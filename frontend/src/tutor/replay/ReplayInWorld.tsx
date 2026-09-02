@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -11,7 +11,7 @@ import { SpeechCaption } from '../SpeechCaption';
 import { TutorFace } from '../TutorFace';
 import { TutorWhiteboard } from '../TutorWhiteboard';
 import { useStageDock, type ReplayLayerProps } from '../stage/StageShell';
-import type { TrayDemoStep } from '../types';
+import { DemoStepsSummary } from './DemoStepsSummary';
 import type { ReplayBeat } from './replayScript';
 
 /*
@@ -599,40 +599,6 @@ function ActivitySummary({ beat }: { beat: ReplayBeat }) {
   const scored = t('tutor.replay.activityScored', { score: activity.score });
   const xp = activity.xpAwarded > 0 ? ` · ${t('tutor.history.xp', { count: activity.xpAwarded })}` : '';
   return <>{`${scored}${xp}`}</>;
-}
-
-/**
- * What the tutor's hands did on the money tray during this beat — a plain
- * sentence, deliberately NOT a re-animated tray.
- *
- * WHAT IT DOES NOT DO IS THE INTERESTING PART, the same shape as
- * `ActivityDetail` above. `runTrayDemo` (`trayDemo.ts`) only knows how to
- * move a REAL, interactive Lesson Engine renderer's own draft state — the
- * same one a real tap changes — and `mayDemonstrate` itself refuses to run
- * against an activity that has already been answered correctly, which
- * every replayed activity, by definition, already has. Mounting that
- * renderer here to re-run the animation would mean building a SECOND,
- * read-only tray surface with its own accessibility and hit-testing
- * burden (§1.14) for a beat that is otherwise a plain caption — a fix far
- * larger than the gap it would close. The steps themselves are real and
- * worth keeping visible, so this states what they were instead: which
- * denominations were added or removed, in order. A `pause` step has
- * nothing to show and is skipped; if every step were a pause (the schema
- * allows it, nothing authors it) there is nothing to say, and this
- * renders nothing rather than an empty sentence.
- */
-function DemoStepsSummary({ steps }: { steps: TrayDemoStep[] }) {
-  const { t, i18n } = useTranslation();
-  const format = useMemo(
-    () => new Intl.NumberFormat(i18n.language, { signDisplay: 'exceptZero', maximumFractionDigits: 0 }),
-    [i18n.language],
-  );
-  const parts = steps
-    .filter((step): step is TrayDemoStep & { denomination: number } => typeof step.denomination === 'number')
-    .map((step) => format.format(step.kind === 'remove' ? -step.denomination : step.denomination));
-  if (parts.length === 0) return null;
-  const list = new Intl.ListFormat(i18n.language, { style: 'short', type: 'conjunction' }).format(parts);
-  return <p className="lf-caption text-content-muted">{t('tutor.replay.demonstrated', { steps: list })}</p>;
 }
 
 /**

@@ -410,19 +410,37 @@ function checkEmotions(library, sampler, rest, characters) {
 
 /* ── run ────────────────────────────────────────────────────────────────── */
 
+/*
+ * A SKIP EXITS NON-ZERO (fixed 2026-09-01).
+ *
+ * Both branches below used to `process.exit(0)`, and the second one printed
+ * the words "never reports success on an empty run" three lines above the
+ * call that did exactly that. This file's own header states the rule — "a
+ * check that reports success on an empty run is worse than none" — so the
+ * claim was right, written down twice, and contradicted by the code in the
+ * same block.
+ *
+ * It matters because of what a zero means to the next reader: running the
+ * §5 gate list and seeing `verify:rig EXIT=0` is indistinguishable from the
+ * rig actually being verified, which is how a rig defect ships behind a
+ * green tick. This is a LOCAL gate and deliberately not in CI, so exiting 1
+ * costs a red line on a machine without Blender and buys the guarantee that
+ * a zero from this script always means the clips were really checked.
+ */
 if (!existsSync(LIBRARY)) {
-  console.log('verify-rig: SKIPPED — no clip library.');
-  console.log(`  ${LIBRARY} is a gitignored build output. Run: npm run assets:clips`);
-  process.exit(0);
+  console.error('verify-rig: CANNOT RUN — no clip library, so nothing was verified.');
+  console.error(`  ${LIBRARY} is a gitignored build output. Run: npm run assets:clips`);
+  console.error('  Exiting NON-ZERO on purpose: a skip must never read as a pass.');
+  process.exit(1);
 }
 const missing = Object.values(BIPEDS)
   .map((file) => resolve(SOURCE_DIR, `${file}.glb`))
   .filter((path) => !existsSync(path));
 if (missing.length > 0) {
-  console.log('verify-rig: SKIPPED — the source exports are not present.');
-  console.log(`  /glb/ lives outside the repo by design. Missing: ${missing.length} file(s).`);
-  console.log('  This is a LOCAL gate; it is not part of CI and never reports success on an empty run.');
-  process.exit(0);
+  console.error('verify-rig: CANNOT RUN — the source exports are not present.');
+  console.error(`  /glb/ lives outside the repo by design. Missing: ${missing.length} file(s).`);
+  console.error('  This is a LOCAL gate; it is not part of CI and never reports success on an empty run.');
+  process.exit(1);
 }
 
 const library = readGlb(LIBRARY);

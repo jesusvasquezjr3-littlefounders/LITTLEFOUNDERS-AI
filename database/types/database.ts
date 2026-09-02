@@ -1356,6 +1356,63 @@ export type Database = {
         }
         Relationships: []
       }
+      learner_memory_proposals: {
+        Row: {
+          after_hash: string
+          before_hash: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          expected_before: string | null
+          id: string
+          proposed: string
+          session_id: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          after_hash: string
+          before_hash?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          expected_before?: string | null
+          id?: string
+          proposed: string
+          session_id?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          after_hash?: string
+          before_hash?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          expected_before?: string | null
+          id?: string
+          proposed?: string
+          session_id?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learner_memory_proposals_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "learner_memory_proposals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       learner_misconception: {
         Row: {
           evidence_count: number
@@ -2349,21 +2406,6 @@ export type Database = {
           },
         ]
       }
-      /*
-       * HAND-AUTHORED, not machine-generated — migration 0065. `npm run
-       * db:types` needs the local Supabase stack (`local-stack.sh db-url`);
-       * this worktree deliberately did not touch it (a live, non-worktree-
-       * scoped Docker Supabase stack was already running on this machine,
-       * and database/AGENTS.md's own migration protocol warns against
-       * nuking a shared development database). Shaped to match what the
-       * real generator produces elsewhere in this file: an `auth.users`
-       * FK renders as `dataintel_users_sync`/`user_id` (see every other
-       * `user_id` Relationship in this file — a generator artifact, not a
-       * real second target), and `course_id` mirrors `course_placements`'
-       * own `courses`/`id` entry above. Re-run `npm run db:types` for real
-       * once this migration is applied somewhere the generator can reach,
-       * and diff against this block rather than trusting it blindly.
-       */
       tutor_placement_safety_flags: {
         Row: {
           category: string
@@ -2396,6 +2438,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "courses"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_placement_safety_flags_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["course_id"]
           },
           {
             foreignKeyName: "tutor_placement_safety_flags_user_id_fkey"
@@ -2685,11 +2734,88 @@ export type Database = {
           },
         ]
       }
+      tutor_trajectory_step: {
+        Row: {
+          created_at: string
+          difficulty: number
+          event_kind: string
+          id: string
+          kc_id: string | null
+          kc_mode: string | null
+          misconception_code: string | null
+          p_known: number | null
+          scaffolding: number
+          session_id: string | null
+          skill_name: string | null
+          strategy: string
+          strategy_before: string
+          turn_seq: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          difficulty: number
+          event_kind: string
+          id?: string
+          kc_id?: string | null
+          kc_mode?: string | null
+          misconception_code?: string | null
+          p_known?: number | null
+          scaffolding: number
+          session_id?: string | null
+          skill_name?: string | null
+          strategy: string
+          strategy_before: string
+          turn_seq: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          difficulty?: number
+          event_kind?: string
+          id?: string
+          kc_id?: string | null
+          kc_mode?: string | null
+          misconception_code?: string | null
+          p_known?: number | null
+          scaffolding?: number
+          session_id?: string | null
+          skill_name?: string | null
+          strategy?: string
+          strategy_before?: string
+          turn_seq?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_trajectory_step_kc_id_fkey"
+            columns: ["kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_trajectory_step_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_trajectory_step_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       tutor_turns: {
         Row: {
           action: string | null
           audio_path: string | null
           created_at: string
+          demonstrate: Json | null
           emotion: string | null
           id: string
           moderation: Json
@@ -2705,6 +2831,7 @@ export type Database = {
           action?: string | null
           audio_path?: string | null
           created_at?: string
+          demonstrate?: Json | null
           emotion?: string | null
           id?: string
           moderation?: Json
@@ -2720,6 +2847,7 @@ export type Database = {
           action?: string | null
           audio_path?: string | null
           created_at?: string
+          demonstrate?: Json | null
           emotion?: string | null
           id?: string
           moderation?: Json
@@ -3308,6 +3436,10 @@ export type Database = {
       }
     }
     Functions: {
+      add_tutor_session_cost: {
+        Args: { p_amount: number; p_session_id: string }
+        Returns: number
+      }
       admin_retention_at_distance: {
         Args: never
         Returns: {
@@ -3335,6 +3467,15 @@ export type Database = {
         }
         Returns: number
       }
+      decide_learner_memory_proposal: {
+        Args: {
+          p_actor: string
+          p_decided_by: string
+          p_proposal_id: string
+          p_verdict: string
+        }
+        Returns: string
+      }
       get_completed_course_badges: {
         Args: { p_user_id: string }
         Returns: {
@@ -3347,6 +3488,44 @@ export type Database = {
       has_active_tutor_voice_consent: {
         Args: { p_user_id: string }
         Returns: boolean
+      }
+      insert_tutor_segment_checked: {
+        Args: {
+          p_answer: Json
+          p_key_verified: boolean
+          p_lesson_id: string
+          p_origin: string
+          p_payload: Json
+          p_provenance: Json
+          p_review_status: string
+          p_segment_type: string
+          p_session_id: string
+          p_source_key: string
+        }
+        Returns: {
+          answer: Json | null
+          attempts: number
+          created_at: string
+          id: string
+          key_verified: boolean
+          lesson_id: string | null
+          origin: string
+          payload: Json
+          provenance: Json
+          review_status: string | null
+          score: number | null
+          segment_type: string
+          seq: number
+          session_id: string
+          voice_checked_at: string | null
+          xp_awarded: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "tutor_segments"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }

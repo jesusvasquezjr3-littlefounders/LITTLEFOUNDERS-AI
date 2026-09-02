@@ -144,6 +144,42 @@ async function pressSwitch(page, label) {
   await realClick(page, at.x, at.y)
 }
 
+/*
+ * THE LAB PANEL, OPENED AND CLOSED BY ITS ACTUAL STATE RATHER THAN BY A COUNT
+ * OF HOW MANY TIMES IT HAS BEEN TOGGLED.
+ *
+ * `pressSwitch(page, 'lab')` is not idempotent and never was: 'lab' is the
+ * COLLAPSED chip and 'hide' is the OPEN panel's header button, so the same
+ * call throws "lab switch not found" whenever the panel happens to already be
+ * open. The whiteboard loop below toggles open/closed once per kind and had
+ * been assuming those toggles stay in phase — which held for three kinds and
+ * then, on the run that added a fourth, did not: one run failed at the fourth
+ * iteration's first press with the panel open, and the very next identical run
+ * passed. Intermittent, not deterministic, and the exact mechanism that put
+ * the panel back open was never pinned down (the toggle cycle reproduces
+ * cleanly in isolation, at the loop's own timing, for all four kinds).
+ *
+ * So the assumption goes rather than the count: ask what state the panel is
+ * in, act only if it is the wrong one, and confirm the change landed. An
+ * unproven root cause is not a reason to keep a construct that can only be
+ * correct when a guess about state is correct — and a gate that fails one run
+ * in two teaches people to re-run it, which is worse than not having it.
+ */
+const PANEL_IS_OPEN =
+  `(() => [...document.querySelectorAll('[data-lab-chrome] button')]` +
+  `.some((n) => n.textContent.trim() === 'hide'))()`
+
+async function setLabPanel(page, open) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if ((await page.evaluate(PANEL_IS_OPEN)) === open) return
+    await pressSwitch(page, open ? 'lab' : 'hide')
+    await sleep(250)
+  }
+  if ((await page.evaluate(PANEL_IS_OPEN)) !== open) {
+    throw new Error(`the lab panel would not ${open ? 'open' : 'close'}`)
+  }
+}
+
 async function waitFor(page, expression, ms, what) {
   const until = Date.now() + ms
   while (Date.now() < until) {
@@ -172,14 +208,13 @@ try {
     const page = await openPage(browser, viewport)
     await page.send('Page.navigate', { url: `${server.url}/dev/tutor-lab` })
     await waitFor(page, '!!document.querySelector("[data-lab-chrome]")', 60_000, 'lab chrome')
-    const open = await page.evaluate(switchCoords('conversing'))
-    if (!open) await pressSwitch(page, 'lab')
+    await setLabPanel(page, true)
     await waitFor(page, 'document.body.innerText.includes("stage ready")', 90_000, 'stage ready')
     await pressSwitch(page, locale)
     await sleep(400)
     await pressSwitch(page, 'conversing')
     await sleep(2500)
-    await pressSwitch(page, 'hide')
+    await setLabPanel(page, false)
     await sleep(300)
 
     const controls = await page.evaluate(SWEEP)
@@ -311,19 +346,33 @@ try {
       }
 
       /*
-       * THE WHITEBOARD (V4) — all THREE kinds (`sequence` via the lab's own
-       * `'whiteboard'` activity id, `compare`, `marked_line` — /ORACLE.md
-       * §20.5 backlog: "same schema family, straightforward once sequence is
-       * proven live"). The owner's own defect: a growth story narrated in
-       * pure text beside an unrelated activity. The activity switch lives in
+       * THE WHITEBOARD (V4) — all FOUR kinds (`sequence` via the lab's own
+       * `'whiteboard'` activity id, then `compare`, `marked_line` and
+       * `categories` — /ORACLE.md §20.5 backlog: "same schema family,
+       * straightforward once sequence is proven live"). The owner's own
+       * defect: a growth story narrated in pure text beside an unrelated
+       * activity.
+       *
+       * `categories` was added 2026-09-01, closing a gap /ORACLE.md §20.5 had
+       * flagged in writing rather than dropped: the argument for leaving it
+       * out was that the existing scenarios "already exercise the shared
+       * container/DOM shape this kind renders into." True of the SHELL and
+       * false of the thing that has actually broken here — `CategoriesBoard`
+       * draws its own `height: N%` bars (TutorWhiteboard.tsx), which is
+       * precisely the construct that rendered at ZERO PIXELS in every real
+       * browser for `sequence` from launch until the check below was written.
+       * A per-kind component with per-kind bars needs a per-kind measurement;
+       * inheriting a wrapper is not inheriting a layout.
+       *
+       * The activity switch lives in
        * the same chrome panel `hide` just unmounted (`panelOpen` gates the
        * whole panel, not just its visibility), so briefly reopen it for EACH
-       * kind — the `lab` switch is the same one used to open the panel at the
-       * very start of this run — flip the fixture, and hide again before
-       * measuring, so the chrome is absent from the screenshot exactly like
-       * every other tag.
+       * kind — via `setLabPanel`, which asks the panel what state it is in
+       * rather than assuming (see its own comment) — flip the fixture, and
+       * hide again before measuring, so the chrome is absent from the
+       * screenshot exactly like every other tag.
        */
-      await pressSwitch(page, 'lab')
+      await setLabPanel(page, true)
       const activitySelect = await page.evaluate(
         centerOf(`document.querySelector('select[aria-label="activity on the plate"]')`),
       )
@@ -331,19 +380,24 @@ try {
         failures += 1
         console.log('  MISSING: the lab activity switch — cannot drive the whiteboard scenarios')
       }
-      // Close it again: the loop below opens it fresh each iteration (its own
-      // "flip the fixture, hide again" sequence), and without this the panel
-      // is still open from the press above, so iteration 1's own `pressSwitch
-      // (page, 'lab')` finds a "hide" button where it expects "lab" and throws.
-      await pressSwitch(page, 'hide')
+      await setLabPanel(page, false)
 
-      for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line'] : []) {
-        await pressSwitch(page, 'lab')
-        await page.evaluate(
+      for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line', 'categories'] : []) {
+        await setLabPanel(page, true)
+        const flipped = await page.evaluate(
           `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +
-            ` s.value = ${JSON.stringify(activityId)}; s.dispatchEvent(new Event('change', { bubbles: true })) })()`,
+            ` if (!s) return false; s.value = ${JSON.stringify(activityId)};` +
+            ` s.dispatchEvent(new Event('change', { bubbles: true })); return s.value === ${JSON.stringify(activityId)} })()`,
         )
-        await pressSwitch(page, 'hide')
+        if (!flipped) {
+          // Without this the run would measure the PREVIOUS kind's board and
+          // print this kind's name over it — a harness reporting confidently
+          // on something it never actually put on screen (/AGENTS.md §1.14).
+          failures += 1
+          console.log(`  COULD NOT SELECT: the lab activity switch never took "${activityId}"`)
+          continue
+        }
+        await setLabPanel(page, false)
         await sleep(300)
 
         await waitFor(
@@ -353,9 +407,10 @@ try {
           `the ${activityId} whiteboard to mount`,
         )
         // Lets a `sequence` board's bars grow in before measuring; a no-op
-        // wait for `compare`/`marked_line`, which render fully immediately
-        // (TutorWhiteboard.tsx — there is no story unfolding over steps for
-        // either to pace an animation against).
+        // wait for `compare`/`marked_line`/`categories`, which render fully
+        // immediately (TutorWhiteboard.tsx — several named things at one
+        // moment have no story unfolding over steps for either to pace an
+        // animation against).
         await sleep(2_500)
 
         const boardControls = await page.evaluate(SWEEP)

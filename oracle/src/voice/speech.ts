@@ -108,6 +108,18 @@ export interface SpeechScope {
    * comment for why this exists; this is its session-scoped twin, for the
    * text class `memo` itself covers (never shared across sessions, so the
    * coalescing must not be either).
+   *
+   * ALREADY CORRECT AT N>1 REPLICAS, by construction rather than by luck —
+   * examined 2026-09-01 (round 142) and recorded here so the next person
+   * asking "which of these maps blocks scaling?" does not have to re-derive
+   * it. A `SpeechScope` has exactly one production constructor
+   * (`ws/server.ts`'s `resumed?.speech ?? newSpeechScope(session)`) and
+   * exactly one production consumer (the `Synthesizer` closure built on the
+   * next line), both bound to ONE socket — and a socket lives entirely inside
+   * the process that accepted it. Every caller that can race on a key in here
+   * is therefore already in the same process. This map must NOT be migrated
+   * to a shared store; making it shared is an active privacy regression (see
+   * the ternary in `speakLine` that chooses between the two maps).
    */
   inFlight: Map<string, Promise<SynthesisOutcome>>;
 }
@@ -134,10 +146,48 @@ export function newSpeechScope(session: {
  * nothing between the two, so two callers that both miss before either has
  * written back both fall through to the paid path — proven with two
  * sessions greeting concurrently on a cold cache, 2 Inworld calls where the
- * cache's own docstring promises "pay once, ever". Scoped per-process,
- * which is correct here: Oracle runs as a single replica (unlike Core —
- * see `backend/AGENTS.md`), so this already covers every session that could
- * actually race on the same instance.
+ * cache's own docstring promises "pay once, ever". Scoped per-process, which
+ * covers every session that can actually race on the same instance — and
+ * which stayed per-process on PURPOSE once Oracle stopped requiring a single
+ * replica (§16, round 143), for the measured reason set out immediately
+ * below, not because nobody revisited it.
+ *
+ * ── WHAT THIS ACTUALLY COSTS AT N>1 REPLICAS, MEASURED (round 142) ──────────
+ *
+ * This is the map ORACLE.md §16 named as blocking a second replica, and the
+ * exposure was measured rather than assumed before deciding anything. With the
+ * shipped default `SPEECH_CACHE_SCOPE=scripted`, "reusable" IS the closed
+ * catalogue and nothing else: 144 keys (12 texts x 4 characters x 3 locales),
+ * 16,697 characters in total, $0.0835 at `USD_PER_1K_TTS_CHARS`. It does not
+ * grow with usage. So the ENTIRE worst case of leaving this per-process is
+ * $0.0835 x (N-1), ONCE, on a cold cache — after which the shared Redis cache
+ * (180-day TTL) serves every replica.
+ *
+ * A distributed claim is the wrong instrument for that. A Promise cannot cross
+ * a process boundary, so the only cross-replica shape is "leader claims,
+ * follower POLLS the cache until it appears" — and a follower that waits adds
+ * latency to a child's turn on the one feature where latency IS the product,
+ * while a follower that does not wait pays anyway, which is today's behaviour
+ * with an extra Redis round trip bolted on. Failing CLOSED is worse still:
+ * this module's contract is "never throws... a lost voice costs the sound",
+ * and `cache.ts` promises an unreachable store degrades to one paid synthesis
+ * "spoken normally". Silence to save a cent inverts both.
+ *
+ * THE CHEAP FIX IS AN OPERATOR ACTION, NOT A LOCK: `npm run
+ * speech:pregenerate -- --confirm` buys the whole set once, records it in the
+ * TRACKED `speech.pregenerated.json`, and `pregeneratedUrl` is consulted
+ * BEFORE the cache with no network at all. The manifest ships in the deploy
+ * image, so it is identical on every replica by construction and the exposure
+ * above becomes $0.00. It currently ships with `"lines": {}` — a documented,
+ * valid state, and the reason this map has any cross-replica cost at all.
+ *
+ * CONDITIONAL, AND THE CONDITION IS A FLAG: all of the above holds only while
+ * `SPEECH_CACHE_SCOPE=scripted`. Under `all`, "reusable" becomes every
+ * generated turn, the keyspace is unbounded and grows with traffic, and the
+ * duplicate spend stops being a one-time 8-cent rounding error. That flag
+ * already needs owner sign-off for privacy reasons (see the header comment);
+ * this is a second, independent reason it cannot be flipped casually — and
+ * flipping it at N>1 REOPENS this question rather than inheriting this answer.
  */
 const inFlightShared = new Map<string, Promise<SynthesisOutcome>>();
 
@@ -216,6 +266,17 @@ export async function speakLine(text: string, scope: SpeechScope): Promise<Speec
   // AWAITS the first's in-flight promise instead of starting a second paid
   // call, and reports its own cost as zero — only the leader's `speak()`
   // call, which actually caused the spend, is billed for it.
+  /*
+   * WHICH MAP, AND WHY IT IS NOT ONE MAP (round 142, 2026-09-01).
+   *
+   * Collapsing this ternary to `inFlightShared` is the cheapest-looking way to
+   * make speech coalescing replica-safe, and it is a PRIVACY regression: a
+   * follower in session B would receive the URL of an object
+   * `synthesizeAndStore` wrote to the SESSION bucket under session A's own
+   * name, on A's 90-day retention clock (/ORACLE.md §12). Fenced by
+   * `speech.test.ts`'s "never coalesces two CONCURRENT sessions ... for a
+   * GENERATED line", which was confirmed to fail against exactly that change.
+   */
   const inFlightMap = reusable ? inFlightShared : scope.inFlight;
   let promise = inFlightMap.get(key);
   const isLeader = promise === undefined;

@@ -270,15 +270,19 @@ const Env = z.object({
    * deliberately as real paid usage grows; a ceiling that trips on ordinary
    * Tuesday traffic is as useless as one that never trips at all.
    *
-   * In-process and reset on a rolling 24h window (`session/spend-guard.ts`),
-   * exactly like the token nonce ledger and the session park: Oracle is
-   * explicitly single-replica today (/ORACLE.md §16), so a cross-replica
-   * store would buy nothing but a dependency this circuit breaker cannot
-   * afford to depend on (§1.14 — liveness, and now spend safety, must not
-   * ride on optional infrastructure). A process restart forgets today's
-   * running total; the worst that allows is one extra day at full exposure
-   * on the day of a deploy, which is a fair trade against a Redis outage
-   * silently disabling the breaker entirely.
+   * In-process and reset on a rolling 24h window (`session/spend-guard.ts`) —
+   * deliberately NOT moved to the shared store the nonce ledger and the
+   * session park now use (/ORACLE.md §16, `RUNBOOK.md` Round 143), because a
+   * circuit breaker must not depend on the infrastructure it exists to
+   * survive (§1.14). A process restart forgets today's running total; the
+   * worst that allows is one extra day at full exposure on the day of a
+   * deploy, which is a fair trade against a Redis outage silently disabling
+   * the breaker entirely.
+   *
+   * **PER REPLICA.** At N instances the effective ceiling is this number times
+   * N, because each process only ever sees its own spend. Divide it by the
+   * replica count when scaling out — see `spend-guard.ts`'s own header for
+   * why that is the right trade rather than an oversight.
    */
   DAILY_SPEND_CEILING_USD: z.coerce.number().positive().default(20),
   /**

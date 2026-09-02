@@ -7,13 +7,18 @@
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-23): IN PRODUCTION.** The runtime, migration `0047`, Core's
+> **Status (2026-09-01): IN PRODUCTION.** The runtime, migration `0047`, Core's
 > `/api/v1/tutor/*` surface AND the immersive experience are all built, shipped
 > and verified end to end against the deployed service — Core reaches Oracle
 > privately, both providers answer, a turn seals/parses/passes the judge, and
 > the cast is enrolled, synthesized in their own voices, stored and fetchable.
 > Live at `oracle-production-e82a.up.railway.app`. §16.1's immersion gates were
-> measured on 2026-08-23; three remain unticked and each says why.
+> measured on 2026-08-23; as of 2026-09-01 exactly ONE remains unticked, and it
+> says why. *This line said "three" until 2026-09-01* — the gates it was
+> counting were ticked in §16.1 itself, each with its own dated evidence, while
+> the tally up here was never re-counted. §15.2's lesson in miniature: a claim
+> about the state of the code decays silently, and a summary of a checklist
+> decays faster than the checklist.
 >
 > An adversarial security audit on 2026-08-23 found five HIGH defects, all
 > fixed with a regression test each: `/SECURITY_AUDIT_2026-08-23.md`, whose §3
@@ -40,7 +45,7 @@
 > was wrong, or that had recorded a fallback as a decision. Both directions
 > happen. Every correction says what it used to say.
 >
-> **Last updated:** 2026-08-23 · Language: English (project rule).
+> **Last updated:** 2026-09-01 · Language: English (project rule).
 
 ---
 
@@ -280,10 +285,16 @@ replaying: a `history` frame with the transcript, the on-screen turn re-sent as
 text with no audio, no second greeting. An unclaimed park is finalized as
 `learner_left`. The client auto-resumes at most ONCE per session and says
 "reconnecting" while it does; a server-refused socket (expired, budget, consent)
-is never re-dialled. The park shares the nonce ledger's single-replica
-constraint (§16). Proven by `live-session.test.ts` → "a dropped session can be
-resumed on a fresh token" (all three tests) and `backend/src/__tests__/tutor.test.ts`
-→ "POST /api/v1/tutor/sessions/:id/resume".
+is never re-dialled. **Since 2026-09-01 the park is no longer confined to the
+process that made it** (§16, `RUNBOOK.md` Round 143): it is also published as a
+versioned snapshot any replica can adopt, so a reconnect load-balanced to a
+different instance resumes the same conversation rather than starting over, and
+`transcriptSeq` is floored by a shared monotonic high-water mark so a resumed
+transcript can never renumber over rows already written. Proven by
+`live-session.test.ts` → "a dropped session can be resumed on a fresh token"
+(same-replica) and → "a dropped session resumes on a DIFFERENT replica"
+(cross-replica, every test confirmed red against the pre-fix code), plus
+`backend/src/__tests__/tutor.test.ts` → "POST /api/v1/tutor/sessions/:id/resume".
 
 > **Fixed 2026-08-30 (adversarial review, HIGH): resume had no notion of
 > "already live".** `POST /sessions/:id/resume` minted a fresh token for any
@@ -611,15 +622,29 @@ calling `insertPlacementSafetyFlag` with `course.id` as context — and read
 back through the SAME guardian-visibility route the live-session flags
 already use, `GET /api/v1/tutor/kids/:kidUserId/sessions`, as a new
 `placementSafetyFlags` field alongside (never merged into) `safetyFlags`.
-**Not yet done, stated so rather than silently claimed complete:** the
-`/family/:kidId/tutor` page (§12: "safety flags surfaced FIRST... sorted
-severity-first") does not yet render this new array — it is real,
-RLS-protected, guardian-queryable data today, reachable by direct query or
-through the API, but the dedicated frontend treatment §12 already gives
-session-based flags (severity sort, a translated chip, "surfaced FIRST")
-has not been extended to this second provenance. The floor moved from "a
-log line" to "a guardian-queryable record reachable through the same API
-the live-session flags use"; the frontend card is the next floor to raise.
+**The frontend card, which this section previously recorded as "not yet
+done", is done — 2026-09-01.** `/family/:kidId/tutor`
+(`frontend/src/routes/app/family/KidTutorPage.tsx`) renders
+`placementSafetyFlags` through §12's existing treatment rather than a
+second design of its own: the same "Worth your attention" card, the same
+translated `tutor.guardian.flagCategory.*` / `flagSeverity.*` chips (both
+provenances emit the SAME `classifyLearnerInput` enums, so no new category
+copy was needed), and — the load-bearing part — inside the SAME
+severity-first sort as the session flags, not in a section beneath them.
+A separate section would have recreated one layer up the exact defect the
+2026-08-30 review fixed inside this card: a HIGH `self_harm` flag sitting
+below a batch of LOW ones, with "surfaced FIRST" true of the section and
+false of what a parent actually reads first. **Only the ORDERING is
+shared** — the two arrays stay separate on the wire, as the paragraph
+above requires, and the component models them as a discriminated union so
+the compiler, not a runtime check, is what proves a `session_id` exists
+before the "Read it" control is offered. A placement flag carries no
+session, so that control is absent by design and the row SAYS so
+(`tutor.guardian.flagFromPlacement`, all three locales) rather than
+leaving a hole a parent would read as a transcript that failed to load.
+The floor is now the card; what remains open above it is unchanged
+(retention for this table is still deliberately undecided — see migration
+`0065`'s own header).
 
 ### §4.2 To the voice provider (Inworld)
 
@@ -1653,6 +1678,19 @@ point at; deleting it when the first of those sessions expires would protect
 nobody and silence every session afterwards. Core's sweep therefore deletes
 from `tutor-speech` only, and that is asserted by a test rather than trusted.
 
+**A second clarification added 2026-09-01, because a new place now briefly
+holds conversation text.** A dropped session's park record (`ws/parkStore.ts`,
+§16) contains the transcript so far and the session's pinned context — first
+name/nickname and age band, the same fields §4.1 already permits — written to
+OUR OWN Redis so a reconnect landing on another replica can resume the same
+lesson. It is not a new destination for a child's data in the sense §1.9 cares
+about: it never leaves our infrastructure, it never reaches a third-party API,
+and it is not a store anything reads from later. It is deleted the moment it is
+adopted (an atomic get-and-delete) or when the parking replica's grace window
+closes, and it carries a hard TTL of the resume grace window plus five minutes
+— minutes, against the transcript's own 90 days in Postgres. The learner's
+AUDIO is not in it and never was.
+
 - **Replay** reconstructs the session: the characters re-act it, the tutor's
   audio plays, the segments are shown alongside how the learner did on them.
 
@@ -1773,12 +1811,25 @@ from `tutor-speech` only, and that is asserted by a test rather than trusted.
   Topic titles are resolved in the GUARDIAN's own profile locale (the same
   "caller's own row" pattern the rest of this route already uses), not the
   child's session locale — a bilingual family should not read a topic name
-  in a language they did not choose. Known limitation: the digest fallback
-  (a session the brain never touched) still surfaces its topic string in the
-  CHILD's session locale, because that string was baked in at close time
-  (migration `0051`) rather than kept as a re-localizable id; left as a
-  documented gap rather than a second re-localization round-trip for a
-  fallback path, not the common case once the brain is seeded.
+  in a language they did not choose. **This now holds on BOTH tiers
+  (2026-09-01).** It previously did not, and the reason recorded here for
+  leaving it — that the digest's topic string "was baked in at close time
+  (migration `0051`) rather than kept as a re-localizable id" — was simply
+  wrong about our own schema: `SessionSummaryDigest` has carried `topicId`
+  next to the baked `topic` string since that same migration, and the offers
+  screen had been rebuilding "continue" openings from it all along. So the
+  fallback tier re-resolves the title from `topicId` in the guardian's
+  locale, for ONE extra bounded `in.(...)` read (`getTopicTitlesByIds`,
+  `backend/src/routes/tutor.ts`) issued only for the sessions that actually
+  reach that tier — a session the brain touched never reads `fallbackTopic`,
+  so resolving its id would be a discarded round-trip. An id that resolves
+  to nothing (unpublished topic, failed read) degrades to the baked string
+  rather than to null: display-only, and erasing a topic the parent could
+  already see would be worse than naming it in the wrong language. Both
+  behaviours are covered by regression tests that fail against the old code.
+  The general lesson is worth more than the fix: a limitation documented
+  with a REASON is still a claim about the code, and this one had never been
+  checked against the schema it described.
 - **Retention 90 days**, then automatic deletion, enforced by a scheduled job
   with its own test. A retention policy nobody runs is not a retention policy.
 - RLS from the first migration. Kid rows readable by verified guardians only.
@@ -1964,8 +2015,10 @@ expensive thing in the product was the least measured.**
    `speech.ts`: a second caller for the exact same key while a synthesis is
    already running awaits the FIRST caller's result instead of starting a
    second one, and reports its own cost as zero. Scoped per-process for the
-   shared/scripted cache (a module-level map) — correct because Oracle runs
-   as a single replica, unlike Core — and per-session for generated lines
+   shared/scripted cache (a module-level map) — re-examined at N>1 on
+   2026-09-01 and deliberately KEPT per-process, because its entire exposure
+   is a measured $0.0835 once per replica on a cold cache and every available
+   fix is worse (§16) — and per-session for generated lines
    (added to `SpeechScope` alongside the existing `memo`), matching the
    existing privacy boundary between the two caches exactly.
 
@@ -2052,6 +2105,57 @@ answer returns 502 and the session does not start, rather than defaulting to
 "no sessions used yet". Moderation and consent fail closed; rate limiting fails
 open, deliberately, because it is an availability control (§1.14).
 
+> ### The staff USAGE exemption — owner request, 2026-09-01
+>
+> **`admin` and `superadmin` accounts are exempt from the four limits above
+> that bound a learner's USE of the tutor**, so the people who test the
+> product are not stopped by budgets shaped for a child's attention span. The
+> daily session cap has been exempt since before this (`STAFF_SESSION_CAP`,
+> `backend/src/routes/tutor.ts` — and its own comment records the day the
+> exemption existed on paper and threw `integer out of range` in practice).
+> What 2026-09-01 added is the rest: the **25-minute hard stop**, the
+> **15-minute wind-down** and the **120-turn cap** now read
+> `STAFF_HARD_BUDGET_MS` (8 h), `STAFF_SOFT_BUDGET_MS` (7 h 45 m) and
+> `STAFF_MAX_TURNS` (5,000) instead (`oracle/src/session/budget.ts`).
+>
+> **It travels as one derived boolean, never a role list.** Core computes
+> `isStaff` in the same handler that already reads the roles and already
+> fails closed on an unreadable answer (502), and sends it on the `.strict()`
+> session context beside `isMinor` — a policy flag, no PII, and `optional()`
+> on Oracle's side so an Oracle deployed ahead of Core reads its absence as
+> `false`. It reaches the BUDGET only: `verify:tutor` still asserts the model
+> context rejects every unlisted field, and staff-ness has no business
+> shaping how the tutor speaks to anybody.
+>
+> **What is deliberately NOT exempt, and must not become so:**
+> - **The platform-wide daily spend ceiling** (`DAILY_SPEND_CEILING_USD`,
+>   §15.2 item 1). It exists for the runaway case, and an unattended staff
+>   session with no session cap, no clock and no turn cap is the most
+>   plausible way to produce one. This is the control that makes the rest of
+>   the exemption affordable.
+> - **The 120 tutor XP per day cap.** XP is a reward, not a usage limit;
+>   uncapping it would make staff progress data non-comparable with a real
+>   learner's for no testing benefit.
+> - **Moderation, consent, and the §1.9 PII boundary.** Those are safety.
+>   Nothing in this exemption touches them, and a future change that "extends
+>   the staff exemption" to any of them is a bug, not an extension.
+>
+> **The staff budget is large and still FINITE, on purpose.** "Unlimited"
+> literally asks for `Infinity`, and the hard budget is the only thing that
+> ever closes a session nobody is sitting in front of. Eight hours is past
+> any real testing session and still ends an abandoned one the same day —
+> the identical judgement `STAFF_SESSION_CAP` made when it chose Postgres's
+> `int4` ceiling over `Number.MAX_SAFE_INTEGER`. The wind-down stays a fixed
+> fifteen minutes below the hard stop rather than a proportion of it, so
+> staff can still reach and test the `wrapping` state instead of spending
+> two and a half hours inside it.
+>
+> Pinned by seven tests in `oracle/src/__tests__/session.test.ts` (the
+> exemption is real; it is not infinite; the wind-down is still reachable;
+> and — the one a careless implementation breaks — omitting the flag gives a
+> learner the learner's budget) and two in `backend/src/__tests__/tutor.test.ts`
+> covering the wire contract in both directions.
+
 > **This paragraph was false for five days, and that is the point (2026-08-23).**
 >
 > An adversarial audit found that the 700 ms floor and the 120-turn cap were
@@ -2116,13 +2220,18 @@ open, deliberately, because it is an availability control (§1.14).
    `oracle/src/__tests__/admission-control.test.ts`: the (N+1)th attempt is
    refused with a real close frame while the N already-live sessions stay
    untouched, and freeing a slot admits the next attempt — the ceiling is
-   dynamic, not a one-shot lockout. **What remains open, deliberately: the
-   horizontal-scale plan.** Sessions share no state beyond this one process's
-   memory (the token nonce ledger, `liveSessions`, `parkedSessions` are all
-   in-process maps — this file's own single-replica constraint, §16), so
-   scaling out is easy in the sense that nothing needs to migrate — but a
-   per-instance cap alone does not become admission control ACROSS instances,
-   and that is a separate, larger, architecturally-undecided piece of work.
+   dynamic, not a one-shot lockout. **What remains open, deliberately: this
+   cap is still PER INSTANCE.** The session state it counts is no longer
+   process-bound — the nonce ledger and `liveSessions` moved onto a shared
+   claim, and `parkedSessions` gained a shared, adoptable snapshot (§16,
+   `RUNBOOK.md` Round 143) — but `ORACLE_MAX_CONCURRENT_SESSIONS` is read from
+   one process's own `liveSessions.size`, so N replicas admit N times the
+   ceiling. That is deliberate and safe in the direction that matters (each
+   instance still protects ITSELF from overload, which is what the cap is for),
+   and it is not admission control ACROSS instances, which remains a separate
+   and architecturally-undecided piece of work. Note it is a capacity control,
+   not a spend control: the daily ceiling that bounds MONEY (`spend-guard.ts`,
+   §15.2 item 1) is a different mechanism.
 3. **The websocket handshake is not rate limited — CLOSED 2026-08-31.** It is
    still attached to the HTTP server directly, so Express's
    `globalRateLimiter` still never sees it — that has not changed and could
@@ -2308,7 +2417,22 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       injecting axe-core into `/dev/tutor-lab` across desktop light en-US,
       desktop dark es-MX and mobile light es-MX — the same three
       configurations `verify-tutor-ui.mjs` already drives — so the next
-      rebuild gets a gate instead of a memory. Two real violations found and
+      rebuild gets a gate instead of a memory. **Widened the same day from two
+      stage phases to all EIGHT** (arriving, personalizing, introducing,
+      conversing, adapting, closing, replaying, unavailable), each scanned at
+      rest, so this row's "all four Tutor surfaces" claim is now carried by
+      the gate rather than by the two phases that happened to be scripted.
+      Twenty-four phase scans, ZERO product violations — the six phases that
+      had never been swept were in fact clean. What the widening did find was
+      a defect in the HARNESS, and it is the more useful finding: the old
+      fixed 600ms post-switch wait assumed a phase's entrance animation starts
+      when the phase switch is pressed. It does not — a world chip's
+      `lf-settle` starts when the placement solver seats it, caught with
+      `getAnimations()` reporting `lf-settle:running:33` on a sample taken
+      1.9 SECONDS after the switch, composited at 1.06:1 where the resting
+      pair is 6.29:1. Three of twenty-four scans tripped that way. The wait is
+      now animation quiescence with a floor, not a duration, so the gate
+      measures the resting state by construction. Two real violations found and
       fixed, both on `TutorTranscript.tsx`'s scroll region:
       `scrollable-region-focusable` (an `overflow-y-auto` log with no
       focusable descendant was reachable by mouse wheel or touch, never by
@@ -2362,25 +2486,80 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       **What the audit did not cover** is recorded honestly in
       `/SECURITY_AUDIT_2026-08-23.md` — no live provider calls, no
       dependency review, no multi-instance analysis, no load testing.
-- [ ] **Oracle runs as a SINGLE Railway replica — partially closed.** Two of
-      the four in-process, per-session structures `oracle/AGENTS.md` item 79 /
-      `RUNBOOK.md` Round 119 named now sit on a shared, Redis-backed
-      distributed lock (`oracle/src/lib/lock.ts`) instead of a bare in-process
-      Map: the `jti` replay ledger (`session/token.ts`) and the live-session
-      exclusivity guard (`liveSessions`, `ws/server.ts`'s SEVENTH GATE). Both
-      fail CLOSED — refuse the connection — when the shared store cannot
-      confirm exclusivity, a deliberate choice written down at each call site
-      and in `RUNBOOK.md` Round 119's follow-up. **STILL in-process, and
-      STILL a blocker to scaling past one replica:** `parkedSessions` (a
-      resumed session's live `TutorOrchestrator` and `SpeechScope`
-      instances — closures and private class state, not serializable data;
-      see the same round's own accounting of why this is a materially larger
-      piece of work) and item 24's speech in-flight-coalescing maps
-      (`inFlightShared`/`SpeechScope.inFlight` in `voice/speech.ts` — the
-      underlying cache they sit in front of is ALREADY Redis-backed and
-      shared; only the same-instant race-avoidance layer on top of it is
-      still per-process). Verify before scaling, not after — and finish
-      moving BOTH remaining structures before ever running N>1 replicas.
+- [x] **Oracle no longer requires a SINGLE Railway replica — closed 2026-09-01
+      (`RUNBOOK.md` Round 143), with one deliberate limit and one operational
+      step named below rather than hidden.** All four of the in-process,
+      per-session structures `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round
+      119 originally named are now resolved, and they were resolved by three
+      different means because they were three different problems:
+
+      - **The `jti` replay ledger and the live-session exclusivity guard**
+        (`session/token.ts`, `liveSessions` in `ws/server.ts`) sit on a shared
+        Redis-backed claim (`oracle/src/lib/lock.ts`). Both fail CLOSED —
+        refuse the connection — when the store cannot confirm exclusivity, a
+        decision written down at each call site.
+      - **The speech in-flight coalescing maps** (`voice/speech.ts`) were
+        CLOSED ON MEASUREMENT, without a lock, in Round 142.
+        `SpeechScope.inFlight` is already correct at N>1 by construction and
+        must never be made shared — doing so serves one child's session audio
+        into another child's session, fenced now by a regression test.
+        `inFlightShared` is genuinely per-process and its ENTIRE exposure was
+        measured: with the shipped `SPEECH_CACHE_SCOPE=scripted` the reusable
+        class is the closed catalogue — 144 keys, 16,697 chars, **$0.0835 in
+        total, once** — so leaving it costs $0.0835 x (N-1) on a cold cache and
+        nothing thereafter. `npm run speech:pregenerate -- --confirm` takes
+        that to $0.00. **Conditional on that flag**: `SPEECH_CACHE_SCOPE=all`
+        makes the reusable class unbounded and reopens the question.
+      - **`parkedSessions`** — the one Round 142 called the real blocker, and
+        the one this round rebuilt. A dropped session now publishes a
+        versioned, `.strict()`-validated snapshot of itself
+        (`ws/parkStore.ts`), which any replica can adopt: the conversation, the
+        lesson plan, the pedagogical controller's private state, the budget
+        clock, the cost ledger and the open activity all come back, on a
+        `Synthesizer` the adopting process builds for itself because a closure
+        cannot travel. Three properties make it safe rather than merely
+        working, and each has its own test: the claim is released only AFTER
+        the park is published, so anything that acquires it is looking at a
+        store where the park already exists; the parking replica's grace timer
+        must win a compare-and-delete on the shared record before it may close
+        the session, so it can never stomp a conversation another replica
+        adopted; and `transcriptSeq` is floored by a separate monotonic
+        high-water mark, published per row, so it can never restart at 0 even
+        when no park record survives at all.
+
+      **What is NOT covered, stated plainly.** A REDEPLOY still ends every live
+      session as `abandoned` rather than handing it to a sibling replica —
+      exactly as it does today at one replica, so it is unchanged rather than
+      regressed, and it loses no data. Round 142's requirement 6 called that an
+      owner decision rather than a refactor, and it still is: a process on its
+      way out cannot answer "is a sibling still there to resume into?" about
+      itself, so changing it needs a fleet-liveness signal this service does
+      not have. Cross-replica adoption covers a learner who DROPS.
+
+      **Two controls remain PER INSTANCE, and scaling out requires acting on
+      one of them.** `ORACLE_MAX_CONCURRENT_SESSIONS` counts one process's own
+      live sockets, which is what it is for — each instance protecting itself
+      from overload — so N replicas admit N times that ceiling, harmlessly.
+      `DAILY_SPEND_CEILING_USD` is the one that matters: `spend-guard.ts` is
+      deliberately in-process, because a circuit breaker must not depend on the
+      infrastructure it exists to survive (§1.14), so at N replicas the
+      effective daily ceiling is **N times the configured number**. It still
+      stops the multiplier-shaped bug it was built for on each instance, but
+      the platform-wide dollar figure is only true if the configured value is
+      DIVIDED by the replica count. Do that in the same change that scales.
+
+      **What is proven, and what is only argued.** The snapshot's completeness
+      is enforced mechanically rather than by review — `snapshotFence.test.ts`
+      reads both classes' real runtime fields and fails if one is neither
+      snapshotted nor explicitly excluded with a reason, confirmed red against
+      an injected field on each class. The cross-replica behaviour is driven
+      end to end over real sockets, every test confirmed red against the
+      pre-fix code (the transcript one reported 6 rows carrying only 3 distinct
+      seqs — half the conversation deleted in silence). The Redis Lua was
+      verified against a real Redis 7 container, 23 assertions, twice. What has
+      NOT happened is a live two-replica deploy: **scale to N>1 with a smoke
+      test that drops a session on one instance and resumes it on another,
+      rather than trusting this paragraph.**
 
 ### §16.1 The immersion gates — added 2026-08-21, measured 2026-08-23
 
@@ -2451,13 +2630,37 @@ items are unticked because they were not proven, and each one says why.
       ancestor returns the descendant's OWN display, so the collapsed sheet's
       contents look visible to a scan while being correctly out of the tab
       order.
-- [ ] **Motion survives the quality governor.** A locked `low` tier still
-      transitions between shots (DESIGN.md §Motion recipe 9). Measured frame
-      times and live triangle count at fullscreen against the documented
-      per-frame ceiling. **NOT VERIFIED THIS PASS.** Frame times measured under
-      a software rasteriser — which is what a headless machine has — say
-      nothing about a real GPU, and there is no real one here. It needs a
-      device.
+- [x] **Motion survives the quality governor — MEASURED ON REAL GPU HARDWARE,
+      2026-09-01, and the old caveat is now half retired rather than repeated.**
+      This item said "there is no real one here" for over a week. That was true
+      of the HEADLESS harness and had quietly become false of the machine: the
+      in-app browser renders through the real device GPU, which reported itself
+      as `ANGLE (Apple, ANGLE Metal Renderer: Apple M2)` — not SwiftShader. The
+      claim was never re-tested after the tooling changed underneath it, which
+      is this file's own recurring failure (an assertion decays silently while
+      the thing it describes moves).
+
+      **The numbers, read off `requestAnimationFrame` deltas on the live
+      `/dev/tutor-lab` stage, 295 frames desktop and 235 at 390x844 with
+      `devicePixelRatio` 2:** median **16.7 ms (59.9 fps)** at BOTH sizes, p95
+      **18.5 / 18.6 ms**, worst frame **18.7 ms**, and **zero frames over
+      33 ms** — that is, not one dropped frame across either run. The ~39% of
+      frames nominally "over 16.7 ms" is vsync jitter either side of the 60 Hz
+      boundary, not stutter: the distribution's own worst case is 18.7 ms,
+      nowhere near a doubled frame. This supersedes the 48-fps figure recorded
+      in `/TUTOR_3D.md`, which that file already labelled "a software-rasteriser
+      bound, not a phone measurement".
+
+      **WHAT THIS DOES NOT PROVE, and the box is ticked with this attached
+      rather than despite it.** An M2 is far stronger than the mid-range phone
+      most of our learners hold. What is now closed is the SOFTWARE-RASTERISER
+      caveat — frame times are no longer being read off a renderer with no GPU
+      behind it at all — and the ceiling comparison holds (`/TUTOR_3D.md`'s
+      measured worst case is 106,224 triangles against a documented
+      `maxTrianglesPerFrame` of 220,000, 48%). What remains open, and is now
+      tracked in §16.2 rather than here, is a real mid-range ANDROID number.
+      Ticking this on an M2 and calling the phone question answered would be
+      exactly the over-claim §1.12 forbids.
 - [x] **Text over the render is measurable.** **HALF SUPERSEDED, half
       RE-RUN — 2026-09-01.** The first half — "every plate carrying body text
       stands on the opaque `bg-surface` floor" — was superseded on 2026-08-22
@@ -2538,9 +2741,38 @@ up everywhere a character appears, including outside the Tutor. Re-framing the
 four illustrations is a change to every screen in the product and needs its own
 pass.
 
-**7. The Tutor has per-learner limits but no platform-wide spending brake.**
-See §15.2. It cannot be exhausted by one child; it has not been proven against
-a thousand at once.
+**7. The Tutor has per-learner limits AND, since 2026-09-01, a platform-wide
+spending brake.** Until then it had only the per-learner ones — it could not be
+exhausted by one child, but nothing watched the TOTAL, and "we would notice on
+the invoice" is an autopsy rather than a control. Now the service keeps a
+rolling 24-hour total of what the Tutor has actually cost, warns loudly well
+before the ceiling (at half of it, by default), and once the ceiling is reached
+declines to open any NEW conversation. A conversation already under way is
+never cut off for this reason, and a learner turned away sees the same ordinary
+"The tutor is resting. Try again soon." they would see for any other outage —
+a business cost ceiling is not something to explain to a child. The numbers,
+the settings and the tests behind it are §15.2 item 1. *What is still true:*
+the total is counted inside the one server that runs the Tutor, so restarting
+or redeploying it starts the count over, and none of this has been proven
+against a thousand learners at once. *If a customer asks:* "There is a daily
+spending limit on the tutor as a whole, on top of the limits on each child. If
+it is ever reached, new conversations wait — nobody is cut off part-way through
+one."
+
+**8. The 3D island has been measured on a laptop GPU and a software renderer,
+never on a mid-range phone.** On real GPU hardware (Apple M2, 2026-09-01) the
+scene holds a steady 60 frames a second at both desktop and phone-sized
+viewports, with not one dropped frame across two runs, and it draws about half
+the triangles the design budget allows. That retires the old worry that every
+frame-time number we had came from a renderer with no graphics card behind it
+at all. What it does NOT tell us is how the same scene behaves on the mid-range
+Android device a good share of our learners actually hold — a laptop chip is
+not that phone, and no arithmetic gets you from one to the other. The quality
+governor exists precisely for this: it lowers the scene's own ambition when
+frames get expensive, and a learner on a weaker device gets a simpler island
+rather than a stuttering one. *If a customer asks:* "The tutor's world adjusts
+itself to the device it is running on. On a slower phone it draws a simpler
+scene so it keeps moving smoothly."
 
 ## §17 Documentation stewardship for this feature
 
@@ -2968,10 +3200,67 @@ disclaimer, rather than concatenated raw — so even content the classifier's
 five categories do not cover degrades to the same treatment as any other
 replayed learner text.
 
-**Parental approval gate (BLOCKING before family rollout):** auto-write is the
-owner-accepted interim while the platform's only active learner is the owner.
-Before real families: LEARNER-store writes require guardian approval from the
-portal, which reads the same ledger.
+**Parental approval gate — SHIPPED 2026-09-01, migration `0068`.** This was
+the last item in this document marked BLOCKING before family rollout, and it
+read: auto-write is the owner-accepted interim while the platform's only
+active learner is the owner; before real families, LEARNER-store writes
+require guardian approval from the portal. It no longer does.
+
+**What a `kid`'s post-session review now does.** The LEARNER store's proposal
+is not applied. It is written to `learner_memory_proposals` as PENDING, with
+the belief it was computed from (`expected_before`) and both content hashes
+carried on the row, and Core answers Oracle with a THIRD outcome —
+`pending: ['learner']` beside `written` — because a parked store is neither
+written nor failed, and without that distinction every kid session would log
+"the memory write did not land" forever (§1.14). A guardian empties the queue
+from `/family/:kidId/tutor`; an approval applies the note through
+`write_learner_memory_checked` (migration `0059`, the same function `0061`'s
+pair wrapper calls), so the compare-and-swap and the append-only
+`learner_memory_ledger` row are literally the same code as an ungated write.
+The ledger's `actor` is `guardian-approved-review` rather than
+`oracle-post-session-review`, so reading the trail back tells the two apart.
+
+**The PEDAGOGY store is deliberately NOT gated**, for a minor or an adult. It
+holds the tutor's notes about its own teaching method ("prefers a worked
+example before the rule"), not a record of the child; gating it would ask a
+guardian to approve a teaching technique, which is not a parental decision,
+and would stall the tutor's ability to adapt behind an inbox. The split is
+enforced by construction rather than by a caller remembering it: the proposals
+table has no `store` column, its length CHECK is the LEARNER store's own 1,400
+cap, and the decision function passes the literal `'learner'`.
+
+**Adults are unaffected** — there is no guardian to ask, and an approval queue
+nobody can empty would simply stop their memory from ever being written. Core
+decides which path a write takes by reading `user_roles`, and a role read that
+FAILS refuses the whole write rather than falling through to the ungated path:
+the "default" there would be a child's note bypassing the gate because
+PostgREST hiccuped.
+
+**A verdict lands only on a still-pending row**, claimed and applied in ONE
+transaction (`decide_learner_memory_proposal`) — the rule `setTutorReviewStatus`
+already enforces for the live-review queue with a `review_status=eq.pending`
+filter, moved into the database because here a decision also triggers a write.
+Two guardians of the same child deciding at once is ordinary (§1.3: families
+support multiple parents); the second gets `not_pending`, never a silent
+overwrite.
+
+**A proposal can go stale, and that is reported rather than resolved.** Each
+note is a full REPLACEMENT computed from the store as it stood when its
+session began, so two overlapping sessions can park two notes built on the
+same base. Approving the first moves the store; the second no longer matches
+`expected_before`, the compare-and-swap returns `conflict`, nothing is written
+and the row STAYS PENDING so the guardian can reject it instead of being told
+a write landed that did not. Same per-store contract round 51 already gave two
+overlapping sessions, reached through a guardian instead of through a race.
+The portal also sends the store's CURRENT text, so a stale note is marked
+before anyone taps approve rather than only afterwards.
+
+Routes: `GET /api/v1/tutor/kids/:kidUserId/memory-proposals` and
+`POST /api/v1/tutor/memory-proposals/:proposalId/decision`, both behind the
+same `isVerifiedGuardian` check as the rest of the family surface, with RLS
+saying it again independently (`user_id = auth.uid() OR
+is_verified_guardian_of(user_id)`, and no INSERT/UPDATE/DELETE policy at all —
+only the service role writes, and only through the function).
 
 **The review call itself had no fence at all — found by adversarial review,
 2026-08-30 (HIGH), the sibling of the recall gap above.** `runPostSessionReview`
@@ -3120,9 +3409,10 @@ when no segment is present, so it inherits every overlap fix already built for
 that surface for free: the caption docks to the panel's own free space instead
 of losing an unwinnable escape budget against it, the sheet rises to `half` the
 same way an announced segment does, and the transcript yields height the same
-way. `verify-tutor-ui.mjs` drives a dedicated `whiteboard` lab scenario and
-runs the SAME sweep + geometric overlap audit already built for segments
-against it — 0 unreachable controls, 0 overlaps, caption never under the board.
+way. `verify-tutor-ui.mjs` drives a dedicated lab scenario for EVERY kind
+(`whiteboard`/`sequence`, `compare`, `marked-line`, `categories`) and runs the
+SAME sweep + geometric overlap audit already built for segments against each —
+0 unreachable controls, 0 overlaps, caption never under the board.
 
 A graded segment always wins the plate if somehow both are present (the schema
 refusal makes this unreachable in practice).
@@ -3239,22 +3529,44 @@ and `listTutorTurns`'s read-time re-validation (`backend/src/routes/
 tutor.ts`, `backend/src/services/tutorData.ts`) were widened the same way,
 so a categories board is not the ONE thing round 35's fix (below) was about
 all over again — reaching the learner's screen and nowhere else.
-**Deliberately NOT built in this slice, and why:** drift detectors analogous
-to `narratesUnshownGrowth`/`whiteboardNumberMismatch`/
-`whiteboardDoubledPeriodSteps` — every one of those was written AFTER a real
-production session showed a SPECIFIC, reproduced way the model's words
-disagreed with its own board; none were theorized ahead of evidence.
-`categories` has no live sessions behind it yet, so writing one now would be
-guessing at a defect that may not be the one that actually occurs. The right
-next step, once this is proven live, is the same one that built every
-existing detector: run it, read the transcripts, detect the ACTUAL drift. A
-dedicated `verify-tutor-ui.mjs` E2E lab scenario for this kind was also not
-added — the existing `whiteboard` lab scenario's overlap/hit-test coverage
-already exercises the shared container/DOM shape this kind renders into
-(the same `WhiteboardShell` wrapper every kind draws through), and a
-`/dev/tutor-lab` `categories` activity exists for manual verification, but
-the dedicated automated scenario is a reasonable, explicitly-flagged gap
-rather than a silently dropped requirement.
+**Both gaps this slice deliberately left open were CLOSED on 2026-09-01, at
+the owner's request.** What they were, and what closing them actually found,
+is recorded below rather than deleted — the reasoning that left them open was
+sound, and the fact that it was later overruled is part of the record.
+
+*The gap:* drift detectors analogous to `narratesUnshownGrowth`/
+`whiteboardNumberMismatch`/`whiteboardDoubledPeriodSteps` — every one of those
+was written AFTER a real production session showed a SPECIFIC, reproduced way
+the model's words disagreed with its own board; none were theorized ahead of
+evidence. `categories` had no live sessions behind it, so writing one then
+would have been guessing at a defect that may not be the one that actually
+occurs. *What changed:* the owner asked for it, and **there is still no live
+transcript behind it** — that has not changed and is not claimed. What makes
+building it anyway defensible is a property `sequence` never had: THIS BOARD
+NAMES ITS OWN PARTS. `sequence` has to recover "which period is this sentence
+about" out of freeform prose, which is why its history is a catalogue of
+ordinals, cardinals, contractions and a Portuguese verb list; a `categories`
+bar carries a LABEL the model itself wrote and the child can read on screen,
+so the anchor is the model's own word for the thing, followed by a copula,
+followed by a number. `whiteboardCategoryMismatch` (prompt.ts) checks a bar's
+own amount misquoted beside its own name, and a stated total that is not the
+sum. It deliberately does NOT check a superlative naming the wrong bar as the
+biggest — the anchor for that is a bare "más"/"most" near a label, which is
+too common to be safe with up to six bars — and that remains open, for the
+original reason, until a transcript shows the wording.
+
+*The second gap:* a dedicated `verify-tutor-ui.mjs` E2E lab scenario. The
+argument for leaving it out was that the existing `whiteboard` scenario
+"already exercises the shared container/DOM shape this kind renders into (the
+same `WhiteboardShell` wrapper every kind draws through)." That is true of the
+SHELL and false of the thing that has actually broken on this surface:
+`CategoriesBoard` draws its OWN `height: N%` bars, and a percentage height
+that never resolves is exactly the defect that rendered `sequence`'s bars at
+ZERO PIXELS in every real browser from launch (below). A per-kind component
+with per-kind bars needs a per-kind measurement; inheriting a wrapper is not
+inheriting a layout. `categories` now runs in the same loop as the other
+three — reachability sweep, overlap audit, caption-under-board, and the
+real-pixel bar-height check — and passes.
 
 **Scoping note on the remaining "general free-form canvas" (still backlog,
 blueprint §10.4).** Before building further along this axis, three product
@@ -3349,14 +3661,37 @@ gap (this section and oracle/AGENTS.md §2.3).
 
 **The sequence-specific narrative-consistency repairs above this line —
 `narratesUnshownGrowth`, `whiteboardUnitMismatch`, `whiteboardNumberMismatch`,
-`whiteboardDoubledPeriodSteps` — are deliberately NOT reproduced for the two
-new kinds.** Every one of them exists because a REAL model, on a REAL
-session, was caught doing a specific wrong thing over several rounds of
-live observation (round 65, round 67, the owner's own transcripts). No
-such observation exists yet for `compare` or `marked_line` — building
-equivalent detectors now would be guessing at defects nobody has seen,
-which is the opposite of how every other repair in this file earned its
-place. What IS carried over unconditionally, because it is the safety
+`whiteboardDoubledPeriodSteps` — were deliberately NOT reproduced for the two
+new kinds, and that was REVERSED on 2026-09-01 at the owner's request.** Every
+one of them exists because a REAL model, on a REAL session, was caught doing a
+specific wrong thing over several rounds of live observation (round 65, round
+67, the owner's own transcripts). No such observation existed for `compare` or
+`marked_line`, and **none exists now either** — that is stated plainly rather
+than quietly dropped, because the two facts that make these safe to build
+anyway are structural, not evidential:
+
+- **The board names its own parts.** A `compare` side has a LABEL the model
+  wrote and the child reads on screen, so the anchor is "the model's own word
+  for the thing, a copula, a number" rather than a guess at what a number in
+  freeform prose refers to. That is a materially stronger anchor than anything
+  `sequence` ever had.
+- **Only an assertion can contradict a board.** This tutor asks for a living,
+  so "¿la paleta cuesta más que el helado?" is the single most likely sentence
+  on a `compare` turn — and reading it as a claim would fail the tutor for
+  teaching correctly. Every check drops question clauses before a pattern is
+  applied (`assertionClauses`, prompt.ts).
+
+`whiteboardComparisonMismatch` checks a side's amount misquoted beside its own
+name, a stated difference that is not `computeComparison`'s, and the cheaper
+side being called the dearer one (refusing when BOTH sides match the
+comparative shape, and when the two values tie). `whiteboardMarkedLineMismatch`
+checks a stated shortfall or difference against the gap between the marks, and
+**only on a TWO-mark board** — with three or four marks there are three or six
+gaps and nothing says which one a spoken number means, so no claim is made. All
+three new checks fail open on a board their own `compute*` function refuses,
+and share `NUMBER_TOLERANCE` with `whiteboardNumberMismatch`.
+
+What was already carried over unconditionally, because it is the safety
 property this whole feature exists for rather than a tuned heuristic: the
 fail-open posture (`parseTurn`'s per-field schema retry drops a malformed
 board, never the turn), the authoring-time AND wire-time recompute, and
@@ -3370,6 +3705,21 @@ model conversation** the way `sequence`'s own "SHOW YOUR WORK" line was
 the same gap `sequence` itself had before round 74 found the instruction
 alone was not reliable, and it is left open here rather than closed on a
 guess.
+
+**`TUTOR_SYSTEM_PROMPT` was deliberately NOT touched when the three detectors
+above were added (2026-09-01), and that is a choice rather than an oversight.**
+The prompt's "SHOW YOUR WORK" line already says to use the SAME numbers the
+story uses, and it says it in the `sequence` context; widening it to name all
+four kinds is a real improvement and it belongs in a change that can pay for
+`gh workflow run tutor-deploy.yml -f step=converse` — the one gate that
+answers "was that a good lesson" rather than "did the machinery work"
+(/AGENTS.md §5), which is paid, model-dependent, and the only honest way to
+tell whether a new prompt line lands. Shipping a prompt edit whose effect was
+never measured is precisely what round 74 caught. In the meantime the
+deterministic layer is doing the work it always does here: each of the three
+repair corrections in `orchestrator.ts` states the specific rule AT THE MOMENT
+IT IS BROKEN, which is the mechanism this file already trusts more than a
+standing instruction — the model follows what it is CHECKED on.
 
 **Reusing the SAME rendering surface meant reworking IT, and reworking it
 found two defects already live in `sequence` — neither one from THIS
@@ -3404,10 +3754,13 @@ carries the row's stretched, definite height down to the bar, with
 `items-end` moved onto the track so the bar still grows from a shared
 bottom baseline; the fill is `bg-accent/70`, the CONFIGURED token, which
 Tailwind can correctly attach an alpha channel to. `verify-tutor-ui.mjs`'s
-whiteboard scenario now measures every percentage-height bar's actual
+whiteboard scenarios now measure every percentage-height bar's actual
 `getBoundingClientRect().height` in the real browser it already opens, on
 top of the reachability/overlap checks it already ran — the only place a
-regression of this specific class could ever be caught. **The identical
+regression of this specific class could ever be caught, and the reason
+`categories` got its own scenario on 2026-09-01 rather than inheriting the
+shell's: `CategoriesBoard` draws its own percentage bars, so it can fail this
+exact way on its own. **The identical
 broken color pattern also appears once more, in `ConversationView.tsx`'s
 debug caption pill (`bg-[color:var(--lf-surface)]/70`) — untouched here,
 out of this lane's scope, flagged separately.**
@@ -3442,8 +3795,11 @@ re-derives it) and the edge-position clamp. None of this — nor any jsdom
 test — can observe real layout, which is exactly why the two bugs above
 survived until a real browser was asked to look. `npm run verify:tutor-ui`
 was updated to drive all three lab activities (`whiteboard`, `compare`,
-`marked-line`) at all three breakpoints, but **could not be run to a full
-pass in this environment**: `/dev/tutor-lab` needs the 3D scene, whose
+`marked-line`) at all three breakpoints — a fourth, `categories`, joined them
+on 2026-09-01, and the whole loop **has since been run to a full green pass**
+in an environment that does have the 3D assets (see §20.5's `categories` note
+above) — but at the time **could not be run to a full pass in this
+environment**: `/dev/tutor-lab` needs the 3D scene, whose
 `.glb` assets are gitignored and absent from a fresh checkout (`frontend/
 .gitignore`, `public/scenes/`), and the lab's own `ErrorBoundary` unmounts
 the whole page rather than degrading when they fail to load — a
@@ -3487,19 +3843,98 @@ reaches a child") extended here to the curriculum itself: applying a
 proposal means a human editing a skill file or `kc_graph.v1.json` in an
 ordinary reviewed commit, the exact PR-as-approval-gate §20.1 already
 established for hand-written skills. Verified against this repository's REAL
-catalog on 2026-09-01 (28 KCs, 36 edges, 32 misconception rows, 15 real
-skill files — no live attempt data was reachable from the environment that
+catalog on 2026-09-01 (28 KCs, 36 edges, 32 misconception rows, and the 15
+skill files that existed at that hour — no live attempt data was reachable
+from the environment that
 built this, so `masteryByKc`/`misconceptionEvidence` ran empty and only the
 catalog-only check had anything to find): it correctly caught a real,
 pre-existing defect on its very first run — `counterexample-confront.md`'s
-own frontmatter names two misconception codes
-(`more-parts-means-more`, `longer-number-is-bigger`) that exist nowhere in
-the seeded catalog — and reported that only 1 of 31 distinct cataloged
-misconception codes has any covering skill at all, a standing authoring
-backlog this tool now makes visible instead of invisible. Not yet wired to a
-schedule (unlike `audit:content-bridge`'s daily drift check): its proposals
-are a standing backlog to work through, not a regression to catch, so an
-operator running it by hand is the right cadence for a first version.
+own frontmatter NAMED two misconception codes
+(`more-parts-means-more`, `longer-number-is-bigger`) that existed nowhere in
+the seeded catalog, beside the one real code it also carried
+(`adds-instead-of-counts-up`) — and reported that only 1 of 31 distinct
+cataloged misconception codes had any covering skill at all.
+
+**That backlog is CLOSED, later the same day (2026-09-01): 31 of 31.** The
+tool's own summary line is the evidence, before and after the same live
+catalog — `31 distinct misconception code(s) in the catalog, 1 covered by at
+least one skill` became `...31 covered by at least one skill`, and the skill
+count went 15 → 36. Thirty codes were uncovered and twenty-one skills cover
+them, NOT thirty: the skills are grouped by the didactic MANEUVER that
+repairs a wrong idea, not one file per code, because the per-code specifics
+already reach the model separately as `misconceptionHint` — our own
+catalogued `remediation_hint` for that exact row (`prompt.ts`: "A specific
+wrong idea has been detected. Our guidance for it: ..."). A skill body is the
+PROCEDURE; duplicating it thirty times with the hint's content pasted in
+would have spent the 1,600-char budget restating what the context already
+carries. So `value-not-appearance` covers the three codes that are all one
+substitution of a visible attribute for value (`bigger-coin-worth-more`,
+`more-coins-more-money`, `counts-coins-not-value`) with one procedure —
+make the two answers disagree on a case the child predicts FIRST — and
+`three-piles-in-out-left` covers the four that are all one missing separation
+of money in from money out (`revenue-is-profit`, `profit-is-revenue`,
+`cost-equals-price`, `adds-costs-to-revenue`). Every new skill is
+`strategies: [REMEDIATE]`, which is deliberate and not a default: the
+dedicated path filters on strategy precisely so a still-set diagnosis cannot
+hand a confrontation to a RESCUE turn (§20.1, round 22), and a non-empty
+`misconceptions` list also fences the skill OUT of generic selection, so
+adding twenty-one of them changes nothing about what an undiagnosed turn
+receives.
+
+**And the backlog is now a GATE, not an observation.** Visible is not the
+same as checked: this tool REPORTS, it does not fail anything, so
+nothing stopped the next code added to `kc_graph.v1.json` from silently
+reopening the gap — every other gate stays green while a diagnosed wrong idea
+falls quietly through to the generic remediation. Two assertions in
+`backend/src/__tests__/tutorCurator.test.ts` now read the REAL seed file and
+the REAL skill directory side by side (the same cross-package read
+`seedKcGraph.test.ts` and this tool's own live-file test already do) and fail
+CI on either half: a cataloged code with no skill, or a skill naming a code
+that is not cataloged. Both were proven to fail for their stated reason
+before being trusted — one skill file moved aside and one bogus code added
+produced exactly the two named failures, each naming the offending code.
+
+*Note for whoever adds the next misconception:* `counts-coins-not-value` is
+cataloged TWICE, on two different KCs with different descriptions and
+different hints, which is why 32 rows are 31 codes. `selectSkill` matches by
+code STRING, so one skill covers both rows and the two hints still travel
+separately — the duplication is deliberate, not a seed defect.
+
+**The dead-reference defect above is FIXED too, earlier the same day
+(2026-09-01):** the frontmatter was trimmed to the one real code, and the
+tool re-run in that round reported
+"0 proposed action(s) across 28 KC(s) and 15 skill(s)." The tool's own
+before/after output is the verification. *This paragraph said the frontmatter
+"names" those two codes, in the present tense, until 2026-09-01* — it named
+them, they are gone, and the sentence outlived them by long enough to be worth
+recording: a document that describes a defect in the present tense sends
+somebody to fix code that is already correct. **Wired to a WEEKLY schedule 2026-09-01** —
+`.github/workflows/tutor-skill-curation.yml`, Mondays 09:20 UTC, plus a push
+trigger on `oracle/skills/moves/**`, `kc_graph.v1.json` and the two analysis
+files, plus `workflow_dispatch`. This section previously read "not yet wired
+to a schedule … an operator running it by hand is the right cadence", on the
+grounds that "its proposals are a standing backlog to work through, not a
+regression to catch". That is right about the REPORT and wrong about the
+INPUTS: learner mastery and misconception evidence accumulate with real
+usage, and the KC graph and misconception catalog move whenever production
+data is edited — none of which is a commit any gate here can see. "An
+operator runs it by hand" is a plan that decays to "nobody ran it", which is
+the same argument `tutor-content-bridge.yml` already records for why a human
+dispatching a step does not close a gap.
+
+WEEKLY rather than daily is the honest cadence — this is authoring work a
+human then does, and a daily report on a backlog that moves at authoring
+speed is noise, which is how a job stops being read. A schedule is only safe
+at all because the tool NEVER WRITES: the workflow adds cadence to the
+READING and changes nothing about the approving. It stays propose-only —
+`tutorCurator.ts` imports only a TYPE and holds no runtime client, and the
+CLI has no `--apply` flag to forget to omit. Green is the normal state (it
+exits 0 WITH proposals, non-zero only on an unanswered query, §1.14), so a
+red run means a failed read and never a full backlog — a permanently-red job
+is one everyone learns to ignore. The report is published to the job's step
+summary rather than left in the log, because unlike `audit:content-bridge`
+(pass/fail, where the failed job IS the message) this tool's entire output is
+a document meant to be read on a green run.
 
 ### 20.7 Trajectory emission and the simulated-student gym (2026-09-01, SHIPPED — backstage only)
 
@@ -3583,16 +4018,48 @@ mathematically converges toward that slow value once slow measurements
 outnumber the earlier fast ones, at which point the 2x-median check can no
 longer fire, independent of how extreme the original fast/slow gap was. The
 gym's `'fragile hesitant'` archetype is promoted (CELEBRATE) on exactly this
-mechanism despite never becoming genuinely fluent. Both are named explicitly
-in `oracle/src/__tests__/pedagogyGym.test.ts`'s own `KNOWN_GAPS`, with the
-full mechanism documented inline in `pedagogyGym.ts` beside each archetype —
-recorded rather than silently tolerated, and NOT fixed here on purpose: a
-`controller.ts` difficulty or mastery-detection change is a pedagogy change
-with real stakes (§5 of `/AGENTS.md`'s gate table), and the second finding in
-particular needs a genuine product decision (should "the learner's own
-median" use a fixed early baseline, a decaying window, or something else)
-that this backlog slice's scope — the harness TOOLING, not a mastery-model
-redesign — is not the place to make unilaterally.
+mechanism despite never becoming genuinely fluent.
+
+**BOTH ARE NOW CLOSED — the first on 2026-09-01 alongside the difficulty
+fix, the second on 2026-09-01 by the owner decision this paragraph was
+waiting for.** `KNOWN_GAPS` in `pedagogyGym.test.ts` is now deliberately
+EMPTY, and its own comment carries the record. The product decision taken
+was **mastery is RECONSIDERED, not declared once**: a promotion is allowed
+to stand on the evidence available at the time, and is TAKEN BACK when the
+same KC's spaced-review re-encounter produces a wrong answer or a
+hesitant-but-correct one (`PedagogicalController.masteryRevokedKcIds`,
+observable via `revokedMasteryKcIds`). Three things about that decision are
+worth keeping, because each was a real fork:
+
+- **Revocation, not withholding.** Withholding would mean a second
+  confirming check before `advanceEntry()` may run, and this file has
+  already reasoned that through once and rejected it — `advanceEntry` is the
+  only thing that moves the plan pointer, so gating it risks stranding a
+  learner who never gets a second qualifying opportunity. Revocation is
+  strictly additive to forward motion and cannot stall it.
+- **The fixture was part of the defect, not just the code.** The archetype's
+  single-entry plan went dormant on turn 3, before its own slow phase
+  produced a single turn — so the gap was partly UNREACHABLE by the run that
+  reported it. It now carries the `review_due` second entry that is the real
+  product shape of a KC coming back.
+- **Bounded to once per KC, because the fix grew its own mirror image.**
+  Unbounded, revocation re-fired every turn and pinned the opportunity count
+  below the promotion floor forever: the gym printed `CELEBRATE` followed by
+  SPACED thirteen times, a learner correct on every single turn and never
+  promoted — the §8.3 defect inverted. Once a session has taken a KC's
+  mastery back once, sustained correctness re-earns it even at the slower
+  pace. That encodes a position rather than a threshold: we check whether a
+  promotion was fragile, act on it once by teaching more, and then believe
+  the child rather than holding them to a speed they may simply not have.
+  The archetype now reads `SOCRATIC FLUENCY CELEBRATE SPACED TRANSFER`, plan
+  completed.
+
+Regression-pinned by three tests in `controller.test.ts` (hesitant revokes,
+a revoked KC re-earns rather than being trapped, a wrong answer revokes
+too) and by the gym's own rewritten `extraCheck`, which now asserts the
+promotion does not STAND — and is itself tested against both the
+promoted-and-revoked and promoted-and-stood shapes, so a check that fired on
+the FIXED behaviour would fail rather than look green.
 
 **The harness doc's remaining phases, updated as of this section's own
 merge:** the skill/KC curator loop is SHIPPED (§20.6, above); a scoped,
@@ -3641,9 +4108,52 @@ and `Intl.ListFormat` — as a small caption beneath the tutor beat that
 narrated them. The steps are real and now visible again; the animation
 itself is not reconstructed.
 
-**Still out of scope, not silently dropped:** a genuine read-only replica of
-the tray's own visual (coins actually appearing/disappearing in sequence,
-timed against the beat) would need that second renderer and its own full
-accessibility/responsive verification pass — a real next step, scoped
-separately, if the plain-text summary above turns out not to be enough for
-a parent or learner reviewing a replay.
+**Still out of scope, not silently dropped** — but re-investigated
+2026-09-01, and the two paragraphs above state the WRONG REASON, which is
+worth more than the conclusion they reach.
+
+**The rendering blocker does not exist.** "Building a SECOND tray-rendering
+surface with its own accessibility and hit-testing burden" is not required:
+`ExerciseProps.disabled` is already part of the Lesson Engine contract
+(`lesson-engine/core/types.ts`) and `MoneyTray` already threads it into every
+`DenominationButton`, so a read-only tray is the EXISTING renderer with one
+prop set — no second surface, no new hit-testing story. `mayDemonstrate`'s
+"already answered correctly" refusal is likewise not a blocker: it guards a
+LIVE draft from being overwritten, and a replay would call `runTrayDemo`
+directly, which is a pure `setTimeout` loop over a `getPicked`/`setPicked`
+interface with no socket, no audio, no token and no 3D. `ReplayInWorld`
+already mounts the real live `TutorWhiteboard` one line above, so "replay
+mounts the real component" is an established pattern here, not a new one.
+
+**The real blocker is DATA, and neither paragraph above mentions it.** The
+steps themselves are persisted losslessly (`tutor_turns.demonstrate`,
+migration `0067`; per-step timing was never server data — `DEFAULT_STEP_MS`
+is a client constant). What is persisted NOWHERE is the tray's state at the
+moment the demo ran: `tutor_segments` keeps payload, score, attempts and XP,
+never the learner's draft. `runTrayDemo` replays a DELTA against whatever was
+already in the tray, so a replay starting from empty would (a) silently
+no-op every `remove` step, since `lastIndexOf` finds nothing to take out, and
+(b) drive `CoinCount`/`MakeChange`'s `TrayTotal` — the single largest number
+on the surface, inside an `aria-live` region — to a figure the learner never
+saw. That is a confident wrong picture where an absent one merely omits
+(§1.14), and it is why restricting the animation to `add`/`pause` steps does
+NOT rescue the idea: the total is wrong for a pure-`add` demo too, whenever
+the learner had already put anything in the tray.
+
+**So the honest scope is one nullable column, not a renderer.** Persisting
+the tray's `picked` array on the demonstrate turn (a wire field, a schema
+entry, a read-time validator, a migration) is what would make re-animation
+truthful; the frontend work after that is genuinely small. That is a real
+feature with a migration, deliberately not half-built here, and it should
+only be taken on if the plain-text summary proves insufficient in practice.
+
+**One thing WAS closed on 2026-09-01, because it was a plain gap rather than
+a scope decision:** migration `0067`'s own header says the defect it fixed
+was losing the demonstration "silently, on replay AND on the guardian
+transcript viewer" — and only the replay half had shipped. `KidTutorPage`
+rendered `beat.whiteboard` and nothing at all for `beat.demonstrate`, so a
+parent reading "so I take one of these away…" still had no way to see what
+"these" were. `DemoStepsSummary` now lives in its own module
+(`tutor/replay/DemoStepsSummary.tsx`) rather than inside `ReplayInWorld.tsx`,
+so the guardian transcript can render it without pulling the entire 3D replay
+world into a plain scrolling page, and both surfaces now show it.

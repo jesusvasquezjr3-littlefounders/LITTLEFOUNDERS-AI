@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { Adaptation, PlanState, TutorIntent } from '../context/schema.js';
 import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
 
@@ -282,4 +283,68 @@ export function stuckInstruction(plan: LessonPlan, skillKey: string): string | n
     `genuinely tricky, and offer ONE DIFFERENT adaptation via offerAdaptation (pick the one you judge most likely ` +
     `to help, never one already declined). Do not request another activity this turn.`
   );
+}
+
+/*
+ * ── THE PLAN'S HALF OF THE PARK SNAPSHOT ────────────────────────────────────
+ *
+ * A parked session can now be adopted by a DIFFERENT replica (`ws/parkStore.ts`),
+ * which means everything a session's teaching depends on has to survive as
+ * plain JSON. The plan is genuinely mutable state, not a derived value:
+ * `recordGrade`, `advance`, `noteConversationTurn`, `nextStyle` and
+ * `recordDeclinedAdaptation` all write to it during a lesson. Rebuilding it
+ * with `buildPlan` on the far side would silently rewind a learner to step 1
+ * with no failures recorded — which looks exactly like a fresh, healthy plan.
+ *
+ * So the snapshot carries the WHOLE plan, `objective` and `steps` included,
+ * rather than re-deriving the deterministic parts. That is the /AGENTS.md
+ * §1.14 "prefer a measurement that reads NOTHING above the thing being
+ * measured" posture applied here: a restored plan is correct because it is a
+ * copy, not because `buildPlan` happens to still be deterministic and happens
+ * to still be fed identical inputs.
+ */
+
+export const PlanSnapshotSchema = z
+  .object({
+    objective: z.string(),
+    steps: z.array(z.enum(PLAN_STEPS)),
+    stepIndex: z.number().int().min(0),
+    turnsOnStep: z.number().int().min(0),
+    finalStepRoundsCompleted: z.number().int().min(0),
+    /** A Map cannot be JSON; entry pairs are the honest wire shape for one. */
+    failures: z.array(z.tuple([z.string(), z.number().int().min(0)])),
+    stuckSkillKey: z.string().nullable(),
+    stylesTried: z.array(z.enum(ADAPTATIONS)),
+    declinedAdaptations: z.array(z.enum(ADAPTATIONS)),
+  })
+  .strict();
+
+export type PlanSnapshot = z.infer<typeof PlanSnapshotSchema>;
+
+export function planSnapshot(plan: LessonPlan): PlanSnapshot {
+  return {
+    objective: plan.objective,
+    steps: [...plan.steps],
+    stepIndex: plan.stepIndex,
+    turnsOnStep: plan.turnsOnStep,
+    finalStepRoundsCompleted: plan.finalStepRoundsCompleted,
+    failures: [...plan.failures.entries()],
+    stuckSkillKey: plan.stuckSkillKey,
+    stylesTried: [...plan.stylesTried],
+    declinedAdaptations: [...plan.declinedAdaptations],
+  };
+}
+
+export function planFromSnapshot(snapshot: PlanSnapshot): LessonPlan {
+  return {
+    objective: snapshot.objective,
+    steps: [...snapshot.steps],
+    stepIndex: snapshot.stepIndex,
+    turnsOnStep: snapshot.turnsOnStep,
+    finalStepRoundsCompleted: snapshot.finalStepRoundsCompleted,
+    failures: new Map(snapshot.failures),
+    stuckSkillKey: snapshot.stuckSkillKey,
+    stylesTried: [...snapshot.stylesTried],
+    declinedAdaptations: [...snapshot.declinedAdaptations],
+  };
 }

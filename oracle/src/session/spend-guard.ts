@@ -11,16 +11,33 @@ import { getConfig } from '../env.js';
  * call site, looks identical to ordinary load from inside any one session's
  * own ledger. This is the thing that watches the total instead.
  *
- * IN-PROCESS AND ROLLING, on purpose, matching `session/token.ts`'s
- * `NonceLedger` and `ws/server.ts`'s `parkedSessions`: Oracle is explicitly
- * single-replica today (/ORACLE.md §16), so a shared store (Redis, Postgres)
- * would add a dependency this breaker cannot afford to be coupled to — a
- * circuit breaker that goes down WITH the thing it is supposed to protect is
- * worse than none at all (§1.14, liveness must not depend on optional
- * infrastructure — the same reasoning now extends to spend safety). A process
- * restart forgets the running total; the worst that allows is one extra
- * window at full exposure on the day of a deploy, which is a fair trade
- * against a store outage silently disabling the breaker.
+ * IN-PROCESS AND ROLLING, on purpose — and the reason is INDEPENDENCE, not
+ * convenience. A shared store (Redis, Postgres) would couple this breaker to
+ * infrastructure it exists to survive, and a circuit breaker that goes down
+ * WITH the thing it is supposed to protect is worse than none at all (§1.14,
+ * liveness must not depend on optional infrastructure — the same reasoning
+ * extended to spend safety). A process restart forgets the running total; the
+ * worst that allows is one extra window at full exposure on the day of a
+ * deploy, which is a fair trade against a store outage silently disabling the
+ * breaker.
+ *
+ * ── THIS CEILING IS PER REPLICA, AND THAT IS AN OPERATOR'S PROBLEM ──────────
+ *
+ * This comment used to justify itself with "Oracle is explicitly
+ * single-replica today", alongside the nonce ledger and `parkedSessions`.
+ * BOTH of those have since moved to shared state and Oracle no longer requires
+ * one replica (/ORACLE.md §16, `RUNBOOK.md` Round 143) — so that premise is
+ * gone, while the independence argument above survives it intact and is why
+ * this one deliberately did NOT move with them.
+ *
+ * The consequence has to be said out loud rather than left to be discovered
+ * on an invoice: at N replicas the effective daily ceiling is
+ * `DAILY_SPEND_CEILING_USD * N`, because each process watches only its own
+ * total. Scaling out therefore requires DIVIDING the configured ceiling by the
+ * replica count, and it is the one cost control that does not scale itself.
+ * The breaker still does its real job at any N — each instance stops its OWN
+ * runaway multiplier, which is the shape of bug it was built for (§15.2 item
+ * 1) — but the platform-wide dollar figure is only as true as that division.
  *
  * WHAT COUNTS: every real, already-incurred cost this process knows about —
  * the model call inside `TutorOrchestrator.produce()`, tier-3 live-generation

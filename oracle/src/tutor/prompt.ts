@@ -1,6 +1,13 @@
 import type { TutorContext, Locale } from '../context/schema.js';
-import { EMOTIONS, ACTIONS, type WhiteboardSequence } from './turnSchema.js';
-import { computeSequence } from './whiteboard.js';
+import {
+  EMOTIONS,
+  ACTIONS,
+  type WhiteboardCategories,
+  type WhiteboardCompare,
+  type WhiteboardMarkedLine,
+  type WhiteboardSequence,
+} from './turnSchema.js';
+import { computeCategories, computeComparison, computeMarkedLine, computeSequence } from './whiteboard.js';
 import { fenceActivityContent } from '../safety/untrusted.js';
 
 /*
@@ -922,6 +929,401 @@ export function whiteboardDoubledPeriodSteps(
     if (b.op !== second.op || b.value !== second.value) return false;
   }
   return true;
+}
+
+/*
+ * ════════════════════════════════════════════════════════════════════════════
+ * THE OTHER THREE BOARDS' WORDS-VERSUS-BOARD CHECKS.
+ *
+ * Everything above this line checks a `sequence`. `compare`, `marked_line`
+ * and `categories` had NO drift detector at all until 2026-09-01, and both
+ * /ORACLE.md §20.5 and oracle/AGENTS.md said so deliberately and in writing:
+ * every `sequence` check was written AFTER a real session reproduced a
+ * specific defect, and inventing one ahead of the evidence is guessing.
+ *
+ * WHAT CHANGED, AND IT IS AN HONEST CHANGE OF POSITION RATHER THAN A NEW
+ * REPRODUCTION: the owner asked for the three gaps closed. There is still no
+ * live transcript behind these three functions, and this comment is the place
+ * that says so — the reasoning that left them out was sound, and nothing
+ * below should be read as evidence that a defect was observed.
+ *
+ * What makes building them anyway defensible is that these three kinds hand
+ * the checker something `sequence` never had: THE BOARD NAMES ITS OWN PARTS.
+ * `sequence` had to recover "which period is this sentence talking about" out
+ * of freeform prose, which is why its two rounds of history are a catalogue
+ * of ordinals, cardinals, contractions and a Portuguese verb list. A
+ * `compare` side and a `categories` bar each carry a LABEL the model itself
+ * wrote and the child can read on screen, so the anchor is not a guess about
+ * what a number refers to — it is the model's own word for the thing,
+ * followed by a copula, followed by a number. That is a materially stronger
+ * anchor than anything above, and it is the reason these can be written
+ * without a transcript to fit them to.
+ *
+ * THE SAME DISCIPLINE APPLIES, ALL OF IT:
+ *   - Silence beats a false alarm. Every check below refuses to fire on any
+ *     ambiguity rather than guessing, and the gaps that leaves are named.
+ *   - Fail open. A board whose own arithmetic does not check out returns null
+ *     from its `compute*` function, and a null ground truth means NO opinion —
+ *     never a complaint. The board is dropped elsewhere, on its own terms.
+ *   - The ground truth is the SERVER'S computation, never the model's word:
+ *     `computeComparison`, `computeMarkedLine`, `computeCategories`.
+ *   - `NUMBER_TOLERANCE` is shared with `whiteboardNumberMismatch`, so a
+ *     spoken rounding of a fractional value is a rounding here too.
+ *
+ * ONE GUARD THEY ALL SHARE, AND IT IS NOT OPTIONAL IN A SOCRATIC PRODUCT:
+ * only an ASSERTION can contradict a board. This tutor's whole method is
+ * asking (§9.2), so "¿el helado cuesta más que la paleta?" is the single most
+ * likely sentence on a `compare` turn — and reading it as a claim about which
+ * side is bigger would fire the check on the product working exactly as
+ * designed. `assertionClauses` drops any clause carrying a question mark of
+ * either kind before a single pattern is applied.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+
+/**
+ * The clauses of `say` that ASSERT something — questions removed.
+ *
+ * Split on sentence terminators, then drop anything containing `?` or `¿`:
+ * a question proposes, it does not claim, and only a claim can disagree with
+ * the board. Kept as ONE function so every check below inherits the guard
+ * rather than each remembering it (the same "one source, not a hand list at
+ * each call site" rule `whiteboardVisibleText` already applies to moderation).
+ */
+function assertionClauses(say: string): string[] {
+  return say
+    .split(/(?<=[.!?…])\s+/)
+    .filter((clause) => !clause.includes('?') && !clause.includes('¿'))
+    .map((clause) => clause.trim())
+    .filter((clause) => clause.length > 0);
+}
+
+/** Regex-escapes a model-written label so it can anchor a pattern literally. */
+function escapeForPattern(label: string): string {
+  return label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Builds one of the label-anchored patterns below, or `null` if it cannot.
+ *
+ * A whiteboard label is a string the MODEL wrote, and it is being compiled
+ * into a regular expression. `escapeForPattern` covers every syntax character
+ * — including the ones the `u` flag is strict about — but "I believe I escaped
+ * everything" is exactly the kind of confidence this file is not built on, and
+ * the cost of being wrong is not a missed check: an exception thrown here
+ * escapes into the orchestrator's turn loop and takes down a turn that has
+ * nothing else wrong with it. Every whiteboard path in this product is fail
+ * open (`whiteboard.ts`: a board that does not compute is dropped, never
+ * shown), so the check that reads one fails open too — no pattern means no
+ * opinion.
+ */
+function labelPattern(label: string, tail: string): RegExp | null {
+  try {
+    return new RegExp(`${WORD_START}${escapeForPattern(label)}${WORD_END}${tail}`, 'iu');
+  } catch {
+    return null;
+  }
+}
+
+/*
+ * WORD EDGES THAT SURVIVE AN ACCENT — and `\b` does not.
+ *
+ * JavaScript's `\b` is defined against `\w`, which is `[A-Za-z0-9_]` and
+ * nothing else. So `é` is a NON-word character to it, and `/Ahorré\b/` asks
+ * for a boundary after a non-word character — which means it only matches when
+ * the very next character IS a word character. "Ahorré es 25" has a space
+ * there, so the pattern does not match, and a check anchored that way is dead
+ * on every label ending in an accent.
+ *
+ * That is not an edge case in this product: two of its three locales are
+ * Spanish and Portuguese, `Ahorré` and `Ganhei` are exactly the words a model
+ * writes on a bar, and this file has already paid for one Portuguese-shaped
+ * coverage gap that looked like it worked (`PERIOD_CLAIM_PATTERNS`'s own verb
+ * list). Found here BEFORE shipping, by writing the es-MX test first;
+ * `\p{L}`-based lookarounds (with the `u` flag) ask the question that was
+ * actually meant — "is the character next to this one part of a word" — for
+ * every alphabet rather than for ASCII.
+ */
+const WORD_START = '(?<![\\p{L}\\p{N}])';
+const WORD_END = '(?![\\p{L}\\p{N}])';
+
+/** One named quantity actually drawn on a board: a `compare` side, a `categories` bar. */
+interface NamedQuantity {
+  readonly label: string;
+  readonly value: number;
+}
+
+/**
+ * A COPULA, PER LOCALE — the thing that turns a name and a number into a
+ * CLAIM about that name.
+ *
+ * Deliberately a copula and not mere adjacency. "ahorras 25 cada semana"
+ * mentions a savings bar's name and a number that is not its value, and is a
+ * perfectly correct sentence about a RATE; "Ahorré son 25" asserts the bar's
+ * amount. Only the second can contradict the board, and only the second
+ * matches. This is the same distinction `PERIOD_CLAIM_PATTERNS` above draws
+ * between a cumulative-total verb and a per-period rate verb — that one cost
+ * a mis-extracted pt-BR deposit to learn, and it is not being relearned here.
+ */
+const NAMED_VALUE_COPULA =
+  `(?::|${WORD_START}(?:` +
+  // es-MX — "es", "son", "sería(n)", "cuesta(n)", "vale(n)"
+  'es(?:\\s+de)?|son|ser[íi]an?|cuesta[n]?|vale[n]?|' +
+  // en-US — "is", "are", "cost(s)"
+  'is|are|costs?|' +
+  // pt-BR — "é", "são", "custa(m)", "vale(m)"
+  '[ée]|s[ãa]o|custa[m]?|vale[m]?' +
+  `)${WORD_END})`;
+
+/**
+ * A NUMBER CLAIMED FOR A NAMED THING THAT THE BOARD DRAWS DIFFERENTLY.
+ *
+ * Shared by `compare` (two sides) and `categories` (two to six bars), because
+ * they are the same shape: things with names, each with one number beside it.
+ *
+ * TWO REFUSALS, both chosen so a false alarm needs a genuinely strange
+ * sentence rather than an ordinary one:
+ *
+ *   - A label that is a SUBSTRING of another label on the same board is
+ *     skipped entirely. `computeCategories` rejects two bars sharing a label,
+ *     but "Ahorro" and "Ahorro largo" are different labels that pass it, and a
+ *     pattern for the shorter one matches inside the longer one — so it would
+ *     read the LONGER bar's number as a claim about the SHORTER bar. Nothing
+ *     distinguishes the two readings, so neither is made.
+ *   - A spoken number that equals ANY value on this board (within tolerance)
+ *     never fires, even beside the wrong label. A sentence relating two bars
+ *     to each other ("Quiero es lo mismo que Ahorré: 25") is ordinary
+ *     teaching, and the number is demonstrably one the board actually
+ *     contains — which is the opposite of the thing this check exists to
+ *     catch, a number the board does not contain at all.
+ */
+function namedValueContradiction(say: string, quantities: readonly NamedQuantity[]): boolean {
+  const onTheBoard = quantities.map((q) => q.value);
+  for (const quantity of quantities) {
+    const label = quantity.label.trim();
+    if (label.length === 0) continue;
+    if (quantities.some((other) => other !== quantity && other.label.toLowerCase().includes(label.toLowerCase()))) {
+      continue;
+    }
+    const pattern = labelPattern(
+      label,
+      `[^.!?]{0,12}?${NAMED_VALUE_COPULA}[^.!?\\d]{0,12}?\\$?\\s*(\\d+(?:[.,]\\d+)?)`,
+    );
+    if (pattern === null) continue;
+    for (const clause of assertionClauses(say)) {
+      const match = pattern.exec(clause);
+      if (match === null) continue;
+      const claimed = Number(match[1]!.replace(',', '.'));
+      if (!Number.isFinite(claimed)) continue;
+      if (onTheBoard.some((value) => Math.abs(value - claimed) <= NUMBER_TOLERANCE)) continue;
+      if (Math.abs(quantity.value - claimed) > NUMBER_TOLERANCE) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * "The difference is N" — in any of the three locales, and only as a claim.
+ *
+ * The one place a `compare` or a two-mark `marked_line` board states a DERIVED
+ * fact out loud. `difference` is computed by the server for exactly this
+ * reason (`whiteboard.ts`: the schema gives the model no field to assert it),
+ * so a spoken difference is checkable against a number the model never chose.
+ */
+const STATED_DIFFERENCE: readonly RegExp[] = [
+  /\b(?:la\s+)?diferencia\s+(?:es|son|ser[íi]a)\s+(?:de\s+)?\$?\s*(\d+(?:[.,]\d+)?)/i,
+  /\bthe\s+difference\s+is\s+\$?\s*(\d+(?:[.,]\d+)?)/i,
+  /\ba\s+diferen[çc]a\s+(?:[ée]|seria)\s+(?:de\s+)?\$?\s*(\d+(?:[.,]\d+)?)/i,
+];
+
+/** Every stated difference in the assertion clauses of `say`, in order. */
+function statedDifferences(say: string): number[] {
+  const found: number[] = [];
+  for (const clause of assertionClauses(say)) {
+    for (const pattern of STATED_DIFFERENCE) {
+      const match = pattern.exec(clause);
+      if (match === null) continue;
+      const value = Number(match[1]!.replace(',', '.'));
+      if (Number.isFinite(value)) found.push(value);
+    }
+  }
+  return found;
+}
+
+/**
+ * A `compare` BOARD WHOSE OWN NUMBERS THE STORY CONTRADICTS.
+ *
+ * `compare` draws two named quantities side by side and derives two facts
+ * from them that the model is given no field to assert: how far apart they
+ * are, and which one is bigger (`computeComparison`). Three ways the spoken
+ * turn can disagree with the board under it, and this checks all three:
+ *
+ *   1. A SIDE'S OWN AMOUNT, misquoted beside that side's own name — the
+ *      shared `namedValueContradiction` above.
+ *   2. THE DIFFERENCE, stated as a number that is not the computed one.
+ *   3. THE WRONG SIDE NAMED AS THE BIGGER ONE. This is the one a child would
+ *      notice fastest: the board draws one bar visibly taller and the tutor
+ *      says the other one is more. Anchored on a label followed by a
+ *      comparative that has a VERB in it (`cuesta más`, `costs more`, `is
+ *      bigger`, `custa mais`) rather than a bare "más"/"more", which is one
+ *      of the most common words in a teaching turn and would fire constantly.
+ *      It refuses to fire when BOTH labels match the comparative shape in the
+ *      same turn (a sentence naming both sides is not a claim this check can
+ *      read reliably), and when the two values are a `tie` (there is no
+ *      bigger side to be wrong about).
+ *
+ * Fails open on a board `computeComparison` refuses, and on `null` — the same
+ * "no ground truth means no opinion" rule every check in this file follows.
+ */
+const COMPARATIVE_AFTER_LABEL =
+  '(?:cuesta[ns]?|vale[ns]?|es|son|tiene[ns]?|costs?|is|are|has|have|custa[mn]?|[ée]|s[ãa]o|tem)\\s+' +
+  '(?:m[áa]s|more|mais|bigger|larger|greater|higher|expensive)';
+
+function namesAsGreater(say: string, label: string): boolean {
+  const trimmed = label.trim();
+  if (trimmed.length === 0) return false;
+  const pattern = labelPattern(
+    trimmed,
+    `[^.!?]{0,20}?${WORD_START}${COMPARATIVE_AFTER_LABEL}${WORD_END}`,
+  );
+  if (pattern === null) return false;
+  return assertionClauses(say).some((clause) => pattern.test(clause));
+}
+
+export function whiteboardComparisonMismatch(
+  say: string,
+  whiteboard: Pick<WhiteboardCompare, 'left' | 'right'> | null | undefined,
+): boolean {
+  if (whiteboard == null) return false;
+  const computed = computeComparison(whiteboard);
+  if (computed == null) return false;
+
+  const { left, right } = whiteboard;
+  if (namedValueContradiction(say, [left, right])) return true;
+
+  for (const spoken of statedDifferences(say)) {
+    if (Math.abs(computed.difference - spoken) > NUMBER_TOLERANCE) return true;
+  }
+
+  if (computed.greater === 'tie') return false;
+  const leftClaimed = namesAsGreater(say, left.label);
+  const rightClaimed = namesAsGreater(say, right.label);
+  // Both, or neither, and there is nothing unambiguous to read.
+  if (leftClaimed === rightClaimed) return false;
+  return leftClaimed ? computed.greater === 'right' : computed.greater === 'left';
+}
+
+/**
+ * "You need N more" / "te faltan N" / "faltam N" — a SHORTFALL, stated.
+ *
+ * The sentence `marked_line` exists to draw, in /ORACLE.md §20.5's own
+ * example: "tienes 22, y algo cuesta 35 — ¿cuánto te falta?" The question is
+ * the teaching; a turn that then ANSWERS it with a number has made a claim
+ * about the distance between two marks, and that distance is on the board.
+ */
+const STATED_SHORTFALL: readonly RegExp[] = [
+  /\bte\s+falta[n]?\s+(?:de\s+)?\$?\s*(\d+(?:[.,]\d+)?)/i,
+  /\bfalta[mn]\s+(?:de\s+)?\$?\s*(\d+(?:[.,]\d+)?)/i,
+  /\byou\s+need\s+\$?\s*(\d+(?:[.,]\d+)?)\s+more\b/i,
+  /\byou(?:'re|\s+are)\s+\$?\s*(\d+(?:[.,]\d+)?)\s+short\b/i,
+];
+
+/**
+ * A `marked_line` BOARD WHOSE OWN GAP THE STORY CONTRADICTS.
+ *
+ * DELIBERATELY ONLY FOR A TWO-MARK BOARD, and that restriction is the whole
+ * safety argument. "The gap" is a single unambiguous number when a line
+ * carries exactly two marks — what you have and what it costs, the shape this
+ * kind was built for. On a three- or four-mark board there are three or six
+ * gaps and nothing in the sentence says which one a spoken number refers to,
+ * so no claim is made about it at all. `marks` is bounded 1..4 by the schema;
+ * one mark has no gap and is skipped for the same reason.
+ *
+ * Checks a stated SHORTFALL and a stated DIFFERENCE against the same computed
+ * distance — two phrasings of one claim, and `marked_line` is the kind where
+ * the first phrasing is the natural one. Positions are not re-derived here:
+ * `computeMarkedLine` owns that (the client only ever draws them), and this
+ * reads its verified values rather than the raw `marks`, so a board that
+ * function refuses produces no opinion at all.
+ */
+export function whiteboardMarkedLineMismatch(
+  say: string,
+  whiteboard: Pick<WhiteboardMarkedLine, 'min' | 'max' | 'marks'> | null | undefined,
+): boolean {
+  if (whiteboard == null) return false;
+  const points = computeMarkedLine(whiteboard);
+  if (points == null || points.length !== 2) return false;
+
+  const gap = Math.abs(points[1]!.value - points[0]!.value);
+  const spokenGaps: number[] = [...statedDifferences(say)];
+  for (const clause of assertionClauses(say)) {
+    for (const pattern of STATED_SHORTFALL) {
+      const match = pattern.exec(clause);
+      if (match === null) continue;
+      const value = Number(match[1]!.replace(',', '.'));
+      if (Number.isFinite(value)) spokenGaps.push(value);
+    }
+  }
+  return spokenGaps.some((spoken) => Math.abs(gap - spoken) > NUMBER_TOLERANCE);
+}
+
+/**
+ * "In total, N" — the one derived fact a `categories` board makes checkable.
+ *
+ * Requires `total` to be followed IMMEDIATELY by a copula or a colon, which
+ * is what keeps "el total de semanas es 4" — a total of something that is not
+ * money — from being read as a claim about the bars. The word itself is
+ * spelled `total` in all three locales, so one pattern covers them; only the
+ * copulas differ.
+ */
+const STATED_TOTAL = new RegExp(
+  `${WORD_START}total\\s*(?::|${WORD_START}(?:es|son|is|are|[ée]|s[ãa]o|ser[íi]an?)${WORD_END})` +
+    `\\s*(?:de\\s+)?\\$?\\s*(\\d+(?:[.,]\\d+)?)`,
+  'iu',
+);
+
+/**
+ * A `categories` BOARD WHOSE OWN BARS THE STORY CONTRADICTS.
+ *
+ * Two claims a turn can make that the board can answer:
+ *
+ *   1. A BAR'S OWN AMOUNT, misquoted beside that bar's own name — the shared
+ *      `namedValueContradiction` above. This is the likeliest drift on this
+ *      kind by a distance: the turn recites the split ("Necesito: 40, Quiero:
+ *      35, Ahorré: 25") and one number does not match the bar under it.
+ *   2. A STATED TOTAL that is not the sum of the bars.
+ *
+ * DELIBERATELY NOT CHECKED, and named rather than left silent: a SUPERLATIVE
+ * naming the wrong bar as the biggest ("lo que más gastas es X"). It is a
+ * real drift shape, and the anchor for it — a bare "más"/"most" near a label
+ * — is exactly the bare-comparative anchor `whiteboardComparisonMismatch`
+ * above rejected as too common to be safe. `compare` can afford its version
+ * only because it has exactly TWO named sides and can refuse when both match;
+ * with up to six bars that refusal does not generalize. Left to the prompt
+ * alone until a real transcript shows the shape and the wording to anchor on.
+ *
+ * The sum is computed from `computeCategories`'s verified values, so a board
+ * with a duplicate label — which that function refuses, and which is the one
+ * cross-bar fault no per-bar schema can see — produces no opinion here either.
+ */
+export function whiteboardCategoryMismatch(
+  say: string,
+  whiteboard: Pick<WhiteboardCategories, 'categories'> | null | undefined,
+): boolean {
+  if (whiteboard == null) return false;
+  const values = computeCategories(whiteboard);
+  if (values == null) return false;
+
+  if (namedValueContradiction(say, whiteboard.categories)) return true;
+
+  const sum = values.reduce((running, value) => running + value, 0);
+  for (const clause of assertionClauses(say)) {
+    const match = STATED_TOTAL.exec(clause);
+    if (match === null) continue;
+    const claimed = Number(match[1]!.replace(',', '.'));
+    if (!Number.isFinite(claimed)) continue;
+    if (Math.abs(sum - claimed) > NUMBER_TOLERANCE) return true;
+  }
+  return false;
 }
 
 export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {

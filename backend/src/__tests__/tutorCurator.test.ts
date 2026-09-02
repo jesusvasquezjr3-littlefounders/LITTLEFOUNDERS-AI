@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -317,5 +317,56 @@ describe('parseSkillMisconceptionRef', () => {
     expect(skill.name).toBe('counterexample-confront');
     expect(skill.misconceptions.length).toBeGreaterThan(0);
     for (const code of skill.misconceptions) expect(typeof code).toBe('string');
+  });
+});
+
+/*
+ * THE COVERAGE BACKLOG, TURNED INTO A GATE (2026-09-01).
+ *
+ * `curate:tutor-skills` reported "1 of 31 distinct cataloged misconception
+ * codes has any covering skill" for as long as it existed, and /ORACLE.md
+ * §20.6 called that "a standing authoring backlog this tool now makes visible
+ * instead of invisible". Visible is not the same as CHECKED: the backlog was
+ * closed by hand (30 codes, 21 new skills), and nothing stopped the next
+ * misconception added to `kc_graph.v1.json` from silently reopening it —
+ * every other gate stays green while a diagnosed wrong idea quietly falls
+ * through `selectSkill`'s dedicated path to the generic remediation. The
+ * curator is an OPERATOR tool nobody is obliged to run; these two assertions
+ * are the same two properties it reports (its summary's covered-code count,
+ * and CHECK 1's dead references) asserted against the REAL files, so the pair
+ * fails CI instead of waiting to be noticed.
+ *
+ * Both sources are read live and side by side, exactly as
+ * `seedKcGraph.test.ts` already reads the seed file and as the test directly
+ * above already reads oracle's skill directory — `import.meta.url` anchors to
+ * this file on disk, and both packages are checked out together in dev and in
+ * CI alike (see curate-tutor-skills.ts's own comment on why that path holds).
+ */
+describe('the REAL misconception catalog against the REAL skill catalogue', () => {
+  const here = fileURLToPath(new URL('.', import.meta.url));
+  const seed = JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_graph.v1.json'), 'utf8')) as {
+    misconceptions: { code: string }[];
+  };
+  const skillsDir = path.resolve(here, '../../../oracle/skills/moves');
+  const skills = readdirSync(skillsDir)
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => parseSkillMisconceptionRef(readFileSync(path.join(skillsDir, f), 'utf8'), f));
+
+  // The same DISTINCT-code set the curator counts: `counts-coins-not-value` is
+  // cataloged twice, on two different KCs with different descriptions, and
+  // `selectSkill` matches by code STRING — so 32 rows are 31 codes to cover.
+  const catalogCodes = new Set(seed.misconceptions.map((m) => m.code));
+  const coveredCodes = new Set(skills.flatMap((s) => s.misconceptions));
+
+  it('every cataloged misconception code has at least one skill that remediates it', () => {
+    const uncovered = [...catalogCodes].filter((code) => !coveredCodes.has(code)).sort();
+    expect(uncovered, `no skill in oracle/skills/moves/ names these code(s): ${uncovered.join(', ')}`).toEqual([]);
+  });
+
+  it('no skill names a misconception code that does not exist in the catalog', () => {
+    // The defect this tool caught on its first real run, as a standing gate:
+    // a code named nowhere in the catalog can never be selected for, silently.
+    const dead = [...coveredCodes].filter((code) => !catalogCodes.has(code)).sort();
+    expect(dead, `unreachable code(s) named in skill frontmatter: ${dead.join(', ')}`).toEqual([]);
   });
 });

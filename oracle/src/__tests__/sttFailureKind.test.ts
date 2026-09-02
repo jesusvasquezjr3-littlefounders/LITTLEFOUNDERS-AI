@@ -211,6 +211,18 @@ beforeEach(() => {
 afterEach(async () => {
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
+  /*
+   * The SHARED park store too — the cross-replica half of a park
+   * (`ws/parkStore.ts`): a published park record and, more importantly, this
+   * session's TRANSCRIPT FLOOR, which is monotonic and outlives a session by
+   * design so that no replica can ever reuse a row number. These tests all
+   * share one session id while pretending to be unrelated fresh sessions, so
+   * without this the floor legitimately carries every earlier test's row count
+   * into the next one and a "first" connection starts numbering in the
+   * hundreds. Same reason `nonceLedger.clear()` is on the line above.
+   */
+  const { clearLocalParkStore } = await import('../ws/parkStore.js');
+  clearLocalParkStore();
   // A socket closed without a farewell PARKS its session for resume; sweep it
   // so the next test's fresh socket is not refused as ALREADY_CONNECTED.
   await new Promise((r) => setTimeout(r, 120));

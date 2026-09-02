@@ -166,10 +166,31 @@ describe('runGymScenario drives the REAL controller reactively', () => {
  * tooling, not a mastery-detection redesign) — so it stays named here,
  * more precisely than before, rather than guessed at further.
  */
-const KNOWN_GAPS: Readonly<Record<string, string>> = {
-  'fragile hesitant':
-    'a persistently hesitant-but-correct learner was promoted (CELEBRATE/TRANSFER) — mastery should stay withheld while every correct answer is slow (blueprint §8.3: "correcto + latencia alta → dominio frágil, no promover")',
-};
+/*
+ * CLOSED 2026-09-01 — this map is now deliberately EMPTY, and the emptiness
+ * is the record. The `fragile hesitant` entry that stood here (mastery
+ * declared once, on evidence that later turned out to be fragile, with
+ * nothing anywhere that revisited the decision) was resolved by the owner
+ * decision the comment above says it was waiting on: mastery is now
+ * RECONSIDERED. `PedagogicalController.masteryRevokedKcIds` takes a
+ * promotion back when the same KC's spaced-review re-encounter produces a
+ * wrong answer or a hesitant-but-correct one.
+ *
+ * Two things were needed beyond the controller change, and both are worth
+ * naming because either alone would have looked like a fix:
+ *   1. the archetype's plan had to gain its `review_due` second entry, since
+ *      a single-entry plan goes dormant before the slow phase produces a
+ *      single turn — the gap was partly UNREACHABLE BY THE FIXTURE, not only
+ *      unimplemented (see the scenario's own comment in `pedagogyGym.ts`);
+ *   2. revocation had to be bounded to once per KC, or the fix produced its
+ *      own mirror-image defect — a correct-every-turn learner held in review
+ *      for the entire budget, never promoted.
+ *
+ * The test below still requires every named gap to actually reproduce, so an
+ * entry may never be parked here to silence a real regression: if a gap is
+ * listed and does NOT appear, that test fails too.
+ */
+const KNOWN_GAPS: Readonly<Record<string, string>> = {};
 
 describe('the gym\'s own default population', () => {
   it('reports no UNEXPECTED problems for any shipped archetype — every deviation from clean is named above, not silently swallowed', () => {
@@ -207,6 +228,7 @@ describe('the checks themselves catch what they claim to, not only agree with cl
     completed: false,
     turnsRun: 4,
     turnBudget: 16,
+    revokedMasteryKcIds: [],
   };
 
   it('sequenceProblems flags an A↔B thrash', () => {
@@ -250,8 +272,27 @@ describe('the checks themselves catch what they claim to, not only agree with cl
   it("the 'fragile hesitant' scenario's extraCheck fires when a hesitant learner IS promoted", () => {
     const fragile = GYM_SCENARIOS.find((s) => s.name === 'fragile hesitant')!;
     expect(fragile.extraCheck).toBeDefined();
-    const promoted: GymRunResult = { ...baseResult, sequence: ['FLUENCY', 'FLUENCY', 'CELEBRATE'] };
-    expect(fragile.extraCheck!(promoted).length).toBeGreaterThan(0);
+    // Promoted, and the promotion STOOD — no revocation. This is the defect
+    // the check now exists to catch, and the only shape that must fire.
+    const promotedAndStood: GymRunResult = {
+      ...baseResult,
+      sequence: ['FLUENCY', 'FLUENCY', 'CELEBRATE'],
+      revokedMasteryKcIds: [],
+    };
+    expect(fragile.extraCheck!(promotedAndStood).length).toBeGreaterThan(0);
+
+    // Promoted and then TAKEN BACK — the correct behaviour since 2026-09-01.
+    // Asserted explicitly rather than left implied: this is the one case the
+    // check's own rewrite could most easily have got backwards, and a check
+    // that fires on the fixed behaviour is worse than no check at all.
+    const promotedThenRevoked: GymRunResult = {
+      ...baseResult,
+      sequence: ['FLUENCY', 'FLUENCY', 'CELEBRATE'],
+      revokedMasteryKcIds: ['bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1'],
+    };
+    expect(fragile.extraCheck!(promotedThenRevoked)).toEqual([]);
+
+    // Never promoted at all — nothing to revoke, nothing to complain about.
     const neverPromoted: GymRunResult = { ...baseResult, sequence: ['FLUENCY', 'FLUENCY', 'FADED'] };
     expect(fragile.extraCheck!(neverPromoted)).toEqual([]);
   });

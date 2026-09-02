@@ -13037,11 +13037,15 @@ rather than fire-and-forget so a write failure gets a loud line instead
 of quietly recreating the exact gap this closes, and read back through
 the same guardian-visibility route the live-session flags already use,
 as a new `placementSafetyFlags` field — never merged into the existing
-`safetyFlags`, since the row shapes genuinely differ. **Not yet done,
-stated rather than silently claimed complete:** the guardian-facing
-`/family/:kidId/tutor` page's own "surfaced first, severity-sorted"
-treatment has not been extended to this second array yet — the data is
-real, RLS-protected and reachable today, but has no dedicated card.
+`safetyFlags`, since the row shapes genuinely differ. **The guardian card,
+previously recorded here as not yet done, shipped 2026-09-01:**
+`/family/:kidId/tutor` renders the second array inside the SAME card and
+the SAME severity-first sort as the session flags, rather than a section
+of its own — a separate section would have put a HIGH placement flag
+below a batch of LOW session ones, which is the exact defect that sort
+exists to prevent. The row offers no "read it in context" control,
+because it names no session, and says so in words rather than leaving a
+gap a parent would read as a transcript that failed to load.
 
 **"The offer must stand alone in its turn" was prompt-only, with no
 deterministic check — ORACLE.md §11 said so explicitly.** Closed by
@@ -14310,3 +14314,421 @@ included). Root: `docs:check`, `secrets:check`, `i18n:check`,
 `paths:check`, `seo:check`, `provider:check`, `tools:test` (26/26) all
 green — no new strings, routes, or migrations this round. oracle and
 backend untouched.
+
+## Round 142: the last two in-process structures, priced separately instead of migrated together — one was never a blocker, one is worth 8.35 cents, and the real blocker is a rearchitecture, 2026-09-01
+
+**INVESTIGATION. One test added, three comment blocks corrected, no
+production behaviour changed — the reasoning below is the deliverable,
+the same shape as Round 119.** Round 132 moved the `jti` ledger and
+`liveSessions` onto `lib/lock.ts` and left `parkedSessions` and the
+speech in-flight maps as one open follow-up in `/ORACLE.md` §16. This
+round asked whether either can move, judged them separately, and
+concluded that **only one of the two was ever a blocker**.
+
+### 1. `SpeechScope.inFlight` — NOT a blocker, and sharing it is a privacy bug
+
+`voice/speech.ts`'s coalescing layer is two maps, chosen by one ternary
+(`reusable ? inFlightShared : scope.inFlight`). §16 named both. Only one
+of them is per-process in any way that matters.
+
+A `SpeechScope` has exactly ONE production constructor
+(`ws/server.ts:1038`, `resumed?.speech ?? newSpeechScope(session)`) and
+exactly ONE production consumer (`ws/server.ts:1071`, the `Synthesizer`
+closure `(turn) => speakLine(turn.say, speech)`) — verified by grepping
+every call site of both symbols across `src/` and `scripts/`; every
+other hit is a test. Both are bound to one socket, and a socket lives
+entirely in the process that accepted it (Round 119 point 2). So every
+caller that can race on a key in this map is already co-located, at any
+replica count. **It needs no migration, now or ever.**
+
+The stronger finding is that migrating it would be a REGRESSION.
+`synthesizeAndStore` writes a non-reusable clip to `SESSION_SPEECH_BUCKET`
+under `name: scope.sessionId` (`speech.ts`), swept with that session's
+audio at 90 days (/ORACLE.md §12). A follower coalesced onto a leader in
+a DIFFERENT session would be handed that URL — one child's session audio
+served into another child's session, on the first child's retention
+clock. Proven, not argued: collapsing the ternary to `inFlightShared`
+and re-running the suite turned session B into a `cache` follower on
+session A's clip. **No existing test noticed** — the sequential sibling
+("keeps a generated line inside its OWN session") never reaches the
+in-flight map, because by its second call the first has already settled
+into `memo`. A concurrent fence now exists and was confirmed RED against
+exactly that change before being committed green.
+
+### 2. `inFlightShared` — genuinely per-process, and worth $0.0835
+
+Measured rather than assumed. With the shipped default
+`SPEECH_CACHE_SCOPE=scripted` (`env.ts`, `.env.example`, and set to `all`
+nowhere in the repo), `isReusableText` is exactly `SCRIPTED_TEXTS` — the
+closed catalogue, 12 texts x 4 characters x 3 locales. Enumerated
+directly from `scriptedLineCatalogue()`: **144 keys, 16,697 characters,
+$0.0835** at `USD_PER_1K_TTS_CHARS = 0.005`. It does not grow with usage.
+So the entire worst case of leaving this per-process is **$0.0835 x (N-1),
+once**, on a cold cache, after which the already-shared Redis cache
+(180-day TTL) serves every replica.
+
+Against that, every available fix is worse than the defect:
+
+- A Promise cannot cross a process boundary, so the only cross-replica
+  shape is leader-claims / follower-POLLS-the-cache. A follower that
+  waits adds latency to a child's turn on the one feature where latency
+  IS the product (/AGENTS.md §1.5's own reason for the browser-to-Oracle
+  socket exception), and `acquireLock` alone already carries a 250 ms
+  command timeout plus a 150 ms retry.
+- A follower that does NOT wait pays anyway — today's behaviour, plus a
+  Redis round trip on every cold-cache line. A no-op with a cost.
+- Failing CLOSED means silence, in a module whose own contract is "never
+  throws: a lost voice costs the sound, not the lesson", sitting on a
+  cache whose contract is that an unreachable store degrades to one paid
+  synthesis "spoken normally". Trading a child hearing nothing for a cent
+  inverts both, and §1.14's fail-closed discipline was never meant to
+  reach a cost control.
+
+**The remedy that does work is an operator action already built and
+simply un-run.** `pregeneratedUrl` is consulted BEFORE the cache, with no
+network at all, from `oracle/speech.pregenerated.json` — a TRACKED file
+baked into the deploy image, therefore identical on every replica by
+construction. It currently ships `"lines": {}` (a documented, valid
+state, and the sole reason this map has any cross-replica cost).
+`npm run speech:pregenerate -- --confirm` takes the exposure to **$0.00
+on every replica**, with no lock, no latency and no new failure mode.
+
+**Conditional, and the condition is a flag.** All of the above holds only
+while `SPEECH_CACHE_SCOPE=scripted`. Under `all` the reusable class
+becomes every generated turn — unbounded, growing with traffic — and this
+question must be reopened rather than inheriting this answer. That flag
+already needs owner sign-off for privacy reasons; this is a second,
+independent reason.
+
+### 3. `parkedSessions` — the only real blocker, and the session lock does NOT already cover it
+
+The non-obvious half first. `liveSessions` and the distributed claim
+guard a second CONCURRENT socket. They say nothing about a RESUME,
+because `socket.on('close')` releases the claim (`ws/server.ts:1166`)
+*before* it parks (`:1173`) — deliberately, so a genuine resume need not
+wait out `SESSION_LOCK_TTL_MS`. At N>1 that means:
+
+1. The socket drops on replica A; A releases the lock, parks the session.
+2. Core mints a resume token for any session the caller owns with
+   `ended_at IS NULL`; it has no idea which replica parked it.
+3. The reconnect is load-balanced to B. `liveSessions.has()` is false,
+   `acquireLock` succeeds cleanly (the claim really is free), `takeParked`
+   returns null — so B builds a SECOND `TutorOrchestrator` with no
+   history, `lastTurnAtMs: 0`, a fresh budget clock and turn cap, and
+   greets the learner again instead of redrawing (`:1179`).
+4. `transcriptSeq` restarts at 0, so every row collides in `tutor_turns`
+   and is dropped in silence by `ignore-duplicates` — the "a guardian
+   cannot read what their child said" failure this file already names
+   twice (`:156-174`, `:341-349`), reopened through a topology door.
+5. A's park timer still fires `SESSION_RESUME_GRACE_MS` later and calls
+   `closeSession`. That PATCH filters on `ended_at=is.null`
+   (`backend/src/services/tutorData.ts:411`), so **A's close wins and B's
+   real, billed usage never reaches Core's cost ledger** — §1.0's blind
+   flight, and the exact accounting failure `liveSessions` was created to
+   fix.
+
+**What it actually holds**, read field by field rather than summarised:
+`ParkedSession.orchestrator` is a live `TutorOrchestrator`, whose
+`synthesize` is a closure built at `:1071` and bound to this
+connection's `SpeechScope`; whose `controller` is a
+`PedagogicalController` instance with its own private Maps, arrays and
+counters; whose `pendingDiscardedAudio` is an array of UNSETTLED Promises
+for paid TTS whose cost has not yet reached `voiceUsd` — the field that
+exists precisely so a session-ending path can fold outstanding spend in
+before the number is persisted, so dropping it loses real billed money
+from the record. Plus `speech` (containing its own Promise map) and
+`timer`, a `setTimeout` whose firing performs three fire-and-forget
+writes.
+
+**What a migration would actually require**, so the next person starts
+here rather than at the beginning:
+
+1. A versioned snapshot/restore contract on `TutorOrchestrator` AND
+   `PedagogicalController` covering EVERY private field, including ones
+   future rounds add — §1.14's "state read back out of a shared object is
+   the previous owner's state" is exactly the class of bug a partial
+   snapshot invites, and a field silently omitted looks correct on the
+   first resume.
+2. A `Synthesizer` that can be RECONSTRUCTED on a different process, since
+   the closure cannot travel.
+3. A decision about unsettled paid-audio promises at hand-off: they
+   cannot cross, so their cost either lands in the ledger before the park
+   or is lost.
+4. A grace-window timer a fleet can own, rather than one process's
+   `setTimeout`.
+5. Re-derivation of `finalizeParked`'s `endSessionRequested` deferral,
+   which today skips a review "in favour of the one `finish()` is
+   GUARANTEED to still run" — guaranteed by a `finally`-chain *inside this
+   process*. Across processes that guarantee simply does not exist.
+6. A product decision on shutdown. `closeAllSockets` parks every live
+   session and immediately finalizes them all as `'abandoned'`, on the
+   stated reasoning that "there is no process left for anyone to resume
+   into once this one exits." At N>1 that reasoning inverts — a sibling IS
+   still there — so a shared park changes what a redeploy does to a child
+   mid-lesson. That is an owner call, not a refactor.
+
+**Decision: NOT implemented.** A partial park migration is worse than the
+honest single-replica constraint: it would ship a resume that silently
+restores an incomplete orchestrator, which is indistinguishable from a
+working one until a transcript row goes missing or a cost disappears.
+
+### Changes made
+
+- `oracle/src/__tests__/speech.test.ts` — one new test, "never coalesces
+  two CONCURRENT sessions onto one paid call for a GENERATED line",
+  confirmed RED against the collapsed ternary before being taken green.
+- `oracle/src/voice/speech.ts` — comments only. The `inFlightShared`
+  header now carries the measured exposure, the three-way argument
+  against a lock, the `speech:pregenerate` remedy and the
+  `SPEECH_CACHE_SCOPE` condition; `SpeechScope.inFlight` records that it
+  is already correct at N>1 and must not be shared; the ternary itself
+  names the privacy regression and its fence.
+- `oracle/src/ws/server.ts` — comment only. The park's block comment now
+  states that it is the LAST structure holding one replica and that the
+  session lock does not cover the resume path, with the five-step failure
+  above.
+- `/ORACLE.md` §16 — the unticked item rewritten to say what actually
+  remains (one structure) instead of reading as two open migrations.
+- `oracle/AGENTS.md` — new item 82; item 79 marked superseded in part.
+
+**Verification.** Gate output below, each with its own real exit code.
+
+- `oracle`: `type-check` exit 0 (src + scripts + tests), `lint` exit 0,
+  `test` exit 0 — 35 files, **853 tests** (852 before, +1 the new fence).
+- Root: `docs:check` exit 0, `secrets:check` exit 0.
+- Root `tools:test` exit **1**, and **not from this round**: the
+  repo-consistency assertion "ROADMAP.md delta upper bound must match the
+  highest shipped migration" reports `actual: '0067', expected: '0068'`
+  against an UNTRACKED `database/migrations/0068_learner_memory_guardian_approval.sql`
+  belonging to another in-flight lane. Proven rather than assumed by
+  moving that one file aside and re-running: **26/26, exit 0**, then
+  restoring it. This is exactly the failure /AGENTS.md §5 warns about —
+  a migration added without being declared pending in `ROADMAP.md` is
+  green on every other gate and red here (and in CI). Whoever owns 0068
+  must declare it before merge; this round did not touch `ROADMAP.md` or
+  any migration and deliberately did not "fix" it by guessing at that
+  lane's intent.
+
+## Round 143: the last in-process structure migrated — a dropped session now resumes on ANY replica, fenced by a completeness test that reads the classes' own fields, 2026-09-01
+
+**IMPLEMENTATION.** Round 142 priced this and declined it, on reasoning that
+was right at the time: "a partial park migration is worse than the honest
+single-replica constraint — it would ship a resume that silently restores an
+incomplete orchestrator, which is indistinguishable from a working one until a
+transcript row goes missing or a cost disappears." This round did the migration
+because it found a way to make "incomplete" a **broken build** rather than a
+judgement call. Everything below follows from that one move.
+
+### What was actually broken, re-verified rather than inherited
+
+Round 142's five-step failure was re-read against the code and holds exactly.
+`socket.on('close')` released the distributed session claim (`:1166`) *before*
+parking (`:1173`), deliberately, so a genuine resume need not wait out
+`SESSION_LOCK_TTL_MS`. At one replica that is harmless. At N>1 the resuming
+socket's ONLY gate is that claim, so:
+
+1. The socket drops on A; A releases the claim, parks in process memory.
+2. Core mints a resume token for any session the caller owns with
+   `ended_at IS NULL`. It has no idea which replica parked it.
+3. The reconnect is load-balanced to B. `liveSessions.has()` is false,
+   `acquireLock` succeeds cleanly (the claim really is free), nothing is
+   parked here — so B builds a SECOND `TutorOrchestrator`, greets the learner
+   again, and starts `transcriptSeq` at 0.
+4. Every row then collides in `tutor_turns`, which is unique on
+   `(session_id, seq)` and written `ignore-duplicates`, and is **dropped in
+   silence**.
+5. A's park timer still fires and closes the session; the PATCH filters on
+   `ended_at=is.null`, so the DEAD replica's close wins and B's real billed
+   usage never reaches Core's ledger at all.
+
+Step 4 is not a projection. The new cross-replica transcript test, run against
+the pre-fix behaviour, reports **6 transcript rows carrying 3 distinct seqs** —
+half the conversation deleted, with a `200` on every write.
+
+### The move that made it safe: derive the enumeration, don't write it twice
+
+The hazard was never serialization; every field turned out to be plain data,
+`Map` or `Set`. The hazard is that an omitted field restores as its constructor
+default, and every default here is *plausible* — a failure streak of zero, a
+strategy of `DIRECT`, an empty set of once-per-session skills already spent.
+Nothing throws. The tutor forgets a child's struggle on reconnect, and no gate
+can tell that from a child who had not struggled.
+
+TypeScript's `private` is erased at compile time, so `Object.keys()` on a live
+instance returns **every** field — parameter properties and
+declared-but-unassigned ones included (verified empirically before designing
+around it). So `snapshotFence.test.ts` derives each class's real shape and
+requires every field to be either carried by `snapshot()` or named in an
+exclusion list *with a written reason*. A field added without that decision is
+a red build. Confirmed by injecting one into each class:
+
+- `TutorOrchestrator has 1 field(s) that neither snapshot() carries nor ORCHESTRATOR_EXCLUDED explains: hintsGivenThisSession`
+- `PedagogicalController has 1 field(s) that neither snapshot() carries nor CONTROLLER_EXCLUDED explains: turnsSinceProbe`
+
+A mirror test fails if an exclusion names a field that no longer exists, so the
+list cannot rot in the other direction either.
+
+### Round 142's six requirements, each answered
+
+1. **Versioned snapshot/restore across both classes** — `snapshot()`/`restore()`
+   on `TutorOrchestrator` and `PedagogicalController`, plus
+   `planSnapshot`/`planFromSnapshot` for the `LessonPlan`, which is genuinely
+   mutable state (`recordGrade`, `advance`, `noteConversationTurn` all write to
+   it) and is therefore COPIED rather than rebuilt by `buildPlan` — a rebuild
+   would rewind a learner to step 1 with no failures recorded and look healthy.
+   `restore` overwrites in place so every `readonly` stays `readonly`.
+2. **A reconstructable `Synthesizer`** — the adopting process builds
+   `newSpeechScope(pinnedSession)` and `(turn) => speakLine(turn.say, speech)`
+   itself. The paid-speech `memo` does not travel (cost: re-synthesizing a
+   repeated line, cents, mostly absorbed by the 180-day shared cache).
+   `SpeechScope.inFlight` must never travel — Round 142 proved sharing it
+   serves one child's session audio into another child's session.
+3. **Unsettled paid-TTS promises** — SETTLED, not dropped and not carried.
+   `publishPark` awaits `awaitPendingCosts()` before snapshotting, and
+   `snapshot()` **throws** if the array is non-empty rather than trusting every
+   future caller to remember. A snapshot taken over unsettled audio hands the
+   adopter a ledger that is real money short, and the adopter's close is the
+   one Core records.
+4. **A fleet-owned grace timer** — the timer stays a local `setTimeout` (a
+   distributed scheduler is a lot of machinery for a question a local clock
+   answers correctly); what moved is the **authority** to act on it. Before
+   closing, the parking replica must win a compare-and-delete on the shared
+   record. `taken` → decline, another replica owns this session's ending.
+   `unreachable` → close anyway, and that is a decision: adoption itself
+   requires the shared store (the session lock fails closed without it), so
+   "the store is down" implies "nobody adopted this", and the alternative
+   leaves every abandoned session open in Core's ledger for the whole duration
+   of any outage. The residual window — store up at adoption, down one grace
+   window later — is named in the code rather than hidden.
+5. **`finalizeParked`'s `endSessionRequested` deferral** — re-derived by
+   removing the need for it. That deferral rests on `finish()` being guaranteed
+   to run by a `finally`-chain *inside one process*, a guarantee that does not
+   exist across processes. So a park with `endSessionRequested` set is simply
+   **never published**: the learner has already asked to leave, there is nothing
+   to resume, and the guarantee stays inside the process that holds it. Its
+   transcript continuity is covered by the floor below regardless.
+6. **The claim-release-before-park ordering** — inverted. The close handler now
+   parks, publishes, and only THEN releases the claim, so anything that
+   successfully acquires the claim is by construction looking at a store where
+   the park already exists. The property the old ordering bought is kept (the
+   claim is released rather than left to expire), it just lands a few
+   milliseconds later — inside the window `acquireLock`'s own bounded retry
+   already exists to absorb.
+
+### The backstop the record is not
+
+A park record can legitimately be absent: it expired, the process crashed, it
+was never published (requirement 5), or the deploy replaced the process. In all
+of those a resumed session must STILL never renumber over rows already written.
+So `transcriptSeq` is additionally floored by a **separate monotonic
+high-water mark** (`oracle:seq:<sid>`), raised fire-and-forget on every row and
+read at every connection; the socket takes `max(park, floor)`. The floor read
+FAILS CLOSED — a garbage or unreadable value refuses the connection rather than
+defaulting to 0, because 0 means "this session has written nothing" and acting
+on that wrongly is the silent deletion this whole mechanism exists to prevent.
+It costs nothing already lost: a socket only reaches that line by acquiring the
+claim, which fails closed on the same store one gate earlier.
+
+Raised on ALLOCATION, not after a confirmed write: the floor's job is "no future
+row may reuse this number", and a seq allocated to a row whose `persistTurn`
+failed must still never be handed to different text.
+
+### What was NOT done, and why
+
+**A redeploy still ends live sessions as `abandoned`.** Round 142's requirement
+6 called this an owner decision rather than a refactor, and it remains one. A
+process on its way out cannot answer "is a sibling still there to resume into?"
+about itself, so changing it needs a fleet-liveness signal this service does not
+have. Shutdown behaviour is therefore **provably unchanged**: `closeAllSockets`
+parks directly rather than through the close handler, so it never publishes, and
+`finalizeAllParked` now passes `shuttingDown: true` so the ownership check is
+fired without being awaited — `index.ts` budgets ~250 ms before `process.exit`,
+and the check's own 250 ms timeout could otherwise consume all of it and lose
+the `closeSession` call entirely. This loses no data; a learner starts a new
+session, exactly as today.
+
+**A live two-replica deploy has not happened.** Everything below is bench
+evidence. Scale with a smoke test that drops a session on one instance and
+resumes it on another.
+
+### A stale premise, and the real thing it was hiding
+
+`spend-guard.ts` justified being in-process with "Oracle is explicitly
+single-replica today". That premise died in this round, so it was grepped for
+rather than left: four comments (`spend-guard.ts`, `env.ts`, `voice/speech.ts`,
+`ws/server.ts`) still reasoned from it. Three were merely stale. The fourth was
+hiding a consequence nobody had written down: **`DAILY_SPEND_CEILING_USD` is per
+replica**, so at N instances the effective daily ceiling is N times the
+configured number. The breaker stays in-process on purpose — a circuit breaker
+must not depend on the infrastructure it exists to survive (§1.14) — so the
+remedy is operational and is now stated in three places: divide the configured
+ceiling by the replica count in the same change that scales.
+`ORACLE_MAX_CONCURRENT_SESSIONS` multiplies the same way and is harmless (each
+instance protecting itself is what it is for).
+
+### Changes made
+
+- **New** `oracle/src/ws/parkStore.ts` — the shared park record, its ownership
+  (compare-and-delete), and the transcript floor. Neutral about failure like
+  `lib/lock.ts`; the decisions live at the call sites. Redis in prod, an
+  in-process Map with the identical contract in test/dev.
+- `oracle/src/tutor/plan.ts`, `controller.ts`, `orchestrator.ts` — snapshot /
+  restore contracts, Zod-schema'd and `.strict()`, co-located with the fields
+  they cover so a person adding a field sees the schema.
+- `oracle/src/ws/server.ts` — the ordering fix, the adopt path, the fleet
+  ownership gate, the transcript floor, `dropLocalParksForTest`, and a
+  type-level equality assertion pinning `ParkedSegmentFrameSchema` to
+  `ServerMessage`'s own segment variant (verified to fail compilation when the
+  wire type drifts).
+- `oracle/src/core/client.ts` — `SessionContextSchema` exported, so a park
+  record's pinned context is re-validated by the real schema.
+- `oracle/src/session/spend-guard.ts`, `env.ts`, `voice/speech.ts` — comments
+  only; stale premise corrected and the per-replica ceiling stated.
+- **New** `oracle/src/__tests__/snapshotFence.test.ts` (10) and
+  `parkStore.test.ts` (14); `live-session.test.ts` +7 cross-replica tests. The
+  four ws suites' `afterEach` now also clears the shared park store — the tests
+  share one session id while pretending to be unrelated sessions, and the floor
+  is monotonic by design, so without it a "first" connection starts numbering
+  in the hundreds. (That is how the floor first proved itself: it failed a test
+  by refusing to renumber.)
+- `/ORACLE.md` §12 and §16, `oracle/AGENTS.md` items 79 + new 83.
+
+### Verification
+
+Every new test was confirmed RED against the pre-fix behaviour, each run in
+isolation so no failure is a cascade of another:
+
+| Test | Pre-fix failure |
+|---|---|
+| adopts the conversation from the shared park | `expected undefined to be defined` (no history frame) |
+| continues the transcript instead of restarting at 0 | `expected 3 to be 6` — 6 rows, 3 distinct seqs |
+| continues the transcript when NO park record survived | `expected false to be true` |
+| publishes the park BEFORE releasing the claim | `expected null not to be null` (claim free, record absent) |
+| does not close a session another replica adopted | `expected false to be true` (a `learner_left` close was written) |
+| still closes an unclaimed park (control) | **passes both before and after**, as a control must |
+
+**The Redis Lua was verified against a real Redis 7 container** (`docker run
+redis:7-alpine`), the way `lib/lock.ts`'s scripts were before shipping — 23
+assertions, exit 0, run twice: atomic claim, owner compare including a
+prefix-of-the-owner attempt, records containing newlines, floor monotonicity and
+TTL, a corrupt floor reported as `unreachable` rather than 0, and every entry
+point reporting `unreachable` against a closed client. The first run of that
+script FAILED on its own state: the floor from the previous run correctly
+refused to be lowered. The code was right and the script was not idempotent —
+fixed with a `flushAll`, and worth recording because it is the mechanism
+demonstrating itself.
+
+Gate output, each with its own real exit code:
+
+- `oracle`: `type-check` exit 0 (src + scripts + tests), `lint` exit 0,
+  `test` exit 0 — 37 files, **895 tests** (864 before, +31), `build` exit 0.
+- `oracle`: `verify:tutor` exit 0, `verify:pedagogy` exit 0.
+- Root: `docs:check` exit 0, `secrets:check` exit 0.
+
+**Note for whoever runs `tools:test`:** Round 142 recorded it failing at exit 1
+on an UNTRACKED `database/migrations/0068_*.sql` from another in-flight lane
+that `ROADMAP.md` does not declare. That is unrelated to this round, which
+touched no migration and no `ROADMAP.md`. Another lane was also editing
+`oracle/src/tutor/orchestrator.ts` in this same working tree during this round;
+a `lint` run mid-write reported a transient unused-variable error in code this
+round did not author, and passed on re-run.

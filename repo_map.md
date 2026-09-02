@@ -887,6 +887,26 @@ name: Tutor deploy (operator)
 #
 ```
 
+### .github/workflows/tutor-retention-watch.yml
+
+```
+name: Tutor retention watch
+
+# THE OTHER HALF OF THE RETENTION PROMISE: somebody has to notice when the
+# sweep STOPS running (/ORACLE.md §15.2 item 4).
+#
+# `tutor-retention.yml` deletes the rows and the audio, and fails loudly when
+# it cannot. What it structurally cannot do is report its own ABSENCE: a
+# workflow that never fires — disabled, renamed, its schedule silently dropped
+# by GitHub after repository inactivity, its secrets rotated out from under it
+# — produces no output at all, and no output is exactly what a healthy quiet
+# night also looks like. Every failure mode of a cron job that matters is
+# invisible to that cron job.
+#
+# So this one asks the DATABASE what it can see, rather than asking the sweep
+# how it thinks it did. Core writes `tutor.retention.swept` to `audit_logs` on
+```
+
 ### .github/workflows/tutor-retention.yml
 
 ```
@@ -905,6 +925,26 @@ name: Tutor retention
 # alone would leave a child's conversation audible at a public URL forever with
 # every database record of it destroyed — the worst combination, because
 # nothing would remain to tell anyone the files existed. Core does both, so
+```
+
+### .github/workflows/tutor-skill-curation.yml
+
+```
+name: Tutor skill & KC curation
+
+# WHAT DOES THE LIVE CURRICULUM SAY WE SHOULD AUTHOR NEXT?
+# (/ORACLE.md §20.6, backend/src/services/pedagogy/tutorCurator.ts)
+#
+# `curate:tutor-skills` reads the live KC graph, the misconception catalog and
+# real learner attempt/evidence aggregates from Vault, cross-references them
+# against `oracle/skills/moves/*.md`, and prints a PROPOSE-ONLY markdown
+# report: KCs with no skill covering them, misconceptions with evidence but no
+# remediation move, skills referencing a misconception code that no longer
+# exists, and so on.
+#
+# IT NEVER WRITES ANYTHING, WHICH IS PRECISELY WHY A SCHEDULE IS SAFE HERE.
+# ROADMAP.md §15.1 ("nothing autonomous reaches a child") extends to the
+# curriculum itself: applying a proposal means a human editing a skill file or
 ```
 
 ### .github/workflows/vault-backup.yml
@@ -954,7 +994,7 @@ name: Vault drift probe
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-08-27 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-09-01 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -974,7 +1014,7 @@ name: Vault drift probe
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-08-27 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-09-01 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -1199,7 +1239,7 @@ Knowing learner behavior — patterns, drop-off, rhythm, family dynamics — is
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-23): IN PRODUCTION.** The runtime, migration `0047`, Core's
+> **Status (2026-09-01): IN PRODUCTION.** The runtime, migration `0047`, Core's
 > `/api/v1/tutor/*` surface AND the immersive experience are all built, shipped
 > and verified end to end against the deployed service — Core reaches Oracle
 > privately, both providers answer, a turn seals/parses/passes the judge, and
@@ -7430,7 +7470,7 @@ import { GRADERS } from '../lesson-contract/registry.js';
 ### backend/src/__tests__/tutorCurator.test.ts
 
 ```
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -13491,6 +13531,26 @@ BEGIN
 -- result is the identical shape migration 0058 already closed for the
 -- whiteboard: every session where the tutor demonstrated on the tray lost
 -- that fact, silently, on replay AND on the guardian transcript viewer.
+```
+
+### database/migrations/0068_learner_memory_guardian_approval.sql
+
+```
+-- 0068_learner_memory_guardian_approval.sql — the LEARNER store stops
+-- auto-writing for a minor. A post-session review's proposal now PARKS as a
+-- pending row a verified guardian approves or rejects, and only an approval
+-- moves the store.
+-- @phase: expand
+--
+-- CLOSES THE ONE ITEM /ORACLE.md §20 MARKS **BLOCKING BEFORE FAMILY
+-- ROLLOUT**: "auto-write is the owner-accepted interim while the platform's
+-- only active learner is the owner. Before real families: LEARNER-store writes
+-- require guardian approval from the portal, which reads the same ledger."
+-- Migration 0053 shipped the stores with that sentence already written into
+-- its own header; this is the migration that makes it true.
+--
+-- WHY ONLY THE `learner` STORE. The two stores 0053 created are different
+-- KINDS of thing and only one of them is a record OF THE CHILD:
 ```
 
 ### database/package.json
@@ -25094,12 +25154,12 @@ import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
 import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
+import { DemoStepsSummary } from '@/tutor/replay/DemoStepsSummary';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
+import { MemoryNotesPanel } from './MemoryNotesPanel';
 
 /*
- * `/family/:kidId/tutor` — a child's tutor conversations, through the parent's
- * eyes.
 ```
 
 ### frontend/src/routes/app/family/ManageKidPanel.tsx
@@ -25120,6 +25180,26 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
  * `auth.users` address is DERIVED from their handle, so renaming it here alone
  * would strand the account at sign-in - Core refuses it too, and this panel
  * explains the refusal rather than hiding a field and letting a parent wonder.
+```
+
+### frontend/src/routes/app/family/MemoryNotesPanel.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Card, Icon } from '@/components/ui';
+import {
+  decideMemoryNote,
+  getPendingMemoryNotes,
+  type PendingMemoryNote,
+} from '@/tutor/tutorApi';
+
+/*
+ * THE PARENTAL APPROVAL GATE, as a surface (/ORACLE.md §20, migration 0068).
+ *
+ * The tutor keeps a short prose note about each learner — what they are into,
+ * what motivates them, what to steer away from — and it is read back into
+ * every future conversation. For a child that note used to write itself after
 ```
 
 ### frontend/src/routes/app/family/__tests__/AddKidCard.test.tsx
@@ -25185,7 +25265,7 @@ import { FamilyPage } from '../FamilyPage';
 ### frontend/src/routes/app/family/__tests__/KidTutorPage.test.tsx
 
 ```
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { KidTutorPage } from '../KidTutorPage';
@@ -25219,6 +25299,26 @@ import { ManageKidPanel } from '../ManageKidPanel';
  *  - removal cannot be reached without typing that username, because a hard
  *    delete of a minor's whole record is not something a person should be able
  *    to trigger by muscle memory.
+ */
+```
+
+### frontend/src/routes/app/family/__tests__/MemoryNotesPanel.test.tsx
+
+```
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryNotesPanel } from '../MemoryNotesPanel';
+import { decideMemoryNote, getPendingMemoryNotes } from '@/tutor/tutorApi';
+
+/*
+ * THE PARENTAL APPROVAL GATE, as a surface (/ORACLE.md §20, migration 0068) —
+ * the one item that document marked BLOCKING before real families could use
+ * the Tutor.
+ *
+ * What these tests protect is not the layout. It is that a guardian is never
+ * shown a decision that did not happen: the server refuses a stale note and an
+ * already-decided one, and a panel that rendered "Approved" either time would
+ * be telling a parent their child's record changed when it did not.
  */
 ```
 
@@ -28652,7 +28752,7 @@ import { useTutorSocket } from '../useTutorSocket';
 ### frontend/src/tutor/__tests__/offerChips.test.tsx
 
 ```
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '@/i18n';
 import { OfferChips } from '../OfferChips';
@@ -29226,7 +29326,7 @@ import { ReplayInWorld } from '../replay/ReplayInWorld';
 import { buildReplayScript } from '../replay/replayScript';
 import { useReplayDirector } from '../replay/useReplayDirector';
 import { VoiceConsentControl } from '../VoiceConsentControl';
-import { micBlockedForOffers, narrowBlockedReason } from '../mic';
+import { MemoryNotesPanel } from '@/routes/app/family/MemoryNotesPanel';
 ```
 
 ### frontend/src/tutor/lab/labFixtures.ts
@@ -29349,10 +29449,30 @@ import type { TutorOffers } from './types';
 
 ```
 
+### frontend/src/tutor/replay/DemoStepsSummary.tsx
+
+```
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TrayDemoStep } from '../types';
+
+/**
+ * What the tutor's hands did on the money tray during this beat — a plain
+ * sentence, deliberately NOT a re-animated tray (/ORACLE.md §20.8).
+ *
+ * WHAT IT DOES NOT DO IS THE INTERESTING PART. The blocker is NOT the
+ * rendering surface: `ExerciseProps.disabled` already exists and `MoneyTray`
+ * already threads it into every button, so a read-only tray needs no second
+ * renderer. The blocker is the DATA. `runTrayDemo` replays a delta — "add a
+ * 10, take a 20 back out" — against whatever the learner had ALREADY put in
+ * the tray, and that starting state is persisted nowhere: `tutor_segments`
+ * keeps the payload, score, attempts and XP, never the draft. Replaying from
+```
+
 ### frontend/src/tutor/replay/ReplayInWorld.tsx
 
 ```
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -29365,7 +29485,7 @@ import { SpeechCaption } from '../SpeechCaption';
 import { TutorFace } from '../TutorFace';
 import { TutorWhiteboard } from '../TutorWhiteboard';
 import { useStageDock, type ReplayLayerProps } from '../stage/StageShell';
-import type { TrayDemoStep } from '../types';
+import { DemoStepsSummary } from './DemoStepsSummary';
 import type { ReplayBeat } from './replayScript';
 ```
 
@@ -30247,6 +30367,46 @@ export default tseslint.config(
  * this does.
 ```
 
+### oracle/skills/moves/biggest-coin-first.md
+
+```
+---
+name: biggest-coin-first
+description: Biggest coin that fits, then the leftover is the same question again
+strategies: [REMEDIATE]
+misconceptions: [single-denomination-only]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: BIGGEST COIN THAT FITS, THEN FILL WHAT IS LEFT.
+
+They try to build every amount out of one kind of coin and give up when it
+does not divide evenly — "no se puede hacer 35 con monedas de 10." They are
+right about the tens. What is missing is that a pile is allowed to MIX.
+```
+
+### oracle/skills/moves/both-sides-said-yes.md
+
+```
+---
+name: both-sides-said-yes
+description: Ask each side what they wanted more, one at a time
+strategies: [REMEDIATE]
+misconceptions: [trade-has-loser]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: ASK WHAT EACH SIDE WANTED MORE.
+
+They read every trade as a winner and a loser, because only one thing can be
+"the better item", and something must be lost for something to be gained. The
+way out is not insisting both win — it is noticing that the two sides wanted
+```
+
 ### oracle/skills/moves/celebrate-specific.md
 
 ```
@@ -30265,6 +30425,26 @@ They earned this: real evidence, more than once. A generic party wastes the
 moment; a specific one builds identity.
 
 1. Name the precise thing they now own, with the evidence: "Hace un rato 15
+```
+
+### oracle/skills/moves/compare-one-part-each.md
+
+```
+---
+name: compare-one-part-each
+description: Split the same whole both ways and compare a single piece
+strategies: [REMEDIATE]
+misconceptions: [bigger-denominator-bigger-part]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: SPLIT THE SAME WHOLE BOTH WAYS, COMPARE ONE PIECE.
+
+"Un cuarto es más que un medio porque cuatro es más que dos." The number they
+are reading is real — there ARE more pieces. What flips is that more pieces
+of the same thing makes each piece smaller, and that has to be seen, not
 ```
 
 ### oracle/skills/moves/concrete-to-abstract.md
@@ -30287,6 +30467,26 @@ PICTURE, as a SYMBOL — in that order, never skipping.
 1. Start with objects they can picture or the screen can show: real coins,
 ```
 
+### oracle/skills/moves/count-what-each-price-earns.md
+
+```
+---
+name: count-what-each-price-earns
+description: Multiply each price by how many actually sell, and compare the totals
+strategies: [REMEDIATE]
+misconceptions: [highest-price-wins]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: COUNT WHAT EACH PRICE ACTUALLY BRINGS IN.
+
+"Le pongo 100 pesos al vaso y me hago rico." This is not greed, it is that
+only one of the two numbers is being looked at. The price is visible; how
+many people say yes is not. Make the second number visible and the answer
+```
+
 ### oracle/skills/moves/counterexample-confront.md
 
 ```
@@ -30294,7 +30494,7 @@ PICTURE, as a SYMBOL — in that order, never skipping.
 name: counterexample-confront
 description: Let a wrong rule collide with a case where it visibly fails
 strategies: [REMEDIATE]
-misconceptions: [adds-instead-of-counts-up, more-parts-means-more, longer-number-is-bigger]
+misconceptions: [adds-instead-of-counts-up]
 mastery_min: 0.25
 mastery_max: 0.7
 tiers: [1, 2, 3]
@@ -30305,6 +30505,46 @@ Strategy for this turn: CONFRONT WITH A COUNTEREXAMPLE.
 
 They hold a wrong RULE — not a slip, a rule they can state and defend. Rules
 do not die by being contradicted by you; they die by visibly failing.
+```
+
+### oracle/skills/moves/deal-it-into-piles.md
+
+```
+---
+name: deal-it-into-piles
+description: Deal it out like cards, then read one pile
+strategies: [REMEDIATE]
+misconceptions: [ignores-remainder, multiplies-instead-of-divides]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: DEAL IT OUT LIKE CARDS, ONE AT A TIME.
+
+Sharing breaks in two ways that one physical move repairs: piles called equal
+while something is left over, and multiplication reached for because the two
+numbers were simply sitting there. Dealing settles both — you cannot deal
+```
+
+### oracle/skills/moves/decide-before-money-moves.md
+
+```
+---
+name: decide-before-money-moves
+description: Rank it and set the saving aside before the first coin leaves
+strategies: [REMEDIATE]
+misconceptions: [saving-is-leftover, spends-until-empty]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: DECIDE THE ORDER BEFORE THE FIRST COIN LEAVES.
+
+Two habits with one shape: spending down the list until the money runs out,
+and saving only whatever happens to survive. Both hand the decision to
+whatever came first. Neither is an arithmetic problem — the ORDER is the
 ```
 
 ### oracle/skills/moves/direct-then-check.md
@@ -30367,6 +30607,26 @@ NUMBER without touching the THINKING guarantees the same error tomorrow.
 1. Name what their answer tells you, without judgment: "Dijiste 25 — creo que
 ```
 
+### oracle/skills/moves/find-what-is-missing.md
+
+```
+---
+name: find-what-is-missing
+description: Name the gap on a bar before choosing what to divide
+strategies: [REMEDIATE]
+misconceptions: [forgets-already-saved]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: MARK WHAT THEY ALREADY HAVE BEFORE DIVIDING.
+
+They divide the whole goal by the weekly saving and get a number of weeks
+that ignores the money already in the jar. The division itself is correct; it
+was aimed at the wrong number. Fixing the arithmetic will not fix that.
+```
+
 ### oracle/skills/moves/fluency-hidden-clock.md
 
 ```
@@ -30407,6 +30667,86 @@ this turn is to make continuing feel safe.
 1. Name the feeling without drama and side WITH them: "Esto está costando
 ```
 
+### oracle/skills/moves/need-or-want-week-test.md
+
+```
+---
+name: need-or-want-week-test
+description: A test that runs on a week without it, not on how much they want it
+strategies: [REMEDIATE]
+misconceptions: [want-feels-like-need]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: TEST IT WITH A WEEK, NOT WITH A FEELING.
+
+Anything wanted strongly is being filed as a need. That is not an error to
+correct out of them — wanting something badly genuinely feels like needing
+it. Give them a test that does not run on how much they want it.
+```
+
+### oracle/skills/moves/one-step-per-period.md
+
+```
+---
+name: one-step-per-period
+description: A staircase with one step per period, each starting where the last ended
+strategies: [REMEDIATE]
+misconceptions: [growth-is-one-time]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: DRAW THE STAIRCASE, ONE STEP PER PERIOD.
+
+They apply the growth once and stop, because "crece 10% al año" reads as one
+event instead of as something that happens again each year. The arithmetic is
+fine. The repetition is what is missing.
+```
+
+### oracle/skills/moves/paying-for-the-work.md
+
+```
+---
+name: paying-for-the-work
+description: Follow the work instead of the object when nothing is handed over
+strategies: [REMEDIATE]
+misconceptions: [service-needs-object, only-objects-have-value]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: FOLLOW THE WORK, NOT THE OBJECT.
+
+Two versions of one belief: a sale is not real unless something is handed
+over, and only things deserve paying for, not time or effort. Both come from
+the same place — the object is easy to see and the work is not.
+```
+
+### oracle/skills/moves/percent-of-what.md
+
+```
+---
+name: percent-of-what
+description: Same percent, two very different amounts, two different answers
+strategies: [REMEDIATE]
+misconceptions: [percent-is-amount]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: A PERCENT IS ALWAYS A PERCENT OF SOMETHING.
+
+They read "10%" as ten pesos. The words "por ciento" have gone invisible and
+what is left is a number that looks like money. The repair is to make the
+ANSWER change while the percent stays the same.
+```
+
 ### oracle/skills/moves/prerequisite-probe.md
 
 ```
@@ -30427,6 +30767,26 @@ LOCATE, not to teach.
 
 ```
 
+### oracle/skills/moves/price-is-a-decision.md
+
+```
+---
+name: price-is-a-decision
+description: The same thing at two prices in two places, and who decided
+strategies: [REMEDIATE]
+misconceptions: [price-is-fixed-property]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: SHOW THE SAME THING AT TWO DIFFERENT PRICES.
+
+They believe an object carries one true price the way it carries a colour. A
+price is not a property of the thing — it is a decision somebody made and
+somebody else agreed to. The way in is a contradiction they can check
+```
+
 ### oracle/skills/moves/productive-struggle-hold.md
 
 ```
@@ -30445,6 +30805,86 @@ They are working close to the edge of what they can do, and not upset — just
 thinking hard. This exact state is where the most durable learning happens,
 and the biggest threat to it is a helpful tutor.
 
+```
+
+### oracle/skills/moves/register-keeps-the-price.md
+
+```
+---
+name: register-keeps-the-price
+description: Act out the sale so the price stays and only the rest goes back
+strategies: [REMEDIATE]
+misconceptions: [returns-payment]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: ACT OUT THE SALE — THE PRICE STAYS, THE REST GOES BACK.
+
+They hand the whole payment back as change. Whatever the arithmetic says, it
+is the STORY that broke: in their version nothing was actually bought. So do
+not start with numbers.
+```
+
+### oracle/skills/moves/round-the-safe-way.md
+
+```
+---
+name: round-the-safe-way
+description: The direction you round depends on the question you are asking
+strategies: [REMEDIATE]
+misconceptions: [always-rounds-down]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: ROUND IN THE DIRECTION THAT CANNOT EMBARRASS YOU.
+
+They round every price down, so the estimate always says the money is enough.
+It is a comfortable habit precisely because the answer is always yes. The fix
+is not "redondea al más cercano" — it is that the DIRECTION depends on the
+```
+
+### oracle/skills/moves/running-basket-total.md
+
+```
+---
+name: running-basket-total
+description: One total for the whole basket, not one check per item
+strategies: [REMEDIATE]
+misconceptions: [budget-is-per-item]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: ONE TOTAL FOR THE BASKET, NOT ONE CHECK PER ITEM.
+
+They compare each price against the money and say yes every time — "me
+alcanza para la pelota, me alcanza para el cuaderno" — and end up over. Every
+one of those answers is correct on its own, which is why arguing about any
+```
+
+### oracle/skills/moves/same-unit-first.md
+
+```
+---
+name: same-unit-first
+description: Put both amounts in one unit before operating on them
+strategies: [REMEDIATE]
+misconceptions: [mixes-units, adds-digits-ignores-decimal]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: SAME UNIT FIRST, THEN OPERATE.
+
+Digits are being moved around with nothing attached to them, so $5 and 50¢
+become 55 and 1.50 + 2.50 becomes 3.100. The decimal point is not a rule they
+forgot; it is a unit they never heard.
 ```
 
 ### oracle/skills/moves/scaffold-fading.md
@@ -30507,6 +30947,66 @@ like an exam ambush. Instead:
 
 ```
 
+### oracle/skills/moves/stop-at-the-target.md
+
+```
+---
+name: stop-at-the-target
+description: A running total said out loud, with a stop question each coin
+strategies: [REMEDIATE]
+misconceptions: [overshoots-target]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: RUNNING TOTAL, WITH A STOP QUESTION EVERY COIN.
+
+They keep adding coins past the amount asked for. Usually nothing is wrong
+with the counting — nobody told them the target is a place to STOP, so they
+are treating it as a direction to go.
+```
+
+### oracle/skills/moves/three-piles-in-out-left.md
+
+```
+---
+name: three-piles-in-out-left
+description: Separate what came in, what went out and what is left before naming any of it
+strategies: [REMEDIATE]
+misconceptions: [revenue-is-profit, profit-is-revenue, cost-equals-price, adds-costs-to-revenue]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: THREE PILES — WHAT CAME IN, WHAT WENT OUT, WHAT IS LEFT.
+
+One missing separation produces all of these: the money that came in gets
+called the earnings, the cost gets called the price, or the cost gets ADDED
+to the sales instead of leaving. Words will not fix it. The money has to sit
+```
+
+### oracle/skills/moves/trade-before-subtract.md
+
+```
+---
+name: trade-before-subtract
+description: Make the exchange physical before any digit is crossed out
+strategies: [REMEDIATE]
+misconceptions: [subtracts-smaller-from-larger-digitwise]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: DO THE TRADE WITH COINS BEFORE SUBTRACTING.
+
+They take the smaller digit from the larger one in every column, whichever
+way round it sits, because "de 3 no puedo quitar 7" is TRUE and nobody gave
+them the move that makes it possible. This is not carelessness. It is a rule
+```
+
 ### oracle/skills/moves/transfer-probe.md
 
 ```
@@ -30527,6 +31027,26 @@ is a trick, not a skill; check it travels.
 1. Keep the STRUCTURE, change the CLOTHES: change we practiced with coins
 ```
 
+### oracle/skills/moves/value-not-appearance.md
+
+```
+---
+name: value-not-appearance
+description: Make how-many and how-much disagree in front of them
+strategies: [REMEDIATE]
+misconceptions: [bigger-coin-worth-more, more-coins-more-money, counts-coins-not-value]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: SEPARATE THE TWO QUESTIONS — cuántas, and cuánto.
+
+They are answering an easier question than the one asked. "How many are
+there" and "how big is it" are visible; "what is it worth" is not, so the eye
+answers first. Telling them value matters changes nothing — the two answers
+```
+
 ### oracle/skills/moves/worked-example-think-aloud.md
 
 ```
@@ -30545,6 +31065,26 @@ Solve one small problem yourself, narrating the DECISIONS, not just the steps.
 The learner can see WHAT you did from the numbers; what they cannot see is WHY.
 
 1. Pick a small, concrete problem in their world.
+```
+
+### oracle/skills/moves/write-both-endings.md
+
+```
+---
+name: write-both-endings
+description: Both endings written side by side before the choice is made
+strategies: [REMEDIATE]
+misconceptions: [ignores-downside]
+mastery_min: 0
+mastery_max: 1
+tiers: [1, 2, 3]
+priority: 7
+---
+Strategy for this turn: WRITE BOTH ENDINGS BEFORE CHOOSING.
+
+They choose by the prize alone — the good ending is the only one they have
+imagined. Telling them to be careful adds nothing. The missing step is that
+the other ending gets written down TOO, before the decision, not after it.
 ```
 
 ### oracle/speech.pregenerated.json
@@ -30695,16 +31235,16 @@ import {
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   praiseContradictsAnswer,
+  whiteboardCategoryMismatch,
+  whiteboardComparisonMismatch,
   whiteboardDoubledPeriodSteps,
+  whiteboardMarkedLineMismatch,
   whiteboardNumberMismatch,
   whiteboardUnitMismatch,
 } from '../tutor/prompt.js';
 
 /*
  * TWO MIRROR DEFECTS, BOTH FROM REAL SESSIONS.
- *
- * praiseContradictsAnswer: "¡Muy bien!" about a wrong answer, right one stated
- * in the same breath. contradictsCorrectAnswer: "¡Casi!" about a RIGHT answer,
 ```
 
 ### oracle/src/__tests__/controller.test.ts
@@ -30927,6 +31467,26 @@ const KID: SessionContext = {
   sessionId: '11111111-1111-4111-8111-111111111111',
 ```
 
+### oracle/src/__tests__/parkStore.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+/*
+ * `ws/parkStore.ts` in isolation — the shared half of a parked session
+ * (`RUNBOOK.md` Round 143).
+ *
+ * TWO halves, tested for different things. The LOCAL implementation is what
+ * `npm run dev` and every other suite in this repo actually run, so its
+ * contract is tested directly. The REDIS implementation is what PRODUCTION
+ * runs and what no other test in this repo can reach (everything else is under
+ * `isTestOrDev`), so it is exercised here through a mocked client — which is
+ * precisely why `redisPublishPark` and friends are exported on their own, the
+ * same seam and the same reasoning as `lib/lock.ts`'s `redisAcquireLock`.
+ *
+ * The Lua text itself was verified separately against a real Redis 7 container
+```
+
 ### oracle/src/__tests__/pedagogyGym.test.ts
 
 ```
@@ -31117,14 +31677,14 @@ import {
   nonceLedger,
   verifySessionToken,
 } from '../session/token.js';
-import { evaluateBudget } from '../session/budget.js';
+import {
+  evaluateBudget,
+  STAFF_HARD_BUDGET_MS,
+  STAFF_MAX_TURNS,
+  STAFF_SOFT_BUDGET_MS,
+} from '../session/budget.js';
 import { spendGuard } from '../session/spend-guard.js';
 import { getConfig, resetConfigCache } from '../env.js';
-import {
-  parseTurn,
-  sanitizePreferredTypes,
-  TutorTurnSchema,
-  whiteboardVisibleText,
 ```
 
 ### oracle/src/__tests__/skills.test.ts
@@ -31145,6 +31705,26 @@ const STRATEGIES: Strategy[] = [
   'DIRECT',
   'WORKED',
   'FADED',
+```
+
+### oracle/src/__tests__/snapshotFence.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { OrchestratorSnapshotSchema, TutorOrchestrator } from '../tutor/orchestrator.js';
+import { PedagogicalController } from '../tutor/controller.js';
+import { planSnapshot } from '../tutor/plan.js';
+import type { SessionContext } from '../core/client.js';
+import type { SpeechResult } from '../voice/speech.js';
+
+/*
+ * THE PARK SNAPSHOT'S COMPLETENESS FENCE.
+ *
+ * A parked session can now be adopted by a DIFFERENT replica, which means a
+ * conversation crosses a process boundary as plain JSON. `RUNBOOK.md` Round
+ * 142 named the exact hazard that makes this worth a dedicated suite, and
+ * declined to implement the migration until there was an answer to it: "a
+ * versioned snapshot/restore contract covering EVERY private field, INCLUDING
 ```
 
 ### oracle/src/__tests__/speech.test.ts
@@ -31703,8 +32283,8 @@ import { getConfig } from '../env.js';
  * call site, looks identical to ordinary load from inside any one session's
  * own ledger. This is the thing that watches the total instead.
  *
- * IN-PROCESS AND ROLLING, on purpose, matching `session/token.ts`'s
- * `NonceLedger` and `ws/server.ts`'s `parkedSessions`: Oracle is explicitly
+ * IN-PROCESS AND ROLLING, on purpose — and the reason is INDEPENDENCE, not
+ * convenience. A shared store (Redis, Postgres) would couple this breaker to
 ```
 
 ### oracle/src/session/token.ts
@@ -31788,41 +32368,41 @@ process.env.VOICE_PROVIDER ??= 'none';
 ### oracle/src/tutor/controller.ts
 
 ```
+import { z } from 'zod';
+import { STRATEGIES } from '../context/schema.js';
 import type { PedagogyState, Strategy } from '../context/schema.js';
 import type { KcState, SessionPlanEntry } from '../core/client.js';
 
 /*
- * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
+ * ── THE CONTROLLER'S HALF OF THE PARK SNAPSHOT ──────────────────────────────
  *
- * NOT a prompt — a policy. It receives state (the session plan Core computed,
- * the local mastery mirror, the events the server witnessed) and emits a
- * STRATEGY CODE per turn; the conversational layer only performs the matching
- * template. If the differentiation lived in the prompt, there would be no
- * product — this file is where "the intelligence lives upstream of the LLM"
- * becomes code.
- *
- * Deterministic and side-effect-free by construction, like plan.ts: every
- * decision here must be explainable to a parent later ("why did my child get
+ * A parked session can be adopted by a DIFFERENT replica (`ws/parkStore.ts`),
+ * so every mutable field below has to survive as plain JSON and come back
+ * IDENTICAL. This is the part /AGENTS.md §1.14 warns loudest about: a field
+ * silently left out of the snapshot restores as its constructor default,
+ * which looks like a perfectly healthy controller and is in fact a learner
+ * whose struggle the tutor has just forgotten. `snapshot-fence.test.ts`
+ * enumerates this class's real runtime fields and fails the moment one is
 ```
 
 ### oracle/src/tutor/orchestrator.ts
 
 ```
+import { z } from 'zod';
 import { getConfig } from '../env.js';
-import { sealContext, type SkillState, type Strategy, type TutorContext } from '../context/schema.js';
+import {
+  ADAPTATIONS,
+  sealContext,
+  SkillStateSchema,
+  TutorContextSchema,
+  type SkillState,
+  type Strategy,
+  type TutorContext,
+} from '../context/schema.js';
 import {
   buildPlan,
   noteConversationTurn,
-  planState,
-  recordDeclinedAdaptation,
-  recordGrade,
-  stuckInstruction,
-  type LessonPlan,
-} from './plan.js';
-import {
-  IDLE_NUDGE_MS,
-  LISTEN_SILENCE_MS,
-  PedagogicalController,
+  planFromSnapshot,
 ```
 
 ### oracle/src/tutor/pedagogyGym.ts
@@ -31868,6 +32448,7 @@ import type { SessionPlanEntry } from '../core/client.js';
 ### oracle/src/tutor/plan.ts
 
 ```
+import { z } from 'zod';
 import type { Adaptation, PlanState, TutorIntent } from '../context/schema.js';
 import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
 
@@ -31882,27 +32463,26 @@ import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
  * this file existed, "adaptivity" was one sentence in the system prompt asking
  * the model to notice when a learner was stuck twice; nothing counted, so
  * nothing noticed. Now the counting is arithmetic here, and the model is told
- * the state instead of being asked to reconstruct it.
 ```
 
 ### oracle/src/tutor/prompt.ts
 
 ```
 import type { TutorContext, Locale } from '../context/schema.js';
-import { EMOTIONS, ACTIONS, type WhiteboardSequence } from './turnSchema.js';
-import { computeSequence } from './whiteboard.js';
+import {
+  EMOTIONS,
+  ACTIONS,
+  type WhiteboardCategories,
+  type WhiteboardCompare,
+  type WhiteboardMarkedLine,
+  type WhiteboardSequence,
+} from './turnSchema.js';
+import { computeCategories, computeComparison, computeMarkedLine, computeSequence } from './whiteboard.js';
 import { fenceActivityContent } from '../safety/untrusted.js';
 
 /*
  * The pedagogical system prompt.
  *
- * Two structural rules, both load-bearing:
- *
- * 1. THE STATIC PART COMES FIRST AND NEVER VARIES. Forge learned this the
- *    expensive way — a provider's prefix cache only pays if the leading tokens
- *    are byte-identical across calls, and a prompt that interpolates the
- *    learner's nickname into paragraph one defeats it on every single turn.
- *    Everything learner-specific lives in the second message.
 ```
 
 ### oracle/src/tutor/scripted.ts
@@ -32145,6 +32725,26 @@ import { withTimeout } from '../lib/http.js';
  * `handleConnection` — but that leaves the handshake PATH itself unbounded:
 ```
 
+### oracle/src/ws/parkStore.ts
+
+```
+import { randomUUID } from 'node:crypto';
+import { isTestOrDev } from '../env.js';
+import { withTimeout } from '../lib/http.js';
+import { redisClient } from '../lib/redis.js';
+
+/*
+ * THE SHARED HALF OF A PARKED SESSION — what lets a dropped learner reconnect
+ * onto a DIFFERENT replica and keep the same lesson, the same transcript and
+ * the same ledger entry.
+ *
+ * ── WHY THIS EXISTS AT ALL ──────────────────────────────────────────────────
+ *
+ * `ws/server.ts`'s `parkedSessions` holds a dropped session's LIVE
+ * `TutorOrchestrator` and `SpeechScope` for `SESSION_RESUME_GRACE_MS`. That
+ * map is process memory, and `RUNBOOK.md` Round 142 established it was the
+```
+
 ### oracle/src/ws/protocol.ts
 
 ```
@@ -32169,6 +32769,7 @@ import type { WordTiming } from '../voice/provider.js';
 
 ```
 import type { IncomingMessage, Server } from 'http';
+import { z } from 'zod';
 import { getConfig } from '../env.js';
 import { WebSocketServer, type WebSocket } from 'ws';
 import { looksLikeSupabaseJwt, verifySessionToken } from '../session/token.js';
@@ -32180,9 +32781,8 @@ import {
   persistSafetyFlag,
   persistTurn,
   requestSegment,
+  SessionContextSchema,
   verifyGeneratedSegment,
-  voiceCheck,
-  type CloseReason,
 ```
 
 ### oracle/tsconfig.json

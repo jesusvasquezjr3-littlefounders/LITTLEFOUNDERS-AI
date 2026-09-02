@@ -650,6 +650,161 @@ export async function writeLearnerMemoryPair(input: {
   return written;
 }
 
+/*
+ * ─── THE GUARDIAN APPROVAL GATE (migration 0068, /ORACLE.md §20) ───────────
+ *
+ * `learner_memory` auto-wrote both stores for every learner, and /ORACLE.md
+ * §20 recorded that as the owner-accepted INTERIM while the platform's only
+ * active learner was the owner, BLOCKING before real families. This is the
+ * gate: for a `kid`, the LEARNER store's proposal parks as a pending row a
+ * verified guardian decides on. The PEDAGOGY store is not gated — it is the
+ * tutor's notes about its own teaching method, not a record of the child (the
+ * migration's own header argues this at length).
+ *
+ * Nothing here re-implements the write. An approval goes through
+ * `write_learner_memory_checked` (0059) — the same function 0061's pair
+ * wrapper calls — so the compare-and-swap, the verdict vocabulary and the
+ * append-only `learner_memory_ledger` row are literally the same code for a
+ * gated write and an ungated one.
+ */
+
+/** A parked LEARNER-store proposal awaiting a guardian's decision. */
+export interface LearnerMemoryProposalRow {
+  id: string;
+  user_id: string;
+  proposed: string;
+  expected_before: string | null;
+  session_id: string | null;
+  status: string;
+  decided_by: string | null;
+  decided_at: string | null;
+  created_at: string;
+}
+
+const PROPOSAL_COLUMNS =
+  'id,user_id,proposed,expected_before,session_id,status,decided_by,decided_at,created_at';
+
+/**
+ * Park a LEARNER-store proposal for guardian approval instead of applying it.
+ *
+ * The hashes are computed HERE, with the same `sha256` helper every ledger row
+ * already uses, and carried on the row — so when the proposal is later
+ * approved, the ledger entry it produces is byte-identical in shape to an
+ * ungated write's. Computing them in Postgres at approval time would need
+ * pgcrypto and would give the row a second, subtly different provenance.
+ *
+ * Returns false on ANY failure. The caller must refuse the whole request on
+ * false rather than continuing: a parked proposal that silently failed to land
+ * is a child's note that vanished, reported to Oracle as success (§1.14).
+ */
+export async function parkLearnerMemoryProposal(input: {
+  userId: string;
+  proposed: string;
+  expectedBefore: string | null;
+  sessionId: string | null;
+}): Promise<boolean> {
+  const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
+  const res = await serviceRest<unknown>('/learner_memory_proposals', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      user_id: input.userId,
+      proposed: input.proposed,
+      expected_before: input.expectedBefore,
+      before_hash: input.expectedBefore === null ? null : sha(input.expectedBefore),
+      after_hash: sha(input.proposed),
+      session_id: input.sessionId,
+    }),
+  });
+  return res !== null;
+}
+
+/**
+ * One learner's still-undecided proposals, oldest first — the guardian queue.
+ * `null` is a read failure and never an empty queue: the portal has to be able
+ * to say "we could not load this" instead of "there is nothing to review",
+ * which is the same claim with the opposite meaning for a parent.
+ */
+export async function listPendingLearnerMemoryProposals(
+  userId: string,
+  limit = 50,
+): Promise<LearnerMemoryProposalRow[] | null> {
+  return serviceRest<LearnerMemoryProposalRow[]>(
+    `/learner_memory_proposals?user_id=eq.${eu(userId)}&status=eq.pending` +
+      `&select=${PROPOSAL_COLUMNS}&order=created_at.asc&limit=${Math.min(limit, 200)}`,
+  );
+}
+
+/**
+ * One proposal by id, for the AUTHORIZATION step — the route has to learn
+ * WHOSE note this is before it can ask whether the caller is that child's
+ * verified guardian. `undefined` is "no such row", `null` is "the read
+ * failed"; a route that collapses them answers 404 to an outage.
+ */
+export async function getLearnerMemoryProposal(
+  proposalId: string,
+): Promise<LearnerMemoryProposalRow | null | undefined> {
+  const rows = await serviceRest<LearnerMemoryProposalRow[]>(
+    `/learner_memory_proposals?id=eq.${eu(proposalId)}&select=${PROPOSAL_COLUMNS}`,
+  );
+  if (rows === null) return null;
+  return rows[0];
+}
+
+/**
+ * The guardian's verdict — the claim and the apply in ONE transaction
+ * (migration 0068). The function answers with a word, not a boolean, and each
+ * one means something the guardian has to be told apart from the others:
+ *
+ *   'written' / 'unchanged'  approved, and the store now holds the note.
+ *   'rejected'               closed, the store did not move.
+ *   'conflict'               the store moved since this note was written, so
+ *                            nothing was applied and the row STAYS PENDING.
+ *   'not_pending'            already decided by someone (or something) else.
+ *
+ * `null` is a transport failure and is deliberately NOT folded into any of
+ * them: "we could not reach the database" and "your approval was refused
+ * because the note is stale" are different sentences for a parent (§1.14).
+ */
+export type LearnerMemoryDecisionOutcome =
+  | 'written'
+  | 'unchanged'
+  | 'rejected'
+  | 'conflict'
+  | 'not_pending';
+
+const DECISION_OUTCOMES: readonly string[] = [
+  'written',
+  'unchanged',
+  'rejected',
+  'conflict',
+  'not_pending',
+];
+
+export async function decideLearnerMemoryProposal(input: {
+  proposalId: string;
+  decidedBy: string;
+  verdict: 'approved' | 'rejected';
+}): Promise<LearnerMemoryDecisionOutcome | null> {
+  const outcome = await serviceRest<string>('/rpc/decide_learner_memory_proposal', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_proposal_id: input.proposalId,
+      p_decided_by: input.decidedBy,
+      p_verdict: input.verdict,
+      // The ledger's `actor` for an approved note. Deliberately different from
+      // `oracle-post-session-review`: reading the ledger back, a guardian-
+      // approved write and an auto-write must not look the same.
+      p_actor: 'guardian-approved-review',
+    }),
+  });
+  // A word this layer does not recognise is a failure, not a success. The
+  // function's vocabulary is closed; anything else means the two sides have
+  // drifted, and guessing which way is how a rejection becomes an approval.
+  if (outcome === null || !DECISION_OUTCOMES.includes(outcome)) return null;
+  return outcome as LearnerMemoryDecisionOutcome;
+}
+
 /**
  * Episodic recall: literal excerpts from this learner's own past sessions.
  * ~20 ms of GIN index, zero model cost — the only memory cheap enough for

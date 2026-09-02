@@ -90,8 +90,9 @@ decisions. There is no field for a link, a script or an exfiltrated context.
 **Never add a free-form field to that schema.** If a new capability needs one,
 it needs a design conversation, not a property. `whiteboard` (V4) is the
 precedent for how a real capability clears that bar without breaking it: every
-one of its three `kind`s (`sequence`; `compare` and `marked_line`, added once
-`sequence` was proven live) is a closed operator enum plus bounded numbers —
+one of its four `kind`s (`sequence`; then `compare`, `marked_line` and
+`categories`, added once `sequence` was proven live) is a closed operator enum
+or a bounded count of named things, plus bounded numbers —
 no freer than `demonstrate` already was — and its handful of prose sub-fields
 join the moderation call below rather than inventing a new free-text channel
 per kind.
@@ -324,16 +325,27 @@ in the wild gets added to `src/safety/canary.ts` after it is fixed, so it can
 never come back. It asserts **both directions** — a classifier that blocks
 everything passes the blocked half perfectly and destroys the product.
 
-**`npm run gym:pedagogy`** (V4 harness backlog, /ORACLE.md §20.6) is not in
-the list above — it is exploratory tooling for iterating on pedagogy, not a
-required pre-commit gate yet. It drives the real controller against REACTIVE
-simulated-student archetypes (each answers based on the strategy the
-controller just chose, unlike `verify:pedagogy`'s fixed scripts) and costs
-nothing — no network, no model. Run it after touching `controller.ts`,
-`skills.ts` or a skill file, alongside `verify:pedagogy`. It currently
-reports two genuine, already-documented findings (`pedagogyGym.test.ts`'s own
-`KNOWN_GAPS`, /ORACLE.md §20.6) — a nonzero exit today is expected until those
-land a fix, not a sign something in THIS run broke.
+**`npm run gym:pedagogy`** (V4 harness backlog, /ORACLE.md §20.6) **is now a
+required pre-commit gate** for Tutor pedagogy/controller changes, listed in
+AGENTS.md/CLAUDE.md §5 alongside `verify:pedagogy` (promoted 2026-09-01). It
+drives the real controller against REACTIVE simulated-student archetypes —
+each answers based on the strategy the controller just chose, unlike
+`verify:pedagogy`'s fixed scripts, which is exactly what lets it find
+guardrail faults that only appear when the learner ADAPTS — and costs nothing:
+no network, no model, just the controller's own arithmetic. Run it after
+touching `controller.ts`, `skills.ts` or a skill file, alongside
+`verify:pedagogy`.
+
+**It exits 0 today, and a nonzero exit is now a real failure.** That is the
+whole reason it could be promoted. This paragraph previously said the
+opposite — "not a required pre-commit gate yet", with a standing nonzero exit
+"expected" against two documented `KNOWN_GAPS` — and both halves outlived the
+state they described: those two gaps were fixed (§20.6, RUNBOOK Round 140 and
+the mastery-revocation change), `KNOWN_GAPS` is EMPTY, and the run is clean
+across all four archetypes. A tolerated red gate is indistinguishable from a
+broken one, so a gate that is allowed to fail teaches everyone to ignore it;
+promoting it is what makes the next regression it catches actually stop a
+commit.
 
 ---
 
@@ -1817,6 +1829,26 @@ land a fix, not a sign something in THIS run broke.
    same window reopens with a write path that still looks correct. See
    `RUNBOOK.md` Round 75.
 
+   **THE SAME CALL NOW HAS A THIRD OUTCOME (2026-09-01, migration
+   `0068`).** `/ORACLE.md` §20's parental approval gate — the last item
+   that document marked BLOCKING before family rollout — means the
+   LEARNER store's proposal PARKS for a verified guardian when the
+   learner is a `kid`, so it is correctly absent from `written`: it was
+   not written. It did not FAIL either, and `updateLearnerMemory`
+   already treats an absent PROPOSED store as a failed write (round 28,
+   correctly). Core therefore answers `pending: ['learner']` alongside
+   `written`, and this client counts a parked store as landed while
+   logging it distinctly. Without that field the one message that would
+   tell an operator the gate had stopped working — "learner memory
+   write did not land" — would be firing constantly for the HEALTHY
+   case, on every kid session, forever. `pending` is `.optional()` on
+   the wire because Core and Oracle deploy independently; an older
+   Core simply never sends it. Nothing else in Oracle changes: the
+   review still proposes both stores, still sends `expectedBefore`, and
+   still lets the next session's review try again on a real failure.
+   The PEDAGOGY store is not gated for anyone — it is the tutor's notes
+   about its own method, not a record of the child.
+
 64. **`serveSegment()` and `deliver()` are mutually recursive, and
    nothing counted the trips — one learner utterance could re-enter an
    empty content ladder forever.** Found in passing by round 74, closed
@@ -2123,7 +2155,8 @@ land a fix, not a sign something in THIS run broke.
    many rows it actually touched. See `RUNBOOK.md` Round 98.
    **The double-review half RESOLVED, 2026-09-01 — the naive fix
    ("the loser skips") would have been WRONG.** The cost-reconciliation
-   half above is unchanged, still not attempted. But the loser of the
+   half above is now RESOLVED AS A DECISION rather than left open — see the
+   note at the end of this item (2026-09-01). But the loser of the
    `closeSession` race is `finish()`, and `finish()`'s snapshot is the
    MORE complete one here — `finalizeParked` fires the instant its timer
    expires, `finish()` only reaches this point after the busy turn has
@@ -2140,6 +2173,44 @@ land a fix, not a sign something in THIS run broke.
    is precisely the moment that `finally`-chain guarantee runs out of
    event loop to keep. See `ws/server.ts`'s `finalizeParked`/`finish()`
    and the round-98 tests in `live-session.test.ts`.
+
+   **THE COST HALF, RESOLVED 2026-09-01 — as a decision NOT to reconcile,
+   plus the observability that was actually missing.** Reconciliation was
+   investigated properly rather than carried forward a third time, and the
+   answer is that it is not worth its risk: `add_tutor_session_cost`
+   (migration `0062`) is additive with NO idempotency key, so a correcting
+   write that cannot PROVE the first one missed double-counts. Over-counting
+   is strictly worse than under-counting here, because `cost_usd`'s one real
+   job is noticing a session that cost ten times the normal amount, and a
+   double-count fires that signal falsely. Sizing the thing being protected:
+   the loss is the delta between `finalizeParked`'s snapshot and `finish()`'s
+   — roughly **$0.002–$0.02**, on a path that needs a turn to outlast a
+   90-second grace window — and `cost_usd` is written by exactly this path
+   and read by NOTHING (no route returns it, no UI renders it, nothing bills
+   from it). The money is not lost from view regardless: `spendGuard.record()`
+   fires inside `addModelCost`/`addVoiceCost` at the MOMENT OF SPEND, so every
+   dollar already counts against the daily ceiling whether or not the row ever
+   hears about it. **Revisit this the moment anything READS `cost_usd`** — a
+   parent-facing figure, a per-family cap, an internal chargeback — because an
+   over-count becomes a real defect then, while an under-count stays an
+   estimate error.
+
+   **What WAS wrong and is now fixed is the other half of the race.**
+   `finish()` has warned loudly on both `already-closed` and `failed` since
+   round 98; `finalizeParked` did a bare `void closeSession({...})` and read
+   its outcome NOWHERE. So when THIS side was the one that failed — Core
+   unreachable, a 5xx, a malformed envelope — the session's `ended_at`,
+   `close_reason` and entire cost were silently never written, and the only
+   trace was a row that stays open until the retention sweep reaps it. That is
+   the same "failure collapsed into emptiness" shape (§1.14) this very item
+   was opened about, hiding in the half nobody had instrumented, and it is why
+   the loud-warning fix only ever half-landed. Both outcomes now warn, naming
+   the session and the unrecorded dollar figure so a manual reconciliation is
+   possible at all. The round-98 race test also asserted the close COUNT and
+   REASON while never once looking at the cost — the actual subject of the
+   open follow-up — so it now pins the ledger half too, and the journal type
+   it asserts through had simply never declared `costUsd` even though the wire
+   body always carried it.
 
 72. **A surface with no character-rendering layer of its own does not get
    to borrow one — it has to be TOLD who to portray, by whatever
@@ -2447,7 +2518,13 @@ land a fix, not a sign something in THIS run broke.
    until then, verify the deployment rather than the code, and when a
    fix does become due, ask what an existing helper's failure semantics
    were built for before reusing it for something with different stakes.
-   See `RUNBOOK.md` Round 119.
+   See `RUNBOOK.md` Round 119. **Now fully closed — see item 83 and
+   `RUNBOOK.md` Round 143 for the last structure, `parkedSessions`.
+   Superseded in part by item 82:** the fix
+   did become due (Round 132 closed two of the four), and the "move the
+   whole class together" framing above turned out to be wrong about the
+   remaining two — one of them was never a blocker at all, and the other
+   is not a store swap.
 
 80. **"Imperfect but still teaches something new" is not true of a promise
    with nothing behind it — item 21's own list of safe-to-deliver examples
@@ -2531,6 +2608,91 @@ land a fix, not a sign something in THIS run broke.
    the entire time; the bug was that a second, more-authoritative source of
    progress existed and was never consulted.
 
+82. **A "class of in-process state" is a convenient label, not a finding —
+   price each member separately before committing to migrate them
+   together, because the cheapest one may already be correct and the
+   dearest one may not be a migration at all.** Item 79 and Round 119
+   named four structures and committed to moving them "together" before
+   Oracle could ever run N>1 replicas; Round 132 moved two onto
+   `lib/lock.ts` and left the other two as one open follow-up. Judged
+   individually on 2026-09-01 (Round 142), they were three different
+   answers, none of them the one the shared label implied.
+   `SpeechScope.inFlight` was NOT a blocker and never had been: it has
+   exactly one production constructor and one production consumer, both
+   bound to a single WebSocket, and a socket cannot span processes — so
+   every caller that can race on a key in it is already co-located. Worse,
+   making it shared (the obvious way to "close" it) is a PRIVACY
+   regression, because a non-reusable clip is stored in the SESSION bucket
+   under the leader's own session id, so a follower in another session
+   receives another child's audio on that child's retention clock. It is
+   now fenced by a test that was confirmed RED against exactly that
+   change, and no other test in the suite noticed. `inFlightShared` IS
+   per-process, and measuring it ended the argument: with the shipped
+   `SPEECH_CACHE_SCOPE=scripted` the reusable class is the closed
+   catalogue — 144 keys, 16,697 characters, **$0.0835 in total, once** —
+   so the entire cost of leaving it is $0.0835 x (N-1) on a cold cache,
+   against a "fix" that must either make a follower WAIT (latency on the
+   one feature where latency is the product), not wait (today's behaviour
+   plus a Redis round trip), or fail closed (silence, to save a cent, in a
+   module whose contract is "a lost voice costs the sound, not the
+   lesson"). The real remedy was an operator action already built and
+   simply un-run — `speech:pregenerate` takes it to $0.00 on every replica
+   — which no amount of locking would have found. Only `parkedSessions`
+   remains, and it is not a store swap: live closures, a nested controller,
+   unsettled paid-TTS Promises whose cost has not yet reached the ledger,
+   and a timer whose firing performs writes. General lesson, in three
+   parts: a grouped follow-up hides the fact that its members have
+   different costs, different fixes and sometimes no defect at all, so
+   split it before you schedule it; put a NUMBER on the exposure before
+   reaching for a mechanism, because $0.0835-once does not buy a
+   distributed lock on a latency-critical path; and when a structure looks
+   like it needs sharing, check whether sharing it would be actively
+   wrong before checking how to share it. See `RUNBOOK.md` Round 142 and
+   `/ORACLE.md` §16.
+
+83. **State that crosses a process boundary must be covered by a fence the
+   COMPILER or a test enforces, not by the diligence of whoever adds the
+   next field — because the failure mode of an incomplete snapshot is a
+   session that looks completely healthy.** Round 142 declined to migrate
+   `parkedSessions` and named exactly why: "a versioned snapshot/restore
+   contract covering EVERY private field, INCLUDING ONES FUTURE ROUNDS
+   ADD — a field silently omitted looks correct on the first resume." That
+   is the whole difficulty, and it is not a difficulty about serialization.
+   An omitted field restores as its constructor default, and every
+   constructor default here is a plausible value: a learner's failure
+   streak reads as zero, a strategy reads as `DIRECT`, the set of
+   once-per-session skills already spent reads as empty. Nothing throws,
+   no gate fires, and the tutor simply forgets a child's struggle on
+   reconnect in a way nothing downstream can distinguish from a child who
+   had not struggled yet. What unblocked the migration (Round 143) was not
+   more care, it was noticing that TypeScript's `private` is erased at
+   compile time: `Object.keys()` on a live instance returns every field,
+   parameter properties and declared-but-unassigned ones included, so a
+   test can DERIVE the class's real shape and require each field to be
+   either snapshotted or named in an exclusion list with a written reason.
+   Adding a field without deciding is then a red build rather than a quiet
+   regression — confirmed by injecting one into each class and watching it
+   go red. The same move applied twice more in the same round, because the
+   shape recurs wherever two declarations of one thing must agree: a Zod
+   schema and the wire type it mirrors were pinned to each other with a
+   type-level equality assertion (drift is now a compile error, not a
+   `.strict()` rejection discovered later by whichever replica failed to
+   adopt), and the record is validated at PUBLISH time as well as on read,
+   so a record this deploy cannot write correctly is caught in the log of
+   the process that produced it. General lesson: when correctness depends
+   on an enumeration staying complete, do not write the enumeration twice
+   and hope — derive one side from the thing itself, and make disagreement
+   fail a gate. Corollary that cost the least and matters as much: a
+   comment justifying a design with "X is true today" is a dependency on
+   X, so when X stops being true, grep for the premise rather than only
+   for the code. Round 143 changed one deployment fact and found four
+   comments (`spend-guard.ts`, `env.ts`, `voice/speech.ts`, `ws/server.ts`)
+   still reasoning from it — one of which, the daily spend ceiling, hid a
+   real consequence nobody had stated: it is IN-PROCESS on purpose, so at N
+   replicas the effective ceiling is N times the configured number and
+   scaling out requires dividing it. See `RUNBOOK.md` Round 143 and
+   `/ORACLE.md` §16.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
@@ -2541,13 +2703,32 @@ land a fix, not a sign something in THIS run broke.
 - `SESSION_HARD_BUDGET_MS` must exceed `SESSION_SOFT_BUDGET_MS` or startup
   fails — a hard stop at or before the soft close means the session dies
   mid-sentence every time.
+- **The staff USAGE exemption (owner request, 2026-09-01) is NOT an env var
+  and deliberately not configurable.** `admin`/`superadmin` sessions read
+  `STAFF_HARD_BUDGET_MS` (8 h), `STAFF_SOFT_BUDGET_MS` (7 h 45 m) and
+  `STAFF_MAX_TURNS` (5,000) from `session/budget.ts` instead of the three
+  config values above, selected by one derived boolean (`isStaff`) that Core
+  puts on the `.strict()` session context beside `isMinor`. `optional()` on
+  this side, so an Oracle deployed ahead of Core reads its absence as
+  `false` — a staff member briefly getting a learner's budget, never the
+  reverse. Three things about it are load-bearing. (1) It swaps THRESHOLDS
+  inside the one reducer rather than short-circuiting to `running`, so
+  `wrapping` and both `ended` reasons stay reachable for exactly the accounts
+  used to test them — the `TRANSFER`-was-dead-code shape (item 79's
+  neighbourhood) applied to a state machine. (2) It is finite: the hard
+  budget is the only thing that closes a session nobody is sitting in front
+  of, and staff have no session cap either. (3) It does NOT touch the
+  platform-wide spend ceiling, moderation, consent, or the §1.9 boundary —
+  usage is not safety, and extending it to any of those is a bug rather than
+  an extension. `/ORACLE.md` §15 has the full record; `verify:tutor` proves
+  the flag never reaches the model context.
 - No provider key is required to boot. Oracle starts, serves `/health`, and
   logs loudly about what it cannot do. A silent degraded start is how a
   deployment serves text-only sessions for a week before anyone notices.
 
 ## V4 — the harness subsystems (2026-08-29)
 
-- **Skills (`skills/moves/*.md`)** are code: reviewed through pull requests (that IS the §15.1 approval gate), parsed at boot with a loud failure (a malformed file fails deploy, never a turn), body hard-capped at 1,600 chars. A skill listing `misconceptions` is reachable ONLY through them — never through generic strategy selection. Every strategy×tier must resolve to a skill; `verify:pedagogy` and `skills.test.ts` enforce it. A skill flagged `once_per_session: true` in its own frontmatter (today, only `counterexample-confront`) is fenced out of `selectSkill` once `TutorOrchestrator.usedSkillNames` already holds its name — found live via `tutor:converse`: a learner who failed the same skill four times in one session got the identical "ONE per session, ever" confrontation all four times, because selection was a pure function of the turn's own strategy/tier/misconception with no memory of what it had already returned. Writing "once, ever" in a skill body is not enough; it must be checked.
+- **Skills (`skills/moves/*.md`)** are code: reviewed through pull requests (that IS the §15.1 approval gate), parsed at boot with a loud failure (a malformed file fails deploy, never a turn), body hard-capped at 1,600 chars. A skill listing `misconceptions` is reachable ONLY through them — never through generic strategy selection. Every strategy×tier must resolve to a skill; `verify:pedagogy` and `skills.test.ts` enforce it. A skill flagged `once_per_session: true` in its own frontmatter (today, only `counterexample-confront`) is fenced out of `selectSkill` once `TutorOrchestrator.usedSkillNames` already holds its name — found live via `tutor:converse`: a learner who failed the same skill four times in one session got the identical "ONE per session, ever" confrontation all four times, because selection was a pure function of the turn's own strategy/tier/misconception with no memory of what it had already returned. Writing "once, ever" in a skill body is not enough; it must be checked. **Every cataloged misconception code must be named by at least one skill, and no skill may name a code that is not cataloged** — both halves are asserted in CI against the REAL seed file and the REAL skill directory (`backend/src/__tests__/tutorCurator.test.ts`), because `curate:tutor-skills` only REPORTS coverage and a code with no skill falls silently through to the generic remediation with every other gate green. The catalogue went from covering 1 of 31 codes to 31 of 31 on 2026-09-01 (/ORACLE.md §20.6); if you add a misconception to `database/seeds/kc_graph.v1.json`, you write its skill in the SAME commit. Group by the didactic MANEUVER, not one file per code: the per-code wording already reaches the model as `misconceptionHint`, so a skill body is the procedure, and 31 codes are covered by 22 files.
 **"Checked" also means checked at the right MOMENT** (found 2026-08-30,
 MEDIUM): `usedSkillNames` is documented as names already DELIVERED, but a
 skill used to be added to it at SELECTION time, before the model call even
@@ -2559,6 +2740,6 @@ with `emission.source === 'model'`. See `RUNBOOK.md`.
 - **`learnerBrief`** renders as the tutor's OWN notes, never as the learner's words — text derived from a child's speech must never be readable as instructions. Any change to what reaches the model still walks the full §4.1 chain (schema, ORACLE.md, legal review, the field-count test).
 - **Episodic recall** triggers on a CLOSED phrase list only — no model ever decides whether to look — and failure degrades to the turn we had before.
 - **The grace turn** (`closeGraceUsed`) is minted exactly once per session; the turn after it closes scripted no matter what the model did.
-- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()`, `whiteboardUnitMismatch()` and `whiteboardNumberMismatch()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all. `whiteboardNumberMismatch()` catches the narrowest of the three: `say` and `whiteboard` each individually well-formed, but disagreeing on the actual running totals — `start` silently absorbing a period's worth of growth the narration had already attributed to "after the first period" (item 56), or to a later concluding "so"/"entonces"/"então" total following an explicit period count, the same defect confirmed live again under a different phrasing the next day (item 58). `WhiteboardSchema` is a `z.discriminatedUnion('kind', ...)`; `compare` and `marked_line` are two more kinds (two static quantities side by side; values placed on a line between two references), and `categories` (`{categories: [{label, value}] (2-6), label, currency}`) generalizes `compare` from a fixed two sides to 2-6 named things at one instant — the first bounded slice of "UI generativa acotada" (blueprint §10.4) — each dispatched through its own `compute*` function in `whiteboard.ts`, wired into `whiteboardComputesOk`'s and `toWireWhiteboard`'s per-kind switches, and each with its OWN render component in `TutorWhiteboard.tsx` (`compare`/`marked_line`/`categories` all render fully immediately, no grow-in reveal — a snapshot, not a process, unlike `sequence`). None of the three has detectors of its own yet (see ORACLE.md §20.5's full writeup for why: every existing detector above was built from a REPRODUCED live defect, and none of the three has one yet to build from).
-- **Trajectory emission and the simulated-student gym** (2026-09-01, /ORACLE.md §20.7) — `TutorOrchestrator.trajectorySteps` accumulates one entry per real `decide()` call (plain in-memory push, no I/O), flushed as ONE batch by `session/trajectory.ts` from the same fire-and-forget seam `runPostSessionReview` uses. New table `tutor_trajectory_step` (migration `0066`), new route `POST /tutor/internal/trajectory` (backend), service-role-only RLS (no client reader exists). `npm run gym:pedagogy` (`src/tutor/pedagogyGym.ts`) drives the real controller against REACTIVE simulated students — each reacts to the strategy the controller just chose, unlike `verify:pedagogy`'s fixed scripts — and found two real gaps in the shipped controller on its first run (`pedagogyGym.test.ts`'s `KNOWN_GAPS`): difficulty could rise the turn right after a failure when the recovery strategy was an ordinary one rather than a support strategy, and a persistently (but consistently) slow-and-correct learner was eventually promoted because `answeredHesitantly`'s median was unbounded and self-inclusive. Both named, not silently tolerated, the day they were found. **RUNBOOK.md Round 140 (2026-09-01) fixed the first fully** — `decide()`'s default difficulty case now holds at `lastDifficulty` (this controller's own memory of the learner) instead of resetting to the plan's authored target, distinguished from a legitimate content-ladder substitution via a new `lastDifficultyFromContent` flag — and **fixed the second's ROOT MECHANISM while re-diagnosing its actual failure mode as bigger than first described**: `LATENCY_BASELINE_SIZE` now freezes each KC's latency baseline at its first 3 measurements, but instrumenting the real controller showed the gym's "fragile hesitant" archetype is promoted using only its first three (genuinely fast) turns, before its slow phase ever reaches a live KC to evaluate — not "the check gets defeated by accumulated data" but "can a mastery decision ever be reconsidered once later evidence contradicts it," a mechanism this codebase has nowhere today and which raising `MASTERY_MIN_OPPORTUNITIES` cannot honestly answer (it already sits at the top of the blueprint's own cited range). `KNOWN_GAPS` now names only that one, more precisely.
+- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()`, `whiteboardUnitMismatch()`, `whiteboardNumberMismatch()` and `whiteboardDoubledPeriodSteps()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all. `whiteboardNumberMismatch()` catches the narrowest of the three: `say` and `whiteboard` each individually well-formed, but disagreeing on the actual running totals — `start` silently absorbing a period's worth of growth the narration had already attributed to "after the first period" (item 56), or to a later concluding "so"/"entonces"/"então" total following an explicit period count, the same defect confirmed live again under a different phrasing the next day (item 58). `WhiteboardSchema` is a `z.discriminatedUnion('kind', ...)`; `compare` and `marked_line` are two more kinds (two static quantities side by side; values placed on a line between two references), and `categories` (`{categories: [{label, value}] (2-6), label, currency}`) generalizes `compare` from a fixed two sides to 2-6 named things at one instant — the first bounded slice of "UI generativa acotada" (blueprint §10.4) — each dispatched through its own `compute*` function in `whiteboard.ts`, wired into `whiteboardComputesOk`'s and `toWireWhiteboard`'s per-kind switches, and each with its OWN render component in `TutorWhiteboard.tsx` (`compare`/`marked_line`/`categories` all render fully immediately, no grow-in reveal — a snapshot, not a process, unlike `sequence`). **All three gained drift detectors on 2026-09-01** (owner request, reversing the position this line used to record): `whiteboardComparisonMismatch()`, `whiteboardMarkedLineMismatch()` and `whiteboardCategoryMismatch()`, same file, same deterministic repair loop, same fail-open discipline — a board its own `compute*` function refuses produces NO opinion, and the orchestrator buckets all four kinds' contradictions together as `boardContradiction` (never delivered; scripted line if the retry does not land), for `whiteboardNumberMismatch`'s own reason: a screen and a sentence disagreeing in front of a child teaches something false. Unlike every detector above them, these three were NOT built from a reproduced live defect — none exists — and ORACLE.md §20.5 says so in the open rather than implying evidence there is not. What makes them safe without one is structural: these kinds NAME THEIR OWN PARTS, so the anchor is the model's own label plus a copula plus a number rather than a guess at what a number in prose refers to; and only ASSERTIONS are read (`assertionClauses` drops every question clause first, because a Socratic tutor's most likely sentence is exactly the one a naive check would misread as a claim). Each documents what it refuses to judge — a superlative over 2-6 bars, a gap on a 3-or-4-mark line, a turn calling BOTH compare sides bigger — and those stay open until a transcript shows the wording.
+- **Trajectory emission and the simulated-student gym** (2026-09-01, /ORACLE.md §20.7) — `TutorOrchestrator.trajectorySteps` accumulates one entry per real `decide()` call (plain in-memory push, no I/O), flushed as ONE batch by `session/trajectory.ts` from the same fire-and-forget seam `runPostSessionReview` uses. New table `tutor_trajectory_step` (migration `0066`), new route `POST /tutor/internal/trajectory` (backend), service-role-only RLS (no client reader exists). `npm run gym:pedagogy` (`src/tutor/pedagogyGym.ts`) drives the real controller against REACTIVE simulated students — each reacts to the strategy the controller just chose, unlike `verify:pedagogy`'s fixed scripts — and found two real gaps in the shipped controller on its first run (`pedagogyGym.test.ts`'s `KNOWN_GAPS`): difficulty could rise the turn right after a failure when the recovery strategy was an ordinary one rather than a support strategy, and a persistently (but consistently) slow-and-correct learner was eventually promoted because `answeredHesitantly`'s median was unbounded and self-inclusive. Both named, not silently tolerated, the day they were found. **RUNBOOK.md Round 140 (2026-09-01) fixed the first fully** — `decide()`'s default difficulty case now holds at `lastDifficulty` (this controller's own memory of the learner) instead of resetting to the plan's authored target, distinguished from a legitimate content-ladder substitution via a new `lastDifficultyFromContent` flag — and **fixed the second's ROOT MECHANISM while re-diagnosing its actual failure mode as bigger than first described**: `LATENCY_BASELINE_SIZE` now freezes each KC's latency baseline at its first 3 measurements, but instrumenting the real controller showed the gym's "fragile hesitant" archetype is promoted using only its first three (genuinely fast) turns, before its slow phase ever reaches a live KC to evaluate — not "the check gets defeated by accumulated data" but "can a mastery decision ever be reconsidered once later evidence contradicts it," a mechanism this codebase has nowhere today and which raising `MASTERY_MIN_OPPORTUNITIES` cannot honestly answer (it already sits at the top of the blueprint's own cited range). `KNOWN_GAPS` now names only that one, more precisely. **CLOSED 2026-09-01 by owner decision, and `KNOWN_GAPS` is now EMPTY:** mastery is RECONSIDERED rather than declared once — `masteryRevokedKcIds` takes a promotion back when the same KC's `review_due` re-encounter produces a wrong answer or a hesitant-but-correct one, exposed as `revokedMasteryKcIds`. Three parts of that are load-bearing and each was a real fork. (1) It REVOKES rather than withholds, because withholding means a confirming check in front of `advanceEntry()` — the only thing that moves the plan pointer — which item 81's own neighbourhood already rejected as a stall risk; revocation is strictly additive to forward motion. (2) The FIXTURE was half the defect: the archetype's single-entry plan went dormant before its slow phase produced any turn, so the gap was partly unreachable by the run reporting it, and the scenario now carries the `review_due` second entry that is the real shape of a KC coming back. (3) It is bounded to ONCE per KC, because unbounded it grew the mirror-image defect — re-firing every turn pinned the opportunity count below the promotion floor permanently, and the gym printed `CELEBRATE` then SPACED thirteen times: a learner correct on every turn, never promoted. After one revocation, sustained correctness re-earns mastery even at the slower pace, which is a pedagogical position and not a threshold tweak — we check fragility once, teach more, then believe the child rather than holding them to a speed they may not have. Pinned by three `controller.test.ts` tests and by the gym's rewritten `extraCheck`, which is itself asserted against BOTH the promoted-and-revoked and promoted-and-stood shapes so a check that fired on the fixed behaviour would fail rather than look green.
 

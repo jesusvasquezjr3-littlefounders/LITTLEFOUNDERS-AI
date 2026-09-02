@@ -5,7 +5,12 @@ import {
   nonceLedger,
   verifySessionToken,
 } from '../session/token.js';
-import { evaluateBudget } from '../session/budget.js';
+import {
+  evaluateBudget,
+  STAFF_HARD_BUDGET_MS,
+  STAFF_MAX_TURNS,
+  STAFF_SOFT_BUDGET_MS,
+} from '../session/budget.js';
 import { spendGuard } from '../session/spend-guard.js';
 import { getConfig, resetConfigCache } from '../env.js';
 import {
@@ -151,6 +156,85 @@ describe('the session budget', () => {
   it('is a pure function — the same input always gives the same verdict', () => {
     const input = { startedAtMs: start, nowMs: start + 5_000, turnCount: 3 };
     expect(evaluateBudget(input, config)).toEqual(evaluateBudget(input, config));
+  });
+
+  /*
+   * THE STAFF USAGE EXEMPTION (owner request, 2026-09-01).
+   *
+   * Staff test the product past the bounds a learner lives inside. These
+   * assert the exemption is real, that it is NOT infinite, and — the one a
+   * careless implementation breaks — that omitting the flag still gives a
+   * learner the learner's budget.
+   */
+  describe('the staff exemption', () => {
+    it('keeps a staff session RUNNING well past the learner hard budget', () => {
+      const verdict = evaluateBudget(
+        {
+          startedAtMs: start,
+          nowMs: start + config.SESSION_HARD_BUDGET_MS + 60_000,
+          turnCount: 20,
+          isStaff: true,
+        },
+        config,
+      );
+      expect(verdict.state).toBe('running');
+    });
+
+    it('keeps a staff session running past the learner TURN cap', () => {
+      const verdict = evaluateBudget(
+        { startedAtMs: start, nowMs: start + 1_000, turnCount: config.SESSION_MAX_TURNS, isStaff: true },
+        config,
+      );
+      expect(verdict.state).toBe('running');
+    });
+
+    it('is NOT unlimited — an abandoned staff session still ends, which is the whole point of a finite ceiling', () => {
+      const verdict = evaluateBudget(
+        { startedAtMs: start, nowMs: start + STAFF_HARD_BUDGET_MS, turnCount: 20, isStaff: true },
+        config,
+      );
+      expect(verdict.state).toBe('ended');
+      expect(verdict.reason).toBe('hard_budget');
+    });
+
+    it('still ends a staff session on its own turn cap', () => {
+      const verdict = evaluateBudget(
+        { startedAtMs: start, nowMs: start + 1_000, turnCount: STAFF_MAX_TURNS, isStaff: true },
+        config,
+      );
+      expect(verdict.state).toBe('ended');
+      expect(verdict.reason).toBe('turn_cap');
+    });
+
+    it('still WRAPS before it ends — staff must be able to reach the goodbye state they are testing', () => {
+      const verdict = evaluateBudget(
+        { startedAtMs: start, nowMs: start + STAFF_SOFT_BUDGET_MS, turnCount: 20, isStaff: true },
+        config,
+      );
+      expect(verdict.state).toBe('wrapping');
+      expect(verdict.reason).toBe('soft_budget');
+    });
+
+    it('gives the wind-down the same real fifteen minutes a learner gets, not a proportional slice', () => {
+      expect(STAFF_HARD_BUDGET_MS - STAFF_SOFT_BUDGET_MS).toBe(15 * 60_000);
+    });
+
+    it('OMITTING the flag is a learner budget — the exemption is asked for, never inherited', () => {
+      const verdict = evaluateBudget(
+        { startedAtMs: start, nowMs: start + config.SESSION_HARD_BUDGET_MS, turnCount: 20 },
+        config,
+      );
+      expect(verdict.state).toBe('ended');
+      expect(verdict.reason).toBe('hard_budget');
+    });
+
+    it('isStaff: false is a learner budget too', () => {
+      const verdict = evaluateBudget(
+        { startedAtMs: start, nowMs: start + config.SESSION_HARD_BUDGET_MS, turnCount: 20, isStaff: false },
+        config,
+      );
+      expect(verdict.state).toBe('ended');
+    });
   });
 });
 

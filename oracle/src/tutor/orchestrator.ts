@@ -1,8 +1,20 @@
+import { z } from 'zod';
 import { getConfig } from '../env.js';
-import { sealContext, type SkillState, type Strategy, type TutorContext } from '../context/schema.js';
+import {
+  ADAPTATIONS,
+  sealContext,
+  SkillStateSchema,
+  TutorContextSchema,
+  type SkillState,
+  type Strategy,
+  type TutorContext,
+} from '../context/schema.js';
 import {
   buildPlan,
   noteConversationTurn,
+  planFromSnapshot,
+  planSnapshot,
+  PlanSnapshotSchema,
   planState,
   recordDeclinedAdaptation,
   recordGrade,
@@ -10,6 +22,7 @@ import {
   type LessonPlan,
 } from './plan.js';
 import {
+  ControllerSnapshotSchema,
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
   PedagogicalController,
@@ -36,6 +49,9 @@ import {
   whiteboardUnitMismatch,
   whiteboardNumberMismatch,
   whiteboardDoubledPeriodSteps,
+  whiteboardCategoryMismatch,
+  whiteboardComparisonMismatch,
+  whiteboardMarkedLineMismatch,
   echoesEarlierTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
@@ -47,7 +63,7 @@ import {
 } from './prompt.js';
 import { selectSkill } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
-import { parseTurn, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
+import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
 import { whiteboardComputesOk } from './whiteboard.js';
 import {
   closingResponse,
@@ -214,6 +230,71 @@ export interface Synthesizer {
   (turn: TutorTurn, session: SessionContext): Promise<SpeechResult>;
 }
 
+/**
+ * Bumped whenever the shape below changes in a way an older or newer replica
+ * could misread. A record whose version is not this one is REFUSED rather
+ * than best-effort restored (`ws/server.ts`'s adopt path), because a
+ * partially-understood conversation is indistinguishable from a healthy one
+ * right up until a transcript row or a dollar goes missing.
+ */
+export const ORCHESTRATOR_SNAPSHOT_VERSION = 1;
+
+const TrajectoryStepSchema = z
+  .object({
+    turnSeq: z.number().int(),
+    eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'entry_opened']),
+    strategyBefore: z.string(),
+    strategy: z.string(),
+    skillName: z.string().nullable(),
+    scaffolding: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+    difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
+    pKnown: z.number().nullable(),
+    misconceptionCode: z.string().nullable(),
+    kcId: z.string().nullable(),
+    kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
+  })
+  .strict();
+
+/**
+ * A park record read back out of a shared store is an INPUT, so it is
+ * Zod-validated at the edge like every other one (/AGENTS.md §1.6) — and
+ * `.strict()`, so a record written by a replica running different code is
+ * rejected outright instead of being restored with whatever happens to line
+ * up. "Reject, don't coerce silently" matters more here than almost anywhere
+ * else in the service: the thing being coerced would be a child's lesson.
+ */
+export const OrchestratorSnapshotSchema = z
+  .object({
+    version: z.literal(ORCHESTRATOR_SNAPSHOT_VERSION),
+    history: z.array(z.object({ speaker: z.enum(['learner', 'tutor']), text: z.string() }).strict()),
+    seq: z.number().int().min(0),
+    modelUsd: z.number().min(0),
+    voiceUsd: z.number().min(0),
+    paidSyntheses: z.number().int().min(0),
+    freeSyntheses: z.number().int().min(0),
+    discardedSyntheses: z.number().int().min(0),
+    segmentCount: z.number().int().min(0),
+    adaptations: z.array(z.enum(ADAPTATIONS)),
+    stopped: z.boolean(),
+    lastTurn: z.object({ turn: TutorTurnSchema, seq: z.number().int() }).strict().nullable(),
+    lastOfferedAdaptation: z.enum(ADAPTATIONS).nullable(),
+    closeGraceUsed: z.boolean(),
+    plan: PlanSnapshotSchema,
+    controller: ControllerSnapshotSchema,
+    openCheckableSegment: z.string().nullable(),
+    openActivity: TutorContextSchema.shape.openActivity,
+    openUngradedSegmentId: z.string().nullable(),
+    usedSkillNames: z.array(z.string()),
+    trajectoryLog: z.array(TrajectoryStepSchema),
+    skillStates: z.array(SkillStateSchema),
+    servedSegmentSkills: z.array(z.tuple([z.string(), z.string()])),
+    segmentServedAt: z.array(z.tuple([z.string(), z.number()])),
+    minorPosture: z.boolean(),
+  })
+  .strict();
+
+export type OrchestratorSnapshot = z.infer<typeof OrchestratorSnapshotSchema>;
+
 export class TutorOrchestrator {
   private readonly history: { speaker: 'learner' | 'tutor'; text: string }[] = [];
   private seq = 0;
@@ -379,6 +460,131 @@ export class TutorOrchestrator {
    * it cannot quietly become the seam through which the rest of the pinned
    * context starts refreshing too.
    */
+  /**
+   * EVERY mutable field, as plain JSON, so a dropped session can be resumed on
+   * a DIFFERENT replica (`ws/parkStore.ts`, `RUNBOOK.md` Round 143).
+   *
+   * Three fields are deliberately absent, each for its own reason rather than
+   * by oversight — `snapshot-fence.test.ts` enumerates this class's real
+   * runtime fields and goes RED if a future round adds one without deciding
+   * which of these buckets it belongs in:
+   *
+   *   - `synthesize` is a CLOSURE bound to one socket's `SpeechScope`. A
+   *     closure cannot cross a process, so `restore` takes a freshly built one
+   *     as an argument — the same way the constructor does.
+   *   - `session` and `startedAtMs` are carried, but as constructor arguments
+   *     to `restore` rather than as assignable fields, because they are the
+   *     PINNED originals (`minorPosture`'s own comment explains why a resume
+   *     must not refresh them) and `readonly` is the thing keeping them so.
+   *   - `pendingDiscardedAudio` is a list of unsettled Promises for paid TTS
+   *     whose cost has not yet reached `voiceUsd`. Promises cannot cross a
+   *     process either, and dropping them would lose real billed money from
+   *     the record — so the caller MUST `await awaitPendingCosts()` before
+   *     calling this, which folds every outstanding discard into `voiceUsd`
+   *     and leaves the array legitimately empty. `snapshot()` asserts that
+   *     rather than trusting it: a snapshot taken with costs still in flight
+   *     is a silently wrong ledger, which is exactly the failure /AGENTS.md
+   *     §1.0 counts as money leaving.
+   */
+  snapshot(): OrchestratorSnapshot {
+    if (this.pendingDiscardedAudio.length > 0) {
+      throw new Error(
+        'TutorOrchestrator.snapshot() called with unsettled discarded-audio promises — ' +
+          'await awaitPendingCosts() first, or their real billed cost is lost from the ledger.',
+      );
+    }
+    return {
+      version: ORCHESTRATOR_SNAPSHOT_VERSION,
+      history: this.history.map((h) => ({ ...h })),
+      seq: this.seq,
+      modelUsd: this.modelUsd,
+      voiceUsd: this.voiceUsd,
+      paidSyntheses: this.paidSyntheses,
+      freeSyntheses: this.freeSyntheses,
+      discardedSyntheses: this.discardedSyntheses,
+      segmentCount: this.segmentCount,
+      adaptations: [...this.adaptations],
+      stopped: this.stopped,
+      lastTurn: this.lastTurn ? { turn: this.lastTurn.turn, seq: this.lastTurn.seq } : null,
+      lastOfferedAdaptation: this.lastOfferedAdaptation,
+      closeGraceUsed: this.closeGraceUsed,
+      plan: planSnapshot(this.plan),
+      controller: this.controller.snapshot(),
+      openCheckableSegment: this.openCheckableSegment,
+      openActivity: this.openActivity,
+      openUngradedSegmentId: this.openUngradedSegmentId,
+      usedSkillNames: [...this.usedSkillNames],
+      trajectoryLog: this.trajectoryLog.map((step) => ({ ...step })),
+      skillStates: this.skillStates.map((s) => ({ ...s })),
+      servedSegmentSkills: [...this.servedSegmentSkills.entries()],
+      segmentServedAt: [...this.segmentServedAt.entries()],
+      minorPosture: this.minorPosture,
+    };
+  }
+
+  /**
+   * Rebuilds an orchestrator on another process from `snapshot()`'s output.
+   *
+   * `session` and `startedAtMs` come from the snapshot's own carrier (the park
+   * record), NOT from the resuming connection's fresh context — the resume
+   * path re-pins exactly one field afterwards, through `refreshIsMinor`, and
+   * that asymmetry is deliberate and documented on `minorPosture`.
+   *
+   * Every field is OVERWRITTEN, never merged. The constructor has just seeded
+   * a plan, a controller and a skill-state list from the session context, and
+   * those seeds are the START-of-session values — precisely what a resumed
+   * conversation must not keep.
+   */
+  static restore(
+    snapshot: OrchestratorSnapshot,
+    session: SessionContext,
+    startedAtMs: number,
+    synthesize: Synthesizer,
+  ): TutorOrchestrator {
+    const restored = new TutorOrchestrator(session, startedAtMs, synthesize);
+    restored.applySnapshot(snapshot);
+    return restored;
+  }
+
+  /**
+   * In-place, so every `readonly` field above stays readonly. The alternative
+   * — dropping `readonly` so these could be reassigned — would trade a
+   * compile-time guarantee that nothing else in a 2,600-line class reassigns
+   * them for nothing but a slightly shorter method.
+   */
+  private applySnapshot(snapshot: OrchestratorSnapshot): void {
+    this.history.length = 0;
+    this.history.push(...snapshot.history.map((h) => ({ ...h })));
+    this.seq = snapshot.seq;
+    this.modelUsd = snapshot.modelUsd;
+    this.voiceUsd = snapshot.voiceUsd;
+    this.paidSyntheses = snapshot.paidSyntheses;
+    this.freeSyntheses = snapshot.freeSyntheses;
+    this.discardedSyntheses = snapshot.discardedSyntheses;
+    this.segmentCount = snapshot.segmentCount;
+    this.adaptations = [...snapshot.adaptations] as TutorContext['adaptations'];
+    this.stopped = snapshot.stopped;
+    this.lastTurn = snapshot.lastTurn ? { turn: snapshot.lastTurn.turn, seq: snapshot.lastTurn.seq } : null;
+    this.lastOfferedAdaptation = snapshot.lastOfferedAdaptation;
+    this.closeGraceUsed = snapshot.closeGraceUsed;
+    Object.assign(this.plan, planFromSnapshot(snapshot.plan));
+    this.controller.restore(snapshot.controller);
+    this.openCheckableSegment = snapshot.openCheckableSegment;
+    this.openActivity = snapshot.openActivity;
+    this.openUngradedSegmentId = snapshot.openUngradedSegmentId;
+    this.usedSkillNames.clear();
+    for (const name of snapshot.usedSkillNames) this.usedSkillNames.add(name);
+    this.trajectoryLog.length = 0;
+    this.trajectoryLog.push(...snapshot.trajectoryLog.map((step) => ({ ...step })));
+    this.skillStates.length = 0;
+    this.skillStates.push(...snapshot.skillStates.map((s) => ({ ...s })));
+    this.servedSegmentSkills.clear();
+    for (const [id, skill] of snapshot.servedSegmentSkills) this.servedSegmentSkills.set(id, skill);
+    this.segmentServedAt.clear();
+    for (const [id, at] of snapshot.segmentServedAt) this.segmentServedAt.set(id, at);
+    this.minorPosture = snapshot.minorPosture;
+  }
+
   refreshIsMinor(isMinor: boolean): void {
     if (isMinor === this.minorPosture) return;
     // LOUD, in both directions: a learner's role changing inside one session's
@@ -473,6 +679,17 @@ export class TutorOrchestrator {
 
   get turnCount(): number {
     return this.seq;
+  }
+
+  /**
+   * When this session's clock started — the budget's own origin, and the one
+   * number a rebuilt orchestrator on another replica must be handed rather
+   * than allowed to re-derive. Re-deriving it as "now" would silently grant a
+   * resumed learner a whole fresh session's worth of budget every time they
+   * reconnected (`ws/server.ts`'s park record carries it for exactly this).
+   */
+  get startedAt(): number {
+    return this.startedAtMs;
   }
 
   /**
@@ -1420,7 +1637,22 @@ export class TutorOrchestrator {
 
   private currentBudget(nowMs: number): BudgetVerdict {
     return evaluateBudget(
-      { startedAtMs: this.startedAtMs, nowMs, turnCount: this.seq },
+      {
+        startedAtMs: this.startedAtMs,
+        nowMs,
+        turnCount: this.seq,
+        /*
+         * Read straight off the session context rather than mirrored into a
+         * field like `minorPosture` above, and the difference is real:
+         * `isMinor` is mirrored because a guardian can REVOKE consent
+         * mid-session and the posture has to be refreshed under the running
+         * orchestrator. Staff-ness has no such event — a role change takes
+         * effect on the next session, and on a resume `ws/server.ts` builds
+         * a fresh context anyway. Mirroring it would add a second copy that
+         * can go stale with nothing to keep it honest.
+         */
+        isStaff: this.session.isStaff === true,
+      },
       getConfig(),
     );
   }
@@ -1973,25 +2205,24 @@ export class TutorOrchestrator {
              * it is CHECKED on does.
              */
             /*
+             * ONE NARROWING PER `kind`, DONE HERE AND ONLY HERE.
+             *
+             * Every whiteboard check is written for exactly one board shape —
              * `whiteboardUnitMismatch`/`whiteboardNumberMismatch`/
-             * `whiteboardDoubledPeriodSteps` below are ALL specific to a
-             * `sequence` board's own period-by-period story — narrowed here,
-             * once, rather than inside each of the three, so a `compare` or
-             * `marked_line` board (V4 backlog) is simply never handed to a
-             * check written for a shape it does not have. `missedWhiteboard`
-             * stays on the FULL `whiteboard`, unnarrowed: "a growth story told
-             * with no board at all" is true regardless of which kind a board
-             * would have been.
-             */
-            /*
-             * Every detector below this point is SEQUENCE-ONLY (a `categories`
-             * board has no time axis for any of them to check against — see
-             * `whiteboardNumberMismatch`'s own doc comment in prompt.ts) and
-             * narrowed here once, rather than inside each function, so a
-             * `categories` board's own fields never need to satisfy a
-             * sequence-shaped parameter type.
+             * `whiteboardDoubledPeriodSteps` for a `sequence`'s
+             * period-by-period story, and the three added 2026-09-01 for the
+             * three kinds that had none. Narrowing at the call site rather
+             * than inside each function means no check ever has to learn
+             * about a shape it was not written for, and a board of the wrong
+             * kind is simply never handed to it. `missedWhiteboard` stays on
+             * the FULL `whiteboard`, unnarrowed: "a growth story told with no
+             * board at all" is true regardless of which kind a board would
+             * have been.
              */
             const sequenceBoard = parsed.turn.whiteboard?.kind === 'sequence' ? parsed.turn.whiteboard : null;
+            const compareBoard = parsed.turn.whiteboard?.kind === 'compare' ? parsed.turn.whiteboard : null;
+            const markedLineBoard = parsed.turn.whiteboard?.kind === 'marked_line' ? parsed.turn.whiteboard : null;
+            const categoriesBoard = parsed.turn.whiteboard?.kind === 'categories' ? parsed.turn.whiteboard : null;
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
             const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, sequenceBoard);
             /*
@@ -2031,6 +2262,37 @@ export class TutorOrchestrator {
              * not a wrong fact a child could be taught.
              */
             const doubledSteps = whiteboardDoubledPeriodSteps(sequenceBoard);
+            /*
+             * THE SAME QUESTION, ASKED OF THE OTHER THREE BOARDS (2026-09-01).
+             *
+             * `numberMismatch` above asks whether a `sequence`'s spoken
+             * running totals are the ones its board computes. These three ask
+             * the identical question of the kinds that had nobody asking it:
+             * a `compare` side's amount, the difference between the two, and
+             * which of them is bigger; a two-mark `marked_line`'s gap; a
+             * `categories` bar's amount and the total of all of them. Every
+             * ground truth is the SERVER's own computation
+             * (`computeComparison`/`computeMarkedLine`/`computeCategories`),
+             * never a number the model asserted — the same rule that has
+             * always applied to what gets DRAWN, now applied to what gets
+             * SAID about it. See each function's doc comment (prompt.ts) for
+             * what it deliberately refuses to judge, and for the honest note
+             * that these three were built from the boards' own structure
+             * rather than from a reproduced live transcript.
+             */
+            const comparisonMismatch = whiteboardComparisonMismatch(parsed.turn.say, compareBoard);
+            const markedLineMismatch = whiteboardMarkedLineMismatch(parsed.turn.say, markedLineBoard);
+            const categoryMismatch = whiteboardCategoryMismatch(parsed.turn.say, categoriesBoard);
+            /*
+             * One flag for "the words contradict the board", whatever kind the
+             * board is. Bucketed with `numberMismatch` rather than with
+             * `missedWhiteboard`/`wrongUnit`, and for `numberMismatch`'s own
+             * reason: a child reading a number off the screen while hearing a
+             * different one is being taught something false, which is not a
+             * clumsy-but-still-useful turn.
+             */
+            const boardContradiction =
+              numberMismatch || comparisonMismatch || markedLineMismatch || categoryMismatch;
             /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
@@ -2107,7 +2369,11 @@ export class TutorOrchestrator {
                * a child learning arithmetic is actively wrong, not a
                * stylistic imperfection a child can still learn from — the
                * board and the sentence next to it disagree about the exact
-               * thing this turn exists to teach.
+               * thing this turn exists to teach. `boardContradiction`
+               * (2026-09-01) is that same flag widened to the other three
+               * board kinds — the argument for the bucket was never about
+               * `sequence` in particular, only about a screen and a sentence
+               * disagreeing in front of a child.
                *
                * `brokenPromise` (2026-08-31) joins for the same reason as
                * the wrong-language case, not the vocabulary/number one: an
@@ -2135,7 +2401,7 @@ export class TutorOrchestrator {
                 falseCorrection ||
                 violation !== null ||
                 langDrift !== null ||
-                numberMismatch ||
+                boardContradiction ||
                 brokenPromise ||
                 offerStackedQuestion;
             }
@@ -2173,6 +2439,18 @@ export class TutorOrchestrator {
               turnCorrection =
                 'said a running total for one of the periods in its own story that does NOT match what "whiteboard" computes for that same period — the two must agree exactly. Say the SAME story again, and either correct the numbers you speak so they match the board\'s own running total at each period, or leave the running totals to the board and only narrate the situation and the question';
               console.warn('[oracle] spoken running total disagreed with the whiteboard\'s own numbers — asking again');
+            } else if (comparisonMismatch && attempt === 0) {
+              turnCorrection =
+                'said something about the two sides of its own "whiteboard" that the board does not show — a side\'s amount, the difference between them, or which one is bigger. The board is on the learner\'s screen while you speak, so they can see both at once. Say the SAME comparison again with every number and every "more/bigger" matching the two values you yourself set, or leave the amounts to the board and only ask the question';
+              console.warn('[oracle] spoken comparison disagreed with the whiteboard\'s own two sides — asking again');
+            } else if (markedLineMismatch && attempt === 0) {
+              turnCorrection =
+                'said a distance between the two marks on its own "whiteboard" that is not the distance between the values you set for them. Say the SAME situation again with the gap corrected to match your own two marks, or ask the learner what the gap is instead of stating it';
+              console.warn('[oracle] spoken gap disagreed with the whiteboard\'s own two marks — asking again');
+            } else if (categoryMismatch && attempt === 0) {
+              turnCorrection =
+                'said an amount for one of its own "whiteboard" categories, or a total for all of them, that does not match the values you set. The learner can read every bar and its name on screen while you speak. Say the SAME split again with each number matching the bar it names and any total matching their sum, or name the categories without repeating their amounts out loud';
+              console.warn('[oracle] spoken category amount or total disagreed with the whiteboard\'s own bars — asking again');
             } else if (missedWhiteboard && attempt === 0) {
               turnCorrection =
                 'told a story about a quantity that changes every day/week/month/year, in words only. Say the SAME story again, but this time ALSO set "whiteboard" with the exact start value and step values your story used, and set "unit" to whichever of day/week/month/year your own words named — do not add a step count higher than what you already said';
@@ -2218,7 +2496,7 @@ export class TutorOrchestrator {
                 falseCorrection ||
                 violation !== null ||
                 langDrift !== null ||
-                numberMismatch ||
+                boardContradiction ||
                 brokenPromise ||
                 offerStackedQuestion
               ) {
@@ -2240,6 +2518,21 @@ export class TutorOrchestrator {
                 if (numberMismatch) {
                   console.warn(
                     '[oracle] spoken running total vs. whiteboard mismatch SURVIVED the retry — scripted line instead',
+                  );
+                }
+                if (comparisonMismatch) {
+                  console.warn(
+                    '[oracle] spoken comparison vs. whiteboard mismatch SURVIVED the retry — scripted line instead',
+                  );
+                }
+                if (markedLineMismatch) {
+                  console.warn(
+                    '[oracle] spoken gap vs. whiteboard marks mismatch SURVIVED the retry — scripted line instead',
+                  );
+                }
+                if (categoryMismatch) {
+                  console.warn(
+                    '[oracle] spoken category amount vs. whiteboard bars mismatch SURVIVED the retry — scripted line instead',
                   );
                 }
                 if (violation !== null) {

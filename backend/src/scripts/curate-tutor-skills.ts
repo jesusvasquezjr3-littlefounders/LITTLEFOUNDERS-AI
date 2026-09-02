@@ -15,11 +15,23 @@
  * audit:content-bridge:
  *   SUPABASE_URL=… SUPABASE_ANON_KEY=… SUPABASE_SERVICE_ROLE_KEY=… npm run curate:tutor-skills
  *
- * NOT YET WIRED TO A SCHEDULE. `audit:content-bridge` runs daily via
- * `.github/workflows/tutor-content-bridge.yml` because a fixed defect could
- * recur silently; this tool's proposals are a standing authoring backlog, not
- * a regression to catch, so an operator running it by hand (or a human
- * deciding to add a schedule later) is the right cadence for a first version.
+ * SCHEDULED WEEKLY since 2026-09-01, via
+ * `.github/workflows/tutor-skill-curation.yml` (Mondays 09:20 UTC, plus a
+ * push trigger on the skills/graph/analysis files and `workflow_dispatch`).
+ * This header previously said the opposite — "an operator running it by hand
+ * is the right cadence" — and that reasoning was sound about the REPORT and
+ * wrong about the INPUTS: mastery and misconception evidence accumulate with
+ * real usage, and the graph and catalog move on production data edits, none
+ * of which is a commit anyone here would see. "An operator runs it by hand"
+ * decays to "nobody ran it", and a backlog nobody regenerates quietly
+ * describes last month's learners.
+ *
+ * A schedule is only safe because this NEVER WRITES: the workflow adds a
+ * cadence to the READING and changes nothing about the approving, which
+ * stays a human editing a skill file or `kc_graph.v1.json` in a reviewed
+ * commit. The report is published to the job's step summary, since unlike
+ * `audit:content-bridge` (pass/fail, where a failed job IS the message) this
+ * tool's whole output is a document meant to be read on a GREEN run.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';

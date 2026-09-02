@@ -1,4 +1,5 @@
 import type { IncomingMessage, Server } from 'http';
+import { z } from 'zod';
 import { getConfig } from '../env.js';
 import { WebSocketServer, type WebSocket } from 'ws';
 import { looksLikeSupabaseJwt, verifySessionToken } from '../session/token.js';
@@ -10,11 +11,19 @@ import {
   persistSafetyFlag,
   persistTurn,
   requestSegment,
+  SessionContextSchema,
   verifyGeneratedSegment,
   voiceCheck,
   type CloseReason,
   type SessionContext,
 } from '../core/client.js';
+import {
+  claimParkedSession,
+  publishParkedSession,
+  raiseTranscriptFloor,
+  readTranscriptFloor,
+  releaseParkIfOwned,
+} from './parkStore.js';
 import { verifyGradeEcho } from '../session/gradeEcho.js';
 import { runPostSessionReview } from '../session/review.js';
 import { spendGuard } from '../session/spend-guard.js';
@@ -23,7 +32,7 @@ import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
-import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
+import { OrchestratorSnapshotSchema, TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
 import {
   CLOSE_CODES,
   ClientMessageSchema,
@@ -328,16 +337,122 @@ export function sessionLockKey(sessionId: string): string {
  * gate re-runs — signature, replay, user match, judge readiness, consent — so
  * a resumed socket is exactly as authenticated as a first one.
  *
- * The park is THIS PROCESS'S MEMORY, exactly like the token nonce ledger, so
- * it adds nothing new to the single-replica constraint — it rides it. A parked
- * session that nobody reclaims is finalized as `learner_left`, which is what
- * happened.
+ * The park is THIS PROCESS'S MEMORY *and*, since round 143, a published
+ * snapshot any replica can adopt (`ws/parkStore.ts`). It used to be the LAST
+ * structure holding Oracle at one replica (`/ORACLE.md` §16); the local map
+ * below is now the FAST PATH — a same-replica reconnect gets the very objects
+ * the last socket was using — and the shared record is the fallback that makes
+ * a reconnect landing anywhere else resume the same lesson instead of starting
+ * over. See `ParkedSession` and `publishPark` for what crosses and what
+ * deliberately does not.
+ *
+ * AND THE SESSION LOCK DOES NOT COVER IT, which is the part that is easy to
+ * get wrong from the outside (established round 142, 2026-09-01). The lock
+ * refuses a SECOND CONCURRENT socket; it says nothing about a resume, because
+ * the close handler below deliberately RELEASES the claim before parking, so
+ * a genuine resume can re-acquire immediately instead of waiting out
+ * `SESSION_LOCK_TTL_MS`. At N>1 that means a reconnect load-balanced to a
+ * different replica acquires the free lock cleanly, finds `takeParked` empty,
+ * and builds a SECOND `TutorOrchestrator` — no history, `transcriptSeq` back
+ * to 0 (so every row collides in `tutor_turns` and is dropped in silence by
+ * `ignore-duplicates`, the failure this file already fixed twice), a fresh
+ * budget clock and turn cap, and the learner greeted again instead of
+ * redrawn. Meanwhile the ORIGINAL replica's park timer still fires
+ * `SESSION_RESUME_GRACE_MS` later and closes the session in Core; that PATCH
+ * filters on `ended_at=is.null` (`backend/src/services/tutorData.ts`), so the
+ * first close wins and the live replica's real, billed usage never reaches
+ * the cost ledger at all. A parked session that nobody reclaims is finalized
+ * as `learner_left`, which is what happened.
  */
+/**
+ * The re-drawable `segment` frame, as it goes into a shared park record.
+ *
+ * Mirrors `ServerMessage`'s own `segment` variant field for field. `segment`
+ * is `Record<string, unknown>` THERE too — a stripped Lesson Engine payload
+ * Core has already validated on its way in — so accepting it as one here is
+ * the declared type rather than a relaxation of it.
+ */
+const ParkedSegmentFrameSchema = z
+  .object({
+    type: z.literal('segment'),
+    segmentId: z.string(),
+    seq: z.number().int(),
+    origin: z.enum(['catalog', 'bank', 'live']),
+    segment: z.record(z.string(), z.unknown()),
+    scoresXp: z.boolean(),
+    framing: z.string(),
+  })
+  .strict();
+
+/**
+ * The schema above and `ServerMessage`'s own `segment` variant must stay
+ * EXACTLY the same shape, and this makes a divergence a compile error rather
+ * than a silent runtime one.
+ *
+ * Without it, adding a field to the wire type would leave this `.strict()`
+ * schema rejecting every park record belonging to a session with an activity
+ * on screen — which does not break a build, does not fail a test that never
+ * opens an activity, and shows up only as "resume sometimes forgets the
+ * conversation" for the subset of learners who dropped mid-exercise. Exactly
+ * the class of defect this file keeps finding the expensive way.
+ */
+type ExactlyTheSame<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+const _parkedSegmentFrameMatchesTheWire: ExactlyTheSame<
+  Extract<ServerMessage, { type: 'segment' }>,
+  z.infer<typeof ParkedSegmentFrameSchema>
+> = true;
+void _parkedSegmentFrameMatchesTheWire;
+
+/**
+ * THE SHARED PARK RECORD — everything a different replica needs to keep this
+ * exact lesson going, and nothing it does not.
+ *
+ * `session` and `startedAtMs` are the PINNED originals rather than the
+ * resuming connection's own: a resumed orchestrator deliberately keeps the
+ * context it was built with (see `TutorOrchestrator`'s `minorPosture` comment
+ * for the full audit of why), and re-pins exactly one field, `isMinor`,
+ * through `refreshIsMinor`. Carrying them here is what lets the far side
+ * reproduce that asymmetry instead of guessing at it.
+ *
+ * `.strict()` throughout, and validated on read: a record is an input from a
+ * shared store, and a half-understood one must be REFUSED rather than
+ * best-effort restored (/AGENTS.md §1.6, §1.14).
+ */
+const ParkRecordSchema = z
+  .object({
+    session: SessionContextSchema,
+    startedAtMs: z.number(),
+    orchestrator: OrchestratorSnapshotSchema,
+    transcriptSeq: z.number().int().min(0),
+    lastTurnAtMs: z.number(),
+    lastSegmentFrame: ParkedSegmentFrameSchema.nullable(),
+  })
+  .strict();
+
+type ParkRecord = z.infer<typeof ParkRecordSchema>;
+
 interface ParkedSession {
   orchestrator: TutorOrchestrator;
   speech: SpeechScope;
   lastTurnAtMs: number;
   timer: NodeJS.Timeout;
+  /**
+   * This park's owner token in the SHARED store, once the record has actually
+   * landed — `null` while the write is still in flight, or if it never landed
+   * (the store was down), or if this park was deliberately never published.
+   *
+   * It is what makes the grace timer safe at N>1: the timer stays a local
+   * `setTimeout`, but the AUTHORITY to end the session is a compare-and-delete
+   * against this token. A park that another replica has already adopted no
+   * longer matches, so this replica's timer declines to close a session
+   * somebody else is live on — the `ended_at=is.null` stomp `RUNBOOK.md`
+   * Round 142 traced, where the dead replica's close wins and the live
+   * replica's billed usage never reaches Core's ledger.
+   *
+   * `null` is not ambiguous here: nothing was published, so nothing could have
+   * been adopted, so this replica is unambiguously the one that must close.
+   */
+  parkOwner: string | null;
   /**
    * Carried across the park, because the transcript's row numbers are unique
    * per session and a resumed socket keeps writing into the SAME transcript.
@@ -391,7 +506,7 @@ const parkedSessions = new Map<string, ParkedSession>();
  */
 const liveSessions = new Map<string, Live>();
 
-function parkSession(sessionId: string, live: Live): void {
+function parkSession(sessionId: string, live: Live): ParkedSession {
   // A stale park for the same session (two sockets raced) is finalized first —
   // two parked orchestrators for one session would both write a close later.
   finalizeParked(sessionId);
@@ -402,10 +517,99 @@ function parkSession(sessionId: string, live: Live): void {
     transcriptSeq: live.transcriptSeq,
     lastSegmentFrame: live.lastSegmentFrame,
     endSessionRequested: live.endSessionRequested,
+    parkOwner: null,
     timer: setTimeout(() => finalizeParked(sessionId), getConfig().SESSION_RESUME_GRACE_MS),
   };
   entry.timer.unref();
   parkedSessions.set(sessionId, entry);
+  return entry;
+}
+
+/**
+ * Publishes a local park to the shared store so ANOTHER replica can adopt it.
+ *
+ * Returns once the record has landed (or provably has not), because the
+ * caller must not release this session's exclusivity claim until then — see
+ * the close handler's own comment for why that ordering is the whole fix.
+ *
+ * TWO parks are deliberately never published:
+ *
+ *   - One whose entry is no longer the live one. `await`ing the pending audio
+ *     below is real async time, and a resume can land inside it; publishing
+ *     afterwards would advertise a conversation this process has already
+ *     handed over, and the adopter would find TWO records for one session
+ *     across its life. Re-reading the map after every await is what makes
+ *     this safe rather than merely unlikely.
+ *   - One with `endSessionRequested` set. That park raced an in-flight
+ *     `attemptEndSession`, and `finalizeParked`'s deferral rests on `finish()`
+ *     being GUARANTEED to still run — a guarantee made by a `finally`-chain
+ *     INSIDE this process, which does not exist across processes. Rather than
+ *     re-deriving that guarantee for a fleet, a session that has already asked
+ *     to end simply never becomes adoptable: there is nothing left to resume,
+ *     and its transcript continuity is held by the floor below regardless.
+ *     (`RUNBOOK.md` Round 142's requirement 5.)
+ */
+async function publishPark(sessionId: string, entry: ParkedSession): Promise<void> {
+  if (entry.endSessionRequested) return;
+
+  /*
+   * The ledger is folded up BEFORE the snapshot, never after. `voiceUsd` only
+   * grows when a discarded speculative synthesis actually settles, so a
+   * snapshot taken with promises still outstanding hands the adopting replica
+   * a cost that is real money short — and that replica's close is the one
+   * Core will record. This is the one call site that answers Round 142's
+   * "unsettled paid-TTS promises" question: they are SETTLED, not dropped and
+   * not carried.
+   */
+  await entry.orchestrator.awaitPendingCosts();
+  if (parkedSessions.get(sessionId) !== entry) return;
+
+  let json: string;
+  try {
+    const record: ParkRecord = {
+      session: entry.orchestrator.sessionContext,
+      startedAtMs: entry.orchestrator.startedAt,
+      orchestrator: entry.orchestrator.snapshot(),
+      transcriptSeq: entry.transcriptSeq,
+      lastTurnAtMs: entry.lastTurnAtMs,
+      lastSegmentFrame: entry.lastSegmentFrame,
+    };
+    /*
+     * VALIDATED HERE, WHERE IT IS CAUSED — not only on the far side where it
+     * is suffered. `adoptParkedSession` re-validates because a record from a
+     * shared store is an untrusted input; this validates because a record this
+     * process cannot even write correctly is a bug in THIS deploy, and finding
+     * it in the log of the replica that produced it is worth far more than
+     * finding it in the log of whichever replica later failed to adopt.
+     * Refusing to publish is also the right outcome: a record that will be
+     * rejected on read is worse than no record, because it wastes the grace
+     * window pretending a hand-off is possible.
+     */
+    const valid = ParkRecordSchema.safeParse(record);
+    if (!valid.success) {
+      console.error(
+        `[oracle] session ${sessionId}: refusing to publish a park record that does not match its own ` +
+          `schema — this session stays resumable only on THIS replica. ${valid.error.issues
+            .slice(0, 3)
+            .map((i) => `${i.path.join('.')}: ${i.message}`)
+            .join('; ')}`,
+      );
+      return;
+    }
+    json = JSON.stringify(record);
+  } catch (error) {
+    // LOUD: a session that cannot be snapshotted is one no other replica can
+    // ever take over, and silence here would look exactly like a healthy park.
+    console.error(
+      `[oracle] session ${sessionId}: could not snapshot the parked conversation — ` +
+        `it stays resumable only on THIS replica:`,
+      error instanceof Error ? error.message : error,
+    );
+    return;
+  }
+
+  const owner = await publishParkedSession(sessionId, json, getConfig().SESSION_RESUME_GRACE_MS);
+  if (parkedSessions.get(sessionId) === entry) entry.parkOwner = owner;
 }
 
 function takeParked(sessionId: string): ParkedSession | null {
@@ -413,7 +617,144 @@ function takeParked(sessionId: string): ParkedSession | null {
   if (!entry) return null;
   clearTimeout(entry.timer);
   parkedSessions.delete(sessionId);
+  /*
+   * The shared advertisement goes with it. This replica is either resuming
+   * the session itself or cancelling the park outright (`finish()`), and in
+   * both cases a record left behind is an invitation for a THIRD process to
+   * adopt a conversation that is already live here. Fire-and-forget: nothing
+   * downstream waits on it, and a failed delete simply ages out on the
+   * record's own TTL.
+   */
+  if (entry.parkOwner) void releaseParkIfOwned(sessionId, entry.parkOwner);
   return entry;
+}
+
+/**
+ * What a resuming socket needs, from EITHER park — this process's own map or
+ * another replica's published record. `ParkedSession` is a superset of it, so
+ * a local resume satisfies this without conversion and the handshake below
+ * has exactly one shape to reason about rather than two nearly-identical ones.
+ */
+interface ResumedSession {
+  orchestrator: TutorOrchestrator;
+  speech: SpeechScope;
+  lastTurnAtMs: number;
+  transcriptSeq: number;
+  lastSegmentFrame: Extract<ServerMessage, { type: 'segment' }> | null;
+}
+
+/**
+ * Takes another replica's published park and rebuilds this conversation here.
+ *
+ * Returns `null` for every "no" — there is nothing parked, the store could not
+ * be reached, the record was written by a replica running a different snapshot
+ * version, or it failed validation. That collapse is deliberate and is the
+ * opposite of the transcript floor's posture two gates below, because the
+ * STAKES are opposite: a missing adoption costs the learner their conversation
+ * history and re-greets them, which is bad; a missing floor silently destroys
+ * rows already written, which is unrecoverable. So this one degrades and says
+ * so, and that one refuses.
+ *
+ * Nothing here is best-effort restored. `ParkRecordSchema` is `.strict()` and
+ * the snapshot carries an explicit version, because a partially-understood
+ * conversation is indistinguishable from a healthy one right up until a
+ * transcript row or a dollar goes missing (/AGENTS.md §1.14).
+ */
+async function adoptParkedSession(sessionId: string): Promise<ResumedSession | null> {
+  const claim = await claimParkedSession(sessionId);
+  if (!claim.ok) {
+    console.warn(
+      `[oracle] session ${sessionId}: could not check for a parked conversation on another replica ` +
+        `(shared store unreachable) — continuing as a fresh conversation.`,
+    );
+    return null;
+  }
+  if (claim.record === null) return null;
+
+  let parsed: ParkRecord;
+  try {
+    const validated = ParkRecordSchema.safeParse(JSON.parse(claim.record));
+    if (!validated.success) {
+      console.error(
+        `[oracle] session ${sessionId}: a parked conversation was found on the shared store but did NOT ` +
+          `validate — refusing to restore it partially. ${validated.error.issues
+            .slice(0, 3)
+            .map((i) => `${i.path.join('.')}: ${i.message}`)
+            .join('; ')}`,
+      );
+      return null;
+    }
+    parsed = validated.data;
+  } catch (error) {
+    console.error(
+      `[oracle] session ${sessionId}: a parked conversation on the shared store was unreadable:`,
+      error instanceof Error ? error.message : error,
+    );
+    return null;
+  }
+
+  /*
+   * The `Synthesizer`, rebuilt (Round 142's requirement 2). It is the one
+   * thing in the snapshot that genuinely cannot travel — a closure over this
+   * process's `SpeechScope` — so it is constructed here exactly the way the
+   * first connection constructed it, from the record's PINNED session so the
+   * voice and locale are the ones this conversation has been using.
+   *
+   * The paid-speech memo does NOT come with it: `SpeechScope.memo` is a
+   * per-process cache of already-synthesized lines, and the worst a cold one
+   * costs is re-synthesizing a line this learner hears again — real money, but
+   * cents, and the shared speech cache (`voice/cache.ts`, 180-day TTL) already
+   * absorbs most of it. `SpeechScope.inFlight` must NEVER be shared at all;
+   * `voice/speech.ts` records why, and Round 142 proved it serves one child's
+   * session audio into another child's session.
+   */
+  const speech = newSpeechScope(parsed.session);
+  const orchestrator = TutorOrchestrator.restore(
+    parsed.orchestrator,
+    parsed.session,
+    parsed.startedAtMs,
+    (turn) => speakLine(turn.say, speech),
+  );
+
+  console.log(
+    `[oracle] session ${sessionId}: adopted a conversation parked by another replica — ` +
+      `${parsed.orchestrator.history.length} turns, transcript seq ${parsed.transcriptSeq}.`,
+  );
+
+  return {
+    orchestrator,
+    speech,
+    lastTurnAtMs: parsed.lastTurnAtMs,
+    transcriptSeq: parsed.transcriptSeq,
+    lastSegmentFrame: parsed.lastSegmentFrame,
+  };
+}
+
+/**
+ * Test seam: drops this process's LOCAL park entries without finalizing them.
+ *
+ * This is the one condition a single-process test cannot otherwise reach, and
+ * it is the exact condition a second replica is always in — it never had the
+ * local entry, only whatever the shared store holds. Dropping the local map
+ * mid-test turns "resume on the same replica" into "resume on a different
+ * one", which is the whole scenario this file's cross-replica behaviour
+ * exists for. Named so it cannot be mistaken for a production affordance;
+ * there is deliberately no non-test caller.
+ */
+export function dropLocalParksForTest(): void {
+  for (const entry of parkedSessions.values()) clearTimeout(entry.timer);
+  parkedSessions.clear();
+}
+
+/**
+ * The two things a caller can tell `finalizeParked` about ITSELF, both of
+ * which only the shutdown path ever sets — see `finalizeAllParked`.
+ */
+interface FinalizeParkedOptions {
+  /** Run the post-session review even when a graceful close is still in flight. */
+  forceReview?: boolean;
+  /** Do not WAIT on the shared store; this process is about to stop existing. */
+  shuttingDown?: boolean;
 }
 
 /**
@@ -429,13 +770,118 @@ function takeParked(sessionId: string): ParkedSession | null {
 function finalizeParked(
   sessionId: string,
   closeReason: CloseReason = 'learner_left',
-  opts: { forceReview?: boolean } = {},
+  opts: FinalizeParkedOptions = {},
 ): void {
   const entry = parkedSessions.get(sessionId);
   if (!entry) return;
   clearTimeout(entry.timer);
   parkedSessions.delete(sessionId);
   entry.speech.memo.clear();
+  void finalizeParkedOnce(sessionId, entry, closeReason, opts);
+}
+
+/**
+ * The half of `finalizeParked` that must ask the FLEET a question first.
+ *
+ * Split out, and fired rather than awaited, so `finalizeParked` itself stays
+ * synchronous — it is called from a `setTimeout`, from `parkSession`'s
+ * stale-park sweep and from the shutdown path, none of which can await.
+ */
+async function finalizeParkedOnce(
+  sessionId: string,
+  entry: ParkedSession,
+  closeReason: CloseReason,
+  opts: FinalizeParkedOptions,
+): Promise<void> {
+  /*
+   * DID ANYONE ELSE TAKE THIS PARK? — the fleet-owned half of the grace
+   * window (`RUNBOOK.md` Round 142's requirement 4).
+   *
+   * The timer that brought us here is still a local `setTimeout`: a
+   * distributed scheduler is a great deal of machinery for a question a local
+   * clock already answers correctly. What could not stay local is the
+   * AUTHORITY to act on it. At N>1 this replica's timer would otherwise close
+   * a session another replica has since resumed — and because Core's close
+   * filters on `ended_at IS NULL`, the DEAD replica's close wins and the live
+   * conversation's real, billed usage never reaches the ledger at all. That
+   * is the precise accounting failure Round 142 traced.
+   *
+   * `unreachable` closes anyway, and that is a decision rather than a
+   * fallthrough. Adoption itself REQUIRES the shared store — a resuming socket
+   * cannot get past the session lock (which fails CLOSED, see the handshake's
+   * own call site) nor read the park record without it — so "the store is
+   * down" implies "nobody adopted this". The exposure that remains is only a
+   * store that was up at adoption and down one grace window later. Weighed
+   * against the alternative: declining to close on an unreachable store would
+   * leave EVERY abandoned session open in Core's ledger for the whole
+   * duration of any outage, cost unrecorded, `ended_at` null forever, with no
+   * process that will ever revisit it. A certain §1.0 blind flight versus a
+   * narrow race — so this closes, and says so.
+   */
+  if (entry.parkOwner && opts.shuttingDown === true) {
+    /*
+     * SHUTDOWN DOES NOT WAIT FOR THE ANSWER, and that keeps this path's timing
+     * exactly what it was before any of this existed.
+     *
+     * `index.ts`'s `shutdown()` budgets ~250ms before `process.exit(0)` and
+     * disconnects Redis on its way past. `releaseParkIfOwned` is bounded by
+     * the same 250ms command timeout — so awaiting it here could consume the
+     * entire remaining budget and lose the `closeSession` call altogether,
+     * turning a best-effort close into no close at all. A session whose row
+     * stays open forever, cost unrecorded, is a worse outcome than the narrow
+     * case this check protects against (a park published by an EARLIER drop,
+     * adopted by a sibling replica, inside the last grace window before this
+     * process was told to stop).
+     *
+     * The record is still dropped, just without waiting: a shared record left
+     * pointing at a session this process is about to close is an invitation
+     * for a sibling to adopt a conversation that has already ended.
+     */
+    void releaseParkIfOwned(sessionId, entry.parkOwner);
+  } else if (entry.parkOwner) {
+    const verdict = await releaseParkIfOwned(sessionId, entry.parkOwner);
+    if (verdict === 'taken') {
+      console.log(
+        `[oracle] session ${sessionId}'s park was adopted by another replica — declining to close it ` +
+          `here; that replica owns this session's ending now.`,
+      );
+      return;
+    }
+    if (verdict === 'unreachable') {
+      console.warn(
+        `[oracle] session ${sessionId}: could not confirm whether another replica adopted this park ` +
+          `(shared store unreachable). Closing as '${closeReason}' rather than leaving the row open ` +
+          `forever — see finalizeParkedOnce's comment for the trade.`,
+      );
+    }
+  }
+
+  /*
+   * THIS CLOSE'S OUTCOME IS READ, NOT DISCARDED (2026-09-01).
+   *
+   * It used to be a bare `void closeSession({...})`. `finish()` — the OTHER
+   * close path, the one that can lose the race to this one — has warned
+   * loudly on both `already-closed` and `failed` since round 98. This path
+   * had no branch at all, so when THIS side was the one that failed (Core
+   * unreachable, a 5xx, a malformed envelope) the session's `ended_at`,
+   * `close_reason` and entire cost were silently never written, and the only
+   * trace anywhere was a row that stays open forever. That is precisely the
+   * "failure collapsed into emptiness" shape §1.14 forbids, and it was
+   * hiding in the half of the race nobody had instrumented.
+   *
+   * Observability ONLY — this deliberately does NOT retry and does NOT
+   * reconcile the cost. `add_tutor_session_cost` (migration 0062) is
+   * additive with NO idempotency key, so a retry that could not prove the
+   * first write missed would DOUBLE-count. Over-counting is strictly worse
+   * than under-counting here: `cost_usd` is written by exactly this path and
+   * read by nothing — no route returns it, no UI renders it, nothing bills
+   * from it — while its one real purpose is spotting a session that cost ten
+   * times the normal amount, which a double-count would trigger falsely. The
+   * money itself is NOT lost from view either way: `spendGuard.record()`
+   * fires inside `addModelCost`/`addVoiceCost` at the moment of spend, so
+   * every dollar already counts against the daily ceiling regardless of
+   * whether this row ever hears about it. See oracle/AGENTS.md item 71.
+   */
   void closeSession({
     sessionId,
     closeReason,
@@ -444,7 +890,34 @@ function finalizeParked(
     turnCount: entry.transcriptSeq,
     segmentCount: entry.orchestrator.servedSegments,
     costUsd: entry.orchestrator.totalCostUsd,
-  });
+  })
+    .then((outcome) => {
+      if (outcome === 'closed') return;
+      const cost = entry.orchestrator.totalCostUsd.toFixed(5);
+      if (outcome === 'already-closed') {
+        console.warn(
+          `[oracle] parked session ${sessionId}'s '${closeReason}' close found it ALREADY closed — ` +
+            `something else (a resumed socket's own finish(), or a second finalize) got there first, so ` +
+            `this snapshot's cost of $${cost} was NOT persisted. Reconcile manually if material.`,
+        );
+        return;
+      }
+      console.warn(
+        `[oracle] parked session ${sessionId}'s '${closeReason}' close call to Core FAILED outright — ` +
+          `the session row is still open with no close reason and no cost ($${cost} unrecorded). ` +
+          `Nothing will retry this: the row stays open until the retention sweep reaps it.`,
+      );
+    })
+    // `closeSession` catches its own transport errors and answers 'failed',
+    // so this is unreachable today — but an unhandled rejection raised from a
+    // bare `setTimeout` callback takes the whole process down, and this one
+    // is armed on every parked session.
+    .catch((err: unknown) => {
+      console.warn(
+        `[oracle] parked session ${sessionId}'s close threw unexpectedly: ` +
+          `${err instanceof Error ? err.message : String(err)}`,
+      );
+    });
 
   /*
    * V4's slow chamber, for the session that ended THIS way too.
@@ -531,10 +1004,24 @@ function finalizeParked(
  * — there is no "later" left to defer to. Skipping the review here on that
  * same trust would make it never run at all, for a session that had a real
  * conversation in it.
+ *
+ * `shuttingDown: true` for the sibling reason, one layer down: the shared-park
+ * ownership check is a bounded round trip, and this function runs inside
+ * `index.ts`'s ~250ms exit budget. See `finalizeParkedOnce` for why the answer
+ * is worth less here than the close it would delay.
+ *
+ * NOTE, and it is a real limitation rather than an oversight: a REDEPLOY still
+ * ends every live session as `'abandoned'` instead of handing it to a sibling
+ * replica. Cross-replica adoption covers a learner who DROPS; it deliberately
+ * does not change what a deploy does to a learner mid-lesson, which
+ * `RUNBOOK.md` Round 142 (requirement 6) calls an owner decision rather than a
+ * refactor — and which would need a fleet-liveness signal this service does
+ * not have, since "is a sibling still there to resume into?" is exactly the
+ * question a process on its way out cannot answer about itself.
  */
 export function finalizeAllParked(closeReason: CloseReason = 'abandoned'): void {
   for (const sessionId of [...parkedSessions.keys()]) {
-    finalizeParked(sessionId, closeReason, { forceReview: true });
+    finalizeParked(sessionId, closeReason, { forceReview: true, shuttingDown: true });
   }
 }
 
@@ -665,6 +1152,23 @@ const PERSIST_FAILURE_LIMIT = 5;
  */
 function nextTranscriptSeq(live: Live): number {
   live.transcriptSeq += 1;
+  /*
+   * Published to the shared floor so that whichever replica serves this
+   * session NEXT — after a drop, a crash or a redeploy — continues the
+   * transcript instead of restarting it. Fire-and-forget by design (see
+   * `raiseTranscriptFloor`): this is the live turn path, the learner must
+   * never wait on it, and a lost raise is absorbed by the next row.
+   *
+   * Raised on ALLOCATION rather than after the row is confirmed written,
+   * deliberately. The floor's job is "no future row may reuse this number",
+   * and a number that was allocated and then failed to persist must still
+   * never be reused: `persistTurn` can fail, and a retry of the CONVERSATION
+   * would otherwise be free to hand the same seq to different text. Being one
+   * or two ahead of what Core actually holds costs nothing — the column has
+   * no meaning beyond ordering — while being one behind is the silent
+   * collision this whole mechanism exists to prevent.
+   */
+  raiseTranscriptFloor(live.session.sessionId, live.transcriptSeq);
   return live.transcriptSeq;
 }
 
@@ -935,7 +1439,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    * TWO checks, cheapest first. `liveSessions.has()` is the original,
    * zero-latency, same-process guard — unchanged, and still what catches the
    * overwhelming majority of real "second socket" attempts, since Oracle runs
-   * as a single replica today. The distributed claim below is what makes this
+   * as one replica per deploy by default. The distributed claim below is what makes this
    * gate ACTUALLY hold once that stops being true (`oracle/AGENTS.md` item 79
    * / `RUNBOOK.md` Round 119): a second socket for this session landing on a
    * DIFFERENT process would find this process's `liveSessions` empty and sail
@@ -1007,10 +1511,60 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     return;
   }
 
+  /*
+   * TENTH GATE: THE TRANSCRIPT MUST NEVER RESTART AT ZERO.
+   *
+   * `tutor_turns` is unique on `(session_id, seq)` and written with
+   * `resolution=ignore-duplicates`, so a second row claiming a seq that
+   * already exists is discarded IN SILENCE — the "a guardian cannot read what
+   * their child said" failure this file has now fixed three times, each time
+   * through a different door. The third door was topology: at N>1 a reconnect
+   * landing on a replica with no local park had no way to know this session
+   * had ever written a row, so it started at 0 and every row after it
+   * collided.
+   *
+   * The floor closes that door for good, and deliberately does NOT depend on
+   * the park record surviving. A park can legitimately be absent — it expired,
+   * the parking process crashed or was redeployed, or it was never published
+   * because a graceful close was already in flight — and in every one of those
+   * cases the transcript must still continue. The floor is raised per row by
+   * whichever replica wrote it, so it is the one fact that outlives all of
+   * them.
+   *
+   * FAILS CLOSED, matching this file's other shared-store call site verbatim:
+   * `{ seq: 0 }` and "could not ask" are different answers, and treating the
+   * second as the first is exactly the §1.14 defaulting-on-an-unconfirmed-read
+   * shape (`getLearningStatsForUpdate` erasing a child's XP) — here it would
+   * silently destroy a transcript instead. It costs nothing that was not
+   * already lost: a socket only reaches this line by ACQUIRING the claim
+   * above, which itself fails closed on the same store, so the conditions
+   * under which this refuses are conditions under which the connection was
+   * already being refused one gate earlier.
+   */
+  const floor = await readTranscriptFloor(session.sessionId);
+  if (!floor.ok) {
+    await releaseLock(lockKey, claimed.owner);
+    console.warn(
+      `[oracle] session ${session.sessionId}: refusing the socket — could not read the transcript floor, ` +
+        `and starting a transcript that may collide with rows already written is silent data loss.`,
+    );
+    socket.close(CLOSE_CODES.SERVICE_DEGRADED, 'could not confirm transcript continuity');
+    return;
+  }
+
   // A parked orchestrator for this session means this socket is a RESUME:
   // same history, same budget clock, same paid-speech memo. Every gate above
   // already re-ran against a fresh token and a fresh Core context.
-  const resumed = takeParked(session.sessionId);
+  //
+  // TWO places it can be parked, checked cheapest first. The local map is a
+  // same-replica reconnect — the overwhelmingly common case, and a
+  // full-fidelity one, since it hands back the very objects the last socket
+  // was using. The shared record (`adoptParkedSession`) is the cross-replica
+  // case: the same conversation, rebuilt from a versioned snapshot, with a
+  // freshly constructed `Synthesizer` because a closure cannot travel between
+  // processes.
+  const resumed: ResumedSession | null =
+    takeParked(session.sessionId) ?? (await adoptParkedSession(session.sessionId));
   /*
    * THE ONE FIELD THE RE-ATTACHED ORCHESTRATOR RE-READS from this connection's
    * own fresh context.
@@ -1079,7 +1633,19 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     endSessionRequested: false,
     persistFailures: 0,
     flagPersistFailures: 0,
-    transcriptSeq: resumed?.transcriptSeq ?? 0,
+    /*
+     * The HIGHER of what this park remembers and what the shared floor has
+     * seen — never either one alone.
+     *
+     * The park is the more informative number when it exists, but it can be
+     * stale by a row or two (the floor is raised on every write; a park record
+     * is written once, at drop). The floor is authoritative about what has
+     * been WRITTEN but knows nothing about the conversation. Taking the max
+     * means a resumed transcript continues past every row any replica has
+     * ever written for this session, which is the only property that actually
+     * has to hold.
+     */
+    transcriptSeq: Math.max(resumed?.transcriptSeq ?? 0, floor.seq),
     lastSegmentFrame: resumed?.lastSegmentFrame ?? null,
     heartbeat: setInterval(() => {
       if (socket.readyState !== socket.OPEN) return;
@@ -1153,26 +1719,54 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   socket.on('close', () => {
     clearInterval(live.heartbeat);
     liveSessions.delete(session.sessionId);
-    /*
-     * Fire-and-forget, exactly like `finalizeParked`'s own `closeSession`
-     * call a few lines below — a `close` event handler cannot make its
-     * emitter await it. Releasing (rather than waiting out the TTL) is what
-     * lets a GENUINE resume re-acquire immediately instead of waiting up to
-     * `SESSION_LOCK_TTL_MS`; the narrow race this leaves (a resume landing
-     * before this specific release lands) is exactly what `acquireLock`'s own
-     * one bounded retry exists to absorb — see `lib/lock.ts`'s
-     * `RETRY_DELAY_MS` comment.
-     */
-    void releaseLock(sessionLockKey(session.sessionId), live.lockOwner);
     if (!live.closing) {
-      // The socket died without a farewell. The session is PARKED, not ended:
-      // a sleeping phone or a proxy timeout should cost the connection, never
-      // the conversation. If nobody resumes inside the grace window, the park
-      // finalizes it as `learner_left` — which is what will then be true —
-      // and only then is the speech memo dropped.
-      parkSession(session.sessionId, live);
+      /*
+       * The socket died without a farewell. The session is PARKED, not ended:
+       * a sleeping phone or a proxy timeout should cost the connection, never
+       * the conversation. If nobody resumes inside the grace window, the park
+       * finalizes it as `learner_left` — which is what will then be true —
+       * and only then is the speech memo dropped.
+       *
+       * PARK, PUBLISH, *THEN* RELEASE THE CLAIM — and the order is the fix,
+       * not an implementation detail (`RUNBOOK.md` Round 142's requirement 6).
+       *
+       * This used to release the claim FIRST and park afterwards, deliberately,
+       * so a genuine resume need not wait out `SESSION_LOCK_TTL_MS`. At one
+       * replica that was harmless. At N>1 it was the whole bug: a resuming
+       * socket's only gate is the session claim, so releasing it before the
+       * park was visible anywhere SHARED meant a reconnect could acquire
+       * cleanly, find nothing parked, and build a SECOND orchestrator with
+       * `transcriptSeq` back to 0 — every row then colliding in `tutor_turns`
+       * and being dropped in silence — while this replica's park timer still
+       * won the `ended_at=is.null` close, so the live replica's billed usage
+       * never reached the ledger.
+       *
+       * Releasing LAST makes the guarantee positive rather than probabilistic:
+       * anything that successfully acquires this session's claim is, by
+       * construction, looking at a shared store where this park is already
+       * published. The property the old ordering bought is kept — the claim is
+       * still RELEASED rather than left to expire, so a genuine resume never
+       * waits out the TTL — it just happens a few milliseconds later, and
+       * those milliseconds are exactly what `acquireLock`'s own bounded retry
+       * already absorbs (`lib/lock.ts`'s `RETRY_DELAY_MS`, which exists for
+       * this same just-closed-socket race).
+       *
+       * `.finally` rather than `.then`: a publish that throws must still
+       * release the claim, or a failed snapshot would strand this session
+       * behind a claim nobody holds until its TTL expires.
+       */
+      const entry = parkSession(session.sessionId, live);
+      void publishPark(session.sessionId, entry).finally(() => {
+        void releaseLock(sessionLockKey(session.sessionId), live.lockOwner);
+      });
     } else {
       live.speech.memo.clear();
+      /*
+       * A graceful close has nothing to publish and nothing to hand over, so
+       * the claim goes immediately — the ordering above buys nothing here.
+       * Fire-and-forget: a `close` event handler cannot make its emitter await.
+       */
+      void releaseLock(sessionLockKey(session.sessionId), live.lockOwner);
     }
   });
 

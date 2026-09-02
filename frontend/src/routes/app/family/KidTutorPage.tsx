@@ -7,8 +7,10 @@ import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
 import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
+import { DemoStepsSummary } from '@/tutor/replay/DemoStepsSummary';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
+import { MemoryNotesPanel } from './MemoryNotesPanel';
 
 /*
  * `/family/:kidId/tutor` — a child's tutor conversations, through the parent's
@@ -57,6 +59,26 @@ import type { SessionTranscript } from '@/tutor/types';
  * and never the child's words — the words are in the transcript, where they
  * belong in context, rather than duplicated into an alert.
  *
+ * TWO PROVENANCES, ONE SEVERITY-ORDERED LIST (2026-09-01). `/ORACLE.md` §4.1b
+ * closed its own "not yet done" note here: `placementSafetyFlags` (migration
+ * 0065) is a flag raised while the learner was CHOOSING A COURSE, before any
+ * `tutor_sessions` row existed, and it was real, RLS-protected,
+ * guardian-queryable data that this page never rendered. It is now shown in
+ * the SAME card, through the SAME chip and severity treatment, and — this is
+ * the load-bearing part — inside the SAME severity-first sort as the
+ * session flags rather than in a second card below them. A separate section
+ * would have recreated, one layer up, the exact defect the 2026-08-30 review
+ * fixed inside this one: a HIGH `self_harm` flag sitting below a batch of LOW
+ * ones, with "surfaced FIRST" true of the section and false of what a parent
+ * actually reads first. The two arrays stay separate ON THE WIRE (they are
+ * different row shapes); only the ORDERING is shared.
+ *
+ * The one thing a placement flag cannot offer is the "Read it" control: it has
+ * no `session_id`/`turn_seq`, so there is no transcript to open. That absence
+ * is stated in words on the row itself rather than left as a missing button,
+ * because a parent looking at an urgent flag must not be left wondering
+ * whether the transcript failed to load.
+ *
  * Core re-checks the verified guardian link on every request here; this page
  * cannot show anything the server would not already hand over.
  *
@@ -77,6 +99,20 @@ type State =
   | { status: 'loading' }
   | { status: 'error'; code: string }
   | { status: 'ready'; history: KidTutorHistory };
+
+/**
+ * One row of the "Worth your attention" list, from either provenance.
+ *
+ * A discriminated union rather than one widened row shape: `source` is the
+ * only thing that proves a `session_id`/`turn_seq` is there to open a
+ * transcript with, and this way the compiler enforces that instead of a
+ * runtime `in` check that would quietly pass on a partially-typed row.
+ * `key` is the composite React key, because the two ids come from two
+ * different tables.
+ */
+type GuardianFlag =
+  | (KidTutorHistory['safetyFlags'][number] & { source: 'session'; key: string })
+  | (KidTutorHistory['placementSafetyFlags'][number] & { source: 'placement'; key: string });
 
 export function KidTutorPage() {
   const { t, i18n } = useTranslation();
@@ -152,8 +188,10 @@ export function KidTutorPage() {
               sessions: [...prev.history.sessions, ...nextPage.sessions],
               hasMore: nextPage.hasMore,
               // Refreshed rather than kept stale: a page turn is also a
-              // chance to surface a flag raised since the first load.
+              // chance to surface a flag raised since the first load. Both
+              // provenances, for the same reason.
               safetyFlags: nextPage.safetyFlags,
+              placementSafetyFlags: nextPage.placementSafetyFlags,
             },
           }
         : prev,
@@ -163,7 +201,7 @@ export function KidTutorPage() {
   if (state.status === 'loading') return <LoadingOverlay label={t('tutor.guardian.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
 
-  const { sessions, hasMore, safetyFlags } = state.history;
+  const { sessions, hasMore, safetyFlags, placementSafetyFlags } = state.history;
   const formatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium', timeStyle: 'short' });
 
   /*
@@ -174,9 +212,24 @@ export function KidTutorPage() {
    * sit BELOW a newer LOW-severity one (model_output_blocked) — "surfaced
    * FIRST" was true of the section, never of what a parent actually sees
    * first inside it. `severity` was already fetched and simply never read.
+   *
+   * BOTH provenances go into the SAME sort (2026-09-01, see the header): the
+   * ordering is about what a parent reads first, and a flag's severity does
+   * not become less urgent because it was raised during course selection
+   * instead of mid-conversation. `source` is what decides whether a row can
+   * offer a transcript, and nothing else. The composite key exists because the
+   * two ids come from two different tables and only their PAIRING with a
+   * source is unique by construction.
    */
   const SEVERITY_RANK: Record<string, number> = { high: 0, medium: 1, low: 2 };
-  const sortedFlags = [...safetyFlags].sort((a, b) => {
+  const sortedFlags: GuardianFlag[] = [
+    ...safetyFlags.map((flag) => ({ ...flag, source: 'session' as const, key: `session:${flag.id}` })),
+    ...placementSafetyFlags.map((flag) => ({
+      ...flag,
+      source: 'placement' as const,
+      key: `placement:${flag.id}`,
+    })),
+  ].sort((a, b) => {
     const rank = (SEVERITY_RANK[a.severity] ?? 3) - (SEVERITY_RANK[b.severity] ?? 3);
     return rank !== 0 ? rank : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
@@ -191,7 +244,7 @@ export function KidTutorPage() {
         <p className="lf-body text-content-muted">{t('tutor.guardian.subtitle')}</p>
       </header>
 
-      {safetyFlags.length > 0 && (
+      {sortedFlags.length > 0 && (
         <Card className="border-warning/60 p-4">
           <h2 className="lf-title mb-2 flex items-center gap-2 text-content">
             <Icon name="flag" className="text-warning" aria-hidden />
@@ -200,7 +253,7 @@ export function KidTutorPage() {
           <p className="lf-body mb-3 text-content-muted">{t('tutor.guardian.flagsHelp')}</p>
           <ul className="space-y-2">
             {sortedFlags.map((flag) => (
-              <li key={flag.id} className="lf-body rounded-md bg-warning-soft px-3 py-2 text-content">
+              <li key={flag.key} className="lf-body rounded-md bg-warning-soft px-3 py-2 text-content">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <span className="lf-label flex items-center gap-2">
@@ -218,6 +271,17 @@ export function KidTutorPage() {
                     <span className="lf-caption text-content-muted">
                       {formatter.format(new Date(flag.created_at))}
                     </span>
+                    {/*
+                     * Said in words, not left as a missing button. A placement
+                     * flag has no session to open, and a parent staring at an
+                     * urgent flag must not have to guess whether the "Read it"
+                     * control is absent by design or failed to appear.
+                     */}
+                    {flag.source === 'placement' && (
+                      <span className="lf-caption block text-content-muted">
+                        {t('tutor.guardian.flagFromPlacement')}
+                      </span>
+                    )}
                   </div>
                   {/*
                    * Found by adversarial review, round 41 (2026-08-30, HIGH):
@@ -233,15 +297,20 @@ export function KidTutorPage() {
                    * alone and never depends on that session appearing in the
                    * capped `sessions` list, so this works for a flag from
                    * any point in the retention window, not only a recent one.
+                   *
+                   * Session flags only: a placement flag names no session, so
+                   * there is nothing this control could fetch.
                    */}
-                  <Button
-                    variant="secondary"
-                    onClick={() => setOpenFlagId(openFlagId === flag.id ? null : flag.id)}
-                  >
-                    {openFlagId === flag.id ? t('tutor.guardian.hide') : t('tutor.guardian.read')}
-                  </Button>
+                  {flag.source === 'session' && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setOpenFlagId(openFlagId === flag.key ? null : flag.key)}
+                    >
+                      {openFlagId === flag.key ? t('tutor.guardian.hide') : t('tutor.guardian.read')}
+                    </Button>
+                  )}
                 </div>
-                {openFlagId === flag.id && token && (
+                {flag.source === 'session' && openFlagId === flag.key && token && (
                   <Transcript token={token} sessionId={flag.session_id} highlightSeq={flag.turn_seq} />
                 )}
               </li>
@@ -249,6 +318,20 @@ export function KidTutorPage() {
           </ul>
         </Card>
       )}
+
+      {/*
+        * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068) — the one
+        * item that document marked BLOCKING before real families.
+        *
+        * Placed ABOVE the conversation list and BELOW the safety flags. It is
+        * an inbox: it asks the guardian to DO something, and an inbox under a
+        * scrolling archive is an inbox nobody empties. It stays below the
+        * flags because a child disclosing distress outranks a pending note,
+        * which is the same ordering argument the flags card itself is built
+        * on. The panel renders nothing at all while it is loading, so it
+        * never pushes the list down after the fact.
+        */}
+      <MemoryNotesPanel kidUserId={kidId} token={token} />
 
       {sessions.length === 0 ? (
         <Card className="p-6 text-center">
@@ -463,6 +546,22 @@ function Transcript({
                 <TutorWhiteboard board={beat.whiteboard} seq={beat.seq} className="h-full" />
               </div>
             )}
+            {/*
+             * What the tutor's hands did on the money tray (/ORACLE.md §20.8).
+             *
+             * This surface rendered NOTHING for it until 2026-09-01, even
+             * though migration `0067`'s own header states the defect it fixed
+             * was losing that fact "silently, on replay AND on the guardian
+             * transcript viewer" — the replay half shipped, this half did
+             * not, and the migration went on claiming both. A parent reading
+             * "so I take one of these away…" had no way to see what "these"
+             * were, which is the same missing-referent complaint that put
+             * `demonstrate` on the wire in the first place.
+             *
+             * The plain-sentence summary, not a re-animated tray, for the
+             * data reason `DemoStepsSummary`'s own comment gives.
+             */}
+            {beat.kind === 'tutor' && beat.demonstrate && <DemoStepsSummary steps={beat.demonstrate} />}
           </Fragment>
         );
       })}

@@ -26,9 +26,1162 @@
     "real deployment. The runtime falls through to the Redis cache and then to a paid call.",
     "Run 'npm run speech:pregenerate' (no --confirm) to see what is missing or stale."
   ],
-  "generated": null,
-  "provider": null,
-  "depot": null,
+  "generated": "2026-09-02",
+  "provider": "inworld",
+  "depot": "https://media-b2c.littlefounders.ai",
   "bucket": "tutor-speech-shared",
-  "lines": {}
+  "lines": {
+    "8f0415ec301b18229b3e79e05b0b204ff17d5e7d2cbf7b162ade647ccb66a9f5": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/95a86d966b44e8e7d9ad1e3d9f1b643bd998fe13aa02e8b3324c75a95bf1f0ce.mp3",
+      "key": "greeting",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "Hello. Take your time getting settled — I am in…",
+      "chars": 102
+    },
+    "ac5ec3bddf6acce336057621c3376c3959dfafca3120287778d1e24e3ad09684": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/544185ad9a708dfbd2a4bc610fcb167304a7d9502da5eeffc5a5c0e1937af577.mp3",
+      "key": "safety.self_harm",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "What you just said matters, and it is bigger th…",
+      "chars": 214
+    },
+    "08957fffdffea6cc2164f81fae186c4d84fd95a0911c9aa340bc21dabc3bb741": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/06674a8828fd7cd6bf51cf70f7f67961daba09a72f553261e3b1a3e03193ef7d.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "Thank you for telling me. That is not okay and …",
+      "chars": 205
+    },
+    "7abd991a220e86204dc54fe794cdc291ded5c40ae7b3a95c4032504ce9625a9d": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/278823382930f43854a292d32b968acaac3aad2a51fe80ed811d712f6e6642b1.mp3",
+      "key": "safety.adult_content",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "That is not something I can talk about. Shall w…",
+      "chars": 85
+    },
+    "f1b88f89aab4e7a918aa8a5118e28dccfc771f6e6b139fd7be9b59c1337cef05": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3db59bc4d1598a29399f57ee9f1a4f94ecef24975d2069dd664662ceca9fd35e.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "I never keep secrets from your family, and neit…",
+      "chars": 162
+    },
+    "379f7cbbb53044edb51e746ba1c169d9771317dc79351e84eceac6799347a105": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/f0c8a9981eb40c8ecc22e0871077908d197db944708c9b3f25b016b410cff940.mp3",
+      "key": "safety.personal_data",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "Careful — never tell me things like your addres…",
+      "chars": 131
+    },
+    "a7cc3349142e51c45686bcb60b65d976854555f7ff9744c81b85e9da64fd49c0": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/e92ba863bb0fc6133902da19374fac9e790cd327849cc6a2848a78f7ece8ae7a.mp3",
+      "key": "safety.injection_attempt",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "Nice try! I am just here to help you learn. Whe…",
+      "chars": 58
+    },
+    "8d6c908721465271a75f896945ea32d865bf61465b39efeb7cc9ac479f623f27": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/691f728eea12aab1b1554c7659c2c4242145f7b7f3dc3efd1e19b85b77c9ccd5.mp3",
+      "key": "model_down",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "My thoughts got tangled for a moment. Give me a…",
+      "chars": 72
+    },
+    "af608c5c44b4bca621f848527ce0a240bf15d23a6a6085ad0068507687f914ef": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/75f807a031129f24a24b11627c79799377cede3c7ade9bcbb6167769b4a2677e.mp3",
+      "key": "moderation_blocked",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "Let me say that a different way. What part woul…",
+      "chars": 78
+    },
+    "8ba56384c0a0af49389206829d41082096f7491e88d05acc21e15ce09f2d2911": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/00454124ef5503a16359b2577e668a807ccd47e72f51459b6279368314108b15.mp3",
+      "key": "soft_close",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "We did great work today. Thank you for coming —…",
+      "chars": 101
+    },
+    "f3559796d56a5da2add5257d9376669279eaae1644a26d4c5ec3445ca3ddadfc": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/fb2642ad8b459462cfcf1b770f441b806a89c3c09143fc9fb65c3e7c407492de.mp3",
+      "key": "hard_close",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "That is our time for today. You worked hard — I…",
+      "chars": 80
+    },
+    "75647c14593c8feace23f5ff98853255ca9c31081547495b0e2ee85f3d3e2e92": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/558faef82915262c7177ba4d163ea9cc2b805cd087bc9d821dba3c056d81ac07.mp3",
+      "key": "consent_revoked",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "We are switching off the microphone. You can ke…",
+      "chars": 80
+    },
+    "e9be0e4304bc7323fe5daca9b30b40f385313ee0ebc4924fc5b72903567e4b89": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8b99f97aced6b2b513b608c14253a257ada9a210afd00342feeb28155d0f6a0b.mp3",
+      "key": "greeting",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Hola. Acomódate con calma, que yo no tengo ning…",
+      "chars": 99
+    },
+    "c633555ff67cbeac992ba6242ab5685e5768d796dffb984f4e0f26d1ac013045": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3ccb6f315070cf18944cc0e1fddbd51784ed3a90e2e039b1c9911b39251230bf.mp3",
+      "key": "safety.self_harm",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Lo que acabas de decir importa, y es más grande…",
+      "chars": 255
+    },
+    "11cb6cba0e16422651987bed1275cc07a995b44aa86da22278ae857ce7e40362": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/dc6378360cbae17a319736002ada07d3c48645d835a44461fc909b8b54f8dc5d.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Gracias por contármelo. Eso no está bien y no e…",
+      "chars": 215
+    },
+    "17c4834c526312eb80df056014bbd34ad005a3136a6f181956e4fd5276eb9b36": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/d1686b8ec7c88565557c7eefb4689ebaf833f3400293d1dadf69806c6d23ddc1.mp3",
+      "key": "safety.adult_content",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "De eso no puedo hablar. ¿Regresamos a lo que es…",
+      "chars": 62
+    },
+    "19037ebef2ef4664817f2db4cce2790cbc869f7ed84e2830d5efbb7d5968d162": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ea7e17aeceea1ca493728f7afa3490d16df5af109c3ec1fdd3ed320a3e75fceb.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Yo nunca guardo secretos de tu familia, y nadie…",
+      "chars": 173
+    },
+    "7ffc0917508ea7e3ddaac8485ac746f1a089a9f50f79fc0415bab9387a99b8c9": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/c75a96bca3d5a65d079fff487fd275cc676d5b85326b27c8cba228241d578e32.mp3",
+      "key": "safety.personal_data",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Cuidado: nunca me digas cosas como tu dirección…",
+      "chars": 133
+    },
+    "e2895922735c955ed58ea65b27522c9d2c785dac1a2073f7696b77cd542e3808": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/10725cef994e1d4e14364beff17bb557b79f4edf1c53ed2a8cb0c4b134d20ed7.mp3",
+      "key": "safety.injection_attempt",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "¡Buen intento! Yo nada más estoy aquí para ayud…",
+      "chars": 79
+    },
+    "ddf496f512f8bd2549c3aed7a938b20d41fd7ac09e26867a070a1783c04205d9": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/e4da530b759ba175760537542ad2b965ae1acafe2433a43c120726e3796f4e86.mp3",
+      "key": "model_down",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Se me enredaron las ideas un momento. ¿Me lo pr…",
+      "chars": 64
+    },
+    "db43da250fd8f25ab6e8a720712942b82adb7f9d14072c3ec04a998133019142": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/a66a982bf1808f7158865ea29601bb40303efba75dfaa1ae75ee74de1a411a0d.mp3",
+      "key": "moderation_blocked",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Déjame decirlo de otra forma. ¿Qué parte quiere…",
+      "chars": 74
+    },
+    "5e10fcd700eaabd6e41be48f10580af8b8aa9e1b2bf9ccb8b1abbb1c84b9d594": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/7c868352e322f340619f102a79a5cec585e75127bddd83f3969d1db0dedb0bc9.mp3",
+      "key": "soft_close",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Hoy trabajamos muy bien. Gracias por venir; aqu…",
+      "chars": 89
+    },
+    "d527232e5e7883c666f9c73253c6c2e179ef70e130ac8000760c8940e46fc4d8": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/381eea150ae52a3621ae87726e4c4b05ef3530046b93638d546f36e6757ad816.mp3",
+      "key": "hard_close",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Hasta aquí llegamos por hoy. Te esforzaste much…",
+      "chars": 83
+    },
+    "7a2a1c397f0c5146430b7b68c1ca706eab3f041a90dec6a24731a52bcd65d159": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8668ec13c181a584420efd54b1314cfb6bceab459afadfbda79651e681842fba.mp3",
+      "key": "consent_revoked",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Vamos a apagar el micrófono. Puedes seguir toca…",
+      "chars": 66
+    },
+    "f610c935b38ce76fa47c591958e030f2bc6ef8a5a0612213fe030e3cd664f87e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/d2c15cc8111b5fb467a3ea6ab756ade71f33e1160c72d6bcccfca59374c95ce1.mp3",
+      "key": "greeting",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Oi. Pode se ajeitar com calma, eu não estou com…",
+      "chars": 96
+    },
+    "b2d52b7fd9c721d9c4f4ca3f52be79118e955c7eaf7c0675825c36172e919966": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/35778bd9a0847ef475300cc54c3e5aef0dd0ea3b00982406e1e3f5c6cb057f97.mp3",
+      "key": "safety.self_harm",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "O que você acabou de dizer é importante, e é ma…",
+      "chars": 250
+    },
+    "a30c5bb8babd8d9e6372c47964632aae89f33b354c00d06cd13c60d4adb3059c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ad3f179d7ec3f62a48b0f2b3c6bf229b155eb71388b709790dd7459401ec7bd1.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Obrigado por me contar. Isso não é certo e não …",
+      "chars": 217
+    },
+    "368663e7c3d5285315e562af284ab86cafb1f193bb38619534bf8d09b8199fd7": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9a6c66bdd291cf3e70af4aa2faadcc5d03e3c90b7bbf8bdb59921cc180f88697.mp3",
+      "key": "safety.adult_content",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Sobre isso eu não posso falar. Vamos voltar par…",
+      "chars": 71
+    },
+    "d7a157c3476baa0e720bdff16f7e223d200d94974f9508cf769726a9e84cd297": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/858d0c3100e3b1bfc154092626936cf7cd9f265b9992b65a30d08f5e1f1f269c.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Eu nunca guardo segredos da sua família, e ning…",
+      "chars": 169
+    },
+    "e1c5fe8c30d9ab12a3cd3ed0cda008219b8dc554df60e112814292c6b2f9d49f": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/6ce4d63124062113b079d4c696db89899b03b848ab19098a765a0ce4275c447b.mp3",
+      "key": "safety.personal_data",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Cuidado: nunca me diga coisas como seu endereço…",
+      "chars": 130
+    },
+    "5cd6ed61a489562a804ea3bfb30d4e901468c7ebc87f90ed8b353a295407f2ee": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ffb73242dd98c5f6675691bb0eb2568f86dc7258888bf2c14d3660bac9a9afc8.mp3",
+      "key": "safety.injection_attempt",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Boa tentativa! Eu só estou aqui para te ajudar …",
+      "chars": 74
+    },
+    "1905ce1134c37b5f4f3af99aaf14a781faff2b0ed3f123a28400f58644459a6e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/feb518a18ee27e139c41a8e769c7a070af105a4166392084a822cb352a173260.mp3",
+      "key": "model_down",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Minhas ideias se embaralharam um instante. Pode…",
+      "chars": 69
+    },
+    "08a3b5438255052c0dfe2f83a6b95c81175cf4ce7d7df0ec700ffcd615958060": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/87bfcf40902f8606497b6e23c3d977fbf4b17688461206d6b9afc4cc53513d64.mp3",
+      "key": "moderation_blocked",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Deixa eu dizer de outro jeito. Que parte você q…",
+      "chars": 75
+    },
+    "347c3589adfe92aff469c7890de62fc9216c9a413f22c36b5c09e060961ab592": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/70b834c2bbf810c54f9c61b9947bec01f72b26e966f4f0219471a7b2f37b4025.mp3",
+      "key": "soft_close",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Hoje a gente trabalhou muito bem. Obrigado por …",
+      "chars": 106
+    },
+    "1422bbf05de2f010c1c3ebc6f4ea6a43d637370a0f0e0eb6c899cdfb764edd6e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9a704362c8bd5d28f78c64dc87c1f7c06b597899c1eb43e440da9c3c836ced49.mp3",
+      "key": "hard_close",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Por hoje é isso. Você se esforçou bastante; vou…",
+      "chars": 78
+    },
+    "7d7dfde68d93b34a29e00eed47aaf97a2e677459de9ee1144d841832273876e7": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/12d44970c74f3872c87e8e4596aa78b5fb512b5bf54d917905e80352b7cbeb00.mp3",
+      "key": "consent_revoked",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Vamos desligar o microfone. Você pode continuar…",
+      "chars": 75
+    },
+    "e5e74a6ca65149c5b749818e59abe3515318835d5680ada48158bda637dfe6c5": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/80ac23a82d45fa4e106c23149596eb0546c9e6d928e39e29cf8b3b5b7675234f.mp3",
+      "key": "greeting",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "You came back! I waited all morning and I could…",
+      "chars": 95
+    },
+    "e8436fc4b456d3d619077842f86e542da697b33200e603d5eefa5ea7eb09ed2c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8abe2a9a29be8c6c2a05d42fc20adc725955ef82e16a90adbb35be6b5d719cac.mp3",
+      "key": "safety.self_harm",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "What you just said matters, and it is bigger th…",
+      "chars": 214
+    },
+    "a88a29fdc47ddc137848fba186f25a7defd8059ca0ee1511b01e385e7d3579a0": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/96e170faa08c2a04ef048f4d75b7e9f590656175f31be201eff7b628cc94e50f.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "Thank you for telling me. That is not okay and …",
+      "chars": 205
+    },
+    "ed4ca0b00ac9c164a7ca0d5cb8e2e71167771906d8ed18da20437d1d4d55448a": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/03badc7a9bbac4bbb90bce2562e0c66e12974ded3c1f7cd204b5705bd4eeb09b.mp3",
+      "key": "safety.adult_content",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "That is not something I can talk about. Shall w…",
+      "chars": 85
+    },
+    "5369d44597b373d346b47a2a048ffe7c5f98e0a5a56a3aeeef5c29c24419da87": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3fdb95368e816920afd7cd8c385e6d9510edc995b41f7ab234de429f679dc101.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "I never keep secrets from your family, and neit…",
+      "chars": 162
+    },
+    "e380ad184dc18121308cc68e52747de1ecc87d02443dd13998f976d9f0668038": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/34be8144d32446bd387ed9c4f7f4b3ca3b271bc9eb1a4632cf2c2f99ab5fda25.mp3",
+      "key": "safety.personal_data",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "Careful — never tell me things like your addres…",
+      "chars": 131
+    },
+    "588f56a0477bc2cf8b04cc9c79c127e4b92d62155dc8b07420cc541e140afb6a": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/10e8c11a0cb4e279f3320db3ac1f5f24eb1a94abc8364fdb93faa9c8037010f4.mp3",
+      "key": "safety.injection_attempt",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "Nice try! I am just here to help you learn. Whe…",
+      "chars": 58
+    },
+    "914867a377f54c795c8890c3079321c55ea32cbcd6faf68852bf393ea130eb5b": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0363fbca0940879b07d13da51469456961adb5b9ba8becb0c254abbe6d6d125b.mp3",
+      "key": "model_down",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "My thoughts got tangled for a moment. Give me a…",
+      "chars": 72
+    },
+    "37cee931cb71f6bb120f56d31b0eef6556a26e26ed5d03e5b3c4932452580761": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/195740020b2b9a815d2130d497e058fcd2a1bae161d9732554c1c5597efb4f37.mp3",
+      "key": "moderation_blocked",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "Let me say that a different way. What part woul…",
+      "chars": 78
+    },
+    "12fa8c340ba9d26ce68d80b0f119294d03e7a36da2e4a16cda572a4247e277f4": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0deb504e81635d314fff421074fdcd7b555dc546145113a6a8628c231d4ad48e.mp3",
+      "key": "soft_close",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "We did great work today. Thank you for coming —…",
+      "chars": 101
+    },
+    "5d65c57a6f8a3c3e3c8989e1e57acddbea26c24edc214a0bb3a75be3215b8e15": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3e9349b23812b862e64e937600cbc2d493a29a300882ed1631ef31bdf32e5940.mp3",
+      "key": "hard_close",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "That is our time for today. You worked hard — I…",
+      "chars": 80
+    },
+    "d06932a93f6e83918be095147b89bc45ea0dfffa0973563e18368e069206dab1": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/79e91248ae4582a72d3ff96222dbbf68b4b830beecd31a95753c2faeeb3c17c0.mp3",
+      "key": "consent_revoked",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "We are switching off the microphone. You can ke…",
+      "chars": 80
+    },
+    "758f963b58822a2c90d230daeb67e2236998a8ec6f8d4e13b938ee30b69e09f7": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/bc79cb7d8d12678a3434ca35aab6758e39a0879bc40507ff8c71ff54937ac65a.mp3",
+      "key": "greeting",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "¡Volviste! Te esperé toda la mañana y no me pod…",
+      "chars": 90
+    },
+    "89f97ff38c126b2a2fdd9f1137de81b592c33b52a9e5a7c293a8f2d47f790b84": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/e276b12bcd84292a98082af90e7c3c514d2e2549d34e8df05ca57bd5ffc12322.mp3",
+      "key": "safety.self_harm",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Lo que acabas de decir importa, y es más grande…",
+      "chars": 255
+    },
+    "26e2dd4d44d30c5c24cd409aa1e04de26e8470c72d3f951df88500f34f010af3": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/5a8ca3f79941983109a79937493ecd8e2ab42e2b149017baf875808b0bb7e0d0.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Gracias por contármelo. Eso no está bien y no e…",
+      "chars": 215
+    },
+    "f4c58a39586238865223969c6ac6797db29eb55c94232a76b7f171433adf7ee2": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9bd19da83d990cda3cc5ff23802399ea95831d3e225782ae6de4ab692a6547b1.mp3",
+      "key": "safety.adult_content",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "De eso no puedo hablar. ¿Regresamos a lo que es…",
+      "chars": 62
+    },
+    "83504b05ab10f94d90f44e96d698f195f3b0bf7b75529e06627334d7568e2630": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/51891881c06af982d8a1f2058b06a782946228e8e35d2adb8b68937cd2190509.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Yo nunca guardo secretos de tu familia, y nadie…",
+      "chars": 173
+    },
+    "27a1eb0d0dd4df00156885836b8d55d22e80a81f2af27f48d6aa25779b2595b0": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3e60c8766b1d7b380679339070b011aaf97d17bf1c6930e415cefa4f01e0c511.mp3",
+      "key": "safety.personal_data",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Cuidado: nunca me digas cosas como tu dirección…",
+      "chars": 133
+    },
+    "63f805b9c293e2a4ce08c104b406f0689f5220e0605d217da9034097afde6743": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8cbd7e48859429132e50aa312d7f1c7d752276c962e5dfb2dab0c803698e3aa3.mp3",
+      "key": "safety.injection_attempt",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "¡Buen intento! Yo nada más estoy aquí para ayud…",
+      "chars": 79
+    },
+    "6a3c555c81aad80b6713f108d5d52c272ce3b4f397be1d950e670efcb0c53d53": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/04403008e835b6c2d1c7430140fd545f031a63f205c399c0cf9ad6a8e1948c2a.mp3",
+      "key": "model_down",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Se me enredaron las ideas un momento. ¿Me lo pr…",
+      "chars": 64
+    },
+    "5e57a1b40680c44a169ff977582ad938fe027345b0f4660875adcf79d0b21822": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/27b58a8e5e6cd77eb34e25678b4518db88e845977c93031ed095e144c1024d94.mp3",
+      "key": "moderation_blocked",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Déjame decirlo de otra forma. ¿Qué parte quiere…",
+      "chars": 74
+    },
+    "fa0c26e714b227cb465f54d6f905149c3d3de12536d9c24c0df43e89d8e9983a": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/7c8173cc8403021076571618b045848b47ca784ca8f5004330c0612a01812598.mp3",
+      "key": "soft_close",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Hoy trabajamos muy bien. Gracias por venir; aqu…",
+      "chars": 89
+    },
+    "79900431e83b910180599f3571128f977323e95e903cb2a5fe3c1595622b7c55": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/845735c184d5a208aa43fc53078b7f85009610cd66de35ff71134a7facb82486.mp3",
+      "key": "hard_close",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Hasta aquí llegamos por hoy. Te esforzaste much…",
+      "chars": 83
+    },
+    "f458b803638e3abb3be3b90e7a7730188284874d94bc79f71576682fa840e55f": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3a7673f3aaa3eb587a1935418b3749971cc56d10644c44b3f6a0b7890ab10720.mp3",
+      "key": "consent_revoked",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Vamos a apagar el micrófono. Puedes seguir toca…",
+      "chars": 66
+    },
+    "dfc95045a2bb23c5172a97fc7d407bc12d2ce257d0a5a63261abc599ab4bbf02": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/f47555d958a10fd83aa9fafc3b50ac566446a9dd4acc7a112ad329959831a761.mp3",
+      "key": "greeting",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Você voltou! Esperei a manhã toda e não consegu…",
+      "chars": 99
+    },
+    "41e1ff0fc64d8f6474b3f25252fc27918cf8a909f6ab8527213d01a47573da1c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9ea74abaf6caa84e6214d74c311e17c94b489155f7bcc4030b52c01b40dbb759.mp3",
+      "key": "safety.self_harm",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "O que você acabou de dizer é importante, e é ma…",
+      "chars": 250
+    },
+    "1cffbe3285c797a6cf6981d415a3d7650e81dc03f8d5551c5019518013e926ba": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/5304b948865b8edeff59c828da399d160f37c1b4213d0cef1ec906d049feff5f.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Obrigado por me contar. Isso não é certo e não …",
+      "chars": 217
+    },
+    "993639ad333cd032ee260b2991b6ef0e609995ce4a9810d8d26ff854d640b71c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/7d6089c65e22e878de72ec570e3797796b3e45f5cc2e4528ffc03451b1e95a7e.mp3",
+      "key": "safety.adult_content",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Sobre isso eu não posso falar. Vamos voltar par…",
+      "chars": 71
+    },
+    "e9b48c13b0cc05f04443032121d31613a3b48906f753f9301de229f4bfac2d48": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/860868033302b7daeb8564904a9eed7e7ded01f97fdc7b435765c68030ad094c.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Eu nunca guardo segredos da sua família, e ning…",
+      "chars": 169
+    },
+    "42f7fa2db87188a800306c5067296bb940026e63905cfff0ecdc2a0f61e8945e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/40b43b5663522a921ed6dace343c75c9fad6d04570e781323c77584d7003f8cd.mp3",
+      "key": "safety.personal_data",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Cuidado: nunca me diga coisas como seu endereço…",
+      "chars": 130
+    },
+    "55474a11c668c10b662c2b1b5ca74b81be038b698a7ccd0ef155e990c53ffaf2": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8f78050122a9de0654729155287b643691a3c5413a34221bbc7ed998153d85e0.mp3",
+      "key": "safety.injection_attempt",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Boa tentativa! Eu só estou aqui para te ajudar …",
+      "chars": 74
+    },
+    "c2418e6a5a2f3a40e95f1290890148d73cd05c5dca5eb943c106791b1680f8ce": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/72c82c3cebf88164264b834ec40999c29d3a5f49cde047f508fa332c7afabd61.mp3",
+      "key": "model_down",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Minhas ideias se embaralharam um instante. Pode…",
+      "chars": 69
+    },
+    "15432cc7a5f45f81cb11f0cbc70de1121e039b6f69689a96ba612d08cb0c0e28": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/dab47f59246698b1b3c583d0540a2c846e2a67ac802de712e6b113625727acc0.mp3",
+      "key": "moderation_blocked",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Deixa eu dizer de outro jeito. Que parte você q…",
+      "chars": 75
+    },
+    "7fa6339507ff939eef5cf641843f43894d9f75f06f54cb026c57f11fde382d37": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/b9a7e4eb8ca3bde1d5851eedb37422654b42012b49e54b70f2c02a77347eda1f.mp3",
+      "key": "soft_close",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Hoje a gente trabalhou muito bem. Obrigado por …",
+      "chars": 106
+    },
+    "b0a663794c7516b3307fd49b64103f6f209f807a35b94f1dd514d922e07c5613": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/f7908e1b2dd5cff87d7c78765096c7b6042b57757447f4ddbfe53df13c8edb86.mp3",
+      "key": "hard_close",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Por hoje é isso. Você se esforçou bastante; vou…",
+      "chars": 78
+    },
+    "b3c846e6d56931c07552240ca1bb43fb1ef4ba80f0cb35ee7d2c6a4d13d5e455": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/adce6794c59bed9dc9b5b21f1159be63340eaf7434335ba79380959923dcec65.mp3",
+      "key": "consent_revoked",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Vamos desligar o microfone. Você pode continuar…",
+      "chars": 75
+    },
+    "a37a06b010310c42504f56cbc0a7fd315e7a3c1ecbc8d5380f0f7065f86f96a5": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/6cecb2723706c7fb297db1afc80f7244a235b76fb93e76cd93cef52254b2bfab.mp3",
+      "key": "greeting",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "Good to see you. Let us start with something sm…",
+      "chars": 108
+    },
+    "7cce699be053962bcb47ef6ac97b0767ac440f9b6ab6ebf8d183b95e801db372": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/b7215b44c4034db244a8bf2510d996b80c04d4dc5868a1a995fad1c7eb2952e7.mp3",
+      "key": "safety.self_harm",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "What you just said matters, and it is bigger th…",
+      "chars": 214
+    },
+    "aca62674e0d694914068507c5aa05d97357c1766256b2cddd7f9f1a97be0a424": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ca36b05641f3723f565f08fdba3f03d61a8b3c4b80002d1a886e130f6037da62.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "Thank you for telling me. That is not okay and …",
+      "chars": 205
+    },
+    "62858f1cfb75d9481be6064e83163171d9dffab9fa3ee28ebb6f5009c46e5114": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/27d5ac95ddfe24ba36ad5a0e073f216516e05f3b92055ecff2fabd75862db8ea.mp3",
+      "key": "safety.adult_content",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "That is not something I can talk about. Shall w…",
+      "chars": 85
+    },
+    "b302bf5069afd5b91226d3c25bc1937eb97e1cf7781bc1e3d2f21166726c6dd1": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ba19b83d29fe381e55f184291f0b1667c47b82dab48d46b890de31cb9d089ac4.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "I never keep secrets from your family, and neit…",
+      "chars": 162
+    },
+    "4ef3ef5a6707dedd533081c5c12f2f7f94fcefb9be74f5b2e10bfc7d2ac47d92": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/c3b60e7c3641b0cb6a0654eb853e9c7e31d5848031fb7106436077572b3212fd.mp3",
+      "key": "safety.personal_data",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "Careful — never tell me things like your addres…",
+      "chars": 131
+    },
+    "c732fb35d6ac4fd57c7ef0c06b2655e80c590970100f62c2c3dab1bea5ca2aac": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/b58c25b87755d6cd67ca3d5073b9918b105688b727828baca839b8b4b84d578c.mp3",
+      "key": "safety.injection_attempt",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "Nice try! I am just here to help you learn. Whe…",
+      "chars": 58
+    },
+    "0aceaa8d278fda02a7825f8973e819052d347304233302a1dfef936fb486805f": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/d38bc5bbdbdced596899a7d09d98be6ef19f313168a0c244926b584aedb55c42.mp3",
+      "key": "model_down",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "My thoughts got tangled for a moment. Give me a…",
+      "chars": 72
+    },
+    "38fc86975d99711b3584761b731ebee314a52f795ed8a3648c568c8ae950bd6d": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/43611c574e514e61031e9199eb3970344192a73e27a51ef34f5f12bac6bb760c.mp3",
+      "key": "moderation_blocked",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "Let me say that a different way. What part woul…",
+      "chars": 78
+    },
+    "d280c5d4e0aafe3ee7dc25b827f20cef5ad877fbfdf95f01f15097ea9a5e644e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/07e90a8f681cb18bdad6d2c33828b6d8a106db96f1e2a2b1a31b5b2ea583cc76.mp3",
+      "key": "soft_close",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "We did great work today. Thank you for coming —…",
+      "chars": 101
+    },
+    "4de703d774a4251a700b967b133985e004160a42adc07a057fd876871b9baa1e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/a1f0cb092d85bc7cb244d771a4b60026cdb5ba4b0c6c5c5b645efe6f70c71943.mp3",
+      "key": "hard_close",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "That is our time for today. You worked hard — I…",
+      "chars": 80
+    },
+    "62c6c47ae0d383f0f49a767e05c1bb53acf3f4e45b085804e382e5a2aaf5d919": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/f62449b1e05a9a69a4d8d48d302f37a58ac7837a26d1d9ea8c5de86d184295f7.mp3",
+      "key": "consent_revoked",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "We are switching off the microphone. You can ke…",
+      "chars": 80
+    },
+    "a47ca00db0af899ebfe1923534f146f5273d02d6f1a2b23fffe972a25a38bbab": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/f1fa63d413f9157d46a06ab4d2de6c5f096c4031dbf80f09969920482bc11910.mp3",
+      "key": "greeting",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Qué gusto verte. Empecemos por algo pequeño y h…",
+      "chars": 97
+    },
+    "84eabc8adee1586ba32d1ab25b97549562e60b43a98fe419f5956314ae42dfb7": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/21861bce0471d437c64b1dd3be664215bc0965380bacdc97905e5d1b7a310bff.mp3",
+      "key": "safety.self_harm",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Lo que acabas de decir importa, y es más grande…",
+      "chars": 255
+    },
+    "8e9d830afa9fdbc7c992c84b6f8a3fb78df22bd2153b44f5c9427a2f5fb9d762": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/92419d1454c3a00cf0bf310b878791d0f597f5ece4b60671c9b3a56fb5c48ae4.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Gracias por contármelo. Eso no está bien y no e…",
+      "chars": 215
+    },
+    "1e1ec101f92edb5337d094e4a91ed17bac7fa098e4929e5037717101e19c3d8c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/1dccc83f48ba28b377d6da427c6079618318aedcd7548e9e292488955757d911.mp3",
+      "key": "safety.adult_content",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "De eso no puedo hablar. ¿Regresamos a lo que es…",
+      "chars": 62
+    },
+    "7fcb9c5f0c23879757762199729b8628d84c8e51538c364a3e4ccceb4226af5e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/50721029039c65b9a6d8f3e756bbfd5d7fa840484f2093dca1d5047920b62c25.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Yo nunca guardo secretos de tu familia, y nadie…",
+      "chars": 173
+    },
+    "7f435b77a1678e6c0f9013f399a8e58038b93612e5e7a949951f353c56cbb6bb": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/a15bc81c2fd52aa0ca9f9837da38f0ad35308e4ae2706f61f29398fa06e5d2ea.mp3",
+      "key": "safety.personal_data",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Cuidado: nunca me digas cosas como tu dirección…",
+      "chars": 133
+    },
+    "fc7e5effd34bee672ec87ce4fa5eed92dd03f4f3eec4c29c55f2df209e40e05e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9032fbd64f78e4cc26909cec2db6e0e11f8e8abcae790d59b0cc1d77c954789c.mp3",
+      "key": "safety.injection_attempt",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "¡Buen intento! Yo nada más estoy aquí para ayud…",
+      "chars": 79
+    },
+    "1410b4b62c6247236821248e82f2c08ee6d1e193ff058ec180bf2538b054a8f8": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/1ca13dd3c94098462ac45996630ec84fef0ddeef6e0a3978e331ce1d035aca80.mp3",
+      "key": "model_down",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Se me enredaron las ideas un momento. ¿Me lo pr…",
+      "chars": 64
+    },
+    "7f4cc22ff3419f968271e32ca4deb39ff3818c056949b22282cb54fc436e1ad0": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/83651c8cb06bdcb65a21626ff2352014f82c0ab08b752fc5b7c4ee04e43e3722.mp3",
+      "key": "moderation_blocked",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Déjame decirlo de otra forma. ¿Qué parte quiere…",
+      "chars": 74
+    },
+    "ba1f2e947894436de7946ba339e696797f3940df8d746fde0da151a35823a4e1": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/645b9071e40bfab33e8e386fbd7f30fbde1e4f88d1e7e19420373652c8de91a7.mp3",
+      "key": "soft_close",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Hoy trabajamos muy bien. Gracias por venir; aqu…",
+      "chars": 89
+    },
+    "f6b0f5b78ceec504a02d38864d4265059b7180616ccba1e3b55423120b3c5c67": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/1e93f8314f4e97241ec525d672c7cf6e29f9d46dac10aa6f181fa73bc6fe71f0.mp3",
+      "key": "hard_close",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Hasta aquí llegamos por hoy. Te esforzaste much…",
+      "chars": 83
+    },
+    "c8427812ac74f0c4e441afa351ced25bbee06f30125f1ab9f2d8cc95bba1aa2c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/06d9399fcfbdada2b974286658abad78978e6ed2d54422064a4035dd45c0570a.mp3",
+      "key": "consent_revoked",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Vamos a apagar el micrófono. Puedes seguir toca…",
+      "chars": 66
+    },
+    "a71909ca11ef7540f87cf1d4eebb445c1fa8d8709fed5b8286b31ab3473e84ec": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/80a58686c6e620005031c129f26b7671884c513b25aa53298830cbb2ee5de7a7.mp3",
+      "key": "greeting",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Que bom te ver. Vamos começar por algo pequeno …",
+      "chars": 93
+    },
+    "7e24d2b69dbb68b4a6d9c30f4f6d133ff83ebad08c2a6fc95b029c1aac9f3584": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/e050e4101b5daaa02132baf38c317cb004809c68aa155723660475bf2eaaaf92.mp3",
+      "key": "safety.self_harm",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "O que você acabou de dizer é importante, e é ma…",
+      "chars": 250
+    },
+    "b43f4f013e1cd792eed4bbb18a434e5d532f020a65d731d45341d375f55830ae": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/c36549350115851ba2630570378542c9e5014103a30889723e7b5fe7d8d41d7e.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Obrigado por me contar. Isso não é certo e não …",
+      "chars": 217
+    },
+    "a2797b4142e649ba8342f5dee4470f3b8cfc4ee40d81bc8ebc89adaafe5a5b5c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0a8c52fda7d55da6fe925ecc655b8facc6e15e7cca24c5a5f36cabd6e78d4166.mp3",
+      "key": "safety.adult_content",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Sobre isso eu não posso falar. Vamos voltar par…",
+      "chars": 71
+    },
+    "4f4e7640625d068e55c1402546571f834651c22ba5bfede08965eb19d3a85c9a": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3b775b7c2c2b3957d29dac3533ecd33c383d198bd737d4f28d2c42dc53becdc2.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Eu nunca guardo segredos da sua família, e ning…",
+      "chars": 169
+    },
+    "cba27cd74acdf0f40d7455ef9271378543fa98675fe3268841299b5b1b564a4f": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/71c12eeb1382baae2ad87bfd58fc23e3445a827d9b7f3fcb1345fc0062deeb82.mp3",
+      "key": "safety.personal_data",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Cuidado: nunca me diga coisas como seu endereço…",
+      "chars": 130
+    },
+    "6849e532278e0a47673df1ebe12946c2056b60a0d0e1cf603ecccce2bf1707c8": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/36ba0ea08420e88bf1b6af45d3300eb269705d6e3ad4ef54585517ede22c494d.mp3",
+      "key": "safety.injection_attempt",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Boa tentativa! Eu só estou aqui para te ajudar …",
+      "chars": 74
+    },
+    "73ce750b5298af3537f3cab2558d7a1f5e6cb96fdc1184ddc62a1608dcdc2640": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/d2cec574a036d96e8da83293b54e98ab4ba1e1861e3a9d9d5b2e602ec3c77e1e.mp3",
+      "key": "model_down",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Minhas ideias se embaralharam um instante. Pode…",
+      "chars": 69
+    },
+    "6cc68702b901c421d35de0bdf776090e0565331bdb95c47d4b5119fa8196b76c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/5aec7fed9fb0c99530b8bc1b1ddd53444f69f293ba11df5462a930d933b60919.mp3",
+      "key": "moderation_blocked",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Deixa eu dizer de outro jeito. Que parte você q…",
+      "chars": 75
+    },
+    "df75f51e95b9a23e5b7f75561a9e9cc852eb0a40418fe5734e0b1fb386ff27b0": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ab39ea3bf32c4f3ce4000d2dfdcc9bfb0b9503612b005306d927ad4c79af2485.mp3",
+      "key": "soft_close",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Hoje a gente trabalhou muito bem. Obrigado por …",
+      "chars": 106
+    },
+    "6937c054ebdb2be098f8e423bb4e4410fd8a8e21755a58ccd37a9d958a8338ca": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/c80528d242ce8784c41400220ac603f1c3970e0383ec2dd7f8473d44bc8687e3.mp3",
+      "key": "hard_close",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Por hoje é isso. Você se esforçou bastante; vou…",
+      "chars": 78
+    },
+    "de50af44568baaf712b1595a98d8460e95a3735b12174ceb6eddc674036bc67c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0597f3d72c47de696c401402c0e427cb2d026b8e6821c20d91a4158db4f5ab64.mp3",
+      "key": "consent_revoked",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Vamos desligar o microfone. Você pode continuar…",
+      "chars": 75
+    },
+    "5cb2d0f1a1c7ec1c3b7c26f228b090d5faac2835b6c03d6d28be87e395e690e8": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/512142b11d317e2617b02f3e577a92843c86b196d79096764ff9838a00a99f46.mp3",
+      "key": "greeting",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "Oh good, you are here. I already have about nin…",
+      "chars": 107
+    },
+    "dadda1f7b780f61964a4ccd63b0c2003c3df04fcf9b5e98524f886d04d703ad2": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ea6d71bea5eb283bc001b049cea41f45e54223a87f65ba6b843763360d21d325.mp3",
+      "key": "safety.self_harm",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "What you just said matters, and it is bigger th…",
+      "chars": 214
+    },
+    "049993fc23d0c868567e8e27b1d07defa74613b25f5d29e8a1211a37ef22a10d": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/570e0496af41d2cc5665eab069fcdb68d52bb6af1261537f1b36ed83c0548045.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "Thank you for telling me. That is not okay and …",
+      "chars": 205
+    },
+    "10566a74f5c549747294a4c865c88d2aeb4fb0c7fcf333a379c7f01007fda16e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/b1ddd6db4f5d70954ec43d66b029460fe792b6ef051edb0cf461d9a88112d222.mp3",
+      "key": "safety.adult_content",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "That is not something I can talk about. Shall w…",
+      "chars": 85
+    },
+    "5e0a5018022331f5113d6153c68c052b500419c3cb83d7f7b2389bcce57c0e87": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8c305b6b1f8efd73a9217b1ef35ee8449f55543b87ffbbe644211cccac5214f8.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "I never keep secrets from your family, and neit…",
+      "chars": 162
+    },
+    "6ddac5de1a25f453e43b1dda388ff3fe48bc71cdc55daf034f60f91777483f82": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/7e30cf0401e94bd0c8e1a57b65057f10c53e3e65dc252a9103fe8458550e29ec.mp3",
+      "key": "safety.personal_data",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "Careful — never tell me things like your addres…",
+      "chars": 131
+    },
+    "38dc98da1db9e50496225c68285bb2630164fbe24c69195125bf9920c1588663": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/2e4ace219598f54b1e4eecf1f23c4b866d12cc4e726575634b7a955af05d25db.mp3",
+      "key": "safety.injection_attempt",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "Nice try! I am just here to help you learn. Whe…",
+      "chars": 58
+    },
+    "c842b641e3b929f6869d515ca068ee5b7cfaac8fd1b2498ecdb0f43e3c865140": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0aeb1465dfc0dcaf76ea1f4c86c5b513fd40158aeba8708e89ea89c82284bacf.mp3",
+      "key": "model_down",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "My thoughts got tangled for a moment. Give me a…",
+      "chars": 72
+    },
+    "d913fb4847b0e79e8dc8106f62ab547881d04acd0316a989ef19ce58c42f9860": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0722c193850ff654e33c9e49c68918b25305849d6e010b9569261364dbc9d53e.mp3",
+      "key": "moderation_blocked",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "Let me say that a different way. What part woul…",
+      "chars": 78
+    },
+    "4491ca3c473726816344e16836568f738ea8019724c8691bf1272ed203d24f58": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/d79529c0a9f5a3930af80a294ca86e44cf224c3954dfe22457f9196fdd323c18.mp3",
+      "key": "soft_close",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "We did great work today. Thank you for coming —…",
+      "chars": 101
+    },
+    "e6a83ec39915eb5a26c9b6749d447b14d89daa60b5127ada041e583e1e87761b": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/bc4dd0b09b66daf4e21c23381918e89f4b476fa8a2dc0c871895e32da94344ec.mp3",
+      "key": "hard_close",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "That is our time for today. You worked hard — I…",
+      "chars": 80
+    },
+    "9dea6d66885cb81b36a5c7cf2e9b6e51f7c50b41bb74de359204ed923b32a431": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/38bd9be1f40239c28d9f808188df0f05cb2cb639d7f8db6ca13e80b9e49019b2.mp3",
+      "key": "consent_revoked",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "We are switching off the microphone. You can ke…",
+      "chars": 80
+    },
+    "7862e6fb8f54c15f4007bca31467729eb40aab35165d696e838bf77cd5d669e9": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ef987d0f3fb962240f8cd18944223c4b19d24ffae842476324fcf8ff791891eb.mp3",
+      "key": "greeting",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Ay, qué bueno que llegaste. Ya traigo como nuev…",
+      "chars": 104
+    },
+    "90ea1414c42fca2e7925e8ab3233e388252f338380a64fe85c2118251ed75488": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0e864461c26689ea9adc41b436b607e8789748725a44ee3bf779fa7b255255f5.mp3",
+      "key": "safety.self_harm",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Lo que acabas de decir importa, y es más grande…",
+      "chars": 255
+    },
+    "6ba654b3e8ab15e5ab5a81209f37048be340f8ba62f8ed7f3d8ec2e8eed79759": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ce6c80c2863421b82c49419c35a7b3d55a6a98d53dd831fbb2633bdc199f36c1.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Gracias por contármelo. Eso no está bien y no e…",
+      "chars": 215
+    },
+    "2131932fb1a0b2b3555f2880162a8890fcf74a414fbe5faf989ac3ee796cdbe1": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/53afbcc675104c8351d59afc1e8414988fcb7cbacbc863725577beb57ea9fec1.mp3",
+      "key": "safety.adult_content",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "De eso no puedo hablar. ¿Regresamos a lo que es…",
+      "chars": 62
+    },
+    "db12b50756ecd773667b5e2b00b466ff403a5dabdd93cb0d4c4538403b7a4ccb": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/56e8427beaf080e88a10acf4c18f218424e76e502e507311a21859aaeb552123.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Yo nunca guardo secretos de tu familia, y nadie…",
+      "chars": 173
+    },
+    "dcba826f856af3f5227806918ee5068c82641ccbea3a4017884f789c3c748020": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/dbfcc4a8796937cdb8ed9bb105fc9cc2cb04552c647203fc96dff318804065f8.mp3",
+      "key": "safety.personal_data",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Cuidado: nunca me digas cosas como tu dirección…",
+      "chars": 133
+    },
+    "6f57a853edde5c6df9eac5e766722e63a388907fbb492109257ae41eda25c83b": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8beef7b89d8fa018c320baf82a32b75d85a8296080f3ce3c0fb8100cb14395e7.mp3",
+      "key": "safety.injection_attempt",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "¡Buen intento! Yo nada más estoy aquí para ayud…",
+      "chars": 79
+    },
+    "9b0835731f2ff255b897e3947d21b71feffa4ca3991ae29ed97a8fe0c5a98bf4": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/bcedadde6b4f56892abd6c6d42a653d2d45ed9daa714e221975e12913541dfe8.mp3",
+      "key": "model_down",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Se me enredaron las ideas un momento. ¿Me lo pr…",
+      "chars": 64
+    },
+    "1d112fa3ec5aa0bcf656c39747144794c8d9a75e18075e96e8447ecb002110a2": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8d51a851bf40f44df4e038b1d9e762d0e72257f115baba46a787ad8b17335afc.mp3",
+      "key": "moderation_blocked",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Déjame decirlo de otra forma. ¿Qué parte quiere…",
+      "chars": 74
+    },
+    "49beff9e18c2fd756cdafc888107ee95bb66759f7c06af301254f54818c6f46d": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0eefd59e8e264ae14ffb447847113728b5d67405483ef8be1808572ed3f536d0.mp3",
+      "key": "soft_close",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Hoy trabajamos muy bien. Gracias por venir; aqu…",
+      "chars": 89
+    },
+    "ec6632e5dacdb36abc9b9f85ce3491e9f7a8cd339f56920f6c9ed3fc65c6032d": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/a637c974f0c3c19bf8da2839d519b0157051253c9b43aec752f568437b2df6c8.mp3",
+      "key": "hard_close",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Hasta aquí llegamos por hoy. Te esforzaste much…",
+      "chars": 83
+    },
+    "96bf4dc426f6e04aafdc8acd21d2558b1fba68c670b71d7a13ed3d676d0c33ca": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/06b286d402f6d5f62109dd67c5bfd0db07c5796bb5868470dddc244822b0a1b6.mp3",
+      "key": "consent_revoked",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Vamos a apagar el micrófono. Puedes seguir toca…",
+      "chars": 66
+    },
+    "48c059e55321dda1493e8ed6aaaab956eb92807a4c2bae3642ae43cfd4999c2e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/03957fe3a52472a449e1547934e889e16a39224aa7b97f0223d270d9a10ea1d4.mp3",
+      "key": "greeting",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Ah, que bom que você chegou. Já estou com umas …",
+      "chars": 115
+    },
+    "76e61355c09fd98e2f8d17825504cfdbd7a7b8536dbaa0e5cc6bdb78766356b5": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8eb0e0f47e827c9222696ada1d98edd935ed7f4f98a683fc69f8ed648bf6edbd.mp3",
+      "key": "safety.self_harm",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "O que você acabou de dizer é importante, e é ma…",
+      "chars": 250
+    },
+    "a6812c26bd9a956b6839dc392416f1c3adf68589f1c8cca520ce336923928fab": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/91c36bf404b88f354c0e1cc2b723fa9dba6c980dcb44282585484b9e831e09d7.mp3",
+      "key": "safety.abuse_disclosure",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Obrigado por me contar. Isso não é certo e não …",
+      "chars": 217
+    },
+    "5504cbbe8830933eb1c67d307aaa3fa834d3166fc202358cfebfb70444940ed3": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/7df49a13c8ae1a9450aafe8c708fc0214c17de6d78fcdb2f5261ba7896aed94c.mp3",
+      "key": "safety.adult_content",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Sobre isso eu não posso falar. Vamos voltar par…",
+      "chars": 71
+    },
+    "b895ce90cbef4a60523552cd404cf35eeb33975e1411e57bfadf497892e27080": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/66b24f626d9bc06f0438ac47e91e5c4d3f0153b64821ef66b9cf7acfa825906c.mp3",
+      "key": "safety.grooming_pattern",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Eu nunca guardo segredos da sua família, e ning…",
+      "chars": 169
+    },
+    "7591f238589e5711b5a4ddefceb9380f5af7c297ff0fe578fee11c6e85e22886": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/bf82f852e92a299f3912802cefd242cfefea0a1c57b88d3ce17f0d2daad20a03.mp3",
+      "key": "safety.personal_data",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Cuidado: nunca me diga coisas como seu endereço…",
+      "chars": 130
+    },
+    "d1ebf347b902797a3c7b90c39820f96e1bcd4c4404c60102436f32eb38955e18": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/35ea9e23aa84891c7b01b6218a2a3a505955d98c9f523a755613b23fcf303154.mp3",
+      "key": "safety.injection_attempt",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Boa tentativa! Eu só estou aqui para te ajudar …",
+      "chars": 74
+    },
+    "5a6774ccac700de6daabc4dd9f0a9b73d439d1be300c93d9d55bef974fea9a62": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/150c2b18c84359f4ffdf4da5634a0bdbc952a24cd7ec448e82f92356ba5a1742.mp3",
+      "key": "model_down",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Minhas ideias se embaralharam um instante. Pode…",
+      "chars": 69
+    },
+    "77f1cbae11efaef1fa868ca3adf6dce7a5b6fb3910b98c41d30f29a2a84d561d": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/2942f1853a35b5b6c9d4cf7a51c000cff1e5697d259115783c25be696bd4ad37.mp3",
+      "key": "moderation_blocked",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Deixa eu dizer de outro jeito. Que parte você q…",
+      "chars": 75
+    },
+    "c5aad57a70db69dc231609090f8b6ce6b1168fa22c47b5671a467f919d83e3e4": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/64878b3c894cdee4a6988f30543f74c0994b733efafba8b8c9a2c3703b544e48.mp3",
+      "key": "soft_close",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Hoje a gente trabalhou muito bem. Obrigado por …",
+      "chars": 106
+    },
+    "7cc29ba81ffc97090393b871b465cf841b67c8b4a087694e6fb5a8c711b10bce": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/555c8f29ffb08aa159ec221f32c4568a787a961ef1c99d391b437eaa0df8aa24.mp3",
+      "key": "hard_close",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Por hoje é isso. Você se esforçou bastante; vou…",
+      "chars": 78
+    },
+    "1f562c57d2d0af49348c7489ad8c4f8d32abce3225737320a6060530e138e3d3": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/0c8d08d91e5bdfcaa4e857d4c9218a3985042dfb41d3ba2b46965ad5d02d70fa.mp3",
+      "key": "consent_revoked",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Vamos desligar o microfone. Você pode continuar…",
+      "chars": 75
+    }
+  }
 }

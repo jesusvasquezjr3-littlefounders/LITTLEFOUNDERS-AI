@@ -35,12 +35,18 @@ import {
   listRecentSummaries,
   getLearnerMemory,
   writeLearnerMemoryPair,
+  // The parental approval gate (/ORACLE.md §20, migration 0068).
+  parkLearnerMemoryProposal,
+  listPendingLearnerMemoryProposals,
+  getLearnerMemoryProposal,
+  decideLearnerMemoryProposal,
   searchOwnTurns,
   listSafetyFlags,
   listPlacementSafetyFlags,
   listTutorSegments,
   listTutorSessions,
   listTutorTurns,
+  getTutorRetentionStatus,
   markSegmentVoiceChecked,
   recordSegmentResult,
   RETENTION_SWEEP_AUDIT_ACTION,
@@ -134,6 +140,37 @@ const MAX_SESSIONS_PER_DAY = 2;
  * unreachable by any real per-day session count.
  */
 const STAFF_SESSION_CAP = 2_147_483_647;
+/**
+ * The ONE definition of "this account is staff, so the USAGE limits do not
+ * apply to it".
+ *
+ * Extracted 2026-09-01, when the exemption grew from one limit (the daily
+ * session cap, below) to also cover the session's own duration and turn
+ * budget in Oracle. The expression was already written inline twice; a third
+ * copy in a different file, evaluated at a different moment, is the shape
+ * AGENTS.md §1.14 records under hand-tuned constants drifting apart — and a
+ * role set that disagreed between "may start another session" and "may keep
+ * this one open" would be invisible until someone was cut off mid-test by
+ * exactly the limit they had been exempted from.
+ *
+ * SCOPE, deliberately: `admin` as well as `superadmin`, matching what the
+ * session cap has always exempted rather than inventing a second, narrower
+ * set for the new half of the same feature. Both roles are granted, never
+ * self-served (§1.4), and `superadmin` is additionally DB-restricted to
+ * `@littlefounders.ai` addresses (§1.3), so the blast radius is a staff list
+ * somebody deliberately wrote.
+ *
+ * WHAT THIS DOES NOT EXEMPT, and must never be extended to: the
+ * platform-wide daily spend ceiling (`DAILY_SPEND_CEILING_USD`,
+ * `oracle/src/session/spend-guard.ts`). That control exists precisely for
+ * the runaway case, and an unattended staff session with no session cap, no
+ * duration cap and no turn cap is the single most plausible way to produce
+ * one. Nor does it touch moderation, consent, or the §1.9 PII boundary —
+ * those are safety, not usage.
+ */
+export function isStaffRoles(roles: readonly string[]): boolean {
+  return roles.includes('admin') || roles.includes('superadmin');
+}
 /** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
@@ -515,6 +552,17 @@ function internalRouter(): Router {
         reasonCode: s.reasonCode,
       })),
       isMinor,
+      /*
+       * The USAGE-limit exemption, travelling as a single derived boolean —
+       * never the role list itself. Oracle has no business knowing WHICH
+       * staff role this is, only that the duration and turn budgets do not
+       * bind it (`session/budget.ts`), and the narrowest true thing is the
+       * one to send. Same shape and same reasoning as `isMinor` directly
+       * above: a policy flag derived here, where the roles are already read
+       * and already fail closed on an unreadable answer (502, line ~396),
+       * so an unknown role can never arrive at Oracle as "staff".
+       */
+      isStaff: isStaffRoles(roles),
       voiceConsent: consent !== null,
       intelDegraded,
       sessionPlan: pedagogyPlan?.plan ?? null,
@@ -712,6 +760,50 @@ function internalRouter(): Router {
       return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
+
+    /*
+     * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068) — the one
+     * item that document marked BLOCKING before real families could use the
+     * Tutor. Auto-write was the owner-accepted interim while the platform's
+     * only active learner was the owner.
+     *
+     * ONLY the LEARNER store is gated. That store is a model-authored prose
+     * description of a MINOR — who they are, what motivates them — injected
+     * into every future session, and a parent has the right to see a belief
+     * like that before the system starts holding it. The PEDAGOGY store is
+     * the tutor's notes about its OWN teaching method ("prefers a worked
+     * example before the rule"); gating it would ask a guardian to approve a
+     * teaching technique, which is not a parental decision, and would stall
+     * the tutor's ability to adapt behind an inbox. It keeps auto-writing for
+     * a minor and an adult alike.
+     *
+     * A FAILED ROLE READ REFUSES THE WHOLE WRITE. Falling through to the
+     * ungated path would be the §1.14 failure-collapsed-into-a-default shape
+     * with the worst possible default: a child's note bypassing the gate
+     * because PostgREST hiccuped. Oracle already treats a non-2xx here as
+     * "did not land, the next review will try again", which is exactly right.
+     */
+    const roles = await getRolesForGate(userId);
+    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
+    const isMinor = roles.includes('kid');
+
+    const gatedStores = { learner: isMinor ? null : stores.learner, pedagogy: stores.pedagogy };
+    const pending: ('learner' | 'pedagogy')[] = [];
+    if (isMinor && stores.learner !== null) {
+      const parked = await parkLearnerMemoryProposal({
+        userId,
+        proposed: stores.learner,
+        expectedBefore: expectedBefore.learner,
+        sessionId,
+      });
+      // Refused, not degraded. A proposal that failed to park is a note that
+      // vanished; reporting it as landed would mean nothing ever retries it.
+      if (!parked) {
+        return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the memory note for guardian approval');
+      }
+      pending.push('learner');
+    }
+
     /*
      * ONE call, not one per store — round 61 (2026-08-30, MEDIUM), closed as
      * round 75. This used to loop and await `writeLearnerMemory` once per
@@ -724,12 +816,20 @@ function internalRouter(): Router {
      */
     const written = await writeLearnerMemoryPair({
       userId,
-      stores,
+      stores: gatedStores,
       expectedBefore,
       actor: 'oracle-post-session-review',
       sessionId,
     });
-    return ok(res, { written });
+    /*
+     * `pending` is a THIRD answer, not a dressed-up version of either other
+     * one. A parked store is absent from `written` — it was not written — but
+     * it did not FAIL either, and Oracle's `updateLearnerMemory` requires
+     * every proposed store to report success or it logs "the write did not
+     * land". Without this field a gated write would be indistinguishable from
+     * a broken one, forever, on every kid session (§1.14).
+     */
+    return ok(res, { written, pending });
   });
 
   /*
@@ -954,6 +1054,45 @@ function internalRouter(): Router {
    * and this is the promise the legal brief makes on our behalf.
    */
   const PurgeBody = z.object({ limit: z.number().int().min(1).max(2000).default(500) }).strict();
+
+  /*
+   * THE SWEEP'S OWN WATCHER, on the INTERNAL surface (2026-09-01).
+   *
+   * `/ORACLE.md` §15.2 item 4 closed the data half of this — every purge that
+   * reaches the database writes `tutor.retention.swept` to `audit_logs`,
+   * including a batch that deleted nothing, and
+   * `GET /admin/tutor/retention-status` reads it back for a human. What it
+   * explicitly left owner-side was "something that actually polls this route
+   * on a schedule and alerts". This is the endpoint that makes the poller
+   * possible.
+   *
+   * WHY A SECOND ROUTE RATHER THAN POLLING THE ADMIN ONE. The admin route
+   * needs a staff SESSION, which a scheduled runner does not have and should
+   * not be given — minting one would mean a long-lived staff credential in a
+   * CI secret, which is precisely the credential-copying that
+   * `tutor-retention.yml`'s own header rejects for the purge. The internal
+   * surface is already reachable the way that workflow reaches it: stand
+   * inside the container over `railway ssh`, call 127.0.0.1 with the
+   * `INTERNAL_API_KEY` that is ALREADY in that process's environment, and
+   * copy no credential anywhere.
+   *
+   * BOTH ROUTES CALL THE SAME `getTutorRetentionStatus()`, deliberately. The
+   * staleness threshold (`RETENTION_STALE_HOURS`) must exist in exactly one
+   * place: a watcher that re-implemented "36 hours" in bash would be a second
+   * hand-tuned constant that drifts from the first the day either moves, which
+   * is the failure AGENTS.md §1.14 records for independently-tuned values. The
+   * only thing this route adds is who is allowed to ask.
+   *
+   * A failed READ stays a 502, never a reassuring 200 — same as the admin
+   * route, and for the same §1.14 reason: "the database is unreachable" and
+   * "the sweep has never run" are different facts and the watcher must be able
+   * to tell them apart.
+   */
+  router.get('/retention/status', async (_req, res) => {
+    const status = await getTutorRetentionStatus();
+    if (!status) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load the retention sweep status');
+    return ok(res, status);
+  });
 
   router.post('/retention/purge', async (req, res) => {
     const parsed = PurgeBody.safeParse(req.body ?? {});
@@ -1737,6 +1876,41 @@ interface CourseTitleRow {
 }
 
 /**
+ * Catalog topic titles by id, for the guardian narrative's DIGEST fallback
+ * (/ORACLE.md §12, 2026-09-01).
+ *
+ * Why this exists at all: the digest (`tutor_sessions.summary`, migration
+ * `0051`) stores BOTH a baked `topic` STRING — written at close in the
+ * CHILD's session locale — and the `topicId` it was baked from. Reading the
+ * baked string back to a guardian showed a bilingual family a topic name in
+ * a language they did not choose, which is precisely the defect the
+ * attempt-backed tier of this narrative already avoids by resolving
+ * `kc.title` in the guardian's own locale. The id was there the whole time,
+ * so this is a re-localization, not a new fact: same row, same RLS, same
+ * catalog table `resolveCourseContext` above already reads.
+ *
+ * Shaped after `getKcTitlesByIds` (kcData.ts) rather than looping
+ * `resolveCourseContext`: one bounded `in.(...)` read for the whole page,
+ * never one round-trip per session. Deliberately NOT `status`-filtered — a
+ * topic later unpublished is still the real thing this child worked on, and
+ * a title is catalog text we wrote, not injected content (the same reasoning
+ * `getKcTitlesByIds` records for a retired KC).
+ */
+async function getTopicTitlesByIds(topicIds: string[]): Promise<Map<string, Record<string, string>>> {
+  const out = new Map<string, Record<string, string>>();
+  if (topicIds.length === 0) return out;
+  const rows = await serviceRest<CourseTitleRow[]>(
+    `/topics?id=in.(${topicIds.map((id) => encodeURIComponent(id)).join(',')})&select=id,title&limit=200`,
+  );
+  // A transport failure returns null, and the caller falls back to the baked
+  // digest string — a topic named in the wrong language still beats no topic
+  // at all on a read-only, display-only surface (§1.14 permits defaulting
+  // exactly here: nothing is read-modify-written back).
+  for (const row of rows ?? []) out.set(row.id, row.title ?? {});
+  return out;
+}
+
+/**
  * Resolves what a `course_topic` session is ABOUT, into the title Oracle's
  * `buildPlan` names as the lesson's whole objective.
  *
@@ -1984,7 +2158,7 @@ export function tutorRouter(): Router {
      * never writes anything (§1.14) — the actual enforcement never moved
      * off the atomic path below.
      */
-    const isStaff = roles.includes('admin') || roles.includes('superadmin');
+    const isStaff = isStaffRoles(roles);
     const sessionsToday = await countTutorSessionsSince(user.id, startOfLocalDayIso(locale));
     const sessionCapReached = sessionsToday !== null && sessionsToday >= (isStaff ? STAFF_SESSION_CAP : MAX_SESSIONS_PER_DAY);
     /*
@@ -2193,7 +2367,7 @@ export function tutorRouter(): Router {
      * unlimited cap for staff reuses this one atomic path rather than a
      * second, unchecked insert.
      */
-    const isStaff = roles.includes('admin') || roles.includes('superadmin');
+    const isStaff = isStaffRoles(roles);
     const result = await startTutorSessionChecked({
       userId: user.id,
       sinceIso: startOfLocalDayIso(locale),
@@ -2748,12 +2922,47 @@ export function tutorRouter(): Router {
       attemptsBySession.set(row.session_id, list);
     }
 
+    /*
+     * The DIGEST fallback, re-localized (2026-09-01). ORACLE.md §12 recorded
+     * this as a known limitation on the stated grounds that the digest's
+     * topic "was baked in at close time rather than kept as a re-localizable
+     * id" — that was simply wrong about our own schema: `SessionSummaryDigest`
+     * carries `topicId` alongside the baked `topic` string (migration 0051,
+     * tutorData.ts), and the offers screen has been rebuilding "continue"
+     * openings from it all along. So the fallback tier can honour the
+     * guardian's locale exactly like the attempt-backed tier above, for one
+     * extra bounded read of the same catalog table, and only for the sessions
+     * that actually NEED it.
+     *
+     * Scoped to sessions with no attempt evidence, on purpose: a session the
+     * brain DID touch never reads `fallbackTopic`, so resolving its topic id
+     * would be a round-trip whose result is discarded.
+     */
+    const fallbackTopicIds = [
+      ...new Set(
+        page.sessions
+          .filter((s) => (attemptsBySession.get(s.id) ?? []).length === 0 && s.summary?.topicId)
+          .map((s) => s.summary!.topicId!),
+      ),
+    ];
+    const topicTitleById = await getTopicTitlesByIds(fallbackTopicIds);
+    const localizedFallbackTopic = (s: { summary: SessionSummaryDigest | null }): string | null => {
+      const baked = s.summary?.topic ?? null;
+      const id = s.summary?.topicId;
+      if (!id) return baked;
+      const title = topicTitleById.get(id);
+      // `?? baked`, never `?? null`: an id that resolves to nothing (deleted
+      // topic, failed read) must degrade to the string we already have, not
+      // erase a topic the parent could previously see.
+      return (title ? pickTitle(title, narrativeLocale) : null) ?? baked;
+    };
+
     const narrativeById = new Map<string, SessionNarrative | null>(
       page.sessions.map((s) => [
         s.id,
         buildSessionNarrative({
           attempts: attemptsBySession.get(s.id) ?? [],
-          fallbackTopic: s.summary?.topic ?? null,
+          fallbackTopic: localizedFallbackTopic(s),
           gradedCorrect: s.summary?.gradedCorrect ?? null,
           gradedTotal: s.summary?.gradedTotal ?? null,
         }),
@@ -2777,11 +2986,132 @@ export function tutorRouter(): Router {
        * two row shapes genuinely differ (no `session_id`/`turn_seq` to open
        * a transcript with, a `course_id` instead) and a caller that already
        * assumes every `safetyFlags` row has a session would silently break
-       * on one that does not. The frontend does not render this array yet;
-       * it is real, RLS-protected, guardian-queryable data either way.
+       * on one that does not. `KidTutorPage` renders it (2026-09-01) inside
+       * the SAME severity-first sort as `safetyFlags` above, while keeping
+       * these two arrays separate here: only the guardian's reading ORDER is
+       * shared, never the row shape.
        */
       placementSafetyFlags: placementFlags,
     });
+  });
+
+  // ── The parental approval gate (/ORACLE.md §20, migration 0068) ───────────
+
+  /*
+   * THE ITEM /ORACLE.md MARKED **BLOCKING BEFORE FAMILY ROLLOUT**, closed
+   * here. What the tutor believes about a child — the LEARNER memory store —
+   * no longer writes itself for a `kid`. Every proposal parks, and this pair
+   * of routes is the portal that empties the queue.
+   *
+   * Both are gated by the SAME `isVerifiedGuardian` check every other family
+   * route on this router uses: not a parent-in-general, not the child, not an
+   * admin acting on their behalf. RLS says the same thing independently
+   * (migration 0068's SELECT policy), so a mistake here is caught by the
+   * database rather than by this line being the only thing standing between a
+   * stranger and a note about someone's child.
+   */
+
+  router.get('/kids/:kidUserId/memory-proposals', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+
+    const [proposals, current] = await Promise.all([
+      listPendingLearnerMemoryProposals(kidUserId.data),
+      getLearnerMemory(kidUserId.data),
+    ]);
+    // A read failure is a 502, never an empty queue rendered as "nothing to
+    // review" — those are the same screen with opposite meanings (§1.14).
+    if (proposals === null || current === null) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
+    }
+
+    return ok(res, {
+      proposals: proposals.map((p) => ({
+        id: p.id,
+        proposed: p.proposed,
+        // What the note REPLACES, so a guardian is deciding on a change rather
+        // than on a paragraph with no context. Null means there is no note yet.
+        expectedBefore: p.expected_before,
+        sessionId: p.session_id,
+        createdAt: p.created_at,
+      })),
+      /*
+       * The store as it stands TODAY, which is not always what any single
+       * proposal expected: two overlapping sessions can each park a note
+       * computed from the same earlier text, and approving the first moves
+       * the store out from under the second. Sending it lets the portal show
+       * a stale note as stale BEFORE the guardian taps approve, instead of
+       * only afterwards through a CONFLICT.
+       */
+      current: current.learner,
+    });
+  });
+
+  const DecisionBody = z.object({ verdict: z.enum(['approved', 'rejected']) }).strict();
+
+  router.post('/memory-proposals/:proposalId/decision', async (req, res) => {
+    const proposalId = z.string().uuid().safeParse(req.params.proposalId);
+    if (!proposalId.success) return fail(res, 400, VALIDATION, 'Invalid proposal id');
+    const parsed = DecisionBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, VALIDATION, 'verdict must be approved or rejected');
+    const user = authedUser(res);
+
+    /*
+     * Read first, to learn WHOSE note this is — the guardian check needs a
+     * child to check against, and the proposal id alone does not name one.
+     * `undefined` (no such row) and `null` (the read failed) are kept apart
+     * on purpose: answering 404 to an outage tells a parent their child's
+     * note does not exist.
+     */
+    const proposal = await getLearnerMemoryProposal(proposalId.data);
+    if (proposal === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the note');
+    if (proposal === undefined) return fail(res, 404, NOT_FOUND, 'No such note');
+
+    const guardian = await isVerifiedGuardian(user.id, proposal.user_id);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+
+    /*
+     * The claim and the apply are ONE transaction inside the function
+     * (migration 0068), which is what makes "a verdict lands only on a
+     * still-pending row" true under two guardians deciding at once rather
+     * than merely true in the common case — the same rule
+     * `setTutorReviewStatus` already enforces with a `review_status=eq.pending`
+     * filter, moved into the database because here a decision also triggers a
+     * write. The check above is NOT that guard: it reads the row, and
+     * anything read outside the transaction can be stale by the time it is
+     * acted on.
+     */
+    const outcome = await decideLearnerMemoryProposal({
+      proposalId: proposalId.data,
+      decidedBy: user.id,
+      verdict: parsed.data.verdict,
+    });
+    if (outcome === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the decision');
+
+    /*
+     * Every outcome is reported as itself. Collapsing them into a boolean is
+     * what would make "somebody already decided this" and "the note is out of
+     * date so nothing was applied" look like success to a parent who then
+     * never looks again.
+     *
+     * `conflict` deliberately keeps the row PENDING (the function does not
+     * close it), so this is a 409 rather than a 200 with a sad field: the
+     * request did not accomplish what it asked for and the queue still holds
+     * the item.
+     */
+    if (outcome === 'not_pending') {
+      return fail(res, 409, 'ALREADY_DECIDED', 'This note was already decided');
+    }
+    if (outcome === 'conflict') {
+      return fail(res, 409, 'NOTE_OUT_OF_DATE', 'A newer note has already been approved for this child');
+    }
+    return ok(res, { outcome, applied: outcome === 'written' || outcome === 'unchanged' });
   });
 
   return router;

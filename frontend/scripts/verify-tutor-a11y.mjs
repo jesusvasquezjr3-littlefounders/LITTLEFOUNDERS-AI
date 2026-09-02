@@ -1,5 +1,5 @@
 /*
- * THE TUTOR'S CONVERSING PHASE, AUDITED WITH axe-core.
+ * EVERY ONE OF THE TUTOR'S EIGHT STAGE PHASES, AUDITED WITH axe-core.
  *
  *   npm run verify:tutor-a11y
  *
@@ -14,14 +14,29 @@
  * real theme, not a filter).
  *
  * WHAT IT SCANS, per configuration:
- *   - conversing, with a `sort_buckets` activity live — the drag/drop
+ *   - ALL EIGHT stage phases, in the lab's own order: arriving,
+ *     personalizing, introducing, conversing, adapting, closing, replaying,
+ *     unavailable (`LAB_SCENES`, labFixtures.ts — the same eight the phase
+ *     switcher offers, `consent` excepted: it is a family-facing panel on a
+ *     different route, not a stage phase). Until 2026-09-01 this gate
+ *     scanned TWO of them and /AGENTS.md §5 said so in writing — "the other
+ *     stage phases ... are not yet swept by this gate and need a manual
+ *     spot-check until it is extended." A manual spot-check nobody is
+ *     scheduled to perform is not a control; six of the eight phases a
+ *     child actually walks through were being reported on by a gate that
+ *     never looked at them.
+ *   - conversing AGAIN, with a `sort_buckets` activity live — the drag/drop
  *     grouping type flagged by live-testing (2026-09-01) as having group
  *     buttons with no accessible name. Driving it here means a REGRESSION —
  *     one of the buckets losing its `aria-label` again — fails a gate
- *     instead of waiting for the next live session to find it.
- *   - replaying — `ReplayInWorld.tsx`'s transport (previous/pause-play/next,
- *     the per-line "play from here" transcript), explicitly named in the
- *     same audit request as a surface rebuilt since the 08-21 pass.
+ *     instead of waiting for the next live session to find it. It is a
+ *     SECOND pass over `conversing` rather than the phase sweep's own,
+ *     because the sweep measures each phase in its resting state and this
+ *     one deliberately puts a specific activity on the plate.
+ *   - replaying is in the sweep above — `ReplayInWorld.tsx`'s transport
+ *     (previous/pause-play/next, the per-line "play from here" transcript),
+ *     explicitly named in the same audit request as a surface rebuilt since
+ *     the 08-21 pass.
  *
  * WHY `[data-lab-chrome]` IS EXCLUDED. It is the lab's own instrument panel
  * — switches, not product — and `verify-tutor-ui.mjs` already established
@@ -50,9 +65,36 @@
  *      text-on-accent` pairing (measured 6.29:1 — comfortably past 4.5:1).
  *      Caught here on 2026-09-01 scanning `PersonalizeInWorld`'s "I'm ready"
  *      button mid-`lf-settle`; confirmed a false alarm by re-scanning after
- *      the animation settles. `SETTLE_MS` below is the wait this script
- *      pays on every phase switch so it always measures the RESTING state
- *      instead of relitigating that false positive on every run.
+ *      the animation settles.
+ *
+ *      THE WAIT THAT ANSWERS IT USED TO BE A CONSTANT, AND THE CONSTANT WAS
+ *      MEASURED FROM THE WRONG EVENT (found extending this gate to all eight
+ *      phases, 2026-09-01). `SETTLE_MS` — 600ms, paid on every phase switch —
+ *      is only correct if the entrance animation STARTS at the switch. It does
+ *      not. A world chip's `lf-settle` starts when the placement solver seats
+ *      it, which happens after the composition has something to seat it
+ *      against, and that is an unbounded number of frames after the phase
+ *      changed. Caught with `getAnimations()` at the moment axe complained:
+ *      `introducing`'s "Review: Compare amounts" chip reported
+ *      `lf-settle:running:33` — thirty-three milliseconds into a 300ms
+ *      animation — at a sample taken 1.9 SECONDS after the switch, with the
+ *      composited pair reading `#e0e0f9` on `#d9d9f8` (1.06:1) where the
+ *      resting pair is `#ffffff` on `rgb(79,70,229)` (6.29:1). Three of
+ *      twenty-four phase scans tripped this way, on `introducing` and
+ *      `personalizing`, at two different configurations — a gate that fails
+ *      one run in eight teaches people to re-run it, which is worse than not
+ *      having it.
+ *      So the wait is no longer a bet on a duration: `settle()` below waits
+ *      for the page to have NO finite CSS animation running (an infinite one
+ *      — `lf-pulse-attention` — is not an entrance and never settles, so it
+ *      is excluded by construction rather than by name), holds that quiet for
+ *      `QUIET_MS`, and cannot finish before `MIN_SETTLE_MS` no matter how
+ *      quiet the page looks early, because "nothing is animating yet" and
+ *      "nothing is animating any more" are the same reading taken from
+ *      opposite sides of the thing being waited for. That makes the
+ *      measurement correct BY CONSTRUCTION instead of correct when called at
+ *      the right moment (/AGENTS.md §1.14, the shared-object measurement
+ *      rule's own corollary).
  * A REAL, persistent contrast defect on a solid (non-canvas, non-animating)
  * surface is still worth catching by eye — this script prints every
  * `color-contrast` node it finds, tagged `incomplete` vs `violation`, so a
@@ -81,10 +123,43 @@ mkdirSync(OUT, { recursive: true })
 const axeSource = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8')
 
 /** The settle animation's own duration (`--lf-dur-slow`, index.css) plus
- *  slack — see the file banner's false-positive note. Paid once per phase
- *  switch, never per scan, so the three-configuration run costs seconds, not
- *  minutes. */
+ *  slack. Still the right wait for a switch whose effect is SYNCHRONOUS — the
+ *  lab's own locale and activity switches — but NOT for a phase switch, whose
+ *  entrance animations start whenever the placement solver seats them: see
+ *  `settle()` and the file banner's false-positive note. */
 const SETTLE_MS = 600
+
+/**
+ * The floor on a phase scan's wait. Nothing may be measured before this, even
+ * on a page that reports no animation at all, because a phase whose chips have
+ * not been seated YET is indistinguishable from one whose chips have finished
+ * settling — and the observed seat happened 1.9s after the switch.
+ * `verify-tutor-ui.mjs` pays the same 2.5s after entering `conversing`, for
+ * the same reason and against the same solver.
+ */
+const MIN_SETTLE_MS = 2_500
+
+/** How long the page must stay free of running animations before it counts as settled. */
+const QUIET_MS = 500
+
+/** Upper bound on one phase's settle wait; exceeded means "measured anyway, and said so". */
+const SETTLE_BUDGET_MS = 15_000
+
+/**
+ * True when no FINITE CSS animation is running anywhere in the document.
+ *
+ * `iterations === Infinity` is excluded rather than named: `lf-pulse-attention`
+ * is the one that exists today, and an infinite animation is by definition not
+ * an entrance settling into a resting state, so waiting for it would hang
+ * forever on any page that ever grows another one. Reading the timing off the
+ * effect keeps that true for animations this file has never heard of.
+ */
+const NO_FINITE_ANIMATION_RUNNING =
+  '(() => document.getAnimations().every((a) => {' +
+  '  const timing = a.effect && a.effect.getTiming ? a.effect.getTiming() : null;' +
+  '  if (timing && timing.iterations === Infinity) return true;' +
+  '  return a.playState === "finished" || a.playState === "idle";' +
+  '}))()'
 
 async function startDevServer() {
   if (process.env.TUTOR_LAB_URL) return { url: process.env.TUTOR_LAB_URL, stop: () => {} }
@@ -154,6 +229,63 @@ async function waitFor(page, expression, ms, what) {
   throw new Error(`timed out waiting for ${what}`)
 }
 
+/**
+ * Waits until the page is holding still — see the file banner. Returns false
+ * if the budget ran out with something still animating, so the caller can say
+ * so out loud instead of silently reporting a mid-animation frame as the
+ * product's resting state.
+ */
+async function settle(page) {
+  const started = Date.now()
+  const deadline = started + SETTLE_BUDGET_MS
+  let quietSince = null
+  while (Date.now() < deadline) {
+    if (await page.evaluate(NO_FINITE_ANIMATION_RUNNING)) {
+      if (quietSince === null) quietSince = Date.now()
+      if (Date.now() - quietSince >= QUIET_MS && Date.now() - started >= MIN_SETTLE_MS) return true
+    } else {
+      quietSince = null
+    }
+    await sleep(120)
+  }
+  return false
+}
+
+/*
+ * THE EIGHT STAGE PHASES, AND HOW TO KNOW EACH ONE ARRIVED.
+ *
+ * Every readiness expression is STRUCTURAL, never a string of copy: this file
+ * runs two of its three configurations in es-MX, so matching English text
+ * would time out on the product being perfectly fine (the same trap
+ * `replaying`'s own marker note below already records). Each marker was read
+ * off the live DOM rather than guessed, and each is chosen to distinguish the
+ * phase from the one BEFORE it in this list, so waiting on it proves the
+ * switch actually landed rather than that the previous phase is still up:
+ * `arriving`/`unavailable` mount no `StageLayer` at all, `introducing` is the
+ * only phase with `[data-opening]`, `conversing` brings `[data-character]`,
+ * `adapting` adds `[data-offer]` on top of it, and `closing` is the one that
+ * takes `[data-character]` away again while keeping a layer.
+ */
+const PHASES = [
+  ['arriving', '!document.querySelector("section[aria-label]")'],
+  ['personalizing', '!!document.querySelector("section[aria-label]")'],
+  ['introducing', '!!document.querySelector("[data-opening]")'],
+  ['conversing', '!!document.querySelector("[data-character]")'],
+  ['adapting', '!!document.querySelector("[data-offer]")'],
+  ['closing', '!document.querySelector("[data-character]") && !!document.querySelector("section[aria-label]")'],
+  /*
+   * Locale-proof on purpose: "Line X of Y" is `tutor.replay.position` and
+   * reads "Línea X de Y" in es-MX, so matching English text here would time
+   * out on two of the three configurations instead of the product having
+   * anything wrong with it. `skip_previous` is the Material Symbols ligature
+   * `Icon` renders as literal text content (AGENTS.md §1.14 notes the same
+   * ligatures glue onto labels elsewhere) — it names an icon, not a locale,
+   * so it is present identically in all three languages.
+   */
+  ['replaying', 'document.body.innerText.includes("skip_previous")'],
+  ['unavailable', '!document.querySelector("section[aria-label]")'],
+]
+
 async function shoot(page, name) {
   const { data } = await page.send('Page.captureScreenshot', { format: 'png' })
   writeFileSync(join(OUT, `${name}.png`), Buffer.from(data, 'base64'))
@@ -190,11 +322,11 @@ function isKnownContrastCase(node, bucket) {
   // Category 1: axe itself could not compute a background — always
   // `incomplete`, never `violations`, and that split is the signal.
   if (bucket === 'incomplete') return true
-  // Category 2: a mid-settle false positive. The only page this script
-  // drives it through is `personalizing`'s accent-floor "done" action, and
-  // `pressSwitch` already waits `SETTLE_MS` past every switch — so seeing
-  // this AT ALL here means the wait stopped being enough, which is itself
-  // worth printing rather than silently swallowing.
+  // Category 2: a mid-settle false positive — `settle()` waits every phase
+  // scan out to real animation quiescence, so seeing this AT ALL means either
+  // the settle budget was exceeded (the run says so, out loud, on its own
+  // line) or a genuinely resting surface is genuinely below 4.5:1. Both are
+  // worth failing on rather than silently swallowing.
   return false
 }
 
@@ -217,9 +349,40 @@ try {
     if (!open) await pressSwitch(page, 'lab')
     await waitFor(page, 'document.body.innerText.includes("stage ready")', 90_000, 'stage ready')
     await pressSwitch(page, locale)
-    await pressSwitch(page, 'conversing')
 
-    // ---- conversing, sort_buckets — the drag/drop grouping regression check
+    // ---- every stage phase, in the lab's own order, each in its resting state
+    for (const [phaseName, ready] of PHASES) {
+      await pressSwitch(page, phaseName)
+      await waitFor(page, ready, 20_000, `the ${phaseName} phase to mount`)
+      if (!(await settle(page))) {
+        // Not a failure by itself — the scan below still runs and still
+        // gates. It is printed because it is the ONE condition under which a
+        // `color-contrast` violation from this phase might be the animation
+        // rather than the product, and a reader of this log deserves to know
+        // which of the two they are looking at (§1.14 — failure must be
+        // distinguishable, and so must a caveat).
+        console.log(`[${tag}] ${phaseName}: still animating after ${SETTLE_BUDGET_MS}ms — scanned anyway`)
+      }
+
+      const phaseReport = await runAxe(page)
+      const shown = phaseReport.violations.length
+      console.log(`[${tag}] ${phaseName}: ${shown} violation(s)`)
+      for (const v of phaseReport.violations) {
+        failures += 1
+        console.log(`  VIOLATION [${v.id}]${v.impact ? ` (${v.impact})` : ''}: ${v.nodes.length} node(s)`)
+        for (const n of v.nodes) console.log(`    ${n.target.join(' ')} — ${n.html}`)
+      }
+      for (const v of phaseReport.incomplete) {
+        if (isKnownContrastCase(v, 'incomplete')) continue
+        console.log(`  INCOMPLETE [${v.id}] (needs a human look): ${v.nodes.length} node(s)`)
+        for (const n of v.nodes) contrastNotes.push(`${tag} ${phaseName}: ${v.id} — ${n.target.join(' ')}`)
+      }
+      await shoot(page, `tutor-a11y-${tag}-${phaseName}`)
+    }
+
+    // ---- conversing AGAIN, sort_buckets — the drag/drop grouping regression check
+    await pressSwitch(page, 'conversing')
+    await waitFor(page, '!!document.querySelector("[data-character]")', 20_000, 'the conversing phase to mount')
     const select = await page.evaluate(
       `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +
         ` if (!s) return false; s.value = 'sort_buckets'; s.dispatchEvent(new Event('change', { bubbles: true })); return true })()`,
@@ -228,7 +391,7 @@ try {
       failures += 1
       console.log(`[${tag}] MISSING: the lab activity switch — cannot drive sort_buckets`)
     } else {
-      await sleep(SETTLE_MS)
+      await settle(page)
       const zones = await page.evaluate(
         `JSON.stringify([...document.querySelectorAll('[data-dropzone] button')].map((b) => ({` +
           ` ariaLabel: b.getAttribute('aria-label'), text: b.textContent.trim() })))`,
@@ -255,27 +418,10 @@ try {
       await shoot(page, `tutor-a11y-${tag}-sort-buckets`)
     }
 
-    // ---- replaying — ReplayInWorld's transport
-    await pressSwitch(page, 'replaying')
-    // Locale-proof on purpose: "Line X of Y" is `tutor.replay.position` and
-    // reads "Línea X de Y" in es-MX, so matching English text here would
-    // time out on two of the three configurations instead of the product
-    // having anything wrong with it. `skip_previous` is the Material Symbols
-    // ligature `Icon` renders as literal text content (AGENTS.md §1.14 notes
-    // the same ligatures glue onto labels elsewhere) — it names an icon, not
-    // a locale, so it is present identically in all three languages.
-    await waitFor(page, 'document.body.innerText.includes("skip_previous")', 15_000, 'the replay transport')
-    const replayReport = await runAxe(page)
-    for (const v of replayReport.violations) {
-      failures += 1
-      console.log(`[${tag}] REPLAY VIOLATION [${v.id}]${v.impact ? ` (${v.impact})` : ''}: ${v.nodes.length} node(s)`)
-      for (const n of v.nodes) console.log(`    ${n.target.join(' ')} — ${n.html}`)
-    }
-    for (const v of replayReport.incomplete) {
-      if (isKnownContrastCase(v, 'incomplete')) continue
-      for (const n of v.nodes) contrastNotes.push(`${tag} replaying: ${v.id} — ${n.target.join(' ')}`)
-    }
-    await shoot(page, `tutor-a11y-${tag}-replaying`)
+    // `replaying` — ReplayInWorld's transport — is no longer scanned here on
+    // its own: it is one of the eight phases the sweep above already drives,
+    // with the same `skip_previous` readiness marker it always used and the
+    // same screenshot name it always wrote.
 
     if (page.errors.length > 0) {
       failures += page.errors.length
@@ -294,7 +440,7 @@ if (contrastNotes.length > 0) {
 
 console.log(
   failures === 0
-    ? 'verify:tutor-a11y OK — zero WCAG A/AA violations across conversing (sort_buckets) and replaying, both themes, desktop and mobile.'
+    ? `verify:tutor-a11y OK — zero WCAG A/AA violations across all ${PHASES.length} stage phases plus conversing/sort_buckets, both themes, desktop and mobile.`
     : `verify:tutor-a11y FAILED: ${failures}`,
 )
 process.exitCode = failures === 0 ? 0 : 1

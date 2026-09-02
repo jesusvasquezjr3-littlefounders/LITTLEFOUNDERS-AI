@@ -41,7 +41,10 @@ interface CoreJournal {
     demonstrate?: { kind: string; denomination?: number }[] | null;
   }[];
   flags: { category: string; handled: string; turnSeq: number | null }[];
-  closes: { closeReason: string; turnCount: number }[];
+  /* `costUsd` is on the wire body and therefore in this journal already
+   * (it is a raw `JSON.parse` of the POST); it was simply never declared,
+   * so no test could assert on the ledger half of a close. */
+  closes: { closeReason: string; turnCount: number; costUsd: number }[];
   segmentRequests: number;
 }
 
@@ -542,6 +545,18 @@ afterEach(async () => {
   vi.restoreAllMocks();
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
+  /*
+   * The SHARED park store too — the cross-replica half of a park
+   * (`ws/parkStore.ts`): a published park record and, more importantly, this
+   * session's TRANSCRIPT FLOOR, which is monotonic and outlives a session by
+   * design so that no replica can ever reuse a row number. These tests all
+   * share one session id while pretending to be unrelated fresh sessions, so
+   * without this the floor legitimately carries every earlier test's row count
+   * into the next one and a "first" connection starts numbering in the
+   * hundreds. Same reason `nonceLedger.clear()` is on the line above.
+   */
+  const { clearLocalParkStore } = await import('../ws/parkStore.js');
+  clearLocalParkStore();
   // Tests share one session id, and a socket closed without a farewell PARKS
   // its orchestrator — which the next test's handshake would then resume.
   // Finalizing between tests keeps each one a first visit. The beat first:
@@ -1575,6 +1590,23 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
       expect(journal.closes).toHaveLength(1);
       expect(journal.closes[0]).toMatchObject({ closeReason: 'learner_left' });
 
+      /*
+       * THE LEDGER HALF OF THE SAME RACE (oracle/AGENTS.md item 71), which
+       * this test asserted nothing about until 2026-09-01 — it checked the
+       * close COUNT and REASON while the cost, the actual subject of the
+       * open follow-up, went unexamined.
+       *
+       * What is pinned here is the DOCUMENTED behaviour, not a wish: the
+       * winner's snapshot is what persists, and it is a real recorded
+       * number rather than a dropped field. Cost reconciliation is
+       * deliberately not attempted (see `finalizeParked`'s own comment: the
+       * additive RPC has no idempotency key, so a retry that cannot prove
+       * the first write missed would double-count an estimate that nothing
+       * reads and that `spendGuard` has already counted at spend time).
+       */
+      expect(typeof journal.closes[0].costUsd).toBe('number');
+      expect(Number.isFinite(journal.closes[0].costUsd)).toBe(true);
+
       // And finish()'s own losing attempt must not be a SILENT no-op: it is
       // told by Core that its write matched zero rows, and must say so
       // loudly, naming the session, rather than reporting completion.
@@ -1583,6 +1615,13 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
           typeof message === 'string' && message.includes(SESSION_ID) && message.includes('already closed'),
       );
       expect(warned).toBe(true);
+
+      // And that warning must NAME THE MONEY, because "reconcile manually if
+      // material" is only actionable if the log says what the amount was.
+      const namedCost = warnSpy.mock.calls.some(
+        ([message]) => typeof message === 'string' && message.includes(SESSION_ID) && /\$\d+\.\d+/.test(message),
+      );
+      expect(namedCost).toBe(true);
     } finally {
       warnSpy.mockRestore();
     }
@@ -1997,6 +2036,256 @@ describe('a dropped session can be resumed on a fresh token', () => {
     second.socket.close();
     await second.closed();
   });
+});
+
+/*
+ * ── THE SAME DROP, ONTO A DIFFERENT REPLICA ─────────────────────────────────
+ *
+ * Every test in the block above resumes onto the SAME process, which is the
+ * only thing a single test process can do by default — and precisely the case
+ * that was already working. `RUNBOOK.md` Round 142 traced what happened at
+ * N>1 instead: the close handler released the session claim BEFORE parking, so
+ * a reconnect load-balanced elsewhere acquired cleanly, found nothing parked,
+ * and built a SECOND orchestrator with `transcriptSeq` back to 0 — every row
+ * colliding in `tutor_turns` and being dropped in silence — while the original
+ * replica's park timer still won the `ended_at=is.null` close, losing the live
+ * replica's billed usage from Core's ledger entirely.
+ *
+ * `dropLocalParksForTest()` is what makes that reachable from one process. It
+ * empties this process's LOCAL park map without finalizing anything, which is
+ * exactly the state a second replica is always in: it never had the local
+ * entry, only whatever the shared store holds. Everything after that call is
+ * the code path a genuinely different replica runs.
+ */
+describe('a dropped session resumes on a DIFFERENT replica', () => {
+  /** Park a real conversation, then become the replica that never saw it. */
+  async function parkThenBecomeAnotherReplica(): Promise<{ say: string; seq: number }> {
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+    first.socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+    const reply = (await answered).find((m) => m.type === 'turn') as { say: string; seq: number };
+
+    first.socket.terminate();
+    await first.closed();
+    // The park (and its publish to the shared store) happens on the server's
+    // own close event, which races this line — the same beat `afterEach` uses.
+    await new Promise((r) => setTimeout(r, 150));
+    return reply;
+  }
+
+  it('adopts the conversation from the shared park — history, last turn, no second greeting', async () => {
+    freshJournal();
+    const reply = await parkThenBecomeAnotherReplica();
+    expect(journal.closes).toHaveLength(0);
+
+    const { dropLocalParksForTest } = await import('../ws/server.js');
+    dropLocalParksForTest();
+
+    const second = open(await socketUrl());
+    const rejoined = await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+
+    // A `history` frame at all is the whole point: a replica that could not
+    // adopt would send a fresh greeting `turn` and no history.
+    const history = rejoined.find((m) => m.type === 'history') as {
+      turns: { speaker: string; text: string; seq: number }[];
+    };
+    expect(history).toBeDefined();
+    expect(history.turns.length).toBeGreaterThanOrEqual(3);
+    expect(history.turns.some((t) => t.speaker === 'learner' && t.text.includes('bici'))).toBe(true);
+
+    // The turn that was on screen comes back verbatim, with the same seq —
+    // rebuilt from the snapshot on a synthesizer this process constructed.
+    const redrawn = rejoined.find((m) => m.type === 'turn') as { say: string; seq: number; audioPending: boolean };
+    expect(redrawn.say).toBe(reply.say);
+    expect(redrawn.seq).toBe(reply.seq);
+    expect(redrawn.audioPending).toBe(false);
+
+    second.socket.close();
+    await second.closed();
+  });
+
+  it('redraws the open ACTIVITY too — the frame survives the shared record round trip', async () => {
+    /*
+     * The record's segment frame is `.strict()`-validated on read, so a frame
+     * that ever stops matching its schema would leave adoption silently
+     * failing for exactly the learners who dropped mid-exercise — a subset no
+     * test that never opens an activity would notice. (A compile-time check in
+     * `ws/server.ts` fences the schema against the wire type; this proves the
+     * round trip itself, with a real frame, end to end.)
+     */
+    freshJournal();
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const served = collect(first.socket, (m) => m.some((x) => x.type === 'segment'));
+    first.socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const original = (await served).find((m) => m.type === 'segment') as { segmentId: string };
+
+    first.socket.terminate();
+    await first.closed();
+    await new Promise((r) => setTimeout(r, 150));
+
+    const { dropLocalParksForTest } = await import('../ws/server.js');
+    dropLocalParksForTest();
+
+    const second = open(await socketUrl());
+    const rejoined = await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+    const redrawn = rejoined.find((m) => m.type === 'segment') as { segmentId: string } | undefined;
+    expect(redrawn).toBeDefined();
+    expect(redrawn?.segmentId).toBe(original.segmentId);
+
+    // Still answerable on the new replica: the adopted orchestrator remembers
+    // that it served this activity, which `segment_graded` checks.
+    await new Promise((r) => setTimeout(r, 750));
+    const reacted = collect(second.socket, (m) => m.some((x) => x.type === 'turn'));
+    second.socket.send(
+      JSON.stringify({ type: 'segment_graded', segmentId: original.segmentId, score: 100, correct: true }),
+    );
+    expect((await reacted).find((m) => m.type === 'turn')).toBeDefined();
+
+    second.socket.close();
+    await second.closed();
+  });
+
+  it('continues the transcript instead of restarting it at 0 — the silent-row-loss bug', async () => {
+    freshJournal();
+    await parkThenBecomeAnotherReplica();
+    const rowsBefore = journal.turns.length;
+    expect(rowsBefore).toBeGreaterThanOrEqual(3);
+
+    const { dropLocalParksForTest } = await import('../ws/server.js');
+    dropLocalParksForTest();
+
+    const second = open(await socketUrl());
+    await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+
+    // MIN_TURN_GAP_MS is 700ms; a turn inside that window is refused.
+    await new Promise((r) => setTimeout(r, 750));
+    const answered = collect(second.socket, (m) => m.some((x) => x.type === 'turn'));
+    second.socket.send(JSON.stringify({ type: 'learner_text', text: 'y cuanto junto en un mes' }));
+    await answered;
+    await new Promise((r) => setTimeout(r, 200));
+
+    /*
+     * THE ASSERTION THIS WHOLE BLOCK EXISTS FOR. `tutor_turns` is unique on
+     * `(session_id, seq)` with `resolution=ignore-duplicates`, so a reused seq
+     * is a row destroyed in silence. Every row this session has EVER written,
+     * across both "replicas", must carry a distinct, ascending number.
+     */
+    const seqs = journal.turns.map((t) => t.seq);
+    expect(new Set(seqs).size).toBe(seqs.length);
+    expect([...seqs].sort((a, b) => a - b)).toEqual(seqs);
+    // …and the new replica's first row continued past the old one's last,
+    // rather than starting again at 1.
+    expect(Math.min(...seqs.slice(rowsBefore))).toBeGreaterThan(Math.max(...seqs.slice(0, rowsBefore)));
+
+    second.socket.close();
+    await second.closed();
+  });
+
+  it('continues the transcript even when NO park record survived at all', async () => {
+    /*
+     * The park record is optional by nature — it expires, the parking process
+     * crashes or is redeployed, or it was deliberately never published because
+     * a graceful close was already in flight. The TRANSCRIPT FLOOR is the
+     * separate, monotonic backstop that must hold in every one of those cases,
+     * so this test destroys the record and keeps only the floor.
+     */
+    freshJournal();
+    await parkThenBecomeAnotherReplica();
+    const rowsBefore = journal.turns.length;
+
+    const { dropLocalParksForTest } = await import('../ws/server.js');
+    const { claimParkedSession } = await import('../ws/parkStore.js');
+    dropLocalParksForTest();
+    // Consume and discard the shared record: this replica finds nothing.
+    const consumed = await claimParkedSession(SESSION_ID);
+    expect(consumed.ok && consumed.record !== null).toBe(true);
+
+    const second = open(await socketUrl());
+    // No park anywhere, so this IS a fresh conversation — it greets rather
+    // than redrawing, and that is correct. What must NOT be fresh is the seq.
+    await collect(second.socket, (m) => m.some((x) => x.type === 'turn'));
+    await new Promise((r) => setTimeout(r, 200));
+
+    const seqs = journal.turns.map((t) => t.seq);
+    expect(new Set(seqs).size).toBe(seqs.length);
+    expect(Math.min(...seqs.slice(rowsBefore))).toBeGreaterThan(Math.max(...seqs.slice(0, rowsBefore)));
+
+    second.socket.close();
+    await second.closed();
+  });
+
+  it('publishes the park BEFORE releasing the claim, so an adopter can never miss it', async () => {
+    /*
+     * The ordering is the fix, not an implementation detail. The resuming
+     * socket's only gate is the session claim, so if the claim is free while
+     * the park is not yet visible, a reconnect provably sails through into a
+     * fresh, colliding orchestrator. Asserted as the invariant itself: at the
+     * first instant the claim can be taken, the record is already there.
+     */
+    freshJournal();
+    await parkThenBecomeAnotherReplica();
+
+    const { acquireLock, releaseLock } = await import('../lib/lock.js');
+    const { sessionLockKey, dropLocalParksForTest } = await import('../ws/server.js');
+    const { claimParkedSession } = await import('../ws/parkStore.js');
+
+    const claim = await acquireLock(sessionLockKey(SESSION_ID), 5_000);
+    expect(claim.ok).toBe(true);
+    try {
+      const record = await claimParkedSession(SESSION_ID);
+      expect(record.ok).toBe(true);
+      expect(record.ok && record.record).not.toBeNull();
+    } finally {
+      if (claim.ok) await releaseLock(sessionLockKey(SESSION_ID), claim.owner);
+      dropLocalParksForTest();
+    }
+  });
+
+  it('does not close a session another replica has already adopted', async () => {
+    /*
+     * THE LEDGER STOMP (`RUNBOOK.md` Round 142, step 5). The parking replica's
+     * grace timer keeps running after a hand-off, and Core's close filters on
+     * `ended_at IS NULL` — so whichever close lands first wins. Before this
+     * round, the DEAD replica's timer won, and the live conversation's real
+     * billed usage never reached the ledger at all.
+     *
+     * Consuming the shared record is exactly what an adopting replica does to
+     * it, so this reproduces the hand-off without needing a second process:
+     * the local park and its timer are untouched, and the timer must now
+     * decline to close a session it no longer owns.
+     */
+    freshJournal();
+    await parkThenBecomeAnotherReplica();
+    expect(journal.closes).toHaveLength(0);
+
+    const { claimParkedSession } = await import('../ws/parkStore.js');
+    const adopted = await claimParkedSession(SESSION_ID);
+    expect(adopted.ok && adopted.record !== null).toBe(true);
+
+    // SESSION_RESUME_GRACE_MS is 1500ms in this suite. Wait well past it.
+    await new Promise((r) => setTimeout(r, 2_000));
+
+    expect(journal.closes).toEqual([]);
+  }, 10_000);
+
+  it('still closes an unclaimed park — the ownership check must not disable the timer', async () => {
+    /*
+     * The control for the test above. A guard that declined to close
+     * EVERYTHING would pass that assertion perfectly while leaking every
+     * abandoned session into Core's ledger forever, so this proves the timer
+     * still ends a park that genuinely nobody took.
+     */
+    freshJournal();
+    await parkThenBecomeAnotherReplica();
+
+    await new Promise((r) => setTimeout(r, 2_000));
+
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'learner_left' });
+  }, 10_000);
 });
 
 /*

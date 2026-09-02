@@ -1,5 +1,51 @@
+import { z } from 'zod';
+import { STRATEGIES } from '../context/schema.js';
 import type { PedagogyState, Strategy } from '../context/schema.js';
 import type { KcState, SessionPlanEntry } from '../core/client.js';
+
+/*
+ * ── THE CONTROLLER'S HALF OF THE PARK SNAPSHOT ──────────────────────────────
+ *
+ * A parked session can be adopted by a DIFFERENT replica (`ws/parkStore.ts`),
+ * so every mutable field below has to survive as plain JSON and come back
+ * IDENTICAL. This is the part /AGENTS.md §1.14 warns loudest about: a field
+ * silently left out of the snapshot restores as its constructor default,
+ * which looks like a perfectly healthy controller and is in fact a learner
+ * whose struggle the tutor has just forgotten. `snapshot-fence.test.ts`
+ * enumerates this class's real runtime fields and fails the moment one is
+ * added without a decision recorded here, so omission is a broken build
+ * rather than a quiet regression on somebody's reconnect.
+ *
+ * TWO fields are deliberately NOT in the snapshot, and both are constructor
+ * arguments rather than session state: `plan` (the `SessionPlanEntry[]` Core
+ * computed) and `kcStates`. They are rebuilt on the far side from the SAME
+ * pinned `SessionContext` the snapshot already carries, so copying them here
+ * would store the identical bytes twice and invite the two copies to disagree.
+ */
+const ControllerSnapshotSchema = z
+  .object({
+    entryIndex: z.number().int().min(0),
+    pKnown: z.array(z.tuple([z.string(), z.number()])),
+    strategy: z.enum(STRATEGIES),
+    consecutiveFailures: z.number().int().min(0),
+    lastDifficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
+    lastDifficultyFromContent: z.boolean(),
+    misconceptionCode: z.string().nullable(),
+    strategyChangesAt: z.array(z.number()),
+    questioningWithoutProgress: z.number().int().min(0),
+    rescuedSinceProgress: z.boolean(),
+    opportunities: z.array(z.tuple([z.string(), z.number()])),
+    correctLatencies: z.array(z.tuple([z.string(), z.array(z.number())])),
+    guessedLastTurn: z.boolean(),
+    probeReturnIndex: z.number().int().nullable(),
+    probingKcId: z.string().nullable(),
+    celebratedKcIds: z.array(z.string()),
+    masteryRevokedKcIds: z.array(z.string()),
+  })
+  .strict();
+
+export { ControllerSnapshotSchema };
+export type ControllerSnapshot = z.infer<typeof ControllerSnapshotSchema>;
 
 /*
  * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
@@ -290,6 +336,41 @@ export class PedagogicalController {
    */
   private readonly celebratedKcIds = new Set<string>();
 
+  /**
+   * Every KC whose mastery was DECLARED and then TAKEN BACK, because later
+   * evidence contradicted it. Kept for the life of the session, alongside
+   * `celebratedKcIds` rather than inside it, because the two answer different
+   * questions: "have we ever celebrated this" (which is what makes TRANSFER
+   * reachable) and "did that celebration survive contact with more evidence".
+   *
+   * WHY THIS EXISTS (owner decision, 2026-09-01). Until now mastery was
+   * evaluated exactly ONCE, on whatever evidence existed at that moment, with
+   * nothing anywhere in this codebase that revisited the decision if worse
+   * evidence followed. The pedagogy gym's `fragile hesitant` archetype named
+   * the consequence precisely: a learner is promoted on three fast, correct
+   * answers, and a later run of slow-but-correct ones — the blueprint §8.3
+   * signal for FRAGILE mastery, "correcto + latencia alta → no promover" —
+   * had no way to reach the decision it should have changed.
+   *
+   * WHY IT REVOKES AFTERWARDS RATHER THAN WITHHOLDING UP FRONT. Withholding
+   * would mean a second confirming check before `advanceEntry()` is allowed
+   * to run, and `celebratedKcIds`'s own comment above already reasoned that
+   * through and rejected it: `advanceEntry` is the ONLY place the plan
+   * pointer moves, so gating it on a second qualifying opportunity risks a
+   * learner who never gets one being stalled on the same entry until the
+   * session ends. Revocation is strictly additive to the plan's forward
+   * motion — it can never block it — so it buys the correction without
+   * re-opening the stall this file already closed once.
+   *
+   * WHAT COUNTS AS CONTRADICTION, and why not simply "any wrong answer
+   * ever": both halves are read from the SAME two signals the promotion
+   * itself was judged on, so the bar to lose mastery is the bar to gain it,
+   * read in reverse. Anything looser would make a single unlucky tap undo a
+   * genuinely learned skill; anything tighter would leave §8.3 unenforced,
+   * which is the gap this closes.
+   */
+  private readonly masteryRevokedKcIds = new Set<string>();
+
   constructor(
     private readonly plan: SessionPlanEntry[],
     /**
@@ -314,6 +395,65 @@ export class PedagogicalController {
      * sessions are things we saw.
      */
     for (const state of this.kcStates) this.opportunities.set(state.kcId, state.attempts);
+  }
+
+  /** Every mutable field, as plain JSON — see this file's snapshot header. */
+  snapshot(): ControllerSnapshot {
+    return {
+      entryIndex: this.entryIndex,
+      pKnown: [...this.pKnown.entries()],
+      strategy: this.strategy,
+      consecutiveFailures: this.consecutiveFailures,
+      lastDifficulty: this.lastDifficulty,
+      lastDifficultyFromContent: this.lastDifficultyFromContent,
+      misconceptionCode: this.misconceptionCode,
+      strategyChangesAt: [...this.strategyChangesAt],
+      questioningWithoutProgress: this.questioningWithoutProgress,
+      rescuedSinceProgress: this.rescuedSinceProgress,
+      opportunities: [...this.opportunities.entries()],
+      correctLatencies: [...this.correctLatencies.entries()].map(([kcId, ms]) => [kcId, [...ms]]),
+      guessedLastTurn: this.guessedLastTurn,
+      probeReturnIndex: this.probeReturnIndex,
+      probingKcId: this.probingKcId,
+      celebratedKcIds: [...this.celebratedKcIds],
+      masteryRevokedKcIds: [...this.masteryRevokedKcIds],
+    };
+  }
+
+  /**
+   * Overwrites EVERY mutable field from a snapshot — never merges.
+   *
+   * The constructor has already seeded `pKnown` and `opportunities` from the
+   * plan and the KC states by the time this runs, and those seeds are exactly
+   * what a resumed session must NOT keep: they are the values from the START
+   * of the session, and the whole point of the snapshot is the evidence
+   * gathered since. `clear()` before each replay rather than `set()` over the
+   * top, so a key the learner's live run had removed cannot survive as the
+   * constructor's stale copy of it.
+   */
+  restore(snapshot: ControllerSnapshot): void {
+    this.entryIndex = snapshot.entryIndex;
+    this.pKnown.clear();
+    for (const [kcId, p] of snapshot.pKnown) this.pKnown.set(kcId, p);
+    this.strategy = snapshot.strategy;
+    this.consecutiveFailures = snapshot.consecutiveFailures;
+    this.lastDifficulty = snapshot.lastDifficulty;
+    this.lastDifficultyFromContent = snapshot.lastDifficultyFromContent;
+    this.misconceptionCode = snapshot.misconceptionCode;
+    this.strategyChangesAt = [...snapshot.strategyChangesAt];
+    this.questioningWithoutProgress = snapshot.questioningWithoutProgress;
+    this.rescuedSinceProgress = snapshot.rescuedSinceProgress;
+    this.opportunities.clear();
+    for (const [kcId, n] of snapshot.opportunities) this.opportunities.set(kcId, n);
+    this.correctLatencies.clear();
+    for (const [kcId, ms] of snapshot.correctLatencies) this.correctLatencies.set(kcId, [...ms]);
+    this.guessedLastTurn = snapshot.guessedLastTurn;
+    this.probeReturnIndex = snapshot.probeReturnIndex;
+    this.probingKcId = snapshot.probingKcId;
+    this.celebratedKcIds.clear();
+    for (const kcId of snapshot.celebratedKcIds) this.celebratedKcIds.add(kcId);
+    this.masteryRevokedKcIds.clear();
+    for (const kcId of snapshot.masteryRevokedKcIds) this.masteryRevokedKcIds.add(kcId);
   }
 
   /** Whether the controller has anything to control. False = v2 behaviour. */
@@ -422,6 +562,20 @@ export class PedagogicalController {
   /** The kcId a served activity should be stamped with right now. */
   get activeKcId(): string | null {
     return this.activeEntry?.kcId ?? null;
+  }
+
+  /**
+   * KCs whose declared mastery was withdrawn again this session, because
+   * later evidence contradicted it (see `masteryRevokedKcIds`).
+   *
+   * Exposed as a copy rather than the live Set: this is read by the pedagogy
+   * gym and by tests as an OBSERVATION of what the controller concluded, and
+   * handing out the internal Set would let a reader mutate the decision it
+   * came to ask about — the same shared-mutable-state hazard AGENTS.md §1.14
+   * records twice for 3D scene objects, in a much smaller place.
+   */
+  get revokedMasteryKcIds(): readonly string[] {
+    return [...this.masteryRevokedKcIds];
   }
 
   private probeEntry(): SessionPlanEntry | null {
@@ -536,6 +690,73 @@ export class PedagogicalController {
         }
       }
       this.pKnown.set(kcId, mirrorBktUpdate(this.pKnown.get(kcId) ?? entry.pKnown, event.correct));
+
+      /*
+       * MASTERY IS RECONSIDERED, NOT DECLARED ONCE (owner decision,
+       * 2026-09-01 — see `masteryRevokedKcIds` for the full reasoning).
+       *
+       * Reached on a LATER encounter of a KC this session already
+       * celebrated — in practice a spaced-review entry
+       * (`reason === 'review_due'`), which is the same re-encounter that
+       * makes TRANSFER reachable at all. Placed HERE, in the evidence
+       * handler, rather than beside rule 5's promotion test, because the
+       * two are different acts: rule 5 decides what to SAY this turn,
+       * while this decides what the session still BELIEVES. Putting it in
+       * the strategy path would have tied revocation to whichever strategy
+       * happened to win, which is how the promotion got evaluated exactly
+       * once in the first place.
+       *
+       * The two contradiction signals are the same two rule 5 requires to
+       * promote — `event.correct` and `answeredHesitantly` — so mastery is
+       * lost on exactly the evidence that would have prevented it. A
+       * hesitant answer counts precisely BECAUSE it is correct: a learner
+       * who still gets there, but now takes more than twice their own
+       * established pace, is the fragile-mastery case §8.3 names, and it is
+       * invisible to any check that only watches for wrong answers.
+       */
+      /*
+       * ONCE PER KC PER SESSION — `!masteryRevokedKcIds.has(kcId)` is
+       * load-bearing, not defensive. Without it this block re-fires on every
+       * subsequent contradicting turn, and because it runs BEFORE the strategy
+       * is chosen, each firing pins the opportunity count back to one below
+       * the floor that the same turn's increment had just restored. The count
+       * can then never reach `MASTERY_MIN_OPPORTUNITIES` at decision time
+       * again, and rule 5's bypass below never gets the chance to fire.
+       *
+       * Observed, not reasoned: the gym printed `CELEBRATE` then SPACED
+       * thirteen times with the plan never completing, and printed it
+       * IDENTICALLY before and after the rule 5 bypass was added — which is
+       * what exposed that the bypass was unreachable rather than wrong.
+       */
+      if (this.celebratedKcIds.has(kcId) && !this.masteryRevokedKcIds.has(kcId)) {
+        const contradicted = !event.correct || this.answeredHesitantly(kcId, event);
+        if (contradicted) {
+          /*
+           * `celebratedKcIds` is deliberately NOT cleared here. It answers
+           * "has this KC ever been celebrated", which is what makes TRANSFER
+           * reachable at all (see its own comment); clearing it would conflate
+           * that with "do we still believe it" and quietly kill TRANSFER for
+           * every KC that was ever revoked — a second dead strategy, which is
+           * the exact defect that comment was written about. The BELIEF lives
+           * in the opportunity count below; the HISTORY stays where it was.
+           */
+          this.masteryRevokedKcIds.add(kcId);
+          /*
+           * Dropped just below the floor, never to zero: the earlier
+           * opportunities genuinely happened and this learner is not made to
+           * start from nothing. What is withdrawn is only the SUFFICIENCY of
+           * that evidence — one more qualifying, unhesitant correct answer
+           * re-earns the promotion, and a second contradiction takes it away
+           * again. `Math.min` because a persisted-attempt seed (constructor)
+           * can legitimately sit far above the floor, and this must lower the
+           * count rather than silently raise it.
+           */
+          this.opportunities.set(
+            kcId,
+            Math.min(this.opportunities.get(kcId) ?? 0, MASTERY_MIN_OPPORTUNITIES - 1),
+          );
+        }
+      }
       /*
        * A GUESS IS NOT A DIAGNOSIS. Our distractors are authored to encode
        * misconceptions, so a random tap produces a confident wrong-idea code;
@@ -751,7 +972,32 @@ export class PedagogicalController {
       (event.kind === 'activity_result' || event.kind === 'voice_result') &&
       event.correct &&
       (this.opportunities.get(entry.kcId) ?? 0) >= MASTERY_MIN_OPPORTUNITIES &&
-      !this.answeredHesitantly(entry.kcId, event)
+      /*
+       * FRAGILITY IS CHECKED ONCE, AND MUST NOT BECOME A CAGE (2026-09-01,
+       * found by running the gym immediately after adding revocation — the
+       * fix for one defect creating its mirror image, which AGENTS.md §1.14
+       * names as its own class: "a value derived to correct an
+       * under-measurement must be checked against every case the ORIGINAL fix
+       * was protecting").
+       *
+       * Hesitancy blocking promotion is right the FIRST time: it is what
+       * takes a fragile mastery back. Left unqualified it is also a trap,
+       * because a learner whose pace never returns to their own early
+       * baseline can never again produce an unhesitant answer — so once
+       * revoked they would sit in review forever, correct every single turn
+       * and never promoted. The gym showed exactly that the moment
+       * revocation existed: `CELEBRATE` followed by SPACED thirteen times,
+       * the plan never completing inside a 16-turn budget.
+       *
+       * So once this session has ALREADY taken this KC's mastery back once,
+       * sustained correctness is allowed to re-earn it even at the slower
+       * pace. What that encodes is a real pedagogical position and not a
+       * threshold tweak: we check whether a promotion was fragile, we act on
+       * it once by teaching more, and we then believe the child rather than
+       * holding them to a speed they may simply not have. A learner who is
+       * carefully, reliably right is not a learner who has failed to learn.
+       */
+      (!this.answeredHesitantly(entry.kcId, event) || this.masteryRevokedKcIds.has(entry.kcId))
     ) {
       return this.celebratedKcIds.has(entry.kcId) ? 'TRANSFER' : 'CELEBRATE';
     }

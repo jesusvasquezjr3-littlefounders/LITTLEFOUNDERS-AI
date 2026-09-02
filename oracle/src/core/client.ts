@@ -70,8 +70,15 @@ const KcStateSchema = z
 export type SessionPlanEntry = z.infer<typeof SessionPlanEntrySchema>;
 export type KcState = z.infer<typeof KcStateSchema>;
 
-/** What Core hands back when Oracle opens a session it was given a token for. */
-const SessionContextSchema = z
+/**
+ * What Core hands back when Oracle opens a session it was given a token for.
+ *
+ * EXPORTED because a parked session's pinned context is written into the
+ * shared park record (`ws/parkStore.ts`) and read back on another replica —
+ * where it is an untrusted input like any other and must be re-validated by
+ * this exact schema rather than by a hand-copied approximation of it.
+ */
+export const SessionContextSchema = z
   .object({
     sessionId: z.uuid(),
     userId: z.uuid(),
@@ -138,6 +145,24 @@ const SessionContextSchema = z
     kcStates: z.array(KcStateSchema).max(40).nullable().optional(),
     /** True when this learner is a minor: forces the model moderation pass. */
     isMinor: z.boolean(),
+    /**
+     * True for an `admin`/`superadmin` account, which is exempt from the
+     * USAGE limits so staff can test the product past the two-sessions-a-day
+     * and twenty-five-minute bounds a learner lives inside (§15.2).
+     *
+     * OPTIONAL, and that is the deployment story rather than laziness: Core
+     * and Oracle deploy independently, so an Oracle that ships first must
+     * read a payload without this field and treat it as `false` — the
+     * conservative direction, where a staff member briefly gets a learner's
+     * budget rather than a learner silently getting a staff one. Same
+     * pattern the `sessionPlan`/`kcStates` fields above already use.
+     *
+     * This reaches the BUDGET only. It is not, and must never become, part
+     * of the model context (§4.1) — `verify:tutor` asserts that context
+     * rejects every unlisted field, and this one has no business shaping how
+     * a tutor speaks to anybody.
+     */
+    isStaff: z.boolean().optional(),
     /** Whether an active guardian voice consent exists RIGHT NOW. */
     voiceConsent: z.boolean(),
     /** Whether personalization could actually be read (§14: failure != empty). */
@@ -564,7 +589,24 @@ export async function updateLearnerMemory(input: {
       method: 'PUT',
       body: JSON.stringify(input),
     });
-    const parsed = Envelope(z.object({ written: z.record(z.string(), z.boolean()) })).safeParse(body);
+    const parsed = Envelope(
+      z.object({
+        written: z.record(z.string(), z.boolean()),
+        /*
+         * THE PARENTAL APPROVAL GATE (Core's `PUT /learner-memory`, migration
+         * 0068, /ORACLE.md §20). For a `kid`, the LEARNER store's proposal
+         * PARKS as a pending row a verified guardian decides on, so it is
+         * correctly absent from `written` — it was not written. It did not
+         * FAIL either, and without this third answer a gated write would be
+         * indistinguishable from a broken one on every kid session, forever.
+         *
+         * `.optional()` because Core and Oracle deploy independently: an
+         * older Core simply never sends it, which reads as "nothing parked"
+         * — the behaviour this function already had.
+         */
+        pending: z.array(z.string()).optional(),
+      }),
+    ).safeParse(body);
     if (!parsed.success || parsed.data.data === null) return false;
     /*
      * EVERY STORE ACTUALLY ASKED FOR, NOT JUST "DID THE ENVELOPE PARSE".
@@ -588,10 +630,23 @@ export async function updateLearnerMemory(input: {
      * warning, forever.
      */
     const written = parsed.data.data.written;
+    const pending = parsed.data.data.pending ?? [];
     const proposedStores = (Object.keys(input.stores) as (keyof typeof input.stores)[]).filter(
       (store) => input.stores[store] !== null,
     );
-    return proposedStores.every((store) => written[store] === true);
+    /*
+     * Said out loud, and at info rather than warn: a parked note is the gate
+     * working, not a fault. Silence here would leave the one visible
+     * difference between "this child's memory is awaiting a parent" and "this
+     * child's memory has been auto-writing all along" entirely invisible in
+     * the logs, which is how a gate that stops working goes unnoticed.
+     */
+    if (pending.length > 0) {
+      console.info(
+        `[oracle] learner memory ${pending.join(', ')} parked for guardian approval — the store moves when a guardian approves it`,
+      );
+    }
+    return proposedStores.every((store) => written[store] === true || pending.includes(store));
   } catch {
     return false;
   }

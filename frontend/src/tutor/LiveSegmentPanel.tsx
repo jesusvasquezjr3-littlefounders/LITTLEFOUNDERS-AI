@@ -362,7 +362,29 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         {t('tutor.conversation.peekActivityWaiting')}
       </span>
 
-      <header className="min-h-0 shrink space-y-1 overflow-y-auto">
+      <header
+        className="min-h-0 shrink space-y-1 overflow-y-auto"
+        // Found by `npm run verify:tutor-a11y`, 2026-09-01:
+        // `scrollable-region-focusable` (serious). The `overflow-y-auto` on
+        // the line below — added the same day by the Round 137 fix that
+        // stopped a rigid header squeezing the answers region to zero height
+        // — made this a scrollable region reachable by mouse wheel or touch
+        // and by NOTHING on a keyboard, since the framing and prompt it holds
+        // are text with no focusable descendant of their own. That is the
+        // identical violation class ORACLE.md §16 records closing on
+        // `TutorTranscript.tsx`, reopened one component over by a fix for an
+        // unrelated defect: the class was closed at the instance, not at the
+        // class, and the next `overflow-y-auto` re-introduced it.
+        //
+        // `tabIndex={0}` is the same remedy used there — it puts the region
+        // in the tab order without taking focus on mount, so arrow keys /
+        // Page Up / Page Down scroll it exactly as a mouse would. Deliberately
+        // NO `aria-label` here: `<header>` carries an implicit role, and
+        // naming a region whose role does not accept a name is how the same
+        // §16 re-run produced `aria-prohibited-attr` on a bare div. The
+        // heading text inside is what a screen reader announces.
+        tabIndex={0}
+      >
         {/*
           NOT `shrink-0` — found live, 2026-09-01, testing a real "give
           change" activity at the HALF detent on a 375px phone. `framing`

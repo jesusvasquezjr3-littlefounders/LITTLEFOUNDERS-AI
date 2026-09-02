@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { KidTutorPage } from '../KidTutorPage';
@@ -17,6 +17,14 @@ import { getKidTutorHistory, getTranscript } from '@/tutor/tutorApi';
 vi.mock('@/tutor/tutorApi', () => ({
   getKidTutorHistory: vi.fn(),
   getTranscript: vi.fn(),
+  /*
+   * The parental approval gate's panel (`MemoryNotesPanel`) is rendered by
+   * this page and calls these. Stubbed to an empty queue so every test in
+   * this file keeps describing the page it was written about; the panel has
+   * its own suite next door.
+   */
+  getPendingMemoryNotes: vi.fn().mockResolvedValue({ data: { proposals: [], current: null }, error: null }),
+  decideMemoryNote: vi.fn(),
 }));
 /*
  * `getToken` must be the SAME function reference across renders, exactly as
@@ -72,6 +80,7 @@ describe('KidTutorPage — safety flags are severity-first, not just chronologic
       data: {
         sessions: [],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [
           {
             id: 'flag-low-newer',
@@ -106,12 +115,94 @@ describe('KidTutorPage — safety flags are severity-first, not just chronologic
   });
 });
 
+/*
+ * /ORACLE.md §4.1b's own "not yet done, stated so rather than silently
+ * claimed complete": `placementSafetyFlags` (migration 0065) was real,
+ * RLS-protected, guardian-queryable data that this page never rendered.
+ *
+ * The sort is the part worth a test rather than the chip: putting the second
+ * provenance in a separate section below would have recreated, one layer up,
+ * the exact defect the block above exists to prevent.
+ */
+describe('KidTutorPage — placement flags share the session flags severity sort', () => {
+  it('puts a HIGH placement flag above a LOW session flag, and offers no transcript for it', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [],
+        hasMore: false,
+        safetyFlags: [
+          {
+            id: 'flag-session-low',
+            session_id: 's1',
+            turn_seq: 4,
+            category: 'model_output_blocked',
+            severity: 'low',
+            handled: 'turn_blocked',
+            created_at: '2026-08-31T12:00:00Z',
+          },
+        ],
+        placementSafetyFlags: [
+          {
+            id: 'flag-placement-high',
+            course_id: null,
+            category: 'self_harm',
+            severity: 'high',
+            created_at: '2026-08-29T09:00:00Z',
+          },
+        ],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    const items = await waitFor(() => screen.getAllByRole('listitem'));
+    // Older, other provenance, still FIRST: severity decides.
+    expect(items[0]).toHaveTextContent('Your child said something about hurting themselves');
+    expect(items[0]).toHaveTextContent('Urgent');
+    expect(items[1]).toHaveTextContent('Low priority');
+
+    // No session to open, and the row says so rather than leaving a hole
+    // where the control would be.
+    expect(items[0]).toHaveTextContent('before any conversation started');
+    expect(within(items[0]!).queryByRole('button', { name: 'Read it' })).toBeNull();
+    // The session flag beside it is untouched.
+    expect(within(items[1]!).getByRole('button', { name: 'Read it' })).toBeTruthy();
+  });
+
+  it('renders the flags card when the ONLY flags are placement ones', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [],
+        hasMore: false,
+        safetyFlags: [],
+        placementSafetyFlags: [
+          {
+            id: 'flag-placement-only',
+            course_id: '2b8f0d4e-1f3a-4c6b-9d21-7a5e8c0b4f13',
+            category: 'abuse_disclosure',
+            severity: 'high',
+            created_at: '2026-08-29T09:00:00Z',
+          },
+        ],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText('Worth your attention'));
+    expect(screen.getByText('Your child described being hurt by someone')).toBeTruthy();
+  });
+});
+
 describe('KidTutorPage — an in-progress session is not reported as 0 messages', () => {
   it('says the conversation is still going, not "0 messages"', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [{ ...BASE_SESSION, endedAt: null, turnCount: 0 }],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -128,6 +219,7 @@ describe('KidTutorPage — an in-progress session is not reported as 0 messages'
       data: {
         sessions: [{ ...BASE_SESSION, endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -155,6 +247,7 @@ describe('KidTutorPage — a session that did not end normally says so', () => {
       data: {
         sessions: [{ ...BASE_SESSION, closeReason: 'completed', endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -179,6 +272,7 @@ describe('KidTutorPage — a session that did not end normally says so', () => {
       data: {
         sessions: [{ ...BASE_SESSION, closeReason, endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -219,6 +313,7 @@ describe('KidTutorPage — switching kidId without a remount does not leak the p
           data: {
             sessions: [],
             hasMore: false,
+            placementSafetyFlags: [],
             safetyFlags: [
               {
                 id: 'flag-a',
@@ -267,7 +362,7 @@ describe('KidTutorPage — switching kidId without a remount does not leak the p
     // (and its resolver) only exists a tick later — wait for it rather than
     // racing it, or this resolves a stale placeholder and hangs forever.
     await waitFor(() => expect(resolveKidB).not.toBeNull());
-    resolveKidB!({ data: { sessions: [], hasMore: false, safetyFlags: [] }, error: null });
+    resolveKidB!({ data: { sessions: [], hasMore: false, placementSafetyFlags: [], safetyFlags: [] }, error: null });
 
     await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull());
     expect(screen.queryByText(/hurting themselves/)).toBeNull();
@@ -291,6 +386,7 @@ describe('KidTutorPage — a safety flag opens the exact transcript it happened 
         // the orphaned-reference scenario the review proved is real.
         sessions: [],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [
           {
             id: 'flag-1',
@@ -347,6 +443,7 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
       data: {
         sessions: [{ ...BASE_SESSION }],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -394,7 +491,7 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
 
   it('shows a real score and XP for an answered activity', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
-      data: { sessions: [{ ...BASE_SESSION }], hasMore: false, safetyFlags: [] },
+      data: { sessions: [{ ...BASE_SESSION }], hasMore: false, placementSafetyFlags: [], safetyFlags: [] },
       error: null,
     });
     vi.mocked(getTranscript).mockResolvedValue({
@@ -442,7 +539,7 @@ describe('KidTutorPage — paging past the first page of sessions', () => {
 
   it('shows "Load more" only while the server reports more, fetches the NEXT offset, and appends rather than replaces', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
-      data: { sessions: [{ ...BASE_SESSION }], hasMore: true, safetyFlags: [] },
+      data: { sessions: [{ ...BASE_SESSION }], hasMore: true, placementSafetyFlags: [], safetyFlags: [] },
       error: null,
     });
 
@@ -452,7 +549,7 @@ describe('KidTutorPage — paging past the first page of sessions', () => {
     const loadMore = await screen.findByText('Load older conversations');
 
     vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
-      data: { sessions: [OLD_SESSION], hasMore: false, safetyFlags: [] },
+      data: { sessions: [OLD_SESSION], hasMore: false, placementSafetyFlags: [], safetyFlags: [] },
       error: null,
     });
 
@@ -473,7 +570,7 @@ describe('KidTutorPage — paging past the first page of sessions', () => {
 
   it('leaves the existing sessions on screen and offers a retry when the next page fails to load', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
-      data: { sessions: [{ ...BASE_SESSION }], hasMore: true, safetyFlags: [] },
+      data: { sessions: [{ ...BASE_SESSION }], hasMore: true, placementSafetyFlags: [], safetyFlags: [] },
       error: null,
     });
 
@@ -533,7 +630,7 @@ describe('KidTutorPage — a tutor turn that drew a whiteboard shows it to the p
 
   it('renders the whiteboard beside the tutor line that drew it', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
-      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], hasMore: false },
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], placementSafetyFlags: [], hasMore: false },
       error: null,
     });
     vi.mocked(getTranscript).mockResolvedValue({
@@ -557,7 +654,7 @@ describe('KidTutorPage — a tutor turn that drew a whiteboard shows it to the p
 
   it('renders no whiteboard well for a tutor turn that never drew one', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
-      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], hasMore: false },
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], placementSafetyFlags: [], hasMore: false },
       error: null,
     });
     vi.mocked(getTranscript).mockResolvedValue({
@@ -576,6 +673,83 @@ describe('KidTutorPage — a tutor turn that drew a whiteboard shows it to the p
 
     await waitFor(() => screen.getByText('Cada semana te dan 2 pesos más.'));
     expect(document.querySelector('[data-tutor-whiteboard]')).toBeNull();
+  });
+});
+
+/*
+ * The SAME class of defect as the whiteboard block above, one field over, and
+ * this one had a documentation claim standing behind it: migration `0067`'s
+ * own header says the defect it fixed was losing the tutor's tray
+ * demonstration "silently, on replay AND on the guardian transcript viewer".
+ * Only the replay half shipped. `buildReplayScript` computed
+ * `beat.demonstrate` and this page — which already read `beat.whiteboard`
+ * from the very same beat — never rendered it, so a parent read "so I take
+ * one of these away…" with no way to see what "these" were.
+ *
+ * A plain-sentence summary, never a re-animated tray: the learner's tray
+ * state at demo time is persisted nowhere, so replaying the delta from empty
+ * would drive the money exercises' own total to a number nobody saw
+ * (/ORACLE.md §20.8, and `DemoStepsSummary`'s own comment).
+ */
+describe('KidTutorPage — a tutor turn that demonstrated on the tray shows it to the parent too', () => {
+  const DEMO_TURN = {
+    id: 't-demo',
+    seq: 3,
+    speaker: 'tutor' as const,
+    text: 'Mira, pongo estas dos monedas.',
+    emotion: null,
+    action: null,
+    audio_path: null,
+    source: 'model',
+    created_at: '2026-08-31T10:00:00Z',
+    whiteboard: null,
+    demonstrate: [
+      { kind: 'add' as const, denomination: 10 },
+      { kind: 'add' as const, denomination: 5 },
+    ],
+  };
+
+  it('names the denominations the tutor put on the tray, in order', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], placementSafetyFlags: [], hasMore: false },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: { session: BASE_SESSION, turns: [DEMO_TURN], segments: [] },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+    fireEvent.click(screen.getByText('Read it'));
+
+    await waitFor(() => screen.getByText('Mira, pongo estas dos monedas.'));
+    // Signed, so a `remove` step would read as a negative — the whole point
+    // of the summary is which way each denomination went.
+    expect(screen.getByText(/\+10/)).toBeInTheDocument();
+    expect(screen.getByText(/\+5/)).toBeInTheDocument();
+  });
+
+  it('draws no demonstration line for a tutor turn that never touched the tray', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], placementSafetyFlags: [], hasMore: false },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: {
+        session: BASE_SESSION,
+        turns: [{ ...DEMO_TURN, id: 't-plain', seq: 4, demonstrate: null }],
+        segments: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+    fireEvent.click(screen.getByText('Read it'));
+
+    await waitFor(() => screen.getByText('Mira, pongo estas dos monedas.'));
+    expect(screen.queryByText(/\+10/)).toBeNull();
   });
 });
 
@@ -604,6 +778,7 @@ describe('KidTutorPage — the "what is happening" narrative', () => {
           },
         ],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -630,6 +805,7 @@ describe('KidTutorPage — the "what is happening" narrative', () => {
           },
         ],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -661,6 +837,7 @@ describe('KidTutorPage — the "what is happening" narrative', () => {
           },
         ],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -677,6 +854,7 @@ describe('KidTutorPage — the "what is happening" narrative', () => {
       data: {
         sessions: [{ ...BASE_SESSION, narrative: null }],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,
@@ -705,6 +883,7 @@ describe('KidTutorPage — the "what is happening" narrative', () => {
           },
         ],
         hasMore: false,
+        placementSafetyFlags: [],
         safetyFlags: [],
       },
       error: null,

@@ -12,6 +12,7 @@ import { ReplayInWorld } from '../replay/ReplayInWorld';
 import { buildReplayScript } from '../replay/replayScript';
 import { useReplayDirector } from '../replay/useReplayDirector';
 import { VoiceConsentControl } from '../VoiceConsentControl';
+import { MemoryNotesPanel } from '@/routes/app/family/MemoryNotesPanel';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
 import { auditionFor } from '../stage/phases';
 import { micForPhase } from '../stage/micForPhase';
@@ -344,6 +345,25 @@ export default function TutorLabPage() {
 
   useStubbedCoreApi(consentGranted, locale, voicePolicy);
 
+  /*
+   * NOTHING RENDERS UNTIL THE SHIM IS ACTUALLY INSTALLED, and this is not
+   * belt-and-braces — without it the two panels on the `consent` surface both
+   * rendered their FAILURE state on this page, permanently.
+   *
+   * React runs a CHILD's effects before its parent's, so a child that fetches
+   * on mount beats `useStubbedCoreApi`'s install and reaches the real Core,
+   * which on a developer's machine answers 401. StrictMode does not rescue it
+   * either: the second pass runs the child's effect again AFTER the parent's
+   * cleanup has already put the real `fetch` back, so the child races and
+   * loses on both passes. `labFixtures.ts` names this hazard in its own
+   * comments for the locale/consent refs; this is the same hazard one level
+   * up, and the fix is ordering rather than more refs — on the first render
+   * there are no children at all, so by the time any child exists the parent's
+   * effects have run.
+   */
+  const [apiReady, setApiReady] = useState(false);
+  useEffect(() => setApiReady(true), []);
+
   const scene: LabScene = surface === 'consent' ? 'introducing' : surface;
   const phase = phaseForScene(scene);
   const socket = useLabSocket(scene, locale, activity);
@@ -668,15 +688,26 @@ export default function TutorLabPage() {
     </div>
   );
 
+  // See `apiReady` above: the first render deliberately has no children.
+  if (!apiReady) return null;
+
   if (surface === 'consent') {
     /*
-     * The ONE surface here that has no stage.
+     * The ONE surface here that has no stage — and now the GUARDIAN's two
+     * screens rather than one.
      *
      * The guardian's microphone gate lives on `/family`, not on the Tutor
      * route, and its exact wording is what a consent dispute is resolved
      * against (/ORACLE.md §4.3). It kept its place on this page when the rest
      * of it became a stage, because the alternative was that the one legally
      * significant screen in the feature went back to being unviewable.
+     *
+     * The memory-note approval queue (/ORACLE.md §20, migration 0068) joins it
+     * for exactly the same reason. It lives on `/family/:kidId/tutor`, behind
+     * a parent role AND a verified guardian link AND a child who has actually
+     * had a session — so on a developer's machine it is, in practice,
+     * unviewable. Two notes are fixtured, one of them deliberately out of
+     * date, because "approve" and "this is stale" are different screens.
      */
     return (
       <div className="min-h-screen bg-surface-sunken">
@@ -694,6 +725,12 @@ export default function TutorLabPage() {
               kidName="Ana"
             />
           </div>
+          <p className="lf-body max-w-prose text-content-muted">
+            The approval queue for what the tutor remembers, as it appears on
+            /family/:kidId/tutor. The second note was written against older text, so it is marked
+            out of date before anything is tapped.
+          </p>
+          <MemoryNotesPanel key={locale} kidUserId={LAB_KID_ID} token={LAB_TOKEN} />
         </div>
       </div>
     );

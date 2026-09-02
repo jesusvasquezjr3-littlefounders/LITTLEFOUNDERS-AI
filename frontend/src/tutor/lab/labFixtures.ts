@@ -178,6 +178,45 @@ interface LabScript {
   verdict: string;
 }
 
+/**
+ * The parental approval gate's fixtures (/ORACLE.md §20, migration 0068).
+ *
+ * Written at REAL length, in the voice the review model actually produces —
+ * several sentences of plain prose about a child. A one-line fixture would
+ * make the panel look tidy and hide the only layout question worth asking
+ * here: whether a paragraph and the paragraph it replaces both stay readable
+ * side by side on a 375 px phone.
+ */
+const LAB_MEMORY_NOTES: Readonly<
+  Record<Locale, { current: string; fresh: string; stale: string; older: string }>
+> = {
+  'en-US': {
+    current:
+      'Robi is curious about money and counts confidently in fives and tens. They lose the thread past two steps and do best when a problem is restated in full. Praise after a correct answer visibly lifts their confidence.',
+    fresh:
+      'Robi is saving for a bike and brings it up unprompted, which makes goal-shaped problems land far better than abstract ones. They count confidently in fives and tens and still lose the thread past two steps. Restating the whole problem before asking is what keeps them with you.',
+    stale:
+      'Robi enjoys number games and is starting to ask what things cost.',
+    older: 'Robi is curious about money and likes counting coins out loud.',
+  },
+  'es-MX': {
+    current:
+      'Robi tiene curiosidad por el dinero y cuenta con seguridad de cinco en cinco y de diez en diez. Pierde el hilo después de dos pasos y le va mejor cuando se le repite el problema completo. El elogio después de una respuesta correcta le sube visiblemente la confianza.',
+    fresh:
+      'Robi está ahorrando para una bici y lo menciona por su cuenta, así que los problemas con una meta le funcionan mucho mejor que los abstractos. Cuenta con seguridad de cinco en cinco y de diez en diez, y todavía pierde el hilo después de dos pasos. Repetirle el problema completo antes de preguntar es lo que lo mantiene contigo.',
+    stale: 'A Robi le gustan los juegos con números y empieza a preguntar cuánto cuestan las cosas.',
+    older: 'Robi tiene curiosidad por el dinero y le gusta contar monedas en voz alta.',
+  },
+  'pt-BR': {
+    current:
+      'Robi tem curiosidade sobre dinheiro e conta com segurança de cinco em cinco e de dez em dez. Perde o fio depois de dois passos e vai melhor quando o problema é repetido por inteiro. O elogio depois de uma resposta certa levanta visivelmente a confiança dele.',
+    fresh:
+      'Robi está juntando dinheiro para uma bicicleta e fala disso por conta própria, então problemas com uma meta funcionam muito melhor do que os abstratos. Conta com segurança de cinco em cinco e de dez em dez, e ainda perde o fio depois de dois passos. Repetir o problema inteiro antes de perguntar é o que o mantém junto com você.',
+    stale: 'Robi gosta de jogos com números e começa a perguntar quanto as coisas custam.',
+    older: 'Robi tem curiosidade sobre dinheiro e gosta de contar moedas em voz alta.',
+  },
+};
+
 const LAB_SCRIPTS: Readonly<Record<Locale, LabScript>> = {
   'en-US': {
     weakSkillKey: 'financial-education/saving-with-a-goal',
@@ -1078,6 +1117,43 @@ function answerTutorPath(
 
   if (path.endsWith('/tutor/sessions') && method === 'GET') {
     return envelope({ sessions: [labSessionSummary(locale)] });
+  }
+
+  /*
+   * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068). Two notes on
+   * purpose, and they are not interchangeable: the first is written against
+   * the note the tutor holds today and can simply be approved; the second was
+   * written against something older, so the panel must mark it out of date
+   * BEFORE anyone taps approve. A fixture with only the easy one would leave
+   * the state a real family actually hits unviewable here.
+   */
+  if (path.includes('/memory-proposals') && method === 'GET') {
+    return envelope({
+      proposals: [
+        {
+          id: '11111111-1111-4111-8111-aaaaaaaaaaaa',
+          proposed: LAB_MEMORY_NOTES[locale].fresh,
+          expectedBefore: LAB_MEMORY_NOTES[locale].current,
+          sessionId: '22222222-2222-4222-8222-222222222222',
+          createdAt: '2026-09-01T10:00:00Z',
+        },
+        {
+          id: '11111111-1111-4111-8111-bbbbbbbbbbbb',
+          proposed: LAB_MEMORY_NOTES[locale].stale,
+          expectedBefore: LAB_MEMORY_NOTES[locale].older,
+          sessionId: null,
+          createdAt: '2026-08-30T09:00:00Z',
+        },
+      ],
+      current: LAB_MEMORY_NOTES[locale].current,
+    });
+  }
+
+  if (path.includes('/memory-proposals/') && method === 'POST') {
+    // Always lands, and pays nothing. The REFUSAL paths (a stale note, a note
+    // somebody else already decided) are exercised by the panel's own unit
+    // tests; what this page is for is looking at the screen.
+    return envelope({ outcome: 'written', applied: true });
   }
 
   if (path.endsWith('/tutor/preferences')) {

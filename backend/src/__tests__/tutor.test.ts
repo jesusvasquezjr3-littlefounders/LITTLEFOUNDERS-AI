@@ -98,6 +98,17 @@ interface StubOpts {
    *  exhausted falls back to `segments`. */
   segmentsSequence?: unknown[][];
   guardianLinks?: unknown[];
+  /**
+   * Migration 0068 — LEARNER-store notes parked for guardian approval. Rows
+   * for the queue read; `decisionOutcome` is what the decision RPC answers
+   * ('written' | 'unchanged' | 'rejected' | 'conflict' | 'not_pending'),
+   * defaulting to the verdict the caller asked for so the ordinary happy path
+   * needs no fixture.
+   */
+  memoryProposals?: unknown[];
+  decisionOutcome?: unknown;
+  /** `/learner_memory` rows, for the surfaces that read the store back. */
+  learnerMemory?: unknown[];
   /** Migration 0065 — a flag raised during placement, before any session existed. */
   placementSafetyFlags?: unknown[];
   preferences?: unknown[];
@@ -170,7 +181,19 @@ function stub(opts: StubOpts = {}) {
          * exists for, so the test for it would have passed against no code.
          */
         const want = /slug=eq\.([^&]+)/.exec(url)?.[1];
-        const rows = (opts.topics ?? []) as { slug?: string }[];
+        const rows = (opts.topics ?? []) as { slug?: string; id?: string }[];
+        /*
+         * `id=in.(...)` is honoured for the SAME reason the slug filter is
+         * (2026-09-01): the guardian narrative's digest fallback resolves
+         * topic titles by id, and a stub that answered every id with every
+         * fixture row would let a test pass even if the route looked up the
+         * wrong topic entirely.
+         */
+        const wantIds = /id=in\.\(([^)]*)\)/.exec(url)?.[1];
+        if (wantIds !== undefined) {
+          const ids = new Set(wantIds.split(',').filter(Boolean).map(decodeURIComponent));
+          return Promise.resolve(jsonResponse(200, rows.filter((r) => r.id !== undefined && ids.has(r.id))));
+        }
         return Promise.resolve(
           jsonResponse(200, want ? rows.filter((r) => r.slug === decodeURIComponent(want)) : rows),
         );
@@ -367,6 +390,28 @@ function stub(opts: StubOpts = {}) {
       }
       if (url.includes('/rest/v1/guardian_links')) {
         return Promise.resolve(jsonResponse(200, opts.guardianLinks ?? []));
+      }
+      // Migration 0068 — the parental approval gate.
+      if (url.includes('/rest/v1/learner_memory_proposals')) {
+        if (method === 'POST') return Promise.resolve(new Response(null, { status: 201 }));
+        return Promise.resolve(jsonResponse(200, opts.memoryProposals ?? []));
+      }
+      if (url.includes('/rpc/decide_learner_memory_proposal')) {
+        if (opts.decisionOutcome !== undefined) {
+          return Promise.resolve(jsonResponse(200, opts.decisionOutcome));
+        }
+        /*
+         * The real function answers 'written' for an approval that landed and
+         * 'rejected' for a rejection. Defaulting to the verdict asked for
+         * keeps every happy-path test fixture-free while leaving the three
+         * outcomes that MATTER ('conflict', 'not_pending', an unrecognised
+         * word) reachable only by saying so explicitly.
+         */
+        const verdict = JSON.parse(String(init?.body ?? '{}')).p_verdict as string;
+        return Promise.resolve(jsonResponse(200, verdict === 'rejected' ? 'rejected' : 'written'));
+      }
+      if (url.includes('/rest/v1/learner_memory?')) {
+        return Promise.resolve(jsonResponse(200, opts.learnerMemory ?? []));
       }
       if (url.includes('/intel/learning/states')) {
         return Promise.resolve(jsonResponse(200, { data: { states: [] }, error: null }));
@@ -1665,6 +1710,69 @@ describe('the internal surface', () => {
     expect(body).not.toContain('Ana Vasquez');
   });
 
+  /*
+   * THE STAFF USAGE EXEMPTION'S WIRE CONTRACT (owner request, 2026-09-01).
+   *
+   * `oracle/src/session/budget.ts` grants staff an eight-hour, 5,000-turn
+   * budget instead of twenty-five minutes and 120 turns — but ONLY when this
+   * payload says so. The flag is derived here, where the roles are already
+   * read, so these two tests are the whole seam between "the role exists"
+   * and "the limit does not bind". Without them the exemption could be
+   * silently absent on the wire and the only symptom would be a staff member
+   * cut off mid-test by a limit they were told they did not have.
+   */
+  it('tells Oracle a staff account is exempt from the usage limits', async () => {
+    stub({ roles: [{ role: 'superadmin' }] });
+
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.isStaff).toBe(true);
+  });
+
+  /*
+   * THE RETENTION SWEEP'S WATCHER (2026-09-01, /ORACLE.md §15.2 item 4).
+   *
+   * `.github/workflows/tutor-retention-watch.yml` polls this nightly and
+   * FAILS when the sweep has gone quiet. It exists on the internal surface
+   * rather than the admin one so a scheduled runner needs no staff session —
+   * see the route's own comment. These two tests are the reason the workflow
+   * can trust what it reads: that the key is required at all, and that a
+   * never-run sweep reports `stale: true` rather than a comfortable silence.
+   */
+  it('serves the retention sweep status to the internal key', async () => {
+    stub();
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/internal/retention/status')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+
+    expect(response.status).toBe(200);
+    // A sweep that has never recorded a run is STALE, not "fine so far" — the
+    // watcher must be able to tell those apart (§1.14).
+    expect(response.body.data.stale).toBe(true);
+    expect(response.body.data.lastRunAt).toBeNull();
+  });
+
+  it('refuses the retention sweep status without the internal key', async () => {
+    stub();
+    const response = await request(createApp()).get('/api/v1/tutor/internal/retention/status');
+    expect(response.status).toBe(403);
+  });
+
+  it('says an ordinary learner is NOT staff — the exemption is never the default', async () => {
+    stub({ roles: [{ role: 'kid' }] });
+
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.isStaff).toBe(false);
+  });
+
   it('substitutes a neutral word when no nickname was chosen', async () => {
     stub({ preferences: [] });
 
@@ -2195,7 +2303,10 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
   });
 
   it('forwards the caller\'s expectedBefore as the RPC\'s compare value, not a value it reads itself', async () => {
-    const calls = stub();
+    // An ADULT learner: the approval gate below parks a kid's learner store
+    // instead of writing it, and this test is about the compare value that
+    // reaches the RPC when a write actually happens.
+    const calls = stub({ roles: [{ role: 'universal' }] });
     const response = await request(createApp())
       .put('/api/v1/tutor/internal/learner-memory')
       .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
@@ -2324,6 +2435,340 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
     await expect(getLearnerMemory(KID)).resolves.toEqual({
       learner: 'NEW learner note',
       pedagogy: 'NEW pedagogy note',
+    });
+  });
+});
+
+/*
+ * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068) — the one item
+ * that document marked BLOCKING before real families could use the Tutor.
+ *
+ * What these tests are actually protecting: a model-authored prose
+ * description of a MINOR, injected into every future session, used to write
+ * itself with nobody outside the system ever seeing it. The four properties
+ * below are the gate, and each one fails silently if it breaks — a kid whose
+ * note quietly writes itself looks exactly like a kid whose note was
+ * approved.
+ */
+describe('the LEARNER store parks for guardian approval when the learner is a kid', () => {
+  const PROPOSAL = '55555555-5555-4555-8555-555555555555';
+  const guardianOfKid = [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }];
+
+  it('parks the learner note instead of writing it, and says so as PENDING', async () => {
+    // `roles` defaults to `[{ role: 'kid' }]` in this suite's stub.
+    const calls = stub();
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'A Ana le gustan los caballos.', pedagogy: null },
+        expectedBefore: { learner: 'Nota anterior.', pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    // The store did NOT move: the pair RPC was asked for nothing at all.
+    const rpcCall = calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'));
+    expect(rpcCall).toBeUndefined();
+
+    const park = calls.find((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'));
+    expect(park).toBeDefined();
+    const parked = JSON.parse(String(park?.body ?? '{}'));
+    expect(parked.user_id).toBe(KID);
+    expect(parked.proposed).toBe('A Ana le gustan los caballos.');
+    // The belief the proposal was computed from travels WITH it — it is what
+    // the compare-and-swap will be judged against whenever a guardian gets
+    // round to approving, which can be days later.
+    expect(parked.expected_before).toBe('Nota anterior.');
+    // sha256 hex, so the ledger row an approval writes is shaped exactly like
+    // an ungated write's.
+    expect(parked.after_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(parked.before_hash).toMatch(/^[0-9a-f]{64}$/);
+
+    /*
+     * The §1.14 assertion, and the reason `pending` exists at all: a parked
+     * store is absent from `written` because it was not written, and Oracle
+     * treats an absent proposed store as a failed write. Without this field
+     * every kid session would log "the memory write did not land" forever.
+     */
+    expect(response.body.data.written).toEqual({});
+    expect(response.body.data.pending).toEqual(['learner']);
+  });
+
+  it('does NOT gate the pedagogy store — the tutor’s own teaching notes keep writing', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nota sobre Ana.', pedagogy: 'Prefiere un ejemplo antes de la regla.' },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    const rpcBody = JSON.parse(
+      String(calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))?.body ?? '{}'),
+    );
+    // The learner half is NULL to the RPC ("nothing proposed"), the pedagogy
+    // half goes straight through.
+    expect(rpcBody.p_learner_new).toBeNull();
+    expect(rpcBody.p_pedagogy_new).toBe('Prefiere un ejemplo antes de la regla.');
+    expect(response.body.data.written).toEqual({ pedagogy: true });
+    expect(response.body.data.pending).toEqual(['learner']);
+  });
+
+  it('writes an ADULT learner’s note directly — there is no guardian to ask', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nota de una persona adulta.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(false);
+    expect(response.body.data.written).toEqual({ learner: true });
+    expect(response.body.data.pending).toEqual([]);
+  });
+
+  /*
+   * §1.14, and the most expensive way this could fail: a role read that
+   * errors must NOT fall through to the ungated path. The "default" there is
+   * a child's note bypassing the gate because PostgREST hiccuped, and it
+   * would be indistinguishable from the gate simply never having applied.
+   */
+  it('refuses the whole write when the role read fails, rather than writing ungated', async () => {
+    const calls = stub({ restFailures: ['user_roles'] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nota sobre Ana.', pedagogy: 'Nota pedagógica.' },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(false);
+  });
+
+  it('refuses when the proposal fails to PARK — a note that vanished is not a note that landed', async () => {
+    stub({ restFailures: ['learner_memory_proposals'] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nota sobre Ana.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+
+  // ── The portal ───────────────────────────────────────────────────────────
+
+  describe('GET /api/v1/tutor/kids/:kidUserId/memory-proposals', () => {
+    it('refuses anyone who is not a VERIFIED guardian of that child', async () => {
+      stub({ guardianLinks: [] });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/memory-proposals`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('hands a verified guardian the pending notes AND what each one would replace', async () => {
+      stub({
+        guardianLinks: guardianOfKid,
+        memoryProposals: [
+          {
+            id: PROPOSAL,
+            user_id: KID,
+            proposed: 'A Ana le gustan los caballos.',
+            expected_before: 'Nota anterior.',
+            session_id: SESSION,
+            status: 'pending',
+            decided_by: null,
+            decided_at: null,
+            created_at: '2026-09-01T10:00:00Z',
+          },
+        ],
+        learnerMemory: [{ store: 'learner', content: 'Nota anterior.' }],
+      });
+
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/memory-proposals`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.proposals).toEqual([
+        {
+          id: PROPOSAL,
+          proposed: 'A Ana le gustan los caballos.',
+          expectedBefore: 'Nota anterior.',
+          sessionId: SESSION,
+          createdAt: '2026-09-01T10:00:00Z',
+        },
+      ]);
+      // The store as it stands today, so the portal can show a stale note as
+      // stale BEFORE a guardian taps approve rather than only afterwards.
+      expect(response.body.data.current).toBe('Nota anterior.');
+    });
+
+    it('answers 502 when the queue read fails — never an empty queue', async () => {
+      stub({ guardianLinks: guardianOfKid, restFailures: ['learner_memory_proposals'] });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/memory-proposals`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(502);
+      expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+    });
+  });
+
+  describe('POST /api/v1/tutor/memory-proposals/:proposalId/decision', () => {
+    const proposalRow = {
+      id: PROPOSAL,
+      user_id: KID,
+      proposed: 'A Ana le gustan los caballos.',
+      expected_before: 'Nota anterior.',
+      session_id: SESSION,
+      status: 'pending',
+      decided_by: null,
+      decided_at: null,
+      created_at: '2026-09-01T10:00:00Z',
+    };
+
+    it('refuses a caller who is not a verified guardian of the child the note is about', async () => {
+      const calls = stub({ guardianLinks: [], memoryProposals: [proposalRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+      // And nothing was decided on the way to being refused.
+      expect(calls.some((c) => c.url.includes('/rpc/decide_learner_memory_proposal'))).toBe(false);
+    });
+
+    it('applies an approval through the SAME atomic function, stamped as a guardian decision', async () => {
+      const calls = stub({ guardianLinks: guardianOfKid, memoryProposals: [proposalRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ outcome: 'written', applied: true });
+
+      const rpc = calls.find((c) => c.url.includes('/rpc/decide_learner_memory_proposal'));
+      expect(rpc).toBeDefined();
+      const body = JSON.parse(String(rpc?.body ?? '{}'));
+      expect(body.p_proposal_id).toBe(PROPOSAL);
+      expect(body.p_verdict).toBe('approved');
+      // WHO decided is the question this whole feature exists to answer.
+      expect(body.p_decided_by).toBe(PARENT);
+      // And the ledger must be able to tell a guardian-approved write apart
+      // from an auto-write, which is the actor string's entire job.
+      expect(body.p_actor).toBe('guardian-approved-review');
+    });
+
+    it('records a rejection without touching the store', async () => {
+      const calls = stub({ guardianLinks: guardianOfKid, memoryProposals: [proposalRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'rejected' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ outcome: 'rejected', applied: false });
+      expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    });
+
+    /*
+     * THE PRECEDENT THIS REUSES (`setTutorReviewStatus`, the live-review
+     * queue): a verdict lands ONLY on a still-pending row. A second guardian's
+     * stale tab, a double-tap or a retry after a timeout must never overwrite
+     * a decision that was already made — and must be TOLD, not silently
+     * answered with a success that describes somebody else's decision.
+     */
+    it('refuses a second verdict on an already-decided note', async () => {
+      stub({
+        guardianLinks: guardianOfKid,
+        memoryProposals: [proposalRow],
+        decisionOutcome: 'not_pending',
+      });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('ALREADY_DECIDED');
+    });
+
+    it('reports a STALE note as its own outcome, not as a success', async () => {
+      stub({ guardianLinks: guardianOfKid, memoryProposals: [proposalRow], decisionOutcome: 'conflict' });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('NOTE_OUT_OF_DATE');
+    });
+
+    it('treats a verdict word it does not recognise as a failure, never as an approval', async () => {
+      stub({ guardianLinks: guardianOfKid, memoryProposals: [proposalRow], decisionOutcome: 'sure_why_not' });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(502);
+      expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+    });
+
+    it('answers 404 for a note that does not exist, and 502 when the read fails', async () => {
+      stub({ guardianLinks: guardianOfKid, memoryProposals: [] });
+      const missing = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+      expect(missing.status).toBe(404);
+
+      stub({ guardianLinks: guardianOfKid, restFailures: ['learner_memory_proposals'] });
+      const unreachable = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'approved' });
+      expect(unreachable.status).toBe(502);
+    });
+
+    it('rejects a verdict that is neither approved nor rejected', async () => {
+      stub({ guardianLinks: guardianOfKid, memoryProposals: [proposalRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+        .send({ verdict: 'maybe' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
     });
   });
 });
@@ -2598,6 +3043,85 @@ describe('guardian visibility', () => {
       expect(response.status).toBe(200);
       const [session] = response.body.data.sessions;
       expect(session.narrative.topics).toEqual(['Making Change']);
+    });
+
+    /*
+     * ORACLE.md §12 carried this as a KNOWN LIMITATION — the digest fallback
+     * surfacing its topic in the CHILD's session locale — on the stated
+     * grounds that the string "was baked in at close time rather than kept
+     * as a re-localizable id". The schema disagreed: `SessionSummaryDigest`
+     * has carried `topicId` since migration 0051. Closed 2026-09-01.
+     */
+    it("re-localizes the DIGEST fallback topic into the guardian's locale via summary.topicId", async () => {
+      const TOPIC_ID = 'bbbbbbbb-0000-4000-8000-000000000002';
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: [
+          {
+            ...SESSION_ROW,
+            locale: 'es-MX',
+            ended_at: '2026-08-30T10:20:00Z',
+            close_reason: 'completed',
+            summary: {
+              // Baked at close in the CHILD's locale — what the parent used to be shown.
+              topic: 'Cobrar y dar cambio',
+              courseId: null,
+              topicId: TOPIC_ID,
+              skillKeys: [],
+              outcome: 'completed',
+              gradedCorrect: 4,
+              gradedTotal: 5,
+            },
+          },
+        ],
+        topics: [
+          {
+            id: TOPIC_ID,
+            title: { 'en-US': 'Charging and Making Change', 'es-MX': 'Cobrar y dar cambio' },
+          },
+        ],
+        // No kc_attempt rows at all — this is exactly the fallback tier.
+        profile: { ...KID_PROFILE, locale: 'en-US' },
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const [session] = response.body.data.sessions;
+      expect(session.narrative.topics).toEqual(['Charging and Making Change']);
+    });
+
+    it('keeps the baked digest topic when its topicId resolves to nothing — never erases a topic the parent could already see', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: [
+          {
+            ...SESSION_ROW,
+            ended_at: '2026-08-30T10:20:00Z',
+            close_reason: 'completed',
+            summary: {
+              topic: 'Cobrar y dar cambio',
+              courseId: null,
+              // Names a topic that no longer exists in the catalog.
+              topicId: 'bbbbbbbb-0000-4000-8000-00000000dead',
+              skillKeys: [],
+              outcome: 'completed',
+              gradedCorrect: 4,
+              gradedTotal: 5,
+            },
+          },
+        ],
+        topics: [],
+        profile: { ...KID_PROFILE, locale: 'en-US' },
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const [session] = response.body.data.sessions;
+      expect(session.narrative.topics).toEqual(['Cobrar y dar cambio']);
     });
 
     it('still refuses a stranger before any narrative data is ever read', async () => {

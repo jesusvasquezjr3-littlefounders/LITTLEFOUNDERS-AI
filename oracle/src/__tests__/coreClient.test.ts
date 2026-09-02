@@ -101,6 +101,58 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
     const sentBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}'));
     expect(sentBody.expectedBefore).toEqual({ learner: 'Nota de la sesión anterior.', pedagogy: null });
   });
+
+  /*
+   * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068). For a `kid`,
+   * Core PARKS the learner store's proposal for a verified guardian instead of
+   * writing it, so that store is correctly ABSENT from `written` — and every
+   * assertion above treats an absent proposed store as a failed write.
+   *
+   * Without the `pending` field this function would log "the write did not
+   * land" on every single kid session forever, which is the §1.14 failure that
+   * matters most here: the ONE signal that would tell an operator the gate had
+   * stopped working is a message that is already firing constantly for the
+   * healthy case.
+   */
+  function coreSaysWithPending(written: Record<string, boolean>, pending: string[]): Response {
+    return new Response(JSON.stringify({ data: { written, pending }, error: null }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  it('treats a store PARKED for guardian approval as landed, not as a failure', async () => {
+    fetchMock.mockResolvedValueOnce(coreSaysWithPending({ pedagogy: true }, ['learner']));
+    const result = await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
+    });
+    expect(result).toBe(true);
+  });
+
+  it('still reports a genuine failure when another store failed alongside a parked one', async () => {
+    fetchMock.mockResolvedValueOnce(coreSaysWithPending({ pedagogy: false }, ['learner']));
+    const result = await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
+    });
+    expect(result).toBe(false);
+  });
+
+  it('an older Core that sends no `pending` field at all still behaves exactly as before', async () => {
+    fetchMock.mockResolvedValueOnce(coreSays({ learner: false, pedagogy: true }));
+    const result = await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
+    });
+    expect(result).toBe(false);
+  });
 });
 
 /*

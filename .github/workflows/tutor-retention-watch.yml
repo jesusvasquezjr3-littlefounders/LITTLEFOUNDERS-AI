@@ -1,0 +1,137 @@
+name: Tutor retention watch
+
+# THE OTHER HALF OF THE RETENTION PROMISE: somebody has to notice when the
+# sweep STOPS running (/ORACLE.md §15.2 item 4).
+#
+# `tutor-retention.yml` deletes the rows and the audio, and fails loudly when
+# it cannot. What it structurally cannot do is report its own ABSENCE: a
+# workflow that never fires — disabled, renamed, its schedule silently dropped
+# by GitHub after repository inactivity, its secrets rotated out from under it
+# — produces no output at all, and no output is exactly what a healthy quiet
+# night also looks like. Every failure mode of a cron job that matters is
+# invisible to that cron job.
+#
+# So this one asks the DATABASE what it can see, rather than asking the sweep
+# how it thinks it did. Core writes `tutor.retention.swept` to `audit_logs` on
+# every purge that reaches the database — INCLUDING one that deleted nothing,
+# deliberately, so "ran and found nothing due" can never be confused with
+# "never ran" (/AGENTS.md §1.14). This job reads that trail back and fails when
+# it is stale.
+#
+# WHY IT DOES NOT COMPUTE STALENESS ITSELF. `RETENTION_STALE_HOURS` (36 — a
+# nightly job plus slack for a late run, not so much slack that a genuinely
+# missed night passes) lives in `backend/src/services/tutorData.ts`, and
+# `getTutorRetentionStatus()` is the one thing that applies it. Re-deriving "36
+# hours" in bash would be a second copy of a tuned constant that drifts from
+# the first the day either moves — the failure §1.14 records for
+# independently-tuned values. This job asks the route and reads its `stale`
+# boolean; the threshold has exactly one home.
+#
+# WHY IT CALLS CORE FROM INSIDE CORE. Identical reasoning to
+# `tutor-retention.yml`'s own header, and the same two secrets: the admin-facing
+# `/admin/tutor/retention-status` needs a staff SESSION, which would mean
+# minting a long-lived staff credential into a CI secret. Standing inside the
+# container and calling 127.0.0.1 with the `INTERNAL_API_KEY` already in that
+# process's environment copies nothing anywhere.
+#
+# IT RUNS AFTER THE SWEEP, NOT BESIDE IT. 06:00 UTC is three hours past the
+# 03:00 purge — long enough for a slow run to finish and be recorded, early
+# enough that a missed night is known the same morning.
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 06:00 UTC daily, three hours after the 03:00 sweep
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    name: Fail if the retention sweep has gone quiet
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          # Railway's SSH proxy host is ephemeral per session, not a fixed host
+          # worth pinning — same note as every other ops workflow here.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Ask Core when the sweep last ran
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Base64 as a SINGLE argument, and NO inner quotes around the -c
+          # string: `railway ssh` passes argv straight to exec on this path, so
+          # quotes added for the other behaviour arrive literal and swallow the
+          # pipes. Measured in tutor-retention.yml; see its header.
+          #
+          # Single quotes on the way OUT are deliberate: $INTERNAL_API_KEY and
+          # $PORT must expand THERE, inside the container that already has them,
+          # never here on a runner that must not see either.
+          remote_status() {
+            local script b64
+            script='curl -sS'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/tutor/internal/retention/status"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          body=''
+          # Railway's SSH key-verification service has transient account-wide
+          # outages; every ops workflow here retries around it. PRINT WHAT
+          # FAILED — a retry loop that swallows its reason turns three distinct
+          # faults into one identical line.
+          for attempt in 1 2 3; do
+            if body=$(remote_status); then break; fi
+            echo "attempt ${attempt} failed:" >&2
+            printf '%s\n' "$body" | head -5 >&2
+            body=''
+            sleep 20
+          done
+
+          if [ -z "$body" ]; then
+            echo "::error::could not reach Core after 3 attempts — the retention sweep's health is UNKNOWN, which is not the same as healthy"
+            exit 1
+          fi
+
+          printf 'retention-status: %s\n' "$body"
+
+          # `stale` ABSENT IS NOT `stale: false`. An error envelope, or an HTML
+          # page from a proxy, would otherwise fall through every grep below and
+          # end the job green — the one outcome a watcher must never fake.
+          stale=$(printf '%s' "$body" | grep -o '"stale":\(true\|false\)' | head -1 | cut -d: -f2)
+          if [ -z "${stale:-}" ]; then
+            echo "::error::Core's reply carried no 'stale' field; refusing to report a health check that did not happen"
+            exit 1
+          fi
+
+          hours=$(printf '%s' "$body" | grep -o '"hoursSinceLastRun":[0-9.]*' | head -1 | cut -d: -f2)
+
+          if [ "$stale" = "true" ]; then
+            # Deliberately an ERROR and a failed job, not a warning: a warning
+            # in a scheduled run is something nobody is subscribed to. This is
+            # a retention promise with a legal document behind it
+            # (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §3).
+            echo "::error::the tutor retention sweep is STALE (last run ${hours:-never} hour(s) ago) — a child's conversation may be outliving its 90-day window"
+            exit 1
+          fi
+
+          echo "tutor-retention-watch: sweep healthy, last run ${hours:-0} hour(s) ago"

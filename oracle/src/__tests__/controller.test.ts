@@ -210,6 +210,86 @@ describe('PedagogicalController', () => {
       expect(again.strategy).toBe('TRANSFER');
     });
 
+    /*
+     * MASTERY IS RECONSIDERED, NOT DECLARED ONCE (owner decision, 2026-09-01).
+     *
+     * The gap these three tests close was found by the pedagogy gym's
+     * `fragile hesitant` archetype and tracked in its `KNOWN_GAPS`: mastery
+     * was evaluated exactly once, and a later run of slow-but-correct answers
+     * — blueprint §8.3's fragile-mastery signal — could not reach the
+     * decision it should have changed.
+     *
+     * Latencies are supplied explicitly here because `masteringOpportunities`
+     * deliberately carries none: `answeredHesitantly` refuses to judge without
+     * them, which is why every OTHER test in this file is unaffected by this
+     * behaviour existing at all.
+     */
+    const fastCorrect = (latencyMs: number) => ({
+      kind: 'activity_result' as const,
+      correct: true,
+      misconceptionCode: null,
+      attemptNumber: 1,
+      latencyMs,
+    });
+
+    it('takes mastery BACK when a celebrated KC comes back and the learner is correct but hesitant', () => {
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+      ]);
+      // Three fast, correct answers establish both the pace baseline and the
+      // promotion — this is the exact evidence the gym archetype promotes on.
+      let last;
+      for (let i = 0; i < MASTERY_MIN_OPPORTUNITIES; i += 1) {
+        last = c.decide(fastCorrect(1_500), NOW + i * 1_000);
+      }
+      expect(last!.strategy).toBe('CELEBRATE');
+      expect(c.revokedMasteryKcIds).toEqual([]);
+
+      // Same KC, review-due re-encounter, still CORRECT — but at six times
+      // their own established pace. Mastery must not survive this.
+      const hesitant = c.decide(fastCorrect(9_000), NOW + 10_000);
+      expect(hesitant.strategy).not.toBe('TRANSFER');
+      expect(hesitant.strategy).not.toBe('CELEBRATE');
+      expect(c.revokedMasteryKcIds).toEqual([KC_A]);
+    });
+
+    it('a revoked KC must EARN mastery again — one qualifying answer, not zero', () => {
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+      ]);
+      for (let i = 0; i < MASTERY_MIN_OPPORTUNITIES; i += 1) {
+        c.decide(fastCorrect(1_500), NOW + i * 1_000);
+      }
+      c.decide(fastCorrect(9_000), NOW + 10_000); // revokes
+      // Back at their own pace: this re-qualifies, and because the KC WAS
+      // celebrated before, it comes back as TRANSFER rather than CELEBRATE.
+      const regained = c.decide(fastCorrect(1_500), NOW + 11_000);
+      expect(regained.strategy).toBe('TRANSFER');
+    });
+
+    it('a WRONG answer on a celebrated KC revokes it too — not only a slow one', () => {
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+      ]);
+      for (let i = 0; i < MASTERY_MIN_OPPORTUNITIES; i += 1) {
+        c.decide(fastCorrect(1_500), NOW + i * 1_000);
+      }
+      c.decide(
+        {
+          kind: 'activity_result',
+          correct: false,
+          misconceptionCode: null,
+          attemptNumber: 1,
+          latencyMs: 1_500,
+        },
+        NOW + 10_000,
+      );
+      expect(c.revokedMasteryKcIds).toEqual([KC_A]);
+    });
+
     it('TRANSFER still advances the plan — it must not strand the entry it resolves', () => {
       const c = new PedagogicalController([
         entry({ kcId: KC_A, pKnown: 0.9 }),

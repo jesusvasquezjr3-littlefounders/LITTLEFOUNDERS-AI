@@ -214,6 +214,29 @@ export interface KidTutorHistory {
     handled: string;
     created_at: string;
   }[];
+  /**
+   * The SECOND flag provenance (migration 0065, /ORACLE.md §4.1b): a flag
+   * raised while the learner was choosing a course, before any `tutor_sessions`
+   * row existed for `safetyFlags` above to reference.
+   *
+   * Its own array rather than merged into `safetyFlags`, because the two row
+   * shapes genuinely differ and a caller that assumes every flag has a session
+   * would break on one that does not: there is no `session_id`/`turn_seq` here,
+   * so there is no transcript to open, and no `handled` (placement takes
+   * exactly one path on a flag — the neutral fallback — never `turn_blocked`
+   * or `session_stopped`). `course_id` stands in as the only context there is.
+   *
+   * Required, not optional: Core returns this field unconditionally
+   * (`backend/src/routes/tutor.ts`, `GET /tutor/kids/:kidUserId/sessions`), so
+   * an absent one would model a response the server never sends.
+   */
+  placementSafetyFlags: {
+    id: string;
+    course_id: string | null;
+    category: string;
+    severity: string;
+    created_at: string;
+  }[];
 }
 
 export function getKidTutorHistory(
@@ -225,6 +248,54 @@ export function getKidTutorHistory(
   if (opts.offset) params.set('offset', String(opts.offset));
   const qs = params.toString();
   return api<KidTutorHistory>(`/tutor/kids/${kidUserId}/sessions${qs ? `?${qs}` : ''}`, { token });
+}
+
+/*
+ * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068).
+ *
+ * What the tutor believes about a child no longer writes itself. Every note a
+ * session proposes about a `kid` parks until a verified guardian decides, and
+ * these two calls are the portal that empties the queue.
+ */
+export interface PendingMemoryNote {
+  id: string;
+  /** The note as proposed: what the tutor would hold about this child. */
+  proposed: string;
+  /** What it would replace. `null` when there is no note yet. */
+  expectedBefore: string | null;
+  sessionId: string | null;
+  createdAt: string;
+}
+
+export interface PendingMemoryNotes {
+  proposals: PendingMemoryNote[];
+  /**
+   * The note the tutor holds TODAY, which is not always what any single
+   * proposal expected: two overlapping sessions can each park a note computed
+   * from the same earlier text, and approving the first moves the store out
+   * from under the second. Having it lets the portal mark a stale note as
+   * stale BEFORE a guardian taps approve, rather than only afterwards.
+   */
+  current: string | null;
+}
+
+export function getPendingMemoryNotes(
+  token: string,
+  kidUserId: string,
+): Promise<ApiResult<PendingMemoryNotes>> {
+  return api<PendingMemoryNotes>(`/tutor/kids/${kidUserId}/memory-proposals`, { token });
+}
+
+export function decideMemoryNote(
+  token: string,
+  proposalId: string,
+  verdict: 'approved' | 'rejected',
+): Promise<ApiResult<{ outcome: string; applied: boolean }>> {
+  return api<{ outcome: string; applied: boolean }>(`/tutor/memory-proposals/${proposalId}/decision`, {
+    method: 'POST',
+    token,
+    body: { verdict },
+  });
 }
 
 export const ADAPTATION_KEYS: readonly Adaptation[] = [

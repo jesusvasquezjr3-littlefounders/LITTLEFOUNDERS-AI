@@ -305,6 +305,47 @@ describe('the cache sits BEFORE the paid call', () => {
     vi.resetModules();
   });
 
+  /*
+   * THE COALESCING LAYER IS TWO MAPS ON PURPOSE, AND THE SESSION-SCOPED ONE
+   * MUST NEVER BECOME THE SHARED ONE (round 142, 2026-09-01).
+   *
+   * The test above proves the SHARED map (`inFlightShared`) collapses two
+   * sessions onto one paid call. This proves its twin (`SpeechScope.inFlight`)
+   * does the exact opposite for the other text class, CONCURRENTLY — the side
+   * of `speakLine`'s `reusable ? inFlightShared : scope.inFlight` ternary that
+   * had no concurrent coverage at all.
+   *
+   * It is a fence around one specific wrong fix. `inFlightShared` is
+   * per-process, so it duplicates work across replicas, and the
+   * cheapest-looking way to "make the speech maps replica-safe" is to make the
+   * coalescing global. Doing that to THIS map would hand a follower in session
+   * B a URL for an object `synthesizeAndStore` wrote to the SESSION bucket
+   * under session A's own name — one child's session audio served into another
+   * child's session, on A's 90-day retention clock (/ORACLE.md §12). That is a
+   * privacy regression wearing a cost saving's clothes.
+   *
+   * The sequential sibling above ("keeps a generated line inside its OWN
+   * session") cannot catch it: by the time its second call runs, the first has
+   * already settled into `memo` and the in-flight map is never consulted.
+   */
+  it('never coalesces two CONCURRENT sessions onto one paid call for a GENERATED line', async () => {
+    const spy = withVoice();
+    const generated = 'Muy bien pensado, esa idea sirve.';
+
+    const [first, second] = await Promise.all([
+      speakLine(generated, newSpeechScope(SESSION)),
+      speakLine(generated, newSpeechScope({ ...SESSION, sessionId: 'a-second-child-entirely' })),
+    ]);
+
+    // Both LED their own synthesis: two paid calls, two distinct clips, and
+    // neither reported as the free `cache` a coalesced follower would get.
+    expect([first.source, second.source]).toEqual(['synthesized', 'synthesized']);
+    expect(first.billedChars).toBe(generated.length);
+    expect(second.billedChars).toBe(generated.length);
+    expect(first.url).not.toBe(second.url);
+    expect(ttsCalls(spy)).toBe(2);
+  });
+
   it('degrades a cache outage to a PAID CALL, never to silence', async () => {
     // Redis is not connected in tests, so every lookup is already a miss —
     // which is exactly the outage posture. The line is still spoken.

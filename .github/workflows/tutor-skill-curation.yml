@@ -1,0 +1,138 @@
+name: Tutor skill & KC curation
+
+# WHAT DOES THE LIVE CURRICULUM SAY WE SHOULD AUTHOR NEXT?
+# (/ORACLE.md §20.6, backend/src/services/pedagogy/tutorCurator.ts)
+#
+# `curate:tutor-skills` reads the live KC graph, the misconception catalog and
+# real learner attempt/evidence aggregates from Vault, cross-references them
+# against `oracle/skills/moves/*.md`, and prints a PROPOSE-ONLY markdown
+# report: KCs with no skill covering them, misconceptions with evidence but no
+# remediation move, skills referencing a misconception code that no longer
+# exists, and so on.
+#
+# IT NEVER WRITES ANYTHING, WHICH IS PRECISELY WHY A SCHEDULE IS SAFE HERE.
+# ROADMAP.md §15.1 ("nothing autonomous reaches a child") extends to the
+# curriculum itself: applying a proposal means a human editing a skill file or
+# `kc_graph.v1.json` in an ordinary reviewed commit — the PR-as-approval-gate
+# /ORACLE.md §20.1 already established. This workflow adds a CADENCE to the
+# reading, and changes nothing about the approving. `tutorCurator.ts` imports
+# only a TYPE from `kcData.ts` and has no runtime client at all; the CLI
+# wrapper's own last line is "Nothing was written."
+#
+# WHY SCHEDULE IT AT ALL, GIVEN §20.6 ARGUED AGAINST IT. That argument was
+# "its proposals are a standing authoring backlog, not a regression to catch,
+# so an operator running it by hand is the right cadence" — sound about the
+# REPORT, wrong about the INPUTS. Every input moves without anyone touching
+# this repository: learner mastery and misconception evidence accumulate with
+# real usage, and the KC graph and catalog change from production data edits.
+# A backlog nobody regenerates is a backlog that silently describes last
+# month's learners, and "an operator runs it by hand" is a plan that decays to
+# "nobody ran it" — the same reasoning tutor-content-bridge.yml already
+# records for why a human dispatching a step does not close a gap.
+#
+# WEEKLY, NOT DAILY, AND THAT IS THE HONEST CADENCE. This is authoring work a
+# human then does; a daily report on a backlog that moves at authoring speed
+# is noise, and noise is how a job stops being read. The daily slots also
+# already hold six jobs (03:00 through 08:30) whose findings are regressions
+# and genuinely are daily.
+#
+# GREEN IS THE NORMAL STATE, AND A RED RUN MEANS A FAILED READ, NOT A FULL
+# BACKLOG. `curate-tutor-skills.ts` exits 0 with proposals and non-zero ONLY
+# when a query went unanswered (it refuses to report a curation summary from a
+# null read, §1.14). Proposals must never fail this job: a workflow that is
+# permanently red is one everybody learns to ignore — the same rule
+# vault-drift.yml states for pending-vs-drift.
+#
+# THE REPORT GOES IN THE STEP SUMMARY, not only the log. Unlike
+# tutor-content-bridge.yml (pass/fail, where a failed job IS the message),
+# this tool's whole output is a document meant to be read on a green run.
+# Buried in raw logs it would be a job nobody opens. Idiom copied from
+# vault-drift.yml's own probe summary.
+
+on:
+  schedule:
+    # 09:20 UTC every Monday — clear of the whole daily pack (the last of
+    # which, pulse-backup, starts 08:30), so this never contends with them
+    # for the Railway gateway.
+    - cron: '20 9 * * 1'
+  push:
+    branches: [main]
+    paths:
+      - 'oracle/skills/moves/**'
+      - 'database/seeds/kc_graph.v1.json'
+      - 'backend/src/services/pedagogy/tutorCurator.ts'
+      - 'backend/src/scripts/curate-tutor-skills.ts'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  ENVIRONMENT: production
+
+jobs:
+  curate:
+    name: What the live curriculum says we should author next
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # A FULL monorepo checkout is load-bearing, not incidental:
+      # `curate-tutor-skills.ts` resolves SKILLS_DIR to `oracle/skills/moves`
+      # relative to its own `import.meta.url` and throws a named error if that
+      # directory is unreadable. A backend-only checkout would fail here.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      # ALL SIX variables, not the three the script's own usage line names.
+      # Importing anything under `backend/src/services` pulls in
+      # `backend/src/config.ts`, whose Zod schema validates the WHOLE env
+      # regardless of which fields this code path reads — the exact miscount
+      # (`TUTOR_SESSION_SECRET`) that failed tutor-content-bridge.yml's first
+      # real run, recorded in that file's own comment. Copied deliberately
+      # rather than re-derived.
+      - name: Read production credentials and run the curator
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          read_var() {
+            railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$1" '.[$k] // ""'
+          }
+          export SUPABASE_URL="$(read_var SUPABASE_URL)"
+          export SUPABASE_ANON_KEY="$(read_var SUPABASE_ANON_KEY)"
+          export SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
+          export SUPABASE_JWT_SECRET="$(read_var SUPABASE_JWT_SECRET)"
+          export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
+          export TUTOR_SESSION_SECRET="$(read_var TUTOR_SESSION_SECRET)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY TUTOR_SESSION_SECRET; do
+            [ -n "${!v}" ] || { echo "::error::backend variable $v is empty"; exit 1; }
+          done
+          echo "Curating tutor skills against $SUPABASE_URL"
+          npm ci --prefix backend --no-audit --no-fund >/dev/null
+          # `tee` keeps the report on stdout for the raw log AND on disk for
+          # the step summary below. `set -o pipefail` (set above) is what makes
+          # a failed curator still fail this step through the pipe.
+          npm run --prefix backend --silent curate:tutor-skills | tee curation.md
+
+      # `if: always()` so a FAILED run still publishes whatever the curator
+      # managed to print before it threw — a partial report names which read
+      # went unanswered, which is the first thing an operator needs.
+      - name: Publish the report
+        if: always()
+        run: |
+          {
+            echo "### Tutor skill & KC curation"
+            echo ""
+            echo "Propose-only (/ORACLE.md §20.6). Nothing here was written to the catalogue —"
+            echo "applying a proposal means a human editing a skill file or \`kc_graph.v1.json\`"
+            echo "in an ordinary reviewed commit."
+            echo ""
+            cat curation.md 2>/dev/null || echo "_The curator produced no report — see the step above for why._"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -187,18 +187,50 @@ export interface GymScenario {
 export const GYM_SCENARIOS: GymScenario[] = Object.entries(STUDENT_ARCHETYPES).map(([name, student]) => ({
   name,
   student,
-  plan: [entry()],
+  /*
+   * `fragile hesitant` is the one archetype that needs the SAME KC to come
+   * round twice — a frontier pass and its own spaced-review re-encounter —
+   * because what it tests is whether a mastery decision SURVIVES later
+   * evidence, and a single-entry plan has no "later" at all: the controller
+   * celebrates on turn 3 and goes dormant before this archetype's slow phase
+   * (turnIndex >= 3) ever produces a turn. That is not a hypothetical about
+   * the fixture; it is why this scenario sat in `KNOWN_GAPS` describing a
+   * defect the run could not actually reach. Two entries is also the real
+   * product shape, not a contrivance: `review_due` is how a KC genuinely
+   * comes back, and it is the same two-entry plan `controller.test.ts` has
+   * always used to make TRANSFER observable.
+   */
+  plan: name === 'fragile hesitant' ? [entry(), entry({ reason: 'review_due' })] : [entry()],
   turnBudget: 16,
   ...(name === 'fragile hesitant'
     ? {
-        extraCheck: (result: GymRunResult): string[] =>
-          result.sequence.includes('CELEBRATE') || result.sequence.includes('TRANSFER')
-            ? [
-                'a persistently hesitant-but-correct learner was promoted (CELEBRATE/TRANSFER) — mastery ' +
-                  'should stay withheld while every correct answer is slow (blueprint §8.3: "correcto + ' +
-                  'latencia alta → dominio frágil, no promover")',
-              ]
-            : [],
+        /*
+         * WHAT THIS ASSERTS CHANGED WITH THE OWNER'S 2026-09-01 DECISION, and
+         * the change is the point rather than a relaxation. The old check said
+         * mastery must never be DECLARED while answers are slow. That was
+         * unreachable: the promotion happens on this archetype's three FAST
+         * answers, before a single slow one exists, so no implementation could
+         * have satisfied it without withholding mastery from a learner who had
+         * so far been nothing but fast and right.
+         *
+         * What is enforceable, and what §8.3 actually protects, is that
+         * mastery must not STAND once the slow evidence arrives. So the
+         * promotion is allowed and the REVOCATION is required — and it is read
+         * from `revokedMasteryKcIds`, the controller's own conclusion, not
+         * inferred from the strategy list, which by design never shows it.
+         */
+        extraCheck: (result: GymRunResult): string[] => {
+          const promoted =
+            result.sequence.includes('CELEBRATE') || result.sequence.includes('TRANSFER');
+          if (!promoted) return [];
+          return result.revokedMasteryKcIds.length > 0
+            ? []
+            : [
+                'a persistently hesitant-but-correct learner was promoted and the promotion STOOD — ' +
+                  'mastery must be taken back once every correct answer is slow (blueprint §8.3: ' +
+                  '"correcto + latencia alta → dominio frágil, no promover")',
+              ];
+        },
       }
     : {}),
 }));
@@ -213,6 +245,16 @@ export interface GymRunResult {
   completed: boolean;
   turnsRun: number;
   turnBudget: number;
+  /**
+   * KCs whose declared mastery the controller took BACK during this run
+   * (`PedagogicalController.revokedMasteryKcIds`).
+   *
+   * Read as an outcome rather than inferred from `sequence`, because
+   * revocation deliberately produces no strategy of its own — it changes what
+   * the session BELIEVES, not what it says that turn, so a strategy list
+   * cannot show it.
+   */
+  revokedMasteryKcIds: readonly string[];
 }
 
 /**
@@ -261,6 +303,7 @@ export function runGymScenario(scenario: GymScenario): GymRunResult {
     completed: !controller.active,
     turnsRun: sequence.length,
     turnBudget: scenario.turnBudget,
+    revokedMasteryKcIds: controller.revokedMasteryKcIds,
   };
 }
 

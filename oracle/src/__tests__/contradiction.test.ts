@@ -3,7 +3,10 @@ import {
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   praiseContradictsAnswer,
+  whiteboardCategoryMismatch,
+  whiteboardComparisonMismatch,
   whiteboardDoubledPeriodSteps,
+  whiteboardMarkedLineMismatch,
   whiteboardNumberMismatch,
   whiteboardUnitMismatch,
 } from '../tutor/prompt.js';
@@ -766,6 +769,398 @@ describe('whiteboardNumberMismatch — Portuguese "vira" and bare "fica"', () =>
           { op: 'add', value: 5 },
         ],
       }),
+    ).toBe(false);
+  });
+});
+
+/*
+ * THE OTHER THREE BOARD KINDS (2026-09-01).
+ *
+ * `compare`, `marked_line` and `categories` had no drift detector until now,
+ * deliberately — see the long note above `assertionClauses` in prompt.ts for
+ * what changed and what did NOT (there is still no live transcript behind
+ * these three; they are anchored on the boards' own labels instead).
+ *
+ * Every describe below tests BOTH directions, because half of what these
+ * functions are for is refusing to fire: this product asks more questions than
+ * it answers, and a check that reads a Socratic question as a claim would fail
+ * the tutor for teaching. Each documented refusal gets its own test so that
+ * removing a guard breaks something.
+ *
+ * The `compare` fixture uses 45/28 and the `marked_line` fixture 22/35/0/40 —
+ * the numbers /ORACLE.md §20.5 already spends on these two kinds, so no new
+ * arithmetic is introduced for a reader to have to hold.
+ */
+const HELADO_PALETA = {
+  left: { label: 'Helado', value: 45 },
+  right: { label: 'Paleta', value: 28 },
+};
+
+describe('a compare board contradicted by the words beside it', () => {
+  it('catches a side quoted at an amount the board does not draw', () => {
+    expect(whiteboardComparisonMismatch('El helado cuesta 50 pesos.', HELADO_PALETA)).toBe(true);
+  });
+
+  it('catches a stated difference that is not the computed one', () => {
+    // 45 − 28 is 17, not 20.
+    expect(whiteboardComparisonMismatch('La diferencia es 20 pesos.', HELADO_PALETA)).toBe(true);
+  });
+
+  it('catches the cheaper side being called the dearer one', () => {
+    expect(whiteboardComparisonMismatch('La paleta cuesta más.', HELADO_PALETA)).toBe(true);
+  });
+
+  it('says nothing about a turn whose numbers all agree', () => {
+    expect(
+      whiteboardComparisonMismatch(
+        'El helado cuesta 45 y la paleta cuesta 28. La diferencia es 17 pesos.',
+        HELADO_PALETA,
+      ),
+    ).toBe(false);
+  });
+
+  it('never reads a QUESTION as a claim — the tutor asks for a living', () => {
+    // The single most likely sentence on a compare turn, and it names the
+    // side the board draws SHORTER. An assertion-blind check fails here.
+    expect(whiteboardComparisonMismatch('¿La paleta cuesta más que el helado?', HELADO_PALETA)).toBe(
+      false,
+    );
+  });
+
+  it('refuses to judge a turn that says BOTH sides are the bigger one', () => {
+    expect(
+      whiteboardComparisonMismatch('El helado cuesta más hoy. La paleta cuesta más el martes.', HELADO_PALETA),
+    ).toBe(false);
+  });
+
+  it('has no opinion about which is bigger when the two are equal', () => {
+    expect(
+      whiteboardComparisonMismatch('La paleta cuesta más.', {
+        left: { label: 'Helado', value: 30 },
+        right: { label: 'Paleta', value: 30 },
+      }),
+    ).toBe(false);
+  });
+
+  it('leaves a number that IS on the board alone, even beside the other label', () => {
+    // Relating the two sides to each other is ordinary teaching, and 45 is
+    // demonstrably a number this board contains.
+    expect(whiteboardComparisonMismatch('La paleta es 45 pesos más barata... no, espera.', HELADO_PALETA)).toBe(
+      false,
+    );
+  });
+
+  it('works in en-US', () => {
+    const board = { left: { label: 'Ice cream', value: 45 }, right: { label: 'Popsicle', value: 28 } };
+    expect(whiteboardComparisonMismatch('The ice cream costs 50 dollars.', board)).toBe(true);
+    expect(whiteboardComparisonMismatch('The difference is 20 dollars.', board)).toBe(true);
+    expect(whiteboardComparisonMismatch('The ice cream costs 45 and the difference is 17.', board)).toBe(false);
+  });
+
+  it('works in pt-BR, accented label and all', () => {
+    // `Sorvete` is plain, but `Picolé` ends in an accent — the exact shape a
+    // `\b`-anchored pattern silently never matches (see WORD_END, prompt.ts).
+    const board = { left: { label: 'Sorvete', value: 45 }, right: { label: 'Picolé', value: 28 } };
+    expect(whiteboardComparisonMismatch('O picolé custa 50 reais.', board)).toBe(true);
+    expect(whiteboardComparisonMismatch('A diferença é 20 reais.', board)).toBe(true);
+    expect(whiteboardComparisonMismatch('O picolé custa 28 reais. A diferença é 17.', board)).toBe(false);
+  });
+
+  it('fails open on a null board', () => {
+    expect(whiteboardComparisonMismatch('La diferencia es 999.', null)).toBe(false);
+  });
+});
+
+describe('a marked_line board contradicted by the words beside it', () => {
+  const TIENES_CUESTA = {
+    min: 0,
+    max: 40,
+    marks: [
+      { value: 22, label: 'Tienes' },
+      { value: 35, label: 'Cuesta' },
+    ],
+  };
+
+  it('catches a shortfall that is not the gap between the two marks', () => {
+    // 35 − 22 is 13, not 15.
+    expect(whiteboardMarkedLineMismatch('Te faltan 15 pesos.', TIENES_CUESTA)).toBe(true);
+  });
+
+  it('catches the same claim phrased as a difference', () => {
+    expect(whiteboardMarkedLineMismatch('La diferencia es 15 pesos.', TIENES_CUESTA)).toBe(true);
+  });
+
+  it('says nothing when the spoken gap is the real one', () => {
+    expect(whiteboardMarkedLineMismatch('Te faltan 13 pesos para llegar.', TIENES_CUESTA)).toBe(false);
+  });
+
+  it('never reads a QUESTION as a claim', () => {
+    expect(whiteboardMarkedLineMismatch('¿Te faltan 15 pesos?', TIENES_CUESTA)).toBe(false);
+  });
+
+  it('refuses a board with more than two marks — "the gap" stops being one number', () => {
+    expect(
+      whiteboardMarkedLineMismatch('Te faltan 15 pesos.', {
+        min: 0,
+        max: 40,
+        marks: [
+          { value: 10, label: 'Lunes' },
+          { value: 22, label: 'Martes' },
+          { value: 35, label: 'Meta' },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('refuses a one-mark board, which has no gap at all', () => {
+    expect(
+      whiteboardMarkedLineMismatch('Te faltan 15 pesos.', {
+        min: 0,
+        max: 40,
+        marks: [{ value: 22, label: 'Tienes' }],
+      }),
+    ).toBe(false);
+  });
+
+  it('fails open on a board computeMarkedLine itself refuses', () => {
+    // Inverted range: the board is dropped elsewhere, so this must not also
+    // complain about the words next to a board nobody will ever see.
+    expect(
+      whiteboardMarkedLineMismatch('Te faltan 15 pesos.', {
+        min: 50,
+        max: 10,
+        marks: [
+          { value: 22, label: 'Tienes' },
+          { value: 35, label: 'Cuesta' },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('works in en-US and pt-BR', () => {
+    expect(whiteboardMarkedLineMismatch('You need 15 more dollars.', TIENES_CUESTA)).toBe(true);
+    expect(whiteboardMarkedLineMismatch('You need 13 more dollars.', TIENES_CUESTA)).toBe(false);
+    expect(whiteboardMarkedLineMismatch('Faltam 15 reais.', TIENES_CUESTA)).toBe(true);
+    expect(whiteboardMarkedLineMismatch('Faltam 13 reais.', TIENES_CUESTA)).toBe(false);
+  });
+
+  it('fails open on a null board', () => {
+    expect(whiteboardMarkedLineMismatch('Te faltan 999.', null)).toBe(false);
+  });
+});
+
+describe('a categories board contradicted by the words beside it', () => {
+  // The lab's own es-MX fixture (labFixtures.ts): 40 / 35 / 25, summing to 100.
+  const SPLIT = {
+    categories: [
+      { label: 'Necesito', value: 40 },
+      { label: 'Quiero', value: 35 },
+      { label: 'Ahorré', value: 25 },
+    ],
+  };
+
+  it('catches a bar quoted at an amount the board does not draw', () => {
+    expect(whiteboardCategoryMismatch('Necesito es 50 pesos.', SPLIT)).toBe(true);
+  });
+
+  it('catches it on an ACCENT-ENDING label, which is where `\\b` gave up', () => {
+    expect(whiteboardCategoryMismatch('Ahorré es 60 pesos.', SPLIT)).toBe(true);
+  });
+
+  it('catches a stated total that is not the sum of the bars', () => {
+    expect(whiteboardCategoryMismatch('En total son 120 pesos.', SPLIT)).toBe(true);
+  });
+
+  it('says nothing when every number matches its own bar', () => {
+    expect(
+      whiteboardCategoryMismatch(
+        'Necesito es 40, Quiero es 35 y Ahorré es 25. En total son 100 pesos.',
+        SPLIT,
+      ),
+    ).toBe(false);
+  });
+
+  it('never reads a QUESTION as a claim', () => {
+    expect(whiteboardCategoryMismatch('¿Ahorré es 60 pesos?', SPLIT)).toBe(false);
+  });
+
+  it('needs a COPULA — a rate mentioned near a bar name is not a claim about the bar', () => {
+    // "Ahorré 60 pesos cada semana" says how much moves each week; the bar is
+    // the running amount. An adjacency-only anchor fires here, wrongly.
+    expect(whiteboardCategoryMismatch('Ahorré 60 pesos cada semana.', SPLIT)).toBe(false);
+  });
+
+  it('leaves a number that IS on the board alone, even beside the wrong bar', () => {
+    expect(whiteboardCategoryMismatch('Ahorré es 40... perdón, quise decir Necesito.', SPLIT)).toBe(false);
+  });
+
+  it('does not read a total of something that is not money', () => {
+    // "total" must be followed straight away by a copula, or "el total de
+    // semanas es 4" becomes a claim about 100 pesos.
+    expect(whiteboardCategoryMismatch('El total de semanas es 4.', SPLIT)).toBe(false);
+  });
+
+  it('refuses a label that is contained in another label on the same board', () => {
+    // Nothing distinguishes "a claim about Ahorro" from "the start of a claim
+    // about Ahorro largo", so neither reading is taken.
+    const overlapping = {
+      categories: [
+        { label: 'Ahorro', value: 10 },
+        { label: 'Ahorro largo', value: 60 },
+      ],
+    };
+    expect(whiteboardCategoryMismatch('Ahorro es 99 pesos.', overlapping)).toBe(false);
+  });
+
+  it('fails open on a board computeCategories itself refuses', () => {
+    // Two bars sharing a label — the one cross-bar fault no per-bar schema can
+    // see, and the board is dropped for it elsewhere.
+    expect(
+      whiteboardCategoryMismatch('Quiero es 99 pesos.', {
+        categories: [
+          { label: 'Quiero', value: 40 },
+          { label: 'quiero', value: 35 },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('works in en-US and pt-BR', () => {
+    const en = {
+      categories: [
+        { label: 'Need', value: 40 },
+        { label: 'Want', value: 35 },
+        { label: 'Saved', value: 25 },
+      ],
+    };
+    expect(whiteboardCategoryMismatch('Need: 50 dollars.', en)).toBe(true);
+    expect(whiteboardCategoryMismatch('Need: 40 dollars. In total that is a total of 100.', en)).toBe(false);
+
+    const pt = {
+      categories: [
+        { label: 'Preciso', value: 40 },
+        { label: 'Quero', value: 35 },
+        { label: 'Guardei', value: 25 },
+      ],
+    };
+    expect(whiteboardCategoryMismatch('Guardei é 60 reais.', pt)).toBe(true);
+    expect(whiteboardCategoryMismatch('O total é 120 reais.', pt)).toBe(true);
+    expect(whiteboardCategoryMismatch('Guardei é 25 reais. O total é 100 reais.', pt)).toBe(false);
+  });
+
+  it('fails open on a null board', () => {
+    expect(whiteboardCategoryMismatch('En total son 999.', null)).toBe(false);
+  });
+
+  it('survives a label full of regex metacharacters — it is MODEL-written text', () => {
+    // The label is compiled into a pattern. An unescaped `(` or `{` would
+    // throw out of the turn loop and destroy a turn with nothing else wrong
+    // with it, so this asserts both halves: it does not throw, and it still
+    // reads the claim correctly through the escaping.
+    const board = {
+      categories: [
+        { label: 'Ahorro (largo)', value: 40 },
+        { label: 'Gasto [semanal]', value: 35 },
+      ],
+    };
+    expect(() => whiteboardCategoryMismatch('Ahorro (largo) es 40.', board)).not.toThrow();
+    expect(whiteboardCategoryMismatch('Ahorro (largo) es 40.', board)).toBe(false);
+    expect(whiteboardCategoryMismatch('Ahorro (largo) es 99.', board)).toBe(true);
+  });
+});
+
+/*
+ * THE PRODUCT'S OWN COPY, IN ALL THREE LOCALES, MUST NOT TRIP ANY OF THEM.
+ *
+ * Hand-written examples prove a check FIRES; only real content proves it stays
+ * quiet. These are the `say`/board pairs from `frontend/src/tutor/lab/
+ * labFixtures.ts` — the fixtures `verify-tutor-ui.mjs` puts on a real screen —
+ * copied verbatim, because oracle and frontend are separate packages with no
+ * shared fixture module. They are known-consistent by construction, so every
+ * assertion here is `false`, and a `true` means a check has started firing on
+ * ordinary correct teaching.
+ *
+ * They also cover the shape most likely to produce a false alarm and hardest
+ * to think of unprompted: a bar's label and a form of the same word appearing
+ * in the sentence for entirely different reasons ("Need" the bar versus "you
+ * need" the verb; "Necesito" the bar versus "necesitas" the verb).
+ */
+describe("the lab's own fixture copy trips nothing", () => {
+  it('compare, all three locales', () => {
+    expect(
+      whiteboardComparisonMismatch('A shirt at Store A costs $45, and the same shirt at Store B costs $28.', {
+        left: { label: 'Store A', value: 45 },
+        right: { label: 'Store B', value: 28 },
+      }),
+    ).toBe(false);
+    expect(
+      whiteboardComparisonMismatch(
+        'Una playera en la Tienda A cuesta 45 pesos, y en la Tienda B cuesta 28 pesos.',
+        { left: { label: 'Tienda A', value: 45 }, right: { label: 'Tienda B', value: 28 } },
+      ),
+    ).toBe(false);
+    expect(
+      whiteboardComparisonMismatch('Uma camiseta na Loja A custa 45 reais, e na Loja B custa 28 reais.', {
+        left: { label: 'Loja A', value: 45 },
+        right: { label: 'Loja B', value: 28 },
+      }),
+    ).toBe(false);
+  });
+
+  it('marked_line, all three locales', () => {
+    const board = {
+      min: 0,
+      max: 40,
+      marks: [
+        { value: 22, label: 'What you have' },
+        { value: 35, label: 'The headphones' },
+      ],
+    };
+    expect(whiteboardMarkedLineMismatch('You have $22 saved, and headphones cost $35.', board)).toBe(false);
+    expect(
+      whiteboardMarkedLineMismatch('Tienes 22 pesos ahorrados, y unos audífonos cuestan 35 pesos.', board),
+    ).toBe(false);
+    expect(
+      whiteboardMarkedLineMismatch('Você tem 22 reais guardados, e um fone de ouvido custa 35 reais.', board),
+    ).toBe(false);
+  });
+
+  it('categories, all three locales — including a label that is also a verb in the sentence', () => {
+    expect(
+      whiteboardCategoryMismatch(
+        'Imagine you got $100. You spend $40 on something you need, $35 on something you want, and save the rest.',
+        {
+          categories: [
+            { label: 'Need', value: 40 },
+            { label: 'Want', value: 35 },
+            { label: 'Saved', value: 25 },
+          ],
+        },
+      ),
+    ).toBe(false);
+    expect(
+      whiteboardCategoryMismatch(
+        'Imagina que te dieron 100 pesos. Gastas 40 en algo que necesitas, 35 en algo que quieres, y guardas el resto.',
+        {
+          categories: [
+            { label: 'Necesito', value: 40 },
+            { label: 'Quiero', value: 35 },
+            { label: 'Ahorré', value: 25 },
+          ],
+        },
+      ),
+    ).toBe(false);
+    expect(
+      whiteboardCategoryMismatch(
+        'Imagine que você ganhou 100 reais. Gasta 40 em algo que precisa, 35 em algo que quer, e guarda o resto.',
+        {
+          categories: [
+            { label: 'Preciso', value: 40 },
+            { label: 'Quero', value: 35 },
+            { label: 'Guardei', value: 25 },
+          ],
+        },
+      ),
     ).toBe(false);
   });
 });
