@@ -175,6 +175,30 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
   const answersRef = useRef<HTMLDivElement | null>(null);
   useScrollEdges(answersRef);
 
+  /*
+   * AND SO IS THE HEADER, WHICH HAS BEEN A SCROLLING BOX SINCE ROUND 137 AND
+   * SAID NOTHING ABOUT IT.
+   *
+   * Found live, 2026-09-02, es-MX at 390x844: with the sheet at HALF the
+   * header measured `clientHeight 82` against `scrollHeight 107`, so the last
+   * line of the question — "ahorrado en 4 semanas?" — was scrolled out of
+   * view, and the child read "Si ahorras 25 pesos cada semana, ¿cuánto
+   * llevas". That is a truncation with no ellipsis, no fade and no scrollbar:
+   * it does not read as cut off, it reads as a complete (if strange)
+   * sentence, and a child can answer a question they never finished reading.
+   *
+   * `useScrollEdges`' own comment already states the rule this violated — "a
+   * scroll that a learner has to DISCOVER is a defect… a panel with more
+   * content below looks exactly like a panel that has finished". Round 137
+   * gave this box `overflow-y-auto` to stop it crushing the answers, and gave
+   * the cue to the answers only; the class was closed at the instance and the
+   * next `overflow-y-auto` on this route reopened it, exactly as the a11y
+   * `tabIndex` note on the header below already records happening for the
+   * KEYBOARD half of the same change.
+   */
+  const headerRef = useRef<HTMLElement | null>(null);
+  useScrollEdges(headerRef);
+
   // A new segment resets everything. Without this, the previous activity's
   // draft and verdict bleed into the next one — which looks like the tutor
   // marking an answer the learner never gave.
@@ -362,7 +386,19 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         {t('tutor.conversation.peekActivityWaiting')}
       </span>
 
+      {/*
+        THE FRAME THAT SAYS THE QUESTION SCROLLS. `lf-scroll-edge` paints the
+        two 24 px gradients on the BOX while the content moves inside it, so
+        it has to be the header's parent rather than the header itself — the
+        same arrangement the answers region below uses, and the reason
+        `useScrollEdges` marks a scroller's PARENT. It carries the flex
+        behaviour of the child it wraps (`min-h-0 shrink`) so that the
+        shrink-and-scroll chain Round 137 built is unchanged: the section
+        shrinks this frame, this frame shrinks the header, the header scrolls.
+      */}
+      <div className="lf-scroll-edge flex min-h-0 shrink flex-col">
       <header
+        ref={headerRef}
         className="min-h-0 shrink space-y-1 overflow-y-auto"
         // Found by `npm run verify:tutor-a11y`, 2026-09-01:
         // `scrollable-region-focusable` (serious). The `overflow-y-auto` on
@@ -445,6 +481,7 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         */}
         <MarkdownLite text={segment.prompt_md} className="lf-speech text-content" />
       </header>
+      </div>
 
       {/*
         THE SCROLLING REGION, and the only one on the plate.
@@ -462,8 +499,26 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         much the header above needs to shrink. Sized off the real minimum, not
         a round number: smaller than this and a single-row activity could
         still show a peek too thin to register as "there's more, scroll."
+
+        `basis-[110px]` AND NOT `flex-auto`, AND THE DIFFERENCE IS WHICH
+        SURFACE YIELDS FIRST. `flex-auto` gives this box a flex BASIS of its
+        own CONTENT height — every option laid end to end — so flexbox saw a
+        171 px answers list arguing with a 107 px header over 324 px of plate
+        and, distributing the 39 px deficit in proportion to those bases, took
+        24 px off the answers and 15 px off the header. The 15 px was the last
+        line of the QUESTION (measured live, es-MX at 390x844, 2026-09-02).
+        That is the wrong thing to spend: this box is a SCROLLER with a
+        visible edge cue, and a scroller's flex basis should be the smallest
+        size at which it still works — not the size at which it would not have
+        to scroll. With a 110 px basis the same activity has no deficit at all
+        (107 + 110 + 49 + gaps = 302 against 324), so the question renders
+        whole and this box GROWS into the 22 px left over.
+        Round 137's degradation is untouched: a header long enough to eat the
+        difference still shrinks and scrolls, because this box cannot go below
+        the same 110 px floor it always had — it just no longer yields the
+        first pixels rather than the last.
       */}
-      <div className="lf-scroll-edge -mx-2 flex min-h-[110px] flex-auto flex-col">
+      <div className="lf-scroll-edge -mx-2 flex min-h-[110px] shrink grow basis-[110px] flex-col">
         <div ref={answersRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2">
           <Component
             segment={segment}

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SafeAreaProvider } from '@/tutor-scene/SafeAreaContext';
+import { detentHeights } from '../hud/LessonPlate';
 import { StageLayer, StageShell, type StageMicProps } from '../stage/StageShell';
 import type { Microphone } from '../useMicrophone';
 import { ConversationView } from '../ConversationView';
@@ -974,6 +975,42 @@ describe('the resting lesson sheet', () => {
     expect(screen.getByRole('status', { name: '' }).textContent).toBe(
       'An activity is ready.',
     );
+  });
+
+  /*
+   * AN ANNOUNCED ACTIVITY OPENS TO THE DETENT IT CAN BE ANSWERED IN, AND
+   * THAT IS THE SAME ONE THE ROW'S OWN TAP OPENS TO.
+   *
+   * Found live, 2026-09-02, es-MX at 390x844 (TUTOR_QA_2026-09-02 D2). Two
+   * paths answer the same question — "how much room does an activity need?" —
+   * and they disagreed: `peekOpensTo="full"` for the learner's own tap, whose
+   * comment says of HALF "it is the wrong one for an exercise", against a
+   * `setDetent(... 'half')` for the announced arrival, which is the path the
+   * learner does NOT control. At that HALF the plate body is 324 px against
+   * an activity needing 363: the question's last line was scrolled out of the
+   * header and the third of three options sat below the answers scroller's
+   * fold, with `elementFromPoint` at its own centre landing on the Check
+   * button's wrapper.
+   *
+   * Asserted against `detentHeights()` rather than a literal, because the
+   * numbers are viewport arithmetic and a literal here would be pinning
+   * jsdom's window size rather than the behaviour.
+   */
+  it('opens an ANNOUNCED activity to the detent it is answerable in, not to HALF', () => {
+    const heights = detentHeights();
+    renderConversation(
+      makeSocket({
+        turn: { ...makeSocket().turn!, seq: 2, next: 'segment' },
+        segment: SEGMENT,
+      }),
+      { ready: true },
+    );
+
+    expect(plateHeight()).toBe(`${heights.full}px`);
+    // Named explicitly: HALF is what this used to be, and the two are far
+    // enough apart that a future edit cannot drift back without failing.
+    expect(plateHeight()).not.toBe(`${heights.half}px`);
+    expect(plateHeight()).not.toBe(`${heights.peek}px`);
   });
 
   /*

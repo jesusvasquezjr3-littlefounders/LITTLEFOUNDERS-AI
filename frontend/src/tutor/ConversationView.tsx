@@ -333,9 +333,34 @@ export function ConversationView({
    * "elementos que no funcionan": an announced activity that does not appear
    * is a broken promise in UI form, the exact harm the unkept-promise
    * repair chases on the language side. So when the tutor's own current turn
-   * asked for the screen, the sheet rises to HALF — the tutor keeps
-   * teaching above it, and the learner keeps the handle to dismiss it. An
-   * unannounced arrival still only announces itself.
+   * asked for the screen, the sheet rises — the tutor keeps teaching above
+   * it, and the learner keeps the handle to dismiss it. An unannounced
+   * arrival still only announces itself.
+   *
+   * IT RISES TO `full`, WHICH IS THE DETENT THIS FILE ALREADY NAMES AS THE
+   * ONE AN EXERCISE IS ANSWERABLE IN — see `peekOpensTo` below, whose own
+   * comment says of HALF: "It is the wrong one for an exercise: at 375x812 it
+   * leaves about 90 px between the pinned prompt and the pinned check
+   * control." That was true and written down, and this effect raised to HALF
+   * anyway: the two paths to the same question — "how much room does an
+   * activity need?" — gave different answers, and the one the LEARNER does
+   * not control gave the wrong one. So the child who taps the row got a sheet
+   * they could answer in, and the child whose tutor announced the activity
+   * OUT LOUD (the ordinary path, `next: 'segment'`) got one they could not.
+   *
+   * Measured live, 2026-09-02, es-MX at 390x844, the lab's own `quiz_mcq`
+   * with an ordinary framing+prompt pair: at the HALF this used to raise to,
+   * the plate body is 324 px against an activity that needs 363, so the
+   * question's last line ("ahorrado en 4 semanas?") was scrolled out of a
+   * header with no scroll cue on it, and the third of three options sat below
+   * the answers scroller's fold with `elementFromPoint` at its own centre
+   * landing on the Check button's wrapper. At FULL the same activity fits
+   * whole with room over.
+   *
+   * FULL DOES NOT HIDE THE TUTOR, which is the thing HALF was protecting:
+   * `LessonPlate`'s `STAGE_RESERVE_PX` reserves 300 px of stage above the
+   * sheet and FULL is clamped to it, so the character and the caption keep
+   * the room this file's own line 1135 comment already measures at FULL.
    *
    * BUT NOT WHILE THE KEYBOARD IS STILL OPEN. Found by adversarial review,
    * 2026-08-30 (HIGH): this raised the sheet unconditionally, so an
@@ -353,10 +378,10 @@ export function ConversationView({
     if (segmentId === null) return;
     if (turn?.next !== 'segment') return;
     if (safeArea?.keyboardOpenRef.current) {
-      borrowedDetentRef.current = 'half';
+      borrowedDetentRef.current = 'full';
       return;
     }
-    setDetent((current) => (current === 'peek' ? 'half' : current));
+    setDetent((current) => (current === 'peek' ? 'full' : current));
   }, [segmentId, turn?.next, safeArea]);
 
   /*

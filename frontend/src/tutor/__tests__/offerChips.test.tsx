@@ -823,6 +823,17 @@ describe('the learning map panel degrades gracefully at short viewports (round 1
     expect(wrap?.className).toContain('bottom-[clamp(18rem,27vh,20rem)]');
     expect(wrap?.className).not.toContain('bottom-60');
     expect(wrap?.className).not.toContain('bottom-[clamp(11rem,27vh,15rem)]');
+
+    /*
+     * And the sheet takes only the height it USES out of that reservation.
+     * The flex default `align-items: stretch` made the plate fill the whole
+     * band whether or not it had anything to put there — measured live at
+     * 1280x900, 2026-09-02: 531px of sheet for 424px of content, so 107px of
+     * empty glass sat over the character for nothing (TUTOR_QA_2026-09-02
+     * D6). It is `items-start` rather than `items-center` because the freed
+     * room belongs at the BOTTOM, where the character's body is.
+     */
+    expect(wrap?.className).toContain('items-start');
   });
 
   /*

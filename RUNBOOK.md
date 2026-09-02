@@ -14732,3 +14732,175 @@ touched no migration and no `ROADMAP.md`. Another lane was also editing
 `oracle/src/tutor/orchestrator.ts` in this same working tree during this round;
 a `lint` run mid-write reported a transient unused-variable error in code this
 round did not author, and passed on re-run.
+
+## Round 144: three UI defects a low-retention child hit in a live session — a map sized to English, an activity opened to the detent the code itself calls "the wrong one for an exercise", and a sheet stretching past its own content, 2026-09-02
+
+**D1, D2 and D6 of `TUTOR_QA_2026-09-02.md`, all three confirmed live before
+any code was written and re-measured live after.** Driven with the repo's own
+CDP harness (`scripts/lesson-engine/browser.mjs`) rather than the Browser
+pane, because on a manually-resized viewport that pane's clicks never reached
+the page at all — zero `pointerdown` and zero `click` on an element that
+`elementFromPoint` confirmed was topmost. That is the same instrumentation
+trap round 136/138 already recorded, and it is why nothing here is asserted
+from a screenshot alone.
+
+### D1 — the learning map's node was fitted to English, to the character
+
+**Reproduced at both breakpoints §1.11 mandates.** es-MX at 1280x900 and at
+390x844: `Dar cambio contando hacia arriba` and `Lo que queda: la ganancia`
+each measured `scrollHeight 45` against `clientHeight 30` inside
+[MapGraph.tsx:166](frontend/src/tutor/map/MapGraph.tsx)'s `line-clamp-2` —
+three lines of text in a two-line box, so the map read `Dar cambio contando…`
+and `Lo que queda: la…` on the one screen where a child who cannot read well
+has to CHOOSE. `i18n:check` is structurally unable to see it: these titles are
+Vault catalog rows (`database/seeds/kc_graph.v1.json`), not `i18n/**`.
+
+**The QA's report was very slightly generous to English and is corrected
+here.** en-US at 1280x900 clips too — `Give change by counting up`, 1 of 6
+lab nodes against Spanish's 2 of 6. `w-24` minus `p-2` is 80px of text, which
+holds ~26 characters over two lines, and 26 is EXACTLY the longest en-US
+title in the seed. The container was fitted to the English corpus to the
+character; es-MX runs to 32 and pt-BR to 33.
+
+**Fixed against a measurement of the whole catalog, not against the two
+titles a screenshot caught.** All 84 real titles (28 KCs x 3 locales) were
+rendered in the live page in that span's own computed style (Inter 12px/15px)
+at six candidate widths: 16 of 84 need a third line at 80px of text, 6 at
+96px, 1 at 112px, **0 at 128px**. So the node is 144px (128 + `p-2`), set
+inline so one number feeds both the node and the canvas arithmetic, and the
+canvas min-width is now derived — `max(560, widestRow x (144 + 16))` — rather
+than the flat `min-w-[560px]`, which was sized for 96px nodes at four per row
+(140px columns) and would have silently stacked titles at anything wider.
+Every tier of the real graph tops out at four per row, so that is 640px there;
+a fifth widens the canvas instead of overlapping. `line-clamp-2` stays and its
+job changes: it is now a guarantee that every node is 74px tall, so the 92px
+row pitch and the SVG edge layer keep agreeing by construction.
+
+**Re-measured live after: 0 of 6 clipped at 1280x900 es-MX, and 0 of 6 at
+390x844 in es-MX, pt-BR AND en-US.** The cost is named rather than hidden:
+on a phone the graph's own horizontal scroller grows from 560 to 640px for
+the real four-wide graph. It already scrolled there (319px of view), and the
+file's own header comment has always said this is wide content that scrolls
+inside its own `overflow-x` container.
+
+### D2 — the question truncated and the third option sat under Revisar
+
+**Not "the half detent working as designed", and the file already knew it.**
+Two code paths answer the same question — how much room does an activity
+need? — and they disagreed. `peekOpensTo="full"`
+([ConversationView.tsx:872](frontend/src/tutor/ConversationView.tsx)) carries a
+comment saying of HALF: *"It is the wrong one for an exercise: at 375x812 it
+leaves about 90 px between the pinned prompt and the pinned check control."*
+The effect that raises the sheet when the tutor ANNOUNCES an activity out
+loud (`turn.next === 'segment'`, the ordinary path, and the one the learner
+does not control) raised it to HALF anyway. So the child who taps the row got
+a sheet they could answer in, and the child whose tutor promised the activity
+aloud got one they could not.
+
+**Measured, es-MX at 390x844, before:** plate body 324px against an activity
+needing 363. Header `clientHeight 82` / `scrollHeight 107` — "ahorrado en 4
+semanas?" simply not on screen, with no ellipsis, no fade and no scrollbar, so
+it reads as a complete sentence rather than a cut one. Answers region 130px
+for 171px of options, and `document.elementFromPoint` at the third option's
+own centre returned `DIV.flex shrink-0 flex-col gap-1.5` — the Check button's
+wrapper. That is Round 137's class reappearing one layer up.
+
+**Three fixes, because the defect has three independent halves.**
+1. [ConversationView.tsx:352-360](frontend/src/tutor/ConversationView.tsx): an
+   announced activity now opens to `full`, the same detent the row's own tap
+   opens to (the deferred-keyboard path too). FULL does not hide the tutor —
+   `LessonPlate`'s `STAGE_RESERVE_PX` reserves 300px of stage above the sheet
+   and FULL is clamped to it.
+2. [LiveSegmentPanel.tsx:466](frontend/src/tutor/LiveSegmentPanel.tsx): the
+   answers wrapper goes from `flex-auto` to `grow shrink basis-[110px]`. This
+   is the whole "which surface yields first" question: `flex-auto` gave the
+   scroller a flex basis of every option laid end to end (171px), so flexbox
+   split the 39px deficit in proportion to that and took 15px off the header
+   — the last line of the QUESTION. A scroller's basis belongs at the
+   smallest size it still works at. With a 110px basis the same activity has
+   no deficit at all (107 + 110 + 49 + gaps = 302 against 324). Round 137's
+   degradation is untouched: a header long enough to eat the difference still
+   shrinks and scrolls, because this box still cannot go below the same 110px
+   floor — it just no longer yields the FIRST pixels rather than the last.
+3. The header is now wrapped in an `lf-scroll-edge` frame with its own
+   `useScrollEdges` call, so when it does have to clip it SAYS so. Round 137
+   made this box scrollable and gave the "there is more below" cue to the
+   answers only — the class was closed at the instance, exactly as the a11y
+   `tabIndex` note on that same header already records happening for the
+   keyboard half of the same change.
+
+**Re-measured live after, es-MX at 390x844:** plate body 488px; header
+`107/107`, not clipped, the whole question on screen; answers `173/173`, not
+scrolling at all; all three options `reaches: true` with Revisar below them,
+not over them. Desktop 1280x900: header `87/87`, three of three reachable,
+zero console errors.
+
+**And measured at HALF too, by dragging the handle back down with real
+PointerEvents** — because a learner may still choose that size. Header
+`102/107`: all three lines of the question legible, the 5px being the fade
+band itself, `data-scroll-below="yes"` now painting on both the question and
+the answers. The third option is still one scroll away there, and that is
+honest rather than fixed: at HALF the activity genuinely does not fit (363
+against 324), the answers are a scroller with a cue, and HALF is no longer
+where an announced activity lands.
+
+### D6 — the offers sheet covers the island: mostly deliberate, one accident
+
+**Left alone, with the numbers, rather than "improved" by taking the map
+away.** In `introducing` the map IS the home screen: the greeting was moved
+INTO it on purpose (the crown caption was landing across CONTINUE), and the
+band's bottom reservation was re-measured against the dock only one round ago
+(141). Measured over the real seed, the graph ALONE is 460px at learner tier
+1, 644 at tier 2 and 736 at tier 3, against a band of 531px at 1280x900 and
+480px at 390x844 — the sheet needs the whole band, and taking height back
+would push the map below the fold, which is precisely the failure rounds 123
+and 141 both fixed.
+
+**The one part that was never deliberate:** the flex default `align-items:
+stretch` made the plate fill the band whether or not it had anything to put
+there. Measured live at 1280x900 on the lab's own three-row map, 531px of
+sheet for 424px of content — 107px of empty glass over the character, buying
+nothing. [OfferChips.tsx:1158](frontend/src/tutor/OfferChips.tsx) gains
+`items-start` (start, not center: the freed room belongs at the bottom, where
+the character's body is). After: sheet 429px, 102px of island returned, and
+the character reads from the waist down instead of from the ankles. Round
+141's `min-h-[110px]` floor is unaffected — a min-height still wins over a
+content-derived height.
+
+**Stated plainly: at a production-sized map, at the two breakpoints §1.11
+mandates, this changes nothing**, because the map fills the band there. It
+pays where the band is taller than the map — a tall desktop monitor, or a
+smaller graph — and it was worth doing because it is the correct relationship,
+not because it fixes the screenshot that was reported.
+
+### The class audit D1 asked for, reported and NOT fixed
+
+The instruction was to treat D1 as a class. A sweep for catalog-sourced text
+(database/API strings, invisible to `i18n:check`) rendering into fixed space
+found four more that TRUNCATE today and two AT RISK. None is fixed here —
+they are outside the Tutor and outside this batch — and all six are listed in
+`TUTOR_QA_2026-09-02.md` so the next session does not have to re-find them.
+
+### Verification
+
+frontend: `type-check` 0, `lint` 0, `test` 0 (141 files / 1659 tests, +5 new
+regression tests), `build` 0, `verify:tutor-ui` 0 (8/8/9 controls, 0
+unreachable, 0 overlaps, all four whiteboard kinds), `verify:tutor-a11y` 0
+(zero WCAG A/AA violations across all 8 stage phases, both themes, desktop
+and mobile). Root: `docs:check`, `secrets:check`, `i18n:check`,
+`paths:check`, `seo:check`, `provider:check`, `tools:test` (26/26) all 0. No
+new i18n keys — nothing user-facing was added, only re-sized. oracle,
+backend and database untouched.
+
+**Both browser gates were run against the ALREADY-RUNNING dev server via
+`TUTOR_LAB_URL`, not against one of their own.** The machine is an 8GB M2
+under memory pressure with another lane working in the same tree, and each
+gate spawns its own Vite on 5173 by default — which is also the failure that
+`TUTOR_QA_2026-09-02.md`'s own false-positive table records as a
+"timed out waiting for lab chrome" that looked exactly like a product defect.
+
+**`verify:lesson-engine` was NOT run and is not claimed.** This round touched
+no Lesson Engine renderer and no character layer; `LiveSegmentPanel` reuses
+the engine's registry but is not part of it. It is a second headless-Chrome
+gate with a long walk, and running it concurrently with the two above is the
+one thing the machine could not take.

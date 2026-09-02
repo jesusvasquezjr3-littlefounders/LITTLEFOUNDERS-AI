@@ -51,6 +51,64 @@ function centerOf(row: number, col: number, rowSize: number, rows: number): { x:
   return { x: ((col + 0.5) / rowSize) * 100, y: ((row + 0.5) / Math.max(rows, 1)) * 100 };
 }
 
+/*
+ * THE NODE'S WIDTH IS A MEASUREMENT OF THE CATALOG, NOT A ROUND NUMBER.
+ *
+ * Found live, 2026-09-02, es-MX at 1280x900 AND 390x844 (/AGENTS.md §1.11's
+ * two mandated breakpoints): `w-24` (96 px, so 80 px of text after `p-2`) left
+ * "Dar cambio contando hacia arriba" and "Lo que queda: la ganancia" needing
+ * three lines inside a `line-clamp-2`, so the map read `Dar cambio contando…`
+ * and `Lo que queda: la…` — on the ONE screen where a child who cannot yet
+ * read well has to CHOOSE. `i18n:check` is structurally unable to see this:
+ * these titles come from Vault's own catalog (`database/seeds/kc_graph.v1.json`,
+ * localized per row), not from `frontend/src/i18n/**`.
+ *
+ * The container was fitted to English to the character: 80 px of text holds
+ * ~26 characters over two lines, and 26 is EXACTLY the longest en-US title in
+ * the seed ("Give change by counting up") — which is itself already clipped,
+ * so this was never only a Spanish defect, just a much rarer English one.
+ * es-MX runs to 32 characters and pt-BR to 33.
+ *
+ * 144 px is measured rather than reasoned. All 84 real catalog titles (28 KCs
+ * x 3 locales) were rendered in the live page, in this exact span's own
+ * computed style (Inter 12 px / 15 px), at six candidate widths:
+ *
+ *     text width   titles needing a 3rd line
+ *      80 px  (today)      16 of 84
+ *      96 px                6
+ *     112 px                1
+ *     128 px                0      <- 144 px node, minus `p-2`
+ *
+ * So 144 px is the first width at which the CLAMP NEVER TRUNCATES ANYTHING,
+ * in any locale, rather than the first width that happens to fix the two
+ * titles a screenshot caught. `line-clamp-2` stays, and its job changes: it is
+ * now a guarantee about the GRID's geometry (every node is 74 px tall, so the
+ * 92 px row pitch and the SVG edge layer keep agreeing by construction) rather
+ * than a truncation anyone should ever see. A future title longer than any of
+ * today's 84 would clip again — re-run the measurement above if one is added.
+ *
+ * The width is inline rather than a `w-36` class so that ONE number feeds both
+ * the node and the pitch arithmetic below; `left`/`top` are already inline
+ * here for the same reason.
+ */
+const NODE_WIDTH_PX = 144;
+/**
+ * The smallest gap that still reads as two separate nodes rather than one
+ * strip — the same 16 px `margin-mobile` inset the rest of the product uses
+ * for "not touching".
+ */
+const NODE_GUTTER_PX = 16;
+/**
+ * Enough width that the WIDEST row's nodes stand apart, derived rather than
+ * pinned. The old flat `min-w-[560px]` was sized for 96 px nodes and four per
+ * row (140 px columns); at 144 px those columns would overlap. Every tier of
+ * the real graph tops out at four per row (measured over the seed: 4/4/4 for
+ * tiers 1/2/3), so this is 640 px there — but a fifth node in a row would
+ * widen the canvas instead of silently stacking two titles on top of each
+ * other, which is what the flat number would have done.
+ */
+const MIN_GRAPH_WIDTH_PX = 560;
+
 export function MapGraph({ map, onPick, disabled = false }: MapGraphProps) {
   const { t } = useTranslation();
   const layout = useMemo(() => layoutMap(map.nodes, map.edges), [map]);
@@ -70,6 +128,8 @@ export function MapGraph({ map, onPick, disabled = false }: MapGraphProps) {
 
   const rowHeight = 92;
   const height = layout.rows * rowHeight;
+  const widestRow = layout.nodes.reduce((widest, laid) => Math.max(widest, laid.rowSize), 1);
+  const minWidth = Math.max(MIN_GRAPH_WIDTH_PX, widestRow * (NODE_WIDTH_PX + NODE_GUTTER_PX));
 
   /*
    * THE FIRST-LISTED PREREQUISITE IS NOT NECESSARILY THE ONE BLOCKING IT.
@@ -102,7 +162,7 @@ export function MapGraph({ map, onPick, disabled = false }: MapGraphProps) {
 
   return (
     <div className="overflow-x-auto overscroll-contain" role="group" aria-label={t('tutor.map.graphLabel')}>
-      <div className="relative min-w-[560px]" style={{ height }}>
+      <div className="relative" style={{ height, minWidth }}>
         {/* Edges first, under the nodes — the prerequisite graph made visible. */}
         <svg
           className="absolute inset-0 h-full w-full"
@@ -146,12 +206,12 @@ export function MapGraph({ map, onPick, disabled = false }: MapGraphProps) {
                   : `${node.title}. ${stateLine}`
               }
               className={cn(
-                'absolute flex w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 rounded-md p-2 text-center',
+                'absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 rounded-md p-2 text-center',
                 'min-h-12 transition-opacity',
                 NODE_STATE_CLASSES[node.state],
                 startable && 'cursor-pointer hover:opacity-90',
               )}
-              style={{ left: `${center.x}%`, top: `${center.y}%` }}
+              style={{ left: `${center.x}%`, top: `${center.y}%`, width: NODE_WIDTH_PX }}
             >
               <Icon
                 name={NODE_ICON[node.state]}

@@ -71,3 +71,58 @@ describe('MapGraph — naming the prerequisite that actually blocks a node', () 
     expect(button).toHaveAccessibleName(expect.stringContaining('B'));
   });
 });
+
+/*
+ * THE NODE IS AS WIDE AS THE CATALOG NEEDS, AND THE CANVAS IS AS WIDE AS THE
+ * WIDEST ROW OF THEM NEEDS.
+ *
+ * Found live, 2026-09-02, es-MX at both breakpoints /AGENTS.md §1.11 mandates
+ * (TUTOR_QA_2026-09-02 D1): at `w-24` the map read `Dar cambio contando…` and
+ * `Lo que queda: la…`, because 80px of text after `p-2` holds ~26 characters
+ * over `line-clamp-2` and es-MX runs to 32 (pt-BR to 33). The width is now
+ * measured against all 84 real catalog titles rather than fitted to English —
+ * see `NODE_WIDTH_PX`'s own comment for the table.
+ *
+ * jsdom has no layout engine, so this cannot assert wrapping the way the live
+ * measurement did. What it CAN pin is the geometry contract that makes the
+ * live result reproducible: the node's own width, and that the canvas is
+ * always wide enough for the widest row's nodes to stand apart rather than
+ * overlap. The old flat `min-w-[560px]` was sized for 96px nodes at four per
+ * row and silently stacks titles on top of each other at anything wider.
+ */
+describe('MapGraph — the node is sized to the catalog, not to English', () => {
+  function row(count: number): TutorMapResponse {
+    return {
+      nodes: Array.from({ length: count }, (_, i) =>
+        node({ kcKey: `n${i}`, kcId: `n${i}`, title: `Node ${i}` }),
+      ),
+      edges: [],
+      continueTarget: null,
+      review: { count: 0 },
+    };
+  }
+
+  it('gives every node the measured 144px, so the longest real title fits in two lines', () => {
+    render(<MapGraph map={row(3)} onPick={vi.fn()} />);
+    for (const button of screen.getAllByRole('button')) {
+      expect(button.style.width).toBe('144px');
+    }
+  });
+
+  it('widens the canvas so the widest row cannot overlap, rather than pinning one number', () => {
+    // Four per row is what every tier of the real graph tops out at: 4 nodes
+    // x (144 + 16) = 640px, which is past the 560px floor.
+    const { container, rerender } = render(<MapGraph map={row(4)} onPick={vi.fn()} />);
+    const canvas = () => container.querySelector<HTMLElement>('.relative');
+    expect(canvas()?.style.minWidth).toBe('640px');
+
+    // A fifth would have overlapped under the old flat number; it widens now.
+    rerender(<MapGraph map={row(5)} onPick={vi.fn()} />);
+    expect(canvas()?.style.minWidth).toBe('800px');
+
+    // And a narrow graph keeps the 560px floor rather than collapsing to a
+    // strip: two nodes at their own pitch would be 320px.
+    rerender(<MapGraph map={row(2)} onPick={vi.fn()} />);
+    expect(canvas()?.style.minWidth).toBe('560px');
+  });
+});

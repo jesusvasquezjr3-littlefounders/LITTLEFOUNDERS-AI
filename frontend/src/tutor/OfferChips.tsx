@@ -1154,8 +1154,36 @@ export function OfferChips({
             clearing a bottom sheet) would be the right shape for a live
             measurement, not another hand-tuned constant.
           */}
+          {/*
+            `items-start`, ADDED 2026-09-02, AND IT IS THE ONLY PART OF THIS
+            SHEET'S SIZE THAT WAS EVER AN ACCIDENT.
+
+            A live test reported the map covering the island down to the
+            character's feet. Most of that is deliberate and is left exactly
+            as it is: in `introducing` the map IS the home screen, the
+            greeting was moved INTO it on purpose (see the plate's own comment
+            above), and the map genuinely needs the whole band — measured over
+            the real seed, the graph alone is 460 px at learner tier 1, 644 at
+            tier 2 and 736 at tier 3, against a band of 531 px at 1280x900 and
+            480 px at 390x844. Taking height back from this sheet would push
+            the map below the fold, which is the exact failure rounds 123 and
+            141 both fixed.
+
+            What was NOT deliberate is that the flex default `align-items:
+            stretch` made the plate fill the band whether or not it had
+            anything to put there. Measured live at 1280x900 on the lab's own
+            three-row map: the sheet painted 531 px tall for 424 px of
+            content — 107 px of empty glass over the character, bought
+            nothing. It only ever shows up where the band is taller than the
+            map (a tall desktop monitor, a small map), which is precisely
+            where there was island to give back.
+
+            Round 141's `min-h-[110px]` floor below is unaffected: a
+            min-height still wins over a content-derived height, so the "never
+            silently collapse to zero" protection it added holds identically.
+          */}
           {chipsIn && mapPanel && (
-            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-[clamp(18rem,27vh,20rem)] z-20 flex justify-center px-4">
+            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-[clamp(18rem,27vh,20rem)] z-20 flex items-start justify-center px-4">
               {/*
                 `min-h-[110px]` — the same floor Round 137 measured for the
                 answers panel's own "never quite collapse to zero" problem,

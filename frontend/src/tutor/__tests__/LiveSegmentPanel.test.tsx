@@ -318,8 +318,62 @@ describe('LiveSegmentPanel — a long framing+prompt must not be able to collaps
     // The answers region's own floor — enough for one full option row plus a
     // peek of the next — so it can never again be squeezed all the way to
     // the zero height that made every option unreachable.
-    const answersWrapper = container.querySelector('.lf-scroll-edge');
-    expect(answersWrapper).not.toBeNull();
+    //
+    // Selected STRUCTURALLY — the frame that is not the header's — because
+    // there are now two `lf-scroll-edge` frames on this panel and a
+    // first-match selector would silently start asserting the wrong one.
+    const frames = [...container.querySelectorAll('.lf-scroll-edge')];
+    const answersWrapper = frames.find((frame) => frame.querySelector('header') === null);
+    expect(answersWrapper).toBeDefined();
     expect(answersWrapper?.className).toMatch(/min-h-\[110px\]/);
+
+    /*
+     * AND ITS FLEX BASIS IS THAT SAME FLOOR, NOT ITS CONTENT HEIGHT.
+     *
+     * Found live, 2026-09-02, es-MX at 390x844 (TUTOR_QA_2026-09-02 D2):
+     * `flex-auto` gave this scroller a basis of every option laid end to end
+     * (171px), so flexbox split the plate's deficit in proportion to that and
+     * took 15px off the header — which is the last line of the QUESTION. A
+     * scroller's basis belongs at the smallest size it still works at; it can
+     * then GROW into whatever is spare, and the header only shrinks once this
+     * box has already reached the floor above. `grow` is what keeps it filling
+     * the plate when there is room, which `flex-auto` used to provide.
+     */
+    expect(answersWrapper?.className).toMatch(/basis-\[110px\]/);
+    expect(answersWrapper?.className).toMatch(/(^|\s)grow(\s|$)/);
+    expect(answersWrapper?.className).not.toMatch(/(^|\s)flex-auto(\s|$)/);
+  });
+
+  /*
+   * AND THE HEADER SAYS SO WHEN IT DOES HAVE TO SCROLL.
+   *
+   * The round-137 fix above made this box scrollable and gave the "there is
+   * more below" cue to the ANSWERS only. Measured live, 2026-09-02, es-MX at
+   * 390x844 with the sheet at HALF: header `clientHeight` 82 against
+   * `scrollHeight` 107, so "ahorrado en 4 semanas?" was simply not on screen
+   * — with no ellipsis, no fade and no scrollbar. It does not read as cut
+   * off, it reads as a complete sentence, and a child can answer a question
+   * they never finished reading. `useScrollEdges` marks the scroller's
+   * PARENT, so the frame is what has to carry `lf-scroll-edge`.
+   */
+  it('frames the question in a scroll-edge, so a question that is cut off says so', () => {
+    const live: LiveSegmentState = {
+      segmentId: 'segment-cued',
+      seq: 1,
+      origin: 'live',
+      segment: { type: 'test_input', prompt_md: 'Question for segment-cued', payload: {} },
+      scoresXp: true,
+      framing: 'Try this one with me.',
+    };
+    const { container } = render(<LiveSegmentPanel live={live} token="tok" onGraded={vi.fn()} />);
+
+    const header = container.querySelector('header');
+    expect(header).not.toBeNull();
+    expect(header?.parentElement?.className).toMatch(/lf-scroll-edge/);
+    // The frame carries the shrink behaviour of the child it wraps, or the
+    // round-137 chain (section shrinks frame, frame shrinks header, header
+    // scrolls) is broken by the wrapper that was added to cue it.
+    expect(header?.parentElement?.className).toMatch(/(^|\s)min-h-0(\s|$)/);
+    expect(header?.parentElement?.className).toMatch(/(^|\s)shrink(\s|$)/);
   });
 });
