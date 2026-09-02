@@ -512,6 +512,36 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
          */
         const clean = event.code === 1000 || event.code === 1005;
         setConnection((prev) => (prev === 'failed' ? 'failed' : 'closed'));
+
+        /*
+         * THE CLOSE EVENT'S OWN `reason` IS THE FALLBACK FOR `closedReason`,
+         * and without it the single most important screen in this product
+         * showed the wrong words.
+         *
+         * FOUND LIVE, 2026-09-02, playing a low-retention child: after the
+         * safety classifier caught an indirect self-harm disclosure, the
+         * database recorded `close_reason: 'safety_stop'` and the goodbye
+         * screen still read "¡Nos vemos pronto! Guardada. Puedes escucharla
+         * cuando quieras." — the cheerful completion copy, seconds after the
+         * tutor had told a child to go find a trusted adult.
+         *
+         * The mechanism, and every part of it was already correct except this
+         * one: Oracle sends `{type:'closed', reason}` and then IMMEDIATELY
+         * calls `socket.close(code, reason)` (`ws/server.ts`). Meanwhile
+         * `TutorExperience` enters the closing phase on
+         * `closedReason !== null || connection === 'closed'` — either one. So
+         * when the close beats the frame, the phase flips with `closedReason`
+         * still null, and `ClosingInWorld`'s safety branch — which exists, is
+         * correct, and has its own passing test — is simply never reached.
+         * Nothing was broken; one of two racing paths carried the fact and the
+         * other did not.
+         *
+         * `event.reason` carries the same string because the server passes it
+         * as `close()`'s second argument, so this needs no protocol change.
+         * `prev ?? …` because a frame that DID arrive is the authority — this
+         * only fills a hole, and must never overwrite what the socket said.
+         */
+        if (event.reason) setClosedReason((prev) => prev ?? event.reason);
         if (!clean) {
           /*
            * THE COMMENT BELOW SAID "ALWAYS LOGGED" AND NOTHING EVER LOGGED IT.

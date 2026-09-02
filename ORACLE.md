@@ -1103,6 +1103,39 @@ means the turn is not spoken. A safe scripted line covers the gap.
 > and inventing one on an unverified guess costs more than none. See
 > `RUNBOOK.md` Round 139.
 >
+> **And the correct close reason still showed a child the WRONG GOODBYE, for
+> two days, because two paths race and only one carried the fact
+> (found live 2026-09-02, playing a low-retention learner; HIGH).** Everything
+> above worked: `close_reason: 'safety_stop'` was computed, persisted, and
+> flagged. `ClosingInWorld` has had a `safety_stop` branch since round 33 —
+> calmer wording, "Aquí nos detuvimos / Ve a buscar a esa persona adulta
+> ahora" — with its own passing test. The child was shown "¡Nos vemos pronto!
+> Guardada. Puedes escucharla cuando quieras." anyway, seconds after being
+> told to go find a trusted adult.
+>
+> The mechanism is worth keeping because nothing in it was broken.
+> `ws/server.ts`'s `finish()` sends `{type:'closed', reason}` and then
+> IMMEDIATELY calls `socket.close(code, reason)`. `TutorExperience` enters the
+> closing phase on `closedReason !== null` **or** `connection === 'closed'` —
+> either one, deliberately, so a dropped socket still reaches a goodbye rather
+> than hanging. So when the close beat the frame, the phase flipped with
+> `closedReason` still null and the safety branch was simply never reached.
+> Two racing paths, one carrying the reason, and the UI keyed on whichever
+> arrived first.
+>
+> Closed by reading the reason off the CLOSE EVENT as a fallback
+> (`useTutorSocket.ts`'s `onclose`): the server already passes the same string
+> as `close()`'s second argument, so it needed no protocol change, and
+> `prev ?? …` keeps a frame that did arrive authoritative. Pinned by two tests
+> in `useTutorSocket.test.ts`, the first confirmed to fail against the pre-fix
+> code with `expected null to be 'safety_stop'`.
+>
+> **The general lesson, and it is the expensive half:** a branch that is
+> correct, tested, and never reached is indistinguishable from one that does
+> not exist — and every unit test in the repo agreed the branch worked, because
+> each one supplied the input the branch needed. Only a live session, where the
+> race is real, could tell the difference.
+>
 > **Confirmed live, 2026-09-01, continuing standing mandate testing past
 > Round 139: the fail-closed policy for a MINOR holds even when the failure
 > is the judge's own unavailability, not a content judgment, exactly as

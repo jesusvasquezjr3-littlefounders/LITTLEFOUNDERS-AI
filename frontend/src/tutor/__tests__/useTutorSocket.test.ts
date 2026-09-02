@@ -96,6 +96,51 @@ describe('useTutorSocket logs an unclean close, since the UI only ever shows a g
 
     expect(console.error).not.toHaveBeenCalled();
   });
+
+  /*
+   * THE SAFETY CLOSE MUST SURVIVE THE RACE IT LOSES.
+   *
+   * Found live, 2026-09-02 (HIGH): a session stopped by the self-harm
+   * classifier recorded `close_reason: 'safety_stop'` in the database and
+   * still showed the child the cheerful "¡Nos vemos pronto! Guardada." — the
+   * ordinary-completion goodbye — because Oracle sends the `closed` FRAME and
+   * then immediately closes the socket, while `TutorExperience` enters the
+   * closing phase on `connection === 'closed'` alone. When the close won,
+   * `closedReason` was still null and `ClosingInWorld`'s (correct, tested)
+   * safety branch was never reached.
+   */
+  it('takes the close reason from the close EVENT when the closed frame never arrived — the safety goodbye must not fall back to the cheerful one', async () => {
+    const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws/tutor?token=abc'));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const socket = FakeSocket.last!;
+
+    // No `{type:'closed'}` message at all — exactly the losing side of the race.
+    act(() => {
+      socket.onclose?.({ code: 4008, reason: 'safety_stop' });
+    });
+
+    expect(result.current.closedReason).toBe('safety_stop');
+  });
+
+  it('never lets the close event overwrite a reason the frame already delivered', async () => {
+    const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws/tutor?token=abc'));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const socket = FakeSocket.last!;
+
+    act(() => {
+      socket.onmessage?.({ data: JSON.stringify({ type: 'closed', reason: 'safety_stop' }) });
+    });
+    // A later, vaguer close code must not downgrade what the server already said.
+    act(() => {
+      socket.onclose?.({ code: 4008, reason: 'hard_budget' });
+    });
+
+    expect(result.current.closedReason).toBe('safety_stop');
+  });
 });
 
 /*
