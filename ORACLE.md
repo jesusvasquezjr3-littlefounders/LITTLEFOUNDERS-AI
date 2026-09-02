@@ -1667,6 +1667,91 @@ back to the scripted line rather than being delivered. Proven in
 section already quotes, plus the scoping boundary itself — the rhetorical-
 question fixture above, run with no offer open, is left alone.
 
+**One sentence frame replayed with the numbers swapped — found live testing
+as a low-retention learner, 2026-09-02 (`TUTOR_QA_2026-09-02.md` D4,
+MEDIUM).** Three consecutive real turns carried the identical frame, tic and
+all: "Primero miro cuánto cuesta, porque necesito saber cuánto me falta. 9
+menos 7 son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza." `echoesEarlierTurn`
+exists to catch a reworded repeat and reported the session clean. Measured
+rather than reasoned about: the word overlap between those turns is **1.0**,
+so the similarity test never failed — what exempted them is
+`echoesPreviousTurn`'s hard requirement that the NUMBERS be unchanged, `2,7,9`
+against `10,4,6`. **That requirement is correct and is unchanged**: the same
+method applied to a new problem is good teaching, and a check that punished
+it would retry every practice turn in the session. `reusesATemplate` asks the
+other question instead — not "is this a new QUESTION?" but "is this a new
+SENTENCE?" — and so demands near-total identity of the turn's skeleton
+(≥ 0.9 in BOTH directions with every digit stripped, versus the 0.6 the
+numbers gate pairs with), plus at least 6 distinct skeleton words so short
+drill lines ("si tienes 10 y agregas 5, cuenta…") keep recurring freely. The
+two live data points bracket the threshold with margin: 3 distinct skeleton
+words in the good-teaching fixture the suite already protects, 9 in the
+defect. It joins the `repeated` family — one corrective retry, then delivered
+anyway, because a repetitive turn still teaches — with its OWN correction
+text, which tells the model to keep the method and change the wording rather
+than to "say something new", since the problem genuinely is new.
+
+**The invitation was in the skill catalogue, and that is the half that
+mattered.** `oracle/skills/moves/worked-example-think-aloud.md` handed the
+model those exact Spanish sentences as its illustrative lines, and
+`selectSkill` is a pure function of the current turn with no memory of what
+it last returned — so the same script reached the model on every consecutive
+WORKED turn. This is the identical class already recorded for the system
+prompt's own whiteboard example ("guardas 10 pesos, cada semana te dan 2
+más…" appearing verbatim across unrelated conversations); the anti-copy
+discipline was never carried across to the skills, where it matters more.
+Closed catalogue-wide by `SKILL_WORDING_RULE` (`oracle/src/tutor/skills.ts`),
+appended to every body at the single place a body reaches the model, so no
+skill file written later can omit it. It redirects rather than forbids — a
+body whose procedure the model stopped following would cost more than the
+repetition it fixes.
+
+**"Sí alcanza" said over the learner's own shortfall — the arithmetic check
+mistaken for the affordability verdict (D5, MEDIUM, same session).** The
+activity said "tienes 7 pesos y quieres una paleta que cuesta 9". The tutor
+said "9 menos 7 son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza." It means
+the subtraction checks out; a child reads "you can buy it", and cannot. This
+is a lesson whose entire subject is telling those two apart, so the one
+sentence that had to be right was the one that was wrong. The invitation was
+literal — the same skill body's checking line was "¿Me pasé? A ver: 7 y 3
+son 10, sí alcanza." — and that file now separates the two explicitly: the
+check tells you the arithmetic is right, and whether they can buy it is a
+different statement that gets its own words. `contradictsItsOwnShortfall`
+(`prompt.ts`) is the deterministic half, and it is deliberately LEXICAL
+rather than arithmetic, because the defect itself proves arithmetic cannot
+settle it: "9 menos 7 son 2" is the same subtraction whether 9 is the price
+(you are 2 short) or the purse (you have 2 left). What does settle it is the
+tutor's own word for the gap — a turn that says something is `falta` has
+declared a shortfall, and "sí alcanza" in the same breath contradicts it with
+no numbers needed. It refuses to judge a conditional ("si ahorras 2 más, sí
+te alcanza"), a contrast naming a second cheaper thing, a question, a negated
+shortfall, and the unaccented Spanish `si` ("if"), each of which is good
+teaching. It joins `repairableIsFalseVerdict`, not the `repeated` family: a
+child told they can afford something they cannot has been taught the exact
+thing the lesson exists to correct, which is a wrong fact rather than a
+clumsy sentence, so a surviving one is replaced by the scripted line. It is
+also placed ABOVE the repeat branch in the correction chain, because the live
+turn carried both faults at once and the single retry has to be spent on the
+one a child would be taught by.
+
+**The product was missing an exemption its own harness had.** Every check in
+the `repeated` family fired on a turn that restated its question because the
+learner ASKED what the question was — the one case where repeating unchanged
+is the correct answer. `scripts/converse.ts` had skipped exactly that since
+2026-08-30, with a comment recording the live case; the orchestrator never
+did. The `tutor:converse` run of 2026-09-02 showed the cost: the learner
+asked "otra vez cual era la pregunta", the restatement was repaired, the
+retry hit one of the provider's empty completions, and the child received "Se
+me enredaron las ideas un momento" instead of the question — one of only two
+canned lines in seven conversations, gone on the following run. Both sides
+now share `EXPLICIT_REPEAT_REQUEST`, and the shared list is NARROWER than the
+harness's original: the existing suite drives a bare "otra vez" as an
+ordinary learner line and went red, correctly — "otra vez" means "give me
+another one" as often as "say that again", and a wrong skip costs a skipped
+report in the harness but hands a child the same problem twice in the
+product. Only phrasings that can only mean "restate what you just said" are
+listed, which still covers the live line verbatim.
+
 **"Never imposed" also means never accepted without an offer — found by
 adversarial review, 2026-08-30 (MEDIUM).** `applyAdaptation` (the WS
 `adaptation_response` handler's call into the orchestrator) applied whatever

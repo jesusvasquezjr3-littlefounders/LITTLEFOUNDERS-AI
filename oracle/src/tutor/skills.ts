@@ -63,6 +63,42 @@ export interface PedagogicalSkill {
  */
 export const SKILL_BODY_MAX_CHARS = 1_600;
 
+/**
+ * A SKILL'S QUOTED EXAMPLE LINE IS A SHAPE, NOT A SCRIPT.
+ *
+ * Appended to every skill body on its way to the model. Found live, testing
+ * as a low-retention learner, 2026-09-02 (`TUTOR_QA_2026-09-02.md` D4): three
+ * consecutive real turns opened with `worked-example-think-aloud`'s own
+ * illustrative sentence — "Primero miro cuánto cuesta, PORQUE necesito saber
+ * cuánto me va a faltar…" — and closed with its own checking line, changing
+ * only the numbers. The model was not inventing badly. It found a
+ * perfectly serviceable sentence sitting in its instructions and said it,
+ * which is the reasonable reading of a quoted example absent a rule against it.
+ *
+ * This is the IDENTICAL class prompt.ts already recorded for the system
+ * prompt's whiteboard example ("guardas 10 pesos, cada semana te dan 2
+ * más…", verbatim across unrelated conversations), closed there with an
+ * anti-copy instruction beside the example. The discipline was simply never
+ * carried across to the skill catalogue — where it matters MORE, because a
+ * skill body is selected repeatedly and `selectSkill` is a pure function of
+ * the current turn with no memory of what it last returned, so the same
+ * script reaches the model on every consecutive turn in the same strategy.
+ *
+ * Fixed catalogue-wide here rather than file by file: every one of the
+ * thirty-odd moves quotes model lines, and one appended sentence closes the
+ * class for all of them at once, including any skill written after today.
+ * It rides in the USER content alongside the body it qualifies, so the
+ * prefix cache is untouched (the same rule `STRATEGY_INSTRUCTIONS` obeys).
+ * Worded to redirect rather than to forbid — a body whose procedure the model
+ * stopped following would cost far more than the repetition it fixes.
+ */
+export const SKILL_WORDING_RULE =
+  'The quoted lines above show the SHAPE of each move, never the words to say. ' +
+  'Make the move in your own wording, with your own numbers and a situation ' +
+  'that fits THIS learner and what they just said — a sentence copied from ' +
+  'here, or reused from your own last turn with only the numbers changed, ' +
+  'stops being heard by the third time.';
+
 /*
  * A deliberately minimal frontmatter reader. The format is a closed set of
  * `key: value` lines between `---` fences — strings, numbers, and `[a, b]`

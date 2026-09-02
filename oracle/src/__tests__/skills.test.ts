@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { selectSkill, skillCatalogue, SKILL_BODY_MAX_CHARS } from '../tutor/skills.js';
+import { selectSkill, skillCatalogue, SKILL_BODY_MAX_CHARS, SKILL_WORDING_RULE } from '../tutor/skills.js';
 import type { Strategy } from '../context/schema.js';
 
 /*
@@ -204,5 +204,76 @@ describe('a skill whose own procedure says "once, ever"', () => {
       usedSkillNames: new Set(['counterexample-confront']),
     });
     expect(skill?.name).toBe('error-as-data');
+  });
+});
+
+/*
+ * A SKILL'S QUOTED EXAMPLE LINE IS THE MOST COPYABLE TEXT IN THE TURN.
+ *
+ * Found live, testing as a low-retention learner, 2026-09-02
+ * (`TUTOR_QA_2026-09-02.md` D4 and D5). Three consecutive real turns opened
+ * with this skill's own illustrative sentence and closed with its own checking
+ * line, changing only the numbers:
+ *
+ *   file   "Primero miro cuánto cuesta, PORQUE necesito saber cuánto me va a
+ *           faltar…"   /   "¿Me pasé? A ver: 7 y 3 son 10, sí alcanza."
+ *   live   "Primero miro cuánto cuesta, porque necesito saber cuánto me falta.
+ *           9 menos 7 son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza."
+ *
+ * The model was not inventing badly — it found a serviceable sentence in its
+ * own instructions and said it, which is the reasonable reading of a quoted
+ * example absent a rule against it. Identical class to the system prompt's
+ * whiteboard example (prompt.ts), closed there and never carried across to the
+ * catalogue, where `selectSkill` is a pure function of the current turn and so
+ * hands the same script back on every consecutive turn in the same strategy.
+ *
+ * The second half is worse than repetition: "sí alcanza" told a child holding
+ * 7 pesos that they could buy a 9-peso paleta. This gates BOTH at source.
+ */
+describe('the worked-example skill hands over a shape, not a script', () => {
+  const worked = () => skillCatalogue().find((s) => s.name === 'worked-example-think-aloud')!;
+
+  it('is still in the catalogue and still the WORKED move', () => {
+    expect(worked().strategies).toContain('WORKED');
+  });
+
+  it('no longer hands the model the sentence it repeated three turns running', () => {
+    expect(worked().body).not.toContain('Primero miro cuánto cuesta');
+    expect(worked().body).not.toContain('¿Me pasé?');
+  });
+
+  it('no longer hands the model an affordability verdict to copy', () => {
+    expect(worked().body).not.toContain('sí alcanza."');
+  });
+
+  it('tells it the arithmetic check is not the affordability answer', () => {
+    const body = worked().body;
+    expect(body).toContain('It does NOT tell you whether they can buy the thing');
+    expect(body).toContain('name the amount missing and say they cannot buy it yet');
+  });
+
+  it('tells it to vary the wording, since the frame is what recurred', () => {
+    expect(worked().body).toContain('this move is a shape');
+  });
+});
+
+/*
+ * Closed catalogue-wide rather than file by file: every one of the thirty-odd
+ * moves quotes model lines, so one appended sentence covers all of them and
+ * every skill written after today. See `SKILL_WORDING_RULE`'s own doc comment.
+ */
+describe('every skill body reaches the model with the anti-copy rule attached', () => {
+  it('names both ways a script recurs — copied from the file, and reused from the last turn', () => {
+    expect(SKILL_WORDING_RULE).toContain('never the words to say');
+    expect(SKILL_WORDING_RULE).toContain('only the numbers changed');
+  });
+
+  it('redirects rather than forbidding, so the procedure itself is still followed', () => {
+    expect(SKILL_WORDING_RULE).toContain('Make the move in your own wording');
+  });
+
+  it('leaves room in the budget for the longest body in the catalogue', () => {
+    const longest = Math.max(...skillCatalogue().map((s) => s.body.length));
+    expect(longest + SKILL_WORDING_RULE.length).toBeLessThan(SKILL_BODY_MAX_CHARS + 500);
   });
 });

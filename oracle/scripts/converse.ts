@@ -27,7 +27,13 @@
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
-import { tierVocabularyViolation, promisesAnActivity } from '../src/tutor/prompt.js';
+import {
+  tierVocabularyViolation,
+  promisesAnActivity,
+  reusesATemplate,
+  contradictsItsOwnShortfall,
+  EXPLICIT_REPEAT_REQUEST,
+} from '../src/tutor/prompt.js';
 import { computeCategories, computeComparison, computeMarkedLine, computeSequence } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
@@ -594,8 +600,9 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
    * own line asked for the repeat — a narrow list, on purpose: broadening it
    * risks hiding the real defect this check exists to catch.
    */
-  const EXPLICIT_REPEAT_REQUEST =
-    /\b(otra vez|de nuevo|repite|rep[ií]teme|cu[aá]l era la pregunta|qu[eé] (dijiste|preguntaste)|say that again|what was the question|repeat that)\b/i;
+  // The SAME constant the product now uses, exported from prompt.ts — the
+  // orchestrator used to lack this exemption entirely, so a turn this harness
+  // forgave was repaired in production. One definition, both places.
   for (let i = 1; i < beats.length; i += 1) {
     const prev = beats[i - 1]!.tutor;
     const curr = beats[i]!.tutor;
@@ -614,6 +621,50 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
       `turn ${i + 1} repeats turn ${i} with nothing changed (${Math.round(overlap * 100)}% of its words)`,
       curr.slice(0, 100),
     );
+  }
+
+  /*
+   * 4b. THE SAME SENTENCE FRAME, WITH THE NUMBERS SWAPPED.
+   *
+   * The check above cannot see this BY CONSTRUCTION — its last line exempts
+   * any pair whose numbers differ, which is right for the scaffold case it
+   * documents and is exactly what the defect walks through. Found live,
+   * testing as a low-retention learner, 2026-09-02
+   * (`TUTOR_QA_2026-09-02.md` D4): three consecutive real turns, word overlap
+   * 1.0, different quantities, same verbal tic, and every check we owned —
+   * this harness's included — reported the session clean. A human reading the
+   * transcript saw it immediately.
+   *
+   * Uses the PRODUCTION detector rather than a second definition, for the
+   * reason prompt.ts already records: the thing that detects and the thing
+   * that repairs must share a definition, or the product ships faults its own
+   * gate reports. A fault here now means the orchestrator's repair did not
+   * hold, which is the only thing worth reporting once the repair exists.
+   */
+  for (let i = 1; i < beats.length; i += 1) {
+    if (EXPLICIT_REPEAT_REQUEST.test(beats[i]!.learner)) continue;
+    const earlier = beats.slice(0, i).map((b) => b.tutor);
+    const template = reusesATemplate(beats[i]!.tutor, earlier);
+    if (template !== null) {
+      fault(
+        `turn ${i + 1} narrates a new problem with an earlier turn's exact script`,
+        `${beats[i]!.tutor.slice(0, 80)}  ⟵  ${template.slice(0, 80)}`,
+      );
+    }
+  }
+
+  /*
+   * 4c. "SÍ ALCANZA" SAID OVER THE LEARNER'S OWN SHORTFALL (D5, same session).
+   *
+   * "tienes 7 pesos y quieres una paleta que cuesta 9" → "9 menos 7 son 2.
+   * ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza." The tutor means the subtraction
+   * checks out; a child reads "you can buy it", and cannot. Same production
+   * detector, same reason as above.
+   */
+  for (const [i, b] of beats.entries()) {
+    if (contradictsItsOwnShortfall(b.tutor)) {
+      fault(`turn ${i + 1} says they can afford it while naming what they are short`, b.tutor.slice(0, 100));
+    }
   }
 
   // 5. A PROMISE IT DID NOT KEEP. Announced a game, requested nothing.

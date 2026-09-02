@@ -2693,6 +2693,76 @@ commit.
    scaling out requires dividing it. See `RUNBOOK.md` Round 143 and
    `/ORACLE.md` §16.
 
+84. **A CHECK THAT EXEMPTS THE CASE IT WAS WRITTEN FOR IS NOT A CHECK, AND
+   THE EXEMPTION IS USUALLY A RULE THAT WAS RIGHT IN ITS OWN RIGHT.**
+   Testing as a low-retention learner, 2026-09-02
+   (`TUTOR_QA_2026-09-02.md` D4), three consecutive real turns used one
+   sentence frame with only the numbers changed, tic included: "Primero
+   miro cuánto cuesta, porque necesito saber cuánto me falta. 9 menos 7
+   son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza." `echoesEarlierTurn`
+   exists to catch a REWORDED repeat and reported the session clean.
+   Measured rather than reasoned about: the word overlap between those two
+   turns is **1.0** — the similarity test never failed — and what exempted
+   them is `echoesPreviousTurn`'s hard `numbersOf(previous) ===
+   numbersOf(say)` gate, `2,7,9` against `10,4,6`. That gate is CORRECT and
+   stays: the same method applied to a new problem is good teaching, and a
+   check that punished it would retry every practice turn in the session.
+   The resolution is that the two are different questions. The numbers gate
+   asks "is this a new QUESTION?"; `reusesATemplate` asks "is this a new
+   SENTENCE?" A genuinely new problem is narrated in its own terms — a
+   different thing bought, a different reason — and those are exactly the
+   long words, so the new check demands near-total skeleton identity
+   (≥ 0.9 BOTH ways, digits stripped) instead of the 0.6 the numbers gate
+   pairs with, plus a minimum of 6 distinct skeleton words so short drill
+   lines still recur freely. The two real data points bracket that
+   threshold with room: 3 distinct words in the good-teaching fixture the
+   suite already protects, 9 in the live defect. **The more important half
+   was the SOURCE.** `skills/moves/worked-example-think-aloud.md` handed the
+   model those exact Spanish sentences as its illustrative lines, and
+   `selectSkill` is a pure function of the current turn — so the same
+   script reaches the model on every consecutive WORKED turn. This is the
+   identical class `prompt.ts` already recorded for the system prompt's own
+   whiteboard example ("guardas 10 pesos, cada semana te dan 2 más…",
+   verbatim across unrelated conversations); the anti-copy discipline was
+   simply never carried across to the skill catalogue, where it matters
+   more. Closed catalogue-wide with `SKILL_WORDING_RULE`, appended to every
+   body at the one place a body reaches the model, so no skill file written
+   after today can omit it. General lesson: when a detector misses
+   something obvious, check whether it holds an EXEMPTION that swallows the
+   case — and fix it by adding a second question, not by weakening the
+   first, because the exemption is usually protecting something real.
+
+85. **A DETECTOR AND ITS REPAIR MUST SHARE A DEFINITION IN BOTH
+   DIRECTIONS — including the case the GATE forgives and the PRODUCT
+   punishes.** `prompt.ts` has recorded the forward version of this for
+   days ("the thing that DETECTS and the thing that REPAIRS must share a
+   definition, or the product ships faults its own gate reports"). The
+   reverse cost more, and only a live run showed it:
+   `scripts/converse.ts` skips its repetition check when the learner's own
+   line ASKED for the repeat, with a comment recording the live case, and
+   the orchestrator had no such exemption at all. The `tutor:converse` run
+   of 2026-09-02 caught the price: the learner asked "otra vez cual era la
+   pregunta", the correctly-restated question was repaired, the retry
+   landed on one of the provider's empty completions, and the child
+   received "Se me enredaron las ideas un momento" instead of the question
+   they had just asked for — one of only two canned lines in seven
+   conversations, and it disappeared once the product was given the same
+   exemption its own harness had. **The list is NARROWER in the product
+   than in the harness, and the existing test suite is what insisted.** Two
+   tests drive the learner line "otra vez" and both went red the moment a
+   bare "otra vez" counted as a repeat request. They were right: "otra vez"
+   means "give me another one" about as often as "say that again", and the
+   two want opposite behaviour. The asymmetry decides it — in the harness a
+   wrong skip costs one unreported line in a transcript a human is reading
+   anyway; in the product it hands a child the same problem twice with the
+   repair switched off. General lesson: a shared definition is right, but
+   "shared" is not "identical" when the two callers pay different prices
+   for the same mistake; and when an existing test breaks against a new
+   exemption, read it as evidence about the exemption before treating it as
+   a fixture to update. Corollary from the same run: FOUR detectors shared
+   one `console.warn` string, so the output could not answer "which check
+   spent this turn's only retry" — the branch now names the reason.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

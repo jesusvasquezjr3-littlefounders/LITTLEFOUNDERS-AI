@@ -1349,6 +1349,77 @@ export function praiseContradictsAnswer(say: string, learnerText: string): boole
 }
 
 /**
+ * "SÍ ALCANZA" AFTER SAYING HOW MUCH IS MISSING — the arithmetic check
+ * mistaken for the affordability verdict.
+ *
+ * Found live, testing as a low-retention learner, 2026-09-02 (MEDIUM,
+ * `TUTOR_QA_2026-09-02.md` D5). The activity said "tienes 7 pesos y quieres
+ * una paleta que cuesta 9". The tutor said:
+ *
+ *   "Primero miro cuánto cuesta, porque necesito saber cuánto me falta.
+ *    9 menos 7 son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza."
+ *
+ * The tutor means "the subtraction checks out". A child reads "you can buy
+ * it" — and cannot; they are 2 pesos short. This is a lesson whose entire
+ * subject is telling those two apart, so the one sentence that has to be
+ * right is the one that was wrong. The invitation was literal: the WORKED
+ * skill's own body handed the model the sentence "¿Me pasé? A ver: 7 y 3 son
+ * 10, sí alcanza." to say, and that is fixed at source in the same commit.
+ * This is the "check" half.
+ *
+ * WHY IT IS LEXICAL AND NOT ARITHMETIC. The obvious version — read the purse
+ * and the price out of the turn and compare them — cannot be built precisely,
+ * and the reason is the defect itself: "9 menos 7 son 2" is the SAME
+ * arithmetic whether 9 is the price (you are 2 short) or the purse (you have
+ * 2 left over). Numbers alone can never settle which, so a checker built on
+ * them would guess. What DOES settle it is the tutor's own word for the gap:
+ * a turn that says something is `falta` has already declared there is a
+ * shortfall, and "sí alcanza" in the same breath contradicts it outright.
+ * That contradiction needs no numbers at all.
+ *
+ * WHAT IT DELIBERATELY REFUSES TO JUDGE, so it cannot misfire on good
+ * teaching — the bar this was built against, since a checker that punishes a
+ * good turn is worse than none:
+ *
+ *   - A CONDITIONAL. "Te faltan 2 pesos. Si ahorras 2 más, sí te alcanza." is
+ *     correct, encouraging, and exactly what a tutor should say. The verdict
+ *     sentence carries `si`, so it is skipped.
+ *   - A CONTRAST, i.e. a second, cheaper thing. "Te faltan 2 para la paleta,
+ *     pero sí te alcanza para el chicle." The verdict sentence carries `pero`.
+ *   - A QUESTION. "¿Sí te alcanza?" is the question this whole lesson asks;
+ *     asking it is never the defect.
+ *   - A NEGATED shortfall. "No te falta nada, sí te alcanza" is one consistent
+ *     statement, not two contradictory ones.
+ *   - An unaccented `si`. Spanish `si` is "if" and `sí` is "yes"; only the
+ *     accented one is a verdict. Both real turns carry the accent.
+ *
+ * Reproduced against the Spanish transcript only. The Portuguese patterns are
+ * near-cognates of the Spanish ones and the English ones were written from the
+ * same shape rather than from an observed turn — stated plainly here rather
+ * than implied, the same honesty `whiteboardComparisonMismatch` records about
+ * its own provenance.
+ */
+const SHORTFALL =
+  /(?:cu[áa]nt[oa]s?\s+(?:me\s+|te\s+|le\s+|nos\s+)?falta[nm]?\b)|(?:(?<!\bno\s)\b(?:me|te|le|lhe|nos)\s+falta[nm]?\b)|(?:\bfalta[nm]?\s+\$?\d)|(?:\byou(?:'re|\s+are)\s+(?:\$?\d+\s+)?short\b)|(?:\bshort\s+by\b)|(?:\byou(?:'re|\s+are)\s+missing\b)|(?:\byou\s+need\s+\$?\d+\s+more\b)/iu;
+
+const SUFFICIENT =
+  /(?:\bsí,?\s+(?:me|te|le|nos)?\s*alcanza)|(?:\bsí,?\s+(?:me|te|le)?\s*puedes?\s+comprar)|(?:\bsim,?\s+(?:voc[êe]\s+)?(?:d[áa]|consegue|alcança))|(?:\bd[áa]\s+p(?:ara|ra)\s+comprar)|(?:\byes,?\s+you\s+can\s+afford)|(?:\byou\s+can\s+afford\s+it\b)|(?:\byes,?\s+you\s+have\s+enough)/iu;
+
+/** A clause that makes a sufficiency claim hypothetical or about something else. */
+const NOT_A_VERDICT = /\b(?:si|se|if|cuando|quando|when|entonces|ent[ãa]o|then|pero|mas|but|aunque|embora|though|ya|j[áa]|once|after)\b/iu;
+
+export function contradictsItsOwnShortfall(say: string): boolean {
+  if (!SHORTFALL.test(say)) return false;
+  for (const sentence of say.split(/(?<=[.!?])\s+/)) {
+    if (!SUFFICIENT.test(sentence)) continue;
+    if (sentence.trim().endsWith('?')) continue;
+    if (NOT_A_VERDICT.test(sentence)) continue;
+    return true;
+  }
+  return false;
+}
+
+/**
  * A SENTENCE THE TUTOR HAS ALREADY USED.
  *
  * The prompt asks it not to repeat itself, and asking did not work — the same
@@ -1436,6 +1507,131 @@ export function echoesPreviousTurn(say: string, previous: string): boolean {
 export function echoesEarlierTurn(say: string, earlierTutorLines: readonly string[]): string | null {
   for (const earlier of earlierTutorLines) {
     if (echoesPreviousTurn(say, earlier)) return earlier;
+  }
+  return null;
+}
+
+/**
+ * THE SAME SENTENCE FRAME AGAIN, WITH ONLY THE NUMBERS SWAPPED.
+ *
+ * Found live, testing as a low-retention learner, 2026-09-02 (MEDIUM,
+ * `TUTOR_QA_2026-09-02.md` D4). Three consecutive real turns:
+ *
+ *   "Primero miro cuánto cuesta, porque necesito saber cuánto me falta.
+ *    9 menos 7 son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza."
+ *   "Primero miro cuánto cuesta, porque necesito saber cuánto falta.
+ *    10 menos 6 son 4. ¿Me pasé? A ver: 6 y 4 son 10, sí alcanza."
+ *
+ * `echoesEarlierTurn` exists to catch a REWORDED repeat and reported the
+ * session clean. Measured directly rather than reasoned about: the word
+ * overlap between those two turns is **1.0** — every distinctive word shared,
+ * in both directions — so the similarity test was never what failed. What
+ * failed is `echoesPreviousTurn`'s hard `numbersOf(previous) === numbersOf(say)`
+ * gate: `2,7,9` vs `10,4,6`, so the pair was exempted before the overlap it
+ * had already passed could matter.
+ *
+ * THAT GATE IS NOT A BUG AND IS NOT BEING RELAXED. It encodes a real rule this
+ * file learned the hard way — the same method applied to a new problem is good
+ * teaching, and a check that punished it would retry every practice turn in the
+ * session. `echoesPreviousTurn` keeps it, untouched, and the fixture that
+ * protects it ("leaves the same METHOD on new numbers alone") keeps passing.
+ *
+ * THE TWO CHECKS ASK DIFFERENT QUESTIONS, WHICH IS HOW THE TENSION RESOLVES.
+ * The numbers gate asks "is this a new QUESTION?" — new numbers, so yes.
+ * This asks "is this a new SENTENCE?" A genuinely new problem is narrated in
+ * its own terms: a different thing being bought, a different reason, a
+ * different way in. Those are exactly the long words. A turn whose entire
+ * skeleton — every distinctive word, in both directions, once the digits are
+ * removed — is an earlier turn's is not a new problem told freshly; it is one
+ * template being replayed with the quantities swapped, and a child stops
+ * hearing it for the same reason they stop hearing the fourth identical
+ * compliment (`repeatsEarlierSentence`) or the third identical announcement
+ * (`repeatsAnAnnouncement`).
+ *
+ * So the band is deliberately far tighter than `echoesPreviousTurn`'s 0.6:
+ * near-total identity, measured BOTH ways so a longer turn that merely
+ * contains an earlier one's vocabulary does not count, and neither does a
+ * fragment of it.
+ *
+ * `MIN_TEMPLATE_WORDS` is the other half of not punishing good teaching, and
+ * it is the same argument `MIN_DISTINCTIVE_WORDS` already makes one level
+ * down: short drill lines SHOULD recur. "Si tienes 10 y agregas 5, cuenta:
+ * 11, 12, 13" carries three distinctive words and is the language of practice,
+ * not a catchphrase. The defect's shape is the opposite — a long narration
+ * frame, a whole reasoning script, replayed intact. The two real data points
+ * bracket the threshold with room on both sides: 3 distinct skeleton words in
+ * the good-teaching fixture, 9 in the live defect.
+ *
+ * The template's SOURCE was fixed in the same commit and is the more important
+ * half: `skills/moves/worked-example-think-aloud.md` handed the model those
+ * exact Spanish sentences to say, and it is selected on every WORKED turn. See
+ * that file, and `SKILL_WORDING_RULE` in skills.ts for the catalogue-wide half.
+ * This detector is the "check" beside that "tell", for the reason stated
+ * everywhere else in this file: a rule the model is only TOLD does not hold.
+ */
+const MIN_TEMPLATE_WORDS = 6;
+const TEMPLATE_IDENTITY = 0.9;
+
+/**
+ * THE LEARNER ASKED FOR THE REPEAT, SO REPEATING IS THE CORRECT ANSWER.
+ *
+ * `scripts/converse.ts` has skipped its own repetition check on this for days
+ * — its comment records the live case, testing the low-retention persona
+ * 2026-08-30: the learner asked "otra vez cual era la pregunta" and the tutor
+ * correctly restated its own question near-verbatim, because restating it
+ * UNCHANGED is the only right response to that request. The harness knew. The
+ * PRODUCT did not, and every repair in the `repeated` family fired anyway.
+ *
+ * Measured, not assumed: the `tutor:converse` run of 2026-09-02 shows exactly
+ * that turn repaired, the retry hitting one of the provider's empty
+ * completions, and a child who asked "what was the question again?" receiving
+ * "Se me enredaron las ideas un momento" instead of the question. One of only
+ * two canned lines in seven conversations, and it cost the learner the answer
+ * they had explicitly asked for.
+ *
+ * Exported so the harness and the product share ONE definition, per the rule
+ * `echoesPreviousTurn` states above: the thing that detects and the thing that
+ * repairs must agree, or the product ships faults its own gate reports — and
+ * here the disagreement ran the other way, with the gate forgiving what the
+ * product punished.
+ *
+ * NARROWER THAN THE HARNESS'S ORIGINAL LIST, and the existing suite is what
+ * insisted on it: two tests drive the learner line "otra vez", and both broke
+ * the moment a bare "otra vez" was treated as a repeat request. They were
+ * right to. "Otra vez" is genuinely ambiguous — a child saying it means
+ * "say that again" about as often as they mean "give me another one" — and
+ * the two readings want opposite behaviour. The asymmetry decides it: in the
+ * HARNESS a wrong skip costs one unreported line in a transcript a human is
+ * reading anyway, while in the PRODUCT a wrong skip hands a child the same
+ * problem twice with the repair switched off. So only phrasings that can ONLY
+ * mean "restate what you just said" are listed, which still covers the live
+ * case verbatim ("otra vez cual era la pregunta"). Broadening it risks hiding
+ * the real defect these checks exist to catch — the harness's own warning
+ * about its own list, and it applies harder here.
+ */
+export const EXPLICIT_REPEAT_REQUEST =
+  /\b(?:(?:cu[aá]l|qu[eé]) era la pregunta|otra vez la pregunta|de nuevo la pregunta|qu[eé] (?:dijiste|preguntaste)|rep[ií]te(?:me|lo|la)?\b|say that again|what was the question|repeat that|what did you say|qual era a pergunta|o que voc[êe] disse|repete)/i;
+
+/** A turn's distinctive vocabulary with every quantity removed. */
+function skeletonWords(text: string): string[] {
+  return sentencesOf(text)
+    .join(' ')
+    .replace(/\d+/g, ' ')
+    .split(' ')
+    .filter((w) => w.length > 4);
+}
+
+export function reusesATemplate(say: string, earlierTutorLines: readonly string[]): string | null {
+  const words = skeletonWords(say);
+  const distinct = new Set(words);
+  if (distinct.size < MIN_TEMPLATE_WORDS) return null;
+  for (const earlier of earlierTutorLines) {
+    const before = skeletonWords(earlier);
+    const seen = new Set(before);
+    if (seen.size < MIN_TEMPLATE_WORDS) continue;
+    const forward = words.filter((w) => seen.has(w)).length / words.length;
+    const backward = before.filter((w) => distinct.has(w)).length / before.length;
+    if (forward >= TEMPLATE_IDENTITY && backward >= TEMPLATE_IDENTITY) return earlier;
   }
   return null;
 }

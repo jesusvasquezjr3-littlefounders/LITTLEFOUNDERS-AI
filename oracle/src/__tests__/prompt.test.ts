@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { asksMultipleQuestions, buildContextMessage, languageViolation, TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
+import {
+  asksMultipleQuestions,
+  buildContextMessage,
+  contradictsItsOwnShortfall,
+  echoesEarlierTurn,
+  EXPLICIT_REPEAT_REQUEST,
+  languageViolation,
+  repeatsEarlierSentence,
+  reusesATemplate,
+  TUTOR_SYSTEM_PROMPT,
+} from '../tutor/prompt.js';
 import { buildPlan, planState } from '../tutor/plan.js';
 import type { TutorContext } from '../context/schema.js';
 
@@ -326,5 +336,150 @@ describe('a served activity\'s own prompt is fenced, not interpolated raw', () =
     const message = buildContextMessage({ ...BASE_CONTEXT, openActivity: null });
     expect(message).not.toContain('ON THE LEARNER\'S SCREEN RIGHT NOW');
     expect(message).not.toContain('ACTIVITY_CONTENT');
+  });
+});
+
+/*
+ * Both defects below are the SAME live session and, in the transcript that
+ * found them, the SAME sentence: testing as a low-retention learner,
+ * 2026-09-02 (`TUTOR_QA_2026-09-02.md` D4 and D5). Every string quoted here is
+ * verbatim from that transcript, not a reconstruction.
+ */
+const REAL_D4_FIRST =
+  'Primero miro cuánto cuesta, porque necesito saber cuánto me falta. 9 menos 7 son 2. ' +
+  '¿Me pasé? A ver: 7 y 2 son 9, sí alcanza.';
+const REAL_D4_SECOND =
+  'Primero miro cuánto cuesta, porque necesito saber cuánto falta. 10 menos 6 son 4. ' +
+  '¿Me pasé? A ver: 6 y 4 son 10, sí alcanza.';
+
+describe('reusesATemplate catches one sentence frame replayed with the numbers swapped', () => {
+  it('catches the two real consecutive turns echoesEarlierTurn let through', () => {
+    expect(reusesATemplate(REAL_D4_SECOND, [REAL_D4_FIRST])).toBe(REAL_D4_FIRST);
+  });
+
+  /*
+   * The mechanism, asserted rather than described, so nobody re-investigates
+   * the similarity threshold: the word overlap between those two turns is
+   * already perfect. What exempted them is `echoesPreviousTurn`'s numbers
+   * gate — 2,7,9 against 10,4,6 — and that gate is correct and stays.
+   */
+  it('confirms the existing check was defeated by the CHANGED NUMBERS, not by the wording', () => {
+    expect(echoesEarlierTurn(REAL_D4_SECOND, [REAL_D4_FIRST])).toBeNull();
+    expect(repeatsEarlierSentence(REAL_D4_SECOND, [REAL_D4_FIRST])).toBeNull();
+  });
+
+  it('finds the template several turns back, not only in the one before it', () => {
+    const between = 'Casi, Robi. Una goma vale 4 pesos y traes 6. ¿Te sobra o te falta?';
+    expect(reusesATemplate(REAL_D4_SECOND, [REAL_D4_FIRST, between])).toBe(REAL_D4_FIRST);
+  });
+
+  /*
+   * The whole difficulty of this check, and the case that must never regress:
+   * the same METHOD on a genuinely new problem is good practice. This is the
+   * exact pair the orchestrator suite already protects under "leaves the same
+   * METHOD on new numbers alone" — three distinctive skeleton words, which is
+   * the language of drilling, not a script.
+   */
+  it('leaves a short drill line alone however often its frame recurs', () => {
+    const first = 'Casi. Si tienes 10 y agregas 5, cuenta: 11, 12, 13, 14, 15. ¿Y 10 más 3?';
+    const next = 'Casi. Si tienes 10 y agregas 3, cuenta: 11, 12, 13. ¿Y 10 más 7?';
+    expect(reusesATemplate(next, [first])).toBeNull();
+  });
+
+  it('leaves the same method alone when the new problem is narrated in its own terms', () => {
+    const first =
+      'Imagina que unos audífonos cuestan 35 pesos y llevas 22 ahorrados. ' +
+      'Le quito lo que traigo al precio y eso me dice lo que me falta. ¿Cuánto sería?';
+    const next =
+      'Ahora piensa en una mochila de 60 pesos, con 45 guardados en tu alcancía. ' +
+      '¿Qué número buscamos primero?';
+    expect(reusesATemplate(next, [first])).toBeNull();
+  });
+
+  it('is not fooled by padding an earlier turn with extra words', () => {
+    // Measured BOTH ways on purpose: a longer turn that merely contains an
+    // earlier one's vocabulary is a different turn, not a replay of it.
+    const padded = `${REAL_D4_FIRST} Cuéntame qué juguete querías comprar y buscamos juntos cuántas semanas tendrías que guardar para llegar.`;
+    expect(reusesATemplate(padded, [REAL_D4_FIRST])).toBeNull();
+  });
+
+  it('says nothing on the first turn of a session', () => {
+    expect(reusesATemplate(REAL_D4_FIRST, [])).toBeNull();
+  });
+});
+
+describe('contradictsItsOwnShortfall catches "sí alcanza" said over the learner\'s own shortfall', () => {
+  it('catches the real turn — 7 pesos, a paleta that costs 9, and "sí alcanza"', () => {
+    expect(contradictsItsOwnShortfall(REAL_D4_FIRST)).toBe(true);
+    expect(contradictsItsOwnShortfall(REAL_D4_SECOND)).toBe(true);
+  });
+
+  it('leaves a CONDITIONAL alone — being short and then reaching it is good teaching', () => {
+    expect(
+      contradictsItsOwnShortfall('Te faltan 2 pesos para la paleta. Si ahorras 2 más, sí te alcanza.'),
+    ).toBe(false);
+  });
+
+  it('leaves a CONTRAST alone — a second, cheaper thing they really can buy', () => {
+    expect(
+      contradictsItsOwnShortfall('Te faltan 2 para la paleta, pero sí te alcanza para el chicle de 5.'),
+    ).toBe(false);
+  });
+
+  it('leaves the QUESTION alone — asking it is the whole lesson', () => {
+    expect(contradictsItsOwnShortfall('Traes 7 y cuesta 9. ¿Sí te alcanza, o te falta?')).toBe(false);
+  });
+
+  it('leaves a NEGATED shortfall alone — "no te falta nada" agrees with "sí alcanza"', () => {
+    expect(contradictsItsOwnShortfall('Traes 9 y cuesta 9. No te falta nada, sí te alcanza.')).toBe(false);
+  });
+
+  it('says nothing about a turn that never claimed anything was missing', () => {
+    expect(contradictsItsOwnShortfall('Traes 10 y la paleta cuesta 8. Sí te alcanza, y te sobran 2.')).toBe(
+      false,
+    );
+  });
+
+  it('does not read the Spanish "si" (if) as the Spanish "sí" (yes)', () => {
+    expect(contradictsItsOwnShortfall('Te faltan 3 pesos. Pregúntate si alcanza antes de ir a la caja.')).toBe(
+      false,
+    );
+  });
+});
+
+/*
+ * The exemption the PRODUCT was missing while its own harness had it: a turn
+ * that restates its question because the learner asked what the question was
+ * is doing the right thing, and every repair in the repeat family punished it.
+ * The list is narrow on purpose — see the constant's own doc comment for the
+ * asymmetry that decided how narrow.
+ */
+describe('EXPLICIT_REPEAT_REQUEST only matches an unambiguous ask to restate', () => {
+  it('matches the live line that cost a child their answer', () => {
+    expect(EXPLICIT_REPEAT_REQUEST.test('otra vez cual era la pregunta')).toBe(true);
+  });
+
+  it('matches the other plain ways a child asks for it, in all three locales', () => {
+    for (const line of [
+      '¿qué dijiste?',
+      'repíteme la pregunta',
+      'what was the question',
+      'say that again',
+      'qual era a pergunta',
+    ]) {
+      expect(EXPLICIT_REPEAT_REQUEST.test(line)).toBe(true);
+    }
+  });
+
+  /*
+   * The case the existing suite caught, and the reason this list is not the
+   * harness's: a bare "otra vez" is as likely to mean "give me another one",
+   * and reading it as "say that again" switches the repair off on a turn that
+   * really is handing a child the same problem twice.
+   */
+  it('does NOT match a bare "otra vez" or "de nuevo", which mean "another one" just as often', () => {
+    expect(EXPLICIT_REPEAT_REQUEST.test('otra vez')).toBe(false);
+    expect(EXPLICIT_REPEAT_REQUEST.test('de nuevo')).toBe(false);
+    expect(EXPLICIT_REPEAT_REQUEST.test('ya entendí, dame otro')).toBe(false);
   });
 });

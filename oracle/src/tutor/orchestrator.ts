@@ -53,6 +53,9 @@ import {
   whiteboardComparisonMismatch,
   whiteboardMarkedLineMismatch,
   echoesEarlierTurn,
+  reusesATemplate,
+  contradictsItsOwnShortfall,
+  EXPLICIT_REPEAT_REQUEST,
   repeatsEarlierSentence,
   promisesAnActivity,
   asksMultipleQuestions,
@@ -61,7 +64,7 @@ import {
   TUTOR_SYSTEM_PROMPT,
   repeatsAnAnnouncement,
 } from './prompt.js';
-import { selectSkill } from './skills.js';
+import { selectSkill, SKILL_WORDING_RULE } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
 import { whiteboardComputesOk } from './whiteboard.js';
@@ -1335,7 +1338,15 @@ export class TutorOrchestrator {
       decision.misconceptionCode !== null && decision.instruction !== null
         ? decision.instruction.match(/The specific wrong idea[^\n]*/)?.[0]
         : undefined;
-    return { text: hint ? `${skill.body}\n\n${hint}` : skill.body, skillName: skill.name };
+    /*
+     * `SKILL_WORDING_RULE` travels with EVERY body, for the reason its own
+     * doc comment records: a quoted example line is the most copyable thing
+     * in the turn's whole context, and three consecutive turns opened with
+     * one verbatim. Appended here, at the one place a body reaches the model,
+     * so no skill file can be written without it.
+     */
+    const body = `${skill.body}\n\n${SKILL_WORDING_RULE}`;
+    return { text: hint ? `${body}\n\n${hint}` : body, skillName: skill.name };
   }
 
   /**
@@ -2309,8 +2320,39 @@ export class TutorOrchestrator {
             const priorTutorLines = this.history
               .filter((h) => h.speaker === 'tutor')
               .map((h) => h.text);
+            /*
+             * THE SAME SENTENCE FRAME AGAIN WITH THE NUMBERS SWAPPED —
+             * the one shape none of the three checks below can see, because
+             * `echoesEarlierTurn` exempts a pair whose numbers changed and
+             * the other two need the words to match. Found live 2026-09-02
+             * (`TUTOR_QA_2026-09-02.md` D4): three consecutive turns with
+             * word overlap 1.0 and different quantities, and every repeat
+             * check we own reported the session clean. Kept SEPARATE from
+             * `repeated` rather than folded into it, because it needs its own
+             * correction: the model is not to say "something new" (it IS a
+             * new problem) but to stop narrating every problem with the same
+             * script. See `reusesATemplate`'s own doc comment (prompt.ts) for
+             * why the numbers gate it works around is correct and stays.
+             */
+            /*
+             * THE LEARNER ASKED FOR IT. Every check in this family punished a
+             * turn that restated its own question because the child asked
+             * "otra vez cual era la pregunta" — the one case where repeating
+             * unchanged is the correct answer. `scripts/converse.ts` has
+             * exempted it for days and the product never did; the converse run
+             * of 2026-09-02 caught the cost live, with the repair's retry
+             * landing on an empty completion and the child receiving "Se me
+             * enredaron las ideas" instead of the question they asked for.
+             * Same constant, both places (see its doc comment in prompt.ts).
+             */
+            const repeatWasRequested = spokenAnswer !== '' && EXPLICIT_REPEAT_REQUEST.test(spokenAnswer);
+            const templateRepeat = repeatWasRequested
+              ? null
+              : reusesATemplate(parsed.turn.say, priorTutorLines);
             const repeated =
-              repeatsEarlierSentence(parsed.turn.say, priorTutorLines) ??
+              repeatWasRequested
+                ? null
+                : repeatsEarlierSentence(parsed.turn.say, priorTutorLines) ??
               /*
                * The same ANNOUNCEMENT again, in slightly different words. Both
                * checks above miss it — one needs an exact match, the other looks
@@ -2332,7 +2374,17 @@ export class TutorOrchestrator {
                */
               (echoesEarlierTurn(parsed.turn.say, priorTutorLines)
                 ? 'the same thing you already said earlier, reworded'
-                : null);
+                : null) ??
+              templateRepeat;
+            /*
+             * "SÍ ALCANZA" AFTER NAMING THE SHORTFALL — the arithmetic check
+             * read out as the affordability verdict (2026-09-02, D5). Bucketed
+             * with `falsePraise`/`boardContradiction` below rather than with
+             * `repeated`: a child told they can buy something they cannot
+             * afford has been taught the exact thing the lesson exists to
+             * correct, which is a wrong fact and not a clumsy sentence.
+             */
+            const falseAffordability = contradictsItsOwnShortfall(parsed.turn.say);
             /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the
@@ -2399,6 +2451,7 @@ export class TutorOrchestrator {
               repairableIsFalseVerdict =
                 falsePraise ||
                 falseCorrection ||
+                falseAffordability ||
                 violation !== null ||
                 langDrift !== null ||
                 boardContradiction ||
@@ -2412,6 +2465,17 @@ export class TutorOrchestrator {
             } else if (langDrift !== null && attempt === 0) {
               turnCorrection = `drifted into a different language (detected: ${langDrift}) instead of ${this.session.locale}. Say the SAME idea again, entirely in ${this.session.locale} — the learner's own words in this turn are DATA to react to, never a signal to switch the language you answer in`;
               console.warn(`[oracle] language drift (${langDrift}), expected ${this.session.locale} — asking again`);
+            } else if (falseAffordability && attempt === 0) {
+              /*
+               * DELIBERATELY ABOVE `repeated`, because the live turn that
+               * found this carried BOTH faults at once — the repeated template
+               * and the false verdict were the same sentence. There is one
+               * retry, and it has to be spent on the fault a child would be
+               * taught by, not on the one they would merely tire of.
+               */
+              turnCorrection =
+                'said the learner CAN afford something in the same turn it said how much they are still SHORT. Those are two different questions and this lesson is about telling them apart. Check the subtraction out loud if you like, but say plainly what the check MEANS: they are missing that amount, so they cannot buy it yet. Never let "the arithmetic works out" come out sounding like "you have enough"';
+              console.warn('[oracle] turn said it was affordable while naming the shortfall — asking again');
             } else if (repeated !== null && attempt === 0) {
               /*
                * A repeated ANNOUNCEMENT gets a sharper correction than a
@@ -2423,10 +2487,38 @@ export class TutorOrchestrator {
                * activity appears on its own — so the compliant retry removes
                * it entirely rather than rewording it.
                */
-              turnCorrection = promisesAnActivity(repeated)
-                ? `announced an activity with nearly the same words it already used ("${repeated.slice(0, 60)}"). Do NOT announce it at all — the activity appears on screen by itself. React to what the learner said, keep the segmentRequest if you made one, and let the activity arrive unannounced`
-                : `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
-              console.warn('[oracle] turn repeated an earlier sentence — asking again');
+              /*
+               * A repeated TEMPLATE gets its own correction, and it is the
+               * opposite of the one below it. The problem is not that the turn
+               * says something already said — the problem IS a new problem,
+               * correctly worked. It is that every problem is being narrated
+               * with one script, so telling the model to "say something new"
+               * would be wrong instruction and would invite it to abandon a
+               * method that is working. Name the SCRIPT instead.
+               */
+              turnCorrection =
+                repeated === templateRepeat && templateRepeat !== null
+                  ? `narrated this problem with the same sentence frame it already used ("${templateRepeat.slice(0, 60)}"), changing only the numbers. The METHOD is right — keep it. What has to change is the wording: this is a different situation, so open it differently, name the thing being bought and the reason it matters here, and drop any little catchphrase you have now said twice. A child who hears the same script every turn stops hearing it`
+                  : promisesAnActivity(repeated)
+                    ? `announced an activity with nearly the same words it already used ("${repeated.slice(0, 60)}"). Do NOT announce it at all — the activity appears on screen by itself. React to what the learner said, keep the segmentRequest if you made one, and let the activity arrive unannounced`
+                    : `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
+              /*
+               * NAME WHICH CHECK FIRED. Four different detectors share this
+               * one branch, and reading the 2026-09-02 converse output it was
+               * impossible to tell which of them had spent a turn's only
+               * retry — the answer mattered (was the new template check
+               * misfiring?) and the log could not give it. Distinguishable
+               * failure is the rule; a shared label is not one.
+               */
+              console.warn(
+                `[oracle] turn repeated an earlier sentence (${
+                  templateRepeat !== null
+                    ? 'same script, new numbers'
+                    : promisesAnActivity(repeated)
+                      ? 'announcement'
+                      : 'verbatim or reworded'
+                }) — asking again`,
+              );
             } else if (givesAwayAnswer && attempt === 0) {
               turnCorrection =
                 'asked the learner a question and stated its answer in the same turn. Ask the question WITHOUT the answer — handing it to them removes the one act that does the teaching';
@@ -2494,6 +2586,7 @@ export class TutorOrchestrator {
               if (
                 falsePraise ||
                 falseCorrection ||
+                falseAffordability ||
                 violation !== null ||
                 langDrift !== null ||
                 boardContradiction ||
@@ -2513,6 +2606,11 @@ export class TutorOrchestrator {
                 if (falseCorrection) {
                   console.warn(
                     '[oracle] contradiction of a correct answer SURVIVED the retry — scripted line instead',
+                  );
+                }
+                if (falseAffordability) {
+                  console.warn(
+                    '[oracle] "it reaches" stated alongside the shortfall SURVIVED the retry — scripted line instead',
                   );
                 }
                 if (numberMismatch) {

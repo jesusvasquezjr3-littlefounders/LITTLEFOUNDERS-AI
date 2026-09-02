@@ -3739,3 +3739,180 @@ describe('lessonThread counts by the controller\'s own plan while it steers (V4)
     expect(orchestrator.lessonThread).toEqual({ topic: null, step: 2, of: 5 });
   });
 });
+
+/*
+ * TWO DEFECTS FROM ONE LIVE SESSION, AND IN THE TRANSCRIPT, ONE SENTENCE.
+ * Testing as a low-retention learner, 2026-09-02 (`TUTOR_QA_2026-09-02.md`
+ * D4 and D5). Three consecutive real turns used the identical sentence frame
+ * with only the numbers changed, and the frame's own closing clause told a
+ * child they could afford something they could not:
+ *
+ *   "Primero miro cuánto cuesta, porque necesito saber cuánto me falta.
+ *    9 menos 7 son 2. ¿Me pasé? A ver: 7 y 2 son 9, sí alcanza."
+ *
+ * The activity was "tienes 7 pesos y quieres una paleta que cuesta 9". The
+ * tutor meant "the subtraction checks out"; what it said was "you can buy it",
+ * in a lesson whose whole subject is telling those apart.
+ *
+ * Both were invited by `skills/moves/worked-example-think-aloud.md`, which
+ * handed the model those exact Spanish sentences to say and is selected on
+ * every WORKED turn. That is fixed at source; these gate the checks that had
+ * to exist anyway, because a rule the model is only TOLD does not hold.
+ */
+const REAL_TEMPLATE_TURN =
+  'Primero miro cuánto cuesta, porque necesito saber cuánto me falta. 9 menos 7 son 2. ' +
+  '¿Me pasé? A ver: 7 y 2 son 9, sí alcanza.';
+
+describe('one sentence frame replayed with the numbers swapped', () => {
+  /*
+   * The verdict clause is dropped from this pair on purpose, so the test
+   * isolates the REPETITION wiring from the affordability wiring below —
+   * the real turn trips both at once, which is its own test further down.
+   */
+  it('repairs a turn that narrates a new problem with the previous turn\'s script', async () => {
+    const first =
+      'Primero miro cuánto cuesta, porque necesito saber cuánto me falta. 9 menos 7 son 2. Te faltan 2 pesos.';
+    const replayed =
+      'Primero miro cuánto cuesta, porque necesito saber cuánto falta. 10 menos 6 son 4. Te faltan 4 pesos.';
+    const fresh = 'Ahora tú: una galleta vale 8 y traes 5. ¿Qué número buscamos primero?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: first }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: replayed }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: fresh }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('no sé', Date.now());
+    const second = (await orchestrator.handleLearnerText('tampoco sé', Date.now()))!;
+
+    expect(second.emission.turn.say).toBe(fresh);
+    /*
+     * The correction has to name the SCRIPT, not the content. Telling the
+     * model to "say something new" here would be wrong instruction: it IS a
+     * new problem, correctly worked, and the method is worth keeping.
+     */
+    const retry = String(fetchMock.mock.calls[3]?.[1]?.body ?? '');
+    expect(retry).toContain('same sentence frame');
+    expect(retry).toContain('The METHOD is right');
+  });
+
+  it('buys no retry for a short drill line whose frame recurs', async () => {
+    const first = 'Casi. Si tienes 10 y agregas 5, cuenta: 11, 12, 13, 14, 15. ¿Y 10 más 3?';
+    const next = 'Casi. Si tienes 10 y agregas 3, cuenta: 11, 12, 13. ¿Y 10 más 7?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: first }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: next }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('20', Date.now());
+    const second = (await orchestrator.handleLearnerText('25', Date.now()))!;
+
+    expect(second.emission.turn.say).toBe(next);
+    // Four calls: two turns, no retry bought for teaching well.
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+});
+
+describe('"sí alcanza" said over the learner\'s own shortfall', () => {
+  it('repairs the real turn, and spends the one retry on the FALSE VERDICT, not the repetition', async () => {
+    const honest =
+      'Casi. La paleta cuesta 9 y traes 7, así que te faltan 2 pesos: todavía no puedes comprarla.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: REAL_TEMPLATE_TURN }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: honest }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe(honest);
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('CAN afford something in the same turn it said how much they are still SHORT');
+  });
+
+  /*
+   * The same bucket as false praise and a board that contradicts its own
+   * narration: a child told they can buy something they cannot afford has been
+   * taught the exact thing this lesson exists to correct. That is a wrong fact,
+   * not a clumsy sentence, so a surviving one never reaches the child.
+   */
+  it('falls back to the scripted line when the retry says it again', async () => {
+    const again = 'A ver: 6 y 4 son 10, sí alcanza. Te faltan 4 pesos para el juguete.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: REAL_TEMPLATE_TURN }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: again }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toBe(REAL_TEMPLATE_TURN);
+    expect(outcome.emission.turn.say).not.toBe(again);
+  });
+
+  it('leaves a turn alone that says they are short and says they cannot buy it', async () => {
+    const correct =
+      'La paleta cuesta 9 y traes 7. Te faltan 2 pesos, así que hoy no te alcanza para ella.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: correct }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe(correct);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+/*
+ * THE ONE REPEAT THAT IS THE CORRECT ANSWER.
+ *
+ * `scripts/converse.ts` has skipped its own repetition check on this since
+ * 2026-08-30 — its comment records the live case — and the PRODUCT never had
+ * the exemption at all, so a turn the gate forgave was repaired in production.
+ * The `tutor:converse` run of 2026-09-02 caught what that costs: the learner
+ * asked "otra vez cual era la pregunta", the restated question was repaired,
+ * the retry landed on one of the provider's empty completions, and the child
+ * got "Se me enredaron las ideas un momento" instead of the question they had
+ * just asked for. One of only two canned lines in seven conversations.
+ */
+describe('a repeat the learner explicitly asked for is not repaired', () => {
+  it('restates the question unchanged when the learner asks what it was', async () => {
+    const question = 'Si tienes 10 pesos y un pan cuesta 3 pesos, ¿te alcanza para comprarlo?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: question }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: question }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('no se', Date.now());
+    const second = (await orchestrator.handleLearnerText('otra vez cual era la pregunta', Date.now()))!;
+
+    expect(second.emission.turn.say).toBe(question);
+    // Four calls: two turns, no retry bought for answering correctly.
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('still repairs the same repeat when the learner did NOT ask for it', async () => {
+    const question = 'Si tienes 10 pesos y un pan cuesta 3 pesos, ¿te alcanza para comprarlo?';
+    const fresh = 'Ahora una galleta de 8. ¿Con 5 monedas la llevas o no?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: question }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: question }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: fresh }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('no se', Date.now());
+    const second = (await orchestrator.handleLearnerText('mmm', Date.now()))!;
+
+    expect(second.emission.turn.say).toBe(fresh);
+  });
+});
