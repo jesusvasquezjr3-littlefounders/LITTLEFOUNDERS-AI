@@ -8,6 +8,7 @@
 
 ## §0 Pre-flight checklist — read BEFORE any edit
 
+0. **Measure the machine BEFORE planning the work** (owner rule, 2026-09-02). Run `sysctl -n machdep.cpu.brand_string hw.physicalcpu hw.memsize`, `memory_pressure | tail -3` and `uptime`, and size the session to what came back. This is not a formality: the development machine on 2026-09-02 was an **Apple M2 with 8 CPU cores and 8 GB of RAM**, and a session that ran six parallel subagents alongside several headless Chrome instances and Vite servers drove it to **1.4 million pageouts, 37% free memory and a load average of 6.35 on 8 cores**. The visible cost was a test suite that "went flaky" — 8-second sleeps timing out against a 12-second budget — which was investigated as a product defect and was in fact the machine swapping. **A saturated machine does not fail loudly; it fails as a wrong measurement**, and a wrong measurement is more expensive than no measurement (§1.0 #5). Concretely, on a machine this size: prefer sequential agents over parallel ones, never run two headless-Chrome gates at once, keep ONE dev server (`verify:tutor-*` spawn their own Vite on 5173 and fail with a misleading "timed out waiting for lab chrome" when the port is held), and re-run any timing-sensitive failure on a quiet machine before believing it.
 1. **Locate** — check `repo_map.md` to find the files you need. Never guess paths.
 2. **Domain rules** — read the target service's own `AGENTS.md` (every service has one).
 3. **Route** — check `doc_map.md` for the authoritative document on your topic.
@@ -16,6 +17,7 @@
 6. **Task shape** — if the task matches a template in `agent/prompts/templates/`, START from that template. Do not re-derive the procedure.
 7. **Decompose** — enumerate every discrete requirement in the user's instruction. You will re-check each one before declaring the task done (§1.12).
 8. **Reach** — if the change adds, renames or removes a public page, or alters what the product IS (a course, an audience, a language, the headline claim), it also belongs in `frontend/scripts/seo/site.mjs` in the SAME commit (§1.15). Skipping it does not break a build; it makes the change invisible to search, to every shared link, and to every AI assistant.
+9. **COMMIT AS YOU GO, PUSH ONCE AT THE END** (owner rule, 2026-09-02). Commit each coherent piece of work locally as it lands — that is the record, and it is free. **Do NOT push until the session's work is finished.** Every push to `main` fans out into CI across eight services plus the CD workflows behind them, so pushing three times in a session buys three full fan-outs of the same minutes for one deployable result. Batch them: one push, one fan-out, at the end, when everything is green together. **Exceptions, and they must be deliberate:** the owner says otherwise; the work is a hotfix for something broken in production; or the session ends with work that must not be left only on one laptop, in which case push the BRANCH (which runs CI but no CD) rather than `main`. This is a resource rule, not a safety one — it never justifies skipping a gate, and §5 still has to pass before the one push.
 
 ---
 
