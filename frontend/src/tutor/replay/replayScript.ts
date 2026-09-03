@@ -229,8 +229,12 @@ export function estimateBeatMs(text: string, kind: ReplayBeatKind): number {
  */
 function whiteboardMinMs(whiteboard: TranscriptTurn['whiteboard']): number {
   // Only `sequence` reveals incrementally (`TutorWhiteboard.tsx`'s own
-  // `SequenceBoard`) — `compare`/`marked_line` (V4 backlog) render fully
-  // immediately, so neither needs a floor beyond the caption's own pace.
+  // `SequenceBoard`). Every other kind — `compare`, `marked_line`,
+  // `categories`, `tokens` — renders fully on its first frame, so none needs a
+  // floor beyond the caption's own pace. Written as "anything but sequence"
+  // rather than a list on purpose: a new kind that renders immediately is
+  // correct here by construction, and a new kind that DOES animate has to come
+  // and change this line, which is the safer direction to fail in.
   if (!whiteboard || whiteboard.kind !== 'sequence') return 0;
   return Math.max(0, whiteboard.values.length - 1) * GROW_STEP_MS;
 }

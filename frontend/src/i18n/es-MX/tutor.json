@@ -401,6 +401,10 @@
     "updated": "El pizarrón se actualizó.",
     "compare": {
       "difference": "Diferencia: {{amount}}"
+    },
+    "tokens": {
+      "total": "En total: {{amount}}",
+      "each": "{{count}} × {{amount}}"
     }
   }
 }

@@ -4077,6 +4077,60 @@ overlap/reachability audit that scenario runs was never the gap here; a
 zoomed-in read of the rendered caption rather than another automated
 sweep). Full defect record and status: TUTOR_QA_2026-09-02.md.
 
+**`tokens` — the fifth kind, and the first that is not a chart (SHIPPED
+2026-09-02).** Everything above this line draws a quantity as a length: a bar's
+height, a mark's position on a line. `oracle/skills/moves/biggest-coin-first.md`
+asks for something no length can express — "keep the coins ON THE TABLE where
+they can be picked up. This move dies if it becomes arithmetic in the head" —
+and `value-not-appearance.md` asks to "count the same pile twice". A bar chart of
+"three 10s and two 5s" is a picture of two numbers; those moves want a picture of
+a pile. `{kind:'tokens', groups: 1-6 of {denomination, count}, label, currency}`
+draws the objects themselves.
+
+Three things about it differ from every kind above, each for a stated reason.
+**The model has no field for the total.** The sum of a pile is precisely the
+arithmetic the learner is doing, so `computeTokens` derives `subtotals` and
+`total` server-side and the schema refuses a turn that tries to state either —
+the same rule that keeps `greater` off `WhiteboardCompareSchema`, applied to the
+one number a tutor is most tempted to say. **`currency` is not nullable**, alone
+among the kinds: a bar can be an abstract quantity, a coin cannot, and a
+denomination is only checkable against a currency that is actually named. **The
+denominations are checked against the ones that really exist** — `computeTokens`
+holds a per-currency table and drops the whole board on anything else, because a
+7-peso coin passes every per-field bound and would teach a child something false
+about the money in their own hand (§1.14, verified for SUBJECT not only form).
+It also refuses more than 24 objects on the table: past that nobody counts, they
+estimate, which is a different skill than the one this instrument teaches.
+
+**Every token is drawn the same size, and that is pedagogy rather than styling.**
+Three of the five misconceptions `tokens` closes — `bigger-coin-worth-more`,
+`more-coins-more-money`, `counts-coins-not-value` — are a learner believing that
+what LOOKS bigger is worth more. Sizing a token by its denomination would make
+appearance and value agree on every board this tutor ever draws, teaching the
+misconception instead of breaking it; `value-not-appearance.md` asks for the
+opposite ("build one case where the two split"). A token's value is read, never
+inferred from its size, and a test asserts every token on a board shares one size
+class so a later hand cannot quietly "improve" it.
+
+**No drift detector was written, deliberately.** Every detector above this line
+exists because a real transcript showed a specific failure; no `tokens` session
+has ever run. The obvious candidate — the tutor speaking a total that disagrees
+with the computed one — has a strong anchor and is left open rather than
+theorised (/TUTOR_INSTRUMENTS.md §7.6-R). Note that the model cannot state a
+total in the board at all, so the only path to that contradiction is `say`.
+
+**What building it changed about how the next one gets built.** The four kinds
+above were each written by hand, and the two defects this section already records
+— bars at zero pixels, a caption that disappeared rather than truncating — both
+lived in the parts every kind copies. Those parts are now
+`frontend/src/tutor/whiteboard/primitives.tsx`, and all five kinds draw through
+them, so both defects are unreachable by construction rather than by remembering.
+`npm run instruments:check` (new, `/AGENTS.md` §5) verifies that a kind's five
+hand-written copies agree, and enforces the model-may-not-assert-a-derived-fact
+rule that nothing previously checked. Full record, including a cost measurement
+that **failed its own criterion** and the corrected metric that replaced it:
+/TUTOR_INSTRUMENTS.md §0 and §7.6-R.
+
 ### 20.6 The skill/KC curator — propose-only (SHIPPED)
 
 V4 harness backlog: "the skill distiller/curator loop." `backend/src/

@@ -499,6 +499,28 @@ const LAB_MARKED_LINE_TEXT: Readonly<Record<Locale, { say: string; label: string
   },
 };
 
+/**
+ * `activity === 'tokens'` — the first NON-CHART instrument
+ * (/TUTOR_INSTRUMENTS.md, Sprint 6). Denominations here are real ones for each
+ * currency, because `computeTokens` verifies them against the real
+ * denominations of the board's currency and a fixture that used a coin nobody
+ * mints would be testing a board the server refuses to serve.
+ */
+const LAB_TOKENS_TEXT: Readonly<Record<Locale, { say: string; label: string }>> = {
+  'en-US': {
+    say: 'Look at the table: three ten-dollar bills and four one-dollar coins. How much is there?',
+    label: 'Count what is on the table',
+  },
+  'es-MX': {
+    say: 'Mira la mesa: tres billetes de diez pesos y cuatro monedas de un peso. ¿Cuánto hay?',
+    label: 'Cuenta lo que hay en la mesa',
+  },
+  'pt-BR': {
+    say: 'Olha a mesa: três notas de dez reais e quatro moedas de um real. Quanto tem?',
+    label: 'Conte o que está na mesa',
+  },
+};
+
 const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
   'en-US': 'USD',
   'es-MX': 'MXN',
@@ -600,6 +622,34 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (activity === 'tokens') {
+    const text = LAB_TOKENS_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      whiteboard: {
+        kind: 'tokens',
+        groups: [
+          { denomination: 10, count: 3 },
+          { denomination: 1, count: 4 },
+        ],
+        // Server-computed on the real wire (`whiteboard.ts`'s `computeTokens`)
+        // — hand-set here since the lab has no server.
+        subtotals: [30, 4],
+        total: 34,
+        label: text.label,
+        currency: LAB_CURRENCY[locale],
+      },
+    };
+  }
   if (activity === 'categories') {
     const text = LAB_CATEGORIES_TEXT[locale];
     return {
@@ -668,15 +718,24 @@ const fixtureByType = (locale: Locale): Readonly<Record<string, SegmentBase>> =>
   Object.fromEntries(allFixtures(locale).map((fixture) => [fixture.type, fixture]));
 
 /** `script` (the scripted turn), `none`, then every engine fixture. */
+/**
+ * THE ACTIVITIES THAT ARE A WHITEBOARD RATHER THAN A GRADED SEGMENT, in ONE
+ * place. `LAB_ACTIVITIES` (the switch's vocabulary) and `labActivity` (which
+ * decides whether the plate holds a segment) both read this.
+ *
+ * They used to be two hand-maintained lists, and adding `tokens` to only one of
+ * them cost a red `verify:tutor-ui` run: the switch offered the activity, the
+ * plate served a graded segment instead — and a segment always wins the plate —
+ * so the board never mounted and the gate reported "timed out waiting for the
+ * tokens whiteboard". Exactly the "add a kind, forget a copy" class
+ * `instruments:check` exists for, one layer below where that gate can see.
+ */
+const WHITEBOARD_ACTIVITIES = ['whiteboard', 'compare', 'marked-line', 'categories', 'tokens'] as const;
+
 export const LAB_ACTIVITIES: readonly string[] = [
   'script',
   'none',
-  'whiteboard',
-  // The same lab-fixture treatment for the three ADDITIONAL whiteboard
-  // kinds (/ORACLE.md §20.5).
-  'compare',
-  'marked-line',
-  'categories',
+  ...WHITEBOARD_ACTIVITIES,
   // The TYPE LIST is locale-independent by construction (registry.test.tsx
   // proves it), so building it from one locale is not a choice with a
   // consequence — it is the same list in all three.
@@ -687,13 +746,7 @@ export const DEFAULT_LAB_ACTIVITY = 'script';
 
 /** The activity the plate should hold, for whatever the switch is on. */
 export function labActivity(locale: Locale, activity: string): LiveSegmentState | null {
-  if (
-    activity === 'none' ||
-    activity === 'whiteboard' ||
-    activity === 'compare' ||
-    activity === 'marked-line' ||
-    activity === 'categories'
-  ) {
+  if (activity === 'none' || (WHITEBOARD_ACTIVITIES as readonly string[]).includes(activity)) {
     return null;
   }
   if (activity === 'script') return labSegment(locale);

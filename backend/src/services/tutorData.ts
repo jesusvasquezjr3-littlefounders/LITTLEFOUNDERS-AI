@@ -968,12 +968,29 @@ export interface TutorTurnCategoriesBoard {
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
 
+/**
+ * A live table of coins and notes, exactly as it was shown. Mirrors
+ * `oracle/src/ws/protocol.ts`'s tokens member (/TUTOR_INSTRUMENTS.md, Sprint 6).
+ * `subtotals`/`total` are server-computed: the sum of a pile is the arithmetic
+ * the learner is doing, so the model has no field to assert it.
+ */
+export interface TutorTurnTokensBoard {
+  kind: 'tokens';
+  groups: { denomination: number; count: number }[];
+  subtotals: number[];
+  total: number;
+  label: string;
+  /** Non-nullable alone among the kinds — a coin with no currency is not money. */
+  currency: 'MXN' | 'USD' | 'BRL';
+}
+
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
   | TutorTurnSequenceBoard
   | TutorTurnCompareBoard
   | TutorTurnMarkedLineBoard
-  | TutorTurnCategoriesBoard;
+  | TutorTurnCategoriesBoard
+  | TutorTurnTokensBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1148,6 +1165,32 @@ const CategoriesBoardRowSchema = z
   })
   .strict();
 
+const WhiteboardTokenGroupRowSchema = z
+  .object({
+    denomination: z.number().positive().max(1_000),
+    count: z.number().int().min(1).max(12),
+  })
+  .strict();
+
+/**
+ * Re-derives oracle's `WhiteboardTokensSchema` the same way
+ * `SequenceBoardRowSchema` above re-derives its own source, plus the bounds
+ * `computeTokens` enforces on top of the per-field ones. It deliberately does
+ * NOT re-check a denomination against the real denominations of the currency:
+ * that table lives in Oracle, this is a display-only read, and a third copy of
+ * it here could disagree with the one that actually validated the board.
+ */
+const TokensBoardRowSchema = z
+  .object({
+    kind: z.literal('tokens'),
+    groups: z.array(WhiteboardTokenGroupRowSchema).min(1).max(6),
+    subtotals: z.array(z.number().min(0).max(10_000_000)).min(1).max(6),
+    total: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1165,6 +1208,7 @@ const TutorTurnWhiteboardRowSchema = z
     CompareBoardRowSchema,
     MarkedLineBoardRowSchema,
     CategoriesBoardRowSchema,
+    TokensBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -1195,6 +1239,14 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'every mark value must fall within [min, max]',
           path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'tokens') {
+      if (board.subtotals.length !== board.groups.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'subtotals must carry exactly one entry per group',
+          path: ['subtotals'],
         });
       }
     } else if (board.kind === 'categories') {

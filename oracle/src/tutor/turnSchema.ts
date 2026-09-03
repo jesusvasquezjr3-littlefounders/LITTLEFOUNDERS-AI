@@ -364,6 +364,69 @@ export const WhiteboardMarkedLineSchema = z
   .strict();
 
 /**
+ * ONE PILE OF IDENTICAL COINS OR NOTES on a `tokens` board — a denomination
+ * and how many of it are on the table.
+ *
+ * NO LABEL, deliberately. Every other kind's items carry model-written prose;
+ * this one's identity is its own denomination, which the server verifies
+ * against the real denominations of the board's currency (`whiteboard.ts`'s
+ * `computeTokens`). That makes `tokens` the first instrument with NO new
+ * moderation surface at all — its only free text is the board's own top-level
+ * `label`, exactly as `sequence` has always been.
+ */
+export const WhiteboardTokenGroupSchema = z
+  .object({
+    /**
+     * The face value of one coin or note. Bounded here, but the real check is
+     * cross-field and lives in `computeTokens`: it must be a denomination that
+     * actually EXISTS in this board's currency. A "7-peso coin" passes every
+     * per-field bound and would teach a child something false about the money
+     * in their own hand (§1.14: generated content verified for SUBJECT, not
+     * only for form).
+     */
+    denomination: z.number().positive().max(1_000),
+    /** How many of it. Past a dozen a pile stops being countable at a glance. */
+    count: z.number().int().min(1).max(12),
+  })
+  .strict();
+
+/**
+ * `kind: 'tokens'` — DISCRETE, DENOMINATED OBJECTS ON THE TABLE
+ * (/TUTOR_INSTRUMENTS.md §3.2, Sprint 6). The first instrument in the catalog
+ * that is not a chart.
+ *
+ * WHY IT EXISTS, in the tutor's own words. `oracle/skills/moves/
+ * biggest-coin-first.md` instructs: "Keep the coins ON THE TABLE where they can
+ * be picked up. This move dies if it becomes arithmetic in the head."
+ * `value-not-appearance.md` asks to "count the same pile twice".
+ * `stop-at-the-target.md` wants a running total said aloud, coin by coin. None
+ * of that is expressible as the height of a number, which is all every other
+ * kind can draw — a bar chart of "three 10s and two 5s" is a picture of two
+ * numbers, not of a pile a child can count.
+ *
+ * THE TOTAL IS THE ONE THING THE MODEL MAY NOT SAY. There is no `total` field
+ * here, on purpose and for the same reason `compare` has no `greater`: the sum
+ * of a pile is precisely the arithmetic the learner is doing, so it is computed
+ * server-side (`computeTokens`) and attached at the wire. A model that could
+ * assert the total could assert a wrong one over a correct picture.
+ *
+ * `currency` is NOT nullable here, unlike every other kind. A bar can be an
+ * abstract quantity; a coin cannot — a token with no currency is not money,
+ * and the denominations this board draws are only checkable against a currency
+ * that is actually named.
+ */
+export const WhiteboardTokensSchema = z
+  .object({
+    kind: z.literal('tokens'),
+    /** 1-6 piles. Past six the table stops being readable on a phone. */
+    groups: z.array(WhiteboardTokenGroupSchema).min(1).max(6),
+    /** A short caption above the table — see `WhiteboardSequenceSchema.label`. */
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
+/**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
  * never free-form — the same §5 discipline every other model-facing schema
  * on this turn already follows. `parseTurn`'s own fail-open guard
@@ -379,6 +442,7 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardCompareSchema,
   WhiteboardMarkedLineSchema,
   WhiteboardCategoriesSchema,
+  WhiteboardTokensSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -445,7 +509,9 @@ export type WhiteboardMark = z.infer<typeof WhiteboardMarkSchema>;
 export type WhiteboardMarkedLine = z.infer<typeof WhiteboardMarkedLineSchema>;
 export type WhiteboardCategory = z.infer<typeof WhiteboardCategorySchema>;
 export type WhiteboardCategories = z.infer<typeof WhiteboardCategoriesSchema>;
-/** Any of the four closed board shapes — see `WhiteboardSchema`'s own comment. */
+export type WhiteboardTokenGroup = z.infer<typeof WhiteboardTokenGroupSchema>;
+export type WhiteboardTokens = z.infer<typeof WhiteboardTokensSchema>;
+/** Any of the closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
 /**
@@ -476,6 +542,12 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       // as freely as an unmoderated one, regardless of how short it is
       // expected to stay.
       return [whiteboard.label, ...whiteboard.categories.map((c) => c.label)];
+    case 'tokens':
+      // The only kind whose ITEMS carry no prose at all: a pile is identified
+      // by its own denomination, which the server verifies against the real
+      // denominations of the currency. So this board's entire learner-facing
+      // free-text surface is its own caption.
+      return [whiteboard.label];
   }
 }
 

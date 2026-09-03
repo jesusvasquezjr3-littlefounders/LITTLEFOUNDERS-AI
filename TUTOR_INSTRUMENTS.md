@@ -27,8 +27,8 @@ only section that must be updated on EVERY sprint boundary.**
 | | |
 |---|---|
 | **Status** | IN PROGRESS. Wave 1 foundation started 2026-09-02. |
-| **Active sprint** | Sprint 6 (§7.6) — `tokens`, the first new instrument. |
-| **Next action** | Ship `tokens` end to end, then record the cost measurement (§7.6 acceptance #2) here — it is the go/no-go for Sprints 11–15. |
+| **Active sprint** | — none. Sprints 4, 5 and 6 are done; Sprint 7 (`bar_model` + `part_whole`) is next. |
+| **Next action** | Sprint 7 (§7.7). Before starting it, read §7.6-R: the cost measurement failed its own criterion and the criterion was replaced. Sprints 1–3 (Wave 0 unlocks) are still untouched and remain the cheapest value in the plan. |
 | **Blocked on owner** | Nothing blocking today. D1 and D3 (§8.2) were answered by the owner on 2026-09-02 with "procede": the catalog grows by **named instruments** and the architecture tax is paid with Wave 1. **D2 (generated imagery) is still open** and gates Wave 4 only. |
 | **Last verified against the repo** | 2026-09-02. |
 
@@ -38,13 +38,15 @@ only section that must be updated on EVERY sprint boundary.**
 |---|---|---|
 | **S5 — instrument manifest + parity gate** | **DONE** 2026-09-02 | `npm run instruments:check` green over 4 instruments × 5 copies; `agent/tools/check-instrument-parity.test.mjs` — 13 tests, of which **7 deliberately desynchronise a copy and each turns the gate red**. In CI (`repo-gates.yml`) and in `/AGENTS.md` §5. Two defects it found in its own first hour are recorded in §10.3 |
 | **S4 — primitive kit** | **DONE** 2026-09-02 | `frontend/src/tutor/whiteboard/primitives.tsx`; all four existing kinds rebuilt on it with **no behaviour change** — the 30 existing whiteboard tests pass unmodified, `verify:tutor-ui` green (real-pixel bar heights across all 4 kinds × 3 breakpoints), `verify:tutor-a11y` green (8 phases × 2 themes × 2 breakpoints), 962 frontend tests green. 15 new primitive tests lock the two structural contracts. Scope was cut from a speculative nine primitives to the parts the EVIDENCE names — see §4.2 |
-| S6 — `tokens` | in progress | — |
+| **S6 — `tokens`** | **DONE** 2026-09-02 | The first non-chart instrument, end to end: schema → compute → wire → Core body → Core read-time revalidation → frontend mirror → renderer → lab fixture → gate. `instruments:check` now green over **5** instruments. New tests: 7 compute (oracle), 7 schema/fail-open (oracle), 1 real-socket wire proof, 5 render (frontend). `verify:tutor-ui` drives it at 3 breakpoints; `verify:tutor-a11y` green; both breakpoints screenshotted and inspected. **The cost measurement failed its own criterion — see §7.6-R** |
 | everything else | not started | — |
 
 ### §0.1 Baseline — what is true today (all VERIFIED 2026-09-02)
 
-- The Tutor can draw **4** things: `sequence`, `compare`, `marked_line`, `categories`
+- The Tutor can draw **5** things: `sequence`, `compare`, `marked_line`,
+  `categories` and — since Sprint 6, 2026-09-02 — `tokens`
   (`oracle/src/tutor/turnSchema.ts`, `frontend/src/tutor/TutorWhiteboard.tsx`).
+  It was 4 when this file was written.
 - The Tutor can serve **any of the 57** Lesson Engine segment types live
   (`LiveSegmentPanel` mounts the real `REGISTRY`), but can only *request* **2**:
   `segmentRequest.preferredTypes` is closed to `interest_peek` and `number_line`.
@@ -62,8 +64,10 @@ only section that must be updated on EVERY sprint boundary.**
   point at.
 - **9 of 13** sound files are wired (`frontend/src/lesson-engine/player/sfx.ts`);
   the whiteboard uses none.
-- Adding one whiteboard kind touches **17 files** and **5 hand-mirrored schema
-  copies** across 3 services with no compiler check between them (§4.2).
+- Adding one whiteboard kind touched **17 files** and **5 hand-mirrored schema
+  copies** across 3 services with no compiler check between them (§4.2). Measured
+  again after Sprints 4–6: still ~20 files, and the copies are now *checked*
+  rather than *fewer* — §7.6-R has the honest result and the corrected metric.
 
 ### §0.2 The one invariant that must survive every sprint
 
@@ -81,7 +85,7 @@ the property that makes a generated visual safe to put in front of a minor
    to not shipping a defect.
 3. Read the active sprint in §7 end to end, including its "explicitly out of scope".
 4. Only then read §3 (the catalog) for the instrument you are building.
-5. `/ORACLE.md` §20.5 is the authoritative record of the four instruments that
+5. `/ORACLE.md` §20.5 is the authoritative record of the instruments that
    ALREADY exist and every defect they have already cost. Read it before adding a
    fifth. It is long; the two entries that matter most to a new instrument are the
    zero-pixel bar defect and the silently-clipped label defect, because both were
@@ -167,7 +171,7 @@ Coverage claims are ESTIMATED (§10.2).
 
 | Key | What it draws | Source | Closes | Status |
 |---|---|---|---|---|
-| `tokens` | Discrete denominated objects, groupable by value, countable twice two ways | `biggest-coin-first`, `value-not-appearance`, `stop-at-the-target` | `bigger-coin-worth-more`, `more-coins-more-money`, `counts-coins-not-value` (×2), `single-denomination-only`, `overshoots-target` | **S6** |
+| `tokens` | Discrete denominated objects, groupable by value, countable twice two ways. Every token is drawn the SAME SIZE — sizing by value would make appearance and worth agree on every board and teach three of the misconceptions it exists to break | `biggest-coin-first`, `value-not-appearance`, `stop-at-the-target` | `bigger-coin-worth-more`, `more-coins-more-money`, `counts-coins-not-value` (×2), `single-denomination-only`, `overshoots-target` | **LIVE** |
 | `ten_frame` | Ten cells in two rows; quantity and its complement to ten seen without counting | canonical | supports `count-like-coins` | S11 |
 | `pictograph` | Quantity as a count of figures, not a bar height | `tier_min: 1` (12 of 28 KCs) | supports all tier-1 | S14 |
 | `number_track` | A hundred-chart segment: rounding, tens, a number's neighbourhood | canonical | `always-rounds-down` | S14 |
@@ -684,6 +688,62 @@ first, touchable later. Real photographic currency art (S19).
 
 **Risks.** Discrete objects at six denominations on a 375px screen. Design the
 overflow behaviour before the schema bounds, not after.
+
+---
+
+#### §7.6-R Sprint 6 RESULT — the measurement, and why its criterion was wrong
+
+**Measured, 2026-09-02: `tokens` touched 20 files against a 17-file baseline.
+By the letter of §7.6 acceptance #2 — "if it has not fallen materially, the plan
+stops here" — this sprint FAILED its own gate.** Recorded that way rather than
+rounded off, because the interesting part is what the number got wrong.
+
+**Why the count did not fall, honestly.** Nothing in Sprints 4–5 was ever going
+to remove a schema copy: the four hand-written copies are a consequence of the
+service boundary (§1.5), and a parity gate makes drift *detectable*, not
+*impossible*. Two of the 20 are new obligations the baseline did not have — the
+parity manifest (13 lines of declaration) and `oracle/scripts/converse.ts`, which
+the compiler forced because a new `kind` made an operator script's switch
+non-exhaustive. That second one is a gate doing its job, not a cost.
+
+**What actually fell, and it is not files:**
+
+- **The two historical defect classes became unreachable.** A bar cannot be
+  rendered outside the track that gives it a definite height; a model-written
+  caption cannot be rendered without a line ceiling. Both were shipped defects,
+  both invisible to jsdom, both live for months.
+- **Layout work per instrument collapsed.** `TokensBoard` is composition, not new
+  layout. Three iterations happened in this sprint and every one was a
+  *composition* change (centre it, don't let the row eat the plate), each found by
+  looking at a screenshot the gate already takes.
+- **Drift became loud.** `instruments:check` went from 4 to 5 instruments with no
+  new checking code.
+
+**The corrected criterion for Sprints 7 and 11–15: measure DEFECTS AND REWORK,
+not files touched.** Files touched was a proxy chosen before there was any
+evidence, and it measures the service boundary rather than the difficulty. On
+this sprint's evidence the real numbers are: zero layout defects shipped, three
+composition iterations (all caught pre-commit by an existing screenshot), one
+omission caught by an existing gate in about a minute, and one gate hole found by
+the gate's own negative test. That is the number worth carrying forward.
+
+**A SIXTH hand-maintained list, found the hard way.** `instruments:check` covers
+the five schema copies. It does not — and structurally cannot — see
+`labFixtures.ts`'s `labActivity`, which decides whether the plate holds a board
+or a graded segment. `tokens` was added to the lab's activity *switch* and not to
+that list, so the lab served a segment instead, a segment always wins the plate,
+and `verify:tutor-ui` failed with "timed out waiting for the tokens whiteboard to
+mount". Fixed by deriving both lists from one `WHITEBOARD_ACTIVITIES` constant, so
+the next instrument cannot miss one. **Worth stating plainly: the browser gate
+caught what the schema gate could not**, which is the argument for keeping both.
+
+**What §6's checklist did NOT get, and why.** No drift detector was written for
+`tokens`. §5.12 says a detector is written only after a real transcript shows a
+specific failure, and no `tokens` session has ever run. The obvious candidate —
+the tutor speaking a total that disagrees with the computed one — has a strong
+anchor and would be easy to write, and it is deliberately left open rather than
+theorised. The model also has no field to state a total at all, so the only path
+to that contradiction is `say`. Write it when a transcript shows it.
 
 ---
 

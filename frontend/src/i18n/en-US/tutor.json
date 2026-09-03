@@ -401,6 +401,10 @@
     "updated": "The whiteboard updated.",
     "compare": {
       "difference": "Difference: {{amount}}"
+    },
+    "tokens": {
+      "total": "In total: {{amount}}",
+      "each": "{{count}} × {{amount}}"
     }
   }
 }

@@ -40,7 +40,13 @@ import {
   type ServerMessage,
   type WireWhiteboard,
 } from './protocol.js';
-import { computeCategories, computeComparison, computeMarkedLine, computeSequence } from '../tutor/whiteboard.js';
+import {
+  computeCategories,
+  computeComparison,
+  computeMarkedLine,
+  computeSequence,
+  computeTokens,
+} from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
 import { isHandshakeRateLimited } from './handshakeRateLimit.js';
@@ -1273,6 +1279,10 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
     case 'categories': {
       const values = computeCategories(board);
       return values === null ? null : { ...board, values };
+    }
+    case 'tokens': {
+      const result = computeTokens(board);
+      return result === null ? null : { ...board, ...result };
     }
   }
 }

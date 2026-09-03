@@ -8,6 +8,7 @@ import {
   BarTrack,
   BoardRow,
   Caption,
+  Token,
   ValueLabel,
   barHeightPct,
   useValueFormat,
@@ -29,13 +30,16 @@ import {
  * owned entirely by the tutor surface (LESSON_ENGINE.md §4's family-boundary
  * convention: a family's files are its own, and this is not a family).
  *
- * FOUR KINDS (/ORACLE.md §20.5): `sequence` (a value that changes over
- * time), `compare` (two named things at one moment), `marked_line` (values
- * placed on a line between two references), and `categories` — `compare`
- * generalized from a fixed two sides to 2-6 named things at that same one
- * moment. `TutorWhiteboardWire` (`./types`) is the single source for the
- * wire shape of all four. The catalog these four are the first of, and the
- * plan for the rest, is /TUTOR_INSTRUMENTS.md.
+ * FIVE KINDS. Four are charts (/ORACLE.md §20.5): `sequence` (a value that
+ * changes over time), `compare` (two named things at one moment),
+ * `marked_line` (values placed on a line between two references), and
+ * `categories` — `compare` generalized from a fixed two sides to 2-6 named
+ * things at that same one moment. The fifth, `tokens`, is not a chart at all:
+ * discrete denominated objects on a table, for the several remediation moves
+ * that ask for coins a learner can pick up rather than a height. The catalog
+ * these five are the first of, and the plan for the rest, is
+ * /TUTOR_INSTRUMENTS.md. `TutorWhiteboardWire` (`./types`) is the single
+ * source for the wire shape of all five.
  *
  * EVERY SHAPE IS DRAWN THROUGH `whiteboard/primitives.tsx`, and that is a
  * safety property rather than tidiness. Both defects this surface has shipped
@@ -175,6 +179,7 @@ type SequenceWire = Extract<TutorWhiteboardWire, { kind: 'sequence' }>;
 type CompareWire = Extract<TutorWhiteboardWire, { kind: 'compare' }>;
 type MarkedLineWire = Extract<TutorWhiteboardWire, { kind: 'marked_line' }>;
 type CategoriesWire = Extract<TutorWhiteboardWire, { kind: 'categories' }>;
+type TokensWire = Extract<TutorWhiteboardWire, { kind: 'tokens' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -420,6 +425,74 @@ function CategoriesBoard({ board, seq, className }: { board: CategoriesWire; seq
   );
 }
 
+/**
+ * `kind: 'tokens'` — DISCRETE, DENOMINATED OBJECTS ON THE TABLE
+ * (/TUTOR_INSTRUMENTS.md, Sprint 6). The first instrument here that is not a
+ * chart, and the reason the primitive kit exists rather than the two bar-chart
+ * kinds simply sharing a helper.
+ *
+ * `oracle/skills/moves/biggest-coin-first.md` instructs the tutor to "keep the
+ * coins ON THE TABLE where they can be picked up. This move dies if it becomes
+ * arithmetic in the head." A bar chart of "three 10s and two 5s" is a picture
+ * of two numbers; this is a picture of a pile.
+ *
+ * EVERY TOKEN IS DRAWN THE SAME SIZE, and that is a pedagogical requirement,
+ * not a shortcut. Three of the misconceptions this instrument exists to close
+ * are `bigger-coin-worth-more`, `more-coins-more-money` and
+ * `counts-coins-not-value` — a learner believing that what LOOKS bigger is
+ * worth more. Sizing tokens by denomination would make appearance and value
+ * agree on every board this tutor ever draws, which teaches the misconception
+ * instead of breaking it. `value-not-appearance.md` asks for the opposite:
+ * "build one case where the two split." So a token's value is READ, never
+ * inferred from its size.
+ *
+ * Renders immediately, no reveal: a pile is a snapshot. The counting is the
+ * learner's work, and pacing it for them would take that away.
+ */
+function TokensBoard({ board, seq, className }: { board: TokensWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+
+  const ariaLabel = `${board.label}. ${board.groups
+    .map((group, i) => `${t('tutor.whiteboard.tokens.each', { count: group.count, amount: format(group.denomination) })}: ${format(board.subtotals[i]!)}`)
+    .join(', ')}. ${t('tutor.whiteboard.tokens.total', { amount: format(board.total) })}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      {/*
+        Vertically CENTRED, unlike every bar-chart kind, and the difference is
+        not a preference. A bar grows from a shared baseline, so bottom
+        anchoring is what makes two bars comparable; a pile of coins has no
+        baseline to share, and bottom-anchoring it inside the plate's full
+        height left a large empty band above the coins that reads as a broken
+        layout rather than as a table. Caught by looking at the gate's own
+        screenshot, not by any assertion in it — 0 unreachable controls and 0
+        overlaps were both true of the version that looked wrong.
+      */}
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2">
+        <BoardRow gap="lg" justify="center" grow={false}>
+          {board.groups.map((group, i) => (
+            <div key={i} className="flex min-w-[5rem] flex-col items-center justify-center gap-1.5">
+              <div className="flex flex-wrap items-end justify-center gap-1">
+                {Array.from({ length: group.count }, (_, n) => (
+                  <Token key={n}>{format(group.denomination)}</Token>
+                ))}
+              </div>
+              {/* Chrome from the locale files around server-computed numbers — not model text. */}
+              <AxisCaption>
+                {t('tutor.whiteboard.tokens.each', { count: group.count, amount: format(group.denomination) })}
+              </AxisCaption>
+            </div>
+          ))}
+        </BoardRow>
+        <p className="lf-caption shrink-0 text-center text-content-muted" aria-hidden="true">
+          {t('tutor.whiteboard.tokens.total', { amount: format(board.total) })}
+        </p>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -430,5 +503,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <MarkedLineBoard board={board} seq={seq} className={className} />;
     case 'categories':
       return <CategoriesBoard board={board} seq={seq} className={className} />;
+    case 'tokens':
+      return <TokensBoard board={board} seq={seq} className={className} />;
   }
 }

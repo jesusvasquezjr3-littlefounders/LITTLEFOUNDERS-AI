@@ -34,7 +34,13 @@ import {
   contradictsItsOwnShortfall,
   EXPLICIT_REPEAT_REQUEST,
 } from '../src/tutor/prompt.js';
-import { computeCategories, computeComparison, computeMarkedLine, computeSequence } from '../src/tutor/whiteboard.js';
+import {
+  computeCategories,
+  computeComparison,
+  computeMarkedLine,
+  computeSequence,
+  computeTokens,
+} from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
@@ -351,6 +357,14 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
       const values = computeCategories(board);
       const bars = board.categories.map((c) => `${c.label}=${c.value}`).join(', ');
       return { label: board.label, summary: values ? bars : `${bars} (INVALID)` };
+    }
+    case 'tokens': {
+      const result = computeTokens(board);
+      const piles = board.groups.map((g) => `${g.count}x${g.denomination}`).join(' + ');
+      return {
+        label: board.label,
+        summary: result ? `${piles} = ${result.total} ${board.currency}` : `${piles} (INVALID)`,
+      };
     }
   }
 }

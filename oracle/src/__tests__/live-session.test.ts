@@ -286,6 +286,7 @@ function startFakeModel(): Promise<Server> {
       // (`difference`/`greater`, each mark's `position`).
       const wantsCompare = !isJudge && body.includes('quierocomparar');
       const wantsMarkedLine = !isJudge && body.includes('quierorecta');
+      const wantsTokens = !isJudge && body.includes('quieromonedas');
       /*
        * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
        * animations" backlog item, 2026-09-01 — the same "prove the FRAME
@@ -356,7 +357,17 @@ function startFakeModel(): Promise<Server> {
                       label: '¿Cuánto te falta para los audífonos?',
                       currency: 'MXN',
                     }
-                  : null,
+                  : wantsTokens
+                    ? {
+                        kind: 'tokens',
+                        groups: [
+                          { denomination: 10, count: 3 },
+                          { denomination: 1, count: 4 },
+                        ],
+                        label: 'Cuenta lo que hay en la mesa',
+                        currency: 'MXN',
+                      }
+                    : null,
             demonstrate: wantsDemo
               ? [
                   { kind: 'add', denomination: 10 },
@@ -791,6 +802,34 @@ describe('a real live session over a real websocket', () => {
     // both are computed by Oracle from the model's raw left/right values.
     expect(board?.difference).toBe(17);
     expect(board?.greater).toBe('left');
+
+    socket.close();
+    await closed();
+  });
+
+  it('the tokens board reaches the client with SERVER-COMPUTED subtotals and total', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieromonedas, cuentame una historia' }));
+    const board = (await answered).find((m) => m.type === 'turn')?.whiteboard as
+      | { kind: string; groups: { denomination: number; count: number }[]; subtotals: number[]; total: number }
+      | undefined;
+
+    expect(board).toMatchObject({
+      kind: 'tokens',
+      groups: [
+        { denomination: 10, count: 3 },
+        { denomination: 1, count: 4 },
+      ],
+    });
+    // NEITHER field is anywhere in the model's own completion body above: the
+    // schema gives it no place to put them, because the sum of a pile is the
+    // arithmetic the learner is doing.
+    expect(board?.subtotals).toEqual([30, 4]);
+    expect(board?.total).toBe(34);
 
     socket.close();
     await closed();

@@ -196,6 +196,8 @@ frontend/
         __tests__/
       stage/
         __tests__/
+      whiteboard/
+        __tests__/
 goal/
 oracle/
   scripts/
@@ -28516,17 +28518,17 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type { TutorWhiteboardWire } from './types';
-
-/*
- * THE TUTOR'S WHITEBOARD (V4).
- *
- * Until now a growth or spending story lived only in `say` — the tutor could
- * narrate "empiezas con 10 y cada día te dan 2 más" and nothing on screen
- * changed. Reported directly by the owner from a live session, alongside a
- * COMPLETELY UNRELATED activity sitting in the plate. This renders the SAME
- * numbers the tutor is already inventing for its story (oracle/prompt.ts's
- * "invented numbers" rule), live, as the turn arrives.
- *
+import {
+  AxisCaption,
+  BarColumn,
+  BarTrack,
+  BoardRow,
+  Caption,
+  Token,
+  ValueLabel,
+  barHeightPct,
+  useValueFormat,
+} from './whiteboard/primitives';
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -29947,6 +29949,46 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
  * The live session, as a hook.
  *
  * ONE SOCKET, ONE SESSION, NO RECONNECT — and that last part is deliberate.
+```
+
+### frontend/src/tutor/whiteboard/__tests__/primitives.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+
+import { BarColumn, BarTrack, BoardRow, Caption, Token, barHeightPct } from '../primitives';
+
+/*
+ * WHAT THIS FILE CAN AND CANNOT PROVE, stated up front because getting it
+ * wrong is how this surface shipped two invisible defects.
+ *
+ * jsdom lays NOTHING out. It cannot tell you a bar rendered at zero pixels —
+ * that is `verify:tutor-ui`'s real-browser `getBoundingClientRect()` sweep, and
+ * nothing here replaces it. What these tests DO lock is the structural contract
+ * that makes the real-browser result possible: the bar sits inside a track that
+ * carries a definite height down to it, and a model-written caption always
+ * carries a hard line ceiling. Those are the two things that, when someone
+```
+
+### frontend/src/tutor/whiteboard/primitives.tsx
+
+```
+import { useMemo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+
+/*
+ * THE WHITEBOARD'S DRAWING PRIMITIVES.
+ *
+ * WHY THIS FILE EXISTS, and why it is small. Every instrument the Tutor draws
+ * (/TUTOR_INSTRUMENTS.md) is a different arrangement of a few identical parts:
+ * a bar that has to resolve a percentage height, a caption written by the model
+ * in a language whose length nobody controls, a number above a shape, a row that
+ * scrolls sideways rather than crushing its contents. Both defects this surface
+ * has actually shipped were in those parts, not in any instrument's own logic:
+ *
+ *   1. EVERY BAR RENDERED AT ZERO PIXELS, in every real browser, from launch.
 ```
 
 ### frontend/src/vite-env.d.ts
@@ -31876,6 +31918,7 @@ import {
   computeComparison,
   computeMarkedLine,
   computeSequence,
+  computeTokens,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -31884,7 +31927,6 @@ import {
  * rule `arithmetic.ts` applies to a spoken answer. Every case below is either
  * the owner's own screenshot (2026-08-29: "empiezas con 10, cada día +2… si
  * empezaras con 20 y cada día 3") or a bound that must hold no matter what a
- * model proposes.
 ```
 
 ### oracle/src/app.ts
@@ -32594,6 +32636,7 @@ import type {
   WhiteboardCompare,
   WhiteboardMarkedLine,
   WhiteboardSequence,
+  WhiteboardTokens,
 } from './turnSchema.js';
 
 /*
@@ -32602,7 +32645,6 @@ import type {
  * This is the same rule `arithmetic.ts` applies to a spoken answer, extended
  * to what gets DRAWN: the model proposes the raw shape of a board as part of
  * its story, and the functions in this file are the only thing that turn
- * that proposal into the values a child actually sees. A drawn number that
 ```
 
 ### oracle/src/voice/cache.ts
@@ -32798,11 +32840,11 @@ import {
   type WhiteboardMark,
   type WhiteboardMarkedLine,
   type WhiteboardSequence,
+  type WhiteboardTokens,
 } from '../tutor/turnSchema.js';
 import type { WordTiming } from '../voice/provider.js';
 
 /*
- * The websocket wire format.
 ```
 
 ### oracle/src/ws/server.ts

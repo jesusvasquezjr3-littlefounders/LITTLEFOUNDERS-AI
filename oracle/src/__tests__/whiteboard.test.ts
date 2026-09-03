@@ -4,6 +4,7 @@ import {
   computeComparison,
   computeMarkedLine,
   computeSequence,
+  computeTokens,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -379,6 +380,98 @@ describe('whiteboardComputesOk — the single validity gate, dispatched by kind'
         ],
         label: 'x',
         currency: null,
+      }),
+    ).toBe(false);
+  });
+});
+
+/*
+ * `tokens` — the first NON-CHART instrument (/TUTOR_INSTRUMENTS.md, Sprint 6).
+ * What only `computeTokens` can catch, and no per-field bound can: a
+ * denomination that does not EXIST in the board's currency, a table nobody
+ * could count at a glance, and the total itself — which the schema gives the
+ * model no field to assert, exactly as it gives it no `greater` on a
+ * comparison, because that sum is the arithmetic the learner is doing.
+ */
+
+describe('a real table of coins', () => {
+  it('counts three 10s and four 1s the way a child would', () => {
+    expect(computeTokens({ currency: 'MXN', groups: [{ denomination: 10, count: 3 }, { denomination: 1, count: 4 }] })).toEqual(
+      { subtotals: [30, 4], total: 34 },
+    );
+  });
+
+  it('adds sub-unit coins without floating-point dust reaching a child', () => {
+    // 0.1 * 3 is 0.30000000000000004 in JS, and a learner would read that.
+    expect(computeTokens({ currency: 'USD', groups: [{ denomination: 0.1, count: 3 }] })).toEqual({
+      subtotals: [0.3],
+      total: 0.3,
+    });
+  });
+
+  it('accepts a denomination written with trailing precision (0.10 for 0.1)', () => {
+    expect(computeTokens({ currency: 'BRL', groups: [{ denomination: 0.1, count: 2 }] })?.total).toBe(0.2);
+  });
+});
+
+describe('a table that must not be drawn', () => {
+  it('refuses a denomination that does not exist in the currency', () => {
+    // A "7-peso coin" passes every per-field bound and would teach a child
+    // something false about the money in their own hand (§1.14: verified for
+    // SUBJECT, not only for form).
+    expect(computeTokens({ currency: 'MXN', groups: [{ denomination: 7, count: 2 }] })).toBeNull();
+  });
+
+  it('refuses a denomination borrowed from another currency', () => {
+    // 0.25 is a real US quarter and a real BRL coin; it is not Mexican money.
+    expect(computeTokens({ currency: 'MXN', groups: [{ denomination: 0.25, count: 2 }] })).toBeNull();
+    expect(computeTokens({ currency: 'USD', groups: [{ denomination: 0.25, count: 2 }] })).not.toBeNull();
+  });
+
+  it('refuses more objects than anyone counts at a glance', () => {
+    // Past the ceiling a learner stops counting and starts estimating, which
+    // is a different skill than the one this instrument exists to teach.
+    expect(
+      computeTokens({ currency: 'MXN', groups: [{ denomination: 1, count: 12 }, { denomination: 1, count: 12 }, { denomination: 1, count: 12 }] }),
+    ).toBeNull();
+  });
+
+  it('accepts exactly the ceiling, and refuses one past it', () => {
+    expect(
+      computeTokens({ currency: 'MXN', groups: [{ denomination: 1, count: 12 }, { denomination: 2, count: 12 }] }),
+    ).toEqual({ subtotals: [12, 24], total: 36 });
+    expect(
+      computeTokens({ currency: 'MXN', groups: [{ denomination: 1, count: 12 }, { denomination: 2, count: 12 }, { denomination: 5, count: 1 }] }),
+    ).toBeNull();
+  });
+
+  it('refuses a fractional count — half a coin is not on any table', () => {
+    expect(computeTokens({ currency: 'MXN', groups: [{ denomination: 5, count: 2.5 }] })).toBeNull();
+  });
+
+  it('refuses a currency it has no denomination table for', () => {
+    expect(
+      computeTokens({ currency: 'EUR' as 'MXN', groups: [{ denomination: 1, count: 2 }] }),
+    ).toBeNull();
+  });
+});
+
+describe('whiteboardComputesOk dispatches tokens', () => {
+  it('passes a real table and fails an impossible coin', () => {
+    expect(
+      whiteboardComputesOk({
+        kind: 'tokens',
+        groups: [{ denomination: 20, count: 2 }],
+        label: 'Cuenta lo que hay',
+        currency: 'MXN',
+      }),
+    ).toBe(true);
+    expect(
+      whiteboardComputesOk({
+        kind: 'tokens',
+        groups: [{ denomination: 3, count: 2 }],
+        label: 'Cuenta lo que hay',
+        currency: 'MXN',
       }),
     ).toBe(false);
   });

@@ -655,11 +655,36 @@ function internalRouter(): Router {
     })
     .strict();
 
+  /**
+   * The `tokens` kind — discrete, denominated objects on the table rather than
+   * a chart (/TUTOR_INSTRUMENTS.md, Sprint 6), mirroring
+   * `oracle/src/ws/protocol.ts`'s tokens member. `subtotals` and `total` are
+   * SERVER-COMPUTED (`oracle/src/tutor/whiteboard.ts`'s `computeTokens`): the
+   * sum of a pile is the arithmetic the learner is doing, so the model is given
+   * no field to assert it, exactly as it is given no `greater` on a comparison.
+   * `currency` is non-nullable here alone, because a coin with no currency is
+   * not money and its denomination could not be verified against anything.
+   */
+  const TokensWhiteboardBody = z
+    .object({
+      kind: z.literal('tokens'),
+      groups: z
+        .array(z.object({ denomination: z.number(), count: z.number().int() }).strict())
+        .min(1)
+        .max(6),
+      subtotals: z.array(z.number()),
+      total: z.number(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']),
+    })
+    .strict();
+
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
     CompareWhiteboardBody,
     MarkedLineWhiteboardBody,
     CategoriesWhiteboardBody,
+    TokensWhiteboardBody,
   ]);
 
   /**

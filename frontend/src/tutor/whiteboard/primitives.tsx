@@ -96,11 +96,23 @@ export function BoardRow({
   children,
   gap = 'md',
   justify = 'start',
+  grow = true,
   className,
 }: {
   children: ReactNode;
   gap?: 'md' | 'lg';
   justify?: 'start' | 'center';
+  /**
+   * False sizes the row to its CONTENT instead of claiming the plate's free
+   * height.
+   *
+   * `flex-1` exists here for one reason — to hand a definite height down to a
+   * percentage-sized bar — so an instrument that draws no bars should not take
+   * it. `tokens` was the first: with `flex-1` the row swallowed the whole plate,
+   * the coins centred inside it and the total was pushed to the very bottom of
+   * the panel, far from the pile it belonged to.
+   */
+  grow?: boolean;
   className?: string;
 }) {
   /*
@@ -114,7 +126,8 @@ export function BoardRow({
   return (
     <div
       className={cn(
-        'flex min-h-0 flex-1 overflow-x-auto px-1 pb-1',
+        'flex min-h-0 overflow-x-auto px-1 pb-1',
+        grow ? 'flex-1' : 'shrink-0',
         gap === 'lg' ? 'gap-6' : 'gap-2',
         justify === 'center' && 'justify-center',
         className,

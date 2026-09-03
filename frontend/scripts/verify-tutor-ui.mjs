@@ -382,7 +382,7 @@ try {
       }
       await setLabPanel(page, false)
 
-      for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line', 'categories'] : []) {
+      for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line', 'categories', 'tokens'] : []) {
         await setLabPanel(page, true)
         const flipped = await page.evaluate(
           `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +

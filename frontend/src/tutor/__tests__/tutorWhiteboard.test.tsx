@@ -411,3 +411,72 @@ describe('the live announcement fires for compare, marked_line and categories to
     expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
   });
 });
+
+/*
+ * `tokens` — the first NON-CHART instrument (/TUTOR_INSTRUMENTS.md, Sprint 6).
+ * Same two guarantees as every kind above: the component draws what the server
+ * computed and never redoes the arithmetic, and the accessible name carries
+ * what the decorative visual does not.
+ */
+
+const TOKENS = {
+  kind: 'tokens' as const,
+  groups: [
+    { denomination: 10, count: 3 },
+    { denomination: 1, count: 4 },
+  ],
+  subtotals: [30, 4],
+  total: 34,
+  label: 'Cuenta lo que hay en la mesa',
+  currency: 'MXN' as const,
+};
+
+describe('a tokens board', () => {
+  it('draws one object per coin, not one bar per pile', () => {
+    // The whole reason this instrument exists: `biggest-coin-first.md` asks for
+    // coins "on the table where they can be picked up". Three 10s must be three
+    // things, not a bar of height 30.
+    render(<TutorWhiteboard board={TOKENS} seq={1} />);
+    expect(screen.getAllByText('MX$10')).toHaveLength(3);
+    expect(screen.getAllByText('MX$1')).toHaveLength(4);
+  });
+
+  it('shows the server-computed total and never recomputes it', () => {
+    // A deliberately WRONG total on otherwise valid groups must still be drawn
+    // as given: proof the client trusts the server rather than doing the
+    // learner's arithmetic itself. 3x10 + 4x1 is 34, and this board says 99.
+    render(<TutorWhiteboard board={{ ...TOKENS, total: 99 }} seq={1} />);
+    expect(screen.getByText(/In total: MX\$99/)).toBeInTheDocument();
+    expect(screen.queryByText(/In total: MX\$34/)).not.toBeInTheDocument();
+  });
+
+  it('puts the piles and the total in the accessible name', () => {
+    render(<TutorWhiteboard board={TOKENS} seq={1} />);
+    const board = screen.getByRole('img');
+    const name = board.getAttribute('aria-label') ?? '';
+    expect(name).toContain('Cuenta lo que hay en la mesa');
+    expect(name).toContain('MX$30');
+    expect(name).toContain('In total: MX$34');
+  });
+
+  it('renders the whole table immediately — the counting is the learner\'s work', () => {
+    // No reveal: pacing the count for them would take away the thing being
+    // practised. Every coin is present on the first frame.
+    render(<TutorWhiteboard board={TOKENS} seq={1} />);
+    expect(screen.getAllByText('MX$10')).toHaveLength(3);
+  });
+
+  it('draws every token the same size, whatever it is worth', () => {
+    // PEDAGOGICAL, not cosmetic. Three of the misconceptions this instrument
+    // closes are about believing what LOOKS bigger is worth more. Sizing a
+    // token by its denomination would make appearance and value agree on every
+    // board and teach the misconception instead of breaking it.
+    const { container } = render(<TutorWhiteboard board={TOKENS} seq={1} />);
+    const tokens = Array.from(container.querySelectorAll('span')).filter((el) =>
+      el.className.includes('rounded-full') && el.className.includes('border-2'),
+    );
+    expect(tokens).toHaveLength(7);
+    const sizes = new Set(tokens.map((el) => el.className.match(/h-\d+/)?.[0]));
+    expect(sizes.size).toBe(1);
+  });
+});

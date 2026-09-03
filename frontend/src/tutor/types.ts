@@ -255,6 +255,22 @@ export type TutorWhiteboardWire =
       values: number[];
       label: string;
       currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'tokens';
+      /** Piles of identical coins or notes. A pile is identified by its denomination, so it carries no label and adds no moderation surface. */
+      groups: { denomination: number; count: number }[];
+      /** SERVER-COMPUTED, one per group. */
+      subtotals: number[];
+      /**
+       * SERVER-COMPUTED. The sum of the table is the arithmetic the learner is
+       * doing, so the schema gives the model no field to assert it — the same
+       * reason `compare` has no model-settable `greater`.
+       */
+      total: number;
+      label: string;
+      /** Non-nullable alone among the kinds — a coin with no currency is not money. */
+      currency: 'MXN' | 'USD' | 'BRL';
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

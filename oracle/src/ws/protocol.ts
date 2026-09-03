@@ -8,6 +8,7 @@ import {
   type WhiteboardMark,
   type WhiteboardMarkedLine,
   type WhiteboardSequence,
+  type WhiteboardTokens,
 } from '../tutor/turnSchema.js';
 import type { WordTiming } from '../voice/provider.js';
 
@@ -151,7 +152,8 @@ export type WireWhiteboard =
   | (WhiteboardSequence & { values: number[] })
   | (WhiteboardCompare & { difference: number; greater: 'left' | 'right' | 'tie' })
   | (WhiteboardMarkedLine & { marks: Array<WhiteboardMark & { position: number }> })
-  | (WhiteboardCategories & { values: number[] });
+  | (WhiteboardCategories & { values: number[] })
+  | (WhiteboardTokens & { subtotals: number[]; total: number });
 
 /**
  * One closed step of a tray demonstration — mirrors `oracle/src/tutor/

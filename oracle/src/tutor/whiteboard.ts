@@ -4,6 +4,7 @@ import type {
   WhiteboardCompare,
   WhiteboardMarkedLine,
   WhiteboardSequence,
+  WhiteboardTokens,
 } from './turnSchema.js';
 
 /*
@@ -154,6 +155,81 @@ export function computeMarkedLine(
 }
 
 /**
+ * THE DENOMINATIONS THAT ACTUALLY EXIST, per currency.
+ *
+ * A `tokens` board draws money a learner can recognise from their own hand, so
+ * a denomination that does not exist is not a rounding error — it teaches
+ * something false about the real world. `WhiteboardTokenGroupSchema` can bound
+ * one number; only this table can say that 7 is not a coin in any of the three
+ * currencies this product ships (§1.14, "generated content must be verified for
+ * SUBJECT, not only for form").
+ *
+ * Expressed in each currency's MAJOR unit, sub-unit coins included, because a
+ * lesson about change needs the 50-centavo piece as much as the 10-peso one.
+ */
+const DENOMINATIONS: Readonly<Record<'MXN' | 'USD' | 'BRL', readonly number[]>> = {
+  MXN: [0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1_000],
+  USD: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100],
+  BRL: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100, 200],
+};
+
+/** No board may put more than this many objects on the table — past it, nobody counts, they estimate. */
+const MAX_TOKENS_ON_TABLE = 24;
+
+/** What a `tokens` board draws beyond the model's own piles — see `computeTokens`. */
+export interface TokensResult {
+  /** The value of each pile, in the model's own order. */
+  subtotals: number[];
+  /** The value of the whole table. THE MODEL HAS NO FIELD FOR THIS — see `WhiteboardTokensSchema`. */
+  total: number;
+}
+
+/** Money arithmetic in floating point: 0.1 × 3 is 0.30000000000000004, and a child would read that. */
+const money = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * Verifies a `tokens` board and computes what it adds up to.
+ *
+ * THIS IS THE ARITHMETIC THE LEARNER IS DOING, which is exactly why the schema
+ * gives the model no field to state it — the same rule that keeps `greater` off
+ * `WhiteboardCompareSchema`. A tutor that could assert the total of a pile could
+ * assert a wrong one over a correct picture, and a wrong picture of money is
+ * remembered longer than a wrong sentence.
+ *
+ * Three things no per-field bound can catch, all of them fail-open (null drops
+ * the whole board): a denomination that does not exist in this currency; more
+ * objects than anyone can count at a glance; and a table whose value runs past
+ * the ceiling every other kind already respects.
+ */
+export function computeTokens(board: Pick<WhiteboardTokens, 'groups' | 'currency'>): TokensResult | null {
+  const allowed = DENOMINATIONS[board.currency];
+  if (!allowed) return null;
+
+  let objects = 0;
+  let total = 0;
+  const subtotals: number[] = [];
+
+  for (const group of board.groups) {
+    if (!Number.isFinite(group.denomination) || !Number.isInteger(group.count)) return null;
+    // `.some` with an epsilon rather than `.includes`: the denominations above
+    // are decimals, and a model that emits 0.10 for 0.1 is right about the money.
+    if (!allowed.some((d) => Math.abs(d - group.denomination) <= ZERO_EPSILON)) return null;
+    if (group.count < 1) return null;
+
+    objects += group.count;
+    if (objects > MAX_TOKENS_ON_TABLE) return null;
+
+    const subtotal = money(group.denomination * group.count);
+    if (!Number.isFinite(subtotal)) return null;
+    subtotals.push(subtotal);
+    total = money(total + subtotal);
+  }
+
+  if (!Number.isFinite(total) || total <= 0 || total > MAX_VALUE) return null;
+  return { subtotals, total };
+}
+
+/**
  * True when a whiteboard's own numbers compute to something sane, dispatched
  * to the right function above for its `kind`. The single "is this board
  * valid at all" gate every kind must pass before it can reach a child's
@@ -172,6 +248,8 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return computeMarkedLine(board) !== null;
     case 'categories':
       return computeCategories(board) !== null;
+    case 'tokens':
+      return computeTokens(board) !== null;
   }
 }
 

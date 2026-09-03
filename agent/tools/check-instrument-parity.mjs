@@ -100,6 +100,18 @@ export const INSTRUMENTS = [
     },
   },
   {
+    kind: 'tokens',
+    model: ['kind', 'groups', 'label', 'currency'],
+    // The sum of a pile is the arithmetic the learner is doing, so the model
+    // gets no field for it — the same reason `compare` has no `greater`.
+    computed: ['subtotals', 'total'],
+    blocks: {
+      oracleSchema: 'WhiteboardTokensSchema',
+      coreBody: 'TokensWhiteboardBody',
+      coreRow: 'TokensBoardRowSchema',
+    },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -295,6 +307,7 @@ export function wireComputedKeys(source, kind) {
     compare: 'WhiteboardCompare',
     marked_line: 'WhiteboardMarkedLine',
     categories: 'WhiteboardCategories',
+    tokens: 'WhiteboardTokens',
   }[kind];
   if (!kindType) return null;
   const at = new RegExp(`\\(${kindType}\\s*&`).exec(region);

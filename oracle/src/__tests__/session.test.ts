@@ -722,6 +722,100 @@ describe('the closed turn schema', () => {
    * closed turn schema', ...)` as the sequence block above it, so it shares
    * that describe's `valid` base turn fixture rather than duplicating it.
    */
+  /*
+   * `tokens` — the first NON-CHART instrument (/TUTOR_INSTRUMENTS.md, Sprint 6):
+   * discrete denominated objects a learner counts, for the several remediation
+   * moves that ask for coins "on the table where they can be picked up" rather
+   * than a height. Same closed-vocabulary discipline as every kind above, plus
+   * one property none of them has: its own currency is NOT nullable, because a
+   * coin with no currency is not money and its denomination could not be
+   * verified against anything.
+   */
+  describe('the whiteboard — tokens kind (the first non-chart instrument)', () => {
+    const tokensBoard = {
+      kind: 'tokens' as const,
+      groups: [
+        { denomination: 10, count: 3 },
+        { denomination: 1, count: 4 },
+      ],
+      label: 'Cuenta lo que hay en la mesa',
+      currency: 'MXN' as const,
+    };
+
+    it('accepts a turn carrying a tokens whiteboard', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: tokensBoard }).success).toBe(true);
+    });
+
+    it('never both a tokens whiteboard and a segment request on the same turn', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          next: 'segment' as const,
+          segmentRequest: {
+            skillKey: 'financial-education/contar-monedas',
+            difficulty: 2,
+            framing: 'Practiquemos contar monedas.',
+            rationale: 'reinforce the counting just shown',
+          },
+          whiteboard: tokensBoard,
+        }).success,
+      ).toBe(false);
+    });
+
+    it('gives the model NO field for the total — asserting it is the learner\'s job, not the tutor\'s', () => {
+      // The same rule that keeps `greater` off a comparison: the sum of a pile
+      // is the arithmetic being taught, so it is computed server-side and the
+      // schema refuses a turn that tries to state it.
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...tokensBoard, total: 34 } }).success,
+      ).toBe(false);
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...tokensBoard, subtotals: [30, 4] } }).success,
+      ).toBe(false);
+    });
+
+    it('requires a currency — unlike every other kind, which may leave it null', () => {
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...tokensBoard, currency: null } }).success,
+      ).toBe(false);
+    });
+
+    it('refuses a fractional count — half a coin is not on any table', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...tokensBoard, groups: [{ denomination: 5, count: 2.5 }] },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('refuses more than 6 piles, and more than 12 of one coin', () => {
+      const seven = Array.from({ length: 7 }, () => ({ denomination: 1, count: 1 }));
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...tokensBoard, groups: seven } }).success).toBe(false);
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...tokensBoard, groups: [{ denomination: 1, count: 13 }] },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('drops a malformed tokens board without losing the turn — the fail-open posture', () => {
+      // A board the schema cannot accept must never take an otherwise-good turn
+      // down with it: `parseTurn` nulls the whiteboard and delivers the rest.
+      const raw = JSON.stringify({
+        ...valid,
+        whiteboard: { ...tokensBoard, groups: [{ denomination: 'ten', count: 3 }] },
+      });
+      const parsed = parseTurn(raw);
+      expect(parsed.ok).toBe(true);
+      if (parsed.ok) {
+        expect(parsed.turn.whiteboard).toBeNull();
+        expect(parsed.turn.say).toBe(valid.say);
+      }
+    });
+  });
+
   describe('the whiteboard — categories kind (V4 backlog slice)', () => {
     const categoriesBoard = {
       kind: 'categories' as const,

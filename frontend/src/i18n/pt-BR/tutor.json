@@ -401,6 +401,10 @@
     "updated": "O quadro foi atualizado.",
     "compare": {
       "difference": "Diferença: {{amount}}"
+    },
+    "tokens": {
+      "total": "No total: {{amount}}",
+      "each": "{{count}} × {{amount}}"
     }
   }
 }
