@@ -9,6 +9,7 @@ import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { micBlockedReason } from './mic';
+import { PlanNotebookPanel } from './PlanNotebookPanel';
 import { SessionHistory } from './SessionHistory';
 import { SpeechCaption } from './SpeechCaption';
 import { useStageDock, type OfferLayerProps } from './stage/StageShell';
@@ -298,6 +299,15 @@ export function OfferChips({
 
   const [chipsIn, setChipsIn] = useState(false);
   const [replaysOpen, setReplaysOpen] = useState(false);
+  /*
+   * Class V (migration 0069, /TUTOR_INSTRUMENTS.md §3.6): the learner's own
+   * plan, kept boards and last-session recap. A SECOND boolean rather than a
+   * shared "which panel" enum, so opening one closes the other (see the two
+   * chips' own onClick below) without this file's own delicate
+   * dock/z-index branches below — all keyed on `archive`'s bare truthiness —
+   * ever needing to learn about a third state.
+   */
+  const [plannerOpen, setPlannerOpen] = useState(false);
 
   useEffect(() => {
     /*
@@ -867,12 +877,37 @@ export function OfferChips({
         as="button"
         shape="chip"
         aria-expanded={replaysOpen}
-        onClick={() => setReplaysOpen((open) => !open)}
+        onClick={() => {
+          setReplaysOpen((open) => !open);
+          setPlannerOpen(false);
+        }}
         className="pointer-events-auto lf-settle-2"
       >
         <Icon name="history" />
         <span className="lf-action">
           {replaysOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
+        </span>
+      </HudPlate>
+
+      {/*
+       * Class V (migration 0069): the learner's own plan, kept boards and
+       * last-session recap — the same "point at the thing you mean, from a
+       * chip" shape `SessionHistory`'s own chip already is, sharing its
+       * ONE sheet slot below rather than opening a second one alongside it.
+       */}
+      <HudPlate
+        as="button"
+        shape="chip"
+        aria-expanded={plannerOpen}
+        onClick={() => {
+          setPlannerOpen((open) => !open);
+          setReplaysOpen(false);
+        }}
+        className="pointer-events-auto lf-settle-2"
+      >
+        <Icon name="savings" />
+        <span className="lf-action">
+          {plannerOpen ? t('tutor.introduce.hidePlanner') : t('tutor.introduce.planner')}
         </span>
       </HudPlate>
     </div>
@@ -898,19 +933,26 @@ export function OfferChips({
    * UPWARD from the bottom edge, so a learner with thirty conversations would
    * otherwise push the first row off the top of the screen.
    */
-  const archive = replaysOpen ? (
-    <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
-      {/*
-        The plate's own floor centres its content, which is right for a one-line
-        chip and wrong for a list. The list sets its own alignment rather than
-        the primitive growing a variant for it.
-      */}
-      <div className="flex w-full flex-col gap-3 text-left">
-        <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-        <SessionHistory token={token} onReplay={onReplay} />
-      </div>
-    </HudPlate>
-  ) : null;
+  const archive =
+    replaysOpen || plannerOpen ? (
+      <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
+        {/*
+          The plate's own floor centres its content, which is right for a one-line
+          chip and wrong for a list. The list sets its own alignment rather than
+          the primitive growing a variant for it.
+        */}
+        <div className="flex w-full flex-col gap-3 text-left">
+          {replaysOpen ? (
+            <>
+              <span className="lf-headline text-content">{t('tutor.history.title')}</span>
+              <SessionHistory token={token} onReplay={onReplay} />
+            </>
+          ) : (
+            <PlanNotebookPanel token={token} />
+          )}
+        </div>
+      </HudPlate>
+    ) : null;
 
   /*
    * The dock is absent on the scene lab and in a unit test, and a control that

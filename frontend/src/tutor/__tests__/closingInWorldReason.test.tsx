@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ClosingInWorld } from '../ClosingInWorld';
 
@@ -45,5 +45,47 @@ describe('ClosingInWorld says something different for a safety stop', () => {
     render(<ClosingInWorld onStartAnother={NOOP} token="tok" onReplay={NOOP} closedReason="hard_budget" />);
 
     expect(screen.getByText('See you soon!')).toBeInTheDocument();
+  });
+});
+
+/*
+ * Class V (migration 0069): the goodbye's second archive slot, mirroring
+ * `OfferChips.tsx`'s own "Past conversations" / "My progress" pair and the
+ * SAME mutual-exclusion wiring — unexercised here until now.
+ */
+describe('ClosingInWorld — the "My progress" chip added alongside "Past conversations"', () => {
+  it('opens the plan/notebook panel (not the history list) and closes the other toggle', () => {
+    render(<ClosingInWorld onStartAnother={NOOP} token="tok" onReplay={NOOP} closedReason="completed" />);
+
+    const history = screen.getByRole('button', { name: 'Past conversations' });
+    const planner = screen.getByRole('button', { name: 'My progress' });
+    expect(planner).toHaveAttribute('aria-expanded', 'false');
+
+    act(() => {
+      history.click();
+    });
+    expect(history).toHaveAttribute('aria-expanded', 'true');
+
+    act(() => {
+      planner.click();
+    });
+    expect(planner).toHaveAttribute('aria-expanded', 'true');
+    expect(history).toHaveAttribute('aria-expanded', 'false');
+    // The history sheet's own static heading is gone: the OTHER branch of
+    // the `historyOpen ? ... : <PlanNotebookPanel />` ternary rendered.
+    expect(screen.queryByText('Your past conversations')).toBeNull();
+
+    act(() => {
+      history.click();
+    });
+    expect(history).toHaveAttribute('aria-expanded', 'true');
+    expect(planner).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('offers neither toggle when there is no token — the archive is not offered broken', () => {
+    render(<ClosingInWorld onStartAnother={NOOP} token={null} onReplay={NOOP} closedReason="completed" />);
+
+    expect(screen.queryByRole('button', { name: 'Past conversations' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'My progress' })).toBeNull();
   });
 });

@@ -9,6 +9,50 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
+## Class V closed: `recap`, and the learner's own view of what the Tutor already showed the guardian (2026-09-03)
+
+**The sprint plan two entries below this one committed to five classes of new
+Tutor instrument; by this entry, Class V (`/TUTOR_INSTRUMENTS.md` §3.6) is the
+first one fully closed.** `plan` and `notebook` (migration `0069`) shipped
+earlier the same day — a savings plan the model saves by drawing it, and a
+"keep this" button the learner presses themselves, both outliving the
+90-day transcript purge. This entry is the rest: `recap` (a card of the most
+recent session's own best board, computed client-side from data the session
+API already returns — no new endpoint) and, more consequentially, a view of
+all three that the LEARNER can open themselves, not only their guardian.
+
+**The guardian-only component was deleted, not duplicated.**
+`TutorPlanNotebookPanel.tsx` became `frontend/src/tutor/PlanNotebookPanel.tsx`,
+switched between the guardian's endpoints and the learner's own by an
+optional `kidUserId` prop, and between the guardian route's own card chrome
+and the Tutor's own HUD sheet chrome by a `variant` prop — one surface, two
+callers, the same shape `TutorWhiteboard` itself already is between a live
+conversation and a replay. The learner reaches it from a new "My progress"
+chip riding the EXISTING "Past conversations" chip's one sheet slot, on
+both surfaces that already offer that history: the introducing phase
+(`OfferChips.tsx`) and the goodbye (`ClosingInWorld.tsx`, added second, for
+parity — and arguably the better-fitting home, since it renders right after
+the session `recap` describes just ended).
+
+**Live verification of the new panel found one real defect and one
+pre-existing one, and treated them differently on purpose.** The real one —
+its own wrapping element was a component defined inside the render body, a
+fresh identity every render that remounted (and replayed the reveal sound
+of) every whiteboard on screen whenever an unrelated parent re-rendered —
+was fixed in the same commit, and the fix was proven by watching a
+regression test fail against the reintroduced bug before watching it pass
+against the restored fix. The pre-existing one — the introducing phase's
+greeting card overlapping the archive sheet, caught by the Tutor Lab's own
+HUD overlap instrument and reproducing identically against the untouched
+history chip — was left alone and flagged as a separate task instead,
+because it predates this work and touches `OfferChips.tsx`'s own
+historically fragile positioning logic, which does not get an opportunistic
+fix riding an unrelated feature commit.
+
+Full account, evidence and the exact gates run: `/TUTOR_INSTRUMENTS.md`
+§0.0's Class V row and its decision-log entries; the behavioral/architecture
+account: `/ORACLE.md` §20.11.
+
 ## A clipped label, and then the whole question of what the Tutor can show (2026-09-02)
 
 **Two pieces of work, and the second came out of the first.** The session opened

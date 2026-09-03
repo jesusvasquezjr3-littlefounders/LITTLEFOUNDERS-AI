@@ -527,6 +527,79 @@ describe('the arrival, once the island is on screen', () => {
   });
 
   /*
+   * Class V (migration 0069): a second sheet slot riding the SAME `archive`
+   * variable the regression above already covers for the history chip — the
+   * same "toggled with no stage dock present" combination, and the same risk
+   * the round-27 fix closed: a control that flips its own `aria-expanded`
+   * and label while the panel it names never mounts anywhere on screen.
+   * `PlanNotebookPanel` itself is async and has no static always-present
+   * heading (unlike `SessionHistory`'s), so what is checkable synchronously
+   * here is the WIRING — the toggle state, and that the history list's own
+   * always-present heading is absent, proving the OTHER branch of the
+   * `replaysOpen ? ... : <PlanNotebookPanel />` ternary is what rendered —
+   * not `PlanNotebookPanel`'s own content, which is covered directly in
+   * `PlanNotebookPanel.test.tsx`.
+   */
+  it('still shows the plan/notebook panel (not the history list) when toggled, with no stage dock present', () => {
+    vi.useFakeTimers();
+    const { getByRole, queryByText } = renderChips({}, { ready: true });
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const toggle = getByRole('button', { name: 'My progress' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    act(() => {
+      toggle.click();
+    });
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(toggle).toHaveTextContent('Hide');
+    expect(queryByText('Your past conversations')).toBeNull();
+  });
+
+  /*
+   * `replaysOpen` and `plannerOpen` are two independent booleans sharing ONE
+   * sheet slot (`archive`'s own comment: "One archive, two phases, one
+   * arrangement" — one archive, two CONTENTS here). Nothing stops both from
+   * being true at once except each toggle's own handler explicitly clearing
+   * the other — unexercised until now, and exactly the kind of cross-wiring
+   * a future edit to either handler could silently drop.
+   */
+  it('opening one of "Past conversations" / "My progress" closes the other', () => {
+    vi.useFakeTimers();
+    const { getByRole } = renderChips({}, { ready: true });
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    // Captured once: React updates these same nodes' text/attributes in
+    // place rather than remounting them, so the references stay valid even
+    // after their accessible name changes from "Past conversations"/"My
+    // progress" to the shared "Hide" label.
+    const history = getByRole('button', { name: 'Past conversations' });
+    const planner = getByRole('button', { name: 'My progress' });
+
+    act(() => {
+      history.click();
+    });
+    expect(history).toHaveAttribute('aria-expanded', 'true');
+
+    act(() => {
+      planner.click();
+    });
+    expect(planner).toHaveAttribute('aria-expanded', 'true');
+    expect(history).toHaveAttribute('aria-expanded', 'false');
+
+    act(() => {
+      planner.click();
+    });
+    expect(planner).toHaveAttribute('aria-expanded', 'false');
+    expect(history).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  /*
    * A live browser test measured the openings (`chips`) and this "My
    * island" / "Past conversations" pair painting at IDENTICAL y-coordinates,
    * text interleaved and unreadable, right after a failed session-start

@@ -65,7 +65,9 @@
     "offersLabel": "Coisas que podemos fazer",
     "moreLabel": "Outras coisas que você pode fazer",
     "replays": "Conversas anteriores",
-    "hideReplays": "Esconder"
+    "hideReplays": "Esconder",
+    "planner": "Meu progresso",
+    "hidePlanner": "Esconder"
   },
   "personalize": {
     "whoTitle": "Seu tutor",
@@ -354,13 +356,6 @@
       "allDone": "Tudo em dia.",
       "loadFailed": "Não conseguimos carregar o que está esperando sua revisão."
     },
-    "planNotebook": {
-      "title": "Plano de poupança e quadros guardados",
-      "loadFailed": "Não conseguimos carregar o plano ou os quadros guardados.",
-      "planUpdatedOn": "Atualizado {{date}}",
-      "notebookLabel_one": "{{count}} quadro guardado",
-      "notebookLabel_other": "{{count}} quadros guardados"
-    },
     "retentionNote": "As conversas ficam guardadas por 90 dias e depois são apagadas automaticamente.",
     "loadMore": "Ver conversas mais antigas",
     "loadingMore": "Carregando…",
@@ -463,5 +458,13 @@
     "keeping": "Guardando…",
     "kept": "Guardado",
     "keepFailed": "Não foi possível guardar — tente de novo"
+  },
+  "planNotebook": {
+    "title": "Plano de poupança e quadros guardados",
+    "loadFailed": "Não conseguimos carregar o plano ou os quadros guardados.",
+    "planUpdatedOn": "Atualizado {{date}}",
+    "notebookLabel_one": "{{count}} quadro guardado",
+    "notebookLabel_other": "{{count}} quadros guardados",
+    "recapLabel": "Da última vez: {{minutes}} min · {{xp}} XP"
   }
 }

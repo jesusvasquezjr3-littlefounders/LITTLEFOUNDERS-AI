@@ -65,7 +65,9 @@
     "offersLabel": "Cosas que podemos hacer",
     "moreLabel": "Otras cosas que puedes hacer",
     "replays": "Conversaciones anteriores",
-    "hideReplays": "Ocultar"
+    "hideReplays": "Ocultar",
+    "planner": "Mi progreso",
+    "hidePlanner": "Ocultar"
   },
   "personalize": {
     "whoTitle": "Tu tutor",
@@ -354,13 +356,6 @@
       "allDone": "Todo al día.",
       "loadFailed": "No pudimos cargar lo que está esperando tu revisión."
     },
-    "planNotebook": {
-      "title": "Plan de ahorro y pizarrones guardados",
-      "loadFailed": "No pudimos cargar el plan ni los pizarrones guardados.",
-      "planUpdatedOn": "Actualizado {{date}}",
-      "notebookLabel_one": "{{count}} pizarrón guardado",
-      "notebookLabel_other": "{{count}} pizarrones guardados"
-    },
     "retentionNote": "Las conversaciones se guardan 90 días y después se borran solas.",
     "loadMore": "Ver conversaciones más antiguas",
     "loadingMore": "Cargando…",
@@ -463,5 +458,13 @@
     "keeping": "Guardando…",
     "kept": "Guardado",
     "keepFailed": "No se pudo guardar — intenta de nuevo"
+  },
+  "planNotebook": {
+    "title": "Plan de ahorro y pizarrones guardados",
+    "loadFailed": "No pudimos cargar el plan ni los pizarrones guardados.",
+    "planUpdatedOn": "Actualizado {{date}}",
+    "notebookLabel_one": "{{count}} pizarrón guardado",
+    "notebookLabel_other": "{{count}} pizarrones guardados",
+    "recapLabel": "La última vez: {{minutes}} min · {{xp}} XP"
   }
 }

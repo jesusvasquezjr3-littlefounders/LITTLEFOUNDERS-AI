@@ -4695,7 +4695,7 @@ will not call the live capability verified on the strength of four calls that
 did not produce it, the same standard already applied to `move` and `fill`.
 /TUTOR_INSTRUMENTS.md §0.0's Class II / S10 `whatif` row has the full count.
 
-### 20.11 `plan` and `notebook` — the first state a learner keeps ON PURPOSE (2026-09-03, SHIPPED)
+### 20.11 `plan`, `notebook` and `recap` — the first state a learner keeps ON PURPOSE (2026-09-03, SHIPPED)
 
 **Class V (TUTOR_INSTRUMENTS.md §3.6, migration 0069) is a different kind of
 feature from everything in §20.5-§20.10: those sections are all about what
@@ -4765,30 +4765,74 @@ either cascade-delete the very thing "collected" is supposed to mean, or
 require the retention sweep to know about tables it was never designed to
 reach.
 
-**Guardian visibility is `TutorPlanNotebookPanel.tsx`, reusing
-`<TutorWhiteboard>` unmodified** — a plan or a kept board renders in
-`KidTutorPage.tsx` exactly as it looked the moment it was drawn, the same
-component the live conversation and session replay already use. It is
-deliberately ABSENT, not an empty state, when a family has touched neither
-artifact yet, unlike the always-relevant memory-notes inbox beside it
-(§20.4's approval-gate panel): most families have not used an opt-in Class V
-artifact yet, and an empty "no plan, nothing kept" card on every guardian
-page, for every family, forever, would be exactly the accumulated clutter
-this product avoids elsewhere.
+**Visibility is ONE shared component, `frontend/src/tutor/PlanNotebookPanel.tsx`, reusing
+`<TutorWhiteboard>` unmodified** — a plan or a kept board renders exactly as
+it looked the moment it was drawn, the same component the live conversation
+and session replay already use. `TutorPlanNotebookPanel.tsx` was the
+original, guardian-only name; it was deleted and its logic generalized the
+same session `recap` and the learner's own view shipped (below), rather than
+kept as a second, near-duplicate component. It is deliberately ABSENT, not
+an empty state, when a family has touched neither artifact yet, unlike the
+always-relevant memory-notes inbox beside it (§20.4's approval-gate panel):
+most families have not used an opt-in Class V artifact yet, and an empty "no
+plan, nothing kept" card on every visit, for every family, forever, would be
+exactly the accumulated clutter this product avoids elsewhere.
 
-**`recap` — the third of the three artifacts this sprint researched — needed
-no new table, and that is the research finding, not a shortcut taken.**
-`GET /sessions/:id` already returns full `turns` (each one's own whiteboard
-included) and `session.summary`; "the day's best board, for learner and
-parent" is entirely computable client-side from data already being fetched
-for the existing session-detail view. Left unbuilt this pass — the display
-pattern it would need is already proven by `plan`/`notebook`'s own panel —
-recorded here so a future pass does not re-research the same question.
+An optional `kidUserId` prop switches the data source, not the rendering:
+present, it is `KidTutorPage.tsx` calling the guardian's own
+`getKidPlan`/`getKidNotebook`; absent, it is the learner's OWN view of
+themselves, reached from a new "My progress" chip on the stage itself
+(`OfferChips.tsx`, the introducing phase; `ClosingInWorld.tsx`, the closing
+phase — added second, for parity, since the goodbye renders right after the
+session `recap` summarizes just ended, arguably the more natural home for it
+than the introduction). Only the learner path computes `recap` — a guardian
+already has the full transcript list; a per-child recap card would be a
+second, redundant summary of the same thing. A `variant` prop (`'card'`
+wraps the app's own `Card`, for the guardian route that stands beside plain
+cards; `'bare'`, the default, renders content only, for the Tutor's own
+`HudPlate` sheet) keeps the SAME component from ever supplying its own outer
+chrome when its caller already provides one — the "no glass on glass" rule
+`/DESIGN.md`'s Lumen material states outright, and the reason
+`SessionHistory.tsx`'s own header already gives for staying bare in that
+same sheet slot.
+
+**`recap` needed no new table, and that was the research finding, not a
+shortcut taken — and it shipped, the same session, exactly as the research
+predicted.** `GET /sessions/:id` already returns full `turns` (each one's
+own whiteboard included) and `session.summary`; "the day's best board, for
+learner and parent" is entirely computable client-side: the newest session
+with a non-null `endedAt`, then that session's transcript, then a
+reversed-array `.find()` for the last turn carrying a non-null whiteboard —
+not necessarily the session's LAST turn, since a closing turn rarely carries
+one of its own. No new endpoint, exactly as the original research found.
+
+Live verification (both chips, both dock mountings, both breakpoints) found
+and fixed one real defect the panel introduced: its wrapping element was
+defined AS a component inside `PlanNotebookPanel`'s own render body — a
+fresh function identity on every render, which React treats as a different
+component type at that position and therefore unmounts and remounts
+everything below it, including every `<TutorWhiteboard>`'s mount-time
+reveal sound and bar-growth animation. `OfferChips.tsx` re-renders often for
+reasons that have nothing to do with this panel's own data (mic state, live
+captions, chip animations), so the un-hoisted version would have replayed
+that chime on every board on screen, repeatedly, for as long as the sheet
+stayed open. Hoisted to module scope; proven, not merely asserted, by
+temporarily reintroducing the exact prior shape and watching a new
+regression test fail on DOM-node identity before restoring the fix.
+
+The same pass also surfaced — and deliberately did NOT fix, flagging it as a
+separate task instead — one pre-existing defect unrelated to this feature:
+the introducing phase's greeting/opening-picker card and the archive sheet
+(either chip's content) occupy overlapping screen space when both are open
+at once, caught live by the Tutor Lab's own instrumented HUD overlap
+detector and reproducing identically against the original, long-shipped
+"Past conversations" chip — proof it predates this work and is about the
+archive sheet's POSITION, not either panel's content.
 
 Full plumbing, the concurrency-shape reasoning, the 156-test ripple a
 REQUIRED (not optional) turn field caused and how it was traced to five
-shared fixtures rather than fixed 156 times over, and the live-verification
-account (the `computer` tool's own click-coordinate resolution proved
-unreliable this session; confirmed by `elementFromPoint` and a directly
-dispatched real event sequence that the component was never the problem):
-/TUTOR_INSTRUMENTS.md §0.0's Class V row and its own decision-log entry.
+shared fixtures rather than fixed 156 times over, and both live-verification
+accounts (the `computer` tool's own click-coordinate resolution proved
+unreliable BOTH times this feature was live-verified; confirmed by
+`elementFromPoint` and a directly dispatched real event sequence each time):
+/TUTOR_INSTRUMENTS.md §0.0's Class V row and its decision-log entries.

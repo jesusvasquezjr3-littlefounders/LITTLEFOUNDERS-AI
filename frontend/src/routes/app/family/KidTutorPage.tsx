@@ -8,10 +8,10 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
 import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
 import { DemoStepsSummary } from '@/tutor/replay/DemoStepsSummary';
+import { PlanNotebookPanel } from '@/tutor/PlanNotebookPanel';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
 import { MemoryNotesPanel } from './MemoryNotesPanel';
-import { TutorPlanNotebookPanel } from './TutorPlanNotebookPanel';
 
 /*
  * `/family/:kidId/tutor` — a child's tutor conversations, through the parent's
@@ -336,8 +336,11 @@ export function KidTutorPage() {
 
       {/* Class V (migration 0069, /TUTOR_INSTRUMENTS.md §3.6): the savings
           plan and any boards the learner kept. Renders nothing at all when
-          there is neither — see that component's own header. */}
-      <TutorPlanNotebookPanel kidUserId={kidId} token={token} />
+          there is neither — see that component's own header. No `recap`
+          section here: this component only computes it for the CALLER's
+          own sessions (no `kidUserId`), the same reasoning `getKidTutorHistory`
+          above already has its own full guardian-facing history for. */}
+      <PlanNotebookPanel kidUserId={kidId} token={token} variant="card" />
 
       {sessions.length === 0 ? (
         <Card className="p-6 text-center">

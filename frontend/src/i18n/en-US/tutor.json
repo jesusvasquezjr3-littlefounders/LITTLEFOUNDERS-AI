@@ -65,7 +65,9 @@
     "offersLabel": "Things we could do",
     "moreLabel": "Other things you can do",
     "replays": "Past conversations",
-    "hideReplays": "Hide"
+    "hideReplays": "Hide",
+    "planner": "My progress",
+    "hidePlanner": "Hide"
   },
   "personalize": {
     "whoTitle": "Your tutor",
@@ -354,13 +356,6 @@
       "allDone": "All caught up.",
       "loadFailed": "We couldn’t load what is waiting for your review."
     },
-    "planNotebook": {
-      "title": "Savings plan & kept boards",
-      "loadFailed": "We couldn’t load the plan or kept boards.",
-      "planUpdatedOn": "Updated {{date}}",
-      "notebookLabel_one": "{{count}} kept board",
-      "notebookLabel_other": "{{count}} kept boards"
-    },
     "retentionNote": "Conversations are kept for 90 days and then deleted automatically.",
     "loadMore": "Load older conversations",
     "loadingMore": "Loading…",
@@ -463,5 +458,13 @@
     "keeping": "Keeping…",
     "kept": "Kept",
     "keepFailed": "Couldn't keep it — try again"
+  },
+  "planNotebook": {
+    "title": "Savings plan & kept boards",
+    "loadFailed": "We couldn’t load the plan or kept boards.",
+    "planUpdatedOn": "Updated {{date}}",
+    "notebookLabel_one": "{{count}} kept board",
+    "notebookLabel_other": "{{count}} kept boards",
+    "recapLabel": "Last time: {{minutes}} min · {{xp}} XP"
   }
 }

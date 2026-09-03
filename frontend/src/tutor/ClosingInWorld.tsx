@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HudPlate } from '@/tutor/hud/HudPlate';
+import { PlanNotebookPanel } from './PlanNotebookPanel';
 import { SessionHistory } from './SessionHistory';
 import { useStageDock } from './stage/StageShell';
 import type { SessionSummary } from './types';
@@ -67,6 +68,16 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
   const { t } = useTranslation();
   const dock = useStageDock();
   const [historyOpen, setHistoryOpen] = useState(false);
+  /*
+   * Class V (migration 0069), mirroring `OfferChips.tsx`'s own pair: two
+   * independent booleans sharing ONE sheet slot below rather than a second
+   * slot alongside it — the same reasoning that put the goodbye in the
+   * dock's `above` slot in the first place (see this file's own header).
+   * The goodbye is arguably the MORE natural home for a recap than the
+   * introduction is: it renders right after the session that recap
+   * summarizes just ended, so "here's what you just did" is never stale.
+   */
+  const [plannerOpen, setPlannerOpen] = useState(false);
   const isSafetyStop = closedReason === 'safety_stop';
 
   const goodbye = (
@@ -121,11 +132,31 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
             as="button"
             shape="chip"
             aria-expanded={historyOpen}
-            onClick={() => setHistoryOpen((open) => !open)}
+            onClick={() => {
+              setHistoryOpen((open) => !open);
+              setPlannerOpen(false);
+            }}
             className="pointer-events-auto lf-settle-2"
           >
             <span className="lf-action">
               {historyOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
+            </span>
+          </HudPlate>
+        )}
+
+        {token && (
+          <HudPlate
+            as="button"
+            shape="chip"
+            aria-expanded={plannerOpen}
+            onClick={() => {
+              setPlannerOpen((open) => !open);
+              setHistoryOpen(false);
+            }}
+            className="pointer-events-auto lf-settle-2"
+          >
+            <span className="lf-action">
+              {plannerOpen ? t('tutor.introduce.hidePlanner') : t('tutor.introduce.planner')}
             </span>
           </HudPlate>
         )}
@@ -142,11 +173,17 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
         an archive with thirty conversations in it would otherwise push its own
         first row off the top of the screen.
       */}
-      {historyOpen && token && (
+      {(historyOpen || plannerOpen) && token && (
         <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
           <div className="flex w-full flex-col gap-3 text-left">
-            <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-            <SessionHistory token={token} onReplay={onReplay} />
+            {historyOpen ? (
+              <>
+                <span className="lf-headline text-content">{t('tutor.history.title')}</span>
+                <SessionHistory token={token} onReplay={onReplay} />
+              </>
+            ) : (
+              <PlanNotebookPanel token={token} />
+            )}
           </div>
         </HudPlate>
       )}
@@ -154,7 +191,7 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
   );
 
   /*
-   * `pointer-events-auto` ON ALL THREE CONTROLS ABOVE, ADDED ALONGSIDE
+   * `pointer-events-auto` ON EVERY CONTROL ABOVE, ADDED ALONGSIDE
    * `StageShell.tsx`'s dock switching from `-auto` to `-none` on its own
    * container. This file had none of its own anywhere — every control here
    * relied ENTIRELY on inheriting the dock's blanket `pointer-events-auto`,
