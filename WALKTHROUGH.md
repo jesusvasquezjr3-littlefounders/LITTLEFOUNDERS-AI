@@ -9,7 +9,90 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## Tutor V4 — the bicameral pedagogical brain, and the live-test-driven hardening run in progress (2026-08-29 → present)
+## The engineering backlog closed, and then a live session found seven more (2026-09-01 → 2026-09-02)
+
+**Where this left the product, stated before the detail:** the acceptance
+checklist in `/ORACLE.md` §16 — the authoritative "before any minor uses this"
+list — stands at **27 of 29**. The two that remain are the voice provider's
+data-processing agreement and counsel's consent wording, both OWNER actions,
+and together they are why `TUTOR_VOICE_FOR_MINORS` is still false: **a child
+has the whole Tutor today except the ability to speak to it.** No engineering
+item blocks that. This is the first time that sentence has been true.
+
+**Two owner rules were added to `/AGENTS.md` §0 and both were earned the same
+day.** Step 0 — measure the machine before planning the work — exists because
+this machine is an M2 with 8 GB of RAM, and a session running six parallel
+subagents beside headless Chrome and Vite drove it to 1.4M pageouts and a load
+average of 16.9 on 8 cores. The visible cost was a test suite that "went
+flaky", investigated as a product defect, that was the machine swapping. The
+rule then validated itself hours later: two frontend gates chained in one
+command failed with a port-contention signature on a free port; run one at a
+time on a quiet machine, both passed. Step 9 — commit as you go, push once at
+the end — because every push to `main` fans out across eight services plus CD.
+
+**The backlog closed first** (`60962e4f`, 81 files): cross-replica session
+parking (the last N>1 blocker), the parental approval gate on learner-memory
+writes (the one item the docs marked BLOCKING before families), mastery
+reconsideration, the a11y gate extended from 2 stage phases to all 8, drift
+detectors for the three whiteboard kinds that had none, misconception coverage
+from 1 of 31 to 31 of 31 with CI now failing on a gap, and the staff usage
+exemption. Deployed and verified: migrations 0065–0068 applied, oracle healthy,
+a real guest smoke test.
+
+**Then the live session the owner had been asking for since 2026-08-29 finally
+happened** — a low-retention child persona, in Spanish, against real services
+and the real model. It produced two deliverables kept deliberately separate: an
+engineering + UX report (artifact and PDF, 22 pages, 16 screenshots of the
+product running) and `TUTOR_QA_2026-09-02.md`, seven defects. All seven are
+fixed.
+
+**What the seven are worth remembering for is that the diagnosis was wrong
+about the MECHANISM in four of them, while naming the right place:**
+
+- **D2** was neither "the half detent working as designed" nor a regression of
+  Round 137's floor. The file already knew: `peekOpensTo` carries a comment
+  saying half is the wrong detent for an exercise — and the path that ignored
+  it was the one the child does not control, the activity the tutor ANNOUNCES.
+- **D3** was not a missing safety branch. `ClosingInWorld` has had one since
+  round 33, with calmer copy and its own passing test, and it was never
+  reached: `finish()` sends the `closed` frame then immediately closes the
+  socket, while the closing phase triggers on `closedReason !== null` **or**
+  `connection === 'closed'`. When the close won, a child who had just
+  disclosed self-harm got "¡Nos vemos pronto! Guardada." **A branch that is
+  correct, tested, and never reached is indistinguishable from one that does
+  not exist** — and every unit test agreed it worked, because each supplied
+  the input the branch needed.
+- **D4** was not a short threshold. Word overlap between the two repeated
+  turns measured 1.0; an EARLIER gate discarded the pair because the numbers
+  differed. And the template's source was not the model — a skill file handed
+  it those Spanish sentences literally, on every consecutive WORKED turn.
+- **D7**, found while verifying the other six, was not a choice between
+  delivering a repeat and delivering an apology. **The repair had never run:**
+  a turn gets two model calls, and the repair's call came back one of the
+  provider's billed whitespace completions, so the budget was spent on the
+  provider declining to answer. `model/provider.ts` already stated the rule
+  the orchestrator was not applying — "a billable empty completion is a
+  failure, not an answer".
+
+**Two things about that run are worth more than the fixes.** First, **four of
+the reported defects were the instrumentation, not the product** — a held port,
+a key named `Return` instead of `Enter`, a locale set by writing localStorage
+directly instead of through the app's own switcher (which persists to
+`profiles.locale`, correctly), and screenshots composited at the wrong size.
+They are listed in the QA file so nobody re-investigates them. Second, **an
+existing test caught each of the two times the D7 fix was too broad** — first
+letting a dead provider be retried to the ceiling, doubling cost across an
+outage; then buying an extra completion for a case whose fallback was already
+good. Review did not catch either.
+
+**The honest read on completion:** one session, one persona, one language,
+typed only, found seven defects, three of them high. That rate does not say
+finished; it says a second session would find more. Still unmeasured: voice
+INPUT (the microphone is blocked in the test browser), a real mid-range Android,
+and two replicas at once — the cross-replica parking has 31 bench tests and
+zero live runs, and `/ORACLE.md` §16 now asks for a smoke test before scaling.
+
+## Tutor V4 — the bicameral pedagogical brain, and the live-test-driven hardening run (2026-08-29 → 2026-09-01)
 
 **Architecture.** `30d93a88` recorded the v4 decision: a bicameral split
 between a fast conversational voice and a slower pedagogical brain that
