@@ -186,6 +186,7 @@ function cleanTurn(): Record<string, unknown> {
     next: 'ask',
     segmentRequest: null,
     offerAdaptation: null,
+    savePlan: false,
   };
 }
 

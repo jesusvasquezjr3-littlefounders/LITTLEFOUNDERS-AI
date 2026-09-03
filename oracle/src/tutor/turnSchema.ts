@@ -1586,6 +1586,17 @@ export const TutorTurnSchema = z
      * disconnected-surfaces bug this exists to close.
      */
     whiteboard: WhiteboardSchema.nullable().optional(),
+    /**
+     * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): "persist the
+     * board this turn just drew as the learner's ongoing savings plan."
+     * Server-computed nothing new — Core copies `whiteboard` verbatim into
+     * `tutor_plans` (a plain overwrite, see that migration's own comment on
+     * why this is safe without compare-and-swap). Meaningless without a
+     * `whiteboard` on the SAME turn, which the refine below enforces —
+     * there is nothing here for the model to author beyond the boundary
+     * itself.
+     */
+    savePlan: z.boolean(),
   })
   .strict()
   .refine((turn) => turn.next !== 'segment' || turn.segmentRequest != null, {
@@ -1599,6 +1610,10 @@ export const TutorTurnSchema = z
   .refine((turn) => turn.whiteboard == null || turn.segmentRequest == null, {
     message: 'whiteboard and segmentRequest may not both be set on the same turn',
     path: ['whiteboard'],
+  })
+  .refine((turn) => !turn.savePlan || turn.whiteboard != null, {
+    message: 'savePlan requires a whiteboard on the SAME turn — nothing to save otherwise',
+    path: ['savePlan'],
   });
 
 export type TutorTurn = z.infer<typeof TutorTurnSchema>;

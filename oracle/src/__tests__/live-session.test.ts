@@ -325,6 +325,7 @@ function startFakeModel(): Promise<Server> {
               ? { skillKey: 'money.saving', difficulty: 2, framing: 'Prueba esto.', rationale: 'practice' }
               : null,
             offerAdaptation: null,
+            savePlan: false,
             whiteboard: wantsBoard
               ? {
                   kind: 'sequence',

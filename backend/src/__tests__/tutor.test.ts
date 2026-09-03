@@ -109,6 +109,16 @@ interface StubOpts {
   decisionOutcome?: unknown;
   /** `/learner_memory` rows, for the surfaces that read the store back. */
   learnerMemory?: unknown[];
+  /** `tutor_turns` rows — absent means "no transcript", matching every existing test's implicit assumption. */
+  turns?: unknown[];
+  /** Class V (migration 0069) — `tutor_plans` rows (at most one, keyed by user). */
+  tutorPlan?: unknown[];
+  /** Overrides whether `/rpc/write_tutor_plan` reports success; defaults to landing. */
+  writePlanFails?: boolean;
+  /** Class V (migration 0069) — `tutor_notebook_entries` rows. */
+  notebookEntries?: unknown[];
+  /** Overrides whether a POST to `tutor_notebook_entries` reports success; defaults to landing. */
+  keepBoardFails?: boolean;
   /** Migration 0065 — a flag raised during placement, before any session existed. */
   placementSafetyFlags?: unknown[];
   preferences?: unknown[];
@@ -380,8 +390,26 @@ function stub(opts: StubOpts = {}) {
         const requested = JSON.parse(String(init?.body ?? '{}')).p_requested as number;
         return Promise.resolve(jsonResponse(200, opts.awardedXp ?? requested));
       }
-      if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, opts.turns ?? []));
       if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, []));
+      // Class V (migration 0069). write_tutor_plan RETURNS void — PostgREST
+      // answers a genuine call with an EMPTY 200 body, not a JSON `null`
+      // literal, and `rest()`'s own "empty body on 2xx = success" branch is
+      // what `writeTutorPlan`'s `res !== null` check relies on; a mock
+      // returning `jsonResponse(200, null)` would parse to JS null and read
+      // as a FAILURE that never happens against the real function.
+      if (url.includes('/rpc/write_tutor_plan')) {
+        return Promise.resolve(new Response(null, { status: opts.writePlanFails ? 500 : 200 }));
+      }
+      if (url.includes('/rest/v1/tutor_plans')) {
+        return Promise.resolve(jsonResponse(200, opts.tutorPlan ?? []));
+      }
+      if (url.includes('/rest/v1/tutor_notebook_entries')) {
+        if (method === 'POST') {
+          return Promise.resolve(opts.keepBoardFails ? new Response(null, { status: 500 }) : new Response(null, { status: 201 }));
+        }
+        return Promise.resolve(jsonResponse(200, opts.notebookEntries ?? []));
+      }
       // Migration 0065 (/ORACLE.md §4.1b) — a SECOND, separate flags table,
       // for a flag raised during placement before any `tutor_sessions` row
       // existed for the branch above to name.
@@ -2770,6 +2798,255 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
       expect(response.status).toBe(400);
       expect(response.body.error.code).toBe('VALIDATION_ERROR');
     });
+  });
+});
+
+/*
+ * Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6): the first
+ * state a learner keeps on purpose. `plan` is a whiteboard snapshot Oracle
+ * saves via `POST /turns`'s own `savePlan` flag; `notebook` is a board the
+ * LEARNER explicitly keeps, via its own dedicated POST.
+ */
+const PLAN_WHITEBOARD = {
+  kind: 'sequence',
+  start: 10,
+  steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }],
+  unit: 'week',
+  values: [10, 15, 20],
+  label: 'Ahorra para los audífonos',
+  currency: 'MXN',
+};
+
+const PLAN_ROW = {
+  user_id: KID,
+  content: PLAN_WHITEBOARD,
+  session_id: SESSION,
+  updated_at: '2026-09-03T10:00:00Z',
+};
+
+const guardianOfKidClassV = [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }];
+
+const KEPT_BOARD_ROW = {
+  id: 'notebook-1',
+  user_id: KID,
+  whiteboard: { kind: 'sequence', start: 0, steps: [{ op: 'add', value: 5 }], unit: 'week', values: [0, 5], label: 'Ahorro semanal', currency: 'MXN' },
+  session_id: SESSION,
+  turn_seq: 3,
+  kept_at: '2026-09-03T10:05:00Z',
+};
+
+describe('GET /api/v1/tutor/plan', () => {
+  it("returns the learner's own plan", async () => {
+    stub({ tutorPlan: [PLAN_ROW] });
+    const response = await request(createApp())
+      .get('/api/v1/tutor/plan')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.plan).toEqual({
+      content: PLAN_ROW.content,
+      sessionId: SESSION,
+      updatedAt: PLAN_ROW.updated_at,
+    });
+  });
+
+  it('answers null, not an error, when the learner has never saved a plan', async () => {
+    stub({ tutorPlan: [] });
+    const response = await request(createApp())
+      .get('/api/v1/tutor/plan')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.plan).toBeNull();
+  });
+});
+
+describe('GET /api/v1/tutor/kids/:kidUserId/plan', () => {
+  it('refuses anyone who is not a VERIFIED guardian of that child', async () => {
+    stub({ guardianLinks: [] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/plan`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it("hands a verified guardian the child's plan", async () => {
+    stub({ guardianLinks: guardianOfKidClassV, tutorPlan: [PLAN_ROW] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/plan`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.plan.content).toEqual(PLAN_ROW.content);
+  });
+});
+
+describe('GET /api/v1/tutor/notebook', () => {
+  it("returns the learner's own kept boards, newest first", async () => {
+    stub({ notebookEntries: [KEPT_BOARD_ROW] });
+    const response = await request(createApp())
+      .get('/api/v1/tutor/notebook')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.entries).toEqual([
+      {
+        id: 'notebook-1',
+        whiteboard: KEPT_BOARD_ROW.whiteboard,
+        sessionId: SESSION,
+        turnSeq: 3,
+        keptAt: KEPT_BOARD_ROW.kept_at,
+      },
+    ]);
+  });
+
+  it('answers 502 when the read fails, never an empty notebook', async () => {
+    stub({ restFailures: ['tutor_notebook_entries'] });
+    const response = await request(createApp())
+      .get('/api/v1/tutor/notebook')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+});
+
+describe('GET /api/v1/tutor/kids/:kidUserId/notebook', () => {
+  it('refuses anyone who is not a VERIFIED guardian of that child', async () => {
+    stub({ guardianLinks: [] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/notebook`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it("hands a verified guardian the child's kept boards", async () => {
+    stub({ guardianLinks: guardianOfKidClassV, notebookEntries: [KEPT_BOARD_ROW] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/notebook`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.entries).toHaveLength(1);
+  });
+});
+
+describe('POST /api/v1/tutor/notebook — the learner keeps a board', () => {
+  it("refuses a session that is not the caller's own", async () => {
+    stub({ session: [SESSION_ROW] }); // SESSION_ROW.user_id === KID
+    const response = await request(createApp())
+      .post('/api/v1/tutor/notebook')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ sessionId: SESSION, turnSeq: 3 });
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it('refuses a turn that never drew a board — nothing to keep', async () => {
+    stub({ session: [SESSION_ROW], turns: [{ id: 't1', session_id: SESSION, seq: 3, speaker: 'tutor', text: 'hola', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-09-03T10:00:00Z', whiteboard: null, demonstrate: null }] });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/notebook')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ sessionId: SESSION, turnSeq: 3 });
+
+    expect(response.status).toBe(404);
+  });
+
+  it('copies the REAL turn whiteboard into a new kept-board row', async () => {
+    const board = { kind: 'sequence', start: 0, steps: [{ op: 'add', value: 5 }], unit: 'week', values: [0, 5], label: 'x', currency: null };
+    stub({
+      session: [SESSION_ROW],
+      turns: [{ id: 't1', session_id: SESSION, seq: 3, speaker: 'tutor', text: 'mira', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-09-03T10:00:00Z', whiteboard: board, demonstrate: null }],
+    });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/notebook')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ sessionId: SESSION, turnSeq: 3 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.kept).toBe(true);
+  });
+
+  it('answers 502 without pretending the board was kept, when the insert fails', async () => {
+    const board = { kind: 'sequence', start: 0, steps: [{ op: 'add', value: 5 }], unit: 'week', values: [0, 5], label: 'x', currency: null };
+    stub({
+      session: [SESSION_ROW],
+      turns: [{ id: 't1', session_id: SESSION, seq: 3, speaker: 'tutor', text: 'mira', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-09-03T10:00:00Z', whiteboard: board, demonstrate: null }],
+      keepBoardFails: true,
+    });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/notebook')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ sessionId: SESSION, turnSeq: 3 });
+
+    expect(response.status).toBe(502);
+  });
+});
+
+describe('POST /api/v1/tutor/internal/turns — savePlan persists the drawn board as the plan', () => {
+  it('saves the plan when savePlan is true and a board was drawn', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const board = { kind: 'sequence', start: 10, steps: [{ op: 'add', value: 5 }], unit: 'week', values: [10, 15], label: 'x', currency: 'MXN' };
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/turns')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        sessionId: SESSION,
+        seq: 4,
+        speaker: 'tutor',
+        text: 'aquí va tu plan',
+        source: 'model',
+        whiteboard: board,
+        savePlan: true,
+      });
+
+    expect(response.status).toBe(200);
+    const planWrite = calls.find((c) => c.url.includes('/rpc/write_tutor_plan'));
+    expect(planWrite).toBeDefined();
+    expect(JSON.parse(planWrite!.body!)).toEqual({ p_user_id: KID, p_content: board, p_session_id: SESSION });
+  });
+
+  it('never calls write_tutor_plan when savePlan is false, even with a board drawn', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/turns')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        sessionId: SESSION,
+        seq: 4,
+        speaker: 'tutor',
+        text: 'mira esto',
+        source: 'model',
+        whiteboard: { kind: 'sequence', start: 0, steps: [{ op: 'add', value: 5 }], unit: 'week', values: [0, 5], label: 'x', currency: null },
+        savePlan: false,
+      });
+
+    expect(response.status).toBe(200);
+    expect(calls.some((c) => c.url.includes('/rpc/write_tutor_plan'))).toBe(false);
+  });
+
+  it('a failed plan save does not turn a landed turn into a reported failure', async () => {
+    stub({ session: [SESSION_ROW], writePlanFails: true });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/turns')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        sessionId: SESSION,
+        seq: 4,
+        speaker: 'tutor',
+        text: 'aquí va tu plan',
+        source: 'model',
+        whiteboard: { kind: 'sequence', start: 10, steps: [{ op: 'add', value: 5 }], unit: 'week', values: [10, 15], label: 'x', currency: 'MXN' },
+        savePlan: true,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.recorded).toBe(true);
   });
 });
 

@@ -2384,6 +2384,91 @@ export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] 
   }));
 }
 
+// ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──
+
+export interface TutorPlanRow {
+  user_id: string;
+  content: TutorTurnWhiteboard | null;
+  session_id: string | null;
+  updated_at: string;
+}
+
+/**
+ * The learner's current savings plan, or null — whether because they have
+ * never saved one, or the read itself failed. A display-only read (never
+ * read, modified and written back — `writeTutorPlan` below is an
+ * independent, full-replacement write path, not a read-then-write against
+ * this), so collapsing "no plan" and "fetch failed" is the same posture
+ * `getTutorSession` already takes for the identical reason.
+ */
+export async function getTutorPlan(userId: string): Promise<TutorPlanRow | null> {
+  const rows = await serviceRest<{ user_id: string; content: unknown; session_id: string | null; updated_at: string }[]>(
+    `/tutor_plans?user_id=eq.${eu(userId)}&select=user_id,content,session_id,updated_at&limit=1`,
+  );
+  const row = rows?.[0];
+  if (!row) return null;
+  return { ...row, content: readTurnWhiteboard(row.content, `plan:${userId}`) };
+}
+
+/**
+ * Persists `content` as the learner's whole current plan, replacing whatever
+ * was there — `write_tutor_plan` (0069) is a plain UPSERT, not compare-and-
+ * swap: the new content is never a merge of the old (see that migration's
+ * own comment), so there is nothing to conflict against.
+ */
+export async function writeTutorPlan(input: { userId: string; content: unknown; sessionId: string | null }): Promise<boolean> {
+  const res = await serviceRest<unknown>('/rpc/write_tutor_plan', {
+    method: 'POST',
+    body: JSON.stringify({ p_user_id: input.userId, p_content: input.content, p_session_id: input.sessionId }),
+  });
+  return res !== null;
+}
+
+export interface TutorNotebookEntryRow {
+  id: string;
+  user_id: string;
+  whiteboard: TutorTurnWhiteboard | null;
+  session_id: string | null;
+  turn_seq: number | null;
+  kept_at: string;
+}
+
+/**
+ * Copies `whiteboard` into a new kept-board row — never a reference, see
+ * migration 0069's own header for why (sessions purge at 90 days). Returns
+ * false on any failure; the caller must refuse rather than report success on
+ * a "keep" that did not actually land (§1.14).
+ */
+export async function insertNotebookEntry(input: {
+  userId: string;
+  whiteboard: unknown;
+  sessionId: string | null;
+  turnSeq: number | null;
+}): Promise<boolean> {
+  const res = await serviceRest<unknown>('/tutor_notebook_entries', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      user_id: input.userId,
+      whiteboard: input.whiteboard,
+      session_id: input.sessionId,
+      turn_seq: input.turnSeq,
+    }),
+  });
+  return res !== null;
+}
+
+/** Newest-first. A learner's notebook is expected to stay small (a deliberate, occasional "keep this"), so no pagination yet — the same call this codebase already made for `listPendingLearnerMemoryProposals`. */
+export async function listNotebookEntries(userId: string): Promise<TutorNotebookEntryRow[] | null> {
+  const rows = await serviceRest<
+    { id: string; user_id: string; whiteboard: unknown; session_id: string | null; turn_seq: number | null; kept_at: string }[]
+  >(
+    `/tutor_notebook_entries?user_id=eq.${eu(userId)}&select=id,user_id,whiteboard,session_id,turn_seq,kept_at&order=kept_at.desc`,
+  );
+  if (rows === null) return null;
+  return rows.map((row) => ({ ...row, whiteboard: readTurnWhiteboard(row.whiteboard, `notebook:${row.id}`) }));
+}
+
 // ── Segments ────────────────────────────────────────────────────────────────
 
 export interface TutorSegmentRow {

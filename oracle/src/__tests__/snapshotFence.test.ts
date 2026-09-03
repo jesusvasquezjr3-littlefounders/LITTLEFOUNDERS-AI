@@ -160,7 +160,7 @@ describe('a snapshot survives a round trip byte for byte', () => {
     o.adaptations = ['slower_pacing', 'more_visual'];
     o.stopped = false;
     o.lastTurn = {
-      turn: { say: 'Muy bien', emotion: 'proud', action: 'celebrate', next: 'ask' },
+      turn: { say: 'Muy bien', emotion: 'proud', action: 'celebrate', next: 'ask', savePlan: false },
       seq: 7,
     };
     o.lastOfferedAdaptation = 'more_examples';

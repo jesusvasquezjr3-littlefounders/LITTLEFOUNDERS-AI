@@ -41,6 +41,11 @@ import {
   getLearnerMemoryProposal,
   decideLearnerMemoryProposal,
   searchOwnTurns,
+  // Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6).
+  getTutorPlan,
+  writeTutorPlan,
+  insertNotebookEntry,
+  listNotebookEntries,
   listSafetyFlags,
   listPlacementSafetyFlags,
   listTutorSegments,
@@ -1104,12 +1109,41 @@ function internalRouter(): Router {
     moderation: z.record(z.string(), z.unknown()).optional(),
     whiteboard: WhiteboardBody.nullish(),
     demonstrate: DemonstrateBody.nullish(),
+    /**
+     * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): "persist the
+     * board this turn just drew as the learner's ongoing plan." Only
+     * meaningful alongside a non-null `whiteboard` — see the handler below.
+     */
+    savePlan: z.boolean().nullish(),
   });
 
   router.post('/turns', async (req, res) => {
     const parsed = TurnBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid turn');
     const recorded = await insertTutorTurn(parsed.data);
+
+    /*
+     * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): a turn that drew
+     * a board and marked it as the plan persists it — a plain overwrite,
+     * never a merge (write_tutor_plan's own comment explains why that is
+     * safe here and would not be for learner_memory). Best-effort and
+     * independent of the turn write above: a plan save failing must not
+     * turn a turn the learner already saw into a reported failure.
+     */
+    if (parsed.data.savePlan && parsed.data.whiteboard) {
+      const session = await getTutorSession(parsed.data.sessionId);
+      if (session) {
+        const saved = await writeTutorPlan({
+          userId: session.user_id,
+          content: parsed.data.whiteboard,
+          sessionId: parsed.data.sessionId,
+        });
+        if (!saved) {
+          console.warn(`[tutor] plan save did not land for session ${parsed.data.sessionId}`);
+        }
+      }
+    }
+
     return ok(res, { recorded });
   });
 
@@ -3545,7 +3579,96 @@ export function tutorRouter(): Router {
     return ok(res, { outcome, applied: outcome === 'written' || outcome === 'unchanged' });
   });
 
+  // ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──
+
+  router.get('/plan', async (req, res) => {
+    const user = authedUser(res);
+    const plan = await getTutorPlan(user.id);
+    return ok(res, { plan: summarizePlan(plan) });
+  });
+
+  router.get('/kids/:kidUserId/plan', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+
+    const plan = await getTutorPlan(kidUserId.data);
+    return ok(res, { plan: summarizePlan(plan) });
+  });
+
+  router.get('/notebook', async (req, res) => {
+    const user = authedUser(res);
+    const entries = await listNotebookEntries(user.id);
+    if (entries === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the notebook');
+    return ok(res, { entries: entries.map(summarizeNotebookEntry) });
+  });
+
+  router.get('/kids/:kidUserId/notebook', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+
+    const entries = await listNotebookEntries(kidUserId.data);
+    if (entries === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the notebook');
+    return ok(res, { entries: entries.map(summarizeNotebookEntry) });
+  });
+
+  const KeepBoardBody = z.object({ sessionId: z.string().uuid(), turnSeq: z.number().int().nonnegative() }).strict();
+
+  /*
+   * The learner's own "keep this" tap. Validated against the REAL turn,
+   * never trusted from the client: a POST naming someone else's session, or
+   * a turn that never drew a board, is refused rather than silently keeping
+   * nothing or another family's content.
+   */
+  router.post('/notebook', async (req, res) => {
+    const parsed = KeepBoardBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
+    const user = authedUser(res);
+
+    const session = await getTutorSession(parsed.data.sessionId);
+    if (session === null) return fail(res, 404, NOT_FOUND, 'No such session');
+    if (session.user_id !== user.id) return fail(res, 403, 'FORBIDDEN', 'This is not your session');
+
+    const turns = await listTutorTurns(session.id);
+    if (turns === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the transcript');
+    const turn = turns.find((t) => t.seq === parsed.data.turnSeq);
+    if (!turn || !turn.whiteboard) return fail(res, 404, NOT_FOUND, 'That turn drew no board to keep');
+
+    const kept = await insertNotebookEntry({
+      userId: user.id,
+      whiteboard: turn.whiteboard,
+      sessionId: session.id,
+      turnSeq: turn.seq,
+    });
+    if (!kept) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not keep that board');
+    return ok(res, { kept: true });
+  });
+
   return router;
+}
+
+function summarizePlan(plan: { content: unknown; session_id: string | null; updated_at: string } | null) {
+  if (plan === null) return null;
+  return { content: plan.content, sessionId: plan.session_id, updatedAt: plan.updated_at };
+}
+
+function summarizeNotebookEntry(entry: {
+  id: string;
+  whiteboard: unknown;
+  session_id: string | null;
+  turn_seq: number | null;
+  kept_at: string;
+}) {
+  return { id: entry.id, whiteboard: entry.whiteboard, sessionId: entry.session_id, turnSeq: entry.turn_seq, keptAt: entry.kept_at };
 }
 
 /**

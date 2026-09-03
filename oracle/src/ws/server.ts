@@ -2701,6 +2701,7 @@ async function deliver(
       // the length of the live socket and vanished from replay and from the
       // guardian transcript viewer the instant the session ended.
       demonstrate: emission.turn.demonstrate ?? null,
+      savePlan: emission.turn.savePlan,
     }).then((recorded) => notePersist(live, recorded));
   });
 

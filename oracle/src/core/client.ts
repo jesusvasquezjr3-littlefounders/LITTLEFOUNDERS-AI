@@ -244,6 +244,14 @@ export interface PersistTurnInput {
    * §19.5's "replaying `demonstrate` animations" backlog item, 2026-09-01).
    */
   demonstrate?: WireDemoStep[] | null;
+  /**
+   * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): "persist this
+   * turn's board as the learner's ongoing plan." Meaningless without
+   * `whiteboard` on the same input — `TutorTurnSchema`'s own refine already
+   * enforces that upstream of here, so Core's own body validator is what
+   * catches a caller that skipped it.
+   */
+  savePlan?: boolean | null;
 }
 
 /**

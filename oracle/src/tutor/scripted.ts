@@ -40,7 +40,7 @@ import type { TutorTurn } from './turnSchema.js';
 type Trilingual = Record<Locale, string>;
 
 function turn(say: string, emotion: TutorTurn['emotion'], action: TutorTurn['action']): TutorTurn {
-  return { say, emotion, action, next: 'ask', segmentRequest: null, offerAdaptation: null };
+  return { say, emotion, action, next: 'ask', segmentRequest: null, offerAdaptation: null, savePlan: false };
 }
 
 const SAFETY_LINES: Record<SafetyCategory, Trilingual> = {
@@ -197,6 +197,7 @@ export function safetyResponse(category: SafetyCategory, locale: Locale): TutorT
     next: stopping ? 'close' : 'ask',
     segmentRequest: null,
     offerAdaptation: null,
+    savePlan: false,
   };
 }
 
@@ -234,6 +235,7 @@ export function closingResponse(locale: Locale, kind: 'soft' | 'hard'): TutorTur
     next: 'close',
     segmentRequest: null,
     offerAdaptation: null,
+    savePlan: false,
   };
 }
 

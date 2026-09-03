@@ -246,10 +246,33 @@ describe('the closed turn schema', () => {
     next: 'ask',
     segmentRequest: null,
     offerAdaptation: null,
+    savePlan: false,
   };
 
   it('accepts a well-formed turn', () => {
     expect(TutorTurnSchema.safeParse(valid).success).toBe(true);
+  });
+
+  describe('savePlan (Class V, migration 0069)', () => {
+    it('accepts savePlan true alongside a whiteboard', () => {
+      const turn = {
+        ...valid,
+        savePlan: true,
+        whiteboard: { kind: 'sequence', start: 0, unit: 'week', steps: [{ op: 'add', value: 5 }], label: 'x', currency: null },
+      };
+      expect(TutorTurnSchema.safeParse(turn).success).toBe(true);
+    });
+
+    it('refuses savePlan true with no whiteboard on the same turn — nothing to save', () => {
+      const turn = { ...valid, savePlan: true, whiteboard: null };
+      const parsed = TutorTurnSchema.safeParse(turn);
+      expect(parsed.success).toBe(false);
+    });
+
+    it('requires savePlan to be present — it is not an optional field', () => {
+      const { savePlan: _drop, ...withoutSavePlan } = valid;
+      expect(TutorTurnSchema.safeParse(withoutSavePlan).success).toBe(false);
+    });
   });
 
   it('rejects a field the model invented', () => {

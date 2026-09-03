@@ -45,6 +45,7 @@ const GOOD_TURN = {
   next: 'ask',
   segmentRequest: null,
   offerAdaptation: null,
+  savePlan: false,
 };
 
 function modelReplies(payload: unknown): Response {
@@ -1878,6 +1879,7 @@ describe('the reaction turn must not lose to the tutor\'s own earlier promise', 
       rationale: 'El aprendiz necesita practicar sumar monedas para pagar un monto exacto',
     },
     offerAdaptation: null,
+    savePlan: false,
   };
   const SORT_BUCKETS_PROMPT = 'Clasifica cada cosa: ¿es una necesidad o un gusto?';
 

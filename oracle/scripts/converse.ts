@@ -1136,6 +1136,9 @@ async function main(): Promise<void> {
       if (whiteboardSummary) {
         console.log(`           [whiteboard "${whiteboardSummary.label}" — ${whiteboardSummary.summary}]`);
       }
+      if (turn.savePlan) {
+        console.log('           [savePlan: true — this board would become the ongoing plan]');
+      }
       beats.push({
         learner: line,
         tutor: turn.say,
