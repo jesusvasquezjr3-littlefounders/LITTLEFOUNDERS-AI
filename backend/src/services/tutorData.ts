@@ -1164,6 +1164,25 @@ export interface TutorTurnChanceBoard {
   label: string;
 }
 
+/** Sharing with the remainder kept visible. `perBin`/`remainder` are server-computed. */
+export interface TutorTurnDealBoard { kind: 'deal'; total: number; bins: string[]; perBin: number; remainder: number; label: string }
+/** One payment splitting into kept and returned. `change` is server-computed. */
+export interface TutorTurnChangeBoard { kind: 'change'; price: number; paid: number; change: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+/** One unit broken into many. `intoCount` is server-computed and must divide evenly. */
+export interface TutorTurnRegroupBoard { kind: 'regroup'; fromDenomination: number; fromCount: number; intoDenomination: number; intoCount: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+/** Two sides as lengths that must match. An unbalanced board is refused, never drawn. */
+export interface TutorTurnEquationBarBoard { kind: 'equation_bar'; left: { label: string; value: number }[]; right: { label: string; value: number }[]; total: number; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** A till receipt. `total` is server-computed — adding it up is the practice. */
+export interface TutorTurnReceiptBoard { kind: 'receipt'; lines: { label: string; value: number }[]; total: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+/** Two columns and a running balance, every step server-computed. */
+export interface TutorTurnLedgerBoard { kind: 'ledger'; entries: { label: string; amount: number; direction: 'in' | 'out' }[]; balances: number[]; final: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+/** Price, quantity and discount on one object. Unit and final price are server-computed. */
+export interface TutorTurnPriceTagBoard { kind: 'price_tag'; item: string; price: number; units: number; discountPercent: number | null; unitPrice: number; finalPrice: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+/** Stock falling as sales happen. `left` is server-computed; selling more than you had is refused. */
+export interface TutorTurnInventoryBoard { kind: 'inventory'; item: string; start: number; sold: number; left: number; label: string }
+/** A total against a visible ceiling. Overspending is ALLOWED and drawn — that is the lesson. */
+export interface TutorTurnBudgetPlateBoard { kind: 'budget_plate'; budget: number; items: { label: string; value: number }[]; spent: number; remaining: number; overBy: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
   | TutorTurnSequenceBoard
@@ -1188,7 +1207,16 @@ export type TutorTurnWhiteboard =
   | TutorTurnRankingBoard
   | TutorTurnOutcomesBoard
   | TutorTurnTradeBoard
-  | TutorTurnChanceBoard;
+  | TutorTurnChanceBoard
+  | TutorTurnDealBoard
+  | TutorTurnChangeBoard
+  | TutorTurnRegroupBoard
+  | TutorTurnEquationBarBoard
+  | TutorTurnReceiptBoard
+  | TutorTurnLedgerBoard
+  | TutorTurnPriceTagBoard
+  | TutorTurnInventoryBoard
+  | TutorTurnBudgetPlateBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1645,6 +1673,126 @@ const ChanceBoardRowSchema = z
   })
   .strict();
 
+const CUR_ROW = z.enum(['MXN', 'USD', 'BRL']);
+const NamedValueRowSchema = z
+  .object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) })
+  .strict();
+
+const DealBoardRowSchema = z
+  .object({
+    kind: z.literal('deal'),
+    total: z.number().int().min(1).max(60),
+    bins: z.array(z.string().min(1).max(40)).min(2).max(6),
+    perBin: z.number().int().min(0).max(60),
+    remainder: z.number().int().min(0).max(6),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const ChangeBoardRowSchema = z
+  .object({
+    kind: z.literal('change'),
+    price: z.number().positive().max(1_000_000),
+    paid: z.number().positive().max(1_000_000),
+    change: z.number().min(0).max(1_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW,
+  })
+  .strict();
+
+const RegroupBoardRowSchema = z
+  .object({
+    kind: z.literal('regroup'),
+    fromDenomination: z.number().positive().max(1_000),
+    fromCount: z.number().int().min(1).max(6),
+    intoDenomination: z.number().positive().max(1_000),
+    intoCount: z.number().int().min(1).max(60),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW,
+  })
+  .strict();
+
+const EquationBarBoardRowSchema = z
+  .object({
+    kind: z.literal('equation_bar'),
+    left: z.array(NamedValueRowSchema).min(1).max(3),
+    right: z.array(NamedValueRowSchema).min(1).max(3),
+    total: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
+const ReceiptBoardRowSchema = z
+  .object({
+    kind: z.literal('receipt'),
+    lines: z.array(NamedValueRowSchema).min(1).max(6),
+    total: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW,
+  })
+  .strict();
+
+const LedgerBoardRowSchema = z
+  .object({
+    kind: z.literal('ledger'),
+    entries: z
+      .array(
+        z
+          .object({
+            label: z.string().min(1).max(40),
+            amount: z.number().positive().max(1_000_000),
+            direction: z.enum(['in', 'out']),
+          })
+          .strict(),
+      )
+      .min(2)
+      .max(6),
+    balances: z.array(z.number().min(0).max(10_000_000)).min(2).max(6),
+    final: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW,
+  })
+  .strict();
+
+const PriceTagBoardRowSchema = z
+  .object({
+    kind: z.literal('price_tag'),
+    item: z.string().min(1).max(40),
+    price: z.number().positive().max(1_000_000),
+    units: z.number().positive().max(10_000),
+    discountPercent: z.number().int().min(1).max(90).nullable(),
+    unitPrice: z.number().min(0).max(1_000_000),
+    finalPrice: z.number().min(0).max(1_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW,
+  })
+  .strict();
+
+const InventoryBoardRowSchema = z
+  .object({
+    kind: z.literal('inventory'),
+    item: z.string().min(1).max(40),
+    start: z.number().int().min(1).max(40),
+    sold: z.number().int().min(0).max(40),
+    left: z.number().int().min(0).max(40),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const BudgetPlateBoardRowSchema = z
+  .object({
+    kind: z.literal('budget_plate'),
+    budget: z.number().positive().max(1_000_000),
+    items: z.array(NamedValueRowSchema).min(2).max(5),
+    spent: z.number().min(0).max(10_000_000),
+    remaining: z.number().min(0).max(10_000_000),
+    overBy: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW,
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1681,6 +1829,15 @@ const TutorTurnWhiteboardRowSchema = z
     OutcomesBoardRowSchema,
     TradeBoardRowSchema,
     ChanceBoardRowSchema,
+    DealBoardRowSchema,
+    ChangeBoardRowSchema,
+    RegroupBoardRowSchema,
+    EquationBarBoardRowSchema,
+    ReceiptBoardRowSchema,
+    LedgerBoardRowSchema,
+    PriceTagBoardRowSchema,
+    InventoryBoardRowSchema,
+    BudgetPlateBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -1711,6 +1868,22 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'every mark value must fall within [min, max]',
           path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'ledger') {
+      if (board.balances.length !== board.entries.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'balances must carry exactly one entry per ledger line',
+          path: ['balances'],
+        });
+      }
+    } else if (board.kind === 'inventory') {
+      if (board.sold > board.start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'you cannot sell more than you had',
+          path: ['sold'],
         });
       }
     } else if (board.kind === 'ranking') {

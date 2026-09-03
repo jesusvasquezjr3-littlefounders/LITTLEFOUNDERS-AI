@@ -267,6 +267,60 @@ export const INSTRUMENTS = [
     blocks: { oracleSchema: 'WhiteboardChanceSchema', coreBody: 'ChanceWhiteboardBody', coreRow: 'ChanceBoardRowSchema' },
   },
   {
+    kind: 'deal',
+    model: ['kind', 'total', 'bins', 'label'],
+    computed: ['perBin', 'remainder'],
+    blocks: { oracleSchema: 'WhiteboardDealSchema', coreBody: 'DealWhiteboardBody', coreRow: 'DealBoardRowSchema' },
+  },
+  {
+    kind: 'change',
+    model: ['kind', 'price', 'paid', 'label', 'currency'],
+    computed: ['change'],
+    blocks: { oracleSchema: 'WhiteboardChangeSchema', coreBody: 'ChangeWhiteboardBody', coreRow: 'ChangeBoardRowSchema' },
+  },
+  {
+    kind: 'regroup',
+    model: ['kind', 'fromDenomination', 'fromCount', 'intoDenomination', 'label', 'currency'],
+    computed: ['intoCount'],
+    blocks: { oracleSchema: 'WhiteboardRegroupSchema', coreBody: 'RegroupWhiteboardBody', coreRow: 'RegroupBoardRowSchema' },
+  },
+  {
+    kind: 'equation_bar',
+    model: ['kind', 'left', 'right', 'label', 'currency'],
+    computed: ['total'],
+    blocks: { oracleSchema: 'WhiteboardEquationBarSchema', coreBody: 'EquationBarWhiteboardBody', coreRow: 'EquationBarBoardRowSchema' },
+  },
+  {
+    kind: 'receipt',
+    model: ['kind', 'lines', 'label', 'currency'],
+    computed: ['total'],
+    blocks: { oracleSchema: 'WhiteboardReceiptSchema', coreBody: 'ReceiptWhiteboardBody', coreRow: 'ReceiptBoardRowSchema' },
+  },
+  {
+    kind: 'ledger',
+    model: ['kind', 'entries', 'label', 'currency'],
+    computed: ['balances', 'final'],
+    blocks: { oracleSchema: 'WhiteboardLedgerSchema', coreBody: 'LedgerWhiteboardBody', coreRow: 'LedgerBoardRowSchema' },
+  },
+  {
+    kind: 'price_tag',
+    model: ['kind', 'item', 'price', 'units', 'discountPercent', 'label', 'currency'],
+    computed: ['unitPrice', 'finalPrice'],
+    blocks: { oracleSchema: 'WhiteboardPriceTagSchema', coreBody: 'PriceTagWhiteboardBody', coreRow: 'PriceTagBoardRowSchema' },
+  },
+  {
+    kind: 'inventory',
+    model: ['kind', 'item', 'start', 'sold', 'label'],
+    computed: ['left'],
+    blocks: { oracleSchema: 'WhiteboardInventorySchema', coreBody: 'InventoryWhiteboardBody', coreRow: 'InventoryBoardRowSchema' },
+  },
+  {
+    kind: 'budget_plate',
+    model: ['kind', 'budget', 'items', 'label', 'currency'],
+    computed: ['spent', 'remaining', 'overBy'],
+    blocks: { oracleSchema: 'WhiteboardBudgetPlateSchema', coreBody: 'BudgetPlateWhiteboardBody', coreRow: 'BudgetPlateBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -481,6 +535,15 @@ export function wireComputedKeys(source, kind) {
     outcomes: 'WhiteboardOutcomes',
     trade: 'WhiteboardTrade',
     chance: 'WhiteboardChance',
+    deal: 'WhiteboardDeal',
+    change: 'WhiteboardChange',
+    regroup: 'WhiteboardRegroup',
+    equation_bar: 'WhiteboardEquationBar',
+    receipt: 'WhiteboardReceipt',
+    ledger: 'WhiteboardLedger',
+    price_tag: 'WhiteboardPriceTag',
+    inventory: 'WhiteboardInventory',
+    budget_plate: 'WhiteboardBudgetPlate',
   }[kind];
   if (!kindType) return null;
   // Two legal forms, and the difference between them is meaningful: a kind with

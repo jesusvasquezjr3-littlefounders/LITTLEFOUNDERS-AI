@@ -387,6 +387,7 @@ try {
         'bar-model', 'part-whole', 'flow', 'goal-bar', 'worked',
         'ten-frame', 'number-jumps', 'array', 'fraction-strip', 'partition',
         'table', 'scale', 'two-bins', 'venn', 'ranking', 'outcomes', 'trade', 'chance',
+        'deal', 'change', 'regroup', 'equation', 'receipt', 'ledger', 'price-tag', 'inventory', 'budget',
       ] : []) {
         await setLabPanel(page, true)
         const flipped = await page.evaluate(

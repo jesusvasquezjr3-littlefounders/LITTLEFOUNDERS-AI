@@ -21,6 +21,15 @@ import type {
   WhiteboardTable,
   WhiteboardTwoBins,
   WhiteboardVenn,
+  WhiteboardBudgetPlate,
+  WhiteboardChange,
+  WhiteboardDeal,
+  WhiteboardEquationBar,
+  WhiteboardInventory,
+  WhiteboardLedger,
+  WhiteboardPriceTag,
+  WhiteboardReceipt,
+  WhiteboardRegroup,
 } from './turnSchema.js';
 
 /*
@@ -689,6 +698,210 @@ export function computeChance(board: Pick<WhiteboardChance, 'outcomes'>): Chance
   return { shares: board.outcomes.map((o) => o.weight / total) };
 }
 
+
+/* ── OPERATIONS AND REAL-MONEY ARTEFACTS ────────────────────────────────────── */
+
+/** How a `deal` shares out — see `computeDeal`. */
+export interface DealResult {
+  /** How many each place gets. The model has no field for it. */
+  perBin: number;
+  /** What is left over, and it is not nothing — that is the lesson. */
+  remainder: number;
+}
+
+/** Shares a total into places and keeps the remainder visible. */
+export function computeDeal(board: Pick<WhiteboardDeal, 'total' | 'bins'>): DealResult | null {
+  const { total, bins } = board;
+  if (!Number.isInteger(total) || total < 1) return null;
+  if (bins.length < 2) return null;
+  // You cannot deal what you do not have: fewer things than places means at
+  // least one place gets nothing, which is a different lesson than sharing.
+  if (total < bins.length) return null;
+  return { perBin: Math.floor(total / bins.length), remainder: total % bins.length };
+}
+
+/** The change owed — see `computeChange`. */
+export interface ChangeResult {
+  change: number;
+}
+
+/**
+ * Works out the change. Refuses a payment smaller than the price: a negative
+ * change is not a picture of `register-keeps-the-price`, it is a different story
+ * about not having enough, and `goal_bar` or `marked_line` tells that one.
+ */
+export function computeChange(board: Pick<WhiteboardChange, 'price' | 'paid'>): ChangeResult | null {
+  const { price, paid } = board;
+  if (!Number.isFinite(price) || !Number.isFinite(paid)) return null;
+  if (price <= 0 || paid <= 0 || price > MAX_VALUE || paid > MAX_VALUE) return null;
+  if (paid < price - ZERO_EPSILON) return null;
+  return { change: money(paid - price) };
+}
+
+/** What a `regroup` yields — see `computeRegroup`. */
+export interface RegroupResult {
+  /** How many of the smaller denomination you get back. */
+  intoCount: number;
+}
+
+/**
+ * Breaks a denomination into a smaller one.
+ *
+ * Refuses anything that does not divide evenly, and refuses breaking a unit into
+ * something bigger than itself: a trade that leaves a fraction of a coin is not
+ * a thing that happens on a table, and drawing it would teach that it does.
+ */
+export function computeRegroup(
+  board: Pick<WhiteboardRegroup, 'fromDenomination' | 'fromCount' | 'intoDenomination'>,
+): RegroupResult | null {
+  const { fromDenomination, fromCount, intoDenomination } = board;
+  if (!Number.isFinite(fromDenomination) || !Number.isFinite(intoDenomination)) return null;
+  if (fromDenomination <= 0 || intoDenomination <= 0) return null;
+  if (intoDenomination >= fromDenomination) return null;
+  const exact = (fromDenomination * fromCount) / intoDenomination;
+  const rounded = Math.round(exact);
+  if (Math.abs(exact - rounded) > 1e-6) return null;
+  if (rounded < 1 || rounded > 60) return null;
+  return { intoCount: rounded };
+}
+
+/** What an `equation_bar` weighs — see `computeEquationBar`. */
+export interface EquationBarResult {
+  /** Both sides, which are equal by construction: an unbalanced board is refused. */
+  total: number;
+}
+
+/**
+ * Verifies that the two sides actually match.
+ *
+ * An equation drawn out of balance teaches that the equals sign is decorative,
+ * which is the opposite of what this instrument exists for.
+ */
+export function computeEquationBar(
+  board: Pick<WhiteboardEquationBar, 'left' | 'right'>,
+): EquationBarResult | null {
+  const sum = (terms: { value: number }[]) => terms.reduce((acc, t) => acc + t.value, 0);
+  for (const term of [...board.left, ...board.right]) {
+    if (!Number.isFinite(term.value) || term.value < 0 || term.value > MAX_VALUE) return null;
+  }
+  const left = money(sum(board.left));
+  const right = money(sum(board.right));
+  if (Math.abs(left - right) > ZERO_EPSILON) return null;
+  return { total: left };
+}
+
+/** A receipt's running total — see `computeReceipt`. */
+export interface ReceiptResult {
+  total: number;
+}
+
+/** Adds the lines up. The total is the thing being practised, so it is not a model field. */
+export function computeReceipt(board: Pick<WhiteboardReceipt, 'lines'>): ReceiptResult | null {
+  let total = 0;
+  for (const line of board.lines) {
+    if (!Number.isFinite(line.value) || line.value < 0 || line.value > MAX_VALUE) return null;
+    total = money(total + line.value);
+  }
+  if (total <= 0 || total > MAX_VALUE) return null;
+  return { total };
+}
+
+/** A ledger's running balance after each line — see `computeLedger`. */
+export interface LedgerResult {
+  balances: number[];
+  final: number;
+}
+
+/**
+ * Runs the ledger.
+ *
+ * Refuses a balance that ever goes below zero: a child's ledger that goes
+ * negative is a story about debt, which is not what `biz.revenue`/`profit` is
+ * teaching here and which this board has no way to draw honestly.
+ */
+export function computeLedger(board: Pick<WhiteboardLedger, 'entries'>): LedgerResult | null {
+  const balances: number[] = [];
+  let running = 0;
+  for (const entry of board.entries) {
+    if (!Number.isFinite(entry.amount) || entry.amount <= 0) return null;
+    running = money(entry.direction === 'in' ? running + entry.amount : running - entry.amount);
+    if (running < -ZERO_EPSILON || running > MAX_VALUE) return null;
+    if (running < 0) running = 0;
+    balances.push(running);
+  }
+  return { balances, final: running };
+}
+
+/** What a price tag works out — see `computePriceTag`. */
+export interface PriceTagResult {
+  /** What one unit costs after any discount. */
+  unitPrice: number;
+  /** What the whole thing costs after any discount. */
+  finalPrice: number;
+}
+
+/** Applies the discount and divides by the quantity — the two numbers a shopper is working out. */
+export function computePriceTag(
+  board: Pick<WhiteboardPriceTag, 'price' | 'units' | 'discountPercent'>,
+): PriceTagResult | null {
+  const { price, units, discountPercent } = board;
+  if (!Number.isFinite(price) || price <= 0 || price > MAX_VALUE) return null;
+  if (!Number.isFinite(units) || units <= 0) return null;
+  if (discountPercent !== null && (!Number.isInteger(discountPercent) || discountPercent < 1 || discountPercent > 90)) {
+    return null;
+  }
+  const finalPrice = money(discountPercent === null ? price : price * (1 - discountPercent / 100));
+  return { unitPrice: money(finalPrice / units), finalPrice };
+}
+
+/** What is left in stock — see `computeInventory`. */
+export interface InventoryResult {
+  left: number;
+}
+
+/** Refuses selling more than you had: stock that goes negative is not a thing on a shelf. */
+export function computeInventory(board: Pick<WhiteboardInventory, 'start' | 'sold'>): InventoryResult | null {
+  const { start, sold } = board;
+  if (!Number.isInteger(start) || !Number.isInteger(sold)) return null;
+  if (start < 1 || sold < 0 || sold > start) return null;
+  return { left: start - sold };
+}
+
+/** What a budget plate has left, or is over by — see `computeBudgetPlate`. */
+export interface BudgetPlateResult {
+  spent: number;
+  /** What is still available. Zero once the ceiling is reached. */
+  remaining: number;
+  /** How far past the ceiling, or 0. Drawn so an overspend shows what it STEALS FROM. */
+  overBy: number;
+}
+
+/**
+ * Adds the items up against the ceiling.
+ *
+ * Overspending is NOT refused here, unlike most boards: `budget-is-per-item` is
+ * the belief that a budget applies to each thing separately, and the only way to
+ * break it is to let the learner see the total cross the line. A refusal would
+ * hide exactly the case the instrument exists for.
+ */
+export function computeBudgetPlate(
+  board: Pick<WhiteboardBudgetPlate, 'budget' | 'items'>,
+): BudgetPlateResult | null {
+  const { budget } = board;
+  if (!Number.isFinite(budget) || budget <= 0 || budget > MAX_VALUE) return null;
+  let spent = 0;
+  for (const item of board.items) {
+    if (!Number.isFinite(item.value) || item.value < 0 || item.value > MAX_VALUE) return null;
+    spent = money(spent + item.value);
+  }
+  if (spent > MAX_VALUE) return null;
+  return {
+    spent,
+    remaining: Math.max(0, money(budget - spent)),
+    overBy: Math.max(0, money(spent - budget)),
+  };
+}
+
 /**
  * True when a whiteboard's own numbers compute to something sane, dispatched
  * to the right function above for its `kind`. The single "is this board
@@ -748,6 +961,24 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return true;
     case 'chance':
       return computeChance(board) !== null;
+    case 'deal':
+      return computeDeal(board) !== null;
+    case 'change':
+      return computeChange(board) !== null;
+    case 'regroup':
+      return computeRegroup(board) !== null;
+    case 'equation_bar':
+      return computeEquationBar(board) !== null;
+    case 'receipt':
+      return computeReceipt(board) !== null;
+    case 'ledger':
+      return computeLedger(board) !== null;
+    case 'price_tag':
+      return computePriceTag(board) !== null;
+    case 'inventory':
+      return computeInventory(board) !== null;
+    case 'budget_plate':
+      return computeBudgetPlate(board) !== null;
   }
 }
 

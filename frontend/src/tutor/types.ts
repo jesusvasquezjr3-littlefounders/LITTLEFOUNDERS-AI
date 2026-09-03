@@ -431,6 +431,57 @@ export type TutorWhiteboardWire =
       /** SERVER-COMPUTED from plain weights — the model never states a percentage. */
       shares: number[];
       label: string;
+    }
+  | { kind: 'deal'; total: number; bins: string[]; perBin: number; remainder: number; label: string }
+  | { kind: 'change'; price: number; paid: number; change: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+  | {
+      kind: 'regroup';
+      fromDenomination: number;
+      fromCount: number;
+      intoDenomination: number;
+      intoCount: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL';
+    }
+  | {
+      kind: 'equation_bar';
+      left: { label: string; value: number }[];
+      right: { label: string; value: number }[];
+      total: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | { kind: 'receipt'; lines: { label: string; value: number }[]; total: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
+  | {
+      kind: 'ledger';
+      entries: { label: string; amount: number; direction: 'in' | 'out' }[];
+      balances: number[];
+      final: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL';
+    }
+  | {
+      kind: 'price_tag';
+      item: string;
+      price: number;
+      units: number;
+      discountPercent: number | null;
+      unitPrice: number;
+      finalPrice: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL';
+    }
+  | { kind: 'inventory'; item: string; start: number; sold: number; left: number; label: string }
+  | {
+      kind: 'budget_plate';
+      budget: number;
+      items: { label: string; value: number }[];
+      spent: number;
+      remaining: number;
+      /** Over the ceiling, or 0. Overspending is DRAWN rather than refused — that is the lesson. */
+      overBy: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL';
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

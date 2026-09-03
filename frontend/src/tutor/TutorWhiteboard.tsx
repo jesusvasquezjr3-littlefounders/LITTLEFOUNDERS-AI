@@ -199,6 +199,15 @@ type RankingWire = Extract<TutorWhiteboardWire, { kind: 'ranking' }>;
 type OutcomesWire = Extract<TutorWhiteboardWire, { kind: 'outcomes' }>;
 type TradeWire = Extract<TutorWhiteboardWire, { kind: 'trade' }>;
 type ChanceWire = Extract<TutorWhiteboardWire, { kind: 'chance' }>;
+type DealWire = Extract<TutorWhiteboardWire, { kind: 'deal' }>;
+type ChangeWire = Extract<TutorWhiteboardWire, { kind: 'change' }>;
+type RegroupWire = Extract<TutorWhiteboardWire, { kind: 'regroup' }>;
+type EquationBarWire = Extract<TutorWhiteboardWire, { kind: 'equation_bar' }>;
+type ReceiptWire = Extract<TutorWhiteboardWire, { kind: 'receipt' }>;
+type LedgerWire = Extract<TutorWhiteboardWire, { kind: 'ledger' }>;
+type PriceTagWire = Extract<TutorWhiteboardWire, { kind: 'price_tag' }>;
+type InventoryWire = Extract<TutorWhiteboardWire, { kind: 'inventory' }>;
+type BudgetPlateWire = Extract<TutorWhiteboardWire, { kind: 'budget_plate' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -1234,6 +1243,311 @@ function ChanceBoard({ board, seq, className }: { board: ChanceWire; seq: number
   );
 }
 
+
+/** `kind: 'deal'` — the share AND the leftover, which is the part `categories` hides. */
+function DealBoard({ board, seq, className }: { board: DealWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const ariaLabel = `${board.label}. ${t('tutor.whiteboard.board.eachGets', { count: board.perBin })}. ${t(
+    'tutor.whiteboard.board.leftOver',
+    { count: board.remainder },
+  )}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-2" aria-hidden="true">
+        <div className="flex items-stretch justify-center gap-2">
+          {board.bins.map((bin, b) => (
+            <div key={b} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+              <div className="flex w-full flex-wrap content-end justify-center gap-1 rounded-md border-2 border-dashed border-content-muted/40 p-1.5">
+                {Array.from({ length: board.perBin }, (_, i) => (
+                  <span key={i} className="h-4 w-4 rounded-full bg-accent/70" />
+                ))}
+              </div>
+              <Caption>{bin}</Caption>
+            </div>
+          ))}
+        </div>
+        {/* The remainder sits APART, which is the whole point — it is not nothing. */}
+        {board.remainder > 0 && (
+          <div className="flex items-center justify-center gap-2">
+            <span className="flex gap-1">
+              {Array.from({ length: board.remainder }, (_, i) => (
+                <span key={i} className="h-4 w-4 rounded-full border-2 border-warning bg-warning/30" />
+              ))}
+            </span>
+            <AxisCaption>{t('tutor.whiteboard.board.leftOver', { count: board.remainder })}</AxisCaption>
+          </div>
+        )}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'change'` — one payment splitting into two piles. */
+function ChangeBoard({ board, seq, className }: { board: ChangeWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${format(board.paid)} → ${format(board.price)}. ${t(
+    'tutor.whiteboard.board.change',
+    { amount: format(board.change) },
+  )}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2" aria-hidden="true">
+        <span className="flex h-12 w-28 items-center justify-center rounded-md border-2 border-accent bg-accent/15">
+          <span className="lf-number lf-title text-content tabular-nums">{format(board.paid)}</span>
+        </span>
+        <svg width="120" height="24" viewBox="0 0 120 24" aria-hidden="true" className="shrink-0 text-content-muted/50">
+          <path d="M60 2 L26 22 M60 2 L94 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <div className="flex items-start gap-4">
+          {[
+            { value: board.price, tone: 'muted' as const },
+            { value: board.change, tone: 'accent' as const },
+          ].map((pile, i) => (
+            <span key={i} className="flex flex-col items-center gap-1">
+              <span
+                className={cn(
+                  'flex h-10 w-24 items-center justify-center rounded-md border-2',
+                  pile.tone === 'accent' ? 'border-accent bg-accent/15' : 'border-content-muted/40',
+                )}
+              >
+                <span className="lf-number text-content tabular-nums">{format(pile.value)}</span>
+              </span>
+            </span>
+          ))}
+        </div>
+        <AxisCaption>{t('tutor.whiteboard.board.change', { amount: format(board.change) })}</AxisCaption>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'regroup'` — one unit broken into many, as a visible step of the problem. */
+function RegroupBoard({ board, seq, className }: { board: RegroupWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.fromCount} x ${format(board.fromDenomination)} → ${board.intoCount} x ${format(
+    board.intoDenomination,
+  )}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-center justify-center gap-3 px-2" aria-hidden="true">
+        <span className="flex flex-wrap justify-center gap-1">
+          {Array.from({ length: board.fromCount }, (_, i) => (
+            <Token key={i} size="md">
+              {format(board.fromDenomination)}
+            </Token>
+          ))}
+        </span>
+        <svg width="24" height="16" viewBox="0 0 24 16" aria-hidden="true" className="shrink-0 text-accent">
+          <path d="M2 8 h16 M14 3 l5 5 l-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="flex max-w-[55%] flex-wrap justify-center gap-1">
+          {Array.from({ length: board.intoCount }, (_, i) => (
+            <Token key={i} size="sm" tone="muted">
+              {format(board.intoDenomination)}
+            </Token>
+          ))}
+        </span>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'equation_bar'` — two sides as lengths that match, because the server refused any board where they do not. */
+function EquationBarBoard({ board, seq, className }: { board: EquationBarWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const sides = [board.left, board.right];
+  const ariaLabel = `${board.label}. ${sides
+    .map((side) => side.map((t) => `${t.label} ${format(t.value)}`).join(' + '))
+    .join(' = ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-2" aria-hidden="true">
+        {sides.map((side, i) => (
+          <div key={i} className="flex flex-col gap-1">
+            <HBar segments={side.map((term) => ({ fraction: term.value / Math.max(board.total, 1) }))} />
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              {side.map((term, j) => (
+                <span key={j} className="flex min-w-0 items-baseline gap-1.5">
+                  <Caption>{term.label}</Caption>
+                  <AxisCaption className="tabular-nums">{format(term.value)}</AxisCaption>
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'receipt'` — the document a child has already seen, written line by line to a total. */
+function ReceiptBoard({ board, seq, className }: { board: ReceiptWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.lines
+    .map((l) => `${l.label}: ${format(l.value)}`)
+    .join(', ')}. ${t('tutor.whiteboard.board.total', { amount: format(board.total) })}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-center justify-center" aria-hidden="true">
+        <div className="flex w-full max-w-[16rem] flex-col gap-1 rounded-sm border border-content-muted/30 bg-surface p-3">
+          {board.lines.map((line, i) => (
+            <div key={i} className="flex items-baseline justify-between gap-2">
+              <Caption className="text-left">{line.label}</Caption>
+              <AxisCaption className="shrink-0 tabular-nums">{format(line.value)}</AxisCaption>
+            </div>
+          ))}
+          <div className="mt-1 flex items-baseline justify-between gap-2 border-t border-dashed border-content-muted/40 pt-1.5">
+            <span className="lf-caption font-semibold text-content">{t('tutor.whiteboard.board.totalWord')}</span>
+            <span className="lf-number lf-title text-content tabular-nums">{format(board.total)}</span>
+          </div>
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'ledger'` — two columns and a running balance, every step server-computed. */
+function LedgerBoard({ board, seq, className }: { board: LedgerWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.entries
+    .map((e, i) => `${e.label} ${e.direction === 'in' ? '+' : '−'}${format(e.amount)} → ${format(board.balances[i]!)}`)
+    .join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-1 px-2" aria-hidden="true">
+        <div className="flex items-baseline justify-between gap-2 border-b border-content-muted/30 pb-1">
+          <span className="lf-caption text-content-muted">&nbsp;</span>
+          <span className="lf-caption shrink-0 text-content-muted">{t('tutor.whiteboard.board.balance')}</span>
+        </div>
+        {board.entries.map((entry, i) => (
+          <div key={i} className="flex items-baseline justify-between gap-2">
+            <span className="flex min-w-0 items-baseline gap-1.5">
+              <span className={cn('lf-caption shrink-0 tabular-nums', entry.direction === 'in' ? 'text-success' : 'text-warning')}>
+                {entry.direction === 'in' ? '+' : '−'}
+                {format(entry.amount)}
+              </span>
+              <Caption className="text-left">{entry.label}</Caption>
+            </span>
+            <AxisCaption className="shrink-0 tabular-nums">{format(board.balances[i]!)}</AxisCaption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'price_tag'` — price, quantity and discount on one object, where the decision happens. */
+function PriceTagBoard({ board, seq, className }: { board: PriceTagWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.item}: ${format(board.finalPrice)}. ${t(
+    'tutor.whiteboard.board.perUnit',
+    { amount: format(board.unitPrice) },
+  )}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-center justify-center" aria-hidden="true">
+        <div className="flex min-w-[12rem] flex-col items-center gap-1 rounded-md border-2 border-accent bg-accent/10 px-5 py-3">
+          <Caption>{board.item}</Caption>
+          <span className="flex items-baseline gap-2">
+            {board.discountPercent !== null && (
+              <span className="lf-caption text-content-muted line-through tabular-nums">{format(board.price)}</span>
+            )}
+            <span className="lf-number lf-title text-content tabular-nums">{format(board.finalPrice)}</span>
+          </span>
+          {board.discountPercent !== null && (
+            <span className="lf-caption rounded-full bg-warning-soft px-2 py-0.5 text-content">
+              −{board.discountPercent}%
+            </span>
+          )}
+          <AxisCaption>{t('tutor.whiteboard.board.perUnit', { amount: format(board.unitPrice) })}</AxisCaption>
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'inventory'` — stock falling as sales happen: selling is exchanging, not only receiving. */
+function InventoryBoard({ board, seq, className }: { board: InventoryWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const ariaLabel = `${board.label}. ${board.item}. ${t('tutor.whiteboard.board.stillHave', { count: board.left })}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-2" aria-hidden="true">
+        <div className="flex max-w-full flex-wrap justify-center gap-1">
+          {Array.from({ length: board.start }, (_, i) => (
+            <span
+              key={i}
+              className={cn(
+                'h-5 w-5 rounded-sm border',
+                i < board.left ? 'border-accent bg-accent/60' : 'border-content-muted/30 bg-transparent',
+              )}
+            />
+          ))}
+        </div>
+        <div className="flex items-baseline gap-2">
+          <Caption>{board.item}</Caption>
+          <AxisCaption>{t('tutor.whiteboard.board.stillHave', { count: board.left })}</AxisCaption>
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'budget_plate'` — a total against a visible ceiling.
+ *
+ * The ONE board that draws a rule being broken rather than refusing it:
+ * `budget-is-per-item` can only be dislodged by letting the learner watch the
+ * total cross the line, so `computeBudgetPlate` allows an overspend and this
+ * draws the part that went past.
+ */
+function BudgetPlateBoard({ board, seq, className }: { board: BudgetPlateWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const scale = Math.max(board.budget, board.spent);
+  const ariaLabel = `${board.label}. ${board.items.map((i) => `${i.label}: ${format(i.value)}`).join(', ')}. ${
+    board.overBy > 0
+      ? t('tutor.whiteboard.board.over', { amount: format(board.overBy) })
+      : t('tutor.whiteboard.board.remaining', { amount: format(board.remaining) })
+  }`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 px-2" aria-hidden="true">
+        <div className="relative">
+          <HBar
+            segments={[
+              ...board.items.map((item) => ({ fraction: item.value / scale })),
+              { fraction: Math.max(0, board.budget - board.spent) / scale, tone: 'muted' as const },
+            ]}
+          />
+          {/* The ceiling, drawn ON the bar so an overspend is visibly past it. */}
+          <span
+            className="absolute inset-y-0 w-0.5 bg-warning"
+            style={{ left: `${(board.budget / scale) * 100}%` }}
+          />
+        </div>
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          {board.items.map((item, i) => (
+            <span key={i} className="flex min-w-0 items-baseline gap-1.5">
+              <Caption>{item.label}</Caption>
+              <AxisCaption className="tabular-nums">{format(item.value)}</AxisCaption>
+            </span>
+          ))}
+        </div>
+        <p className={cn('lf-caption shrink-0 text-center', board.overBy > 0 ? 'text-warning' : 'text-content-muted')}>
+          {board.overBy > 0
+            ? t('tutor.whiteboard.board.over', { amount: format(board.overBy) })
+            : t('tutor.whiteboard.board.remaining', { amount: format(board.remaining) })}
+        </p>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -1282,5 +1596,23 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <TradeBoard board={board} seq={seq} className={className} />;
     case 'chance':
       return <ChanceBoard board={board} seq={seq} className={className} />;
+    case 'deal':
+      return <DealBoard board={board} seq={seq} className={className} />;
+    case 'change':
+      return <ChangeBoard board={board} seq={seq} className={className} />;
+    case 'regroup':
+      return <RegroupBoard board={board} seq={seq} className={className} />;
+    case 'equation_bar':
+      return <EquationBarBoard board={board} seq={seq} className={className} />;
+    case 'receipt':
+      return <ReceiptBoard board={board} seq={seq} className={className} />;
+    case 'ledger':
+      return <LedgerBoard board={board} seq={seq} className={className} />;
+    case 'price_tag':
+      return <PriceTagBoard board={board} seq={seq} className={className} />;
+    case 'inventory':
+      return <InventoryBoard board={board} seq={seq} className={className} />;
+    case 'budget_plate':
+      return <BudgetPlateBoard board={board} seq={seq} className={className} />;
   }
 }

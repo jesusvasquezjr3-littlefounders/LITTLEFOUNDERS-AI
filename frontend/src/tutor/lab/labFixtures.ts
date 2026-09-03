@@ -747,6 +747,58 @@ const LAB_DECIDE_TEXT: Readonly<
   },
 };
 
+/* Operations and real-money artefacts (/TUTOR_INSTRUMENTS.md §3.2 C and F). */
+const LAB_MONEY_TEXT: Readonly<
+  Record<
+    Locale,
+    {
+      deal: { say: string; label: string; bins: [string, string, string] };
+      change: { say: string; label: string };
+      regroup: { say: string; label: string };
+      equation: { say: string; label: string; left: [string, string]; right: [string] };
+      receipt: { say: string; label: string; lines: [string, string, string] };
+      ledger: { say: string; label: string; entries: [string, string, string] };
+      priceTag: { say: string; label: string; item: string };
+      inventory: { say: string; label: string; item: string };
+      budget: { say: string; label: string; items: [string, string, string] };
+    }
+  >
+> = {
+  'en-US': {
+    deal: { say: 'Fourteen marbles between three friends. How many each?', label: 'Sharing them out', bins: ['Ana', 'Beto', 'Caro'] },
+    change: { say: 'It costs 7 and you paid with 20.', label: 'What comes back?' },
+    regroup: { say: 'One ten, traded for coins you can actually count out.', label: 'Breaking a ten' },
+    equation: { say: 'Both sides have to be the same length.', label: 'Keeping it balanced', left: ['Saved', 'Still to save'], right: ['The goal'] },
+    receipt: { say: 'Three things in the basket. What does the till say?', label: 'The receipt', lines: ['Bread', 'Milk', 'Apples'] },
+    ledger: { say: 'Money in, money out, and where you stand after each one.', label: 'The little account book', entries: ['Sold lemonade', 'Bought cups', 'Sold more'] },
+    priceTag: { say: 'Read the tag. What does one really cost?', label: 'Reading the tag', item: 'Pack of 6 pencils' },
+    inventory: { say: 'You started with twelve and sold five.', label: 'What is left on the shelf', item: 'Cookies' },
+    budget: { say: 'You have 100 for the whole week. Watch the line.', label: 'The week\'s budget', items: ['Lunch', 'Bus', 'A game'] },
+  },
+  'es-MX': {
+    deal: { say: 'Catorce canicas entre tres amigos. ¿Cuántas a cada quien?', label: 'Repartiéndolas', bins: ['Ana', 'Beto', 'Caro'] },
+    change: { say: 'Cuesta 7 y pagaste con 20.', label: '¿Qué regresa?' },
+    regroup: { say: 'Un billete de diez, cambiado por monedas que sí puedes contar.', label: 'Cambiando el de diez' },
+    equation: { say: 'Los dos lados tienen que medir lo mismo.', label: 'Manteniéndolo parejo', left: ['Ahorrado', 'Lo que falta'], right: ['La meta'] },
+    receipt: { say: 'Tres cosas en la canasta. ¿Qué dice la caja?', label: 'El ticket', lines: ['Pan', 'Leche', 'Manzanas'] },
+    ledger: { say: 'Lo que entra, lo que sale, y cómo vas después de cada uno.', label: 'La libretita de cuentas', entries: ['Vendí agua', 'Compré vasos', 'Vendí más'] },
+    priceTag: { say: 'Lee la etiqueta. ¿Cuánto cuesta uno de verdad?', label: 'Leyendo la etiqueta', item: 'Paquete de 6 lápices' },
+    inventory: { say: 'Empezaste con doce y vendiste cinco.', label: 'Lo que queda en el estante', item: 'Galletas' },
+    budget: { say: 'Tienes 100 para toda la semana. Mira la raya.', label: 'El presupuesto de la semana', items: ['Comida', 'Camión', 'Un juego'] },
+  },
+  'pt-BR': {
+    deal: { say: 'Quatorze bolinhas entre três amigos. Quantas para cada um?', label: 'Dividindo entre eles', bins: ['Ana', 'Beto', 'Caro'] },
+    change: { say: 'Custa 7 e você pagou com 20.', label: 'O que volta?' },
+    regroup: { say: 'Uma nota de dez, trocada por moedas que dá para contar.', label: 'Trocando a de dez' },
+    equation: { say: 'Os dois lados têm que ter o mesmo tamanho.', label: 'Mantendo equilibrado', left: ['Guardado', 'O que falta'], right: ['A meta'] },
+    receipt: { say: 'Três coisas na cesta. O que diz o caixa?', label: 'O cupom', lines: ['Pão', 'Leite', 'Maçãs'] },
+    ledger: { say: 'O que entra, o que sai, e como você fica depois de cada um.', label: 'O caderninho de contas', entries: ['Vendi limonada', 'Comprei copos', 'Vendi mais'] },
+    priceTag: { say: 'Lê a etiqueta. Quanto custa um de verdade?', label: 'Lendo a etiqueta', item: 'Pacote de 6 lápis' },
+    inventory: { say: 'Você começou com doze e vendeu cinco.', label: 'O que sobra na prateleira', item: 'Biscoitos' },
+    budget: { say: 'Você tem 100 para a semana toda. Olha a linha.', label: 'O orçamento da semana', items: ['Almoço', 'Ônibus', 'Um jogo'] },
+  },
+};
+
 const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
   'en-US': 'USD',
   'es-MX': 'MXN',
@@ -1208,6 +1260,154 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (
+    activity === 'deal' ||
+    activity === 'change' ||
+    activity === 'regroup' ||
+    activity === 'equation' ||
+    activity === 'receipt' ||
+    activity === 'ledger' ||
+    activity === 'price-tag' ||
+    activity === 'inventory' ||
+    activity === 'budget'
+  ) {
+    const text = LAB_MONEY_TEXT[locale];
+    const currency = LAB_CURRENCY[locale];
+    const base = {
+      seq: 4,
+      emotion: 'happy' as const,
+      action: 'nod' as const,
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask' as const,
+      policy: null,
+      demonstrate: null,
+    };
+    if (activity === 'deal') {
+      return {
+        ...base,
+        text: text.deal.say,
+        whiteboard: { kind: 'deal', total: 14, bins: text.deal.bins, perBin: 4, remainder: 2, label: text.deal.label },
+      };
+    }
+    if (activity === 'change') {
+      return {
+        ...base,
+        text: text.change.say,
+        whiteboard: { kind: 'change', price: 7, paid: 20, change: 13, label: text.change.label, currency },
+      };
+    }
+    if (activity === 'regroup') {
+      return {
+        ...base,
+        text: text.regroup.say,
+        whiteboard: {
+          kind: 'regroup',
+          fromDenomination: 10,
+          fromCount: 1,
+          intoDenomination: 1,
+          intoCount: 10,
+          label: text.regroup.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'equation') {
+      return {
+        ...base,
+        text: text.equation.say,
+        whiteboard: {
+          kind: 'equation_bar',
+          left: [
+            { label: text.equation.left[0], value: 34 },
+            { label: text.equation.left[1], value: 56 },
+          ],
+          right: [{ label: text.equation.right[0], value: 90 }],
+          total: 90,
+          label: text.equation.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'receipt') {
+      return {
+        ...base,
+        text: text.receipt.say,
+        whiteboard: {
+          kind: 'receipt',
+          lines: [
+            { label: text.receipt.lines[0], value: 18 },
+            { label: text.receipt.lines[1], value: 24 },
+            { label: text.receipt.lines[2], value: 31 },
+          ],
+          total: 73,
+          label: text.receipt.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'ledger') {
+      return {
+        ...base,
+        text: text.ledger.say,
+        whiteboard: {
+          kind: 'ledger',
+          entries: [
+            { label: text.ledger.entries[0], amount: 48, direction: 'in' },
+            { label: text.ledger.entries[1], amount: 19, direction: 'out' },
+            { label: text.ledger.entries[2], amount: 26, direction: 'in' },
+          ],
+          balances: [48, 29, 55],
+          final: 55,
+          label: text.ledger.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'price-tag') {
+      return {
+        ...base,
+        text: text.priceTag.say,
+        whiteboard: {
+          kind: 'price_tag',
+          item: text.priceTag.item,
+          price: 60,
+          units: 6,
+          discountPercent: 25,
+          unitPrice: 7.5,
+          finalPrice: 45,
+          label: text.priceTag.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'inventory') {
+      return {
+        ...base,
+        text: text.inventory.say,
+        whiteboard: { kind: 'inventory', item: text.inventory.item, start: 12, sold: 5, left: 7, label: text.inventory.label },
+      };
+    }
+    return {
+      ...base,
+      text: text.budget.say,
+      whiteboard: {
+        kind: 'budget_plate',
+        budget: 100,
+        items: [
+          { label: text.budget.items[0], value: 45 },
+          { label: text.budget.items[1], value: 30 },
+          { label: text.budget.items[2], value: 40 },
+        ],
+        spent: 115,
+        remaining: 0,
+        overBy: 15,
+        label: text.budget.label,
+        currency,
+      },
+    };
+  }
   if (activity === 'categories') {
     const text = LAB_CATEGORIES_TEXT[locale];
     return {
@@ -1312,6 +1512,15 @@ const WHITEBOARD_ACTIVITIES = [
   'outcomes',
   'trade',
   'chance',
+  'deal',
+  'change',
+  'regroup',
+  'equation',
+  'receipt',
+  'ledger',
+  'price-tag',
+  'inventory',
+  'budget',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [

@@ -21,6 +21,15 @@ import {
   computeVenn,
   computeRanking,
   computeChance,
+  computeDeal,
+  computeChange,
+  computeRegroup,
+  computeEquationBar,
+  computeReceipt,
+  computeLedger,
+  computePriceTag,
+  computeInventory,
+  computeBudgetPlate,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -871,5 +880,134 @@ describe('chance — weights in, shares out, no percentage from the model', () =
     const result = computeChance({ outcomes: [{ label: 'vende', weight: 4 }, { label: 'llueve', weight: 1 }] });
     expect(result?.shares).toEqual([0.8, 0.2]);
     expect(result!.shares.reduce((a, b) => a + b, 0)).toBeCloseTo(1);
+  });
+});
+
+/* ── OPERATIONS AND REAL-MONEY ARTEFACTS ────────────────────────────────────── */
+
+describe('deal — the remainder is not nothing', () => {
+  it('shares out and keeps what is left', () => {
+    expect(computeDeal({ total: 14, bins: ['a', 'b', 'c'] })).toEqual({ perBin: 4, remainder: 2 });
+    expect(computeDeal({ total: 12, bins: ['a', 'b', 'c'] })).toEqual({ perBin: 4, remainder: 0 });
+  });
+
+  it('refuses fewer things than places — you cannot deal what you do not have', () => {
+    expect(computeDeal({ total: 2, bins: ['a', 'b', 'c'] })).toBeNull();
+  });
+});
+
+describe('change', () => {
+  it('works out what comes back', () => {
+    expect(computeChange({ price: 7, paid: 20 })).toEqual({ change: 13 });
+    expect(computeChange({ price: 7, paid: 7 })).toEqual({ change: 0 });
+  });
+
+  it('refuses paying less than the price — that is a different story', () => {
+    expect(computeChange({ price: 20, paid: 7 })).toBeNull();
+  });
+});
+
+describe('regroup', () => {
+  it('breaks a unit into smaller ones', () => {
+    expect(computeRegroup({ fromDenomination: 10, fromCount: 1, intoDenomination: 1 })).toEqual({ intoCount: 10 });
+    expect(computeRegroup({ fromDenomination: 10, fromCount: 2, intoDenomination: 5 })).toEqual({ intoCount: 4 });
+  });
+
+  it('refuses a trade that does not divide evenly — half a coin is not on any table', () => {
+    expect(computeRegroup({ fromDenomination: 10, fromCount: 1, intoDenomination: 3 })).toBeNull();
+  });
+
+  it('refuses breaking a unit into something bigger than itself', () => {
+    expect(computeRegroup({ fromDenomination: 5, fromCount: 1, intoDenomination: 10 })).toBeNull();
+  });
+});
+
+describe('equation_bar — an unbalanced equation is refused, never drawn', () => {
+  it('accepts sides that match', () => {
+    expect(
+      computeEquationBar({
+        left: [{ label: 'a', value: 34 }, { label: 'b', value: 56 }],
+        right: [{ label: 'goal', value: 90 }],
+      }),
+    ).toEqual({ total: 90 });
+  });
+
+  it('refuses sides that do not — the equals sign is not decorative', () => {
+    expect(
+      computeEquationBar({
+        left: [{ label: 'a', value: 34 }],
+        right: [{ label: 'goal', value: 90 }],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('receipt and ledger', () => {
+  it('adds a receipt up', () => {
+    expect(
+      computeReceipt({ lines: [{ label: 'a', value: 18 }, { label: 'b', value: 24 }, { label: 'c', value: 31 }] }),
+    ).toEqual({ total: 73 });
+  });
+
+  it('runs a ledger balance line by line', () => {
+    const result = computeLedger({
+      entries: [
+        { label: 'sold', amount: 48, direction: 'in' },
+        { label: 'cups', amount: 19, direction: 'out' },
+        { label: 'sold', amount: 26, direction: 'in' },
+      ],
+    });
+    expect(result?.balances).toEqual([48, 29, 55]);
+    expect(result?.final).toBe(55);
+  });
+
+  it('refuses a ledger that goes below zero — this board cannot draw debt honestly', () => {
+    expect(
+      computeLedger({
+        entries: [
+          { label: 'cups', amount: 19, direction: 'out' },
+          { label: 'sold', amount: 5, direction: 'in' },
+        ],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('price_tag', () => {
+  it('applies the discount and divides by the quantity', () => {
+    expect(computePriceTag({ price: 60, units: 6, discountPercent: 25 })).toEqual({ unitPrice: 7.5, finalPrice: 45 });
+  });
+
+  it('handles a plain tag with no discount', () => {
+    expect(computePriceTag({ price: 60, units: 6, discountPercent: null })).toEqual({ unitPrice: 10, finalPrice: 60 });
+  });
+});
+
+describe('inventory', () => {
+  it('works out what is left', () => {
+    expect(computeInventory({ start: 12, sold: 5 })).toEqual({ left: 7 });
+  });
+
+  it('refuses selling more than you had', () => {
+    expect(computeInventory({ start: 5, sold: 12 })).toBeNull();
+  });
+});
+
+describe('budget_plate — the ONE board that draws a rule being broken', () => {
+  it('reports what is left when it fits', () => {
+    expect(
+      computeBudgetPlate({ budget: 100, items: [{ label: 'a', value: 45 }, { label: 'b', value: 30 }] }),
+    ).toEqual({ spent: 75, remaining: 25, overBy: 0 });
+  });
+
+  it('ALLOWS an overspend and reports it — refusing would hide the case it exists for', () => {
+    // `budget-is-per-item` can only be dislodged by letting the learner watch
+    // the total cross the line.
+    expect(
+      computeBudgetPlate({
+        budget: 100,
+        items: [{ label: 'a', value: 45 }, { label: 'b', value: 30 }, { label: 'c', value: 40 }],
+      }),
+    ).toEqual({ spent: 115, remaining: 0, overBy: 15 });
   });
 });

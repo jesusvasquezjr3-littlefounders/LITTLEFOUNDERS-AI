@@ -898,6 +898,186 @@ export const WhiteboardChanceSchema = z
   })
   .strict();
 
+
+/* ── OPERATIONS AND REAL-MONEY ARTEFACTS (§3.2 families C and F) ────────────── */
+
+/**
+ * `kind: 'deal'` — REPARTIR DE A UNO, WITH THE REMAINDER VISIBLE AND APART.
+ *
+ * `deal-it-into-piles.md`: "one place per person… you cannot deal what you do
+ * not have." `categories` draws the end state, which hides the very thing being
+ * taught — that some is left over and it is not nothing. Both the share and the
+ * remainder are computed (`computeDeal`); the model states neither.
+ */
+export const WhiteboardDealSchema = z
+  .object({
+    kind: z.literal('deal'),
+    total: z.number().int().min(1).max(60),
+    /** Who or what it is being dealt into. 2-6 places; past that nobody follows the dealing. */
+    bins: z.array(z.string().min(1).max(40)).min(2).max(6),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/**
+ * `kind: 'change'` — ONE PAYMENT SPLITTING INTO WHAT IS KEPT AND WHAT COMES BACK.
+ *
+ * `register-keeps-the-price.md`: "split it PHYSICALLY in front of them… two
+ * piles out of one payment." The `returns-payment` misconception is a learner
+ * handing the whole payment back, and no subtraction sentence shows why that is
+ * wrong the way two piles do. The change is computed, never stated.
+ */
+export const WhiteboardChangeSchema = z
+  .object({
+    kind: z.literal('change'),
+    price: z.number().positive().max(1_000_000),
+    paid: z.number().positive().max(1_000_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
+/**
+ * `kind: 'regroup'` — ONE UNIT BROKEN INTO MANY.
+ *
+ * `trade-before-subtract.md` and `same-unit-first.md`. A ten broken into ten
+ * ones is a step of the problem, not mental arithmetic, and drawing it is what
+ * makes `subtracts-smaller-from-larger-digitwise` visible as a wrong move rather
+ * than a wrong answer. How many you get back is computed.
+ */
+export const WhiteboardRegroupSchema = z
+  .object({
+    kind: z.literal('regroup'),
+    fromDenomination: z.number().positive().max(1_000),
+    fromCount: z.number().int().min(1).max(6),
+    intoDenomination: z.number().positive().max(1_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
+/**
+ * `kind: 'equation_bar'` — TWO SIDES AS LENGTHS THAT MUST MATCH.
+ *
+ * For `money.percent-intro` and tier-3 work where an equality stops being an
+ * arithmetic instruction and becomes a relationship to keep. `computeEquationBar`
+ * REFUSES a board whose sides do not match: an equation drawn out of balance
+ * teaches that the sign is decorative.
+ */
+export const WhiteboardEquationBarSchema = z
+  .object({
+    kind: z.literal('equation_bar'),
+    left: z.array(z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict()).min(1).max(3),
+    right: z.array(z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict()).min(1).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One line of a till receipt. */
+export const ReceiptLineSchema = z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict();
+
+/**
+ * `kind: 'receipt'` — THE DOCUMENT A CHILD HAS ALREADY SEEN.
+ *
+ * A till receipt written line by line to a total. `money.estimate-total` and
+ * `add-money` are usually taught as a column of numbers; this is the same column
+ * wearing the form it takes in the world, which is most of why it is worth
+ * having. The total is computed.
+ */
+export const WhiteboardReceiptSchema = z
+  .object({
+    kind: z.literal('receipt'),
+    lines: z.array(ReceiptLineSchema).min(1).max(6),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
+/** One entry in a ledger — money in or money out. */
+export const LedgerEntrySchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    amount: z.number().positive().max(1_000_000),
+    direction: z.enum(['in', 'out']),
+  })
+  .strict();
+
+/**
+ * `kind: 'ledger'` — TWO COLUMNS AND A RUNNING BALANCE.
+ *
+ * What a real business keeps, in a child's version. Where `flow` shows one
+ * in-out-left moment, this shows the sequence of them, which is what makes
+ * `saving-is-leftover` visible: the balance moves, and what is left at the end
+ * was decided by every line above it. Every running balance is computed.
+ */
+export const WhiteboardLedgerSchema = z
+  .object({
+    kind: z.literal('ledger'),
+    entries: z.array(LedgerEntrySchema).min(2).max(6),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
+/**
+ * `kind: 'price_tag'` — WHERE THE DECISION ACTUALLY HAPPENS.
+ *
+ * Price, quantity and discount on one object, because a learner meets all three
+ * on a shelf at once and has to read them together. Unit price and the
+ * discounted price are computed — those are the two numbers a shopper is being
+ * asked to work out, and `price-is-fixed-property` is the belief that they are
+ * not workable-out at all.
+ */
+export const WhiteboardPriceTagSchema = z
+  .object({
+    kind: z.literal('price_tag'),
+    item: z.string().min(1).max(40),
+    price: z.number().positive().max(1_000_000),
+    units: z.number().positive().max(10_000),
+    /** A whole-percent discount, or null for a plain tag. */
+    discountPercent: z.number().int().min(1).max(90).nullable(),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
+/**
+ * `kind: 'inventory'` — STOCK FALLING AS SALES HAPPEN.
+ *
+ * Makes visible that selling is exchanging a thing for money rather than only
+ * receiving money, which is the missing half of `revenue-is-profit`. What is
+ * left is computed, and selling more than you had is refused.
+ */
+export const WhiteboardInventorySchema = z
+  .object({
+    kind: z.literal('inventory'),
+    item: z.string().min(1).max(40),
+    start: z.number().int().min(1).max(40),
+    sold: z.number().int().min(0).max(40),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/**
+ * `kind: 'budget_plate'` — A TOTAL AGAINST A VISIBLE CEILING.
+ *
+ * `budget-is-per-item` is believing the budget applies to each thing separately.
+ * A plate with a ceiling makes over-allocating show what it STEALS FROM rather
+ * than produce an error message, which is the difference between a constraint a
+ * learner feels and a rule they are told. Spent, remaining and any overspend are
+ * computed.
+ */
+export const WhiteboardBudgetPlateSchema = z
+  .object({
+    kind: z.literal('budget_plate'),
+    budget: z.number().positive().max(1_000_000),
+    items: z.array(z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict()).min(2).max(5),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']),
+  })
+  .strict();
+
 /**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
  * never free-form — the same §5 discipline every other model-facing schema
@@ -933,6 +1113,15 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardOutcomesSchema,
   WhiteboardTradeSchema,
   WhiteboardChanceSchema,
+  WhiteboardDealSchema,
+  WhiteboardChangeSchema,
+  WhiteboardRegroupSchema,
+  WhiteboardEquationBarSchema,
+  WhiteboardReceiptSchema,
+  WhiteboardLedgerSchema,
+  WhiteboardPriceTagSchema,
+  WhiteboardInventorySchema,
+  WhiteboardBudgetPlateSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -1019,6 +1208,15 @@ export type WhiteboardRanking = z.infer<typeof WhiteboardRankingSchema>;
 export type WhiteboardOutcomes = z.infer<typeof WhiteboardOutcomesSchema>;
 export type WhiteboardTrade = z.infer<typeof WhiteboardTradeSchema>;
 export type WhiteboardChance = z.infer<typeof WhiteboardChanceSchema>;
+export type WhiteboardDeal = z.infer<typeof WhiteboardDealSchema>;
+export type WhiteboardChange = z.infer<typeof WhiteboardChangeSchema>;
+export type WhiteboardRegroup = z.infer<typeof WhiteboardRegroupSchema>;
+export type WhiteboardEquationBar = z.infer<typeof WhiteboardEquationBarSchema>;
+export type WhiteboardReceipt = z.infer<typeof WhiteboardReceiptSchema>;
+export type WhiteboardLedger = z.infer<typeof WhiteboardLedgerSchema>;
+export type WhiteboardPriceTag = z.infer<typeof WhiteboardPriceTagSchema>;
+export type WhiteboardInventory = z.infer<typeof WhiteboardInventorySchema>;
+export type WhiteboardBudgetPlate = z.infer<typeof WhiteboardBudgetPlateSchema>;
 /** Any of the closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
@@ -1103,6 +1301,23 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       ];
     case 'chance':
       return [whiteboard.label, ...whiteboard.outcomes.map((o) => o.label)];
+    case 'deal':
+      return [whiteboard.label, ...whiteboard.bins];
+    case 'change':
+    case 'regroup':
+      return [whiteboard.label];
+    case 'equation_bar':
+      return [whiteboard.label, ...whiteboard.left.map((t) => t.label), ...whiteboard.right.map((t) => t.label)];
+    case 'receipt':
+      return [whiteboard.label, ...whiteboard.lines.map((l) => l.label)];
+    case 'ledger':
+      return [whiteboard.label, ...whiteboard.entries.map((e) => e.label)];
+    case 'price_tag':
+      return [whiteboard.label, whiteboard.item];
+    case 'inventory':
+      return [whiteboard.label, whiteboard.item];
+    case 'budget_plate':
+      return [whiteboard.label, ...whiteboard.items.map((i) => i.label)];
   }
 }
 

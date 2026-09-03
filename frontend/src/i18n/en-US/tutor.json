@@ -415,7 +415,14 @@
       "perUnit": "{{amount}} each",
       "best": "Best deal",
       "fair": "The same",
-      "both": "Both"
+      "both": "Both",
+      "change": "Change: {{amount}}",
+      "leftOver": "{{count}} left over",
+      "eachGets": "{{count}} each",
+      "over": "Over by {{amount}}",
+      "stillHave": "{{count}} left",
+      "balance": "Balance",
+      "totalWord": "Total"
     }
   }
 }

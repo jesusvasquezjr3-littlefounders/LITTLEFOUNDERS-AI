@@ -415,7 +415,14 @@
       "perUnit": "{{amount}} cada uno",
       "best": "La mejor",
       "fair": "Igual",
-      "both": "Los dos"
+      "both": "Los dos",
+      "change": "Cambio: {{amount}}",
+      "leftOver": "sobran {{count}}",
+      "eachGets": "{{count}} cada quien",
+      "over": "Te pasaste por {{amount}}",
+      "stillHave": "quedan {{count}}",
+      "balance": "Saldo",
+      "totalWord": "Total"
     }
   }
 }

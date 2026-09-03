@@ -56,6 +56,15 @@ import {
   computeVenn,
   computeRanking,
   computeChance,
+  computeDeal,
+  computeChange,
+  computeRegroup,
+  computeEquationBar,
+  computeReceipt,
+  computeLedger,
+  computePriceTag,
+  computeInventory,
+  computeBudgetPlate,
 } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
@@ -475,6 +484,43 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
           ? board.outcomes.map((o, i) => `${o.label} ${Math.round(result.shares[i]! * 100)}%`).join(', ')
           : 'INVALID',
       };
+    }
+    case 'deal': {
+      const r = computeDeal(board);
+      return { label: board.label, summary: r ? `${board.total} into ${board.bins.length}: ${r.perBin} each, ${r.remainder} left` : 'INVALID' };
+    }
+    case 'change': {
+      const r = computeChange(board);
+      return { label: board.label, summary: r ? `paid ${board.paid} for ${board.price} = ${r.change} change` : 'INVALID' };
+    }
+    case 'regroup': {
+      const r = computeRegroup(board);
+      return { label: board.label, summary: r ? `${board.fromCount}x${board.fromDenomination} -> ${r.intoCount}x${board.intoDenomination}` : 'INVALID' };
+    }
+    case 'equation_bar': {
+      const r = computeEquationBar(board);
+      const sides = `${board.left.map((t) => t.value).join('+')} = ${board.right.map((t) => t.value).join('+')}`;
+      return { label: board.label, summary: r ? sides : `${sides} (INVALID)` };
+    }
+    case 'receipt': {
+      const r = computeReceipt(board);
+      return { label: board.label, summary: r ? `${board.lines.length} lines = ${r.total}` : 'INVALID' };
+    }
+    case 'ledger': {
+      const r = computeLedger(board);
+      return { label: board.label, summary: r ? `${r.balances.join(' → ')} (final ${r.final})` : 'INVALID' };
+    }
+    case 'price_tag': {
+      const r = computePriceTag(board);
+      return { label: board.label, summary: r ? `${board.item} ${r.finalPrice} (${r.unitPrice} each)` : 'INVALID' };
+    }
+    case 'inventory': {
+      const r = computeInventory(board);
+      return { label: board.label, summary: r ? `${board.item}: ${board.start} - ${board.sold} = ${r.left}` : 'INVALID' };
+    }
+    case 'budget_plate': {
+      const r = computeBudgetPlate(board);
+      return { label: board.label, summary: r ? `spent ${r.spent} of ${board.budget}${r.overBy > 0 ? ` (OVER by ${r.overBy})` : ''}` : 'INVALID' };
     }
   }
 }

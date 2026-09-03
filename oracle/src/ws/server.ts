@@ -62,6 +62,15 @@ import {
   computeVenn,
   computeRanking,
   computeChance,
+  computeDeal,
+  computeChange,
+  computeRegroup,
+  computeEquationBar,
+  computeReceipt,
+  computeLedger,
+  computePriceTag,
+  computeInventory,
+  computeBudgetPlate,
 } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
@@ -1368,6 +1377,42 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
       return { ...board };
     case 'chance': {
       const result = computeChance(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'deal': {
+      const result = computeDeal(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'change': {
+      const result = computeChange(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'regroup': {
+      const result = computeRegroup(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'equation_bar': {
+      const result = computeEquationBar(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'receipt': {
+      const result = computeReceipt(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'ledger': {
+      const result = computeLedger(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'price_tag': {
+      const result = computePriceTag(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'inventory': {
+      const result = computeInventory(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'budget_plate': {
+      const result = computeBudgetPlate(board);
       return result === null ? null : { ...board, ...result };
     }
   }

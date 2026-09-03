@@ -899,6 +899,35 @@ function internalRouter(): Router {
     })
     .strict();
 
+  /* Operations and real-money artefacts (/TUTOR_INSTRUMENTS.md §3.2 C and F). */
+  const DealWhiteboardBody = z
+    .object({ kind: z.literal('deal'), total: z.number().int(), bins: z.array(z.string().max(40)).min(2).max(6), perBin: z.number().int(), remainder: z.number().int(), label: z.string().max(60) })
+    .strict();
+  const ChangeWhiteboardBody = z
+    .object({ kind: z.literal('change'), price: z.number(), paid: z.number(), change: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
+    .strict();
+  const RegroupWhiteboardBody = z
+    .object({ kind: z.literal('regroup'), fromDenomination: z.number(), fromCount: z.number().int(), intoDenomination: z.number(), intoCount: z.number().int(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
+    .strict();
+  const EquationBarWhiteboardBody = z
+    .object({ kind: z.literal('equation_bar'), left: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(1).max(3), right: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(1).max(3), total: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
+    .strict();
+  const ReceiptWhiteboardBody = z
+    .object({ kind: z.literal('receipt'), lines: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(1).max(6), total: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
+    .strict();
+  const LedgerWhiteboardBody = z
+    .object({ kind: z.literal('ledger'), entries: z.array(z.object({ label: z.string().max(40), amount: z.number(), direction: z.enum(['in', 'out']) }).strict()).min(2).max(6), balances: z.array(z.number()), final: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
+    .strict();
+  const PriceTagWhiteboardBody = z
+    .object({ kind: z.literal('price_tag'), item: z.string().max(40), price: z.number(), units: z.number(), discountPercent: z.number().int().nullable(), unitPrice: z.number(), finalPrice: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
+    .strict();
+  const InventoryWhiteboardBody = z
+    .object({ kind: z.literal('inventory'), item: z.string().max(40), start: z.number().int(), sold: z.number().int(), left: z.number().int(), label: z.string().max(60) })
+    .strict();
+  const BudgetPlateWhiteboardBody = z
+    .object({ kind: z.literal('budget_plate'), budget: z.number(), items: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(2).max(5), spent: z.number(), remaining: z.number(), overBy: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
+    .strict();
+
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
     CompareWhiteboardBody,
@@ -923,6 +952,15 @@ function internalRouter(): Router {
     OutcomesWhiteboardBody,
     TradeWhiteboardBody,
     ChanceWhiteboardBody,
+    DealWhiteboardBody,
+    ChangeWhiteboardBody,
+    RegroupWhiteboardBody,
+    EquationBarWhiteboardBody,
+    ReceiptWhiteboardBody,
+    LedgerWhiteboardBody,
+    PriceTagWhiteboardBody,
+    InventoryWhiteboardBody,
+    BudgetPlateWhiteboardBody,
   ]);
 
   /**
