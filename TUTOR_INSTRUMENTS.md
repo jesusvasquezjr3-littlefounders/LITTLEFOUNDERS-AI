@@ -26,7 +26,7 @@ only section that must be updated on EVERY sprint boundary.**
 
 | | |
 |---|---|
-| **Status** | IN PROGRESS. **🔴 Class I is NOT actually complete despite the S14/S15 row below — see §10.5, found 2026-09-03 while wiring `grab`'s prompt guidance.** Wave 0 + Classes II-V underway 2026-09-02/03. |
+| **Status** | IN PROGRESS. Class I is NOW actually complete — §10.5 found 31 of 41 kinds unreachable (the model was never shown their shape) and fixed it the same day, live-verified on 2 of the 31. Wave 0 + Classes II-V underway 2026-09-02/03. |
 | **Active sprint** | Wave 0 COMPLETE. Class II / S9 IN PROGRESS: `step` DONE 2026-09-03, `grab`/`fill` not started. **Correction to the "continue as planned" framing below**: Class II turned out NOT to carry S2's ids-in-context risk — §3.3's own header says Class II is ungraded, no answer key, no verdict, which is exactly what removes the "a guessed id could assert a wrong graded answer" hazard `place`/`assign`/`pair` had. Confirmed by §8.1 decision D, not re-litigated. |
 | **Next action** | Finish S9: `grab` (drag into piles/bins/cells) and `fill` (tap to fill a container) — each a new, self-contained, model-invented-content instrument in the Class I mould (own schema/wire/renderer) but LEARNER-INTERACTIVE, so real-pointer-event hit-testing (§1.14) matters more here than anywhere in Class I. Then S10 (`whatif`, `your_turn`). Then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
 | **Blocked on owner** | **D2 (generated imagery, gates Class IV and Wave 4) — asked at the end of this session's work.** D1 and D3 were answered 2026-09-02 with "procede". |
@@ -1198,8 +1198,10 @@ every one by being RUN rather than by being reasoned about.
 
 ---
 
-### §10.5 🔴 31 OF 41 "SHIPPED" CLASS I INSTRUMENTS ARE UNREACHABLE — the model was
-never shown their shape (found 2026-09-03, live-verified, HIGH)
+### §10.5 ✅ 31 of 41 "shipped" Class I instruments were unreachable — FIXED
+
+**Found, live-verified and fixed 2026-09-03, same day, HIGH.** The model was
+never shown their shape.
 
 **The claim in the S14/S15 row above — "CLASS I IS COMPLETE: all 41 drawn
 instruments are live" — is true of the DATA PLUMBING and false of the PRODUCT.**
@@ -1265,18 +1267,60 @@ never aimed at doing deliberately, and every local `tutor:converse`-pattern run
 this session ran (Sprint 2, Sprint 3's own predecessors) happened to land on
 kinds inside the shaped 10.
 
-**Not fixed here.** This was found while researching where `grab`'s prompt
-guidance belongs (Class II, S9) — a new, 42nd kind, about to become a 32nd
-unreachable one if wired the same way. `grab`'s own oracle-side schema/wire/
-moderation/compute plumbing was completed and type-checks clean (this commit's
-own diff) but was deliberately NOT wired into `prompt.ts` pending the owner's
-steer on which of two things to do first: extend the SHAPE LIST (mechanical —
-every field already exists in `turnSchema.ts`, this is transcription, not
-design) and REACH INTO §4.4 for the 31 kinds' actual guidance (a genuinely
-different, larger job — deciding what each kind is FOR, in prompt-budget terms,
-the same care S6-S8 spent on 6 kinds), or continue the Class II roadmap as
-planned and return to this afterward. Surfaced rather than guessed, the same
-posture D2 and the S2 ids-in-context finding already have.
+**Found while researching where `grab`'s prompt guidance belongs** (Class II,
+S9) — a new, 42nd kind, about to become a 32nd unreachable one if wired the
+same way. Raised to the owner rather than guessed on, the same posture D2 and
+the S2 ids-in-context finding already have: fix the 31-kind gap first, or
+continue the Class II roadmap and return to it after. **Answer: fix it first.**
+
+**THE FIX.** All 31 shape lines added to `prompt.ts`'s shape-list array
+(alongside the original 10), each transcribed directly from its own schema in
+`turnSchema.ts` — not re-derived from memory or from the doc comments beside
+them, because a shape hint that disagrees with what `.strict()` actually
+accepts is worse than none: it fails in exactly the way a correct one
+succeeds, and the failure is silent (the turn is thrown away, §1.14's "harness
+that cannot operate a surface" lesson applied to the model's OWN reach into
+the product rather than a test driver's). `grab`'s own shape line was added
+the same way, alongside them, so it ships already reachable rather than as
+kind #32 in the same hole. The "WHICH BOARD FITS WHICH MOMENT" situation index
+got one edit: `two_bins` vs `grab` now says which is which ("YOU narrate the
+sort" vs "the learner sorting it themselves, hands-on"), since both now
+answer to the same "sorting into groups" situation and previously only one of
+them could actually be drawn.
+
+**VERIFIED, not assumed to follow from the diff.** Two live `deepseek-chat`
+calls, two different kinds from the previously-unreachable 31, both drawn
+correctly on essentially the first ask:
+- The EXACT scenario that proved the gap — "muéstramelo en un pizarrón con dos
+  grupos" — now produces `two_bins` on the FIRST turn (previously took an
+  explicit follow-up and still produced the wrong kind): `{"kind":"two_bins",
+  "binLabels":["Necesito","Quiero"],"items":[{"label":"Pan","bin":0},
+  {"label":"Agua","bin":0},{"label":"Juguete","bin":1},
+  {"label":"Consola","bin":1}],...}` — every item correctly sorted.
+- A lemonade-business "ciclo de comprar y vender" scenario produces `cycle`:
+  `{"kind":"cycle","steps":["Comprar limones y azúcar","Hacer limonada",
+  "Vender cada vaso a 5","Ganar dinero y volver a comprar"],...}` — 4 steps,
+  within the schema's 3-5 bound, genuinely representing the cycle asked for.
+
+Not individually re-verified: the other 29 of the 31. The root cause (no shape
+text existed at all) and the fix (the SAME transcription mechanism that
+visibly repaired the two kinds tested) apply uniformly to all of them, so
+this is treated as fixed across the set — but the next live `tutor:converse`-
+pattern run or `step=converse` deploy gate should watch for any of the other
+29 landing wrong the way `two_bins` did, since two data points is evidence,
+not exhaustion.
+
+**What this does NOT include.** Full `instrumentSpecs.ts`-style guidance
+("when to reach for it, what its fields mean, a worked example," the
+treatment S6-S8 gave 6 kinds) for the 31 — that remains a separate, larger,
+deliberately-not-attempted job. The shape line alone is what makes a kind
+REACHABLE (this fix); full guidance is what makes the model choose it WELL
+and use its fields correctly under harder scenarios, matching how the
+original 4 kinds (`sequence`/`compare`/`marked_line`/`categories`) have
+operated on shape-plus-situation-index alone since S4, with no
+`instrumentSpecs.ts` entry, apparently adequately. Add per-kind guidance
+later, incrementally, the same way `INSTRUMENT_SPEAKING_RULE` was added — from
+a real observed failure, not pre-emptively for all 31 at once.
 
 ---
 
@@ -1312,3 +1356,4 @@ this plan does not change that rule (§5.12).
 | 2026-09-03 | Sprint 2 closed (§7.2 RESULT): `demonstrate` machinery widened to 4 families across all 6 hand-mirrored copies (new `demo-step:check` gate). Only `number_line`'s `move` reached the live prompt; `place`/`assign`/`pair` were built and then deliberately withheld after finding `orchestrator.ts` never gives the model a served segment's real ids, which would let a guessed placement assert a wrong graded answer. `move` itself was measured live (5 calls) to not fire despite two prompt revisions — recorded as an honest negative result, not claimed as working. |
 | 2026-09-03 | Sprint 3 closed (§7.3 RESULT), completing Wave 0: `sequence`'s bar-by-bar reveal plays a sound (scoped from all 41 kinds to the one with a repeating staged reveal); the map opened during `conversing` as a `document.body` portal rather than a dock-hosted sheet, after `phases.ts` showed the dock-hosted design would have illegally moved the camera during a live conversation. Found and fixed a real, previously-latent JSDOM gap (`HTMLMediaElement.prototype.play`) in `test-setup.ts` along the way. `verify:tutor-ui`/`verify:tutor-a11y` green; mic-dock geometry proven byte-identical with the map open/closed at both breakpoints. |
 | 2026-09-03 | Class II / S9's `step` shipped: a "Show next" control on `sequence`'s reveal, sibling of `role="img"` (never nested — would be swallowed from assistive tech), no model involvement. Corrected the session's own prior framing: Class II does NOT carry `demonstrate`'s ids-in-context risk — it is ungraded by construction (§3.3, §8.1 decision D), so there is no answer key a guessed id could ever assert wrongly. `grab`/`fill` (S9) and `whatif`/`your_turn` (S10) remain. |
+| 2026-09-03 | §10.5: found and fixed, same day — 31 of 41 "shipped" Class I kinds had no JSON shape anywhere in `prompt.ts`, only a bare name in the situation index, so the model could never validly produce them and silently substituted a shaped kind instead (a wrong-but-plausible board, worse than none). `instruments:check`'s 5-copy manifest never covered this SIXTH place, which is why it shipped clean through S11-S15. All 31 shapes added, transcribed from `turnSchema.ts` directly; live-verified on `two_bins` and `cycle`, both now drawn correctly. Found while wiring `grab`'s own prompt line, which shipped alongside them rather than becoming a 32nd instance of the same gap. |

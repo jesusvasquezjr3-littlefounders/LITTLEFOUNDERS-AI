@@ -1846,6 +1846,59 @@ export const TUTOR_SYSTEM_PROMPT: string = [
     + ' "keptLabel", "label", "currency" }',
   '    { "kind": "goal_bar", "goal": { "label", "value" }, "saved": { "label", "value" }, "label", "currency" }',
   '    { "kind": "worked", "start", "steps": 1-4 of { "op": "add"|"subtract", "value" }, "label", "currency" }',
+  /*
+   * THE 31 KINDS S11-S15 SHIPPED, NEVER ADDED HERE — found 2026-09-03 while
+   * wiring `grab`'s own line below (/TUTOR_INSTRUMENTS.md §10.5). Every field
+   * transcribed directly from its own schema in turnSchema.ts, not
+   * re-derived — a shape hint that disagrees with what `.strict()` actually
+   * accepts is worse than none, because it fails in exactly the way a right
+   * one succeeds. Kept in the SAME six-section grouping turnSchema.ts itself
+   * uses, so a reader checking one against the other never has to search.
+   */
+  '    { "kind": "ten_frame", "count", "label" }',
+  '    { "kind": "open_number_line", "from", "to", "jumps": 1-5 of { "value" }, "label", "currency" }',
+  '    { "kind": "array", "rows", "columns", "unitValue", "label", "currency" }',
+  '    { "kind": "fraction_strip", "rows": 2-4 of { "denominator", "highlighted" }, "label" }',
+  '    { "kind": "partition", "whole", "splits": 2-3 of { "label", "denominator" }, "label", "currency" }',
+  '    { "kind": "table", "options": 2-4 of { "label", "price", "units" }, "label", "currency" }',
+  '    { "kind": "scale", "left": { "label", "value" }, "right": { "label", "value" }, "label", "currency" }',
+  '    { "kind": "two_bins", "binLabels": exactly 2 strings,'
+    + ' "items": 2-8 of { "label", "bin": 0|1 }, "label" }',
+  '    { "kind": "venn", "leftLabel", "rightLabel",'
+    + ' "items": 2-8 of { "label", "side": "left"|"right"|"both" }, "label" }',
+  '    { "kind": "ranking", "items": 2-5 of { "label", "value" }, "direction": "asc"|"desc", "label", "currency" }',
+  '    { "kind": "outcomes", "good": { "label", "detail" }, "bad": { "label", "detail" }, "label" }',
+  '    { "kind": "trade", "left": { "who", "gives", "gets" }, "right": { "who", "gives", "gets" }, "label" }',
+  '    { "kind": "chance", "outcomes": 2-3 of { "label", "weight": 1-100 }, "label" }',
+  '    { "kind": "deal", "total", "bins": 2-6 of string, "label" }',
+  '    { "kind": "change", "price", "paid", "label", "currency" }',
+  '    { "kind": "regroup", "fromDenomination", "fromCount", "intoDenomination", "label", "currency" }',
+  '    { "kind": "equation_bar", "left": 1-3 of { "label", "value" },'
+    + ' "right": 1-3 of { "label", "value" }, "label", "currency" }',
+  '    { "kind": "receipt", "lines": 1-6 of { "label", "value" }, "label", "currency" }',
+  '    { "kind": "ledger", "entries": 2-6 of { "label", "amount", "direction": "in"|"out" }, "label", "currency" }',
+  '    { "kind": "price_tag", "item", "price", "units",'
+    + ' "discountPercent": 1-90 or null, "label", "currency" }',
+  '    { "kind": "inventory", "item", "start", "sold", "label" }',
+  '    { "kind": "budget_plate", "budget", "items": 2-5 of { "label", "value" }, "label", "currency" }',
+  '    { "kind": "pictograph", "rows": 2-4 of { "label", "count" }, "unitValue", "label", "currency" }',
+  '    { "kind": "bead_string", "count": 1-20, "label" }',
+  '    { "kind": "tally", "groups": 2-5 of { "label", "count" }, "label" }',
+  '    { "kind": "fraction_circle", "denominator", "highlighted", "label" }',
+  '    { "kind": "stack", "columns": 2-3 of { "label", "parts": 2-3 of { "label", "value" } }, "label", "currency" }',
+  '    { "kind": "sequence_compare", "unit": "day"|"week"|"month"|"year",'
+    + ' "tracks": exactly 2 of { "label", "start", "steps": 1-6 of { "op": "add"|"subtract"|"multiply_percent", "value" } },'
+    + ' "label", "currency" }',
+  '    { "kind": "timeline", "unit": "day"|"week"|"month"|"year", "span",'
+    + ' "events": 2-5 of { "label", "at" }, "label" }',
+  '    { "kind": "cycle", "steps": 3-5 of string, "label" }',
+  '    { "kind": "before_after", "what", "before", "after", "label", "currency" }',
+  /*
+   * `grab` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3). Ungraded: no field
+   * for which bin an item belongs in, because the LEARNER decides that by
+   * tapping, not the model. See WhiteboardGrabSchema's own comment.
+   */
+  '    { "kind": "grab", "binLabels": 2-4 of string, "items": 2-8 of string, "label" }',
   '}',
   '',
   'ONE SURFACE PER TURN. A turn may carry a `whiteboard` OR a `segmentRequest`,',
@@ -1869,7 +1922,9 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  Breaking a coin into smaller ones → regroup. Sharing with a leftover → deal.',
   '  Two named amounts → compare; several → categories; fairness between two →',
   '  scale; options by price per unit → table; putting them in order → ranking.',
-  '  Sorting into two groups → two_bins; things that fall in both → venn.',
+  '  Sorting into two groups → two_bins (YOU narrate the sort while showing it);',
+  '  the learner sorting it themselves, hands-on → grab instead. Things that',
+  '  fall in both groups → venn.',
   '  How it ends well or badly → outcomes; how likely → chance; a swap with two',
   '  sides → trade. A till receipt → receipt; a price label → price_tag; stock',
   '  going down → inventory; spending against a limit → budget_plate.',
