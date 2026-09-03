@@ -321,6 +321,60 @@ export const INSTRUMENTS = [
     blocks: { oracleSchema: 'WhiteboardBudgetPlateSchema', coreBody: 'BudgetPlateWhiteboardBody', coreRow: 'BudgetPlateBoardRowSchema' },
   },
   {
+    kind: 'pictograph',
+    model: ['kind', 'rows', 'unitValue', 'label', 'currency'],
+    computed: ['totals'],
+    blocks: { oracleSchema: 'WhiteboardPictographSchema', coreBody: 'PictographWhiteboardBody', coreRow: 'PictographBoardRowSchema' },
+  },
+  {
+    kind: 'bead_string',
+    model: ['kind', 'count', 'label'],
+    computed: ['rows'],
+    blocks: { oracleSchema: 'WhiteboardBeadStringSchema', coreBody: 'BeadStringWhiteboardBody', coreRow: 'BeadStringBoardRowSchema' },
+  },
+  {
+    kind: 'tally',
+    model: ['kind', 'groups', 'label'],
+    computed: ['fives'],
+    blocks: { oracleSchema: 'WhiteboardTallySchema', coreBody: 'TallyWhiteboardBody', coreRow: 'TallyBoardRowSchema' },
+  },
+  {
+    kind: 'fraction_circle',
+    model: ['kind', 'denominator', 'highlighted', 'label'],
+    computed: ['share'],
+    blocks: { oracleSchema: 'WhiteboardFractionCircleSchema', coreBody: 'FractionCircleWhiteboardBody', coreRow: 'FractionCircleBoardRowSchema' },
+  },
+  {
+    kind: 'stack',
+    model: ['kind', 'columns', 'label', 'currency'],
+    computed: ['totals', 'max'],
+    blocks: { oracleSchema: 'WhiteboardStackSchema', coreBody: 'StackWhiteboardBody', coreRow: 'StackBoardRowSchema' },
+  },
+  {
+    kind: 'sequence_compare',
+    model: ['kind', 'unit', 'tracks', 'label', 'currency'],
+    computed: ['values'],
+    blocks: { oracleSchema: 'WhiteboardSequenceCompareSchema', coreBody: 'SequenceCompareWhiteboardBody', coreRow: 'SequenceCompareBoardRowSchema' },
+  },
+  {
+    kind: 'timeline',
+    model: ['kind', 'unit', 'span', 'events', 'label'],
+    computed: ['positions'],
+    blocks: { oracleSchema: 'WhiteboardTimelineSchema', coreBody: 'TimelineWhiteboardBody', coreRow: 'TimelineBoardRowSchema' },
+  },
+  {
+    kind: 'cycle',
+    model: ['kind', 'steps', 'label'],
+    computed: [],
+    blocks: { oracleSchema: 'WhiteboardCycleSchema', coreBody: 'CycleWhiteboardBody', coreRow: 'CycleBoardRowSchema' },
+  },
+  {
+    kind: 'before_after',
+    model: ['kind', 'what', 'before', 'after', 'label', 'currency'],
+    computed: ['delta', 'direction'],
+    blocks: { oracleSchema: 'WhiteboardBeforeAfterSchema', coreBody: 'BeforeAfterWhiteboardBody', coreRow: 'BeforeAfterBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -544,6 +598,15 @@ export function wireComputedKeys(source, kind) {
     price_tag: 'WhiteboardPriceTag',
     inventory: 'WhiteboardInventory',
     budget_plate: 'WhiteboardBudgetPlate',
+    pictograph: 'WhiteboardPictograph',
+    bead_string: 'WhiteboardBeadString',
+    tally: 'WhiteboardTally',
+    fraction_circle: 'WhiteboardFractionCircle',
+    stack: 'WhiteboardStack',
+    sequence_compare: 'WhiteboardSequenceCompare',
+    timeline: 'WhiteboardTimeline',
+    cycle: 'WhiteboardCycle',
+    before_after: 'WhiteboardBeforeAfter',
   }[kind];
   if (!kindType) return null;
   // Two legal forms, and the difference between them is meaningful: a kind with

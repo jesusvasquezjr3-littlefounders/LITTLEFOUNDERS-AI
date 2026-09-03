@@ -30,6 +30,14 @@ import type {
   WhiteboardPriceTag,
   WhiteboardReceipt,
   WhiteboardRegroup,
+  WhiteboardBeadString,
+  WhiteboardBeforeAfter,
+  WhiteboardFractionCircle,
+  WhiteboardPictograph,
+  WhiteboardSequenceCompare,
+  WhiteboardStack,
+  WhiteboardTally,
+  WhiteboardTimeline,
 } from './turnSchema.js';
 
 /*
@@ -902,6 +910,165 @@ export function computeBudgetPlate(
   };
 }
 
+
+/* ── EARLY YEARS AND TIME ───────────────────────────────────────────────────── */
+
+/** What each pictograph row adds up to. */
+export interface PictographResult {
+  totals: number[];
+}
+
+/** Multiplies each row's icon count by what one icon is worth. */
+export function computePictograph(board: Pick<WhiteboardPictograph, 'rows' | 'unitValue'>): PictographResult | null {
+  if (!Number.isFinite(board.unitValue) || board.unitValue <= 0) return null;
+  const totals: number[] = [];
+  for (const row of board.rows) {
+    if (!Number.isInteger(row.count) || row.count < 1) return null;
+    const total = money(row.count * board.unitValue);
+    if (!Number.isFinite(total) || total > MAX_VALUE) return null;
+    totals.push(total);
+  }
+  return { totals };
+}
+
+/** How a bead string groups into fives — see `computeBeadString`. */
+export interface BeadStringResult {
+  /** Beads on each of the two rows of ten. */
+  rows: number[];
+}
+
+/** Splits a count across two rows of ten. The complement is never computed — it is the question. */
+export function computeBeadString(board: Pick<WhiteboardBeadString, 'count'>): BeadStringResult | null {
+  const { count } = board;
+  if (!Number.isInteger(count) || count < 1 || count > 20) return null;
+  return { rows: count <= 10 ? [count] : [10, count - 10] };
+}
+
+/** How each tally group breaks into fives — see `computeTally`. */
+export interface TallyResult {
+  /** [complete groups of five, leftover marks] per group. */
+  fives: [number, number][];
+}
+
+/** Splits each count into fives and singles, which is how a tally is actually written. */
+export function computeTally(board: Pick<WhiteboardTally, 'groups'>): TallyResult | null {
+  const fives: [number, number][] = [];
+  for (const group of board.groups) {
+    if (!Number.isInteger(group.count) || group.count < 1 || group.count > 20) return null;
+    fives.push([Math.floor(group.count / 5), group.count % 5]);
+  }
+  return { fives };
+}
+
+/** The shaded share of a fraction circle. */
+export interface FractionCircleResult {
+  share: number;
+}
+
+/** Refuses shading more pieces than the circle has — no per-field bound can see that relationship. */
+export function computeFractionCircle(
+  board: Pick<WhiteboardFractionCircle, 'denominator' | 'highlighted'>,
+): FractionCircleResult | null {
+  const { denominator, highlighted } = board;
+  if (!Number.isInteger(denominator) || denominator < 2 || denominator > 12) return null;
+  if (!Number.isInteger(highlighted) || highlighted < 0 || highlighted > denominator) return null;
+  return { share: highlighted / denominator };
+}
+
+/** What each stacked column totals, and the tallest one. */
+export interface StackResult {
+  totals: number[];
+  /** The tallest column, so every column is drawn against the same scale. */
+  max: number;
+}
+
+/** Adds each column up and finds the scale they share. */
+export function computeStack(board: Pick<WhiteboardStack, 'columns'>): StackResult | null {
+  const totals: number[] = [];
+  for (const column of board.columns) {
+    let total = 0;
+    for (const part of column.parts) {
+      if (!Number.isFinite(part.value) || part.value < 0 || part.value > MAX_VALUE) return null;
+      total = money(total + part.value);
+    }
+    if (total <= 0 || total > MAX_VALUE) return null;
+    totals.push(total);
+  }
+  return { totals, max: Math.max(...totals) };
+}
+
+/** Both trajectories of a `sequence_compare`, folded — see `computeSequenceCompare`. */
+export interface SequenceCompareResult {
+  /** One running-value array per track, in the model's own order. */
+  values: number[][];
+}
+
+/**
+ * Folds both trajectories, and refuses tracks of different lengths.
+ *
+ * Two lines over different numbers of periods would draw a difference in OUTCOME
+ * that is really a difference in how long you looked — the exact confusion this
+ * instrument exists to remove from `money.simple-interest-peek`.
+ */
+export function computeSequenceCompare(
+  board: Pick<WhiteboardSequenceCompare, 'tracks'>,
+): SequenceCompareResult | null {
+  const [first, second] = board.tracks;
+  if (first.steps.length !== second.steps.length) return null;
+  const values: number[][] = [];
+  for (const track of board.tracks) {
+    const folded = computeSequence({ start: track.start, steps: track.steps });
+    if (folded === null) return null;
+    values.push(folded);
+  }
+  return { values };
+}
+
+/** Where each timeline event sits along the line. */
+export interface TimelineResult {
+  /** 0..1 along the span, one per event. */
+  positions: number[];
+}
+
+/**
+ * Places each event, and refuses one that falls outside the span or two that
+ * land on the same period — a timeline with two events in one place cannot show
+ * the ORDER it exists to show.
+ */
+export function computeTimeline(board: Pick<WhiteboardTimeline, 'span' | 'events'>): TimelineResult | null {
+  const { span, events } = board;
+  if (!Number.isInteger(span) || span < 2) return null;
+  const seen = new Set<number>();
+  const positions: number[] = [];
+  for (const event of events) {
+    if (!Number.isInteger(event.at) || event.at < 1 || event.at > span) return null;
+    if (seen.has(event.at)) return null;
+    seen.add(event.at);
+    positions.push((event.at - 1) / (span - 1));
+  }
+  return { positions };
+}
+
+/** What changed between two states — see `computeBeforeAfter`. */
+export interface BeforeAfterResult {
+  /** How much it moved. THE MODEL HAS NO FIELD FOR THIS — it is the question. */
+  delta: number;
+  direction: 'up' | 'down' | 'same';
+}
+
+/** Works out what changed, and which way. */
+export function computeBeforeAfter(
+  board: Pick<WhiteboardBeforeAfter, 'before' | 'after'>,
+): BeforeAfterResult | null {
+  const { before, after } = board;
+  if (!Number.isFinite(before) || !Number.isFinite(after)) return null;
+  if (before < 0 || after < 0 || before > MAX_VALUE || after > MAX_VALUE) return null;
+  const delta = money(Math.abs(after - before));
+  const direction: BeforeAfterResult['direction'] =
+    delta <= ZERO_EPSILON ? 'same' : after > before ? 'up' : 'down';
+  return { delta, direction };
+}
+
 /**
  * True when a whiteboard's own numbers compute to something sane, dispatched
  * to the right function above for its `kind`. The single "is this board
@@ -979,6 +1146,26 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return computeInventory(board) !== null;
     case 'budget_plate':
       return computeBudgetPlate(board) !== null;
+    case 'pictograph':
+      return computePictograph(board) !== null;
+    case 'bead_string':
+      return computeBeadString(board) !== null;
+    case 'tally':
+      return computeTally(board) !== null;
+    case 'fraction_circle':
+      return computeFractionCircle(board) !== null;
+    case 'stack':
+      return computeStack(board) !== null;
+    case 'sequence_compare':
+      return computeSequenceCompare(board) !== null;
+    case 'timeline':
+      return computeTimeline(board) !== null;
+    case 'before_after':
+      return computeBeforeAfter(board) !== null;
+    // No numbers at all: 3-5 short steps that come back to their start.
+    // Moderation is this one's whole guard.
+    case 'cycle':
+      return true;
   }
 }
 

@@ -388,6 +388,7 @@ try {
         'ten-frame', 'number-jumps', 'array', 'fraction-strip', 'partition',
         'table', 'scale', 'two-bins', 'venn', 'ranking', 'outcomes', 'trade', 'chance',
         'deal', 'change', 'regroup', 'equation', 'receipt', 'ledger', 'price-tag', 'inventory', 'budget',
+        'pictograph', 'beads', 'tally', 'fraction-circle', 'stack', 'two-futures', 'timeline', 'cycle', 'before-after',
       ] : []) {
         await setLabPanel(page, true)
         const flipped = await page.evaluate(
@@ -459,14 +460,37 @@ try {
          * class of defect at all, which is exactly why this check lives
          * here and not in a unit test.
          */
-        const barHeights = await page.evaluate(
-          '[...document.querySelectorAll(\'[data-tutor-whiteboard] [style*="height:"]\')].map((el) => el.getBoundingClientRect().height)',
+        const bars = await page.evaluate(
+          `[...document.querySelectorAll('[data-tutor-whiteboard] [style*="height:"]')].map((el) => ({
+             intended: el.style.height,
+             rendered: el.getBoundingClientRect().height,
+           }))`,
         )
-        const zeroHeightBars = barHeights.filter((h) => h <= 0)
-        if (zeroHeightBars.length > 0) {
+        /*
+         * INTENDED vs RENDERED, not merely rendered.
+         *
+         * The first version of this check flagged ANY inline-height element
+         * measuring zero pixels, which was right while every such element was
+         * meant to be visible. It stopped being right once a board could
+         * legitimately draw a zero: `barHeightPct` returns exactly 0 for a true
+         * zero value (round 107 — a bar labelled "$0" that still had height
+         * contradicted its own label), and `sequence_compare` opens on two
+         * tracks that both start at zero. Reported as two broken bars on a board
+         * that was drawing correctly.
+         *
+         * So the question is not "did it render at zero" but "did it render at
+         * zero when it asked not to". That is strictly SHARPER than the old
+         * check — a bar asking for 71% and getting 0px still fails, which is the
+         * defect this exists for — and it no longer calls a correct zero a bug.
+         */
+        const collapsed = bars.filter((bar) => {
+          const asked = Number.parseFloat(bar.intended)
+          return Number.isFinite(asked) && asked > 0 && bar.rendered <= 0
+        })
+        if (collapsed.length > 0) {
           failures += 1
           console.log(
-            `  ${activityId}: ${zeroHeightBars.length}/${barHeights.length} percentage-height bar(s) rendered at ZERO pixels`,
+            `  ${activityId}: ${collapsed.length}/${bars.length} bar(s) asked for height and rendered at ZERO pixels`,
           )
         }
 

@@ -208,6 +208,15 @@ type LedgerWire = Extract<TutorWhiteboardWire, { kind: 'ledger' }>;
 type PriceTagWire = Extract<TutorWhiteboardWire, { kind: 'price_tag' }>;
 type InventoryWire = Extract<TutorWhiteboardWire, { kind: 'inventory' }>;
 type BudgetPlateWire = Extract<TutorWhiteboardWire, { kind: 'budget_plate' }>;
+type PictographWire = Extract<TutorWhiteboardWire, { kind: 'pictograph' }>;
+type BeadStringWire = Extract<TutorWhiteboardWire, { kind: 'bead_string' }>;
+type TallyWire = Extract<TutorWhiteboardWire, { kind: 'tally' }>;
+type FractionCircleWire = Extract<TutorWhiteboardWire, { kind: 'fraction_circle' }>;
+type StackWire = Extract<TutorWhiteboardWire, { kind: 'stack' }>;
+type SequenceCompareWire = Extract<TutorWhiteboardWire, { kind: 'sequence_compare' }>;
+type TimelineWire = Extract<TutorWhiteboardWire, { kind: 'timeline' }>;
+type CycleWire = Extract<TutorWhiteboardWire, { kind: 'cycle' }>;
+type BeforeAfterWire = Extract<TutorWhiteboardWire, { kind: 'before_after' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -1548,6 +1557,309 @@ function BudgetPlateBoard({ board, seq, className }: { board: BudgetPlateWire; s
   );
 }
 
+
+/** `kind: 'pictograph'` — quantity as a count of figures, for readers a bar chart cannot reach yet. */
+function PictographBoard({ board, seq, className }: { board: PictographWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.rows.map((r, i) => `${r.label}: ${format(board.totals[i]!)}`).join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 px-2" aria-hidden="true">
+        {board.rows.map((row, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <Caption className="w-20 shrink-0 text-left">{row.label}</Caption>
+            <span className="flex min-w-0 flex-wrap gap-1">
+              {Array.from({ length: row.count }, (_, n) => (
+                <span key={n} className="h-4 w-4 rounded-sm bg-accent/70" />
+              ))}
+            </span>
+            <AxisCaption className="shrink-0 tabular-nums">{format(board.totals[i]!)}</AxisCaption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'bead_string'` — a quantity as a POSITION you slide along, the sibling of the ten frame. */
+function BeadStringBoard({ board, seq, className }: { board: BeadStringWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.count}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2" aria-hidden="true">
+        {board.rows.map((filled, r) => (
+          <div key={r} className="flex items-center gap-1">
+            {Array.from({ length: 10 }, (_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'h-5 w-5 rounded-full border-2',
+                  // Fives are grouped by tone, which is the whole reason a bead
+                  // string reads faster than counting.
+                  i < filled
+                    ? i < 5
+                      ? 'border-accent bg-accent/70'
+                      : 'border-accent bg-accent/35'
+                    : 'border-content-muted/30 bg-transparent',
+                  i === 5 && 'ml-2',
+                )}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'tally'` — a count being KEPT rather than reported. */
+function TallyBoard({ board, seq, className }: { board: TallyWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.groups.map((g) => `${g.label}: ${g.count}`).join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 px-2" aria-hidden="true">
+        {board.groups.map((group, i) => {
+          const [fives, singles] = board.fives[i]!;
+          return (
+            <div key={i} className="flex items-center gap-2">
+              <Caption className="w-20 shrink-0 text-left">{group.label}</Caption>
+              <span className="flex min-w-0 flex-wrap items-center gap-2">
+                {Array.from({ length: fives }, (_, f) => (
+                  <svg key={`f${f}`} width="22" height="18" viewBox="0 0 22 18" className="shrink-0 text-accent">
+                    <path
+                      d="M3 2 v14 M8 2 v14 M13 2 v14 M18 2 v14 M1 15 L20 3"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
+                ))}
+                {Array.from({ length: singles }, (_, n) => (
+                  <span key={`s${n}`} className="h-4 w-0.5 rounded-full bg-accent" />
+                ))}
+              </span>
+              <AxisCaption className="shrink-0 tabular-nums">{group.count}</AxisCaption>
+            </div>
+          );
+        })}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'fraction_circle'` — the slice of cake every child already owns. */
+function FractionCircleBoard({ board, seq, className }: { board: FractionCircleWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.highlighted}/${board.denominator}`;
+  const R = 46;
+  const slice = (i: number) => {
+    const a0 = (i / board.denominator) * 2 * Math.PI - Math.PI / 2;
+    const a1 = ((i + 1) / board.denominator) * 2 * Math.PI - Math.PI / 2;
+    const large = a1 - a0 > Math.PI ? 1 : 0;
+    return `M50 50 L${50 + R * Math.cos(a0)} ${50 + R * Math.sin(a0)} A${R} ${R} 0 ${large} 1 ${
+      50 + R * Math.cos(a1)
+    } ${50 + R * Math.sin(a1)} Z`;
+  };
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2" aria-hidden="true">
+        <svg width="120" height="120" viewBox="0 0 100 100" className="shrink-0">
+          {Array.from({ length: board.denominator }, (_, i) => (
+            <path
+              key={i}
+              d={slice(i)}
+              className={i < board.highlighted ? 'fill-accent/70' : 'fill-transparent'}
+              stroke="currentColor"
+              strokeWidth="1.5"
+              // The token colour, so the outline reads in both themes.
+              style={{ color: 'rgb(var(--lf-content-muted) / 0.45)' }}
+            />
+          ))}
+        </svg>
+        <AxisCaption className="tabular-nums">
+          {board.highlighted}/{board.denominator}
+        </AxisCaption>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'stack'` — totals compared by what they are MADE OF, not only by size. */
+function StackBoard({ board, seq, className }: { board: StackWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.columns
+    .map((c, i) => `${c.label}: ${format(board.totals[i]!)} (${c.parts.map((p) => `${p.label} ${format(p.value)}`).join(', ')})`)
+    .join('. ')}`;
+  const tones = ['bg-accent/70', 'bg-accent/40', 'bg-content-muted/30'];
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <BoardRow gap="lg" justify="center">
+        {board.columns.map((column, c) => (
+          <BarColumn key={c} minWidth="5rem" maxWidth="10rem">
+            <ValueLabel>{format(board.totals[c]!)}</ValueLabel>
+            <div className="flex w-full min-h-0 flex-1 flex-col-reverse items-end">
+              {column.parts.map((part, i) => (
+                <div
+                  key={i}
+                  className={cn('w-full first:rounded-b-md last:rounded-t-md', tones[i % tones.length])}
+                  style={{ height: `${(part.value / Math.max(board.max, 1)) * 100}%` }}
+                />
+              ))}
+            </div>
+            <Caption>{column.label}</Caption>
+          </BarColumn>
+        ))}
+      </BoardRow>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'sequence_compare'` — two futures at once, which is the only form in which compounding means anything. */
+function SequenceCompareBoard({ board, seq, className }: { board: SequenceCompareWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const max = Math.max(...board.values.flat(), 1);
+  const steps = board.values[0]!.length;
+  const ariaLabel = `${board.label}. ${board.tracks
+    .map((track, i) => `${track.label}: ${board.values[i]!.map((v) => format(v)).join(', ')}`)
+    .join('. ')}`;
+  const tones = ['bg-accent/70', 'bg-content-muted/40'];
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col gap-2">
+        <BoardRow>
+          {Array.from({ length: steps }, (_, i) => (
+            <BarColumn key={i} minWidth="3.5rem">
+              <ValueLabel>{format(board.values[0]![i]!)}</ValueLabel>
+              {/* Two bars per period, side by side, so the gap between the two
+                  futures is the thing that grows. */}
+              <div className="flex w-full min-h-0 flex-1 items-end gap-0.5">
+                {board.values.map((track, tIdx) => (
+                  <div
+                    key={tIdx}
+                    className={cn('min-w-0 flex-1 rounded-t-sm', tones[tIdx % tones.length])}
+                    style={{ height: `${barHeightPct(track[i]!, max)}%` }}
+                  />
+                ))}
+              </div>
+              <AxisCaption>
+                {i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i })}
+              </AxisCaption>
+            </BarColumn>
+          ))}
+        </BoardRow>
+        <div className="flex shrink-0 flex-wrap justify-center gap-x-4 gap-y-1" aria-hidden="true">
+          {board.tracks.map((track, i) => (
+            <span key={i} className="flex items-center gap-1.5">
+              <span className={cn('h-2.5 w-2.5 shrink-0 rounded-sm', tones[i % tones.length])} />
+              <Caption>{track.label}</Caption>
+            </span>
+          ))}
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'timeline'` — WHEN, not how much. Money on the 15th and a bill on the 10th is a problem of order. */
+function TimelineBoard({ board, seq, className }: { board: TimelineWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const ariaLabel = `${board.label}. ${board.events
+    .map((e) => `${t(`tutor.whiteboard.step.${board.unit}`, { n: e.at })}: ${e.label}`)
+    .join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-6" aria-hidden="true">
+        <div className="relative h-1.5 rounded-full bg-accent-soft">
+          {board.events.map((event, i) => (
+            <span
+              key={i}
+              className="absolute top-1/2 flex flex-col items-center gap-1"
+              style={{ left: `${board.positions[i]! * 100}%`, transform: 'translate(-50%, -50%)' }}
+            >
+              <span className="lf-caption whitespace-nowrap text-content-muted tabular-nums">
+                {t(`tutor.whiteboard.step.${board.unit}`, { n: event.at })}
+              </span>
+              <span className="h-3 w-3 shrink-0 rounded-full bg-accent ring-2 ring-surface" />
+            </span>
+          ))}
+        </div>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          {board.events.map((event, i) => (
+            <Caption key={i} className="max-w-[10rem]">
+              {event.label}
+            </Caption>
+          ))}
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'cycle'` — a loop that comes back. Every other board draws something that ends; a business does not. */
+function CycleBoard({ board, seq, className }: { board: CycleWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.steps.join(' → ')} → ${board.steps[0]}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-wrap items-center justify-center gap-1.5 px-2" aria-hidden="true">
+        {board.steps.map((step, i) => (
+          <span key={i} className="flex items-center gap-1.5">
+            <Chip tone="accent">{step}</Chip>
+            <svg width="16" height="12" viewBox="0 0 16 12" className="shrink-0 text-content-muted">
+              <path d="M1 6 h11 M9 2 l4 4 l-4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        ))}
+        {/* The loop closes: the first step again, dimmed, so the arrow returns. */}
+        <Chip>{board.steps[0]}</Chip>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/** `kind: 'before_after'` — what changed, and what stayed the same. The change is server-computed. */
+function BeforeAfterBoard({ board, seq, className }: { board: BeforeAfterWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const summary =
+    board.direction === 'same'
+      ? t('tutor.whiteboard.board.noChange')
+      : t('tutor.whiteboard.board.changedBy', { amount: format(board.delta) });
+  const ariaLabel = `${board.label}. ${board.what}. ${t('tutor.whiteboard.board.was', {
+    amount: format(board.before),
+  })}, ${t('tutor.whiteboard.board.now', { amount: format(board.after) })}. ${summary}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-2" aria-hidden="true">
+        <Caption>{board.what}</Caption>
+        <div className="flex items-center gap-3">
+          {[
+            { value: board.before, key: 'was' as const, tone: 'muted' as const },
+            { value: board.after, key: 'now' as const, tone: 'accent' as const },
+          ].map((state, i) => (
+            <span key={i} className="flex items-center gap-3">
+              {i === 1 && (
+                <svg width="22" height="14" viewBox="0 0 22 14" className="shrink-0 text-accent">
+                  <path d="M1 7 h16 M14 2 l5 5 l-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+              <span
+                className={cn(
+                  'flex h-14 w-24 items-center justify-center rounded-md border-2',
+                  state.tone === 'accent' ? 'border-accent bg-accent/15' : 'border-content-muted/40',
+                )}
+              >
+                <span className="lf-number lf-title text-content tabular-nums">{format(state.value)}</span>
+              </span>
+            </span>
+          ))}
+        </div>
+        <AxisCaption>{summary}</AxisCaption>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -1614,5 +1926,23 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <InventoryBoard board={board} seq={seq} className={className} />;
     case 'budget_plate':
       return <BudgetPlateBoard board={board} seq={seq} className={className} />;
+    case 'pictograph':
+      return <PictographBoard board={board} seq={seq} className={className} />;
+    case 'bead_string':
+      return <BeadStringBoard board={board} seq={seq} className={className} />;
+    case 'tally':
+      return <TallyBoard board={board} seq={seq} className={className} />;
+    case 'fraction_circle':
+      return <FractionCircleBoard board={board} seq={seq} className={className} />;
+    case 'stack':
+      return <StackBoard board={board} seq={seq} className={className} />;
+    case 'sequence_compare':
+      return <SequenceCompareBoard board={board} seq={seq} className={className} />;
+    case 'timeline':
+      return <TimelineBoard board={board} seq={seq} className={className} />;
+    case 'cycle':
+      return <CycleBoard board={board} seq={seq} className={className} />;
+    case 'before_after':
+      return <BeforeAfterBoard board={board} seq={seq} className={className} />;
   }
 }

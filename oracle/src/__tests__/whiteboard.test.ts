@@ -30,6 +30,14 @@ import {
   computePriceTag,
   computeInventory,
   computeBudgetPlate,
+  computePictograph,
+  computeBeadString,
+  computeTally,
+  computeFractionCircle,
+  computeStack,
+  computeSequenceCompare,
+  computeTimeline,
+  computeBeforeAfter,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -1009,5 +1017,118 @@ describe('budget_plate — the ONE board that draws a rule being broken', () => 
         items: [{ label: 'a', value: 45 }, { label: 'b', value: 30 }, { label: 'c', value: 40 }],
       }),
     ).toEqual({ spent: 115, remaining: 0, overBy: 15 });
+  });
+});
+
+/* ── EARLY YEARS AND TIME ───────────────────────────────────────────────────── */
+
+describe('pictograph, bead string, tally, fraction circle', () => {
+  it('scales each pictograph row by what one icon is worth', () => {
+    expect(
+      computePictograph({ rows: [{ label: 'a', count: 4 }, { label: 'b', count: 7 }], unitValue: 10 }),
+    ).toEqual({ totals: [40, 70] });
+  });
+
+  it('splits a bead string across two rows of ten', () => {
+    expect(computeBeadString({ count: 13 })).toEqual({ rows: [10, 3] });
+    expect(computeBeadString({ count: 7 })).toEqual({ rows: [7] });
+  });
+
+  it('writes a tally as fives and singles, which is how a tally is actually kept', () => {
+    expect(
+      computeTally({ groups: [{ label: 'a', count: 12 }, { label: 'b', count: 3 }] })?.fives,
+    ).toEqual([
+      [2, 2],
+      [0, 3],
+    ]);
+  });
+
+  it('refuses shading more circle pieces than the circle has', () => {
+    expect(computeFractionCircle({ denominator: 8, highlighted: 3 })).toEqual({ share: 0.375 });
+    expect(computeFractionCircle({ denominator: 4, highlighted: 5 })).toBeNull();
+  });
+});
+
+describe('stack — totals compared by what they are made of', () => {
+  it('adds each column and finds the shared scale', () => {
+    const result = computeStack({
+      columns: [
+        { label: 'w1', parts: [{ label: 'food', value: 60 }, { label: 'fun', value: 20 }] },
+        { label: 'w2', parts: [{ label: 'food', value: 25 }, { label: 'fun', value: 55 }] },
+      ],
+    });
+    // Same total, completely different composition — the point of the board.
+    expect(result?.totals).toEqual([80, 80]);
+    expect(result?.max).toBe(80);
+  });
+});
+
+describe('sequence_compare — two futures over the SAME number of periods', () => {
+  it('folds both tracks', () => {
+    const result = computeSequenceCompare({
+      tracks: [
+        { label: 'save 2', start: 0, steps: [{ op: 'add', value: 2 }, { op: 'add', value: 2 }] },
+        { label: 'save 5', start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ],
+    });
+    expect(result?.values).toEqual([
+      [0, 2, 4],
+      [0, 5, 10],
+    ]);
+  });
+
+  it('refuses tracks of different lengths — that draws a difference in how long you looked', () => {
+    expect(
+      computeSequenceCompare({
+        tracks: [
+          { label: 'a', start: 0, steps: [{ op: 'add', value: 2 }] },
+          { label: 'b', start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+        ],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('timeline — order is the whole point', () => {
+  it('places events along the span', () => {
+    const result = computeTimeline({ span: 5, events: [{ label: 'a', at: 1 }, { label: 'b', at: 3 }, { label: 'c', at: 5 }] });
+    expect(result?.positions).toEqual([0, 0.5, 1]);
+  });
+
+  it('refuses two events in the same period', () => {
+    expect(computeTimeline({ span: 5, events: [{ label: 'a', at: 2 }, { label: 'b', at: 2 }] })).toBeNull();
+  });
+
+  it('refuses an event outside the span', () => {
+    expect(computeTimeline({ span: 3, events: [{ label: 'a', at: 1 }, { label: 'b', at: 9 }] })).toBeNull();
+  });
+});
+
+describe('before_after', () => {
+  it('works out what changed and which way', () => {
+    expect(computeBeforeAfter({ before: 40, after: 65 })).toEqual({ delta: 25, direction: 'up' });
+    expect(computeBeforeAfter({ before: 65, after: 40 })).toEqual({ delta: 25, direction: 'down' });
+    expect(computeBeforeAfter({ before: 40, after: 40 })).toEqual({ delta: 0, direction: 'same' });
+  });
+});
+
+describe('every shipped kind is dispatched by whiteboardComputesOk', () => {
+  it('has no kind that falls through — the compiler enforces it, this records why it matters', () => {
+    // A kind missing from the switch would be a board nothing verifies, which
+    // is the one thing this whole file exists to prevent. TypeScript's
+    // exhaustiveness check is what actually guarantees it; this test is the
+    // note explaining that the guarantee is deliberate.
+    expect(
+      whiteboardComputesOk({ kind: 'cycle', steps: ['a', 'b', 'c'], label: 'loop' }),
+    ).toBe(true);
+    expect(
+      whiteboardComputesOk({
+        kind: 'timeline',
+        unit: 'day',
+        span: 3,
+        events: [{ label: 'a', at: 1 }, { label: 'b', at: 1 }],
+        label: 'when',
+      }),
+    ).toBe(false);
   });
 });

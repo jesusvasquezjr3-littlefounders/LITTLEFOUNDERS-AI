@@ -65,6 +65,14 @@ import {
   computePriceTag,
   computeInventory,
   computeBudgetPlate,
+  computePictograph,
+  computeBeadString,
+  computeTally,
+  computeFractionCircle,
+  computeStack,
+  computeSequenceCompare,
+  computeTimeline,
+  computeBeforeAfter,
 } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
@@ -521,6 +529,43 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
     case 'budget_plate': {
       const r = computeBudgetPlate(board);
       return { label: board.label, summary: r ? `spent ${r.spent} of ${board.budget}${r.overBy > 0 ? ` (OVER by ${r.overBy})` : ''}` : 'INVALID' };
+    }
+    case 'pictograph': {
+      const r = computePictograph(board);
+      return { label: board.label, summary: r ? board.rows.map((row, i) => `${row.label}=${r.totals[i]}`).join(', ') : 'INVALID' };
+    }
+    case 'bead_string': {
+      const r = computeBeadString(board);
+      return { label: board.label, summary: r ? `${board.count} beads in ${r.rows.length} row(s)` : 'INVALID' };
+    }
+    case 'tally': {
+      const r = computeTally(board);
+      return { label: board.label, summary: r ? board.groups.map((g) => `${g.label}=${g.count}`).join(', ') : 'INVALID' };
+    }
+    case 'fraction_circle': {
+      const r = computeFractionCircle(board);
+      return { label: board.label, summary: r ? `${board.highlighted}/${board.denominator}` : 'INVALID' };
+    }
+    case 'stack': {
+      const r = computeStack(board);
+      return { label: board.label, summary: r ? board.columns.map((c, i) => `${c.label}=${r.totals[i]}`).join(', ') : 'INVALID' };
+    }
+    case 'sequence_compare': {
+      const r = computeSequenceCompare(board);
+      return {
+        label: board.label,
+        summary: r ? board.tracks.map((t, i) => `${t.label}: ${r.values[i]!.join(' → ')}`).join(' | ') : 'INVALID',
+      };
+    }
+    case 'timeline': {
+      const r = computeTimeline(board);
+      return { label: board.label, summary: r ? board.events.map((e) => `${board.unit} ${e.at}: ${e.label}`).join(', ') : 'INVALID' };
+    }
+    case 'cycle':
+      return { label: board.label, summary: `${board.steps.join(' → ')} → ${board.steps[0]}` };
+    case 'before_after': {
+      const r = computeBeforeAfter(board);
+      return { label: board.label, summary: r ? `${board.what}: ${board.before} → ${board.after} (${r.direction} ${r.delta})` : 'INVALID' };
     }
   }
 }

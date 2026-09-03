@@ -482,6 +482,57 @@ export type TutorWhiteboardWire =
       overBy: number;
       label: string;
       currency: 'MXN' | 'USD' | 'BRL';
+    }
+  | {
+      kind: 'pictograph';
+      rows: { label: string; count: number }[];
+      unitValue: number;
+      totals: number[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | { kind: 'bead_string'; count: number; rows: number[]; label: string }
+  | { kind: 'tally'; groups: { label: string; count: number }[]; fives: [number, number][]; label: string }
+  | { kind: 'fraction_circle'; denominator: number; highlighted: number; share: number; label: string }
+  | {
+      kind: 'stack';
+      columns: { label: string; parts: { label: string; value: number }[] }[];
+      totals: number[];
+      max: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'sequence_compare';
+      unit: 'day' | 'week' | 'month' | 'year';
+      tracks: [
+        { label: string; start: number; steps: { op: string; value: number }[] },
+        { label: string; start: number; steps: { op: string; value: number }[] },
+      ];
+      /** SERVER-COMPUTED, one running-value array per track. Tracks of unequal length are refused. */
+      values: number[][];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'timeline';
+      unit: 'day' | 'week' | 'month' | 'year';
+      span: number;
+      events: { label: string; at: number }[];
+      positions: number[];
+      label: string;
+    }
+  | { kind: 'cycle'; steps: string[]; label: string }
+  | {
+      kind: 'before_after';
+      what: string;
+      before: number;
+      after: number;
+      /** SERVER-COMPUTED. What changed is the question. */
+      delta: number;
+      direction: 'up' | 'down' | 'same';
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

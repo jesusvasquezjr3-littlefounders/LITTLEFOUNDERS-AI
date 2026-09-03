@@ -1183,6 +1183,25 @@ export interface TutorTurnInventoryBoard { kind: 'inventory'; item: string; star
 /** A total against a visible ceiling. Overspending is ALLOWED and drawn — that is the lesson. */
 export interface TutorTurnBudgetPlateBoard { kind: 'budget_plate'; budget: number; items: { label: string; value: number }[]; spent: number; remaining: number; overBy: number; label: string; currency: 'MXN' | 'USD' | 'BRL' }
 
+/** Quantity as a count of figures. `totals` is server-computed from the icon count and what one icon is worth. */
+export interface TutorTurnPictographBoard { kind: 'pictograph'; rows: { label: string; count: number }[]; unitValue: number; totals: number[]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** Twenty beads in fives. The complement is deliberately not computed. */
+export interface TutorTurnBeadStringBoard { kind: 'bead_string'; count: number; rows: number[]; label: string }
+/** Counting events in fives, as they happen. */
+export interface TutorTurnTallyBoard { kind: 'tally'; groups: { label: string; count: number }[]; fives: [number, number][]; label: string }
+/** A share of a round whole. Shading more pieces than the circle has is refused. */
+export interface TutorTurnFractionCircleBoard { kind: 'fraction_circle'; denominator: number; highlighted: number; share: number; label: string }
+/** Totals decomposed inside, drawn against one shared scale. */
+export interface TutorTurnStackBoard { kind: 'stack'; columns: { label: string; parts: { label: string; value: number }[] }[]; totals: number[]; max: number; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** Two trajectories at once. Tracks of different lengths are refused. */
+export interface TutorTurnSequenceCompareBoard { kind: 'sequence_compare'; unit: 'day' | 'week' | 'month' | 'year'; tracks: [{ label: string; start: number; steps: { op: string; value: number }[] }, { label: string; start: number; steps: { op: string; value: number }[] }]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** When, not how much. Two events in one period are refused — the board exists to show ORDER. */
+export interface TutorTurnTimelineBoard { kind: 'timeline'; unit: 'day' | 'week' | 'month' | 'year'; span: number; events: { label: string; at: number }[]; positions: number[]; label: string }
+/** A loop that comes back to its start. The only Class I board with no numbers at all. */
+export interface TutorTurnCycleBoard { kind: 'cycle'; steps: string[]; label: string }
+/** Two states of the same thing. The change is server-computed. */
+export interface TutorTurnBeforeAfterBoard { kind: 'before_after'; what: string; before: number; after: number; delta: number; direction: 'up' | 'down' | 'same'; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
   | TutorTurnSequenceBoard
@@ -1216,7 +1235,16 @@ export type TutorTurnWhiteboard =
   | TutorTurnLedgerBoard
   | TutorTurnPriceTagBoard
   | TutorTurnInventoryBoard
-  | TutorTurnBudgetPlateBoard;
+  | TutorTurnBudgetPlateBoard
+  | TutorTurnPictographBoard
+  | TutorTurnBeadStringBoard
+  | TutorTurnTallyBoard
+  | TutorTurnFractionCircleBoard
+  | TutorTurnStackBoard
+  | TutorTurnSequenceCompareBoard
+  | TutorTurnTimelineBoard
+  | TutorTurnCycleBoard
+  | TutorTurnBeforeAfterBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1793,6 +1821,118 @@ const BudgetPlateBoardRowSchema = z
   })
   .strict();
 
+const UnitRow = z.enum(['day', 'week', 'month', 'year']);
+const SeqStepRow = z
+  .object({ op: z.enum(['add', 'subtract', 'multiply_percent']), value: z.number().positive().max(100_000) })
+  .strict();
+const SeqTrackRow = z
+  .object({
+    label: z.string().min(1).max(40),
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(SeqStepRow).min(1).max(6),
+  })
+  .strict();
+
+const PictographBoardRowSchema = z
+  .object({
+    kind: z.literal('pictograph'),
+    rows: z.array(z.object({ label: z.string().min(1).max(40), count: z.number().int().min(1).max(12) }).strict()).min(2).max(4),
+    unitValue: z.number().positive().max(1_000),
+    totals: z.array(z.number().min(0).max(10_000_000)).min(2).max(4),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
+const BeadStringBoardRowSchema = z
+  .object({
+    kind: z.literal('bead_string'),
+    count: z.number().int().min(1).max(20),
+    rows: z.array(z.number().int().min(0).max(10)).min(1).max(2),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const TallyBoardRowSchema = z
+  .object({
+    kind: z.literal('tally'),
+    groups: z.array(z.object({ label: z.string().min(1).max(40), count: z.number().int().min(1).max(20) }).strict()).min(2).max(5),
+    fives: z.array(z.tuple([z.number().int().min(0).max(4), z.number().int().min(0).max(4)])).min(2).max(5),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const FractionCircleBoardRowSchema = z
+  .object({
+    kind: z.literal('fraction_circle'),
+    denominator: z.number().int().min(2).max(12),
+    highlighted: z.number().int().min(0).max(12),
+    share: z.number().min(0).max(1),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const StackBoardRowSchema = z
+  .object({
+    kind: z.literal('stack'),
+    columns: z
+      .array(
+        z
+          .object({ label: z.string().min(1).max(40), parts: z.array(NamedValueRowSchema).min(2).max(3) })
+          .strict(),
+      )
+      .min(2)
+      .max(3),
+    totals: z.array(z.number().min(0).max(10_000_000)).min(2).max(3),
+    max: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
+const SequenceCompareBoardRowSchema = z
+  .object({
+    kind: z.literal('sequence_compare'),
+    unit: UnitRow,
+    tracks: z.tuple([SeqTrackRow, SeqTrackRow]),
+    values: z.array(z.array(z.number().min(0).max(10_000_000))).length(2),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
+const TimelineBoardRowSchema = z
+  .object({
+    kind: z.literal('timeline'),
+    unit: UnitRow,
+    span: z.number().int().min(2).max(12),
+    events: z.array(z.object({ label: z.string().min(1).max(40), at: z.number().int().min(1).max(12) }).strict()).min(2).max(5),
+    positions: z.array(z.number().min(0).max(1)).min(2).max(5),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const CycleBoardRowSchema = z
+  .object({
+    kind: z.literal('cycle'),
+    steps: z.array(z.string().min(1).max(40)).min(3).max(5),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const BeforeAfterBoardRowSchema = z
+  .object({
+    kind: z.literal('before_after'),
+    what: z.string().min(1).max(40),
+    before: z.number().min(0).max(1_000_000),
+    after: z.number().min(0).max(1_000_000),
+    delta: z.number().min(0).max(1_000_000),
+    direction: z.enum(['up', 'down', 'same']),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1838,6 +1978,15 @@ const TutorTurnWhiteboardRowSchema = z
     PriceTagBoardRowSchema,
     InventoryBoardRowSchema,
     BudgetPlateBoardRowSchema,
+    PictographBoardRowSchema,
+    BeadStringBoardRowSchema,
+    TallyBoardRowSchema,
+    FractionCircleBoardRowSchema,
+    StackBoardRowSchema,
+    SequenceCompareBoardRowSchema,
+    TimelineBoardRowSchema,
+    CycleBoardRowSchema,
+    BeforeAfterBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -1868,6 +2017,29 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'every mark value must fall within [min, max]',
           path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'timeline') {
+      if (board.positions.length !== board.events.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'positions must carry exactly one entry per event',
+          path: ['positions'],
+        });
+      }
+      if (new Set(board.events.map((e) => e.at)).size !== board.events.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'two events in the same period cannot show the order this board exists to show',
+          path: ['events'],
+        });
+      }
+    } else if (board.kind === 'fraction_circle') {
+      if (board.highlighted > board.denominator) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'a circle may not shade more pieces than it has',
+          path: ['highlighted'],
         });
       }
     } else if (board.kind === 'ledger') {

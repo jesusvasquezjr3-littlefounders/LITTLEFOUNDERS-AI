@@ -799,6 +799,58 @@ const LAB_MONEY_TEXT: Readonly<
   },
 };
 
+/* Early years and time — the last of the Class I catalog. */
+const LAB_LAST_TEXT: Readonly<
+  Record<
+    Locale,
+    {
+      pictograph: { say: string; label: string; rows: [string, string, string] };
+      bead: { say: string; label: string };
+      tally: { say: string; label: string; groups: [string, string] };
+      circle: { say: string; label: string };
+      stack: { say: string; label: string; cols: [string, string]; parts: [string, string] };
+      seqCompare: { say: string; label: string; tracks: [string, string] };
+      timeline: { say: string; label: string; events: [string, string, string] };
+      cycle: { say: string; label: string; steps: [string, string, string] };
+      beforeAfter: { say: string; label: string; what: string };
+    }
+  >
+> = {
+  'en-US': {
+    pictograph: { say: 'One picture is one cookie sold. Who sold most?', label: 'Cookies sold this week', rows: ['Monday', 'Tuesday', 'Wednesday'] },
+    bead: { say: 'Slide the beads. How many more to make twenty?', label: 'Thirteen beads' },
+    tally: { say: 'We kept count as they happened.', label: 'How many, day by day', groups: ['Sunny days', 'Rainy days'] },
+    circle: { say: 'The cake cut in eight. Three pieces are gone.', label: 'Three eighths of the cake' },
+    stack: { say: 'Two weeks that cost the same, spent completely differently.', label: 'Same total, different weeks', cols: ['Week 1', 'Week 2'], parts: ['Food', 'Fun'] },
+    seqCompare: { say: 'Saving two a week, against saving five. Watch the gap.', label: 'Two futures', tracks: ['Save 2', 'Save 5'] },
+    timeline: { say: 'The money comes on the 15th. The bill is due on the 10th.', label: 'When things happen', events: ['Bill due', 'Money arrives', 'Buy the gift'] },
+    cycle: { say: 'And then it starts again.', label: 'How a little business goes round', steps: ['Buy lemons', 'Make lemonade', 'Sell it'] },
+    beforeAfter: { say: 'Before and after. What changed?', label: 'What changed', what: 'The piggy bank' },
+  },
+  'es-MX': {
+    pictograph: { say: 'Cada dibujito es una galleta vendida. ¿Quién vendió más?', label: 'Galletas vendidas esta semana', rows: ['Lunes', 'Martes', 'Miércoles'] },
+    bead: { say: 'Recorre las cuentas. ¿Cuántas faltan para veinte?', label: 'Trece cuentas' },
+    tally: { say: 'Fuimos anotando conforme pasaban.', label: 'Cuántos, día con día', groups: ['Días de sol', 'Días de lluvia'] },
+    circle: { say: 'El pastel partido en ocho. Se fueron tres pedazos.', label: 'Tres octavos del pastel' },
+    stack: { say: 'Dos semanas que costaron lo mismo, gastadas muy distinto.', label: 'Mismo total, semanas distintas', cols: ['Semana 1', 'Semana 2'], parts: ['Comida', 'Diversión'] },
+    seqCompare: { say: 'Guardar dos por semana, contra guardar cinco. Mira la distancia.', label: 'Dos futuros', tracks: ['Guardo 2', 'Guardo 5'] },
+    timeline: { say: 'El dinero llega el 15. El pago es el 10.', label: 'Cuándo pasa cada cosa', events: ['Toca pagar', 'Llega el dinero', 'Compro el regalo'] },
+    cycle: { say: 'Y luego vuelve a empezar.', label: 'Cómo da la vuelta un negocito', steps: ['Compro limones', 'Hago agua', 'La vendo'] },
+    beforeAfter: { say: 'Antes y después. ¿Qué cambió?', label: 'Qué cambió', what: 'La alcancía' },
+  },
+  'pt-BR': {
+    pictograph: { say: 'Cada desenho é um biscoito vendido. Quem vendeu mais?', label: 'Biscoitos vendidos esta semana', rows: ['Segunda', 'Terça', 'Quarta'] },
+    bead: { say: 'Corre as contas. Quantas faltam para vinte?', label: 'Treze contas' },
+    tally: { say: 'A gente foi anotando conforme aconteciam.', label: 'Quantos, dia a dia', groups: ['Dias de sol', 'Dias de chuva'] },
+    circle: { say: 'O bolo cortado em oito. Sumiram três pedaços.', label: 'Três oitavos do bolo' },
+    stack: { say: 'Duas semanas que custaram o mesmo, gastas de jeitos bem diferentes.', label: 'Mesmo total, semanas diferentes', cols: ['Semana 1', 'Semana 2'], parts: ['Comida', 'Diversão'] },
+    seqCompare: { say: 'Guardar dois por semana, contra guardar cinco. Olha a distância.', label: 'Dois futuros', tracks: ['Guardo 2', 'Guardo 5'] },
+    timeline: { say: 'O dinheiro chega no dia 15. A conta vence no dia 10.', label: 'Quando cada coisa acontece', events: ['Vence a conta', 'Chega o dinheiro', 'Compro o presente'] },
+    cycle: { say: 'E aí começa de novo.', label: 'Como um negocinho dá a volta', steps: ['Compro limões', 'Faço limonada', 'Vendo'] },
+    beforeAfter: { say: 'Antes e depois. O que mudou?', label: 'O que mudou', what: 'O cofrinho' },
+  },
+};
+
 const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
   'en-US': 'USD',
   'es-MX': 'MXN',
@@ -1408,6 +1460,149 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (
+    activity === 'pictograph' ||
+    activity === 'beads' ||
+    activity === 'tally' ||
+    activity === 'fraction-circle' ||
+    activity === 'stack' ||
+    activity === 'two-futures' ||
+    activity === 'timeline' ||
+    activity === 'cycle' ||
+    activity === 'before-after'
+  ) {
+    const text = LAB_LAST_TEXT[locale];
+    const currency = LAB_CURRENCY[locale];
+    const base = {
+      seq: 4,
+      emotion: 'happy' as const,
+      action: 'nod' as const,
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask' as const,
+      policy: null,
+      demonstrate: null,
+    };
+    if (activity === 'pictograph') {
+      return {
+        ...base,
+        text: text.pictograph.say,
+        whiteboard: {
+          kind: 'pictograph',
+          rows: [
+            { label: text.pictograph.rows[0], count: 4 },
+            { label: text.pictograph.rows[1], count: 7 },
+            { label: text.pictograph.rows[2], count: 5 },
+          ],
+          unitValue: 1,
+          totals: [4, 7, 5],
+          label: text.pictograph.label,
+          currency: null,
+        },
+      };
+    }
+    if (activity === 'beads') {
+      return { ...base, text: text.bead.say, whiteboard: { kind: 'bead_string', count: 13, rows: [10, 3], label: text.bead.label } };
+    }
+    if (activity === 'tally') {
+      return {
+        ...base,
+        text: text.tally.say,
+        whiteboard: {
+          kind: 'tally',
+          groups: [
+            { label: text.tally.groups[0], count: 12 },
+            { label: text.tally.groups[1], count: 3 },
+          ],
+          fives: [
+            [2, 2],
+            [0, 3],
+          ],
+          label: text.tally.label,
+        },
+      };
+    }
+    if (activity === 'fraction-circle') {
+      return {
+        ...base,
+        text: text.circle.say,
+        whiteboard: { kind: 'fraction_circle', denominator: 8, highlighted: 3, share: 0.375, label: text.circle.label },
+      };
+    }
+    if (activity === 'stack') {
+      return {
+        ...base,
+        text: text.stack.say,
+        whiteboard: {
+          kind: 'stack',
+          columns: [
+            { label: text.stack.cols[0], parts: [{ label: text.stack.parts[0], value: 60 }, { label: text.stack.parts[1], value: 20 }] },
+            { label: text.stack.cols[1], parts: [{ label: text.stack.parts[0], value: 25 }, { label: text.stack.parts[1], value: 55 }] },
+          ],
+          totals: [80, 80],
+          max: 80,
+          label: text.stack.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'two-futures') {
+      return {
+        ...base,
+        text: text.seqCompare.say,
+        whiteboard: {
+          kind: 'sequence_compare',
+          unit: 'week',
+          tracks: [
+            { label: text.seqCompare.tracks[0], start: 0, steps: [{ op: 'add', value: 2 }, { op: 'add', value: 2 }, { op: 'add', value: 2 }] },
+            { label: text.seqCompare.tracks[1], start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+          ],
+          values: [
+            [0, 2, 4, 6],
+            [0, 5, 10, 15],
+          ],
+          label: text.seqCompare.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'timeline') {
+      return {
+        ...base,
+        text: text.timeline.say,
+        whiteboard: {
+          kind: 'timeline',
+          unit: 'day',
+          span: 5,
+          events: [
+            { label: text.timeline.events[0], at: 1 },
+            { label: text.timeline.events[1], at: 3 },
+            { label: text.timeline.events[2], at: 5 },
+          ],
+          positions: [0, 0.5, 1],
+          label: text.timeline.label,
+        },
+      };
+    }
+    if (activity === 'cycle') {
+      return { ...base, text: text.cycle.say, whiteboard: { kind: 'cycle', steps: text.cycle.steps, label: text.cycle.label } };
+    }
+    return {
+      ...base,
+      text: text.beforeAfter.say,
+      whiteboard: {
+        kind: 'before_after',
+        what: text.beforeAfter.what,
+        before: 40,
+        after: 65,
+        delta: 25,
+        direction: 'up',
+        label: text.beforeAfter.label,
+        currency,
+      },
+    };
+  }
   if (activity === 'categories') {
     const text = LAB_CATEGORIES_TEXT[locale];
     return {
@@ -1521,6 +1716,15 @@ const WHITEBOARD_ACTIVITIES = [
   'price-tag',
   'inventory',
   'budget',
+  'pictograph',
+  'beads',
+  'tally',
+  'fraction-circle',
+  'stack',
+  'two-futures',
+  'timeline',
+  'cycle',
+  'before-after',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [

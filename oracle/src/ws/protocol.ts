@@ -36,6 +36,15 @@ import {
   type WhiteboardPriceTag,
   type WhiteboardInventory,
   type WhiteboardBudgetPlate,
+  type WhiteboardPictograph,
+  type WhiteboardBeadString,
+  type WhiteboardTally,
+  type WhiteboardFractionCircle,
+  type WhiteboardStack,
+  type WhiteboardSequenceCompare,
+  type WhiteboardTimeline,
+  type WhiteboardBeforeAfter,
+  type WhiteboardCycle,
 } from '../tutor/turnSchema.js';
 import type { WordTiming } from '../voice/provider.js';
 
@@ -207,7 +216,16 @@ export type WireWhiteboard =
   | (WhiteboardLedger & { balances: number[]; final: number })
   | (WhiteboardPriceTag & { unitPrice: number; finalPrice: number })
   | (WhiteboardInventory & { left: number })
-  | (WhiteboardBudgetPlate & { spent: number; remaining: number; overBy: number });
+  | (WhiteboardBudgetPlate & { spent: number; remaining: number; overBy: number })
+  | (WhiteboardPictograph & { totals: number[] })
+  | (WhiteboardBeadString & { rows: number[] })
+  | (WhiteboardTally & { fives: [number, number][] })
+  | (WhiteboardFractionCircle & { share: number })
+  | (WhiteboardStack & { totals: number[]; max: number })
+  | (WhiteboardSequenceCompare & { values: number[][] })
+  | (WhiteboardTimeline & { positions: number[] })
+  | (WhiteboardBeforeAfter & { delta: number; direction: 'up' | 'down' | 'same' })
+  | WhiteboardCycle;
 
 /**
  * One closed step of a tray demonstration — mirrors `oracle/src/tutor/

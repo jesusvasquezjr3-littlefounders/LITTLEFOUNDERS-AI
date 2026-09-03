@@ -422,7 +422,11 @@
       "over": "Passou {{amount}}",
       "stillHave": "restam {{count}}",
       "balance": "Saldo",
-      "totalWord": "Total"
+      "totalWord": "Total",
+      "was": "era {{amount}}",
+      "now": "agora {{amount}}",
+      "changedBy": "Mudou {{amount}}",
+      "noChange": "Sem mudança"
     }
   }
 }

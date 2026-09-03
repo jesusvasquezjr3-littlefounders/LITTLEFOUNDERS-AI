@@ -1078,6 +1078,210 @@ export const WhiteboardBudgetPlateSchema = z
   })
   .strict();
 
+
+/* ── EARLY YEARS AND TIME — the last of the Class I catalog ─────────────────── */
+
+/** One row of a pictograph: a thing, and how many icons stand for it. */
+export const PictographRowSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    count: z.number().int().min(1).max(12),
+  })
+  .strict();
+
+/**
+ * `kind: 'pictograph'` — QUANTITY AS A COUNT OF FIGURES, NOT A HEIGHT.
+ *
+ * For `tier_min: 1` — six and seven year olds, twelve of the twenty-eight KCs.
+ * A bar is an abstraction that has to be taught before it can teach; six drawn
+ * things are not. `unitValue` lets one icon stand for more than one thing,
+ * which is the step from counting to scaling and the reason this is not just
+ * `categories` with pictures.
+ */
+export const WhiteboardPictographSchema = z
+  .object({
+    kind: z.literal('pictograph'),
+    rows: z.array(PictographRowSchema).min(2).max(4),
+    /** What ONE icon is worth. 1 for plain counting; more for a first scale. */
+    unitValue: z.number().positive().max(1_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'bead_string'` — TWENTY BEADS IN FIVES.
+ *
+ * The sibling of `ten_frame` and not a duplicate of it: a frame shows a quantity
+ * as an ARRANGEMENT, a string shows it as a POSITION you can slide along. Both
+ * are canonical, and a learner who reads one does not automatically read the
+ * other. Like the frame, the complement is never computed — that is the question.
+ */
+export const WhiteboardBeadStringSchema = z
+  .object({
+    kind: z.literal('bead_string'),
+    count: z.number().int().min(1).max(20),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One thing being counted with tally marks. */
+export const TallyGroupSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    count: z.number().int().min(1).max(20),
+  })
+  .strict();
+
+/**
+ * `kind: 'tally'` — COUNTING EVENTS IN FIVES, AS THEY HAPPEN.
+ *
+ * How many sold, how many days it rained. The only board that draws a count
+ * being KEPT rather than reported, which is what makes data feel collected
+ * rather than handed down — the beginning of `biz.revenue`.
+ */
+export const WhiteboardTallySchema = z
+  .object({
+    kind: z.literal('tally'),
+    groups: z.array(TallyGroupSchema).min(2).max(5),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/**
+ * `kind: 'fraction_circle'` — A SHARE OF A ROUND WHOLE.
+ *
+ * The gesture every child already owns: a slice of the cake. `fraction_strip`
+ * compares wholes cut different ways; this one is the single whole a learner
+ * recognises before any of that, and it is the natural picture for
+ * `money.equal-sharing` and a first look at percent.
+ */
+export const WhiteboardFractionCircleSchema = z
+  .object({
+    kind: z.literal('fraction_circle'),
+    denominator: z.number().int().min(2).max(12),
+    highlighted: z.number().int().min(0).max(12),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One column of a stacked bar: a total, decomposed. */
+export const StackColumnSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    parts: z
+      .array(z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict())
+      .min(2)
+      .max(3),
+  })
+  .strict();
+
+/**
+ * `kind: 'stack'` — TWO OR THREE TOTALS, EACH DECOMPOSED INSIDE.
+ *
+ * `categories` compares totals; this compares what they are MADE OF, which is
+ * the question `biz.budget-decisions` actually asks — two weeks that cost the
+ * same can be spent completely differently, and only a stacked bar shows both
+ * facts at once.
+ */
+export const WhiteboardStackSchema = z
+  .object({
+    kind: z.literal('stack'),
+    columns: z.array(StackColumnSchema).min(2).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One of the two trajectories on a `sequence_compare` board. */
+export const SequenceTrackSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(WhiteboardStepSchema).min(1).max(6),
+  })
+  .strict();
+
+/**
+ * `kind: 'sequence_compare'` — TWO FUTURES AT ONCE.
+ *
+ * Save two a week against save five; simple growth against compound. `sequence`
+ * answers "what happens"; this answers "what happens INSTEAD", which is the only
+ * form in which `money.simple-interest-peek` means anything to a child. Both
+ * tracks must span the same number of periods, or the picture compares two
+ * different lengths of time and calls it a difference in outcome.
+ */
+export const WhiteboardSequenceCompareSchema = z
+  .object({
+    kind: z.literal('sequence_compare'),
+    unit: z.enum(['day', 'week', 'month', 'year']),
+    tracks: z.tuple([SequenceTrackSchema, SequenceTrackSchema]),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One event on a timeline. */
+export const TimelineEventSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    /** Which period it happens in, counting from 1. */
+    at: z.number().int().min(1).max(12),
+  })
+  .strict();
+
+/**
+ * `kind: 'timeline'` — WHEN, NOT HOW MUCH.
+ *
+ * `sequence` answers "how much"; this answers "when", and the gap between the
+ * two is where `spends-until-empty` lives: money that arrives on the 15th and a
+ * bill that is due on the 10th is a problem of ORDER, not of amount.
+ */
+export const WhiteboardTimelineSchema = z
+  .object({
+    kind: z.literal('timeline'),
+    unit: z.enum(['day', 'week', 'month', 'year']),
+    /** How many periods the line covers. */
+    span: z.number().int().min(2).max(12),
+    events: z.array(TimelineEventSchema).min(2).max(5),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/**
+ * `kind: 'cycle'` — A LOOP THAT COMES BACK TO ITS START.
+ *
+ * Buy, sell, earn, buy again. Every other board in this family draws something
+ * that ENDS; a business does not, and `biz.revenue`/`profit` make a different
+ * kind of sense once the arrow returns. The only Class I board with no numbers
+ * at all — closed to 3-5 short steps, and moderation is its whole guard.
+ */
+export const WhiteboardCycleSchema = z
+  .object({
+    kind: z.literal('cycle'),
+    steps: z.array(z.string().min(1).max(40)).min(3).max(5),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/**
+ * `kind: 'before_after'` — TWO STATES OF THE SAME THING.
+ *
+ * "What changed, and what stayed the same" is the question underneath every
+ * operation, and it is the one a learner skips when they treat arithmetic as a
+ * procedure. The change is computed, never stated.
+ */
+export const WhiteboardBeforeAfterSchema = z
+  .object({
+    kind: z.literal('before_after'),
+    what: z.string().min(1).max(40),
+    before: z.number().min(0).max(1_000_000),
+    after: z.number().min(0).max(1_000_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
  * never free-form — the same §5 discipline every other model-facing schema
@@ -1122,6 +1326,15 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardPriceTagSchema,
   WhiteboardInventorySchema,
   WhiteboardBudgetPlateSchema,
+  WhiteboardPictographSchema,
+  WhiteboardBeadStringSchema,
+  WhiteboardTallySchema,
+  WhiteboardFractionCircleSchema,
+  WhiteboardStackSchema,
+  WhiteboardSequenceCompareSchema,
+  WhiteboardTimelineSchema,
+  WhiteboardCycleSchema,
+  WhiteboardBeforeAfterSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -1217,6 +1430,15 @@ export type WhiteboardLedger = z.infer<typeof WhiteboardLedgerSchema>;
 export type WhiteboardPriceTag = z.infer<typeof WhiteboardPriceTagSchema>;
 export type WhiteboardInventory = z.infer<typeof WhiteboardInventorySchema>;
 export type WhiteboardBudgetPlate = z.infer<typeof WhiteboardBudgetPlateSchema>;
+export type WhiteboardPictograph = z.infer<typeof WhiteboardPictographSchema>;
+export type WhiteboardBeadString = z.infer<typeof WhiteboardBeadStringSchema>;
+export type WhiteboardTally = z.infer<typeof WhiteboardTallySchema>;
+export type WhiteboardFractionCircle = z.infer<typeof WhiteboardFractionCircleSchema>;
+export type WhiteboardStack = z.infer<typeof WhiteboardStackSchema>;
+export type WhiteboardSequenceCompare = z.infer<typeof WhiteboardSequenceCompareSchema>;
+export type WhiteboardTimeline = z.infer<typeof WhiteboardTimelineSchema>;
+export type WhiteboardCycle = z.infer<typeof WhiteboardCycleSchema>;
+export type WhiteboardBeforeAfter = z.infer<typeof WhiteboardBeforeAfterSchema>;
 /** Any of the closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
@@ -1318,6 +1540,26 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       return [whiteboard.label, whiteboard.item];
     case 'budget_plate':
       return [whiteboard.label, ...whiteboard.items.map((i) => i.label)];
+    case 'pictograph':
+      return [whiteboard.label, ...whiteboard.rows.map((r) => r.label)];
+    case 'bead_string':
+    case 'fraction_circle':
+      return [whiteboard.label];
+    case 'tally':
+      return [whiteboard.label, ...whiteboard.groups.map((g) => g.label)];
+    case 'stack':
+      return [
+        whiteboard.label,
+        ...whiteboard.columns.flatMap((c) => [c.label, ...c.parts.map((p) => p.label)]),
+      ];
+    case 'sequence_compare':
+      return [whiteboard.label, ...whiteboard.tracks.map((t) => t.label)];
+    case 'timeline':
+      return [whiteboard.label, ...whiteboard.events.map((e) => e.label)];
+    case 'cycle':
+      return [whiteboard.label, ...whiteboard.steps];
+    case 'before_after':
+      return [whiteboard.label, whiteboard.what];
   }
 }
 

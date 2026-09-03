@@ -71,6 +71,14 @@ import {
   computePriceTag,
   computeInventory,
   computeBudgetPlate,
+  computePictograph,
+  computeBeadString,
+  computeTally,
+  computeFractionCircle,
+  computeStack,
+  computeSequenceCompare,
+  computeTimeline,
+  computeBeforeAfter,
 } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
@@ -1415,6 +1423,41 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
       const result = computeBudgetPlate(board);
       return result === null ? null : { ...board, ...result };
     }
+    case 'pictograph': {
+      const result = computePictograph(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'bead_string': {
+      const result = computeBeadString(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'tally': {
+      const result = computeTally(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'fraction_circle': {
+      const result = computeFractionCircle(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'stack': {
+      const result = computeStack(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'sequence_compare': {
+      const result = computeSequenceCompare(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'timeline': {
+      const result = computeTimeline(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'before_after': {
+      const result = computeBeforeAfter(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    // Prose only; moderation is its guard.
+    case 'cycle':
+      return { ...board };
   }
 }
 

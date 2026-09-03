@@ -928,6 +928,35 @@ function internalRouter(): Router {
     .object({ kind: z.literal('budget_plate'), budget: z.number(), items: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(2).max(5), spent: z.number(), remaining: z.number(), overBy: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']) })
     .strict();
 
+  /* Early years and time — the last of the Class I catalog. */
+  const PictographWhiteboardBody = z
+    .object({ kind: z.literal('pictograph'), rows: z.array(z.object({ label: z.string().max(40), count: z.number().int() }).strict()).min(2).max(4), unitValue: z.number(), totals: z.array(z.number()), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
+    .strict();
+  const BeadStringWhiteboardBody = z
+    .object({ kind: z.literal('bead_string'), count: z.number().int(), rows: z.array(z.number().int()), label: z.string().max(60) })
+    .strict();
+  const TallyWhiteboardBody = z
+    .object({ kind: z.literal('tally'), groups: z.array(z.object({ label: z.string().max(40), count: z.number().int() }).strict()).min(2).max(5), fives: z.array(z.tuple([z.number().int(), z.number().int()])), label: z.string().max(60) })
+    .strict();
+  const FractionCircleWhiteboardBody = z
+    .object({ kind: z.literal('fraction_circle'), denominator: z.number().int(), highlighted: z.number().int(), share: z.number(), label: z.string().max(60) })
+    .strict();
+  const StackWhiteboardBody = z
+    .object({ kind: z.literal('stack'), columns: z.array(z.object({ label: z.string().max(40), parts: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(2).max(3) }).strict()).min(2).max(3), totals: z.array(z.number()), max: z.number(), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
+    .strict();
+  const SequenceCompareWhiteboardBody = z
+    .object({ kind: z.literal('sequence_compare'), unit: z.enum(['day', 'week', 'month', 'year']), tracks: z.tuple([z.object({ label: z.string().max(40), start: z.number(), steps: z.array(z.object({ op: z.enum(['add', 'subtract', 'multiply_percent']), value: z.number() }).strict()) }).strict(), z.object({ label: z.string().max(40), start: z.number(), steps: z.array(z.object({ op: z.enum(['add', 'subtract', 'multiply_percent']), value: z.number() }).strict()) }).strict()]), values: z.array(z.array(z.number())), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
+    .strict();
+  const TimelineWhiteboardBody = z
+    .object({ kind: z.literal('timeline'), unit: z.enum(['day', 'week', 'month', 'year']), span: z.number().int(), events: z.array(z.object({ label: z.string().max(40), at: z.number().int() }).strict()).min(2).max(5), positions: z.array(z.number()), label: z.string().max(60) })
+    .strict();
+  const CycleWhiteboardBody = z
+    .object({ kind: z.literal('cycle'), steps: z.array(z.string().max(40)).min(3).max(5), label: z.string().max(60) })
+    .strict();
+  const BeforeAfterWhiteboardBody = z
+    .object({ kind: z.literal('before_after'), what: z.string().max(40), before: z.number(), after: z.number(), delta: z.number(), direction: z.enum(['up', 'down', 'same']), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
+    .strict();
+
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
     CompareWhiteboardBody,
@@ -961,6 +990,15 @@ function internalRouter(): Router {
     PriceTagWhiteboardBody,
     InventoryWhiteboardBody,
     BudgetPlateWhiteboardBody,
+    PictographWhiteboardBody,
+    BeadStringWhiteboardBody,
+    TallyWhiteboardBody,
+    FractionCircleWhiteboardBody,
+    StackWhiteboardBody,
+    SequenceCompareWhiteboardBody,
+    TimelineWhiteboardBody,
+    CycleWhiteboardBody,
+    BeforeAfterWhiteboardBody,
   ]);
 
   /**

@@ -27,8 +27,8 @@ only section that must be updated on EVERY sprint boundary.**
 | | |
 |---|---|
 | **Status** | IN PROGRESS. Wave 1 foundation started 2026-09-02. |
-| **Active sprint** | — none. Wave 1 COMPLETE (Sprints 4-8 plus §4.4); Sprints 11 and 12 done. **32 of the 41 Class I instruments are live; 9 remain.** Classes II-V not started. **None of the 19 new kinds has been used by a real model in a real session** — they are built and gate-verified, not proven live. |
-| **Next action** | Either Wave 0 (§7.1-§7.3 — unlocks nothing new has to be designed for, and still the cheapest value in the plan) or Wave 2 (§7.9 onward — Class II manipulation and the remaining 31 boards). Read §7.6-R first: the cost criterion was replaced. |
+| **Active sprint** | — none. **Class I of the catalog is COMPLETE.** **CLASS I IS COMPLETE — all 41 drawn instruments are live.** Classes II-V not started. **None of the 19 new kinds has been used by a real model in a real session** — they are built and gate-verified, not proven live. |
+| **Next action** | **Prove some of these live before building more.** 37 of the 41 kinds have never been used by a real model in a real session, and `gh workflow run tutor-deploy.yml -f step=converse` is the only gate that answers "was that a good lesson". After that: Wave 0 (§7.1-§7.3, the unlocks — still the cheapest value in the plan) and then Classes II-V. |
 | **Blocked on owner** | Nothing blocking today. D1 and D3 (§8.2) were answered by the owner on 2026-09-02 with "procede": the catalog grows by **named instruments** and the architecture tax is paid with Wave 1. **D2 (generated imagery) is still open** and gates Wave 4 only. |
 | **Last verified against the repo** | 2026-09-02. |
 
@@ -44,7 +44,9 @@ only section that must be updated on EVERY sprint boundary.**
 | **S11 — the canonical batch** | **DONE** 2026-09-02 | `ten_frame`, `open_number_line`, `array`, `fraction_strip`, `partition` — the primary-maths vocabulary the catalog was missing. `open_number_line` gives `money.make-change-counting-up` its first visual representation ever. `instruments:check` green over **15**; `verify:tutor-ui` drives all fifteen |
 | **S12 — decision and comparison** | **DONE** 2026-09-02 | `table`, `scale`, `two_bins`, `venn`, `ranking`, `outcomes`, `trade`, `chance`. `instruments:check` green over **23**; `verify:tutor-ui` drives all 23. `outcomes` and `trade` are the first prose-carrying boards — every string moderated, `detail` capped at 110 chars |
 | **S13 — operations and real-money artefacts** | **DONE** 2026-09-02 | `deal`, `change`, `regroup`, `equation_bar`, `receipt`, `ledger`, `price_tag`, `inventory`, `budget_plate`. `instruments:check` green over **32**. `budget_plate` is the one board that ALLOWS an overspend rather than refusing it — `budget-is-per-item` can only be dislodged by watching the total cross the line |
-| Wave 0 (S1-S3) and the rest of Waves 2-5 | not started | — |
+| **S14/S15 — early years and time** | **DONE** 2026-09-02 | `pictograph`, `bead_string`, `tally`, `fraction_circle`, `stack`, `sequence_compare`, `timeline`, `cycle`, `before_after`. **CLASS I IS COMPLETE: all 41 drawn instruments are live**, `instruments:check` green over 41 × 5 copies |
+| Wave 0 (S1-S3) — the unlocks | **not started** | `preferredTypes` still reaches 2 of 57 activity types; `demonstrate` still covers 2 of 57; the whiteboard is still silent; the map is still reachable in 1 of 8 phases |
+| Classes II-V (S9-S10, S16-S21) | **not started** | manipulation, the 3D stage, micro-worlds, kept artifacts |
 
 ### §0.1 Baseline — what is true today (all VERIFIED 2026-09-02)
 
@@ -55,10 +57,13 @@ only section that must be updated on EVERY sprint boundary.**
   `fraction_strip`, `partition`, `table`, `scale`, `two_bins`, `venn`,
   `ranking`, `outcomes`, `trade`, `chance`, `deal`, `change`, `regroup`,
   `equation_bar`, `receipt`, `ledger`, `price_tag`, `inventory`,
-  `budget_plate`. It was 4 when this
+  `budget_plate`, `pictograph`, `bead_string`, `tally`, `fraction_circle`,
+  `stack`, `sequence_compare`, `timeline`, `cycle`, `before_after`. It was 4 when this
   file was written on 2026-09-02; Sprints 4-8, 11 and 12 landed the other
-  nineteen the same day, and Sprint 13 added nine more for **32 kinds**.
-  **9 of the 41 Class I instruments remain**, and Classes II-V are untouched.
+  nineteen the same day; Sprints 13-15 added the last eighteen. **All 41 Class I
+  instruments are live.** Classes II-V — manipulation, the 3D stage,
+  micro-worlds and kept artifacts — are untouched, and Wave 0's unlocks are
+  still open.
 - The Tutor can serve **any of the 57** Lesson Engine segment types live
   (`LiveSegmentPanel` mounts the real `REGISTRY`), but can only *request* **2**:
   `segmentRequest.preferredTypes` is closed to `interest_peek` and `number_line`.
@@ -932,6 +937,26 @@ Both are recorded rather than quietly fixed, because both generalise.
   reason `zodDiscriminant` exists. **This is the argument for writing the negative
   tests at all**: a gate is only as good as the failure someone has actually watched
   it catch.
+
+### §10.3b A third gate hole, found by the gate (2026-09-02)
+
+`verify:tutor-ui`'s zero-pixel bar check flagged ANY inline-height element that
+measured zero. That was right while every such element was meant to be visible,
+and it stopped being right the moment a board could legitimately draw a zero:
+`barHeightPct` returns exactly 0 for a true zero value (round 107 — a bar
+labelled "$0" that still had height contradicted its own label), and
+`sequence_compare` opens on two tracks that both start at zero. The gate reported
+two broken bars on a board that was drawing correctly.
+
+Sharpened rather than relaxed: it now compares INTENDED height (the inline style)
+against RENDERED height, so a bar asking for 71% and getting 0px still fails and
+a bar asking for 0% no longer does. **Proven, not reasoned about**: the original
+launch-day defect was deliberately reintroduced (removing `min-h-0 flex-1` from
+`BarTrack`'s track) and the sharpened gate went red on all three bar-chart kinds,
+then green again on restore.
+
+That is three holes this catalog's own gates have found in themselves in one day,
+every one by being RUN rather than by being reasoned about.
 
 ### §10.4 Known documentation defects found while writing this
 
