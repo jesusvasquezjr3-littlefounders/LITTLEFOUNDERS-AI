@@ -234,9 +234,14 @@ export type WireWhiteboard =
  * persist the SAME steps the wire carried, not a second, driftable shape.
  */
 export interface WireDemoStep {
-  kind: 'add' | 'remove' | 'pause';
+  kind: 'add' | 'remove' | 'pause' | 'place' | 'assign' | 'pair' | 'move';
   denomination?: number;
   ms?: number;
+  item?: string;
+  bucket?: string;
+  left?: string;
+  right?: string;
+  value?: number;
 }
 
 export type ServerMessage =

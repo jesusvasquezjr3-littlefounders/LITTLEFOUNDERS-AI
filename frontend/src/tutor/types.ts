@@ -194,11 +194,20 @@ export type ServerMessage =
   | { type: 'closed'; reason: string }
   | { type: 'error'; code: string; message: string };
 
-/** v3: one closed step of a tray demonstration (mirrors Oracle's DemoStepSchema). */
+/**
+ * v3: one closed step of a demonstration (mirrors Oracle's `DemoStepSchema`).
+ * Widened to 4 families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2) — see
+ * `trayDemo.ts` for which family reads which fields.
+ */
 export interface TrayDemoStep {
-  kind: 'add' | 'remove' | 'pause';
+  kind: 'add' | 'remove' | 'pause' | 'place' | 'assign' | 'pair' | 'move';
   denomination?: number;
   ms?: number;
+  item?: string;
+  bucket?: string;
+  left?: string;
+  right?: string;
+  value?: number;
 }
 
 /**

@@ -45,6 +45,20 @@ vi.mock('@/lesson-engine/registry', () => ({
         <div>picked: {JSON.stringify((value as { picked?: number[] })?.picked ?? [])}</div>
       ),
     },
+    // One of the four families `demonstrate` widened to 2026-09-02
+    // (/TUTOR_INSTRUMENTS.md Sprint 2) — chosen because `sortBucketsAdapter` is
+    // the one with the most to get wrong (two ids validated against two
+    // different payload lists). Money alone proved the OLD driver's wiring;
+    // this proves the NEW generic `payload`/`getDraft`/`setDraft` plumbing
+    // actually reaches a non-money family through the real component, not
+    // just through `trayDemo.test.ts`'s own adapter-level mocks.
+    sort_buckets: {
+      kind: 'input',
+      canSubmit: () => false,
+      component: ({ value }: { value: unknown }): ReactNode => (
+        <div>assignments: {JSON.stringify((value as { assignments?: Record<string, string> })?.assignments ?? {})}</div>
+      ),
+    },
   },
 }));
 
@@ -139,6 +153,54 @@ function traySegmentState(id: string): LiveSegmentState {
     framing: '',
   };
 }
+
+function sortBucketsSegmentState(id: string): LiveSegmentState {
+  return {
+    segmentId: id,
+    seq: 1,
+    origin: 'live',
+    segment: {
+      type: 'sort_buckets',
+      prompt_md: 'Ordena cada cosa',
+      payload: {
+        buckets: [{ id: 'needs' }, { id: 'wants' }],
+        items: [{ id: 'azucar' }, { id: 'juguete' }],
+      },
+    },
+    scoresXp: true,
+    framing: '',
+  };
+}
+
+describe('LiveSegmentPanel — a demo reaches a non-money family through the real generic driver', () => {
+  it('assigns a real item to a real bucket, rendered by the actual mounted component', async () => {
+    vi.useFakeTimers();
+    try {
+      const steps = [{ kind: 'assign' as const, item: 'azucar', bucket: 'needs' }];
+      const { rerender } = render(
+        <LiveSegmentPanel live={sortBucketsSegmentState('segment-b')} token="tok" onGraded={vi.fn()} demo={null} />,
+      );
+      expect(screen.getByText('assignments: {}')).toBeInTheDocument();
+
+      rerender(
+        <LiveSegmentPanel
+          live={sortBucketsSegmentState('segment-b')}
+          token="tok"
+          onGraded={vi.fn()}
+          demo={{ seq: 3, steps }}
+        />,
+      );
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+
+      expect(screen.getByText('assignments: {"azucar":"needs"}')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
 
 describe('LiveSegmentPanel — a tray demo must not freeze when an unrelated ancestor re-renders', () => {
   /*

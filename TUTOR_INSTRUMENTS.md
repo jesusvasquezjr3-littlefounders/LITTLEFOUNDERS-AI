@@ -26,11 +26,11 @@ only section that must be updated on EVERY sprint boundary.**
 
 | | |
 |---|---|
-| **Status** | IN PROGRESS. Class I complete; Wave 0 + Classes II-V underway 2026-09-02. |
-| **Active sprint** | Wave 0 — Sprint 1 DONE (`preferredTypes` widened, live-verified 4x via `tutor:converse`), Sprint 2 next. |
-| **Next action** | Finish Wave 0 (S2 `demonstrate`, S3 sound + map reach), then Class II (S9-S10 manipulation), then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
+| **Status** | IN PROGRESS. Class I complete; Wave 0 + Classes II-V underway 2026-09-02/03. |
+| **Active sprint** | Wave 0 — Sprint 1 DONE, Sprint 2 DONE with a real scope finding (below), Sprint 3 next. |
+| **Next action** | S3 (sound + map reach), then Class II (S9-S10 manipulation), then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
 | **Blocked on owner** | **D2 (generated imagery, gates Class IV and Wave 4) — asked at the end of this session's work.** D1 and D3 were answered 2026-09-02 with "procede". |
-| **Last verified against the repo** | 2026-09-02. |
+| **Last verified against the repo** | 2026-09-03. |
 
 ### §0.0 Sprint log — what is actually built
 
@@ -46,7 +46,7 @@ only section that must be updated on EVERY sprint boundary.**
 | **S13 — operations and real-money artefacts** | **DONE** 2026-09-02 | `deal`, `change`, `regroup`, `equation_bar`, `receipt`, `ledger`, `price_tag`, `inventory`, `budget_plate`. `instruments:check` green over **32**. `budget_plate` is the one board that ALLOWS an overspend rather than refusing it — `budget-is-per-item` can only be dislodged by watching the total cross the line |
 | **S14/S15 — early years and time** | **DONE** 2026-09-02 | `pictograph`, `bead_string`, `tally`, `fraction_circle`, `stack`, `sequence_compare`, `timeline`, `cycle`, `before_after`. **CLASS I IS COMPLETE: all 41 drawn instruments are live**, `instruments:check` green over 41 × 5 copies |
 | **S1 — `preferredTypes` widened** | **DONE** 2026-09-02 | 2 → 10 types: the Lesson Engine's own `money` family (`coin_count`, `make_change`, `piggy_split`, `needs_wants`, `price_compare`, `budget_fit`, `savings_goal`, `fair_trade`, `interest_peek`) plus `number_line`. New `agent/tools/check-preferred-types-parity.mjs` gate (the same hand-mirrored-constant class as `instruments:check`, one layer up) — 4 tests, 2 deliberately desynchronised. A real defect found and fixed along the way: `sanitizePreferredTypes` never actually deduplicated; the old cap of 2 only LOOKED like it did, for one specific ordering. Live-verified across the 4 `tutor:converse` runs in §10.3a — the widened vocabulary is what let `tokens`/`flow` fire at all |
-| S2 — `demonstrate` beyond the coin tray | in progress | — |
+| **S2 — `demonstrate` beyond the coin tray** | **DONE, scoped down from plan** 2026-09-03 | Schema/wire/adapter machinery for all 4 families, all 6 hand-mirrored copies (new `demo-step:check` gate, 5 tests, 4 desynchronised). Only `number_line`'s `move` joined the LIVE prompt vocabulary — `order_steps`/`sort_buckets`/`match_pairs` are real, tested (12 new adapter tests + 1 non-money `LiveSegmentPanel` integration test) and schema-defined but deliberately NOT offered to the model: `orchestrator.ts` never gives it a served segment's real item/bucket ids (confirmed: zero `payload` references), so a guessed id landing on a real one would place a child's own graded answer with no check behind it — the §1.14 "never affirm an unchecked answer" harm, for exactly the three families where an intermediate state can be definitively wrong (unlike money, or a marker on a bounded line). `move` itself was MEASURED, not assumed: 5 live `tutor:converse`-pattern calls found it never fires — the model reaches for a `sequence`/`open_number_line` WHITEBOARD instead (now blocked by a new prompt exception) and then just narrates in words, on every attempt including a direct "muéstrame cómo". Left in the prompt as harmless, unproven capability; not reported as verified. Full detail in §7.2's RESULT block |
 | S3 — whiteboard sound + map reach | not started | — |
 | Class II (S9-S10) — manipulation | not started | — |
 | Class III (S16) — non-asset slice | not started | `point_at`, `beat` only. `props`/`roleplay` need a 3D asset pipeline this session cannot run |
@@ -72,8 +72,13 @@ only section that must be updated on EVERY sprint boundary.**
 - The Tutor can serve **any of the 57** Lesson Engine segment types live
   (`LiveSegmentPanel` mounts the real `REGISTRY`), but can only *request* **2**:
   `segmentRequest.preferredTypes` is closed to `interest_peek` and `number_line`.
-- `demonstrate` covers **2 of 57** types (`coin_count`, `make_change`) with a
-  3-verb vocabulary (`add` / `remove` / `pause`), max 8 steps
+- `demonstrate` LIVE vocabulary covers **3 of 57** types (`coin_count`,
+  `make_change`, `number_line`) — `add` / `remove` / `pause` fire reliably
+  (verified live); `move` is prompt-invited but MEASURED not to fire in 5/5
+  live attempts (§7.2 RESULT). The DEFINED (schema+adapter, not
+  model-offered) vocabulary reaches 2 more types (`order_steps`,
+  `sort_buckets`, `match_pairs`) via `place`/`assign`/`pair`, withheld from
+  the model deliberately — see §7.2. Max 8 steps either way
   (`frontend/src/tutor/trayDemo.ts`).
 - The knowledge catalog is **28 KCs, 36 edges, 32 misconceptions**, 2 strands
   (`money_math` 16, `entrepreneurship` 12), `tier_min` 1–3
@@ -609,6 +614,83 @@ Lesson Engine surfaces) and `verify:tutor-ui`.
 **Risks.** A demonstration that fights the learner's input. The abort path is the
 part to test hardest, not the happy path.
 
+**RESULT (2026-09-03).** Shipped with one deliberate, safety-driven scope cut
+and one honestly-reported measurement failure — both found by actually running
+the thing against a real model, not by reasoning about the schema:
+
+- **`place`/`assign`/`pair` (`order_steps`/`sort_buckets`/`match_pairs`) are
+  built end to end but withheld from the model.** All six hand-mirrored copies
+  of the step shape agree (new `oracle.schema.ts`/`ws/protocol.ts`/
+  `backend/routes/tutor.ts`/`backend/services/tutorData.ts` ×2/
+  `frontend/tutor/types.ts` — `npm run demo-step:check`, mirroring
+  `instruments:check`'s own class of gap one layer down), and
+  `frontend/tutor/trayDemo.ts` has a real, tested adapter for each (12 new
+  tests, each hand-derived from the ACTUAL production draft-mutation code in
+  `lesson-engine/families/arrange/components.tsx`, not guessed). What stopped
+  them from reaching the prompt is a risk the original plan did not name:
+  `orchestrator.ts` builds the model's "what's on screen" context from only
+  `{type, prompt}` (`noteSegmentServed`, confirmed by reading the real
+  signature — no field for a payload or item ids exists at all), so the model
+  can only ever GUESS an item/bucket id. For money, a wrong guess is dropped
+  and nothing is lost — no partial coin total is ever incorrect. For these
+  three families, a placement IS the graded answer; a guess that happens to
+  land on a real id would move a child's own unsubmitted answer with no check
+  behind it, and could show the trusted tutor asserting a WRONG placement
+  through action while narrating as if it were correct — the exact harm
+  /AGENTS.md §1.14's "never affirm an unchecked answer" family of rules exists
+  to prevent. `oracle/src/tutor/prompt.ts`'s `"demonstrate"` shape line
+  documents this at the point a future reader would try to "complete" it, and
+  `trayDemo.ts`'s own header repeats it. Reopening this needs either the
+  served segment's real ids reaching the model's context (a §4.1 sealed-context
+  change — new field, needs its own sign-off, `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`
+  too per the documentation-stewardship table) or a product decision that a
+  non-committal placement is acceptable UX. Not attempted here — surfaced, not
+  guessed, the same posture D2 already has.
+- **`number_line`'s `move` reached the prompt, and was then MEASURED to not
+  work.** Unlike the three above, `move` has no ids-in-context problem — a
+  value is just a number, exactly like a coin denomination — so it was left in
+  the active vocabulary. Five live calls against the real orchestrator
+  (`deepseek-chat`, the pattern `oracle/scripts/converse.ts` itself uses, run
+  ad hoc and not committed) found it never fires: a force-served `number_line`
+  activity plus an explicit "muéstrame cómo contarías tú" produced
+  `demonstrate: null` on every attempt, across two wording revisions of the
+  guidance paragraph. The `[oracle] whiteboard set while an activity is still
+  open and ungraded — dropped` log line on the first attempt showed WHY: the
+  model's first instinct is to draw a `sequence` or `open_number_line`
+  WHITEBOARD (`WHICH BOARD FITS WHICH MOMENT` explicitly indexes "a quantity
+  moving over periods" to `sequence`), which a pre-existing server guard
+  correctly blocks — but even with that blocked, the model fell through to
+  narrating the count in words rather than reaching for `demonstrate`. A new
+  exception line was added to `WHICH BOARD FITS WHICH MOMENT` telling the
+  model not to draw a second number line over an already-open activity, which
+  did stop the whiteboard attempt (confirmed: the drop warning disappeared on
+  the next run) but still did not produce a `move` step. **Left in the prompt
+  as harmless — it costs nothing and may fire on phrasing these five calls did
+  not try — but this file will not claim it as a verified capability the way
+  `add`/`remove` are**, per /AGENTS.md §1.0 #5: reporting unproven work as
+  done is the most expensive mistake available here. A follow-up owns either a
+  materially different trigger (a number line reads to the model as a diagram
+  to draw, not an object to manipulate, unlike a coin — a "point"/"mark"-framed
+  instruction may fare better than "demonstrate") or an honest write-off.
+- **Acceptance #1 (screenshotted in `/dev/tutor-lab`) was not done as
+  written** — no live model in the lab means no way to trigger a `demo` prop
+  through the UI there. Substituted with what the machine version of that
+  question actually needed: a new `LiveSegmentPanel` integration test
+  (`sort_buckets`, chosen as the adapter with the most to get wrong — two ids
+  checked against two different payload lists) proving the generic
+  `payload`/`getDraft`/`setDraft` plumbing reaches a REAL mounted non-money
+  component, not just the isolated adapter unit tests — closing the one gap
+  those unit tests could not: whether `LiveSegmentPanel`'s own `useEffect`
+  wiring, previously only exercised against `coin_count`, generalizes.
+  Acceptance #2 and #4 hold by construction, unchanged from the money-only
+  driver (`runTrayDemo` never touches a submit/grade path, and the same
+  abort-signal check covers every family uniformly) — re-confirmed by the
+  full existing test suite passing unmodified. Acceptance #3 (replay) needed
+  no new work: `DemoStepsSummary.tsx` was already, deliberately, money-only
+  before this sprint (its own doc comment: no persisted starting state for any
+  family to replay against) and stays that way — a pre-existing, correctly
+  reasoned scope boundary, not a gap this sprint opened.
+
 ---
 
 #### §7.3 Sprint 3 — The board stops being silent, and the map becomes reachable
@@ -1080,3 +1162,4 @@ this plan does not change that rule (§5.12).
 | Date | Change |
 |---|---|
 | 2026-09-02 | Created. Catalog, architecture and 21-sprint plan derived from a full read of the KC graph, the 33 moves, the 57 segment types, the four existing whiteboard kinds, the 3D stage vocabulary, Prism's real costs and latencies, and the end-to-end path of a board from schema to screen. Nothing built. |
+| 2026-09-03 | Sprint 2 closed (§7.2 RESULT): `demonstrate` machinery widened to 4 families across all 6 hand-mirrored copies (new `demo-step:check` gate). Only `number_line`'s `move` reached the live prompt; `place`/`assign`/`pair` were built and then deliberately withheld after finding `orchestrator.ts` never gives the model a served segment's real ids, which would let a guessed placement assert a wrong graded answer. `move` itself was measured live (5 calls) to not fire despite two prompt revisions — recorded as an honest negative result, not claimed as working. |

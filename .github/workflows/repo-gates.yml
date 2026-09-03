@@ -75,6 +75,17 @@ jobs:
       - name: Preferred segment types agree between oracle and core
         run: node agent/tools/check-preferred-types-parity.mjs
 
+      # A THIRD instance of the same gap, one layer deeper: a `demonstrate`
+      # step's `{ kind, denomination?, ms?, item?, bucket?, left?, right?,
+      # value? }` shape is hand-mirrored SIX times (oracle's model schema,
+      # oracle's wire type, Core's body validator, Core's TS interface, Core's
+      # OWN separate read-time revalidator, and the frontend's wire type) —
+      # widened from 3 verbs to 7 2026-09-02/03 (/TUTOR_INSTRUMENTS.md
+      # Sprint 2). A step naming a dropped verb or field is a silent no-op in
+      # the frontend adapter, never an error, so nothing else would catch it.
+      - name: Demonstrate steps agree across every copy
+        run: node agent/tools/check-demo-step-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed: on 2026-08-14 it was failing because ROADMAP.md still
       # named migration 0033 as the ceiling while the repo shipped 0046. A gate

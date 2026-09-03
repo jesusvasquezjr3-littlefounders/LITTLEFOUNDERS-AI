@@ -23,6 +23,17 @@ import type { TrayDemoStep } from '../types';
  * it) there is nothing to say, and this renders nothing rather than an empty
  * sentence.
  *
+ * MONEY-ONLY, DELIBERATELY, even after `demonstrate` widened to 4 more
+ * families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2). The `denomination`
+ * filter below already renders nothing for a `place`/`assign`/`pair`/`move`
+ * step, and that is the SAME §1.14 posture the paragraph above already
+ * argues for pauses: an absent summary merely omits, where a wrong one — "the
+ * tutor moved a token" with no id a reader can check against anything —
+ * misleads. Extending this to the other four families needs their own
+ * persisted starting state first, the identical gap this whole comment is
+ * about for money, and is left for whichever sprint actually needs it rather
+ * than guessed at now.
+ *
  * Lives in its own module rather than inside `ReplayInWorld.tsx` (2026-09-01)
  * so the GUARDIAN transcript viewer can render it too: that surface showed
  * nothing at all for `demonstrate`, even though migration `0067`'s own header

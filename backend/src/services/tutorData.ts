@@ -1254,9 +1254,14 @@ export type TutorTurnWhiteboard =
  * own comment on this exact posture) — duplicated deliberately, not imported.
  */
 export interface TutorTurnDemonstrateStep {
-  kind: 'add' | 'remove' | 'pause';
+  kind: 'add' | 'remove' | 'pause' | 'place' | 'assign' | 'pair' | 'move';
   denomination?: number;
   ms?: number;
+  item?: string;
+  bucket?: string;
+  left?: string;
+  right?: string;
+  value?: number;
 }
 
 export interface TutorTurnRow {
@@ -2193,9 +2198,16 @@ function readTurnWhiteboard(raw: unknown, turnId: string): TutorTurnWhiteboard |
  */
 const DemonstrateStepRowSchema = z
   .object({
-    kind: z.enum(['add', 'remove', 'pause']),
+    // Widened to 4 families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2) — see
+    // `DemoStepSchema`'s own comment (oracle/src/tutor/turnSchema.ts).
+    kind: z.enum(['add', 'remove', 'pause', 'place', 'assign', 'pair', 'move']),
     denomination: z.number().positive().max(10_000).optional(),
     ms: z.number().int().min(100).max(2_000).optional(),
+    item: z.string().min(1).max(64).optional(),
+    bucket: z.string().min(1).max(64).optional(),
+    left: z.string().min(1).max(64).optional(),
+    right: z.string().min(1).max(64).optional(),
+    value: z.number().optional(),
   })
   .strict();
 

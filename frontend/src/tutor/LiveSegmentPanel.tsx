@@ -133,14 +133,14 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
   useEffect(() => {
     const currentDemo = demoRef.current;
     const currentSegment = segmentRef.current;
-    const denominations: unknown = (currentSegment.payload as { denominations?: unknown }).denominations;
+    const payload = currentSegment.payload as Record<string, unknown>;
     if (
       !mayDemonstrate({
         demoSeq: currentDemo?.seq ?? null,
         lastPlayedSeq: lastDemoSeq.current,
         segmentType: currentSegment.type,
         answeredCorrectly: verdictRef.current?.correct === true,
-        denominations,
+        payload,
       })
     ) {
       return;
@@ -149,15 +149,12 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
     const abort = new AbortController();
     setDemoRunning(true);
     void runTrayDemo(
+      currentSegment.type,
+      payload,
       currentDemo!.steps,
-      // `mayDemonstrate` has already established this is a non-empty array.
-      (denominations as unknown[]).filter((d): d is number => typeof d === 'number'),
       {
-        getPicked: () => {
-          const current = draftRef.current as { picked?: unknown } | undefined;
-          return Array.isArray(current?.picked) ? (current.picked as number[]) : [];
-        },
-        setPicked: (picked) => setDraft({ picked }),
+        getDraft: () => draftRef.current,
+        setDraft: (next) => setDraft(next),
       },
       { signal: abort.signal },
     ).finally(() => setDemoRunning(false));

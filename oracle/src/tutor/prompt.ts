@@ -1792,7 +1792,45 @@ export const TUTOR_SYSTEM_PROMPT: string = [
         'for this skill yet.',
       ].join('\n  '),
   '  "offerAdaptation": null or one of slower_pacing | more_examples | less_text | more_visual | repeat_before_advancing,',
-  '  "demonstrate": null or 1-8 steps of { "kind": "add"|"remove"|"pause", "denomination"?, "ms"? },',
+  // `DemoStepSchema` (turnSchema.ts) also accepts "place"|"assign"|"pair" with
+  // "item"/"bucket"/"left"/"right", and `trayDemo.ts` has a tested adapter for
+  // each — wired end to end, deliberately NOT offered here
+  // (/TUTOR_INSTRUMENTS.md Sprint 2, 2026-09-03). `orchestrator.ts` never
+  // builds the served segment's real item/bucket ids into this model's
+  // context (confirmed: zero references to `payload` in that file), so a
+  // "place"/"assign"/"pair" step can only ever name a GUESSED id. For money,
+  // a guessed denomination that doesn't match is silently dropped and no harm
+  // is done — no partial coin total is ever "wrong". For order_steps /
+  // sort_buckets / match_pairs, a placement IS the graded answer: a step that
+  // happened to land on a real id would move the child's own draft into a
+  // position with no check behind it, and could show the trusted tutor
+  // asserting a WRONG placement through action while narrating as if it were
+  // correct. That is the exact harm §1.14's "never affirm an unchecked
+  // answer" family of rules exists to prevent, so this stays schema-defined
+  // and prompt-silent until either the served segment's real ids reach this
+  // context (a §4.1 sealed-context change, needs its own sign-off) or product
+  // decides a generic, non-committal placement is acceptable UX. Left as
+  // future capability, not a bug — do not "complete" it by adding the three
+  // verbs back here without resolving the ids-in-context gap first.
+  //
+  // MEASURED, NOT ASSUMED (2026-09-03): unlike "add"/"remove", which fire
+  // reliably (confirmed live, deepseek-chat, coin_count, first attempt), a
+  // FORCE-SERVED number_line activity plus an explicit "muéstrame cómo
+  // contarías tú" did NOT produce a "move" step in five consecutive live
+  // calls — two wording attempts on this guidance, and one that additionally
+  // added the WHICH-BOARD-FITS exception below (which did stop the model
+  // reaching for a competing `sequence`/`open_number_line` WHITEBOARD instead,
+  // confirmed by the drop warning disappearing, but still no "move"). The
+  // model narrates the counting correctly in every run; it just never reaches
+  // for the widget to show it. Left in the prompt because it is harmless and
+  // may still fire on phrasing these five calls did not try — but do not
+  // report this as a working, verified capability the way "add"/"remove" are.
+  // A follow-up should either try a materially different trigger (e.g. built
+  // around "point"/"mark" rather than "demonstrate", since a number line
+  // reads to the model as a diagram to draw, not an object to manipulate —
+  // unlike a coin) or accept it as unreachable in practice and say so.
+  '  "demonstrate": null or 1-8 steps of { "kind": "add"|"remove"|"pause"|"move",'
+    + ' "denomination"?, "ms"?, "value"? },',
   '  "whiteboard": null or ONE of:',
   '    { "kind": "sequence", "start", "unit": "day"|"week"|"month"|"year",'
     + ' "steps": 1-8 of { "op": "add"|"subtract"|"multiply_percent", "value" }, "label", "currency" }',
@@ -1817,7 +1855,11 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '',
   'WHICH BOARD FITS WHICH MOMENT. The shapes above are the whole vocabulary; this',
   'is the shortest map from a situation to one of them. Reach for a board when it',
-  'shows something words would have to list — never for its own sake.',
+  'shows something words would have to list — never for its own sake. EXCEPTION:',
+  'if a number-line ACTIVITY is already open (its type is on your screen, above),',
+  'do not draw `sequence` or `open_number_line` to count through it — the learner',
+  'already has a number line, and a second one is confusing, not helpful. Use',
+  '"demonstrate" on the one already there instead (see below).',
   '  Counting real money on a table → tokens. A quantity moving over periods →',
   '  sequence; two of those side by side → sequence_compare. A total and its',
   '  pieces, one unknown → bar_model; both parts known → part_whole. Money in and',
@@ -1836,11 +1878,18 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  partition; totals broken down → stack. Rows by columns → array.',
   '  When things happen → timeline; a loop that repeats → cycle; two states of',
   '  one thing → before_after. Two sides that must match → equation_bar.',
-  '',  'Use "demonstrate" ONLY while a coin/money activity is on screen and a small',
-  'demonstration teaches better than words: the steps move real coins in the',
-  'learner\'s tray while you speak ("mira, si agrego esta moneda…"). Use the',
-  'denominations the activity itself shows. Never use it to solve the whole',
-  'exercise — show one or two moves, then hand it back.',
+  '',  'Use "demonstrate" while a coin/money activity OR a number-line activity is',
+  'on screen: WHENEVER the learner asks you to show them, or says they do not',
+  'understand how, set "demonstrate" instead of only describing it in words —',
+  'that request IS the moment a demonstration is for, not a moment to describe',
+  'one in "say" and leave "demonstrate" null. Also reach for it on your own',
+  'when a small one teaches better than more words.',
+  'On coins: the steps move real coins in the learner\'s tray while you speak',
+  '("mira, si agrego esta moneda…"). Use the denominations the activity itself',
+  'shows. On a number line: a "move" step slides the marker to one value while',
+  'you count up to it out loud ("mira, cuento… uno, dos, tres"). Use only values',
+  'between the line\'s own min and max. Either way, never use it to solve the',
+  'whole exercise — show one or two moves, then hand it back.',
   '',
   'When you set "offerAdaptation", "say" must be ONLY the offer itself (a short',
   'transition plus the question — "¿te ayudaría ver otro ejemplo?" — nothing',

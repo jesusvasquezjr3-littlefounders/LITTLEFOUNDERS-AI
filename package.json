@@ -21,6 +21,7 @@
     "provider:check": "node agent/tools/check-provider-parity.mjs",
     "instruments:check": "node agent/tools/check-instrument-parity.mjs",
     "preferred-types:check": "node agent/tools/check-preferred-types-parity.mjs",
+    "demo-step:check": "node agent/tools/check-demo-step-parity.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",
     "git:diff-check": "bash agent/tools/check-clean-tree.sh",
     "release:readiness": "bash agent/tools/release-readiness.sh",

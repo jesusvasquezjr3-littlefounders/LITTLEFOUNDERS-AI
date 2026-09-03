@@ -1015,9 +1015,17 @@ function internalRouter(): Router {
     .array(
       z
         .object({
-          kind: z.enum(['add', 'remove', 'pause']),
+          // Widened to 4 families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2) —
+          // see `DemoStepSchema`'s own comment (oracle/src/tutor/turnSchema.ts)
+          // for what each new verb moves and why the vocabulary stayed flat.
+          kind: z.enum(['add', 'remove', 'pause', 'place', 'assign', 'pair', 'move']),
           denomination: z.number().positive().max(10_000).optional(),
           ms: z.number().int().min(100).max(2_000).optional(),
+          item: z.string().min(1).max(64).optional(),
+          bucket: z.string().min(1).max(64).optional(),
+          left: z.string().min(1).max(64).optional(),
+          right: z.string().min(1).max(64).optional(),
+          value: z.number().optional(),
         })
         .strict(),
     )

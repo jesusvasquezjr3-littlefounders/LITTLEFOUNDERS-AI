@@ -178,20 +178,50 @@ export function sanitizePreferredTypes(
 }
 
 /**
- * One step of an on-screen demonstration over the OPEN money-tray activity
- * (Tutor v3, /ORACLE.md). Closed vocabulary in the §5 sense: verbs from a
- * three-item enum, denominations as bare numbers the client validates against
- * the segment's own payload, pauses clamped. There is no free text and no
- * target outside the widget — an injection that reaches this field can add a
- * coin to a tray, and nothing else.
+ * One step of an on-screen demonstration over the OPEN active activity (Tutor
+ * v3, /ORACLE.md; widened to 4 families 2026-09-02,
+ * /TUTOR_INSTRUMENTS.md Sprint 2).
+ *
+ * STILL ONE FLAT, CLOSED SCHEMA — verbs from a fixed enum, every value a bare
+ * number or a short id, no free text and no target outside the widget. Adding
+ * families did not add authoring surface: `item`/`bucket`/`left`/`right` name
+ * an id the CLIENT validates against the live segment's own payload before
+ * acting on it, exactly the posture `denomination` already had — an injection
+ * that reaches this field can move a piece already sitting in the widget, and
+ * nothing else. A step whose verb does not match the segment on screen is a
+ * silent no-op (`frontend/src/tutor/trayDemo.ts`'s per-family
+ * adapters), never an error.
+ *
+ * `add`/`remove`/`pause` — the original three, unchanged, for `coin_count` /
+ * `make_change`. `place` — append an item to an `order_steps` sequence.
+ * `assign` — put an item in a `sort_buckets` bucket. `pair` — commit a
+ * `match_pairs` match. `move` — set the marker on a `number_line`.
+ *
+ * DEFINED HERE ≠ OFFERED TO THE MODEL. `prompt.ts`'s `"demonstrate"` shape
+ * line only ever lists `add`/`remove`/`pause`/`move` — `place`/`assign`/
+ * `pair` are accepted end-to-end (this schema, the wire type, both Core
+ * schemas, the frontend adapters in `trayDemo.ts`) but never invited, because
+ * nothing in `orchestrator.ts` gives the model the served segment's real
+ * item/bucket ids to name. See the long comment on that shape line in
+ * `prompt.ts` before adding them to it: a guessed id that happens to match is
+ * the graded answer, placed with no check behind it.
  */
 export const DemoStepSchema = z
   .object({
-    kind: z.enum(['add', 'remove', 'pause']),
+    kind: z.enum(['add', 'remove', 'pause', 'place', 'assign', 'pair', 'move']),
     /** The denomination to add/remove; the client drops values the payload lacks. */
     denomination: z.number().positive().max(10_000).optional(),
     /** For 'pause': milliseconds, clamped client-side. */
     ms: z.number().int().min(100).max(2_000).optional(),
+    /** For 'place' (order_steps) / 'assign' (sort_buckets, the item side): an item id from the segment's own payload. */
+    item: z.string().min(1).max(64).optional(),
+    /** For 'assign': which bucket. The client drops a bucket id the payload lacks, same as an unknown denomination. */
+    bucket: z.string().min(1).max(64).optional(),
+    /** For 'pair' (match_pairs): the left-column and right-column ids being matched. */
+    left: z.string().min(1).max(64).optional(),
+    right: z.string().min(1).max(64).optional(),
+    /** For 'move' (number_line): the target value. The client clamps to [min, max] from the segment's own payload. */
+    value: z.number().optional(),
   })
   .strict();
 
