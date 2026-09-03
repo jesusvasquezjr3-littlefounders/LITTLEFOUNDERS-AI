@@ -899,6 +899,8 @@ export function TutorScene({
            * see `shots.ts` → `APPROACH_HOLD`.
            */
           cast={auditionIds ? auditionCast : null}
+          action={action}
+          actionKey={actionKey}
           ambientMotion={settings.ambientMotion}
           reducedMotion={prefersReducedMotion}
           fitKey={fitKey}

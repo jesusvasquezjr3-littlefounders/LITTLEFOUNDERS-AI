@@ -23,6 +23,7 @@ import {
   limitFaceLift,
 } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
+import { playSfx } from '@/lesson-engine/player/sfx';
 import {
   additiveClip,
   baseClipName,
@@ -404,6 +405,17 @@ export function Character3D({
       if (startedFor.current !== token) {
         startedFor.current = token;
         actionStart.current = state.clock.elapsedTime;
+        /*
+         * Class III / S16 `audio_cue`, the STAGE side (the whiteboard side
+         * already shipped in S3 — TutorWhiteboard.tsx's per-bar `drop`).
+         * `celebrate` is the one action unambiguous enough to earn a sound
+         * on its own: it already means "a real moment", unlike `nod`/`think`,
+         * which fire constantly as filler. Gated on the SAME one-shot
+         * transition `startedFor` already exists to detect, so a `celebrate`
+         * held across several frames — or replayed via a bumped `actionKey`
+         * — plays the cue exactly once per occurrence, never once per frame.
+         */
+        if (action === 'celebrate') playSfx('celebration');
       }
 
       const duration = ACTION_SECONDS[action];

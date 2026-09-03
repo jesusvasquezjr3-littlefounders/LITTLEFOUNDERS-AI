@@ -1760,6 +1760,14 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  "say": string,            // what you say out loud, 1-3 short sentences',
   `  "emotion": one of ${EMOTIONS.join(' | ')},`,
   `  "action": one of ${ACTIONS.join(' | ')},`,
+  // Class III / S16 (TUTOR_INSTRUMENTS.md §3.4), the COARSE version: no
+  // per-element identity exists on any whiteboard kind (only a whole-board
+  // hook), so this can only aim the gesture at the board/plate as a whole,
+  // never a specific bar or segment inside it — that is a future increment,
+  // not a bug in this one line.
+  '  Choose "point" on the SAME turn you draw or refer back to a whiteboard —',
+  '  it makes the character gesture toward the board rather than into empty',
+  '  air. Not for anything else; a generic emphasis is "nod" or "think".',
   '  "next": "ask" | "segment" | "close",',
   '  "segmentRequest": null or { "skillKey", "difficulty" 1-5, "framing", "rationale",'
     + ' "preferredTypes"? },'

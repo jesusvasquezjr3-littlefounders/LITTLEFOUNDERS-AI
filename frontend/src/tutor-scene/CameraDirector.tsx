@@ -20,6 +20,29 @@ import {
   type SafeAreaInsets,
 } from './composition';
 import { useSafeArea } from './SafeAreaContext';
+import { arc } from './characterActions';
+import type { CharacterAction } from '@/components/characters/control/types';
+
+/**
+ * Class III / S16 `beat` (TUTOR_INSTRUMENTS.md §3.4): "the camera responds to
+ * a teaching moment, not only a phase change." `phases.ts`'s `shotForPhase`
+ * documents a hardened, three-document invariant (/ORACLE.md §9.3, §16,
+ * /DESIGN.md) that a `conversing` shot may change for exactly one reason
+ * (`adaptationOffered`) — a prior feature (`segmentLive`) violated this and
+ * was removed 2026-08-21 after shipping a real defect (the character's own
+ * head filling the frame on a phone). `beat` must therefore never touch
+ * `ShotId` or distance; it rides the SAME channel that already keeps the
+ * tutor clear of the plate — `composeFor`'s aim offset — as a small,
+ * self-decaying ADDITION on top of it, triggered by the character's own
+ * `point` gesture rather than a new schema field (nothing here changes what
+ * the model is asked to produce). Deliberately tiny: this is the version the
+ * decision log called "needs real visual iteration" — kept small enough that
+ * an imperfect direction reads as subtle rather than broken while a future
+ * pass tunes it with a human watching the render.
+ */
+const BEAT_DURATION_S = 1.2;
+const BEAT_UP_M = 0.025;
+
 
 /*
  * One camera, one damper, every shot.
@@ -138,6 +161,14 @@ export interface CameraDirectorProps {
    */
   cast?: readonly ShotSubject[] | null;
   /**
+   * The lead's current gesture, for `beat` ONLY — see this file's own header
+   * comment. Not read for anything else; the shot itself stays a pure
+   * function of phase, exactly as `shotForPhase` requires.
+   */
+  action?: CharacterAction;
+  /** Bumped per turn; a repeated `point` (same action, new key) beats again. */
+  actionKey?: number;
+  /**
    * The quality tier's ambient-motion budget. Gates orbit, handheld and bob.
    * NEVER the damper.
    */
@@ -165,6 +196,8 @@ export function CameraDirector({
   lead,
   companion,
   cast = null,
+  action,
+  actionKey,
   ambientMotion,
   reducedMotion,
   fitKey,
@@ -181,6 +214,8 @@ export function CameraDirector({
   const orbitPhase = useRef(0);
   const swayClock = useRef(0);
   const shotChangedAt = useRef(0);
+  const beatActionKey = useRef<number | null>(null);
+  const beatStartedAt = useRef<number | null>(null);
   const arrivedAt = useRef<number | null>(null);
   const activeShot = useRef<ShotId>(shot);
 
@@ -233,6 +268,18 @@ export function CameraDirector({
       shotChangedAt.current = state.clock.elapsedTime;
       arrivedAt.current = null;
     }
+
+    // `beat`: a new `point` occurrence (action unchanged but actionKey
+    // bumped counts as new — the character re-pointing at something else).
+    if (action === 'point' && actionKey !== undefined && beatActionKey.current !== actionKey) {
+      beatActionKey.current = actionKey;
+      beatStartedAt.current = state.clock.elapsedTime;
+    }
+    const beatElapsed = beatStartedAt.current === null ? null : state.clock.elapsedTime - beatStartedAt.current;
+    const beatAmount =
+      beatElapsed !== null && beatElapsed >= 0 && beatElapsed <= BEAT_DURATION_S && !reducedMotion
+        ? arc(beatElapsed / BEAT_DURATION_S)
+        : 0;
 
     /* ---- Where the camera is going ------------------------------------- */
 
@@ -302,6 +349,12 @@ export function CameraDirector({
      * states the radius it may not lose; the solver clamps against it.
      */
     const composition = composeFor(insets.current, viewport, distance, ctx, pose.keepInFrame);
+    // `beat`: an ADDITIVE nudge on the aim only — never `composition.padding`,
+    // which is what `distance` above was already fixed from. Adding to an
+    // already-resolved distance's own offset cannot smuggle in a shot or
+    // distance change; it can only ever move where the same shot, at the
+    // same distance, is currently looking.
+    if (beatAmount > 0) composition.up += BEAT_UP_M * beatAmount;
     const composed = applyComposition(position, pose.target, composition);
 
     /* ---- Ambient motion, which the quality tier may switch off ---------- */

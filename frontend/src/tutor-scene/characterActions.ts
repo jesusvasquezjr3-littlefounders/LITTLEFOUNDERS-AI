@@ -146,8 +146,8 @@ const BIPED: Record<CharacterAction, (rig: Rig, p: number, t: number) => number>
 
   point: (rig, p) => {
     const reach = ease(Math.min(p * 2.5, 1)) * (1 - ease(Math.max((p - 0.7) * 3.3, 0)));
-    turn(rig, rig.rightArm, -1.25 * reach, 0.25 * reach, -0.35 * reach);
-    turn(rig, rig.rightForeArm, -0.2 * reach, 0, 0);
+    turn(rig, rig.rightArm, -1.35 * reach, 0.15 * reach, -0.3 * reach);
+    turn(rig, rig.rightForeArm, -0.55 * reach, 0, 0);
     // The head follows the gesture; a point the character ignores looks broken.
     turn(rig, rig.head, 0, 0.18 * reach, 0);
     turn(rig, rig.chest, 0, 0.12 * reach, 0);
