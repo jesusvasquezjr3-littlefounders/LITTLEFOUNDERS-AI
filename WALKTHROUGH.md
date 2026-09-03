@@ -9,6 +9,71 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
+## A clipped label, and then the whole question of what the Tutor can show (2026-09-02)
+
+**Two pieces of work, and the second came out of the first.** The session opened
+on the last item `TUTOR_QA_2026-09-02.md` had left marked EN RIESGO: two width
+constraints in `TutorWhiteboard.tsx` on labels Oracle writes live. Verifying the
+mechanism rather than the symptom found it was worse than the class it was filed
+under. The other D1-class sites fail visibly — `truncate` cuts a string at a
+pixel edge and a reader can see it happened. These do not: `LessonPlate`'s
+`bodyLayout="column"` body is `overflow-hidden` with **no scroll**, and the
+whiteboard is the one child contractually responsible for fitting its own bounds,
+so a 58-character `es-MX` label wrapping to three lines in a 144px column does
+not truncate — **it disappears behind the ancestor**, with no ellipsis and no
+signal. Fixed with a deterministic `line-clamp-2` ceiling on all three
+live-authored caption surfaces (the two flagged, plus `marked_line`, which
+carries the identical unbounded 60-char field and was included on structural
+grounds rather than left to be filed twice), plus wider columns where there was
+real room. The full text still reaches a screen reader — every board's
+`aria-label` is built from the raw fields, never from the rendered DOM. Verified
+in a real browser with 58-59 character `es-MX` stress labels at 375px and 1280px
+across all three affected kinds; `verify:tutor-ui` green — **and green before the
+fix too**, which is the point worth keeping: an overlap/reachability audit cannot
+see a caption whose bottom lines are hidden behind an ancestor. Commit
+`accca6ff`.
+
+**Then the owner asked what it would take for the Tutor to teach with more than
+four pictures, and the answer turned out to be already written down.**
+`/TUTOR_INSTRUMENTS.md` is the result — a plan, nothing built. The finding that
+shapes it: `oracle/skills/moves/*.md` is the Tutor's procedural memory, 33 files
+retrieved per turn at zero model cost, and roughly two thirds of the
+misconception-tagged ones instruct a physical staging no surface in this product
+can perform — *"keep the coins on the table where they can be picked up. This
+move dies if it becomes arithmetic in the head"*, *"make three places and leave
+them UNNAMED"*, *"draw the bar before any operation"*. The specification of what
+is missing was inside the product all along; the catalog is derived from it
+rather than invented, and it also adopts the canonical primary-maths vocabulary
+the four current kinds omit entirely (bar models, ten frames, number bonds, open
+number lines, fraction strips, arrays). 62 resources in five classes, 21 sprints,
+6 waves.
+
+**The structural finding matters more than the catalog.** The reason there are
+four instruments is not imagination: one kind costs 17 files and five
+hand-mirrored schema copies across three services with no compiler check between
+them — the same gap that already shipped `compare`/`marked_line` without Core's
+branch and lost their boards **silently on replay**, caught by adversarial review
+and by no gate. So Wave 1 pays that down first (a nine-primitive drawing kit
+verified once in a real browser; an instrument manifest plus an
+`instruments:check` parity gate in the `provider:check` idiom, shipped with five
+negative tests because a parity gate nobody has watched fail is not a gate; and
+instrument hints riding the per-turn move instead of inflating the system prompt
+for every learner forever), and Sprint 6 exists to **measure** whether the tax
+actually fell before Sprints 11-15 are authorised. Wave 0 needs no new surface at
+all: `preferredTypes` is closed to 2 of the 57 activity types the Tutor already
+serves live, `demonstrate` reaches 2 of 57, nine wired sound effects go unused,
+and the learning map is reachable in 1 of 8 phases.
+
+Two documentation defects found while writing it, both recorded rather than
+quietly fixed: **`/ORACLE.md` §19.1 says 33 misconceptions and the seed file has
+32**, and the deploy order for a new whiteboard kind is **Core before Oracle** —
+the reverse of the `servedDifficulty` note — because `POST /turns`' body is a
+discriminated union with no fallback member, so an unknown `kind` 400s the whole
+turn instead of dropping the board. Three owner decisions gate Wave 1
+(`/TUTOR_INSTRUMENTS.md` §8.2, mirrored into `ROADMAP.md`'s Open decisions).
+Coverage figures in that file are ESTIMATED and labelled as such; every count and
+cost is verified against code.
+
 ## The engineering backlog closed, and then a live session found seven more (2026-09-01 → 2026-09-02)
 
 **Where this left the product, stated before the detail:** the acceptance

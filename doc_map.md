@@ -46,6 +46,7 @@
 | AI tutor runtime code (prompts, moderation, voice, session) | oracle/AGENTS.md · oracle/README.md | all |
 | AI tutor legal exposure (minors' voice, ungated generated content, retention) | /LEGAL/AI_TUTOR_LEGAL_REVIEW.md | all; §7 = open questions for counsel |
 | Tutor 3D stage (assets, rigs, procedural actions, placement, perf, Blender handoff) | TUTOR_3D.md | all |
+| Tutor teaching instruments — the catalog beyond today's 4 whiteboard kinds, the architecture that makes it affordable, the 21-sprint plan | TUTOR_INSTRUMENTS.md | §0 = STATE, read first after any context loss; §5 = invariants; §7 = sprints; §8.2 = owner decisions outstanding. PLAN ONLY — nothing built |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
 | Embedded lesson game (KartRush) — deploy, embed contract, integration TODO | `LittleFounders-AI/KartRush` → `docs/21-DEPLOYMENT.md` | all; §3 = the embed contract, §5 = what integration needs |

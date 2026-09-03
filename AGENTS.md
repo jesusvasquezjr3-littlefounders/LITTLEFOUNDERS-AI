@@ -253,6 +253,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `email-server/AGENTS.md` | email sending contract |
 | `pulse/AGENTS.md` | analytics & health stack (pins, upgrade protocol, §1.9 tracking boundary) |
 | `oracle/AGENTS.md` + `/ORACLE.md` | ANY Tutor work — runtime, prompts, voice, moderation, the content ladder |
+| `/TUTOR_INSTRUMENTS.md` | adding, changing or planning anything the Tutor SHOWS a learner — a whiteboard kind, a manipulable, a stage capability, a world, a kept artifact. §0 is the resume point after context loss; §5 is the invariant checklist; §6 is the definition of done for one instrument. PLAN ONLY today — nothing in it is built |
 | `TEAM_PROTOCOL.md` | invoking team-mode skills; session-end ritual |
 | `RUNBOOK.md` | incidents, rollback, secrets leak |
 | `agent/README.md` | how templates/workflows/tools compose |

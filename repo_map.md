@@ -1387,6 +1387,26 @@ untracked by default; a skill the team wants versioned gets a scoped
 > its entire cast in the pond. Conversational layer BUILT 2026-08-21 and plugged in through §7b (/ORACLE.md).
 ```
 
+### TUTOR_INSTRUMENTS.md
+
+```
+# TUTOR_INSTRUMENTS.md — The Tutor's teaching instruments: catalog, architecture, sprint plan
+
+> **Authority:** engine spec (`/AGENTS.md` §1.1 tier 6). Subordinate to `/AGENTS.md`,
+> `ROADMAP.md`, `GLOSSARY.md`, `DESIGN.md` and the service `AGENTS.md` files;
+> authoritative over `WALKTHROUGH.md`, `repo_map.md` and `doc_map.md` on this topic.
+> On conflict with `/ORACLE.md`: `/ORACLE.md` owns the Tutor's runtime, privacy
+> contract, content ladder and the whiteboard AS IT EXISTS TODAY (§20.5). This file
+> owns where the instrument catalog GOES. Neither may contradict the other; a change
+> to a shipped instrument updates `/ORACLE.md` §20.5 and this file's §0 in the same
+> commit.
+>
+> **Created:** 2026-09-02 · **Language:** English, per `/AGENTS.md` §1.0 #4.
+>
+> **What this file is.** A plan, not a record of built work. Nothing in §3 or §7
+> exists yet unless §0 says so. Everything here was derived by reading the repo
+```
+
 ### TUTOR_QA_2026-09-02.md
 
 ```
@@ -1421,10 +1441,10 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## The engineering backlog closed, and then a live session found seven more (2026-09-01 → 2026-09-02)
+## A clipped label, and then the whole question of what the Tutor can show (2026-09-02)
 
-**Where this left the product, stated before the detail:** the acceptance
-checklist in `/ORACLE.md` §16 — the authoritative "before any minor uses this"
+**Two pieces of work, and the second came out of the first.** The session opened
+on the last item `TUTOR_QA_2026-09-02.md` had left marked EN RIESGO: two width
 ```
 
 ### agent/README.md

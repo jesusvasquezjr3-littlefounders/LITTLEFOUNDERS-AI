@@ -3758,6 +3758,43 @@ decisions above: whatever "free-form" turns out to responsibly mean beyond
 the closed family `sequence`, `compare`, `marked_line` and `categories`
 already cover.
 
+**ANSWERED — as a plan, not as built work, 2026-09-02. `/TUTOR_INSTRUMENTS.md`
+is authoritative for everything past this paragraph; this section stays
+authoritative for the four kinds that actually exist.** The three decisions above
+now have a written recommendation and a 21-sprint plan behind them, and the
+recommendation on the first one is that **"free-form" should mean neither option
+as posed**: not an arbitrary canvas, and not a resigned four. The dilemma was
+false because the binding constraint was never expressive range — it was that one
+kind costs 17 files and five hand-mirrored schema copies across three services
+with no compiler check between them, which is the same gap that shipped
+`compare`/`marked_line` without Core's branch and lost their boards silently on
+replay. Pay that down once (a nine-primitive drawing kit verified in a real
+browser; an instrument manifest plus an `instruments:check` parity gate in the
+`provider:check` idiom; instrument hints carried by the per-turn move rather than
+the system prompt) and a catalog of ~41 NAMED, individually verifiable
+instruments becomes affordable — which is strictly more expressive than a canvas
+AND strictly more checkable, since each one can be caught contradicting what the
+tutor says while a canvas cannot. The other two answers: generated imagery is
+Prism's, batch-only and pre-warmed against the 28 KCs, never called from a turn
+(60-120s per attempt, up to 3 verification attempts, $0.075 each — measured, not
+estimated); and the CAS-verifier/age-classifier/content-bank pipeline stays
+deferred, while the primitive kit does NOT, because without it the catalog is
+unaffordable. The catalog itself was derived rather than invented: two thirds of
+the 33 procedural moves in `oracle/skills/moves/` already instruct a physical
+staging no surface here can perform ("keep the coins on the table where they can
+be picked up", "leave the three places UNNAMED", "draw the bar before any
+operation"), and the plan also adopts the canonical primary-maths vocabulary the
+four current kinds omit entirely — bar models, ten frames, number bonds, open
+number lines, fraction strips, arrays. **Nothing is built, and three owner
+decisions gate the first wave** (`/TUTOR_INSTRUMENTS.md` §8.2, mirrored in
+`ROADMAP.md`'s Open decisions). Two corrections that belong in THIS section and
+are recorded there: §19.1's "33 catalogued misconceptions" is wrong — the seed
+file has 32 — and the deploy order for a NEW whiteboard kind is **Core before
+Oracle**, the reverse of the `servedDifficulty` note above, because `POST
+/turns`' body is a discriminated union with no fallback member, so an unknown
+`kind` fails `safeParse` whole-cloth and 400s the entire turn rather than
+dropping the board.
+
 **A valid decimal sequence could compute to "negative" by a hair and lose
 the whole board — found by adversarial review, 2026-08-30 (MEDIUM).**
 `WhiteboardStepSchema.value` is a plain `z.number()`, not an integer — money
