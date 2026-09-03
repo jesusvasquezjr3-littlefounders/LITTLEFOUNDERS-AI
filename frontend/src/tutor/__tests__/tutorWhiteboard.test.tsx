@@ -1,6 +1,9 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorWhiteboard } from '../TutorWhiteboard';
+import { playSfx } from '@/lesson-engine/player/sfx';
+
+vi.mock('@/lesson-engine/player/sfx', () => ({ playSfx: vi.fn() }));
 
 /*
  * THE LIVE WHITEBOARD (V4). The owner's exact complaint: the tutor narrated a
@@ -40,6 +43,7 @@ beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  vi.mocked(playSfx).mockClear();
 });
 
 describe('what it draws', () => {
@@ -160,6 +164,51 @@ describe('the growth animation', () => {
     });
     // Fresh turn: back to one bar, the new board's own first value and caption.
     expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Otra historia. Start: MX$20');
+  });
+});
+
+/*
+ * ONE CUE PER BAR (Sprint 3, /TUTOR_INSTRUMENTS.md) — reusing the Lesson
+ * Player's own `sfx.ts` rather than a new model-facing field (see
+ * TutorWhiteboard.tsx's own comment on the reveal effect for why). Mocked
+ * rather than exercised through the real `Audio` element: `test-setup.ts`
+ * stubs `HTMLMediaElement.prototype.play` so a real call no longer throws,
+ * but this suite cares about WHEN the cue fires relative to the reveal, which
+ * a spy proves directly instead of inferring from a JSDOM audio element that
+ * cannot actually be heard.
+ */
+describe('the reveal sound', () => {
+  it('plays one cue per bar as it grows in, but not for the bar shown on mount', async () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    // Bar 0 (of 3) is visible immediately on mount — no cue for it.
+    expect(playSfx).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(600);
+    });
+    expect(playSfx).toHaveBeenCalledTimes(1);
+    expect(playSfx).toHaveBeenLastCalledWith('drop');
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(600);
+    });
+    expect(playSfx).toHaveBeenCalledTimes(2);
+
+    // All 3 values shown now — no further growth, no further cue.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(600);
+    });
+    expect(playSfx).toHaveBeenCalledTimes(2);
+  });
+
+  it('stays silent under reduced motion — the whole board is shown on mount, nothing grows in', async () => {
+    stubMatchMedia(true);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2_000);
+    });
+    expect(playSfx).not.toHaveBeenCalled();
   });
 });
 

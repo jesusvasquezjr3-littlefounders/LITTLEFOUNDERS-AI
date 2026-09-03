@@ -382,6 +382,9 @@
     "reviewCount_one": "{{count}} cosa para repasar hoy",
     "reviewCount_other": "{{count}} cosas para repasar hoy",
     "lockedBy": "Se abre al dominar {{title}}",
+    "openLabel": "Mi isla",
+    "closeLabel": "Cerrar mapa",
+    "readOnlyDuringSession": "Sigue con la conversación de hoy para elegir algo nuevo",
     "state": {
       "locked": "Aún no se abre",
       "available": "Listo para aprender",

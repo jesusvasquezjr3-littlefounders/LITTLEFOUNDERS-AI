@@ -84,7 +84,12 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
 function conversation(
   socket: TutorSocket,
   ready: boolean,
-  overrides: { onDraftChange?: (hasDraft: boolean) => void; timedOut?: boolean } = {},
+  overrides: {
+    onDraftChange?: (hasDraft: boolean) => void;
+    timedOut?: boolean;
+    mapAvailable?: boolean;
+    onOpenMap?: () => void;
+  } = {},
 ) {
   return (
     <ConversationView
@@ -106,6 +111,8 @@ function conversation(
       onCharacterCue={vi.fn()}
       resuming={false}
       replyTimedOut={false}
+      mapAvailable={overrides.mapAvailable ?? false}
+      onOpenMap={overrides.onOpenMap ?? vi.fn()}
       onRestart={vi.fn()}
       onExit={vi.fn()}
     />
@@ -117,10 +124,18 @@ function renderConversation(
   {
     ready = false,
     timedOut,
+    mapAvailable,
+    onOpenMap,
     wrapper,
-  }: { ready?: boolean; timedOut?: boolean; wrapper?: (children: ReactNode) => ReactNode } = {},
+  }: {
+    ready?: boolean;
+    timedOut?: boolean;
+    mapAvailable?: boolean;
+    onOpenMap?: () => void;
+    wrapper?: (children: ReactNode) => ReactNode;
+  } = {},
 ) {
-  const view = conversation(socket, ready, { timedOut });
+  const view = conversation(socket, ready, { timedOut, mapAvailable, onOpenMap });
   return render(<>{wrapper ? wrapper(view) : view}</>);
 }
 
@@ -378,6 +393,8 @@ describe('the composer refuses to submit while a reply is already pending', () =
         onCharacterCue={vi.fn()}
         resuming={false}
         replyTimedOut={false}
+        mapAvailable={false}
+        onOpenMap={vi.fn()}
         onRestart={vi.fn()}
         onExit={vi.fn()}
       />
@@ -521,6 +538,8 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
         onCharacterCue={vi.fn()}
         resuming={false}
         replyTimedOut={false}
+        mapAvailable={false}
+        onOpenMap={vi.fn()}
         onRestart={overrides.onRestart ?? vi.fn()}
         onExit={overrides.onExit ?? vi.fn()}
       />
@@ -1594,5 +1613,26 @@ describe('a failure says what actually failed', () => {
     expect(text).not.toMatch(/closer to the microphone/i);
     expect(text).not.toContain('inworld stt responded 500');
     expect(text).toMatch(/something went wrong on our end/i);
+  });
+});
+
+/*
+ * THE MAP, OPENED MID-CONVERSATION (Sprint 3, /TUTOR_INSTRUMENTS.md).
+ * `ConversationView` itself only owns the button — the overlay it opens is
+ * `MapOverlay`, tested on its own in `mapOverlay.test.tsx`. What matters
+ * here is the same posture the restart/finish chips beside it already have:
+ * omitted rather than shown-disabled when there is nothing to open.
+ */
+describe('the map chip in the conversation header', () => {
+  it('is omitted when there is no map to show', () => {
+    renderConversation(makeSocket(), { ready: true, mapAvailable: false });
+    expect(screen.queryByRole('button', { name: 'My island' })).not.toBeInTheDocument();
+  });
+
+  it('opens the map when the learner asks for it', () => {
+    const onOpenMap = vi.fn();
+    renderConversation(makeSocket(), { ready: true, mapAvailable: true, onOpenMap });
+    fireEvent.click(screen.getByRole('button', { name: 'My island' }));
+    expect(onOpenMap).toHaveBeenCalledTimes(1);
   });
 });

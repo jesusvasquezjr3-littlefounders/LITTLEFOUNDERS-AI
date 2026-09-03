@@ -5,6 +5,7 @@ import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId } from '@/tutor-scene/backdrops';
 import { overlappingPairs, type NamedRect } from '@/tutor-scene/hudSpace';
 import { ConversationView } from '../ConversationView';
+import { MapOverlay } from '../MapOverlay';
 import { ClosingInWorld } from '../ClosingInWorld';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
@@ -330,6 +331,9 @@ export default function TutorLabPage() {
    */
   const [speaking, setSpeaking] = useState(false);
   const [awaitingReply, setAwaitingReply] = useState(false);
+  // Sprint 3 (/TUTOR_INSTRUMENTS.md): the map opened mid-conversation, mirroring
+  // `TutorExperience.tsx`'s own `mapOpen` so the lab can actually show it.
+  const [mapOpen, setMapOpen] = useState(false);
   const [stageReady, setStageReady] = useState(false);
   /** Also REAL, same reasoning as `stageReady` above — see `StageShellProps.onTimedOut`. */
   const [stageTimedOut, setStageTimedOut] = useState(false);
@@ -540,6 +544,8 @@ export default function TutorLabPage() {
     // outlive; the affordances still render, which is what the lab is for.
     resuming: false,
     replyTimedOut: false,
+    mapAvailable: labMap(locale).nodes.length > 0,
+    onOpenMap: () => setMapOpen(true),
     onRestart: () => setSurface('introducing'),
     onExit: () => {
       socket.endSession();
@@ -791,6 +797,10 @@ export default function TutorLabPage() {
           <StageLayer label={t('tutor.stage.conversationLayer')} placement="world">
             <ConversationView {...conversationLayer} />
           </StageLayer>
+        )}
+
+        {phase === 'conversing' && mapOpen && (
+          <MapOverlay map={labMap(locale)} onClose={() => setMapOpen(false)} />
         )}
 
         {phase === 'closing' && (

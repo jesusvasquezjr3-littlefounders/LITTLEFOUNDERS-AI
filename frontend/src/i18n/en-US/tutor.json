@@ -382,6 +382,9 @@
     "reviewCount_one": "{{count}} thing to review today",
     "reviewCount_other": "{{count}} things to review today",
     "lockedBy": "Opens after {{title}}",
+    "openLabel": "My island",
+    "closeLabel": "Close map",
+    "readOnlyDuringSession": "Keep going with today's conversation to pick something new",
     "state": {
       "locked": "Not open yet",
       "available": "Ready to learn",

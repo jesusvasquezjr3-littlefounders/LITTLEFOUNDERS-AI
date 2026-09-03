@@ -45,6 +45,23 @@ window.scrollTo = () => {}
 
 window.HTMLElement.prototype.scrollIntoView = () => {}
 
+/*
+ * JSDOM does not implement real media playback: `HTMLMediaElement.prototype
+ * .play` returns `undefined` rather than the Promise every real browser
+ * returns (even one that immediately rejects it on an autoplay policy).
+ * `playSfx` (lesson-engine/player/sfx.ts) relies on that Promise to swallow a
+ * blocked or missing-asset play attempt — "a missing sound is never an error
+ * a kid sees" — so without this stub, the FIRST test to render a component
+ * that actually calls `playSfx` (not just import the module) throws
+ * `Cannot read properties of undefined (reading 'catch')`, a JSDOM gap
+ * masquerading as a product defect. Found adding the whiteboard's Sprint 3
+ * reveal sound (/TUTOR_INSTRUMENTS.md) — the first caller in a rendered
+ * component's own effect, rather than the sfx module's own asset-existence
+ * tests, which never call `playSfx` itself.
+ */
+window.HTMLMediaElement.prototype.play = () => Promise.resolve()
+window.HTMLMediaElement.prototype.pause = () => {}
+
 class IntersectionObserverMock {
   observe = () => {}
   unobserve = () => {}

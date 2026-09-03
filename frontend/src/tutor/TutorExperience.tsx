@@ -19,6 +19,7 @@ import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpen
 import { PersonalizeInWorld } from './PersonalizeInWorld';
 import { OfferChips } from './OfferChips';
 import { ConversationView } from './ConversationView';
+import { MapOverlay } from './MapOverlay';
 import { ClosingInWorld } from './ClosingInWorld';
 import { ReplayInWorld } from './replay/ReplayInWorld';
 import { buildReplayScript, type ReplayScript } from './replay/replayScript';
@@ -305,6 +306,29 @@ export function TutorExperience() {
   const [offers, setOffers] = useState<TutorOffers | null>(null);
   /** The learning map (Tutor v3). Null = the v2 openings — graceful. */
   const [map, setMap] = useState<TutorMapResponse | null>(null);
+  /**
+   * The map, opened as a temporary OVERLAY during `conversing` (Sprint 3,
+   * /TUTOR_INSTRUMENTS.md) — the SAME `MapGraph` `introducing` already draws,
+   * reused rather than re-implemented, but NOT sharing `introducing`'s
+   * "ride the dock's above slot" coexistence layout: `phases.ts`'s own
+   * `shotForPhase` deliberately never reads `mapOpen` for `conversing` (its
+   * comment: "Ignored outside `introducing`"), and three documents
+   * (/ORACLE.md §9.3, §16, /DESIGN.md) make the character's on-screen framing
+   * during a conversation a shipping invariant no piece of chrome may move.
+   * So this portals over everything instead (`document.body`, the same
+   * escape-every-stacking-context tool `ConversationView.tsx`'s dock-`above`
+   * portal already uses) — the plate, caption and dock are UNCHANGED
+   * underneath it, not squeezed beside it, which is what makes "does not
+   * disturb them" true by construction rather than by hand-tuned measurement.
+   * Nodes render `disabled` (read-only): tapping one in `introducing` STARTS a
+   * session, and starting a second one over an already-live conversation is a
+   * new interaction this sprint does not open — "make the map openable", not
+   * "make the map navigable mid-conversation".
+   */
+  const [mapOpen, setMapOpen] = useState(false);
+  useEffect(() => {
+    if (phase !== 'conversing') setMapOpen(false);
+  }, [phase]);
   const [session, setSession] = useState<StartedSession | null>(null);
   const [saving, setSaving] = useState(false);
   const [starting, setStarting] = useState(false);
@@ -1251,6 +1275,8 @@ export function TutorExperience() {
           onCharacterCue: setSegmentCue,
           resuming,
           replyTimedOut,
+          mapAvailable: (map?.nodes.length ?? 0) > 0,
+          onOpenMap: () => setMapOpen(true),
           onRestart: () => {
             /*
              * Start over: the tutor still gets its goodbye turn server-side
@@ -1509,6 +1535,18 @@ export function TutorExperience() {
         <StageLayer label={t('tutor.stage.conversationLayer')} placement="world">
           <ConversationView {...conversationLayer} />
         </StageLayer>
+      )}
+
+      {/*
+        THE MAP, OPENED MID-CONVERSATION (Sprint 3, /TUTOR_INSTRUMENTS.md).
+        A portal (see `MapOverlay`'s own comment), not a `StageLayer` — it
+        does not compose against the camera and must survive exactly where
+        `mapOpen`'s own reset effect above already guarantees it cannot leak:
+        the `phase !== 'conversing'` check there means this can never render
+        outside `conversing` even if `mapOpen` were somehow still true.
+      */}
+      {phase === 'conversing' && mapOpen && map && (
+        <MapOverlay map={map} onClose={() => setMapOpen(false)} />
       )}
 
       {phase === 'closing' && (

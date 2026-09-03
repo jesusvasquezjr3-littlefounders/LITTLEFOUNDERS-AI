@@ -1280,6 +1280,16 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
   onRestart: () => void;
   /** End the session. The close is a camera move, not a screen. */
   onExit: () => void;
+  /**
+   * True when the learning map (Tutor v3) has at least one node to show —
+   * mirrors `OfferChips`'s own `map && map.nodes.length > 0` gate. The header
+   * button this drives is omitted rather than disabled when false, matching
+   * how the restart/finish chips beside it are never shown disabled-for-no-
+   * reason either.
+   */
+  mapAvailable: boolean;
+  /** Opens the map overlay (Sprint 3, /TUTOR_INSTRUMENTS.md) — see `TutorExperience.tsx`'s `mapOpen` for why it is a portal rather than dock-hosted content here. */
+  onOpenMap: () => void;
 }
 
 /**

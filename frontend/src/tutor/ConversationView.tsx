@@ -119,6 +119,8 @@ export function ConversationView({
   replyTimedOut,
   onRestart,
   onExit,
+  mapAvailable,
+  onOpenMap,
   onDraftChange,
   onCharacterCue,
 }: ConversationViewProps) {
@@ -922,6 +924,27 @@ export function ConversationView({
           <>
             {desktop && budgetRune && (
               <span className="lf-caption whitespace-nowrap text-content-muted">{budgetRune}</span>
+            )}
+            {/*
+             * THE MAP, OPENED MID-CONVERSATION (Sprint 3, /TUTOR_INSTRUMENTS.md).
+             * Icon-only, matching the restart chip beside it rather than
+             * `OfferChips`'s own labelled "Mi isla" — that one stands alone in
+             * a cluster with room to spend on a word; this one shares a row
+             * with two other controls on a 375px header. Omitted rather than
+             * disabled when there is no map to show, the same posture restart/
+             * finish already have (they are never rendered "off").
+             */}
+            {mapAvailable && (
+              <HudPlate
+                as="button"
+                shape="chip"
+                onClick={onOpenMap}
+                aria-label={t('tutor.map.openLabel')}
+                title={t('tutor.map.openLabel')}
+                className="pointer-events-auto shrink-0"
+              >
+                <Icon name="map" className="!text-[18px]" />
+              </HudPlate>
             )}
             {/*
              * DISABLED WHILE THE TUTOR IS STILL ANSWERING (found by

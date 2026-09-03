@@ -382,6 +382,9 @@
     "reviewCount_one": "{{count}} coisa para revisar hoje",
     "reviewCount_other": "{{count}} coisas para revisar hoje",
     "lockedBy": "Abre depois de {{title}}",
+    "openLabel": "Minha ilha",
+    "closeLabel": "Fechar mapa",
+    "readOnlyDuringSession": "Continue a conversa de hoje para escolher algo novo",
     "state": {
       "locked": "Ainda não abriu",
       "available": "Pronto para aprender",

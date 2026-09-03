@@ -27,8 +27,8 @@ only section that must be updated on EVERY sprint boundary.**
 | | |
 |---|---|
 | **Status** | IN PROGRESS. Class I complete; Wave 0 + Classes II-V underway 2026-09-02/03. |
-| **Active sprint** | Wave 0 — Sprint 1 DONE, Sprint 2 DONE with a real scope finding (below), Sprint 3 next. |
-| **Next action** | S3 (sound + map reach), then Class II (S9-S10 manipulation), then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
+| **Active sprint** | Wave 0 COMPLETE — Sprints 1, 2 and 3 all done (S2 and S3 each closed with a real scope finding, below). Class II next, per the owner's explicit "continue as planned" 2026-09-03 answer to the ids-in-context question S2 raised. |
+| **Next action** | Class II (S9-S10 manipulation: `grab`/`fill`/`step`/`whatif`/`your_turn`), same cautious posture as S2 — build real, tested plumbing, withhold any verb that would require guessing a real item id against a graded answer. Then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
 | **Blocked on owner** | **D2 (generated imagery, gates Class IV and Wave 4) — asked at the end of this session's work.** D1 and D3 were answered 2026-09-02 with "procede". |
 | **Last verified against the repo** | 2026-09-03. |
 
@@ -47,7 +47,7 @@ only section that must be updated on EVERY sprint boundary.**
 | **S14/S15 — early years and time** | **DONE** 2026-09-02 | `pictograph`, `bead_string`, `tally`, `fraction_circle`, `stack`, `sequence_compare`, `timeline`, `cycle`, `before_after`. **CLASS I IS COMPLETE: all 41 drawn instruments are live**, `instruments:check` green over 41 × 5 copies |
 | **S1 — `preferredTypes` widened** | **DONE** 2026-09-02 | 2 → 10 types: the Lesson Engine's own `money` family (`coin_count`, `make_change`, `piggy_split`, `needs_wants`, `price_compare`, `budget_fit`, `savings_goal`, `fair_trade`, `interest_peek`) plus `number_line`. New `agent/tools/check-preferred-types-parity.mjs` gate (the same hand-mirrored-constant class as `instruments:check`, one layer up) — 4 tests, 2 deliberately desynchronised. A real defect found and fixed along the way: `sanitizePreferredTypes` never actually deduplicated; the old cap of 2 only LOOKED like it did, for one specific ordering. Live-verified across the 4 `tutor:converse` runs in §10.3a — the widened vocabulary is what let `tokens`/`flow` fire at all |
 | **S2 — `demonstrate` beyond the coin tray** | **DONE, scoped down from plan** 2026-09-03 | Schema/wire/adapter machinery for all 4 families, all 6 hand-mirrored copies (new `demo-step:check` gate, 5 tests, 4 desynchronised). Only `number_line`'s `move` joined the LIVE prompt vocabulary — `order_steps`/`sort_buckets`/`match_pairs` are real, tested (12 new adapter tests + 1 non-money `LiveSegmentPanel` integration test) and schema-defined but deliberately NOT offered to the model: `orchestrator.ts` never gives it a served segment's real item/bucket ids (confirmed: zero `payload` references), so a guessed id landing on a real one would place a child's own graded answer with no check behind it — the §1.14 "never affirm an unchecked answer" harm, for exactly the three families where an intermediate state can be definitively wrong (unlike money, or a marker on a bounded line). `move` itself was MEASURED, not assumed: 5 live `tutor:converse`-pattern calls found it never fires — the model reaches for a `sequence`/`open_number_line` WHITEBOARD instead (now blocked by a new prompt exception) and then just narrates in words, on every attempt including a direct "muéstrame cómo". Left in the prompt as harmless, unproven capability; not reported as verified. Full detail in §7.2's RESULT block |
-| S3 — whiteboard sound + map reach | not started | — |
+| **S3 — whiteboard sound + map reach** | **DONE** 2026-09-03 | `sequence`'s bar-by-bar reveal plays `playSfx('drop')` once per animated bar (not the bar shown instantly on mount), gated by the SAME `reducedMotion` check the reveal loop already used — silent under reduced motion for free, no second check needed. Found and fixed a real, previously-unexercised JSDOM gap along the way: `HTMLMediaElement.prototype.play` returns `undefined` in JSDOM rather than the Promise every real browser returns, so the FIRST test to render a component that actually calls `playSfx` (not just import the module) threw — fixed in `test-setup.ts`, the same file that already stubs `scrollIntoView`/`IntersectionObserver` for the identical reason. The map: a NEW `MapOverlay` component, portalled to `document.body` rather than sharing `introducing`'s dock-`above`-slot layout — `phases.ts`'s `shotForPhase` deliberately never reads `mapOpen` outside `introducing` (three documents make the character's on-screen framing during a conversation a shipping invariant no chrome may move), so the map cannot pull the camera back during `conversing` the way it does in `introducing`. A portal satisfies "does not disturb the plate/caption/dock" BY CONSTRUCTION; verified geometrically anyway — `getBoundingClientRect()` on the mic dock, byte-identical before/during/after the overlay opens and closes, at BOTH breakpoints (not assumed from one). Nodes render `disabled`: tapping one in `introducing` starts a session, and starting a second one over an already-live conversation is a new interaction this sprint does not open. `verify:tutor-ui` and `verify:tutor-a11y` both green (0 unreachable controls, 0 WCAG violations, all 8 phases, both themes) |
 | Class II (S9-S10) — manipulation | not started | — |
 | Class III (S16) — non-asset slice | not started | `point_at`, `beat` only. `props`/`roleplay` need a 3D asset pipeline this session cannot run |
 | Class IV — worlds | **blocked** | owner decision D2 (§8.2), asked not guessed |
@@ -90,7 +90,13 @@ only section that must be updated on EVERY sprint boundary.**
   anchors**, and **zero props** — nothing in the world a character can touch or
   point at.
 - **9 of 13** sound files are wired (`frontend/src/lesson-engine/player/sfx.ts`);
-  the whiteboard uses none.
+  the whiteboard uses ONE of them (`drop`, on `sequence`'s bar-by-bar reveal —
+  the only whiteboard kind with a repeating, staged reveal to cue at all;
+  S3, 2026-09-03).
+- The learning map is reachable in `conversing` as well as `introducing`
+  (S3, 2026-09-03) — as a read-only, portalled overlay (`MapOverlay.tsx`),
+  not the dock-hosted, camera-pulling-back surface `introducing` uses; see
+  §7.3's RESULT for why those had to be two different designs.
 - Adding one whiteboard kind touched **17 files** and **5 hand-mirrored schema
   copies** across 3 services with no compiler check between them (§4.2). Measured
   again after Sprints 4–6: still ~20 files, and the copies are now *checked*
@@ -723,6 +729,63 @@ or to `shotForPhase`'s existing mapping beyond making the map openable.
 product one — default volume conservative, and check whether a mute affordance
 belongs here.
 
+**RESULT (2026-09-03).** Shipped with one scope narrowing (sound), one design
+change from the plan's implicit assumption (map), and one real defect found
+and fixed along the way:
+
+- **Sound was scoped to `sequence` only, of the 41 whiteboard kinds.** Only
+  two kinds have any staged, multi-step reveal at all (`TutorWhiteboard.tsx`'s
+  own `GROW_STEP_MS` usages): `sequence`'s bar-by-bar growth, and `flow`'s
+  ONE-TIME delayed label reveal (values appear, then a beat later the third
+  pile's label does). The latter is not "one cue per event" in the same sense
+  — a single "labels appear" moment, not a repeating growth — and adding a
+  cue to it was judged a different, unscoped decision rather than the same
+  one applied twice, so it was left alone. Every other kind renders its final
+  state immediately (a snapshot, not a process) and so has no reveal to cue at
+  all. `audio_cue` stayed a CLIENT-resolved choice (`playSfx('drop')` inline
+  in `SequenceBoard`, not a new schema field): which of the 9 sounds plays for
+  a bar growing in carries no pedagogical content, so authoring it per turn
+  would spend a §4.1 sealed-context field (its own sign-off, its own
+  legal-review touch) on a decision that is really about the board's own
+  `kind` — the same reasoning `GROW_STEP_MS` itself already isn't authored.
+- **The map is a portal, not a dock-hosted sheet, and this was decided AFTER
+  reading `phases.ts` rather than assumed from `introducing`'s example.** The
+  plan's own "Explicitly out of scope" line ("any change to `shotForPhase`'s
+  existing mapping") reads, in hindsight, like it already anticipated the
+  question this answers: `introducing`'s map pulls the camera back to the
+  establishing shot while it is open, and copying that design into
+  `conversing` would have been exactly a `shotForPhase` mapping change — and
+  a **prohibited** one, since three documents (/ORACLE.md §9.3, §16,
+  /DESIGN.md) make the character's on-screen framing during a live
+  conversation invariant to any chrome, the map included. A `fixed inset-0`
+  portal to `document.body` (mirroring `CookieConsentBanner.tsx`'s
+  `PreferencesDialog`, the one other real modal in this codebase — same
+  backdrop, same Escape/backdrop-click-to-close, same
+  `body.style.overflow = 'hidden'`) sidesteps the invariant entirely rather
+  than risking it: the plate, caption and dock are unchanged UNDERNEATH the
+  overlay, not squeezed beside it, which is what makes "does not disturb
+  them" true by construction. Verified anyway, not just assumed: the mic
+  dock's `getBoundingClientRect()` is byte-identical before, during and after
+  the map opens and closes, confirmed at both 1280×900 and 375×812.
+- **Real defect, found by this sprint's own first test:** `HTMLMediaElement
+  .prototype.play` returns `undefined` in JSDOM rather than the Promise every
+  real browser returns (even one that rejects it on an autoplay policy), so
+  `playSfx`'s `void el.play().catch(() => {})` threw `Cannot read properties
+  of undefined (reading 'catch')` the moment a REAL rendered component (not
+  `sfx.test.ts`'s own asset-existence checks, which never call `playSfx`
+  itself) tried to play a sound in a test for the first time. Fixed in
+  `test-setup.ts` alongside the file's existing `scrollIntoView`/
+  `IntersectionObserver` stubs, for the identical reason: a JSDOM gap
+  masquerading as a product defect.
+- **Read-only nodes, not a new interaction.** `MapGraph`'s existing
+  `disabled` prop (already used for a locked/mastered node) does the whole
+  job — no new prop, no new component variant. Tapping a node in
+  `introducing` starts a session; starting a second one over an
+  already-live conversation would be a genuinely new interaction this sprint
+  does not open, so `MapOverlay` passes `disabled` unconditionally and a
+  short caption (`tutor.map.readOnlyDuringSession`) says why, rather than
+  leaving a child to wonder why the map does not respond to a tap.
+
 ---
 
 ### WAVE 1 — Pay the tax, prove it, build the six most-demanded
@@ -1163,3 +1226,4 @@ this plan does not change that rule (§5.12).
 |---|---|
 | 2026-09-02 | Created. Catalog, architecture and 21-sprint plan derived from a full read of the KC graph, the 33 moves, the 57 segment types, the four existing whiteboard kinds, the 3D stage vocabulary, Prism's real costs and latencies, and the end-to-end path of a board from schema to screen. Nothing built. |
 | 2026-09-03 | Sprint 2 closed (§7.2 RESULT): `demonstrate` machinery widened to 4 families across all 6 hand-mirrored copies (new `demo-step:check` gate). Only `number_line`'s `move` reached the live prompt; `place`/`assign`/`pair` were built and then deliberately withheld after finding `orchestrator.ts` never gives the model a served segment's real ids, which would let a guessed placement assert a wrong graded answer. `move` itself was measured live (5 calls) to not fire despite two prompt revisions — recorded as an honest negative result, not claimed as working. |
+| 2026-09-03 | Sprint 3 closed (§7.3 RESULT), completing Wave 0: `sequence`'s bar-by-bar reveal plays a sound (scoped from all 41 kinds to the one with a repeating staged reveal); the map opened during `conversing` as a `document.body` portal rather than a dock-hosted sheet, after `phases.ts` showed the dock-hosted design would have illegally moved the camera during a live conversation. Found and fixed a real, previously-latent JSDOM gap (`HTMLMediaElement.prototype.play`) in `test-setup.ts` along the way. `verify:tutor-ui`/`verify:tutor-a11y` green; mic-dock geometry proven byte-identical with the map open/closed at both breakpoints. |

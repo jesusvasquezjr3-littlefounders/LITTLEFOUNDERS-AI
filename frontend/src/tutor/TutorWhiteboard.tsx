@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { playSfx } from '@/lesson-engine/player/sfx';
 import type { TutorWhiteboardWire } from './types';
 import {
   AxisCaption,
@@ -262,9 +263,32 @@ function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: nu
     setShown(reducedMotion ? board.values.length : Math.min(1, board.values.length));
   }
 
+  /*
+   * ONE CUE PER BAR (Sprint 3, /TUTOR_INSTRUMENTS.md), reusing the Lesson
+   * Player's own `sfx.ts` — no new asset, and the same fire-and-forget,
+   * autoplay-safe, "a missing sound is never an error a kid sees" posture
+   * that module already has. Deliberately client-resolved rather than a new
+   * model-facing field: which of the 9 sounds plays for a bar growing in
+   * carries no pedagogical content, so authoring it per turn would spend a
+   * §4.1 sealed-context field (its own sign-off, its own legal-review touch)
+   * on a decision that is really about the board's own `kind`, not about
+   * this turn's story — the same reasoning `GROW_STEP_MS` itself already
+   * isn't authored, either.
+   * Gated by the SAME `reducedMotion` check the reveal loop already uses:
+   * under reduced motion this effect never runs at all (bars are all shown
+   * on mount, above), so the cue is silent for free rather than needing its
+   * own separate check — there is no standard `prefers-reduced-sound` media
+   * query to check separately. Bar 0 (shown instantly on mount, above) does
+   * NOT play a cue — only the bars that actually animate in via this timer
+   * do, so the sound stays synchronized to visible motion rather than
+   * popping before the learner has any context.
+   */
   useEffect(() => {
     if (reducedMotion || shown >= board.values.length) return;
-    const id = window.setTimeout(() => setShown((n) => Math.min(n + 1, board.values.length)), GROW_STEP_MS);
+    const id = window.setTimeout(() => {
+      setShown((n) => Math.min(n + 1, board.values.length));
+      playSfx('drop');
+    }, GROW_STEP_MS);
     return () => window.clearTimeout(id);
   }, [shown, reducedMotion, board.values.length]);
 
