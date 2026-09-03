@@ -2359,6 +2359,41 @@ export type Database = {
           },
         ]
       }
+      tutor_notebook_entries: {
+        Row: {
+          id: string
+          kept_at: string
+          session_id: string | null
+          turn_seq: number | null
+          user_id: string
+          whiteboard: Json
+        }
+        Insert: {
+          id?: string
+          kept_at?: string
+          session_id?: string | null
+          turn_seq?: number | null
+          user_id: string
+          whiteboard: Json
+        }
+        Update: {
+          id?: string
+          kept_at?: string
+          session_id?: string | null
+          turn_seq?: number | null
+          user_id?: string
+          whiteboard?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_notebook_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       tutor_packs: {
         Row: {
           created_at: string
@@ -2450,6 +2485,35 @@ export type Database = {
             foreignKeyName: "tutor_placement_safety_flags_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      tutor_plans: {
+        Row: {
+          content: Json
+          session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: Json
+          session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
           },
@@ -3649,6 +3713,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: Json
+      }
+      write_tutor_plan: {
+        Args: { p_content: Json; p_session_id: string; p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {
