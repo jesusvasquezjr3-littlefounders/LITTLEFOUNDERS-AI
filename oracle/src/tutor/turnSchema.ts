@@ -693,6 +693,211 @@ export const WhiteboardPartitionSchema = z
   })
   .strict();
 
+
+/* ── DECISION AND COMPARISON (/TUTOR_INSTRUMENTS.md §3.2 families D and F) ──── */
+
+/** One option on a `table` board: what it costs and how much of it you get. */
+export const TableOptionSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    price: z.number().positive().max(1_000_000),
+    units: z.number().positive().max(10_000),
+  })
+  .strict();
+
+/**
+ * `kind: 'table'` — TWO TO FOUR OPTIONS, COMPARED ON PRICE PER UNIT.
+ *
+ * Deliberately NOT a general grid of free text. A table whose cells the model
+ * wrote would be the largest prose surface on this whole board family, for the
+ * one instrument whose job is arithmetic. So it is narrow: each option carries a
+ * price and a quantity, and `computeTable` derives the per-unit price and which
+ * option actually wins — the comparison being taught (`money.unit-price`,
+ * `biz.pricing-strategy`, and the `highest-price-wins` misconception).
+ */
+export const WhiteboardTableSchema = z
+  .object({
+    kind: z.literal('table'),
+    options: z.array(TableOptionSchema).min(2).max(4),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'scale'` — TWO SIDES THAT TIP UNTIL THEY LEVEL.
+ *
+ * Shares its data shape with `compare` and is a different instrument: `compare`
+ * asks "which is more", `scale` asks "are these fair to each other" — cost
+ * against price, effort against pay. Equality becomes something seen moving
+ * rather than a sign between two numbers, which is what `biz.cost-vs-price` and
+ * `biz.value-of-work` actually need.
+ */
+export const WhiteboardScaleSchema = z
+  .object({
+    kind: z.literal('scale'),
+    left: WhiteboardCompareSideSchema,
+    right: WhiteboardCompareSideSchema,
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One thing being sorted on a `two_bins` board. */
+export const SortedItemSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    /** Which bin it belongs in — 0 or 1, never a name, so the two can never disagree. */
+    bin: z.number().int().min(0).max(1),
+  })
+  .strict();
+
+/**
+ * `kind: 'two_bins'` — CLASSIFICATION, SHOWN AND NOT GRADED.
+ *
+ * Need against want, good against service. The Lesson Engine already has graded
+ * sorting activities; this is the ungraded demonstration a tutor performs WHILE
+ * TALKING, which `paying-for-the-work.md` and `value-not-appearance.md` both ask
+ * for and no graded activity can be (it would stop the conversation to score).
+ */
+export const WhiteboardTwoBinsSchema = z
+  .object({
+    kind: z.literal('two_bins'),
+    binLabels: z.tuple([z.string().min(1).max(40), z.string().min(1).max(40)]),
+    items: z.array(SortedItemSchema).min(2).max(8),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One thing placed in a `venn` board's two overlapping sets. */
+export const VennItemSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    side: z.enum(['left', 'right', 'both']),
+  })
+  .strict();
+
+/**
+ * `kind: 'venn'` — WHAT FALLS IN BOTH.
+ *
+ * The instrument for `want-feels-like-need`: a thing can be a need AND
+ * something you want, and a two-bin sort forces a false choice about exactly
+ * the cases that confuse a learner most. Overlap is the whole point.
+ */
+export const WhiteboardVennSchema = z
+  .object({
+    kind: z.literal('venn'),
+    leftLabel: z.string().min(1).max(40),
+    rightLabel: z.string().min(1).max(40),
+    items: z.array(VennItemSchema).min(2).max(8),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One item to be ranked. */
+export const RankedItemSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    value: z.number().min(0).max(1_000_000),
+  })
+  .strict();
+
+/**
+ * `kind: 'ranking'` — AN ORDER THE SERVER PUTS THEM IN.
+ *
+ * The model supplies the items and their amounts and NOT the order: sorting
+ * them is the thing being practised, so `computeRanking` does it. A tutor that
+ * could assert the order could assert a wrong one over correct numbers.
+ */
+export const WhiteboardRankingSchema = z
+  .object({
+    kind: z.literal('ranking'),
+    items: z.array(RankedItemSchema).min(2).max(5),
+    /** Ascending puts the smallest first — "cheapest first" is a different lesson than "biggest first". */
+    direction: z.enum(['asc', 'desc']),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One ending on an `outcomes` board. */
+export const OutcomeSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    detail: z.string().min(1).max(110),
+  })
+  .strict();
+
+/**
+ * `kind: 'outcomes'` — HOW IT ENDS IF IT GOES WELL, AND IF IT DOES NOT.
+ *
+ * `write-both-endings.md`: "put the two side by side WHERE BOTH ARE VISIBLE AT
+ * ONCE. Two columns, few words. The comparison has to be seen, not remembered."
+ * The only board in the family whose content is prose rather than number, which
+ * is why `detail` is capped hard at a hundred-odd characters — a paragraph is
+ * not an ending, it is a story, and it would not be readable side by side.
+ */
+export const WhiteboardOutcomesSchema = z
+  .object({
+    kind: z.literal('outcomes'),
+    good: OutcomeSchema,
+    bad: OutcomeSchema,
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One party's side of a trade — what they hand over and what they receive. */
+export const TradeSideSchema = z
+  .object({
+    who: z.string().min(1).max(30),
+    gives: z.string().min(1).max(40),
+    gets: z.string().min(1).max(40),
+  })
+  .strict();
+
+/**
+ * `kind: 'trade'` — TWO PARTIES, EACH JUDGING THEIR OWN SIDE.
+ *
+ * `both-sides-said-yes.md` needs two points of view at once, which no
+ * single-quantity board can hold. It is the instrument for `trade-has-loser`:
+ * seeing what each side gave AND got is what makes "both of them wanted this"
+ * an observation rather than a claim.
+ */
+export const WhiteboardTradeSchema = z
+  .object({
+    kind: z.literal('trade'),
+    left: TradeSideSchema,
+    right: TradeSideSchema,
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One possible outcome and how likely it is, as a plain weight. */
+export const ChanceOutcomeSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    /** A weight, never a percentage: the model does not have to make them sum to anything. */
+    weight: z.number().int().min(1).max(100),
+  })
+  .strict();
+
+/**
+ * `kind: 'chance'` — LIKELIHOOD AS AREA.
+ *
+ * `biz.risk-and-reward` and `ignores-downside` need "usually fine, sometimes
+ * not" to be visible without asking a nine-year-old to read a percentage. The
+ * model gives plain WEIGHTS and never a percentage; `computeChance` normalises
+ * them, so the shares drawn always add to a whole and the model cannot state a
+ * probability it did not compute.
+ */
+export const WhiteboardChanceSchema = z
+  .object({
+    kind: z.literal('chance'),
+    outcomes: z.array(ChanceOutcomeSchema).min(2).max(3),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
 /**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
  * never free-form — the same §5 discipline every other model-facing schema
@@ -720,6 +925,14 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardArraySchema,
   WhiteboardFractionStripSchema,
   WhiteboardPartitionSchema,
+  WhiteboardTableSchema,
+  WhiteboardScaleSchema,
+  WhiteboardTwoBinsSchema,
+  WhiteboardVennSchema,
+  WhiteboardRankingSchema,
+  WhiteboardOutcomesSchema,
+  WhiteboardTradeSchema,
+  WhiteboardChanceSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -798,6 +1011,14 @@ export type WhiteboardOpenNumberLine = z.infer<typeof WhiteboardOpenNumberLineSc
 export type WhiteboardArray = z.infer<typeof WhiteboardArraySchema>;
 export type WhiteboardFractionStrip = z.infer<typeof WhiteboardFractionStripSchema>;
 export type WhiteboardPartition = z.infer<typeof WhiteboardPartitionSchema>;
+export type WhiteboardTable = z.infer<typeof WhiteboardTableSchema>;
+export type WhiteboardScale = z.infer<typeof WhiteboardScaleSchema>;
+export type WhiteboardTwoBins = z.infer<typeof WhiteboardTwoBinsSchema>;
+export type WhiteboardVenn = z.infer<typeof WhiteboardVennSchema>;
+export type WhiteboardRanking = z.infer<typeof WhiteboardRankingSchema>;
+export type WhiteboardOutcomes = z.infer<typeof WhiteboardOutcomesSchema>;
+export type WhiteboardTrade = z.infer<typeof WhiteboardTradeSchema>;
+export type WhiteboardChance = z.infer<typeof WhiteboardChanceSchema>;
 /** Any of the closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
@@ -856,6 +1077,32 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       return [whiteboard.label];
     case 'partition':
       return [whiteboard.label, ...whiteboard.splits.map((s) => s.label)];
+    case 'table':
+      return [whiteboard.label, ...whiteboard.options.map((o) => o.label)];
+    case 'scale':
+      return [whiteboard.label, whiteboard.left.label, whiteboard.right.label];
+    case 'two_bins':
+      return [whiteboard.label, ...whiteboard.binLabels, ...whiteboard.items.map((i) => i.label)];
+    case 'venn':
+      return [whiteboard.label, whiteboard.leftLabel, whiteboard.rightLabel, ...whiteboard.items.map((i) => i.label)];
+    case 'ranking':
+      return [whiteboard.label, ...whiteboard.items.map((i) => i.label)];
+    case 'outcomes':
+      // The only board whose content is PROSE. Every string on it is moderated,
+      // which is exactly why `detail` is capped as hard as it is.
+      return [whiteboard.label, whiteboard.good.label, whiteboard.good.detail, whiteboard.bad.label, whiteboard.bad.detail];
+    case 'trade':
+      return [
+        whiteboard.label,
+        whiteboard.left.who,
+        whiteboard.left.gives,
+        whiteboard.left.gets,
+        whiteboard.right.who,
+        whiteboard.right.gives,
+        whiteboard.right.gets,
+      ];
+    case 'chance':
+      return [whiteboard.label, ...whiteboard.outcomes.map((o) => o.label)];
   }
 }
 

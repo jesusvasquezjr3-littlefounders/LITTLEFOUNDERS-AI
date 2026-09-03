@@ -56,6 +56,12 @@ import {
   computeArray,
   computeFractionStrip,
   computePartition,
+  computeTable,
+  computeScale,
+  computeTwoBins,
+  computeVenn,
+  computeRanking,
+  computeChance,
 } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
@@ -1333,6 +1339,35 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
     }
     case 'partition': {
       const result = computePartition(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'table': {
+      const result = computeTable(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'scale': {
+      const result = computeScale(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'two_bins': {
+      const result = computeTwoBins(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'venn': {
+      const result = computeVenn(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'ranking': {
+      const result = computeRanking(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    // Prose only: nothing to attach, and nothing a computation could verify.
+    // Moderation is what guards these two.
+    case 'outcomes':
+    case 'trade':
+      return { ...board };
+    case 'chance': {
+      const result = computeChance(board);
       return result === null ? null : { ...board, ...result };
     }
   }

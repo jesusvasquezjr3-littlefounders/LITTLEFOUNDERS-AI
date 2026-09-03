@@ -191,6 +191,14 @@ type OpenNumberLineWire = Extract<TutorWhiteboardWire, { kind: 'open_number_line
 type ArrayWire = Extract<TutorWhiteboardWire, { kind: 'array' }>;
 type FractionStripWire = Extract<TutorWhiteboardWire, { kind: 'fraction_strip' }>;
 type PartitionWire = Extract<TutorWhiteboardWire, { kind: 'partition' }>;
+type TableWire = Extract<TutorWhiteboardWire, { kind: 'table' }>;
+type ScaleWire = Extract<TutorWhiteboardWire, { kind: 'scale' }>;
+type TwoBinsWire = Extract<TutorWhiteboardWire, { kind: 'two_bins' }>;
+type VennWire = Extract<TutorWhiteboardWire, { kind: 'venn' }>;
+type RankingWire = Extract<TutorWhiteboardWire, { kind: 'ranking' }>;
+type OutcomesWire = Extract<TutorWhiteboardWire, { kind: 'outcomes' }>;
+type TradeWire = Extract<TutorWhiteboardWire, { kind: 'trade' }>;
+type ChanceWire = Extract<TutorWhiteboardWire, { kind: 'chance' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -927,6 +935,305 @@ function PartitionBoard({ board, seq, className }: { board: PartitionWire; seq: 
   );
 }
 
+
+/** A small chip used by several of the classification boards below. */
+function Chip({ children, tone = 'muted' }: { children: ReactNode; tone?: 'accent' | 'muted' }) {
+  return (
+    <span
+      className={cn(
+        'lf-caption max-w-[9rem] truncate rounded-full border px-2.5 py-1',
+        tone === 'accent' ? 'border-accent bg-accent/15 text-content' : 'border-content-muted/40 text-content-muted',
+      )}
+      aria-hidden="true"
+    >
+      {children}
+    </span>
+  );
+}
+
+/**
+ * `kind: 'table'` — options compared on PRICE PER UNIT, which is the comparison
+ * `money.unit-price` is about and the one `highest-price-wins` gets wrong.
+ * `unitPrices` and the winner are server-computed (`computeTable`).
+ */
+function TableBoard({ board, seq, className }: { board: TableWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.options
+    .map((o, i) => `${o.label}: ${format(o.price)}, ${t('tutor.whiteboard.board.perUnit', { amount: format(board.unitPrices[i]!) })}`)
+    .join('. ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 px-2" aria-hidden="true">
+        {board.options.map((option, i) => (
+          <div
+            key={i}
+            className={cn(
+              'flex items-baseline justify-between gap-2 rounded-md px-2 py-1.5',
+              i === board.bestIndex ? 'bg-accent/15 ring-1 ring-accent' : 'bg-content-muted/5',
+            )}
+          >
+            <Caption className="text-left">{option.label}</Caption>
+            <span className="flex shrink-0 items-baseline gap-2">
+              <AxisCaption className="tabular-nums">{format(option.price)}</AxisCaption>
+              <span className="lf-number text-content tabular-nums">
+                {t('tutor.whiteboard.board.perUnit', { amount: format(board.unitPrices[i]!) })}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'scale'` — a balance that tips. `compare` asks which is more; this asks
+ * whether two things are fair to each other, which is what `biz.cost-vs-price`
+ * and `biz.value-of-work` actually need. `tilt` is server-computed.
+ */
+function ScaleBoard({ board, seq, className }: { board: ScaleWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.left.label}: ${format(board.left.value)}, ${board.right.label}: ${format(
+    board.right.value,
+  )}${board.tilt === 'level' ? `. ${t('tutor.whiteboard.board.fair')}` : ''}`;
+  const angle = board.tilt === 'level' ? 0 : board.tilt === 'left' ? -8 : 8;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2" aria-hidden="true">
+        <div className="relative flex h-28 w-full max-w-xs items-start justify-center">
+          {/*
+            The BEAM is what makes this a balance rather than two floating
+            trays: it spans the full width inside the rotating group, so the
+            pans hang from its ends and the tilt is read off the beam's own
+            angle. Without it the first version drew two tilted pans with
+            nothing between them, which reads as ambiguous rather than as
+            weighing.
+          */}
+          <div
+            className="absolute left-0 right-0 top-2 origin-center transition-transform duration-500"
+            style={{ transform: `rotate(${angle}deg)` }}
+          >
+            <div className="h-1.5 w-full rounded-full bg-accent/70" />
+            <div className="flex w-full justify-between">
+              {[board.left, board.right].map((side, i) => (
+                <span key={i} className="flex w-24 flex-col items-center">
+                  {/* The hanger, so a pan is attached to the beam rather than near it. */}
+                  <span className="h-4 w-0.5 bg-content-muted/50" />
+                  <span className="flex h-10 w-full items-center justify-center rounded-b-lg border-2 border-t-0 border-accent/60 bg-surface">
+                    <span className="lf-number text-content tabular-nums">{format(side.value)}</span>
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
+          {/* The pillar and its base, which do not tip. */}
+          <span className="absolute bottom-0 left-1/2 h-24 w-1.5 -translate-x-1/2 rounded-full bg-content-muted/40" />
+          <span className="absolute bottom-0 left-1/2 h-1.5 w-16 -translate-x-1/2 rounded-full bg-content-muted/40" />
+        </div>
+        <div className="flex w-full max-w-xs justify-between gap-2">
+          <Caption>{board.left.label}</Caption>
+          <Caption>{board.right.label}</Caption>
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'two_bins'` — ungraded classification performed WHILE the tutor talks.
+ * The Lesson Engine's sorting activities are graded and stop the conversation to
+ * score; this does not. `computeTwoBins` refuses a sort with an empty bin.
+ */
+function TwoBinsBoard({ board, seq, className }: { board: TwoBinsWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.binLabels
+    .map((bin, b) => `${bin}: ${board.items.filter((i) => i.bin === b).map((i) => i.label).join(', ')}`)
+    .join('. ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-stretch justify-center gap-3 px-2" aria-hidden="true">
+        {board.binLabels.map((bin, b) => (
+          <div key={b} className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div className="flex min-h-0 flex-1 flex-wrap content-start justify-center gap-1 rounded-md border-2 border-dashed border-content-muted/40 p-2">
+              {board.items
+                .filter((item) => item.bin === b)
+                .map((item, i) => (
+                  <Chip key={i} tone={b === 0 ? 'accent' : 'muted'}>
+                    {item.label}
+                  </Chip>
+                ))}
+            </div>
+            <Caption>{bin}</Caption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'venn'` — what falls in BOTH. The instrument for `want-feels-like-need`,
+ * where a two-bin sort forces a false choice about exactly the cases that
+ * confuse a learner most. `computeVenn` refuses an empty overlap.
+ */
+function VennBoard({ board, seq, className }: { board: VennWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const regions: { key: 'left' | 'both' | 'right'; label: string }[] = [
+    { key: 'left', label: board.leftLabel },
+    { key: 'both', label: t('tutor.whiteboard.board.both') },
+    { key: 'right', label: board.rightLabel },
+  ];
+  const ariaLabel = `${board.label}. ${regions
+    .map((r) => `${r.label}: ${board.items.filter((i) => i.side === r.key).map((i) => i.label).join(', ')}`)
+    .join('. ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-stretch justify-center gap-1 px-2" aria-hidden="true">
+        {regions.map((region) => (
+          <div key={region.key} className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div
+              className={cn(
+                'flex min-h-0 flex-1 flex-wrap content-start justify-center gap-1 border-2 border-content-muted/40 p-2',
+                region.key === 'left' && 'rounded-l-full border-r-0',
+                region.key === 'both' && 'border-x-0 bg-accent/10',
+                region.key === 'right' && 'rounded-r-full border-l-0',
+              )}
+            >
+              {board.items
+                .filter((item) => item.side === region.key)
+                .map((item, i) => (
+                  <Chip key={i} tone={region.key === 'both' ? 'accent' : 'muted'}>
+                    {item.label}
+                  </Chip>
+                ))}
+            </div>
+            <Caption>{region.label}</Caption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'ranking'` — an ordered list where the ORDER is the server's
+ * (`computeRanking`), because putting things in order is the thing being
+ * practised and a tie is refused rather than silently broken.
+ */
+function RankingBoard({ board, seq, className }: { board: RankingWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const ordered = board.order.map((i) => board.items[i]!);
+  const ariaLabel = `${board.label}. ${ordered.map((item, i) => `${i + 1}. ${item.label}: ${format(item.value)}`).join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 px-2" aria-hidden="true">
+        {ordered.map((item, i) => (
+          <div key={i} className="flex items-baseline gap-2 rounded-md bg-content-muted/5 px-2 py-1.5">
+            <span className="lf-caption w-5 shrink-0 text-content-muted tabular-nums">{i + 1}</span>
+            <Caption className="flex-1 text-left">{item.label}</Caption>
+            <AxisCaption className="shrink-0 tabular-nums">{format(item.value)}</AxisCaption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'outcomes'` — how it ends if it goes well, and if it does not.
+ * `write-both-endings.md`: "side by side WHERE BOTH ARE VISIBLE AT ONCE. Two
+ * columns, few words." The only board whose content is prose, which is why its
+ * `detail` is capped hard and every string on it is moderated.
+ */
+function OutcomesBoard({ board, seq, className }: { board: OutcomesWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.good.label}: ${board.good.detail}. ${board.bad.label}: ${board.bad.detail}`;
+  const columns = [
+    { ...board.good, tone: 'good' as const },
+    { ...board.bad, tone: 'bad' as const },
+  ];
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-stretch gap-3 px-2" aria-hidden="true">
+        {columns.map((column, i) => (
+          <div
+            key={i}
+            className={cn(
+              'flex min-w-0 flex-1 flex-col gap-1.5 rounded-md border-l-4 bg-content-muted/5 p-2.5',
+              column.tone === 'good' ? 'border-success' : 'border-warning',
+            )}
+          >
+            <span className="lf-caption font-semibold text-content">{column.label}</span>
+            <span className="lf-caption line-clamp-4 break-words text-content-muted">{column.detail}</span>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'trade'` — two parties, each judging their own side. `both-sides-said-
+ * yes.md` needs two points of view at once, which no single-quantity board can
+ * hold: seeing what each side gave AND got is what makes "both of them wanted
+ * this" an observation rather than a claim.
+ */
+function TradeBoard({ board, seq, className }: { board: TradeWire; seq: number; className?: string }) {
+  const sides = [board.left, board.right];
+  const ariaLabel = `${board.label}. ${sides.map((s) => `${s.who}: ${s.gives} → ${s.gets}`).join('. ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-center justify-center gap-2 px-2" aria-hidden="true">
+        {sides.map((side, i) => (
+          <div key={i} className="flex min-w-0 flex-1 flex-col items-center gap-1.5 rounded-md bg-content-muted/5 p-2.5">
+            <span className="lf-caption font-semibold text-content">{side.who}</span>
+            <Chip>{side.gives}</Chip>
+            <svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true" className="shrink-0 text-accent">
+              <path d="M2 7 h12 M10 3 l4 4 l-4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <Chip tone="accent">{side.gets}</Chip>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'chance'` — likelihood as AREA, so "usually fine, sometimes not" is
+ * visible without asking a nine-year-old to read a percentage. The model gives
+ * plain weights; `computeChance` normalises them.
+ */
+function ChanceBoard({ board, seq, className }: { board: ChanceWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.outcomes
+    .map((o, i) => `${o.label}: ${Math.round(board.shares[i]! * 100)}%`)
+    .join(', ')}`;
+  const tones = ['bg-accent/70', 'bg-content-muted/40', 'bg-accent/30'];
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 px-2" aria-hidden="true">
+        <div className="flex h-9 w-full overflow-hidden rounded-md">
+          {board.shares.map((share, i) => (
+            <span
+              key={i}
+              className={cn('h-full min-w-0 border-r border-surface last:border-r-0', tones[i % tones.length])}
+              style={{ width: `${share * 100}%` }}
+            />
+          ))}
+        </div>
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+          {board.outcomes.map((outcome, i) => (
+            <span key={i} className="flex min-w-0 items-baseline gap-1.5">
+              <Caption>{outcome.label}</Caption>
+              <AxisCaption className="tabular-nums">{Math.round(board.shares[i]! * 100)}%</AxisCaption>
+            </span>
+          ))}
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -959,5 +1266,21 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <FractionStripBoard board={board} seq={seq} className={className} />;
     case 'partition':
       return <PartitionBoard board={board} seq={seq} className={className} />;
+    case 'table':
+      return <TableBoard board={board} seq={seq} className={className} />;
+    case 'scale':
+      return <ScaleBoard board={board} seq={seq} className={className} />;
+    case 'two_bins':
+      return <TwoBinsBoard board={board} seq={seq} className={className} />;
+    case 'venn':
+      return <VennBoard board={board} seq={seq} className={className} />;
+    case 'ranking':
+      return <RankingBoard board={board} seq={seq} className={className} />;
+    case 'outcomes':
+      return <OutcomesBoard board={board} seq={seq} className={className} />;
+    case 'trade':
+      return <TradeBoard board={board} seq={seq} className={className} />;
+    case 'chance':
+      return <ChanceBoard board={board} seq={seq} className={className} />;
   }
 }

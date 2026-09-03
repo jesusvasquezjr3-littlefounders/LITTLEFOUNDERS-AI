@@ -218,6 +218,55 @@ export const INSTRUMENTS = [
     },
   },
   {
+    kind: 'table',
+    model: ['kind', 'options', 'label', 'currency'],
+    computed: ['unitPrices', 'bestIndex'],
+    blocks: { oracleSchema: 'WhiteboardTableSchema', coreBody: 'TableWhiteboardBody', coreRow: 'TableBoardRowSchema' },
+  },
+  {
+    kind: 'scale',
+    model: ['kind', 'left', 'right', 'label', 'currency'],
+    computed: ['tilt', 'difference'],
+    blocks: { oracleSchema: 'WhiteboardScaleSchema', coreBody: 'ScaleWhiteboardBody', coreRow: 'ScaleBoardRowSchema' },
+  },
+  {
+    kind: 'two_bins',
+    model: ['kind', 'binLabels', 'items', 'label'],
+    computed: ['counts'],
+    blocks: { oracleSchema: 'WhiteboardTwoBinsSchema', coreBody: 'TwoBinsWhiteboardBody', coreRow: 'TwoBinsBoardRowSchema' },
+  },
+  {
+    kind: 'venn',
+    model: ['kind', 'leftLabel', 'rightLabel', 'items', 'label'],
+    computed: ['left', 'right', 'both'],
+    blocks: { oracleSchema: 'WhiteboardVennSchema', coreBody: 'VennWhiteboardBody', coreRow: 'VennBoardRowSchema' },
+  },
+  {
+    kind: 'ranking',
+    model: ['kind', 'items', 'direction', 'label', 'currency'],
+    computed: ['order'],
+    blocks: { oracleSchema: 'WhiteboardRankingSchema', coreBody: 'RankingWhiteboardBody', coreRow: 'RankingBoardRowSchema' },
+  },
+  {
+    kind: 'outcomes',
+    model: ['kind', 'good', 'bad', 'label'],
+    // Prose only: nothing to compute, and moderation is what guards it.
+    computed: [],
+    blocks: { oracleSchema: 'WhiteboardOutcomesSchema', coreBody: 'OutcomesWhiteboardBody', coreRow: 'OutcomesBoardRowSchema' },
+  },
+  {
+    kind: 'trade',
+    model: ['kind', 'left', 'right', 'label'],
+    computed: [],
+    blocks: { oracleSchema: 'WhiteboardTradeSchema', coreBody: 'TradeWhiteboardBody', coreRow: 'TradeBoardRowSchema' },
+  },
+  {
+    kind: 'chance',
+    model: ['kind', 'outcomes', 'label'],
+    computed: ['shares'],
+    blocks: { oracleSchema: 'WhiteboardChanceSchema', coreBody: 'ChanceWhiteboardBody', coreRow: 'ChanceBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -424,6 +473,14 @@ export function wireComputedKeys(source, kind) {
     array: 'WhiteboardArray',
     fraction_strip: 'WhiteboardFractionStrip',
     partition: 'WhiteboardPartition',
+    table: 'WhiteboardTable',
+    scale: 'WhiteboardScale',
+    two_bins: 'WhiteboardTwoBins',
+    venn: 'WhiteboardVenn',
+    ranking: 'WhiteboardRanking',
+    outcomes: 'WhiteboardOutcomes',
+    trade: 'WhiteboardTrade',
+    chance: 'WhiteboardChance',
   }[kind];
   if (!kindType) return null;
   // Two legal forms, and the difference between them is meaningful: a kind with

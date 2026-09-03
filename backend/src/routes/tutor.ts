@@ -808,6 +808,97 @@ function internalRouter(): Router {
     })
     .strict();
 
+  /* Decision and comparison (/TUTOR_INSTRUMENTS.md §3.2 families D and F). */
+  const TableWhiteboardBody = z
+    .object({
+      kind: z.literal('table'),
+      options: z
+        .array(z.object({ label: z.string().max(40), price: z.number(), units: z.number() }).strict())
+        .min(2)
+        .max(4),
+      unitPrices: z.array(z.number()),
+      bestIndex: z.number().int(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const ScaleWhiteboardBody = z
+    .object({
+      kind: z.literal('scale'),
+      left: z.object({ label: z.string().max(60), value: z.number() }).strict(),
+      right: z.object({ label: z.string().max(60), value: z.number() }).strict(),
+      tilt: z.enum(['left', 'right', 'level']),
+      difference: z.number(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const TwoBinsWhiteboardBody = z
+    .object({
+      kind: z.literal('two_bins'),
+      binLabels: z.tuple([z.string().max(40), z.string().max(40)]),
+      items: z.array(z.object({ label: z.string().max(40), bin: z.number().int() }).strict()).min(2).max(8),
+      counts: z.tuple([z.number().int(), z.number().int()]),
+      label: z.string().max(60),
+    })
+    .strict();
+
+  const VennWhiteboardBody = z
+    .object({
+      kind: z.literal('venn'),
+      leftLabel: z.string().max(40),
+      rightLabel: z.string().max(40),
+      items: z
+        .array(z.object({ label: z.string().max(40), side: z.enum(['left', 'right', 'both']) }).strict())
+        .min(2)
+        .max(8),
+      left: z.number().int(),
+      right: z.number().int(),
+      both: z.number().int(),
+      label: z.string().max(60),
+    })
+    .strict();
+
+  const RankingWhiteboardBody = z
+    .object({
+      kind: z.literal('ranking'),
+      items: z.array(z.object({ label: z.string().max(40), value: z.number() }).strict()).min(2).max(5),
+      direction: z.enum(['asc', 'desc']),
+      order: z.array(z.number().int()),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const OutcomesWhiteboardBody = z
+    .object({
+      kind: z.literal('outcomes'),
+      good: z.object({ label: z.string().max(40), detail: z.string().max(110) }).strict(),
+      bad: z.object({ label: z.string().max(40), detail: z.string().max(110) }).strict(),
+      label: z.string().max(60),
+    })
+    .strict();
+
+  const TradeWhiteboardBody = z
+    .object({
+      kind: z.literal('trade'),
+      left: z.object({ who: z.string().max(30), gives: z.string().max(40), gets: z.string().max(40) }).strict(),
+      right: z.object({ who: z.string().max(30), gives: z.string().max(40), gets: z.string().max(40) }).strict(),
+      label: z.string().max(60),
+    })
+    .strict();
+
+  const ChanceWhiteboardBody = z
+    .object({
+      kind: z.literal('chance'),
+      outcomes: z.array(z.object({ label: z.string().max(40), weight: z.number().int() }).strict()).min(2).max(3),
+      shares: z.array(z.number()),
+      label: z.string().max(60),
+    })
+    .strict();
+
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
     CompareWhiteboardBody,
@@ -824,6 +915,14 @@ function internalRouter(): Router {
     ArrayWhiteboardBody,
     FractionStripWhiteboardBody,
     PartitionWhiteboardBody,
+    TableWhiteboardBody,
+    ScaleWhiteboardBody,
+    TwoBinsWhiteboardBody,
+    VennWhiteboardBody,
+    RankingWhiteboardBody,
+    OutcomesWhiteboardBody,
+    TradeWhiteboardBody,
+    ChanceWhiteboardBody,
   ]);
 
   /**

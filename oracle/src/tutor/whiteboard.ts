@@ -15,6 +15,12 @@ import type {
   WhiteboardOpenNumberLine,
   WhiteboardPartition,
   WhiteboardTenFrame,
+  WhiteboardChance,
+  WhiteboardRanking,
+  WhiteboardScale,
+  WhiteboardTable,
+  WhiteboardTwoBins,
+  WhiteboardVenn,
 } from './turnSchema.js';
 
 /*
@@ -529,6 +535,160 @@ export function computePartition(board: Pick<WhiteboardPartition, 'whole' | 'spl
   return { pieceValues };
 }
 
+
+/* ── DECISION AND COMPARISON ────────────────────────────────────────────────── */
+
+/** What a `table` works out about its options — see `computeTable`. */
+export interface TableResult {
+  /** Price per unit for each option, in the model's own order. */
+  unitPrices: number[];
+  /** Which option is cheapest per unit. THE MODEL HAS NO FIELD FOR THIS — it is the comparison being taught. */
+  bestIndex: number;
+}
+
+/**
+ * Works out price per unit for each option and which one actually wins.
+ *
+ * The whole point of `money.unit-price` is that the cheapest STICKER price and
+ * the cheapest per-unit price are often different options, so a tutor that could
+ * simply assert a winner could assert the wrong one over correct numbers — the
+ * `highest-price-wins` misconception with a picture behind it. A tie refuses
+ * rather than picking: two winners is not the lesson.
+ */
+export function computeTable(board: Pick<WhiteboardTable, 'options'>): TableResult | null {
+  const unitPrices: number[] = [];
+  for (const option of board.options) {
+    if (!Number.isFinite(option.price) || option.price <= 0) return null;
+    if (!Number.isFinite(option.units) || option.units <= 0) return null;
+    unitPrices.push(money(option.price / option.units));
+  }
+  let bestIndex = 0;
+  for (let i = 1; i < unitPrices.length; i += 1) {
+    if (unitPrices[i]! < unitPrices[bestIndex]! - ZERO_EPSILON) bestIndex = i;
+  }
+  const ties = unitPrices.filter((p) => Math.abs(p - unitPrices[bestIndex]!) <= ZERO_EPSILON).length;
+  if (ties > 1) return null;
+  return { unitPrices, bestIndex };
+}
+
+/** Which way a `scale` tips — see `computeScale`. */
+export interface ScaleResult {
+  tilt: 'left' | 'right' | 'level';
+  difference: number;
+}
+
+/**
+ * Derives which way the balance tips and by how much.
+ *
+ * Shares its inputs with `computeComparison` and is kept separate deliberately:
+ * `compare` answers "which is more" and this answers "are these fair to each
+ * other", and a later change to one should not silently move the other.
+ */
+export function computeScale(board: Pick<WhiteboardScale, 'left' | 'right'>): ScaleResult | null {
+  const { left, right } = board;
+  if (!Number.isFinite(left.value) || left.value < 0 || left.value > MAX_VALUE) return null;
+  if (!Number.isFinite(right.value) || right.value < 0 || right.value > MAX_VALUE) return null;
+  const difference = money(Math.abs(left.value - right.value));
+  const tilt: ScaleResult['tilt'] =
+    difference <= ZERO_EPSILON ? 'level' : left.value > right.value ? 'left' : 'right';
+  return { tilt, difference };
+}
+
+/** How many things landed in each bin — see `computeTwoBins`. */
+export interface TwoBinsResult {
+  counts: [number, number];
+}
+
+/**
+ * Counts each bin, and refuses a sort with an empty one.
+ *
+ * A classification board with everything on one side demonstrates nothing about
+ * the distinction it was drawn to make — which is the exact failure
+ * `value-not-appearance.md` guards against when it asks to "build one case where
+ * the two split".
+ */
+export function computeTwoBins(board: Pick<WhiteboardTwoBins, 'items'>): TwoBinsResult | null {
+  const counts: [number, number] = [0, 0];
+  for (const item of board.items) {
+    if (item.bin !== 0 && item.bin !== 1) return null;
+    counts[item.bin] += 1;
+  }
+  if (counts[0] === 0 || counts[1] === 0) return null;
+  return { counts };
+}
+
+/** How many things fall on each side of a `venn`, and in the overlap. */
+export interface VennResult {
+  left: number;
+  right: number;
+  both: number;
+}
+
+/**
+ * Counts the three regions, and refuses a Venn with an empty overlap.
+ *
+ * The overlap IS the instrument. Without something in it this is a two-bin sort
+ * drawn as circles, and the misconception it exists for (`want-feels-like-need`)
+ * lives entirely in the middle.
+ */
+export function computeVenn(board: Pick<WhiteboardVenn, 'items'>): VennResult | null {
+  const result: VennResult = { left: 0, right: 0, both: 0 };
+  for (const item of board.items) result[item.side] += 1;
+  if (result.both === 0) return null;
+  return result;
+}
+
+/** The order a `ranking` puts its items in — see `computeRanking`. */
+export interface RankingResult {
+  /** Item indices, in the order they should be drawn. The model does not choose this. */
+  order: number[];
+}
+
+/**
+ * Sorts the items. The model supplies amounts and never the order, because
+ * putting them in order is the thing being practised.
+ *
+ * A tie refuses: two items in the same place is not a ranking, and quietly
+ * picking one would teach an ordering the numbers do not support.
+ */
+export function computeRanking(board: Pick<WhiteboardRanking, 'items' | 'direction'>): RankingResult | null {
+  const values = board.items.map((i) => i.value);
+  if (values.some((v) => !Number.isFinite(v) || v < 0 || v > MAX_VALUE)) return null;
+  for (let i = 0; i < values.length; i += 1) {
+    for (let j = i + 1; j < values.length; j += 1) {
+      if (Math.abs(values[i]! - values[j]!) <= ZERO_EPSILON) return null;
+    }
+  }
+  const order = board.items
+    .map((_, i) => i)
+    .sort((a, b) => (board.direction === 'asc' ? values[a]! - values[b]! : values[b]! - values[a]!));
+  return { order };
+}
+
+/** How much of the circle each outcome gets — see `computeChance`. */
+export interface ChanceResult {
+  /** Each outcome's share of the whole, 0..1, summing to 1. */
+  shares: number[];
+}
+
+/**
+ * Normalises plain weights into shares.
+ *
+ * The model states WEIGHTS, never percentages, and never a probability of its
+ * own: "three times out of four" is a thing a tutor can reason about loosely and
+ * get wrong, and a nine-year-old should not be asked to read a percentage to
+ * understand that something usually works.
+ */
+export function computeChance(board: Pick<WhiteboardChance, 'outcomes'>): ChanceResult | null {
+  let total = 0;
+  for (const outcome of board.outcomes) {
+    if (!Number.isInteger(outcome.weight) || outcome.weight < 1) return null;
+    total += outcome.weight;
+  }
+  if (total <= 0) return null;
+  return { shares: board.outcomes.map((o) => o.weight / total) };
+}
+
 /**
  * True when a whiteboard's own numbers compute to something sane, dispatched
  * to the right function above for its `kind`. The single "is this board
@@ -570,6 +730,24 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return computeFractionStrip(board) !== null;
     case 'partition':
       return computePartition(board) !== null;
+    case 'table':
+      return computeTable(board) !== null;
+    case 'scale':
+      return computeScale(board) !== null;
+    case 'two_bins':
+      return computeTwoBins(board) !== null;
+    case 'venn':
+      return computeVenn(board) !== null;
+    case 'ranking':
+      return computeRanking(board) !== null;
+    case 'outcomes':
+      // Prose only — nothing to compute, and nothing that could be wrong about
+      // it in the way a number can be. Moderation is what guards this one.
+      return true;
+    case 'trade':
+      return true;
+    case 'chance':
+      return computeChance(board) !== null;
   }
 }
 

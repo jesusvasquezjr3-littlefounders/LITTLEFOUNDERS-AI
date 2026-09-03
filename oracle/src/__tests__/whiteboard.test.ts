@@ -15,6 +15,12 @@ import {
   computeArray,
   computeFractionStrip,
   computePartition,
+  computeTable,
+  computeScale,
+  computeTwoBins,
+  computeVenn,
+  computeRanking,
+  computeChance,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -766,5 +772,104 @@ describe('partition', () => {
         ],
       }),
     ).toBeNull();
+  });
+});
+
+/*
+ * DECISION AND COMPARISON. Every refusal below is a picture that would teach
+ * something false, not merely an out-of-range number.
+ */
+
+describe('table — the cheapest sticker price and the cheapest per unit differ', () => {
+  it('works out price per unit and which option actually wins', () => {
+    // 12 for 4 is 3 each; 20 for 10 is 2 each. The DEARER bag is the better
+    // deal, which is the whole point of `money.unit-price`.
+    const result = computeTable({
+      options: [
+        { label: 'chica', price: 12, units: 4 },
+        { label: 'grande', price: 20, units: 10 },
+      ],
+    });
+    expect(result?.unitPrices).toEqual([3, 2]);
+    expect(result?.bestIndex).toBe(1);
+  });
+
+  it('refuses a tie — two winners is not the lesson', () => {
+    expect(
+      computeTable({
+        options: [
+          { label: 'a', price: 10, units: 5 },
+          { label: 'b', price: 20, units: 10 },
+        ],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('scale', () => {
+  it('tips toward the heavier side and levels on equal', () => {
+    expect(computeScale({ left: { label: 'a', value: 18 }, right: { label: 'b', value: 25 } })).toEqual({
+      tilt: 'right',
+      difference: 7,
+    });
+    expect(computeScale({ left: { label: 'a', value: 9 }, right: { label: 'b', value: 9 } })?.tilt).toBe('level');
+  });
+});
+
+describe('two_bins — a sort with an empty bin demonstrates nothing', () => {
+  it('counts both bins', () => {
+    expect(
+      computeTwoBins({ items: [{ label: 'a', bin: 0 }, { label: 'b', bin: 1 }] }),
+    ).toEqual({ counts: [1, 1] });
+  });
+
+  it('refuses everything on one side', () => {
+    expect(computeTwoBins({ items: [{ label: 'a', bin: 0 }, { label: 'b', bin: 0 }] })).toBeNull();
+  });
+});
+
+describe('venn — the overlap IS the instrument', () => {
+  it('counts the three regions', () => {
+    expect(
+      computeVenn({
+        items: [
+          { label: 'a', side: 'left' },
+          { label: 'b', side: 'right' },
+          { label: 'c', side: 'both' },
+        ],
+      }),
+    ).toEqual({ left: 1, right: 1, both: 1 });
+  });
+
+  it('refuses an empty overlap — that is a two-bin sort drawn as circles', () => {
+    expect(
+      computeVenn({ items: [{ label: 'a', side: 'left' }, { label: 'b', side: 'right' }] }),
+    ).toBeNull();
+  });
+});
+
+describe('ranking — the ORDER is the server\'s', () => {
+  it('sorts ascending and descending', () => {
+    const items = [
+      { label: 'cuaderno', value: 25 },
+      { label: 'mochila', value: 180 },
+      { label: 'lapiz', value: 6 },
+    ];
+    expect(computeRanking({ items, direction: 'asc' })?.order).toEqual([2, 0, 1]);
+    expect(computeRanking({ items, direction: 'desc' })?.order).toEqual([1, 0, 2]);
+  });
+
+  it('refuses a tie rather than breaking it quietly', () => {
+    expect(
+      computeRanking({ items: [{ label: 'a', value: 5 }, { label: 'b', value: 5 }], direction: 'asc' }),
+    ).toBeNull();
+  });
+});
+
+describe('chance — weights in, shares out, no percentage from the model', () => {
+  it('normalises weights to shares that sum to one', () => {
+    const result = computeChance({ outcomes: [{ label: 'vende', weight: 4 }, { label: 'llueve', weight: 1 }] });
+    expect(result?.shares).toEqual([0.8, 0.2]);
+    expect(result!.shares.reduce((a, b) => a + b, 0)).toBeCloseTo(1);
   });
 });

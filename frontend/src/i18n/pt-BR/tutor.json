@@ -411,7 +411,11 @@
       "check": "Verificação: {{amount}}",
       "unknown": "?",
       "total": "No total: {{amount}}",
-      "piece": "Uma parte: {{amount}}"
+      "piece": "Uma parte: {{amount}}",
+      "perUnit": "{{amount}} cada um",
+      "best": "A melhor",
+      "fair": "Igual",
+      "both": "Os dois"
     }
   }
 }

@@ -365,6 +365,72 @@ export type TutorWhiteboardWire =
       pieceValues: number[];
       label: string;
       currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'table';
+      options: { label: string; price: number; units: number }[];
+      /** SERVER-COMPUTED. The cheapest sticker price and the cheapest per unit are often different options. */
+      unitPrices: number[];
+      bestIndex: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'scale';
+      left: { label: string; value: number };
+      right: { label: string; value: number };
+      /** SERVER-COMPUTED. */
+      tilt: 'left' | 'right' | 'level';
+      difference: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'two_bins';
+      binLabels: [string, string];
+      items: { label: string; bin: number }[];
+      /** SERVER-COMPUTED. Neither bin may be empty — a sort with one empty side demonstrates nothing. */
+      counts: [number, number];
+      label: string;
+    }
+  | {
+      kind: 'venn';
+      leftLabel: string;
+      rightLabel: string;
+      items: { label: string; side: 'left' | 'right' | 'both' }[];
+      /** SERVER-COMPUTED. The overlap may not be empty — it is the whole instrument. */
+      left: number;
+      right: number;
+      both: number;
+      label: string;
+    }
+  | {
+      kind: 'ranking';
+      items: { label: string; value: number }[];
+      direction: 'asc' | 'desc';
+      /** SERVER-COMPUTED order — putting them in order is the thing being practised. */
+      order: number[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'outcomes';
+      good: { label: string; detail: string };
+      bad: { label: string; detail: string };
+      label: string;
+    }
+  | {
+      kind: 'trade';
+      left: { who: string; gives: string; gets: string };
+      right: { who: string; gives: string; gets: string };
+      label: string;
+    }
+  | {
+      kind: 'chance';
+      outcomes: { label: string; weight: number }[];
+      /** SERVER-COMPUTED from plain weights — the model never states a percentage. */
+      shares: number[];
+      label: string;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

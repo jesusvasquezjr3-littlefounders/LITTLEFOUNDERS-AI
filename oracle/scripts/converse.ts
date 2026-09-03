@@ -50,6 +50,12 @@ import {
   computeArray,
   computeFractionStrip,
   computePartition,
+  computeTable,
+  computeScale,
+  computeTwoBins,
+  computeVenn,
+  computeRanking,
+  computeChance,
 } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
@@ -424,6 +430,51 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
       const result = computePartition(board);
       const splits = board.splits.map((sp, i) => `${sp.label} 1/${sp.denominator}=${result?.pieceValues[i] ?? '?'}`).join(', ');
       return { label: board.label, summary: result ? splits : `${splits} (INVALID)` };
+    }
+    case 'table': {
+      const result = computeTable(board);
+      const opts = board.options.map((o, i) => `${o.label} ${o.price}/${o.units}=${result?.unitPrices[i] ?? '?'}`).join(', ');
+      return { label: board.label, summary: result ? `${opts} (best: ${board.options[result.bestIndex]?.label})` : `${opts} (INVALID)` };
+    }
+    case 'scale': {
+      const result = computeScale(board);
+      const sides = `${board.left.label}=${board.left.value} vs ${board.right.label}=${board.right.value}`;
+      return { label: board.label, summary: result ? `${sides} (${result.tilt})` : `${sides} (INVALID)` };
+    }
+    case 'two_bins': {
+      const result = computeTwoBins(board);
+      const bins = `${board.binLabels[0]}/${board.binLabels[1]}`;
+      return { label: board.label, summary: result ? `${bins}: ${result.counts.join(' vs ')}` : `${bins} (INVALID)` };
+    }
+    case 'venn': {
+      const result = computeVenn(board);
+      return {
+        label: board.label,
+        summary: result ? `${board.leftLabel} ${result.left} / both ${result.both} / ${board.rightLabel} ${result.right}` : 'INVALID',
+      };
+    }
+    case 'ranking': {
+      const result = computeRanking(board);
+      return {
+        label: board.label,
+        summary: result ? result.order.map((i) => board.items[i]?.label).join(' > ') : 'INVALID',
+      };
+    }
+    case 'outcomes':
+      return { label: board.label, summary: `${board.good.label} | ${board.bad.label}` };
+    case 'trade':
+      return {
+        label: board.label,
+        summary: `${board.left.who} gives ${board.left.gives} gets ${board.left.gets}; ${board.right.who} gives ${board.right.gives} gets ${board.right.gets}`,
+      };
+    case 'chance': {
+      const result = computeChance(board);
+      return {
+        label: board.label,
+        summary: result
+          ? board.outcomes.map((o, i) => `${o.label} ${Math.round(result.shares[i]! * 100)}%`).join(', ')
+          : 'INVALID',
+      };
     }
   }
 }

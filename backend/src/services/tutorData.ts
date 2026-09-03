@@ -1088,6 +1088,82 @@ export interface TutorTurnPartitionBoard {
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
 
+/** Options compared on price per unit. `unitPrices`/`bestIndex` are server-computed — the comparison IS the lesson. */
+export interface TutorTurnTableBoard {
+  kind: 'table';
+  options: { label: string; price: number; units: number }[];
+  unitPrices: number[];
+  bestIndex: number;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** A balance. `tilt`/`difference` are server-computed. */
+export interface TutorTurnScaleBoard {
+  kind: 'scale';
+  left: { label: string; value: number };
+  right: { label: string; value: number };
+  tilt: 'left' | 'right' | 'level';
+  difference: number;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** An ungraded sort into two bins. Neither bin may be empty — see `computeTwoBins`. */
+export interface TutorTurnTwoBinsBoard {
+  kind: 'two_bins';
+  binLabels: [string, string];
+  items: { label: string; bin: number }[];
+  counts: [number, number];
+  label: string;
+}
+
+/** Two overlapping sets. The overlap may not be empty — it is the whole instrument. */
+export interface TutorTurnVennBoard {
+  kind: 'venn';
+  leftLabel: string;
+  rightLabel: string;
+  items: { label: string; side: 'left' | 'right' | 'both' }[];
+  left: number;
+  right: number;
+  both: number;
+  label: string;
+}
+
+/** An ordered list. `order` is server-computed — sorting is the thing being practised. */
+export interface TutorTurnRankingBoard {
+  kind: 'ranking';
+  items: { label: string; value: number }[];
+  direction: 'asc' | 'desc';
+  order: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** Two endings side by side. The only board whose content is prose; moderation is what guards it. */
+export interface TutorTurnOutcomesBoard {
+  kind: 'outcomes';
+  good: { label: string; detail: string };
+  bad: { label: string; detail: string };
+  label: string;
+}
+
+/** A trade with two parties, each judging their own side. */
+export interface TutorTurnTradeBoard {
+  kind: 'trade';
+  left: { who: string; gives: string; gets: string };
+  right: { who: string; gives: string; gets: string };
+  label: string;
+}
+
+/** Likelihood as area. `shares` is server-computed from plain weights — the model states no percentage. */
+export interface TutorTurnChanceBoard {
+  kind: 'chance';
+  outcomes: { label: string; weight: number }[];
+  shares: number[];
+  label: string;
+}
+
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
   | TutorTurnSequenceBoard
@@ -1104,7 +1180,15 @@ export type TutorTurnWhiteboard =
   | TutorTurnOpenNumberLineBoard
   | TutorTurnArrayBoard
   | TutorTurnFractionStripBoard
-  | TutorTurnPartitionBoard;
+  | TutorTurnPartitionBoard
+  | TutorTurnTableBoard
+  | TutorTurnScaleBoard
+  | TutorTurnTwoBinsBoard
+  | TutorTurnVennBoard
+  | TutorTurnRankingBoard
+  | TutorTurnOutcomesBoard
+  | TutorTurnTradeBoard
+  | TutorTurnChanceBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1442,6 +1526,125 @@ const PartitionBoardRowSchema = z
   })
   .strict();
 
+const TableBoardRowSchema = z
+  .object({
+    kind: z.literal('table'),
+    options: z
+      .array(
+        z
+          .object({
+            label: z.string().min(1).max(40),
+            price: z.number().positive().max(1_000_000),
+            units: z.number().positive().max(10_000),
+          })
+          .strict(),
+      )
+      .min(2)
+      .max(4),
+    unitPrices: z.array(z.number().min(0).max(10_000_000)).min(2).max(4),
+    bestIndex: z.number().int().min(0).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const ScaleBoardRowSchema = z
+  .object({
+    kind: z.literal('scale'),
+    left: z.object({ label: z.string().min(1).max(60), value: z.number().min(0).max(1_000_000) }).strict(),
+    right: z.object({ label: z.string().min(1).max(60), value: z.number().min(0).max(1_000_000) }).strict(),
+    tilt: z.enum(['left', 'right', 'level']),
+    difference: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const TwoBinsBoardRowSchema = z
+  .object({
+    kind: z.literal('two_bins'),
+    binLabels: z.tuple([z.string().min(1).max(40), z.string().min(1).max(40)]),
+    items: z
+      .array(z.object({ label: z.string().min(1).max(40), bin: z.number().int().min(0).max(1) }).strict())
+      .min(2)
+      .max(8),
+    counts: z.tuple([z.number().int().min(0).max(8), z.number().int().min(0).max(8)]),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const VennBoardRowSchema = z
+  .object({
+    kind: z.literal('venn'),
+    leftLabel: z.string().min(1).max(40),
+    rightLabel: z.string().min(1).max(40),
+    items: z
+      .array(z.object({ label: z.string().min(1).max(40), side: z.enum(['left', 'right', 'both']) }).strict())
+      .min(2)
+      .max(8),
+    left: z.number().int().min(0).max(8),
+    right: z.number().int().min(0).max(8),
+    both: z.number().int().min(0).max(8),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const RankingBoardRowSchema = z
+  .object({
+    kind: z.literal('ranking'),
+    items: z
+      .array(z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict())
+      .min(2)
+      .max(5),
+    direction: z.enum(['asc', 'desc']),
+    order: z.array(z.number().int().min(0).max(4)).min(2).max(5),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const OutcomeRowSchema = z
+  .object({ label: z.string().min(1).max(40), detail: z.string().min(1).max(110) })
+  .strict();
+
+const OutcomesBoardRowSchema = z
+  .object({
+    kind: z.literal('outcomes'),
+    good: OutcomeRowSchema,
+    bad: OutcomeRowSchema,
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const TradeSideRowSchema = z
+  .object({
+    who: z.string().min(1).max(30),
+    gives: z.string().min(1).max(40),
+    gets: z.string().min(1).max(40),
+  })
+  .strict();
+
+const TradeBoardRowSchema = z
+  .object({
+    kind: z.literal('trade'),
+    left: TradeSideRowSchema,
+    right: TradeSideRowSchema,
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const ChanceBoardRowSchema = z
+  .object({
+    kind: z.literal('chance'),
+    outcomes: z
+      .array(z.object({ label: z.string().min(1).max(40), weight: z.number().int().min(1).max(100) }).strict())
+      .min(2)
+      .max(3),
+    shares: z.array(z.number().min(0).max(1)).min(2).max(3),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1470,6 +1673,14 @@ const TutorTurnWhiteboardRowSchema = z
     ArrayBoardRowSchema,
     FractionStripBoardRowSchema,
     PartitionBoardRowSchema,
+    TableBoardRowSchema,
+    ScaleBoardRowSchema,
+    TwoBinsBoardRowSchema,
+    VennBoardRowSchema,
+    RankingBoardRowSchema,
+    OutcomesBoardRowSchema,
+    TradeBoardRowSchema,
+    ChanceBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -1500,6 +1711,30 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'every mark value must fall within [min, max]',
           path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'ranking') {
+      if (board.order.length !== board.items.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'order must carry exactly one entry per item',
+          path: ['order'],
+        });
+      }
+    } else if (board.kind === 'chance') {
+      if (board.shares.length !== board.outcomes.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'shares must carry exactly one entry per outcome',
+          path: ['shares'],
+        });
+      }
+    } else if (board.kind === 'table') {
+      if (board.unitPrices.length !== board.options.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'unitPrices must carry exactly one entry per option',
+          path: ['unitPrices'],
         });
       }
     } else if (board.kind === 'fraction_strip') {

@@ -684,6 +684,69 @@ const LAB_CANON_TEXT: Readonly<
   },
 };
 
+/* Decision and comparison (/TUTOR_INSTRUMENTS.md §3.2 families D and F). */
+const LAB_DECIDE_TEXT: Readonly<
+  Record<
+    Locale,
+    {
+      table: { say: string; label: string; options: [string, string] };
+      scale: { say: string; label: string; left: string; right: string };
+      twoBins: { say: string; label: string; bins: [string, string]; items: [string, string, string, string] };
+      venn: { say: string; label: string; left: string; right: string; items: [string, string, string] };
+      ranking: { say: string; label: string; items: [string, string, string] };
+      outcomes: { say: string; label: string; good: [string, string]; bad: [string, string] };
+      trade: { say: string; label: string; who: [string, string]; gives: [string, string]; gets: [string, string] };
+      chance: { say: string; label: string; outcomes: [string, string] };
+    }
+  >
+> = {
+  'en-US': {
+    table: { say: 'Two bags of the same sweets. Which one really costs less?', label: 'Which bag is the better deal?', options: ['Small bag', 'Big bag'] },
+    scale: { say: 'What it cost you to make, against what you charged.', label: 'Is that fair?', left: 'What it cost', right: 'What you charged' },
+    twoBins: { say: 'Let us put each one where it belongs.', label: 'Need or want?', bins: ['Need', 'Want'], items: ['Shoes', 'A game', 'Lunch', 'Stickers'] },
+    venn: { say: 'Some things are both — you need them AND you want them.', label: 'What lands in both?', left: 'Need', right: 'Want', items: ['Medicine', 'A new phone', 'Warm coat'] },
+    ranking: { say: 'Let us put them in order, cheapest first.', label: 'Cheapest first', items: ['Notebook', 'Backpack', 'Pencil'] },
+    outcomes: {
+      say: 'If it sells, and if it does not. Both are worth looking at.',
+      label: 'How it could end',
+      good: ['It sells out', 'You get your money back and a little more, and you buy more lemons.'],
+      bad: ['Nobody buys', 'The lemons are already paid for, so you are short until next time.'],
+    },
+    trade: { say: 'Look at what each of them gave and got.', label: 'Did both of them win?', who: ['You', 'Ana'], gives: ['Your stickers', 'Her marbles'], gets: ['Her marbles', 'Your stickers'] },
+    chance: { say: 'Most days it sells. Some days it rains.', label: 'How often does it work?', outcomes: ['It sells', 'It rains'] },
+  },
+  'es-MX': {
+    table: { say: 'Dos bolsas de los mismos dulces. ¿Cuál cuesta menos de verdad?', label: '¿Cuál bolsa conviene?', options: ['Bolsa chica', 'Bolsa grande'] },
+    scale: { say: 'Lo que te costó hacerlo, contra lo que cobraste.', label: '¿Está parejo?', left: 'Lo que costó', right: 'Lo que cobraste' },
+    twoBins: { say: 'Vamos poniendo cada cosa donde va.', label: '¿Necesito o quiero?', bins: ['Necesito', 'Quiero'], items: ['Zapatos', 'Un juego', 'La comida', 'Calcomanías'] },
+    venn: { say: 'Hay cosas que son las dos — las necesitas Y las quieres.', label: '¿Qué cae en las dos?', left: 'Necesito', right: 'Quiero', items: ['Medicina', 'Un celular nuevo', 'Chamarra'] },
+    ranking: { say: 'Vamos a ordenarlos, del más barato al más caro.', label: 'Del más barato', items: ['Cuaderno', 'Mochila', 'Lápiz'] },
+    outcomes: {
+      say: 'Si se vende, y si no. Vale la pena ver las dos.',
+      label: 'Cómo podría terminar',
+      good: ['Se vende todo', 'Recuperas tu dinero y algo más, y compras más limones.'],
+      bad: ['Nadie compra', 'Los limones ya los pagaste, así que te quedas corto hasta la próxima.'],
+    },
+    trade: { say: 'Mira lo que dio y lo que recibió cada quien.', label: '¿Ganaron los dos?', who: ['Tú', 'Ana'], gives: ['Tus calcomanías', 'Sus canicas'], gets: ['Sus canicas', 'Tus calcomanías'] },
+    chance: { say: 'Casi siempre se vende. A veces llueve.', label: '¿Qué tan seguido funciona?', outcomes: ['Se vende', 'Llueve'] },
+  },
+  'pt-BR': {
+    table: { say: 'Dois pacotes das mesmas balas. Qual custa menos de verdade?', label: 'Qual pacote vale mais a pena?', options: ['Pacote pequeno', 'Pacote grande'] },
+    scale: { say: 'O que custou fazer, contra o que você cobrou.', label: 'Está justo?', left: 'O que custou', right: 'O que você cobrou' },
+    twoBins: { say: 'Vamos colocar cada coisa no lugar dela.', label: 'Preciso ou quero?', bins: ['Preciso', 'Quero'], items: ['Sapatos', 'Um jogo', 'O almoço', 'Adesivos'] },
+    venn: { say: 'Tem coisas que são as duas — você precisa E quer.', label: 'O que cai nas duas?', left: 'Preciso', right: 'Quero', items: ['Remédio', 'Celular novo', 'Casaco'] },
+    ranking: { say: 'Vamos colocar em ordem, do mais barato.', label: 'Do mais barato', items: ['Caderno', 'Mochila', 'Lápis'] },
+    outcomes: {
+      say: 'Se vender, e se não vender. Vale olhar as duas.',
+      label: 'Como pode terminar',
+      good: ['Vende tudo', 'Você recupera seu dinheiro e um pouco mais, e compra mais limões.'],
+      bad: ['Ninguém compra', 'Os limões já foram pagos, então você fica no aperto até a próxima.'],
+    },
+    trade: { say: 'Olha o que cada um deu e recebeu.', label: 'Os dois ganharam?', who: ['Você', 'Ana'], gives: ['Seus adesivos', 'As bolinhas dela'], gets: ['As bolinhas dela', 'Seus adesivos'] },
+    chance: { say: 'Quase sempre vende. Às vezes chove.', label: 'Funciona com que frequência?', outcomes: ['Vende', 'Chove'] },
+  },
+};
+
 const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
   'en-US': 'USD',
   'es-MX': 'MXN',
@@ -996,6 +1059,155 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (
+    activity === 'table' ||
+    activity === 'scale' ||
+    activity === 'two-bins' ||
+    activity === 'venn' ||
+    activity === 'ranking' ||
+    activity === 'outcomes' ||
+    activity === 'trade' ||
+    activity === 'chance'
+  ) {
+    const text = LAB_DECIDE_TEXT[locale];
+    const currency = LAB_CURRENCY[locale];
+    const base = {
+      seq: 4,
+      emotion: 'happy' as const,
+      action: 'nod' as const,
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask' as const,
+      policy: null,
+      demonstrate: null,
+    };
+    if (activity === 'table') {
+      return {
+        ...base,
+        text: text.table.say,
+        whiteboard: {
+          kind: 'table',
+          options: [
+            { label: text.table.options[0], price: 12, units: 4 },
+            { label: text.table.options[1], price: 20, units: 10 },
+          ],
+          unitPrices: [3, 2],
+          bestIndex: 1,
+          label: text.table.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'scale') {
+      return {
+        ...base,
+        text: text.scale.say,
+        whiteboard: {
+          kind: 'scale',
+          left: { label: text.scale.left, value: 18 },
+          right: { label: text.scale.right, value: 25 },
+          tilt: 'right',
+          difference: 7,
+          label: text.scale.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'two-bins') {
+      return {
+        ...base,
+        text: text.twoBins.say,
+        whiteboard: {
+          kind: 'two_bins',
+          binLabels: text.twoBins.bins,
+          items: [
+            { label: text.twoBins.items[0], bin: 0 },
+            { label: text.twoBins.items[1], bin: 1 },
+            { label: text.twoBins.items[2], bin: 0 },
+            { label: text.twoBins.items[3], bin: 1 },
+          ],
+          counts: [2, 2],
+          label: text.twoBins.label,
+        },
+      };
+    }
+    if (activity === 'venn') {
+      return {
+        ...base,
+        text: text.venn.say,
+        whiteboard: {
+          kind: 'venn',
+          leftLabel: text.venn.left,
+          rightLabel: text.venn.right,
+          items: [
+            { label: text.venn.items[0], side: 'left' },
+            { label: text.venn.items[1], side: 'right' },
+            { label: text.venn.items[2], side: 'both' },
+          ],
+          left: 1,
+          right: 1,
+          both: 1,
+          label: text.venn.label,
+        },
+      };
+    }
+    if (activity === 'ranking') {
+      return {
+        ...base,
+        text: text.ranking.say,
+        whiteboard: {
+          kind: 'ranking',
+          items: [
+            { label: text.ranking.items[0], value: 25 },
+            { label: text.ranking.items[1], value: 180 },
+            { label: text.ranking.items[2], value: 6 },
+          ],
+          direction: 'asc',
+          order: [2, 0, 1],
+          label: text.ranking.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'outcomes') {
+      return {
+        ...base,
+        text: text.outcomes.say,
+        whiteboard: {
+          kind: 'outcomes',
+          good: { label: text.outcomes.good[0], detail: text.outcomes.good[1] },
+          bad: { label: text.outcomes.bad[0], detail: text.outcomes.bad[1] },
+          label: text.outcomes.label,
+        },
+      };
+    }
+    if (activity === 'trade') {
+      return {
+        ...base,
+        text: text.trade.say,
+        whiteboard: {
+          kind: 'trade',
+          left: { who: text.trade.who[0], gives: text.trade.gives[0], gets: text.trade.gets[0] },
+          right: { who: text.trade.who[1], gives: text.trade.gives[1], gets: text.trade.gets[1] },
+          label: text.trade.label,
+        },
+      };
+    }
+    return {
+      ...base,
+      text: text.chance.say,
+      whiteboard: {
+        kind: 'chance',
+        outcomes: [
+          { label: text.chance.outcomes[0], weight: 4 },
+          { label: text.chance.outcomes[1], weight: 1 },
+        ],
+        shares: [0.8, 0.2],
+        label: text.chance.label,
+      },
+    };
+  }
   if (activity === 'categories') {
     const text = LAB_CATEGORIES_TEXT[locale];
     return {
@@ -1092,6 +1304,14 @@ const WHITEBOARD_ACTIVITIES = [
   'array',
   'fraction-strip',
   'partition',
+  'table',
+  'scale',
+  'two-bins',
+  'venn',
+  'ranking',
+  'outcomes',
+  'trade',
+  'chance',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [
