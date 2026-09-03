@@ -320,6 +320,51 @@ export type TutorWhiteboardWire =
       checkValue: number;
       label: string;
       currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'ten_frame';
+      count: number;
+      /** SERVER-COMPUTED. The complement to ten deliberately is NOT sent — it is usually the question. */
+      frames: number[];
+      label: string;
+    }
+  | {
+      kind: 'open_number_line';
+      from: number;
+      to: number;
+      jumps: { value: number }[];
+      /** SERVER-COMPUTED. A line whose jumps do not land exactly on `to` is refused outright. */
+      stops: number[];
+      positions: number[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'array';
+      rows: number;
+      columns: number;
+      unitValue: number;
+      /** SERVER-COMPUTED. The product is what is being taught, so the model has no field for it. */
+      total: number;
+      cells: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'fraction_strip';
+      rows: { denominator: number; highlighted: number }[];
+      /** SERVER-COMPUTED shaded share per row, 0..1. */
+      shares: number[];
+      label: string;
+    }
+  | {
+      kind: 'partition';
+      whole: number;
+      splits: { label: string; denominator: number }[];
+      /** SERVER-COMPUTED value of ONE piece in each split — the lesson itself. */
+      pieceValues: number[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

@@ -45,6 +45,11 @@ import {
   computeFlow,
   computeGoalBar,
   computeWorked,
+  computeTenFrame,
+  computeOpenNumberLine,
+  computeArray,
+  computeFractionStrip,
+  computePartition,
 } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
@@ -396,6 +401,29 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
         label: board.label,
         summary: result ? `${result.values.join(' → ')} (check ${result.checkValue})` : 'INVALID',
       };
+    }
+    case 'ten_frame': {
+      const result = computeTenFrame(board);
+      return { label: board.label, summary: result ? `${board.count} in ${result.frames.length} frame(s)` : 'INVALID' };
+    }
+    case 'open_number_line': {
+      const result = computeOpenNumberLine(board);
+      return { label: board.label, summary: result ? result.stops.join(' → ') : 'INVALID' };
+    }
+    case 'array': {
+      const result = computeArray(board);
+      const shape = `${board.rows}x${board.columns} @ ${board.unitValue}`;
+      return { label: board.label, summary: result ? `${shape} = ${result.total}` : `${shape} (INVALID)` };
+    }
+    case 'fraction_strip': {
+      const result = computeFractionStrip(board);
+      const rows = board.rows.map((r) => `${r.highlighted}/${r.denominator}`).join(', ');
+      return { label: board.label, summary: result ? rows : `${rows} (INVALID)` };
+    }
+    case 'partition': {
+      const result = computePartition(board);
+      const splits = board.splits.map((sp, i) => `${sp.label} 1/${sp.denominator}=${result?.pieceValues[i] ?? '?'}`).join(', ');
+      return { label: board.label, summary: result ? splits : `${splits} (INVALID)` };
     }
   }
 }

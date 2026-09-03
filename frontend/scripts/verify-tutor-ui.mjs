@@ -382,7 +382,11 @@ try {
       }
       await setLabPanel(page, false)
 
-      for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line', 'categories', 'tokens', 'bar-model', 'part-whole', 'flow', 'goal-bar', 'worked'] : []) {
+      for (const activityId of activitySelect ? [
+        'whiteboard', 'compare', 'marked-line', 'categories', 'tokens',
+        'bar-model', 'part-whole', 'flow', 'goal-bar', 'worked',
+        'ten-frame', 'number-jumps', 'array', 'fraction-strip', 'partition',
+      ] : []) {
         await setLabPanel(page, true)
         const flipped = await page.evaluate(
           `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +

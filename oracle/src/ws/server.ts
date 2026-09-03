@@ -51,6 +51,11 @@ import {
   computeFlow,
   computeGoalBar,
   computeWorked,
+  computeTenFrame,
+  computeOpenNumberLine,
+  computeArray,
+  computeFractionStrip,
+  computePartition,
 } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
@@ -1308,6 +1313,26 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
     }
     case 'worked': {
       const result = computeWorked(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'ten_frame': {
+      const result = computeTenFrame(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'open_number_line': {
+      const result = computeOpenNumberLine(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'array': {
+      const result = computeArray(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'fraction_strip': {
+      const result = computeFractionStrip(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'partition': {
+      const result = computePartition(board);
       return result === null ? null : { ...board, ...result };
     }
   }

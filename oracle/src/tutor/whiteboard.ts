@@ -10,6 +10,11 @@ import type {
   WhiteboardSequence,
   WhiteboardTokens,
   WhiteboardWorked,
+  WhiteboardArray,
+  WhiteboardFractionStrip,
+  WhiteboardOpenNumberLine,
+  WhiteboardPartition,
+  WhiteboardTenFrame,
 } from './turnSchema.js';
 
 /*
@@ -393,6 +398,137 @@ export function computeWorked(board: Pick<WhiteboardWorked, 'start' | 'steps'>):
   return { values, checkValue };
 }
 
+
+/* ── THE CANONICAL PRIMARY-MATHS VOCABULARY ─────────────────────────────────── */
+
+/** How a `ten_frame` fills its frames — see `computeTenFrame`. */
+export interface TenFrameResult {
+  /** How many cells are filled in each frame of ten, in order. */
+  frames: number[];
+}
+
+/**
+ * Splits a count across frames of ten.
+ *
+ * Deliberately does NOT compute the complement to ten. That number is almost
+ * always the question a ten frame is being used to ask ("how many more to make
+ * ten?"), and a board that carries the answer is one field away from printing it.
+ */
+export function computeTenFrame(board: Pick<WhiteboardTenFrame, 'count'>): TenFrameResult | null {
+  const { count } = board;
+  if (!Number.isInteger(count) || count < 1 || count > 20) return null;
+  return { frames: count <= 10 ? [count] : [10, count - 10] };
+}
+
+/** Where each jump lands on an open number line — see `computeOpenNumberLine`. */
+export interface OpenNumberLineResult {
+  /** The value at each stop, starting with `from` and ending on `to`. */
+  stops: number[];
+  /** Each stop's place along the line, 0..1 — the client draws from this, never from the raw numbers. */
+  positions: number[];
+}
+
+/**
+ * Verifies an open number line and places every stop along it.
+ *
+ * The refusal is the point: jumps that do not land exactly on `to` are a picture
+ * of counting up that never arrives, which teaches the method as unreliable.
+ * `make-change-counting-up` is the KC this exists for, and a wrong picture of it
+ * is worse than no picture.
+ */
+export function computeOpenNumberLine(
+  board: Pick<WhiteboardOpenNumberLine, 'from' | 'to' | 'jumps'>,
+): OpenNumberLineResult | null {
+  const { from, to, jumps } = board;
+  if (!Number.isFinite(from) || !Number.isFinite(to)) return null;
+  if (from < 0 || to < 0 || from > MAX_VALUE || to > MAX_VALUE) return null;
+  const span = to - from;
+  if (span <= ZERO_EPSILON) return null;
+
+  const stops: number[] = [from];
+  let current = from;
+  for (const jump of jumps) {
+    if (!Number.isFinite(jump.value) || jump.value <= 0) return null;
+    current = money(current + jump.value);
+    if (current > to + ZERO_EPSILON) return null;
+    stops.push(current);
+  }
+  // It has to ARRIVE. A line that stops short is not counting up, it is stopping.
+  if (Math.abs(current - to) > ZERO_EPSILON) return null;
+  return { stops, positions: stops.map((v) => (v - from) / span) };
+}
+
+/** What an `array` adds up to — see `computeArray`. */
+export interface ArrayResult {
+  /** rows x columns x unitValue. THE MODEL HAS NO FIELD FOR THIS — it is the product being taught. */
+  total: number;
+  /** How many cells, for a renderer that draws them. */
+  cells: number;
+}
+
+/** Verifies a rectangle and multiplies it out. */
+export function computeArray(board: Pick<WhiteboardArray, 'rows' | 'columns' | 'unitValue'>): ArrayResult | null {
+  const { rows, columns, unitValue } = board;
+  if (!Number.isInteger(rows) || !Number.isInteger(columns)) return null;
+  if (rows < 1 || columns < 1 || rows > 6 || columns > 6) return null;
+  if (!Number.isFinite(unitValue) || unitValue <= 0) return null;
+  const cells = rows * columns;
+  const total = money(cells * unitValue);
+  if (!Number.isFinite(total) || total > MAX_VALUE) return null;
+  return { total, cells };
+}
+
+/** What each strip of a fraction wall shows — see `computeFractionStrip`. */
+export interface FractionStripResult {
+  /** The shaded share of each row, 0..1, in order. */
+  shares: number[];
+}
+
+/**
+ * Verifies a fraction wall.
+ *
+ * `highlighted` may not exceed `denominator` — a strip shading five of four
+ * pieces is not a fraction, and a per-field bound cannot see the relationship.
+ */
+export function computeFractionStrip(board: Pick<WhiteboardFractionStrip, 'rows'>): FractionStripResult | null {
+  const shares: number[] = [];
+  for (const row of board.rows) {
+    if (!Number.isInteger(row.denominator) || row.denominator < 1 || row.denominator > 12) return null;
+    if (!Number.isInteger(row.highlighted) || row.highlighted < 0) return null;
+    if (row.highlighted > row.denominator) return null;
+    shares.push(row.highlighted / row.denominator);
+  }
+  return { shares };
+}
+
+/** What one piece is worth in each split — see `computePartition`. */
+export interface PartitionResult {
+  /** The value of ONE piece in each split, in order. The model has no field for these. */
+  pieceValues: number[];
+}
+
+/**
+ * Verifies a partition and works out what one piece is worth in each split.
+ *
+ * That value is the whole lesson — "a bigger bottom number means a smaller
+ * piece" — so it is derived here rather than stated. Two splits sharing a
+ * denominator are refused: drawing the same split twice is not a comparison,
+ * and no per-split schema can see it.
+ */
+export function computePartition(board: Pick<WhiteboardPartition, 'whole' | 'splits'>): PartitionResult | null {
+  const { whole, splits } = board;
+  if (!Number.isFinite(whole) || whole <= 0 || whole > MAX_VALUE) return null;
+  const seen = new Set<number>();
+  const pieceValues: number[] = [];
+  for (const split of splits) {
+    if (!Number.isInteger(split.denominator) || split.denominator < 2 || split.denominator > 12) return null;
+    if (seen.has(split.denominator)) return null;
+    seen.add(split.denominator);
+    pieceValues.push(money(whole / split.denominator));
+  }
+  return { pieceValues };
+}
+
 /**
  * True when a whiteboard's own numbers compute to something sane, dispatched
  * to the right function above for its `kind`. The single "is this board
@@ -424,6 +560,16 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return computeGoalBar(board) !== null;
     case 'worked':
       return computeWorked(board) !== null;
+    case 'ten_frame':
+      return computeTenFrame(board) !== null;
+    case 'open_number_line':
+      return computeOpenNumberLine(board) !== null;
+    case 'array':
+      return computeArray(board) !== null;
+    case 'fraction_strip':
+      return computeFractionStrip(board) !== null;
+    case 'partition':
+      return computePartition(board) !== null;
   }
 }
 

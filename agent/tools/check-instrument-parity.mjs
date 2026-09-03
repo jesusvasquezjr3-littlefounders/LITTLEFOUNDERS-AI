@@ -168,6 +168,56 @@ export const INSTRUMENTS = [
     },
   },
   {
+    kind: 'ten_frame',
+    model: ['kind', 'count', 'label'],
+    computed: ['frames'],
+    blocks: {
+      oracleSchema: 'WhiteboardTenFrameSchema',
+      coreBody: 'TenFrameWhiteboardBody',
+      coreRow: 'TenFrameBoardRowSchema',
+    },
+  },
+  {
+    kind: 'open_number_line',
+    model: ['kind', 'from', 'to', 'jumps', 'label', 'currency'],
+    computed: ['stops', 'positions'],
+    blocks: {
+      oracleSchema: 'WhiteboardOpenNumberLineSchema',
+      coreBody: 'OpenNumberLineWhiteboardBody',
+      coreRow: 'OpenNumberLineBoardRowSchema',
+    },
+  },
+  {
+    kind: 'array',
+    model: ['kind', 'rows', 'columns', 'unitValue', 'label', 'currency'],
+    computed: ['total', 'cells'],
+    blocks: {
+      oracleSchema: 'WhiteboardArraySchema',
+      coreBody: 'ArrayWhiteboardBody',
+      coreRow: 'ArrayBoardRowSchema',
+    },
+  },
+  {
+    kind: 'fraction_strip',
+    model: ['kind', 'rows', 'label'],
+    computed: ['shares'],
+    blocks: {
+      oracleSchema: 'WhiteboardFractionStripSchema',
+      coreBody: 'FractionStripWhiteboardBody',
+      coreRow: 'FractionStripBoardRowSchema',
+    },
+  },
+  {
+    kind: 'partition',
+    model: ['kind', 'whole', 'splits', 'label', 'currency'],
+    computed: ['pieceValues'],
+    blocks: {
+      oracleSchema: 'WhiteboardPartitionSchema',
+      coreBody: 'PartitionWhiteboardBody',
+      coreRow: 'PartitionBoardRowSchema',
+    },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -369,6 +419,11 @@ export function wireComputedKeys(source, kind) {
     flow: 'WhiteboardFlow',
     goal_bar: 'WhiteboardGoalBar',
     worked: 'WhiteboardWorked',
+    ten_frame: 'WhiteboardTenFrame',
+    open_number_line: 'WhiteboardOpenNumberLine',
+    array: 'WhiteboardArray',
+    fraction_strip: 'WhiteboardFractionStrip',
+    partition: 'WhiteboardPartition',
   }[kind];
   if (!kindType) return null;
   // Two legal forms, and the difference between them is meaningful: a kind with

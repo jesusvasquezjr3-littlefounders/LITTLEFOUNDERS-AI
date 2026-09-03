@@ -566,6 +566,133 @@ export const WhiteboardWorkedSchema = z
   })
   .strict();
 
+
+/* ── THE CANONICAL PRIMARY-MATHS VOCABULARY (/TUTOR_INSTRUMENTS.md §3.1 source 3)
+ *
+ * Ten frames, open number lines, arrays, fraction strips and equal partitions
+ * are not inventions of this catalog: they are the representations primary
+ * mathematics teaching has converged on across decades and many countries, and
+ * every one of them lands on a KC this product already teaches. Adopting the
+ * established vocabulary is both more ambitious than inventing shapes and more
+ * defensible — a teacher, a parent, and the child's own school all already know
+ * what these mean.
+ */
+
+/**
+ * `kind: 'ten_frame'` — A QUANTITY SEEN RATHER THAN COUNTED.
+ *
+ * Ten cells in two rows of five. A child reads "seven" off the arrangement
+ * without counting to it, and sees what it takes to make ten in the same glance.
+ * The complement to ten is NOT computed: that is usually the question.
+ */
+export const WhiteboardTenFrameSchema = z
+  .object({
+    kind: z.literal('ten_frame'),
+    /** 1-20 — one frame, or two. Past twenty the arrangement stops being seeable. */
+    count: z.number().int().min(1).max(20),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One jump along an open number line. */
+export const NumberLineJumpSchema = z
+  .object({ value: z.number().positive().max(100_000) })
+  .strict();
+
+/**
+ * `kind: 'open_number_line'` — COUNTING ON, IN JUMPS.
+ *
+ * The representation of `money.make-change-counting-up`, which until now had no
+ * visual at all. Change is not given by subtracting; it is given by counting up
+ * from the price to what was handed over, and this draws exactly that.
+ *
+ * The jumps must actually cover the distance — `computeOpenNumberLine` refuses a
+ * line whose jumps do not land on `to`, because a picture of counting up that
+ * does not arrive is a picture of the method failing.
+ */
+export const WhiteboardOpenNumberLineSchema = z
+  .object({
+    kind: z.literal('open_number_line'),
+    from: z.number().min(0).max(1_000_000),
+    to: z.number().min(0).max(1_000_000),
+    jumps: z.array(NumberLineJumpSchema).min(1).max(5),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'array'` — ROWS BY COLUMNS.
+ *
+ * Multiplying, sharing and unit price are the same rectangle read three ways.
+ * The PRODUCT is what the learner is working out, so the model has no field for
+ * it — `computeArray` derives it.
+ */
+export const WhiteboardArraySchema = z
+  .object({
+    kind: z.literal('array'),
+    rows: z.number().int().min(1).max(6),
+    columns: z.number().int().min(1).max(6),
+    /** What one cell is worth. 1 for a plain count of things; a price for a unit-price story. */
+    unitValue: z.number().positive().max(100_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One strip of a fraction wall: a whole cut into `denominator` pieces, `highlighted` of them shaded. */
+export const FractionStripRowSchema = z
+  .object({
+    denominator: z.number().int().min(1).max(12),
+    highlighted: z.number().int().min(0).max(12),
+  })
+  .strict();
+
+/**
+ * `kind: 'fraction_strip'` — THE SAME WHOLE, CUT DIFFERENT WAYS, STACKED.
+ *
+ * Equivalences stop being a rule to memorise and become something read by
+ * looking down a column. `compare-one-part-each.md` asks for exactly this
+ * ("split it in front of them twice… take exactly ONE piece from each and set
+ * them side by side"), and stacking makes the comparison unavoidable.
+ */
+export const WhiteboardFractionStripSchema = z
+  .object({
+    kind: z.literal('fraction_strip'),
+    rows: z.array(FractionStripRowSchema).min(2).max(4),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/** One way of splitting the whole on a `partition` board. */
+export const PartitionSplitSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    denominator: z.number().int().min(2).max(12),
+  })
+  .strict();
+
+/**
+ * `kind: 'partition'` — ONE AMOUNT, SHARED TWO OR THREE DIFFERENT WAYS.
+ *
+ * `compare-one-part-each.md` again, but with money on it: the same 60 pesos
+ * split between two people and then between four, so that "a bigger bottom
+ * number means a smaller piece" is something the learner watched happen rather
+ * than something they were told.
+ *
+ * What ONE piece is worth in each split is the arithmetic being taught, so
+ * `computePartition` derives it and the model has no field for it.
+ */
+export const WhiteboardPartitionSchema = z
+  .object({
+    kind: z.literal('partition'),
+    whole: z.number().positive().max(1_000_000),
+    splits: z.array(PartitionSplitSchema).min(2).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
  * never free-form — the same §5 discipline every other model-facing schema
@@ -588,6 +715,11 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardFlowSchema,
   WhiteboardGoalBarSchema,
   WhiteboardWorkedSchema,
+  WhiteboardTenFrameSchema,
+  WhiteboardOpenNumberLineSchema,
+  WhiteboardArraySchema,
+  WhiteboardFractionStripSchema,
+  WhiteboardPartitionSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -661,6 +793,11 @@ export type WhiteboardPartWhole = z.infer<typeof WhiteboardPartWholeSchema>;
 export type WhiteboardFlow = z.infer<typeof WhiteboardFlowSchema>;
 export type WhiteboardGoalBar = z.infer<typeof WhiteboardGoalBarSchema>;
 export type WhiteboardWorked = z.infer<typeof WhiteboardWorkedSchema>;
+export type WhiteboardTenFrame = z.infer<typeof WhiteboardTenFrameSchema>;
+export type WhiteboardOpenNumberLine = z.infer<typeof WhiteboardOpenNumberLineSchema>;
+export type WhiteboardArray = z.infer<typeof WhiteboardArraySchema>;
+export type WhiteboardFractionStrip = z.infer<typeof WhiteboardFractionStripSchema>;
+export type WhiteboardPartition = z.infer<typeof WhiteboardPartitionSchema>;
 /** Any of the closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
@@ -710,6 +847,15 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       // Steps are a closed operator enum and bounded numbers; the caption is
       // the whole of this board's free text.
       return [whiteboard.label];
+    case 'ten_frame':
+    case 'open_number_line':
+    case 'array':
+    case 'fraction_strip':
+      // Numbers and closed vocabularies throughout — the caption is all the
+      // learner-facing prose these carry.
+      return [whiteboard.label];
+    case 'partition':
+      return [whiteboard.label, ...whiteboard.splits.map((s) => s.label)];
   }
 }
 

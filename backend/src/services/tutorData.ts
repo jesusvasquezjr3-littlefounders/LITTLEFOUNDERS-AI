@@ -1038,6 +1038,56 @@ export interface TutorTurnWorkedBoard {
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
 
+/** A ten frame. `frames` is server-computed; the complement to ten deliberately is not — that is usually the question. */
+export interface TutorTurnTenFrameBoard {
+  kind: 'ten_frame';
+  count: number;
+  frames: number[];
+  label: string;
+}
+
+/** Counting on in jumps. `stops`/`positions` are server-computed; the line must actually ARRIVE at `to`. */
+export interface TutorTurnOpenNumberLineBoard {
+  kind: 'open_number_line';
+  from: number;
+  to: number;
+  jumps: { value: number }[];
+  stops: number[];
+  positions: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** Rows by columns. `total` is server-computed — the product is what is being taught. */
+export interface TutorTurnArrayBoard {
+  kind: 'array';
+  rows: number;
+  columns: number;
+  unitValue: number;
+  total: number;
+  cells: number;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** A fraction wall. `shares` is server-computed, and a strip may never shade more pieces than it has. */
+export interface TutorTurnFractionStripBoard {
+  kind: 'fraction_strip';
+  rows: { denominator: number; highlighted: number }[];
+  shares: number[];
+  label: string;
+}
+
+/** One amount split two or three ways. `pieceValues` is server-computed — it is the lesson. */
+export interface TutorTurnPartitionBoard {
+  kind: 'partition';
+  whole: number;
+  splits: { label: string; denominator: number }[];
+  pieceValues: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
   | TutorTurnSequenceBoard
@@ -1049,7 +1099,12 @@ export type TutorTurnWhiteboard =
   | TutorTurnPartWholeBoard
   | TutorTurnFlowBoard
   | TutorTurnGoalBarBoard
-  | TutorTurnWorkedBoard;
+  | TutorTurnWorkedBoard
+  | TutorTurnTenFrameBoard
+  | TutorTurnOpenNumberLineBoard
+  | TutorTurnArrayBoard
+  | TutorTurnFractionStripBoard
+  | TutorTurnPartitionBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1319,6 +1374,74 @@ const WorkedBoardRowSchema = z
   })
   .strict();
 
+const TenFrameBoardRowSchema = z
+  .object({
+    kind: z.literal('ten_frame'),
+    count: z.number().int().min(1).max(20),
+    frames: z.array(z.number().int().min(0).max(10)).min(1).max(2),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const OpenNumberLineBoardRowSchema = z
+  .object({
+    kind: z.literal('open_number_line'),
+    from: z.number().min(0).max(1_000_000),
+    to: z.number().min(0).max(1_000_000),
+    jumps: z.array(z.object({ value: z.number().positive().max(100_000) }).strict()).min(1).max(5),
+    stops: z.array(z.number().min(0).max(1_000_000)).min(2).max(6),
+    positions: z.array(z.number().min(0).max(1)).min(2).max(6),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const ArrayBoardRowSchema = z
+  .object({
+    kind: z.literal('array'),
+    rows: z.number().int().min(1).max(6),
+    columns: z.number().int().min(1).max(6),
+    unitValue: z.number().positive().max(100_000),
+    total: z.number().min(0).max(10_000_000),
+    cells: z.number().int().min(1).max(36),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const FractionStripBoardRowSchema = z
+  .object({
+    kind: z.literal('fraction_strip'),
+    rows: z
+      .array(
+        z
+          .object({
+            denominator: z.number().int().min(1).max(12),
+            highlighted: z.number().int().min(0).max(12),
+          })
+          .strict(),
+      )
+      .min(2)
+      .max(4),
+    shares: z.array(z.number().min(0).max(1)).min(2).max(4),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+const PartitionBoardRowSchema = z
+  .object({
+    kind: z.literal('partition'),
+    whole: z.number().positive().max(1_000_000),
+    splits: z
+      .array(z.object({ label: z.string().min(1).max(40), denominator: z.number().int().min(2).max(12) }).strict())
+      .min(2)
+      .max(3),
+    pieceValues: z.array(z.number().min(0).max(1_000_000)).min(2).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1342,6 +1465,11 @@ const TutorTurnWhiteboardRowSchema = z
     FlowBoardRowSchema,
     GoalBarBoardRowSchema,
     WorkedBoardRowSchema,
+    TenFrameBoardRowSchema,
+    OpenNumberLineBoardRowSchema,
+    ArrayBoardRowSchema,
+    FractionStripBoardRowSchema,
+    PartitionBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -1372,6 +1500,37 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'every mark value must fall within [min, max]',
           path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'fraction_strip') {
+      if (board.shares.length !== board.rows.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'shares must carry exactly one entry per row',
+          path: ['shares'],
+        });
+      }
+      if (board.rows.some((r) => r.highlighted > r.denominator)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'a strip may not shade more pieces than it has',
+          path: ['rows'],
+        });
+      }
+    } else if (board.kind === 'partition') {
+      if (board.pieceValues.length !== board.splits.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'pieceValues must carry exactly one entry per split',
+          path: ['pieceValues'],
+        });
+      }
+    } else if (board.kind === 'open_number_line') {
+      if (board.stops.length !== board.jumps.length + 1 || board.positions.length !== board.stops.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'stops must carry one entry per jump plus the start, and positions must match stops',
+          path: ['stops'],
         });
       }
     } else if (board.kind === 'bar_model') {

@@ -14,6 +14,11 @@ import {
   type WhiteboardFlow,
   type WhiteboardGoalBar,
   type WhiteboardWorked,
+  type WhiteboardTenFrame,
+  type WhiteboardOpenNumberLine,
+  type WhiteboardArray,
+  type WhiteboardFractionStrip,
+  type WhiteboardPartition,
 } from '../tutor/turnSchema.js';
 import type { WordTiming } from '../voice/provider.js';
 
@@ -163,7 +168,12 @@ export type WireWhiteboard =
   | WhiteboardPartWhole
   | (WhiteboardFlow & { kept: number })
   | (WhiteboardGoalBar & { remaining: number; savedFraction: number })
-  | (WhiteboardWorked & { values: number[]; checkValue: number });
+  | (WhiteboardWorked & { values: number[]; checkValue: number })
+  | (WhiteboardTenFrame & { frames: number[] })
+  | (WhiteboardOpenNumberLine & { stops: number[]; positions: number[] })
+  | (WhiteboardArray & { total: number; cells: number })
+  | (WhiteboardFractionStrip & { shares: number[] })
+  | (WhiteboardPartition & { pieceValues: number[] });
 
 /**
  * One closed step of a tray demonstration — mirrors `oracle/src/tutor/

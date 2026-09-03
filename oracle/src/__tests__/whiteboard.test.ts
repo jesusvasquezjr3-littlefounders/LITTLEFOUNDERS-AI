@@ -10,6 +10,11 @@ import {
   computeFlow,
   computeGoalBar,
   computeWorked,
+  computeTenFrame,
+  computeOpenNumberLine,
+  computeArray,
+  computeFractionStrip,
+  computePartition,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -668,5 +673,98 @@ describe('whiteboardComputesOk dispatches every Wave 1 kind', () => {
         currency: null,
       }),
     ).toBe(false);
+  });
+});
+
+/*
+ * THE CANONICAL PRIMARY-MATHS VOCABULARY. Each compute below either derives the
+ * number being taught, or refuses a picture that would teach something false.
+ */
+
+describe('ten_frame', () => {
+  it('fills one frame up to ten and spills into a second', () => {
+    expect(computeTenFrame({ count: 7 })).toEqual({ frames: [7] });
+    expect(computeTenFrame({ count: 10 })).toEqual({ frames: [10] });
+    expect(computeTenFrame({ count: 14 })).toEqual({ frames: [10, 4] });
+  });
+
+  it('never computes the complement to ten — that is usually the question', () => {
+    expect(Object.keys(computeTenFrame({ count: 7 }) ?? {})).toEqual(['frames']);
+  });
+});
+
+describe('open_number_line — it has to ARRIVE', () => {
+  it('places every stop along the line', () => {
+    const result = computeOpenNumberLine({ from: 7, to: 10, jumps: [{ value: 1 }, { value: 2 }] });
+    expect(result?.stops).toEqual([7, 8, 10]);
+    expect(result?.positions[0]).toBe(0);
+    expect(result?.positions[2]).toBe(1);
+    expect(result?.positions[1]).toBeCloseTo(1 / 3);
+  });
+
+  it('refuses jumps that stop short — a count-up that never arrives teaches the method as unreliable', () => {
+    expect(computeOpenNumberLine({ from: 7, to: 10, jumps: [{ value: 1 }] })).toBeNull();
+  });
+
+  it('refuses jumps that overshoot', () => {
+    expect(computeOpenNumberLine({ from: 7, to: 10, jumps: [{ value: 5 }] })).toBeNull();
+  });
+
+  it('refuses a line with no distance to cover', () => {
+    expect(computeOpenNumberLine({ from: 10, to: 10, jumps: [{ value: 1 }] })).toBeNull();
+  });
+});
+
+describe('array', () => {
+  it('multiplies the rectangle out', () => {
+    expect(computeArray({ rows: 4, columns: 3, unitValue: 1 })).toEqual({ total: 12, cells: 12 });
+    expect(computeArray({ rows: 3, columns: 2, unitValue: 2.5 })).toEqual({ total: 15, cells: 6 });
+  });
+
+  it('refuses a rectangle bigger than a glance', () => {
+    expect(computeArray({ rows: 7, columns: 2, unitValue: 1 })).toBeNull();
+  });
+});
+
+describe('fraction_strip', () => {
+  it('derives each row shaded share', () => {
+    expect(
+      computeFractionStrip({
+        rows: [
+          { denominator: 2, highlighted: 1 },
+          { denominator: 4, highlighted: 1 },
+        ],
+      }),
+    ).toEqual({ shares: [0.5, 0.25] });
+  });
+
+  it('refuses shading more pieces than the strip has', () => {
+    expect(computeFractionStrip({ rows: [{ denominator: 4, highlighted: 5 }, { denominator: 2, highlighted: 1 }] })).toBeNull();
+  });
+});
+
+describe('partition', () => {
+  it('works out what one piece is worth in each split', () => {
+    expect(
+      computePartition({
+        whole: 60,
+        splits: [
+          { label: 'entre dos', denominator: 2 },
+          { label: 'entre cuatro', denominator: 4 },
+        ],
+      }),
+    ).toEqual({ pieceValues: [30, 15] });
+  });
+
+  it('refuses two splits with the same denominator — drawing one split twice is not a comparison', () => {
+    expect(
+      computePartition({
+        whole: 60,
+        splits: [
+          { label: 'a', denominator: 2 },
+          { label: 'b', denominator: 2 },
+        ],
+      }),
+    ).toBeNull();
   });
 });

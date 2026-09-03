@@ -27,7 +27,7 @@ only section that must be updated on EVERY sprint boundary.**
 | | |
 |---|---|
 | **Status** | IN PROGRESS. Wave 1 foundation started 2026-09-02. |
-| **Active sprint** | — none. Wave 1 is COMPLETE (Sprints 4, 5, 6, 7, 8 plus §4.4). 10 of the 41 Class I instruments are live. |
+| **Active sprint** | — none. Wave 1 COMPLETE (Sprints 4-8 plus §4.4) and Sprint 11 done. **15 of the 41 Class I instruments are live; 26 remain.** Classes II-V not started. |
 | **Next action** | Either Wave 0 (§7.1-§7.3 — unlocks nothing new has to be designed for, and still the cheapest value in the plan) or Wave 2 (§7.9 onward — Class II manipulation and the remaining 31 boards). Read §7.6-R first: the cost criterion was replaced. |
 | **Blocked on owner** | Nothing blocking today. D1 and D3 (§8.2) were answered by the owner on 2026-09-02 with "procede": the catalog grows by **named instruments** and the architecture tax is paid with Wave 1. **D2 (generated imagery) is still open** and gates Wave 4 only. |
 | **Last verified against the repo** | 2026-09-02. |
@@ -41,15 +41,18 @@ only section that must be updated on EVERY sprint boundary.**
 | **S6 — `tokens`** | **DONE** 2026-09-02 | The first non-chart instrument, end to end: schema → compute → wire → Core body → Core read-time revalidation → frontend mirror → renderer → lab fixture → gate. `instruments:check` now green over **5** instruments. New tests: 7 compute (oracle), 7 schema/fail-open (oracle), 1 real-socket wire proof, 5 render (frontend). `verify:tutor-ui` drives it at 3 breakpoints; `verify:tutor-a11y` green; both breakpoints screenshotted and inspected. **The cost measurement failed its own criterion — see §7.6-R** |
 | **§4.4 — guidance rides with the move** | **DONE** 2026-09-02 | `oracle/src/tutor/instrumentSpecs.ts` + an `instruments:` frontmatter key on moves. The system prompt keeps one SHAPE line per kind (prefix-cached, and the model cannot emit valid JSON for a shape it has never seen); the per-kind GUIDANCE travels only when a move names it. 7 tests, including one asserting MOST moves name nothing |
 | **S7 + S8 — Wave 1 instruments** | **DONE** 2026-09-02 | `bar_model`, `part_whole`, `flow`, `goal_bar`, `worked` — all five end to end. `instruments:check` green over **10** instruments; `verify:tutor-ui` drives all ten; `verify:tutor-a11y` green; oracle 1007 / backend 867 / frontend 1679 tests green. `HBar` joined the primitive kit (the horizontal sibling of `BarTrack`, same definite-containing-block reasoning in the other axis) |
-| Wave 0 (S1-S3) and Waves 2-5 | not started | — |
+| **S11 — the canonical batch** | **DONE** 2026-09-02 | `ten_frame`, `open_number_line`, `array`, `fraction_strip`, `partition` — the primary-maths vocabulary the catalog was missing. `open_number_line` gives `money.make-change-counting-up` its first visual representation ever. `instruments:check` green over **15**; `verify:tutor-ui` drives all fifteen |
+| Wave 0 (S1-S3) and the rest of Waves 2-5 | not started | — |
 
 ### §0.1 Baseline — what is true today (all VERIFIED 2026-09-02)
 
-- The Tutor can draw **10** things: `sequence`, `compare`, `marked_line`,
-  `categories`, `tokens`, `bar_model`, `part_whole`, `flow`, `goal_bar` and
-  `worked` (`oracle/src/tutor/turnSchema.ts`,
-  `frontend/src/tutor/TutorWhiteboard.tsx`). It was 4 when this file was written
-  on 2026-09-02; Sprints 4-8 landed the other six the same day.
+- The Tutor can draw **15** things (`oracle/src/tutor/turnSchema.ts`,
+  `frontend/src/tutor/TutorWhiteboard.tsx`): `sequence`, `compare`,
+  `marked_line`, `categories`, `tokens`, `bar_model`, `part_whole`, `flow`,
+  `goal_bar`, `worked`, `ten_frame`, `open_number_line`, `array`,
+  `fraction_strip`, `partition`. It was 4 when this file was written on
+  2026-09-02; Sprints 4-8 and 11 landed the other eleven the same day.
+  **26 of the 41 Class I instruments remain**, and Classes II-V are untouched.
 - The Tutor can serve **any of the 57** Lesson Engine segment types live
   (`LiveSegmentPanel` mounts the real `REGISTRY`), but can only *request* **2**:
   `segmentRequest.preferredTypes` is closed to `interest_peek` and `number_line`.

@@ -409,7 +409,9 @@
     "board": {
       "remaining": "Still needed: {{amount}}",
       "check": "Check: {{amount}}",
-      "unknown": "?"
+      "unknown": "?",
+      "total": "In total: {{amount}}",
+      "piece": "One part: {{amount}}"
     }
   }
 }

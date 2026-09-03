@@ -633,6 +633,57 @@ const LAB_WAVE1_TEXT: Readonly<
   },
 };
 
+/*
+ * THE CANONICAL PRIMARY-MATHS VOCABULARY (/TUTOR_INSTRUMENTS.md §3.1 source 3).
+ * Written per locale, never translated — same rule as everything above.
+ */
+const LAB_CANON_TEXT: Readonly<
+  Record<
+    Locale,
+    {
+      tenFrame: { say: string; label: string };
+      numberLine: { say: string; label: string };
+      array: { say: string; label: string };
+      fractionStrip: { say: string; label: string };
+      partition: { say: string; label: string; splits: [string, string] };
+    }
+  >
+> = {
+  'en-US': {
+    tenFrame: { say: 'Look at the frame. How many more would fill it?', label: 'Seven in the frame' },
+    numberLine: { say: 'The candy costs 7 and you paid with 10. Let us count up.', label: 'Counting up to the change' },
+    array: { say: 'Four rows of three stickers. How many stickers?', label: 'Four rows of three' },
+    fractionStrip: { say: 'Same bar, cut two ways. Which piece is bigger?', label: 'One half and one quarter' },
+    partition: {
+      say: 'Sixty pesos shared between two, and then between four.',
+      label: 'The same money, shared two ways',
+      splits: ['Between two', 'Between four'],
+    },
+  },
+  'es-MX': {
+    tenFrame: { say: 'Mira el marco. ¿Cuántas más lo llenarían?', label: 'Siete en el marco' },
+    numberLine: { say: 'El dulce cuesta 7 y pagaste con 10. Vamos contando hacia arriba.', label: 'Contando el cambio' },
+    array: { say: 'Cuatro filas de tres calcomanías. ¿Cuántas calcomanías hay?', label: 'Cuatro filas de tres' },
+    fractionStrip: { say: 'La misma barra, cortada de dos maneras. ¿Cuál pedazo es más grande?', label: 'Un medio y un cuarto' },
+    partition: {
+      say: 'Sesenta pesos repartidos entre dos, y luego entre cuatro.',
+      label: 'El mismo dinero, repartido de dos maneras',
+      splits: ['Entre dos', 'Entre cuatro'],
+    },
+  },
+  'pt-BR': {
+    tenFrame: { say: 'Olha o quadro. Quantas mais encheriam ele?', label: 'Sete no quadro' },
+    numberLine: { say: 'O doce custa 7 e você pagou com 10. Vamos contando para cima.', label: 'Contando o troco' },
+    array: { say: 'Quatro fileiras de três adesivos. Quantos adesivos?', label: 'Quatro fileiras de três' },
+    fractionStrip: { say: 'A mesma barra, cortada de dois jeitos. Qual pedaço é maior?', label: 'Um meio e um quarto' },
+    partition: {
+      say: 'Sessenta reais divididos entre dois, e depois entre quatro.',
+      label: 'O mesmo dinheiro, dividido de dois jeitos',
+      splits: ['Entre dois', 'Entre quatro'],
+    },
+  },
+};
+
 const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
   'en-US': 'USD',
   'es-MX': 'MXN',
@@ -855,6 +906,96 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (
+    activity === 'ten-frame' ||
+    activity === 'number-jumps' ||
+    activity === 'array' ||
+    activity === 'fraction-strip' ||
+    activity === 'partition'
+  ) {
+    const text = LAB_CANON_TEXT[locale];
+    const currency = LAB_CURRENCY[locale];
+    const base = {
+      seq: 4,
+      emotion: 'happy' as const,
+      action: 'nod' as const,
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask' as const,
+      policy: null,
+      demonstrate: null,
+    };
+    if (activity === 'ten-frame') {
+      return {
+        ...base,
+        text: text.tenFrame.say,
+        whiteboard: { kind: 'ten_frame', count: 7, frames: [7], label: text.tenFrame.label },
+      };
+    }
+    if (activity === 'number-jumps') {
+      return {
+        ...base,
+        text: text.numberLine.say,
+        whiteboard: {
+          kind: 'open_number_line',
+          from: 7,
+          to: 10,
+          jumps: [{ value: 1 }, { value: 2 }],
+          stops: [7, 8, 10],
+          positions: [0, 1 / 3, 1],
+          label: text.numberLine.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'array') {
+      return {
+        ...base,
+        text: text.array.say,
+        whiteboard: {
+          kind: 'array',
+          rows: 4,
+          columns: 3,
+          unitValue: 1,
+          total: 12,
+          cells: 12,
+          label: text.array.label,
+          currency: null,
+        },
+      };
+    }
+    if (activity === 'fraction-strip') {
+      return {
+        ...base,
+        text: text.fractionStrip.say,
+        whiteboard: {
+          kind: 'fraction_strip',
+          rows: [
+            { denominator: 2, highlighted: 1 },
+            { denominator: 4, highlighted: 1 },
+          ],
+          shares: [0.5, 0.25],
+          label: text.fractionStrip.label,
+        },
+      };
+    }
+    return {
+      ...base,
+      text: text.partition.say,
+      whiteboard: {
+        kind: 'partition',
+        whole: 60,
+        splits: [
+          { label: text.partition.splits[0], denominator: 2 },
+          { label: text.partition.splits[1], denominator: 4 },
+        ],
+        pieceValues: [30, 15],
+        label: text.partition.label,
+        currency,
+      },
+    };
+  }
   if (activity === 'categories') {
     const text = LAB_CATEGORIES_TEXT[locale];
     return {
@@ -946,6 +1087,11 @@ const WHITEBOARD_ACTIVITIES = [
   'flow',
   'goal-bar',
   'worked',
+  'ten-frame',
+  'number-jumps',
+  'array',
+  'fraction-strip',
+  'partition',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [

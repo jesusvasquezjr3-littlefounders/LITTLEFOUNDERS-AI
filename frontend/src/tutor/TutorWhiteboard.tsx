@@ -186,6 +186,11 @@ type PartWholeWire = Extract<TutorWhiteboardWire, { kind: 'part_whole' }>;
 type FlowWire = Extract<TutorWhiteboardWire, { kind: 'flow' }>;
 type GoalBarWire = Extract<TutorWhiteboardWire, { kind: 'goal_bar' }>;
 type WorkedWire = Extract<TutorWhiteboardWire, { kind: 'worked' }>;
+type TenFrameWire = Extract<TutorWhiteboardWire, { kind: 'ten_frame' }>;
+type OpenNumberLineWire = Extract<TutorWhiteboardWire, { kind: 'open_number_line' }>;
+type ArrayWire = Extract<TutorWhiteboardWire, { kind: 'array' }>;
+type FractionStripWire = Extract<TutorWhiteboardWire, { kind: 'fraction_strip' }>;
+type PartitionWire = Extract<TutorWhiteboardWire, { kind: 'partition' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -739,6 +744,189 @@ function WorkedBoard({ board, seq, className }: { board: WorkedWire; seq: number
   );
 }
 
+
+/**
+ * `kind: 'ten_frame'` — a quantity SEEN rather than counted. Two rows of five,
+ * so seven reads as "five and two" without counting to it.
+ *
+ * The empty cells are drawn as clearly as the full ones, because the complement
+ * to ten is what a ten frame is usually being used to ask about — and it is
+ * deliberately not a number the server sends.
+ */
+function TenFrameBoard({ board, seq, className }: { board: TenFrameWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.count}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3" aria-hidden="true">
+        {board.frames.map((filled, f) => (
+          <div key={f} className="grid grid-cols-5 gap-1 rounded-md border-2 border-content-muted/40 p-1">
+            {Array.from({ length: 10 }, (_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'h-7 w-7 rounded-full border',
+                  i < filled ? 'border-accent bg-accent/70' : 'border-content-muted/30 bg-transparent',
+                )}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'open_number_line'` — COUNTING ON, IN JUMPS. The representation of
+ * `money.make-change-counting-up`, which had no visual at all until now.
+ *
+ * Every stop's place is server-computed (`computeOpenNumberLine`), and a line
+ * whose jumps do not land exactly on `to` never reaches here — a picture of
+ * counting up that fails to arrive teaches the method as unreliable.
+ */
+function OpenNumberLineBoard({ board, seq, className }: { board: OpenNumberLineWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.stops.map((v) => format(v)).join(' → ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 px-6" aria-hidden="true">
+        {/* The jumps, drawn as arcs between consecutive stops. */}
+        <div className="relative h-9">
+          {board.jumps.map((jump, i) => {
+            const left = board.positions[i]! * 100;
+            const width = (board.positions[i + 1]! - board.positions[i]!) * 100;
+            return (
+              <span
+                key={i}
+                className="absolute bottom-0 flex flex-col items-center"
+                style={{ left: `${left}%`, width: `${width}%` }}
+              >
+                <span className="lf-caption text-content-muted tabular-nums">+{format(jump.value)}</span>
+                <span className="h-2 w-full rounded-t-full border-x-2 border-t-2 border-accent/70" />
+              </span>
+            );
+          })}
+        </div>
+        <div className="relative h-1.5 rounded-full bg-accent-soft">
+          {board.stops.map((stop, i) => (
+            <span
+              key={i}
+              className="absolute top-1/2 flex flex-col items-center gap-1"
+              style={{ left: `${board.positions[i]! * 100}%`, transform: 'translate(-50%, -50%)' }}
+            >
+              <span className="h-3 w-3 shrink-0 rounded-full bg-accent ring-2 ring-surface" />
+              <span className="lf-caption whitespace-nowrap text-content tabular-nums">{format(stop)}</span>
+            </span>
+          ))}
+        </div>
+        <div className="h-5" />
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'array'` — rows by columns. Multiplying, sharing and unit price are one
+ * rectangle read three ways. `total` is server-computed (`computeArray`).
+ */
+function ArrayBoard({ board, seq, className }: { board: ArrayWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.rows} x ${board.columns}. ${t('tutor.whiteboard.board.total', {
+    amount: format(board.total),
+  })}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+        <div
+          className="grid gap-1"
+          style={{ gridTemplateColumns: `repeat(${board.columns}, minmax(0, 1fr))` }}
+          aria-hidden="true"
+        >
+          {Array.from({ length: board.cells }, (_, i) => (
+            <span key={i} className="h-7 w-7 rounded-sm border border-accent bg-accent/40" />
+          ))}
+        </div>
+        <p className="lf-caption shrink-0 text-center text-content-muted" aria-hidden="true">
+          {t('tutor.whiteboard.board.total', { amount: format(board.total) })}
+        </p>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'fraction_strip'` — the same whole cut different ways and stacked, so
+ * an equivalence is read by looking down a column rather than recalled as a rule.
+ */
+function FractionStripBoard({ board, seq, className }: { board: FractionStripWire; seq: number; className?: string }) {
+  const ariaLabel = `${board.label}. ${board.rows.map((r) => `${r.highlighted}/${r.denominator}`).join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 px-2" aria-hidden="true">
+        {board.rows.map((row, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <div className="flex h-7 flex-1 overflow-hidden rounded-md border border-content-muted/30">
+              {Array.from({ length: row.denominator }, (_, piece) => (
+                <span
+                  key={piece}
+                  className={cn(
+                    'h-full min-w-0 flex-1 border-r border-surface last:border-r-0',
+                    piece < row.highlighted ? 'bg-accent/70' : 'bg-content-muted/15',
+                  )}
+                />
+              ))}
+            </div>
+            <AxisCaption className="w-12 shrink-0 text-right tabular-nums">
+              {row.highlighted}/{row.denominator}
+            </AxisCaption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'partition'` — one amount shared two or three different ways, so "a
+ * bigger bottom number means a smaller piece" is watched rather than asserted.
+ * What one piece is worth in each split is server-computed (`computePartition`).
+ */
+function PartitionBoard({ board, seq, className }: { board: PartitionWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${format(board.whole)}. ${board.splits
+    .map((split, i) => `${split.label}: ${t('tutor.whiteboard.board.piece', { amount: format(board.pieceValues[i]!) })}`)
+    .join(', ')}`;
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-2">
+        {board.splits.map((split, i) => (
+          <div key={i} className="flex flex-col gap-1">
+            <div className="flex h-7 overflow-hidden rounded-md border border-content-muted/30" aria-hidden="true">
+              {Array.from({ length: split.denominator }, (_, piece) => (
+                <span
+                  key={piece}
+                  className={cn(
+                    'h-full min-w-0 flex-1 border-r border-surface last:border-r-0',
+                    // Exactly ONE piece highlighted per split: the move asks to
+                    // "take exactly ONE piece from each and set them side by side".
+                    piece === 0 ? 'bg-accent/70' : 'bg-content-muted/15',
+                  )}
+                />
+              ))}
+            </div>
+            <div className="flex items-baseline justify-between gap-2">
+              <Caption>{split.label}</Caption>
+              <AxisCaption>{t('tutor.whiteboard.board.piece', { amount: format(board.pieceValues[i]!) })}</AxisCaption>
+            </div>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -761,5 +949,15 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <GoalBarBoard board={board} seq={seq} className={className} />;
     case 'worked':
       return <WorkedBoard board={board} seq={seq} className={className} />;
+    case 'ten_frame':
+      return <TenFrameBoard board={board} seq={seq} className={className} />;
+    case 'open_number_line':
+      return <OpenNumberLineBoard board={board} seq={seq} className={className} />;
+    case 'array':
+      return <ArrayBoard board={board} seq={seq} className={className} />;
+    case 'fraction_strip':
+      return <FractionStripBoard board={board} seq={seq} className={className} />;
+    case 'partition':
+      return <PartitionBoard board={board} seq={seq} className={className} />;
   }
 }

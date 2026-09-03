@@ -749,6 +749,65 @@ function internalRouter(): Router {
     })
     .strict();
 
+  /* The canonical primary-maths vocabulary (/TUTOR_INSTRUMENTS.md §3.1). */
+  const TenFrameWhiteboardBody = z
+    .object({
+      kind: z.literal('ten_frame'),
+      count: z.number().int(),
+      frames: z.array(z.number().int()),
+      label: z.string().max(60),
+    })
+    .strict();
+
+  const OpenNumberLineWhiteboardBody = z
+    .object({
+      kind: z.literal('open_number_line'),
+      from: z.number(),
+      to: z.number(),
+      jumps: z.array(z.object({ value: z.number() }).strict()).min(1).max(5),
+      stops: z.array(z.number()),
+      positions: z.array(z.number()),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const ArrayWhiteboardBody = z
+    .object({
+      kind: z.literal('array'),
+      rows: z.number().int(),
+      columns: z.number().int(),
+      unitValue: z.number(),
+      total: z.number(),
+      cells: z.number().int(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const FractionStripWhiteboardBody = z
+    .object({
+      kind: z.literal('fraction_strip'),
+      rows: z
+        .array(z.object({ denominator: z.number().int(), highlighted: z.number().int() }).strict())
+        .min(2)
+        .max(4),
+      shares: z.array(z.number()),
+      label: z.string().max(60),
+    })
+    .strict();
+
+  const PartitionWhiteboardBody = z
+    .object({
+      kind: z.literal('partition'),
+      whole: z.number(),
+      splits: z.array(z.object({ label: z.string().max(40), denominator: z.number().int() }).strict()).min(2).max(3),
+      pieceValues: z.array(z.number()),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
     CompareWhiteboardBody,
@@ -760,6 +819,11 @@ function internalRouter(): Router {
     FlowWhiteboardBody,
     GoalBarWhiteboardBody,
     WorkedWhiteboardBody,
+    TenFrameWhiteboardBody,
+    OpenNumberLineWhiteboardBody,
+    ArrayWhiteboardBody,
+    FractionStripWhiteboardBody,
+    PartitionWhiteboardBody,
   ]);
 
   /**

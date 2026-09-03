@@ -409,7 +409,9 @@
     "board": {
       "remaining": "Falta: {{amount}}",
       "check": "Verificação: {{amount}}",
-      "unknown": "?"
+      "unknown": "?",
+      "total": "No total: {{amount}}",
+      "piece": "Uma parte: {{amount}}"
     }
   }
 }
