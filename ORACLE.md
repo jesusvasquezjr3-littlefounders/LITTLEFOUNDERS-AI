@@ -3978,6 +3978,68 @@ real currency formatting, real bar heights and dot positions, screenshotted
 and inspected via `getBoundingClientRect()`, which is what caught the two
 defects above in the first place.
 
+**A live label could wrap past its column's fixed height and be silently
+CLIPPED, not merely truncated — found by TUTOR_QA_2026-09-02.md's own D1
+audit, treated as a class, closed the same day (SHIPPED).** D1 itself was
+about catalog text (course/adventure titles) in fixed-width containers with
+`truncate`/`line-clamp` and `overflow-hidden` — the ordinary failure of that
+class is a visibly cut string. The QA sweep that audited D1 "as a class, not
+a case" flagged `TutorWhiteboard.tsx`'s `compare` and `categories` bar
+captions as the SAME class for a different reason: `side.label` and
+`category.label` are moderated free text Oracle writes live (up to 60/40
+chars respectively), never seen by `i18n:check`, in columns as narrow as
+144px (`compare`, 2 items) or 56px (`categories`, up to 6). Neither had a
+line-count ceiling. Verifying the mechanism (not just the symptom) found a
+worse failure mode than D1's own: `ConversationView.tsx` mounts the board
+with `LessonPlate`'s `bodyLayout="column"`, whose body is `overflow-hidden`
+with NO scroll — the plate's own contract puts the ONE mounted child (the
+whiteboard) in charge of fitting its own bounds. A caption that wraps to 3+
+lines under that contract does not truncate at a fixed pixel edge the way
+D1's `truncate`/`line-clamp-4` sites do; it pushes the bar-column's content
+taller than the row's own bounded height, and the overflow vanishes behind
+the ancestor's `overflow-hidden` — invisible to a screenshot that isn't
+zoomed into `getBoundingClientRect()`, the exact class of gap this file's
+own history (the zero-height-bar defect earlier in this section) already
+warns is invisible to jsdom and an un-inspected screenshot alike.
+
+Fixed with a hard, deterministic ceiling rather than a wider guess at "enough
+room": `line-clamp-2` + `break-words` on all three live-authored caption
+surfaces — `CompareBoard`'s side label, `CategoriesBoard`'s per-bar label,
+and `MarkedLineBoard`'s per-mark label (the third wasn't reproduced live by
+the QA session, but shares the identical unbounded `z.string().max(60)`
+field and was closed on the same structural reasoning, stated as such rather
+than silently folded in — see that component's own comment). A clamp can
+never overflow its box regardless of locale, content length, or a future
+kind added to this file; it trades D1's failure mode (invisible loss) for an
+honest, visible ellipsis. Nothing is lost for a screen-reader user: `aria-
+label` already carries every board's full, unclamped text (`WhiteboardShell`
+above), built directly from `board.left.label`/`category.label`/`mark.label`
+rather than from the rendered DOM, so the sighted caption's clamp never
+touches what gets announced. Column widths were also widened where there was
+real room to reduce how often the clamp actually engages —
+`compare` (only 2 items ever share the row): `max-w-[9rem]` → `max-w-[14rem]`;
+`categories` (up to 6 items): `min-w-[3.5rem]` → `min-w-[4.5rem]` — a floor,
+not a cap, so six long categories on a narrow phone still fall through to the
+row's existing `overflow-x-auto` horizontal scroll rather than crushing the
+labels further.
+
+Verified live at both breakpoints, not assumed from the CSS alone (the same
+discipline this section's earlier zero-height-bar fix insists on): stress
+labels at 58-59 characters in `es-MX` — near the schema's real 60-char
+ceiling, the language this repo's own D1 audit measured as running ~19%
+longer than `en-US` — driven through `/dev/tutor-lab`'s `compare`,
+`categories` and `marked-line` activities via a temporary fixture edit
+(reverted before commit, same posture as this section's earlier "temporary,
+non-3D preview route" note), screenshotted at 375px and 1280px. All three
+kinds clamp to two lines with a visible ellipsis, no clipped or overlapping
+content, bars fully visible. `npm run verify:tutor-ui` passes with its
+existing four whiteboard-kind scenarios (unchanged — the geometric
+overlap/reachability audit that scenario runs was never the gap here; a
+`line-clamp` producing a shorter box is invisible to a check that only asks
+"do controls overlap", which is exactly why this defect needed a live,
+zoomed-in read of the rendered caption rather than another automated
+sweep). Full defect record and status: TUTOR_QA_2026-09-02.md.
+
 ### 20.6 The skill/KC curator — propose-only (SHIPPED)
 
 V4 harness backlog: "the skill distiller/curator loop." `backend/src/

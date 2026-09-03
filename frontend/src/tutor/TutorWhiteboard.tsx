@@ -367,7 +367,7 @@ function CompareBoard({ board, seq, className }: { board: CompareWire; seq: numb
           {sides.map((side, i) => {
             const heightPct = side.value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((side.value / max) * 100));
             return (
-              <div key={i} className="flex min-w-[5rem] max-w-[9rem] flex-1 flex-col items-center gap-1">
+              <div key={i} className="flex min-w-[5rem] max-w-[14rem] flex-1 flex-col items-center gap-1">
                 <span className="lf-number lf-title text-content" aria-hidden="true">
                   {format(side.value)}
                 </span>
@@ -375,7 +375,22 @@ function CompareBoard({ board, seq, className }: { board: CompareWire; seq: numb
                 <div className="flex w-full min-h-0 flex-1 items-end">
                   <div className="w-full rounded-t-md bg-accent/70" style={{ height: `${heightPct}%` }} />
                 </div>
-                <span className="lf-caption text-content-muted text-center" aria-hidden="true">
+                {/*
+                  `line-clamp-2` — a hard, DETERMINISTIC ceiling on how tall this
+                  caption can ever grow. `side.label` is free text Oracle writes
+                  live (moderated, up to 60 chars, /ORACLE.md §20.5) and never
+                  passes through `i18n:check`, which only sees catalog strings —
+                  so es-MX/pt-BR running 16-19% longer than en-US (TUTOR_QA_
+                  2026-09-02.md, D1-as-a-class) can wrap this to 3+ lines in a
+                  144-224px column. `LessonPlate`'s `bodyLayout="column"` body is
+                  `overflow-hidden` with no scroll (this component is the ONE
+                  child expected to manage its own bounds) — an unclamped wrap
+                  does not truncate, it silently DISAPPEARS past that ancestor.
+                  Clamping trades that invisible loss for a visible ellipsis; the
+                  full label still reaches a screen reader via `ariaLabel` above,
+                  unaffected by what the sighted caption shows.
+                */}
+                <span className="lf-caption text-content-muted text-center line-clamp-2 break-words" aria-hidden="true">
                   {side.label}
                 </span>
               </div>
@@ -439,8 +454,18 @@ function MarkedLineBoard({ board, seq, className }: { board: MarkedLineWire; seq
           ))}
         </div>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1" aria-hidden="true">
+          {/*
+            `max-w` + `line-clamp-2` — the same bounded-caption reasoning as
+            `CompareBoard`'s identical comment, applied here too: `mark.label`
+            is the same shape of risk (moderated, model-authored, up to 60
+            chars, up to 4 per board, invisible to `i18n:check`) even though
+            TUTOR_QA_2026-09-02.md's live session only reproduced it on the
+            two narrower bar-chart kinds. Lower likelihood here (this row has
+            no per-label column width forcing an early wrap) but the same
+            ceiling closes it rather than leaving it open on an untested guess.
+          */}
           {board.marks.map((mark, i) => (
-            <span key={i} className="lf-caption text-content-muted">
+            <span key={i} className="lf-caption text-content-muted max-w-[16rem] text-center line-clamp-2 break-words">
               {mark.label}
             </span>
           ))}
@@ -481,7 +506,7 @@ function CategoriesBoard({ board, seq, className }: { board: CategoriesWire; seq
           const value = board.values[i]!;
           const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
           return (
-            <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
+            <div key={i} className="flex min-w-[4.5rem] flex-1 flex-col items-center gap-1">
               <span className="lf-number lf-title text-content" aria-hidden="true">
                 {format(value)}
               </span>
@@ -489,7 +514,8 @@ function CategoriesBoard({ board, seq, className }: { board: CategoriesWire; seq
               <div className="flex w-full min-h-0 flex-1 items-end">
                 <div className="w-full rounded-t-md bg-accent/70" style={{ height: `${heightPct}%` }} />
               </div>
-              <span className="lf-caption text-content-muted text-center" aria-hidden="true">
+              {/* `line-clamp-2` — see `CompareBoard`'s identical comment above. `category.label`: moderated, up to 6 per board, up to 40 chars, model-authored. */}
+              <span className="lf-caption text-content-muted text-center line-clamp-2 break-words" aria-hidden="true">
                 {category.label}
               </span>
             </div>
