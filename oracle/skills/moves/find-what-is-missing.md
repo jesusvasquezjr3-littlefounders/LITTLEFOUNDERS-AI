@@ -6,6 +6,7 @@ misconceptions: [forgets-already-saved]
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [goal_bar, bar_model]
 priority: 7
 ---
 Strategy for this turn: MARK WHAT THEY ALREADY HAVE BEFORE DIVIDING.

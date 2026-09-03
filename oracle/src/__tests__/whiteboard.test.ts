@@ -5,6 +5,11 @@ import {
   computeMarkedLine,
   computeSequence,
   computeTokens,
+  computeBarModel,
+  computePartWhole,
+  computeFlow,
+  computeGoalBar,
+  computeWorked,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -472,6 +477,195 @@ describe('whiteboardComputesOk dispatches tokens', () => {
         groups: [{ denomination: 3, count: 2 }],
         label: 'Cuenta lo que hay',
         currency: 'MXN',
+      }),
+    ).toBe(false);
+  });
+});
+
+/*
+ * WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8). Each compute function
+ * exists to catch a relationship BETWEEN fields no per-field bound can see, and
+ * to derive the one number the schema deliberately denies the model — because in
+ * every case that number is what the learner is working out.
+ */
+
+describe('bar_model — the unknown is drawn, never answered', () => {
+  it('sizes each part against the whole and finds the gap', () => {
+    const result = computeBarModel({
+      whole: { label: 'Tenias', value: 60 },
+      parts: [
+        { label: 'Gastaste', value: 25 },
+        { label: 'Queda', value: null },
+      ],
+    });
+    expect(result?.unknownIndex).toBe(1);
+    expect(result?.widths[0]).toBeCloseTo(25 / 60);
+    expect(result?.widths[1]).toBeCloseTo(35 / 60);
+  });
+
+  it('never returns the unknown part VALUE — that is the answer', () => {
+    const result = computeBarModel({
+      whole: { label: 'w', value: 60 },
+      parts: [
+        { label: 'a', value: 25 },
+        { label: 'b', value: null },
+      ],
+    });
+    expect(Object.keys(result ?? {}).sort()).toEqual(['unknownIndex', 'widths']);
+  });
+
+  it('refuses two unknowns — a model with two gaps is a model of nothing', () => {
+    expect(
+      computeBarModel({
+        whole: { label: 'w', value: 60 },
+        parts: [
+          { label: 'a', value: null },
+          { label: 'b', value: null },
+        ],
+      }),
+    ).toBeNull();
+  });
+
+  it('refuses parts that overrun the whole', () => {
+    expect(
+      computeBarModel({
+        whole: { label: 'w', value: 30 },
+        parts: [
+          { label: 'a', value: 25 },
+          { label: 'b', value: 20 },
+        ],
+      }),
+    ).toBeNull();
+  });
+
+  it('with every part stated, refuses parts that do not make the whole', () => {
+    expect(
+      computeBarModel({
+        whole: { label: 'w', value: 60 },
+        parts: [
+          { label: 'a', value: 25 },
+          { label: 'b', value: 20 },
+        ],
+      }),
+    ).toBeNull();
+    expect(
+      computeBarModel({
+        whole: { label: 'w', value: 60 },
+        parts: [
+          { label: 'a', value: 25 },
+          { label: 'b', value: 35 },
+        ],
+      })?.unknownIndex,
+    ).toBeNull();
+  });
+});
+
+describe('part_whole — a bond that does not balance is not drawn', () => {
+  it('accepts a real bond', () => {
+    expect(
+      computePartWhole({
+        whole: { label: 'total', value: 18 },
+        left: { label: 'sab', value: 9 },
+        right: { label: 'dom', value: 9 },
+      }),
+    ).toBe(true);
+  });
+
+  it('refuses one that does not — a wrong bond teaches a wrong relationship', () => {
+    expect(
+      computePartWhole({
+        whole: { label: 'total', value: 18 },
+        left: { label: 'sab', value: 9 },
+        right: { label: 'dom', value: 8 },
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('flow — what is left is the server number', () => {
+  it('derives what is kept', () => {
+    expect(computeFlow({ income: { label: 'in', value: 48 }, spent: { label: 'out', value: 19 } })).toEqual({
+      kept: 29,
+    });
+  });
+
+  it('handles money decimals without dust', () => {
+    expect(computeFlow({ income: { label: 'in', value: 10 }, spent: { label: 'out', value: 0.3 } })?.kept).toBe(9.7);
+  });
+
+  it('refuses spending more than came in — a loss is a different visual case', () => {
+    expect(computeFlow({ income: { label: 'in', value: 10 }, spent: { label: 'out', value: 11 } })).toBeNull();
+  });
+
+  it('allows spending exactly everything', () => {
+    expect(computeFlow({ income: { label: 'in', value: 10 }, spent: { label: 'out', value: 10 } })).toEqual({ kept: 0 });
+  });
+});
+
+describe('goal_bar — what is missing is the question', () => {
+  it('derives the shortfall and the shaded fraction', () => {
+    const result = computeGoalBar({ goal: { label: 'g', value: 90 }, saved: { label: 's', value: 34 } });
+    expect(result?.remaining).toBe(56);
+    expect(result?.savedFraction).toBeCloseTo(34 / 90);
+  });
+
+  it('refuses saving more than the goal — the bar cannot draw an overflow', () => {
+    expect(computeGoalBar({ goal: { label: 'g', value: 90 }, saved: { label: 's', value: 91 } })).toBeNull();
+  });
+
+  it('draws a reached goal as full, with nothing missing', () => {
+    expect(computeGoalBar({ goal: { label: 'g', value: 90 }, saved: { label: 's', value: 90 } })).toEqual({
+      remaining: 0,
+      savedFraction: 1,
+    });
+  });
+});
+
+describe('worked — the check is arithmetic the server actually performed', () => {
+  it('runs the lines and lands the check on the previous one', () => {
+    const result = computeWorked({
+      start: 72,
+      steps: [
+        { op: 'subtract', value: 15 },
+        { op: 'add', value: 8 },
+      ],
+    });
+    expect(result?.values).toEqual([72, 57, 65]);
+    expect(result?.checkValue).toBe(57);
+    expect(result?.checkValue).toBe(result?.values[result.values.length - 2]);
+  });
+
+  it('checks a single-step example too', () => {
+    const result = computeWorked({ start: 20, steps: [{ op: 'add', value: 5 }] });
+    expect(result?.values).toEqual([20, 25]);
+    expect(result?.checkValue).toBe(20);
+  });
+
+  it('refuses a line that would go negative', () => {
+    expect(computeWorked({ start: 5, steps: [{ op: 'subtract', value: 9 }] })).toBeNull();
+  });
+});
+
+describe('whiteboardComputesOk dispatches every Wave 1 kind', () => {
+  it('passes a real board and fails a broken one', () => {
+    expect(
+      whiteboardComputesOk({
+        kind: 'part_whole',
+        whole: { label: 'w', value: 18 },
+        left: { label: 'a', value: 9 },
+        right: { label: 'b', value: 9 },
+        label: 'bond',
+        currency: null,
+      }),
+    ).toBe(true);
+    expect(
+      whiteboardComputesOk({
+        kind: 'flow',
+        income: { label: 'in', value: 5 },
+        spent: { label: 'out', value: 9 },
+        keptLabel: 'left',
+        label: 'flow',
+        currency: null,
       }),
     ).toBe(false);
   });

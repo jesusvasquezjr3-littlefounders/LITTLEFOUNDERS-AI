@@ -1793,6 +1793,14 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '    { "kind": "marked_line", "min", "max", "marks": 1-4 of { "value", "label" }, "label", "currency" },',
   '    { "kind": "categories", "categories": 2-6 of { "label", "value" }, "label", "currency" }',
   '    { "kind": "tokens", "groups": 1-6 of { "denomination", "count" }, "label", "currency" }',
+  '    { "kind": "bar_model", "whole": { "label", "value" },'
+    + ' "parts": 2-3 of { "label", "value" (one may be null = the unknown) }, "label", "currency" }',
+  '    { "kind": "part_whole", "whole": { "label", "value" }, "left": { "label", "value" },'
+    + ' "right": { "label", "value" }, "label", "currency" }',
+  '    { "kind": "flow", "income": { "label", "value" }, "spent": { "label", "value" },'
+    + ' "keptLabel", "label", "currency" }',
+  '    { "kind": "goal_bar", "goal": { "label", "value" }, "saved": { "label", "value" }, "label", "currency" }',
+  '    { "kind": "worked", "start", "steps": 1-4 of { "op": "add"|"subtract", "value" }, "label", "currency" }',
   '}',
   '',
   'Use "demonstrate" ONLY while a coin/money activity is on screen and a small',

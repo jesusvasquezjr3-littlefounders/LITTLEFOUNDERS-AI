@@ -60,6 +60,56 @@ const SPECS: InstrumentSpec[] = [
       'groups:[{denomination:50,count:2},{denomination:5,count:3}].',
     ].join(' '),
   },
+  {
+    kind: 'bar_model',
+    guidance: [
+      'THE BAR MODEL — {kind:"bar_model", whole:{label,value}, parts: 2-3 of {label, value}, label, currency}.',
+      'Use it for a word problem about a total and its pieces. Set exactly ONE part\'s `value` to null: that',
+      'is the unknown, and the board draws it as a gap the learner can SEE the size of. Do not state what the',
+      'gap is worth — that is the answer. When every part is known the parts must add up to the whole exactly.',
+      'FORMAT example only: "tenías 60 y gastaste 25 en un antojito" with whole 60 and parts 25 and null.',
+    ].join(' '),
+  },
+  {
+    kind: 'part_whole',
+    guidance: [
+      'THE NUMBER BOND — {kind:"part_whole", whole:{label,value}, left:{label,value}, right:{label,value}, label, currency}.',
+      'Use it to show that adding and subtracting are one relationship read two ways, and to CHECK an answer',
+      'the learner just gave. All three numbers are stated and the two parts MUST make the whole exactly —',
+      'a bond that does not balance is refused and nothing is drawn.',
+      'FORMAT example only: 9 on Saturday and 9 on Sunday make 18 altogether.',
+    ].join(' '),
+  },
+  {
+    kind: 'flow',
+    guidance: [
+      'IN, OUT, WHAT IS LEFT — {kind:"flow", income:{label,value}, spent:{label,value}, keptLabel, label, currency}.',
+      'Use it whenever money comes in and some of it goes out: selling and paying costs, earning and spending.',
+      'You name the third place with `keptLabel` but YOU DO NOT VALUE IT — there is no field for that, because',
+      'what is left is exactly the idea being taught. Spending more than came in is refused.',
+      'FORMAT example only: 48 came in, 19 went on lemons.',
+    ].join(' '),
+  },
+  {
+    kind: 'goal_bar',
+    guidance: [
+      'THE GOAL AND WHAT IS SAVED — {kind:"goal_bar", goal:{label,value}, saved:{label,value}, label, currency}.',
+      'Use it BEFORE doing any arithmetic about a savings goal: the whole bar is the goal, the shaded part is',
+      'what is already there, and the gap is the question. You do not state what is missing — the board computes',
+      'it. Saved must not exceed the goal.',
+      'FORMAT example only: a 90-peso skateboard with 34 already saved.',
+    ].join(' '),
+  },
+  {
+    kind: 'worked',
+    guidance: [
+      'THE CALCULATION, LINE BY LINE — {kind:"worked", start, steps: 1-4 of {op:"add"|"subtract", value}, label, currency}.',
+      'Use it when you are showing HOW to work something out rather than what the answer is. The board draws',
+      'each line and then a CHECK: the last step undone, landing back where it came from. You state neither the',
+      'running results nor the check — both are computed, so the check shown is one that really happened.',
+      'FORMAT example only: start at 72, take away 15, add 8.',
+    ].join(' '),
+  },
 ];
 
 const BY_KIND = new Map(SPECS.map((s) => [s.kind, s]));

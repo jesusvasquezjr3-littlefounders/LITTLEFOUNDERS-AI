@@ -8,6 +8,7 @@ import {
   BarTrack,
   BoardRow,
   Caption,
+  HBar,
   Token,
   ValueLabel,
   barHeightPct,
@@ -180,6 +181,11 @@ type CompareWire = Extract<TutorWhiteboardWire, { kind: 'compare' }>;
 type MarkedLineWire = Extract<TutorWhiteboardWire, { kind: 'marked_line' }>;
 type CategoriesWire = Extract<TutorWhiteboardWire, { kind: 'categories' }>;
 type TokensWire = Extract<TutorWhiteboardWire, { kind: 'tokens' }>;
+type BarModelWire = Extract<TutorWhiteboardWire, { kind: 'bar_model' }>;
+type PartWholeWire = Extract<TutorWhiteboardWire, { kind: 'part_whole' }>;
+type FlowWire = Extract<TutorWhiteboardWire, { kind: 'flow' }>;
+type GoalBarWire = Extract<TutorWhiteboardWire, { kind: 'goal_bar' }>;
+type WorkedWire = Extract<TutorWhiteboardWire, { kind: 'worked' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -493,6 +499,246 @@ function TokensBoard({ board, seq, className }: { board: TokensWire; seq: number
   );
 }
 
+
+/**
+ * `kind: 'bar_model'` — THE SINGAPORE BAR. The whole as one length, the parts as
+ * a second length beneath it, and the unknown as a dashed gap.
+ *
+ * The unknown is drawn at its REAL width and with no number in it, and both
+ * halves of that are the representation working as intended: the width is what
+ * lets a learner see how big the missing piece is, and the absent number is what
+ * leaves them something to say. The server never sends the value (`computeBarModel`).
+ */
+function BarModelBoard({ board, seq, className }: { board: BarModelWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.whole.label}: ${format(board.whole.value)}. ${board.parts
+    .map((p) => `${p.label}: ${p.value === null ? t('tutor.whiteboard.board.unknown') : format(p.value)}`)
+    .join(', ')}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-4 px-2">
+        <div className="flex flex-col gap-1">
+          <HBar segments={[{ fraction: 1, tone: 'muted' }]} />
+          <div className="flex items-baseline justify-between gap-2">
+            <Caption className="text-left">{board.whole.label}</Caption>
+            <AxisCaption>{format(board.whole.value)}</AxisCaption>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <HBar segments={board.widths.map((fraction, i) => ({ fraction, dashed: board.parts[i]?.value === null }))} />
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            {board.parts.map((part, i) => (
+              <span key={i} className="flex min-w-0 items-baseline gap-1.5">
+                <Caption>{part.label}</Caption>
+                <AxisCaption>{part.value === null ? t('tutor.whiteboard.board.unknown') : format(part.value)}</AxisCaption>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'part_whole'` — THE NUMBER BOND. One whole above, two parts below,
+ * joined by lines.
+ *
+ * Nothing here is derived; every number was stated and the server's contribution
+ * was refusing a bond that does not balance (`computePartWhole`). What the shape
+ * adds is that adding and subtracting stop looking like two procedures.
+ */
+function PartWholeBoard({ board, seq, className }: { board: PartWholeWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.whole.label}: ${format(board.whole.value)} = ${board.left.label}: ${format(
+    board.left.value,
+  )} + ${board.right.label}: ${format(board.right.value)}`;
+
+  const Node = ({ label, value, tone }: { label: string; value: number; tone: 'whole' | 'part' }) => (
+    <span className="flex min-w-0 flex-col items-center gap-1">
+      <span
+        className={cn(
+          'flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 text-center',
+          tone === 'whole' ? 'border-accent bg-accent/15' : 'border-content-muted/40 bg-surface',
+        )}
+        aria-hidden="true"
+      >
+        <span className="lf-number text-content">{format(value)}</span>
+      </span>
+      <Caption>{label}</Caption>
+    </span>
+  );
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1">
+        <Node label={board.whole.label} value={board.whole.value} tone="whole" />
+        {/* The bond itself: two strokes from the whole down to its parts. */}
+        <svg width="120" height="26" viewBox="0 0 120 26" aria-hidden="true" className="shrink-0">
+          <path
+            d="M60 2 L22 24 M60 2 L98 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className="text-content-muted/50"
+          />
+        </svg>
+        <div className="flex items-start justify-center gap-8">
+          <Node label={board.left.label} value={board.left.value} tone="part" />
+          <Node label={board.right.label} value={board.right.value} tone="part" />
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'flow'` — WHAT CAME IN, WHAT WENT OUT, WHAT IS LEFT.
+ *
+ * `three-piles-in-out-left.md` asks for three places "left UNNAMED… coin by
+ * coin", so the values appear first and the labels follow a beat later. The
+ * reveal is client-side and deliberately short — long enough to make the point
+ * that the third pile is a RESULT, not another thing the tutor decided.
+ *
+ * `kept` is server-computed and is the whole lesson (`computeFlow`).
+ */
+function FlowBoard({ board, seq, className }: { board: FlowWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const reducedMotion = useMemo(
+    () => typeof window !== 'undefined' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false),
+    [],
+  );
+  const [named, setNamed] = useState(reducedMotion);
+
+  // Reset on a genuinely new board, in render rather than an effect — the same
+  // reason `SequenceBoard` does (a bad frame is never painted).
+  const [namedSeq, setNamedSeq] = useState(seq);
+  if (seq !== namedSeq) {
+    setNamedSeq(seq);
+    setNamed(reducedMotion);
+  }
+
+  useEffect(() => {
+    if (named) return;
+    const id = window.setTimeout(() => setNamed(true), GROW_STEP_MS * 2);
+    return () => window.clearTimeout(id);
+  }, [named]);
+
+  const piles = [
+    { label: board.income.label, value: board.income.value, tone: 'accent' as const },
+    { label: board.spent.label, value: board.spent.value, tone: 'muted' as const },
+    { label: board.keptLabel, value: board.kept, tone: 'accent' as const },
+  ];
+  const ariaLabel = `${board.label}. ${piles.map((p) => `${p.label}: ${format(p.value)}`).join(', ')}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 items-center justify-center gap-3 px-2">
+        {piles.map((pile, i) => (
+          <div key={i} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+            <div
+              className={cn(
+                'flex w-full items-center justify-center rounded-md border-2 border-dashed py-3',
+                pile.tone === 'accent' ? 'border-accent/60 bg-accent/10' : 'border-content-muted/40',
+              )}
+              aria-hidden="true"
+            >
+              <span className="lf-number lf-title text-content">{format(pile.value)}</span>
+            </div>
+            {/* The label arrives AFTER the value — the move's own sequencing. */}
+            <Caption className={cn('transition-opacity duration-300', !named && 'opacity-0')}>{pile.label}</Caption>
+          </div>
+        ))}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'goal_bar'` — THE GOAL END TO END, WHAT IS SAVED SHADED FROM THE LEFT.
+ *
+ * `find-what-is-missing.md`, rendered: the bar is drawn before any operation, so
+ * the gap between the shading and the end IS the question. `remaining` is
+ * server-computed (`computeGoalBar`).
+ */
+function GoalBarBoard({ board, seq, className }: { board: GoalBarWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const ariaLabel = `${board.label}. ${board.goal.label}: ${format(board.goal.value)}. ${board.saved.label}: ${format(
+    board.saved.value,
+  )}. ${t('tutor.whiteboard.board.remaining', { amount: format(board.remaining) })}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-2">
+        <HBar
+          segments={[
+            { fraction: board.savedFraction },
+            { fraction: 1 - board.savedFraction, tone: 'muted' },
+          ]}
+        />
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="flex min-w-0 items-baseline gap-1.5">
+            <Caption>{board.saved.label}</Caption>
+            <AxisCaption>{format(board.saved.value)}</AxisCaption>
+          </span>
+          <span className="flex min-w-0 items-baseline gap-1.5">
+            <Caption>{board.goal.label}</Caption>
+            <AxisCaption>{format(board.goal.value)}</AxisCaption>
+          </span>
+        </div>
+        <p className="lf-caption shrink-0 text-center text-content-muted" aria-hidden="true">
+          {t('tutor.whiteboard.board.remaining', { amount: format(board.remaining) })}
+        </p>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'worked'` — THE CALCULATION LINE BY LINE, INCLUDING THE CHECK.
+ *
+ * The only kind that draws a HABIT rather than a quantity.
+ * `worked-example-think-aloud.md` asks to "deliberately show the moment of
+ * CHECKING… undo the operation", and `computeWorked` performs that undo server-
+ * side, so the check drawn here is one the machine actually did.
+ */
+function WorkedBoard({ board, seq, className }: { board: WorkedWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const lines = board.steps.map((step, i) => ({
+    op: step.op === 'add' ? '+' : '−',
+    value: step.value,
+    result: board.values[i + 1]!,
+  }));
+  const ariaLabel = `${board.label}. ${format(board.start)}${lines
+    .map((l) => `, ${l.op} ${format(l.value)} = ${format(l.result)}`)
+    .join('')}. ${t('tutor.whiteboard.board.check', { amount: format(board.checkValue) })}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-1.5 px-2" aria-hidden="true">
+        <p className="lf-number lf-title text-right text-content tabular-nums">{format(board.start)}</p>
+        {lines.map((line, i) => (
+          <p key={i} className="flex items-baseline justify-end gap-2 text-content">
+            <span className="lf-caption text-content-muted tabular-nums">
+              {line.op} {format(line.value)}
+            </span>
+            <span className="lf-number lf-title tabular-nums">{format(line.result)}</span>
+          </p>
+        ))}
+        {/* The check: the last step undone, landing back where it started. */}
+        <p className="mt-1 border-t border-content-muted/25 pt-1.5 text-right lf-caption text-content-muted tabular-nums">
+          {t('tutor.whiteboard.board.check', { amount: format(board.checkValue) })}
+        </p>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -505,5 +751,15 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <CategoriesBoard board={board} seq={seq} className={className} />;
     case 'tokens':
       return <TokensBoard board={board} seq={seq} className={className} />;
+    case 'bar_model':
+      return <BarModelBoard board={board} seq={seq} className={className} />;
+    case 'part_whole':
+      return <PartWholeBoard board={board} seq={seq} className={className} />;
+    case 'flow':
+      return <FlowBoard board={board} seq={seq} className={className} />;
+    case 'goal_bar':
+      return <GoalBarBoard board={board} seq={seq} className={className} />;
+    case 'worked':
+      return <WorkedBoard board={board} seq={seq} className={className} />;
   }
 }

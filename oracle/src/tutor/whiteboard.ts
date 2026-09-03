@@ -3,8 +3,13 @@ import type {
   WhiteboardCategories,
   WhiteboardCompare,
   WhiteboardMarkedLine,
+  WhiteboardBarModel,
+  WhiteboardFlow,
+  WhiteboardGoalBar,
+  WhiteboardPartWhole,
   WhiteboardSequence,
   WhiteboardTokens,
+  WhiteboardWorked,
 } from './turnSchema.js';
 
 /*
@@ -229,6 +234,165 @@ export function computeTokens(board: Pick<WhiteboardTokens, 'groups' | 'currency
   return { subtotals, total };
 }
 
+
+/* ── WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8) ─────────────────── */
+
+/** What a `bar_model` draws beyond its own raw parts — see `computeBarModel`. */
+export interface BarModelResult {
+  /** Each part's share of the whole, 0..1, in the model's own order. */
+  widths: number[];
+  /** Which part is the unknown, or null when every part is stated. */
+  unknownIndex: number | null;
+}
+
+/**
+ * Verifies a bar model and derives each part's WIDTH.
+ *
+ * Deliberately does NOT compute the unknown part's VALUE. That number is the
+ * answer, and this board exists so the learner reads it off the picture; sending
+ * it would put the solution in the wire for a renderer to accidentally print.
+ * The unknown's width IS computed, because making its size apparent is precisely
+ * what a bar model is for.
+ *
+ * Three things no per-field bound can see: more than one unknown (a bar model
+ * with two gaps is not a model of anything), stated parts that overrun the
+ * whole, and — when every part is stated — parts that do not actually make the
+ * whole. All three drop the board entire.
+ */
+export function computeBarModel(board: Pick<WhiteboardBarModel, 'whole' | 'parts'>): BarModelResult | null {
+  const total = board.whole.value;
+  if (!Number.isFinite(total) || total <= 0 || total > MAX_VALUE) return null;
+
+  const unknowns = board.parts.filter((p) => p.value === null).length;
+  if (unknowns > 1) return null;
+
+  let stated = 0;
+  for (const part of board.parts) {
+    if (part.value === null) continue;
+    if (!Number.isFinite(part.value) || part.value < 0) return null;
+    stated += part.value;
+  }
+  if (stated > total + ZERO_EPSILON) return null;
+  // Every part stated must actually bond to the whole — otherwise the picture
+  // asserts an arithmetic that is simply false.
+  if (unknowns === 0 && Math.abs(stated - total) > ZERO_EPSILON) return null;
+
+  const unknownIndex = board.parts.findIndex((p) => p.value === null);
+  const remainder = Math.max(0, total - stated);
+  const widths = board.parts.map((p) => (p.value === null ? remainder : p.value) / total);
+  return { widths, unknownIndex: unknownIndex === -1 ? null : unknownIndex };
+}
+
+/**
+ * Verifies a number bond: the two parts must actually make the whole.
+ *
+ * There is nothing to derive — every value is stated, and that is the point of
+ * this board. What it adds is the REFUSAL: a bond that does not balance is
+ * dropped entire rather than drawn, because a wrong bond teaches a wrong
+ * relationship far more durably than a wrong sentence does.
+ */
+export function computePartWhole(board: Pick<WhiteboardPartWhole, 'whole' | 'left' | 'right'>): true | null {
+  const { whole, left, right } = board;
+  for (const v of [whole.value, left.value, right.value]) {
+    if (!Number.isFinite(v) || v < 0 || v > MAX_VALUE) return null;
+  }
+  return Math.abs(left.value + right.value - whole.value) <= ZERO_EPSILON ? true : null;
+}
+
+/** What a `flow` board draws beyond what came in and what went out. */
+export interface FlowResult {
+  /** The third place. THE MODEL HAS NO FIELD FOR THIS — it is the thing being taught. */
+  kept: number;
+}
+
+/**
+ * Verifies a flow and derives what is left.
+ *
+ * `kept` is the whole lesson of `three-piles-in-out-left.md` — the difference
+ * between what came in and what it cost — so the model is given no way to state
+ * it. Spending more than came in is refused rather than drawn negative: a loss
+ * is a real and teachable situation, but it is a DIFFERENT visual case than
+ * three positive piles, and this board is deliberately the bounded first slice.
+ */
+export function computeFlow(board: Pick<WhiteboardFlow, 'income' | 'spent'>): FlowResult | null {
+  const income = board.income.value;
+  const spent = board.spent.value;
+  if (!Number.isFinite(income) || income < 0 || income > MAX_VALUE) return null;
+  if (!Number.isFinite(spent) || spent < 0 || spent > MAX_VALUE) return null;
+  if (spent > income + ZERO_EPSILON) return null;
+  const kept = Math.max(0, money(income - spent));
+  return { kept };
+}
+
+/** What a `goal_bar` draws beyond the goal and what is saved. */
+export interface GoalBarResult {
+  /** How much more is needed. THE MODEL HAS NO FIELD FOR THIS — it is the question. */
+  remaining: number;
+  /** How much of the bar is shaded, 0..1. */
+  savedFraction: number;
+}
+
+/**
+ * Verifies a savings goal and derives what is missing.
+ *
+ * `find-what-is-missing.md` asks for the bar to be drawn BEFORE any operation,
+ * with the saved part shaded from the left — so what is missing has to be the
+ * server's number, not the model's, or the board would be asserting the very
+ * answer it was drawn to let the learner find.
+ *
+ * Saving MORE than the goal is refused: the bar has no way to draw an overflow,
+ * and a shaded fraction above 1 would silently clamp into a picture that says
+ * "exactly enough" when the story said otherwise.
+ */
+export function computeGoalBar(board: Pick<WhiteboardGoalBar, 'goal' | 'saved'>): GoalBarResult | null {
+  const goal = board.goal.value;
+  const saved = board.saved.value;
+  if (!Number.isFinite(goal) || goal <= 0 || goal > MAX_VALUE) return null;
+  if (!Number.isFinite(saved) || saved < 0 || saved > MAX_VALUE) return null;
+  if (saved > goal + ZERO_EPSILON) return null;
+  return { remaining: Math.max(0, money(goal - saved)), savedFraction: Math.min(1, saved / goal) };
+}
+
+/** What a `worked` example draws beyond its own steps. */
+export interface WorkedResult {
+  /** The running value after each line, `values[0]` being `start`. */
+  values: number[];
+  /**
+   * The result of UNDOING the last step — the checking move made literal.
+   * Equals `values[values.length - 2]` when the arithmetic holds, which is the
+   * point: the board can show the check landing back where it started.
+   */
+  checkValue: number;
+}
+
+/**
+ * Verifies a worked example and derives both its running values and its CHECK.
+ *
+ * `worked-example-think-aloud.md` asks for the one thing no other kind draws:
+ * "deliberately show the moment of CHECKING… undo the operation." So the check
+ * is not a label the model writes, it is arithmetic the server actually
+ * performs — a board that claims to verify itself has genuinely been verified
+ * by the process that drew it.
+ */
+export function computeWorked(board: Pick<WhiteboardWorked, 'start' | 'steps'>): WorkedResult | null {
+  if (!Number.isFinite(board.start) || board.start < 0 || board.start > MAX_VALUE) return null;
+  const values: number[] = [board.start];
+  let current = board.start;
+  for (const step of board.steps) {
+    if (!Number.isFinite(step.value) || step.value <= 0) return null;
+    current = money(step.op === 'add' ? current + step.value : current - step.value);
+    if (!Number.isFinite(current) || current < -ZERO_EPSILON || current > MAX_VALUE) return null;
+    if (current < 0) current = 0;
+    values.push(current);
+  }
+  const last = board.steps[board.steps.length - 1];
+  if (!last) return null;
+  // Undo it: the inverse operation applied to the result must land on the
+  // previous line. Computed rather than assumed, so the drawn check is real.
+  const checkValue = money(last.op === 'add' ? current - last.value : current + last.value);
+  return { values, checkValue };
+}
+
 /**
  * True when a whiteboard's own numbers compute to something sane, dispatched
  * to the right function above for its `kind`. The single "is this board
@@ -250,6 +414,16 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return computeCategories(board) !== null;
     case 'tokens':
       return computeTokens(board) !== null;
+    case 'bar_model':
+      return computeBarModel(board) !== null;
+    case 'part_whole':
+      return computePartWhole(board) !== null;
+    case 'flow':
+      return computeFlow(board) !== null;
+    case 'goal_bar':
+      return computeGoalBar(board) !== null;
+    case 'worked':
+      return computeWorked(board) !== null;
   }
 }
 

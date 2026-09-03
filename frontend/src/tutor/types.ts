@@ -271,6 +271,55 @@ export type TutorWhiteboardWire =
       label: string;
       /** Non-nullable alone among the kinds — a coin with no currency is not money. */
       currency: 'MXN' | 'USD' | 'BRL';
+    }
+  | {
+      kind: 'bar_model';
+      whole: { label: string; value: number };
+      /** Exactly one part may have `value: null` — the unknown the learner reads off the picture. */
+      parts: { label: string; value: number | null }[];
+      /** SERVER-COMPUTED share of the whole, 0..1, one per part. The unknown's VALUE is deliberately never sent. */
+      widths: number[];
+      unknownIndex: number | null;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'part_whole';
+      whole: { label: string; value: number };
+      left: { label: string; value: number };
+      right: { label: string; value: number };
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'flow';
+      income: { label: string; value: number };
+      spent: { label: string; value: number };
+      keptLabel: string;
+      /** SERVER-COMPUTED. The third pile is the whole lesson, so the model has no field for it. */
+      kept: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'goal_bar';
+      goal: { label: string; value: number };
+      saved: { label: string; value: number };
+      /** SERVER-COMPUTED. What is missing is the question, so the model has no field for it. */
+      remaining: number;
+      savedFraction: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'worked';
+      start: number;
+      steps: { op: 'add' | 'subtract'; value: number }[];
+      /** SERVER-COMPUTED running values, and the result of UNDOING the last step — the check made literal. */
+      values: number[];
+      checkValue: number;
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

@@ -112,6 +112,62 @@ export const INSTRUMENTS = [
     },
   },
   {
+    kind: 'bar_model',
+    model: ['kind', 'whole', 'parts', 'label', 'currency'],
+    // The unknown part's VALUE is never computed or sent — that is the answer.
+    // Its WIDTH is, because showing how big the gap is IS the representation.
+    computed: ['widths', 'unknownIndex'],
+    blocks: {
+      oracleSchema: 'WhiteboardBarModelSchema',
+      coreBody: 'BarModelWhiteboardBody',
+      coreRow: 'BarModelBoardRowSchema',
+    },
+  },
+  {
+    kind: 'part_whole',
+    model: ['kind', 'whole', 'left', 'right', 'label', 'currency'],
+    // Nothing derived: what the server adds is the refusal of a bond that does
+    // not balance, the same posture `marked_line` has.
+    computed: [],
+    blocks: {
+      oracleSchema: 'WhiteboardPartWholeSchema',
+      coreBody: 'PartWholeWhiteboardBody',
+      coreRow: 'PartWholeBoardRowSchema',
+    },
+  },
+  {
+    kind: 'flow',
+    model: ['kind', 'income', 'spent', 'keptLabel', 'label', 'currency'],
+    // What is LEFT is the whole lesson of `three-piles-in-out-left`, so the
+    // model names the third pile but never values it.
+    computed: ['kept'],
+    blocks: {
+      oracleSchema: 'WhiteboardFlowSchema',
+      coreBody: 'FlowWhiteboardBody',
+      coreRow: 'FlowBoardRowSchema',
+    },
+  },
+  {
+    kind: 'goal_bar',
+    model: ['kind', 'goal', 'saved', 'label', 'currency'],
+    computed: ['remaining', 'savedFraction'],
+    blocks: {
+      oracleSchema: 'WhiteboardGoalBarSchema',
+      coreBody: 'GoalBarWhiteboardBody',
+      coreRow: 'GoalBarBoardRowSchema',
+    },
+  },
+  {
+    kind: 'worked',
+    model: ['kind', 'start', 'steps', 'label', 'currency'],
+    computed: ['values', 'checkValue'],
+    blocks: {
+      oracleSchema: 'WhiteboardWorkedSchema',
+      coreBody: 'WorkedWhiteboardBody',
+      coreRow: 'WorkedBoardRowSchema',
+    },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -308,12 +364,24 @@ export function wireComputedKeys(source, kind) {
     marked_line: 'WhiteboardMarkedLine',
     categories: 'WhiteboardCategories',
     tokens: 'WhiteboardTokens',
+    bar_model: 'WhiteboardBarModel',
+    part_whole: 'WhiteboardPartWhole',
+    flow: 'WhiteboardFlow',
+    goal_bar: 'WhiteboardGoalBar',
+    worked: 'WhiteboardWorked',
   }[kind];
   if (!kindType) return null;
-  const at = new RegExp(`\\(${kindType}\\s*&`).exec(region);
-  if (!at) return null;
-  const body = balancedBody(region, at.index);
-  return body === null ? null : topLevelKeys(body);
+  // Two legal forms, and the difference between them is meaningful: a kind with
+  // server-computed fields is written `(WhiteboardX & { … })`, and a kind with
+  // NONE is written bare as `| WhiteboardX`. Only the first has keys to read;
+  // the second must still be PRESENT, or the wire cannot carry that kind at all.
+  const intersected = new RegExp(`\\(${kindType}\\s*&`).exec(region);
+  if (intersected) {
+    const body = balancedBody(region, intersected.index);
+    return body === null ? null : topLevelKeys(body);
+  }
+  const bare = new RegExp(`\\|\\s*${kindType}\\s*(?:;|$)`, 'm').exec(region);
+  return bare ? [] : null;
 }
 
 const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x)) && b.every((x) => a.includes(x));

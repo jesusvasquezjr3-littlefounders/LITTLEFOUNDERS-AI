@@ -984,13 +984,72 @@ export interface TutorTurnTokensBoard {
   currency: 'MXN' | 'USD' | 'BRL';
 }
 
+/** A Singapore bar model, as shown. `widths` is server-computed; the unknown's VALUE was never sent — that is the answer. */
+export interface TutorTurnBarModelBoard {
+  kind: 'bar_model';
+  whole: { label: string; value: number };
+  parts: { label: string; value: number | null }[];
+  widths: number[];
+  unknownIndex: number | null;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** A number bond. Nothing is derived: what the server added was the REFUSAL of a bond that does not balance. */
+export interface TutorTurnPartWholeBoard {
+  kind: 'part_whole';
+  whole: { label: string; value: number };
+  left: { label: string; value: number };
+  right: { label: string; value: number };
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** What came in, what went out, what is left. `kept` is server-computed — it is the thing being taught. */
+export interface TutorTurnFlowBoard {
+  kind: 'flow';
+  income: { label: string; value: number };
+  spent: { label: string; value: number };
+  keptLabel: string;
+  kept: number;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** A savings goal and its progress. `remaining` is server-computed — it is the question. */
+export interface TutorTurnGoalBarBoard {
+  kind: 'goal_bar';
+  goal: { label: string; value: number };
+  saved: { label: string; value: number };
+  remaining: number;
+  savedFraction: number;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** A worked calculation and its check. Both `values` and `checkValue` are server-computed. */
+export interface TutorTurnWorkedBoard {
+  kind: 'worked';
+  start: number;
+  steps: { op: 'add' | 'subtract'; value: number }[];
+  values: number[];
+  checkValue: number;
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
   | TutorTurnSequenceBoard
   | TutorTurnCompareBoard
   | TutorTurnMarkedLineBoard
   | TutorTurnCategoriesBoard
-  | TutorTurnTokensBoard;
+  | TutorTurnTokensBoard
+  | TutorTurnBarModelBoard
+  | TutorTurnPartWholeBoard
+  | TutorTurnFlowBoard
+  | TutorTurnGoalBarBoard
+  | TutorTurnWorkedBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1191,6 +1250,75 @@ const TokensBoardRowSchema = z
   })
   .strict();
 
+const NamedAmountRowSchema = z
+  .object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) })
+  .strict();
+
+const BarModelBoardRowSchema = z
+  .object({
+    kind: z.literal('bar_model'),
+    whole: NamedAmountRowSchema,
+    parts: z
+      .array(z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000).nullable() }).strict())
+      .min(2)
+      .max(3),
+    widths: z.array(z.number().min(0).max(1)).min(2).max(3),
+    unknownIndex: z.number().int().min(0).max(2).nullable(),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const PartWholeBoardRowSchema = z
+  .object({
+    kind: z.literal('part_whole'),
+    whole: NamedAmountRowSchema,
+    left: NamedAmountRowSchema,
+    right: NamedAmountRowSchema,
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const FlowBoardRowSchema = z
+  .object({
+    kind: z.literal('flow'),
+    income: NamedAmountRowSchema,
+    spent: NamedAmountRowSchema,
+    keptLabel: z.string().min(1).max(40),
+    kept: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const GoalBarBoardRowSchema = z
+  .object({
+    kind: z.literal('goal_bar'),
+    goal: NamedAmountRowSchema,
+    saved: NamedAmountRowSchema,
+    remaining: z.number().min(0).max(10_000_000),
+    savedFraction: z.number().min(0).max(1),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const WorkedBoardRowSchema = z
+  .object({
+    kind: z.literal('worked'),
+    start: z.number().min(0).max(1_000_000),
+    steps: z
+      .array(z.object({ op: z.enum(['add', 'subtract']), value: z.number().positive().max(100_000) }).strict())
+      .min(1)
+      .max(4),
+    values: z.array(z.number().min(0).max(10_000_000)).min(2).max(5),
+    checkValue: z.number().min(0).max(10_000_000),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1209,6 +1337,11 @@ const TutorTurnWhiteboardRowSchema = z
     MarkedLineBoardRowSchema,
     CategoriesBoardRowSchema,
     TokensBoardRowSchema,
+    BarModelBoardRowSchema,
+    PartWholeBoardRowSchema,
+    FlowBoardRowSchema,
+    GoalBarBoardRowSchema,
+    WorkedBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -1239,6 +1372,29 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'every mark value must fall within [min, max]',
           path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'bar_model') {
+      if (board.widths.length !== board.parts.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'widths must carry exactly one entry per part',
+          path: ['widths'],
+        });
+      }
+      if (board.parts.filter((p) => p.value === null).length > 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'a bar model may have at most one unknown part',
+          path: ['parts'],
+        });
+      }
+    } else if (board.kind === 'worked') {
+      if (board.values.length !== board.steps.length + 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'values must carry exactly one entry per step plus the starting value',
+          path: ['values'],
         });
       }
     } else if (board.kind === 'tokens') {

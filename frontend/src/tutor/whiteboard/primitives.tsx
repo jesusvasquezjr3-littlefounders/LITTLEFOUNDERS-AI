@@ -322,3 +322,45 @@ export function Bin({
     </div>
   );
 }
+
+/**
+ * A HORIZONTAL PROPORTIONAL BAR — a length that means a quantity.
+ *
+ * The sibling of `BarTrack`, and it exists for the same structural reason in the
+ * other axis: a percentage WIDTH resolves against a parent whose width is
+ * definite, which `w-full` on a block-level track guarantees. Segments are laid
+ * out in order and sized by fraction, so a caller cannot produce a bar whose
+ * pieces do not add up to the track they sit in.
+ *
+ * `dashed` draws a segment as an outline rather than a fill — how a bar model
+ * shows THE UNKNOWN. It is drawn at its real width because making the unknown's
+ * size apparent is the entire point of the representation; what is never drawn
+ * is its VALUE, which is the answer.
+ */
+export function HBar({
+  segments,
+  className,
+}: {
+  segments: { fraction: number; dashed?: boolean; tone?: 'accent' | 'muted' }[];
+  className?: string;
+}) {
+  return (
+    <div className={cn('flex h-7 w-full overflow-hidden rounded-md bg-content-muted/10', className)}>
+      {segments.map((segment, i) => (
+        <div
+          key={i}
+          className={cn(
+            'h-full min-w-0 first:rounded-l-md last:rounded-r-md',
+            segment.dashed
+              ? 'border-2 border-dashed border-accent bg-transparent'
+              : segment.tone === 'muted'
+                ? 'bg-content-muted/30'
+                : 'bg-accent/70',
+            i > 0 && !segment.dashed && 'border-l border-surface',
+          )}
+          style={{ width: `${Math.max(0, Math.min(100, segment.fraction * 100))}%` }}
+        />
+      ))}
+    </div>
+  );
+}

@@ -5,6 +5,7 @@ strategies: [WORKED]
 mastery_min: 0.2
 mastery_max: 0.55
 tiers: [1, 2, 3]
+instruments: [worked, part_whole]
 priority: 5
 ---
 Strategy for this turn: WORKED EXAMPLE, thinking out loud.

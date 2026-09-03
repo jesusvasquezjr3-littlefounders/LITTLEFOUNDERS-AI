@@ -6,6 +6,7 @@ misconceptions: [budget-is-per-item]
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [worked]
 priority: 7
 ---
 Strategy for this turn: ONE TOTAL FOR THE BASKET, NOT ONE CHECK PER ITEM.

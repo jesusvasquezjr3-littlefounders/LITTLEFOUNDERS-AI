@@ -426,6 +426,146 @@ export const WhiteboardTokensSchema = z
   })
   .strict();
 
+
+/* ── WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8) ───────────────────
+ *
+ * Five shapes, each demanded by a move that names the staging it needs. They
+ * share one rule with every kind above them, and it is the rule that decides
+ * what each schema may contain: THE NUMBER THE LEARNER IS WORKING OUT IS NEVER
+ * A FIELD THE MODEL CAN SET. A comparison gets no `greater`, a table of coins
+ * gets no `total`, and below: a flow gets no `kept`, a goal gets no
+ * `remaining`, a worked example gets no answer and no check.
+ */
+
+/** One bar of a `bar_model`. `value: null` marks THE UNKNOWN — at most one per board. */
+export const BarModelPartSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    value: z.number().min(0).max(1_000_000).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'bar_model'` — THE SINGAPORE BAR (/TUTOR_INSTRUMENTS.md §3.2 family B).
+ *
+ * The single most-used representation in primary mathematics teaching, and the
+ * one this catalog was missing entirely: a word problem redrawn as comparable
+ * lengths, with the unknown as a visible gap rather than a letter. A whole,
+ * split into 2-3 named parts, exactly one of which may be unknown.
+ *
+ * The unknown's VALUE is never computed or sent — that is the answer, and this
+ * board exists so the learner reads it off the picture. Its WIDTH is computed
+ * (`computeBarModel`), because making the unknown's size apparent is precisely
+ * what a bar model is for.
+ */
+export const WhiteboardBarModelSchema = z
+  .object({
+    kind: z.literal('bar_model'),
+    /** The total the parts make up. Always known — a bar model with no whole has nothing to scale against. */
+    whole: z.object({ label: z.string().min(1).max(40), value: z.number().positive().max(1_000_000) }).strict(),
+    parts: z.array(BarModelPartSchema).min(2).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'part_whole'` — THE NUMBER BOND (/TUTOR_INSTRUMENTS.md §3.2 family B).
+ *
+ * One whole and its two parts, joined, so that adding and subtracting stop
+ * being two procedures and become one relationship read in two directions. It
+ * is what `worked-example-think-aloud.md`'s checking step is checking AGAINST.
+ *
+ * All three values are stated and the server verifies they actually bond
+ * (`computePartWhole`): a board whose parts do not make its whole is dropped
+ * entire, never drawn with a quiet error, because a wrong bond teaches the
+ * wrong relationship more durably than a wrong sentence.
+ */
+export const WhiteboardPartWholeSchema = z
+  .object({
+    kind: z.literal('part_whole'),
+    whole: z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict(),
+    left: z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict(),
+    right: z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict(),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'flow'` — WHAT CAME IN, WHAT WENT OUT, WHAT IS LEFT
+ * (/TUTOR_INSTRUMENTS.md §3.2 family F). The highest-leverage instrument in the
+ * catalog: it closes five misconceptions at once, all of them the core confusion
+ * of the entrepreneurship strand — `revenue-is-profit`, `profit-is-revenue`,
+ * `cost-equals-price`, `adds-costs-to-revenue`, `saving-is-leftover`.
+ *
+ * `three-piles-in-out-left.md` instructs: "make three places on the table or on
+ * screen and leave them UNNAMED… coin by coin." The third place is the one being
+ * taught, so THE MODEL HAS NO FIELD FOR IT — `computeFlow` derives what is left.
+ * The renderer reveals the three places before their labels, which is the move's
+ * own sequencing.
+ */
+export const WhiteboardFlowSchema = z
+  .object({
+    kind: z.literal('flow'),
+    income: z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict(),
+    spent: z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict(),
+    /** What the third place is called, once it is named. The VALUE is the server's. */
+    keptLabel: z.string().min(1).max(40),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * `kind: 'goal_bar'` — THE GOAL, AND WHAT IS ALREADY SAVED
+ * (/TUTOR_INSTRUMENTS.md §3.2 family E).
+ *
+ * `find-what-is-missing.md` is a design specification, verbatim: "draw the bar
+ * BEFORE any operation: the goal end to end, and the part already saved shaded
+ * in from the left." What is missing is the thing being worked out, so
+ * `computeGoalBar` derives it and the model has no field for it.
+ */
+export const WhiteboardGoalBarSchema = z
+  .object({
+    kind: z.literal('goal_bar'),
+    goal: z.object({ label: z.string().min(1).max(40), value: z.number().positive().max(1_000_000) }).strict(),
+    saved: z.object({ label: z.string().min(1).max(40), value: z.number().min(0).max(1_000_000) }).strict(),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/** One line of a `worked` example — the same closed arithmetic vocabulary `WhiteboardStepSchema` uses, minus percentages. */
+export const WorkedStepSchema = z
+  .object({
+    op: z.enum(['add', 'subtract']),
+    value: z.number().positive().max(100_000),
+  })
+  .strict();
+
+/**
+ * `kind: 'worked'` — THE CALCULATION, LINE BY LINE, INCLUDING THE CHECK
+ * (/TUTOR_INSTRUMENTS.md §3.2 family C).
+ *
+ * `worked-example-think-aloud.md` asks for something no other kind draws:
+ * "deliberately show the moment of CHECKING… undo the operation." Every board
+ * above can show a result; this one shows the habit of testing it.
+ *
+ * Neither the running values NOR the check are model fields. `computeWorked`
+ * derives both — the check by actually undoing the last step, so a board that
+ * claims to verify itself has genuinely been verified by the server that drew it.
+ */
+export const WhiteboardWorkedSchema = z
+  .object({
+    kind: z.literal('worked'),
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(WorkedStepSchema).min(1).max(4),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
  * never free-form — the same §5 discipline every other model-facing schema
@@ -443,6 +583,11 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardMarkedLineSchema,
   WhiteboardCategoriesSchema,
   WhiteboardTokensSchema,
+  WhiteboardBarModelSchema,
+  WhiteboardPartWholeSchema,
+  WhiteboardFlowSchema,
+  WhiteboardGoalBarSchema,
+  WhiteboardWorkedSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -511,6 +656,11 @@ export type WhiteboardCategory = z.infer<typeof WhiteboardCategorySchema>;
 export type WhiteboardCategories = z.infer<typeof WhiteboardCategoriesSchema>;
 export type WhiteboardTokenGroup = z.infer<typeof WhiteboardTokenGroupSchema>;
 export type WhiteboardTokens = z.infer<typeof WhiteboardTokensSchema>;
+export type WhiteboardBarModel = z.infer<typeof WhiteboardBarModelSchema>;
+export type WhiteboardPartWhole = z.infer<typeof WhiteboardPartWholeSchema>;
+export type WhiteboardFlow = z.infer<typeof WhiteboardFlowSchema>;
+export type WhiteboardGoalBar = z.infer<typeof WhiteboardGoalBarSchema>;
+export type WhiteboardWorked = z.infer<typeof WhiteboardWorkedSchema>;
 /** Any of the closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
@@ -547,6 +697,18 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       // by its own denomination, which the server verifies against the real
       // denominations of the currency. So this board's entire learner-facing
       // free-text surface is its own caption.
+      return [whiteboard.label];
+    case 'bar_model':
+      return [whiteboard.label, whiteboard.whole.label, ...whiteboard.parts.map((p) => p.label)];
+    case 'part_whole':
+      return [whiteboard.label, whiteboard.whole.label, whiteboard.left.label, whiteboard.right.label];
+    case 'flow':
+      return [whiteboard.label, whiteboard.income.label, whiteboard.spent.label, whiteboard.keptLabel];
+    case 'goal_bar':
+      return [whiteboard.label, whiteboard.goal.label, whiteboard.saved.label];
+    case 'worked':
+      // Steps are a closed operator enum and bounded numbers; the caption is
+      // the whole of this board's free text.
       return [whiteboard.label];
   }
 }

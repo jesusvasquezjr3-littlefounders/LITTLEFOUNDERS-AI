@@ -521,6 +521,118 @@ const LAB_TOKENS_TEXT: Readonly<Record<Locale, { say: string; label: string }>> 
   },
 };
 
+/*
+ * WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8). Written per locale,
+ * never translated — the same rule the scripts above obey, and for the same
+ * reason: a plate width measured against machine-translated Spanish is measured
+ * against nobody's actual language.
+ *
+ * Every SERVER-COMPUTED field below is hand-set because the lab has no server.
+ * They are the values `computeBarModel` / `computeFlow` / `computeGoalBar` /
+ * `computeWorked` would produce for these inputs, which is what makes a
+ * screenshot of this page evidence about the real thing.
+ */
+const LAB_WAVE1_TEXT: Readonly<
+  Record<
+    Locale,
+    {
+      barModel: { say: string; label: string; whole: string; parts: [string, string] };
+      partWhole: { say: string; label: string; whole: string; left: string; right: string };
+      flow: { say: string; label: string; income: string; spent: string; kept: string };
+      goalBar: { say: string; label: string; goal: string; saved: string };
+      worked: { say: string; label: string };
+    }
+  >
+> = {
+  'en-US': {
+    barModel: {
+      say: 'You had 60 pesos and spent some on a snack. This bar shows the whole, and the piece we do not know yet.',
+      label: 'What is the missing piece?',
+      whole: 'What you had',
+      parts: ['The snack', 'What is left'],
+    },
+    partWhole: {
+      say: 'Eighteen is nine and nine — and that works backwards too.',
+      label: 'How the parts make the whole',
+      whole: 'Altogether',
+      left: 'Saturday',
+      right: 'Sunday',
+    },
+    flow: {
+      say: 'You sold lemonade and paid for the lemons. Look at the three places before we name them.',
+      label: 'In, out, and what is left',
+      income: 'What came in',
+      spent: 'What it cost',
+      kept: 'What is left',
+    },
+    goalBar: {
+      say: 'The whole bar is the skateboard. The shaded part is what you have already.',
+      label: 'How far along are you?',
+      goal: 'The skateboard',
+      saved: 'Saved so far',
+    },
+    worked: { say: 'Let me work it out, and then check it by undoing the last step.', label: 'Working it out' },
+  },
+  'es-MX': {
+    barModel: {
+      say: 'Tenías 60 pesos y gastaste algo en un antojito. La barra muestra el total, y el pedazo que todavía no sabemos.',
+      label: '¿Cuál es el pedazo que falta?',
+      whole: 'Lo que tenías',
+      parts: ['El antojito', 'Lo que queda'],
+    },
+    partWhole: {
+      say: 'Dieciocho es nueve y nueve — y también funciona al revés.',
+      label: 'Cómo las partes hacen el total',
+      whole: 'En total',
+      left: 'Sábado',
+      right: 'Domingo',
+    },
+    flow: {
+      say: 'Vendiste agua de limón y pagaste los limones. Mira los tres lugares antes de ponerles nombre.',
+      label: 'Entra, sale, y lo que queda',
+      income: 'Lo que entró',
+      spent: 'Lo que costó',
+      kept: 'Lo que queda',
+    },
+    goalBar: {
+      say: 'La barra entera es la patineta. La parte sombreada es lo que ya llevas.',
+      label: '¿Qué tanto llevas?',
+      goal: 'La patineta',
+      saved: 'Lo ahorrado',
+    },
+    worked: { say: 'Déjame sacar la cuenta, y luego la compruebo deshaciendo el último paso.', label: 'Sacando la cuenta' },
+  },
+  'pt-BR': {
+    barModel: {
+      say: 'Você tinha 60 reais e gastou um pouco num lanche. A barra mostra o total, e o pedaço que ainda não sabemos.',
+      label: 'Qual é o pedaço que falta?',
+      whole: 'O que você tinha',
+      parts: ['O lanche', 'O que sobra'],
+    },
+    partWhole: {
+      say: 'Dezoito é nove e nove — e funciona ao contrário também.',
+      label: 'Como as partes formam o total',
+      whole: 'No total',
+      left: 'Sábado',
+      right: 'Domingo',
+    },
+    flow: {
+      say: 'Você vendeu limonada e pagou os limões. Olha os três lugares antes de dar nome a eles.',
+      label: 'Entra, sai, e o que sobra',
+      income: 'O que entrou',
+      spent: 'O que custou',
+      kept: 'O que sobra',
+    },
+    goalBar: {
+      say: 'A barra inteira é o skate. A parte sombreada é o que você já tem.',
+      label: 'Quanto você já tem?',
+      goal: 'O skate',
+      saved: 'Já guardado',
+    },
+    worked: { say: 'Deixa eu fazer a conta, e depois conferir desfazendo o último passo.', label: 'Fazendo a conta' },
+  },
+};
+
 const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
   'en-US': 'USD',
   'es-MX': 'MXN',
@@ -650,6 +762,99 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (activity === 'bar-model' || activity === 'part-whole' || activity === 'flow' || activity === 'goal-bar' || activity === 'worked') {
+    const text = LAB_WAVE1_TEXT[locale];
+    const currency = LAB_CURRENCY[locale];
+    const base = {
+      seq: 4,
+      emotion: 'happy' as const,
+      action: 'nod' as const,
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask' as const,
+      policy: null,
+      demonstrate: null,
+    };
+    if (activity === 'bar-model') {
+      return {
+        ...base,
+        text: text.barModel.say,
+        whiteboard: {
+          kind: 'bar_model',
+          whole: { label: text.barModel.whole, value: 60 },
+          parts: [
+            { label: text.barModel.parts[0], value: 25 },
+            { label: text.barModel.parts[1], value: null },
+          ],
+          widths: [25 / 60, 35 / 60],
+          unknownIndex: 1,
+          label: text.barModel.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'part-whole') {
+      return {
+        ...base,
+        text: text.partWhole.say,
+        whiteboard: {
+          kind: 'part_whole',
+          whole: { label: text.partWhole.whole, value: 18 },
+          left: { label: text.partWhole.left, value: 9 },
+          right: { label: text.partWhole.right, value: 9 },
+          label: text.partWhole.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'flow') {
+      return {
+        ...base,
+        text: text.flow.say,
+        whiteboard: {
+          kind: 'flow',
+          income: { label: text.flow.income, value: 48 },
+          spent: { label: text.flow.spent, value: 19 },
+          keptLabel: text.flow.kept,
+          kept: 29,
+          label: text.flow.label,
+          currency,
+        },
+      };
+    }
+    if (activity === 'goal-bar') {
+      return {
+        ...base,
+        text: text.goalBar.say,
+        whiteboard: {
+          kind: 'goal_bar',
+          goal: { label: text.goalBar.goal, value: 90 },
+          saved: { label: text.goalBar.saved, value: 34 },
+          remaining: 56,
+          savedFraction: 34 / 90,
+          label: text.goalBar.label,
+          currency,
+        },
+      };
+    }
+    return {
+      ...base,
+      text: text.worked.say,
+      whiteboard: {
+        kind: 'worked',
+        start: 72,
+        steps: [
+          { op: 'subtract', value: 15 },
+          { op: 'add', value: 8 },
+        ],
+        values: [72, 57, 65],
+        checkValue: 57,
+        label: text.worked.label,
+        currency,
+      },
+    };
+  }
   if (activity === 'categories') {
     const text = LAB_CATEGORIES_TEXT[locale];
     return {
@@ -730,7 +935,18 @@ const fixtureByType = (locale: Locale): Readonly<Record<string, SegmentBase>> =>
  * tokens whiteboard". Exactly the "add a kind, forget a copy" class
  * `instruments:check` exists for, one layer below where that gate can see.
  */
-const WHITEBOARD_ACTIVITIES = ['whiteboard', 'compare', 'marked-line', 'categories', 'tokens'] as const;
+const WHITEBOARD_ACTIVITIES = [
+  'whiteboard',
+  'compare',
+  'marked-line',
+  'categories',
+  'tokens',
+  'bar-model',
+  'part-whole',
+  'flow',
+  'goal-bar',
+  'worked',
+] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [
   'script',

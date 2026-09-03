@@ -6,6 +6,7 @@ misconceptions: [revenue-is-profit, profit-is-revenue, cost-equals-price, adds-c
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [flow]
 priority: 7
 ---
 Strategy for this turn: THREE PILES — WHAT CAME IN, WHAT WENT OUT, WHAT IS LEFT.

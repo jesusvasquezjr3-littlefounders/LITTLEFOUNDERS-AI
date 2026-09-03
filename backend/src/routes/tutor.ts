@@ -679,12 +679,87 @@ function internalRouter(): Router {
     })
     .strict();
 
+  /*
+   * WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8), each mirroring its
+   * member of `oracle/src/ws/protocol.ts`'s `WireWhiteboard`. Every one carries
+   * at least one SERVER-COMPUTED field the model-facing schema deliberately
+   * lacks — a bar model's widths, a flow's `kept`, a goal's `remaining`, a
+   * worked example's values and its check — because in each case that number is
+   * the thing the learner is working out.
+   */
+  const BarModelWhiteboardBody = z
+    .object({
+      kind: z.literal('bar_model'),
+      whole: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      parts: z
+        .array(z.object({ label: z.string().max(40), value: z.number().nullable() }).strict())
+        .min(2)
+        .max(3),
+      widths: z.array(z.number()),
+      unknownIndex: z.number().int().nullable(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const PartWholeWhiteboardBody = z
+    .object({
+      kind: z.literal('part_whole'),
+      whole: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      left: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      right: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const FlowWhiteboardBody = z
+    .object({
+      kind: z.literal('flow'),
+      income: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      spent: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      keptLabel: z.string().max(40),
+      kept: z.number(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const GoalBarWhiteboardBody = z
+    .object({
+      kind: z.literal('goal_bar'),
+      goal: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      saved: z.object({ label: z.string().max(40), value: z.number() }).strict(),
+      remaining: z.number(),
+      savedFraction: z.number(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const WorkedWhiteboardBody = z
+    .object({
+      kind: z.literal('worked'),
+      start: z.number(),
+      steps: z.array(z.object({ op: z.enum(['add', 'subtract']), value: z.number() }).strict()).min(1).max(4),
+      values: z.array(z.number()),
+      checkValue: z.number(),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
     CompareWhiteboardBody,
     MarkedLineWhiteboardBody,
     CategoriesWhiteboardBody,
     TokensWhiteboardBody,
+    BarModelWhiteboardBody,
+    PartWholeWhiteboardBody,
+    FlowWhiteboardBody,
+    GoalBarWhiteboardBody,
+    WorkedWhiteboardBody,
   ]);
 
   /**

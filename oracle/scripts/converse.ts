@@ -40,6 +40,11 @@ import {
   computeMarkedLine,
   computeSequence,
   computeTokens,
+  computeBarModel,
+  computePartWhole,
+  computeFlow,
+  computeGoalBar,
+  computeWorked,
 } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
@@ -364,6 +369,32 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
       return {
         label: board.label,
         summary: result ? `${piles} = ${result.total} ${board.currency}` : `${piles} (INVALID)`,
+      };
+    }
+    case 'bar_model': {
+      const result = computeBarModel(board);
+      const parts = board.parts.map((p) => `${p.label}=${p.value ?? '?'}`).join(' + ');
+      return { label: board.label, summary: result ? `${parts} of ${board.whole.value}` : `${parts} (INVALID)` };
+    }
+    case 'part_whole': {
+      const bond = `${board.left.value} + ${board.right.value} = ${board.whole.value}`;
+      return { label: board.label, summary: computePartWhole(board) ? bond : `${bond} (INVALID)` };
+    }
+    case 'flow': {
+      const result = computeFlow(board);
+      const inout = `in ${board.income.value} - out ${board.spent.value}`;
+      return { label: board.label, summary: result ? `${inout} = ${result.kept} left` : `${inout} (INVALID)` };
+    }
+    case 'goal_bar': {
+      const result = computeGoalBar(board);
+      const bar = `${board.saved.value}/${board.goal.value}`;
+      return { label: board.label, summary: result ? `${bar}, ${result.remaining} to go` : `${bar} (INVALID)` };
+    }
+    case 'worked': {
+      const result = computeWorked(board);
+      return {
+        label: board.label,
+        summary: result ? `${result.values.join(' → ')} (check ${result.checkValue})` : 'INVALID',
       };
     }
   }

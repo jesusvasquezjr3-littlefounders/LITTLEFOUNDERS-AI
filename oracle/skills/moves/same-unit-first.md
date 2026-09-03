@@ -6,6 +6,7 @@ misconceptions: [mixes-units, adds-digits-ignores-decimal]
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [part_whole]
 priority: 7
 ---
 Strategy for this turn: SAME UNIT FIRST, THEN OPERATE.

@@ -405,6 +405,11 @@
     "tokens": {
       "total": "No total: {{amount}}",
       "each": "{{count}} × {{amount}}"
+    },
+    "board": {
+      "remaining": "Falta: {{amount}}",
+      "check": "Verificação: {{amount}}",
+      "unknown": "?"
     }
   }
 }

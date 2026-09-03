@@ -46,6 +46,11 @@ import {
   computeMarkedLine,
   computeSequence,
   computeTokens,
+  computeBarModel,
+  computePartWhole,
+  computeFlow,
+  computeGoalBar,
+  computeWorked,
 } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
@@ -1282,6 +1287,27 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
     }
     case 'tokens': {
       const result = computeTokens(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'bar_model': {
+      const result = computeBarModel(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'part_whole': {
+      // Nothing to attach: every value is stated, and what this compute adds is
+      // the REFUSAL of a bond that does not balance.
+      return computePartWhole(board) === null ? null : { ...board };
+    }
+    case 'flow': {
+      const result = computeFlow(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'goal_bar': {
+      const result = computeGoalBar(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'worked': {
+      const result = computeWorked(board);
       return result === null ? null : { ...board, ...result };
     }
   }
