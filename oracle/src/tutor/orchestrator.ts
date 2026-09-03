@@ -64,6 +64,7 @@ import {
   TUTOR_SYSTEM_PROMPT,
   repeatsAnAnnouncement,
 } from './prompt.js';
+import { instrumentGuidanceFor } from './instrumentSpecs.js';
 import { selectSkill, SKILL_WORDING_RULE } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
@@ -1346,7 +1347,18 @@ export class TutorOrchestrator {
      * so no skill file can be written without it.
      */
     const body = `${skill.body}\n\n${SKILL_WORDING_RULE}`;
-    return { text: hint ? `${body}\n\n${hint}` : body, skillName: skill.name };
+    /*
+     * The instruments THIS move needs, and no others
+     * (/TUTOR_INSTRUMENTS.md §4.4). The system prompt lists every board SHAPE
+     * because the model cannot emit valid JSON for a kind it has never seen,
+     * and that list is prefix-cached; the per-instrument GUIDANCE is what
+     * would not scale, so it rides here — beside the procedure that calls for
+     * it, in the user content, leaving the prefix cache untouched. A move that
+     * names none adds nothing, which is most of them.
+     */
+    const guidance = instrumentGuidanceFor(skill.instruments);
+    const withGuidance = guidance ? `${body}\n\n${guidance}` : body;
+    return { text: hint ? `${withGuidance}\n\n${hint}` : withGuidance, skillName: skill.name };
   }
 
   /**

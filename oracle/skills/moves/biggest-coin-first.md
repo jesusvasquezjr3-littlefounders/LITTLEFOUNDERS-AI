@@ -6,6 +6,7 @@ misconceptions: [single-denomination-only]
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [tokens]
 priority: 7
 ---
 Strategy for this turn: BIGGEST COIN THAT FITS, THEN FILL WHAT IS LEFT.

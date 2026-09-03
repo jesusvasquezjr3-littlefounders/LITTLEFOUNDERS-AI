@@ -6,6 +6,7 @@ misconceptions: [bigger-coin-worth-more, more-coins-more-money, counts-coins-not
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [tokens]
 priority: 7
 ---
 Strategy for this turn: SEPARATE THE TWO QUESTIONS — cuántas, and cuánto.

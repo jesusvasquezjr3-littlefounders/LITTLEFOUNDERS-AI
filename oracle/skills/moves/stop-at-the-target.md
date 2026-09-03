@@ -6,6 +6,7 @@ misconceptions: [overshoots-target]
 mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
+instruments: [tokens]
 priority: 7
 ---
 Strategy for this turn: RUNNING TOTAL, WITH A STOP QUESTION EVERY COIN.

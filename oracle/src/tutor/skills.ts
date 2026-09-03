@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import type { Strategy } from '../context/schema.js';
+import { SPECIFIED_INSTRUMENTS } from './instrumentSpecs.js';
 
 /*
  * PEDAGOGICAL SKILLS — the tutor's procedural memory (V4, harness pattern A).
@@ -52,6 +53,17 @@ export interface PedagogicalSkill {
    * strategy layer above it.
    */
   onceOnly: boolean;
+  /**
+   * The board `kind`s this move's own procedure needs, if any
+   * (/TUTOR_INSTRUMENTS.md §4.4). Guidance for exactly these travels with the
+   * body; every other instrument stays out of this turn's context entirely.
+   *
+   * Most moves name none, and that is the point: a move about questioning
+   * technique has no business spending the model's attention on how to draw a
+   * pile of coins. Validated at boot against `SPECIFIED_INSTRUMENTS`, so a
+   * typo in a move file fails the deploy rather than silently sending nothing.
+   */
+  instruments: string[];
   /** The procedure — what actually reaches the model. */
   body: string;
 }
@@ -168,6 +180,14 @@ function parseSkill(file: string, raw: string): PedagogicalSkill {
   if (tiers.some((t) => !Number.isInteger(t) || t < 1 || t > 3)) {
     throw new Error(`${file}: tiers must be integers 1-3`);
   }
+  const instruments = list(meta.instruments);
+  const unknown = instruments.filter((i) => !SPECIFIED_INSTRUMENTS.includes(i));
+  if (unknown.length > 0) {
+    // Loud at boot, like every other malformed-catalogue case here: a move that
+    // names an instrument nothing can speak for would silently send no guidance
+    // at all, which looks exactly like a move that named none.
+    throw new Error(`${file}: unknown instrument(s) ${unknown.join(', ')}`);
+  }
   return {
     name,
     description: meta.description ?? '',
@@ -178,6 +198,7 @@ function parseSkill(file: string, raw: string): PedagogicalSkill {
     tiers: tiers.length > 0 ? tiers : [1, 2, 3],
     priority: meta.priority === undefined ? 0 : Number(meta.priority),
     onceOnly: meta.once_per_session === 'true',
+    instruments,
     body,
   };
 }
