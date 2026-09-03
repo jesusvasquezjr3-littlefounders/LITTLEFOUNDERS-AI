@@ -1752,6 +1752,38 @@ report in the harness but hands a child the same problem twice in the
 product. Only phrasings that can only mean "restate what you just said" are
 listed, which still covers the live line verbatim.
 
+**And the same run's OTHER canned line had a different cause, which is the one
+worth keeping: the repair had never actually run (D7, closed 2026-09-02).** A
+turn is allowed two model calls. Attempt 0 came back with a good turn flagged
+as a repeat; attempt 1 — the repair — came back one of the provider's empty
+completions. The budget was gone, so the repeat branch fired and the child got
+"Se me enredaron las ideas un momento. ¿Me lo preguntas otra vez?": no
+teaching, and the blame pointed at them.
+
+`model/provider.ts` already states the principle this code was not applying —
+"A billable empty completion is a failure, not an answer" — so a call that
+produced no answer cannot be evidence that a repair was tried. An unanswered
+attempt no longer spends the repair budget. **Nothing else moved:** the repeat
+is still never delivered, `repairableIsRepeat` is untouched (it exists since
+2026-08-30 for this exact failure mode), and both fallbacks are unchanged. The
+repair simply gets to run.
+
+Two things about HOW NARROW it had to be, and an existing test caught each
+rather than review doing it. Excluding every unanswered call also let a
+fully-down provider be retried to the ceiling instead of twice — doubling cost
+and latency on every turn of an outage, the "money leaves directly" case
+§1.0 #5 names first; so the extra attempt requires a `repairable` turn already
+in hand. And it is narrower still: it is bought only when the fallback would
+be the scripted apology (`repeat` / false-verdict). Every other repairable
+reason already ends by delivering the clumsy-but-real original, which is a
+good outcome, and paying for a third completion to maybe improve it would be
+spending on a case that already ends well.
+
+Verified against the real model: `tutor:converse` went from one canned line in
+ten turns to **zero** — "nothing a person would notice went wrong" — with four
+empty completions still occurring and all absorbed. Pinned by a test confirmed
+red against the pre-fix code (`expected 'scripted' to be 'model'`).
+
 **"Never imposed" also means never accepted without an offer — found by
 adversarial review, 2026-08-30 (MEDIUM).** `applyAdaptation` (the WS
 `adaptation_response` handler's call into the orchestrator) applied whatever

@@ -1999,8 +1999,75 @@ export class TutorOrchestrator {
      * imperfect value, same as the two entries directly above it.
      */
     let repairableIsFalseVerdict = false;
+    /*
+     * AN EMPTY COMPLETION IS NOT A REPAIR ATTEMPT, so it must not spend one.
+     *
+     * FOUND LIVE 2026-09-02 by `tutor:converse`, and the mechanism is a budget
+     * spent on the wrong axis rather than a wrong judgement anywhere:
+     *
+     *   attempt 0 → a good turn, flagged as a REPEAT     (turn stays null)
+     *   attempt 1 → the repair, and the provider returns an EMPTY COMPLETION
+     *   loop ends (`attempt < 2`) → the repeat branch → a scripted apology
+     *
+     * The child got "Se me enredaron las ideas un momento. ¿Me lo preguntas
+     * otra vez?" — no teaching, and the blame pointed at them — because the
+     * ONE repair the turn is allowed was consumed by the provider declining to
+     * answer. `model/provider.ts` already states the principle this code was
+     * not applying: "A billable empty completion is a failure, not an answer."
+     * A failure that produced no answer cannot be evidence that a repair was
+     * tried, so it must not count as one.
+     *
+     * WHAT THIS DELIBERATELY DOES NOT DO. It does not deliver the repeat, and
+     * it does not touch `repairableIsRepeat` — that flag exists (2026-08-30)
+     * precisely because this same empty-completion failure mode was being
+     * resolved by delivering the flagged turn verbatim, and the anti-repetition
+     * guarantee is the thing the owner asked for by name. Both fallbacks stay
+     * exactly as they were. The only change is that the repair now actually
+     * gets its turn to run.
+     *
+     * WHY IT CANNOT RUN AWAY. `retryDeadlineMs` is checked before every attempt
+     * past the first and is the real bound — a retry whose answer would arrive
+     * after the learner gave up is "two failures, not a recovery"
+     * (`retryDeadlineMs`'s own comment). `MAX_ATTEMPTS` is a hard ceiling on
+     * top of it so a provider failing instantly, forever, still terminates.
+     */
+    const REPAIR_BUDGET = 2;
+    const MAX_ATTEMPTS = 3;
+    /** Attempts that came back with an ANSWER — good or flagged. Empties do not count. */
+    let answeredAttempts = 0;
     try {
-      for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
+      for (
+        let attempt = 0;
+        answeredAttempts < REPAIR_BUDGET && attempt < MAX_ATTEMPTS && turn === null;
+        attempt += 1
+      ) {
+        /*
+         * THE EXTRA ATTEMPT IS FOR A LOST REPAIR, NEVER FOR A DEAD PROVIDER.
+         *
+         * Caught by this file's own "retries a transport failure ONCE before
+         * giving up" test on the first cut of this fix: excluding every
+         * unanswered call from the budget also meant a provider refusing every
+         * request got hammered the full ceiling instead of twice — doubling the
+         * cost and the latency of every turn during an outage, which is the
+         * "money leaves directly" case /AGENTS.md §1.0 #5 names first.
+         *
+         * And it is narrower still than "we have a repairable turn", because
+         * the extra call is only worth money where the ALTERNATIVE is bad. The
+         * two conditions below are exactly the ones that fall through to the
+         * scripted apology; every other repairable reason already ends by
+         * delivering the clumsy-but-real original, which is a fine outcome
+         * ("a clumsy real sentence beats a scripted apology"), and buying a
+         * third completion to maybe improve it would be spending on a case
+         * that already ends well. That distinction was also caught by an
+         * existing test rather than reasoned out — the first cut spent the
+         * extra call on a self-answered question that never needed it.
+         */
+        const fallbackWouldBeScripted = repairableIsRepeat || repairableIsFalseVerdict;
+        if (attempt >= REPAIR_BUDGET && !fallbackWouldBeScripted) break;
+        // Cleared per attempt so it only ever holds the LAST one's failure:
+        // without this, a transport failure on attempt 1 would still be thrown
+        // after attempt 2 had successfully produced a turn.
+        transportFailure = null;
         if (attempt > 0 && Date.now() >= retryDeadlineMs) {
           console.warn('[oracle] skipping retry — the turn is already too late to deliver');
           break;
@@ -2045,7 +2112,12 @@ export class TutorOrchestrator {
          *
          * A repair needs both: what to change, and the shape to answer in.
          */
-        if (attempt === 1) {
+        // `attempt > 0`, not `attempt === 1`: since an unanswered call no
+        // longer spends the repair budget, a repair can now land on attempt 2
+        // or 3, and pinning the correction to index 1 would have sent those
+        // later attempts the ORIGINAL prompt with no correction at all —
+        // re-asking for the same turn and calling the result a repair.
+        if (attempt > 0) {
           messages.push({
             role: 'user' as const,
             content:
@@ -2088,6 +2160,14 @@ export class TutorOrchestrator {
           });
           this.addModelCost(estimateCostUsd(result.promptTokens, result.completionTokens));
           transportFailure = null;
+          /*
+           * THE PROVIDER ANSWERED, so this attempt spends the repair budget —
+           * even if the answer turns out to be unparseable or to violate a
+           * check below. Those are content outcomes and the retry exists for
+           * exactly them. Only a call that produced NO answer (an empty
+           * completion, a timeout) is excluded, by never reaching this line.
+           */
+          answeredAttempts += 1;
 
           const parsed = parseTurn(result.text);
           if (parsed.ok) {

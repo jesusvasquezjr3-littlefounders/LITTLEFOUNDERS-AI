@@ -3179,6 +3179,48 @@ describe('a failed repair costs the improvement, never the turn', () => {
   });
 
   /*
+   * D7, found live 2026-09-02 by `tutor:converse`: the test directly above is
+   * right that a repeat must never be delivered — and for two days it was
+   * reached by turns whose repair had never actually RUN.
+   *
+   * `deepseek-chat` returns billed, normally-terminated whitespace often
+   * enough that this file already documents it as "a measured, common failure
+   * mode, not a rare edge case". The turn was allowed exactly two model calls,
+   * so when the repair drew one of those empties, the budget was spent on the
+   * provider declining to answer and the child got "Se me enredaron las ideas
+   * un momento. ¿Me lo preguntas otra vez?" — no teaching, and the blame
+   * pointed at them.
+   *
+   * An empty completion is a failure, not an answer (`model/provider.ts` says
+   * exactly that), so it cannot be evidence that a repair was tried. This
+   * pins the recovery: one more call, and the child gets a real turn.
+   */
+  it('re-runs a repair the provider never answered, instead of spending the budget on an empty completion', async () => {
+    const stock = 'Eso es pensar como un científico de verdad.';
+    const repaired = 'Muy bien. Ahora dime tú: si tienes 4 y te dan 3, ¿cuántos son?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn repeats, so a repair is asked for…
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
+      // …and the provider answers it with whitespace. That is not a repair
+      // attempt, so it must not consume the one the turn is owed.
+      .mockResolvedValueOnce(modelReplies(''))
+      // The repair actually runs, and lands.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: repaired }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
+
+    expect(second.emission.source).toBe('model');
+    expect(second.emission.turn.say).toBe(repaired);
+    // The two outcomes this defect chose between, both refused.
+    expect(second.emission.turn.say).not.toBe(stock);
+  });
+
+  /*
    * Found live, testing as a struggling learner, 2026-08-30: the ONE retry
    * can swap one contradiction for the other instead of removing it. A
    * learner answered "25" to a question whose right answer was 15. Attempt 0
