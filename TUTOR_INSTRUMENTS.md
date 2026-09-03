@@ -26,10 +26,10 @@ only section that must be updated on EVERY sprint boundary.**
 
 | | |
 |---|---|
-| **Status** | IN PROGRESS. Wave 1 foundation started 2026-09-02. |
-| **Active sprint** | — none. **Class I of the catalog is COMPLETE.** **CLASS I IS COMPLETE — all 41 drawn instruments are live.** Classes II-V not started. **None of the 19 new kinds has been used by a real model in a real session** — they are built and gate-verified, not proven live. |
-| **Next action** | **Prove some of these live before building more.** 37 of the 41 kinds have never been used by a real model in a real session, and `gh workflow run tutor-deploy.yml -f step=converse` is the only gate that answers "was that a good lesson". After that: Wave 0 (§7.1-§7.3, the unlocks — still the cheapest value in the plan) and then Classes II-V. |
-| **Blocked on owner** | Nothing blocking today. D1 and D3 (§8.2) were answered by the owner on 2026-09-02 with "procede": the catalog grows by **named instruments** and the architecture tax is paid with Wave 1. **D2 (generated imagery) is still open** and gates Wave 4 only. |
+| **Status** | IN PROGRESS. Class I complete; Wave 0 + Classes II-V underway 2026-09-02. |
+| **Active sprint** | Wave 0 — Sprint 1 DONE (`preferredTypes` widened, live-verified 4x via `tutor:converse`), Sprint 2 next. |
+| **Next action** | Finish Wave 0 (S2 `demonstrate`, S3 sound + map reach), then Class II (S9-S10 manipulation), then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
+| **Blocked on owner** | **D2 (generated imagery, gates Class IV and Wave 4) — asked at the end of this session's work.** D1 and D3 were answered 2026-09-02 with "procede". |
 | **Last verified against the repo** | 2026-09-02. |
 
 ### §0.0 Sprint log — what is actually built
@@ -45,8 +45,13 @@ only section that must be updated on EVERY sprint boundary.**
 | **S12 — decision and comparison** | **DONE** 2026-09-02 | `table`, `scale`, `two_bins`, `venn`, `ranking`, `outcomes`, `trade`, `chance`. `instruments:check` green over **23**; `verify:tutor-ui` drives all 23. `outcomes` and `trade` are the first prose-carrying boards — every string moderated, `detail` capped at 110 chars |
 | **S13 — operations and real-money artefacts** | **DONE** 2026-09-02 | `deal`, `change`, `regroup`, `equation_bar`, `receipt`, `ledger`, `price_tag`, `inventory`, `budget_plate`. `instruments:check` green over **32**. `budget_plate` is the one board that ALLOWS an overspend rather than refusing it — `budget-is-per-item` can only be dislodged by watching the total cross the line |
 | **S14/S15 — early years and time** | **DONE** 2026-09-02 | `pictograph`, `bead_string`, `tally`, `fraction_circle`, `stack`, `sequence_compare`, `timeline`, `cycle`, `before_after`. **CLASS I IS COMPLETE: all 41 drawn instruments are live**, `instruments:check` green over 41 × 5 copies |
-| Wave 0 (S1-S3) — the unlocks | **not started** | `preferredTypes` still reaches 2 of 57 activity types; `demonstrate` still covers 2 of 57; the whiteboard is still silent; the map is still reachable in 1 of 8 phases |
-| Classes II-V (S9-S10, S16-S21) | **not started** | manipulation, the 3D stage, micro-worlds, kept artifacts |
+| **S1 — `preferredTypes` widened** | **DONE** 2026-09-02 | 2 → 10 types: the Lesson Engine's own `money` family (`coin_count`, `make_change`, `piggy_split`, `needs_wants`, `price_compare`, `budget_fit`, `savings_goal`, `fair_trade`, `interest_peek`) plus `number_line`. New `agent/tools/check-preferred-types-parity.mjs` gate (the same hand-mirrored-constant class as `instruments:check`, one layer up) — 4 tests, 2 deliberately desynchronised. A real defect found and fixed along the way: `sanitizePreferredTypes` never actually deduplicated; the old cap of 2 only LOOKED like it did, for one specific ordering. Live-verified across the 4 `tutor:converse` runs in §10.3a — the widened vocabulary is what let `tokens`/`flow` fire at all |
+| S2 — `demonstrate` beyond the coin tray | in progress | — |
+| S3 — whiteboard sound + map reach | not started | — |
+| Class II (S9-S10) — manipulation | not started | — |
+| Class III (S16) — non-asset slice | not started | `point_at`, `beat` only. `props`/`roleplay` need a 3D asset pipeline this session cannot run |
+| Class IV — worlds | **blocked** | owner decision D2 (§8.2), asked not guessed |
+| Class V (S21) — kept artifacts | not started | DB confirmed available locally; feasible this session |
 
 ### §0.1 Baseline — what is true today (all VERIFIED 2026-09-02)
 
@@ -539,6 +544,29 @@ plus the paid converse run above.
 **Risks.** The model over-requests a favourite type and variety drops — check the
 transcripts, not just the counts. The curated set encodes a pedagogical opinion; it
 should be reviewed by whoever owns pedagogy, not merged silently.
+
+**RESULT (2026-09-02).** Shipped with two deliberate deviations from the plan
+above, both recorded rather than silently substituted:
+
+- **Prompt guidance was NOT delivered through §4.4's move mechanism.** That
+  mechanism exists because 41 whiteboard kinds at full explanation-length would
+  bloat every turn; 10 short segment-type names fit in the same handful of lines
+  the field already occupied in the turn-shape spec, so they are listed there
+  directly. Routing them through moves would have added indirection with no
+  budget problem to solve.
+- **Acceptance #3 used the LOCAL `npm run tutor:converse` harness, not the paid
+  GitHub Action.** Same script (`oracle/scripts/converse.ts`), same orchestrator,
+  same real model — the Action dispatches it remotely against a pushed branch,
+  and nothing was pushed yet this session. Four real runs, ~$0.43 total,
+  documented in §10.3a: the widened vocabulary is what let `tokens` and `flow`
+  fire at all, once combined with the §4.4 fix that gave `worked-example-
+  think-aloud` reach to those instrument specs.
+
+Acceptance #1 and #2: the curated table is §3.1's `money`-family-plus-
+`number_line` rule, one reason for all ten at once rather than one row each; the
+fail-open behaviour is `sanitizePreferredTypes`, covered by
+`session.test.ts`, including a real deduplication defect the widening exposed
+(§10.3a).
 
 ---
 

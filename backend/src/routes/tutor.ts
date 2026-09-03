@@ -1487,8 +1487,32 @@ function internalRouter(): Router {
      * V4 sprint 2 backlog (ROADMAP.md): a hint so the ladder can prefer a
      * VISUAL segment over its own frontier fallback. Best-effort — a miss
      * falls through to the ladder's ordinary behaviour, never an error.
+     *
+     * MIRRORS `oracle/src/tutor/turnSchema.ts`'s `PREFERRED_SEGMENT_TYPES` —
+     * widened together 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 1) from
+     * `interest_peek`/`number_line` alone to the Lesson Engine's own `money`
+     * family (9 types) plus `number_line`. Kept in agreement by
+     * `agent/tools/check-preferred-types-parity.mjs`, not by convention alone
+     * — the exact class of drift `check-instrument-parity.mjs` exists to catch
+     * one layer up, applied here because oracle and backend share no types.
      */
-    preferredTypes: z.array(z.enum(['interest_peek', 'number_line'])).max(2).nullish(),
+    preferredTypes: z
+      .array(
+        z.enum([
+          'coin_count',
+          'make_change',
+          'piggy_split',
+          'needs_wants',
+          'price_compare',
+          'budget_fit',
+          'savings_goal',
+          'fair_trade',
+          'interest_peek',
+          'number_line',
+        ]),
+      )
+      .max(3)
+      .nullish(),
   });
 
   /** Provenance stamp for the v3 evidence join — grading reads these back. */

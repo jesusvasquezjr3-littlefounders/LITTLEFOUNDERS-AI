@@ -111,8 +111,34 @@ export const SegmentRequestSchema = z
   })
   .strict();
 
-/** The only two values `preferredTypes` may ever actually carry past this file. */
-export const PREFERRED_SEGMENT_TYPES = ['interest_peek', 'number_line'] as const;
+/**
+ * THE CLOSED SET `preferredTypes` MAY EVER ACTUALLY CARRY PAST THIS FILE
+ * (widened 2026-09-02, /TUTOR_INSTRUMENTS.md Sprint 1 — was `interest_peek`/
+ * `number_line` only).
+ *
+ * THE CURATION RULE, stated once so a future addition has a test to pass
+ * rather than a judgment call to make: every graded type in the Lesson
+ * Engine's OWN `money` family (`frontend/src/lesson-engine/families/money/
+ * schema.ts` — this product's dedicated subject, not a borrowed one), plus
+ * `number_line`, which is the graded sibling of the whiteboard's own
+ * `open_number_line` (§20.5) for exactly the same counting-up story. Nothing
+ * outside that boundary is added on a guess — a type from `arrange` or
+ * `analyze` earns its way in only when a real transcript shows the tutor
+ * reaching for a story that family actually serves, the same evidence bar
+ * `/ORACLE.md`'s own drift detectors are held to.
+ */
+export const PREFERRED_SEGMENT_TYPES = [
+  'coin_count',
+  'make_change',
+  'piggy_split',
+  'needs_wants',
+  'price_compare',
+  'budget_fit',
+  'savings_goal',
+  'fair_trade',
+  'interest_peek',
+  'number_line',
+] as const;
 
 /**
  * Filters a model-supplied `preferredTypes` down to the closed vocabulary,
@@ -129,7 +155,26 @@ export function sanitizePreferredTypes(
     (v): v is (typeof PREFERRED_SEGMENT_TYPES)[number] =>
       (PREFERRED_SEGMENT_TYPES as readonly string[]).includes(v),
   );
-  return kept.length > 0 ? kept.slice(0, 2) : null;
+  /*
+   * DEDUPE BEFORE CAPPING, not the other way round — found while widening the
+   * cap from 2 to 3 for this same change (2026-09-02). The old code capped
+   * first (`kept.slice(0, 2)`) with no dedup step at all, and one test's own
+   * ordering (`['interest_peek', 'number_line', 'interest_peek']`) happened to
+   * put the duplicate LAST, so slicing to 2 silently discarded it and looked
+   * like deduplication. It was not: the same values in a different order —
+   * `['interest_peek', 'interest_peek', 'number_line']` — would have kept
+   * BOTH copies of the duplicate and dropped the second real type instead. A
+   * duplicate reaching `orderCandidates` (backend/tutorLadder.ts) is harmless
+   * there (it only ever reads `.includes`), but a hint silently losing a real
+   * preference to make room for a repeat of one already counted is the same
+   * "told, not checked" shape this file's other comments warn about.
+   */
+  const deduped = [...new Set(kept)];
+  // Still a SHORT hint, not a filter over the whole vocabulary — 3 survives
+  // the widening from 2 to 10 types without turning "prefer this" into "only
+  // this", which is what `orderCandidates` (backend/tutorLadder.ts) needs to
+  // keep meaning "try these first" rather than "reject everything else".
+  return deduped.length > 0 ? deduped.slice(0, 3) : null;
 }
 
 /**

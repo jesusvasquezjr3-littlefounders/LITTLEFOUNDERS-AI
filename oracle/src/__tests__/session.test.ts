@@ -335,11 +335,27 @@ describe('the closed turn schema', () => {
       expect(sanitizePreferredTypes(['quiz_mcq', 'number_line'])).toEqual(['number_line']);
     });
 
-    it('caps at two, even if the model listed the same valid type three times', () => {
+    it('dedupes a repeated valid type, in EITHER order', () => {
+      // The duplicate-last case: the first version of this test used only this
+      // ordering, capped at 2 with no real dedup step, and the slice happened
+      // to cut the duplicate off — passing for the wrong reason.
       expect(sanitizePreferredTypes(['interest_peek', 'number_line', 'interest_peek'])).toEqual([
         'interest_peek',
         'number_line',
       ]);
+      // The duplicate-FIRST case: this is what the old code actually did wrong
+      // — it kept both copies of the duplicate and silently dropped the real
+      // second preference, `number_line`, instead.
+      expect(sanitizePreferredTypes(['interest_peek', 'interest_peek', 'number_line'])).toEqual([
+        'interest_peek',
+        'number_line',
+      ]);
+    });
+
+    it('caps at three once deduped, even with more valid entries than that', () => {
+      expect(
+        sanitizePreferredTypes(['coin_count', 'make_change', 'piggy_split', 'needs_wants']),
+      ).toEqual(['coin_count', 'make_change', 'piggy_split']);
     });
 
     it('treats null, undefined, and empty the same — no preference', () => {

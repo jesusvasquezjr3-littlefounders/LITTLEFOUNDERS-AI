@@ -67,6 +67,14 @@ jobs:
       - name: Whiteboard instruments agree across every copy
         run: node agent/tools/check-instrument-parity.mjs
 
+      # The same class of gap one layer up: `segmentRequest.preferredTypes` is
+      # ALSO hand-mirrored between oracle and backend (widened together
+      # 2026-09-02, /TUTOR_INSTRUMENTS.md Sprint 1), and a drift here degrades
+      # silently — the hint just stops working for whichever type fell out of
+      # sync, with no error anywhere.
+      - name: Preferred segment types agree between oracle and core
+        run: node agent/tools/check-preferred-types-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed: on 2026-08-14 it was failing because ROADMAP.md still
       # named migration 0033 as the ceiling while the repo shipped 0046. A gate

@@ -3619,13 +3619,50 @@ describe('preferredTypes — the ladder\'s visual-type hint (V4 sprint 2 backlog
     expect(response.body.data.segment?.id).toBe('seg-visual');
   });
 
-  it('rejects a type outside the two named ones — a preference, not a new authoring surface', async () => {
+  it('rejects a type outside the closed vocabulary — a preference, not a new authoring surface', async () => {
     stub(catalog);
 
     const response = await request(createApp())
       .post('/api/v1/tutor/internal/segments')
       .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
       .send({ ...body, preferredTypes: ['quiz_mcq'] });
+
+    expect(response.status).toBe(400);
+  });
+
+  it('accepts every type in the widened money-family vocabulary (2026-09-02)', async () => {
+    // Not just `number_line`/`interest_peek` any more — the Lesson Engine's
+    // own `money` family joined 2026-09-02
+    // (/TUTOR_INSTRUMENTS.md Sprint 1). One request per type, proving Core's
+    // enum actually accepts all nine, not only the two this endpoint was
+    // originally built against.
+    for (const type of [
+      'coin_count',
+      'make_change',
+      'piggy_split',
+      'needs_wants',
+      'price_compare',
+      'budget_fit',
+      'savings_goal',
+      'fair_trade',
+    ]) {
+      stub({ ...catalog, segment: [{ id: 'sss00000-0000-4000-8000-000000000005' }] });
+      const response = await request(createApp())
+        .post('/api/v1/tutor/internal/segments')
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+        .send({ ...body, preferredTypes: [type] });
+
+      expect(response.status, type).toBe(200);
+    }
+  });
+
+  it('rejects more than three preferred types — a short hint, not a filter', async () => {
+    stub(catalog);
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ ...body, preferredTypes: ['coin_count', 'make_change', 'piggy_split', 'needs_wants'] });
 
     expect(response.status).toBe(400);
   });
