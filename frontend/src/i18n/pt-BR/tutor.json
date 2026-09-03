@@ -415,6 +415,12 @@
     "whatif": {
       "hint": "Toque em um para ver o que acontece"
     },
+    "yourTurn": {
+      "hint": "Já fizemos as primeiras — agora é sua vez",
+      "given": "{{n}}: {{value}} — já fizemos isso",
+      "reveal": "Mostrar {{n}}",
+      "undo": "Desfazer {{n}}"
+    },
     "compare": {
       "difference": "Diferença: {{amount}}"
     },

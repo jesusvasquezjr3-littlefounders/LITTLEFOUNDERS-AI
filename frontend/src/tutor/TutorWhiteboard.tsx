@@ -269,6 +269,7 @@ type BeforeAfterWire = Extract<TutorWhiteboardWire, { kind: 'before_after' }>;
 type GrabWire = Extract<TutorWhiteboardWire, { kind: 'grab' }>;
 type FillWire = Extract<TutorWhiteboardWire, { kind: 'fill' }>;
 type WhatifWire = Extract<TutorWhiteboardWire, { kind: 'whatif' }>;
+type YourTurnWire = Extract<TutorWhiteboardWire, { kind: 'your_turn' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -2250,6 +2251,107 @@ function WhatifBoard({ board, seq, className }: { board: WhatifWire; seq: number
   );
 }
 
+/**
+ * `kind: 'your_turn'` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3): "the
+ * Tutor demonstrates, then hands the instrument over — the scaffold-fade two
+ * moves ask for" (`oracle/skills/moves/scaffold-fading.md`'s FULL → LAST STEP
+ * THEIRS → FIRST STEP YOURS → ALONE ladder). ONE `sequence`'s worth of
+ * `values`, split at `board.givenCount`: the first `givenCount` are the
+ * tutor's own contribution, shown on mount; the rest start hidden and the
+ * LEARNER reveals them one at a time, tapping — `fill`'s exact ordered,
+ * undo-able mechanic, generalized from an empty container to a partly-worked
+ * chart. `values` is SERVER-COMPUTED in ONE pass over the WHOLE `steps` list
+ * (`computeYourTurn`), so the tutor's shown prefix and the learner's revealed
+ * suffix can never disagree arithmetically — there is no second computation
+ * for the learner's half to drift from the first.
+ *
+ * `interactive` (`role="group"`), same as `grab`/`fill` and for the same
+ * reason: unlike `whatif`, what is REVEALED is the learner's own doing, tap
+ * by tap, not a finished picture with only a viewing choice attached.
+ *
+ * The tutor's own prefix and the learner's own reveals are colour-coded
+ * differently (muted vs. accent) — a deliberate, visible answer to
+ * `scaffold-fading.md`'s own instruction to name what the learner did
+ * ("Terminaste tú solo la parte difícil"): the bars let them SEE which ones
+ * were theirs, not just be told.
+ */
+function YourTurnBoard({ board, seq, className }: { board: YourTurnWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const [filled, setFilled] = useState(board.givenCount);
+
+  // Reset on a genuinely new board, in render rather than an effect — the
+  // same reason `SequenceBoard` does (a bad frame is never painted).
+  const [resetSeq, setResetSeq] = useState(seq);
+  if (seq !== resetSeq) {
+    setResetSeq(seq);
+    setFilled(board.givenCount);
+  }
+
+  // Defense in depth, the same posture `SequenceBoard`'s `safeShown` and
+  // `WhatifBoard`'s `safeActive` already take: a stale `filled` from a wider
+  // previous board must never index past a narrower new one for the ONE
+  // render where `resetSeq` hasn't caught up yet.
+  const safeFilled = Math.min(Math.max(filled, board.givenCount), board.values.length);
+  const max = Math.max(...board.values, 1);
+  const captionFor = (i: number) => (i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i }));
+
+  const reveal = () => setFilled((n) => Math.min(n + 1, board.values.length));
+  // Never undoes below `givenCount` — the tutor's own prefix is not the
+  // learner's to take back.
+  const undo = () => setFilled((n) => Math.max(n - 1, board.givenCount));
+
+  return (
+    <WhiteboardShell seq={seq} label={board.label} className={className} interactive>
+      <div className="flex min-h-0 flex-1 flex-col gap-2">
+        <p className="lf-caption text-content-muted">{t('tutor.whiteboard.yourTurn.hint')}</p>
+        <BoardRow>
+          {board.values.map((value, i) => {
+            const given = i < board.givenCount;
+            const shown = i < safeFilled;
+            const isNext = i === safeFilled;
+            const isUndo = !given && i === safeFilled - 1;
+            const tappable = isNext || isUndo;
+            return (
+              <button
+                key={i}
+                type="button"
+                disabled={!tappable}
+                onClick={isUndo ? undo : reveal}
+                aria-label={
+                  given
+                    ? t('tutor.whiteboard.yourTurn.given', { n: captionFor(i), value: format(value) })
+                    : isUndo
+                      ? t('tutor.whiteboard.yourTurn.undo', { n: captionFor(i) })
+                      : t('tutor.whiteboard.yourTurn.reveal', { n: captionFor(i) })
+                }
+                className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1 rounded-md p-1 enabled:hover:bg-primary/5"
+              >
+                <span className="lf-number lf-title text-content" aria-hidden="true">
+                  {shown ? format(value) : ''}
+                </span>
+                <span className="flex w-full min-h-0 flex-1 items-end" aria-hidden="true">
+                  <span
+                    className={cn(
+                      'w-full rounded-t-md',
+                      given ? 'bg-content-muted/50' : 'bg-accent/70',
+                      !shown && 'opacity-0',
+                    )}
+                    style={{ height: shown ? `${barHeightPct(value, max)}%` : '0%' }}
+                  />
+                </span>
+                <span className="lf-caption text-content-muted" aria-hidden="true">
+                  {captionFor(i)}
+                </span>
+              </button>
+            );
+          })}
+        </BoardRow>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -2340,5 +2442,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <FillBoard board={board} seq={seq} className={className} />;
     case 'whatif':
       return <WhatifBoard board={board} seq={seq} className={className} />;
+    case 'your_turn':
+      return <YourTurnBoard board={board} seq={seq} className={className} />;
   }
 }

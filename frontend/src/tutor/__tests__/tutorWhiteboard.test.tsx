@@ -828,3 +828,79 @@ describe('whatif — the learner switches between server-computed branches', () 
     expect(screen.getByRole('button', { name: 'Save $3' })).toHaveAttribute('aria-pressed', 'true');
   });
 });
+
+/*
+ * `your_turn` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3). The THIRD
+ * interactive board: ONE `sequence`, split at `givenCount` into the tutor's
+ * shown prefix and the learner's ordered, undo-able reveal — `fill`'s exact
+ * tap-ordering mechanic, applied to a partly-worked chart instead of an
+ * empty container.
+ */
+describe('your_turn — the learner continues a sequence the tutor already started', () => {
+  const YOUR_TURN_BOARD = {
+    kind: 'your_turn' as const,
+    start: 0,
+    steps: [
+      { op: 'add', value: 5 },
+      { op: 'add', value: 5 },
+      { op: 'add', value: 5 },
+    ],
+    givenCount: 2,
+    unit: 'week' as const,
+    values: [0, 5, 10, 15],
+    label: 'Keep the pattern going',
+    currency: 'USD' as const,
+  };
+
+  it('is a group, not a picture — every value is its own reachable control', () => {
+    render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: YOUR_TURN_BOARD.label })).toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toHaveLength(4);
+  });
+
+  it("shows the tutor's given values immediately, both disabled", () => {
+    render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    const start = screen.getByRole('button', { name: 'Start: $0 — we already did this' });
+    const week1 = screen.getByRole('button', { name: 'Week 1: $5 — we already did this' });
+    expect(start).toBeDisabled();
+    expect(week1).toBeDisabled();
+  });
+
+  it('reveals the next value on tap, and only that one is enabled', () => {
+    render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show Week 2' }));
+    expect(screen.getByRole('button', { name: 'Undo Week 2' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show Week 3' })).not.toBeDisabled();
+  });
+
+  it('reveals in order — tapping ahead of the next value does nothing (it is disabled)', () => {
+    render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    expect(screen.getByRole('button', { name: 'Show Week 3' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Show Week 3' }));
+    expect(screen.queryByRole('button', { name: 'Undo Week 3' })).not.toBeInTheDocument();
+  });
+
+  it('undoes the most recently learner-revealed value on tap', () => {
+    render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show Week 2' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Undo Week 2' }));
+    expect(screen.getByRole('button', { name: 'Show Week 2' })).toBeInTheDocument();
+  });
+
+  it("never lets the tutor's own given prefix be undone — the boundary is untouchable", () => {
+    render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    // Nothing revealed yet: the last SHOWN value is the tutor's own Week 1, which stays disabled.
+    expect(screen.getByRole('button', { name: 'Week 1: $5 — we already did this' })).toBeDisabled();
+  });
+
+  it('resets to givenCount when a NEW turn carries a different seq', () => {
+    const { rerender } = render(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show Week 2' }));
+    expect(screen.getByRole('button', { name: 'Undo Week 2' })).toBeInTheDocument();
+
+    rerender(<TutorWhiteboard board={YOUR_TURN_BOARD} seq={2} />);
+    expect(screen.getByRole('button', { name: 'Week 1: $5 — we already did this' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'Undo Week 2' })).not.toBeInTheDocument();
+  });
+});

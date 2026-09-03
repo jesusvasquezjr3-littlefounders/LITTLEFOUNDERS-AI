@@ -72,6 +72,7 @@ import {
   computeStack,
   computeSequenceCompare,
   computeWhatif,
+  computeYourTurn,
   computeTimeline,
   computeBeforeAfter,
 } from '../src/tutor/whiteboard.js';
@@ -639,6 +640,11 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
       const summary = result
         ? board.branches.map((b, i) => `${b.label}: ${result.values[i]!.join(' → ')}`).join(' | ')
         : 'INVALID';
+      return { label: board.label, summary };
+    }
+    case 'your_turn': {
+      const result = computeYourTurn(board);
+      const summary = result ? `given ${board.givenCount}: ${result.values.join(' → ')}` : 'INVALID';
       return { label: board.label, summary };
     }
   }

@@ -816,6 +816,7 @@ const LAB_LAST_TEXT: Readonly<
       grab: { say: string; label: string; bins: [string, string]; items: [string, string, string] };
       fill: { say: string; label: string };
       whatif: { say: string; label: string; branches: [string, string, string] };
+      yourTurn: { say: string; label: string };
     }
   >
 > = {
@@ -832,6 +833,7 @@ const LAB_LAST_TEXT: Readonly<
     grab: { say: 'Sort them yourself — tap one, then tap a group.', label: 'Sort what you need from what you want', bins: ['Need', 'Want'], items: ['Bread', 'Toy', 'Water'] },
     fill: { say: 'Count them out yourself — tap one at a time.', label: 'Count to five' },
     whatif: { say: 'What if you saved more each week? Try each one.', label: 'Three ways to save', branches: ['Save $1', 'Save $3', 'Save $6'] },
+    yourTurn: { say: 'I started it: 0, then 5. Now you keep going.', label: 'Keep the pattern going' },
   },
   'es-MX': {
     pictograph: { say: 'Cada dibujito es una galleta vendida. ¿Quién vendió más?', label: 'Galletas vendidas esta semana', rows: ['Lunes', 'Martes', 'Miércoles'] },
@@ -846,6 +848,7 @@ const LAB_LAST_TEXT: Readonly<
     grab: { say: 'Sepáralas tú — toca una, luego toca un grupo.', label: 'Separa lo que necesitas de lo que quieres', bins: ['Necesito', 'Quiero'], items: ['Pan', 'Juguete', 'Agua'] },
     fill: { say: 'Cuéntalas tú — toca una por una.', label: 'Cuenta hasta cinco' },
     whatif: { say: '¿Qué tal si ahorras más cada semana? Prueba cada una.', label: 'Tres formas de ahorrar', branches: ['Ahorra $1', 'Ahorra $3', 'Ahorra $6'] },
+    yourTurn: { say: 'Yo empecé: 0, luego 5. Ahora sigue tú el patrón.', label: 'Sigue tú el patrón' },
   },
   'pt-BR': {
     pictograph: { say: 'Cada desenho é um biscoito vendido. Quem vendeu mais?', label: 'Biscoitos vendidos esta semana', rows: ['Segunda', 'Terça', 'Quarta'] },
@@ -860,6 +863,7 @@ const LAB_LAST_TEXT: Readonly<
     grab: { say: 'Separe você mesmo — toque em um, depois toque em um grupo.', label: 'Separe o que você precisa do que você quer', bins: ['Preciso', 'Quero'], items: ['Pão', 'Brinquedo', 'Água'] },
     fill: { say: 'Conte você mesmo — toque um de cada vez.', label: 'Conte até cinco' },
     whatif: { say: 'E se você guardasse mais a cada semana? Experimente cada uma.', label: 'Três formas de guardar dinheiro', branches: ['Guarde $1', 'Guarde $3', 'Guarde $6'] },
+    yourTurn: { say: 'Eu comecei: 0, depois 5. Agora continue você o padrão.', label: 'Continue você o padrão' },
   },
 };
 
@@ -1484,7 +1488,8 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
     activity === 'before-after' ||
     activity === 'grab' ||
     activity === 'fill' ||
-    activity === 'whatif'
+    activity === 'whatif' ||
+    activity === 'your-turn'
   ) {
     const text = LAB_LAST_TEXT[locale];
     const currency = LAB_CURRENCY[locale];
@@ -1640,6 +1645,27 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
         },
       };
     }
+    if (activity === 'your-turn') {
+      return {
+        ...base,
+        text: text.yourTurn.say,
+        whiteboard: {
+          kind: 'your_turn',
+          start: 0,
+          steps: [
+            { op: 'add', value: 5 },
+            { op: 'add', value: 5 },
+            { op: 'add', value: 5 },
+            { op: 'add', value: 5 },
+          ],
+          givenCount: 2,
+          unit: 'week',
+          values: [0, 5, 10, 15, 20],
+          label: text.yourTurn.label,
+          currency,
+        },
+      };
+    }
     return {
       ...base,
       text: text.beforeAfter.say,
@@ -1780,6 +1806,7 @@ const WHITEBOARD_ACTIVITIES = [
   'grab',
   'fill',
   'whatif',
+  'your-turn',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [

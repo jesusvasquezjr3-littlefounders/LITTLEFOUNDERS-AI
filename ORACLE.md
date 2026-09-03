@@ -4476,7 +4476,7 @@ parent reading "so I take one of these away…" still had no way to see what
 so the guardian transcript can render it without pulling the entire 3D replay
 world into a plain scrolling page, and both surfaces now show it.
 
-### 20.9 `grab` and `fill` — the two INTERACTIVE whiteboard kinds (2026-09-03, `grab` SHIPPED and WORKING, `fill` SHIPPED and NOT YET RELIABLY REACHABLE)
+### 20.9 `grab`, `fill` and `your_turn` — the three INTERACTIVE whiteboard kinds (2026-09-03, `grab` and `your_turn` SHIPPED and WORKING, `fill` SHIPPED and NOT YET RELIABLY REACHABLE)
 
 **§20.5 through §20.8, and every whiteboard kind before this one, are
 pictures.** Forty-one of them, all sharing the same contract:
@@ -4559,6 +4559,69 @@ about them is wrong — but this file will not claim a capability as verified
 that four independent live calls could not produce, the same standard Sprint
 2's `move` (number_line demonstrate) is already held to.
 /TUTOR_INSTRUMENTS.md §0.0's Class II / S9 `fill` row has the full count.
+
+**`your_turn` (S10, same day) reuses `interactive` mode a THIRD time, and is
+what "the Tutor demonstrates, then hands the instrument over" concretely
+means** — the shape two of this codebase's own pedagogical moves already
+describe in prose (`oracle/skills/moves/scaffold-fading.md`'s FULL → LAST
+STEP THEIRS → FIRST STEP YOURS → ALONE withdrawal ladder;
+`concrete-to-abstract.md`'s same shape on a representation axis instead of a
+who-does-it one) but had no whiteboard to draw before this kind existed.
+Structurally it is ONE `sequence`, split at a new `givenCount` field: the
+first `givenCount` values are the tutor's own contribution, shown on mount;
+the rest start hidden, and the learner reveals them one at a time by
+tapping — `fill`'s exact ordered, undo-able mechanic (only the next hidden
+value and the most-recently-revealed one are ever tappable), generalized
+from an empty container to a chart that starts partly worked.
+
+**NOT ungraded, unlike `grab`/`fill` — and this is the part worth being
+careful about.** `values` is server-computed in a SINGLE `computeSequence`
+pass over the WHOLE `steps` list (`computeYourTurn`, `whiteboard.ts`), never
+two independent computations for the tutor's half and the learner's half.
+That single-pass design is not an implementation convenience; it is what
+guarantees the two halves can never arithmetically disagree — a bug that
+computed the prefix and suffix separately could, in principle, produce a
+board where the tutor's own "shown" values do not connect smoothly to the
+learner's revealed ones, which would be strictly worse than drawing nothing.
+`computeYourTurn` also refuses a board that leaves the learner nothing
+(`givenCount` at or past the last value) — a hand-over that hands over
+nothing is a `sequence` wearing this kind's name, and the model has no field
+here it could use to get that wrong on its own; the refusal is what makes it
+a compute-time guarantee rather than a prompt-time hope, the identical
+posture `whatif`'s branch-length check and `sequence_compare`'s own already
+take.
+
+**The tutor's given bars and the learner's revealed bars are drawn in
+different colours (muted grey vs. the board's accent) — a deliberate,
+visible answer to `scaffold-fading.md`'s own closing instruction**, "Say
+what they did, not 'muy bien': 'Terminaste tú solo la parte difícil.'" The
+move already asks the MODEL to name the learner's contribution in words;
+the board now lets the learner SEE it too, at a glance, every time they look
+back at what they built.
+
+**Live-verified working on the FIRST attempt, unlike `fill` and `whatif`
+before it in this same section and file — the one Class II kind this sprint
+did not need a prompt fix to fire.** Four attempts against the real
+orchestrator: two single-turn requests phrased as an explicit hand-off
+("muéstrame los primeros dos... deja que yo termine el resto yo mismo,
+tocando"), one two-turn scenario where the tutor first narrated a plain
+`sequence` and only handed off on the learner's SECOND message, and one
+tier-1 phrasing. Three of the four produced a correct `your_turn` board —
+with two DIFFERENT `givenCount` choices (1 and 2) that both matched what the
+learner had actually asked for, and narration that named the mechanic
+correctly ("Yo te muestro las primeras dos semanas, y tú tocas para
+descubrir las que siguen"). The one miss narrated the identical invitation
+in words ("ahora tú tocas la pantalla para seguir") without ever attaching
+the board — the same class of gap `fill` and `whatif` have, just far rarer
+here (1-in-4 against their 4-in-4). Working hypothesis for the difference,
+not yet confirmed: `grab`, `fill` and `whatif` each have to DISPLACE one or
+more specific, deeply-reinforced sibling kinds the model already reaches for
+out of habit (`two_bins`, `ten_frame`, and `sequence`/`sequence_compare`/
+`categories` respectively); a hand-off situation has no comparably
+established habit to overcome, so the new kind wins on its own merits rather
+than needing to win an argument against an old one.
+/TUTOR_INSTRUMENTS.md §0.0's Class II / S10 `your_turn` row has the full
+count.
 
 ### 20.10 `whatif` — a picture with a sibling switch, NOT a third `interactive` kind (2026-09-03, SHIPPED and NOT YET RELIABLY REACHABLE)
 

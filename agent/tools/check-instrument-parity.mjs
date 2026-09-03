@@ -404,6 +404,17 @@ export const INSTRUMENTS = [
     blocks: { oracleSchema: 'WhiteboardWhatifSchema', coreBody: 'WhatifWhiteboardBody', coreRow: 'WhatifBoardRowSchema' },
   },
   {
+    kind: 'your_turn',
+    // Class II, S10 — NOT ungraded: ONE `sequence`, folded in a single
+    // server-side pass; `givenCount` is the only new model-facing field,
+    // marking where the tutor's shown prefix ends and the learner's
+    // tap-to-reveal suffix begins. `values` is server-computed exactly as
+    // `sequence`'s own is.
+    model: ['kind', 'start', 'steps', 'givenCount', 'unit', 'label', 'currency'],
+    computed: ['values'],
+    blocks: { oracleSchema: 'WhiteboardYourTurnSchema', coreBody: 'YourTurnWhiteboardBody', coreRow: 'YourTurnBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],

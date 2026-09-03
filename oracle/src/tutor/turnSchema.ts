@@ -942,6 +942,40 @@ export const WhiteboardWhatifSchema = z
   })
   .strict();
 
+/**
+ * `kind: 'your_turn'` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3): "the
+ * Tutor demonstrates, then hands the instrument over — the scaffold-fade two
+ * moves ask for" (`oracle/skills/moves/scaffold-fading.md`'s FULL → LAST STEP
+ * THEIRS → FIRST STEP YOURS → ALONE ladder; `concrete-to-abstract.md`'s same
+ * shape on a different axis). ONE `sequence`, split in two: the first
+ * `givenCount` values are the tutor's own contribution, shown immediately;
+ * the rest are the learner's to reveal themselves, one tap at a time —
+ * `fill`'s exact ordered-reveal mechanic, generalized from an empty
+ * container to a partly-worked one.
+ *
+ * `values` is SERVER-COMPUTED from `start`+`steps` in ONE call
+ * (`computeYourTurn`, folding `computeSequence`), never two — so the tutor's
+ * shown prefix and the learner's revealed suffix can never disagree
+ * arithmetically the way two independently-authored halves could. The MODEL
+ * never states which values are which; it only marks the BOUNDARY
+ * (`givenCount`). `computeYourTurn` refuses a board that leaves the learner
+ * nothing (`givenCount >= values.length`) — a hand-over that hands over
+ * nothing is just a `sequence`, and this file's server-side refusal is what
+ * keeps that a compute-time guarantee rather than a prompt-time hope.
+ */
+export const WhiteboardYourTurnSchema = z
+  .object({
+    kind: z.literal('your_turn'),
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(WhiteboardStepSchema).min(2).max(7),
+    /** How many of the folded values (start included) the TUTOR already showed. Always < steps.length + 1 — enforced in `computeYourTurn`, not here, the same posture `sequence_compare`'s equal-length tracks and `whatif`'s branch count already take. */
+    givenCount: z.number().int().min(1).max(7),
+    unit: z.enum(['day', 'week', 'month', 'year']),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /** One thing placed in a `venn` board's two overlapping sets. */
 export const VennItemSchema = z
   .object({
@@ -1511,6 +1545,7 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardGrabSchema,
   WhiteboardFillSchema,
   WhiteboardWhatifSchema,
+  WhiteboardYourTurnSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -1596,6 +1631,7 @@ export type WhiteboardGrab = z.infer<typeof WhiteboardGrabSchema>;
 export type WhiteboardFill = z.infer<typeof WhiteboardFillSchema>;
 export type WhiteboardWhatifBranch = z.infer<typeof WhiteboardWhatifBranchSchema>;
 export type WhiteboardWhatif = z.infer<typeof WhiteboardWhatifSchema>;
+export type WhiteboardYourTurn = z.infer<typeof WhiteboardYourTurnSchema>;
 export type WhiteboardVenn = z.infer<typeof WhiteboardVennSchema>;
 export type WhiteboardRanking = z.infer<typeof WhiteboardRankingSchema>;
 export type WhiteboardOutcomes = z.infer<typeof WhiteboardOutcomesSchema>;
@@ -1748,6 +1784,8 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       return [whiteboard.label];
     case 'whatif':
       return [whiteboard.label, ...whiteboard.branches.map((b) => b.label)];
+    case 'your_turn':
+      return [whiteboard.label];
   }
 }
 

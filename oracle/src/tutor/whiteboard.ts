@@ -36,6 +36,7 @@ import type {
   WhiteboardPictograph,
   WhiteboardSequenceCompare,
   WhiteboardWhatif,
+  WhiteboardYourTurn,
   WhiteboardStack,
   WhiteboardTally,
   WhiteboardTimeline,
@@ -1049,6 +1050,27 @@ export function computeWhatif(board: Pick<WhiteboardWhatif, 'start' | 'branches'
   return { values };
 }
 
+/** The one `sequence`, folded — see `computeYourTurn`. */
+export interface YourTurnResult {
+  values: number[];
+}
+
+/**
+ * ONE `computeSequence` call, so the tutor's shown prefix and the learner's
+ * revealed suffix can never disagree — there is only ever one arithmetic
+ * pass over `steps`, never two independently-computed halves. Refuses a
+ * board that leaves the learner nothing to reveal (`givenCount` at or past
+ * the last value): a hand-over with nothing left to hand over is a
+ * `sequence` wearing this kind's name, and the model has no field here to
+ * get that wrong on its own — this is the one check enforcing it.
+ */
+export function computeYourTurn(board: Pick<WhiteboardYourTurn, 'start' | 'steps' | 'givenCount'>): YourTurnResult | null {
+  const values = computeSequence({ start: board.start, steps: board.steps });
+  if (values === null) return null;
+  if (board.givenCount < 1 || board.givenCount >= values.length) return null;
+  return { values };
+}
+
 /** Where each timeline event sits along the line. */
 export interface TimelineResult {
   /** 0..1 along the span, one per event. */
@@ -1205,6 +1227,8 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return true;
     case 'whatif':
       return computeWhatif(board) !== null;
+    case 'your_turn':
+      return computeYourTurn(board) !== null;
   }
 }
 

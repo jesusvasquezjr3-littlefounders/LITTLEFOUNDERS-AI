@@ -583,6 +583,23 @@ export type TutorWhiteboardWire =
       values: number[][];
       label: string;
       currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      /**
+       * Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3) — NOT ungraded: ONE
+       * `sequence`, server-computed in a single pass, split at `givenCount`
+       * into the tutor's shown prefix and the learner's tap-to-reveal
+       * suffix. `values` carries steps.length + 1 entries, same as
+       * `sequence`'s own.
+       */
+      kind: 'your_turn';
+      start: number;
+      steps: { op: string; value: number }[];
+      givenCount: number;
+      unit: 'day' | 'week' | 'month' | 'year';
+      values: number[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

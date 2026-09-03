@@ -39,6 +39,7 @@ import {
   computeTimeline,
   computeBeforeAfter,
   computeWhatif,
+  computeYourTurn,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -1128,6 +1129,39 @@ describe('whatif — 2-3 branches sharing ONE start, switched between rather tha
           { label: 'b', steps: [{ op: 'add', value: 2 }] },
         ],
       }),
+    ).toBeNull();
+  });
+});
+
+describe('your_turn — ONE sequence, split into a tutor-shown prefix and a learner-revealed suffix', () => {
+  it('folds the whole sequence in one pass, same as computeSequence itself', () => {
+    const result = computeYourTurn({
+      start: 0,
+      steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }],
+      givenCount: 2,
+    });
+    expect(result?.values).toEqual([0, 5, 10, 15]);
+  });
+
+  it('refuses a board that leaves the learner nothing to reveal', () => {
+    expect(
+      computeYourTurn({ start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }], givenCount: 3 }),
+    ).toBeNull();
+    // Exactly at the boundary — givenCount naming the LAST index is still nothing left.
+    expect(
+      computeYourTurn({ start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }], givenCount: 2 }),
+    ).not.toBeNull();
+  });
+
+  it('refuses a givenCount below 1 — the start itself is always shown', () => {
+    expect(
+      computeYourTurn({ start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }], givenCount: 0 }),
+    ).toBeNull();
+  });
+
+  it('refuses nonsense arithmetic the same way computeSequence does, before givenCount is even considered', () => {
+    expect(
+      computeYourTurn({ start: 5, steps: [{ op: 'subtract', value: 10 }, { op: 'add', value: 1 }], givenCount: 1 }),
     ).toBeNull();
   });
 });

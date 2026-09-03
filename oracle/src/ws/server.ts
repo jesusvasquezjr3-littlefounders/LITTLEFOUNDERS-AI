@@ -78,6 +78,7 @@ import {
   computeStack,
   computeSequenceCompare,
   computeWhatif,
+  computeYourTurn,
   computeTimeline,
   computeBeforeAfter,
 } from '../tutor/whiteboard.js';
@@ -1468,6 +1469,10 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
       return { ...board };
     case 'whatif': {
       const result = computeWhatif(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'your_turn': {
+      const result = computeYourTurn(board);
       return result === null ? null : { ...board, ...result };
     }
   }

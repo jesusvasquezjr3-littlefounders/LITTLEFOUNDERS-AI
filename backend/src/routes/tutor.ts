@@ -996,6 +996,22 @@ function internalRouter(): Router {
       currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
     })
     .strict();
+  /** Class II, S10 — NOT ungraded: ONE `sequence`, server-computed in a single pass, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
+  const YourTurnWhiteboardBody = z
+    .object({
+      kind: z.literal('your_turn'),
+      start: z.number(),
+      steps: z
+        .array(z.object({ op: z.enum(['add', 'subtract', 'multiply_percent']), value: z.number() }).strict())
+        .min(2)
+        .max(7),
+      givenCount: z.number().int().min(1).max(7),
+      unit: z.enum(['day', 'week', 'month', 'year']),
+      values: z.array(z.number()),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
 
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
@@ -1042,6 +1058,7 @@ function internalRouter(): Router {
     GrabWhiteboardBody,
     FillWhiteboardBody,
     WhatifWhiteboardBody,
+    YourTurnWhiteboardBody,
   ]);
 
   /**

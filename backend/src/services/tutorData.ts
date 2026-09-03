@@ -1197,6 +1197,8 @@ export interface TutorTurnStackBoard { kind: 'stack'; columns: { label: string; 
 export interface TutorTurnSequenceCompareBoard { kind: 'sequence_compare'; unit: 'day' | 'week' | 'month' | 'year'; tracks: [{ label: string; start: number; steps: { op: string; value: number }[] }, { label: string; start: number; steps: { op: string; value: number }[] }]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** Class II, S10 — NOT ungraded: `values` is server-computed, one array per branch. */
 export interface TutorTurnWhatifBoard { kind: 'whatif'; start: number; unit: 'day' | 'week' | 'month' | 'year'; branches: { label: string; steps: { op: string; value: number }[] }[]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** Class II, S10 — NOT ungraded: ONE `sequence`, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
+export interface TutorTurnYourTurnBoard { kind: 'your_turn'; start: number; steps: { op: string; value: number }[]; givenCount: number; unit: 'day' | 'week' | 'month' | 'year'; values: number[]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** When, not how much. Two events in one period are refused — the board exists to show ORDER. */
 export interface TutorTurnTimelineBoard { kind: 'timeline'; unit: 'day' | 'week' | 'month' | 'year'; span: number; events: { label: string; at: number }[]; positions: number[]; label: string }
 /** A loop that comes back to its start. The only Class I board with no numbers at all. */
@@ -1253,7 +1255,8 @@ export type TutorTurnWhiteboard =
   | TutorTurnBeforeAfterBoard
   | TutorTurnGrabBoard
   | TutorTurnFillBoard
-  | TutorTurnWhatifBoard;
+  | TutorTurnWhatifBoard
+  | TutorTurnYourTurnBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1936,6 +1939,20 @@ const WhatifBoardRowSchema = z
   })
   .strict();
 
+/** Class II, S10 — NOT ungraded: ONE `sequence`, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
+const YourTurnBoardRowSchema = z
+  .object({
+    kind: z.literal('your_turn'),
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(SeqStepRow).min(2).max(7),
+    givenCount: z.number().int().min(1).max(7),
+    unit: UnitRow,
+    values: z.array(z.number().min(0).max(10_000_000)).min(3).max(8),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
 const TimelineBoardRowSchema = z
   .object({
     kind: z.literal('timeline'),
@@ -2045,6 +2062,7 @@ const TutorTurnWhiteboardRowSchema = z
     GrabBoardRowSchema,
     FillBoardRowSchema,
     WhatifBoardRowSchema,
+    YourTurnBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {
@@ -2208,6 +2226,21 @@ const TutorTurnWhiteboardRowSchema = z
           code: z.ZodIssueCode.custom,
           message: 'values must carry exactly one entry per category',
           path: ['values'],
+        });
+      }
+    } else if (board.kind === 'your_turn') {
+      if (board.values.length !== board.steps.length + 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'values must carry exactly one entry per step plus the starting value',
+          path: ['values'],
+        });
+      }
+      if (board.givenCount >= board.values.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'givenCount must leave at least one value for the learner to reveal',
+          path: ['givenCount'],
         });
       }
     }

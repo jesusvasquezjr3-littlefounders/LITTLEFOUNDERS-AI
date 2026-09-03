@@ -1913,6 +1913,14 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '    { "kind": "whatif", "start", "unit": "day"|"week"|"month"|"year",'
     + ' "branches": 2-3 of { "label", "steps": 1-6 of { "op": "add"|"subtract"|"multiply_percent", "value" } },'
     + ' "label", "currency" }',
+  /*
+   * `your_turn` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3). NOT ungraded:
+   * ONE `sequence`, server-computed in a single pass, split at `givenCount`
+   * into your own shown prefix and the learner's blank-to-reveal suffix. See
+   * WhiteboardYourTurnSchema's own comment.
+   */
+  '    { "kind": "your_turn", "start", "steps": 2-7 of { "op": "add"|"subtract"|"multiply_percent", "value" },'
+    + ' "givenCount", "unit": "day"|"week"|"month"|"year", "label", "currency" }',
   '}',
   '',
   'USE "grab" WHENEVER THE LEARNER ASKS TO SORT SOMETHING THEMSELVES — "déjame',
@@ -1940,6 +1948,18 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'comparison), and you never state which branch ends higher — that is what',
   'tapping between them shows.',
   '',
+  'USE "your_turn" WHEN YOU HAVE BEEN WALKING THROUGH A GROWING NUMBER STORY',
+  'STEP BY STEP AND ARE HANDING THE REST TO THE LEARNER — set "your_turn"',
+  'instead of "sequence". "sequence" is a board YOU narrate start to finish;',
+  '"your_turn" is the SAME kind of board with your own steps already filled in',
+  '("givenCount" of them, start counted as the first) and the rest left BLANK',
+  'for the learner to tap open themselves, one at a time — they are not typing',
+  'or saying a number, only revealing what the board already knows. Choose',
+  '"givenCount" from how much of the work you actually said out loud: if you',
+  'set up the whole problem and only the LAST step is new, give away all but',
+  'one; if you only started it, give away just the first one or two. Never',
+  'state the values you left them — their own tapping is what reveals those.',
+  '',
   'ONE SURFACE PER TURN. A turn may carry a `whiteboard` OR a `segmentRequest`,',
   'never both — the schema refuses it and the whole turn is thrown away, so the',
   'learner gets nothing. If you are handing them an activity, do not also draw a',
@@ -1954,8 +1974,10 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '"demonstrate" on the one already there instead (see below).',
   '  Counting real money on a table → tokens. A quantity moving over periods →',
   '  sequence; two of those side by side → sequence_compare; the learner trying',
-  '  out different amounts themselves, one at a time → whatif. A total and its',
-  '  pieces, one unknown → bar_model; both parts known → part_whole. Money in and',
+  '  out different amounts themselves, one at a time → whatif; you handing the',
+  '  rest of one you were already narrating over to them → your_turn.',
+  '  A total and its pieces, one unknown → bar_model; both parts known →',
+  '  part_whole. Money in and',
   '  out with something left → flow; a running account of many such → ledger.',
   '  A savings goal with a gap → goal_bar. Showing HOW you worked something out →',
   '  worked. Counting up from a price → open_number_line. Giving change → change.',

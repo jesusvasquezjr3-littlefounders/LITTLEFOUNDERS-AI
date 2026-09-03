@@ -415,6 +415,12 @@
     "whatif": {
       "hint": "Tap one to see what happens"
     },
+    "yourTurn": {
+      "hint": "We did the first ones — now it's your turn",
+      "given": "{{n}}: {{value}} — we already did this",
+      "reveal": "Show {{n}}",
+      "undo": "Undo {{n}}"
+    },
     "compare": {
       "difference": "Difference: {{amount}}"
     },
