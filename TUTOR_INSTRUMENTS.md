@@ -938,6 +938,60 @@ Both are recorded rather than quietly fixed, because both generalise.
   tests at all**: a gate is only as good as the failure someone has actually watched
   it catch.
 
+### §10.3a WHAT FOUR LIVE CONVERSATIONS FOUND (2026-09-02)
+
+**The catalog was run against the real model four times** — `npm run
+tutor:converse`, ~$0.11 a run, ~$0.43 total — using a scenario written for this
+purpose ("the situations the instrument catalog was built for": coins on a table,
+a savings goal with a gap, money in and out of a stall, a request to be shown the
+working). Every scenario that existed before had been written when the whiteboard
+had four shapes and none of them puts a learner where the new ones serve, so
+running the harness unchanged would only have proved that 41 instruments compile.
+
+**This is the only gate that answers "was that a good lesson", and it found two
+defects nothing else could.**
+
+| Run | Spoken words avg | Over the 60-word target | Instruments that fired |
+|---|---|---|---|
+| 1 — as shipped | 61 | 3 of 5 turns | `worked` only. `tokens`, `flow`, `goal_bar` **never fired in the scenario written for them** |
+| 2 — after the speaking rule | 55 | 1 of 5 | `worked`, `marked_line` |
+| 3 — after widening the dominant move | **28** | **0 of 5** | `tokens` ✓ `flow` ✓ `part_whole` ✓ — but a NEW collision appeared |
+| 4 — after moving the exclusion rule | 55 | 2 of 5 | `tokens` ✓ `flow` ✓ `worked` ✓, **collision gone** |
+
+**Defect 1 — the tutor recited every line the board was drawing.** 61 words a
+turn, and a six-year-old does not hear the sixty-first. `sequence`'s own guidance
+had carried a "do not also spell out every intermediate number" rule since an
+earlier failure, and the discipline was never carried across when the catalog
+grew. Fixed as `INSTRUMENT_SPEAKING_RULE`, appended once to whatever guidance
+travels — the same shape `SKILL_WORDING_RULE` already takes — so it cannot be
+forgotten by the next instrument.
+
+**Defect 2 — the instrument follows the STRATEGY, not the situation.** A learner
+who said *"tengo unas monedas en la mesa"* got a worked example instead of coins,
+because §4.4 attaches instruments to MOVES and the controller kept selecting
+WORKED, whose move named only `worked` and `part_whole`. Two fixes: a compact
+situation→kind index in the system prompt (one line per grouping, not forty per
+kind — the §4.4 cost argument still holds), and `worked-example-think-aloud`
+widened to reach `tokens`, `flow` and `goal_bar`, because a worked example ABOUT
+COINS should be able to put coins on the table. After both, `tokens` drew
+`3x10 + 4x1 = 34 MXN` for exactly the coins the learner had named.
+
+**Defect 3, which I CAUSED and the run caught.** Making boards more attractive
+made the model start setting `whiteboard` AND `segmentRequest` on the same turn.
+The schema correctly refused — but a refused turn is a lost turn, and one child
+got the scripted "se me enredaron las ideas" line. The rule already existed in
+the prompt, buried 170 lines deep inside the `sequence` section; moved to sit
+directly above the situation index, where the choice is actually made. Gone in
+run 4.
+
+**What is still open and is NOT claimed fixed.** Spoken length varies run to run
+(28, then 55) — that is model variance, not a regression a further prompt line
+would settle, and chasing it with more paid runs would be the wrong use of the
+budget. `goal_bar` still did not fire on the savings-goal turn in any run,
+because the controller answers that turn with RESCUE and the rescue move names no
+instrument; whether a SITUATION should ever override a STRATEGY is a pedagogical
+decision, not an engineering one, and it is left open rather than guessed at.
+
 ### §10.3b A third gate hole, found by the gate (2026-09-02)
 
 `verify:tutor-ui`'s zero-pixel bar check flagged ANY inline-height element that

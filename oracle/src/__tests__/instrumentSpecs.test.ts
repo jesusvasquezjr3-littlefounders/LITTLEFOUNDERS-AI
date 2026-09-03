@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  INSTRUMENT_SPEAKING_RULE,
   INSTRUMENT_SPEC_MAX_CHARS,
   SPECIFIED_INSTRUMENTS,
   instrumentGuidanceFor,
 } from '../tutor/instrumentSpecs.js';
+
+/** One kind's guidance with the shared rule stripped — what the per-instrument budget governs. */
+const specOnly = (kind: string) => instrumentGuidanceFor([kind]).replace(INSTRUMENT_SPEAKING_RULE, '').trim();
 import { skillCatalogue } from '../tutor/skills.js';
 
 /*
@@ -25,8 +29,25 @@ describe('instrument guidance travels only when a move asks for it', () => {
   it('returns only what was named, never the whole catalogue', () => {
     const guidance = instrumentGuidanceFor(['tokens']);
     expect(guidance).toContain('COINS ON THE TABLE');
-    expect(guidance.length).toBeGreaterThan(0);
-    expect(guidance.length).toBeLessThanOrEqual(INSTRUMENT_SPEC_MAX_CHARS);
+    expect(guidance).not.toContain('THE BAR MODEL');
+    expect(specOnly('tokens').length).toBeLessThanOrEqual(INSTRUMENT_SPEC_MAX_CHARS);
+  });
+
+  it('appends the speaking rule ONCE, however many instruments a move named', () => {
+    // Found live 2026-09-02: `worked` fired correctly and the tutor recited
+    // every line the board was already drawing, at 61 words a turn. The rule is
+    // shared rather than repeated per spec so it cannot be forgotten by the
+    // next instrument — and it must not be paid for twice on a move that names
+    // two.
+    const one = instrumentGuidanceFor(['tokens']);
+    const two = instrumentGuidanceFor(['tokens', 'worked']);
+    expect(one).toContain(INSTRUMENT_SPEAKING_RULE);
+    expect(two.split(INSTRUMENT_SPEAKING_RULE)).toHaveLength(2);
+  });
+
+  it('says nothing at all — rule included — when a move names no instrument', () => {
+    expect(instrumentGuidanceFor([])).toBe('');
+    expect(instrumentGuidanceFor([])).not.toContain(INSTRUMENT_SPEAKING_RULE);
   });
 
   it('ignores a kind it has no spec for rather than emitting a placeholder', () => {
@@ -36,9 +57,12 @@ describe('instrument guidance travels only when a move asks for it', () => {
     expect(instrumentGuidanceFor(['tokens', 'sequence'])).toBe(instrumentGuidanceFor(['tokens']));
   });
 
-  it('keeps every spec inside the budget a skill body already respects', () => {
+  it('keeps every spec inside the per-instrument budget', () => {
+    // The budget governs ONE instrument's guidance. The shared speaking rule is
+    // a fixed cost that does not scale with how many a move names, which is the
+    // whole reason it is shared rather than repeated inside each spec.
     for (const kind of SPECIFIED_INSTRUMENTS) {
-      expect(instrumentGuidanceFor([kind]).length).toBeLessThanOrEqual(INSTRUMENT_SPEC_MAX_CHARS);
+      expect(specOnly(kind).length, kind).toBeLessThanOrEqual(INSTRUMENT_SPEC_MAX_CHARS);
     }
   });
 });
@@ -54,12 +78,21 @@ describe('the move catalogue and the spec registry agree', () => {
     }
   });
 
-  it('the moves that stage physical money are the ones that name `tokens`', () => {
-    // Not a style assertion: these three are the moves whose own bodies ask for
-    // coins that can be picked up, counted twice, or stopped at a target — the
-    // reason `tokens` exists at all.
-    const naming = skills.filter((s) => s.instruments.includes('tokens')).map((s) => s.name).sort();
-    expect(naming).toEqual(['biggest-coin-first', 'stop-at-the-target', 'value-not-appearance']);
+  it('every move whose body stages physical money can reach `tokens`', () => {
+    // These three moves' own bodies ask for coins that can be picked up,
+    // counted twice, or stopped at a target — the reason `tokens` exists.
+    //
+    // A SUPERSET is deliberately allowed, and the first version of this test
+    // pinned the exact list, which was wrong the moment live evidence arrived:
+    // two `tutor:converse` runs on 2026-09-02 showed WORKED is the strategy the
+    // controller reaches for most, so `worked-example-think-aloud` was widened
+    // to reach `tokens` too — a worked example ABOUT COINS could not otherwise
+    // put coins on the table. Locking the exact set pinned an implementation
+    // detail; what matters is that no coin-staging move is left without it.
+    const naming = new Set(skills.filter((s) => s.instruments.includes('tokens')).map((s) => s.name));
+    for (const move of ['biggest-coin-first', 'stop-at-the-target', 'value-not-appearance']) {
+      expect(naming, `${move} must be able to draw coins`).toContain(move);
+    }
   });
 
   it('most moves name no instrument, so most turns pay nothing for this', () => {

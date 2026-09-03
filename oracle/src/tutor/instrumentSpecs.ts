@@ -112,6 +112,28 @@ const SPECS: InstrumentSpec[] = [
   },
 ];
 
+/**
+ * THE BOARD DRAWS IT, SO DO NOT ALSO SAY IT. Appended to every spec, once.
+ *
+ * FOUND LIVE, 2026-09-02, on the first `tutor:converse` run after the catalog
+ * shipped. `worked` fired correctly three times — and the tutor narrated every
+ * line the board was already drawing ("primero resto los 10: 48 menos 10 son
+ * 38. Luego resto los 9: 38 menos 9 son 29..."), pushing the scenario to 61
+ * spoken words on average with three of five turns over the 60-word target. A
+ * six-year-old does not hear the sixty-first word.
+ *
+ * `sequence`'s own guidance in prompt.ts already carried this rule — it earned
+ * it from an earlier failure — and the discipline was simply never carried
+ * across when the catalog grew. So it lives HERE, appended to every spec on its
+ * way to the model, the same shape `SKILL_WORDING_RULE` takes for skill bodies:
+ * one rule, applied in one place, covering every instrument written after today.
+ */
+export const INSTRUMENT_SPEAKING_RULE =
+  'For any board you set: the board DRAWS the numbers, so your `say` must not ' +
+  'also recite them. Narrate the situation and ask the question — never walk ' +
+  'through every intermediate result out loud as well. A number said AND drawn ' +
+  'is one idea said twice, and it is what makes a turn too long to listen to.';
+
 const BY_KIND = new Map(SPECS.map((s) => [s.kind, s]));
 
 for (const spec of SPECS) {
@@ -135,5 +157,7 @@ export const SPECIFIED_INSTRUMENTS: readonly string[] = SPECS.map((s) => s.kind)
 export function instrumentGuidanceFor(kinds: readonly string[]): string {
   const specs = kinds.map((k) => BY_KIND.get(k)).filter((s): s is InstrumentSpec => s !== undefined);
   if (specs.length === 0) return '';
-  return specs.map((s) => s.guidance).join('\n');
+  // The speaking rule rides with the guidance, once, however many instruments
+  // a move named — see `INSTRUMENT_SPEAKING_RULE`.
+  return `${specs.map((s) => s.guidance).join('\n')}\n${INSTRUMENT_SPEAKING_RULE}`;
 }

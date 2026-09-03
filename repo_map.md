@@ -31139,7 +31139,7 @@ strategies: [WORKED]
 mastery_min: 0.2
 mastery_max: 0.55
 tiers: [1, 2, 3]
-instruments: [worked, part_whole]
+instruments: [worked, part_whole, tokens, flow, goal_bar]
 priority: 5
 ---
 Strategy for this turn: WORKED EXAMPLE, thinking out loud.
@@ -31454,19 +31454,19 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 ```
 import { describe, expect, it } from 'vitest';
 import {
+  INSTRUMENT_SPEAKING_RULE,
   INSTRUMENT_SPEC_MAX_CHARS,
   SPECIFIED_INSTRUMENTS,
   instrumentGuidanceFor,
 } from '../tutor/instrumentSpecs.js';
+
+/** One kind's guidance with the shared rule stripped — what the per-instrument budget governs. */
+const specOnly = (kind: string) => instrumentGuidanceFor([kind]).replace(INSTRUMENT_SPEAKING_RULE, '').trim();
 import { skillCatalogue } from '../tutor/skills.js';
 
 /*
  * GUIDANCE IS SELECTED, NOT BROADCAST (/TUTOR_INSTRUMENTS.md §4.4).
  *
- * The system prompt must list every board SHAPE — a model cannot emit valid
- * JSON for a kind it has never seen — and that list is prefix-cached, so one
- * compact line per kind is affordable. The per-instrument GUIDANCE is not: it is
- * forty lines each, it lands in a context where the actual teaching instruction
 ```
 
 ### oracle/src/__tests__/live-session.test.ts

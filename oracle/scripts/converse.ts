@@ -326,6 +326,68 @@ const SCENARIOS: Scenario[] = [
       'ok quiero intentarlo',
     ],
   },
+  {
+    /*
+     * THE SCENARIO THE INSTRUMENT CATALOG EXISTS FOR (added 2026-09-02).
+     *
+     * Every scenario above it was written before the whiteboard had more than
+     * four shapes, and none of them puts the learner anywhere that the new ones
+     * serve — so running the harness unchanged would have proved that 41
+     * instruments COMPILE, which no transcript was needed for.
+     *
+     * This one walks deliberately through the situations the instrument-carrying
+     * moves are indexed on: counting coins on a table
+     * (`biggest-coin-first`/`value-not-appearance` → `tokens`), a savings goal
+     * with a gap in it (`find-what-is-missing` → `goal_bar`/`bar_model`), money
+     * in and out of a small business (`three-piles-in-out-left` → `flow`), and
+     * a request to be shown the working (`worked-example-think-aloud` →
+     * `worked`/`part_whole`).
+     *
+     * What it is testing is NOT that the model can emit a board — the schema
+     * already guarantees any board it emits is well-formed or dropped. It is
+     * testing the only thing a transcript can answer: does the tutor REACH for
+     * the right instrument when the situation calls for it, and does what it
+     * SAYS agree with what the board DRAWS.
+     */
+    name: 'the situations the instrument catalog was built for',
+    session: {
+      ...SESSION,
+      nickname: 'Mati',
+      sessionPlan: [
+        {
+          kcId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee01',
+          kcKey: 'money.count-mixed-coins',
+          skillKey: null,
+          reason: 'frontier',
+          pKnown: 0.4,
+          targetDifficulty: 2,
+          objective: 'Contar monedas de distintos valores y decir cuánto hay.',
+          prereqKcIds: [],
+          misconceptions: [
+            {
+              code: 'counts-coins-not-value',
+              hint: 'Cuenta cuántas monedas hay en vez de cuánto valen juntas.',
+            },
+          ],
+        } satisfies SessionPlanEntry,
+      ],
+      kcStates: [
+        {
+          kcId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee01',
+          kcKey: 'money.count-mixed-coins',
+          pKnown: 0.4,
+          attempts: 2,
+        } satisfies KcState,
+      ],
+    },
+    script: [
+      'tengo unas monedas en la mesa y no se cuanto hay',
+      'hay tres de diez y cuatro de uno',
+      'quiero juntar para una patineta que cuesta 90 y llevo 34, cuanto me falta?',
+      'vendi limonada, me dieron 48 y gaste 19 en limones. cuanto me quedo?',
+      'no entiendo como sacaste eso, me lo puedes mostrar paso a paso?',
+    ],
+  },
 ];
 
 interface Beat {
