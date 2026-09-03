@@ -26,11 +26,20 @@ only section that must be updated on EVERY sprint boundary.**
 
 | | |
 |---|---|
-| **Status** | PLANNED. No sprint started. No instrument built. |
-| **Active sprint** | — none — |
-| **Next action** | Owner answers the three decisions in §8.2, then Sprint 1 (§7.1). Sprints 1–3 need no decision and can start immediately. |
-| **Blocked on owner** | §8.2 D1 (named catalog vs free canvas), D2 (generated imagery), D3 (pay the architecture tax with Wave 1). |
-| **Last verified against the repo** | 2026-09-02, commit `accca6ff`. |
+| **Status** | IN PROGRESS. Wave 1 foundation started 2026-09-02. |
+| **Active sprint** | Sprint 4 (§7.4) — the primitive kit. |
+| **Next action** | Finish Sprint 4, then Sprint 6 (`tokens`) and its cost measurement. |
+| **Blocked on owner** | Nothing blocking today. D1 and D3 (§8.2) were answered by the owner on 2026-09-02 with "procede": the catalog grows by **named instruments** and the architecture tax is paid with Wave 1. **D2 (generated imagery) is still open** and gates Wave 4 only. |
+| **Last verified against the repo** | 2026-09-02. |
+
+### §0.0 Sprint log — what is actually built
+
+| Sprint | State | Evidence |
+|---|---|---|
+| **S5 — instrument manifest + parity gate** | **DONE** 2026-09-02 | `npm run instruments:check` green over 4 instruments × 5 copies; `agent/tools/check-instrument-parity.test.mjs` — 13 tests, of which **7 deliberately desynchronise a copy and each turns the gate red**. In CI (`repo-gates.yml`) and in `/AGENTS.md` §5. Two defects it found in its own first hour are recorded in §10.3 |
+| S4 — primitive kit | in progress | — |
+| S6 — `tokens` | not started | — |
+| everything else | not started | — |
 
 ### §0.1 Baseline — what is true today (all VERIFIED 2026-09-02)
 
@@ -829,7 +838,30 @@ Inworld ~0.96s TTS per sentence, ~0.64s STT · paid converse gate ≈ $0.03/run.
   own history is that a "small" whiteboard change cost several rounds of live
   debugging. Sprints are sized by scope and gates, not by calendar.
 
-### §10.3 Known documentation defects found while writing this
+### §10.3 Defects the parity gate found in its own first hour (S5)
+
+Both are recorded rather than quietly fixed, because both generalise.
+
+- **A false positive of the instrument, not a defect in the product.** The first
+  parser resolved a nested item shape by looking for the next inline `z.object(`
+  after the field name. On `marks: z.array(WhiteboardMarkRowSchema)` — written by
+  reference, not inline — it wandered into the next unrelated schema in the file
+  and reported that `marked_line` had lost its server-computed `position`. Core
+  was correct. This is the class `/AGENTS.md` §1.14 calls "a harness that cannot
+  operate a surface reports the product as broken", and a parity gate that cries
+  wolf is worse than none, because the next real failure gets waved through.
+  Fixed by resolving named references; covered by a test.
+- **A hole in the gate, found by the gate's own negative test.** Comparing field
+  NAMES made it blind to a wrong discriminant VALUE: a block named
+  `CompareWhiteboardBody` declaring `kind: z.literal('compare_TYPO')` has exactly
+  the right fields and is, in production, unreachable — Core's discriminated union
+  would reject every real `compare` board and 400 the whole turn. Six of the seven
+  negative tests went red without the discriminant check; the seventh is the entire
+  reason `zodDiscriminant` exists. **This is the argument for writing the negative
+  tests at all**: a gate is only as good as the failure someone has actually watched
+  it catch.
+
+### §10.4 Known documentation defects found while writing this
 
 - **`/ORACLE.md` §19.1 says "33 catalogued misconceptions"; the seed file has 32.**
   The documentation is wrong, not the data. Fix in the same commit as the first

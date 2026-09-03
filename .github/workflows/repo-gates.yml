@@ -56,6 +56,17 @@ jobs:
       - name: Forge and Oracle agree on their provider settings
         run: node agent/tools/check-provider-parity.mjs
 
+      # Every whiteboard instrument is written out by hand in FIVE places
+      # across three services that deliberately share no types. When a copy is
+      # forgotten nothing throws: `compare` and `marked_line` both shipped
+      # without Core's POST /turns branch, so a live board failed the persist
+      # and was LOST SILENTLY on replay and in the guardian transcript viewer.
+      # Both were found by adversarial review, months apart, by no gate. Same
+      # unfiltered job as the two above, and for the same reason: the drift
+      # lives in the GAP between packages.
+      - name: Whiteboard instruments agree across every copy
+        run: node agent/tools/check-instrument-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed: on 2026-08-14 it was failing because ROADMAP.md still
       # named migration 0033 as the ceiling while the repo shipped 0046. A gate

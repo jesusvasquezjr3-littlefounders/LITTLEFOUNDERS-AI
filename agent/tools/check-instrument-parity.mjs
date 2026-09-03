@@ -1,0 +1,427 @@
+#!/usr/bin/env node
+/**
+ * ONE WHITEBOARD INSTRUMENT, FOUR HAND-WRITTEN COPIES OF ITS SHAPE, NO
+ * COMPILER BETWEEN THEM. This is the gate that notices when they disagree.
+ *
+ * WHY THIS EXISTS. `oracle/` and `backend/` deliberately share no types
+ * (`backend/src/services/tutorData.ts` says so in its own comment, and
+ * /AGENTS.md §1.5 is why). The consequence is that every whiteboard `kind`
+ * is written out four times, by hand, in three services — and when a fifth
+ * copy is forgotten nothing fails loudly. It has already happened twice:
+ * `compare` and `marked_line` shipped without Core's `POST /turns` branch, so
+ * a live board of either kind failed `safeParse` on persist and was LOST
+ * SILENTLY on replay and in the guardian transcript viewer. Both were found
+ * by adversarial review, months apart, and by no gate at all.
+ *
+ * The failure has no error message a learner or an operator ever sees: the
+ * session looks perfect, the board draws, and only the recording is missing.
+ * That is exactly the class /AGENTS.md §1.14 calls "failure must be
+ * distinguishable from emptiness" — a replay with no board and a replay whose
+ * board was dropped look identical.
+ *
+ * WHAT IT CHECKS, and why each one is worth a gate:
+ *
+ *   1. COMPLETENESS — every kind appears in every copy. This is the
+ *      compare/marked_line incident, mechanised.
+ *
+ *   2. FIELD PARITY — the copies agree on which fields exist. A field added
+ *      to Oracle's schema and forgotten in Core's body schema means Core
+ *      rejects the whole turn with a 400 (the body is a discriminated union
+ *      with no fallback member), not just the board.
+ *
+ *   3. THE MODEL MAY NOT ASSERT A DERIVED FACT. `WhiteboardCompareSchema`
+ *      deliberately gives the model no `difference` and no `greater` field:
+ *      the server derives both (`whiteboard.ts`'s `computeComparison`) so the
+ *      model cannot claim which side is bigger. That is a SAFETY property, not
+ *      a style choice, and until now nothing enforced it — a later hand could
+ *      add `difference` to the model-facing schema and every test would still
+ *      pass while the guarantee quietly disappeared. This gate fails if a
+ *      computed field ever appears in the model-facing schema.
+ *
+ * WHAT IT IS NOT. It does not compare BOUNDS (Oracle's `.max(60)` vs Core's
+ * `.max(60)`) — those legitimately differ by layer, since Core re-validates a
+ * stored row rather than an incoming model claim, and forcing them equal would
+ * be false precision. It reads SOURCE TEXT, the same way
+ * `check-provider-parity.mjs` does, because the four copies live in three
+ * packages that cannot import each other.
+ */
+
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+
+/**
+ * THE MANIFEST — one entry per shipped instrument.
+ *
+ * `model` is what the MODEL may set. `computed` is what only the SERVER ever
+ * attaches (`ws/server.ts`'s `toWireWhiteboard`). The split is the whole point:
+ * `model` must never contain a `computed` field (check 3 above), and every
+ * persisted/rendered copy must carry both.
+ *
+ * Adding a kind means adding one entry here and four blocks in the sources
+ * below. If you add the entry and forget a block, this gate is what tells you.
+ */
+export const INSTRUMENTS = [
+  {
+    kind: 'sequence',
+    model: ['kind', 'start', 'steps', 'unit', 'label', 'currency'],
+    computed: ['values'],
+    blocks: {
+      oracleSchema: 'WhiteboardSequenceSchema',
+      coreBody: 'SequenceWhiteboardBody',
+      coreRow: 'SequenceBoardRowSchema',
+    },
+  },
+  {
+    kind: 'compare',
+    model: ['kind', 'left', 'right', 'label', 'currency'],
+    // Derived by `computeComparison`. The model has NO field for either —
+    // see check 3 in this file's header.
+    computed: ['difference', 'greater'],
+    blocks: {
+      oracleSchema: 'WhiteboardCompareSchema',
+      coreBody: 'CompareWhiteboardBody',
+      coreRow: 'CompareBoardRowSchema',
+    },
+  },
+  {
+    kind: 'marked_line',
+    model: ['kind', 'min', 'max', 'marks', 'label', 'currency'],
+    // `position` is computed PER MARK, inside `marks`, so it is not a
+    // top-level field — see `perItemComputed` below.
+    computed: [],
+    perItemComputed: { field: 'marks', keys: ['position'] },
+    blocks: {
+      oracleSchema: 'WhiteboardMarkedLineSchema',
+      coreBody: 'MarkedLineWhiteboardBody',
+      coreRow: 'MarkedLineBoardRowSchema',
+    },
+  },
+  {
+    kind: 'categories',
+    model: ['kind', 'categories', 'label', 'currency'],
+    computed: ['values'],
+    blocks: {
+      oracleSchema: 'WhiteboardCategoriesSchema',
+      coreBody: 'CategoriesWhiteboardBody',
+      coreRow: 'CategoriesBoardRowSchema',
+    },
+  },
+];
+
+const SOURCES = {
+  oracleSchema: 'oracle/src/tutor/turnSchema.ts',
+  wire: 'oracle/src/ws/protocol.ts',
+  coreBody: 'backend/src/routes/tutor.ts',
+  coreRow: 'backend/src/services/tutorData.ts',
+  frontendWire: 'frontend/src/tutor/types.ts',
+};
+
+/**
+ * Comments carry braces, colons and the words we scan for, so they are removed
+ * before any structural scan. Block comments first, then line comments.
+ *
+ * Deliberately naive about `//` inside a string literal: none of the blocks
+ * this file scans contains a URL, and a smarter stripper would be more code to
+ * get wrong than the thing it protects. `parity-fixtures` in the test file
+ * covers the shapes that actually occur here.
+ */
+export function stripComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
+}
+
+/**
+ * The text between the first `{` after `startIndex` and its matching `}`.
+ * Returns null when the braces never balance.
+ */
+export function balancedBody(source, startIndex) {
+  const open = source.indexOf('{', startIndex);
+  if (open === -1) return null;
+  let depth = 0;
+  for (let i = open; i < source.length; i += 1) {
+    if (source[i] === '{') depth += 1;
+    else if (source[i] === '}') {
+      depth -= 1;
+      if (depth === 0) return source.slice(open + 1, i);
+    }
+  }
+  return null;
+}
+
+/** The top-level keys of an object body — anything nested is skipped by depth. */
+export function topLevelKeys(body) {
+  const keys = [];
+  let depth = 0;
+  let bracket = 0;
+  let paren = 0;
+  let token = '';
+  for (let i = 0; i < body.length; i += 1) {
+    const ch = body[i];
+    if (ch === '{') depth += 1;
+    else if (ch === '}') depth -= 1;
+    else if (ch === '[') bracket += 1;
+    else if (ch === ']') bracket -= 1;
+    else if (ch === '(') paren += 1;
+    else if (ch === ')') paren -= 1;
+
+    if (depth === 0 && bracket === 0 && paren === 0) {
+      if (/[A-Za-z0-9_$]/.test(ch)) {
+        token += ch;
+        continue;
+      }
+      if (ch === ':' && token.length > 0) keys.push(token);
+      token = '';
+    } else {
+      token = '';
+    }
+  }
+  return keys;
+}
+
+/** The top-level keys of a named `const X = z.object({...})` / `z\n.object({...})` block. */
+export function zodObjectKeys(source, name) {
+  const clean = stripComments(source);
+  const declaration = new RegExp(`\\b(?:const|export const)\\s+${name}\\b`).exec(clean);
+  if (!declaration) return null;
+  const objectAt = clean.indexOf('.object(', declaration.index);
+  if (objectAt === -1) return null;
+  const body = balancedBody(clean, objectAt);
+  return body === null ? null : topLevelKeys(body);
+}
+
+/**
+ * The literal value of a block's `kind` discriminant — `z.literal('compare')`
+ * → `'compare'`.
+ *
+ * A HOLE THIS GATE SHIPPED WITH FOR ONE RUN, found by its own negative test and
+ * recorded because the lesson generalises: comparing only field NAMES made the
+ * gate blind to a wrong discriminant VALUE. A block named `CompareWhiteboardBody`
+ * that declares `kind: z.literal('compare_TYPO')` has exactly the right field
+ * names and is, in production, unreachable — Core's discriminated union would
+ * reject every real `compare` board and 400 the whole turn. Six of seven
+ * negative tests went red without this; the seventh is why it exists.
+ */
+export function zodDiscriminant(source, name) {
+  const clean = stripComments(source);
+  const declaration = new RegExp(`\\b(?:const|export const)\\s+${name}\\b`).exec(clean);
+  if (!declaration) return null;
+  const body = balancedBody(clean, clean.indexOf('.object(', declaration.index));
+  if (body === null) return null;
+  const literal = /kind\s*:\s*z\s*\.\s*literal\(\s*'([^']+)'\s*\)/.exec(body);
+  return literal ? literal[1] : null;
+}
+
+/**
+ * The keys of one nested item shape — `field: z.array(z.object({…}))` written
+ * inline, OR `field: z.array(SomeNamedSchema)` written by reference.
+ *
+ * FALSE POSITIVE THIS FUNCTION ALREADY PRODUCED, recorded so nobody re-derives
+ * it: the first version only looked for an inline `.object(` after `field:`,
+ * and on `marks: z.array(WhiteboardMarkRowSchema)` it happily found the NEXT
+ * unrelated `.object(` in the file (`WhiteboardCategoryRowSchema`) and reported
+ * that `marked_line` was missing its server-computed `position`. Core was
+ * correct; the instrument was wrong. That is the same class /AGENTS.md §1.14
+ * warns about under "a harness that cannot operate a surface reports the product
+ * as broken" — and a parity gate that cries wolf is worse than none, because the
+ * next real failure gets waved through.
+ */
+export function zodNestedKeys(source, name, field) {
+  const clean = stripComments(source);
+  const declaration = new RegExp(`\\b(?:const|export const)\\s+${name}\\b`).exec(clean);
+  if (!declaration) return null;
+  const body = balancedBody(clean, clean.indexOf('.object(', declaration.index));
+  if (body === null) return null;
+
+  // The field's own value expression, bounded by the block it lives in so a
+  // miss can never wander into the next declaration.
+  const fieldAt = body.indexOf(`${field}:`);
+  if (fieldAt === -1) return null;
+  const expression = body.slice(fieldAt);
+
+  if (/z\s*\.\s*array\(\s*z\s*\.\s*object\(|^\s*[A-Za-z_$]*\s*:\s*z\s*\.\s*object\(/.test(expression)) {
+    const inline = balancedBody(expression, expression.indexOf('.object('));
+    return inline === null ? null : topLevelKeys(inline);
+  }
+
+  // By reference: resolve the named schema in the same file.
+  const referenced = /z\s*\.\s*array\(\s*([A-Za-z_$][\w$]*)\s*\)/.exec(expression);
+  if (!referenced) return null;
+  return zodObjectKeys(source, referenced[1]);
+}
+
+/**
+ * The member of a TypeScript discriminated union whose `kind` is `kind`.
+ *
+ * Used for the two copies that are TYPES rather than schemas —
+ * `frontend/src/tutor/types.ts`'s `TutorWhiteboardWire`, and (for the
+ * server-computed half only) `oracle/src/ws/protocol.ts`'s `WireWhiteboard`.
+ */
+export function unionMemberKeys(source, typeName, kind) {
+  const clean = stripComments(source);
+  const declaration = new RegExp(`\\btype\\s+${typeName}\\s*=`).exec(clean);
+  if (!declaration) return null;
+  let cursor = declaration.index;
+  // Walk each `{ … }` group after the declaration until one declares this kind.
+  // Stops at the first blank-line-separated top-level statement after the type.
+  const end = clean.indexOf('\nexport ', declaration.index + 1);
+  const region = clean.slice(declaration.index, end === -1 ? undefined : end);
+  let offset = 0;
+  for (;;) {
+    const body = balancedBody(region, offset);
+    if (body === null) return null;
+    const open = region.indexOf('{', offset);
+    const keys = topLevelKeys(body);
+    if (new RegExp(`kind\\s*:\\s*'${kind}'`).test(body)) return keys;
+    offset = open + body.length + 2;
+    if (offset >= region.length) return null;
+  }
+}
+
+/**
+ * The server-computed fields `protocol.ts` attaches for a kind. That file
+ * builds each member as `WhiteboardX & { …computed… }`, so the model half is
+ * inherited (it cannot drift) and only this half is hand-written.
+ */
+export function wireComputedKeys(source, kind) {
+  const clean = stripComments(source);
+  const declaration = /\btype\s+WireWhiteboard\s*=/.exec(clean);
+  if (!declaration) return null;
+  const end = clean.indexOf('\nexport ', declaration.index + 1);
+  const region = clean.slice(declaration.index, end === -1 ? undefined : end);
+  const kindType = {
+    sequence: 'WhiteboardSequence',
+    compare: 'WhiteboardCompare',
+    marked_line: 'WhiteboardMarkedLine',
+    categories: 'WhiteboardCategories',
+  }[kind];
+  if (!kindType) return null;
+  const at = new RegExp(`\\(${kindType}\\s*&`).exec(region);
+  if (!at) return null;
+  const body = balancedBody(region, at.index);
+  return body === null ? null : topLevelKeys(body);
+}
+
+const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x)) && b.every((x) => a.includes(x));
+
+export function checkInstrumentParity(read) {
+  const problems = [];
+  const src = Object.fromEntries(Object.entries(SOURCES).map(([id, file]) => [id, read(file)]));
+
+  for (const instrument of INSTRUMENTS) {
+    const { kind, model, computed, blocks } = instrument;
+    const expectedFull = [...model, ...computed];
+    const where = (id) => `${SOURCES[id]} (${kind})`;
+
+    // 1 — the model-facing schema carries EXACTLY the model fields.
+    const oracleKeys = zodObjectKeys(src.oracleSchema, blocks.oracleSchema);
+    if (oracleKeys === null) {
+      problems.push(`${where('oracleSchema')}: ${blocks.oracleSchema} not found`);
+    } else {
+      const leaked = computed.filter((f) => oracleKeys.includes(f));
+      if (leaked.length > 0) {
+        problems.push(
+          `${where('oracleSchema')}: ${leaked.join(', ')} is SERVER-COMPUTED and must not be a field ` +
+            'the model can set — the server derives it so the model cannot assert it',
+        );
+      }
+      if (!same(oracleKeys, model)) {
+        problems.push(`${where('oracleSchema')}: fields ${oracleKeys.join(',')} ≠ manifest ${model.join(',')}`);
+      }
+      const discriminant = zodDiscriminant(src.oracleSchema, blocks.oracleSchema);
+      if (discriminant !== kind) {
+        problems.push(
+          `${where('oracleSchema')}: ${blocks.oracleSchema} declares kind '${discriminant}', not '${kind}'`,
+        );
+      }
+    }
+
+    // 2 — the wire declares every computed field.
+    const wireComputed = wireComputedKeys(src.wire, kind);
+    if (wireComputed === null) {
+      problems.push(`${where('wire')}: no WireWhiteboard member found`);
+    } else if (computed.length > 0 && !same(wireComputed, computed)) {
+      problems.push(`${where('wire')}: computed ${wireComputed.join(',')} ≠ manifest ${computed.join(',')}`);
+    }
+
+    // 3 + 4 — both Core copies carry model AND computed, under the right
+    // discriminant. The VALUE matters as much as the fields: a block with the
+    // right shape and the wrong `kind` literal is unreachable in a
+    // discriminated union, and Core rejects the whole turn rather than the board.
+    for (const id of ['coreBody', 'coreRow']) {
+      const keys = zodObjectKeys(src[id], blocks[id]);
+      if (keys === null) {
+        problems.push(`${where(id)}: ${blocks[id]} not found — a kind Core cannot parse loses the whole turn`);
+        continue;
+      }
+      const discriminant = zodDiscriminant(src[id], blocks[id]);
+      if (discriminant !== kind) {
+        problems.push(
+          `${where(id)}: ${blocks[id]} declares kind '${discriminant}', not '${kind}' — ` +
+            'a member no discriminated union can ever reach',
+        );
+      }
+      if (!same(keys, expectedFull)) {
+        problems.push(`${where(id)}: fields ${keys.join(',')} ≠ manifest ${expectedFull.join(',')}`);
+      }
+    }
+
+    // 5 — the frontend mirror carries model AND computed.
+    const feKeys = unionMemberKeys(src.frontendWire, 'TutorWhiteboardWire', kind);
+    if (feKeys === null) {
+      problems.push(`${where('frontendWire')}: no TutorWhiteboardWire member — the client cannot draw this kind`);
+    } else if (!same(feKeys, expectedFull)) {
+      problems.push(`${where('frontendWire')}: fields ${feKeys.join(',')} ≠ manifest ${expectedFull.join(',')}`);
+    }
+
+    // 6 — per-item computed fields (marked_line's `position`).
+    if (instrument.perItemComputed) {
+      const { field, keys: needed } = instrument.perItemComputed;
+      for (const id of ['coreBody', 'coreRow']) {
+        const nested = zodNestedKeys(src[id], blocks[id], field);
+        if (nested === null) {
+          problems.push(`${where(id)}: ${blocks[id]}.${field} not found`);
+        } else {
+          const missing = needed.filter((k) => !nested.includes(k));
+          if (missing.length > 0) {
+            problems.push(`${where(id)}: ${blocks[id]}.${field} is missing computed ${missing.join(',')}`);
+          }
+        }
+      }
+      const oracleNested = zodNestedKeys(src.oracleSchema, blocks.oracleSchema, field);
+      // The model-facing item schema is a separate named schema, so a null
+      // here is expected; what matters is that if it IS inline, it stays clean.
+      if (oracleNested !== null) {
+        const leaked = needed.filter((k) => oracleNested.includes(k));
+        if (leaked.length > 0) {
+          problems.push(`${where('oracleSchema')}: ${field}.${leaked.join(',')} is server-computed`);
+        }
+      }
+    }
+  }
+
+  return problems;
+}
+
+function main() {
+  const read = (file) => readFileSync(path.join(ROOT, file), 'utf8');
+  const problems = checkInstrumentParity(read);
+  if (problems.length > 0) {
+    console.error('instruments:check FAILED — the copies of a whiteboard instrument disagree:\n');
+    for (const p of problems) console.error(`  ✗ ${p}`);
+    console.error(
+      '\nEvery kind is written out by hand in oracle/turnSchema.ts, oracle/ws/protocol.ts,\n' +
+        'backend/routes/tutor.ts, backend/services/tutorData.ts and frontend/tutor/types.ts.\n' +
+        'A missing copy does not throw: it loses the board silently on replay (Core rejects\n' +
+        'the persist) or 400s the whole turn (the body union has no fallback member).\n' +
+        'Deploy order for a NEW kind is Core BEFORE Oracle.',
+    );
+    process.exitCode = 1;
+    return;
+  }
+  const kinds = INSTRUMENTS.map((i) => i.kind).join(', ');
+  console.log(`instruments:check OK — ${INSTRUMENTS.length} instruments agree across all copies (${kinds})`);
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
