@@ -1201,6 +1201,8 @@ export interface TutorTurnTimelineBoard { kind: 'timeline'; unit: 'day' | 'week'
 export interface TutorTurnCycleBoard { kind: 'cycle'; steps: string[]; label: string }
 /** Two states of the same thing. The change is server-computed. */
 export interface TutorTurnBeforeAfterBoard { kind: 'before_after'; what: string; before: number; after: number; delta: number; direction: 'up' | 'down' | 'same'; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** Class II, S9 — items and bins the LEARNER sorts by tapping, ungraded by construction. Nothing server-computed. */
+export interface TutorTurnGrabBoard { kind: 'grab'; binLabels: string[]; items: string[]; label: string }
 
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
@@ -1244,7 +1246,8 @@ export type TutorTurnWhiteboard =
   | TutorTurnSequenceCompareBoard
   | TutorTurnTimelineBoard
   | TutorTurnCycleBoard
-  | TutorTurnBeforeAfterBoard;
+  | TutorTurnBeforeAfterBoard
+  | TutorTurnGrabBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1938,6 +1941,16 @@ const BeforeAfterBoardRowSchema = z
   })
   .strict();
 
+/** Class II, S9 — no computed field, see `WhiteboardGrabSchema`'s own comment (oracle/src/tutor/turnSchema.ts). */
+const GrabBoardRowSchema = z
+  .object({
+    kind: z.literal('grab'),
+    binLabels: z.array(z.string().min(1).max(40)).min(2).max(4),
+    items: z.array(z.string().min(1).max(40)).min(2).max(8),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -1992,6 +2005,7 @@ const TutorTurnWhiteboardRowSchema = z
     TimelineBoardRowSchema,
     CycleBoardRowSchema,
     BeforeAfterBoardRowSchema,
+    GrabBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {

@@ -813,6 +813,7 @@ const LAB_LAST_TEXT: Readonly<
       timeline: { say: string; label: string; events: [string, string, string] };
       cycle: { say: string; label: string; steps: [string, string, string] };
       beforeAfter: { say: string; label: string; what: string };
+      grab: { say: string; label: string; bins: [string, string]; items: [string, string, string] };
     }
   >
 > = {
@@ -826,6 +827,7 @@ const LAB_LAST_TEXT: Readonly<
     timeline: { say: 'The money comes on the 15th. The bill is due on the 10th.', label: 'When things happen', events: ['Bill due', 'Money arrives', 'Buy the gift'] },
     cycle: { say: 'And then it starts again.', label: 'How a little business goes round', steps: ['Buy lemons', 'Make lemonade', 'Sell it'] },
     beforeAfter: { say: 'Before and after. What changed?', label: 'What changed', what: 'The piggy bank' },
+    grab: { say: 'Sort them yourself — tap one, then tap a group.', label: 'Sort what you need from what you want', bins: ['Need', 'Want'], items: ['Bread', 'Toy', 'Water'] },
   },
   'es-MX': {
     pictograph: { say: 'Cada dibujito es una galleta vendida. ¿Quién vendió más?', label: 'Galletas vendidas esta semana', rows: ['Lunes', 'Martes', 'Miércoles'] },
@@ -837,6 +839,7 @@ const LAB_LAST_TEXT: Readonly<
     timeline: { say: 'El dinero llega el 15. El pago es el 10.', label: 'Cuándo pasa cada cosa', events: ['Toca pagar', 'Llega el dinero', 'Compro el regalo'] },
     cycle: { say: 'Y luego vuelve a empezar.', label: 'Cómo da la vuelta un negocito', steps: ['Compro limones', 'Hago agua', 'La vendo'] },
     beforeAfter: { say: 'Antes y después. ¿Qué cambió?', label: 'Qué cambió', what: 'La alcancía' },
+    grab: { say: 'Sepáralas tú — toca una, luego toca un grupo.', label: 'Separa lo que necesitas de lo que quieres', bins: ['Necesito', 'Quiero'], items: ['Pan', 'Juguete', 'Agua'] },
   },
   'pt-BR': {
     pictograph: { say: 'Cada desenho é um biscoito vendido. Quem vendeu mais?', label: 'Biscoitos vendidos esta semana', rows: ['Segunda', 'Terça', 'Quarta'] },
@@ -848,6 +851,7 @@ const LAB_LAST_TEXT: Readonly<
     timeline: { say: 'O dinheiro chega no dia 15. A conta vence no dia 10.', label: 'Quando cada coisa acontece', events: ['Vence a conta', 'Chega o dinheiro', 'Compro o presente'] },
     cycle: { say: 'E aí começa de novo.', label: 'Como um negocinho dá a volta', steps: ['Compro limões', 'Faço limonada', 'Vendo'] },
     beforeAfter: { say: 'Antes e depois. O que mudou?', label: 'O que mudou', what: 'O cofrinho' },
+    grab: { say: 'Separe você mesmo — toque em um, depois toque em um grupo.', label: 'Separe o que você precisa do que você quer', bins: ['Preciso', 'Quero'], items: ['Pão', 'Brinquedo', 'Água'] },
   },
 };
 
@@ -1469,7 +1473,8 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
     activity === 'two-futures' ||
     activity === 'timeline' ||
     activity === 'cycle' ||
-    activity === 'before-after'
+    activity === 'before-after' ||
+    activity === 'grab'
   ) {
     const text = LAB_LAST_TEXT[locale];
     const currency = LAB_CURRENCY[locale];
@@ -1587,6 +1592,13 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
     }
     if (activity === 'cycle') {
       return { ...base, text: text.cycle.say, whiteboard: { kind: 'cycle', steps: text.cycle.steps, label: text.cycle.label } };
+    }
+    if (activity === 'grab') {
+      return {
+        ...base,
+        text: text.grab.say,
+        whiteboard: { kind: 'grab', binLabels: text.grab.bins, items: text.grab.items, label: text.grab.label },
+      };
     }
     return {
       ...base,
@@ -1725,6 +1737,7 @@ const WHITEBOARD_ACTIVITIES = [
   'timeline',
   'cycle',
   'before-after',
+  'grab',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [

@@ -403,6 +403,10 @@
     },
     "updated": "El pizarrón se actualizó.",
     "showNext": "Mostrar siguiente",
+    "grab": {
+      "hint": "Toca algo y luego toca un grupo para ponerlo ahí",
+      "unassign": "Sacar {{item}}"
+    },
     "compare": {
       "difference": "Diferencia: {{amount}}"
     },

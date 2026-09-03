@@ -375,6 +375,16 @@ export const INSTRUMENTS = [
     blocks: { oracleSchema: 'WhiteboardBeforeAfterSchema', coreBody: 'BeforeAfterWhiteboardBody', coreRow: 'BeforeAfterBoardRowSchema' },
   },
   {
+    kind: 'grab',
+    // Class II, S9 — ungraded by construction (§8.1 decision D): no field
+    // for which bin an item belongs in, because the LEARNER decides that by
+    // tapping, client-side, never submitted. The first kind in the catalog
+    // with genuinely nothing server-computed.
+    model: ['kind', 'binLabels', 'items', 'label'],
+    computed: [],
+    blocks: { oracleSchema: 'WhiteboardGrabSchema', coreBody: 'GrabWhiteboardBody', coreRow: 'GrabBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],
@@ -555,6 +565,23 @@ export function unionMemberKeys(source, typeName, kind) {
 }
 
 /**
+ * `two_bins` → `WhiteboardTwoBins`, `before_after` → `WhiteboardBeforeAfter`:
+ * the mechanical transform every `kind` string's own TS type name follows,
+ * used by `wireComputedKeys` below. USED TO BE A 40-ENTRY HAND-WRITTEN MAP,
+ * which is exactly the class of copy this whole gate exists to catch — and
+ * did catch, on itself: adding `grab` (Class II, S9) to `INSTRUMENTS` below
+ * failed with "no WireWhiteboard member found" even though the real
+ * `WireWhiteboard` union in protocol.ts already carried `WhiteboardGrab`,
+ * because this map had no `grab` entry and nothing forced one to be added.
+ * Every existing kind's name already followed this exact transform with no
+ * exception, so the map was never earning its keep — it was a SEVENTH place
+ * to remember, on top of the five real copies and the manifest itself.
+ */
+export function kindTypeName(kind) {
+  return 'Whiteboard' + kind.split('_').map((s) => s[0].toUpperCase() + s.slice(1)).join('');
+}
+
+/**
  * The server-computed fields `protocol.ts` attaches for a kind. That file
  * builds each member as `WhiteboardX & { …computed… }`, so the model half is
  * inherited (it cannot drift) and only this half is hand-written.
@@ -565,50 +592,7 @@ export function wireComputedKeys(source, kind) {
   if (!declaration) return null;
   const end = clean.indexOf('\nexport ', declaration.index + 1);
   const region = clean.slice(declaration.index, end === -1 ? undefined : end);
-  const kindType = {
-    sequence: 'WhiteboardSequence',
-    compare: 'WhiteboardCompare',
-    marked_line: 'WhiteboardMarkedLine',
-    categories: 'WhiteboardCategories',
-    tokens: 'WhiteboardTokens',
-    bar_model: 'WhiteboardBarModel',
-    part_whole: 'WhiteboardPartWhole',
-    flow: 'WhiteboardFlow',
-    goal_bar: 'WhiteboardGoalBar',
-    worked: 'WhiteboardWorked',
-    ten_frame: 'WhiteboardTenFrame',
-    open_number_line: 'WhiteboardOpenNumberLine',
-    array: 'WhiteboardArray',
-    fraction_strip: 'WhiteboardFractionStrip',
-    partition: 'WhiteboardPartition',
-    table: 'WhiteboardTable',
-    scale: 'WhiteboardScale',
-    two_bins: 'WhiteboardTwoBins',
-    venn: 'WhiteboardVenn',
-    ranking: 'WhiteboardRanking',
-    outcomes: 'WhiteboardOutcomes',
-    trade: 'WhiteboardTrade',
-    chance: 'WhiteboardChance',
-    deal: 'WhiteboardDeal',
-    change: 'WhiteboardChange',
-    regroup: 'WhiteboardRegroup',
-    equation_bar: 'WhiteboardEquationBar',
-    receipt: 'WhiteboardReceipt',
-    ledger: 'WhiteboardLedger',
-    price_tag: 'WhiteboardPriceTag',
-    inventory: 'WhiteboardInventory',
-    budget_plate: 'WhiteboardBudgetPlate',
-    pictograph: 'WhiteboardPictograph',
-    bead_string: 'WhiteboardBeadString',
-    tally: 'WhiteboardTally',
-    fraction_circle: 'WhiteboardFractionCircle',
-    stack: 'WhiteboardStack',
-    sequence_compare: 'WhiteboardSequenceCompare',
-    timeline: 'WhiteboardTimeline',
-    cycle: 'WhiteboardCycle',
-    before_after: 'WhiteboardBeforeAfter',
-  }[kind];
-  if (!kindType) return null;
+  const kindType = kindTypeName(kind);
   // Two legal forms, and the difference between them is meaningful: a kind with
   // server-computed fields is written `(WhiteboardX & { … })`, and a kind with
   // NONE is written bare as `| WhiteboardX`. Only the first has keys to read;

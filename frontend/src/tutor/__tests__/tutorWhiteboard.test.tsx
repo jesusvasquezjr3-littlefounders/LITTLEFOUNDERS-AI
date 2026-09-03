@@ -594,3 +594,85 @@ describe('a tokens board', () => {
     expect(sizes.size).toBe(1);
   });
 });
+
+/*
+ * `grab` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3). The ONE interactive
+ * board in the catalog: `role="group"`, not `role="img"` — a picture
+ * presents its subtree as replaced content and would swallow every button
+ * inside it from assistive tech, which is exactly why every OTHER kind here
+ * is read-only. Ungraded by construction: placement is local component
+ * state, never submitted, reset on a new `seq` like every other board.
+ */
+describe('grab — the learner sorts it themselves, hands-on', () => {
+  const GRAB_BOARD = {
+    kind: 'grab' as const,
+    binLabels: ['Necesito', 'Quiero'],
+    items: ['Pan', 'Juguete', 'Agua'],
+    label: 'Separa lo que necesitas de lo que quieres',
+  };
+
+  it('is a group, not a picture — every item and bin is its own reachable control', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={GRAB_BOARD} seq={1} />);
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: GRAB_BOARD.label })).toBeInTheDocument();
+    for (const item of GRAB_BOARD.items) {
+      expect(screen.getByRole('button', { name: item })).toBeInTheDocument();
+    }
+    for (const bin of GRAB_BOARD.binLabels) {
+      expect(screen.getByRole('button', { name: bin })).toBeInTheDocument();
+    }
+  });
+
+  it('selects an item on tap, and tapping it again deselects it', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={GRAB_BOARD} seq={1} />);
+    const pan = screen.getByRole('button', { name: 'Pan' });
+    expect(pan).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(pan);
+    expect(pan).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(pan);
+    expect(pan).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('places the selected item in the tapped bin, and it leaves the unassigned row', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={GRAB_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Pan' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Necesito' }));
+    // Placed: now inside the "Necesito" group, reachable by its own take-back label.
+    expect(screen.getByRole('button', { name: 'Take Pan back out' })).toBeInTheDocument();
+    // No longer offered as a plain unassigned chip.
+    expect(screen.queryByRole('button', { name: 'Pan' })).not.toBeInTheDocument();
+  });
+
+  it('does nothing when a bin is tapped with nothing selected', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={GRAB_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Necesito' }));
+    expect(screen.getByRole('button', { name: 'Pan' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Take Pan back out' })).not.toBeInTheDocument();
+  });
+
+  it('takes a placed item back out on tap, returning it to the unassigned row', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={GRAB_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Pan' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Necesito' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Take Pan back out' }));
+    expect(screen.getByRole('button', { name: 'Pan' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Take Pan back out' })).not.toBeInTheDocument();
+  });
+
+  it('resets every placement when a NEW turn carries a different seq', () => {
+    stubMatchMedia(false);
+    const { rerender } = render(<TutorWhiteboard board={GRAB_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Pan' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Necesito' }));
+    expect(screen.getByRole('button', { name: 'Take Pan back out' })).toBeInTheDocument();
+
+    rerender(<TutorWhiteboard board={GRAB_BOARD} seq={2} />);
+    expect(screen.getByRole('button', { name: 'Pan' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Take Pan back out' })).not.toBeInTheDocument();
+  });
+});

@@ -403,6 +403,10 @@
     },
     "updated": "O quadro foi atualizado.",
     "showNext": "Mostrar próximo",
+    "grab": {
+      "hint": "Toque em algo e depois toque em um grupo para colocá-lo lá",
+      "unassign": "Tirar {{item}}"
+    },
     "compare": {
       "difference": "Diferença: {{amount}}"
     },

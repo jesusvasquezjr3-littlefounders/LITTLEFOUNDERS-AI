@@ -4475,3 +4475,65 @@ parent reading "so I take one of these away…" still had no way to see what
 (`tutor/replay/DemoStepsSummary.tsx`) rather than inside `ReplayInWorld.tsx`,
 so the guardian transcript can render it without pulling the entire 3D replay
 world into a plain scrolling page, and both surfaces now show it.
+
+### 20.9 `grab` — the first INTERACTIVE whiteboard kind (2026-09-03, SHIPPED)
+
+**§20.5 through §20.8, and every whiteboard kind before this one, are
+pictures.** Forty-one of them, all sharing the same contract:
+`WhiteboardShell` wraps its content in `role="img"`, an ARIA role that tells
+assistive tech to present the whole subtree as the image's own replaced
+content — correct for a live-drawn snapshot, and it is why the SIBLING
+mechanism next to a board, `step`'s "Show next" control (Class II, S9,
+/TUTOR_INSTRUMENTS.md §3.3), had to be rendered OUTSIDE `role="img"` rather
+than inside it: a nested interactive control there is presented to a screen
+reader as part of a picture and is never reached.
+
+`grab` (Class II, S9) cannot use that contract at all, because its whole
+point is the opposite of a picture: the model names items and two-to-four
+bins, and the LEARNER sorts them by tapping — tap an item, then tap a bin —
+which is the same interaction the Lesson Engine's own graded `SortingBoard`
+(`lesson-engine/families/arrange/components.tsx`) uses minus its native
+pointer-drag half (touch drag-and-drop is the interaction class that reads
+worst on a phone, most of this product's real traffic, and `grab` is an
+ungraded aside the tutor draws mid-conversation, not a widget that has
+earned that extra machinery). `WhiteboardShell` gained a second mode,
+`interactive`, that swaps `role="img"` for `role="group"` and the single
+static `aria-label` for the board's plain caption — a screen reader
+exploring a `grab` board hears its actual buttons, one at a time, as they
+change, rather than one frozen sentence.
+
+**Ungraded by construction (§0's own D decision, /TUTOR_INSTRUMENTS.md
+§8.1), and this is a stronger guarantee than it sounds.** `WhiteboardGrabSchema`
+has no field naming which bin an item belongs in — unlike `two_bins`'
+`items[].bin`, which the MODEL sets — because nothing about a `grab` board is
+ever checked: the learner's placements live in local React state, reset on
+every new turn, and never reach a server. This is the first whiteboard kind
+with genuinely nothing for `oracle/src/tutor/whiteboard.ts` to compute; its
+`whiteboardComputesOk` case is a bare `true`, the same posture `outcomes`/
+`trade`/`cycle` already have for a different reason (prose or a closed list
+with no arithmetic), extended here to a kind whose content is closed but
+whose STATE is the learner's own and simply never comes back.
+
+**`two_bins` and `grab` answer to the same prompt situation — "sorting into
+groups" — and the model has to be told which one, explicitly, or it reaches
+for the one it already knows better.** Live-tested before shipping, the same
+discipline every instrument in this file has needed: three attempts at
+increasingly explicit phrasing ("quiero intentarlo yo mismo… déjame
+acomodarlas yo") all produced `two_bins` or nothing, with the tutor narrating
+the sort itself in words even after saying "tú las mueves." The situation
+index alone — "the learner sorting it themselves, hands-on → grab instead" —
+was not a strong enough signal against an established, five-sprint-old
+alternative. What worked, on the first attempt after adding it: an explicit
+standalone instruction naming the substitution directly — "set grab INSTEAD
+OF two_bins... do not narrate the sort yourself when you set grab" — the same
+shape of fix `demonstrate`'s money case needed in Sprint 2
+(/TUTOR_INSTRUMENTS.md §7.2), applied to a second, independent instrument.
+Two more live attempts after the fix both produced a correct `grab` board on
+the first turn.
+
+**Full record — the six-copy plumbing, the accessibility design, the
+instrument-parity gate's own gap this kind found in itself (a 40-entry
+hand-written `kind→TypeName` map with no `grab` row, replaced with a
+mechanical derivation), and the `verify:tutor-ui` false-positive its
+`role="group"` triggered against a dock selector that had matched the mic
+dock only by accident:** /TUTOR_INSTRUMENTS.md §0.0's Class II / S9 row.

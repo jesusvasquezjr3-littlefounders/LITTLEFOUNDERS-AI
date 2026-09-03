@@ -112,7 +112,7 @@ const OVERLAPS =
   '   if (r.width > 8 && r.height > 8) rects.push({ name, l: r.left, t: r.top, r: r.right, b: r.bottom }); };' +
   ' grab("caption", document.querySelector(".lf-speech"));' +
   ' grab("lesson-plate", document.querySelector("[data-plate-body]"));' +
-  ' grab("dock", document.querySelector(\'[role="group"][aria-label]\'));' +
+  ' grab("dock", document.querySelector(\'[data-mic-dock]\'));' +
   ' const out = [];' +
   ' for (let i = 0; i < rects.length; i += 1) for (let j = i + 1; j < rects.length; j += 1) {' +
   '   const a = rects[i], b = rects[j];' +
@@ -389,6 +389,7 @@ try {
         'table', 'scale', 'two-bins', 'venn', 'ranking', 'outcomes', 'trade', 'chance',
         'deal', 'change', 'regroup', 'equation', 'receipt', 'ledger', 'price-tag', 'inventory', 'budget',
         'pictograph', 'beads', 'tally', 'fraction-circle', 'stack', 'two-futures', 'timeline', 'cycle', 'before-after',
+        'grab',
       ] : []) {
         await setLabPanel(page, true)
         const flipped = await page.evaluate(

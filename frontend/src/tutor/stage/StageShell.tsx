@@ -772,6 +772,13 @@ function StageShellInner({
         */}
         <div
           ref={attachDock}
+          // A stable hook for tooling — `verify-tutor-ui.mjs`'s own overlap
+          // check used to find this element via `[role="group"][aria-label]`,
+          // which was unique only by accident: `grab` (Class II, S9) gave a
+          // SECOND element that same role+label shape, correctly, since
+          // `role="group"` is the right ARIA role for its own content — and
+          // the gate silently started measuring the wrong one.
+          data-mic-dock
           role="group"
           aria-label={dockLabel ?? t('tutor.stage.controlsLabel')}
           className={cn(

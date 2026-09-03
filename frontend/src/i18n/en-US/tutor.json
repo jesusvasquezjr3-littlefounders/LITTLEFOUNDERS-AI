@@ -403,6 +403,10 @@
     },
     "updated": "The whiteboard updated.",
     "showNext": "Show next",
+    "grab": {
+      "hint": "Tap something, then tap a group to put it there",
+      "unassign": "Take {{item}} back out"
+    },
     "compare": {
       "difference": "Difference: {{amount}}"
     },

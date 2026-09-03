@@ -8,6 +8,7 @@ import {
   INSTRUMENTS,
   balancedBody,
   checkInstrumentParity,
+  kindTypeName,
   stripComments,
   topLevelKeys,
   unionMemberKeys,
@@ -50,6 +51,30 @@ test('strips comments before any structural scan', () => {
 test('balancedBody returns the matching brace body, not the first close', () => {
   assert.equal(balancedBody('x({ a: { b: 1 }, c: 2 })', 0), ' a: { b: 1 }, c: 2 ');
   assert.equal(balancedBody('x({ unbalanced: 1', 0), null);
+});
+
+/*
+ * `kindTypeName` replaced a 40-entry hand-written `kind → TypeName` map
+ * (2026-09-03) that was itself exactly the class of copy this whole gate
+ * exists to catch, and did catch on itself: adding `grab` to `INSTRUMENTS`
+ * failed "no WireWhiteboard member found" even though `WireWhiteboard`
+ * genuinely carried `WhiteboardGrab`, because the map had no `grab` row and
+ * nothing forced one in. This locks the mechanical transform in as a
+ * FUNCTION every future kind gets for free, rather than an eighth place to
+ * remember alongside the five real copies, the manifest and the gate itself.
+ */
+test('kindTypeName derives every real kind\'s own type name, mechanically', () => {
+  assert.equal(kindTypeName('sequence'), 'WhiteboardSequence');
+  assert.equal(kindTypeName('two_bins'), 'WhiteboardTwoBins');
+  assert.equal(kindTypeName('before_after'), 'WhiteboardBeforeAfter');
+  assert.equal(kindTypeName('sequence_compare'), 'WhiteboardSequenceCompare');
+  assert.equal(kindTypeName('grab'), 'WhiteboardGrab');
+  // Every kind actually in the manifest resolves to a name wireComputedKeys
+  // can find in the real WireWhiteboard union — the regression this test
+  // exists for was silent otherwise.
+  for (const { kind } of INSTRUMENTS) {
+    assert.notEqual(wireComputedKeys(real[FILES.wire], kind), null, `wireComputedKeys found nothing for '${kind}'`);
+  }
 });
 
 test('topLevelKeys skips anything nested in braces, brackets or parens', () => {

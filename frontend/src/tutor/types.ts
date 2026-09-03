@@ -542,6 +542,19 @@ export type TutorWhiteboardWire =
       direction: 'up' | 'down' | 'same';
       label: string;
       currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      /**
+       * Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3) — items and bins the
+       * LEARNER sorts by tapping, ungraded by construction. Nothing here is
+       * SERVER-COMPUTED: no field for which bin an item belongs in, unlike
+       * `two_bins`' `items[].bin` — that placement is the learner's own,
+       * decided client-side, never sent back or checked.
+       */
+      kind: 'grab';
+      binLabels: string[];
+      items: string[];
+      label: string;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

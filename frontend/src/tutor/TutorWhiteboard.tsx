@@ -123,9 +123,11 @@ function WhiteboardShell({
   className,
   children,
   onAdvance,
+  interactive,
 }: {
   seq: number;
-  ariaLabel: string;
+  /** Ignored when `interactive` is set — the group takes its name from `label` instead. */
+  ariaLabel?: string;
   label: string;
   className?: string;
   children: ReactNode;
@@ -144,6 +146,20 @@ function WhiteboardShell({
    * for the model to author.
    */
   onAdvance?: () => void;
+  /**
+   * `grab` (Class II, S9) only: this board's content is itself interactive
+   * (tappable items and bins), not a picture of a finished state — the ONE
+   * kind in the whole catalog where that is true. `role="img"` presents its
+   * subtree to assistive tech as the image's own replaced content, which is
+   * correct for 41 read-only boards and would swallow every button inside a
+   * `grab` board the same way a nested `onAdvance` control would be (see
+   * that prop's own comment). So this kind gets `role="group"` instead —
+   * its own children stay individually reachable — and a plain caption for
+   * its name rather than a full state description: the state itself is
+   * exactly what a screen-reader user needs to explore turn by turn as they
+   * place things, not hear collapsed into one string on every change.
+   */
+  interactive?: boolean;
 }) {
   const { t } = useTranslation();
   return (
@@ -186,7 +202,12 @@ function WhiteboardShell({
       <span key={seq} role="status" aria-live="polite" className="sr-only">
         {t('tutor.whiteboard.updated')}
       </span>
-      <div data-tutor-whiteboard role="img" aria-label={ariaLabel} className={cn('flex min-h-0 flex-col gap-3', className)}>
+      <div
+        data-tutor-whiteboard
+        role={interactive ? 'group' : 'img'}
+        aria-label={interactive ? label : (ariaLabel ?? '')}
+        className={cn('flex min-h-0 flex-col gap-3', className)}
+      >
         <p className="lf-caption shrink-0 text-content-muted">{label}</p>
         {children}
       </div>
@@ -245,6 +266,7 @@ type SequenceCompareWire = Extract<TutorWhiteboardWire, { kind: 'sequence_compar
 type TimelineWire = Extract<TutorWhiteboardWire, { kind: 'timeline' }>;
 type CycleWire = Extract<TutorWhiteboardWire, { kind: 'cycle' }>;
 type BeforeAfterWire = Extract<TutorWhiteboardWire, { kind: 'before_after' }>;
+type GrabWire = Extract<TutorWhiteboardWire, { kind: 'grab' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -1933,6 +1955,132 @@ function BeforeAfterBoard({ board, seq, className }: { board: BeforeAfterWire; s
   );
 }
 
+/**
+ * `kind: 'grab'` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3): "drags tokens,
+ * chips and labels into piles, bins or cells." The ONE interactive board in
+ * the whole catalog — every sibling is a picture of a finished state; this
+ * is finished by the LEARNER, tap by tap, which is why `WhiteboardShell`
+ * renders it with `interactive` (`role="group"`, not `role="img"` — see that
+ * prop's own comment).
+ *
+ * TAP-TO-SELECT, TAP-TO-PLACE — the Lesson Engine's own `SortingBoard`
+ * pattern (`lesson-engine/families/arrange/components.tsx`), minus its
+ * native pointer-drag half. `SortingBoard` is a GRADED exercise widget and
+ * earns that extra machinery; this is an ungraded aside the tutor draws
+ * mid-conversation, and touch drag-and-drop is exactly the interaction class
+ * that reads worst on a phone, which is most of this product's real traffic
+ * (§3.3's own reasoning, in `WhiteboardGrabSchema`'s comment).
+ *
+ * UNGRADED BY CONSTRUCTION: `assignments` is local component state, reset on
+ * every new `seq` like the rest of this file, and never leaves the browser —
+ * no draft, no submission, no verdict. Identity is ARRAY POSITION, matching
+ * `WhiteboardGrabSchema`'s own comment on why the schema carries no item id.
+ */
+function GrabBoard({ board, seq, className }: { board: GrabWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const [assignments, setAssignments] = useState<Record<number, number>>({});
+  const [selected, setSelected] = useState<number | null>(null);
+
+  // Reset on a genuinely new board, in render rather than an effect — the
+  // same reason `SequenceBoard` does (a bad frame is never painted).
+  const [resetSeq, setResetSeq] = useState(seq);
+  if (seq !== resetSeq) {
+    setResetSeq(seq);
+    setAssignments({});
+    setSelected(null);
+  }
+
+  const selectItem = (item: number) => setSelected((prev) => (prev === item ? null : item));
+  const placeInBin = (bin: number) => {
+    if (selected === null) return;
+    setAssignments((prev) => ({ ...prev, [selected]: bin }));
+    setSelected(null);
+  };
+  const unassign = (item: number) => {
+    setAssignments((prev) => {
+      const next = { ...prev };
+      delete next[item];
+      return next;
+    });
+    setSelected(null);
+  };
+
+  const unassignedIndexes = board.items.map((_, i) => i).filter((i) => !(i in assignments));
+
+  return (
+    <WhiteboardShell seq={seq} label={board.label} className={className} interactive>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1">
+        {unassignedIndexes.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="lf-caption text-content-muted">{t('tutor.whiteboard.grab.hint')}</p>
+            <div className="flex flex-wrap gap-2">
+              {unassignedIndexes.map((i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-pressed={selected === i}
+                  onClick={() => selectItem(i)}
+                  className={cn(
+                    'lf-caption max-w-[9rem] truncate rounded-full border px-2.5 py-1 transition-colors',
+                    selected === i
+                      ? 'border-primary bg-primary/15 text-content'
+                      : 'border-content-muted/40 text-content-muted hover:border-content-muted/70',
+                  )}
+                >
+                  {board.items[i]}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="grid min-h-0 flex-1 grid-cols-2 gap-2">
+          {board.binLabels.map((bin, b) => {
+            const placed = board.items.map((_, i) => i).filter((i) => assignments[i] === b);
+            return (
+              <div
+                key={b}
+                className={cn(
+                  'flex min-h-[4.5rem] flex-col gap-1.5 rounded-md border-2 border-dashed p-2 transition-colors',
+                  selected !== null ? 'border-primary/60' : 'border-content-muted/40',
+                )}
+              >
+                {/*
+                  A SEPARATE tap target from the placed-items group below,
+                  deliberately: a <button> may not contain another focusable
+                  element, so "tap this bin to place the selected item" and
+                  "tap a placed item to take it back" have to be two controls,
+                  not one nested inside the other.
+                */}
+                <button
+                  type="button"
+                  onClick={() => placeInBin(b)}
+                  disabled={selected === null}
+                  className="lf-caption -m-1 rounded p-1 text-left font-medium text-content-muted enabled:hover:bg-primary/5 enabled:hover:text-content"
+                >
+                  {bin}
+                </button>
+                <div role="group" aria-label={bin} className="flex flex-1 flex-wrap content-start gap-1">
+                  {placed.map((i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => unassign(i)}
+                      aria-label={t('tutor.whiteboard.grab.unassign', { item: board.items[i] })}
+                      className="lf-caption max-w-[9rem] truncate rounded-full border border-accent bg-accent/15 px-2.5 py-1 text-content"
+                    >
+                      {board.items[i]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -2017,5 +2165,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <CycleBoard board={board} seq={seq} className={className} />;
     case 'before_after':
       return <BeforeAfterBoard board={board} seq={seq} className={className} />;
+    case 'grab':
+      return <GrabBoard board={board} seq={seq} className={className} />;
   }
 }

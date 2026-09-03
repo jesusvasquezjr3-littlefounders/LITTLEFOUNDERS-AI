@@ -956,6 +956,15 @@ function internalRouter(): Router {
   const BeforeAfterWhiteboardBody = z
     .object({ kind: z.literal('before_after'), what: z.string().max(40), before: z.number(), after: z.number(), delta: z.number(), direction: z.enum(['up', 'down', 'same']), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
     .strict();
+  /** Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3) — no computed field: nothing is server-derived, see `WhiteboardGrabSchema`'s own comment (oracle/src/tutor/turnSchema.ts). */
+  const GrabWhiteboardBody = z
+    .object({
+      kind: z.literal('grab'),
+      binLabels: z.array(z.string().max(40)).min(2).max(4),
+      items: z.array(z.string().max(40)).min(2).max(8),
+      label: z.string().max(60),
+    })
+    .strict();
 
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
@@ -999,6 +1008,7 @@ function internalRouter(): Router {
     TimelineWhiteboardBody,
     CycleWhiteboardBody,
     BeforeAfterWhiteboardBody,
+    GrabWhiteboardBody,
   ]);
 
   /**
