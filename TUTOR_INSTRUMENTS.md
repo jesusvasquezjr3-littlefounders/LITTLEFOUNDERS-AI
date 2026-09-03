@@ -26,7 +26,7 @@ only section that must be updated on EVERY sprint boundary.**
 
 | | |
 |---|---|
-| **Status** | IN PROGRESS. Class I complete; Wave 0 + Classes II-V underway 2026-09-02/03. |
+| **Status** | IN PROGRESS. **🔴 Class I is NOT actually complete despite the S14/S15 row below — see §10.5, found 2026-09-03 while wiring `grab`'s prompt guidance.** Wave 0 + Classes II-V underway 2026-09-02/03. |
 | **Active sprint** | Wave 0 COMPLETE. Class II / S9 IN PROGRESS: `step` DONE 2026-09-03, `grab`/`fill` not started. **Correction to the "continue as planned" framing below**: Class II turned out NOT to carry S2's ids-in-context risk — §3.3's own header says Class II is ungraded, no answer key, no verdict, which is exactly what removes the "a guessed id could assert a wrong graded answer" hazard `place`/`assign`/`pair` had. Confirmed by §8.1 decision D, not re-litigated. |
 | **Next action** | Finish S9: `grab` (drag into piles/bins/cells) and `fill` (tap to fill a container) — each a new, self-contained, model-invented-content instrument in the Class I mould (own schema/wire/renderer) but LEARNER-INTERACTIVE, so real-pointer-event hit-testing (§1.14) matters more here than anywhere in Class I. Then S10 (`whatif`, `your_turn`). Then Class III's non-asset slice (`point_at`, `beat`). Class III's `props`/`roleplay` need a 3D asset pipeline (Blender-authored `.glb`) this session cannot run and are explicitly not attempted. Class IV stays blocked on the owner's D2 decision (§8.2) — asked, not guessed at. |
 | **Blocked on owner** | **D2 (generated imagery, gates Class IV and Wave 4) — asked at the end of this session's work.** D1 and D3 were answered 2026-09-02 with "procede". |
@@ -1195,6 +1195,88 @@ every one by being RUN rather than by being reasoned about.
 - **Deploy order for a new whiteboard kind is Core-before-Oracle**, the reverse of
   the `servedDifficulty` note, and is not written down anywhere. §4.1 is now the
   record; mirror it into `/ORACLE.md` §20.5 when the first new kind ships.
+
+---
+
+### §10.5 🔴 31 OF 41 "SHIPPED" CLASS I INSTRUMENTS ARE UNREACHABLE — the model was
+never shown their shape (found 2026-09-03, live-verified, HIGH)
+
+**The claim in the S14/S15 row above — "CLASS I IS COMPLETE: all 41 drawn
+instruments are live" — is true of the DATA PLUMBING and false of the PRODUCT.**
+`instruments:check` genuinely proves all 41 kinds agree across their 5
+hand-mirrored copies. It does not, and structurally cannot, prove the model can
+ever actually PRODUCE one — that depends on a SIXTH place, `oracle/src/tutor/
+prompt.ts`'s hand-written JSON shape lines, which `instruments:check`'s manifest
+never touches.
+
+**What was found.** `grep '"kind": "' oracle/src/tutor/prompt.ts` returns exactly
+11 lines: `demonstrate`'s own shape, plus 10 whiteboard kinds — `sequence`,
+`compare`, `marked_line`, `categories`, `tokens`, `bar_model`, `part_whole`,
+`flow`, `goal_bar`, `worked`. Every one of the 31 kinds S11 through S15 shipped
+— `ten_frame`, `open_number_line`, `array`, `fraction_strip`, `partition`,
+`table`, `scale`, `two_bins`, `venn`, `ranking`, `outcomes`, `trade`, `chance`,
+`deal`, `change`, `regroup`, `equation_bar`, `receipt`, `ledger`, `price_tag`,
+`inventory`, `budget_plate`, `pictograph`, `bead_string`, `tally`,
+`fraction_circle`, `stack`, `sequence_compare`, `timeline`, `cycle`,
+`before_after` — is named by NOTHING but its bare kind-string in "WHICH BOARD
+FITS WHICH MOMENT" (the situation → kind-name index a few lines above the shape
+list). None of their actual FIELDS appear anywhere in the file. `instrumentSpecs.ts`
+covers 6 of the 10 shaped kinds and none of the other 31.
+
+This is not a hunch — it is `instrumentSpecs.ts`'s OWN header, written 2026-09-02,
+the same day S11-S15 shipped: **"the system prompt must list every board SHAPE —
+the model cannot emit valid JSON for a shape it has never seen."** That sentence
+was correct and was not carried forward for 31 kinds added the same day. It also
+is not covered by API-level structured output: `oracle/src/model/provider.ts`
+calls the model with `response_format: { type: 'json_object' }` — DeepSeek's
+generic "valid JSON syntax" mode, not a schema-constrained `json_schema` mode —
+so prompt TEXT is the model's only source of truth for any kind's fields, full
+stop.
+
+**Live-verified, not assumed**, with a real `deepseek-chat` call, in the pattern
+this whole session's prior findings used: a needs-vs-wants scenario (WHICH BOARD
+FITS WHICH MOMENT's OWN worked example for `two_bins` — "sorting into two
+groups → two_bins") produced `whiteboard: null` twice even as the tutor narrated
+a textbook needs/wants explanation in words. An explicit, unambiguous follow-up —
+"muéstramelo en un pizarrón con dos grupos... ponlas en el pizarrón de dos
+grupos" (show it to me on a two-groups board... put them on the two-groups
+board) — still never produced `two_bins`. It produced `categories`, a kind the
+model DOES have a shape for, with the four items silently collapsed into
+`{label:"Necesito",value:2}` / `{label:"Quiero",value:2}` — a bar chart of
+`2 vs 2` that shows neither which item is which nor why, a confident WRONG
+picture in place of the one actually requested, which is worse than drawing
+nothing (§1.14: "a confident wrong picture misleads where an absent one merely
+omits"). The model correctly recognised the SITUATION (its own choice of
+`categories` shows it understood "these things sort into two groups") and
+substituted the nearest kind it actually knew how to fill in, silently, with no
+signal to the child, the tutor's own narration, or any gate that anything was
+wrong.
+
+**Scope.** Every S11-S15 kind is presumed equally unreachable until shown
+otherwise — this was one kind, tested twice, not all 31. `verify:tutor-ui` and
+`verify:tutor-a11y` do not catch this class of gap: both drive `/dev/tutor-lab`
+FIXTURES, which construct a `Whiteboard` object directly in TypeScript and skip
+the model entirely, so a board that renders perfectly from a hand-built fixture
+proves nothing about whether the model can ever author one. `instruments:check`
+does not catch it either, for the reason above. The ONLY gate that would have
+caught this is a live model call landing on one of the 31 kinds — which
+`gh workflow run tutor-deploy.yml -f step=converse` could do by chance but was
+never aimed at doing deliberately, and every local `tutor:converse`-pattern run
+this session ran (Sprint 2, Sprint 3's own predecessors) happened to land on
+kinds inside the shaped 10.
+
+**Not fixed here.** This was found while researching where `grab`'s prompt
+guidance belongs (Class II, S9) — a new, 42nd kind, about to become a 32nd
+unreachable one if wired the same way. `grab`'s own oracle-side schema/wire/
+moderation/compute plumbing was completed and type-checks clean (this commit's
+own diff) but was deliberately NOT wired into `prompt.ts` pending the owner's
+steer on which of two things to do first: extend the SHAPE LIST (mechanical —
+every field already exists in `turnSchema.ts`, this is transcription, not
+design) and REACH INTO §4.4 for the 31 kinds' actual guidance (a genuinely
+different, larger job — deciding what each kind is FOR, in prompt-budget terms,
+the same care S6-S8 spent on 6 kinds), or continue the Class II roadmap as
+planned and return to this afterward. Surfaced rather than guessed, the same
+posture D2 and the S2 ids-in-context finding already have.
 
 ---
 

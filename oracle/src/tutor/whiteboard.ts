@@ -1166,6 +1166,13 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
     // Moderation is this one's whole guard.
     case 'cycle':
       return true;
+    // No numbers, no cross-field relationship to check — items and bin
+    // labels are independent lists the SCHEMA already bounds. Ungraded by
+    // construction (§8.1 decision D), so there is no answer for a compute
+    // function to defend the way `two_bins`' own bin ASSIGNMENTS are. This
+    // is the first kind in the catalog with genuinely nothing to compute.
+    case 'grab':
+      return true;
   }
 }
 

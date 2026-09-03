@@ -629,6 +629,8 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
       const r = computeBeforeAfter(board);
       return { label: board.label, summary: r ? `${board.what}: ${board.before} → ${board.after} (${r.direction} ${r.delta})` : 'INVALID' };
     }
+    case 'grab':
+      return { label: board.label, summary: `${board.items.join(', ')} → [${board.binLabels.join(' | ')}]` };
   }
 }
 

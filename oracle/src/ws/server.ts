@@ -1458,6 +1458,11 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
     // Prose only; moderation is its guard.
     case 'cycle':
       return { ...board };
+    case 'grab':
+      // Nothing computed: see `whiteboardComputesOk`'s own comment on this
+      // kind for why — no cross-field relationship exists to validate,
+      // let alone attach.
+      return { ...board };
   }
 }
 

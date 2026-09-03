@@ -844,6 +844,36 @@ export const WhiteboardTwoBinsSchema = z
   })
   .strict();
 
+/**
+ * `kind: 'grab'` — Class II, the first Hand mode (S9, /TUTOR_INSTRUMENTS.md
+ * §3.3): "drags tokens, chips and labels into piles, bins or cells." Where
+ * `two_bins` above is the tutor SHOWING a classification while talking, this
+ * is the LEARNER doing the classifying — items start unplaced and stay that
+ * way until tapped, then tapped again onto a bin (the Lesson Engine's own
+ * `SortingBoard` tap-then-tap pattern, not native drag-and-drop: touch
+ * drag-and-drop is exactly the interaction class that reads worst on a
+ * phone, which is most of this product's real traffic).
+ *
+ * UNGRADED BY CONSTRUCTION (§8.1 decision D) — no field here for which bin
+ * an item "belongs" in, unlike `two_bins.items[].bin` or `SortedItemSchema`.
+ * There is no answer key for the server to defend and no placement for the
+ * model to pre-decide: identity is the item's own ARRAY POSITION (as
+ * `two_bins`' items already are), never a separate id, so nothing here can
+ * drift out of sync with anything a server would need to check against. This
+ * is also why `grab` needed no `computed` fields and no `compute*` function
+ * in `whiteboard.ts` at all — the FIRST Class I/II board in the catalog with
+ * that property; every prior one exists because something needed hiding
+ * from the model or deriving from what it said.
+ */
+export const WhiteboardGrabSchema = z
+  .object({
+    kind: z.literal('grab'),
+    binLabels: z.array(z.string().min(1).max(40)).min(2).max(4),
+    items: z.array(z.string().min(1).max(40)).min(2).max(8),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
 /** One thing placed in a `venn` board's two overlapping sets. */
 export const VennItemSchema = z
   .object({
@@ -1410,6 +1440,7 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardTimelineSchema,
   WhiteboardCycleSchema,
   WhiteboardBeforeAfterSchema,
+  WhiteboardGrabSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -1491,6 +1522,7 @@ export type WhiteboardPartition = z.infer<typeof WhiteboardPartitionSchema>;
 export type WhiteboardTable = z.infer<typeof WhiteboardTableSchema>;
 export type WhiteboardScale = z.infer<typeof WhiteboardScaleSchema>;
 export type WhiteboardTwoBins = z.infer<typeof WhiteboardTwoBinsSchema>;
+export type WhiteboardGrab = z.infer<typeof WhiteboardGrabSchema>;
 export type WhiteboardVenn = z.infer<typeof WhiteboardVennSchema>;
 export type WhiteboardRanking = z.infer<typeof WhiteboardRankingSchema>;
 export type WhiteboardOutcomes = z.infer<typeof WhiteboardOutcomesSchema>;
@@ -1635,6 +1667,8 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       return [whiteboard.label, ...whiteboard.steps];
     case 'before_after':
       return [whiteboard.label, whiteboard.what];
+    case 'grab':
+      return [whiteboard.label, ...whiteboard.binLabels, ...whiteboard.items];
   }
 }
 
