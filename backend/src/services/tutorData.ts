@@ -1195,6 +1195,8 @@ export interface TutorTurnFractionCircleBoard { kind: 'fraction_circle'; denomin
 export interface TutorTurnStackBoard { kind: 'stack'; columns: { label: string; parts: { label: string; value: number }[] }[]; totals: number[]; max: number; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** Two trajectories at once. Tracks of different lengths are refused. */
 export interface TutorTurnSequenceCompareBoard { kind: 'sequence_compare'; unit: 'day' | 'week' | 'month' | 'year'; tracks: [{ label: string; start: number; steps: { op: string; value: number }[] }, { label: string; start: number; steps: { op: string; value: number }[] }]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
+/** Class II, S10 — NOT ungraded: `values` is server-computed, one array per branch. */
+export interface TutorTurnWhatifBoard { kind: 'whatif'; start: number; unit: 'day' | 'week' | 'month' | 'year'; branches: { label: string; steps: { op: string; value: number }[] }[]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** When, not how much. Two events in one period are refused — the board exists to show ORDER. */
 export interface TutorTurnTimelineBoard { kind: 'timeline'; unit: 'day' | 'week' | 'month' | 'year'; span: number; events: { label: string; at: number }[]; positions: number[]; label: string }
 /** A loop that comes back to its start. The only Class I board with no numbers at all. */
@@ -1250,7 +1252,8 @@ export type TutorTurnWhiteboard =
   | TutorTurnCycleBoard
   | TutorTurnBeforeAfterBoard
   | TutorTurnGrabBoard
-  | TutorTurnFillBoard;
+  | TutorTurnFillBoard
+  | TutorTurnWhatifBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1912,6 +1915,27 @@ const SequenceCompareBoardRowSchema = z
   })
   .strict();
 
+/** One branch of a `whatif` — `SeqTrackRow` minus its own `start` (shared at the board's top level, not per branch). */
+const WhatifBranchRow = z
+  .object({
+    label: z.string().min(1).max(30),
+    steps: z.array(SeqStepRow).min(1).max(6),
+  })
+  .strict();
+
+/** Class II, S10 — NOT ungraded: `values` is server-computed, `sequence_compare`'s own shape generalised to 2-3 branches sharing one `start`. */
+const WhatifBoardRowSchema = z
+  .object({
+    kind: z.literal('whatif'),
+    start: z.number().min(0).max(1_000_000),
+    unit: UnitRow,
+    branches: z.array(WhatifBranchRow).min(2).max(3),
+    values: z.array(z.array(z.number().min(0).max(10_000_000))).min(2).max(3),
+    label: z.string().min(1).max(60),
+    currency: CUR_ROW.nullable(),
+  })
+  .strict();
+
 const TimelineBoardRowSchema = z
   .object({
     kind: z.literal('timeline'),
@@ -2020,6 +2044,7 @@ const TutorTurnWhiteboardRowSchema = z
     BeforeAfterBoardRowSchema,
     GrabBoardRowSchema,
     FillBoardRowSchema,
+    WhatifBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {

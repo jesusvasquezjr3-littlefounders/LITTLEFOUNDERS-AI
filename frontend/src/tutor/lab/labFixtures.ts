@@ -815,6 +815,7 @@ const LAB_LAST_TEXT: Readonly<
       beforeAfter: { say: string; label: string; what: string };
       grab: { say: string; label: string; bins: [string, string]; items: [string, string, string] };
       fill: { say: string; label: string };
+      whatif: { say: string; label: string; branches: [string, string, string] };
     }
   >
 > = {
@@ -830,6 +831,7 @@ const LAB_LAST_TEXT: Readonly<
     beforeAfter: { say: 'Before and after. What changed?', label: 'What changed', what: 'The piggy bank' },
     grab: { say: 'Sort them yourself — tap one, then tap a group.', label: 'Sort what you need from what you want', bins: ['Need', 'Want'], items: ['Bread', 'Toy', 'Water'] },
     fill: { say: 'Count them out yourself — tap one at a time.', label: 'Count to five' },
+    whatif: { say: 'What if you saved more each week? Try each one.', label: 'Three ways to save', branches: ['Save $1', 'Save $3', 'Save $6'] },
   },
   'es-MX': {
     pictograph: { say: 'Cada dibujito es una galleta vendida. ¿Quién vendió más?', label: 'Galletas vendidas esta semana', rows: ['Lunes', 'Martes', 'Miércoles'] },
@@ -843,6 +845,7 @@ const LAB_LAST_TEXT: Readonly<
     beforeAfter: { say: 'Antes y después. ¿Qué cambió?', label: 'Qué cambió', what: 'La alcancía' },
     grab: { say: 'Sepáralas tú — toca una, luego toca un grupo.', label: 'Separa lo que necesitas de lo que quieres', bins: ['Necesito', 'Quiero'], items: ['Pan', 'Juguete', 'Agua'] },
     fill: { say: 'Cuéntalas tú — toca una por una.', label: 'Cuenta hasta cinco' },
+    whatif: { say: '¿Qué tal si ahorras más cada semana? Prueba cada una.', label: 'Tres formas de ahorrar', branches: ['Ahorra $1', 'Ahorra $3', 'Ahorra $6'] },
   },
   'pt-BR': {
     pictograph: { say: 'Cada desenho é um biscoito vendido. Quem vendeu mais?', label: 'Biscoitos vendidos esta semana', rows: ['Segunda', 'Terça', 'Quarta'] },
@@ -856,6 +859,7 @@ const LAB_LAST_TEXT: Readonly<
     beforeAfter: { say: 'Antes e depois. O que mudou?', label: 'O que mudou', what: 'O cofrinho' },
     grab: { say: 'Separe você mesmo — toque em um, depois toque em um grupo.', label: 'Separe o que você precisa do que você quer', bins: ['Preciso', 'Quero'], items: ['Pão', 'Brinquedo', 'Água'] },
     fill: { say: 'Conte você mesmo — toque um de cada vez.', label: 'Conte até cinco' },
+    whatif: { say: 'E se você guardasse mais a cada semana? Experimente cada uma.', label: 'Três formas de guardar dinheiro', branches: ['Guarde $1', 'Guarde $3', 'Guarde $6'] },
   },
 };
 
@@ -1479,7 +1483,8 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
     activity === 'cycle' ||
     activity === 'before-after' ||
     activity === 'grab' ||
-    activity === 'fill'
+    activity === 'fill' ||
+    activity === 'whatif'
   ) {
     const text = LAB_LAST_TEXT[locale];
     const currency = LAB_CURRENCY[locale];
@@ -1610,6 +1615,29 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
         ...base,
         text: text.fill.say,
         whiteboard: { kind: 'fill', container: 'ten_frame', capacity: 5, label: text.fill.label },
+      };
+    }
+    if (activity === 'whatif') {
+      return {
+        ...base,
+        text: text.whatif.say,
+        whiteboard: {
+          kind: 'whatif',
+          start: 10,
+          unit: 'week',
+          branches: [
+            { label: text.whatif.branches[0], steps: [{ op: 'add', value: 1 }, { op: 'add', value: 1 }, { op: 'add', value: 1 }] },
+            { label: text.whatif.branches[1], steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+            { label: text.whatif.branches[2], steps: [{ op: 'add', value: 6 }, { op: 'add', value: 6 }, { op: 'add', value: 6 }] },
+          ],
+          values: [
+            [10, 11, 12, 13],
+            [10, 13, 16, 19],
+            [10, 16, 22, 28],
+          ],
+          label: text.whatif.label,
+          currency,
+        },
       };
     }
     return {
@@ -1751,6 +1779,7 @@ const WHITEBOARD_ACTIVITIES = [
   'before-after',
   'grab',
   'fill',
+  'whatif',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [

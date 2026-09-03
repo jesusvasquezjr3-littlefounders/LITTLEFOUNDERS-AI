@@ -77,6 +77,7 @@ import {
   computeFractionCircle,
   computeStack,
   computeSequenceCompare,
+  computeWhatif,
   computeTimeline,
   computeBeforeAfter,
 } from '../tutor/whiteboard.js';
@@ -1465,6 +1466,10 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
       return { ...board };
     case 'fill':
       return { ...board };
+    case 'whatif': {
+      const result = computeWhatif(board);
+      return result === null ? null : { ...board, ...result };
+    }
   }
 }
 

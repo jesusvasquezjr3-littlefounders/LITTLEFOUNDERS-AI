@@ -974,6 +974,28 @@ function internalRouter(): Router {
       label: z.string().max(60),
     })
     .strict();
+  /** Class II, S10 — NOT ungraded: `values` is server-computed, same as `sequence_compare`'s own two-track shape generalised to 2-3 branches. */
+  const WhatifWhiteboardBody = z
+    .object({
+      kind: z.literal('whatif'),
+      start: z.number(),
+      unit: z.enum(['day', 'week', 'month', 'year']),
+      branches: z
+        .array(
+          z
+            .object({
+              label: z.string().max(30),
+              steps: z.array(z.object({ op: z.enum(['add', 'subtract', 'multiply_percent']), value: z.number() }).strict()),
+            })
+            .strict(),
+        )
+        .min(2)
+        .max(3),
+      values: z.array(z.array(z.number())),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
 
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
@@ -1019,6 +1041,7 @@ function internalRouter(): Router {
     BeforeAfterWhiteboardBody,
     GrabWhiteboardBody,
     FillWhiteboardBody,
+    WhatifWhiteboardBody,
   ]);
 
   /**

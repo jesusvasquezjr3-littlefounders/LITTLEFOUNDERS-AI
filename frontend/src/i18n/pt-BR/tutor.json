@@ -412,6 +412,9 @@
       "undo": "Tirar o número {{n}}",
       "count": "{{filled}} de {{capacity}}"
     },
+    "whatif": {
+      "hint": "Toque em um para ver o que acontece"
+    },
     "compare": {
       "difference": "Diferença: {{amount}}"
     },

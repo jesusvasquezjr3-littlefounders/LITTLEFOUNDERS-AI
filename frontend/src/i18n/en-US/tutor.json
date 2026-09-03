@@ -412,6 +412,9 @@
       "undo": "Take back number {{n}}",
       "count": "{{filled}} of {{capacity}}"
     },
+    "whatif": {
+      "hint": "Tap one to see what happens"
+    },
     "compare": {
       "difference": "Difference: {{amount}}"
     },

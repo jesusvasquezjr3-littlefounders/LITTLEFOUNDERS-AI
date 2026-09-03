@@ -567,6 +567,22 @@ export type TutorWhiteboardWire =
       container: 'ten_frame' | 'bar' | 'jar';
       capacity: number;
       label: string;
+    }
+  | {
+      /**
+       * Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3) — NOT ungraded, unlike
+       * `grab`/`fill`: `values` is SERVER-COMPUTED, one running-value array
+       * per branch, `sequence_compare`'s own shape generalised from exactly
+       * two tracks to 2-3 branches sharing one `start`. Switching branches
+       * client-side is a pure re-render of already-computed data.
+       */
+      kind: 'whatif';
+      start: number;
+      unit: 'day' | 'week' | 'month' | 'year';
+      branches: { label: string; steps: { op: string; value: number }[] }[];
+      values: number[][];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

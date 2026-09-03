@@ -394,6 +394,16 @@ export const INSTRUMENTS = [
     blocks: { oracleSchema: 'WhiteboardFillSchema', coreBody: 'FillWhiteboardBody', coreRow: 'FillBoardRowSchema' },
   },
   {
+    kind: 'whatif',
+    // Class II, S10 — NOT ungraded, unlike `grab`/`fill`: `values` is
+    // server-computed, one running-value array per branch, generalizing
+    // `sequence_compare`'s two simultaneous tracks (each with its own
+    // `start`) into 2-3 branches that share ONE top-level `start`.
+    model: ['kind', 'start', 'unit', 'branches', 'label', 'currency'],
+    computed: ['values'],
+    blocks: { oracleSchema: 'WhiteboardWhatifSchema', coreBody: 'WhatifWhiteboardBody', coreRow: 'WhatifBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],

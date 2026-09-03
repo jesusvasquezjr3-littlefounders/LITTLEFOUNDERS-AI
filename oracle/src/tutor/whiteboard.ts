@@ -35,6 +35,7 @@ import type {
   WhiteboardFractionCircle,
   WhiteboardPictograph,
   WhiteboardSequenceCompare,
+  WhiteboardWhatif,
   WhiteboardStack,
   WhiteboardTally,
   WhiteboardTimeline,
@@ -1024,6 +1025,30 @@ export function computeSequenceCompare(
   return { values };
 }
 
+/** Every branch of a `whatif`, folded — see `computeWhatif`. */
+export interface WhatifResult {
+  /** One running-value array per branch, in the model's own order. */
+  values: number[][];
+}
+
+/**
+ * Folds every branch from the SAME shared `start` (unlike `sequence_compare`'s
+ * two independently-started tracks), and refuses branches of different
+ * lengths — the identical reason `computeSequenceCompare` does: a "what if
+ * instead" comparison is only fair read at the same point in time.
+ */
+export function computeWhatif(board: Pick<WhiteboardWhatif, 'start' | 'branches'>): WhatifResult | null {
+  const length = board.branches[0]?.steps.length;
+  if (length === undefined || board.branches.some((b) => b.steps.length !== length)) return null;
+  const values: number[][] = [];
+  for (const branch of board.branches) {
+    const folded = computeSequence({ start: board.start, steps: branch.steps });
+    if (folded === null) return null;
+    values.push(folded);
+  }
+  return { values };
+}
+
 /** Where each timeline event sits along the line. */
 export interface TimelineResult {
   /** 0..1 along the span, one per event. */
@@ -1178,6 +1203,8 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
     // own tapping — see `WhiteboardFillSchema`'s own comment.
     case 'fill':
       return true;
+    case 'whatif':
+      return computeWhatif(board) !== null;
   }
 }
 

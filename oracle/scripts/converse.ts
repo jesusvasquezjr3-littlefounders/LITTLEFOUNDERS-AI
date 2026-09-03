@@ -71,6 +71,7 @@ import {
   computeFractionCircle,
   computeStack,
   computeSequenceCompare,
+  computeWhatif,
   computeTimeline,
   computeBeforeAfter,
 } from '../src/tutor/whiteboard.js';
@@ -633,6 +634,13 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
       return { label: board.label, summary: `${board.items.join(', ')} → [${board.binLabels.join(' | ')}]` };
     case 'fill':
       return { label: board.label, summary: `${board.container}, capacity ${board.capacity}` };
+    case 'whatif': {
+      const result = computeWhatif(board);
+      const summary = result
+        ? board.branches.map((b, i) => `${b.label}: ${result.values[i]!.join(' → ')}`).join(' | ')
+        : 'INVALID';
+      return { label: board.label, summary };
+    }
   }
 }
 

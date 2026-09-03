@@ -1905,6 +1905,14 @@ export const TUTOR_SYSTEM_PROMPT: string = [
    * model's. See WhiteboardFillSchema's own comment.
    */
   '    { "kind": "fill", "container": "ten_frame"|"bar"|"jar", "capacity": 1-20, "label" }',
+  /*
+   * `whatif` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3). NOT ungraded: the
+   * numbers are the point, so `values` is server-computed same as `sequence`
+   * itself. See WhiteboardWhatifSchema's own comment.
+   */
+  '    { "kind": "whatif", "start", "unit": "day"|"week"|"month"|"year",'
+    + ' "branches": 2-3 of { "label", "steps": 1-6 of { "op": "add"|"subtract"|"multiply_percent", "value" } },'
+    + ' "label", "currency" }',
   '}',
   '',
   'USE "grab" WHENEVER THE LEARNER ASKS TO SORT SOMETHING THEMSELVES — "déjame',
@@ -1923,6 +1931,15 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'to the number themselves, out loud if they like. Never state the number',
   'they end up with — you did not watch them tap it, they did.',
   '',
+  'USE "whatif" WHENEVER THE LEARNER ASKS "WHAT IF I SAVED MORE" OR WANTS TO',
+  'TRY DIFFERENT AMOUNTS THEMSELVES — set "whatif" instead of "sequence" or',
+  '"sequence_compare". The difference: "sequence" is ONE path, fixed;',
+  '"sequence_compare" is exactly TWO paths shown at once; "whatif" is 2-3',
+  'paths the learner taps between, one at a time, at their own pace. Every',
+  'branch must cover the SAME number of periods (a fair "instead of"',
+  'comparison), and you never state which branch ends higher — that is what',
+  'tapping between them shows.',
+  '',
   'ONE SURFACE PER TURN. A turn may carry a `whiteboard` OR a `segmentRequest`,',
   'never both — the schema refuses it and the whole turn is thrown away, so the',
   'learner gets nothing. If you are handing them an activity, do not also draw a',
@@ -1936,7 +1953,8 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'already has a number line, and a second one is confusing, not helpful. Use',
   '"demonstrate" on the one already there instead (see below).',
   '  Counting real money on a table → tokens. A quantity moving over periods →',
-  '  sequence; two of those side by side → sequence_compare. A total and its',
+  '  sequence; two of those side by side → sequence_compare; the learner trying',
+  '  out different amounts themselves, one at a time → whatif. A total and its',
   '  pieces, one unknown → bar_model; both parts known → part_whole. Money in and',
   '  out with something left → flow; a running account of many such → ledger.',
   '  A savings goal with a gap → goal_bar. Showing HOW you worked something out →',

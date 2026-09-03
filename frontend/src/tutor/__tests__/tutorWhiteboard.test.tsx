@@ -734,3 +734,97 @@ describe('fill — the learner counts it out themselves, tap by tap', () => {
     expect(screen.getByText('0 of 5')).toBeInTheDocument();
   });
 });
+
+/*
+ * `whatif` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3). NOT ungraded, unlike
+ * `grab`/`fill`: `values` is server-computed, one array per branch. The chart
+ * itself stays `role="img"` (a picture of already-computed data); only WHICH
+ * branch is showing is the learner's own choice, via a separate tab row.
+ */
+describe('whatif — the learner switches between server-computed branches', () => {
+  const WHATIF_BOARD = {
+    kind: 'whatif' as const,
+    start: 10,
+    unit: 'week' as const,
+    branches: [
+      { label: 'Save $1', steps: [{ op: 'add', value: 1 }, { op: 'add', value: 1 }, { op: 'add', value: 1 }] },
+      { label: 'Save $3', steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      { label: 'Save $6', steps: [{ op: 'add', value: 6 }, { op: 'add', value: 6 }, { op: 'add', value: 6 }] },
+    ],
+    values: [
+      [10, 11, 12, 13],
+      [10, 13, 16, 19],
+      [10, 16, 22, 28],
+    ],
+    label: 'Three ways to save',
+    currency: 'USD' as const,
+  };
+
+  it('stays a picture, not a group — the chart is role="img"; the branch tabs are separate, reachable buttons', () => {
+    render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    expect(screen.getByRole('img', { name: /Three ways to save/ })).toBeInTheDocument();
+    expect(screen.queryByRole('group')).not.toBeInTheDocument();
+    for (const branch of WHATIF_BOARD.branches) {
+      expect(screen.getByRole('button', { name: branch.label })).toBeInTheDocument();
+    }
+  });
+
+  it('shows the FIRST branch by default, with its values in the accessible name', () => {
+    render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('Save $1');
+    expect(label).toContain('Start: $10');
+    expect(label).toContain('Week 3: $13');
+    expect(label).not.toContain('Week 3: $19');
+  });
+
+  it('marks only the active branch aria-pressed', () => {
+    render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    expect(screen.getByRole('button', { name: 'Save $1' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Save $3' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: 'Save $6' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('switching tabs redraws the chart to the tapped branch, without touching the others', () => {
+    render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Save $6' }));
+    expect(screen.getByRole('button', { name: 'Save $6' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Save $1' })).toHaveAttribute('aria-pressed', 'false');
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('Save $6');
+    expect(label).toContain('Week 3: $28');
+  });
+
+  it('scales every branch against the SAME (global) maximum — switching tabs must never rescale the chart', () => {
+    const { container, rerender } = render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    // Branch 0's tallest bar (13) is well under the GLOBAL max (28) — 46%, not 100%.
+    let bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars[bars.length - 1]).toHaveStyle({ height: '46%' });
+
+    rerender(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Save $6' }));
+    // Branch 2's tallest bar (28) IS the global max — 100%, on the SAME denominator.
+    bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars[bars.length - 1]).toHaveStyle({ height: '100%' });
+  });
+
+  it('resets to the first branch when a NEW turn carries a different seq', () => {
+    const { rerender } = render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Save $6' }));
+    expect(screen.getByRole('button', { name: 'Save $6' })).toHaveAttribute('aria-pressed', 'true');
+
+    rerender(<TutorWhiteboard board={WHATIF_BOARD} seq={2} />);
+    expect(screen.getByRole('button', { name: 'Save $1' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Save $6' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('defends against a stale selection outliving a narrower board at the SAME seq', () => {
+    const { rerender } = render(<TutorWhiteboard board={WHATIF_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Save $6' }));
+
+    const narrower = { ...WHATIF_BOARD, branches: WHATIF_BOARD.branches.slice(0, 2), values: WHATIF_BOARD.values.slice(0, 2) };
+    rerender(<TutorWhiteboard board={narrower} seq={1} />);
+    // Clamped to the new last branch rather than indexing past it.
+    expect(screen.getByRole('button', { name: 'Save $3' })).toHaveAttribute('aria-pressed', 'true');
+  });
+});

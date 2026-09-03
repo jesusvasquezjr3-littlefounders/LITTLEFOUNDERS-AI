@@ -47,6 +47,7 @@ import {
   type WhiteboardCycle,
   type WhiteboardGrab,
   type WhiteboardFill,
+  type WhiteboardWhatif,
 } from '../tutor/turnSchema.js';
 import type { WordTiming } from '../voice/provider.js';
 
@@ -229,7 +230,8 @@ export type WireWhiteboard =
   | (WhiteboardBeforeAfter & { delta: number; direction: 'up' | 'down' | 'same' })
   | WhiteboardCycle
   | WhiteboardGrab
-  | WhiteboardFill;
+  | WhiteboardFill
+  | (WhiteboardWhatif & { values: number[][] });
 
 /**
  * One closed step of a tray demonstration — mirrors `oracle/src/tutor/

@@ -268,6 +268,7 @@ type CycleWire = Extract<TutorWhiteboardWire, { kind: 'cycle' }>;
 type BeforeAfterWire = Extract<TutorWhiteboardWire, { kind: 'before_after' }>;
 type GrabWire = Extract<TutorWhiteboardWire, { kind: 'grab' }>;
 type FillWire = Extract<TutorWhiteboardWire, { kind: 'fill' }>;
+type WhatifWire = Extract<TutorWhiteboardWire, { kind: 'whatif' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -2151,6 +2152,104 @@ function FillBoard({ board, seq, className }: { board: FillWire; seq: number; cl
   );
 }
 
+/**
+ * `kind: 'whatif'` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3): "what if I
+ * saved more, what if I saved less — the learner tries out branches
+ * themselves, one at a time." 2-3 branches sharing ONE starting point
+ * (`board.start`), generalizing `sequence_compare`'s two SIMULTANEOUS,
+ * side-by-side tracks into branches the learner SWITCHES BETWEEN — the two
+ * kinds answer different questions (`sequence_compare`: "how do these two
+ * fixed paths differ, seen at once"; `whatif`: "what happens if I choose
+ * differently, one path at a time"), which is why this is a new kind rather
+ * than a `sequence_compare` variant. `values` is SERVER-COMPUTED
+ * (`computeWhatif`, `whiteboard.ts`) — one array per branch, never
+ * re-derived here, the same posture every other kind already takes with its
+ * own computed fields.
+ *
+ * NOT `interactive` (unlike `grab`/`fill`): the bars for the active branch
+ * are a picture of a finished, server-computed state — same as
+ * `SequenceBoard`'s own — nothing about the CHART is learner-authored, only
+ * WHICH branch's chart is showing. So the chart itself stays `role="img"`
+ * with a full aria-label for the active branch (screen-reader parity with
+ * the sighted bars), and the branch switcher is a plain button row rendered
+ * as this component's OWN sibling, BEFORE `WhiteboardShell` — the same
+ * "meta-control attached to a picture, not part of the picture" reasoning
+ * `onAdvance` already applies (see that prop's own comment): a `role="img"`
+ * node presents its subtree as the image's own replaced content, which
+ * would swallow a nested tab control from assistive tech. Kept local to
+ * this one component rather than a new `WhiteboardShell` prop — nothing
+ * else in the catalog needs a branch switcher yet, and `WhiteboardShell`
+ * already hands back a bare Fragment, so a sibling row ahead of it costs
+ * nothing structurally.
+ *
+ * The Y-axis scale (`max`) is computed across ALL branches, not just the
+ * active one — switching tabs must never rescale the chart, or the visual
+ * comparison between branches (the entire point of the feature) would be
+ * lying by omission.
+ */
+function WhatifBoard({ board, seq, className }: { board: WhatifWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const [active, setActive] = useState(0);
+
+  // Reset on a genuinely new board, in render rather than an effect — the
+  // same reason `SequenceBoard` does (a bad frame is never painted).
+  const [resetSeq, setResetSeq] = useState(seq);
+  if (seq !== resetSeq) {
+    setResetSeq(seq);
+    setActive(0);
+  }
+
+  // Defense in depth for the same reason `SequenceBoard`'s `safeShown` is:
+  // a stale `active` from a wider previous board must never index past a
+  // narrower new one for the ONE render where `resetSeq` hasn't caught up
+  // yet (see that guard's own comment).
+  const safeActive = Math.min(active, board.branches.length - 1);
+  const max = Math.max(...board.values.flat(), 1);
+  const values = board.values[safeActive]!;
+  const captionFor = (i: number) => (i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i }));
+  const ariaLabel = `${board.label}. ${board.branches[safeActive]!.label}: ${values
+    .map((value, i) => `${captionFor(i)}: ${format(value)}`)
+    .join(', ')}`;
+
+  return (
+    <>
+      <div className="flex shrink-0 flex-col gap-1.5">
+        <p className="lf-caption text-content-muted">{t('tutor.whiteboard.whatif.hint')}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {board.branches.map((branch, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-pressed={i === safeActive}
+              onClick={() => setActive(i)}
+              className={cn(
+                'lf-caption max-w-[10rem] truncate rounded-full border px-2.5 py-1 transition-colors',
+                i === safeActive
+                  ? 'border-primary bg-primary/15 text-content'
+                  : 'border-content-muted/40 text-content-muted hover:border-content-muted/70',
+              )}
+            >
+              {branch.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+        <BoardRow>
+          {values.map((value, i) => (
+            <BarColumn key={i} minWidth="3.5rem">
+              <ValueLabel>{format(value)}</ValueLabel>
+              <BarTrack heightPct={barHeightPct(value, max)} />
+              <AxisCaption>{captionFor(i)}</AxisCaption>
+            </BarColumn>
+          ))}
+        </BoardRow>
+      </WhiteboardShell>
+    </>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -2239,5 +2338,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <GrabBoard board={board} seq={seq} className={className} />;
     case 'fill':
       return <FillBoard board={board} seq={seq} className={className} />;
+    case 'whatif':
+      return <WhatifBoard board={board} seq={seq} className={className} />;
   }
 }

@@ -900,6 +900,48 @@ export const WhiteboardFillSchema = z
   })
   .strict();
 
+/** One branch of a `whatif` board: what changes, and the same closed step vocabulary `sequence` itself uses. */
+export const WhiteboardWhatifBranchSchema = z
+  .object({
+    /** Names what THIS branch changes ("Ahorra 2 a la semana") — the tab the learner taps to see it. */
+    label: z.string().min(1).max(30),
+    steps: z.array(WhiteboardStepSchema).min(1).max(6),
+  })
+  .strict();
+
+/**
+ * `kind: 'whatif'` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3): "moves a
+ * value and watches the board answer. The server pre-computes every
+ * branch; the client still only draws." Where `sequence_compare` shows two
+ * FIXED trajectories side by side at once, `whatif` is the LEARNER exploring
+ * 2-3 of them one at a time, tapping between tabs — the interactive sibling
+ * of that static kind, generalising `computeSequenceCompare`'s own two-track
+ * loop to a variable branch count.
+ *
+ * ALL BRANCHES MUST SPAN THE SAME NUMBER OF PERIODS (checked in
+ * `computeWhatif`, the same constraint `computeSequenceCompare` already
+ * has): a "what if instead" comparison is only fair read at the SAME point
+ * in time, and a picture comparing two different lengths of time would call
+ * a difference in TIME a difference in OUTCOME.
+ *
+ * NOT UNGRADED like `grab`/`fill` — this is a Class I-shaped board with a
+ * REAL computed field (`values`, one array per branch), because "watches
+ * the board answer" means the numbers themselves are the point, the same
+ * reason `sequence` itself has never let the model state a running total.
+ * Switching branches is a pure client-side re-render of ALREADY-computed
+ * data — no new computation, no submission, same as flipping a tab.
+ */
+export const WhiteboardWhatifSchema = z
+  .object({
+    kind: z.literal('whatif'),
+    start: z.number().min(0).max(1_000_000),
+    unit: z.enum(['day', 'week', 'month', 'year']),
+    branches: z.array(WhiteboardWhatifBranchSchema).min(2).max(3),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 /** One thing placed in a `venn` board's two overlapping sets. */
 export const VennItemSchema = z
   .object({
@@ -1468,6 +1510,7 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardBeforeAfterSchema,
   WhiteboardGrabSchema,
   WhiteboardFillSchema,
+  WhiteboardWhatifSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -1551,6 +1594,8 @@ export type WhiteboardScale = z.infer<typeof WhiteboardScaleSchema>;
 export type WhiteboardTwoBins = z.infer<typeof WhiteboardTwoBinsSchema>;
 export type WhiteboardGrab = z.infer<typeof WhiteboardGrabSchema>;
 export type WhiteboardFill = z.infer<typeof WhiteboardFillSchema>;
+export type WhiteboardWhatifBranch = z.infer<typeof WhiteboardWhatifBranchSchema>;
+export type WhiteboardWhatif = z.infer<typeof WhiteboardWhatifSchema>;
 export type WhiteboardVenn = z.infer<typeof WhiteboardVennSchema>;
 export type WhiteboardRanking = z.infer<typeof WhiteboardRankingSchema>;
 export type WhiteboardOutcomes = z.infer<typeof WhiteboardOutcomesSchema>;
@@ -1701,6 +1746,8 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       // `container` is a closed 3-value enum, never free text; the caption
       // is this board's whole learner-facing prose surface.
       return [whiteboard.label];
+    case 'whatif':
+      return [whiteboard.label, ...whiteboard.branches.map((b) => b.label)];
   }
 }
 

@@ -38,6 +38,7 @@ import {
   computeSequenceCompare,
   computeTimeline,
   computeBeforeAfter,
+  computeWhatif,
   whiteboardComputesOk,
 } from '../tutor/whiteboard.js';
 
@@ -1083,6 +1084,48 @@ describe('sequence_compare — two futures over the SAME number of periods', () 
         tracks: [
           { label: 'a', start: 0, steps: [{ op: 'add', value: 2 }] },
           { label: 'b', start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+        ],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('whatif — 2-3 branches sharing ONE start, switched between rather than seen at once', () => {
+  it('folds every branch from the shared start', () => {
+    const result = computeWhatif({
+      start: 5,
+      branches: [
+        { label: 'save 1', steps: [{ op: 'add', value: 1 }, { op: 'add', value: 1 }] },
+        { label: 'save 2', steps: [{ op: 'add', value: 2 }, { op: 'add', value: 2 }] },
+        { label: 'save 3', steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ],
+    });
+    expect(result?.values).toEqual([
+      [5, 6, 7],
+      [5, 7, 9],
+      [5, 8, 11],
+    ]);
+  });
+
+  it('refuses branches of different lengths — the learner must be comparing the SAME number of periods', () => {
+    expect(
+      computeWhatif({
+        start: 0,
+        branches: [
+          { label: 'a', steps: [{ op: 'add', value: 2 }] },
+          { label: 'b', steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+        ],
+      }),
+    ).toBeNull();
+  });
+
+  it("refuses a branch whose own arithmetic is nonsense, same as any other sequence — one bad branch invalidates the whole board", () => {
+    expect(
+      computeWhatif({
+        start: 5,
+        branches: [
+          { label: 'a', steps: [{ op: 'subtract', value: 10 }] },
+          { label: 'b', steps: [{ op: 'add', value: 2 }] },
         ],
       }),
     ).toBeNull();

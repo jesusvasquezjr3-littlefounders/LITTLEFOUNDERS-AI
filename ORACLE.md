@@ -4559,3 +4559,75 @@ about them is wrong — but this file will not claim a capability as verified
 that four independent live calls could not produce, the same standard Sprint
 2's `move` (number_line demonstrate) is already held to.
 /TUTOR_INSTRUMENTS.md §0.0's Class II / S9 `fill` row has the full count.
+
+### 20.10 `whatif` — a picture with a sibling switch, NOT a third `interactive` kind (2026-09-03, SHIPPED and NOT YET RELIABLY REACHABLE)
+
+**`whatif` (Class II, S10) looks like it belongs next to §20.9 — it is the
+third kind in the catalog where the learner's own tap changes what is on
+screen — and it deliberately does NOT reuse that section's `interactive`
+mode.** The distinction is what the tap changes. `grab`'s items and bins,
+`fill`'s empty cells: in both, the thing drawn is unfinished until the
+learner acts, and their placements are never checked against anything —
+`role="group"` is correct because there genuinely is no finished picture yet
+for `role="img"` to present. `whatif`'s chart is the opposite: `values` is
+server-computed (`computeWhatif`, `oracle/src/tutor/whiteboard.ts`, folding
+`computeSequence` once per branch from one shared `start` — the same
+"the server computes it once, the client only draws" rule every chart
+instrument already follows) BEFORE the turn ever reaches the wire. Nothing
+about the bars is the learner's own authorship; only WHICH branch's bars are
+currently showing is their choice. Giving that a full `role="group"` would
+throw away the one thing screen-reader parity here actually needs — a
+complete accessible description of the ACTIVE branch's values, read as one
+sentence, the same as every other chart in this file — in exchange for
+nothing, since there is no second author's state to expose turn by turn the
+way `grab`'s bins genuinely have one.
+
+**So the fix is `step`'s `onAdvance`, generalized in spirit but not in code.**
+`WhiteboardShell` already established, for `step`'s "Show next" control, that
+a control ATTACHED TO a picture — meta to it, not part of it — renders as a
+plain sibling of the `role="img"` node, because that role presents its whole
+subtree to assistive tech as the image's own replaced content and would
+swallow anything interactive nested inside it. A branch tab is exactly that
+same shape of control: attached to the chart, not part of what the chart
+depicts. Rather than teach `WhiteboardShell` itself a second, more general
+sibling-control mechanism for a shape only one kind uses so far, `WhatifBoard`
+renders its own tab row directly, as a sibling ahead of an otherwise-untouched
+`<WhiteboardShell>` call — structurally identical DOM either way (React
+fragments nest without a wrapper element), the smaller diff, and no new
+surface for the other 43 kinds to accidentally trip over.
+
+**The Y-axis scale is deliberately computed across every branch, never the
+active one alone.** `max = Math.max(...board.values.flat(), 1)` reads all
+2-3 branches before any tab is picked, so the bar height for a given value
+means the same thing regardless of which branch is showing — switching tabs
+redraws which numbers appear, never what the scale means. Getting this wrong
+would be quiet and easy to miss in a screenshot: a branch whose own tallest
+value is merely modest would render at full height exactly like the actual
+largest branch, silently erasing the one comparison the whole feature exists
+to show. Verified with a dedicated test asserting the identical bar position
+renders at a DIFFERENT, non-100% height depending on which branch is active.
+
+**Measured live, same as `grab` and `fill` before it, and the honest result
+is a third gap, not a second success.** Four attempts — varied phrasing and
+session tier, one close to a verbatim rendering of the prompt's own trigger
+language ("qué pasaría si ahorro más… probar diferentes cantidades") —
+produced zero real `whatif` boards: one triggered the orchestrator's own
+internal repair retry (a real, working mechanism — /TUTOR_INSTRUMENTS.md's
+D7 fix) and still narrated the interaction in words on the retry; one drew
+`categories`, a defensible reading of an ambiguously-phrased "three ways to
+save" that named fixed amounts rather than asking for a trend over time; one
+drew a plain `sequence`; one narrated in words again with no board at all.
+The explicit "set whatif INSTEAD OF sequence or sequence_compare" instruction
+was written into the prompt from the start — the same shape of fix that
+worked for `grab` on its very next attempt — and it was not enough here
+either, the same outcome `fill` already had with an equally explicit,
+equally early instruction. The working difference between the two failures,
+not yet confirmed: `fill` displaces exactly one deeply-reinforced competitor
+(`ten_frame`, shaped since S11); `whatif` has to displace THREE at once —
+`sequence`, `sequence_compare` and `categories`, all Class I core since
+S4-S15 — which may simply be a harder prior to move regardless of how the
+instruction is worded. Schema, compute, wire, Core validation and the
+frontend renderer are all real, tested and safe to leave shipped; this file
+will not call the live capability verified on the strength of four calls that
+did not produce it, the same standard already applied to `move` and `fill`.
+/TUTOR_INSTRUMENTS.md §0.0's Class II / S10 `whatif` row has the full count.
