@@ -2553,8 +2553,23 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       the tutor's audio in Depot: a cascade reaches the rows and nothing
       reaches the blobs, so a rows-only sweep would leave a child's
       conversation audible at a public URL with every record of it gone.
-- [ ] `npm run verify:rig` and `npm run verify:placement` — LOCAL gates needing
-      `/glb/` source exports, which are outside the repository.
+- [x] **`npm run verify:placement` — RUNS AND PASSES (2026-09-02).** This line
+      said both gates were blocked on `/glb/` source exports "outside the
+      repository" for weeks. Measured rather than assumed: the exports are
+      present on the development machine, and placement passes on the real
+      ones — every character on walkable ground, inside the rim, facing the
+      learner, with the tightest contact-shadow margin at 0.08 m. A stale OPEN
+      on this file sends somebody to fix working code, which §16 warns about
+      in its own words and had here done to itself.
+- [ ] `npm run verify:rig` — the ONE that genuinely cannot run, and NOT for the
+      reason recorded above. It needs `frontend/public/scenes/clips-biped.glb`,
+      a **gitignored build output** produced by `npm run assets:clips` (Blender),
+      not a `/glb/` source export. Blender is not installed on the development
+      machine. Either install it, or generate that single file elsewhere and
+      drop it in. The script itself was fixed the same day to exit NON-ZERO
+      when it cannot run: it previously printed "SKIPPED" and returned 0, three
+      lines below its own comment reading "a check that reports success on an
+      empty run is worse than none".
 - [x] Verified in-browser at 375 px, 720 px and 1280 px, light and dark,
       screenshots taken, no horizontal overflow at any width (§1.11).
 - [x] **Accessibility audited with axe-core** (WCAG 2.0/2.1 A and AA) across
