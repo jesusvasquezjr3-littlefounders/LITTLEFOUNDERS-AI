@@ -11,6 +11,7 @@ import { TutorFace } from './TutorFace';
 import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { TutorWhiteboard } from './TutorWhiteboard';
+import { NotebookKeepButton } from './NotebookKeepButton';
 import { lessonStepDots } from './lessonStepDots';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
@@ -1072,11 +1073,19 @@ export function ConversationView({
             it speaks, instead of an unrelated activity sitting beside plain
             text.
           */
-          <TutorWhiteboard
-            board={turn.whiteboard}
-            seq={turn.seq}
-            className="min-h-0 flex-auto"
-          />
+          <>
+            <TutorWhiteboard
+              board={turn.whiteboard}
+              seq={turn.seq}
+              className="min-h-0 flex-auto"
+            />
+            <NotebookKeepButton
+              key={turn.seq}
+              token={token}
+              sessionId={session.sessionId}
+              turnSeq={turn.seq}
+            />
+          </>
         ) : ended ? (
           <p className="shrink-0 lf-body text-content-muted" role="status">
             {t('tutor.conversation.ended')}

@@ -4694,3 +4694,101 @@ frontend renderer are all real, tested and safe to leave shipped; this file
 will not call the live capability verified on the strength of four calls that
 did not produce it, the same standard already applied to `move` and `fill`.
 /TUTOR_INSTRUMENTS.md §0.0's Class II / S10 `whatif` row has the full count.
+
+### 20.11 `plan` and `notebook` — the first state a learner keeps ON PURPOSE (2026-09-03, SHIPPED)
+
+**Class V (TUTOR_INSTRUMENTS.md §3.6, migration 0069) is a different kind of
+feature from everything in §20.5-§20.10: those sections are all about what
+appears ON SCREEN, once, for the length of a turn. This one is about what
+OUTLIVES the screen** — the savings plan the tutor and learner build
+together, and the boards the learner explicitly chose to keep, both visible
+again the next time the family opens the app, neither one erased by the
+90-day transcript purge (`purge_expired_tutor_sessions`, migration 0047)
+that erases everything else a conversation produced.
+
+**`plan` reuses the whiteboard as its own content format, on purpose.** A
+new turn-level field, `savePlan: boolean` — required, not optional, the same
+posture `next`/`emotion`/`action` already have, so the model states it on
+every turn rather than a client inferring "unset" as false. `TutorTurnSchema`
+refuses `savePlan: true` with no `whiteboard` on the SAME turn: there is
+nothing to save otherwise, and the refuse is enforced by a `.refine()`, not
+a comment asking the model to behave. When Core receives a turn with both,
+it resolves the session's owner and calls `write_tutor_plan` — the model
+never composes plan content SEPARATELY from what it already drew and
+already had moderated; the plan IS the board, copied, never re-derived.
+"Real progress" is not a separately tracked counter that could drift from
+what the learner actually saw — it is whatever the tutor's own
+server-computed numbers say the NEXT time the board is re-saved, which is
+why `write_tutor_plan` is a plain advisory-locked UPSERT and not
+`learner_memory`'s compare-and-swap: the new content is never a MERGE of
+the old value the way a consolidated memory note is, so there is nothing to
+conflict against, and getting this wrong in the other direction — adding
+compare-and-swap where a blind overwrite is correct — would be adding
+complexity that buys nothing, since a "conflict" here would only ever mean
+"someone else also saved the current board," never a loss.
+
+**The prompt is deliberately narrow about when to set it**, learning from
+this file's own repeated lesson that a capability without a clear trigger
+either never fires or fires on the wrong turn: "the learner has just agreed
+a real savings goal and you are drawing the board for it… not a general
+'save this' button, and it replaces whatever plan they had before." An
+earlier draft of the trigger example ("quiero ahorrar") collided with an
+unrelated, pre-existing test's own search string for "the live utterance
+must not appear twice in the model's history" and inflated its count —
+found by running the oracle suite, not by guessing, and fixed by rewording
+the example rather than the unrelated test.
+
+**`notebook` is the inverse: LEARNER-initiated, never the model's choice.**
+"Boards marked 'keep this', collected" reads, in the catalog's own words, as
+the learner's own act of curation — and a research pass before writing any
+code confirmed no such control existed anywhere in this file's history (no
+`keep`/`save`/`star`/`bookmark` affordance on any prior whiteboard). The new
+one, `NotebookKeepButton` (`frontend/src/tutor/NotebookKeepButton.tsx`), is
+a plain sibling of `<TutorWhiteboard>` — the identical "meta-control
+attached to a picture, not part of the picture" reasoning `onAdvance` (§3.3,
+S9) and `whatif`'s own tab row (§20.10) already established, never nested
+inside the board's own `role="img"`/`role="group"` node. It sends only
+`(sessionId, turnSeq)` — never the board's own content — and `POST
+/notebook` re-reads the REAL turn server-side, refusing a session that is
+not the caller's own and a turn that drew no board, so nothing about WHAT
+gets kept, or whether it is even real, is ever trusted from the client. The
+copied JSONB was already moderated and already guardian-visible the moment
+it was first drawn, so keeping it opens no new content-safety surface.
+
+**Both tables outlive their source session on purpose, and both do it the
+same way this codebase already established for the identical reason**:
+`session_id`/`turn_seq` are kept as plain columns with NO foreign key —
+provenance only, the same posture `learner_memory_ledger.session_id`
+(migration 0053) and `learner_memory_proposals.session_id` (migration 0068)
+already take, because a foreign key to a table that purges at 90 days would
+either cascade-delete the very thing "collected" is supposed to mean, or
+require the retention sweep to know about tables it was never designed to
+reach.
+
+**Guardian visibility is `TutorPlanNotebookPanel.tsx`, reusing
+`<TutorWhiteboard>` unmodified** — a plan or a kept board renders in
+`KidTutorPage.tsx` exactly as it looked the moment it was drawn, the same
+component the live conversation and session replay already use. It is
+deliberately ABSENT, not an empty state, when a family has touched neither
+artifact yet, unlike the always-relevant memory-notes inbox beside it
+(§20.4's approval-gate panel): most families have not used an opt-in Class V
+artifact yet, and an empty "no plan, nothing kept" card on every guardian
+page, for every family, forever, would be exactly the accumulated clutter
+this product avoids elsewhere.
+
+**`recap` — the third of the three artifacts this sprint researched — needed
+no new table, and that is the research finding, not a shortcut taken.**
+`GET /sessions/:id` already returns full `turns` (each one's own whiteboard
+included) and `session.summary`; "the day's best board, for learner and
+parent" is entirely computable client-side from data already being fetched
+for the existing session-detail view. Left unbuilt this pass — the display
+pattern it would need is already proven by `plan`/`notebook`'s own panel —
+recorded here so a future pass does not re-research the same question.
+
+Full plumbing, the concurrency-shape reasoning, the 156-test ripple a
+REQUIRED (not optional) turn field caused and how it was traced to five
+shared fixtures rather than fixed 156 times over, and the live-verification
+account (the `computer` tool's own click-coordinate resolution proved
+unreliable this session; confirmed by `elementFromPoint` and a directly
+dispatched real event sequence that the component was never the problem):
+/TUTOR_INSTRUMENTS.md §0.0's Class V row and its own decision-log entry.

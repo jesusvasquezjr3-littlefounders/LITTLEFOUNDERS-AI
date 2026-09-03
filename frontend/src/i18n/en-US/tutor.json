@@ -354,6 +354,13 @@
       "allDone": "All caught up.",
       "loadFailed": "We couldn’t load what is waiting for your review."
     },
+    "planNotebook": {
+      "title": "Savings plan & kept boards",
+      "loadFailed": "We couldn’t load the plan or kept boards.",
+      "planUpdatedOn": "Updated {{date}}",
+      "notebookLabel_one": "{{count}} kept board",
+      "notebookLabel_other": "{{count}} kept boards"
+    },
     "retentionNote": "Conversations are kept for 90 days and then deleted automatically.",
     "loadMore": "Load older conversations",
     "loadingMore": "Loading…",
@@ -450,5 +457,11 @@
       "changedBy": "Changed by {{amount}}",
       "noChange": "No change"
     }
+  },
+  "notebook": {
+    "keep": "Keep this",
+    "keeping": "Keeping…",
+    "kept": "Kept",
+    "keepFailed": "Couldn't keep it — try again"
   }
 }

@@ -273,6 +273,7 @@ may wish to address it in the disclosures even though we do not use it.
 | Exercises served and their results | Our own database | 90 days | Same |
 | Consent records | Our own database | **Indefinite** — see §4 | The learner; the granting guardian; a verified guardian |
 | Safety flags (category and severity only, never the utterance) | Our own database | 90 days | The learner; a verified guardian |
+| Savings plan and boards the learner chose to keep (Class V — **added 2026-09-03**) | Our own database | **Indefinite by design** — see note below | The learner; a verified guardian; our own service role |
 
 Deletion is performed by a scheduled job against a stored `purge_after`
 timestamp, not by manual process.
@@ -282,6 +283,23 @@ append-only and retained beyond the 90-day window, because the question "was
 consent in force on a particular date?" must remain answerable after the
 conversations covered by it have been deleted. Counsel should confirm whether
 that retention is correct, and for how long.
+
+**Note for counsel on the savings plan and kept boards:** both are, by
+content, the SAME whiteboard data already covered above as part of the
+90-day transcript — a value-over-time chart or a category comparison, never
+free text and never the learner's own words (`/ORACLE.md` §20.5). What is
+new is that these two copies are deliberately **excluded from the 90-day
+purge**: the product feature is "a savings plan that survives between
+sessions" and "boards you chose to keep," and a plan or a kept board that
+vanished when its source conversation aged out would not do what its name
+says. The plan is a single row per learner, overwritten each time it is
+updated (no history retained); a kept board is one row per explicit
+"keep this" tap by the learner (never the tutor's own choice). Both are
+readable only by the learner and a verified guardian, under the same
+row-level-security predicate as the transcript itself. Counsel should
+confirm whether indefinite retention is acceptable here, or whether a
+retention window (and, if so, whose — the account's lifetime? a fixed
+number of years?) should be applied to this specific pair of tables.
 
 ---
 

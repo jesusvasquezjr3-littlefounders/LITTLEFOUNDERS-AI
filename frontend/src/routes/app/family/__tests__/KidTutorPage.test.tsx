@@ -25,6 +25,14 @@ vi.mock('@/tutor/tutorApi', () => ({
    */
   getPendingMemoryNotes: vi.fn().mockResolvedValue({ data: { proposals: [], current: null }, error: null }),
   decideMemoryNote: vi.fn(),
+  /*
+   * Class V's own panel (`TutorPlanNotebookPanel`) is ALSO rendered by this
+   * page and calls these — same reasoning as the memory-notes stub above:
+   * empty by default so every test here keeps describing the page it was
+   * written about, and that panel has its own suite next door.
+   */
+  getKidPlan: vi.fn().mockResolvedValue({ data: { plan: null }, error: null }),
+  getKidNotebook: vi.fn().mockResolvedValue({ data: { entries: [] }, error: null }),
 }));
 /*
  * `getToken` must be the SAME function reference across renders, exactly as

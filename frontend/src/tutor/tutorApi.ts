@@ -9,6 +9,7 @@ import type {
   TutorIntent,
   TutorOffers,
   TutorPreferences,
+  TutorWhiteboardWire,
 } from './types';
 
 /*
@@ -296,6 +297,42 @@ export function decideMemoryNote(
     token,
     body: { verdict },
   });
+}
+
+// ── Class V artifacts: plan & notebook (migration 0069, /TUTOR_INSTRUMENTS.md §3.6) ──
+
+export interface TutorPlan {
+  /** A whiteboard JSONB snapshot — the SAME shape any live turn's board already is. */
+  content: TutorWhiteboardWire;
+  sessionId: string | null;
+  updatedAt: string;
+}
+
+export function getPlan(token: string): Promise<ApiResult<{ plan: TutorPlan | null }>> {
+  return api<{ plan: TutorPlan | null }>('/tutor/plan', { token });
+}
+
+export function getKidPlan(token: string, kidUserId: string): Promise<ApiResult<{ plan: TutorPlan | null }>> {
+  return api<{ plan: TutorPlan | null }>(`/tutor/kids/${kidUserId}/plan`, { token });
+}
+
+export interface TutorNotebookEntry {
+  id: string;
+  whiteboard: TutorWhiteboardWire;
+  sessionId: string | null;
+  turnSeq: number | null;
+  keptAt: string;
+}
+
+export function getNotebook(token: string): Promise<ApiResult<{ entries: TutorNotebookEntry[] }>> {
+  return api<{ entries: TutorNotebookEntry[] }>('/tutor/notebook', { token });
+}
+
+export function getKidNotebook(
+  token: string,
+  kidUserId: string,
+): Promise<ApiResult<{ entries: TutorNotebookEntry[] }>> {
+  return api<{ entries: TutorNotebookEntry[] }>(`/tutor/kids/${kidUserId}/notebook`, { token });
 }
 
 export const ADAPTATION_KEYS: readonly Adaptation[] = [
