@@ -965,6 +965,15 @@ function internalRouter(): Router {
       label: z.string().max(60),
     })
     .strict();
+  /** Class II, S9 — no computed field, see `WhiteboardFillSchema`'s own comment (oracle/src/tutor/turnSchema.ts). */
+  const FillWhiteboardBody = z
+    .object({
+      kind: z.literal('fill'),
+      container: z.enum(['ten_frame', 'bar', 'jar']),
+      capacity: z.number().int().min(1).max(20),
+      label: z.string().max(60),
+    })
+    .strict();
 
   const WhiteboardBody = z.discriminatedUnion('kind', [
     SequenceWhiteboardBody,
@@ -1009,6 +1018,7 @@ function internalRouter(): Router {
     CycleWhiteboardBody,
     BeforeAfterWhiteboardBody,
     GrabWhiteboardBody,
+    FillWhiteboardBody,
   ]);
 
   /**

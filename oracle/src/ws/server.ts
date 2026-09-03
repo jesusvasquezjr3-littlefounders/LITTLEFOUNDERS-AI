@@ -1463,6 +1463,8 @@ function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard 
       // kind for why — no cross-field relationship exists to validate,
       // let alone attach.
       return { ...board };
+    case 'fill':
+      return { ...board };
   }
 }
 

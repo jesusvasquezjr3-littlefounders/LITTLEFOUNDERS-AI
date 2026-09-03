@@ -1203,6 +1203,8 @@ export interface TutorTurnCycleBoard { kind: 'cycle'; steps: string[]; label: st
 export interface TutorTurnBeforeAfterBoard { kind: 'before_after'; what: string; before: number; after: number; delta: number; direction: 'up' | 'down' | 'same'; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** Class II, S9 — items and bins the LEARNER sorts by tapping, ungraded by construction. Nothing server-computed. */
 export interface TutorTurnGrabBoard { kind: 'grab'; binLabels: string[]; items: string[]; label: string }
+/** Class II, S9 — an empty container the learner taps to fill, ungraded by construction. Nothing server-computed. */
+export interface TutorTurnFillBoard { kind: 'fill'; container: 'ten_frame' | 'bar' | 'jar'; capacity: number; label: string }
 
 /** Every kind a persisted turn's `whiteboard` column may carry. */
 export type TutorTurnWhiteboard =
@@ -1247,7 +1249,8 @@ export type TutorTurnWhiteboard =
   | TutorTurnTimelineBoard
   | TutorTurnCycleBoard
   | TutorTurnBeforeAfterBoard
-  | TutorTurnGrabBoard;
+  | TutorTurnGrabBoard
+  | TutorTurnFillBoard;
 
 /**
  * One closed step of a tray demonstration, exactly as it was sent over the
@@ -1951,6 +1954,16 @@ const GrabBoardRowSchema = z
   })
   .strict();
 
+/** Class II, S9 — no computed field, see `WhiteboardFillSchema`'s own comment (oracle/src/tutor/turnSchema.ts). */
+const FillBoardRowSchema = z
+  .object({
+    kind: z.literal('fill'),
+    container: z.enum(['ten_frame', 'bar', 'jar']),
+    capacity: z.number().int().min(1).max(20),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
 /*
  * The cross-field relationships no single branch's own `.strict()` shape
  * can express are checked here, AFTER the discriminated union — `.refine()`
@@ -2006,6 +2019,7 @@ const TutorTurnWhiteboardRowSchema = z
     CycleBoardRowSchema,
     BeforeAfterBoardRowSchema,
     GrabBoardRowSchema,
+    FillBoardRowSchema,
   ])
   .superRefine((board, ctx) => {
     if (board.kind === 'sequence') {

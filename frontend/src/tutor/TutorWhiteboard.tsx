@@ -267,6 +267,7 @@ type TimelineWire = Extract<TutorWhiteboardWire, { kind: 'timeline' }>;
 type CycleWire = Extract<TutorWhiteboardWire, { kind: 'cycle' }>;
 type BeforeAfterWire = Extract<TutorWhiteboardWire, { kind: 'before_after' }>;
 type GrabWire = Extract<TutorWhiteboardWire, { kind: 'grab' }>;
+type FillWire = Extract<TutorWhiteboardWire, { kind: 'fill' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -2081,6 +2082,75 @@ function GrabBoard({ board, seq, className }: { board: GrabWire; seq: number; cl
   );
 }
 
+/**
+ * `kind: 'fill'` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3): "taps to fill
+ * a ten frame, a bar, a jar — counting with a finger." The SECOND
+ * interactive board (`interactive` on `WhiteboardShell`, same reasoning as
+ * `GrabBoard`'s own comment). `container` only picks the grid's shape — the
+ * `ten_frame` cell styling is the EXISTING static `TenFrameBoard`'s own
+ * (`h-7 w-7 rounded-full border`, `border-accent bg-accent/70` when filled),
+ * reused rather than re-invented, since a filled cell means the same thing
+ * whether the model drew it or the learner tapped it there.
+ *
+ * ORDERED, UNDO-ABLE COUNTING, not free toggling: only the next empty cell
+ * (to fill) and the most recently filled cell (to undo) are ever tappable —
+ * matching how a real ten-frame or bead jar is actually counted, one at a
+ * time, and keeping "how many" always unambiguous from the shape alone.
+ */
+function FillBoard({ board, seq, className }: { board: FillWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const [filled, setFilled] = useState(0);
+
+  // Reset on a genuinely new board, in render rather than an effect — the
+  // same reason `SequenceBoard` does (a bad frame is never painted).
+  const [resetSeq, setResetSeq] = useState(seq);
+  if (seq !== resetSeq) {
+    setResetSeq(seq);
+    setFilled(0);
+  }
+
+  const cols = board.container === 'ten_frame' ? 5 : board.container === 'jar' ? 3 : board.capacity;
+
+  return (
+    <WhiteboardShell seq={seq} label={board.label} className={className} interactive>
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 overflow-y-auto px-1">
+        <div
+          className="grid gap-1.5 rounded-md border-2 border-content-muted/40 p-2"
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+        >
+          {Array.from({ length: board.capacity }, (_, i) => {
+            const isFilled = i < filled;
+            const isNextToFill = i === filled;
+            const isLastFilled = i === filled - 1;
+            const tappable = isNextToFill || isLastFilled;
+            return (
+              <button
+                key={i}
+                type="button"
+                disabled={!tappable}
+                onClick={() => setFilled(isLastFilled ? filled - 1 : filled + 1)}
+                aria-label={
+                  isLastFilled
+                    ? t('tutor.whiteboard.fill.undo', { n: i + 1 })
+                    : t('tutor.whiteboard.fill.tap', { n: i + 1 })
+                }
+                className={cn(
+                  'h-7 w-7 shrink-0 rounded-full border transition-colors',
+                  isFilled ? 'border-accent bg-accent/70' : 'border-content-muted/30 bg-transparent',
+                  tappable && !isFilled && 'border-primary/60',
+                )}
+              />
+            );
+          })}
+        </div>
+        <p className="lf-caption text-content-muted" aria-live="polite">
+          {t('tutor.whiteboard.fill.count', { filled, capacity: board.capacity })}
+        </p>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -2167,5 +2237,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <BeforeAfterBoard board={board} seq={seq} className={className} />;
     case 'grab':
       return <GrabBoard board={board} seq={seq} className={className} />;
+    case 'fill':
+      return <FillBoard board={board} seq={seq} className={className} />;
   }
 }

@@ -407,6 +407,11 @@
       "hint": "Tap something, then tap a group to put it there",
       "unassign": "Take {{item}} back out"
     },
+    "fill": {
+      "tap": "Fill number {{n}}",
+      "undo": "Take back number {{n}}",
+      "count": "{{filled}} of {{capacity}}"
+    },
     "compare": {
       "difference": "Difference: {{amount}}"
     },

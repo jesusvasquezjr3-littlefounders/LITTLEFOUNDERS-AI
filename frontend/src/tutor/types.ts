@@ -555,6 +555,18 @@ export type TutorWhiteboardWire =
       binLabels: string[];
       items: string[];
       label: string;
+    }
+  | {
+      /**
+       * Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3) — an empty container the
+       * LEARNER taps to fill, ungraded by construction like `grab`. Nothing
+       * here is SERVER-COMPUTED: how many are filled is local component
+       * state, never sent back.
+       */
+      kind: 'fill';
+      container: 'ten_frame' | 'bar' | 'jar';
+      capacity: number;
+      label: string;
     };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────

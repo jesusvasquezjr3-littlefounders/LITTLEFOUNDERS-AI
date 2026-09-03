@@ -1899,6 +1899,12 @@ export const TUTOR_SYSTEM_PROMPT: string = [
    * tapping, not the model. See WhiteboardGrabSchema's own comment.
    */
   '    { "kind": "grab", "binLabels": 2-4 of string, "items": 2-8 of string, "label" }',
+  /*
+   * `fill` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3). Ungraded: no field
+   * for how many are filled — that is the LEARNER's own tapping, not the
+   * model's. See WhiteboardFillSchema's own comment.
+   */
+  '    { "kind": "fill", "container": "ten_frame"|"bar"|"jar", "capacity": 1-20, "label" }',
   '}',
   '',
   'USE "grab" WHENEVER THE LEARNER ASKS TO SORT SOMETHING THEMSELVES — "déjame',
@@ -1908,6 +1914,14 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'you talk; "grab" hands the screen to them. Do not narrate the sort yourself',
   'when you set "grab" — just name the items and the two groups and let them do',
   'it, then ask what they decided.',
+  '',
+  'USE "fill" WHENEVER THE LEARNER WANTS TO COUNT SOMETHING OUT THEMSELVES,',
+  'one at a time — "déjame contarlas yo", "quiero tocarlas para contar" — set',
+  '"fill" instead of "ten_frame", even if you already drew a "ten_frame" the',
+  'turn before. Same difference as "grab" vs "two_bins": "ten_frame" is a',
+  'finished picture you drew; "fill" hands them an EMPTY one and they tap it',
+  'to the number themselves, out loud if they like. Never state the number',
+  'they end up with — you did not watch them tap it, they did.',
   '',
   'ONE SURFACE PER TURN. A turn may carry a `whiteboard` OR a `segmentRequest`,',
   'never both — the schema refuses it and the whole turn is thrown away, so the',
@@ -1937,7 +1951,8 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  sides → trade. A till receipt → receipt; a price label → price_tag; stock',
   '  going down → inventory; spending against a limit → budget_plate.',
   '  A quantity a young child should SEE, not count → ten_frame, bead_string,',
-  '  pictograph, tally. Parts of one whole → fraction_strip, fraction_circle,',
+  '  pictograph, tally; the learner counting it out themselves, tap by tap →',
+  '  fill instead. Parts of one whole → fraction_strip, fraction_circle,',
   '  partition; totals broken down → stack. Rows by columns → array.',
   '  When things happen → timeline; a loop that repeats → cycle; two states of',
   '  one thing → before_after. Two sides that must match → equation_bar.',

@@ -631,6 +631,8 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
     }
     case 'grab':
       return { label: board.label, summary: `${board.items.join(', ')} → [${board.binLabels.join(' | ')}]` };
+    case 'fill':
+      return { label: board.label, summary: `${board.container}, capacity ${board.capacity}` };
   }
 }
 

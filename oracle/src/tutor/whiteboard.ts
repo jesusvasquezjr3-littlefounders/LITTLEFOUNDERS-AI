@@ -1173,6 +1173,11 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
     // is the first kind in the catalog with genuinely nothing to compute.
     case 'grab':
       return true;
+    // No cross-field relationship: `capacity` is the whole content, the
+    // schema already bounds it, and how many are filled is the learner's
+    // own tapping — see `WhiteboardFillSchema`'s own comment.
+    case 'fill':
+      return true;
   }
 }
 

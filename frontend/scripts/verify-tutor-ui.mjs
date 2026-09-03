@@ -389,7 +389,7 @@ try {
         'table', 'scale', 'two-bins', 'venn', 'ranking', 'outcomes', 'trade', 'chance',
         'deal', 'change', 'regroup', 'equation', 'receipt', 'ledger', 'price-tag', 'inventory', 'budget',
         'pictograph', 'beads', 'tally', 'fraction-circle', 'stack', 'two-futures', 'timeline', 'cycle', 'before-after',
-        'grab',
+        'grab', 'fill',
       ] : []) {
         await setLabPanel(page, true)
         const flipped = await page.evaluate(

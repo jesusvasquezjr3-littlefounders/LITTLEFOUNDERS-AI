@@ -874,6 +874,32 @@ export const WhiteboardGrabSchema = z
   })
   .strict();
 
+/**
+ * `kind: 'fill'` — Class II, the second Hand mode (S9, /TUTOR_INSTRUMENTS.md
+ * §3.3): "taps to fill a ten frame, a bar, a jar — counting with a finger."
+ * The second interactive whiteboard kind, same `WhiteboardShell` `interactive`
+ * mode `grab` introduced (`role="group"`, not `role="img"` — see that kind's
+ * own comment). Where `grab` is about WHICH bin, `fill` is about HOW MANY:
+ * `container` picks the visual metaphor only (a 2x5 ten-frame grid, a single
+ * row bar, a stacked jar) — all three share ONE mechanism underneath, an
+ * empty container the learner taps up to `capacity`, because the counting
+ * gesture is identical across all three and only the shape a child
+ * recognises changes.
+ *
+ * UNGRADED BY CONSTRUCTION, same as `grab`: no field for how many are
+ * currently filled — that is the tapping itself, local component state,
+ * never submitted. `capacity` bounds match the EXISTING static `ten_frame`
+ * kind's own `count` (1-20) for the one container type both kinds can draw.
+ */
+export const WhiteboardFillSchema = z
+  .object({
+    kind: z.literal('fill'),
+    container: z.enum(['ten_frame', 'bar', 'jar']),
+    capacity: z.number().int().min(1).max(20),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
 /** One thing placed in a `venn` board's two overlapping sets. */
 export const VennItemSchema = z
   .object({
@@ -1441,6 +1467,7 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardCycleSchema,
   WhiteboardBeforeAfterSchema,
   WhiteboardGrabSchema,
+  WhiteboardFillSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -1523,6 +1550,7 @@ export type WhiteboardTable = z.infer<typeof WhiteboardTableSchema>;
 export type WhiteboardScale = z.infer<typeof WhiteboardScaleSchema>;
 export type WhiteboardTwoBins = z.infer<typeof WhiteboardTwoBinsSchema>;
 export type WhiteboardGrab = z.infer<typeof WhiteboardGrabSchema>;
+export type WhiteboardFill = z.infer<typeof WhiteboardFillSchema>;
 export type WhiteboardVenn = z.infer<typeof WhiteboardVennSchema>;
 export type WhiteboardRanking = z.infer<typeof WhiteboardRankingSchema>;
 export type WhiteboardOutcomes = z.infer<typeof WhiteboardOutcomesSchema>;
@@ -1669,6 +1697,10 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       return [whiteboard.label, whiteboard.what];
     case 'grab':
       return [whiteboard.label, ...whiteboard.binLabels, ...whiteboard.items];
+    case 'fill':
+      // `container` is a closed 3-value enum, never free text; the caption
+      // is this board's whole learner-facing prose surface.
+      return [whiteboard.label];
   }
 }
 

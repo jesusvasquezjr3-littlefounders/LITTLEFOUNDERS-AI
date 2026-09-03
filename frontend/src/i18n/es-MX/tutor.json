@@ -407,6 +407,11 @@
       "hint": "Toca algo y luego toca un grupo para ponerlo ahí",
       "unassign": "Sacar {{item}}"
     },
+    "fill": {
+      "tap": "Llenar el número {{n}}",
+      "undo": "Quitar el número {{n}}",
+      "count": "{{filled}} de {{capacity}}"
+    },
     "compare": {
       "difference": "Diferencia: {{amount}}"
     },

@@ -4476,7 +4476,7 @@ parent reading "so I take one of these away…" still had no way to see what
 so the guardian transcript can render it without pulling the entire 3D replay
 world into a plain scrolling page, and both surfaces now show it.
 
-### 20.9 `grab` — the first INTERACTIVE whiteboard kind (2026-09-03, SHIPPED)
+### 20.9 `grab` and `fill` — the two INTERACTIVE whiteboard kinds (2026-09-03, `grab` SHIPPED and WORKING, `fill` SHIPPED and NOT YET RELIABLY REACHABLE)
 
 **§20.5 through §20.8, and every whiteboard kind before this one, are
 pictures.** Forty-one of them, all sharing the same contract:
@@ -4537,3 +4537,25 @@ hand-written `kind→TypeName` map with no `grab` row, replaced with a
 mechanical derivation), and the `verify:tutor-ui` false-positive its
 `role="group"` triggered against a dock selector that had matched the mic
 dock only by accident:** /TUTOR_INSTRUMENTS.md §0.0's Class II / S9 row.
+
+**`fill` (same day) is the SAME mechanism, `WhiteboardShell`'s `interactive`
+mode, applied a second time — "taps to fill a ten frame, a bar, a jar,
+counting with a finger" — and it is reported here NOT as a second success but
+as a measured, honest gap.** Learning from `grab`'s own history in this
+section, the explicit "use fill INSTEAD OF ten_frame" instruction was written
+into the prompt from the start this time, not added reactively after live
+failures. It did not help: four live attempts — two phrasings, two session
+tiers, one of them the EXACT phrasing pattern that fixed `grab` on its very
+next attempt — all produced `whiteboard: null`, the tutor narrating the
+intended hands-on interaction in words ("aquí está la pantalla para que tú
+toques y cuentes") without ever setting the field. The most likely
+difference: `ten_frame` has been part of the shaped, reinforced prompt
+vocabulary since S11 (the "canonical batch"), one of the ten kinds a model
+call has always been able to see the shape of, where `two_bins` — `grab`'s
+own competing alternative — only joined that set in S12 and is, relatively,
+newer and less deeply reinforced. `fill`'s schema, wire, Core validation and
+frontend renderer are all real, tested, and safe to leave shipped — nothing
+about them is wrong — but this file will not claim a capability as verified
+that four independent live calls could not produce, the same standard Sprint
+2's `move` (number_line demonstrate) is already held to.
+/TUTOR_INSTRUMENTS.md §0.0's Class II / S9 `fill` row has the full count.

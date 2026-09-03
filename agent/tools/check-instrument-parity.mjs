@@ -385,6 +385,15 @@ export const INSTRUMENTS = [
     blocks: { oracleSchema: 'WhiteboardGrabSchema', coreBody: 'GrabWhiteboardBody', coreRow: 'GrabBoardRowSchema' },
   },
   {
+    kind: 'fill',
+    // Class II, S9 — the second interactive kind, same ungraded-by-
+    // construction posture as `grab`: how many are filled is the learner's
+    // own tapping, never a field the model or the server touches.
+    model: ['kind', 'container', 'capacity', 'label'],
+    computed: [],
+    blocks: { oracleSchema: 'WhiteboardFillSchema', coreBody: 'FillWhiteboardBody', coreRow: 'FillBoardRowSchema' },
+  },
+  {
     kind: 'categories',
     model: ['kind', 'categories', 'label', 'currency'],
     computed: ['values'],

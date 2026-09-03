@@ -676,3 +676,61 @@ describe('grab — the learner sorts it themselves, hands-on', () => {
     expect(screen.queryByRole('button', { name: 'Take Pan back out' })).not.toBeInTheDocument();
   });
 });
+
+/*
+ * `fill` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3). The second interactive
+ * board: ORDERED counting, not free toggling — only the next empty cell (to
+ * fill) and the most recently filled one (to undo) are ever tappable, so
+ * "how many" is always unambiguous from the shape alone.
+ */
+describe('fill — the learner counts it out themselves, tap by tap', () => {
+  const FILL_BOARD = { kind: 'fill' as const, container: 'ten_frame' as const, capacity: 5, label: 'Cuenta hasta cinco' };
+
+  it('is a group, not a picture, with every cell its own reachable control', () => {
+    render(<TutorWhiteboard board={FILL_BOARD} seq={1} />);
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: FILL_BOARD.label })).toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toHaveLength(5);
+    expect(screen.getByText('0 of 5')).toBeInTheDocument();
+  });
+
+  it('fills the next cell on tap, and only the next cell is enabled', () => {
+    render(<TutorWhiteboard board={FILL_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fill number 1' }));
+    expect(screen.getByText('1 of 5')).toBeInTheDocument();
+    // Cell 2 (the new next-to-fill) is enabled; cell 3 onward are not.
+    expect(screen.getByRole('button', { name: 'Fill number 2' })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Fill number 3' })).toBeDisabled();
+  });
+
+  it('fills in order — tapping ahead of the next cell does nothing (it is disabled)', () => {
+    render(<TutorWhiteboard board={FILL_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fill number 3' }));
+    expect(screen.getByText('0 of 5')).toBeInTheDocument();
+  });
+
+  it('undoes the most recently filled cell on tap', () => {
+    render(<TutorWhiteboard board={FILL_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fill number 1' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fill number 2' }));
+    expect(screen.getByText('2 of 5')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Take back number 2' }));
+    expect(screen.getByText('1 of 5')).toBeInTheDocument();
+  });
+
+  it('stops at capacity — the last cell cannot be filled twice', () => {
+    render(<TutorWhiteboard board={{ ...FILL_BOARD, capacity: 1 }} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fill number 1' }));
+    expect(screen.getByText('1 of 1')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Fill number 1' })).not.toBeInTheDocument();
+  });
+
+  it('resets to empty when a NEW turn carries a different seq', () => {
+    const { rerender } = render(<TutorWhiteboard board={FILL_BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fill number 1' }));
+    expect(screen.getByText('1 of 5')).toBeInTheDocument();
+
+    rerender(<TutorWhiteboard board={FILL_BOARD} seq={2} />);
+    expect(screen.getByText('0 of 5')).toBeInTheDocument();
+  });
+});
