@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type { TutorWhiteboardWire } from './types';
+import {
+  AxisCaption,
+  BarColumn,
+  BarTrack,
+  BoardRow,
+  Caption,
+  ValueLabel,
+  barHeightPct,
+  useValueFormat,
+} from './whiteboard/primitives';
 
 /*
  * THE TUTOR'S WHITEBOARD (V4).
@@ -24,7 +34,17 @@ import type { TutorWhiteboardWire } from './types';
  * placed on a line between two references), and `categories` — `compare`
  * generalized from a fixed two sides to 2-6 named things at that same one
  * moment. `TutorWhiteboardWire` (`./types`) is the single source for the
- * wire shape of all four.
+ * wire shape of all four. The catalog these four are the first of, and the
+ * plan for the rest, is /TUTOR_INSTRUMENTS.md.
+ *
+ * EVERY SHAPE IS DRAWN THROUGH `whiteboard/primitives.tsx`, and that is a
+ * safety property rather than tidiness. Both defects this surface has shipped
+ * lived in the shared parts, not in any one kind's logic: bars that resolved
+ * their percentage height against nothing and rendered at ZERO PIXELS in every
+ * real browser from launch, and a model-written caption that did not truncate
+ * but DISAPPEARED behind an `overflow-hidden` ancestor. A primitive that makes
+ * the bug unreachable protects the next instrument too; a fix applied kind by
+ * kind protects only the kinds someone remembered.
  *
  * `values`/`difference`+`greater`/each mark's `position` ARE NEVER
  * RECOMPUTED HERE. Oracle already ran the same arithmetic server-side
@@ -77,37 +97,6 @@ export interface TutorWhiteboardProps {
  */
 export const GROW_STEP_MS = 550;
 
-/**
- * A running value this close to zero is drawn as zero height, not a bar with
- * the visibility floor below.
- *
- * Mirrors `oracle/src/tutor/whiteboard.ts`'s own `ZERO_EPSILON` (same value,
- * duplicated rather than imported — this package has no dependency on
- * `oracle/`, same posture as `TutorWhiteboardWire` (`./types`) hand-mirroring
- * the wire shape instead of importing it across the service boundary). That
- * module clamps a running value NEGATIVE by a hair of floating-point noise
- * up to exact `0`, for a legitimate "spend it down to zero" sequence — a
- * designed case, not an edge case. It does not clamp noise on the POSITIVE
- * side (e.g. `1e-16` from a different step ordering), so a value can still
- * arrive here a hair above zero. Found by adversarial review, round 107,
- * RUNBOOK.md: this component's `Math.max(6, …)` visibility floor — added so
- * a genuinely small nonzero bar stays visible — did not carve out true zero,
- * so a value the label above it showed as "$0" still drew a bar with real
- * height, contradicting its own label on exactly the story beat ("spend it
- * down to zero") this feature was built to narrate correctly.
- */
-const ZERO_EPSILON = 1e-9;
-
-function useValueFormat(currency: string | null): (n: number) => string {
-  const { i18n } = useTranslation();
-  return useMemo(() => {
-    const fmt = currency
-      ? new Intl.NumberFormat(i18n.language, { style: 'currency', currency, maximumFractionDigits: 0 })
-      : new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 });
-    return (n: number) => fmt.format(n);
-  }, [i18n.language, currency]);
-}
-
 /** A locale-neutral "min–max" range, an en dash rather than a translated connector word — reads fine in all three shipped locales with no new i18n key. */
 function formatRange(min: string, max: string): string {
   return `${min}–${max}`;
@@ -115,7 +104,7 @@ function formatRange(min: string, max: string): string {
 
 /**
  * The announcement + `role="img"` wrapper every kind shares byte-for-byte —
- * factored out so the three kind-specific components below differ ONLY in
+ * factored out so the kind-specific components below differ ONLY in
  * their inner visual and their own aria-label, never in this shell. See
  * `key={seq}`'s own comment for why the announcement is generic and kind-
  * agnostic on purpose.
@@ -169,7 +158,7 @@ function WhiteboardShell({
         identical posture in round 87: its live region announces "an
         activity is ready," never the activity's own prompt text. Kind-
         agnostic on purpose: it announces that SOMETHING new arrived, which
-        is equally true of `sequence`, `compare` and `marked_line`.
+        is equally true of every kind.
       */}
       <span key={seq} role="status" aria-live="polite" className="sr-only">
         {t('tutor.whiteboard.updated')}
@@ -190,8 +179,7 @@ type CategoriesWire = Extract<TutorWhiteboardWire, { kind: 'categories' }>;
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
  * grow in one at a time while the tutor speaks (the ORIGINAL, proven
- * whiteboard visual; unchanged in substance from before this file learned
- * two more kinds — only moved into its own function).
+ * whiteboard visual).
  */
 function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: number; className?: string }) {
   const { t } = useTranslation();
@@ -272,83 +260,31 @@ function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: nu
 
   return (
     <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
-      <div className="flex min-h-0 flex-1 gap-2 overflow-x-auto px-1 pb-1">
+      <BoardRow>
         {board.values.map((value, i) => {
           const grown = i < safeShown;
-          const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
           return (
-            <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
-              <span className="lf-number lf-title text-content" aria-hidden="true">
-                {grown ? format(value) : ''}
-              </span>
-              {/*
-                THE BAR TRACK — `flex-1 min-h-0` so it (not the bar itself)
-                is what carries the ROW's stretched, DEFINITE height down to
-                a real pixel value, with `items-end` moved HERE so the bar
-                grows from a shared bottom baseline. TWO defects found live,
-                verifying THIS file in a real browser while building the
-                `compare`/`marked_line` kinds — neither one jsdom (which
-                never lays anything out) or any existing unit test here
-                could have caught, exactly the class of bug this task's own
-                brief warned about:
-
-                (1) HEIGHT: `items-end` on the ROW itself (the ORIGINAL,
-                pre-existing structure) leaves each COLUMN's own height
-                auto/content-sized, which is not a definite containing
-                block — a CSS percentage-height cannot resolve against an
-                ancestor whose own height is still being derived FROM that
-                same percentage, so it behaves as `height: auto` and the
-                bar renders at ZERO pixels in every real browser, always,
-                regardless of `heightPct`. Every existing test here only
-                ever asserted the INLINE STYLE VALUE ("71%"), never the
-                rendered box.
-
-                (2) COLOR (see the class list below): the ORIGINAL fill was
-                `bg-[color:var(--lf-accent)]/70` — an arbitrary-value
-                utility referencing a design-token CSS variable that is
-                itself a bare "R G B" triple (`--lf-accent: 79 70 229`,
-                `index.css`), meant to be used inside `rgb(var(...) /
-                <alpha>)` (which is exactly what `tailwind.config.js`'s OWN
-                `accent` token does). Tailwind cannot decompose an opaque
-                `var()` reference at build time, so it emitted
-                `background-color: var(--lf-accent)` with NO `rgb()`
-                wrapper and NO alpha applied — an invalid color value a
-                browser silently discards, leaving the property at its
-                initial `transparent`. `bg-accent/70` (the CONFIGURED
-                token, below) is what correctly threads the opacity
-                modifier through. BOTH defects left the bar fully invisible
-                since the feature shipped — only the value number and the
-                caption below it were ever seen.
-              */}
-              <div className="flex w-full min-h-0 flex-1 items-end">
-                <div
-                  className={cn(
-                    'w-full rounded-t-md bg-accent/70 transition-[height] duration-500 ease-out',
-                    !grown && 'opacity-0',
-                  )}
-                  style={{ height: grown ? `${heightPct}%` : '0%' }}
-                />
-              </div>
-              <span className="lf-caption text-content-muted" aria-hidden="true">
-                {captionFor(i)}
-              </span>
-            </div>
+            <BarColumn key={i} minWidth="3.5rem">
+              <ValueLabel>{grown ? format(value) : ''}</ValueLabel>
+              <BarTrack heightPct={barHeightPct(value, max)} grown={grown} animated />
+              {/* Chrome from the locale files, not model text — see `AxisCaption`. */}
+              <AxisCaption>{captionFor(i)}</AxisCaption>
+            </BarColumn>
           );
         })}
-      </div>
+      </BoardRow>
     </WhiteboardShell>
   );
 }
 
 /**
- * `kind: 'compare'` — two SEPARATE, static quantities side by side (V4,
- * /ORACLE.md §20.5 backlog). Renders immediately, no grow-in reveal: unlike
- * a `sequence`, there is no story unfolding over steps for an animation to
- * pace against — this is a snapshot, not a process, and the fastest way to
- * show a snapshot is to just show it. `difference`/`greater` are
- * SERVER-COMPUTED (`whiteboard.ts`'s `computeComparison`) — the schema gives
- * the model no field to assert either directly, so neither is ever the
- * model's own claim.
+ * `kind: 'compare'` — two SEPARATE, static quantities side by side. Renders
+ * immediately, no grow-in reveal: unlike a `sequence`, there is no story
+ * unfolding over steps for an animation to pace against — this is a snapshot,
+ * not a process, and the fastest way to show a snapshot is to just show it.
+ * `difference`/`greater` are SERVER-COMPUTED (`whiteboard.ts`'s
+ * `computeComparison`) — the schema gives the model no field to assert either
+ * directly, so neither is ever the model's own claim.
  */
 function CompareBoard({ board, seq, className }: { board: CompareWire; seq: number; className?: string }) {
   const { t } = useTranslation();
@@ -363,40 +299,16 @@ function CompareBoard({ board, seq, className }: { board: CompareWire; seq: numb
   return (
     <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
       <div className="flex min-h-0 flex-1 flex-col gap-2">
-        <div className="flex min-h-0 flex-1 justify-center gap-6 overflow-x-auto px-1 pb-1">
-          {sides.map((side, i) => {
-            const heightPct = side.value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((side.value / max) * 100));
-            return (
-              <div key={i} className="flex min-w-[5rem] max-w-[14rem] flex-1 flex-col items-center gap-1">
-                <span className="lf-number lf-title text-content" aria-hidden="true">
-                  {format(side.value)}
-                </span>
-                {/* The bar TRACK — see `SequenceBoard`'s own comment on why the bar itself cannot carry `flex-1`/`items-end`. */}
-                <div className="flex w-full min-h-0 flex-1 items-end">
-                  <div className="w-full rounded-t-md bg-accent/70" style={{ height: `${heightPct}%` }} />
-                </div>
-                {/*
-                  `line-clamp-2` — a hard, DETERMINISTIC ceiling on how tall this
-                  caption can ever grow. `side.label` is free text Oracle writes
-                  live (moderated, up to 60 chars, /ORACLE.md §20.5) and never
-                  passes through `i18n:check`, which only sees catalog strings —
-                  so es-MX/pt-BR running 16-19% longer than en-US (TUTOR_QA_
-                  2026-09-02.md, D1-as-a-class) can wrap this to 3+ lines in a
-                  144-224px column. `LessonPlate`'s `bodyLayout="column"` body is
-                  `overflow-hidden` with no scroll (this component is the ONE
-                  child expected to manage its own bounds) — an unclamped wrap
-                  does not truncate, it silently DISAPPEARS past that ancestor.
-                  Clamping trades that invisible loss for a visible ellipsis; the
-                  full label still reaches a screen reader via `ariaLabel` above,
-                  unaffected by what the sighted caption shows.
-                */}
-                <span className="lf-caption text-content-muted text-center line-clamp-2 break-words" aria-hidden="true">
-                  {side.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        <BoardRow gap="lg" justify="center">
+          {sides.map((side, i) => (
+            <BarColumn key={i} minWidth="5rem" maxWidth="14rem">
+              <ValueLabel>{format(side.value)}</ValueLabel>
+              <BarTrack heightPct={barHeightPct(side.value, max)} />
+              {/* Model-written, so clamped — see `Caption`. */}
+              <Caption>{side.label}</Caption>
+            </BarColumn>
+          ))}
+        </BoardRow>
         {board.greater !== 'tie' && (
           <p className="lf-caption shrink-0 text-center text-content-muted" aria-hidden="true">
             {t('tutor.whiteboard.compare.difference', { amount: format(board.difference) })}
@@ -409,13 +321,12 @@ function CompareBoard({ board, seq, className }: { board: CompareWire; seq: numb
 
 /**
  * `kind: 'marked_line'` — one or more values placed on a line between two
- * references (V4, /ORACLE.md §20.5 backlog). Renders immediately, same
- * reasoning as `CompareBoard` above. Each mark's `position` (0..1) is
- * SERVER-COMPUTED (`whiteboard.ts`'s `computeMarkedLine`) from the model's
- * raw `value`/`min`/`max` — this component only ever reads `position`
- * directly, never re-deriving it from the raw numbers, the same "the server
- * computes it once, the client only draws it" rule `values` already follows
- * for `sequence`.
+ * references. Renders immediately, same reasoning as `CompareBoard` above.
+ * Each mark's `position` (0..1) is SERVER-COMPUTED (`whiteboard.ts`'s
+ * `computeMarkedLine`) from the model's raw `value`/`min`/`max` — this
+ * component only ever reads `position` directly, never re-deriving it from
+ * the raw numbers, the same "the server computes it once, the client only
+ * draws it" rule `values` already follows for `sequence`.
  *
  * Each mark's own VALUE is drawn ON the track, directly above its dot — a
  * short number, safe at any position including the two ends. Each mark's
@@ -424,9 +335,8 @@ function CompareBoard({ board, seq, className }: { board: CompareWire; seq: numb
  * avoid a label near either end overflowing the plate — a position-anchored
  * label has no such protection. KNOWN, ACCEPTED LIMITATION: two marks
  * positioned very close together can still crowd each other's VALUE text
- * above the track — undefended for now, the same as this file's other
- * kinds are undefended against a pathologically long `label`, because no
- * real session has shown it is a problem worth a layout algorithm for yet.
+ * above the track — undefended for now, because no real session has shown it
+ * is a problem worth a layout algorithm for yet.
  */
 function MarkedLineBoard({ board, seq, className }: { board: MarkedLineWire; seq: number; className?: string }) {
   const format = useValueFormat(board.currency);
@@ -454,25 +364,17 @@ function MarkedLineBoard({ board, seq, className }: { board: MarkedLineWire; seq
           ))}
         </div>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1" aria-hidden="true">
-          {/*
-            `max-w` + `line-clamp-2` — the same bounded-caption reasoning as
-            `CompareBoard`'s identical comment, applied here too: `mark.label`
-            is the same shape of risk (moderated, model-authored, up to 60
-            chars, up to 4 per board, invisible to `i18n:check`) even though
-            TUTOR_QA_2026-09-02.md's live session only reproduced it on the
-            two narrower bar-chart kinds. Lower likelihood here (this row has
-            no per-label column width forcing an early wrap) but the same
-            ceiling closes it rather than leaving it open on an untested guess.
-          */}
           {board.marks.map((mark, i) => (
-            <span key={i} className="lf-caption text-content-muted max-w-[16rem] text-center line-clamp-2 break-words">
+            // Model-written and unbounded by any column width here, so the same
+            // clamp plus an explicit ceiling — see `Caption`.
+            <Caption key={i} className="max-w-[16rem]">
               {mark.label}
-            </span>
+            </Caption>
           ))}
         </div>
         <div className="flex justify-between px-1" aria-hidden="true">
-          <span className="lf-caption text-content-muted">{format(board.min)}</span>
-          <span className="lf-caption text-content-muted">{format(board.max)}</span>
+          <AxisCaption>{format(board.min)}</AxisCaption>
+          <AxisCaption>{format(board.max)}</AxisCaption>
         </div>
       </div>
     </WhiteboardShell>
@@ -481,15 +383,15 @@ function MarkedLineBoard({ board, seq, className }: { board: MarkedLineWire; seq
 
 /**
  * `kind: 'categories'` — several DIFFERENT named things compared side by
- * side at ONE moment (V4, /ORACLE.md §20.5) — `compare` generalized from a
- * fixed two sides to 2-6. Renders immediately, same reasoning as
- * `CompareBoard` above: a snapshot of several things has no story unfolding
- * over steps for a `SequenceBoard`-style reveal to pace against. `values` is
- * SERVER-COMPUTED, one-to-one with `categories` (`whiteboard.ts`'s
- * `computeCategories`) — the schema gives the model no field to assert it
- * directly, the same posture `sequence`'s own `values` already takes. Needs
- * no i18n key for its per-bar captions: each one IS `categories[i].label`,
- * the model's own (moderated) name for that bar, never a translated word.
+ * side at ONE moment — `compare` generalized from a fixed two sides to 2-6.
+ * Renders immediately, same reasoning as `CompareBoard` above: a snapshot of
+ * several things has no story unfolding over steps for a `SequenceBoard`-style
+ * reveal to pace against. `values` is SERVER-COMPUTED, one-to-one with
+ * `categories` (`whiteboard.ts`'s `computeCategories`) — the schema gives the
+ * model no field to assert it directly, the same posture `sequence`'s own
+ * `values` already takes. Needs no i18n key for its per-bar captions: each one
+ * IS `categories[i].label`, the model's own (moderated) name for that bar,
+ * never a translated word.
  */
 function CategoriesBoard({ board, seq, className }: { board: CategoriesWire; seq: number; className?: string }) {
   const format = useValueFormat(board.currency);
@@ -501,27 +403,19 @@ function CategoriesBoard({ board, seq, className }: { board: CategoriesWire; seq
 
   return (
     <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
-      <div className="flex min-h-0 flex-1 gap-2 overflow-x-auto px-1 pb-1">
+      <BoardRow>
         {board.categories.map((category, i) => {
           const value = board.values[i]!;
-          const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
           return (
-            <div key={i} className="flex min-w-[4.5rem] flex-1 flex-col items-center gap-1">
-              <span className="lf-number lf-title text-content" aria-hidden="true">
-                {format(value)}
-              </span>
-              {/* The bar TRACK — see `SequenceBoard`'s own comment on why the bar itself cannot carry `flex-1`/`items-end`. */}
-              <div className="flex w-full min-h-0 flex-1 items-end">
-                <div className="w-full rounded-t-md bg-accent/70" style={{ height: `${heightPct}%` }} />
-              </div>
-              {/* `line-clamp-2` — see `CompareBoard`'s identical comment above. `category.label`: moderated, up to 6 per board, up to 40 chars, model-authored. */}
-              <span className="lf-caption text-content-muted text-center line-clamp-2 break-words" aria-hidden="true">
-                {category.label}
-              </span>
-            </div>
+            <BarColumn key={i} minWidth="4.5rem">
+              <ValueLabel>{format(value)}</ValueLabel>
+              <BarTrack heightPct={barHeightPct(value, max)} />
+              {/* Model-written, so clamped — see `Caption`. */}
+              <Caption>{category.label}</Caption>
+            </BarColumn>
           );
         })}
-      </div>
+      </BoardRow>
     </WhiteboardShell>
   );
 }

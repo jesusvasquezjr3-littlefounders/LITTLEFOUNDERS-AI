@@ -27,8 +27,8 @@ only section that must be updated on EVERY sprint boundary.**
 | | |
 |---|---|
 | **Status** | IN PROGRESS. Wave 1 foundation started 2026-09-02. |
-| **Active sprint** | Sprint 4 (§7.4) — the primitive kit. |
-| **Next action** | Finish Sprint 4, then Sprint 6 (`tokens`) and its cost measurement. |
+| **Active sprint** | Sprint 6 (§7.6) — `tokens`, the first new instrument. |
+| **Next action** | Ship `tokens` end to end, then record the cost measurement (§7.6 acceptance #2) here — it is the go/no-go for Sprints 11–15. |
 | **Blocked on owner** | Nothing blocking today. D1 and D3 (§8.2) were answered by the owner on 2026-09-02 with "procede": the catalog grows by **named instruments** and the architecture tax is paid with Wave 1. **D2 (generated imagery) is still open** and gates Wave 4 only. |
 | **Last verified against the repo** | 2026-09-02. |
 
@@ -37,8 +37,8 @@ only section that must be updated on EVERY sprint boundary.**
 | Sprint | State | Evidence |
 |---|---|---|
 | **S5 — instrument manifest + parity gate** | **DONE** 2026-09-02 | `npm run instruments:check` green over 4 instruments × 5 copies; `agent/tools/check-instrument-parity.test.mjs` — 13 tests, of which **7 deliberately desynchronise a copy and each turns the gate red**. In CI (`repo-gates.yml`) and in `/AGENTS.md` §5. Two defects it found in its own first hour are recorded in §10.3 |
-| S4 — primitive kit | in progress | — |
-| S6 — `tokens` | not started | — |
+| **S4 — primitive kit** | **DONE** 2026-09-02 | `frontend/src/tutor/whiteboard/primitives.tsx`; all four existing kinds rebuilt on it with **no behaviour change** — the 30 existing whiteboard tests pass unmodified, `verify:tutor-ui` green (real-pixel bar heights across all 4 kinds × 3 breakpoints), `verify:tutor-a11y` green (8 phases × 2 themes × 2 breakpoints), 962 frontend tests green. 15 new primitive tests lock the two structural contracts. Scope was cut from a speculative nine primitives to the parts the EVIDENCE names — see §4.2 |
+| S6 — `tokens` | in progress | — |
 | everything else | not started | — |
 
 ### §0.1 Baseline — what is true today (all VERIFIED 2026-09-02)
