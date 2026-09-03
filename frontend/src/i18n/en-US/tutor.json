@@ -402,6 +402,7 @@
       "year": "Year {{n}}"
     },
     "updated": "The whiteboard updated.",
+    "showNext": "Show next",
     "compare": {
       "difference": "Difference: {{amount}}"
     },

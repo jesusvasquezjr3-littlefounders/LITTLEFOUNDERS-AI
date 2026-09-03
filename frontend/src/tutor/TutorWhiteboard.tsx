@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { playSfx } from '@/lesson-engine/player/sfx';
 import type { TutorWhiteboardWire } from './types';
@@ -121,12 +122,28 @@ function WhiteboardShell({
   label,
   className,
   children,
+  onAdvance,
 }: {
   seq: number;
   ariaLabel: string;
   label: string;
   className?: string;
   children: ReactNode;
+  /**
+   * `step` (Class II, S9, /TUTOR_INSTRUMENTS.md §3.3): "advances the reveal
+   * at their own pace instead of watching it." Present only on a board with
+   * a genuine multi-beat reveal to pace through and only while a beat is
+   * still pending (`SequenceBoard` is, today, the only caller — see its own
+   * comment). Rendered as a SIBLING of the `role="img"` node below, for the
+   * identical reason the live-announcement span above already is: an
+   * element with `role="img"` presents its subtree as the image's own
+   * replaced content, which would swallow a nested interactive control from
+   * assistive tech rather than let it be reached. No model involvement and
+   * no new schema field — advancing a beat sooner than the auto-timer would
+   * have does not change what is drawn, only when, so there is nothing here
+   * for the model to author.
+   */
+  onAdvance?: () => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -173,6 +190,16 @@ function WhiteboardShell({
         <p className="lf-caption shrink-0 text-content-muted">{label}</p>
         {children}
       </div>
+      {onAdvance && (
+        <button
+          type="button"
+          onClick={onAdvance}
+          className="lf-caption pointer-events-auto flex shrink-0 items-center gap-1 self-end text-primary hover:underline"
+        >
+          {t('tutor.whiteboard.showNext')}
+          <Icon name="chevron_right" className="!text-[16px]" />
+        </button>
+      )}
     </>
   );
 }
@@ -304,6 +331,22 @@ function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: nu
 
   const max = Math.max(...board.values, 1);
 
+  /*
+   * `step` (Class II, S9): tapping plays the SAME state transition the
+   * timer's own callback does — one bar further, one `drop` cue — so a
+   * learner who advances by hand sees and hears exactly what would have
+   * happened anyway, only sooner. `setShown` here reruns the reveal effect
+   * above (it is keyed on `shown`), whose cleanup already clears whatever
+   * timer was pending — a tap and the timer racing each other can only ever
+   * produce ONE advance, never a double one, because there is one source of
+   * truth (`shown`) and one effect that reschedules from it.
+   */
+  const canAdvance = !reducedMotion && safeShown < board.values.length;
+  const advance = () => {
+    setShown((n) => Math.min(n + 1, board.values.length));
+    playSfx('drop');
+  };
+
   /**
    * The SAME per-bar time-step caption a sighted user reads under each bar
    * ("Start" / "Week 1" / "Week 2"…) — shared with the visual render below
@@ -325,7 +368,13 @@ function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: nu
     .join(', ')}`;
 
   return (
-    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+    <WhiteboardShell
+      seq={seq}
+      ariaLabel={ariaLabel}
+      label={board.label}
+      className={className}
+      onAdvance={canAdvance ? advance : undefined}
+    >
       <BoardRow>
         {board.values.map((value, i) => {
           const grown = i < safeShown;

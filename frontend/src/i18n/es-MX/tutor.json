@@ -402,6 +402,7 @@
       "year": "Año {{n}}"
     },
     "updated": "El pizarrón se actualizó.",
+    "showNext": "Mostrar siguiente",
     "compare": {
       "difference": "Diferencia: {{amount}}"
     },

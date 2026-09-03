@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorWhiteboard } from '../TutorWhiteboard';
 import { playSfx } from '@/lesson-engine/player/sfx';
@@ -209,6 +209,71 @@ describe('the reveal sound', () => {
       await vi.advanceTimersByTimeAsync(2_000);
     });
     expect(playSfx).not.toHaveBeenCalled();
+  });
+});
+
+/*
+ * `step` (Class II, S9, /TUTOR_INSTRUMENTS.md §3.3) — "advances the reveal
+ * at their own pace instead of watching it." A sibling of the `role="img"`
+ * node, never a descendant of it (`WhiteboardShell`'s own comment): an
+ * interactive control nested inside `role="img"` would be presented to
+ * assistive tech as the image's own replaced content and never reached.
+ */
+describe('advancing the reveal by hand', () => {
+  it('offers "Show next" while a beat is still pending, under normal motion', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    expect(screen.getByRole('button', { name: 'Show next' })).toBeInTheDocument();
+  });
+
+  it('offers nothing under reduced motion — the whole board is already shown', () => {
+    stubMatchMedia(true);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    expect(screen.queryByRole('button', { name: 'Show next' })).not.toBeInTheDocument();
+  });
+
+  it('reveals the next bar immediately on tap, without waiting for the timer', async () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Cada día te dan 2 más. Start: MX$10');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show next' }));
+    // No `advanceTimersByTimeAsync` — a tap must not need the 550ms wait.
+    expect(screen.getByRole('img').getAttribute('aria-label')).toContain('MX$12');
+    expect(playSfx).toHaveBeenCalledWith('drop');
+  });
+
+  it('withdraws itself once every bar is shown — nothing left to advance to', async () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Show next' }));
+    expect(screen.getByRole('img').getAttribute('aria-label')).toContain('MX$14');
+    expect(screen.queryByRole('button', { name: 'Show next' })).not.toBeInTheDocument();
+  });
+
+  it('a tap cancels the timer that was already pending, rather than leaving it to also fire', async () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    // The auto-timer scheduled at mount has been running for a while — close
+    // to firing on its own — when the tap arrives.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Show next' }));
+    expect(screen.getByRole('img').getAttribute('aria-label')).toContain('MX$12');
+    expect(playSfx).toHaveBeenCalledTimes(1);
+
+    // If the PRE-TAP timer had survived, it would fire within the next 50ms
+    // (600ms elapsed against its own 550ms schedule) and advance a SECOND
+    // time on top of the tap. It must not: only the effect's own fresh
+    // reschedule, a full 550ms after the tap, may produce the next advance.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(50);
+    });
+    expect(screen.getByRole('img').getAttribute('aria-label')).toContain('MX$12');
+    expect(screen.getByRole('img').getAttribute('aria-label')).not.toContain('MX$14');
+    expect(playSfx).toHaveBeenCalledTimes(1);
   });
 });
 

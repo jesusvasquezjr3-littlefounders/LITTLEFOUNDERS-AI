@@ -402,6 +402,7 @@
       "year": "Ano {{n}}"
     },
     "updated": "O quadro foi atualizado.",
+    "showNext": "Mostrar próximo",
     "compare": {
       "difference": "Diferença: {{amount}}"
     },
