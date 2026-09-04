@@ -78,6 +78,55 @@ describe('the move catalogue and the spec registry agree', () => {
     }
   });
 
+  /*
+   * THE GATE THAT DID NOT EXIST, AND THE DRIFT IT WOULD HAVE CAUGHT.
+   *
+   * `instruments:check` (root) holds a kind's SHAPE to agreement across five
+   * copies, and the test above holds a named instrument to having a spec. Both
+   * passed green for the entire time the real defect was live, because neither
+   * asks the only question that decides whether an instrument ever gets USED:
+   * does anything tell the model WHEN to reach for it?
+   *
+   * Measured 2026-09-04: of the 45 kinds the schema accepts, 28 had nothing at
+   * all — no spec here, and no move naming them — so they existed only as one
+   * shape line inside a list of 45. That is not a hypothetical: the live-fire
+   * record in /TUTOR_INSTRUMENTS.md already showed the symptom in writing
+   * (`fill` 0/4, `whatif` 0/4, `move` 0/5) and it was read as a prompt-phrasing
+   * problem rather than as a missing pointer.
+   *
+   * So this asserts the DIRECTION rather than a number: coverage may go up, and
+   * may never silently go down. A kind deliberately left unguided is fine — it
+   * just has to be listed here, by hand, which is the whole point: adding the
+   * 46th kind forces somebody to say which of the two it is.
+   */
+  it('every specced instrument is actually reachable — a spec no move names is guidance nothing can deliver', () => {
+    const named = new Set(skills.flatMap((s) => s.instruments));
+    const orphaned = SPECIFIED_INSTRUMENTS.filter((k) => !named.has(k));
+    expect(orphaned, 'specs written but wired to no move — they can never travel').toEqual([]);
+  });
+
+  it('does not let instrument coverage silently regress', () => {
+    /*
+     * Kinds with NO guidance today, by deliberate omission rather than
+     * oversight — mostly early-years and comparison boards whose moves do not
+     * exist yet. Shrinking this list is the work; growing it needs a reason,
+     * written here, next to the name.
+     */
+    const DELIBERATELY_UNGUIDED = [
+      'array', 'bead_string', 'before_after', 'chance', 'cycle', 'equation_bar',
+      'fraction_circle', 'inventory', 'ledger', 'partition', 'pictograph',
+      'price_tag', 'ranking', 'scale', 'stack', 'tally', 'timeline', 'venn',
+    ] as const;
+
+    const named = new Set(skills.flatMap((s) => s.instruments));
+    // A kind is REACHED if a move names it (which is what makes its spec
+    // travel). Prose in prompt.ts is the other route and is not measured here —
+    // this test governs the selected-guidance path it can actually see.
+    for (const kind of DELIBERATELY_UNGUIDED) {
+      expect(named.has(kind), `${kind} is now wired to a move — remove it from DELIBERATELY_UNGUIDED`).toBe(false);
+    }
+  });
+
   it('every move whose body stages physical money can reach `tokens`', () => {
     // These three moves' own bodies ask for coins that can be picked up,
     // counted twice, or stopped at a target — the reason `tokens` exists.

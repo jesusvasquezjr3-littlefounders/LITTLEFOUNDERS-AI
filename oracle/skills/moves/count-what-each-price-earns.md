@@ -7,6 +7,7 @@ mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
 priority: 7
+instruments: [table]
 ---
 Strategy for this turn: COUNT WHAT EACH PRICE ACTUALLY BRINGS IN.
 

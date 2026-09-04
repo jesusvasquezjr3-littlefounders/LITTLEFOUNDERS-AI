@@ -110,6 +110,146 @@ const SPECS: InstrumentSpec[] = [
       'FORMAT example only: start at 72, take away 15, add 8.',
     ].join(' '),
   },
+
+  /*
+   * WAVE 1 ENDS ABOVE. Everything below was written 2026-09-04, when an audit
+   * asked the question this registry had never been measured against: of the 45
+   * kinds the schema accepts, how many does the model ever get told WHEN to
+   * reach for? The answer was 17, and only 6 of those through this file — the
+   * other 39 existed as one shape line inside a list of 45, which is exactly
+   * the shape of /ORACLE.md §20.5's own lesson ("the model follows what it is
+   * CHECKED on") read from the other side: a kind nothing ever points at is a
+   * kind that never fires, and the live-fire record already said so in writing
+   * (`fill` 0/4, `whatif` 0/4, `move` 0/5).
+   *
+   * These eleven were chosen the way §4.4 says guidance should be — by finding
+   * the MOVE that already teaches the thing, and giving it the board that draws
+   * it. Every one is wired to a move whose body was read first: two of the
+   * mappings that looked obvious from the move's NAME were wrong once the body
+   * was read (`compare-one-part-each` is about fractions, not weighing;
+   * `decide-before-money-moves` is about a budget running out, not chance) and
+   * were corrected before being written down here.
+   */
+  {
+    kind: 'deal',
+    guidance: [
+      'DEALING A TOTAL INTO PLACES — {kind:"deal", total: 1-60, bins: 2-6 of string, label}. No currency field.',
+      'Use it when something has to be SHARED OUT and the real question is whether it comes out even: sweets',
+      'between friends, pesos into envelopes. `bins` are the labelled empty places; `total` is what there is to',
+      'deal. YOU DO NOT SAY HOW MANY EACH PLACE GETS, and you never say what is left over — both are dealt and',
+      'counted on the board, which is the whole point: a remainder nobody predicted is the thing to be seen, not',
+      'announced. FORMAT example only: thirteen into three labelled places.',
+    ].join(' '),
+  },
+  {
+    kind: 'regroup',
+    guidance: [
+      'BREAKING ONE COIN INTO SMALLER ONES — {kind:"regroup", fromDenomination, fromCount: 1-6, intoDenomination, label, currency}.',
+      'Use it at the exact moment a subtraction cannot be done as written — "de 3 no puedo quitar 7" — BEFORE any',
+      'borrowing notation. The board trades those coins for their worth in the smaller one, so the swap is a',
+      'physical fact they watch rather than a rule about crossing out digits. You do not state how many small',
+      'coins come back: performing that count is the board\'s job. Both denominations must really exist in that',
+      'currency. FORMAT example only: one ten traded into ones.',
+    ].join(' '),
+  },
+  {
+    kind: 'change',
+    guidance: [
+      'THE PRICE STAYS, THE REST COMES BACK — {kind:"change", price, paid, label, currency}.',
+      'Use it when a purchase is being acted out and what broke is the STORY, not the arithmetic: the whole',
+      'payment handed back, or nothing returned at all. You state only the price and what was handed over.',
+      'YOU DO NOT STATE THE CHANGE — the board separates it, and watching the price stay behind is what repairs',
+      'the story. `paid` must be at least `price`. FORMAT example only: something costing 27 paid with 50.',
+    ].join(' '),
+  },
+  {
+    kind: 'table',
+    guidance: [
+      'PRICE AGAINST HOW MANY SAY YES — {kind:"table", options: 2-4 of {label, price, units}, label, currency}.',
+      'Use it when only ONE of the two numbers in a business decision is being looked at — usually a high price',
+      'with no thought about how many people would still buy at it. Each option pairs a price with the units sold',
+      'AT that price; let them pick the units. You do not state what any option brings in: the board multiplies',
+      'and sets them side by side, which is what makes a cheaper price winning visible instead of argued.',
+      'FORMAT example only: 100 for two cups against 15 for forty.',
+    ].join(' '),
+  },
+  {
+    kind: 'receipt',
+    guidance: [
+      'THE BASKET, LINE BY LINE — {kind:"receipt", lines: 1-6 of {label, value}, label, currency}.',
+      'Use it when items are going into a basket one at a time and each one was affordable on its own — the',
+      'answers that are all individually correct and add up to too much. Each line is one item at its price, in',
+      'the order it went in. YOU DO NOT STATE THE TOTAL: the board adds it, and a learner who has been tracking',
+      'along is meant to test their own number against it rather than hear it first.',
+      'FORMAT example only: three items at their prices.',
+    ].join(' '),
+  },
+  /*
+   * `ledger` was written here and then REMOVED the same hour, deliberately.
+   * The only move it fit was `paying-for-the-work`, and reading that move's
+   * body rather than its name showed the fit was weak: its lesson is that WORK
+   * is sellable at all (it opens on a haircut — a sale with no object), not
+   * what is left after money moves both ways. Wiring it anyway would have
+   * pushed the catalogue past the "most turns pay nothing" budget rule below
+   * on the strength of the weakest mapping in the batch, which is the wrong
+   * thing to spend that budget on. It stays listed as deliberately unguided
+   * until a move about takings against costs over time exists to earn it.
+   */
+  {
+    kind: 'outcomes',
+    guidance: [
+      'THE TWO ENDINGS, SIDE BY SIDE — {kind:"outcomes", good:{label, detail}, bad:{label, detail}, label}.',
+      'Use it when a choice is being made on the strength of the good ending alone, which is the only one they',
+      'have imagined. Both endings get a short name and ONE concrete sentence of what actually happens — a',
+      'consequence a child could picture, never a moral or a warning. Ask them for the good one in their own',
+      'words first. Nothing numeric is computed; if the point is amounts, another board is the right one.',
+      'FORMAT example only: what happens if it is spent now, and if it is not.',
+    ].join(' '),
+  },
+  {
+    kind: 'trade',
+    guidance: [
+      'WHAT EACH SIDE GIVES AND GETS — {kind:"trade", left:{who, gives, gets}, right:{who, gives, gets}, label}.',
+      'Use it against the belief that every swap has a winner and a loser. Laying both sides out shows the thing',
+      'that actually resolves it: the two sides wanted DIFFERENT things, so both can have gained. What one side',
+      '`gives` is normally what the other `gets`. Nothing is computed — do not add values or declare a winner,',
+      'which would restage the very idea being taken apart.',
+      'FORMAT example only: one child swaps a snack for a toy with another.',
+    ].join(' '),
+  },
+  {
+    kind: 'open_number_line',
+    guidance: [
+      'FRIENDLY HOPS ALONG A LINE — {kind:"open_number_line", from, to, jumps: 1-5 of {value}, label, currency}.',
+      'Use it when getting from one number to another should be done in easy hops rather than a column sum:',
+      'counting up to make change, or rounding to a safe number and adjusting after. Each jump is how far to hop,',
+      'in order. You do not state where the hops land or whether they arrive — the board marks every landing, and',
+      'a set of jumps that MISSES `to` is meant to be seen missing rather than corrected in words.',
+      'FORMAT example only: from 27 to 50 in two hops.',
+    ].join(' '),
+  },
+  {
+    kind: 'fraction_strip',
+    guidance: [
+      'THE SAME WHOLE, SPLIT BOTH WAYS — {kind:"fraction_strip", rows: 2-4 of {denominator, highlighted}, label}. No currency.',
+      'Use it for "un cuarto es más que un medio porque cuatro es más que dos" — the count they are reading is',
+      'real, so only seeing it fails. Every row is the SAME total length cut into a different number of pieces,',
+      'with `highlighted` of them shaded, so more pieces visibly makes each piece smaller. You do not announce',
+      'which is bigger: the strips are already the answer, and saying it removes the reason to look.',
+      'FORMAT example only: one strip in halves against one in quarters.',
+    ].join(' '),
+  },
+  {
+    kind: 'budget_plate',
+    guidance: [
+      'THE BUDGET, AND WHAT EACH CHOICE TAKES FROM IT — {kind:"budget_plate", budget, items: 2-5 of {label, value}, label, currency}.',
+      'Use it when spending is happening down a list until the money runs out, or saving is only whatever happens',
+      'to survive. The order is the lesson. This board deliberately ALLOWS the total to pass the budget rather',
+      'than refusing it — an overspend is drawn taking its space from something already on the plate, which is',
+      'the only way "no alcanza" stops being an abstraction. You do not state what is left over.',
+      'FORMAT example only: a budget with three things claimed against it.',
+    ].join(' '),
+  },
 ];
 
 /**

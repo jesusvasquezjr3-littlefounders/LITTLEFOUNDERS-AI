@@ -7,6 +7,7 @@ mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
 priority: 7
+instruments: [change]
 ---
 Strategy for this turn: ACT OUT THE SALE — THE PRICE STAYS, THE REST GOES BACK.
 
