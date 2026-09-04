@@ -390,6 +390,65 @@ const SCENARIOS: Scenario[] = [
       'no entiendo como sacaste eso, me lo puedes mostrar paso a paso?',
     ],
   },
+
+  /*
+   * THE SCENARIO THAT EXERCISES THE INSTRUMENTS WIRED ON 2026-09-04.
+   *
+   * The scenario above it was written when the catalogue's live instruments
+   * were the six Wave 1 boards, and its script asks about coins and lemonade —
+   * so it reaches `tokens`, `worked` and `flow` and nothing else, which is
+   * exactly what the first run after the wiring showed. That run did not
+   * disprove the wiring; it never exercised it.
+   *
+   * A move is selected by the MISCONCEPTION in play, so the only way to reach
+   * `deal`, `regroup`, `change`, `table`, `receipt` and `fraction_strip` is a
+   * learner who actually holds the belief each of their moves exists to
+   * repair. Every code below is copied from the frontmatter of the move it
+   * should select — `ignores-remainder` selects `deal-it-into-piles`, and so
+   * on — and each scripted line states the belief the way a child states it,
+   * out loud, rather than asking a question that merely touches the topic.
+   */
+  {
+    name: 'the misconceptions the newly-wired instruments repair',
+    session: {
+      ...SESSION,
+      nickname: 'Ceci',
+      sessionPlan: [
+        {
+          kcId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee02',
+          kcKey: 'money.share-and-spend',
+          skillKey: null,
+          reason: 'frontier',
+          pKnown: 0.35,
+          targetDifficulty: 2,
+          objective: 'Repartir, dar cambio y decidir precios sin perder de vista lo que sobra.',
+          prereqKcIds: [],
+          misconceptions: [
+            { code: 'ignores-remainder', hint: 'Reparte y no cuenta lo que sobra.' },
+            { code: 'returns-payment', hint: 'Devuelve todo el pago como si fuera el cambio.' },
+            { code: 'highest-price-wins', hint: 'Cree que el precio más alto siempre gana.' },
+            { code: 'budget-is-per-item', hint: 'Revisa cada precio contra el dinero, nunca el total.' },
+            { code: 'bigger-denominator-bigger-part', hint: 'Cree que más pedazos hace cada pedazo más grande.' },
+          ],
+        } satisfies SessionPlanEntry,
+      ],
+      kcStates: [
+        {
+          kcId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee02',
+          kcKey: 'money.share-and-spend',
+          pKnown: 0.35,
+          attempts: 2,
+        } satisfies KcState,
+      ],
+    },
+    script: [
+      'tengo 14 canicas y somos 3, le toca 4 a cada quien y ya',
+      'si algo cuesta 7 y pago con 20, me tienen que devolver los 20',
+      'le voy a poner 100 pesos al vaso de limonada, asi me hago rico mas rapido',
+      'me alcanza para la pelota, y tambien para el cuaderno, y tambien para los colores',
+      'un cuarto de pastel es mas que un medio porque cuatro es mas que dos',
+    ],
+  },
 ];
 
 interface Beat {
