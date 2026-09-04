@@ -123,6 +123,26 @@ interface Scenario {
    * could not do while the result was hardcoded.
    */
   passesActivities?: boolean;
+  /**
+   * The misconception a FAILED activity reports, when this scenario's learner
+   * fails one. Defaults to `adds-instead-of-counts-up`, which is the only code
+   * this harness could produce until 2026-09-04.
+   *
+   * WHY THIS HAD TO BECOME CONFIGURABLE. `selectSkill` (`src/tutor/skills.ts`)
+   * fences every misconception-tagged move OUT of the generic path — a move
+   * that names misconceptions is reachable ONLY through a
+   * `misconceptionCode`, and that code is set ONLY by a graded activity or a
+   * Core voice-check, never by anything a learner SAYS. So the entire
+   * 21-move remediation catalogue had exactly one door, and this harness held
+   * the key to exactly one of its rooms.
+   *
+   * The consequence was a scenario written to exercise the newly-wired
+   * instruments that could not have exercised them however it was scripted:
+   * its learner states five wrong beliefs out loud, and stating a belief sets
+   * no code. That is not a subtle bug — it is the difference between testing
+   * the product and testing a path the product cannot take.
+   */
+  misconceptionCode?: string;
 }
 
 /*
@@ -409,7 +429,27 @@ const SCENARIOS: Scenario[] = [
    * out loud, rather than asking a question that merely touches the topic.
    */
   {
-    name: 'the misconceptions the newly-wired instruments repair',
+    /*
+     * REWRITTEN 2026-09-04, after the first version could not have worked.
+     *
+     * That version scripted a learner STATING five wrong beliefs, on the
+     * reasoning that a move is selected by the misconception in play. The
+     * reasoning was right and the mechanism was not: `selectSkill` reaches a
+     * misconception-tagged move only through a `misconceptionCode`, and that
+     * code is set only by a graded activity or a Core voice-check —
+     * `orchestrator.ts` hardcodes `null` for every conversation turn. Saying
+     * "le toca 4 a cada quien y ya" sets nothing. The scenario ran, read
+     * plausibly, and exercised none of what it was written for.
+     *
+     * So this one earns the door instead of assuming it: the learner asks for
+     * something to do, FAILS the activity they are given, and the failure
+     * reports `ignores-remainder` — the code `deal-it-into-piles` declares.
+     * That is the real sequence a child produces, and the only one that opens
+     * the remediation catalogue at all.
+     */
+    name: 'a failed activity opens the remediation catalogue',
+    passesActivities: false,
+    misconceptionCode: 'ignores-remainder',
     session: {
       ...SESSION,
       nickname: 'Ceci',
@@ -442,11 +482,14 @@ const SCENARIOS: Scenario[] = [
       ],
     },
     script: [
-      'tengo 14 canicas y somos 3, le toca 4 a cada quien y ya',
-      'si algo cuesta 7 y pago con 20, me tienen que devolver los 20',
-      'le voy a poner 100 pesos al vaso de limonada, asi me hago rico mas rapido',
-      'me alcanza para la pelota, y tambien para el cuaderno, y tambien para los colores',
-      'un cuarto de pastel es mas que un medio porque cuatro es mas que dos',
+      // Asks for practice — this is what makes the tutor set next:"segment".
+      'quiero hacer un ejercicio de repartir',
+      // The activity has now been served and FAILED with `ignores-remainder`,
+      // so the controller should be in REMEDIATE holding that code.
+      'no me salio, creo que me equivoque',
+      'entonces le toca 4 a cada quien y ya, no sobra nada',
+      'a ver, muestrame como se hace',
+      'ah, y si no alcanza a repartirse parejo que pasa?',
     ],
   },
 ];
@@ -477,6 +520,28 @@ interface Beat {
    * without every downstream check needing its own `kind` switch.
    */
   whiteboard: { label: string; summary: string } | null;
+  /*
+   * WHAT THIS TURN ACTUALLY REACHED FOR, recorded per turn so the census at
+   * the end can count it.
+   *
+   * Added 2026-09-04, after a run that looked healthy by every existing check
+   * and was not: 9 conversations drew 8 boards across a handful of kinds out
+   * of 45, served 2 activities, and used `demonstrate`, `roleplay`, `point_at`
+   * and `savePlan` exactly zero times each — while two thirds of the turns ran
+   * the SAME strategy. None of that was visible here, because every check in
+   * this file asks whether a turn was GOOD and none asked how much of the
+   * product the tutor is actually using. A capability nobody counts is a
+   * capability that can quietly stop existing.
+   */
+  used?: {
+    boardKind: string | null;
+    demonstrateSteps: number;
+    roleplayScene: string | null;
+    savePlan: boolean;
+    action: string | null;
+    pointAt: number | null;
+    strategy: string | null;
+  };
 }
 
 /**
@@ -1206,6 +1271,15 @@ async function main(): Promise<void> {
         requestedActivity: turn.segmentRequest != null,
         kind: 'said',
         whiteboard: whiteboardSummary,
+        used: {
+          boardKind: turn.whiteboard?.kind ?? null,
+          demonstrateSteps: turn.demonstrate?.length ?? 0,
+          roleplayScene: turn.roleplayScene ?? null,
+          savePlan: turn.savePlan === true,
+          action: turn.action ?? null,
+          pointAt: turn.pointAt ?? null,
+          strategy: orchestrator.activeStrategy ?? null,
+        },
       });
 
       /*
@@ -1257,7 +1331,7 @@ async function main(): Promise<void> {
           passed,
           Date.now(),
           undefined,
-          { misconceptionCode: passed ? null : 'adds-instead-of-counts-up', attemptNumber: 1 },
+          { misconceptionCode: passed ? null : (scenario.misconceptionCode ?? 'adds-instead-of-counts-up'), attemptNumber: 1 },
         );
         if (reaction !== null) {
           console.log(
@@ -1307,6 +1381,30 @@ async function main(): Promise<void> {
       console.log(`  whiteboard: "${b.whiteboard!.label}" — ${b.whiteboard!.summary}`);
     }
   }
+
+  /*
+   * THE CAPABILITY CENSUS — how much of the product did the tutor actually
+   * use? See `Beat.used`'s own comment for the run that made this necessary.
+   *
+   * Reported, never gated. A number here is a fact about ONE run of a
+   * non-deterministic model, and turning "roleplay fired zero times" into a
+   * red build would make a flaky gate out of an honest measurement. The point
+   * is that the number is on the screen every time, so a collapse is noticed
+   * the run it happens rather than the month somebody greps for it.
+   */
+  const used = allBeats.map((b) => b.used).filter((u): u is NonNullable<Beat['used']> => u != null);
+  const distinct = (xs: (string | null)[]) => new Set(xs.filter((x): x is string => x != null)).size;
+  const boardKinds = new Set(used.map((u) => u.boardKind).filter((k): k is string => k != null));
+  console.log('');
+  console.log('== What the tutor actually reached for ==');
+  console.log(`  boards drawn:        ${boardKinds.size} distinct kind(s) of 45 — ${[...boardKinds].join(', ') || 'none'}`);
+  console.log(`  activities served:   ${allBeats.filter((b) => b.kind === 'activity').length}`);
+  console.log(`  demonstrate:         ${used.filter((u) => u.demonstrateSteps > 0).length} turn(s)`);
+  console.log(`  roleplay scenes:     ${used.filter((u) => u.roleplayScene != null).length}`);
+  console.log(`  point_at:            ${used.filter((u) => u.pointAt != null).length}`);
+  console.log(`  savePlan:            ${used.filter((u) => u.savePlan).length}`);
+  console.log(`  character actions:   ${distinct(used.map((u) => u.action))} distinct`);
+  console.log(`  strategies:          ${distinct(used.map((u) => u.strategy))} distinct — ${[...new Set(used.map((u) => u.strategy).filter(Boolean))].join(', ')}`);
 
   console.log('');
   console.log(`  cost across ${SCENARIOS.length} conversations: $${spent.toFixed(4)}`);

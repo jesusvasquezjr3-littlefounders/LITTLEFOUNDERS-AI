@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   INSTRUMENT_SPEAKING_RULE,
@@ -87,12 +88,18 @@ describe('the move catalogue and the spec registry agree', () => {
    * asks the only question that decides whether an instrument ever gets USED:
    * does anything tell the model WHEN to reach for it?
    *
-   * Measured 2026-09-04: of the 45 kinds the schema accepts, 28 had nothing at
-   * all — no spec here, and no move naming them — so they existed only as one
-   * shape line inside a list of 45. That is not a hypothetical: the live-fire
-   * record in /TUTOR_INSTRUMENTS.md already showed the symptom in writing
-   * (`fill` 0/4, `whatif` 0/4, `move` 0/5) and it was read as a prompt-phrasing
-   * problem rather than as a missing pointer.
+   * Measured 2026-09-04: of the 45 kinds the schema accepts, 39 had no spec
+   * here and no move naming them, so the SELECTED-guidance path reached six.
+   *
+   * A FIRST READING OF THAT NUMBER WAS WRONG AND IS CORRECTED HERE, because
+   * the wrong version is the more tempting one. It was reported as "28 of 45
+   * have nothing telling the model when to use them", which is false:
+   * `prompt.ts` carries a broadcast situation→board map that names 44 of the
+   * 45 (the 45th, `marked_line`, was genuinely missing and was added the same
+   * day). The audit missed it by grepping for quoted kind names while that map
+   * writes them bare. So the real gap was never "no pointer" — it is that a
+   * dense one-paragraph map competes with per-move guidance that arrives
+   * beside the concrete instruction, and loses.
    *
    * So this asserts the DIRECTION rather than a number: coverage may go up, and
    * may never silently go down. A kind deliberately left unguided is fine — it
@@ -141,6 +148,43 @@ describe('the move catalogue and the spec registry agree', () => {
     const naming = new Set(skills.filter((s) => s.instruments.includes('tokens')).map((s) => s.name));
     for (const move of ['biggest-coin-first', 'stop-at-the-target', 'value-not-appearance']) {
       expect(naming, `${move} must be able to draw coins`).toContain(move);
+    }
+  });
+
+  /*
+   * A MISCONCEPTION CODE IS A DOOR KEY, AND A TYPO SILENTLY THROWS IT AWAY.
+   *
+   * `selectSkill` fences every misconception-tagged move OUT of the generic
+   * path: such a move is reachable ONLY when the controller holds that exact
+   * code, which only a graded activity or a Core voice-check can set. So a
+   * code misspelled in frontmatter does not fail anything — boot validation
+   * checks strategies, tiers, instruments and mastery bands, but never the
+   * codes — it just makes that move permanently unreachable, quietly, while
+   * every gate stays green.
+   *
+   * Zero instances today (31 codes, 31 used, no orphans, verified 2026-09-04).
+   * This exists so the first one fails a deploy instead of a child's lesson.
+   */
+  it('every misconception a move claims to repair is a real code in the KC graph', () => {
+    const seed = JSON.parse(
+      readFileSync(new URL('../../../database/seeds/kc_graph.v1.json', import.meta.url), 'utf8'),
+    ) as unknown;
+    const canonical = new Set<string>();
+    const walk = (node: unknown): void => {
+      if (Array.isArray(node)) return node.forEach(walk);
+      if (node && typeof node === 'object') {
+        const rec = node as Record<string, unknown>;
+        if (typeof rec.code === 'string') canonical.add(rec.code);
+        Object.values(rec).forEach(walk);
+      }
+    };
+    walk(seed);
+    expect(canonical.size, 'the KC graph seed carries no misconception codes at all').toBeGreaterThan(0);
+
+    for (const skill of skills) {
+      for (const code of skill.misconceptions) {
+        expect(canonical, `${skill.name} repairs "${code}", which no KC declares`).toContain(code);
+      }
     }
   });
 
