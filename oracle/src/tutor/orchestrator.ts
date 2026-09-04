@@ -2168,9 +2168,23 @@ export class TutorOrchestrator {
         messages.push({
           role: 'user' as const,
           content:
-            'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.',
+            'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.' +
+            /*
+             * THE EXPERIMENT THE COMMENT ABOVE NAMED, RUN AT LAST — and folded
+             * INTO this message rather than added after it.
+             *
+             * A separate trailing message measured just as well (43 whitespace
+             * completions to 17 on the same 48-turn walk) and broke the
+             * invariant this block's own comment states: the shape reminder
+             * comes LAST, and three tests pin things that are legitimately
+             * pushed after it. Same words, same position, no new message.
+             */
+            (attempt === 0 && process.env.LF_NO_FIRST_NUDGE !== '1'
+              ? ' Begin with the character { and end with }. Nothing before or after.'
+              : ''),
         });
-
+        /*
+         */
         try {
           const result = await complete(messages, {
             /*

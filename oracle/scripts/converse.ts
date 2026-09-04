@@ -196,6 +196,110 @@ const ALL_BOARD_KINDS: readonly string[] = (() => {
   return [...new Set([...src.matchAll(/z\.literal\('([a-z_]+)'\)/g)].map((m) => m[1]!))].sort();
 })();
 
+
+/** Tier 1, pKnown 0.2, two attempts on record: the child who needs the boards most. */
+const MEMO: SessionContext = {
+  ...SESSION,
+  tier: 1,
+  nickname: 'Memo',
+  intent: 'open',
+};
+
+const MEMO_PLAN: SessionPlanEntry = {
+  kcId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee09',
+  kcKey: 'money.count-mixed-coins',
+  skillKey: null,
+  reason: 'frontier',
+  pKnown: 0.2,
+  targetDifficulty: 1,
+  objective: 'Contar, repartir y comparar dinero sin perderse.',
+  prereqKcIds: [],
+  misconceptions: [
+    { code: 'counts-coins-not-value', hint: 'Cuenta cuántas monedas hay en vez de cuánto valen.' },
+  ],
+};
+
+const memo = (name: string, script: string[]): Scenario => ({
+  name,
+  session: {
+    ...MEMO,
+    sessionPlan: [MEMO_PLAN],
+    kcStates: [{ kcId: MEMO_PLAN.kcId, kcKey: MEMO_PLAN.kcKey, pKnown: 0.2, attempts: 2 }],
+  },
+  script,
+});
+
+const CATALOGUE_WALK: Scenario[] = [
+  memo('Memo 1 — las monedas en la mesa', [
+    'tengo unas monedas aqui y no se cuanto hay',            // tokens
+    'dejame contarlas yo tocando la pantalla',                // fill
+    'ponme 7 galletas en el cuadrito de diez',                // ten_frame
+    'cuentame del 1 al 10 con bolitas',                       // bead_string
+    'con rayitas, cuantos carritos tiene cada quien',         // tally
+  ]),
+  memo('Memo 2 — repartir y que sobre', [
+    'tengo 14 canicas y somos 3, le toca 4 a cada quien y ya', // deal
+    'los mismos 60 pesos entre 2 amigos y luego entre 4: de cual manera le toca mas', // partition
+    'un cuarto de pastel es mas que un medio porque cuatro es mas que dos', // fraction_strip
+    'y si el pastel es redondo, como se ve un tercio',        // fraction_circle
+    'si pongo 4 filas de 5 galletas cuantas son',             // array
+  ]),
+  memo('Memo 3 — pagar y que te devuelvan', [
+    'si algo cuesta 7 y pago con 20, me tienen que devolver los 20', // change
+    'cuesta 7 y pague con 10, cuenta hacia arriba conmigo',   // open_number_line
+    'de 3 no puedo quitar 7, no se puede restar asi',         // regroup
+    'muestrame paso a paso como le haces para restar 48 menos 19', // worked
+    'quiero ver cada numero en su cajita: izquierda 3, 4 y 2; derecha 9', // equation_bar
+  ]),
+  memo('Memo 4 — lo que entra y lo que sale', [
+    'vendi limonada, me dieron 48 y gaste 19 en limones',     // flow
+    'anota lo que entro y lo que salio hoy: gane 50, gaste 20, gane 30', // ledger
+    'me alcanza para la pelota, y tambien para el cuaderno, y tambien para los colores', // receipt
+    'tengo 100 para la semana: comida 45, camion 30, juego 40. cual se queda sin espacio', // budget_plate
+    'tenia 60 y gaste 25, cuanto me queda',                   // bar_model
+  ]),
+  memo('Memo 5 — la meta y las semanas', [
+    'quiero juntar 200 pesos para unos audifonos',            // goal_bar
+    'puedo guardar 25 cada semana, cuanto llevo en 4',        // sequence
+    'y en la semana 3, esa de en medio, cuanto llevaba',      // point_at
+    'yo ahorro 20 a la semana y mi amiga 30, quien llega primero', // sequence_compare
+    'y si mejor ahorro mas o menos, quiero probar cantidades', // whatif
+  ]),
+  memo('Memo 6 — poner las cosas en su lugar', [
+    'hazme dos cubetas: leche, cuaderno, dulce, juguete',     // two_bins
+    'dejame acomodarlas yo, quiero moverlas',                 // grab
+    'y las que son las dos cosas, necesarias y que me gustan, donde van', // venn
+    'en que se me va el dinero: comida, dulces y camion',     // categories
+    'de estas tres cual me conviene primero, ordenalas',      // ranking
+  ]),
+  memo('Memo 7 — el puesto y sus precios', [
+    'el jabon grande cuesta 24 y trae 3, el chico 10 y trae 1: la etiqueta', // price_tag
+    'dos bolsas de los mismos dulces, cual cuesta menos de verdad', // table
+    'tenia 20 paletas y vendi 8, como va bajando',            // inventory
+    'que pesa mas, lo que me costo hacerlo o lo que cobre',   // scale
+    'el precio de 10 es material 4, trabajo 3, ganancia 3; y el pastel de 20 es 9, 6 y 5: dos torres', // stack
+  ]),
+  memo('Memo 8 — decidir sin saber que va a pasar', [
+    'que puede salir bien y que puede salir mal si me gasto todo', // outcomes
+    'que tan probable es que se venda todo un dia',           // chance
+    'le di 5 estampas y me dio 3 canicas, que dio cada quien', // trade
+    'que cuesta mas, la galleta de 4 o el jugo de 6',         // compare
+    'entre 0 y 100, donde queda mi ahorro de 35',             // marked_line
+  ]),
+  memo('Memo 9 — el tiempo y lo que cambio', [
+    'en enero abri la alcancia, en marzo compre la bici, en junio la vendi', // timeline
+    'y eso se repite: comprar limones, vender, volver a comprar', // cycle
+    'como estaba mi alcancia antes y como esta ahora',        // before_after
+    'el sabado gane 9 y el domingo 9, cuanto junte',          // part_whole
+    'lunes 3 dulces, martes 5, miercoles 2: un dibujito por dulce', // pictograph
+  ]),
+  memo('Memo 10 — ya le voy agarrando', [
+    'ya entendi como va, empieza tu y yo la termino',         // your_turn
+    'no le entiendo, muestrame con las monedas',              // demonstrate
+    'no me imagino lo del cambio, lo pueden actuar',          // roleplay
+  ]),
+];
+
 const SCENARIOS: Scenario[] = [
   {
     // The conversation that broke, turn for turn.
@@ -567,193 +671,6 @@ const SCENARIOS: Scenario[] = [
       'esa semana es la que me falta entender, la de en medio',
     ],
   },
-  /*
-   * THE BOARD SWEEP — one situation per instrument, for the 33 that had never
-   * been offered one.
-   *
-   * A board fires when the SITUATION for it arises; the situation→board map in
-   * `prompt.ts` names all 45, so the question these scenarios ask is not "does
-   * the model know the board" but "does it reach for the right one when the
-   * moment is unmistakable". Each line below is written to be that moment for
-   * a specific kind, in the words a child would use, and grouped so one
-   * conversation can carry four or five without becoming a quiz.
-   *
-   * Scenarios that report a kind still missing after this are the honest
-   * finding: the situation was produced and the model chose otherwise.
-   */
-  {
-    name: 'sweep: counting a small quantity a child should SEE',
-    session: { ...SESSION, tier: 1, nickname: 'Nico' },
-    script: [
-      'tengo 7 galletas, se ven muchas o pocas?',
-      'dejame contarlas yo tocando la pantalla',
-      'mi hermana tiene 3 carritos y yo 5, quien tiene mas y cuantos en total',
-      'y si las cuento de cinco en cinco con rayitas?',
-    ],
-  },
-  {
-    name: 'sweep: parts of one whole',
-    session: { ...SESSION, nickname: 'Sol' },
-    script: [
-      'como reparto un pastel entre 3 personas?',
-      'y si lo parto en pedazos redondos en vez de barra?',
-      'tenia 60 pesos y gaste 25, cuanto me queda',
-      'el sabado gane 9 y el domingo 9, cuanto junte',
-      'mi gasto de comida y de transporte juntos deben dar lo mismo que lo que gano',
-    ],
-  },
-  {
-    name: 'sweep: sorting, grouping and ordering',
-    session: { ...SESSION, nickname: 'Dani' },
-    script: [
-      'cuales cosas necesito de verdad y cuales solo quiero',
-      'dejame acomodarlas yo, quiero moverlas',
-      'hay cosas que son las dos a la vez, necesarias y que me gustan',
-      'de estas tres opciones cual me conviene primero, ordenalas',
-      'que pesa mas, lo que me costo hacerlo o lo que cobre',
-    ],
-  },
-  {
-    name: 'sweep: the money artifacts of a small business',
-    session: { ...SESSION, nickname: 'Chuy' },
-    script: [
-      'venden la bolsa grande a 20 y la chica a 12, cual conviene por unidad',
-      'tenia 20 vasos y ya vendi 8, cuantos me quedan',
-      'gane 50, gaste 20 en limones y luego gane 30 mas',
-      'tengo 100 para toda la semana y quiero comida, camion y un juego',
-      'tengo un billete de 10 y necesito monedas de 1 para dar cambio',
-    ],
-  },
-  {
-    name: 'sweep: time, cycles and what changed',
-    session: { ...SESSION, nickname: 'Vale' },
-    script: [
-      'que pasa primero, comprar los limones o vender la limonada?',
-      'y eso se repite cada semana igual, no?',
-      'como estaba mi alcancia antes y como esta ahora',
-      'si ahorro 20 a la semana y mi amiga 30, quien llega primero',
-      'y si mejor ahorro mas o menos, quiero probar cantidades',
-    ],
-  },
-  /*
-   * SWEEP 2 — the kinds the first sweep offered a situation and still missed.
-   *
-   * Reading those transcripts back showed the miss was rarely "chose a
-   * different board": it was "drew nothing and answered in words". The
-   * situation was real, and the model still narrated. So these lines ask for
-   * the PICTURE, in the way a child does — "hazme dos columnas", "ponlo en una
-   * tabla", "dibujame la línea del tiempo" — because a request to be SHOWN is
-   * the one signal that reliably beats the habit of explaining.
-   */
-  /*
-   * SWEEP 3 — the last ten, with the lesson of sweep 2 applied.
-   *
-   * Sweep 2 missed these not by choosing a different board but by promising a
-   * picture and drawing nothing ("te lo dibujo", then null) or by asking the
-   * child for the numbers first. Both are now prompt rules. These lines supply
-   * the numbers up front, so there is nothing left to ask for and nothing left
-   * to defer.
-   */
-  /*
-   * SWEEP 4 — the final five, each asked for by the ONE thing only that board
-   * does. Sweeps 2 and 3 produced the situation and the model described the
-   * board in words without attaching it ("aquí tienes la barra partida en 4",
-   * whiteboard null), which the new `promisesADrawing` check now catches. So
-   * these lines do not describe a scene: they ask for the specific comparison
-   * the board makes, which is harder to answer in a sentence than to draw.
-   */
-  {
-    name: 'sweep 4: the final five',
-    session: { ...SESSION, nickname: 'Bruno' },
-    script: [
-      'los mismos 60 pesos repartidos entre 2 amigos y luego entre 4: de cual manera le toca mas a cada quien?',
-    ],
-  },
-  {
-    name: 'sweep 3: the last ten, with their numbers already given',
-    session: { ...SESSION, nickname: 'Emi' },
-    script: [
-      'separa estas en dos cubetas: leche, cuaderno, dulce, juguete',
-      'de mis 100 de la semana: 45 comida, 30 camion, 40 un juego. muestralo',
-      'tenia 20 paletas, vendi 8. dibuja como va el inventario',
-      'el jabon de 24 trae 3 y quiero ver la etiqueta con su precio por pieza',
-      'el precio de 10 son 4 de material, 3 de trabajo y 3 de ganancia. apilalo',
-    ],
-  },
-  {
-    name: 'sweep 3: the last ten, second half',
-    session: { ...SESSION, nickname: 'Toño' },
-    script: [
-      'le di 5 estampas y me dio 3 canicas. dibuja que dio cada quien',
-      'lunes 3 dulces, martes 5, miercoles 2. un dibujito por dulce',
-      'parte una barra en 4 y marca 1',
-      'en enero tenia 10, en marzo 40, en junio 90. ponlo en el tiempo',
-      'de un lado 3 mas 4 y del otro 7: enseñame que son iguales',
-    ],
-  },
-  {
-    name: 'sweep 2: sorting and grouping, asked for as a picture',
-    session: { ...SESSION, nickname: 'Pau' },
-    script: [
-      'hazme dos columnas: en una lo que necesito y en otra lo que quiero',
-      'y las cosas que caen en las dos, donde van? dibujalo',
-      'ponme en grupos cuanto gasto en comida, en transporte y en dulces',
-      'de estas 4 cosas cual me da mas por mi dinero, ponlo en una tabla',
-    ],
-  },
-  {
-    name: 'sweep 2: the shop ledger, asked for as a picture',
-    session: { ...SESSION, nickname: 'Tere' },
-    script: [
-      'dibujame la etiqueta: el jabon grande cuesta 24 y trae 3, el chico 10 y trae 1',
-      'tenia 20 paletas y vendi 8, muestrame como va bajando',
-      'anota lo que entro y lo que salio hoy: gane 50, gaste 20, gane 30',
-      'tengo 100 para la semana, muestrame como se reparte entre comida, camion y un juego',
-      'muestrame como cambio un billete de 10 por monedas de 1',
-    ],
-  },
-  {
-    name: 'sweep 2: time and change, asked for as a picture',
-    session: { ...SESSION, nickname: 'Iker' },
-    script: [
-      'dibujame la linea del tiempo de mi ahorro por mes',
-      'y el ciclo de la limonada: comprar, vender, volver a comprar',
-      'muestrame como estaba mi alcancia antes y como esta ahora',
-      'dibujame las dos partes que sumadas dan mi mesada: 9 y 9',
-      'y una barra donde una parte no la se todavia',
-    ],
-  },
-  {
-    name: 'sweep 2: quantities a small child should see',
-    session: { ...SESSION, tier: 1, nickname: 'Mia' },
-    script: [
-      'dibujame 7 galletas en el cuadrito de diez',
-      'y con rayitas cuantos carritos tiene cada quien',
-      'ponme un dibujito por cada dulce que vendimos cada dia',
-      'parte la barra en tres pedazos y enseñame uno',
-      'y las dos cosas que deben pesar igual de los dos lados',
-    ],
-  },
-  {
-    name: 'sweep 2: the trade, the odds and the stack',
-    session: { ...SESSION, nickname: 'Rafa' },
-    script: [
-      'yo le di mis estampas y el me dio sus canicas, dibuja que dio cada quien',
-      'que tan probable es que se venda todo, dibujalo',
-      'muestrame de que esta hecho el precio: material, trabajo y ganancia',
-    ],
-  },
-  {
-    name: 'sweep: rows, chance and handing it over',
-    session: { ...SESSION, nickname: 'Kari' },
-    script: [
-      'si pongo 4 filas de 5 galletas cuantas son',
-      'que tan seguido crees que se venda todo un dia?',
-      'ya entendi como va, sigue tu la cuenta y yo la termino',
-      'entre 0 y 100 donde queda mi ahorro de 35',
-      'que puede salir bien y que puede salir mal si gasto todo',
-    ],
-  },
   {
     /*
      * `roleplay` names the one authored scene, `lemonade_change`, and the
@@ -771,6 +688,27 @@ const SCENARIOS: Scenario[] = [
       'ah ya, entonces yo le doy el billete y me regresa lo que sobra',
     ],
   },
+
+  /*
+   * THE CATALOGUE WALK — ONE CHILD, ALL FORTY-FIVE BOARDS.
+   *
+   * Every scenario above tests a behaviour. This suite tests the CATALOGUE,
+   * and it does it the way the product will actually meet it: as one learner
+   * having a long series of ordinary conversations, not as a checklist.
+   *
+   * ONE SUBJECT ON PURPOSE, and the hardest one. `Memo` is tier 1 — six or
+   * seven years old — with `pKnown` 0.2 and two prior attempts on record: a
+   * child who is BEHIND, guesses, says "no le entiendo", and needs the most
+   * support the tutor has. A catalogue that works for the strongest learner
+   * proves nothing; the boards exist because this child cannot hold the idea
+   * in words alone. Every line below is written as he would say it.
+   *
+   * Grouped by what a child is actually doing, not by instrument family, so
+   * each conversation reads as a lesson rather than a quiz. The board each
+   * line is written to invite is named in a comment — that mapping is the
+   * hypothesis, and the run's own census is what confirms or refutes it.
+   */
+  ...CATALOGUE_WALK,
 ];
 
 interface Beat {
