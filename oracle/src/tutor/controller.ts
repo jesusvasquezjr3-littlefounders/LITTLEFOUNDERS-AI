@@ -130,6 +130,24 @@ export type PedagogyEvent =
     }
   | { kind: 'voice_result'; correct: boolean; misconceptionCode: string | null }
   | { kind: 'conversation_turn' }
+  /**
+   * The learner SAID a wrong idea, in words, outside any graded exercise
+   * (`statedMisconception.ts` reads it deterministically from the utterance).
+   *
+   * DELIBERATELY NOT A FAILURE. It carries a code and nothing else: no
+   * opportunity is counted, no belief is revised downward, no consecutive
+   * failure is recorded. Saying "y ya, no sobra nada" is evidence about what
+   * a child BELIEVES, not evidence that they got a question wrong — the
+   * question was never asked. Treating it as a graded failure would drag
+   * mastery down for talking, and two such sentences in a row would trip the
+   * RESCUE guardrail into rescuing a child who is not struggling, merely
+   * chatting.
+   *
+   * What it does buy is the one thing conversation could not reach before:
+   * `REMEDIATE`, and with it the 21 repair moves that are fenced out of every
+   * other path.
+   */
+  | { kind: 'stated_misconception'; misconceptionCode: string }
   | { kind: 'entry_opened' };
 
 /** Guardrail: never raise difficulty after a failure; cap strategy churn. */
@@ -774,6 +792,21 @@ export class PedagogicalController {
     }
 
     /*
+     * A STATED wrong idea sets the code and nothing else — see the event's
+     * own doc comment for why it must not touch `consecutiveFailures`,
+     * `opportunities` or the posterior. `statedRemediation` is what lets
+     * `propose` reach REMEDIATE without the failure that rule normally
+     * requires; it is scoped to this turn only, so a belief stated once does
+     * not hold the tutor in repair mode afterwards.
+     */
+    let statedRemediation = false;
+    if (event.kind === 'stated_misconception') {
+      this.misconceptionCode = event.misconceptionCode;
+      this.guessedLastTurn = false;
+      statedRemediation = true;
+    }
+
+    /*
      * THE STREAK COUNTS TURNS THAT WENT NOWHERE, NOT WRONG ANSWERS.
      *
      * A first version counted only failed results, and measuring it showed the
@@ -803,7 +836,7 @@ export class PedagogicalController {
       this.questioningWithoutProgress += 1;
     }
 
-    const proposed = this.propose(event, entry, failedNow, pBefore);
+    const proposed = this.propose(event, entry, failedNow, pBefore, statedRemediation);
     const strategy = this.enforceGuardrails(proposed, nowMs);
     this.applyStrategy(strategy, nowMs);
 
@@ -874,6 +907,8 @@ export class PedagogicalController {
     entry: SessionPlanEntry,
     failedNow: boolean,
     pBefore: number,
+    /** A wrong idea the learner SAID, which reaches REMEDIATE without a graded failure. */
+    statedRemediation = false,
   ): Strategy {
     const p = this.pKnown.get(entry.kcId) ?? entry.pKnown;
 
@@ -929,7 +964,7 @@ export class PedagogicalController {
     }
 
     // 2) A diagnosed wrong idea outranks everything except rescue.
-    if (failedNow && this.misconceptionCode !== null) return 'REMEDIATE';
+    if ((failedNow || statedRemediation) && this.misconceptionCode !== null) return 'REMEDIATE';
 
     // 3) Unexpected failure with prerequisites → walk the graph backwards.
     //    Judged on the PRE-update belief: "we thought they had this".

@@ -447,7 +447,7 @@ const SCENARIOS: Scenario[] = [
      * That is the real sequence a child produces, and the only one that opens
      * the remediation catalogue at all.
      */
-    name: 'a failed activity opens the remediation catalogue',
+    name: 'a stated wrong idea opens the remediation catalogue',
     passesActivities: false,
     misconceptionCode: 'ignores-remainder',
     session: {
@@ -482,14 +482,11 @@ const SCENARIOS: Scenario[] = [
       ],
     },
     script: [
-      // Asks for practice — this is what makes the tutor set next:"segment".
-      'quiero hacer un ejercicio de repartir',
-      // The activity has now been served and FAILED with `ignores-remainder`,
-      // so the controller should be in REMEDIATE holding that code.
-      'no me salio, creo que me equivoque',
-      'entonces le toca 4 a cada quien y ya, no sobra nada',
-      'a ver, muestrame como se hace',
-      'ah, y si no alcanza a repartirse parejo que pasa?',
+      'tengo 14 canicas y somos 3, le toca 4 a cada quien y ya',
+      'si algo cuesta 7 y pago con 20, me tienen que devolver los 20',
+      'le voy a poner 100 pesos al vaso de limonada, asi me hago rico',
+      'me alcanza para la pelota, y tambien para el cuaderno, y tambien para los colores',
+      'un cuarto de pastel es mas que un medio porque cuatro es mas que dos',
     ],
   },
 ];

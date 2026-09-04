@@ -683,7 +683,7 @@ export async function updateLearnerMemory(input: {
  */
 export interface TrajectoryStepInput {
   turnSeq: number;
-  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'entry_opened';
+  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'stated_misconception' | 'entry_opened';
   /** Never null: the controller always seeds a real strategy before `decide()` can be called at all. */
   strategyBefore: string;
   strategy: string;

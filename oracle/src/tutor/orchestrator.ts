@@ -65,6 +65,7 @@ import {
   repeatsAnAnnouncement,
 } from './prompt.js';
 import { instrumentGuidanceFor } from './instrumentSpecs.js';
+import { classifyStatedMisconception } from './statedMisconception.js';
 import { selectSkill, SKILL_WORDING_RULE } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
@@ -246,7 +247,13 @@ export const ORCHESTRATOR_SNAPSHOT_VERSION = 1;
 const TrajectoryStepSchema = z
   .object({
     turnSeq: z.number().int(),
-    eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'entry_opened']),
+    eventKind: z.enum([
+      'activity_result',
+      'voice_result',
+      'conversation_turn',
+      'stated_misconception',
+      'entry_opened',
+    ]),
     strategyBefore: z.string(),
     strategy: z.string(),
     skillName: z.string().nullable(),
@@ -1603,10 +1610,30 @@ export class TutorOrchestrator {
       }
     }
 
+    /*
+     * A WRONG IDEA THE LEARNER SAID OUT LOUD, read deterministically from the
+     * utterance (`statedMisconception.ts`).
+     *
+     * This is the only route from conversation into the repair catalogue.
+     * `selectSkill` fences all 21 misconception-tagged moves out of the
+     * generic path, and the code that opens them could previously only come
+     * from a graded activity — so a child could state a belief in plain words
+     * and the tutor's best teaching for it was unreachable. Measured over 27
+     * conversations before this existed: REMEDIATE fired zero times.
+     *
+     * Ordered AFTER the arithmetic verdict on purpose: an utterance that is a
+     * checkable ANSWER is graded as one, and only an utterance that is not
+     * gets read as a belief. The classifier returns null for anything that is
+     * not a committed claim, which is nearly everything, and that path is
+     * byte-identical to the behaviour before this block existed.
+     */
+    const stated = verdict === null ? classifyStatedMisconception(fenced.cleaned) : null;
     const pedagogyEvent: PedagogyEvent =
-      verdict === null
-        ? { kind: 'conversation_turn' }
-        : { kind: 'voice_result', correct: verdict.correct, misconceptionCode: null };
+      verdict !== null
+        ? { kind: 'voice_result', correct: verdict.correct, misconceptionCode: null }
+        : stated !== null
+          ? { kind: 'stated_misconception', misconceptionCode: stated }
+          : { kind: 'conversation_turn' };
     const { text: maneuver, skillName } = this.strategyInstruction(pedagogyEvent, nowMs, null);
     const maneuverNote = maneuver === null ? '' : `\n\n${maneuver}`;
     const outcome = await this.produce(`${fenced.block}${verdictNote}${recallNote}${maneuverNote}${finalNote}`, nowMs, {
