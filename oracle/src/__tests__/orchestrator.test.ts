@@ -2738,6 +2738,7 @@ describe('the tutor cannot promise an activity it did not request', () => {
       .mockResolvedValueOnce(judgeSays(true));
 
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
     const outcome = (await orchestrator.handleLearnerText('ok', Date.now()))!;
 
     // "vamos a ver" is talking, not announcing a screen. A detector that fires
@@ -3958,5 +3959,122 @@ describe('a repeat the learner explicitly asked for is not repaired', () => {
     const second = (await orchestrator.handleLearnerText('mmm', Date.now()))!;
 
     expect(second.emission.turn.say).toBe(fresh);
+  });
+});
+
+/*
+ * THREE FAULTS THE PAID GATE KEPT FINDING, NOW PROVEN CLOSED WITHOUT PAYING.
+ *
+ * All three were reported by `tutor:converse` on 2026-09-04 — a
+ * re-introduction, a praise for an answer nobody gave, and a 91-word turn.
+ * Prompt rules were added for all three and the NEXT paid run produced all
+ * three again, which is the general lesson: a prompt rule is advice, and these
+ * are what a model reaches for when it is unsure.
+ *
+ * They are repairs now, and these tests are the reason that claim can be
+ * checked. Three paid runs scored 13, 7 and 11 problems — a spread that cannot
+ * tell an improvement from noise, so "verified" could not come from buying
+ * another conversation. It comes from here.
+ */
+describe('faults a child would notice are repaired, not merely discouraged', () => {
+  it('asks again when the tutor greets a learner it has already met', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Hola! ¿Qué quieres aprender?' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Cuántas monedas te quedan?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    const outcome = (await orchestrator.handleLearnerText('tengo cinco monedas', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toContain('monedas');
+    expect(outcome.emission.turn.say).not.toContain('Hola');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('greeting the learner');
+  });
+
+  it('asks again when the tutor says its own name a second time', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Soy Rho, tu guía. ¿Seguimos?' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Seguimos con las monedas?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    const outcome = (await orchestrator.handleLearnerText('ok', Date.now()))!;
+
+    expect(outcome.emission.turn.say).not.toContain('Soy Rho');
+  });
+
+  /*
+   * The answer to "¿eres un robot?" is the case an earlier version of this
+   * check got wrong, in the harness, before it was ever a repair: honest about
+   * what it is, and it does NOT restate the character name. It must survive.
+   */
+  it('leaves an honest answer about what it is alone', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Soy un programa que te ayuda a aprender. ¿Seguimos?' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    const outcome = (await orchestrator.handleLearnerText('eres un robot?', Date.now()))!;
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(outcome.emission.turn.say).toContain('programa');
+  });
+
+  it('asks again when the tutor confirms an answer the learner never gave', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Exacto! Son 4 para cada uno.' }))
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Vamos juntos: ¿cuántas hay en el primer montón?' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no sé cómo', Date.now()))!;
+
+    expect(outcome.emission.turn.say).not.toContain('Exacto');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('an answer they never gave');
+  });
+
+  it('asks again when a turn is a paragraph, spoken aloud', async () => {
+    /*
+     * OVER 90 WORDS AND UNDER 700 CHARACTERS, deliberately, because that band
+     * is the whole point. `turnSchema` already caps `say` at 700 chars, so a
+     * genuinely enormous turn is refused before any of this runs — the first
+     * version of this fixture was 890 characters and got the generic "not a
+     * valid JSON object" repair, proving nothing. The turn the paid gate
+     * actually caught was 91 words, which fits the cap comfortably. That band
+     * is what this repair exists for.
+     */
+    const paragraph = `Mira, si ahorras un poco ${'y luego cuentas una moneda más '.repeat(15)}ya está.`;
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: paragraph }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Cuántos amigos son?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('cómo reparto?', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe('¿Cuántos amigos son?');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('words long, and it is spoken aloud');
+  });
+
+  it('leaves an ordinary-length turn alone', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies(GOOD_TURN))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('quiero ahorrar', Date.now()))!;
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(outcome.emission.turn.say).toBe(GOOD_TURN.say);
   });
 });

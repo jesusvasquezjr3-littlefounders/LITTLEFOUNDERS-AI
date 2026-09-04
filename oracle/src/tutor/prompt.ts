@@ -2772,3 +2772,120 @@ export function buildTurnMessages(input: {
  */
 export const SHAPE_REMINDER =
   'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.';
+
+
+/**
+ * PRAISE, PLUS A NUMBER THE LEARNER NEVER OFFERED.
+ *
+ * The sibling of `praiseContradictsAnswer`, and the harm is different.
+ * That one fires when the child answered and the praise disagrees with what
+ * they said; this one fires when the child answered NOTHING and the turn
+ * congratulates them anyway — "¡Exacto, 4 para cada uno!" to a learner who
+ * said "no sé". It teaches that approval is unrelated to work, and once that
+ * is learned every later "muy bien" is worth nothing, including the earned
+ * ones. It reached a learner in the paid gate's run on 2026-09-04.
+ *
+ * DELIBERATELY NARROW, because the false positives are the expensive part and
+ * two of them are already known:
+ *
+ *  - A learner who asks their OWN question back ("¿entonces empiezo por el
+ *    precio?") attempted no numeric answer, and there is nothing here to have
+ *    invented. The tutor's "exacto" is praising a correctly-restated METHOD.
+ *  - A turn that praises and then introduces a NEW worked example is normal
+ *    teaching. So a number only counts as invented if the tutor's own
+ *    immediately preceding question ASKED for one — that is the number the
+ *    praise is attaching to.
+ *
+ * `askedForANumber` is the question the tutor asked last turn; pass the
+ * numbers it named so an example restated in the answer is not read as a
+ * fabrication.
+ */
+export function praisesAnUnofferedAnswer(input: {
+  say: string;
+  learnerText: string;
+  numbersTheTutorAsked: string[];
+}): boolean {
+  if (!CONFIRMATION_MARKERS.test(input.say)) return false;
+  const learnerNumbers = input.learnerText.match(/\d+/g) ?? [];
+  if (learnerNumbers.length > 0) return false;
+  // A bare question back is not an attempted answer; see above.
+  if (input.learnerText.trim().endsWith('?')) return false;
+  const invented = (input.say.match(/\d+/g) ?? []).find(
+    (n) => !input.numbersTheTutorAsked.includes(n),
+  );
+  return invented !== undefined;
+}
+
+/** The praise vocabulary, shared so the product and its harness cannot drift. */
+export const PRAISE_MARKERS =
+  /excelente|muy bien|correcto|perfecto|(?:^|[.!?]\s*)¡?exacto\b|isso mesmo|great job|well done/i;
+
+/**
+ * PRAISE THAT CONFIRMS AN ANSWER, as against praise that encourages a person.
+ *
+ * The distinction is the whole detector, and an existing test is what forced
+ * it out. `orchestrator.test.ts`'s "does not fire on a turn with no single
+ * learner number" pins this exchange:
+ *
+ *   learner: "no sé, ayúdame"
+ *   tutor:   "¡Excelente! La respuesta es 15."
+ *
+ * and asserts it is DELIVERED. The first cut of `praisesAnUnofferedAnswer`
+ * repaired it, and the test was right: a child who says they do not know and
+ * asks for help has done something worth praising — asking — and the tutor is
+ * then STATING the answer, which is ordinary direct instruction. Reading that
+ * as a fault would teach the tutor to withhold encouragement from exactly the
+ * children who need it, which is a worse product than the bug.
+ *
+ * "¡Exacto!" to someone who answered nothing has no such reading. It asserts
+ * that a thing which did not happen was correct. So the repair fires on words
+ * that CONFIRM — and never on words that merely warm.
+ */
+export const CONFIRMATION_MARKERS =
+  /(?:^|[.!?¡]\s*)¡?(?:exacto|correcto|así es|eso es|isso mesmo|that'?s right|correct)\b/i;
+
+/**
+ * GREETING OR NAMING ITSELF AFTER THE FIRST TURN.
+ *
+ * Nine "¡Hola, Jason!" in an eleven-line session was the symptom that exposed
+ * the conversation never reaching the model at all. That root cause is long
+ * fixed, and the behaviour still recurs — the paid gate caught it again on
+ * 2026-09-04 — because a prompt rule is advice and this is the kind of thing
+ * a model does when it is unsure. A child greeted twice does not hear
+ * politeness the second time; they hear someone who does not remember them.
+ *
+ * TWO SEPARATE FAULTS, one check, because the correction is the same: drop it
+ * and start with what you are actually saying.
+ *
+ * The name test is scoped to a SELF-introduction ("soy Liruf"), never to any
+ * mention of the name — a tutor answering "¿eres un robot?" with "Soy un
+ * programa que te ayuda a aprender" is giving the RIGHT answer, and an earlier
+ * version of this check in the harness flagged exactly that. Naming ANOTHER
+ * character ("Dina te va a enseñar") is also not a re-introduction.
+ */
+export function reintroducesItself(say: string, characterId: string): boolean {
+  const said = say.toLowerCase();
+  if (/^\s*[¡!]*\s*(hola|buenas|hey|oi|olá|hi)\b/.test(said)) return true;
+  const selfNamed = /\b(?:soy|me llamo|sou|i am|i'm)\s+([\p{L} ]{0,20})/u.exec(said);
+  return selfNamed !== null && new RegExp(`\\b${characterId}\\b`, 'i').test(selfNamed[1] ?? '');
+}
+
+/**
+ * THE SPOKEN CEILING, AND WHY IT IS ENFORCED AND NOT ONLY REQUESTED.
+ *
+ * The system prompt asks for under 60 words. The paid gate measured a 91-word
+ * opening turn on 2026-09-04, which is roughly half a minute of a six-year-old
+ * listening without being asked anything — and the question usually lives at
+ * the END of a long turn, which is the part nobody is still listening to. So
+ * the cost is not "too much text", it is that the teaching move is lost.
+ *
+ * The threshold here is the FAULT line, not the target: 60 is what the prompt
+ * asks for and 90 is where a turn stops being a turn. Repairing at 61 would
+ * spend the single retry on turns that are merely long, and the retry is
+ * needed for turns that are wrong.
+ */
+export const SPOKEN_WORD_CEILING = 90;
+
+export function isTooLongToSayAloud(say: string): boolean {
+  return say.trim().split(/\s+/).filter(Boolean).length > SPOKEN_WORD_CEILING;
+}

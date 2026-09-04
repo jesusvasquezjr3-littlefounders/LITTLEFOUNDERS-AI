@@ -35,6 +35,7 @@ import {
   reusesATemplate,
   contradictsItsOwnShortfall,
   EXPLICIT_REPEAT_REQUEST,
+  PRAISE_MARKERS,
 } from '../src/tutor/prompt.js';
 import {
   computeCategories,
@@ -1021,8 +1022,18 @@ function flatten(s: string): string {
  * plain substring match; if one of them ever does, it earns the same
  * position-anchored treatment `exacto` gets here.
  */
+/*
+ * THE PRODUCT'S OWN VOCABULARY, not a fourth copy of it.
+ *
+ * This regex was written here by hand and then again in `prompt.ts` when the
+ * same three faults became repairs. Two hand-kept copies of one list is the
+ * shape of defect `instruments:check` exists to catch elsewhere in this repo —
+ * a drift throws nothing, it just makes one of them quietly stop agreeing with
+ * the other, and then the harness reports a fault the product cannot see or
+ * misses one it can.
+ */
 function praises(said: string): boolean {
-  return /excelente|muy bien|correcto|perfecto|(?:^|[.!?]\s*)¡?exacto\b/i.test(said);
+  return PRAISE_MARKERS.test(said);
 }
 
 let problems = 0;

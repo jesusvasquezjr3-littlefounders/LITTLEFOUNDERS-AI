@@ -45,6 +45,9 @@ import {
   buildContextMessage,
   buildTurnMessages,
   praiseContradictsAnswer,
+  praisesAnUnofferedAnswer,
+  reintroducesItself,
+  isTooLongToSayAloud,
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   whiteboardUnitMismatch,
@@ -2337,6 +2340,46 @@ export class TutorOrchestrator {
             const falsePraise =
               spokenAnswer !== '' && praiseContradictsAnswer(parsed.turn.say, spokenAnswer);
             /*
+             * THREE FAULTS THE PAID GATE KEEPS CATCHING, PROMOTED FROM PROMPT
+             * ADVICE TO A REPAIR (2026-09-04).
+             *
+             * All three already had detectors — in `tutor:converse`, which
+             * runs after the fact, costs money, and reports what a learner has
+             * ALREADY been told. Adding prompt rules for them was the right
+             * first move and did not close them: the run after those rules
+             * shipped still produced a re-introduction, an unearned praise and
+             * a paragraph. A prompt rule is advice, and these are exactly what
+             * a model does when it is unsure.
+             *
+             * So they are checked here, where a fault costs a retry instead of
+             * a child. That also makes them VERIFIABLE without buying a
+             * conversation, which is the difference between "we asked it not
+             * to" and "it cannot".
+             *
+             * `isSystemPrompted` turns are exempt from the greeting check for
+             * the same reason `spokenAnswer` is: their `userContent` is an
+             * instruction, not the learner's words, and the first turn of a
+             * session is SUPPOSED to greet.
+             */
+            const reintroduction =
+              // "A tutor has already spoken here", which is the actual
+              // condition — not `history.length > 1`, which counts entries and
+              // happens to be true for the same reason most of the time.
+              this.history.some((h) => h.speaker === 'tutor') &&
+              reintroducesItself(parsed.turn.say, this.session.character);
+            const unearnedPraise =
+              spokenAnswer !== '' &&
+              praisesAnUnofferedAnswer({
+                say: parsed.turn.say,
+                learnerText: spokenAnswer,
+                numbersTheTutorAsked:
+                  [...this.history]
+                    .reverse()
+                    .find((h) => h.speaker === 'tutor')
+                    ?.text.match(/\d+/g) ?? [],
+              });
+            const tooLongToSay = isTooLongToSayAloud(parsed.turn.say);
+            /*
              * The mirror of falsePraise: "casi" followed by reasoning that
              * lands on the learner's own number. Skipped whenever the
              * deterministic verdict already ruled — a verified answer carries
@@ -2589,6 +2632,9 @@ export class TutorOrchestrator {
                */
               repairableIsFalseVerdict =
                 falsePraise ||
+                unearnedPraise ||
+                reintroduction ||
+                tooLongToSay ||
                 falseCorrection ||
                 falseAffordability ||
                 violation !== null ||
@@ -2615,6 +2661,24 @@ export class TutorOrchestrator {
               turnCorrection =
                 'said the learner CAN afford something in the same turn it said how much they are still SHORT. Those are two different questions and this lesson is about telling them apart. Check the subtraction out loud if you like, but say plainly what the check MEANS: they are missing that amount, so they cannot buy it yet. Never let "the arithmetic works out" come out sounding like "you have enough"';
               console.warn('[oracle] turn said it was affordable while naming the shortfall — asking again');
+            } else if (unearnedPraise && attempt === 0) {
+              /*
+               * ABOVE `repeated`, below the verdict faults. A child praised
+               * for an answer they did not give learns that the praise is
+               * noise; a child who hears a repeated sentence merely tires of
+               * it. There is one retry and it goes to the one that teaches
+               * something false.
+               */
+              turnCorrection =
+                'congratulated the learner on an answer they never gave — they did not offer a number this turn. Do not praise what did not happen: it teaches a child that your approval has nothing to do with their work, and then the praise they DO earn is worth nothing either. Ask the question again, smaller, so they can actually answer it. If you want to encourage them, name something they really did';
+              console.warn('[oracle] turn praised an answer the learner never gave — asking again');
+            } else if (reintroduction && attempt === 0) {
+              turnCorrection =
+                'opened by greeting the learner or saying its own name again, in a conversation that has already been going. You have met this child; the greeting happened on the first turn. Start with the thing you are actually saying. Being greeted twice does not read as politeness, it reads as someone who does not remember you, and it stops the session feeling like one conversation';
+              console.warn('[oracle] turn greeted or re-introduced itself mid-session — asking again');
+            } else if (tooLongToSay && attempt === 0) {
+              turnCorrection = `is ${parsed.turn.say.trim().split(/\s+/).filter(Boolean).length} words long, and it is spoken aloud — far past the 60-word ceiling. Do not compress it into denser sentences: CUT it. Say ONE idea and ask your question. The rest is next turn's, and it will be better then because you will know what they answered. A child stops listening halfway through a paragraph, and your question is at the end of it`;
+              console.warn(`[oracle] turn is ${parsed.turn.say.trim().split(/\s+/).filter(Boolean).length} words — too long to say aloud, asking again`);
             } else if (repeated !== null && attempt === 0) {
               /*
                * A repeated ANNOUNCEMENT gets a sharper correction than a
