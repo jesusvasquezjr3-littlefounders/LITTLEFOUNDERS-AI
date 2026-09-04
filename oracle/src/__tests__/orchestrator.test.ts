@@ -4188,3 +4188,34 @@ describe('an all-whitespace turn gets one more attempt than a content failure', 
     expect(fetchMock.mock.calls.length).toBeLessThanOrEqual(3);
   });
 });
+
+describe('a repeat that survives its retry never reaches the learner', () => {
+  /*
+   * The gap was a guard in the right place with the wrong reach.
+   * `repairableIsRepeat` exists for exactly this and its own comment calls the
+   * anti-repetition guarantee "the thing the owner asked for by name" — but
+   * the check consuming it runs only `if (turn === null)`, and a retry that
+   * fails BY REPEATING has set `turn`. So it fell into the "deliver it, it is
+   * merely imperfect" branch, and the paid gate caught the consequence on
+   * 2026-09-04: turn 4 identical to turn 3, 100% of its words, delivered.
+   */
+  it('falls back to the scripted line rather than saying it twice', async () => {
+    const line = 'Mira, cambiemos una moneda de 1 peso por 100 centavos. ¿Cuánto nos queda?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: line }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // The next turn repeats it, and so does its retry.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: line }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: line }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    const first = (await orchestrator.handleLearnerText('no puedo restar', Date.now()))!;
+    expect(first.emission.turn.say).toBe(line);
+
+    const second = (await orchestrator.handleLearnerText('sigo sin poder', Date.now()))!;
+    expect(second.emission.turn.say).not.toBe(line);
+    expect(second.emission.source).toBe('scripted');
+  });
+});

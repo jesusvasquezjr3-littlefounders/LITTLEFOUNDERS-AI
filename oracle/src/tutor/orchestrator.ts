@@ -2892,9 +2892,35 @@ export class TutorOrchestrator {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');
               }
               if (repeated !== null) {
-                console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
+                console.warn('[oracle] repeated sentence SURVIVED the retry — scripted line instead');
               }
+              /*
+               * A SURVIVING REPEAT JOINS THIS SET, and until 2026-09-04 it did
+               * not — which is how a turn identical to the previous one, word
+               * for word, reached a child in the paid gate's own transcript:
+               *
+               *   turn 3  "Tienes razón, de 3 no se pueden quitar 7. Mira,
+               *            cambiemos una moneda de 1 peso por 100 centavos…"
+               *   turn 4   the same sentence, 100% of its words
+               *
+               * The mechanism was a guard in the right place with the wrong
+               * reach. `repairableIsRepeat` exists precisely for this and its
+               * own comment calls the anti-repetition guarantee "the thing the
+               * owner asked for by name" — but the check that consumes it runs
+               * only `if (turn === null)`, and here `turn` had just been SET to
+               * the repeating turn. A retry that fails by repeating again
+               * therefore fell into the "deliver it, it is merely imperfect"
+               * branch, which is the one branch the flag exists to keep it out
+               * of.
+               *
+               * It is not merely imperfect. `missedWhiteboard` and
+               * `givesAwayAnswer` are delivered because a turn missing a
+               * picture still teaches; a turn a child has already heard reads
+               * as a machine that stopped listening, and the scripted line at
+               * least varies and hands the turn back with a question.
+               */
               if (
+                repeated !== null ||
                 falsePraise ||
                 falseCorrection ||
                 falseAffordability ||
