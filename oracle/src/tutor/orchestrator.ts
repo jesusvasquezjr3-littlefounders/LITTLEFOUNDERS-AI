@@ -189,6 +189,16 @@ export const RECALL_TRIGGER =
   /\b(te acuerdas|te acord[aá]s|recuerdas|acu[ée]rdate|la otra vez|el otro d[íi]a|la semana pasada|do you remember|remember when|remember|last time|the other day|last week|that time|you recall|lembra|voc[êe] lembra|recorda|outro dia|semana passada|daquela vez|aquela vez)\b/i;
 
 const TURN_HISTORY_WINDOW = 20;
+/**
+ * The window a retry uses after the provider returned whitespace.
+ *
+ * Six, because `model:probe-empty` measured 0/12 at three turns and 3/12 at
+ * ten: six sits inside the range that came back clean while keeping enough of
+ * the exchange that the retry is still answering the same conversation. It is
+ * a fallback path, entered on roughly one turn in seven, and never the shape
+ * of an ordinary turn.
+ */
+const EMPTY_RETRY_HISTORY_WINDOW = 6;
 
 /**
  * What `speak()` resolves to: the clip's URL and, when the provider and the
@@ -1825,8 +1835,13 @@ export class TutorOrchestrator {
    * instruction now that it is no longer the current utterance. A history
    * replayed unfenced would turn every past turn into an injection slot.
    */
-  private conversationMessages(isSystemPrompted: boolean): ChatMessage[] {
-    const turns = this.history.slice(-TURN_HISTORY_WINDOW);
+  /**
+   * @param window How many recent turns to render. Defaults to the full
+   *   `TURN_HISTORY_WINDOW`; a retry that follows an EMPTY completion passes a
+   *   shorter one — see `emptyRetryWindow` and its measurement.
+   */
+  private conversationMessages(isSystemPrompted: boolean, window = TURN_HISTORY_WINDOW): ChatMessage[] {
+    const turns = this.history.slice(-window);
 
     /*
      * When the caller is answering the learner's OWN words, the last history
@@ -2094,6 +2109,13 @@ export class TutorOrchestrator {
     const MAX_ATTEMPTS = 3;
     /** Attempts that came back with an ANSWER — good or flagged. Empties do not count. */
     let answeredAttempts = 0;
+    /**
+     * Whether the PREVIOUS attempt came back as whitespace, which is what
+     * shortens the next one's history window. Distinct from `transportFailure`,
+     * which is cleared per attempt and also covers timeouts: a timeout says
+     * nothing about the context, so it must not trigger the same response.
+     */
+    let lastAttemptWasEmpty = false;
     try {
       for (
         let attempt = 0;
@@ -2179,7 +2201,41 @@ export class TutorOrchestrator {
         const messages: ChatMessage[] = buildTurnMessages({
           systemContent,
           contextMessage: buildContextMessage(context),
-          conversation: this.conversationMessages(opts.isSystemPrompted === true) as {
+          conversation: this.conversationMessages(
+            opts.isSystemPrompted === true,
+            /*
+             * A RETRY AFTER AN EMPTY COMPLETION SEES A SHORTER CONVERSATION,
+             * and that is the one intervention with a measurement behind it.
+             *
+             * `model:probe-empty` rounds 74-75, against the live provider,
+             * varying ONLY how many alternating turns precede the request:
+             *
+             *     3 turns   0/12        10 turns   3/12        20 turns  7/12
+             *
+             * The rate is a function of the conversation's LENGTH, not its
+             * size in tokens — 14,543 tokens of context with the shape
+             * reminder came back 0/40, while 11,000 without it failed the
+             * majority of the time.
+             *
+             * And in production these failures are CORRELATED, which is what
+             * rules out simply asking again: of 22 turns whose first attempt
+             * came back empty, 5 failed a second time and 4 of those a third —
+             * a conditional rate far above the ~15% baseline. Once a turn's
+             * context starts producing whitespace it keeps producing it, so
+             * another identical call is the one thing that reliably does not
+             * help. Something about THAT context is the cause, and its length
+             * is the only property of it we have measured a lever on.
+             *
+             * Scoped as narrowly as it can be: only after an EMPTY completion,
+             * never after a content repair — a repair needs the conversation
+             * it is repairing. The cost is that one retry sees less history,
+             * which is a real cost (amnesia is what the window exists to
+             * prevent) and strictly better than the alternative on this path,
+             * which is a canned apology that teaches nothing and blames the
+             * child for asking.
+             */
+            lastAttemptWasEmpty ? EMPTY_RETRY_HISTORY_WINDOW : TURN_HISTORY_WINDOW,
+          ) as {
             role: 'assistant' | 'user';
             content: string;
           }[],
@@ -2222,6 +2278,7 @@ export class TutorOrchestrator {
           });
           this.addModelCost(estimateCostUsd(result.promptTokens, result.completionTokens));
           transportFailure = null;
+          lastAttemptWasEmpty = false;
           /*
            * THE PROVIDER ANSWERED, so this attempt spends the repair budget —
            * even if the answer turns out to be unparseable or to violate a
@@ -2866,6 +2923,9 @@ export class TutorOrchestrator {
           if (error instanceof CompletionAbortedError) throw error;
           if (!(error instanceof ModelUnavailableError)) throw error;
           transportFailure = error;
+          // Only whitespace shortens the next window — see its comment. A
+          // timeout or a refused request says nothing about this context.
+          lastAttemptWasEmpty = error.message.includes('empty completion');
           console.warn(`[oracle] model call failed (attempt ${attempt + 1}): ${error.message}`);
         }
       }

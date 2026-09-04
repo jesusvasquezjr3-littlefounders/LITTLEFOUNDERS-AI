@@ -4078,3 +4078,56 @@ describe('faults a child would notice are repaired, not merely discouraged', () 
     expect(outcome.emission.turn.say).toBe(GOOD_TURN.say);
   });
 });
+
+describe('a retry after whitespace sees a shorter conversation', () => {
+  /*
+   * The one intervention with a measurement behind it. `model:probe-empty`
+   * rounds 74-75, varying ONLY the number of alternating turns: 0/12 at three,
+   * 3/12 at ten, 7/12 at twenty. And in production these failures are
+   * CORRELATED — of 22 turns whose first attempt came back empty, 5 failed
+   * again and 4 of those a third time — so asking again unchanged is the one
+   * thing that reliably does not help.
+   *
+   * The long history arrives through `restore()`, the real park/resume path,
+   * rather than a test-only setter: a hook that exists only for this test
+   * would be a second way into the history that production never takes.
+   */
+  it('shortens the window after an empty completion, and only then', async () => {
+    const seed = new TutorOrchestrator(KID, Date.now(), silent);
+    await seed.greet(Date.now());
+    const snapshot = seed.snapshot();
+    snapshot.history = Array.from({ length: 18 }, (_, i) => ({
+      speaker: i % 2 === 0 ? ('learner' as const) : ('tutor' as const),
+      text: `una linea de conversacion numero ${i}`,
+    }));
+
+    /*
+     * `modelReplies('   ')` — WHITESPACE AS THE WHOLE COMPLETION, which is the
+     * provider failure this is about. The first version of this fixture used
+     * `{ ...GOOD_TURN, say: '   ' }`, which is a perfectly valid turn whose
+     * spoken line happens to be blank: no empty completion, no retry, and the
+     * assertion passed anyway because call 1 was then the JUDGE, whose prompt
+     * is shorter than a turn's for reasons that have nothing to do with this.
+     * A green test measuring the wrong call is the failure mode this whole
+     * session has been about.
+     */
+    fetchMock
+      .mockResolvedValueOnce(modelReplies('   '))
+      .mockResolvedValueOnce(modelReplies(GOOD_TURN))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = TutorOrchestrator.restore(snapshot, KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('y ahora que sigue?', Date.now());
+
+    const messagesOf = (i: number): unknown[] =>
+      (JSON.parse(String(fetchMock.mock.calls[i]?.[1]?.body ?? '{}')) as { messages: unknown[] })
+        .messages ?? [];
+
+    // Call 1 must be the RETRY, not the judge: same system prompt as call 0.
+    const systemOf = (i: number): string =>
+      (messagesOf(i)[0] as { content?: string } | undefined)?.content ?? '';
+    expect(systemOf(1)).toBe(systemOf(0));
+    // Same system prompt, same context message, strictly less conversation.
+    expect(messagesOf(1).length).toBeLessThan(messagesOf(0).length);
+  });
+});
