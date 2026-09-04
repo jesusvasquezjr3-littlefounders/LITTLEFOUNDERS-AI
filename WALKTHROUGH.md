@@ -9,6 +9,81 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
+## Class III closed for what infrastructure supports today: a pointing gesture, a camera that responds, a pre-authored scene, a second body in frame (2026-09-03)
+
+**Owner directive, arriving right after the entry below this one closed:
+finish the FULL remaining catalog, not only Class V.** This entry is the
+next two sprints that followed — S16 (`point_at`, `beat`, `audio_cue`'s
+stage side) and S17 (`roleplay`, `presence`) — which between them close
+everything in Class III that today's infrastructure genuinely supports.
+Only `props` and `roleplay`'s own avatar-asset needs remain, and only
+because they are blocked on Blender-authored `.glb` output specifically for
+rigged CHARACTERS — a plan for a STATIC, unrigged prop instead (procedural
+Three.js geometry, no Blender) is what the next sprint, S18, attempts.
+
+**S16 reversed a same-day deferral, once a shape existed that resolved the
+reason for it rather than accepting the reason.** An earlier pass this
+session had researched `point_at` and `beat` and left both deferred:
+`beat`'s catalog description ("the camera responds to a teaching moment")
+reads as a shot change, and this file's own history already contains the
+`segmentLive` regression (removed 2026-08-21) where exactly that mistake put
+the back of the tutor's head across a phone screen. What shipped is not a
+second exception to that invariant — it rides the SAME aim-offset
+`composition.ts` already uses to keep the tutor clear of the lesson plate, as
+a small (2.5cm), self-decaying, reduced-motion-respecting nudge, applied
+after the shot's own distance is already fixed, which is what makes it
+structurally incapable of becoming a shot change. `shotForPhase.test.ts`'s
+own invariant tests, written against the `segmentLive` regression, pass
+completely unmodified — the proof, not merely an assertion, that the
+invariant held. `point_at` shipped at the coarse level the deferral itself
+had already scoped: the existing procedural `point` pose retuned toward the
+plate's typical screen region, tuned by watching the live render, not by
+guessing at numbers. `audio_cue`'s remaining stage-side half is one new
+one-shot sound on a fresh `celebrate` action, using an SFX set and an action
+enum that already existed.
+
+**S17 put a second, non-canon presence in the Tutor's world for the first
+time, without opening either a new content-safety surface or a new live
+provider cost.** `roleplay` never lets the model write a scene, only NAME
+one from a small, pre-authored, pre-moderated catalog — the model's only
+freedom is picking which scene and when, both already-closed-vocabulary
+decisions. `presence` renders the learner's own avatar as a billboard at a
+fixed offset from an already-solved spot, deliberately bypassing the
+placement solver rather than extending it to a fifth, fictitious character.
+Voice was deliberately left uncabled: the live provider is bound to one
+character per session today, and giving a second character its own live
+audio is a new paid-API spend of the exact kind this file's own D2 entry
+required owner sign-off for before committing to — so the scene ships
+captioned, and the money decision stays with the owner rather than being
+assumed.
+
+**Two real defects were found live and fixed, not assumed away.** A trigger
+keyed on a VALUE (`sceneId`) rather than an IDENTITY (`turnSeq`) read the
+conversation's own next ordinary turn as "cancel this scene," cutting a
+four-beat performance short after one line — fixed by keying on turn
+sequence instead. A texture property mutated directly in a React render body
+on a Suspense-cached object caused repeated GPU re-uploads against
+immutably-allocated WebGL storage, caught live as a browser GPU process
+pinned over 500% CPU with reproducible console errors — fixed by a full
+rewrite to an explicit, exactly-once `useEffect` load. A third, SEPARATE
+high-CPU pattern seen in the full UI gate sweep was isolated with an actual
+A/B test (the whole diff stashed, the same gate re-run against the prior
+clean commit) and reproduced identically with none of this work's code
+present — confirmed pre-existing and environmental, not a regression,
+rather than either fixed blindly or ignored without checking.
+
+**One gate limitation is recorded here honestly rather than smoothed over:**
+`verify:tutor-ui` and `verify:tutor-a11y` could not be run to a confirmed
+clean completion this session, under the same sustained machine load the A/B
+test above independently confirmed as real and unrelated to this code.
+Manual live-browser verification substituted — fresh loads, a deliberate
+five-cycle stress test, direct console monitoring, both breakpoints — but
+this is a recorded gap, not a claimed pass.
+
+Full account, evidence and exact gate status: `/TUTOR_INSTRUMENTS.md`
+§0.0's Class III (S16) and (S17) rows and their decision-log entries; the
+behavioral/architecture account: `/ORACLE.md` §20.12-§20.13.
+
 ## Class V closed: `recap`, and the learner's own view of what the Tutor already showed the guardian (2026-09-03)
 
 **The sprint plan two entries below this one committed to five classes of new

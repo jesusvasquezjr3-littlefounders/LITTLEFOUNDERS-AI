@@ -9,6 +9,7 @@
     "personalizeLayer": "Make this place yours",
     "introduceLayer": "Start a conversation",
     "conversationLayer": "Your conversation",
+    "roleplayLayer": "A little scene",
     "closeLayer": "End of the session",
     "controlsLabel": "Talk to your tutor",
     "replayLayer": "A conversation, playing again",
@@ -466,5 +467,16 @@
     "notebookLabel_one": "{{count}} kept board",
     "notebookLabel_other": "{{count}} kept boards",
     "recapLabel": "Last time: {{minutes}} min · {{xp}} XP"
+  },
+  "roleplay": {
+    "scenes": {
+      "lemonade_change": {
+        "title": "The lemonade stand",
+        "beat1": "Hi! I'd like a lemonade, please. Here's five dollars!",
+        "beat2": "One lemonade is three dollars. Let's see how much change that is.",
+        "beat3": "Hmm, five dollars minus three dollars… I'm not sure!",
+        "beat4": "You help me figure out the change — go ahead!"
+      }
+    }
   }
 }

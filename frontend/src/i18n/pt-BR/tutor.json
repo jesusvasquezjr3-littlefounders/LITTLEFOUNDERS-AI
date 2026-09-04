@@ -9,6 +9,7 @@
     "personalizeLayer": "Deixe este lugar do seu jeito",
     "introduceLayer": "Começar uma conversa",
     "conversationLayer": "Sua conversa",
+    "roleplayLayer": "Uma pequena cena",
     "closeLayer": "Fim da sessão",
     "controlsLabel": "Fale com seu tutor",
     "replayLayer": "Uma conversa, tocando de novo",
@@ -466,5 +467,16 @@
     "notebookLabel_one": "{{count}} quadro guardado",
     "notebookLabel_other": "{{count}} quadros guardados",
     "recapLabel": "Da última vez: {{minutes}} min · {{xp}} XP"
+  },
+  "roleplay": {
+    "scenes": {
+      "lemonade_change": {
+        "title": "A barraca de limonada",
+        "beat1": "Oi! Eu queria uma limonada, por favor. Aqui estão cinco reais!",
+        "beat2": "Uma limonada custa três reais. Vamos ver quanto é o troco.",
+        "beat3": "Hmm, cinco reais menos três reais… não tenho certeza!",
+        "beat4": "Me ajude a descobrir o troco — pode ir."
+      }
+    }
   }
 }

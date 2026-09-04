@@ -3,6 +3,7 @@ import { ADAPTATIONS } from '../context/schema.js';
 import {
   ACTIONS,
   EMOTIONS,
+  ROLEPLAY_SCENE_IDS,
   type WhiteboardCategories,
   type WhiteboardCompare,
   type WhiteboardMark,
@@ -336,6 +337,14 @@ export type ServerMessage =
        * the posture `checkAnswer`'s verdict already takes with a spoken answer.
        */
       whiteboard?: WireWhiteboard;
+      /**
+       * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): a closed id
+       * into the frontend's own pre-authored scene catalog
+       * (`frontend/src/tutor/roleplay/scenes.ts`). Unlike `savePlan`, this
+       * IS on the wire — the frontend is what plays the scene, so it needs
+       * to be told which one, verbatim from the model's own turn.
+       */
+      roleplayScene?: (typeof ROLEPLAY_SCENE_IDS)[number] | null;
     }
   | {
       /**

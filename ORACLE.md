@@ -4836,3 +4836,163 @@ accounts (the `computer` tool's own click-coordinate resolution proved
 unreliable BOTH times this feature was live-verified; confirmed by
 `elementFromPoint` and a directly dispatched real event sequence each time):
 /TUTOR_INSTRUMENTS.md §0.0's Class V row and its decision-log entries.
+
+### 20.12 `point_at`, `beat` and `audio_cue` — the character responds to what it just drew (2026-09-03, SHIPPED, COARSE)
+
+**Class III's non-asset slice (TUTOR_INSTRUMENTS.md §3.4, S16) touches the
+stage, not the model's own content-safety surface** — no new field on
+`TutorTurnSchema`, no new moderated string, no new persisted row. The only
+model-facing change is a one-line addition to the situation prompt
+(`oracle/src/tutor/prompt.ts`) telling the model to choose the EXISTING
+`action: "point"` value on the same turn it draws or refers back to a
+whiteboard, instead of leaving `action` at its default. Everything else this
+section describes is client-side staging that reads that same, already-gated
+`action` field — it adds no new way for the model to say something unsafe,
+because it adds no new thing the model can say.
+
+**`beat` is deliberately NOT a shot change**, and that distinction is the
+entire section. §9.3 and §16 both hold, unchanged, that a `conversing` shot
+may move for exactly one reason (`adaptationOffered`) — a prior feature
+(`segmentLive`) violated this once already, by swinging the camera when a
+live activity arrived, was caught live (a phone screenshot showing the back
+of the tutor's head filling the frame), and was removed 2026-08-21
+specifically because the on-screen framing is a shipping gate here, not a
+preference. `beat` reads the model's `action: "point"` as a cue for a small
+(2.5cm), self-decaying nudge on `composition.ts`'s existing aim-offset
+`(right, up)` — never `ShotId`, never distance or padding — applied in
+`CameraDirector.tsx` strictly AFTER the padding-fit pass reads `distance`,
+so it is structurally incapable of becoming a second exception to §9.3's
+rule. `shotForPhase.test.ts`'s own invariant tests, written to protect
+against exactly the `segmentLive` regression above, pass completely
+unmodified — the proof the invariant was never at risk, not merely an
+assertion that it wasn't. Reduced-motion learners get none of it
+(`prefers-reduced-motion` gates the nudge to zero, the same posture every
+other stage animation in this file already takes).
+
+**`point_at` stays whole-plate, honestly.** The character's procedural
+`point` pose (`characterActions.ts`) was retuned toward the plate's typical
+on-screen region — arm reach and forearm bend biased closer to where a
+whiteboard actually renders — verified by watching the live render in
+`/dev/scene-lab` and iterating the rotation constants against a real
+screenshot, not by guessing at numbers blind. This is the coarse version a
+prior research pass identified as available without new bones or IK: no
+whiteboard kind exposes per-element identity (only a whole-board
+`data-tutor-whiteboard` hook), the `Rig` binds no hand or wrist bone despite
+the source skeleton having one, and there is no IK or bone-aim code
+anywhere in this codebase — so nothing in this system can point at, or
+verify a point toward, one specific bar or cell. The catalog's own
+acceptance bar for this instrument — "verified by screen coordinates, not by
+intent" — is not met yet and is not claimed to be; what shipped is a
+character that visibly gestures toward the board region in general, which
+is the honest ceiling of what a canned pose can prove.
+
+**`audio_cue`'s remaining half is a single new one-shot action.** The
+whiteboard-side cue (a sound per drawn event, keyed off the same reveal
+timing `step`'s "Show next" control already paces) shipped earlier, in
+Sprint 3. What S16 adds is the STAGE side: `playSfx('celebration')` fires
+once when the model sets a fresh `action: "celebrate"`, gated on the same
+one-shot transition guard `Character3D.tsx`'s clip-restart logic already
+uses to avoid re-triggering a sound on every re-render of an unrelated prop.
+No new sound asset, no new field — the existing 4-character SFX set and the
+existing `action` enum were already sufficient.
+
+Full gate account, the exact rotation constants, and the one environment
+gap this sprint could not close (`verify:rig` needs a gitignored
+clip-library build asset `npm run assets:clips` was not run to produce —
+that gate covers AUTHORED clips only, and nothing in this sprint touches
+one, so the gap is environmental, not a finding): /TUTOR_INSTRUMENTS.md
+§0.0's Class III (S16) row and its decision-log entries.
+
+### 20.13 `roleplay` and `presence` — a pre-authored scene, and a second body in frame (2026-09-03, SHIPPED, COARSE)
+
+**`roleplay` never lets the model write a scene — it only lets the model
+NAME one.** The catalog's ask ("the tutor and learner act out a scripted
+exchange — buying lemonade, making change") could have been built as
+free-form model-generated dialogue for a second character, which would have
+doubled this file's own per-line moderation surface (§6) for no real
+pedagogical gain over a single, carefully-written, pre-moderated scene. It
+was instead built as a small, hand-authored catalog
+(`frontend/src/tutor/roleplay/scenes.ts`, one scene today —
+`lemonade_change`, four beats) that the model selects via a new closed-enum
+turn field, `roleplayScene` (`TutorTurnSchema`, migration 0070). Every beat's
+text is a translation key, moderated and reviewed the same way any other
+shipped copy in this product is, never generated at request time — the
+model's only degree of freedom is WHICH scene, and WHETHER to start one, both
+already-closed-vocabulary decisions of exactly the kind §5's prompt-injection
+defense already relies on elsewhere (a closed output shape has nothing an
+injected instruction can widen). `roleplayScene` is mutually exclusive with
+`whiteboard` and `segmentRequest` on the same turn, enforced by
+`.refine()`, the same "one surface per turn" posture every other stage
+capability in this file already keeps.
+
+**`presence` puts a second, non-canon body in the 3D canvas for the first
+time** — the learner's own DiceBear avatar, rendered as a billboard sprite
+positioned at a fixed offset from the scene's already-solved companion spot.
+This was confirmed by research before any code was written: nothing in this
+codebase had ever rendered anything but one of the four rigged `.glb`
+characters inside the Tutor's canvas. The placement solver was deliberately
+NOT extended to cover it — the solver is footprint-and-walkability, keyed by
+`CharacterId`, for the four canon characters only; a flat billboard has no
+footprint to solve for, and forcing it through that machinery would have
+added a fifth, fictitious `CharacterId` to a system whose privacy contract
+(§4) and whose asset pipeline both reason about "the four characters"
+as a closed, small set. The avatar shows only while a scene is actively
+running — "during a transaction," the catalog's own words — and never
+persists, never leaves the client, and carries no more identity than the
+avatar options already stored for that account.
+
+**Voice is deliberately not wired, and that is a cost decision, not a
+technical gap.** `speakLine`/`SpeechScope` bind one live provider voice per
+session (§15's cost and rate-limit accounting assumes exactly one). Giving
+the roleplay's second character its own live Inworld voice would mean both
+loosening that one-voice-per-session contract AND opening a new paid-API
+cost pattern — the same class of decision D2 (§8.2 in TUTOR_INSTRUMENTS.md)
+required explicit owner sign-off for, before any per-attempt spend was
+approved. Shipping this scene with captions instead of a second live voice
+keeps the cost surface exactly where it already was: zero new provider
+spend, learner and guardian still get the full scene through
+`RoleplayCaption.tsx`'s speaker-attributed text, and the decision to spend
+money on a second voice is left where §8.2 already puts every decision like
+it — with the owner, asked, not assumed.
+
+**Two real defects were found live, not assumed away, and both are
+instances of failure classes this project already has names for.** First:
+the scene director's first version keyed its "a new scene request arrived"
+trigger on the `roleplayScene` VALUE rather than the turn's own identity —
+so the conversation's very next ordinary turn, which by the prompt's own
+design never repeats `roleplayScene`, read as "the scene was cancelled,"
+cutting a four-beat performance short after its first line. This is the
+same "measurement or trigger must key on identity, not on a value that
+happens to differ" class this codebase has hit before; fixed by keying the
+trigger on `turnSeq` instead, so a scene now runs to its own natural
+completion regardless of what later, unrelated turns carry. Second: the
+avatar billboard's first version mutated a loaded texture's `colorSpace`
+directly inside a React render body, on an object `useLoader`'s
+Suspense-based caching handed back — and because the parent `Cast`
+component re-renders often for reasons that have nothing to do with
+presence (mic state, live captions), a live headless-Chrome run caught the
+browser's GPU process pinned over 500% CPU, repeatedly re-uploading a
+texture against WebGL storage already allocated as immutable, with
+reproducible console errors (`texSubImage2D: bad image data`,
+`glTexImage2DRobustANGLE: Texture is immutable`). Confirmed fixed only after
+a full rewrite to an explicit `useEffect`-based load — the texture created
+and configured exactly once, disposed on cleanup — verified by a fresh page
+load AND a deliberate five-cycle rapid-toggle stress test with the console
+watched throughout, not merely by the error going quiet once.
+
+A separate, sustained high-CPU pattern seen in the full `verify:tutor-ui`
+sweep was isolated with an A/B test — the entire uncommitted diff stashed,
+the identical gate re-run against the last clean commit — and reproduced
+IDENTICALLY with none of this sprint's code present, proving it
+pre-existing and environmental rather than a regression this work
+introduced; `verify:tutor-ui`/`verify:tutor-a11y` themselves could not be
+run to a confirmed clean completion under that same load, an honest gap
+substituted with extensive direct live-browser verification rather than
+claimed as passed.
+
+Full plumbing (the six-copy hand-mirrored field tax, the exact
+`TranscriptTurn` snake_case mismatch the compiler caught, the nine-test
+trigger-cutoff regression suite, gate-by-gate status, and the two
+pre-existing unrelated findings this sprint surfaced and flagged separately
+rather than folded in): /TUTOR_INSTRUMENTS.md §0.0's Class III (S17) row and
+its decision-log entries.

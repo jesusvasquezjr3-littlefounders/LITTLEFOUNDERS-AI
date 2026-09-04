@@ -1,0 +1,22 @@
+-- 0070_tutor_turn_roleplay_scene.sql — the tutor's roleplay scene id had no
+-- path into persistence, the identical gap migrations 0058 (whiteboard) and
+-- 0067 (demonstrate) already closed for the other two live-only visual turn
+-- fields.
+-- @phase: expand
+--
+-- Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): a turn may name a
+-- pre-authored two-character scene by id (`oracle/src/tutor/turnSchema.ts`'s
+-- `roleplayScene`, a closed enum against `frontend/src/tutor/roleplay/
+-- scenes.ts`'s own catalog). Without this column, a session where a scene
+-- played would lose that fact on replay and in the guardian transcript
+-- viewer, silently, exactly as 0058/0067's own comments describe for the
+-- two fields they close the identical gap for.
+--
+-- One additive, nullable TEXT column (not jsonb — a scene id is a single
+-- short string, not structured content the client needs to re-derive
+-- anything from). NULL for every row written before this migration and for
+-- every ordinary turn that names no scene; a replay of an old session shows
+-- no roleplay, exactly as it already does today, rather than backfilling a
+-- value nothing recorded.
+ALTER TABLE public.tutor_turns
+    ADD COLUMN IF NOT EXISTS roleplay_scene text NULL;

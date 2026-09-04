@@ -54,7 +54,7 @@ const TUTOR_LINE = 'A goal is easier to reach when you can see it.';
 function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
   return {
     connection: 'open',
-    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, audioPending: false, wordTimings: null, next: 'ask', policy: null, demonstrate: null, whiteboard: null },
+    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, audioPending: false, wordTimings: null, next: 'ask', policy: null, demonstrate: null, whiteboard: null, roleplayScene: null },
     history: [{ speaker: 'tutor', text: TUTOR_LINE, seq: 1 }],
     segment: null,
     lesson: null,
@@ -268,6 +268,7 @@ const WHITEBOARD_TURN = {
     label: 'Cada día te dan 2 más',
     currency: 'MXN' as const,
   },
+  roleplayScene: null,
 };
 
 

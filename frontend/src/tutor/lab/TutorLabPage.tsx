@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
@@ -12,6 +12,10 @@ import { PersonalizeInWorld } from '../PersonalizeInWorld';
 import { ReplayInWorld } from '../replay/ReplayInWorld';
 import { buildReplayScript } from '../replay/replayScript';
 import { useReplayDirector } from '../replay/useReplayDirector';
+import { useRoleplayDirector } from '../roleplay/useRoleplayDirector';
+import { RoleplayCaption } from '../roleplay/RoleplayCaption';
+import { isRoleplaySceneId } from '../roleplay/scenes';
+import { avatarDataUri } from '@/lib/avatarOptions';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import { MemoryNotesPanel } from '@/routes/app/family/MemoryNotesPanel';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
@@ -104,6 +108,13 @@ const LAB_SURFACES: readonly LabSurface[] = [...LAB_SCENES, 'consent'];
 
 /** A `kid` whose guardian is being asked, for the consent fixture. */
 const LAB_KID_ID = '9f1c2e44-3a58-4d7b-8b21-6c0e9d4f5a33';
+
+/**
+ * `presenceAvatarUri`'s stand-in options, Class III / S17. A stable MODULE
+ * reference on purpose — see that constant's own comment on this page for
+ * why a fresh `{}` literal defeats the memoization it sits inside.
+ */
+const LAB_SAMPLE_AVATAR_OPTIONS: Record<string, unknown> = {};
 
 // ── The instrument panel ────────────────────────────────────────────────────
 
@@ -460,6 +471,49 @@ export default function TutorLabPage() {
 
   const audition = useMemo(() => auditionFor(phase, LAB_CATALOG.characters), [phase]);
 
+  /*
+   * Class III / S17 `roleplay` + `presence`, exercised here the same way
+   * every whiteboard kind already is — `LAB_ACTIVITIES`'s own `'roleplay'`
+   * entry (`labFixtures.ts`) drives `socket.turn.roleplayScene`, so this is
+   * genuine coverage under `verify:tutor-ui`'s own sweep, not a one-off.
+   * `presenceAvatarUri` has no real signed-in learner to read here — a fixed
+   * sample avatar stands in, since the lab is deliberately auth-independent.
+   *
+   * `useRoleplayDirector` keys a fresh trigger on `turnSeq`, which is right
+   * for PRODUCTION (a real orchestrator turn counter that never repeats) but
+   * wrong for the lab's OWN fixtures: `labTurn()` hardcodes `seq: 4` for
+   * most activities, so switching AWAY from `roleplay` and back to it — the
+   * exact thing this switch's own control invites — would read as the SAME
+   * turn twice and never re-arm. `activityTrigger` is a small counter that
+   * bumps on every ACTIVITY change (not every render), giving the lab a
+   * turn identity distinct from the fixture's own reused `seq`.
+   */
+  const lastActivity = useRef(activity);
+  const activityTrigger = useRef(0);
+  if (lastActivity.current !== activity) {
+    lastActivity.current = activity;
+    activityTrigger.current += 1;
+  }
+  const roleplaySceneId =
+    socket.turn?.roleplayScene && isRoleplaySceneId(socket.turn.roleplayScene) ? socket.turn.roleplayScene : null;
+  const roleplay = useRoleplayDirector(roleplaySceneId, activityTrigger.current, character, companion);
+  /*
+   * MEMOIZED — see `TutorExperience.tsx`'s own comment on this exact line
+   * shape: DiceBear's `toDataUri()` builds a fresh SVG string on every call,
+   * so an unmemoized call here handed `AvatarBillboard`'s `useLoader` a NEW
+   * url on every render of this (frequently re-rendering) page, which never
+   * hit the texture cache and re-decoded/re-uploaded a texture every frame —
+   * a live headless-Chrome run caught the GPU process pinned over 400% CPU
+   * from exactly this. `LAB_SAMPLE_AVATAR_OPTIONS` is a module-level empty
+   * object rather than an inline `{}` so its own reference is stable too —
+   * a fresh `{}` literal in the dependency array would defeat this the same
+   * way the unmemoized call did.
+   */
+  const presenceAvatarUri = useMemo(
+    () => (roleplay.active ? avatarDataUri(LAB_SAMPLE_AVATAR_OPTIONS, 'lab-sample-learner') : null),
+    [roleplay.active],
+  );
+
   const blockedBy =
     phase === 'conversing'
       ? narrowBlockedReason(session.microphoneBlockedBy)
@@ -764,6 +818,8 @@ export default function TutorLabPage() {
         emotion={director?.beat?.emotion ?? socket.turn?.emotion ?? 'neutral'}
         action={director?.beat?.action ?? socket.turn?.action ?? 'idle'}
         actionKey={director?.beatKey ?? socket.turn?.seq ?? 0}
+        perCharacter={roleplay.perCharacter}
+        presenceAvatarUri={presenceAvatarUri}
         // Null always. Audio is a network edge and the lab has no clip — the
         // replay fixture is deliberately a silent recording, which is the
         // arrangement every conversation reaches after ninety days — so the
@@ -796,6 +852,16 @@ export default function TutorLabPage() {
         {phase === 'conversing' && (
           <StageLayer label={t('tutor.stage.conversationLayer')} placement="world">
             <ConversationView {...conversationLayer} />
+          </StageLayer>
+        )}
+
+        {phase === 'conversing' && roleplay.active && roleplay.beat && roleplay.titleKey && (
+          <StageLayer label={t('tutor.stage.roleplayLayer')} placement="world">
+            <RoleplayCaption
+              titleKey={roleplay.titleKey}
+              beat={roleplay.beat}
+              speakerId={roleplay.beat.speaker === 'lead' ? character : companion}
+            />
           </StageLayer>
         )}
 

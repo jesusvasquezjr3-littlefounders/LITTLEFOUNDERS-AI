@@ -1,8 +1,21 @@
+import { createAvatar } from '@dicebear/core';
+import { avataaars } from '@dicebear/collection';
+
 /*
  * Curated DiceBear Avataaars option catalog — values verified against
  * @dicebear/collection's avataaars schema (enums) and its color patterns
  * (hex without '#'). The editor only offers these; Core re-validates.
  */
+
+/**
+ * The one place `createAvatar(avataaars, ...)` is called, so a caller — the
+ * profile `Avatar.tsx` today, the Tutor's `presence` billboard (Class III /
+ * S17, TUTOR_INSTRUMENTS.md §3.4) as of this comment — never duplicates
+ * DiceBear's own options-to-URI shape.
+ */
+export function avatarDataUri(options: Record<string, unknown>, seed = 'littlefounder'): string {
+  return createAvatar(avataaars, { seed, ...options }).toDataUri();
+}
 
 export interface AvatarOptions {
   top?: string[];

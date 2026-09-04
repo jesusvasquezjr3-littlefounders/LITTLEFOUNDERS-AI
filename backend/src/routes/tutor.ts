@@ -1115,6 +1115,15 @@ function internalRouter(): Router {
      * meaningful alongside a non-null `whiteboard` — see the handler below.
      */
     savePlan: z.boolean().nullish(),
+    /**
+     * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the
+     * pre-authored roleplay scene id this turn started, when it started
+     * one — the identical live-only-field gap `demonstrate` above closes,
+     * closed the same way. A closed id, not free text; capped generously
+     * rather than pinned to the current one-scene enum, so a wider frontend
+     * catalog never needs a backend redeploy to be storable.
+     */
+    roleplayScene: z.string().min(1).max(64).nullish(),
   });
 
   router.post('/turns', async (req, res) => {

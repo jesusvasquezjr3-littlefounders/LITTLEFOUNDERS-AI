@@ -24,6 +24,10 @@ import { ClosingInWorld } from './ClosingInWorld';
 import { ReplayInWorld } from './replay/ReplayInWorld';
 import { buildReplayScript, type ReplayScript } from './replay/replayScript';
 import { useReplayDirector } from './replay/useReplayDirector';
+import { useRoleplayDirector } from './roleplay/useRoleplayDirector';
+import { RoleplayCaption } from './roleplay/RoleplayCaption';
+import { isRoleplaySceneId } from './roleplay/scenes';
+import { avatarDataUri } from '@/lib/avatarOptions';
 import { auditionFor } from './stage/phases';
 import { micForPhase } from './stage/micForPhase';
 import {
@@ -264,7 +268,7 @@ const SILENCE_REPORT_DELAY_MS = 6_000;
 
 export function TutorExperience() {
   const { t } = useTranslation();
-  const { getToken, session: authSession } = useAuth();
+  const { getToken, session: authSession, avatarOptions } = useAuth();
   /*
    * Held in a ref, and read rather than depended on.
    *
@@ -1404,6 +1408,46 @@ export function TutorExperience() {
    */
   const audition = useMemo(() => auditionFor(phase, catalog?.characters), [phase, catalog]);
 
+  /*
+   * Class III / S17 `roleplay` + `presence` (TUTOR_INSTRUMENTS.md §3.4).
+   * `roleplayScene` only ever arrives on a LIVE turn — replay has no
+   * director for it (see `scenes.ts`'s own header on why voice, and
+   * therefore full replay support, is a later increment) — so this reads
+   * `turn` directly rather than the `segmentCue`-first precedence the pose
+   * below uses. `isRoleplaySceneId` guards a value this session's own
+   * frontend catalog does not (yet) recognise, the same "unknown id renders
+   * nothing" posture an out-of-date client already has for every id-keyed
+   * field on this page.
+   */
+  const roleplaySceneId =
+    turn?.roleplayScene && isRoleplaySceneId(turn.roleplayScene) ? turn.roleplayScene : null;
+  const roleplay = useRoleplayDirector(roleplaySceneId, turnSeq, segmentCue?.character ?? character, companion);
+  /**
+   * Only while a scene is actually running ("during a transaction") — see
+   * `presence`'s own catalog line — and null for a guest/still-restoring
+   * session, which has no avatar of its own to show.
+   *
+   * MEMOIZED as a deliberate safeguard, not merely an optimization: the live
+   * headless-Chrome run that caught `AvatarBillboard`'s GPU-pinning bug (its
+   * own file header has the full account — a texture property mutated in a
+   * render body, fixed there by moving all texture setup into a properly
+   * dependency-gated effect) surfaced it in a component fed an UNMEMOIZED
+   * URL here first. DiceBear's `toDataUri()` builds and re-encodes a fresh
+   * SVG string on every call even for identical options, so leaving this
+   * unmemoized would hand `AvatarBillboard` a freshly-allocated string every
+   * one of this component's own frequent re-renders (mic state, captions,
+   * the socket) — content-equal and therefore harmless to ITS effect
+   * dependency check today, but needless rebuilding this call avoids for
+   * free, and a cheap guard against the same failure mode if that file's own
+   * loading strategy ever changes again. Keyed on the SAME three inputs the
+   * condition above already reads, so it only recomputes when one of them
+   * genuinely changes.
+   */
+  const presenceAvatarUri = useMemo(
+    () => (roleplay.active && authSession ? avatarDataUri(avatarOptions, authSession.user.id) : null),
+    [roleplay.active, authSession, avatarOptions],
+  );
+
   return (
     <StageShell
       mic={mic}
@@ -1449,6 +1493,8 @@ export function TutorExperience() {
       emotion={segmentCue?.emotion ?? director?.beat?.emotion ?? turn?.emotion ?? 'neutral'}
       action={segmentCue?.action ?? director?.beat?.action ?? turn?.action ?? 'idle'}
       actionKey={segmentCue ? segmentCue.actionKey : phase === 'replaying' ? replayKey : turnSeq}
+      perCharacter={roleplay.perCharacter}
+      presenceAvatarUri={presenceAvatarUri}
       /*
        * THE ARTICULATION HEURISTIC, not real lip-sync — exactly `speaking` on
        * `CharacterActor3D` elsewhere in the Lesson Engine (`applySpeaking`):
@@ -1534,6 +1580,24 @@ export function TutorExperience() {
         */
         <StageLayer label={t('tutor.stage.conversationLayer')} placement="world">
           <ConversationView {...conversationLayer} />
+        </StageLayer>
+      )}
+
+      {/*
+        Class III / S17 `roleplay`: its own small caption, ADDITIVE to
+        `conversationLayer` above rather than replacing it — the turn that
+        started the scene still says its own brief framing line through the
+        ordinary caption, and this shows the scene's own beat underneath it,
+        the same "two things on screen for two different reasons" shape the
+        lesson plate and the caption already are.
+      */}
+      {phase === 'conversing' && roleplay.active && roleplay.beat && roleplay.titleKey && (
+        <StageLayer label={t('tutor.stage.roleplayLayer')} placement="world">
+          <RoleplayCaption
+            titleKey={roleplay.titleKey}
+            beat={roleplay.beat}
+            speakerId={roleplay.beat.speaker === 'lead' ? (segmentCue?.character ?? character) : companion}
+          />
         </StageLayer>
       )}
 

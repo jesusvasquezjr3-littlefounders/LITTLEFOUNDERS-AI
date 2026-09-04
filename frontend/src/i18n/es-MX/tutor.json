@@ -9,6 +9,7 @@
     "personalizeLayer": "Haz tuyo este lugar",
     "introduceLayer": "Empezar una conversación",
     "conversationLayer": "Tu conversación",
+    "roleplayLayer": "Una pequeña escena",
     "closeLayer": "Fin de la sesión",
     "controlsLabel": "Habla con tu tutor",
     "replayLayer": "Una conversación, reproduciéndose otra vez",
@@ -466,5 +467,16 @@
     "notebookLabel_one": "{{count}} pizarrón guardado",
     "notebookLabel_other": "{{count}} pizarrones guardados",
     "recapLabel": "La última vez: {{minutes}} min · {{xp}} XP"
+  },
+  "roleplay": {
+    "scenes": {
+      "lemonade_change": {
+        "title": "El puesto de limonada",
+        "beat1": "¡Hola! Quiero una limonada, por favor. ¡Aquí tienes cinco pesos!",
+        "beat2": "Una limonada cuesta tres pesos. Veamos cuánto cambio es eso.",
+        "beat3": "Mmm, cinco pesos menos tres pesos… ¡no estoy segura!",
+        "beat4": "Ayúdame a calcular el cambio — adelante."
+      }
+    }
   }
 }

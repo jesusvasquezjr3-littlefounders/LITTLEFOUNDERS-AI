@@ -41,6 +41,10 @@ export interface TutorStageProps {
   action?: CharacterAction;
   /** Bump to replay the same one-shot action twice in a row. */
   actionKey?: number;
+  /** See `TutorSceneProps.perCharacter`'s own comment (Class III / S17 `roleplay`). */
+  perCharacter?: TutorSceneProps['perCharacter'];
+  /** See `TutorSceneProps.presenceAvatarUri`'s own comment (Class III / S17 `presence`). */
+  presenceAvatarUri?: TutorSceneProps['presenceAvatarUri'];
   /**
    * Drives the syllabic articulation heuristic (`Character3D`'s `speaking`),
    * INDEPENDENT of this stage's own audio-driven viseme.
@@ -165,6 +169,8 @@ export function TutorStage({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  perCharacter,
+  presenceAvatarUri = null,
   characterSpeaking = false,
   speechUrl = null,
   audioKey = 0,
@@ -291,6 +297,8 @@ export function TutorStage({
         emotion={emotion}
         action={action}
         actionKey={actionKey}
+        perCharacter={perCharacter}
+        presenceAvatarUri={presenceAvatarUri}
         characterSpeaking={characterSpeaking}
         viseme={speaking ? viseme : VISEME_CLOSED}
         shot={activeShot}

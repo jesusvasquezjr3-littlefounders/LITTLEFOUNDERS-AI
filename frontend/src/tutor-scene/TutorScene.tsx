@@ -5,6 +5,7 @@ import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
+import { AvatarBillboard } from './AvatarBillboard';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
@@ -113,6 +114,27 @@ export interface TutorSceneProps {
   emotion?: CharacterEmotion;
   action?: CharacterAction;
   actionKey?: number;
+  /**
+   * Class III / S17 `roleplay`: a per-character OVERRIDE of `emotion`/
+   * `action`/`actionKey` above, keyed by character id. Absent (the default,
+   * every caller before S17) means every standing character keeps sharing
+   * the one broadcast pose exactly as before — this is additive, not a
+   * second system. Present only for the character(s) a roleplay scene is
+   * currently driving independently; everyone else still reads the shared
+   * broadcast. Never changes WHICH element a character renders as (see
+   * `Cast`'s own comment on why a wrapper must never depend on role) — only
+   * the prop VALUES passed into the same `<Character3D>` instance.
+   */
+  perCharacter?: Partial<Record<CharacterId, { emotion?: CharacterEmotion; action?: CharacterAction; actionKey?: number }>>;
+  /**
+   * Class III / S17 `presence`: the learner's own DiceBear avatar
+   * (`toDataUri()`, see `components/Avatar.tsx`), rendered as a small
+   * camera-facing billboard beside the standing cast — see
+   * `AvatarBillboard.tsx`'s own header for why a billboard rather than a
+   * rigged reconstruction. Null/absent renders nothing, the same posture
+   * every optional stage guest already has.
+   */
+  presenceAvatarUri?: string | null;
   /**
    * The syllabic articulation heuristic (`Character3D`'s `speaking`),
    * forwarded to every standing character exactly as `emotion`/`action`
@@ -414,6 +436,8 @@ function Cast({
   emotion,
   action,
   actionKey,
+  perCharacter,
+  presenceAvatarUri,
   characterSpeaking,
   viseme,
   backdrop,
@@ -428,6 +452,10 @@ function Cast({
   emotion: CharacterEmotion;
   action: CharacterAction;
   actionKey: number;
+  /** See `TutorSceneProps.perCharacter`'s own comment. */
+  perCharacter?: Partial<Record<CharacterId, { emotion?: CharacterEmotion; action?: CharacterAction; actionKey?: number }>>;
+  /** See `TutorSceneProps.presence`'s own comment (Class III / S17). */
+  presenceAvatarUri?: string | null;
   characterSpeaking: boolean;
   viseme: number;
   /** Passed straight through to the mouth card, which is unlit. */
@@ -618,22 +646,53 @@ function Cast({
         What the principals' boundary used to buy is bought explicitly instead,
         by `PrincipalModels` in `TutorScene` — see its own note.
       */}
-      {posed.map(({ id, spot, facing }) => (
-        <Suspense key={id} fallback={null}>
-          <Character3D
-            id={id}
-            settings={settings}
-            position={[spot.x, 0, spot.z]}
-            rotation={facing}
-            emotion={emotion}
-            action={action}
-            actionKey={actionKey}
-            speaking={characterSpeaking}
-            viseme={viseme}
-            backdrop={backdrop}
-          />
-        </Suspense>
-      ))}
+      {posed.map(({ id, spot, facing }) => {
+        // Undefined for every character a roleplay scene is not currently
+        // driving — same broadcast pose as before S17, per-field.
+        const override = perCharacter?.[id];
+        return (
+          <Suspense key={id} fallback={null}>
+            <Character3D
+              id={id}
+              settings={settings}
+              position={[spot.x, 0, spot.z]}
+              rotation={facing}
+              emotion={override?.emotion ?? emotion}
+              action={override?.action ?? action}
+              actionKey={override?.actionKey ?? actionKey}
+              speaking={characterSpeaking}
+              viseme={viseme}
+              backdrop={backdrop}
+            />
+          </Suspense>
+        );
+      })}
+      {presenceAvatarUri &&
+        (() => {
+          /*
+           * Class III / S17 `presence`: a small, fixed offset from whoever is
+           * LAST in `standing` (the companion, when one is set — the lead
+           * otherwise, per `cast.ts`'s own `[character, companion]` order) —
+           * not its own placement-solver pass. The solver is built around
+           * `CharacterId`-keyed footprints and walkability for a RIGGED
+           * character; the learner's avatar is a flat billboard with no
+           * footprint to solve for, and giving it one would mean teaching the
+           * solver a fifth kind of standee for a coarse, still-experimental
+           * capability. "Beside whoever is already correctly placed" reads as
+           * a third guest in the scene without that cost.
+           */
+          const anchor = posed[posed.length - 1];
+          if (!anchor) return null;
+          const side = Math.cos(anchor.facing + Math.PI / 2);
+          const forward = Math.sin(anchor.facing + Math.PI / 2);
+          const OFFSET_M = 0.9;
+          return (
+            <AvatarBillboard
+              avatarUri={presenceAvatarUri}
+              position={[anchor.spot.x + side * OFFSET_M, anchor.spot.y, anchor.spot.z + forward * OFFSET_M]}
+            />
+          );
+        })()}
     </>
   );
 }
@@ -714,6 +773,8 @@ export function TutorScene({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  perCharacter,
+  presenceAvatarUri = null,
   characterSpeaking = false,
   viseme = 0,
   shot,
@@ -858,6 +919,8 @@ export function TutorScene({
                 emotion={emotion}
                 action={action}
                 actionKey={actionKey}
+                perCharacter={perCharacter}
+                presenceAvatarUri={presenceAvatarUri}
                 characterSpeaking={characterSpeaking}
                 viseme={viseme}
                 backdrop={backdrop}

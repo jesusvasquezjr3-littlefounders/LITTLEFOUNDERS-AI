@@ -194,6 +194,8 @@ frontend/
         __tests__/
       replay/
         __tests__/
+      roleplay/
+        __tests__/
       stage/
         __tests__/
       whiteboard/
@@ -1443,10 +1445,10 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## A clipped label, and then the whole question of what the Tutor can show (2026-09-02)
+## Class V closed: `recap`, and the learner's own view of what the Tutor already showed the guardian (2026-09-03)
 
-**Two pieces of work, and the second came out of the first.** The session opened
-on the last item `TUTOR_QA_2026-09-02.md` had left marked EN RIESGO: two width
+**The sprint plan two entries below this one committed to five classes of new
+Tutor instrument; by this entry, Class V (`/TUTOR_INSTRUMENTS.md` §3.6) is the
 ```
 
 ### agent/README.md
@@ -13595,6 +13597,46 @@ BEGIN
 -- KINDS of thing and only one of them is a record OF THE CHILD:
 ```
 
+### database/migrations/0069_tutor_plan_and_notebook.sql
+
+```
+-- 0069_tutor_plan_and_notebook.sql — Class V artifacts (/TUTOR_INSTRUMENTS.md
+-- §3.6, S21): the first two things a learner keeps across sessions instead of
+-- losing when the conversation ends.
+-- @phase: expand
+--
+-- WHAT THIS ADDS AND WHY.
+--
+--   tutor_plans             ONE row per learner: the savings plan built in
+--                           conversation, as a whiteboard JSONB snapshot —
+--                           the SAME shape any whiteboard kind already
+--                           produces (`oracle/src/tutor/turnSchema.ts`'s
+--                           `Whiteboard` union), not a new content format.
+--                           A new turn-level flag (`savePlan`) tells Core
+--                           "persist the board this turn just drew as the
+--                           learner's ongoing plan" — the content is never
+```
+
+### database/migrations/0070_tutor_turn_roleplay_scene.sql
+
+```
+-- 0070_tutor_turn_roleplay_scene.sql — the tutor's roleplay scene id had no
+-- path into persistence, the identical gap migrations 0058 (whiteboard) and
+-- 0067 (demonstrate) already closed for the other two live-only visual turn
+-- fields.
+-- @phase: expand
+--
+-- Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): a turn may name a
+-- pre-authored two-character scene by id (`oracle/src/tutor/turnSchema.ts`'s
+-- `roleplayScene`, a closed enum against `frontend/src/tutor/roleplay/
+-- scenes.ts`'s own catalog). Without this column, a session where a scene
+-- played would lose that fact on replay and in the guardian transcript
+-- viewer, silently, exactly as 0058/0067's own comments describe for the
+-- two fields they close the identical gap for.
+--
+-- One additive, nullable TEXT column (not jsonb — a scene id is a single
+```
+
 ### database/package.json
 
 ```
@@ -16525,10 +16567,8 @@ export async function fetchEnabledProviders(): Promise<OAuthProvider[]> {
 
 ```
 import { useMemo } from 'react';
-import { createAvatar } from '@dicebear/core';
-import { avataaars } from '@dicebear/collection';
 import { cn } from '@/lib/utils';
-import type { AvatarOptions } from '@/lib/avatarOptions';
+import { avatarDataUri, type AvatarOptions } from '@/lib/avatarOptions';
 
 /*
  * DiceBear Avataaars, rendered LOCALLY (@dicebear/core → SVG data URI) — no
@@ -16539,6 +16579,8 @@ import type { AvatarOptions } from '@/lib/avatarOptions';
 interface AvatarProps {
   options: (AvatarOptions & { seed?: string }) | Record<string, unknown>;
   /** Fallback seed when options carry none (stable per user). */
+  seed?: string;
+  className?: string;
 ```
 
 ### frontend/src/components/CookieConsentBanner.tsx
@@ -17615,10 +17657,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "personalizeLayer": "Make this place yours",
     "introduceLayer": "Start a conversation",
     "conversationLayer": "Your conversation",
+    "roleplayLayer": "A little scene",
     "closeLayer": "End of the session",
     "controlsLabel": "Talk to your tutor",
     "replayLayer": "A conversation, playing again",
-    "replayControls": "Replay controls",
 ```
 
 ### frontend/src/i18n/es-MX/admin.json
@@ -17855,10 +17897,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "personalizeLayer": "Haz tuyo este lugar",
     "introduceLayer": "Empezar una conversación",
     "conversationLayer": "Tu conversación",
+    "roleplayLayer": "Una pequeña escena",
     "closeLayer": "Fin de la sesión",
     "controlsLabel": "Habla con tu tutor",
     "replayLayer": "Una conversación, reproduciéndose otra vez",
-    "replayControls": "Controles de la repetición",
 ```
 
 ### frontend/src/i18n/index.ts
@@ -18115,10 +18157,10 @@ import enErrors from './en-US/errors.json';
     "personalizeLayer": "Deixe este lugar do seu jeito",
     "introduceLayer": "Começar uma conversa",
     "conversationLayer": "Sua conversa",
+    "roleplayLayer": "Uma pequena cena",
     "closeLayer": "Fim da sessão",
     "controlsLabel": "Fale com seu tutor",
     "replayLayer": "Uma conversa, tocando de novo",
-    "replayControls": "Controles da repetição",
 ```
 
 ### frontend/src/i18n/roleLabels.test.ts
@@ -19857,21 +19899,21 @@ export interface ApiError {
 ### frontend/src/lib/avatarOptions.ts
 
 ```
+import { createAvatar } from '@dicebear/core';
+import { avataaars } from '@dicebear/collection';
+
 /*
  * Curated DiceBear Avataaars option catalog — values verified against
  * @dicebear/collection's avataaars schema (enums) and its color patterns
  * (hex without '#'). The editor only offers these; Core re-validates.
  */
 
-export interface AvatarOptions {
-  top?: string[];
-  hairColor?: string[];
-  skinColor?: string[];
-  eyes?: string[];
-  eyebrows?: string[];
-  mouth?: string[];
-  facialHair?: string[];
-  facialHairProbability?: number;
+/**
+ * The one place `createAvatar(avataaars, ...)` is called, so a caller — the
+ * profile `Avatar.tsx` today, the Tutor's `presence` billboard (Class III /
+ * S17, TUTOR_INSTRUMENTS.md §3.4) as of this comment — never duplicates
+ * DiceBear's own options-to-URI shape.
+ */
 ```
 
 ### frontend/src/lib/courseBadges.ts
@@ -25197,11 +25239,11 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
 import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
 import { DemoStepsSummary } from '@/tutor/replay/DemoStepsSummary';
+import { PlanNotebookPanel } from '@/tutor/PlanNotebookPanel';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
 import { MemoryNotesPanel } from './MemoryNotesPanel';
 
-/*
 ```
 
 ### frontend/src/routes/app/family/ManageKidPanel.tsx
@@ -26711,6 +26753,26 @@ function systemPrefersDark(): boolean {
   // matchMedia is absent in some test environments (jsdom) — default to light there.
 ```
 
+### frontend/src/tutor-scene/AvatarBillboard.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { SRGBColorSpace, TextureLoader, type Texture } from 'three';
+
+/*
+ * Class III / S17 `presence` (TUTOR_INSTRUMENTS.md §3.4): "the learner's
+ * existing avatar appears in the scene during a transaction." Confirmed by
+ * research before writing this: nothing in this codebase has ever rendered
+ * anything but one of the 4 rigged, authored `.glb` characters inside the 3D
+ * canvas — the learner's own avatar is a DiceBear `avataaars` SVG data URI
+ * (`frontend/src/components/Avatar.tsx`), 2D-only, with no 3D counterpart
+ * anywhere. This is the coarse, honest version that infrastructure supports
+ * TODAY: a camera-facing billboard (`THREE.Sprite`, which is always aimed at
+ * the camera by construction — no per-frame lookAt code needed, and nothing
+ * to get backwards) textured with that same SVG, standing recognizably in
+ * the scene rather than a full rigged 3D reconstruction of an avatar that
+```
+
 ### frontend/src/tutor-scene/CameraDirector.tsx
 
 ```
@@ -26961,6 +27023,7 @@ import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
+import { AvatarBillboard } from './AvatarBillboard';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
@@ -26968,7 +27031,6 @@ import {
   AUDITION_GROUPING,
   AUDITION_NARROW_WEIGHT,
   AUDITION_RINGS,
-  AUDITION_SAMPLES_PER_METRE,
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -28318,6 +28380,7 @@ import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HudPlate } from '@/tutor/hud/HudPlate';
+import { PlanNotebookPanel } from './PlanNotebookPanel';
 import { SessionHistory } from './SessionHistory';
 import { useStageDock } from './stage/StageShell';
 import type { SessionSummary } from './types';
@@ -28328,7 +28391,6 @@ import type { SessionSummary } from './types';
  * WHY IT IS IN THE DOCK RATHER THAN IN A `bottom` LAYER. Both put the same three
  * surfaces against the bottom of the same viewport; only one of them is a place
  * the CAMERA knows about. A `bottom` layer registers with `keepClearOf`, which
- * moves the microphone dock up — and the microphone is deliberately absent on
 ```
 
 ### frontend/src/tutor/ConversationView.tsx
@@ -28347,8 +28409,8 @@ import { TutorFace } from './TutorFace';
 import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { TutorWhiteboard } from './TutorWhiteboard';
+import { NotebookKeepButton } from './NotebookKeepButton';
 import { lessonStepDots } from './lessonStepDots';
-import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 ```
 
 ### frontend/src/tutor/LiveSegmentPanel.tsx
@@ -28371,6 +28433,46 @@ import type { LiveSegmentState } from './useTutorSocket';
 /*
 ```
 
+### frontend/src/tutor/MapOverlay.tsx
+
+```
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+import { MapGraph } from './map/MapGraph';
+import type { TutorMapResponse } from './tutorApi';
+
+/**
+ * The learning map, opened as a temporary OVERLAY during `conversing`
+ * (Sprint 3, /TUTOR_INSTRUMENTS.md). Portalled to `document.body` rather than
+ * hosted in the dock's `above` slot the way `introducing`'s map is —
+ * `phases.ts`'s `shotForPhase` deliberately never reads `mapOpen` outside
+ * `introducing` (its own comment says so), because three documents
+ * (/ORACLE.md §9.3, §16, /DESIGN.md) make the character's on-screen framing
+ * during a conversation a shipping invariant no piece of chrome may move. A
+```
+
+### frontend/src/tutor/NotebookKeepButton.tsx
+
+```
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
+
+/**
+ * `notebook` — Class V (migration 0069, /TUTOR_INSTRUMENTS.md §3.6): "boards
+ * marked 'keep this', collected." The one piece of Class V that is the
+ * LEARNER's own choice rather than the tutor's — no existing UI affordance
+ * for it anywhere in this file's own history, confirmed while researching
+ * this feature (no `keep`/`save`/`star`/`bookmark` control on any whiteboard
+ * before this one.
+ *
+ * Rendered as a SIBLING of `<TutorWhiteboard>`, never nested inside it — the
+```
+
 ### frontend/src/tutor/OfferChips.tsx
 
 ```
@@ -28385,10 +28487,10 @@ import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { micBlockedReason } from './mic';
+import { PlanNotebookPanel } from './PlanNotebookPanel';
 import { SessionHistory } from './SessionHistory';
 import { SpeechCaption } from './SpeechCaption';
 import { useStageDock, type OfferLayerProps } from './stage/StageShell';
-import { MapGraph } from './map/MapGraph';
 ```
 
 ### frontend/src/tutor/PersonalizeInWorld.tsx
@@ -28409,6 +28511,26 @@ import { useHudOcclusion, WorldChip } from '@/tutor/hud/WorldChip';
 import { useStageDock, type PersonalizeLayerProps } from './stage/StageShell';
 import type { Adaptation } from './types';
 
+```
+
+### frontend/src/tutor/PlanNotebookPanel.tsx
+
+```
+import { useEffect, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Card, Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { TutorWhiteboard } from './TutorWhiteboard';
+import {
+  getKidNotebook,
+  getKidPlan,
+  getNotebook,
+  getPlan,
+  listSessions,
+  getTranscript,
+  type TutorNotebookEntry,
+  type TutorPlan,
+} from './tutorApi';
 ```
 
 ### frontend/src/tutor/SessionHistory.tsx
@@ -28516,7 +28638,9 @@ import { useScrollEdges } from './hud/useScrollEdges';
 ```
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { playSfx } from '@/lesson-engine/player/sfx';
 import type { TutorWhiteboardWire } from './types';
 import {
   AxisCaption,
@@ -28527,8 +28651,6 @@ import {
   HBar,
   Token,
   ValueLabel,
-  barHeightPct,
-  useValueFormat,
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -28611,6 +28733,46 @@ import type { LiveSegmentState } from '../useTutorSocket';
  * response painted its verdict over the NEW segment and, via
 ```
 
+### frontend/src/tutor/__tests__/NotebookKeepButton.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { NotebookKeepButton } from '../NotebookKeepButton';
+
+const { mockApi } = vi.hoisted(() => ({ mockApi: vi.fn() }));
+vi.mock('@/lib/api', () => ({ api: mockApi }));
+
+describe('NotebookKeepButton — the learner keeps a board (Class V, migration 0069)', () => {
+  beforeEach(() => {
+    mockApi.mockReset();
+  });
+
+  it('names only (sessionId, turnSeq), never the board content itself', async () => {
+    mockApi.mockResolvedValue({ data: { kept: true }, error: null });
+    render(<NotebookKeepButton token="tok" sessionId="sess-1" turnSeq={3} />);
+```
+
+### frontend/src/tutor/__tests__/PlanNotebookPanel.test.tsx
+
+```
+import { render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PlanNotebookPanel } from '../PlanNotebookPanel';
+import { getKidNotebook, getKidPlan, getNotebook, getPlan, getTranscript, listSessions } from '../tutorApi';
+
+/*
+ * Class V (/TUTOR_INSTRUMENTS.md §3.6, migration 0069), SHARED between the
+ * two audiences the catalog names: a `kidUserId` is the guardian's view of a
+ * specific child; its absence is the learner's own view of themselves,
+ * which is also the only one that computes `recap` (see the component's own
+ * header for why).
+ */
+
+vi.mock('../tutorApi', () => ({
+  getKidPlan: vi.fn(),
+```
+
 ### frontend/src/tutor/__tests__/adaptationOfferStale.test.tsx
 
 ```
@@ -28634,7 +28796,7 @@ import { useTutorSocket } from '../useTutorSocket';
 ### frontend/src/tutor/__tests__/closingInWorldReason.test.tsx
 
 ```
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ClosingInWorld } from '../ClosingInWorld';
 
@@ -28729,6 +28891,26 @@ describe('lessonStepDots', () => {
   it('marks every earlier dot done on the final step, with none upcoming', () => {
     expect(lessonStepDots(4, 4)).toEqual(['done', 'done', 'done', 'current']);
   });
+```
+
+### frontend/src/tutor/__tests__/mapOverlay.test.tsx
+
+```
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { MapOverlay } from '../MapOverlay';
+import type { TutorMapResponse } from '../tutorApi';
+
+/*
+ * THE MAP, OPENED MID-CONVERSATION (Sprint 3, /TUTOR_INSTRUMENTS.md).
+ *
+ * A portal over the whole scene, not a coexisting layout element — so what
+ * matters here is that it closes every way a real dialog must (Escape,
+ * backdrop, its own button) and that it never lets a tap start a session
+ * mid-conversation, which is exactly what `MapGraph`'s own `onPick` does in
+ * `introducing`.
+ */
+
 ```
 
 ### frontend/src/tutor/__tests__/mapRefreshAfterSession.test.tsx
@@ -29001,14 +29183,14 @@ import type { TrayDemoStep } from '../types';
 /*
  * THE TUTOR'S HANDS.
  *
- * "Mira, si agrego esta moneda…" — the tutor moves the learner's own money
- * tray while it speaks. The blueprint calls this the thing that separates a
- * tutor from a quiz (§10.2), and it had no test: a driver that writes directly
- * into a child's unsubmitted answer, with nothing checking what it writes.
+ * "Mira, si agrego esta moneda…" — the tutor moves the learner's own draft
+ * while it speaks. The blueprint calls this the thing that separates a
+ * tutor from a quiz (§10.2), and it had no test: a driver that writes
+ * directly into a child's unsubmitted answer, with nothing checking what it
+ * writes.
  *
- * Every case here is something that would reach a learner as the tutor's hands
- * doing the wrong thing — adding a coin the activity does not offer, taking
- * back the wrong one, or carrying on after the child interrupted.
+ * Every case here is something that would reach a learner as the tutor's
+ * hands doing the wrong thing — adding a coin the activity does not offer,
 ```
 
 ### frontend/src/tutor/__tests__/turnDetector.test.ts
@@ -29054,9 +29236,12 @@ import type { ServerMessage } from '../types';
 ### frontend/src/tutor/__tests__/tutorWhiteboard.test.tsx
 
 ```
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorWhiteboard } from '../TutorWhiteboard';
+import { playSfx } from '@/lesson-engine/player/sfx';
+
+vi.mock('@/lesson-engine/player/sfx', () => ({ playSfx: vi.fn() }));
 
 /*
  * THE LIVE WHITEBOARD (V4). The owner's exact complaint: the tutor narrated a
@@ -29066,9 +29251,6 @@ import { TutorWhiteboard } from '../TutorWhiteboard';
  * redoes the arithmetic), and reduced motion shows the whole board at once
  * rather than making a child wait through an animation they asked to skip.
  */
-
-const BOARD = {
-  kind: 'sequence' as const,
 ```
 
 ### frontend/src/tutor/__tests__/useHandsFreeTurn.test.tsx
@@ -29354,21 +29536,21 @@ import { useEffect, type RefObject } from 'react';
 ### frontend/src/tutor/lab/TutorLabPage.tsx
 
 ```
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId } from '@/tutor-scene/backdrops';
 import { overlappingPairs, type NamedRect } from '@/tutor-scene/hudSpace';
 import { ConversationView } from '../ConversationView';
+import { MapOverlay } from '../MapOverlay';
 import { ClosingInWorld } from '../ClosingInWorld';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
 import { ReplayInWorld } from '../replay/ReplayInWorld';
 import { buildReplayScript } from '../replay/replayScript';
 import { useReplayDirector } from '../replay/useReplayDirector';
-import { VoiceConsentControl } from '../VoiceConsentControl';
-import { MemoryNotesPanel } from '@/routes/app/family/MemoryNotesPanel';
+import { useRoleplayDirector } from '../roleplay/useRoleplayDirector';
 ```
 
 ### frontend/src/tutor/lab/labFixtures.ts
@@ -29631,6 +29813,106 @@ import { backstopMsFor, beatAt, progressOf, type ReplayBeat, type ReplayScript }
  * (`TutorStage`), fed by `speechUrl`/`audioKey` and reporting back through
 ```
 
+### frontend/src/tutor/roleplay/RoleplayCaption.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { HudPlate } from '@/tutor/hud/HudPlate';
+import type { CharacterId } from '@/components/characters/control/types';
+import type { RoleplayBeat } from './scenes';
+
+/*
+ * Class III / S17 `roleplay`: the caption for a scene beat, attributed to
+ * whichever real character is speaking it — `scenes.ts`'s own header
+ * explains why this reads a caption rather than plays audio. Deliberately
+ * its own small plate rather than reusing `SpeechCaption.tsx`: that
+ * component is wired to the ONE live `<audio>` element `TutorStage` owns
+ * (word-timed reveal, `onSpeechEnd`), and a roleplay beat has no clip for it
+ * to listen to — forcing it through that component would mean either a
+ * second audio element (the exact thing `useReplayDirector.ts`'s own header
+ * says this stage must never have) or teaching it a silent, timer-only mode
+```
+
+### frontend/src/tutor/roleplay/__tests__/RoleplayCaption.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { RoleplayCaption } from '../RoleplayCaption';
+import { ROLEPLAY_SCENES } from '../scenes';
+
+/*
+ * The one place a DYNAMIC i18n key (`tutor.character.${id}.name`,
+ * `t(beat.textKey)`, `t(titleKey)`) can actually be proven to resolve —
+ * `test-setup.ts`'s own `missingKey` listener is why: `i18n:check`'s static
+ * scanner explicitly cannot verify a template-literal key, and this project
+ * has shipped a rendered-but-untranslated key to production before over
+ * exactly that gap.
+ */
+
+const SCENE = ROLEPLAY_SCENES.lemonade_change!;
+```
+
+### frontend/src/tutor/roleplay/__tests__/useRoleplayDirector.test.ts
+
+```
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useRoleplayDirector } from '../useRoleplayDirector';
+import { ROLEPLAY_SCENES } from '../scenes';
+
+const SCENE_ID = 'lemonade_change';
+const SCENE = ROLEPLAY_SCENES[SCENE_ID]!;
+
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+```
+
+### frontend/src/tutor/roleplay/scenes.ts
+
+```
+import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+
+/*
+ * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): "Two characters act
+ * a transaction with their own cloned voices while the learner decides."
+ *
+ * PRE-AUTHORED, not model-generated, and that is a deliberate scope decision
+ * recorded here rather than a shortcut. The model picks a scene BY ID —
+ * the same "id names content that exists" posture `skillKey` already has in
+ * `oracle/src/tutor/prompt.ts` — never composes the two characters' lines
+ * itself. Three reasons: (1) freeform dual-character dialogue would need its
+ * own moderation pass PER LINE PER CHARACTER, doubling the exact per-turn
+ * safety surface /ORACLE.md §7 already treats as expensive and careful;
+ * (2) a small, pre-moderated catalog can be reviewed once, like the
+ * `oracle/skills/moves/` markdown files already are, rather than trusted
+```
+
+### frontend/src/tutor/roleplay/useRoleplayDirector.ts
+
+```
+import { useEffect, useRef, useState } from 'react';
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import { ROLEPLAY_SCENES, type RoleplayBeat, type RoleplaySceneId } from './scenes';
+
+/*
+ * THE CLOCK OF A ROLEPLAY, the same job `useReplayDirector.ts` does for a
+ * replay — this file is deliberately much smaller because a roleplay beat
+ * carries no audio (see `scenes.ts`'s own header for why voice is not wired
+ * yet), so there is only ONE way a beat ends: its `durationMs` timer, no
+ * media-event backstop needed.
+ *
+ * `perCharacter` resolves the scene's abstract `'lead' | 'companion'` roles
+ * to whichever REAL `CharacterId`s this session actually has standing —
+ * TutorScene.tsx's `perCharacter` prop (Class III / S17), so the same scene
+ * plays correctly no matter which two characters the learner picked.
+```
+
 ### frontend/src/tutor/segmentLock.ts
 
 ```
@@ -29817,18 +30099,18 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TrayDemoStep } from './types';
 
 /*
- * The tray demonstration driver (Tutor v3).
+ * THE DEMONSTRATION DRIVER (Tutor v3; widened to 6 segment types
+ * 2026-09-02/03, /TUTOR_INSTRUMENTS.md Sprint 2 — but see the LIVE VOCABULARY
+ * note below before assuming all 6 actually fire).
  *
- * "Mira, si agrego esta moneda…" — the tutor MOVES the open money tray while
- * speaking. The tray renderers (coin_count / make_change) are controlled
- * components whose draft the tutor panel owns, so a demonstration is nothing
- * more exotic than a sequence of draft updates on a timer: no new renderer,
- * no ref plumbing into the lesson engine, and the animation is exactly the
- * same state change a real tap produces — which is what makes it honest.
+ * "Mira, si agrego esta moneda…" — the tutor MOVES the open activity's own
+ * controlled draft while speaking. Every demonstrable renderer already owns a
+ * draft it re-renders from (`onChange` is how a real tap changes it), so a
+ * demonstration is nothing more exotic than a sequence of the SAME draft
+ * updates on a timer: no new renderer, no ref plumbing into the lesson
+ * engine, and the animation is exactly the state change a real tap produces —
+ * which is what makes it honest.
  *
- * Fail-safe by construction: steps naming a denomination the payload does not
- * offer are DROPPED silently (the schema upstream already bounds the shape;
- * this bounds the content), and an abort — the learner interrupting — stops
 ```
 
 ### frontend/src/tutor/turnDetector.ts
@@ -29865,10 +30147,10 @@ import type {
   TutorIntent,
   TutorOffers,
   TutorPreferences,
+  TutorWhiteboardWire,
 } from './types';
 
 /*
- * Core is the only service the browser calls for Tutor DATA (/AGENTS.md §1.5).
 ```
 
 ### frontend/src/tutor/types.ts
@@ -32594,6 +32876,7 @@ import type { TutorContext, Locale } from '../context/schema.js';
 import {
   EMOTIONS,
   ACTIONS,
+  ROLEPLAY_SCENE_IDS,
   type WhiteboardCategories,
   type WhiteboardCompare,
   type WhiteboardMarkedLine,
@@ -32604,7 +32887,6 @@ import { fenceActivityContent } from '../safety/untrusted.js';
 
 /*
  * The pedagogical system prompt.
- *
 ```
 
 ### oracle/src/tutor/scripted.ts
@@ -32875,6 +33157,7 @@ import { ADAPTATIONS } from '../context/schema.js';
 import {
   ACTIONS,
   EMOTIONS,
+  ROLEPLAY_SCENE_IDS,
   type WhiteboardCategories,
   type WhiteboardCompare,
   type WhiteboardMark,
@@ -32884,7 +33167,6 @@ import {
   type WhiteboardBarModel,
   type WhiteboardPartWhole,
   type WhiteboardFlow,
-  type WhiteboardGoalBar,
 ```
 
 ### oracle/src/ws/server.ts

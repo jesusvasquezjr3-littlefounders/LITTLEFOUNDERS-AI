@@ -165,6 +165,11 @@ export type ServerMessage =
        * `TutorWhiteboardWire`, below, for the four shapes.
        */
       whiteboard?: TutorWhiteboardWire;
+      /**
+       * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): a pre-authored roleplay
+       * scene this turn started, by id — see `tutor/roleplay/scenes.ts`.
+       */
+      roleplayScene?: string | null;
     }
   | {
       type: 'turn_audio';
@@ -691,6 +696,18 @@ export interface TranscriptTurn {
    * third copy of the same three fields.
    */
   demonstrate: TrayDemoStep[] | null;
+  /**
+   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the
+   * pre-authored roleplay scene id this turn started, when it started one —
+   * the identical live-only-field gap `demonstrate` above closes, closed
+   * the same way. Null on every row that never started one, including every
+   * row written before this column existed. snake_case, unlike its
+   * siblings above: this whole interface mirrors backend's `TutorTurnRow`
+   * verbatim (see `audio_path`/`created_at` above) rather than a camelCased
+   * response shape — `GET /sessions/:id` forwards `listTutorTurns`' rows
+   * through unmapped.
+   */
+  roleplay_scene: string | null;
 }
 
 export interface TranscriptSegment {

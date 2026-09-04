@@ -1297,6 +1297,16 @@ export interface TutorTurnRow {
    * schema visual field.
    */
   demonstrate: TutorTurnDemonstrateStep[] | null;
+  /**
+   * Null on every row that never started a roleplay scene — see migration
+   * 0070. A closed catalog id, not structured content — unlike
+   * `whiteboard`/`demonstrate` it carries no arithmetic to re-verify at read
+   * time, so it skips the raw-row/revalidator machinery those two have: a
+   * malformed value's worst case is the frontend catalog not recognising the
+   * id and rendering nothing, the same safe failure any unknown id already
+   * has.
+   */
+  roleplay_scene: string | null;
 }
 
 /**
@@ -2347,6 +2357,14 @@ export interface InsertTurnInput {
    * the guardian transcript viewer (migration 0067).
    */
   demonstrate?: TutorTurnDemonstrateStep[] | null;
+  /**
+   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the same
+   * live-only-field gap `demonstrate` above closes, closed identically —
+   * this field did not exist at all, so a session that started a roleplay
+   * scene would have lost that fact silently on replay and on the guardian
+   * transcript viewer.
+   */
+  roleplayScene?: string | null;
 }
 
 export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> {
@@ -2367,6 +2385,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
       moderation: input.moderation ?? {},
       whiteboard: input.whiteboard ?? null,
       demonstrate: input.demonstrate ?? null,
+      roleplay_scene: input.roleplayScene ?? null,
     }),
   });
   return res !== null;
@@ -2374,7 +2393,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
 
 export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] | null> {
   const rows = await serviceRest<TutorTurnRawRow[]>(
-    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard,demonstrate&order=seq.asc`,
+    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard,demonstrate,roleplay_scene&order=seq.asc`,
   );
   if (rows === null) return null;
   return rows.map((row) => ({

@@ -45,6 +45,14 @@ export const ACTIONS = [
 ] as const;
 
 /**
+ * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): the closed set of
+ * PRE-AUTHORED scene ids, hand-mirrored against the actual content catalog
+ * at `frontend/src/tutor/roleplay/scenes.ts` — widen both together, never
+ * one ahead of the other.
+ */
+export const ROLEPLAY_SCENE_IDS = ['lemonade_change'] as const;
+
+/**
  * What the tutor wants to happen after speaking.
  *
  * `ask` keeps the conversation going, `segment` hands the right-hand panel a
@@ -1597,6 +1605,17 @@ export const TutorTurnSchema = z
      * itself.
      */
     savePlan: z.boolean(),
+    /**
+     * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): "two characters act a
+     * transaction with their own cloned voices while the learner decides."
+     * A closed id into a small, PRE-AUTHORED catalog
+     * (`frontend/src/tutor/roleplay/scenes.ts`) — the model NAMES a scene,
+     * it never composes either character's lines, the same "id names
+     * content that exists" posture `skillKey` already has. One scene today
+     * (`lemonade_change`); widen the enum alongside the frontend catalog,
+     * never ahead of it — an id with no matching scene plays nothing.
+     */
+    roleplayScene: z.enum(ROLEPLAY_SCENE_IDS).nullable().optional(),
   })
   .strict()
   .refine((turn) => turn.next !== 'segment' || turn.segmentRequest != null, {
@@ -1614,6 +1633,14 @@ export const TutorTurnSchema = z
   .refine((turn) => !turn.savePlan || turn.whiteboard != null, {
     message: 'savePlan requires a whiteboard on the SAME turn — nothing to save otherwise',
     path: ['savePlan'],
+  })
+  .refine((turn) => turn.roleplayScene == null || turn.whiteboard == null, {
+    message: 'roleplayScene and whiteboard may not both be set on the same turn',
+    path: ['roleplayScene'],
+  })
+  .refine((turn) => turn.roleplayScene == null || turn.segmentRequest == null, {
+    message: 'roleplayScene and segmentRequest may not both be set on the same turn — start the scene, THEN request the activity once it ends',
+    path: ['roleplayScene'],
   });
 
 export type TutorTurn = z.infer<typeof TutorTurnSchema>;

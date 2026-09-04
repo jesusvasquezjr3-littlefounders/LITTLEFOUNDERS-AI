@@ -42,6 +42,7 @@ function turn(over: Pick<TranscriptTurn, 'id' | 'seq' | 'speaker' | 'text'> & Pa
     created_at: `2026-08-14T16:2${over.seq}:00.000Z`,
     whiteboard: null,
     demonstrate: null,
+    roleplay_scene: null,
     ...over,
   };
 }

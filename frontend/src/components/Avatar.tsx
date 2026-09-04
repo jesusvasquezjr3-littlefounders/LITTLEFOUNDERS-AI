@@ -1,8 +1,6 @@
 import { useMemo } from 'react';
-import { createAvatar } from '@dicebear/core';
-import { avataaars } from '@dicebear/collection';
 import { cn } from '@/lib/utils';
-import type { AvatarOptions } from '@/lib/avatarOptions';
+import { avatarDataUri, type AvatarOptions } from '@/lib/avatarOptions';
 
 /*
  * DiceBear Avataaars, rendered LOCALLY (@dicebear/core → SVG data URI) — no
@@ -18,10 +16,7 @@ interface AvatarProps {
 }
 
 export function Avatar({ options, seed = 'littlefounder', className }: AvatarProps) {
-  const uri = useMemo(() => {
-    const opts = { seed, ...options } as Record<string, unknown>;
-    return createAvatar(avataaars, opts).toDataUri();
-  }, [options, seed]);
+  const uri = useMemo(() => avatarDataUri(options as Record<string, unknown>, seed), [options, seed]);
 
   return (
     <img

@@ -61,6 +61,12 @@ export interface TutorTurnState {
    * fields included. Null when this turn draws no board at all.
    */
   whiteboard: TutorWhiteboardWire | null;
+  /**
+   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): a pre-authored roleplay
+   * scene this turn started, by id — see `tutor/roleplay/scenes.ts`. Null
+   * on every ordinary turn.
+   */
+  roleplayScene: string | null;
 }
 
 export interface LiveSegmentState {
@@ -397,6 +403,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
               policy: message.policy ?? null,
               demonstrate: message.demonstrate ?? null,
               whiteboard: message.whiteboard ?? null,
+              roleplayScene: message.roleplayScene ?? null,
             });
             setLesson(message.lesson ?? null);
             setHistory((prev) =>

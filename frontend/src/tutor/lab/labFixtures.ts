@@ -898,6 +898,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask',
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
       whiteboard: {
         kind: 'sequence',
         start: 10,
@@ -927,6 +928,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask',
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
       whiteboard: {
         kind: 'compare',
         left: { label: text.left, value: 45 },
@@ -953,6 +955,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask',
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
       whiteboard: {
         kind: 'marked_line',
         min: 0,
@@ -981,6 +984,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask',
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
       whiteboard: {
         kind: 'tokens',
         groups: [
@@ -1009,6 +1013,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask' as const,
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
     };
     if (activity === 'bar-model') {
       return {
@@ -1108,6 +1113,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask' as const,
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
     };
     if (activity === 'ten-frame') {
       return {
@@ -1201,6 +1207,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask' as const,
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
     };
     if (activity === 'table') {
       return {
@@ -1351,6 +1358,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask' as const,
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
     };
     if (activity === 'deal') {
       return {
@@ -1503,6 +1511,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask' as const,
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
     };
     if (activity === 'pictograph') {
       return {
@@ -1694,6 +1703,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       next: 'ask',
       policy: null,
       demonstrate: null,
+      roleplayScene: null,
       whiteboard: {
         kind: 'categories',
         categories: [
@@ -1709,6 +1719,24 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (activity === 'roleplay') {
+    return {
+      seq: 4,
+      // The triggering turn's OWN line — brief, per the prompt's own
+      // guidance (oracle/src/tutor/prompt.ts): the scene does the rest.
+      text: LAB_SCRIPTS[locale].turn,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      roleplayScene: 'lemonade_change',
+      whiteboard: null,
+    };
+  }
   return {
     seq: 4,
     text: LAB_SCRIPTS[locale].turn,
@@ -1720,6 +1748,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
     next: 'segment',
     policy: null,
     demonstrate: null,
+    roleplayScene: null,
     whiteboard: null,
   };
 }
@@ -1807,6 +1836,10 @@ const WHITEBOARD_ACTIVITIES = [
   'fill',
   'whatif',
   'your-turn',
+  // Class III / S17: not a whiteboard, but the SAME "not a graded segment"
+  // bucket this list actually gates — see this list's own header comment on
+  // why an activity absent here silently gets a segment instead.
+  'roleplay',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [
@@ -1958,6 +1991,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         audio_path: null,
         whiteboard: null,
         demonstrate: null,
+        roleplay_scene: null,
         source: 'scripted',
         created_at: at(0),
       },
@@ -1971,6 +2005,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         audio_path: null,
         whiteboard: null,
         demonstrate: null,
+        roleplay_scene: null,
         source: 'stt',
         created_at: at(1),
       },
@@ -1984,6 +2019,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         audio_path: null,
         whiteboard: null,
         demonstrate: null,
+        roleplay_scene: null,
         source: 'model',
         created_at: at(2),
       },
@@ -1997,6 +2033,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         audio_path: null,
         whiteboard: null,
         demonstrate: null,
+        roleplay_scene: null,
         source: 'stt',
         created_at: at(3),
       },
@@ -2010,6 +2047,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         audio_path: null,
         whiteboard: null,
         demonstrate: null,
+        roleplay_scene: null,
         source: 'model',
         created_at: at(4),
       },
@@ -2023,6 +2061,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         audio_path: null,
         whiteboard: null,
         demonstrate: null,
+        roleplay_scene: null,
         source: 'model',
         created_at: at(5),
       },

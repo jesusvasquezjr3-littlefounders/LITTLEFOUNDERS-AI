@@ -252,6 +252,13 @@ export interface PersistTurnInput {
    * catches a caller that skipped it.
    */
   savePlan?: boolean | null;
+  /**
+   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the
+   * pre-authored scene id this turn started, when it started one — the SAME
+   * live-only-field gap migrations 0058 (`whiteboard`) and 0067
+   * (`demonstrate`) already closed, closed the identical way.
+   */
+  roleplayScene?: string | null;
 }
 
 /**
