@@ -495,7 +495,7 @@ describe('offeredNoAnswer — who has actually tried', () => {
    * one, and `/\bno s[eé]\b/` never matched "no sé": the exact Spanish
    * spelling the rule was written for. It read correctly and was false.
    */
-  it.each(['no sé', 'no sé cómo', 'NO SÉ.', 'ni idea', 'ayúdame', 'não sei', "i don't know", '', '¿y eso?'])(
+  it.each(['no sé', 'no sé cómo', 'NO SÉ.', 'ni idea', 'ayúdame', 'não sei', "i don't know", '', '¿y eso?', '¿cómo?'])(
     'reads %j as no attempt',
     (text) => {
       expect(offeredNoAnswer(text)).toBe(true);
@@ -507,7 +507,22 @@ describe('offeredNoAnswer — who has actually tried', () => {
    * a child who says "un ciclo" has answered, and a tutor confirming it with
    * "Exacto" is doing the thing confirming is for.
    */
-  it.each(['un ciclo', 'comprar y vender', 'porque sube el precio', '12', 'creo que son cuatro'])(
+  /*
+   * The last one is a regression this file paid for: a LONG question is
+   * usually an attempt wearing a question mark. "osea empiezo en el precio y
+   * voy sumando?" restates the method correctly and asks to be confirmed, and
+   * a tutor answering "Exacto" is doing the right thing — repairing it would
+   * teach the tutor to withhold confirmation from children who check their own
+   * understanding.
+   */
+  it.each([
+    'un ciclo',
+    'comprar y vender',
+    'porque sube el precio',
+    '12',
+    'creo que son cuatro',
+    'osea empiezo en el precio y voy sumando?',
+  ])(
     'reads %j as an attempt',
     (text) => {
       expect(offeredNoAnswer(text)).toBe(false);

@@ -2922,9 +2922,22 @@ export function isTooLongToSayAloud(say: string): boolean {
 export function offeredNoAnswer(learnerText: string): boolean {
   const said = learnerText.trim().toLowerCase();
   if (said === '') return true;
-  // A question back asks for help; it does not attempt an answer.
-  if (said.endsWith('?')) return true;
-  return NO_ANSWER_MARKERS.test(said) && said.split(/\s+/).length <= 8;
+  const words = said.split(/\s+/).filter(Boolean).length;
+  /*
+   * A SHORT question back asks for help and offers nothing — "¿y eso?",
+   * "¿cómo?". A LONG one is usually an attempt wearing a question mark, and
+   * treating it as no answer is a regression this file already paid for once:
+   *
+   *   learner: "osea empiezo en el precio y voy sumando?"
+   *   tutor:   "Exacto, Nayeli. Empiezas en el precio y vas sumando…"
+   *
+   * That child restated the method correctly and asked to be confirmed. The
+   * "Exacto" is right, and repairing it would teach the tutor to withhold
+   * confirmation from the children who check their own understanding — which
+   * is the habit this product most wants to encourage.
+   */
+  if (said.endsWith('?')) return words <= 4;
+  return NO_ANSWER_MARKERS.test(said) && words <= 8;
 }
 
 /*

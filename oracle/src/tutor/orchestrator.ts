@@ -2813,7 +2813,19 @@ export class TutorOrchestrator {
                   ? `narrated this problem with the same sentence frame it already used ("${templateRepeat.slice(0, 60)}"), changing only the numbers. The METHOD is right — keep it. What has to change is the wording: this is a different situation, so open it differently, name the thing being bought and the reason it matters here, and drop any little catchphrase you have now said twice. A child who hears the same script every turn stops hearing it`
                   : promisesAnActivity(repeated)
                     ? `announced an activity with nearly the same words it already used ("${repeated.slice(0, 60)}"). Do NOT announce it at all — the activity appears on screen by itself. React to what the learner said, keep the segmentRequest if you made one, and let the activity arrive unannounced`
-                    : `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
+                    : parsed.turn.say.trim().startsWith(repeated.trim().slice(0, 24))
+                      ? /*
+                         * THE OPENING SENTENCE SPECIFICALLY, because "say
+                         * something new" was read as "change the rest".
+                         *
+                         * One child heard "Tienes razón, de 3 no se pueden
+                         * quitar 7." three turns running on 2026-09-04: the
+                         * repair fired every time, and every retry complied by
+                         * writing a different BODY under the same opener. The
+                         * correction has to name the part that did not change.
+                         */
+                        `began with a sentence it has already used in this session ("${repeated.slice(0, 60)}"). The problem is the OPENING, not what follows it: open somewhere else entirely — react to what they just said, or go straight to the next step — and never start two turns the same way. A child who hears the same first line every turn stops listening before you reach the part that is new`
+                      : `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
               /*
                * NAME WHICH CHECK FIRED. Four different detectors share this
                * one branch, and reading the 2026-09-02 converse output it was

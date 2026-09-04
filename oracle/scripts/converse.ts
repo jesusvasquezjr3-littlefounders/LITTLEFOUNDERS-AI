@@ -1405,7 +1405,19 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
   }
 
   // 8. NEVER ASKING ANYTHING. A tutor that only tells is a lecture.
-  const asks = beats.filter((b) => b.tutor.includes('?') || b.tutor.includes('¿')).length;
+  /*
+   * AN INVITATION IS AN ASK, question mark or not. This counted punctuation
+   * only, and reported "Te las muestro en la pantalla, y luego tú me dices
+   * cuál número va después del 4." as a turn that asked nothing. It asks.
+   *
+   * The marker list is short and second-person on purpose: the failure this
+   * check exists for is a tutor that only TELLS, and every one of these hands
+   * the turn to the learner.
+   */
+  const INVITES = /\b(t[uú] me dices|dime|dime t[uú]|prueba|int[eé]ntalo|elige|escoge|cu[eé]ntame|me cuentas|tu turno|ahora t[uú]|me dices)\b/i;
+  const asks = beats.filter(
+    (b) => b.tutor.includes('?') || b.tutor.includes('¿') || INVITES.test(b.tutor),
+  ).length;
   if (asks < Math.ceil(beats.length / 2)) {
     fault(`only ${asks} of ${beats.length} turns asked the learner anything`, 'a tutor that only tells is a lecture');
   }
@@ -1618,7 +1630,27 @@ async function main(): Promise<void> {
        * no activity — and lumping a delivered activity in with it is the
        * metric measuring its own assumption about which surface counts.
        */
-      if (promisesADrawing(turn.say) && turn.whiteboard == null && turn.segmentRequest == null) {
+      /*
+       * FOUR SURFACES KEEP A SCREEN PROMISE, not one. A whiteboard, an
+       * activity, a demonstration, and a roleplay scene are all things that
+       * arrive on the screen; this check knew about the first, then the
+       * second. On 2026-09-04 it fired on
+       *
+       *   learner: "no me imagino lo del cambio, lo pueden actuar"
+       *   tutor:   "Vamos a verlo actuado: yo compro una limonada y alguien
+       *             me da cambio. Mira lo que pasa aquí…"
+       *
+       * which set a `roleplayScene` — the child asked for it to be acted out
+       * and it was acted out. The fault this exists for is a promise NOTHING
+       * keeps.
+       */
+      if (
+        promisesADrawing(turn.say) &&
+        turn.whiteboard == null &&
+        turn.segmentRequest == null &&
+        turn.demonstrate == null &&
+        turn.roleplayScene == null
+      ) {
         fault(
           'promised a drawing and drew nothing',
           turn.say.slice(0, 120),
