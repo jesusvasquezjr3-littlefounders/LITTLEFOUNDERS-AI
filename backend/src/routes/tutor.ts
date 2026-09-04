@@ -1124,6 +1124,8 @@ function internalRouter(): Router {
      * catalog never needs a backend redeploy to be storable.
      */
     roleplayScene: z.string().min(1).max(64).nullish(),
+    /** Class III `point_at` (2026-09-04): the array index `action: "point"` reached for, if any. */
+    pointAt: z.number().int().min(0).nullish(),
   });
 
   router.post('/turns', async (req, res) => {

@@ -2009,6 +2009,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         emotion: snapshot.lastTurn.turn.emotion,
         action: snapshot.lastTurn.turn.action,
         roleplayScene: snapshot.lastTurn.turn.roleplayScene ?? null,
+        pointAt: snapshot.lastTurn.turn.pointAt ?? null,
         audioUrl: null,
         // No `turn_audio` follows a resume redraw (see the comment above) —
         // the client must not wait for one, or hold hands-free listening
@@ -2658,6 +2659,7 @@ async function deliver(
      */
     ...(wireBoard !== null ? { whiteboard: wireBoard } : {}),
     ...(emission.turn.roleplayScene ? { roleplayScene: emission.turn.roleplayScene } : {}),
+    ...(emission.turn.pointAt != null ? { pointAt: emission.turn.pointAt } : {}),
   });
 
   /*
@@ -2705,6 +2707,7 @@ async function deliver(
       demonstrate: emission.turn.demonstrate ?? null,
       savePlan: emission.turn.savePlan,
       roleplayScene: emission.turn.roleplayScene ?? null,
+      pointAt: emission.turn.pointAt ?? null,
     }).then((recorded) => notePersist(live, recorded));
   });
 

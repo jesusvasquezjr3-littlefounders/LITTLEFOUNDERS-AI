@@ -30,6 +30,7 @@ import { RoleplayAudio } from './roleplay/RoleplayAudio';
 import { isRoleplaySceneId } from './roleplay/scenes';
 import { avatarDataUri } from '@/lib/avatarOptions';
 import { isLocale } from '@/i18n';
+import { resolvePointBearing, type PointBearing } from '@/tutor-scene/pointTarget';
 import { auditionFor } from './stage/phases';
 import { micForPhase } from './stage/micForPhase';
 import {
@@ -1432,6 +1433,45 @@ export function TutorExperience() {
     roleplayLocale,
   );
   /**
+   * Class III `point_at` (2026-09-04): resolved in an EFFECT, deliberately
+   * not inline during render — `resolvePointBearing` reads
+   * `getBoundingClientRect()` on the whiteboard's own bars
+   * (`tutor-scene/pointTarget.ts`), a forced layout that must run AFTER the
+   * whiteboard this same turn drew has actually committed and painted, not
+   * during this component's own render pass while that DOM may not exist
+   * yet. `null` (the S16 coarse pose) whenever the effective action is not
+   * `point`, `pointAt` is absent, or no matching element resolves — see
+   * that module's own header on why a miss costs nothing.
+   */
+  const effectiveAction = segmentCue?.action ?? director?.beat?.action ?? turn?.action ?? 'idle';
+  const [pointBearing, setPointBearing] = useState<PointBearing | null>(null);
+  useEffect(() => {
+    if (effectiveAction !== 'point' || turn?.pointAt == null) {
+      setPointBearing(null);
+      return;
+    }
+    const pointAt = turn.pointAt;
+    setPointBearing(resolvePointBearing(pointAt));
+    // Second pass one frame later, same shape as `TutorFace.tsx`'s own
+    // `fit()` re-run: on a cold mount the whiteboard this turn drew can
+    // still be pre-layout on this effect's first commit, which
+    // `getBoundingClientRect()` reads back as a zero-size board — confirmed
+    // live in the lab. A settled board makes the second call redundant.
+    const raf = requestAnimationFrame(() => setPointBearing(resolvePointBearing(pointAt)));
+    return () => cancelAnimationFrame(raf);
+    /*
+     * KEYED ON `turnSeq`, NOT `turn?.whiteboard` — found live in the lab
+     * (`TutorLabPage.tsx`'s own comment on this exact effect shape has the
+     * full account: an unstable mock turn object there turned this into an
+     * infinite render loop). `turn` itself is real `useState` here, so
+     * `turn.whiteboard` IS reference-stable across unrelated re-renders in
+     * production — but keying on `turnSeq`, the SAME "a genuinely new turn
+     * arrived" identity `useRoleplayDirector` above already uses, is the
+     * more honest signal regardless of which caller renders this, and
+     * costs nothing to be consistent about.
+     */
+  }, [effectiveAction, turnSeq]);
+  /**
    * Only while a scene is actually running ("during a transaction") — see
    * `presence`'s own catalog line — and null for a guest/still-restoring
    * session, which has no avatar of its own to show.
@@ -1500,8 +1540,9 @@ export function TutorExperience() {
        * segment's cue outranks both — it is a THIRD performer, momentarily.
        */
       emotion={segmentCue?.emotion ?? director?.beat?.emotion ?? turn?.emotion ?? 'neutral'}
-      action={segmentCue?.action ?? director?.beat?.action ?? turn?.action ?? 'idle'}
+      action={effectiveAction}
       actionKey={segmentCue ? segmentCue.actionKey : phase === 'replaying' ? replayKey : turnSeq}
+      pointBearing={pointBearing}
       perCharacter={roleplay.perCharacter}
       presenceAvatarUri={presenceAvatarUri}
       /*

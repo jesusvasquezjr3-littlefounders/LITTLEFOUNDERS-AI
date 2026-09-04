@@ -58,6 +58,7 @@ function turn(over: Pick<TranscriptTurn, 'id' | 'seq' | 'speaker' | 'text'> & Pa
     whiteboard: null,
     demonstrate: null,
     roleplay_scene: null,
+    point_at: null,
     ...over,
   };
 }

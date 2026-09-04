@@ -13637,6 +13637,26 @@ BEGIN
 -- One additive, nullable TEXT column (not jsonb — a scene id is a single
 ```
 
+### database/migrations/0071_tutor_turn_point_at.sql
+
+```
+-- 0071_tutor_turn_point_at.sql — the tutor's `point_at` target had no path
+-- into persistence, the identical gap migrations 0058 (whiteboard), 0067
+-- (demonstrate) and 0070 (roleplay_scene) already closed for the other
+-- live-only visual turn fields.
+-- @phase: expand
+--
+-- Class III `point_at` (2026-09-04): a turn whose `action` is `"point"` may
+-- name WHICH element of the open whiteboard the gesture reaches for
+-- (`oracle/src/tutor/turnSchema.ts`'s `pointAt`), as a plain array index —
+-- never a coordinate, never content to re-verify. Without this column, a
+-- session where the tutor pointed at something specific would lose that
+-- fact on replay and in the guardian transcript viewer, silently, exactly
+-- as 0058/0067/0070's own comments describe for the fields they close the
+-- identical gap for.
+--
+```
+
 ### database/package.json
 
 ```
@@ -27046,11 +27066,11 @@ import { Character3D } from './Character3D';
 import { AvatarBillboard } from './AvatarBillboard';
 import { StallProp } from './StallProp';
 import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
+import type { PointBearing } from './pointTarget';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import {
-  AUDITION_GROUPING,
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -27439,6 +27459,7 @@ import { CHARACTER_ACTIONS, CHARACTER_EMOTIONS } from '@/components/characters/c
 import { Euler, Quaternion, type Bone } from 'three';
 import type { Rig } from './rig';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+import type { PointBearing } from './pointTarget';
 
 /*
  * The 12 canonical actions and 7 emotions, driven PROCEDURALLY.
@@ -27450,7 +27471,6 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
  * drive these characters exists — only the clips do not.
  *
  * Rather than leave the 3D characters inert until someone opens Blender, the
- * same 19 states are synthesised from bone rotations. The result is not what a
 ```
 
 ### frontend/src/tutor-scene/characterMaterial.test.ts
@@ -28011,6 +28031,46 @@ import { mouthCardTint, resolveBackdrop, SCENE_BACKDROP_IDS } from './backdrops'
  * constant somebody would have to re-check by eye every time a palette moves.
  */
 
+```
+
+### frontend/src/tutor-scene/pointTarget.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { resolvePointBearing } from './pointTarget';
+
+/**
+ * A minimal fake `Document` — real enough for `querySelector` and
+ * `getBoundingClientRect` to answer correctly, without pulling in JSDOM's
+ * full layout engine (which does not compute real box positions anyway;
+ * `getBoundingClientRect` is stubbed per-node here instead).
+ */
+function fakeDocument(
+  boardRect: { left: number; top: number; width: number; height: number },
+  items: Record<number, { left: number; top: number; width: number; height: number }>,
+): Document {
+  const doc = window.document.implementation.createHTMLDocument('');
+  const board = doc.createElement('div');
+```
+
+### frontend/src/tutor-scene/pointTarget.ts
+
+```
+/*
+ * Class III `point_at` (2026-09-04): turns a `pointAt` array index into a
+ * DIRECTION the character's existing `point` pose can lean toward — not
+ * inverse kinematics, and deliberately not: the whiteboard is a DOM
+ * overlay (`/ORACLE.md`'s own "on-canvas overlays" doctrine — every plate
+ * and chip is a projected DOM node, never scene geometry), so there is no
+ * 3D world position for a bar to aim a bone at in the first place. What
+ * DOES exist, and what this reads, is real: the target element's own
+ * on-screen position, found via `data-tutor-whiteboard-item` (BarColumn's
+ * own hook) relative to the whole board's own bounds
+ * (`data-tutor-whiteboard`, `TutorWhiteboard.tsx`).
+ *
+ * A WHITEBOARD-RELATIVE bearing, not a camera-relative one, on purpose: the
+ * character's own projected screen position would need hooking into
+ * `ScreenAnchor.tsx`'s per-frame projector for a value nothing else needs
 ```
 
 ### frontend/src/tutor-scene/poseLibrary.test.ts

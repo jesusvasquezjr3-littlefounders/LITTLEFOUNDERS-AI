@@ -23,6 +23,7 @@ import {
   limitFaceLift,
 } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
+import type { PointBearing } from './pointTarget';
 import { playSfx } from '@/lesson-engine/player/sfx';
 import {
   additiveClip,
@@ -67,6 +68,14 @@ export interface Character3DProps {
   action?: CharacterAction;
   /** Bump to replay the same one-shot action twice in a row. */
   actionKey?: number;
+  /**
+   * Class III `point_at` (2026-09-04): a resolved screen-position bias for
+   * `action: "point"`, already computed by the caller
+   * (`tutor-scene/pointTarget.ts`) — this component never touches the DOM
+   * itself, since resolving it is a layout read that must not happen inside
+   * the per-frame loop below. Ignored by every action but `point`.
+   */
+  pointBearing?: PointBearing | null;
   /*
    * Index into VISEMES (mouthCard.ts). Defaults to `closed`.
    *
@@ -151,6 +160,7 @@ export function Character3D({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  pointBearing = null,
   viseme = 0,
   backdrop = 'auto',
   mouth = true,
@@ -425,11 +435,17 @@ export function Character3D({
       // there), rather than snapping or restarting.
       const progress = duration <= 0 ? 0 : looping ? (elapsed % duration) / duration : Math.min(elapsed / duration, 1);
 
-      const lift = applyCharacterFrame(bones, emotion, action, {
-        progress,
-        time: state.clock.elapsedTime + PHASE[id],
-        lift: 0,
-      });
+      const lift = applyCharacterFrame(
+        bones,
+        emotion,
+        action,
+        {
+          progress,
+          time: state.clock.elapsedTime + PHASE[id],
+          lift: 0,
+        },
+        pointBearing,
+      );
       actionLift.current = lift * asset.targetHeightM;
       if (speaking && !settings.reducedMotion) {
         applySpeaking(bones, state.clock.elapsedTime + PHASE[id]);

@@ -150,16 +150,29 @@ export function BarColumn({
   minWidth = '4.5rem',
   maxWidth,
   className,
+  itemIndex,
 }: {
   children: ReactNode;
   minWidth?: string;
   maxWidth?: string;
   className?: string;
+  /**
+   * Class III `point_at` (2026-09-04): this column's own position in the
+   * board's drawn sequence, published as `data-tutor-whiteboard-item` so a
+   * `pointAt` index the model named can be resolved back to a real,
+   * on-screen element (`tutor-scene/pointTarget.ts`) — the same "a hook
+   * lets an outside reader find this DOM node" shape `data-tutor-whiteboard`
+   * itself already has, one level more specific. Omitted (not `-1`) for any
+   * caller that has no such sequence, so an untargeted board's columns are
+   * simply unreachable by index rather than falsely claiming index 0.
+   */
+  itemIndex?: number;
 }) {
   return (
     <div
       className={cn('flex flex-1 flex-col items-center gap-1', className)}
       style={{ minWidth, ...(maxWidth ? { maxWidth } : {}) }}
+      {...(itemIndex !== undefined ? { 'data-tutor-whiteboard-item': itemIndex } : {})}
     >
       {children}
     </div>

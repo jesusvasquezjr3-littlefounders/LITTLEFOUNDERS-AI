@@ -8,6 +8,7 @@ import { Character3D } from './Character3D';
 import { AvatarBillboard } from './AvatarBillboard';
 import { StallProp } from './StallProp';
 import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
+import type { PointBearing } from './pointTarget';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
@@ -116,6 +117,13 @@ export interface TutorSceneProps {
   emotion?: CharacterEmotion;
   action?: CharacterAction;
   actionKey?: number;
+  /**
+   * Class III `point_at` (2026-09-04): a resolved screen-position bias for
+   * `action: "point"`, broadcast the same way `action` itself is — see
+   * `Character3D.tsx`'s own comment on why this is pre-resolved rather than
+   * read from the DOM inside the per-frame loop.
+   */
+  pointBearing?: PointBearing | null;
   /**
    * Class III / S17 `roleplay`: a per-character OVERRIDE of `emotion`/
    * `action`/`actionKey` above, keyed by character id. Absent (the default,
@@ -449,6 +457,7 @@ function Cast({
   emotion,
   action,
   actionKey,
+  pointBearing,
   perCharacter,
   presenceAvatarUri,
   showStall,
@@ -466,6 +475,8 @@ function Cast({
   emotion: CharacterEmotion;
   action: CharacterAction;
   actionKey: number;
+  /** See `TutorSceneProps.pointBearing`'s own comment. */
+  pointBearing?: PointBearing | null;
   /** See `TutorSceneProps.perCharacter`'s own comment. */
   perCharacter?: Partial<Record<CharacterId, { emotion?: CharacterEmotion; action?: CharacterAction; actionKey?: number }>>;
   /** See `TutorSceneProps.presence`'s own comment (Class III / S17). */
@@ -709,6 +720,7 @@ function Cast({
               emotion={override?.emotion ?? emotion}
               action={override?.action ?? action}
               actionKey={override?.actionKey ?? actionKey}
+              pointBearing={pointBearing}
               speaking={characterSpeaking}
               viseme={viseme}
               backdrop={backdrop}
@@ -841,6 +853,7 @@ export function TutorScene({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  pointBearing = null,
   perCharacter,
   presenceAvatarUri = null,
   showStall = false,
@@ -988,6 +1001,7 @@ export function TutorScene({
                 emotion={emotion}
                 action={action}
                 actionKey={actionKey}
+                pointBearing={pointBearing}
                 perCharacter={perCharacter}
                 presenceAvatarUri={presenceAvatarUri}
                 showStall={showStall}

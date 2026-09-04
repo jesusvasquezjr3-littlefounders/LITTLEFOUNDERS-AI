@@ -46,6 +46,7 @@ function turn(over: Partial<TranscriptTurn> & Pick<TranscriptTurn, 'id' | 'seq' 
     whiteboard: null,
     demonstrate: null,
     roleplay_scene: null,
+    point_at: null,
     ...over,
   };
 }

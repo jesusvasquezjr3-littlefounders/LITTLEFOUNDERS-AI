@@ -162,6 +162,93 @@ describe('applyCharacterFrame', () => {
   });
 });
 
+/*
+ * Class III `point_at` (2026-09-04) — same class of gap the file's own header
+ * comment on `wave` describes: the arithmetic can be reviewed as correct and
+ * still be visually indistinguishable, because "moved" is not "moved toward
+ * the target". A live check was blocked mid-verification by an unrelated,
+ * pre-existing infinite-render-loop bug in `ConversationView.tsx` (reproduced
+ * on a fixture this feature never touches — see the spawned follow-up task),
+ * so this asserts the one thing a screenshot would have shown: a bearing to
+ * the LEFT and a bearing to the RIGHT must send the arm, head and chest in
+ * measurably different, correctly ordered directions, and a `null` bearing
+ * (no target resolved) must reproduce the S16 coarse gesture exactly.
+ */
+describe('point bearing (Class III point_at)', () => {
+  const FRAME = { progress: 0.5, time: 0.5, lift: 0 };
+
+  it('a null bearing reproduces the S16 coarse gesture exactly', () => {
+    const withNull = bindRig(buildBiped());
+    resetRig(withNull);
+    applyCharacterFrame(withNull, 'neutral', 'point', FRAME, null);
+
+    const omitted = bindRig(buildBiped());
+    resetRig(omitted);
+    applyCharacterFrame(omitted, 'neutral', 'point', FRAME);
+
+    expect(withNull.rightArm!.quaternion.angleTo(omitted.rightArm!.quaternion)).toBeLessThan(1e-9);
+    expect(withNull.head!.quaternion.angleTo(omitted.head!.quaternion)).toBeLessThan(1e-9);
+  });
+
+  it('a left vs. right bearing yaws the arm, head and chest in opposite, distinguishable directions', () => {
+    const rest = bindRig(buildBiped());
+
+    const left = bindRig(buildBiped());
+    resetRig(left);
+    applyCharacterFrame(left, 'neutral', 'point', FRAME, { x: -1, y: 0 });
+
+    const right = bindRig(buildBiped());
+    resetRig(right);
+    applyCharacterFrame(right, 'neutral', 'point', FRAME, { x: 1, y: 0 });
+
+    const center = bindRig(buildBiped());
+    resetRig(center);
+    applyCharacterFrame(center, 'neutral', 'point', FRAME, { x: 0, y: 0 });
+
+    for (const slot of ['rightArm', 'head', 'chest'] as const) {
+      // Left and right must diverge from each other, not just from rest —
+      // two poses can each individually "move" while landing on the same
+      // orientation, which is exactly what a bearing that was computed but
+      // never wired to the driver would look like.
+      expect(left[slot]!.quaternion.angleTo(right[slot]!.quaternion), slot).toBeGreaterThan(0.05);
+      // And each must actually be BETWEEN center and its own extreme, not an
+      // arbitrary different pose — the yaw the bearing adds is a bias on top
+      // of the existing S16 lean (`rest`), so left/right/center form a real
+      // order, not just three unequal numbers.
+      const leftFromRest = left[slot]!.quaternion.angleTo(rest[slot]!.quaternion);
+      const centerFromRest = center[slot]!.quaternion.angleTo(rest[slot]!.quaternion);
+      const rightFromRest = right[slot]!.quaternion.angleTo(rest[slot]!.quaternion);
+      expect(leftFromRest, `${slot} left-vs-center`).not.toBeCloseTo(centerFromRest, 3);
+      expect(rightFromRest, `${slot} right-vs-center`).not.toBeCloseTo(centerFromRest, 3);
+    }
+  });
+
+  it('a top vs. bottom bearing pitches the arm in opposite, distinguishable directions', () => {
+    const up = bindRig(buildBiped());
+    resetRig(up);
+    applyCharacterFrame(up, 'neutral', 'point', FRAME, { x: 0, y: -1 });
+
+    const down = bindRig(buildBiped());
+    resetRig(down);
+    applyCharacterFrame(down, 'neutral', 'point', FRAME, { x: 0, y: 1 });
+
+    expect(up.rightArm!.quaternion.angleTo(down.rightArm!.quaternion)).toBeGreaterThan(0.02);
+  });
+
+  it('biases the quadruped nose-point the same way, on head and chest', () => {
+    const left = bindRig(buildQuadruped());
+    resetRig(left);
+    applyCharacterFrame(left, 'neutral', 'point', FRAME, { x: -1, y: 0 });
+
+    const right = bindRig(buildQuadruped());
+    resetRig(right);
+    applyCharacterFrame(right, 'neutral', 'point', FRAME, { x: 1, y: 0 });
+
+    expect(left.head!.quaternion.angleTo(right.head!.quaternion)).toBeGreaterThan(0.05);
+    expect(left.chest!.quaternion.angleTo(right.chest!.quaternion)).toBeGreaterThan(0.02);
+  });
+});
+
 describe('quaternion sanity', () => {
   it('keeps bone orientations normalised after a frame', () => {
     const rig = bindRig(buildBiped());

@@ -345,6 +345,13 @@ export type ServerMessage =
        * to be told which one, verbatim from the model's own turn.
        */
       roleplayScene?: (typeof ROLEPLAY_SCENE_IDS)[number] | null;
+      /**
+       * Class III `point_at` (2026-09-04): which element of the open
+       * `whiteboard` the character's `action: "point"` gesture reaches for,
+       * as a plain array index — never a coordinate, never anything the
+       * client trusts as content, only where to aim a pose it already has.
+       */
+      pointAt?: number | null;
     }
   | {
       /**

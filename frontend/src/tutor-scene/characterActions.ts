@@ -1,6 +1,7 @@
 import { Euler, Quaternion, type Bone } from 'three';
 import type { Rig } from './rig';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+import type { PointBearing } from './pointTarget';
 
 /*
  * The 12 canonical actions and 7 emotions, driven PROCEDURALLY.
@@ -114,7 +115,7 @@ export const LOOPING_ACTIONS: ReadonlySet<CharacterAction> = new Set(['celebrate
  * Each returns the vertical lift it wants applied to the whole character,
  * because a jump is root motion and cannot be expressed as a bone rotation.
  */
-const BIPED: Record<CharacterAction, (rig: Rig, p: number, t: number) => number> = {
+const BIPED: Record<CharacterAction, (rig: Rig, p: number, t: number, bearing?: PointBearing | null) => number> = {
   idle: () => 0,
 
   nod: (rig, p) => {
@@ -144,13 +145,25 @@ const BIPED: Record<CharacterAction, (rig: Rig, p: number, t: number) => number>
     return 0;
   },
 
-  point: (rig, p) => {
+  point: (rig, p, _t, bearing) => {
     const reach = ease(Math.min(p * 2.5, 1)) * (1 - ease(Math.max((p - 0.7) * 3.3, 0)));
-    turn(rig, rig.rightArm, -1.35 * reach, 0.15 * reach, -0.3 * reach);
-    turn(rig, rig.rightForeArm, -0.55 * reach, 0, 0);
+    /*
+     * Class III `point_at`: a SMALL lean toward a real screen-space target,
+     * on top of the S16 pose rather than replacing it — `bearing` is null
+     * for the coarse, whole-plate gesture (no target resolved), so every
+     * caller before this field existed reaches exactly as before.
+     * `bearing.x` biases the SAME yaw axis the pose already leans on (arm Y,
+     * head Y); `bearing.y` biases the SAME pitch axis (arm X) — additive,
+     * never a second pose, so the reach/settle timing (`reach`) still
+     * governs the whole gesture.
+     */
+    const yaw = (bearing?.x ?? 0) * reach;
+    const pitch = (bearing?.y ?? 0) * reach;
+    turn(rig, rig.rightArm, -1.35 * reach + pitch * 0.3, 0.15 * reach + yaw * 0.4, -0.3 * reach);
+    turn(rig, rig.rightForeArm, -0.55 * reach + pitch * 0.2, 0, 0);
     // The head follows the gesture; a point the character ignores looks broken.
-    turn(rig, rig.head, 0, 0.18 * reach, 0);
-    turn(rig, rig.chest, 0, 0.12 * reach, 0);
+    turn(rig, rig.head, 0, 0.18 * reach + yaw * 0.25, 0);
+    turn(rig, rig.chest, 0, 0.12 * reach + yaw * 0.12, 0);
     return 0;
   },
 
@@ -231,7 +244,7 @@ const BIPED: Record<CharacterAction, (rig: Rig, p: number, t: number) => number>
  * emotion. Actions that genuinely have no quadruped reading fall back to a
  * bounce rather than being silently dropped.
  */
-const QUADRUPED: Record<CharacterAction, (rig: Rig, p: number, t: number) => number> = {
+const QUADRUPED: Record<CharacterAction, (rig: Rig, p: number, t: number, bearing?: PointBearing | null) => number> = {
   idle: () => 0,
 
   nod: (rig, p) => {
@@ -253,11 +266,15 @@ const QUADRUPED: Record<CharacterAction, (rig: Rig, p: number, t: number) => num
     return 0;
   },
 
-  point: (rig, p) => {
+  point: (rig, p, _t, bearing) => {
     const reach = ease(Math.min(p * 2.5, 1)) * (1 - ease(Math.max((p - 0.7) * 3.3, 0)));
-    // Nose-point: the head extends toward the subject.
-    turn(rig, rig.head, -0.3 * reach, 0.3 * reach, 0);
-    turn(rig, rig.chest, -0.1 * reach, 0.1 * reach, 0);
+    // Nose-point: the head extends toward the subject. Bearing bias same
+    // reasoning as the biped driver above — additive, null-safe, on the
+    // same axes the pose already leans on.
+    const yaw = (bearing?.x ?? 0) * reach;
+    const pitch = (bearing?.y ?? 0) * reach;
+    turn(rig, rig.head, -0.3 * reach + pitch * 0.25, 0.3 * reach + yaw * 0.35, 0);
+    turn(rig, rig.chest, -0.1 * reach + pitch * 0.1, 0.1 * reach + yaw * 0.15, 0);
     return 0;
   },
 
@@ -519,11 +536,17 @@ export function applyCharacterFrame(
   emotion: CharacterEmotion,
   action: CharacterAction,
   frame: ActionFrame,
+  /**
+   * Class III `point_at` (2026-09-04): a real screen-position bias for the
+   * `point` driver, resolved by the caller (`pointTarget.ts`) and ignored
+   * by every other action — see `BIPED.point`'s own comment.
+   */
+  pointBearing?: PointBearing | null,
 ): number {
   // Posture first so an action's rotations compose on top of it.
   EMOTION_POSTURE[emotion](rig, frame.time);
   const drivers = rig.kind === 'quadruped' ? QUADRUPED : BIPED;
-  return drivers[action](rig, frame.progress, frame.time);
+  return drivers[action](rig, frame.progress, frame.time, pointBearing);
 }
 
 /**

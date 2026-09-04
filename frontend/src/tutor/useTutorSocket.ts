@@ -67,6 +67,12 @@ export interface TutorTurnState {
    * on every ordinary turn.
    */
   roleplayScene: string | null;
+  /**
+   * Class III `point_at` (2026-09-04): which element of `whiteboard` the
+   * `action: "point"` gesture reaches for, as a plain array index. Null on
+   * every turn whose action is not `point`, or that named no target.
+   */
+  pointAt: number | null;
 }
 
 export interface LiveSegmentState {
@@ -404,6 +410,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
               demonstrate: message.demonstrate ?? null,
               whiteboard: message.whiteboard ?? null,
               roleplayScene: message.roleplayScene ?? null,
+              pointAt: message.pointAt ?? null,
             });
             setLesson(message.lesson ?? null);
             setHistory((prev) =>

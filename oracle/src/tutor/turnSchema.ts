@@ -1569,6 +1569,17 @@ export const TutorTurnSchema = z
     say: z.string().min(1).max(700),
     emotion: z.enum(EMOTIONS),
     action: z.enum(ACTIONS),
+    /**
+     * Class III `point_at` (2026-09-04): WHICH element of the open whiteboard
+     * `action: "point"` reaches toward, as a plain index into that board's
+     * own drawn sequence — never a coordinate, and never anything the model
+     * could use to assert content the server has not already computed. A
+     * board with no element at this index, or no board open at all, is a
+     * miss the client resolves to the SAME coarse, whole-plate gesture
+     * `point` already had before this field existed — an out-of-range guess
+     * costs nothing and asserts nothing, so this needs no upper bound here.
+     */
+    pointAt: z.number().int().min(0).nullable().optional(),
     next: z.enum(NEXT_STEPS),
     segmentRequest: SegmentRequestSchema.nullable().optional(),
     /**
@@ -1641,6 +1652,10 @@ export const TutorTurnSchema = z
   .refine((turn) => turn.roleplayScene == null || turn.segmentRequest == null, {
     message: 'roleplayScene and segmentRequest may not both be set on the same turn — start the scene, THEN request the activity once it ends',
     path: ['roleplayScene'],
+  })
+  .refine((turn) => turn.pointAt == null || turn.action === 'point', {
+    message: 'pointAt requires action="point" on the SAME turn — it names what the gesture reaches for, not a fact on its own',
+    path: ['pointAt'],
   });
 
 export type TutorTurn = z.infer<typeof TutorTurnSchema>;

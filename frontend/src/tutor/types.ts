@@ -170,6 +170,12 @@ export type ServerMessage =
        * scene this turn started, by id — see `tutor/roleplay/scenes.ts`.
        */
       roleplayScene?: string | null;
+      /**
+       * Class III `point_at` (2026-09-04): which element of `whiteboard`
+       * `action: "point"` reaches for, as a plain array index — see
+       * `tutor-scene/pointTarget.ts`.
+       */
+      pointAt?: number | null;
     }
   | {
       type: 'turn_audio';
@@ -708,6 +714,8 @@ export interface TranscriptTurn {
    * through unmapped.
    */
   roleplay_scene: string | null;
+  /** Class III `point_at` (2026-09-04, migration 0071): the same live-only-field gap, closed identically — snake_case, same reason. */
+  point_at: number | null;
 }
 
 export interface TranscriptSegment {

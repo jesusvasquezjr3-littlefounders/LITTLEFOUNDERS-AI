@@ -1,0 +1,23 @@
+-- 0071_tutor_turn_point_at.sql — the tutor's `point_at` target had no path
+-- into persistence, the identical gap migrations 0058 (whiteboard), 0067
+-- (demonstrate) and 0070 (roleplay_scene) already closed for the other
+-- live-only visual turn fields.
+-- @phase: expand
+--
+-- Class III `point_at` (2026-09-04): a turn whose `action` is `"point"` may
+-- name WHICH element of the open whiteboard the gesture reaches for
+-- (`oracle/src/tutor/turnSchema.ts`'s `pointAt`), as a plain array index —
+-- never a coordinate, never content to re-verify. Without this column, a
+-- session where the tutor pointed at something specific would lose that
+-- fact on replay and in the guardian transcript viewer, silently, exactly
+-- as 0058/0067/0070's own comments describe for the fields they close the
+-- identical gap for.
+--
+-- One additive, nullable INTEGER column. NULL for every row written before
+-- this migration, for every turn whose action is not `"point"`, and for a
+-- `"point"` turn that named no specific target (the coarse, whole-plate
+-- gesture S16 already shipped) — a replay of an old session shows the same
+-- whole-plate point it already does today, rather than backfilling a value
+-- nothing recorded.
+ALTER TABLE public.tutor_turns
+    ADD COLUMN IF NOT EXISTS point_at integer NULL;

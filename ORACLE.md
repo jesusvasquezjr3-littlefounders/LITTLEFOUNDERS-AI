@@ -4869,7 +4869,12 @@ assertion that it wasn't. Reduced-motion learners get none of it
 (`prefers-reduced-motion` gates the nudge to zero, the same posture every
 other stage animation in this file already takes).
 
-**`point_at` stays whole-plate, honestly.** The character's procedural
+**`point_at` stayed whole-plate at first — UPDATED 2026-09-04, see §20.16.**
+The paragraph below is kept as the historical record of the ceiling this
+sprint actually reached, because §20.16 built on top of it rather than
+replacing it: the retuned pose, the reach/bend constants, and the coarse
+"gestures toward the board in general" gesture are all still exactly what
+runs when no per-element target is named. The character's procedural
 `point` pose (`characterActions.ts`) was retuned toward the plate's typical
 on-screen region — arm reach and forearm bend biased closer to where a
 whiteboard actually renders — verified by watching the live render in
@@ -5073,3 +5078,86 @@ here as open, not silently absent.
 Full account (the exact cost arithmetic, the real `--confirm` run, live
 verification of actual playback in the browser): /TUTOR_INSTRUMENTS.md
 §0.0's Class III (S17 amendment) row and its decision-log entry.
+
+### 20.16 `point_at` becomes per-element — a whiteboard-relative bearing, not IK (2026-09-04, SHIPPED)
+
+**§20.12 named two missing pieces before a real target could exist: no
+whiteboard kind exposed per-element identity, and no bone-aim code existed
+anywhere in this codebase.** This amendment builds the first without ever
+needing the second. `pointAt` (migration `0071`, an optional integer index)
+is a new turn field — the model names WHICH element it means, on the same
+turn it sets `action: "point"` — carrying the same hand-mirrored-copy tax
+`roleplayScene` (§20.13) already pays end to end: `turnSchema.ts`'s own
+`.refine()` (a `pointAt` with no `action: "point"` on the SAME turn is
+rejected — it names what the gesture reaches for, never a fact on its
+own) → `protocol.ts` → `server.ts`'s resume and live-emission sends AND its
+`persistTurn` call → `core/client.ts`'s `PersistTurnInput` → the backend
+route validator → `tutorData.ts`'s insert body, `TutorTurnRow` and its
+`listTutorTurns` SELECT → the frontend's `types.ts` (`ServerMessage` and,
+separately, `TranscriptTurn`'s own snake_case `point_at`) →
+`useTutorSocket.ts`. `preferredTypes`/`demonstrate`'s own gates (§20.9,
+§20.10) do not cover this field — it is neither a whiteboard KIND nor a
+`demonstrate` step — so its only mechanical backstop today is
+`type-check`'s own cross-service TS surface plus the new tests below; it has
+no dedicated parity script yet, the same posture `roleplayScene`'s core
+wiring itself shipped under before §20.15 gave voice its own gate.
+
+**The bearing is read off the DOM the browser already laid out, not
+computed from camera or bone geometry.** `resolvePointBearing()`
+(`frontend/src/tutor-scene/pointTarget.ts`) reads
+`getBoundingClientRect()` on a new `data-tutor-whiteboard-item="N"` marker
+(added to `BarColumn`, wired today only through `SequenceBoard` — the one
+kind with individually addressable, evenly-spaced elements) against the
+existing whole-board `data-tutor-whiteboard` hook, and returns an `{x, y}`
+pair clamped to `[-1, 1]` — where the named element sits relative to the
+board's own bounds, nothing more. This is deliberately NOT a
+camera/world-space projection: `ScreenAnchor.tsx`'s own `AnchorProjector`
+already does that class of work per-frame for a different purpose, and
+hooking a one-shot gesture bias into it would mean paying its continuous
+per-frame cost for a value that only needs to be read once, at the moment a
+`point` action starts. A miss at any stage — no target index, the wrong
+whiteboard kind, a zero-size board — returns `null`, and `null` is not an
+error state: it is the exact S16 coarse gesture, unchanged, which is what
+makes this an ADDITIVE amendment rather than a second gesture system.
+
+**The bias composes onto S16's existing lean; it does not replace it.**
+`characterActions.ts`'s `point` driver (both `BIPED` and `QUADRUPED`) takes
+the resolved bearing as a fourth, optional argument and adds
+`bearing.x`/`bearing.y`-scaled terms to the SAME rotation axes the coarse
+pose already leans on (arm/head/chest yaw from `x`, arm pitch from `y`),
+gated by the same `reach` envelope that already governs the whole gesture's
+timing. A `null` bearing multiplies every added term by zero, which is why
+"reproduces S16 exactly" is a testable claim and not an intention — see
+below.
+
+**Live visual confirmation hit a real, pre-existing, unrelated blocker —
+recorded honestly rather than glossed over.** `ConversationView.tsx`'s
+infinite-render-loop bug (first found and flagged during §20.13's own S17
+work, via a `git stash` A/B against the clean pre-S17 baseline) reproduced
+AGAIN here, independently re-confirmed against a completely different
+fixture this amendment never touches, flooding the console and starving the
+3D canvas of a clean frame to screenshot. Rather than either fold in a fix
+for someone else's already-flagged bug or report the feature unverified,
+verification continued on two tracks a runaway render loop cannot corrupt:
+(1) direct DOM measurement of the actual running Lab confirmed real,
+sane pixel geometry — a 395×368px board, three evenly-spaced items, the
+deliberately-chosen middle target's centre landing exactly on the board's
+own centre — and surfaced a genuine, separate, second bug along the way (an
+effect resolving the bearing before the freshly-switched activity's first
+layout pass had painted, read back as a zero-size board; fixed with the
+SAME two-pass `requestAnimationFrame` idiom `TutorFace.tsx`'s `fit()`
+already established in this codebase, not a new pattern); and (2) new,
+dedicated tests in `characterActions.test.ts` assert the actual claim a
+screenshot would have shown — that a LEFT bearing and a RIGHT bearing yaw
+the arm, head and chest in measurably different, correctly-ordered
+directions (not merely "both move," the exact gap this file's own `wave`
+regression test was written against originally), that top/bottom bearings
+pitch the arm oppositely, that the quadruped's nose-point driver biases the
+same way, and that a `null` bearing reproduces the unbiased S16 gesture to
+within floating-point noise. This is real coverage of the arithmetic, not a
+substitute for watching the render — the render is still owed a look the
+next time this environment's own unrelated bug is fixed.
+
+Full account (the exact hand-mirrored file list, the DOM-measurement race
+found and fixed, the new tests): /TUTOR_INSTRUMENTS.md §0.0's Class III
+(S16 amendment) row and its decision-log entry.

@@ -404,7 +404,7 @@ function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: nu
         {board.values.map((value, i) => {
           const grown = i < safeShown;
           return (
-            <BarColumn key={i} minWidth="3.5rem">
+            <BarColumn key={i} minWidth="3.5rem" itemIndex={i}>
               <ValueLabel>{grown ? format(value) : ''}</ValueLabel>
               <BarTrack heightPct={barHeightPct(value, max)} grown={grown} animated />
               {/* Chrome from the locale files, not model text — see `AxisCaption`. */}

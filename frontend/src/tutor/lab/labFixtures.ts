@@ -899,6 +899,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
       whiteboard: {
         kind: 'sequence',
         start: 10,
@@ -908,6 +909,38 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
         ],
         // The fixture's own text says "cada semana" — this MUST agree, or
         // the lab reproduces the exact defect it exists to catch.
+        unit: 'week',
+        values: [10, 12, 14],
+        label: text.label,
+        currency: locale === 'en-US' ? 'USD' : locale === 'pt-BR' ? 'BRL' : 'MXN',
+      },
+    };
+  }
+  if (activity === 'point_at') {
+    const text = LAB_WHITEBOARD_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'point',
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      roleplayScene: null,
+      // The MIDDLE bar, deliberately — neither edge, so a live check can
+      // tell "biased toward this target" apart from "biased toward the
+      // edge of the board regardless of target" by eye.
+      pointAt: 1,
+      whiteboard: {
+        kind: 'sequence',
+        start: 10,
+        steps: [
+          { op: 'add', value: 2 },
+          { op: 'add', value: 2 },
+        ],
         unit: 'week',
         values: [10, 12, 14],
         label: text.label,
@@ -929,6 +962,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
       whiteboard: {
         kind: 'compare',
         left: { label: text.left, value: 45 },
@@ -956,6 +990,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
       whiteboard: {
         kind: 'marked_line',
         min: 0,
@@ -985,6 +1020,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
       whiteboard: {
         kind: 'tokens',
         groups: [
@@ -1014,6 +1050,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
     };
     if (activity === 'bar-model') {
       return {
@@ -1114,6 +1151,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
     };
     if (activity === 'ten-frame') {
       return {
@@ -1208,6 +1246,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
     };
     if (activity === 'table') {
       return {
@@ -1359,6 +1398,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
     };
     if (activity === 'deal') {
       return {
@@ -1512,6 +1552,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
     };
     if (activity === 'pictograph') {
       return {
@@ -1704,6 +1745,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: null,
+      pointAt: null,
       whiteboard: {
         kind: 'categories',
         categories: [
@@ -1734,6 +1776,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       policy: null,
       demonstrate: null,
       roleplayScene: 'lemonade_change',
+      pointAt: null,
       whiteboard: null,
     };
   }
@@ -1749,6 +1792,7 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
     policy: null,
     demonstrate: null,
     roleplayScene: null,
+    pointAt: null,
     whiteboard: null,
   };
 }
@@ -1840,6 +1884,11 @@ const WHITEBOARD_ACTIVITIES = [
   // bucket this list actually gates — see this list's own header comment on
   // why an activity absent here silently gets a segment instead.
   'roleplay',
+  // Class III `point_at` (2026-09-04): a real `sequence` board, `action:
+  // "point"` and a `pointAt` index — exercises the ONLY live path this
+  // fixture can, `resolvePointBearing`'s own DOM read against a board
+  // that is actually mounted, not a synthetic unit-test DOM.
+  'point_at',
 ] as const;
 
 export const LAB_ACTIVITIES: readonly string[] = [
@@ -1992,6 +2041,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         whiteboard: null,
         demonstrate: null,
         roleplay_scene: null,
+        point_at: null,
         source: 'scripted',
         created_at: at(0),
       },
@@ -2006,6 +2056,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         whiteboard: null,
         demonstrate: null,
         roleplay_scene: null,
+        point_at: null,
         source: 'stt',
         created_at: at(1),
       },
@@ -2020,6 +2071,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         whiteboard: null,
         demonstrate: null,
         roleplay_scene: null,
+        point_at: null,
         source: 'model',
         created_at: at(2),
       },
@@ -2034,6 +2086,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         whiteboard: null,
         demonstrate: null,
         roleplay_scene: null,
+        point_at: null,
         source: 'stt',
         created_at: at(3),
       },
@@ -2048,6 +2101,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         whiteboard: null,
         demonstrate: null,
         roleplay_scene: null,
+        point_at: null,
         source: 'model',
         created_at: at(4),
       },
@@ -2062,6 +2116,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         whiteboard: null,
         demonstrate: null,
         roleplay_scene: null,
+        point_at: null,
         source: 'model',
         created_at: at(5),
       },

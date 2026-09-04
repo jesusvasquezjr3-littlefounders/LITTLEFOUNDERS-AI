@@ -259,6 +259,8 @@ export interface PersistTurnInput {
    * (`demonstrate`) already closed, closed the identical way.
    */
   roleplayScene?: string | null;
+  /** Class III `point_at` (2026-09-04): the array index `action: "point"` reached for, if any. */
+  pointAt?: number | null;
 }
 
 /**

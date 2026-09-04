@@ -47,6 +47,8 @@ export interface TutorStageProps {
   presenceAvatarUri?: TutorSceneProps['presenceAvatarUri'];
   /** See `TutorSceneProps.showStall`'s own comment (Class III / S18 `props`). */
   showStall?: TutorSceneProps['showStall'];
+  /** See `TutorSceneProps.pointBearing`'s own comment (Class III `point_at`). */
+  pointBearing?: TutorSceneProps['pointBearing'];
   /**
    * Drives the syllabic articulation heuristic (`Character3D`'s `speaking`),
    * INDEPENDENT of this stage's own audio-driven viseme.
@@ -171,6 +173,7 @@ export function TutorStage({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  pointBearing = null,
   perCharacter,
   presenceAvatarUri = null,
   showStall = false,
@@ -300,6 +303,7 @@ export function TutorStage({
         emotion={emotion}
         action={action}
         actionKey={actionKey}
+        pointBearing={pointBearing}
         perCharacter={perCharacter}
         presenceAvatarUri={presenceAvatarUri}
         showStall={showStall}

@@ -1761,14 +1761,22 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  "say": string,            // what you say out loud, 1-3 short sentences',
   `  "emotion": one of ${EMOTIONS.join(' | ')},`,
   `  "action": one of ${ACTIONS.join(' | ')},`,
-  // Class III / S16 (TUTOR_INSTRUMENTS.md §3.4), the COARSE version: no
-  // per-element identity exists on any whiteboard kind (only a whole-board
-  // hook), so this can only aim the gesture at the board/plate as a whole,
-  // never a specific bar or segment inside it — that is a future increment,
-  // not a bug in this one line.
+  '  "pointAt": null or an integer index,',
+  // Class III `point_at` (2026-09-04): S16 shipped the coarse, whole-plate
+  // version of this; `pointAt` is the real target on top of it, for the
+  // ONE whiteboard kind that currently exposes per-element identity —
+  // `sequence`'s own bars, indexed 0 through the last one drawn. Naming an
+  // index the board does not have, or naming one on a DIFFERENT kind, is
+  // never an error: the client silently falls back to the same coarse
+  // whole-board gesture S16 already has, so a wrong guess costs nothing
+  // and asserts nothing about the board's own content.
   '  Choose "point" on the SAME turn you draw or refer back to a whiteboard —',
   '  it makes the character gesture toward the board rather than into empty',
-  '  air. Not for anything else; a generic emphasis is "nod" or "think".',
+  '  air. Not for anything else; a generic emphasis is "nod" or "think". When',
+  '  the board is a `sequence` and you are naming ONE specific step or bar —',
+  '  "look at week 2" rather than "look at this chart" — also set "pointAt"',
+  '  to that bar\'s own index (0 is the first). Leave it null for a whole-',
+  '  board gesture, or when the open board is not a `sequence`.',
   '  "next": "ask" | "segment" | "close",',
   '  "segmentRequest": null or { "skillKey", "difficulty" 1-5, "framing", "rationale",'
     + ' "preferredTypes"? },'

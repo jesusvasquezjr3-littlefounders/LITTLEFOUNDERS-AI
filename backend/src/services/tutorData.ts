@@ -1307,6 +1307,8 @@ export interface TutorTurnRow {
    * has.
    */
   roleplay_scene: string | null;
+  /** Null on every row whose action was not `point`, or that named no target — see migration 0071. */
+  point_at: number | null;
 }
 
 /**
@@ -2365,6 +2367,13 @@ export interface InsertTurnInput {
    * transcript viewer.
    */
   roleplayScene?: string | null;
+  /**
+   * Class III `point_at` (2026-09-04, migration 0071): the same live-only
+   * gap `roleplayScene` above closes, closed identically — without this
+   * column, which element a `point` gesture reached for is lost on replay
+   * and on the guardian transcript viewer the instant the session ends.
+   */
+  pointAt?: number | null;
 }
 
 export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> {
@@ -2386,6 +2395,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
       whiteboard: input.whiteboard ?? null,
       demonstrate: input.demonstrate ?? null,
       roleplay_scene: input.roleplayScene ?? null,
+      point_at: input.pointAt ?? null,
     }),
   });
   return res !== null;
@@ -2393,7 +2403,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
 
 export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] | null> {
   const rows = await serviceRest<TutorTurnRawRow[]>(
-    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard,demonstrate,roleplay_scene&order=seq.asc`,
+    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard,demonstrate,roleplay_scene,point_at&order=seq.asc`,
   );
   if (rows === null) return null;
   return rows.map((row) => ({

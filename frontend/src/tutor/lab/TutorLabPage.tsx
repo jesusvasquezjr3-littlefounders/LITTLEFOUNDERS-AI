@@ -35,6 +35,7 @@ import {
 import { useMicrophone } from '../useMicrophone';
 import type { TutorPreferences } from '../types';
 import { isLocale, type Locale } from '@/i18n';
+import { resolvePointBearing, type PointBearing } from '@/tutor-scene/pointTarget';
 import {
   DEFAULT_LAB_ACTIVITY,
   DEFAULT_LAB_LOCALE,
@@ -505,6 +506,40 @@ export default function TutorLabPage() {
     companion,
     roleplayLocale,
   );
+  /**
+   * Class III `point_at` (2026-09-04): same reasoning as
+   * `TutorExperience.tsx`'s own effect — resolved after the fixture's own
+   * whiteboard has actually painted, never inline during render.
+   *
+   * KEYED ON `activityTrigger.current`, NOT `socket.turn?.whiteboard` —
+   * found live, not guessed: `useLabSocket`'s own `turn` is built fresh
+   * (`labTurn(locale, activity)`, no memo) on every render of this page, so
+   * the whiteboard object is a NEW reference every time regardless of
+   * whether anything real changed. An effect depending on that reference
+   * re-fires on every render, calls `setPointBearing`, which triggers the
+   * next render, whose `turn.whiteboard` is fresh again — an infinite loop,
+   * caught by React's own "Maximum update depth exceeded" warning during
+   * live verification of this exact activity. `activityTrigger.current` is
+   * the SAME stable "a genuinely new turn arrived" identity
+   * `useRoleplayDirector` above already keys on, for the identical reason.
+   */
+  const effectiveAction = director?.beat?.action ?? socket.turn?.action ?? 'idle';
+  const [pointBearing, setPointBearing] = useState<PointBearing | null>(null);
+  useEffect(() => {
+    if (effectiveAction !== 'point' || socket.turn?.pointAt == null) {
+      setPointBearing(null);
+      return;
+    }
+    const pointAt = socket.turn.pointAt;
+    setPointBearing(resolvePointBearing(pointAt));
+    // Second pass one frame later — switching the lab's activity dropdown
+    // remounts the stage, and on that cold mount the fixture's whiteboard
+    // can still be pre-layout on this effect's first commit, which reads
+    // back as a zero-size board. Confirmed live: `TutorFace.tsx`'s `fit()`
+    // uses the same two-pass shape for the same reason.
+    const raf = requestAnimationFrame(() => setPointBearing(resolvePointBearing(pointAt)));
+    return () => cancelAnimationFrame(raf);
+  }, [effectiveAction, activityTrigger.current]);
   /*
    * MEMOIZED — see `TutorExperience.tsx`'s own comment on this exact line
    * shape: DiceBear's `toDataUri()` builds a fresh SVG string on every call,
@@ -824,8 +859,9 @@ export default function TutorLabPage() {
         // off the stored row by the real director — the same expression the
         // real route hands the canvas.
         emotion={director?.beat?.emotion ?? socket.turn?.emotion ?? 'neutral'}
-        action={director?.beat?.action ?? socket.turn?.action ?? 'idle'}
+        action={effectiveAction}
         actionKey={director?.beatKey ?? socket.turn?.seq ?? 0}
+        pointBearing={pointBearing}
         perCharacter={roleplay.perCharacter}
         presenceAvatarUri={presenceAvatarUri}
         // Class III / S18 `props`: same trigger as `presence` immediately
