@@ -7,7 +7,7 @@ mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
 priority: 7
-instruments: [budget_plate]
+instruments: [budget_plate, ranking]
 ---
 Strategy for this turn: DECIDE THE ORDER BEFORE THE FIRST COIN LEAVES.
 

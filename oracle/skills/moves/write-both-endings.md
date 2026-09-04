@@ -7,7 +7,7 @@ mastery_min: 0
 mastery_max: 1
 tiers: [1, 2, 3]
 priority: 7
-instruments: [outcomes]
+instruments: [outcomes, chance]
 ---
 Strategy for this turn: WRITE BOTH ENDINGS BEFORE CHOOSING.
 

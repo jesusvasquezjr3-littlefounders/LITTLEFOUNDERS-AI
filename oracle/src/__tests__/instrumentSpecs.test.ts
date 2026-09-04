@@ -113,9 +113,9 @@ describe('the move catalogue and the spec registry agree', () => {
      * written here, next to the name.
      */
     const DELIBERATELY_UNGUIDED = [
-      'array', 'bead_string', 'before_after', 'chance', 'cycle', 'equation_bar',
-      'fraction_circle', 'inventory', 'ledger', 'partition', 'pictograph',
-      'price_tag', 'ranking', 'scale', 'stack', 'tally', 'timeline', 'venn',
+      'array', 'bead_string', 'before_after', 'cycle', 'equation_bar',
+      'inventory', 'ledger', 'partition', 'pictograph',
+      'price_tag', 'stack', 'tally', 'timeline', 'venn',
     ] as const;
 
     const named = new Set(skills.flatMap((s) => s.instruments));

@@ -239,6 +239,58 @@ const SPECS: InstrumentSpec[] = [
       'FORMAT example only: one strip in halves against one in quarters.',
     ].join(' '),
   },
+  /*
+   * A SECOND PASS, same hour: these four cost nothing against the "most turns
+   * pay nothing" budget rule, because each rides a move that was ALREADY
+   * carrying one. That rule counts moves with no instrument at all, so widening
+   * a move already in the set is free where wiring a new move is not — which is
+   * also the honest reason `ledger` above is still waiting rather than being
+   * squeezed in: there was no already-wired move it belonged to.
+   */
+  {
+    kind: 'scale',
+    guidance: [
+      'WHICH SIDE IS ACTUALLY WORTH MORE — {kind:"scale", left:{label,value}, right:{label,value}, label, currency}.',
+      'Use it when the comparison is being made on the wrong feature: the bigger pile, the shinier coin, the',
+      'longer list. Both values are stated and the board tips. YOU DO NOT SAY WHICH SIDE WINS — the tip is the',
+      'answer, and saying it first removes the reason to look. Reach for `compare` instead when the two are the',
+      'same measure at two moments rather than two rival things.',
+      'FORMAT example only: a handful of small coins against one larger one.',
+    ].join(' '),
+  },
+  {
+    kind: 'ranking',
+    guidance: [
+      'PUTTING THEM IN ORDER — {kind:"ranking", items: 2-5 of {label, value}, direction:"asc"|"desc", label, currency}.',
+      'Use it when the decision is about ORDER rather than amount — what gets paid first, which option is best',
+      'value, what to do before the money runs out. You give the items and their values and say which way to',
+      'sort; the board arranges them. You do not announce the winner or read the sorted order back out: the',
+      'arrangement IS the statement, and hearing it twice is what makes a turn too long.',
+      'FORMAT example only: three options ordered by what each brings in.',
+    ].join(' '),
+  },
+  {
+    kind: 'chance',
+    guidance: [
+      'HOW LIKELY EACH ENDING IS — {kind:"chance", outcomes: 2-3 of {label, weight: 1-100}, label}. No currency.',
+      'Use it only after both endings are already written down, when one of them is being treated as certain —',
+      '"seguro me lo compran", "seguro gano". `weight` is RELATIVE, not a percentage you say out loud: the board',
+      'turns weights into visible widths, and the widths are the whole argument. Keep it to real, honest',
+      'uncertainty about a decision they control — never about something safe, which would only make a child',
+      'anxious. FORMAT example only: two endings weighted unevenly.',
+    ].join(' '),
+  },
+  {
+    kind: 'fraction_circle',
+    guidance: [
+      'ONE WHOLE, CUT INTO EQUAL SLICES — {kind:"fraction_circle", denominator, highlighted, label}. No currency.',
+      'Use it as the SECOND view of a fraction the learner has already seen as a strip, when the point is that a',
+      'fraction is not a shape: the same third is a third whether it is a piece of a bar or a slice of a round',
+      'thing. `highlighted` must not exceed `denominator`. You do not state the fraction as a decimal or a',
+      'percentage — the slices are the statement.',
+      'FORMAT example only: one of four slices shaded.',
+    ].join(' '),
+  },
   {
     kind: 'budget_plate',
     guidance: [
