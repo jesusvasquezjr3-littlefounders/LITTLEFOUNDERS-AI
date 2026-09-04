@@ -37,6 +37,7 @@ import {
   contradictsItsOwnShortfall,
   EXPLICIT_REPEAT_REQUEST,
   CONFIRMATION_MARKERS,
+  offeredNoAnswer,
 } from '../src/tutor/prompt.js';
 import {
   computeCategories,
@@ -1229,8 +1230,25 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
      * an invented answer. `praises an answer the learner never gave` presupposes
      * an attempted answer; a bare confirmation question is not one.
      */
-    const learnerAskedBack = beats[i]!.learner.trim().endsWith('?');
-    if (isPraise && newNumber !== undefined && learnerNumbers.length === 0 && !learnerAskedBack) {
+    /*
+     * THE PRODUCT'S OWN RULE, not a second approximation of it.
+     *
+     * This asked "did the learner's line contain a digit", which reads every
+     * VERBAL answer as no answer. On 2026-09-04 it reported
+     *
+     *   "Exacto, eso es un ciclo: comprar, vender, volver a comprar. Mira, si
+     *    compras limones por 10…"
+     *
+     * as praise for an answer nobody gave — to a child who had just described
+     * the cycle in words. The "Exacto" confirms what they really said; the 10
+     * belongs to the new example after it.
+     *
+     * `offeredNoAnswer` names the harm instead of inferring it: a child who
+     * said they do not have an answer, told theirs is right. Sharing the
+     * function with the repair also means the harness cannot report a fault
+     * the product deliberately allows, which is what it was doing.
+     */
+    if (isPraise && newNumber !== undefined && offeredNoAnswer(beats[i]!.learner)) {
       fault('praises an answer the learner never gave', said.slice(0, 100));
     }
   }
@@ -1588,7 +1606,19 @@ async function main(): Promise<void> {
        * A PROMISED PICTURE THAT NEVER APPEARED. Found by reading three sweep
        * transcripts by hand; automated here so the fourth does not need to be.
        */
-      if (promisesADrawing(turn.say) && turn.whiteboard == null) {
+      /*
+       * A SEGMENT KEEPS THE PROMISE TOO, and this check did not know it.
+       *
+       * Both times it fired on 2026-09-04 the tutor said "vamos a jugar un
+       * juego de descuentos EN LA PANTALLA, tú tocas las cosas" and then
+       * requested an activity, which the very next line of the same transcript
+       * shows served and answered correctly. The child was told to look at the
+       * screen and something arrived on the screen. The fault this exists for
+       * is a promise nothing keeps — "mira cómo se ve" with an empty board and
+       * no activity — and lumping a delivered activity in with it is the
+       * metric measuring its own assumption about which surface counts.
+       */
+      if (promisesADrawing(turn.say) && turn.whiteboard == null && turn.segmentRequest == null) {
         fault(
           'promised a drawing and drew nothing',
           turn.say.slice(0, 120),

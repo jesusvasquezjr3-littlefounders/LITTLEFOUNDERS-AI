@@ -2806,10 +2806,26 @@ export function praisesAnUnofferedAnswer(input: {
   numbersTheTutorAsked: string[];
 }): boolean {
   if (!CONFIRMATION_MARKERS.test(input.say)) return false;
-  const learnerNumbers = input.learnerText.match(/\d+/g) ?? [];
-  if (learnerNumbers.length > 0) return false;
-  // A bare question back is not an attempted answer; see above.
-  if (input.learnerText.trim().endsWith('?')) return false;
+  /*
+   * THE LEARNER MUST HAVE OFFERED NOTHING, stated POSITIVELY.
+   *
+   * The first cut asked only whether the learner's line contained a NUMBER,
+   * which reads every verbal answer as no answer. It fired on this, from the
+   * 2026-09-04 run, where the child had just described a cycle in words:
+   *
+   *   "Exacto, eso es un ciclo: comprar, vender, volver a comprar. Mira, si
+   *    compras limones por 10…"
+   *
+   * The "Exacto" confirms something they really said; the 10 belongs to the
+   * NEW example that follows. Repairing that would teach the tutor not to
+   * confirm correct verbal answers, which is most of what confirming is for.
+   *
+   * So the harm is named directly instead: a child who said they do not have
+   * an answer, told that their answer is right. That is a closed set of
+   * shapes, and everything outside it — any substantive attempt, in words or
+   * numbers — is left alone.
+   */
+  if (!offeredNoAnswer(input.learnerText)) return false;
   const invented = (input.say.match(/\d+/g) ?? []).find(
     (n) => !input.numbersTheTutorAsked.includes(n),
   );
@@ -2889,3 +2905,41 @@ export const SPOKEN_WORD_CEILING = 90;
 export function isTooLongToSayAloud(say: string): boolean {
   return say.trim().split(/\s+/).filter(Boolean).length > SPOKEN_WORD_CEILING;
 }
+
+
+/**
+ * TRUE when the learner's turn contains no attempt at an answer.
+ *
+ * Deliberately a closed list of ways to say "I don't have one", plus a bare
+ * question and an empty line — not "anything short" and not "no digits". A
+ * child answering "un ciclo" or "porque sube" has answered; a child answering
+ * "no sé" has not, and confirming the second is what
+ * `praisesAnUnofferedAnswer` exists to catch.
+ *
+ * Biased towards saying NO. A miss costs one unrepaired turn; a false hit
+ * costs the tutor's ability to confirm a correct answer, which is worse.
+ */
+export function offeredNoAnswer(learnerText: string): boolean {
+  const said = learnerText.trim().toLowerCase();
+  if (said === '') return true;
+  // A question back asks for help; it does not attempt an answer.
+  if (said.endsWith('?')) return true;
+  return NO_ANSWER_MARKERS.test(said) && said.split(/\s+/).length <= 8;
+}
+
+/*
+ * NO TRAILING `\b`, and the reason is the kind of thing that ships silently.
+ *
+ * `\b` without the `u` flag is defined on ASCII word characters, so `é` is
+ * not one — which means `/\bno s[eé]\b/` never matches "no sé": between the
+ * `é` and the following space there are two non-word characters and therefore
+ * no boundary. The pattern looks right, reads right, and is false for exactly
+ * the Spanish spelling it was written for. Caught by a test that had passed
+ * ten minutes earlier against the previous, cruder rule.
+ *
+ * A lookahead for the actual delimiters instead, which does not care what
+ * counts as a word character. `\b` stays on the LEADING side, where every
+ * alternative begins with an ASCII letter.
+ */
+const NO_ANSWER_MARKERS =
+  /\b(no s[eé]|no entiendo|no le entiendo|ni idea|no puedo|no me acuerdo|ay[uú]dame|no sei|n[aã]o sei|n[aã]o entendi|me ajuda|i don'?t know|no idea|i'?m stuck|help me)(?=$|[\s.,!?¿¡])/i;

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  offeredNoAnswer,
+  praisesAnUnofferedAnswer,
   asksMultipleQuestions,
   buildContextMessage,
   contradictsItsOwnShortfall,
@@ -481,5 +483,53 @@ describe('EXPLICIT_REPEAT_REQUEST only matches an unambiguous ask to restate', (
     expect(EXPLICIT_REPEAT_REQUEST.test('otra vez')).toBe(false);
     expect(EXPLICIT_REPEAT_REQUEST.test('de nuevo')).toBe(false);
     expect(EXPLICIT_REPEAT_REQUEST.test('ya entendí, dame otro')).toBe(false);
+  });
+});
+
+
+describe('offeredNoAnswer — who has actually tried', () => {
+  /*
+   * The accented spellings are here because the first version of the pattern
+   * ended in `\b`, which is defined on ASCII word characters — so `é` is not
+   * one, and `/\bno s[eé]\b/` never matched "no sé": the exact Spanish
+   * spelling the rule was written for. It read correctly and was false.
+   */
+  it.each(['no sé', 'no sé cómo', 'NO SÉ.', 'ni idea', 'ayúdame', 'não sei', "i don't know", '', '¿y eso?'])(
+    'reads %j as no attempt',
+    (text) => {
+      expect(offeredNoAnswer(text)).toBe(true);
+    },
+  );
+
+  /*
+   * A verbal answer is an answer. This is the case that made the rule narrow:
+   * a child who says "un ciclo" has answered, and a tutor confirming it with
+   * "Exacto" is doing the thing confirming is for.
+   */
+  it.each(['un ciclo', 'comprar y vender', 'porque sube el precio', '12', 'creo que son cuatro'])(
+    'reads %j as an attempt',
+    (text) => {
+      expect(offeredNoAnswer(text)).toBe(false);
+    },
+  );
+
+  it('does not repair a confirmation of a correct VERBAL answer', () => {
+    expect(
+      praisesAnUnofferedAnswer({
+        say: 'Exacto, eso es un ciclo: comprar, vender, volver a comprar. Si compras limones por 10…',
+        learnerText: 'comprar y vender',
+        numbersTheTutorAsked: [],
+      }),
+    ).toBe(false);
+  });
+
+  it('does repair a confirmation aimed at a child who said they do not know', () => {
+    expect(
+      praisesAnUnofferedAnswer({
+        say: '¡Exacto! Son 4 para cada uno.',
+        learnerText: 'no sé cómo',
+        numbersTheTutorAsked: [],
+      }),
+    ).toBe(true);
   });
 });
