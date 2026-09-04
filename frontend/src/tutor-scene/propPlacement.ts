@@ -49,6 +49,31 @@ import { findStandingSpots, type StandingSpot } from './standingSpots';
 export const STALL_CLEARANCE_M = 1.1;
 
 /**
+ * Same reasoning as `STALL_CLEARANCE_M`, for the second prop
+ * (`CrateProp.tsx`) that proves this module's own generality: a crate's
+ * footprint is a fraction of a stall's, and giving it a SMALLER clearance
+ * rather than reusing the stall's is the actual point of a per-kind
+ * constant — a single shared radius would either crowd the stall or waste
+ * ground around the crate.
+ */
+export const CRATE_CLEARANCE_M = 0.55;
+
+/**
+ * Every prop kind this island can place, and the clearance each one needs —
+ * the lookup `TutorScene.tsx`'s own multi-prop solve reads by name so that
+ * adding a THIRD kind is a one-line addition here, never a new branch at
+ * every call site. Kept a plain object rather than a function: both entries
+ * are compile-time constants, and a caller mapping over `props` needs
+ * synchronous, allocation-free access on every render.
+ */
+export const PROP_CLEARANCE_M = {
+  stall: STALL_CLEARANCE_M,
+  crate: CRATE_CLEARANCE_M,
+} as const;
+
+export type PropKind = keyof typeof PROP_CLEARANCE_M;
+
+/**
  * Composes an `isWalkable` predicate that also excludes a disc around
  * `prop`. `base` is optional for the same reason `FindSpotsOptions.isWalkable`
  * is — a missing mask means nobody has checked this island — and is treated
@@ -97,4 +122,58 @@ export function findPropSpot(
     preferDirection,
   });
   return spots[0] ?? null;
+}
+
+/**
+ * Solves EVERY entry in `kinds`, in order, each excluding every prop already
+ * placed before it — the generalization `props` (2026-09-04) needed beyond
+ * `findPropSpot`: a lone prop only ever had to answer to the island, but two
+ * requested together must also answer to EACH OTHER, or nothing stops a
+ * second prop's own solve from landing inside the first one's footprint the
+ * same way an unwrapped character solve could before `excludingProp` existed.
+ *
+ * A `null` from a single kind's solve (the island had nowhere left that
+ * cleared its bar) is skipped rather than aborting the rest — one prop with
+ * nowhere to go is not a reason to also withhold every other prop that DID
+ * find room, the same "a miss costs nothing, never everything" posture
+ * `pointTarget.ts` already applies to a different kind of miss.
+ *
+ * Lives here, not inline in `TutorScene.tsx`'s own solve effect, for the
+ * SAME reason `findPropSpot`/`excludingProp` already do: `verify-placement.ts`
+ * is a headless script with no React tree to mount, and needs this exact
+ * sequence to certify rather than a hand-rolled copy that could drift from
+ * what the product actually runs.
+ */
+export function findPropSpots(
+  ground: Object3D,
+  isWalkable: ((x: number, z: number) => boolean) | undefined,
+  kinds: readonly PropKind[],
+): readonly (readonly [PropKind, StandingSpot])[] {
+  const solved: (readonly [PropKind, StandingSpot])[] = [];
+  let walkable = isWalkable;
+  for (const kind of kinds) {
+    const clearanceM = PROP_CLEARANCE_M[kind];
+    const spot = findPropSpot(ground, walkable, clearanceM);
+    if (!spot) continue;
+    solved.push([kind, spot]);
+    walkable = excludingProp(walkable, spot, clearanceM);
+  }
+  return solved;
+}
+
+/**
+ * Composes an `isWalkable` predicate that excludes the disc around EVERY
+ * solved prop in `props` (as returned by `findPropSpots`) — the multi-prop
+ * sibling of `excludingProp` itself, for the character solve that must clear
+ * all of them at once rather than being wrapped once per prop by hand.
+ */
+export function excludingProps(
+  base: ((x: number, z: number) => boolean) | undefined,
+  props: readonly (readonly [PropKind, StandingSpot])[],
+): (x: number, z: number) => boolean {
+  let walkable = base;
+  for (const [kind, spot] of props) {
+    walkable = excludingProp(walkable, spot, PROP_CLEARANCE_M[kind]);
+  }
+  return walkable ?? (() => true);
 }

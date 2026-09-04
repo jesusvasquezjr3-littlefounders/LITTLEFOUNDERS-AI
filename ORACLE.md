@@ -5021,6 +5021,17 @@ billboard, then static prop) without touching `TutorTurnSchema` a third
 time — the model's own surface stayed exactly as closed as it was after
 S17, which is the property that matters here.
 
+**UPDATED 2026-09-04: a second prop kind (a crate) and true multi-prop
+placement were added, and the one fact this file actually needs to track
+still holds unchanged.** `TutorSceneProps.showStall: boolean` became
+`props: readonly PropKind[]`, `propPlacement.ts` gained
+`findPropSpots`/`excludingProps` to solve and exclude several props at
+once rather than one, and the Tutor's own two callers migrated to the new
+API — none of it touches `TutorTurnSchema`, a prompt, or a persisted row.
+The model still cannot name, request, or influence which props appear;
+`props` is set entirely from `roleplay.active`, exactly as `showStall` was.
+Full account: /TUTOR_INSTRUMENTS.md §0.0's Class III (S18 amendment) row.
+
 Full account (the placement-solver mechanics, the audition regression
 found and fixed, the live verification): /TUTOR_INSTRUMENTS.md §0.0's
 Class III (S18) row and its decision-log entry.

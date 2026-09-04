@@ -26913,6 +26913,26 @@ import { CanvasTexture, DoubleSide, SRGBColorSpace } from 'three';
  * identical cost on a 2GB phone and a desktop GPU. It composes with real
 ```
 
+### frontend/src/tutor-scene/CrateProp.tsx
+
+```
+/*
+ * Class III / S18 amendment `props` generality (2026-09-04): the SECOND
+ * object on the island, built to prove `TutorScene.tsx`'s multi-prop solve
+ * is a real mechanism and not a stall-shaped special case. Procedural,
+ * lit (`meshStandardMaterial`), built once per mount — the same three
+ * reasons `StallProp.tsx`'s own header gives at length; not repeated here,
+ * only cross-referenced, the same "a copy would drift" discipline
+ * `propPlacement.ts` already applies to its own functions.
+ *
+ * A stack of two produce crates, offset and turned against each other —
+ * the smallest shape that reads as "crates" rather than "a box."
+ */
+
+const WOOD = '#b98452';
+const WOOD_DARK = '#8a5a34';
+```
+
 ### frontend/src/tutor-scene/Diorama.tsx
 
 ```
@@ -27065,12 +27085,12 @@ import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
 import { AvatarBillboard } from './AvatarBillboard';
 import { StallProp } from './StallProp';
-import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
+import { CrateProp } from './CrateProp';
+import { excludingProps, findPropSpots, type PropKind } from './propPlacement';
 import type { PointBearing } from './pointTarget';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
-import {
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -28118,19 +28138,19 @@ import type {
 ```
 import { describe, expect, it } from 'vitest';
 import { BoxGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'three';
-import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
+import {
+  CRATE_CLEARANCE_M,
+  excludingProp,
+  excludingProps,
+  findPropSpot,
+  findPropSpots,
+  PROP_CLEARANCE_M,
+  STALL_CLEARANCE_M,
+} from './propPlacement';
 
 /** Same synthetic ground `standingSpots.test.ts` uses — featureless on purpose. */
 function slab(): Mesh {
   const mesh = new Mesh(new BoxGeometry(10, 0.4, 10), new MeshBasicMaterial());
-  mesh.updateMatrixWorld(true);
-  return mesh;
-}
-
-describe('findPropSpot', () => {
-  it('finds a spot on open ground', () => {
-    const spot = findPropSpot(slab(), undefined, 1);
-    expect(spot).not.toBeNull();
 ```
 
 ### frontend/src/tutor-scene/propPlacement.ts

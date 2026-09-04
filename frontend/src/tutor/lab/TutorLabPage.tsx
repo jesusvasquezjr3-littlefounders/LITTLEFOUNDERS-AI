@@ -864,10 +864,15 @@ export default function TutorLabPage() {
         pointBearing={pointBearing}
         perCharacter={roleplay.perCharacter}
         presenceAvatarUri={presenceAvatarUri}
-        // Class III / S18 `props`: same trigger as `presence` immediately
-        // above — see `TutorExperience.tsx`'s own comment on why one shared
-        // condition is correct rather than a second one of its own.
-        showStall={roleplay.active}
+        // Class III / S18 `props`, generalized (2026-09-04): same trigger as
+        // `presence` immediately above — see `TutorExperience.tsx`'s own
+        // comment on why one shared condition is correct rather than a
+        // second one of its own. BOTH props here, deliberately, unlike
+        // production's single stall: the Lab is where this session's own
+        // multi-prop solve — two props excluding each other's footprint,
+        // then the cast excluding both — gets exercised live, the same way
+        // `showStall` itself was first proven here in S18.
+        props={roleplay.active ? (['stall', 'crate'] as const) : []}
         // Null always. Audio is a network edge and the lab has no clip — the
         // replay fixture is deliberately a silent recording, which is the
         // arrangement every conversation reaches after ninety days — so the

@@ -1549,11 +1549,16 @@ export function TutorExperience() {
        * Class III / S18 `props`: the stall shows "during a transaction," the
        * catalog's own words — the SAME condition `presence` already reads,
        * so the two ship and disappear together rather than needing a second
-       * trigger of their own. See `TutorSceneProps.showStall`'s own comment
-       * for why this is safe to gate so simply: false reproduces the cast
-       * solve byte-for-byte, exactly like every other roleplay-only prop.
+       * trigger of their own. See `TutorSceneProps.props`'s own comment for
+       * why this is safe to gate so simply: an empty list reproduces the
+       * cast solve byte-for-byte, exactly like every other roleplay-only
+       * prop. On the new, generalized `props` API rather than the deprecated
+       * `showStall` boolean — still just the one stall here, deliberately:
+       * dressing beyond it stays an honest, unclaimed scope (see
+       * TUTOR_INSTRUMENTS.md), and the Lab is where the mechanism's actual
+       * multi-prop capability gets exercised live.
        */
-      showStall={roleplay.active}
+      props={roleplay.active ? (['stall'] as const) : []}
       /*
        * THE ARTICULATION HEURISTIC, not real lip-sync — exactly `speaking` on
        * `CharacterActor3D` elsewhere in the Lesson Engine (`applySpeaking`):

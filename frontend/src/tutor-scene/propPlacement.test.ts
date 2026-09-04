@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { BoxGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'three';
-import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
+import {
+  CRATE_CLEARANCE_M,
+  excludingProp,
+  excludingProps,
+  findPropSpot,
+  findPropSpots,
+  PROP_CLEARANCE_M,
+  STALL_CLEARANCE_M,
+} from './propPlacement';
 
 /** Same synthetic ground `standingSpots.test.ts` uses — featureless on purpose. */
 function slab(): Mesh {
@@ -82,5 +90,89 @@ describe('excludingProp', () => {
     expect(composed(prop!.x, prop!.z)).toBe(false);
     // ...and a point one clearance-radius away in an arbitrary direction must not be.
     expect(composed(prop!.x + STALL_CLEARANCE_M + 0.5, prop!.z)).toBe(true);
+  });
+});
+
+describe('PROP_CLEARANCE_M', () => {
+  it('gives the crate a smaller clearance than the stall — the actual point of a per-kind lookup', () => {
+    expect(CRATE_CLEARANCE_M).toBeLessThan(STALL_CLEARANCE_M);
+    expect(PROP_CLEARANCE_M.stall).toBe(STALL_CLEARANCE_M);
+    expect(PROP_CLEARANCE_M.crate).toBe(CRATE_CLEARANCE_M);
+  });
+});
+
+/*
+ * Class III / S18 amendment `props` generality (2026-09-04): a lone prop
+ * only ever had to answer to the island — these are the tests for what
+ * changes once more than one is requested at once.
+ */
+describe('findPropSpots', () => {
+  it('solves every kind requested, each a real, distinct spot', () => {
+    const solved = findPropSpots(slab(), undefined, ['stall', 'crate']);
+    expect(solved.map(([kind]) => kind)).toEqual(['stall', 'crate']);
+    const [, stallSpot] = solved[0]!;
+    const [, crateSpot] = solved[1]!;
+    expect(Math.hypot(stallSpot.x - crateSpot.x, stallSpot.z - crateSpot.z)).toBeGreaterThan(0);
+  });
+
+  it('never lets the second prop land inside the first one just-solved footprint', () => {
+    // A featureless slab gives the solver no flatness signal to separate on —
+    // if the second solve did not exclude the first prop's own disc, nothing
+    // else here would stop them landing on the identical spot.
+    const solved = findPropSpots(slab(), undefined, ['stall', 'crate']);
+    const stallSpot = solved[0]![1];
+    const crateSpot = solved[1]![1];
+    const clear = Math.hypot(stallSpot.x - crateSpot.x, stallSpot.z - crateSpot.z);
+    expect(clear).toBeGreaterThanOrEqual(STALL_CLEARANCE_M - 1e-6);
+  });
+
+  it('skips every kind rather than throwing when nothing on the island qualifies', () => {
+    // The same already-proven "always false = never a spot" shape
+    // `findPropSpot`'s own test above uses — here for a whole requested
+    // list, proving the loop completes to an empty result rather than
+    // throwing on the first kind's `null`.
+    expect(findPropSpots(slab(), () => false, ['stall', 'crate'])).toEqual([]);
+  });
+
+  it('a later kind still gets attempted after an earlier one is excluded down to nothing', () => {
+    // Built from a REAL solved position rather than an assumed one: find
+    // where the stall alone would land, then make only a stall-clearance
+    // disc around that exact point walkable. The stall still solves inside
+    // its own disc; once `findPropSpots` excludes that same disc before
+    // trying the crate, nothing remains at all. Proves the loop does not
+    // stop just because a LATER kind comes back null — it already returned
+    // the stall from before that happened.
+    const freeSpot = findPropSpot(slab(), undefined, STALL_CLEARANCE_M);
+    expect(freeSpot).not.toBeNull();
+    const onlyNearStall = (x: number, z: number) =>
+      Math.hypot(x - freeSpot!.x, z - freeSpot!.z) < STALL_CLEARANCE_M;
+    const solved = findPropSpots(slab(), onlyNearStall, ['stall', 'crate']);
+    expect(solved.map(([kind]) => kind)).toEqual(['stall']);
+  });
+
+  it('returns an empty list for an empty request, the byte-identical no-op every pre-generalization caller relies on', () => {
+    expect(findPropSpots(slab(), undefined, [])).toEqual([]);
+  });
+});
+
+describe('excludingProps', () => {
+  it('excludes every solved prop at once, not only the last one composed', () => {
+    const solved = findPropSpots(slab(), undefined, ['stall', 'crate']);
+    const composed = excludingProps(undefined, solved);
+    for (const [kind, spot] of solved) {
+      expect(composed(spot.x, spot.z), `${kind} centre`).toBe(false);
+    }
+  });
+
+  it('is a no-op returning the base predicate unchanged when nothing was solved', () => {
+    const composed = excludingProps(() => true, []);
+    expect(composed(0, 0)).toBe(true);
+    expect(composed(-50, 50)).toBe(true);
+  });
+
+  it('still refuses a point the BASE predicate already refused, props or no props', () => {
+    const solved = findPropSpots(slab(), undefined, ['crate']);
+    const composed = excludingProps((x) => x < 0, solved);
+    expect(composed(5, 5)).toBe(false);
   });
 });

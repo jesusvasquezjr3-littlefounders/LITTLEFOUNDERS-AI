@@ -45,7 +45,9 @@ export interface TutorStageProps {
   perCharacter?: TutorSceneProps['perCharacter'];
   /** See `TutorSceneProps.presenceAvatarUri`'s own comment (Class III / S17 `presence`). */
   presenceAvatarUri?: TutorSceneProps['presenceAvatarUri'];
-  /** See `TutorSceneProps.showStall`'s own comment (Class III / S18 `props`). */
+  /** See `TutorSceneProps.props`'s own comment (Class III / S18 `props`, generalized). */
+  props?: TutorSceneProps['props'];
+  /** @deprecated Use `props: ['stall']` — see `TutorSceneProps.showStall`. */
   showStall?: TutorSceneProps['showStall'];
   /** See `TutorSceneProps.pointBearing`'s own comment (Class III `point_at`). */
   pointBearing?: TutorSceneProps['pointBearing'];
@@ -176,6 +178,7 @@ export function TutorStage({
   pointBearing = null,
   perCharacter,
   presenceAvatarUri = null,
+  props,
   showStall = false,
   characterSpeaking = false,
   speechUrl = null,
@@ -306,6 +309,7 @@ export function TutorStage({
         pointBearing={pointBearing}
         perCharacter={perCharacter}
         presenceAvatarUri={presenceAvatarUri}
+        props={props}
         showStall={showStall}
         characterSpeaking={characterSpeaking}
         viseme={speaking ? viseme : VISEME_CLOSED}

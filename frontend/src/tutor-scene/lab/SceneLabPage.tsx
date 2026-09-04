@@ -216,6 +216,19 @@ export default function SceneLabPage() {
   const [audition, setAudition] = useState(false);
   /** Class III / S18 `props`: the market stall, solved and placed live. */
   const [showStall, setShowStall] = useState(false);
+  /**
+   * Class III / S18 amendment `props` generality (2026-09-04): the second
+   * prop kind, toggled independently so both can be shown TOGETHER here —
+   * the one place in the product that exercises the multi-prop solve
+   * (`propPlacement.ts`'s sequential exclusion) with a human actually
+   * watching the render, the same role this toggle played for the stall
+   * alone in S18.
+   */
+  const [showCrate, setShowCrate] = useState(false);
+  const activeProps = useMemo(
+    () => [...(showStall ? (['stall'] as const) : []), ...(showCrate ? (['crate'] as const) : [])],
+    [showStall, showCrate],
+  );
   const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');
   /*
    * A real <audio> element driving the mouth, so the TTS path is exercised end
@@ -301,7 +314,7 @@ export default function SceneLabPage() {
                 shot={shot}
                 backdrop={backdrop}
                 emotion={emotion}
-                showStall={showStall}
+                props={activeProps}
               />
             ) : (
             <SceneCanvas className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" onStats={setStats} onSettings={setSettings}>
@@ -455,6 +468,20 @@ export default function SceneLabPage() {
                   }
                 >
                   stall: {showStall ? 'on' : 'off'}
+                </button>
+              ) : null}
+              {composed ? (
+                <button
+                  type="button"
+                  data-show-crate={showCrate ? 'on' : 'off'}
+                  onClick={() => setShowCrate((v) => !v)}
+                  className={
+                    showCrate
+                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                  }
+                >
+                  crate: {showCrate ? 'on' : 'off'}
                 </button>
               ) : null}
               {composed

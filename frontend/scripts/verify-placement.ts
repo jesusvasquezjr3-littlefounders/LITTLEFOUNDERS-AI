@@ -103,7 +103,14 @@ import {
 import { standingCast } from '../src/tutor-scene/cast.js';
 import { modelFooting } from '../src/tutor-scene/modelBounds.js';
 import { walkabilityFor } from '../src/tutor-scene/walkability.js';
-import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from '../src/tutor-scene/propPlacement.js';
+import {
+  excludingProp,
+  excludingProps,
+  findPropSpot,
+  findPropSpots,
+  PROP_CLEARANCE_M,
+  STALL_CLEARANCE_M,
+} from '../src/tutor-scene/propPlacement.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SCENES = resolve(HERE, '..', 'public', 'scenes');
@@ -526,6 +533,88 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
         }
       }
       if (!anyBad) console.log(`      ✓ ${label} — every seat clears the stall`);
+    }
+  }
+
+  /*
+   * TWO PROPS AT ONCE (Class III / S18 amendment `props` generality,
+   * 2026-09-04) — the capability the single-stall section above never
+   * exercised: `findPropSpots`/`excludingProps` (imported, never restated —
+   * same reasoning as everywhere else in this file) solve the stall AND a
+   * crate together, on the SAME island the single-prop section just used.
+   * Two things could go wrong that the section above structurally cannot
+   * catch: the second prop landing inside the first one's own footprint, or
+   * the character solve — now excluding BOTH — losing a seat neither prop
+   * alone would have cost it.
+   */
+  console.log('  PROPS: two props at once, neither on top of the other');
+  const twoProps = findPropSpots(island.mesh, propIsWalkable, ['stall', 'crate']);
+  if (twoProps.length !== 2) {
+    console.log(`      ✗ PROPS — expected 2 solved, got ${twoProps.length} (${twoProps.map(([k]) => k).join(', ') || 'none'})`);
+    failures += 1;
+  } else {
+    const [[, stallSpot2], [, crateSpot2]] = twoProps;
+    const propsClear = Math.hypot(stallSpot2.x - crateSpot2.x, stallSpot2.z - crateSpot2.z);
+    const propsBad = propsClear < STALL_CLEARANCE_M - 1e-6;
+    if (propsBad) failures += 1;
+    console.log(
+      `      ${propsBad ? '✗' : '✓'} stall/crate separation  ${propsClear.toFixed(2)} m ` +
+        `(need ${STALL_CLEARANCE_M.toFixed(2)} m)`,
+    );
+    for (const [kind, spot] of twoProps) {
+      const hit = surfaceAt(island.mesh, spot.x, spot.z, from);
+      const rgb = hit?.uv && island.sample ? island.sample(hit.uv.x, hit.uv.y) : null;
+      const surface = describe(rgb);
+      const fromCentre = Math.hypot(spot.x - centre.x, spot.z - centre.z);
+      const overhang = fromCentre - radius;
+      const bad = surface === 'WATER?' || overhang > 0;
+      if (bad) failures += 1;
+      console.log(
+        `      ${bad ? '✗' : '✓'} ${kind.padEnd(5)}   ` +
+          `y=${spot.y.toFixed(2).padStart(6)}  ${fromCentre.toFixed(2)} m out  ` +
+          `${overhang > 0 ? `OVERHANGS ${overhang.toFixed(2)} m` : `${(-overhang).toFixed(2)} m clear`}  ` +
+          `on ${surface}${rgb ? ` rgb(${rgb.join(',')})` : ''}`,
+      );
+    }
+
+    for (const [lead, companion] of PAIRINGS) {
+      const cast = standingCast(null, lead, companion);
+      const footprints = cast.map((who) => characterFootprintM(CHARACTER_MEASUREMENTS[who]));
+      const spots = findStandingSpots(island.mesh, {
+        count: cast.length,
+        minSeparation: castSeparationM(footprints),
+        separationFor: (index, other) => pairSeparationM(footprints[index] ?? 0, footprints[other] ?? 0),
+        preferDirection: new Vector3(0.35, 0, 1),
+        // The SAME composition `TutorScene.tsx` applies for a multi-prop
+        // request — a copy here would certify a different product.
+        isWalkable: excludingProps(propIsWalkable, twoProps),
+        clearance: castClearanceM(footprints),
+      });
+
+      const label = `${lead} + ${companion ?? '—'} around both props`;
+      let anyBad2 = false;
+      for (let i = 0; i < cast.length; i += 1) {
+        const spot = spots[i];
+        if (!spot) {
+          console.log(`      ✗ ${label} — ${cast[i]!.padEnd(6)} NO SPOT FOUND (both props excluded)`);
+          failures += 1;
+          anyBad2 = true;
+          continue;
+        }
+        for (const [kind, propSpot2] of twoProps) {
+          const clear = Math.hypot(spot.x - propSpot2.x, spot.z - propSpot2.z);
+          const clearanceM = PROP_CLEARANCE_M[kind];
+          if (clear < clearanceM - 1e-6) {
+            failures += 1;
+            anyBad2 = true;
+            console.log(
+              `      ✗ ${label} — ${cast[i]!.padEnd(6)} ${clear.toFixed(2)} m from the ${kind}, ` +
+                `inside its ${clearanceM.toFixed(2)} m exclusion`,
+            );
+          }
+        }
+      }
+      if (!anyBad2) console.log(`      ✓ ${label} — every seat clears both props`);
     }
   }
 
