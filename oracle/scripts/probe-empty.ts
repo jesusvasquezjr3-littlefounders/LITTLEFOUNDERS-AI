@@ -91,6 +91,35 @@ const CONTEXT: TutorContext = {
   learnerBrief: null,
 };
 
+/**
+ * A real move body, as `strategyInstruction` appends it — this is
+ * `frustration-rescue.md`'s own procedure plus the wording rule, which is what
+ * a struggling learner's turn actually carries.
+ */
+const MANEUVER_BLOCK = [
+  'Strategy for this turn: RESCUE — the feeling first, the math later.',
+  '',
+  'They are frustrated. Nothing you teach in this state will land; your only job',
+  'this turn is to make continuing feel safe.',
+  '',
+  '1. Name the feeling without drama and side WITH them. Say that this part is',
+  '   hard, that being stuck here is ordinary, and that you are on their side —',
+  '   IN YOUR OWN WORDS, built from what THEY just tried.',
+  '2. Shrink the mountain: hand them one step so small it is almost unfair, one',
+  '   they will certainly get. The point is a win, not progress.',
+  '3. When they get it, point at the win specifically — name the thing THEY did,',
+  '   in the words they used for it.',
+  '4. Offer a real choice of path, not an exit — two ways forward, phrased for',
+  '   what they are working on right now.',
+  '',
+  'Never reuse a sentence you have already said in this session. A quoted example',
+  'in these instructions is a SHAPE, never a line to copy: say it your own way,',
+  'built from what this learner just did.',
+].join('\n');
+
+/** Round 71's nudge, in the exact wording the orchestrator ships. */
+const BRACE_NUDGE = ' Begin with the character { and end with }. Nothing before or after.';
+
 /** The correction the RETRY appends today, and the variable under test. */
 const CORRECTION =
   'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.';
@@ -99,6 +128,45 @@ interface Condition {
   name: string;
   temperature: number;
   correction: boolean;
+  /**
+   * Round 71 (2026-09-04): the brace nudge, and WHERE it rides.
+   *
+   * `null` sends the shape reminder exactly as production did before this
+   * round. `'folded'` appends the nudge to that same reminder — one trailing
+   * message, which is what the orchestrator ships today. `'separate'` sends it
+   * as a SECOND trailing message, which measured better in a conversation
+   * (17 vs 24 empties) and would push the reaction instruction one slot
+   * further from generation, breaking an adjacency three tests pin
+   * deliberately.
+   *
+   * Those two conversation numbers are one sample each, which this file's own
+   * header says is exactly how to read noise as signal. Hence these.
+   */
+  braceNudge?: 'folded' | 'separate' | null;
+  /**
+   * Round 72 (2026-09-04): the tier the CONTEXT declares.
+   *
+   * Every condition before this one ran at tier 2, and every "0%" this file
+   * reports was measured there. The failure that motivated round 71 was
+   * measured somewhere else entirely — a tier-1 walk, 43 whitespace
+   * completions in 48 turns — and round 71's conditions came back 0/12 at
+   * tier 2 for all three, which does not refute the tier-1 number so much as
+   * fail to reach it. Tier is the untested variable between the two.
+   */
+  tier?: 1 | 2 | 3;
+  /**
+   * Round 73 (2026-09-04): the MANEUVER, which every condition before this
+   * one omitted entirely.
+   *
+   * A real turn does not end at the learner's line. `strategyInstruction`
+   * appends the selected move's whole body, plus `SKILL_WORDING_RULE`, plus
+   * any instrument guidance the move named — hundreds of words of procedure,
+   * in the same trailing user content, on most turns. For a struggling
+   * learner it is on nearly every turn, because RESCUE and REMEDIATE both
+   * carry one. This probe has been measuring a message the product does not
+   * send.
+   */
+  maneuver?: boolean;
   /** How many prior turns to put in the context. */
   historyTurns: number;
   /**
@@ -137,6 +205,33 @@ const NON_QUOTING_CORRECTION =
  * lines. If that is the cause, the fix is a window, not a parameter.
  */
 const CONDITIONS: Condition[] = [
+  /*
+   * ROUND 71 (2026-09-04) — does the brace nudge help, and does its POSITION
+   * matter? Measured through a conversation it looked like 43 -> 24 folded and
+   * 43 -> 17 separate, one sample each. This file exists because that is not a
+   * measurement. All three hold the full window and the real attempt-0
+   * temperature still, and differ in nothing else.
+   */
+  /*
+   * ROUND 72 — the tier. Same messages, same window, same temperature, same
+   * reminder: the only difference is the tier the context declares, which is
+   * the one variable separating this file's own 0% from a real tier-1 walk's
+   * 43-in-48.
+   */
+  /*
+   * ROUND 73 — the maneuver. Rounds 71 and 72 both came back 0/12 and neither
+   * reached the real failure, which says the difference is something this
+   * probe was not sending at all. A real turn carries the selected move's
+   * whole procedure in the same trailing content; a struggling learner's turn
+   * carries one on nearly every turn.
+   */
+  { name: 'R73 tier 1 + the real maneuver block', temperature: 0.6, correction: true, historyTurns: 20, tier: 1, maneuver: true },
+  { name: 'R73 tier 1, no maneuver (control)', temperature: 0.6, correction: true, historyTurns: 20, tier: 1, maneuver: false },
+  { name: 'R72 tier 1 (the struggling learner)', temperature: 0.6, correction: true, historyTurns: 20, tier: 1 },
+  { name: 'R72 tier 2 (control, this file default)', temperature: 0.6, correction: true, historyTurns: 20, tier: 2 },
+  { name: 'R71 attempt-0, no nudge (control)', temperature: 0.6, correction: true, historyTurns: 20, braceNudge: null },
+  { name: 'R71 attempt-0, nudge FOLDED into the reminder (ships today)', temperature: 0.6, correction: true, historyTurns: 20, braceNudge: 'folded' },
+  { name: 'R71 attempt-0, nudge as its OWN trailing message', temperature: 0.6, correction: true, historyTurns: 20, braceNudge: 'separate' },
   { name: 'short history (3 turns)', temperature: 0.6, correction: false, historyTurns: 3 },
   { name: 'medium history (10 turns)', temperature: 0.6, correction: false, historyTurns: 10 },
   { name: 'full window (20 turns)', temperature: 0.6, correction: false, historyTurns: 20 },
@@ -254,16 +349,28 @@ async function once(condition: Condition, context: TutorContext): Promise<Outcom
     { role: 'system', content: TUTOR_SYSTEM_PROMPT },
     {
       role: 'user',
-      content: buildContextMessage(sealContext({ ...CONTEXT, turnHistory: history })),
+      content: buildContextMessage(
+        sealContext({ ...CONTEXT, tier: condition.tier ?? CONTEXT.tier, turnHistory: history }),
+      ),
     },
     ...history.map((turn) =>
       turn.speaker === 'tutor'
         ? { role: 'assistant', content: turn.text }
         : { role: 'user', content: fenceUntrusted(turn.text, maxChars).block },
     ),
-    { role: 'user', content: fenceUntrusted('no entendí, explícamelo otra vez', maxChars).block },
+    {
+      role: 'user',
+      content:
+        fenceUntrusted('no entendí, explícamelo otra vez', maxChars).block +
+        (condition.maneuver === true ? `\n\n${MANEUVER_BLOCK}` : ''),
+    },
     ...(repairCorrection !== null ? [{ role: 'user', content: repairCorrection }] : []),
-    ...(condition.correction ? [{ role: 'user', content: CORRECTION }] : []),
+    ...(condition.correction
+      ? [{ role: 'user', content: condition.braceNudge === 'folded' ? `${CORRECTION}${BRACE_NUDGE}` : CORRECTION }]
+      : []),
+    ...(condition.braceNudge === 'separate'
+      ? [{ role: 'user', content: BRACE_NUDGE.trim() }]
+      : []),
   ];
   try {
     const response = await fetch(`${config.MODEL_API_BASE}/chat/completions`, {

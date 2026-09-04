@@ -122,13 +122,23 @@ describe('the scripted set is closed, which is what makes it buyable once', () =
   it('enumerates every fixed line for every character in every locale', () => {
     const catalogue = scriptedLineCatalogue();
     // 12 texts (greeting + 6 safety + 5 fixed) x 4 characters x 3 locales.
-    expect(catalogue).toHaveLength(12 * CHARACTER_IDS.length * LOCALES.length);
+    /*
+     * 14, not 12: the model-down apology became three variants on 2026-09-04.
+     * A single line meant a child who hit two whitespace completions in one
+     * session heard the identical sentence twice, which the paid converse gate
+     * reported as "turn 3 repeats turn 2 with nothing changed (100% of its
+     * words)". The count is pinned here precisely so a new line cannot be
+     * added without also being SYNTHESIZED — an unpregenerated scripted line
+     * is a silent tutor, which is worse than a repeated one.
+     */
+    expect(catalogue).toHaveLength(14 * CHARACTER_IDS.length * LOCALES.length);
 
     for (const character of CHARACTER_IDS) {
       for (const locale of LOCALES) {
         const slot = catalogue.filter((l) => l.character === character && l.locale === locale);
-        expect(slot).toHaveLength(12);
-        expect(new Set(slot.map((l) => l.key)).size).toBe(12);
+        expect(slot).toHaveLength(14);
+        // Keys stay unique — the three model-down variants are `model_down.0..2`.
+        expect(new Set(slot.map((l) => l.key)).size).toBe(14);
         for (const line of slot) expect(line.text.trim().length).toBeGreaterThan(0);
       }
     }

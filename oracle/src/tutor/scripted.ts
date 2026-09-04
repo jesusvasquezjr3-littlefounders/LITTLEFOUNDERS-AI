@@ -88,11 +88,44 @@ const SAFETY_LINES: Record<SafetyCategory, Trilingual> = {
   },
 };
 
-const MODEL_DOWN: Trilingual = {
-  'en-US': 'My thoughts got tangled for a moment. Give me a second and ask me again?',
-  'es-MX': 'Se me enredaron las ideas un momento. ¿Me lo preguntas otra vez?',
-  'pt-BR': 'Minhas ideias se embaralharam um instante. Pode me perguntar de novo?',
-};
+/*
+ * THE SAME APOLOGY TWICE IS WORSE THAN THE FIRST ONE.
+ *
+ * This was a single line, and the paid `step=converse` gate against shipped
+ * code found what that costs: of 13 faults a person would notice, most traced
+ * here — "turn 3 repeats turn 2 with nothing changed (100% of its words)",
+ * "the same sentence was used 8 times", "2 of 4 turns were canned fallback
+ * lines, not teaching". The provider's whitespace completions are the CAUSE
+ * and are still open; this is the part of the damage that is ours.
+ *
+ * A child who hears the identical sentence twice does not hear an accident
+ * the second time — they hear a machine that has stopped listening. So the
+ * second and third occurrences say something DIFFERENT, and each admits it is
+ * happening again rather than pretending it is the first time, because a
+ * child can tell and pretending is what makes it feel broken rather than
+ * merely slow.
+ *
+ * Deliberately short of an excuse: no blaming a connection a six-year-old
+ * cannot picture, and every variant hands the turn back with a question, so
+ * the conversation has somewhere to go.
+ */
+const MODEL_DOWN: Trilingual[] = [
+  {
+    'en-US': 'My thoughts got tangled for a moment. Give me a second and ask me again?',
+    'es-MX': 'Se me enredaron las ideas un momento. ¿Me lo preguntas otra vez?',
+    'pt-BR': 'Minhas ideias se embaralharam um instante. Pode me perguntar de novo?',
+  },
+  {
+    'en-US': 'That happened again — sorry. Say it once more and I am with you.',
+    'es-MX': 'Otra vez se me fue la idea, perdón. Dímelo una vez más y aquí ando.',
+    'pt-BR': 'Aconteceu de novo, desculpa. Fala mais uma vez que eu estou aqui.',
+  },
+  {
+    'en-US': 'I keep losing the thread today. Try me with fewer words?',
+    'es-MX': 'Hoy se me pierde el hilo. ¿Me lo dices con menos palabras?',
+    'pt-BR': 'Hoje eu perco o fio. Pode me dizer com menos palavras?',
+  },
+];
 
 const MODERATION_BLOCKED: Trilingual = {
   'en-US': 'Let me say that a different way. What part would you like me to explain again?',
@@ -201,8 +234,15 @@ export function safetyResponse(category: SafetyCategory, locale: Locale): TutorT
   };
 }
 
-export function modelDownResponse(locale: Locale): TutorTurn {
-  return turn(MODEL_DOWN[locale], 'thinking', 'think');
+/**
+ * `occurrence` is how many times this session has already fallen back — 0 for
+ * the first. Past the last variant it holds the last one rather than cycling
+ * back to the first, because returning to "ask me again" after three failures
+ * reads as a loop, which is precisely what it is.
+ */
+export function modelDownResponse(locale: Locale, occurrence = 0): TutorTurn {
+  const variant = MODEL_DOWN[Math.min(Math.max(occurrence, 0), MODEL_DOWN.length - 1)]!;
+  return turn(variant[locale], 'thinking', 'think');
 }
 
 export function moderationBlockedResponse(locale: Locale): TutorTurn {
@@ -270,7 +310,9 @@ export function scriptedLineCatalogue(): ScriptedLine[] {
       for (const [category, trilingual] of Object.entries(SAFETY_LINES)) {
         lines.push({ key: `safety.${category}`, character, locale, text: trilingual[locale] });
       }
-      lines.push({ key: 'model_down', character, locale, text: MODEL_DOWN[locale] });
+      MODEL_DOWN.forEach((variant, i) => {
+        lines.push({ key: `model_down.${i}`, character, locale, text: variant[locale] });
+      });
       lines.push({ key: 'moderation_blocked', character, locale, text: MODERATION_BLOCKED[locale] });
       lines.push({ key: 'soft_close', character, locale, text: SOFT_CLOSE[locale] });
       lines.push({ key: 'hard_close', character, locale, text: HARD_CLOSE[locale] });

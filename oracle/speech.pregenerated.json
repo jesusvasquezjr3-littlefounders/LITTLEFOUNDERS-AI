@@ -1566,6 +1566,198 @@
       "locale": "pt-BR",
       "preview": "Me ajude a descobrir o troco — pode ir.",
       "chars": 39
+    },
+    "4b715d08654482275f8a77dde017df3269786abef40c3aa4c81444ec025045d6": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/538ec59f792376ac4757d466452a6b07612fd17d57b6c12c1cc63441722c7722.mp3",
+      "key": "model_down.1",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "That happened again — sorry. Say it once more a…",
+      "chars": 64
+    },
+    "107332b16a69c37a09d73b011bed5758e18df44572edccff78517fdb46b94460": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9b8b099a2f8ccd989ee0ff7704b14366574474f5ee738592fe083b944502679c.mp3",
+      "key": "model_down.2",
+      "character": "dina",
+      "locale": "en-US",
+      "preview": "I keep losing the thread today. Try me with few…",
+      "chars": 56
+    },
+    "7e72d89c08bfbac1c8917d61ea0c3f780b80503f9a0ac867363c86a9a0833996": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/e8fb536ee0d39490d9a0dffd3a4c9371f57a0295cc13464c28fc1a5e1ac3057e.mp3",
+      "key": "model_down.1",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Otra vez se me fue la idea, perdón. Dímelo una …",
+      "chars": 67
+    },
+    "d4336787b932632750c45a93f00d1a503dcba10304f9201b736b43b3aea03cff": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/782844af15206df8bb77b92e4acfbb1e33cba5bdcea31802e1e92e98e21150bd.mp3",
+      "key": "model_down.2",
+      "character": "dina",
+      "locale": "es-MX",
+      "preview": "Hoy se me pierde el hilo. ¿Me lo dices con meno…",
+      "chars": 58
+    },
+    "7c77837a268d7fbafc59f311a9c081d5cf3e0a87b6dbd6eca752dc18e3e841a6": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/2ea0b9d226e8157dea873d687d7c122a617334ac950a77845652ce20059a7c2b.mp3",
+      "key": "model_down.1",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Aconteceu de novo, desculpa. Fala mais uma vez …",
+      "chars": 65
+    },
+    "d517a4727ef91546dfdbc0b32cd75dea534de6334f21c4601e65336ffcb98c86": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/bbdf53ce07ed01c2d0a6cfbc58c12efed7a3267be3e049491c8cc0cf78d7f778.mp3",
+      "key": "model_down.2",
+      "character": "dina",
+      "locale": "pt-BR",
+      "preview": "Hoje eu perco o fio. Pode me dizer com menos pa…",
+      "chars": 54
+    },
+    "e78ac0471a7b68e9500315ab88f87d02d05928a438c06251a2412ae4b3171d4f": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/43a4aa53483d238b4f7e4f1ea0298219643e6c8766a7c0d558ad7127139f5cb7.mp3",
+      "key": "model_down.1",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "That happened again — sorry. Say it once more a…",
+      "chars": 64
+    },
+    "6bebc132157c66ebb6ae91dd5a98ebfc5966847cf8d2b294b733a21d9c67bed5": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/8d043b4f51838ccd7c2aaa276b247fc48437b954e3179d4cb376152a8879fb24.mp3",
+      "key": "model_down.2",
+      "character": "liruf",
+      "locale": "en-US",
+      "preview": "I keep losing the thread today. Try me with few…",
+      "chars": 56
+    },
+    "34b37e19832bc2852bd0d6f042ad2207ecc88c306e724a34d25be4bfbc845ee5": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/18c33f4b53bc2082d9df4b8262320b4d6ff6a470a3520645ccb2e2d6833cf3de.mp3",
+      "key": "model_down.1",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Otra vez se me fue la idea, perdón. Dímelo una …",
+      "chars": 67
+    },
+    "3658abd51d3f3ca8455c60970c139c0ee80a3b447dc75d9d2b9fcee5a7b2db5b": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/defdd265f3c6d7b5dcbf68b4ed20afe1670f2e2deecb2bea352ccd34530792fd.mp3",
+      "key": "model_down.2",
+      "character": "liruf",
+      "locale": "es-MX",
+      "preview": "Hoy se me pierde el hilo. ¿Me lo dices con meno…",
+      "chars": 58
+    },
+    "4930334ea3b6eda0572cd80b834aef4c7c14e2b491000e59edc3e4067841a0fe": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/fc9e8ab8b70ecf3cb875c72e3e664fb6ee579772cc7855456e37a2432c57ecc0.mp3",
+      "key": "model_down.1",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Aconteceu de novo, desculpa. Fala mais uma vez …",
+      "chars": 65
+    },
+    "a1f6e23b8df1508886bfca38d6997d785de869aebc95419d943568ac7bfa8e1b": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/2a078d8546e14fd4de727005686619751f322a43256b862fa67cf3f1cd80c986.mp3",
+      "key": "model_down.2",
+      "character": "liruf",
+      "locale": "pt-BR",
+      "preview": "Hoje eu perco o fio. Pode me dizer com menos pa…",
+      "chars": 54
+    },
+    "bfc8b35e467609e284caf2506687a7bcb9e82c40382ae6006ef18de0a931e5c3": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9c3d27d3c402e1c9863722067a330336dbb094570f66366ba59d862c222e194a.mp3",
+      "key": "model_down.1",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "That happened again — sorry. Say it once more a…",
+      "chars": 64
+    },
+    "99489cfe2bfccc75c54e0571dd2660da894c09c39a1f7364be18b47c968ec7d6": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/dc3ad0624d805f57088d7e14fdd8503e9c4b3268dd06117739d4ca44f8608aac.mp3",
+      "key": "model_down.2",
+      "character": "rho",
+      "locale": "en-US",
+      "preview": "I keep losing the thread today. Try me with few…",
+      "chars": 56
+    },
+    "2744eb3969d1370c4597f544f2e196238bd5cc0c72d7325798644e768c7980d6": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/1227da07eab54a76cd46f3850e3498ec2e01288417a81e3ce15031defcf1f252.mp3",
+      "key": "model_down.1",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Otra vez se me fue la idea, perdón. Dímelo una …",
+      "chars": 67
+    },
+    "9df9cf2962cd735659ca89b42e7a9257475e8e16a4f9963ffae0c6e3deab5fab": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/46d9e3dc2e8139a83a7735236188d25b69cbde952b16efbd07dc5618c3aa7d89.mp3",
+      "key": "model_down.2",
+      "character": "rho",
+      "locale": "es-MX",
+      "preview": "Hoy se me pierde el hilo. ¿Me lo dices con meno…",
+      "chars": 58
+    },
+    "5cad5354438816b2cbf7b8f2901c67ab7cd2a2790c2befdbc5ab6c727cbbab64": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/fd62a736a0c9c02e1554e1558f74ba8f3815287cf314555120504037ee738576.mp3",
+      "key": "model_down.1",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Aconteceu de novo, desculpa. Fala mais uma vez …",
+      "chars": 65
+    },
+    "25b8fdc3fa3e85dfdfce58a2c57ab84ffe395a7d697ae15ac02ce1152a48a94c": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/208fcdfc9da54037bfd62c9c506a1616b5aa52283e1c824cb5b6a7a5bc432af5.mp3",
+      "key": "model_down.2",
+      "character": "rho",
+      "locale": "pt-BR",
+      "preview": "Hoje eu perco o fio. Pode me dizer com menos pa…",
+      "chars": 54
+    },
+    "c5094b1c47fc79fcbb6dff6ee50789488268e1b5a2d2b1d84d32aee9f299f9a6": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/a22f9f21d63c35fb9e1b3e6b76f1612ce8e20b1547a2635ad4ac1e4c0b0500ce.mp3",
+      "key": "model_down.1",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "That happened again — sorry. Say it once more a…",
+      "chars": 64
+    },
+    "bbe1847eebb9b0d9593756f31924c2f9b0a7a8e180fbf6a0e2950eee5df8cc74": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/641e8125f7ece52e35f40a2cfb7e0ff3693fc61523f50cdbb7e455853adbb9c1.mp3",
+      "key": "model_down.2",
+      "character": "zara",
+      "locale": "en-US",
+      "preview": "I keep losing the thread today. Try me with few…",
+      "chars": 56
+    },
+    "7b7bf1ac706d95edaf402473af11235228130cf42992bf02a7b4e1128f1b82c7": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/3bd1e4b4743fbd4bc86ea05e3dcec7dcd76d13c69c4bea5405041cdafb559be8.mp3",
+      "key": "model_down.1",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Otra vez se me fue la idea, perdón. Dímelo una …",
+      "chars": 67
+    },
+    "e2b086b45de1d1295b81370ec060416dd7992351682bc6768f779a27735c1902": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/1e66b084dd75ec63f9c52d9e6bd0b9610173d76dac972b2043035da6680a383e.mp3",
+      "key": "model_down.2",
+      "character": "zara",
+      "locale": "es-MX",
+      "preview": "Hoy se me pierde el hilo. ¿Me lo dices con meno…",
+      "chars": 58
+    },
+    "c504f67c03400558ee6743e0cea082dda3632a44e03ddb459397a17e0b4a989e": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/ec322135da8a004b467f93cf143bfb185c090d3b8069b1a68abdcd959ac8af39.mp3",
+      "key": "model_down.1",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Aconteceu de novo, desculpa. Fala mais uma vez …",
+      "chars": 65
+    },
+    "cd45fb28bac8991b4ee053776f56be81c80e31006ef06cfa94d3ed968e513f09": {
+      "url": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/d8f397031df84163b6166514258abdb63237838b6c816de5ed8ef955597f061f.mp3",
+      "key": "model_down.2",
+      "character": "zara",
+      "locale": "pt-BR",
+      "preview": "Hoje eu perco o fio. Pode me dizer com menos pa…",
+      "chars": 54
     }
   }
 }

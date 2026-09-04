@@ -290,6 +290,12 @@ export const OrchestratorSnapshotSchema = z
     lastTurn: z.object({ turn: TutorTurnSchema, seq: z.number().int() }).strict().nullable(),
     lastOfferedAdaptation: z.enum(ADAPTATIONS).nullable(),
     closeGraceUsed: z.boolean(),
+    /*
+     * Defaulted rather than required: a session parked by a replica running
+     * the previous build has no such field, and refusing to restore it would
+     * turn a harmless new counter into a dropped conversation.
+     */
+    modelDownCount: z.number().int().min(0).default(0),
     plan: PlanSnapshotSchema,
     controller: ControllerSnapshotSchema,
     openCheckableSegment: z.string().nullable(),
@@ -307,6 +313,14 @@ export const OrchestratorSnapshotSchema = z
 export type OrchestratorSnapshot = z.infer<typeof OrchestratorSnapshotSchema>;
 
 export class TutorOrchestrator {
+  /*
+   * How many times this session has fallen back to the scripted model-down
+   * line. Drives which variant `modelDownResponse` returns: the same apology
+   * twice is what the paid converse gate reported as "turn 3 repeats turn 2
+   * with nothing changed".
+   */
+  private modelDownCount = 0;
+
   private readonly history: { speaker: 'learner' | 'tutor'; text: string }[] = [];
   private seq = 0;
   private modelUsd = 0;
@@ -519,6 +533,7 @@ export class TutorOrchestrator {
       lastTurn: this.lastTurn ? { turn: this.lastTurn.turn, seq: this.lastTurn.seq } : null,
       lastOfferedAdaptation: this.lastOfferedAdaptation,
       closeGraceUsed: this.closeGraceUsed,
+      modelDownCount: this.modelDownCount,
       plan: planSnapshot(this.plan),
       controller: this.controller.snapshot(),
       openCheckableSegment: this.openCheckableSegment,
@@ -578,6 +593,7 @@ export class TutorOrchestrator {
     this.lastTurn = snapshot.lastTurn ? { turn: snapshot.lastTurn.turn, seq: snapshot.lastTurn.seq } : null;
     this.lastOfferedAdaptation = snapshot.lastOfferedAdaptation;
     this.closeGraceUsed = snapshot.closeGraceUsed;
+    this.modelDownCount = snapshot.modelDownCount;
     Object.assign(this.plan, planFromSnapshot(snapshot.plan));
     this.controller.restore(snapshot.controller);
     this.openCheckableSegment = snapshot.openCheckableSegment;
@@ -1871,7 +1887,7 @@ export class TutorOrchestrator {
       // learner problem. Refuse to call the model, say something scripted, and
       // let the error reach the logs with its field name intact.
       console.error('[oracle] context seal failed:', error);
-      return this.scriptedOutcome(modelDownResponse(this.session.locale), budget, null, null);
+      return this.scriptedOutcome(modelDownResponse(this.session.locale, this.modelDownCount++), budget, null, null);
     }
 
     const systemContent =
@@ -2168,20 +2184,29 @@ export class TutorOrchestrator {
         messages.push({
           role: 'user' as const,
           content:
-            'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.' +
-            /*
-             * THE EXPERIMENT THE COMMENT ABOVE NAMED, RUN AT LAST — and folded
-             * INTO this message rather than added after it.
-             *
-             * A separate trailing message measured just as well (43 whitespace
-             * completions to 17 on the same 48-turn walk) and broke the
-             * invariant this block's own comment states: the shape reminder
-             * comes LAST, and three tests pin things that are legitimately
-             * pushed after it. Same words, same position, no new message.
-             */
-            (attempt === 0 && process.env.LF_NO_FIRST_NUDGE !== '1'
-              ? ' Begin with the character { and end with }. Nothing before or after.'
-              : ''),
+            'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.',
+          /*
+           * ROUND 71'S BRACE NUDGE WAS HERE, AND WAS REVERTED — measured, not
+           * abandoned. A tier-1 walk went 43 whitespace completions to 24 with
+           * it and to 17 with it as its own message, which looked like a win
+           * twice over. `model:probe-empty` then held everything else still and
+           * ran twelve calls per condition: control 0/12, folded 0/12,
+           * separate 0/12. The nudge does nothing the shape reminder above was
+           * not already doing, and those conversation numbers were the noise
+           * that file's own header warns about — one run of a conversation is
+           * not a measurement of a parameter.
+           *
+           * Rounds 72 and 73 then eliminated the two variables that separated
+           * the probe from the failing walk: the TIER the context declares
+           * (1 vs 2, both 0/12) and the MANEUVER block a real turn appends and
+           * this probe never sent (both 0/12). So the cause of the real
+           * whitespace rate is still open, and it is none of: temperature, the
+           * correction message, the shape reminder's position, the brace
+           * wording, tier, or the move body. What the probe still does not
+           * model is the rest of a REAL context — recalled memory, plan state,
+           * skill states, previous sessions — which is where the next round
+           * should look.
+           */
         });
         /*
          */
@@ -2832,7 +2857,7 @@ export class TutorOrchestrator {
     }
 
     if (turn === null) {
-      turn = modelDownResponse(this.session.locale);
+      turn = modelDownResponse(this.session.locale, this.modelDownCount++);
       source = 'scripted';
     }
 
