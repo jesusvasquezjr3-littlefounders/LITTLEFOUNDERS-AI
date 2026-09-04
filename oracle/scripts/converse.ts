@@ -164,11 +164,24 @@ interface Scenario {
  * segment a session has already served, so a learner meets a new one each time.
  */
 const ACTIVITIES: { type: string; prompt: string }[] = [
-  { type: 'coin_count', prompt: 'Junta monedas del cofre para pagar exactamente ese monto.' },
+  /*
+   * The coin activities name their DENOMINATIONS, because the real ones do and
+   * because `demonstrate` is explicitly told to "use the denominations the
+   * activity itself shows". Without them the model is asked to animate coins
+   * it was never told exist, and declining is the correct answer — which
+   * measured as `demonstrate: 0` and read like a dead feature.
+   */
+  {
+    type: 'coin_count',
+    prompt: 'Junta monedas del cofre para pagar exactamente 7 pesos. En el cofre hay monedas de 1, 2, 5 y 10.',
+  },
   { type: 'sort_buckets', prompt: 'Arrastra cada cosa a la cubeta que le toca: lo que necesito y lo que quiero.' },
   { type: 'order_steps', prompt: 'Pon en orden los pasos para ahorrar para algo que cuesta mucho.' },
   { type: 'memory_flip', prompt: 'Encuentra los pares: cada moneda con su valor escrito.' },
-  { type: 'make_change', prompt: 'El cliente pagó de más. Elige el cambio exacto que le devuelves.' },
+  {
+    type: 'make_change',
+    prompt: 'El cliente pagó 20 por algo de 13. Elige el cambio exacto con monedas de 1, 2, 5 y 10.',
+  },
 ];
 
 const SCENARIOS: Scenario[] = [
