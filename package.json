@@ -22,6 +22,8 @@
     "instruments:check": "node agent/tools/check-instrument-parity.mjs",
     "preferred-types:check": "node agent/tools/check-preferred-types-parity.mjs",
     "demo-step:check": "node agent/tools/check-demo-step-parity.mjs",
+    "roleplay-voices:check": "node agent/tools/check-roleplay-voice-parity.mjs",
+    "roleplay-voices:generate": "node agent/tools/generate-roleplay-voices.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",
     "git:diff-check": "bash agent/tools/check-clean-tree.sh",
     "release:readiness": "bash agent/tools/release-readiness.sh",

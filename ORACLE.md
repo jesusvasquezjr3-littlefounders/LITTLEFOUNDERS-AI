@@ -4941,19 +4941,17 @@ running — "during a transaction," the catalog's own words — and never
 persists, never leaves the client, and carries no more identity than the
 avatar options already stored for that account.
 
-**Voice is deliberately not wired, and that is a cost decision, not a
-technical gap.** `speakLine`/`SpeechScope` bind one live provider voice per
-session (§15's cost and rate-limit accounting assumes exactly one). Giving
-the roleplay's second character its own live Inworld voice would mean both
-loosening that one-voice-per-session contract AND opening a new paid-API
-cost pattern — the same class of decision D2 (§8.2 in TUTOR_INSTRUMENTS.md)
-required explicit owner sign-off for, before any per-attempt spend was
-approved. Shipping this scene with captions instead of a second live voice
-keeps the cost surface exactly where it already was: zero new provider
-spend, learner and guardian still get the full scene through
-`RoleplayCaption.tsx`'s speaker-attributed text, and the decision to spend
-money on a second voice is left where §8.2 already puts every decision like
-it — with the owner, asked, not assumed.
+**Voice was deliberately not wired at first, as a cost decision rather than
+a technical gap — UPDATED 2026-09-04, see §20.15.** The reasoning below is
+kept as the historical record of why, because it shaped the fix: `speakLine`/
+`SpeechScope` bind one live provider voice per session (§15's cost and
+rate-limit accounting assumes exactly one), so giving the roleplay's second
+character its own LIVE Inworld voice would have meant both loosening that
+one-voice-per-session contract AND opening a new, ONGOING paid-API cost
+pattern — the same class of decision D2 (§8.2 in TUTOR_INSTRUMENTS.md)
+required explicit owner sign-off for. What §20.15 found is that this framing
+was itself avoidable: roleplay dialogue was never live model speech, so it
+never needed the live per-session voice contract at all.
 
 **Two real defects were found live, not assumed away, and both are
 instances of failure classes this project already has names for.** First:
@@ -5021,3 +5019,57 @@ S17, which is the property that matters here.
 Full account (the placement-solver mechanics, the audition regression
 found and fixed, the live verification): /TUTOR_INSTRUMENTS.md §0.0's
 Class III (S18) row and its decision-log entry.
+
+### 20.15 `roleplay` gains real voice — and why the live-voice framing in §20.13 was avoidable (2026-09-04, SHIPPED)
+
+**The question §20.13 answered was "should the roleplay's second character
+get a live voice." The question that actually mattered was different: does
+roleplay dialogue need a LIVE voice call at all.** It does not, and
+establishing that is the whole reason this shipped without touching
+`SpeechScope`, without loosening the one-voice-per-session contract §20.13
+took as a given, and without opening any ONGOING per-play cost. Roleplay's
+lines are fixed catalog text — the model NAMES a scene, it never writes
+one (§20.13's own "id names content that exists" reasoning) — which is
+the exact shape `scripted.ts`'s 144 always-say-this lines already are:
+content that never varies per session, synthesized once, served free
+forever after. Nothing here reaches this file's live turn-by-turn voice
+path at all.
+
+**Cost was measured before a line of the feature was written, not after.**
+This codebase already has a real, production-trusted TTS rate —
+`USD_PER_1K_TTS_CHARS = 0.005` (`oracle/src/tutor/orchestrator.ts`),
+sourced from the provider's own `usage.processedCharactersCount` field,
+unchanged since 2026-08-22 and billing every live session's own voice
+today. Applying that known rate to the real scene text (via
+`npm run speech:pregenerate`'s own report mode, which makes zero network
+calls) gave a real number — 48 clips across every character who could
+hold either role × 3 locales, ~2,572 characters, ~$0.013 total — before
+any spend happened, the identical discipline D2 (§8.2) modeled with a
+different provider's rate. `oracle/src/tutor/roleplayScenes.ts` (the
+scene text, mirrored from the frontend the same hand-mirrored way every
+cross-service field in this catalog already is) merges into
+`pregenerate-speech.ts`'s EXISTING catalogue — one shared Depot bucket,
+one tracked manifest, the same operator-opt-in `--confirm` gate — rather
+than standing up a second pregeneration pipeline for a second closed set.
+
+**A new gate closes the safety property this decision actually turns
+on.** `roleplay-voices:check` (`agent/tools/check-roleplay-voice-parity.mjs`)
+holds oracle's copy of the dialogue to EXACT agreement with the frontend's
+own captioned text, beat for beat and locale for locale — because the real
+risk here was never cost, it was drift: a learner HEARING one sentence
+while READING a different one, which crashes nothing and is exactly the
+kind of silent divergence this file's own §1.5-adjacent "two services
+share no types" reality already produces elsewhere in this catalog
+(`instruments:check`, `demo-step:check`).
+
+**Lip-sync is a deliberate, separate gap, left open rather than folded
+into this pass.** `Character3D`'s `viseme`/`speaking` remain one broadcast
+value for the whole standing cast; making the specific character currently
+voicing a roleplay beat animate to THIS audio would mean extending
+`perCharacter` (already carrying `emotion`/`action`) a second time. The
+audio is genuinely spoken; the mouth does not move to it yet — recorded
+here as open, not silently absent.
+
+Full account (the exact cost arithmetic, the real `--confirm` run, live
+verification of actual playback in the browser): /TUTOR_INSTRUMENTS.md
+§0.0's Class III (S17 amendment) row and its decision-log entry.

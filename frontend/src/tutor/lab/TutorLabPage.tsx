@@ -14,6 +14,7 @@ import { buildReplayScript } from '../replay/replayScript';
 import { useReplayDirector } from '../replay/useReplayDirector';
 import { useRoleplayDirector } from '../roleplay/useRoleplayDirector';
 import { RoleplayCaption } from '../roleplay/RoleplayCaption';
+import { RoleplayAudio } from '../roleplay/RoleplayAudio';
 import { isRoleplaySceneId } from '../roleplay/scenes';
 import { avatarDataUri } from '@/lib/avatarOptions';
 import { VoiceConsentControl } from '../VoiceConsentControl';
@@ -33,7 +34,7 @@ import {
 } from '../stage/StageShell';
 import { useMicrophone } from '../useMicrophone';
 import type { TutorPreferences } from '../types';
-import type { Locale } from '@/i18n';
+import { isLocale, type Locale } from '@/i18n';
 import {
   DEFAULT_LAB_ACTIVITY,
   DEFAULT_LAB_LOCALE,
@@ -496,7 +497,14 @@ export default function TutorLabPage() {
   }
   const roleplaySceneId =
     socket.turn?.roleplayScene && isRoleplaySceneId(socket.turn.roleplayScene) ? socket.turn.roleplayScene : null;
-  const roleplay = useRoleplayDirector(roleplaySceneId, activityTrigger.current, character, companion);
+  const roleplayLocale = isLocale(i18n.language) ? i18n.language : 'en-US';
+  const roleplay = useRoleplayDirector(
+    roleplaySceneId,
+    activityTrigger.current,
+    character,
+    companion,
+    roleplayLocale,
+  );
   /*
    * MEMOIZED — see `TutorExperience.tsx`'s own comment on this exact line
    * shape: DiceBear's `toDataUri()` builds a fresh SVG string on every call,
@@ -867,6 +875,9 @@ export default function TutorLabPage() {
               speakerId={roleplay.beat.speaker === 'lead' ? character : companion}
             />
           </StageLayer>
+        )}
+        {phase === 'conversing' && roleplay.active && (
+          <RoleplayAudio url={roleplay.audioUrl} onEnded={roleplay.onAudioEnded} />
         )}
 
         {phase === 'conversing' && mapOpen && (

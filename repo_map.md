@@ -1445,10 +1445,10 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## Class III closed for what infrastructure supports today: a pointing gesture, a camera that responds, a pre-authored scene, a second body in frame (2026-09-03)
+## Class III actually closed: a market stall, placed by the real solver, and a live regression it found in the process (2026-09-03)
 
-**Owner directive, arriving right after the entry below this one closed:
-finish the FULL remaining catalog, not only Class V.** This entry is the
+**A stall — the first object on the Tutor's island that is neither a rigged
+character nor a flat billboard.** Built as `three.js` primitives
 ```
 
 ### agent/README.md
@@ -29873,6 +29873,26 @@ import { backstopMsFor, beatAt, progressOf, type ReplayBeat, type ReplayScript }
  * (`TutorStage`), fed by `speechUrl`/`audioKey` and reporting back through
 ```
 
+### frontend/src/tutor/roleplay/RoleplayAudio.tsx
+
+```
+import { useEffect, useRef } from 'react';
+
+/*
+ * Plays the current roleplay beat's pre-generated clip and reports when it
+ * ends — the whole component, on purpose.
+ *
+ * NO `crossOrigin`/Web-Audio DANCE, UNLIKE `TutorStage.tsx`'s OWN speech
+ * element. That element routes audio through `createMediaElementSource` for
+ * `useLipSync`'s viseme analysis, which taints a cross-origin element with
+ * no CORS approval into digital silence — the exact production outage
+ * `TutorStage.tsx`'s own header documents. This element does neither: no
+ * lip-sync is wired for roleplay yet (`useRoleplayDirector.ts`'s own header
+ * on why), so nothing here ever calls Web Audio on it, and a plain `<audio>`
+ * plays a cross-origin `src` correctly with no CORS involvement at all —
+ * the taint only exists for code that tries to ANALYSE the samples, never
+```
+
 ### frontend/src/tutor/roleplay/RoleplayCaption.tsx
 
 ```
@@ -29891,6 +29911,26 @@ import type { RoleplayBeat } from './scenes';
  * to listen to — forcing it through that component would mean either a
  * second audio element (the exact thing `useReplayDirector.ts`'s own header
  * says this stage must never have) or teaching it a silent, timer-only mode
+```
+
+### frontend/src/tutor/roleplay/__tests__/RoleplayAudio.test.tsx
+
+```
+import { render, fireEvent } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { RoleplayAudio } from '../RoleplayAudio';
+
+describe('RoleplayAudio', () => {
+  it('sets the audio element\'s src to the given URL', () => {
+    const { container } = render(<RoleplayAudio url="https://example.test/a.mp3" onEnded={() => {}} />);
+    const audio = container.querySelector('audio')!;
+    expect(audio.getAttribute('src')).toBe('https://example.test/a.mp3');
+  });
+
+  it('renders with no src when the URL is null, rather than an empty string that would fetch the page itself', () => {
+    const { container } = render(<RoleplayAudio url={null} onEnded={() => {}} />);
+    const audio = container.querySelector('audio')!;
+    expect(audio.hasAttribute('src')).toBe(false);
 ```
 
 ### frontend/src/tutor/roleplay/__tests__/RoleplayCaption.test.tsx
@@ -29956,21 +29996,41 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
 ### frontend/src/tutor/roleplay/useRoleplayDirector.ts
 
 ```
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import type { Locale } from '@/i18n';
 import { ROLEPLAY_SCENES, type RoleplayBeat, type RoleplaySceneId } from './scenes';
+import ROLEPLAY_VOICES from './voices.generated.json';
 
 /*
  * THE CLOCK OF A ROLEPLAY, the same job `useReplayDirector.ts` does for a
- * replay — this file is deliberately much smaller because a roleplay beat
- * carries no audio (see `scenes.ts`'s own header for why voice is not wired
- * yet), so there is only ONE way a beat ends: its `durationMs` timer, no
- * media-event backstop needed.
- *
- * `perCharacter` resolves the scene's abstract `'lead' | 'companion'` roles
- * to whichever REAL `CharacterId`s this session actually has standing —
- * TutorScene.tsx's `perCharacter` prop (Class III / S17), so the same scene
- * plays correctly no matter which two characters the learner picked.
+ * replay. Voice added 2026-09-04 (owner request, after `scenes.ts`'s own
+ * header explained why it had been deliberately left uncabled): every beat
+ * of every scene is pre-generated, once, by oracle's `speech:pregenerate`
+ * (merged catalogue — see `oracle/src/tutor/roleplayScenes.ts`), so THIS
+ * hook never calls a provider or spends anything; it only resolves a URL
+ * that already exists in `voices.generated.json`, a file
+ * `roleplay-voices:generate` derives from oracle's own manifest and
+```
+
+### frontend/src/tutor/roleplay/voices.generated.json
+
+```
+{
+  "_comment": "GENERATED by `npm run roleplay-voices:generate` (agent/tools/generate-roleplay-voices.mjs) from oracle/speech.pregenerated.json. Do not hand-edit — re-run the generator instead.",
+  "generated": "2026-09-04",
+  "voices": {
+    "lemonade_change": {
+      "0": {
+        "dina": {
+          "en-US": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/9b5c5f9b4b5eccbe6dc47c8926f52823cafccadcf5e5a1354df9db0643037e71.mp3",
+          "es-MX": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/b21322b282702abd5f0c78c0758c5dd6cebbf1b322a5addcf7b5a6015b224810.mp3",
+          "pt-BR": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/e3c4a8b2707f387a46de6cdf7606ecf616ba8bf166fb385b7f22fff44caca374.mp3"
+        },
+        "liruf": {
+          "en-US": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/c01db9076ffa3decc616224898750077427f5f81eaf149c502b09ab321457c32.mp3",
+          "es-MX": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/b85838cf99efbec5c8dd0e095561d5d345ec30bc321ac22c718a0aa2878af271.mp3",
+          "pt-BR": "https://media-b2c.littlefounders.ai/files/tutor-speech-shared/6185b606ad67407f2b72c2a37044477e1e318f9238b520b0fa270ae2e98814eb.mp3"
 ```
 
 ### frontend/src/tutor/segmentLock.ts
@@ -30627,8 +30687,8 @@ export default tseslint.config(
  * the invoice did. The set does not grow with usage, so it can be paid for
  * exactly once and then be free for the life of the product (/ORACLE.md §15).
  *
- * OPERATOR-OPT-IN, like `voices:clone`: it makes ZERO network calls without
- * `--confirm`. Without the flag it is a REPORT — what exists, what is missing,
+ * SINCE 2026-09-03 this also covers `src/tutor/roleplayScenes.ts`'s
+ * pre-authored scene dialogue (Class III `roleplay`) — the identical
 ```
 
 ### oracle/scripts/probe-empty.ts
@@ -32947,6 +33007,26 @@ import { fenceActivityContent } from '../safety/untrusted.js';
 
 /*
  * The pedagogical system prompt.
+```
+
+### oracle/src/tutor/roleplayScenes.ts
+
+```
+import { CHARACTER_IDS, LOCALES, type Locale } from '../context/schema.js';
+import { ROLEPLAY_SCENE_IDS } from './turnSchema.js';
+import type { ScriptedLine } from './scripted.js';
+
+type RoleplaySceneId = (typeof ROLEPLAY_SCENE_IDS)[number];
+
+/*
+ * Class III / S17 `roleplay`, voice added afterward (owner request,
+ * 2026-09-03): the ORACLE-SIDE mirror of `frontend/src/tutor/roleplay/
+ * scenes.ts`'s beat text, which oracle otherwise has no reason to know at
+ * all — the scene id crosses the wire (`roleplayScene`, migration `0070`),
+ * never the dialogue.
+ *
+ * WHY A MIRROR RATHER THAN A SHARED IMPORT. This codebase's own established
+ * posture, everywhere a value must be true in two services with no shared
 ```
 
 ### oracle/src/tutor/scripted.ts

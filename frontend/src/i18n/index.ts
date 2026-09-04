@@ -50,6 +50,11 @@ import ptTutor from './pt-BR/tutor.json';
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 export type Locale = (typeof LOCALES)[number];
 
+/** i18next's own `language`/`resolvedLanguage` are plain `string` — this is the narrowing gate. */
+export function isLocale(value: string): value is Locale {
+  return (LOCALES as readonly string[]).includes(value);
+}
+
 const resources = {
   'en-US': { translation: { ...enCommon, marketing: enMarketing, errors: enErrors, auth: enAuth, dashboard: enDashboard, profile: enProfile, lesson: enLesson, learn: enLearn, admin: enAdmin, onboarding: enOnboarding, placement: enPlacement, tutor: enTutor } },
   'es-MX': { translation: { ...esCommon, marketing: esMarketing, errors: esErrors, auth: esAuth, dashboard: esDashboard, profile: esProfile, lesson: esLesson, learn: esLearn, admin: esAdmin, onboarding: esOnboarding, placement: esPlacement, tutor: esTutor } },

@@ -26,8 +26,10 @@ import { buildReplayScript, type ReplayScript } from './replay/replayScript';
 import { useReplayDirector } from './replay/useReplayDirector';
 import { useRoleplayDirector } from './roleplay/useRoleplayDirector';
 import { RoleplayCaption } from './roleplay/RoleplayCaption';
+import { RoleplayAudio } from './roleplay/RoleplayAudio';
 import { isRoleplaySceneId } from './roleplay/scenes';
 import { avatarDataUri } from '@/lib/avatarOptions';
+import { isLocale } from '@/i18n';
 import { auditionFor } from './stage/phases';
 import { micForPhase } from './stage/micForPhase';
 import {
@@ -267,7 +269,7 @@ function clearSessionLimit(userId: string | undefined): void {
 const SILENCE_REPORT_DELAY_MS = 6_000;
 
 export function TutorExperience() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { getToken, session: authSession, avatarOptions } = useAuth();
   /*
    * Held in a ref, and read rather than depended on.
@@ -1421,7 +1423,14 @@ export function TutorExperience() {
    */
   const roleplaySceneId =
     turn?.roleplayScene && isRoleplaySceneId(turn.roleplayScene) ? turn.roleplayScene : null;
-  const roleplay = useRoleplayDirector(roleplaySceneId, turnSeq, segmentCue?.character ?? character, companion);
+  const roleplayLocale = isLocale(i18n.language) ? i18n.language : 'en-US';
+  const roleplay = useRoleplayDirector(
+    roleplaySceneId,
+    turnSeq,
+    segmentCue?.character ?? character,
+    companion,
+    roleplayLocale,
+  );
   /**
    * Only while a scene is actually running ("during a transaction") — see
    * `presence`'s own catalog line — and null for a guest/still-restoring
@@ -1608,6 +1617,9 @@ export function TutorExperience() {
             speakerId={roleplay.beat.speaker === 'lead' ? (segmentCue?.character ?? character) : companion}
           />
         </StageLayer>
+      )}
+      {phase === 'conversing' && roleplay.active && (
+        <RoleplayAudio url={roleplay.audioUrl} onEnded={roleplay.onAudioEnded} />
       )}
 
       {/*

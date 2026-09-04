@@ -11,6 +11,15 @@
  * the invoice did. The set does not grow with usage, so it can be paid for
  * exactly once and then be free for the life of the product (/ORACLE.md §15).
  *
+ * SINCE 2026-09-03 this also covers `src/tutor/roleplayScenes.ts`'s
+ * pre-authored scene dialogue (Class III `roleplay`) — the identical
+ * reasoning applied to a second closed set: a beat's text is fixed catalog
+ * content nobody generates per session, and every canon character could end
+ * up holding either role, so it is 4 beats × 4 characters × 3 locales = 48
+ * more clips per scene, merged into the SAME catalogue, run and manifest
+ * below rather than a second script re-deriving this one's Depot/manifest
+ * plumbing.
+ *
  * OPERATOR-OPT-IN, like `voices:clone`: it makes ZERO network calls without
  * `--confirm`. Without the flag it is a REPORT — what exists, what is missing,
  * what went stale because a line was edited or a voice re-enrolled — which is
@@ -40,6 +49,7 @@ import { getConfig } from '../src/env.js';
 import { getVoiceProvider } from '../src/voice/index.js';
 import { speechKey } from '../src/voice/speech.js';
 import { scriptedLineCatalogue, type ScriptedLine } from '../src/tutor/scripted.js';
+import { roleplayLineCatalogue } from '../src/tutor/roleplayScenes.js';
 import { SHARED_SPEECH_BUCKET, storeSpeechAudio } from '../src/depot/client.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -103,7 +113,15 @@ async function main(): Promise<void> {
   console.log(`  bucket    ${SHARED_SPEECH_BUCKET}  (never swept by the 90-day retention job)`);
   console.log(`  recorded  ${Object.keys(manifest.lines).length} line(s)${manifest.generated ? ` on ${manifest.generated}` : ''}`);
 
-  const catalogue = scriptedLineCatalogue();
+  /*
+   * Two closed sets, merged into one run: `scripted.ts`'s always-say-this
+   * lines and `roleplayScenes.ts`'s pre-authored scene dialogue. Both are
+   * fixed text nobody generates per session, so both are free after this
+   * script pays for them once — one catalogue, one manifest, one shared
+   * bucket, rather than a second script duplicating this one's Depot/manifest
+   * plumbing for a second closed set.
+   */
+  const catalogue = [...scriptedLineCatalogue(), ...roleplayLineCatalogue()];
   const slots: Slot[] = catalogue.map((line) => {
     const fingerprint = provider.voiceFingerprint(line.character, line.locale);
     const contentKey = fingerprint ? speechKey(fingerprint, line.text) : null;
