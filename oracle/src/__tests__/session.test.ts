@@ -269,9 +269,26 @@ describe('the closed turn schema', () => {
       expect(parsed.success).toBe(false);
     });
 
-    it('requires savePlan to be present — it is not an optional field', () => {
+    /*
+     * REVERSED 2026-09-04, and the original decision is worth recording.
+     *
+     * This asserted the opposite — that `savePlan` is required, for
+     * consistency with `next`/`emotion`/`action`. Those three have no safe
+     * default: a turn without them is meaningless. This one is an OPT-IN flag
+     * whose absence could never be ambiguous, and requiring it turned a
+     * forgotten opt-in into `invalid_shape`, which discards the WHOLE turn —
+     * the model wrote a good lesson line and the learner got a retry instead.
+     * Caught live in a converse run: one discard in roughly fifty turns.
+     *
+     * What must NOT relax is the pairing rule above: `savePlan: true` still
+     * requires a board on the same turn, because THAT absence is genuinely
+     * ambiguous — there would be nothing to save.
+     */
+    it('defaults savePlan to false when absent, rather than discarding the whole turn', () => {
       const { savePlan: _drop, ...withoutSavePlan } = valid;
-      expect(TutorTurnSchema.safeParse(withoutSavePlan).success).toBe(false);
+      const parsed = TutorTurnSchema.safeParse(withoutSavePlan);
+      expect(parsed.success).toBe(true);
+      expect(parsed.success && parsed.data.savePlan).toBe(false);
     });
   });
 

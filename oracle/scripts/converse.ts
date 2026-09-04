@@ -143,6 +143,19 @@ interface Scenario {
    * the product and testing a path the product cannot take.
    */
   misconceptionCode?: string;
+  /**
+   * Serve the activity and then LEAVE IT ON SCREEN, unanswered, so the next
+   * scripted line arrives while it is still open.
+   *
+   * WHY THIS STATE HAD TO BECOME REACHABLE. `demonstrate` is gated on a coin
+   * or number-line activity being on screen AND the learner asking to be
+   * shown. This harness served every activity and graded it in the same step,
+   * so the open-activity state never survived into a learner turn and that
+   * pair of conditions could not co-occur however the script was written.
+   * `demonstrate` measured 0 across 36 conversations for that reason alone —
+   * a harness artefact that reads exactly like a dead feature.
+   */
+  leavesActivityOpen?: boolean;
 }
 
 /*
@@ -487,6 +500,63 @@ const SCENARIOS: Scenario[] = [
       'le voy a poner 100 pesos al vaso de limonada, asi me hago rico',
       'me alcanza para la pelota, y tambien para el cuaderno, y tambien para los colores',
       'un cuarto de pastel es mas que un medio porque cuatro es mas que dos',
+    ],
+  },
+
+  /*
+   * THE FOUR CAPABILITIES THAT MEASURED ZERO, AND WHY THEY DID.
+   *
+   * The capability census (added the same day) reported `demonstrate`,
+   * `roleplay`, `point_at` and `savePlan` at zero across 36 conversations.
+   * None of them is broken; each is gated on a SITUATION no earlier scenario
+   * produced, so zero was a fact about the scripts rather than the product.
+   * These three scenarios produce those situations deliberately.
+   */
+  {
+    /*
+     * `demonstrate` needs BOTH an activity on screen AND a learner asking to
+     * be shown. `leavesActivityOpen` is what makes the first half survive into
+     * a learner turn at all — see its own comment.
+     */
+    name: 'demonstrate: an open activity, and a child who asks to be shown',
+    leavesActivityOpen: true,
+    session: { ...SESSION, nickname: 'Beto' },
+    script: [
+      'ya no quiero platicar, ponme un ejercicio de monedas en la pantalla',
+      'no le entiendo, me lo puedes mostrar con las monedas?',
+      'ahora si, otra vez pero mas despacio',
+    ],
+  },
+  {
+    /*
+     * `savePlan` needs a real savings goal agreed in the room, and `point_at`
+     * needs a `sequence` on screen plus a reason to name ONE of its bars. A
+     * savings story produces both, in that order.
+     */
+    name: 'savePlan and point_at: a real goal, then one week of it',
+    session: { ...SESSION, nickname: 'Lupe' },
+    script: [
+      'quiero juntar 200 pesos para unos audifonos',
+      'puedo guardar 25 cada semana',
+      'y en la semana 4 cuanto llevo?',
+      'esa semana es la que me falta entender, la de en medio',
+    ],
+  },
+  {
+    /*
+     * `roleplay` names the one authored scene, `lemonade_change`, and the
+     * prompt says to use it right before asking the learner to work out change
+     * themselves. A child who says plainly that they cannot picture it is that
+     * moment — and this exact situation already produced a role-play IN WORDS
+     * ("tú eres la tienda y yo vengo a comprar") without ever setting the
+     * field, which is what makes it the right one to test.
+     */
+    name: 'roleplay: a child who cannot picture the transaction',
+    session: { ...SESSION, nickname: 'Ana' },
+    script: [
+      'no entiendo lo del cambio cuando compras algo',
+      'es que no me lo imagino, lo pueden actuar?',
+      'ah ya, entonces yo le doy el billete y me regresa lo que sobra',
     ],
   },
 ];
@@ -1321,6 +1391,14 @@ async function main(): Promise<void> {
          * conversation evidence were read through that, and no type-check
          * covered this directory to say so.
          */
+        if (scenario.leavesActivityOpen === true) {
+          // Served, not graded: the learner's next line meets an open activity,
+          // which is the only state `demonstrate` is allowed to fire in.
+          console.log(
+            `  [activity] ${turn.segmentRequest.skillKey} (${activity.type}) — served and LEFT OPEN`,
+          );
+          continue;
+        }
         const passed = scenario.passesActivities !== false;
         const reaction = await orchestrator.handleSegmentResult(
           served,

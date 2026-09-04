@@ -1615,7 +1615,21 @@ export const TutorTurnSchema = z
      * there is nothing here for the model to author beyond the boundary
      * itself.
      */
-    savePlan: z.boolean(),
+    /*
+     * DEFAULTS TO FALSE RATHER THAN BEING REQUIRED, and the difference is a
+     * whole turn.
+     *
+     * It shipped required, for consistency with `next`/`emotion`/`action`.
+     * Those three have no safe default — a turn without them is meaningless.
+     * This one does: it is an OPT-IN flag meaning "keep this board as their
+     * ongoing plan", so absent obviously means no. Requiring it turned a
+     * forgotten opt-in into `invalid_shape`, which discards the ENTIRE turn:
+     * the model wrote a perfectly good lesson line, the learner got a retry
+     * instead of it. Caught live 2026-09-04 in a converse run — one discard
+     * in roughly fifty turns, on a field whose absence could never have been
+     * ambiguous.
+     */
+    savePlan: z.boolean().default(false),
     /**
      * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): "two characters act a
      * transaction with their own cloned voices while the learner decides."
