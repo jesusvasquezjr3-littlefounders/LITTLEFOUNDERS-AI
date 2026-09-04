@@ -1445,10 +1445,10 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## Class V closed: `recap`, and the learner's own view of what the Tutor already showed the guardian (2026-09-03)
+## Class III closed for what infrastructure supports today: a pointing gesture, a camera that responds, a pre-authored scene, a second body in frame (2026-09-03)
 
-**The sprint plan two entries below this one committed to five classes of new
-Tutor instrument; by this entry, Class V (`/TUTOR_INSTRUMENTS.md` §3.6) is the
+**Owner directive, arriving right after the entry below this one closed:
+finish the FULL remaining catalog, not only Class V.** This entry is the
 ```
 
 ### agent/README.md
@@ -27013,6 +27013,26 @@ import { useSafeArea } from './SafeAreaContext';
  * WebGL scene means giving up the screen reader, the text selection, the focus
 ```
 
+### frontend/src/tutor-scene/StallProp.tsx
+
+```
+import { useMemo } from 'react';
+import { DoubleSide } from 'three';
+
+/*
+ * Class III / S18 `props` (TUTOR_INSTRUMENTS.md §3.4): "Objects on the island
+ * a character can stand beside and use." The catalog calls this "genuinely
+ * new — no prop system exists," and it still is: this is the FIRST object in
+ * this scene that is neither a Blender-authored `.glb` character nor a flat
+ * billboard (`AvatarBillboard.tsx`) — it has real volume, procedurally built
+ * from primitive geometry, the same "no `.glb`" posture `ContactShadow.tsx`
+ * already established for a flat plane, extended here to an actual object.
+ *
+ * PROCEDURAL, NOT BLENDER, ON PURPOSE: the 3D asset pipeline
+ * (`/TUTOR_3D.md`) is for RIGGED CHARACTERS — meshopt geometry, KTX2
+ * textures, a skeleton, served by Depot. A static market stall has none of
+```
+
 ### frontend/src/tutor-scene/TutorScene.tsx
 
 ```
@@ -27024,13 +27044,13 @@ import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
 import { AvatarBillboard } from './AvatarBillboard';
+import { StallProp } from './StallProp';
+import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import {
   AUDITION_GROUPING,
-  AUDITION_NARROW_WEIGHT,
-  AUDITION_RINGS,
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -28031,6 +28051,46 @@ import type {
  * actions, which multiply to 84 pairs. Most of those pairs are meaningless
  * ("surprised" + "bow") and a few are the entire product ("proud" + "celebrate"
  * after a correct answer). Enumerating the grid would produce 84 rows nobody
+```
+
+### frontend/src/tutor-scene/propPlacement.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { BoxGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'three';
+import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
+
+/** Same synthetic ground `standingSpots.test.ts` uses — featureless on purpose. */
+function slab(): Mesh {
+  const mesh = new Mesh(new BoxGeometry(10, 0.4, 10), new MeshBasicMaterial());
+  mesh.updateMatrixWorld(true);
+  return mesh;
+}
+
+describe('findPropSpot', () => {
+  it('finds a spot on open ground', () => {
+    const spot = findPropSpot(slab(), undefined, 1);
+    expect(spot).not.toBeNull();
+```
+
+### frontend/src/tutor-scene/propPlacement.ts
+
+```
+import { Vector3, type Object3D } from 'three';
+import { findStandingSpots, type StandingSpot } from './standingSpots';
+
+/*
+ * Class III / S18 `props`: placing the FIRST object on this island that is
+ * neither a character nor the camera — and the catalog's own acceptance bar
+ * for this sprint is specific: "placed by the EXISTING placement solver,
+ * that a character can stand beside WITHOUT BREAKING WALKABILITY." That is
+ * two separate claims, and each has its own real mechanism here rather than
+ * a shortcut standing in for it:
+ *
+ * (1) "Placed by the solver" — `findStandingSpots` is generic (`count`,
+ * `isWalkable`, `preferDirection`, …; nothing in its signature or its body
+ * names a character), so a prop is solved with the SAME function characters
+ * are, not a parallel reimplementation. It gets a real walkability- and
 ```
 
 ### frontend/src/tutor-scene/quality.test.ts

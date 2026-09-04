@@ -43,6 +43,16 @@
  * pairing (it must not), and does a character's footing depend on how they were
  * mounted (it must not).
  *
+ * AND IT CHECKS THE STALL, added 2026-09-03 for Class III / S18 `props` — the
+ * first object on this island that is neither a character nor the camera.
+ * `findPropSpot`/`excludingProp` (imported from `propPlacement.ts`, same "a
+ * copy would drift" reasoning as every other import here) are the real
+ * mechanism `TutorScene.tsx` uses to keep a character from being solved
+ * inside the stall's own footprint, and that mechanism does NOT fall out of
+ * the character checks above for free — this file certified placement for
+ * three sprints without ever putting a second object on the island for a
+ * character to avoid.
+ *
  * Usage:  npm run verify:placement
  */
 import { dirname, resolve } from 'node:path';
@@ -93,6 +103,7 @@ import {
 import { standingCast } from '../src/tutor-scene/cast.js';
 import { modelFooting } from '../src/tutor-scene/modelBounds.js';
 import { walkabilityFor } from '../src/tutor-scene/walkability.js';
+import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from '../src/tutor-scene/propPlacement.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SCENES = resolve(HERE, '..', 'public', 'scenes');
@@ -440,6 +451,82 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
 
   for (const [lead, companion] of PAIRINGS) {
     runCast(standingCast(null, lead, companion), `${lead} + ${companion ?? '—'}`);
+  }
+
+  /*
+   * THE STALL (Class III / S18 `props`), and deliberately the simplest check
+   * in this file: a static, unrigged prop has no facing to get wrong and no
+   * remount to drift on, so it needs neither of the two harder questions the
+   * character sweeps below exist to ask. What it DOES need checking, because
+   * `propPlacement.ts`'s own header explains it does NOT fall out of the
+   * solver for free: that a character solved AROUND it (`excludingProp`,
+   * imported rather than restated — same reasoning as everywhere else in
+   * this file) never lands inside its footprint, for every pairing the
+   * product can compose. `TutorScene.tsx` never applies the exclusion during
+   * an audition (measured there to cost the fourth candidate their spot on
+   * `diorama-a`), so this sweep does not either — it certifies the
+   * combination the product actually ships, not the one it deliberately
+   * does not.
+   */
+  console.log('  STALL: a placed prop, and the cast solved around it');
+  const propIsWalkable = walkabilityFor(id) ?? undefined;
+  const prop = findPropSpot(island.mesh, propIsWalkable, STALL_CLEARANCE_M);
+  if (!prop) {
+    console.log('      ✗ STALL — NO SPOT FOUND');
+    failures += 1;
+  } else {
+    const propHit = surfaceAt(island.mesh, prop.x, prop.z, from);
+    const propRgb = propHit?.uv && island.sample ? island.sample(propHit.uv.x, propHit.uv.y) : null;
+    const propSurface = describe(propRgb);
+    const propFromCentre = Math.hypot(prop.x - centre.x, prop.z - centre.z);
+    const propOverhang = propFromCentre - radius;
+    const propBad = propSurface === 'WATER?' || propOverhang > 0;
+    if (propBad) failures += 1;
+    console.log(
+      `      ${propBad ? '✗' : '✓'} spot     ` +
+        `y=${prop.y.toFixed(2).padStart(6)}  score=${prop.score.toFixed(3)}  ` +
+        `${propFromCentre.toFixed(2)} m out  ` +
+        `${propOverhang > 0 ? `OVERHANGS ${propOverhang.toFixed(2)} m` : `${(-propOverhang).toFixed(2)} m clear`}  ` +
+        `on ${propSurface}${propRgb ? ` rgb(${propRgb.join(',')})` : ''}`,
+    );
+
+    for (const [lead, companion] of PAIRINGS) {
+      const cast = standingCast(null, lead, companion);
+      const footprints = cast.map((who) => characterFootprintM(CHARACTER_MEASUREMENTS[who]));
+      const spots = findStandingSpots(island.mesh, {
+        count: cast.length,
+        minSeparation: castSeparationM(footprints),
+        separationFor: (index, other) => pairSeparationM(footprints[index] ?? 0, footprints[other] ?? 0),
+        preferDirection: new Vector3(0.35, 0, 1),
+        // The SAME composition `TutorScene.tsx` applies outside an audition —
+        // a copy here would certify a different product.
+        isWalkable: excludingProp(propIsWalkable, prop, STALL_CLEARANCE_M),
+        clearance: castClearanceM(footprints),
+      });
+
+      const label = `${lead} + ${companion ?? '—'} around the stall`;
+      let anyBad = false;
+      for (let i = 0; i < cast.length; i += 1) {
+        const spot = spots[i];
+        if (!spot) {
+          console.log(`      ✗ ${label} — ${cast[i]!.padEnd(6)} NO SPOT FOUND (stall excluded)`);
+          failures += 1;
+          anyBad = true;
+          continue;
+        }
+        const clear = Math.hypot(spot.x - prop.x, spot.z - prop.z);
+        const bad = clear < STALL_CLEARANCE_M - 1e-6;
+        if (bad) {
+          failures += 1;
+          anyBad = true;
+          console.log(
+            `      ✗ ${label} — ${cast[i]!.padEnd(6)} ${clear.toFixed(2)} m from the stall, ` +
+              `inside its ${STALL_CLEARANCE_M.toFixed(2)} m exclusion`,
+          );
+        }
+      }
+      if (!anyBad) console.log(`      ✓ ${label} — every seat clears the stall`);
+    }
   }
 
   const reference = runCast(

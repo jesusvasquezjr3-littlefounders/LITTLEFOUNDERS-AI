@@ -214,6 +214,8 @@ export default function SceneLabPage() {
    * than as the product's own budget decision would be the wrong conclusion.
    */
   const [audition, setAudition] = useState(false);
+  /** Class III / S18 `props`: the market stall, solved and placed live. */
+  const [showStall, setShowStall] = useState(false);
   const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');
   /*
    * A real <audio> element driving the mouth, so the TTS path is exercised end
@@ -299,6 +301,7 @@ export default function SceneLabPage() {
                 shot={shot}
                 backdrop={backdrop}
                 emotion={emotion}
+                showStall={showStall}
               />
             ) : (
             <SceneCanvas className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" onStats={setStats} onSettings={setSettings}>
@@ -438,6 +441,20 @@ export default function SceneLabPage() {
                   }
                 >
                   audition: all {CHARACTER_IDS.length}
+                </button>
+              ) : null}
+              {composed ? (
+                <button
+                  type="button"
+                  data-show-stall={showStall ? 'on' : 'off'}
+                  onClick={() => setShowStall((v) => !v)}
+                  className={
+                    showStall
+                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                  }
+                >
+                  stall: {showStall ? 'on' : 'off'}
                 </button>
               ) : null}
               {composed

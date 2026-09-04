@@ -820,6 +820,10 @@ export default function TutorLabPage() {
         actionKey={director?.beatKey ?? socket.turn?.seq ?? 0}
         perCharacter={roleplay.perCharacter}
         presenceAvatarUri={presenceAvatarUri}
+        // Class III / S18 `props`: same trigger as `presence` immediately
+        // above — see `TutorExperience.tsx`'s own comment on why one shared
+        // condition is correct rather than a second one of its own.
+        showStall={roleplay.active}
         // Null always. Audio is a network edge and the lab has no clip — the
         // replay fixture is deliberately a silent recording, which is the
         // arrangement every conversation reaches after ninety days — so the

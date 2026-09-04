@@ -4996,3 +4996,28 @@ trigger-cutoff regression suite, gate-by-gate status, and the two
 pre-existing unrelated findings this sprint surfaced and flagged separately
 rather than folded in): /TUTOR_INSTRUMENTS.md §0.0's Class III (S17) row and
 its decision-log entries.
+
+### 20.14 `props` — a stall on the island, and no model-facing surface at all (2026-09-03, SHIPPED, COARSE)
+
+**Recorded here for completeness, not because this sprint touches anything
+this file otherwise governs.** Class III's last piece (TUTOR_INSTRUMENTS.md
+§3.4, S18) puts a procedurally-built market stall on the island — no new
+turn field, no new prompt line, no new persisted row, no new content
+reaching a model or a learner's ear. The stall shows precisely when
+`presence` already does (`roleplay.active`, unchanged from §20.13), so it
+introduces no new trigger this file would need to reason about, and its own
+`propPlacement.ts` composes an exclusion zone into the EXISTING placement
+solver's `isWalkable` predicate purely for physical non-overlap on screen —
+a rendering concern, not a privacy, moderation or injection one.
+
+The one thing worth recording here rather than only in
+TUTOR_INSTRUMENTS.md: this sprint is further confirmation that the
+"broadcast pose, opt-in override" shape §20.13 established for `roleplay`
+generalizes cleanly to a THIRD kind of stage guest (character, then avatar
+billboard, then static prop) without touching `TutorTurnSchema` a third
+time — the model's own surface stayed exactly as closed as it was after
+S17, which is the property that matters here.
+
+Full account (the placement-solver mechanics, the audition regression
+found and fixed, the live verification): /TUTOR_INSTRUMENTS.md §0.0's
+Class III (S18) row and its decision-log entry.

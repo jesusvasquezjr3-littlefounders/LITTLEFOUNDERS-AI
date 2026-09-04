@@ -9,7 +9,53 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## Class III closed for what infrastructure supports today: a pointing gesture, a camera that responds, a pre-authored scene, a second body in frame (2026-09-03)
+## Class III actually closed: a market stall, placed by the real solver, and a live regression it found in the process (2026-09-03)
+
+**A stall — the first object on the Tutor's island that is neither a rigged
+character nor a flat billboard.** Built as `three.js` primitives
+(`StallProp.tsx`: a counter, four posts, a striped canopy), not through the
+Blender pipeline — the entry below this one already scoped that a STATIC,
+unrigged prop does not need it. Re-checked from source rather than trusted
+from that entry's own earlier research: `findStandingSpots`, the real
+placement solver, has no `CharacterId` anywhere in it, so the stall is
+placed by calling the identical function a character is (`propPlacement.ts`)
+— a more literal use of "the existing placement solver" than the entry
+below needed for its own billboard.
+
+**That alone does not stop a character standing inside it, and proving so
+was the point of re-checking rather than assuming.** Neither the island's
+baked walkability mask (water-vs-land only — it does not even know about
+this island's own stone table) nor the solver's own separation logic can
+see an object solved independently of the cast. `excludingProp` closes that
+by composing a hard exclusion disc into the character solve's own
+walkability check — an extension this codebase's docs already invite
+callers to make, not a new solver capability.
+
+**Live testing at the tightest configuration this solver has on record
+found a real regression before it shipped.** `diorama-a`'s 4-candidate
+audition — already the least forgiving seating this codebase has measured —
+dropped from 4/4 to 3/4 placed once the stall's exclusion was layered on
+top. Fixed by scoping the exclusion to outside an audition: the stall only
+ever shows when `roleplay.active` is true, and that can only happen during
+`conversing`, a phase that cannot coexist with the personalization
+audition. The fix narrows a combination the product cannot actually
+produce, not the one this sprint's own acceptance bar asks for — confirmed
+1/1, 2/2 and 4/4 live afterward, the last case with the stall visible.
+
+**One incidental discovery is worth recording on its own:** chasing why the
+machine felt loaded again mid-sprint led to a live, orphaned headless
+Chrome process — `verify-tutor-ui.mjs`'s crash path leaves its spawned
+Chrome running (`child.kill()` does not reliably cascade-kill Chrome's own
+multi-process tree), and one was found alive at 668% CPU over half an hour
+after its parent script had already crashed and exited, earlier the same
+session. Killed live, not merely diagnosed; a real fix is flagged
+separately rather than attempted inside this sprint's own scope.
+
+Full account: `/TUTOR_INSTRUMENTS.md` §0.0's Class III (S18) row and its
+decision-log entry; the (minimal, by design) behavioral account:
+`/ORACLE.md` §20.14.
+
+## Class III's stage capabilities: a pointing gesture, a camera that responds, a pre-authored scene, a second body in frame (2026-09-03, S16-S17 — see the entry above this one for S18, which is what actually closed the class)
 
 **Owner directive, arriving right after the entry below this one closed:
 finish the FULL remaining catalog, not only Class V.** This entry is the

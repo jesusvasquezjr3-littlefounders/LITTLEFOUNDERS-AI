@@ -1496,6 +1496,15 @@ export function TutorExperience() {
       perCharacter={roleplay.perCharacter}
       presenceAvatarUri={presenceAvatarUri}
       /*
+       * Class III / S18 `props`: the stall shows "during a transaction," the
+       * catalog's own words — the SAME condition `presence` already reads,
+       * so the two ship and disappear together rather than needing a second
+       * trigger of their own. See `TutorSceneProps.showStall`'s own comment
+       * for why this is safe to gate so simply: false reproduces the cast
+       * solve byte-for-byte, exactly like every other roleplay-only prop.
+       */
+      showStall={roleplay.active}
+      /*
        * THE ARTICULATION HEURISTIC, not real lip-sync — exactly `speaking` on
        * `CharacterActor3D` elsewhere in the Lesson Engine (`applySpeaking`):
        * a syllabic head/chest cadence, never a mouth shape. A live segment's

@@ -6,6 +6,8 @@ import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
 import { AvatarBillboard } from './AvatarBillboard';
+import { StallProp } from './StallProp';
+import { excludingProp, findPropSpot, STALL_CLEARANCE_M } from './propPlacement';
 import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
@@ -135,6 +137,17 @@ export interface TutorSceneProps {
    * every optional stage guest already has.
    */
   presenceAvatarUri?: string | null;
+  /**
+   * Class III / S18 `props`: the market stall. Unlike `presence`, this DOES
+   * take a real placement-solver pass (`propPlacement.ts`'s `findPropSpot`)
+   * — a stall has a real footprint a character must not stand inside, which
+   * a fixed offset from another anchor cannot guarantee the way a solved,
+   * excluded spot can. False (every caller before S18, and every caller not
+   * currently showing a transaction) reproduces today's cast solve
+   * byte-for-byte: no prop is solved, no exclusion is composed, nothing
+   * about where characters stand changes from before this sprint.
+   */
+  showStall?: boolean;
   /**
    * The syllabic articulation heuristic (`Character3D`'s `speaking`),
    * forwarded to every standing character exactly as `emotion`/`action`
@@ -438,6 +451,7 @@ function Cast({
   actionKey,
   perCharacter,
   presenceAvatarUri,
+  showStall,
   characterSpeaking,
   viseme,
   backdrop,
@@ -456,6 +470,8 @@ function Cast({
   perCharacter?: Partial<Record<CharacterId, { emotion?: CharacterEmotion; action?: CharacterAction; actionKey?: number }>>;
   /** See `TutorSceneProps.presence`'s own comment (Class III / S17). */
   presenceAvatarUri?: string | null;
+  /** See `TutorSceneProps.showStall`'s own comment (Class III / S18). */
+  showStall?: boolean;
   characterSpeaking: boolean;
   viseme: number;
   /** Passed straight through to the mouth card, which is unlit. */
@@ -464,6 +480,7 @@ function Cast({
 }) {
   const { groundRef } = useGround();
   const [spots, setSpots] = useState<StandingSpot[] | null>(null);
+  const [propSpot, setPropSpot] = useState<StandingSpot | null>(null);
 
   /*
    * Separation is derived from WHO IS STANDING THERE, and PER PAIR.
@@ -519,6 +536,21 @@ function Cast({
   useEffect(() => {
     const ground = groundRef.current;
     if (!ground) return;
+
+    /*
+     * Class III / S18 `props`: solved BEFORE the cast, and with the
+     * UNMODIFIED `isWalkable` — the stall answers to the island alone, never
+     * to who happens to be standing on it, which is what keeps its own spot
+     * stable across an ordinary re-solve (a character joining or leaving
+     * does not need to be met with the furniture rearranging itself).
+     * `showStall` is false for every caller before S18 and for an ordinary
+     * conversation today, and in that case this is a no-op returning null —
+     * the character solve two lines down then runs against the plain
+     * `isWalkable`, byte-identical to every session before this sprint.
+     */
+    const prop = showStall ? findPropSpot(ground, isWalkable, STALL_CLEARANCE_M) : null;
+    setPropSpot(prop);
+
     setSpots(
       findStandingSpots(ground, {
         count: standing.length,
@@ -550,11 +582,28 @@ function Cast({
         // The camera opens on +Z, so the cast gathers on that side of the
         // island instead of behind the back wall.
         preferDirection: new Vector3(0.35, 0, 1),
-        isWalkable,
+        /*
+         * `excludingProp` is a no-op (returns `isWalkable` unchanged) when
+         * `prop` is null — see its own header on why this is a HARD gate
+         * against the stall's footprint rather than a soft scoring
+         * preference. NOT applied during an audition, and measured, not
+         * assumed: with it applied, `diorama-a`'s own four-candidate ring —
+         * already the tightest fit this solver has (`AUDITION_RINGS`'s own
+         * header measures it down to a 27-degree gap) — dropped to 3 of 4
+         * placed, the exact "NO SPOT FOUND" failure this file's own
+         * comments already describe fixing once. `showStall` is never true
+         * during an audition in the shipped product (it is driven by
+         * `roleplay.active`, which only exists during `conversing`, a
+         * different phase from `personalizing`'s audition entirely) — so
+         * this is a real, checked boundary on a combination that cannot
+         * occur today, not a silent gap in the one this sprint's own
+         * acceptance bar actually asks for.
+         */
+        isWalkable: audition ? isWalkable : excludingProp(isWalkable, prop, STALL_CLEARANCE_M),
         clearance: castClearanceM(footprints),
       }),
     );
-  }, [groundRef, standing, footprints, audition, isWalkable]);
+  }, [groundRef, standing, footprints, audition, isWalkable, showStall]);
 
   /*
    * Who ended up where, and which way they are turned — computed ONCE and used
@@ -693,6 +742,25 @@ function Cast({
             />
           );
         })()}
+      {showStall &&
+        propSpot &&
+        (() => {
+          /*
+           * Class III / S18 `props`: faced toward the SAME anchor `presence`
+           * already uses (the last posed cast member) — same `atan2(dx, dz)`
+           * convention `facing.ts` itself uses to turn a character toward a
+           * point, applied here to turn the counter's own front toward
+           * whoever is standing at the transaction rather than presenting an
+           * arbitrary edge. Absent cast (a `posed` still resolving) leaves
+           * the stall at its solved position, unrotated, rather than
+           * skipping it — a stall facing the solver's own default direction
+           * is a smaller error than a stall that flickers in and out while
+           * the cast is still loading.
+           */
+          const anchor = posed[posed.length - 1];
+          const facing = anchor ? Math.atan2(anchor.spot.x - propSpot.x, anchor.spot.z - propSpot.z) : 0;
+          return <StallProp position={[propSpot.x, propSpot.y, propSpot.z]} facing={facing} />;
+        })()}
     </>
   );
 }
@@ -775,6 +843,7 @@ export function TutorScene({
   actionKey = 0,
   perCharacter,
   presenceAvatarUri = null,
+  showStall = false,
   characterSpeaking = false,
   viseme = 0,
   shot,
@@ -921,6 +990,7 @@ export function TutorScene({
                 actionKey={actionKey}
                 perCharacter={perCharacter}
                 presenceAvatarUri={presenceAvatarUri}
+                showStall={showStall}
                 characterSpeaking={characterSpeaking}
                 viseme={viseme}
                 backdrop={backdrop}
