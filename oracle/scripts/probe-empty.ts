@@ -123,8 +123,9 @@
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { sealContext, type TutorContext } from '../src/context/schema.js';
-import { TUTOR_SYSTEM_PROMPT, buildContextMessage } from '../src/tutor/prompt.js';
+import { TUTOR_SYSTEM_PROMPT, buildContextMessage, buildTurnMessages } from '../src/tutor/prompt.js';
 import { fenceUntrusted } from '../src/safety/untrusted.js';
+import { SHAPE_REMINDER } from '../src/tutor/prompt.js';
 
 const CONTEXT: TutorContext = {
   nickname: 'Chispa',
@@ -250,32 +251,19 @@ const MANEUVER_BLOCK = [
   'built from what this learner just did.',
 ].join('\n');
 
-/** Round 71's nudge, in the exact wording the orchestrator ships. */
-const BRACE_NUDGE = ' Begin with the character { and end with }. Nothing before or after.';
-
-/** The correction the RETRY appends today, and the variable under test. */
-const CORRECTION =
-  'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.';
-
 interface Condition {
   name: string;
   temperature: number;
   correction: boolean;
-  /**
-   * Round 71 (2026-09-04): the brace nudge, and WHERE it rides.
+  /*
+   * ROUND 71'S `braceNudge` IS GONE, not merely unused (round 76).
    *
-   * `null` sends the shape reminder exactly as production did before this
-   * round. `'folded'` appends the nudge to that same reminder — one trailing
-   * message, which is what the orchestrator ships today. `'separate'` sends it
-   * as a SECOND trailing message, which measured better in a conversation
-   * (17 vs 24 empties) and would push the reaction instruction one slot
-   * further from generation, breaking an adjacency three tests pin
-   * deliberately.
-   *
-   * Those two conversation numbers are one sample each, which this file's own
-   * header says is exactly how to read noise as signal. Hence these.
+   * It was reverted from the product after `probe-empty` refuted it, and this
+   * file now builds its messages with the product's own `buildTurnMessages`.
+   * A condition the product has no way to send is not a condition — keeping
+   * the field would let a future round measure something that cannot ship,
+   * which is how the 43->24 and 43->17 numbers got believed in the first place.
    */
-  braceNudge?: 'folded' | 'separate' | null;
   /**
    * Round 72 (2026-09-04): the tier the CONTEXT declares.
    *
@@ -328,11 +316,18 @@ interface Condition {
   repairQuotesOwnText?: boolean;
 }
 
+/*
+ * PHRASED TO COMPLETE `Your previous reply ${...}.`, which is the contract
+ * `buildTurnMessages` and the orchestrator's own `turnCorrection` share. These
+ * used to be whole sentences carrying that prefix themselves, which was
+ * correct while this file built its own message array and would now produce
+ * "Your previous reply Your previous reply reused…".
+ */
 const QUOTING_CORRECTION = (priorText: string) =>
-  `Your previous reply reused a sentence it has already said in this session ("${priorText.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening.`;
+  `reused a sentence it has already said in this session ("${priorText.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
 
 const NON_QUOTING_CORRECTION =
-  'Your previous reply reused a sentence it has already said in this session. Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening.';
+  'reused a sentence it has already said in this session. Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening';
 
 /*
  * THE HYPOTHESIS UNDER TEST, and it came from the failure of the last one.
@@ -396,9 +391,6 @@ const CONDITIONS: Condition[] = [
   { name: 'R73 tier 1, no maneuver (control)', temperature: 0.6, correction: true, historyTurns: 20, tier: 1, maneuver: false },
   { name: 'R72 tier 1 (the struggling learner)', temperature: 0.6, correction: true, historyTurns: 20, tier: 1 },
   { name: 'R72 tier 2 (control, this file default)', temperature: 0.6, correction: true, historyTurns: 20, tier: 2 },
-  { name: 'R71 attempt-0, no nudge (control)', temperature: 0.6, correction: true, historyTurns: 20, braceNudge: null },
-  { name: 'R71 attempt-0, nudge FOLDED into the reminder (ships today)', temperature: 0.6, correction: true, historyTurns: 20, braceNudge: 'folded' },
-  { name: 'R71 attempt-0, nudge as its OWN trailing message', temperature: 0.6, correction: true, historyTurns: 20, braceNudge: 'separate' },
   { name: 'short history (3 turns)', temperature: 0.6, correction: false, historyTurns: 3 },
   { name: 'medium history (10 turns)', temperature: 0.6, correction: false, historyTurns: 10 },
   { name: 'full window (20 turns)', temperature: 0.6, correction: false, historyTurns: 20 },
@@ -542,38 +534,48 @@ async function once(condition: Condition, context: TutorContext): Promise<Outcom
       : condition.repairQuotesOwnText
         ? QUOTING_CORRECTION(priorTutorText)
         : NON_QUOTING_CORRECTION;
-  const messages = [
-    { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-    {
-      role: 'user',
-      content: buildContextMessage(
-        sealContext({
-          ...CONTEXT,
-          ...(condition.fullContext === true ? FULL_CONTEXT : {}),
-          tier: condition.tier ?? CONTEXT.tier,
-          turnHistory: history,
-        }),
-      ),
-    },
-    ...history.map((turn) =>
-      turn.speaker === 'tutor'
-        ? { role: 'assistant', content: turn.text }
-        : { role: 'user', content: fenceUntrusted(turn.text, maxChars).block },
+  /*
+   * BUILT BY THE PRODUCT'S OWN `buildTurnMessages` (round 76, 2026-09-04).
+   *
+   * This array was hand-written here, in parallel with the orchestrator's own
+   * copy, for every round up to 75 — and rounds 74/75 ended on a gap that
+   * shape could not close: 0 empties in 80 protected calls here against ~14%
+   * in production at the same prompt size. There was no way to tell whether
+   * that was a fact about the provider or a divergence between two hand-kept
+   * copies of one message array, which is the same defect as measuring a
+   * shared object through the wrong parent. Now there is one copy, so a result
+   * from this file is a statement about the product.
+   *
+   * `correction: false` is what makes an arm UNPROTECTED, and it now has to
+   * strip the reminder the builder always appends — deliberately awkward: the
+   * product has no way to send that message array, and the arm exists only as
+   * the positive control that proves a clean run could have failed.
+   */
+  const built = buildTurnMessages({
+    systemContent: TUTOR_SYSTEM_PROMPT,
+    contextMessage: buildContextMessage(
+      sealContext({
+        ...CONTEXT,
+        ...(condition.fullContext === true ? FULL_CONTEXT : {}),
+        tier: condition.tier ?? CONTEXT.tier,
+        turnHistory: history,
+      }),
     ),
-    {
-      role: 'user',
-      content:
-        fenceUntrusted('no entendí, explícamelo otra vez', maxChars).block +
-        (condition.maneuver === true ? `\n\n${MANEUVER_BLOCK}` : ''),
-    },
-    ...(repairCorrection !== null ? [{ role: 'user', content: repairCorrection }] : []),
-    ...(condition.correction
-      ? [{ role: 'user', content: condition.braceNudge === 'folded' ? `${CORRECTION}${BRACE_NUDGE}` : CORRECTION }]
-      : []),
-    ...(condition.braceNudge === 'separate'
-      ? [{ role: 'user', content: BRACE_NUDGE.trim() }]
-      : []),
-  ];
+    conversation: history.map((turn) =>
+      turn.speaker === 'tutor'
+        ? { role: 'assistant' as const, content: turn.text }
+        : { role: 'user' as const, content: fenceUntrusted(turn.text, maxChars).block },
+    ),
+    userContent:
+      fenceUntrusted('no entendí, explícamelo otra vez', maxChars).block +
+      (condition.maneuver === true ? `\n\n${MANEUVER_BLOCK}` : ''),
+    correction: repairCorrection,
+    isRetry: repairCorrection !== null,
+  });
+  const messages = condition.correction
+    ? built
+    : built.filter((m) => m.content !== SHAPE_REMINDER);
+
   try {
     const response = await fetch(`${config.MODEL_API_BASE}/chat/completions`, {
       method: 'POST',

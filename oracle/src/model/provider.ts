@@ -231,8 +231,27 @@ export async function complete(
     const shape = Object.entries(message)
       .map(([k, v]) => `${k}:${typeof v === 'string' ? `${v.length}ch` : typeof v}`)
       .join(' ');
+    /*
+     * THE REQUEST'S SHAPE, because the response's shape was only half the
+     * question (round 76, 2026-09-04).
+     *
+     * `model:probe-empty` measures the protected turn path at 0 in 80 calls
+     * while production runs at ~14% on prompts of the same size — and once the
+     * probe was switched to the product's own `buildTurnMessages`, the two are
+     * provably building the same ARRAY. So the difference is in the data, and
+     * nothing in the logs could describe the data.
+     *
+     * ROLES AND LENGTHS ONLY, never content: this array holds the learner's
+     * own fenced words, and §1.9 does not have an exception for debugging. A
+     * count of characters per role, in order, is enough to tell a
+     * learner-answering turn from a system-prompted one, a short history from
+     * a long one, and a retry from a first attempt — which is the whole
+     * question — and it can carry nothing about a child.
+     */
+    const requestShape = messages.map((m) => `${m.role}:${m.content.length}`).join(' ');
     console.warn(
       `[oracle] empty completion (${opts.label ?? 'unlabelled'}): ` +
+        `request=[${requestShape}] ` +
         `finish_reason=${String(choice?.finish_reason ?? 'none')} ` +
         `reasoning_chars=${reasoningChars} message={${shape}} usage=${JSON.stringify(usage)}`,
     );

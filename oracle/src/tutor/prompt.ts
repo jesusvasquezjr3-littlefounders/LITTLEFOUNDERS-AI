@@ -2702,3 +2702,73 @@ function describeConfidence(evidenceCount: number, uncertainty: number): string 
   if (uncertainty > 0.35) return 'moderate evidence, treat as a hint';
   return 'reasonably well evidenced';
 }
+
+
+/**
+ * THE TURN'S MESSAGE ARRAY, built in ONE place.
+ *
+ * It used to be built inline in `orchestrator.ts` and, separately and by hand,
+ * in `scripts/probe-empty.ts`. That is why the whitespace-completion hunt took
+ * five rounds and still ended with a gap it could not explain: the probe
+ * measured 0 empties in 80 protected calls while production ran at ~14% on
+ * prompts of the same size, and there was no way to tell whether that was a
+ * real difference in the PRODUCT or a difference between two hand-written
+ * copies of the same array. A probe that reconstructs what it is studying is
+ * measuring its own reconstruction — the same defect as §1.14's harness rules,
+ * one layer up.
+ *
+ * So the product and its instrument now call this. A change to the shape
+ * reaches both, and a future probe result is a statement about the product.
+ *
+ * The ORDER is load-bearing and three tests pin it: correction first (what to
+ * change), shape reminder LAST (how to answer). A repair needs both, and a
+ * reminder that is not the final message stops being the last thing read —
+ * measured at 67% whitespace without it, 0% with it.
+ */
+export function buildTurnMessages(input: {
+  systemContent: string;
+  contextMessage: string;
+  /** The alternating history, already fenced by the caller. */
+  conversation: { role: 'assistant' | 'user'; content: string }[];
+  userContent: string;
+  /**
+   * What the previous reply did wrong, phrased to complete
+   * `Your previous reply ${correction}.` — or `null` on the first attempt,
+   * where there is no previous reply and saying there was is how a first turn
+   * starts apologising.
+   */
+  correction: string | null;
+  /** True on any attempt after the first, correction or not. */
+  isRetry: boolean;
+}): { role: 'system' | 'assistant' | 'user'; content: string }[] {
+  return [
+    { role: 'system' as const, content: input.systemContent },
+    { role: 'user' as const, content: input.contextMessage },
+    ...input.conversation,
+    { role: 'user' as const, content: input.userContent },
+    ...(input.isRetry
+      ? [
+          {
+            role: 'user' as const,
+            content:
+              input.correction !== null
+                ? `Your previous reply ${input.correction}.`
+                : 'Your previous reply was not a valid JSON object in the required shape.',
+          },
+        ]
+      : []),
+    { role: 'user' as const, content: SHAPE_REMINDER },
+  ];
+}
+
+/**
+ * The one message that takes whitespace completions from the majority to zero.
+ *
+ * MEASURED, `model:probe-empty` rounds 74-75 against the live provider: with
+ * no reminder, 0/12 at 3 turns of history, 3/12 at 10, 7/12 at 20 — and with
+ * it, 0/40 at 20 turns and 0/40 at 40, the schema maximum, on prompts up to
+ * 14,543 tokens. The number of alternating turns is the variable; the byte
+ * count is not.
+ */
+export const SHAPE_REMINDER =
+  'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.';

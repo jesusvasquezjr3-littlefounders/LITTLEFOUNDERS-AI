@@ -43,6 +43,7 @@ import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../sess
 import { spendGuard } from '../session/spend-guard.js';
 import {
   buildContextMessage,
+  buildTurnMessages,
   praiseContradictsAnswer,
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
@@ -2127,87 +2128,62 @@ export class TutorOrchestrator {
           console.warn('[oracle] skipping retry — the turn is already too late to deliver');
           break;
         }
-        const messages: ChatMessage[] = [
-          { role: 'system', content: systemContent },
-          { role: 'user', content: buildContextMessage(context) },
-          ...this.conversationMessages(opts.isSystemPrompted === true),
-          { role: 'user', content: userContent },
-        ];
         /*
-         * THE SHAPE REMINDER GOES ON EVERY CALL, not only on the retry.
+         * BUILT BY `buildTurnMessages`, WHICH THE PROBE ALSO CALLS.
          *
-         * MEASURED with `model:probe-empty`, twelve calls per condition
-         * against the live provider, messages built exactly as they are here:
+         * This array used to be assembled here and, separately and by hand, in
+         * `scripts/probe-empty.ts`. Five rounds of whitespace-completion
+         * investigation ended with a gap that could not be explained — 0 in 80
+         * protected probe calls against ~14% in production at the same prompt
+         * size — and no way to tell whether that was a fact about the product
+         * or a difference between two hand-written copies of one array. A probe
+         * that reconstructs its subject measures its own reconstruction.
          *
-         *    8%   3 turns of history
-         *   42%  10 turns
-         *   67%  20 turns          ← the window production uses
-         *    0%  20 turns + this reminder
+         * THE SHAPE REMINDER GOES ON EVERY CALL, not only the retry, and lives
+         * in that function now. MEASURED with `model:probe-empty`, messages
+         * built by the same code the product uses:
+         *
+         *    0%   3 turns of history, NO reminder
+         *   25%  10 turns, no reminder
+         *   58%  20 turns, no reminder     ← the window production uses
+         *    0%  20 turns + the reminder   (0/40 at N=40; 0/40 at 40 turns too)
          *
          * `deepseek-chat` returns a billed, normally-terminated completion made
-         * of whitespace, and the rate rises with the conversation until two
-         * turns in three cost a second call. The retry has always carried this
-         * reminder, which is why the second attempt always worked and why I
-         * spent two cycles blaming its temperature instead.
+         * of whitespace, and the rate rises with the NUMBER OF ALTERNATING
+         * TURNS — not the byte count: 14,543 tokens with the reminder is clean.
+         * The retry has always carried this reminder, which is why the second
+         * attempt always worked and why two cycles went to blaming temperature.
          *
          * It rides in the LAST user message, so the prefix cache is untouched,
          * and it says nothing about a previous reply on the first attempt —
          * there is none, and telling a model it just failed when it did not is
          * how a first turn starts apologising.
-         */
-        /*
-         * The correction comes FIRST and the shape reminder always comes LAST.
          *
-         * They used to be alternatives, and that was a real cost: the reminder
-         * is what takes whitespace completions from 67% to 0%, so a repair
-         * attempt — which carried the correction INSTEAD — reintroduced them.
-         * Measured on 2026-08-29: three empty completions in one run, one of
-         * which was the retry for a tier-2 vocabulary slip, so the term reached
-         * an eight-year-old because the fix for it came back blank.
+         * The correction comes FIRST and the reminder always LAST. They used to
+         * be alternatives, and that cost real turns: a repair carried the
+         * correction INSTEAD, reintroducing the whitespace it exists to stop.
+         * Measured 2026-08-29: three empty completions in one run, one of them
+         * the retry for a tier-2 vocabulary slip — so the term reached an
+         * eight-year-old because the fix for it came back blank. A repair needs
+         * both: what to change, and the shape to answer in.
          *
-         * A repair needs both: what to change, and the shape to answer in.
+         * `attempt > 0`, not `attempt === 1`: since an unanswered call no
+         * longer spends the repair budget, a repair can land on attempt 2 or 3,
+         * and pinning the correction to index 1 would have sent those later
+         * attempts the ORIGINAL prompt with no correction at all — re-asking
+         * for the same turn and calling the result a repair.
          */
-        // `attempt > 0`, not `attempt === 1`: since an unanswered call no
-        // longer spends the repair budget, a repair can now land on attempt 2
-        // or 3, and pinning the correction to index 1 would have sent those
-        // later attempts the ORIGINAL prompt with no correction at all —
-        // re-asking for the same turn and calling the result a repair.
-        if (attempt > 0) {
-          messages.push({
-            role: 'user' as const,
-            content:
-              turnCorrection !== null
-                ? `Your previous reply ${turnCorrection}.`
-                : 'Your previous reply was not a valid JSON object in the required shape.',
-          });
-        }
-        messages.push({
-          role: 'user' as const,
-          content:
-            'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.',
-          /*
-           * ROUND 71'S BRACE NUDGE WAS HERE, AND WAS REVERTED — measured, not
-           * abandoned. A tier-1 walk went 43 whitespace completions to 24 with
-           * it and to 17 with it as its own message, which looked like a win
-           * twice over. `model:probe-empty` then held everything else still and
-           * ran twelve calls per condition: control 0/12, folded 0/12,
-           * separate 0/12. The nudge does nothing the shape reminder above was
-           * not already doing, and those conversation numbers were the noise
-           * that file's own header warns about — one run of a conversation is
-           * not a measurement of a parameter.
-           *
-           * Rounds 72 and 73 then eliminated the two variables that separated
-           * the probe from the failing walk: the TIER the context declares
-           * (1 vs 2, both 0/12) and the MANEUVER block a real turn appends and
-           * this probe never sent (both 0/12). So the cause of the real
-           * whitespace rate is still open, and it is none of: temperature, the
-           * correction message, the shape reminder's position, the brace
-           * wording, tier, or the move body. What the probe still does not
-           * model is the rest of a REAL context — recalled memory, plan state,
-           * skill states, previous sessions — which is where the next round
-           * should look.
-           */
-        });
+        const messages: ChatMessage[] = buildTurnMessages({
+          systemContent,
+          contextMessage: buildContextMessage(context),
+          conversation: this.conversationMessages(opts.isSystemPrompted === true) as {
+            role: 'assistant' | 'user';
+            content: string;
+          }[],
+          userContent,
+          correction: turnCorrection,
+          isRetry: attempt > 0,
+        }) as ChatMessage[];
         try {
           const result = await complete(messages, {
             /*
