@@ -74,7 +74,29 @@ interface ChatResponse {
  */
 export async function complete(
   messages: ChatMessage[],
-  opts: { temperature?: number; maxTokens?: number; signal?: AbortSignal } = {},
+  opts: {
+    temperature?: number;
+    maxTokens?: number;
+    signal?: AbortSignal;
+    /**
+     * WHICH CALL SITE THIS IS, and it exists because five rounds of
+     * investigation could not answer that question (2026-09-04).
+     *
+     * The empty-completion warning below is counted by `tutor:converse`, which
+     * reported 38 of them in one paid run. Rounds 71-75 then spent five
+     * experiments hunting the cause inside the TURN pipeline — and measured it
+     * at 0 in 80 protected calls, against an unprotected positive control that
+     * fired at 43%. The turn path is clean, and was already fixed on
+     * 2026-08-29; the 38 came from one of the other call sites and the log had
+     * no way to say which.
+     *
+     * A counter that sums three call sites into one number cannot be acted on:
+     * it is the §1.14 rule about a metric measuring the harness's assumptions,
+     * one layer down. So every caller names itself, and the next run answers
+     * the question instead of raising it.
+     */
+    label?: string;
+  } = {},
 ): Promise<CompletionResult> {
   const config = getConfig();
   if (!config.MODEL_API_KEY) {
@@ -210,7 +232,8 @@ export async function complete(
       .map(([k, v]) => `${k}:${typeof v === 'string' ? `${v.length}ch` : typeof v}`)
       .join(' ');
     console.warn(
-      `[oracle] empty completion: finish_reason=${String(choice?.finish_reason ?? 'none')} ` +
+      `[oracle] empty completion (${opts.label ?? 'unlabelled'}): ` +
+        `finish_reason=${String(choice?.finish_reason ?? 'none')} ` +
         `reasoning_chars=${reasoningChars} message={${shape}} usage=${JSON.stringify(usage)}`,
     );
     throw new ModelUnavailableError('model returned an empty completion');

@@ -2232,6 +2232,7 @@ export class TutorOrchestrator {
              * this experiment actually isolated.
              */
             temperature: attempt === 0 ? 0.6 : 0.2,
+            label: `turn:attempt${attempt}`,
             signal: opts.signal,
           });
           this.addModelCost(estimateCostUsd(result.promptTokens, result.completionTokens));

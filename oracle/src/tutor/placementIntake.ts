@@ -232,7 +232,10 @@ export async function runPlacementIntake(
 
   let raw: string;
   try {
-    const result = await complete(buildMessages(input, fenced), { temperature: 0.3 });
+    const result = await complete(buildMessages(input, fenced), {
+      temperature: 0.3,
+      label: 'placement-intake',
+    });
     raw = result.text;
   } catch (err) {
     if (err instanceof ModelUnavailableError) return fallback(neutralReflection);

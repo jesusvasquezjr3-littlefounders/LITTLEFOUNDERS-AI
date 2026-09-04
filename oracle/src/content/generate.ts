@@ -340,8 +340,40 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
                 },
               ]
             : []),
+          /*
+           * THE SHAPE REMINDER, which the turn pipeline has had since
+           * 2026-08-29 and this call site never got (2026-09-04).
+           *
+           * `model:probe-empty` measures the provider returning a billed,
+           * normally-terminated completion made of whitespace, and a trailing
+           * user message asking for the object takes it to zero — 0 in 80
+           * calls at the longest context the schema allows, against an
+           * unprotected control at 43%. That mitigation was applied to the
+           * turn loop and stopped there, so the one OTHER place we demand
+           * strict JSON kept the original failure with nothing to catch it.
+           *
+           * The risk here is lower than the turn loop's, because this prompt
+           * carries no long alternating history and that is the variable the
+           * probe found. Lower is not zero, the fix is one message, and
+           * leaving a known mitigation off one of the two sites that needs it
+           * is how the class stays open.
+           *
+           * It goes LAST, after the correction, for the same reason it does
+           * there: a repair needs both what to change and the shape to answer
+           * in, and a reminder placed before the correction stops being the
+           * last thing read.
+           */
+          {
+            role: 'user' as const,
+            content: 'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.',
+          },
         ],
-        { temperature: attempts === 1 ? 0.7 : 0.2, maxTokens: 900, signal: request.signal },
+        {
+          temperature: attempts === 1 ? 0.7 : 0.2,
+          maxTokens: 900,
+          label: `activity:attempt${attempts}`,
+          signal: request.signal,
+        },
       );
       // Reported the moment the call SUCCEEDS, not once generation as a
       // whole concludes — a candidate the judge or moderation later

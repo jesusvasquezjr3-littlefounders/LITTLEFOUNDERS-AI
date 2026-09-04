@@ -1037,10 +1037,26 @@ let problems = 0;
  * between a known cost and a surprise on an invoice.
  */
 let emptyCompletions = 0;
+/*
+ * BY CALL SITE, because one number across three of them cost five rounds
+ * (2026-09-04).
+ *
+ * This counter reported 38 in one paid run, and that number was read as a
+ * fact about the TURN pipeline because the turn pipeline is what this harness
+ * is looking at. Five experiments later `model:probe-empty` measured the turn
+ * path at 0 in 80 calls, with an unprotected control firing at 43% in the same
+ * run — so the 38 were never its. `complete()` now labels every call site and
+ * this breaks the total back out, so the next run names the source instead of
+ * handing the reader a number that invites the same wrong inference.
+ */
+const emptyBySite = new Map<string, number>();
 const realWarn = console.warn.bind(console);
 console.warn = (...args: unknown[]): void => {
-  if (args.some((a) => typeof a === 'string' && a.includes('empty completion'))) {
+  const line = args.find((a) => typeof a === 'string' && a.includes('empty completion'));
+  if (typeof line === 'string') {
     emptyCompletions += 1;
+    const site = /empty completion \(([^)]*)\)/.exec(line)?.[1] ?? 'unlabelled';
+    emptyBySite.set(site, (emptyBySite.get(site) ?? 0) + 1);
   }
   realWarn(...(args as []));
 };
@@ -1710,6 +1726,13 @@ async function main(): Promise<void> {
     `  empty completions the provider forced us to retry: ${emptyCompletions}` +
       (emptyCompletions > 0 ? ' (absorbed — no learner saw one)' : ''),
   );
+  if (emptyBySite.size > 0) {
+    const bySite = [...emptyBySite.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([site, n]) => `${site} ${n}`)
+      .join(', ');
+    console.log(`    by call site: ${bySite}`);
+  }
   if (problems > 0) {
     console.log('');
     console.log(`tutor:converse — ${problems} problem(s) a person would notice.`);
