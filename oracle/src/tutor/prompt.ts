@@ -275,6 +275,35 @@ export function promisesAnActivity(say: string): boolean {
 }
 
 /**
+ * TRUE when the spoken text promises a PICTURE that the turn did not draw.
+ *
+ * The sibling of `promisesAnActivity`, and it exists for the same reason,
+ * found the same way. Reading three sweep transcripts back showed seven
+ * different turns saying "te lo dibujo", "mira cómo se ve en el cuadro",
+ * "aquí está la barra partida" — with `whiteboard` null. A child told to look
+ * at something, who finds nothing there, learns that what the tutor says does
+ * not predict what happens, which costs more than the board would have taught.
+ *
+ * Deliberately narrow: only phrasings that point at a THING TO LOOK AT right
+ * now. "vamos a contar juntos" promises nothing visual and must not match, or
+ * the check would fire on ordinary teaching and become noise.
+ */
+const DRAWING_PROMISE = [
+  /\bte lo dibujo\b/i,
+  /\bvoy a dibujar\b/i,
+  /\blo dibujo\b/i,
+  /\bmira (?:cómo|como) (?:se ve|queda|va)\b/i,
+  /\baqu[íi] est[áa] (?:la|el|tu)\b/i,
+  /\bm[íi]ralo en (?:la|el)\b/i,
+  /\ben la (?:pantalla|pizarra|tabla)\b.*\b(?:mira|ves|puedes ver)\b/i,
+  /\b(?:mira|ve) (?:la|el) (?:pizarra|pantalla|tabla|gr[áa]fica)\b/i,
+];
+
+export function promisesADrawing(say: string): boolean {
+  return DRAWING_PROMISE.some((re) => re.test(say));
+}
+
+/**
  * TRUE when a turn's spoken text asks more than one distinct question —
  * counted as more than one sentence ending in "?".
  *
@@ -2042,10 +2071,28 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  going down → inventory; spending against a limit → budget_plate.',
   '  A quantity a young child should SEE, not count → ten_frame, bead_string,',
   '  pictograph, tally; the learner counting it out themselves, tap by tap →',
-  '  fill instead. Parts of one whole → fraction_strip, fraction_circle,',
-  '  partition; totals broken down → stack. Rows by columns → array.',
+  '  fill instead. Parts of one whole, as shapes → fraction_strip,',
+  '  fraction_circle. The SAME amount of money shared two or three DIFFERENT',
+  '  ways — 60 pesos between 2 people, and the same 60 between 4, to see whose',
+  '  piece is bigger → partition; it is the only board that puts a price on',
+  '  each share. Totals broken down → stack. Rows by columns → array.',
   '  When things happen → timeline; a loop that repeats → cycle; two states of',
   '  one thing → before_after. Two sides that must match → equation_bar.',
+  'NEVER ANNOUNCE A DRAWING YOU DO NOT DRAW. If your `say` contains "te lo',
+  'dibujo", "mira cómo se ve", "aquí está", "vamos a verlo en la pantalla" or',
+  'anything else that promises a picture, the `whiteboard` field on THAT SAME',
+  'turn must not be null. A child who is told to look at something, and finds',
+  'nothing there, learns that what you say does not predict what happens —',
+  'which costs more than the board would have taught. If you are not going to',
+  'draw, do not say you will: ask the question in words instead.',
+  '',
+  'AND WHEN THEY ASK YOU TO DRAW, DRAW IT ON THAT TURN. "dibújame…",',
+  '"muéstrame…", "hazme una tabla", "ponlo en la pantalla" — that is a request',
+  'for the picture, not for a plan to make one. Do not answer it by asking them',
+  'for the numbers first: pick sensible small numbers yourself, draw it, and',
+  'ask your question about what is now on the screen. You can always redraw it',
+  'with their numbers next turn.',
+  '',
   'THE MAP ABOVE BEATS HABIT. If the situation names a board there, draw THAT',
   'one — not the board you drew last turn, and not "worked" for something that',
   'is not a calculation you are working through. Sharing something out is',

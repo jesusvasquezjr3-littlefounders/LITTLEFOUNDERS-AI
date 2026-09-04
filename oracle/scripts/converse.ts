@@ -24,12 +24,14 @@
  * and one moderation call per turn.
  */
 
+import { readFileSync } from 'node:fs';
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
 import {
   tierVocabularyViolation,
   promisesAnActivity,
+  promisesADrawing,
   reusesATemplate,
   contradictsItsOwnShortfall,
   EXPLICIT_REPEAT_REQUEST,
@@ -183,6 +185,16 @@ const ACTIVITIES: { type: string; prompt: string }[] = [
     prompt: 'El cliente pagó 20 por algo de 13. Elige el cambio exacto con monedas de 1, 2, 5 y 10.',
   },
 ];
+
+/*
+ * Every board kind the schema accepts, read from the schema itself rather than
+ * listed here — a hand-copied list is the seventh place to remember, and this
+ * file has already paid for one of those.
+ */
+const ALL_BOARD_KINDS: readonly string[] = (() => {
+  const src = readFileSync(new URL('../src/tutor/turnSchema.ts', import.meta.url), 'utf8');
+  return [...new Set([...src.matchAll(/z\.literal\('([a-z_]+)'\)/g)].map((m) => m[1]!))].sort();
+})();
 
 const SCENARIOS: Scenario[] = [
   {
@@ -553,6 +565,193 @@ const SCENARIOS: Scenario[] = [
       'puedo guardar 25 cada semana',
       'y en la semana 4 cuanto llevo?',
       'esa semana es la que me falta entender, la de en medio',
+    ],
+  },
+  /*
+   * THE BOARD SWEEP — one situation per instrument, for the 33 that had never
+   * been offered one.
+   *
+   * A board fires when the SITUATION for it arises; the situation→board map in
+   * `prompt.ts` names all 45, so the question these scenarios ask is not "does
+   * the model know the board" but "does it reach for the right one when the
+   * moment is unmistakable". Each line below is written to be that moment for
+   * a specific kind, in the words a child would use, and grouped so one
+   * conversation can carry four or five without becoming a quiz.
+   *
+   * Scenarios that report a kind still missing after this are the honest
+   * finding: the situation was produced and the model chose otherwise.
+   */
+  {
+    name: 'sweep: counting a small quantity a child should SEE',
+    session: { ...SESSION, tier: 1, nickname: 'Nico' },
+    script: [
+      'tengo 7 galletas, se ven muchas o pocas?',
+      'dejame contarlas yo tocando la pantalla',
+      'mi hermana tiene 3 carritos y yo 5, quien tiene mas y cuantos en total',
+      'y si las cuento de cinco en cinco con rayitas?',
+    ],
+  },
+  {
+    name: 'sweep: parts of one whole',
+    session: { ...SESSION, nickname: 'Sol' },
+    script: [
+      'como reparto un pastel entre 3 personas?',
+      'y si lo parto en pedazos redondos en vez de barra?',
+      'tenia 60 pesos y gaste 25, cuanto me queda',
+      'el sabado gane 9 y el domingo 9, cuanto junte',
+      'mi gasto de comida y de transporte juntos deben dar lo mismo que lo que gano',
+    ],
+  },
+  {
+    name: 'sweep: sorting, grouping and ordering',
+    session: { ...SESSION, nickname: 'Dani' },
+    script: [
+      'cuales cosas necesito de verdad y cuales solo quiero',
+      'dejame acomodarlas yo, quiero moverlas',
+      'hay cosas que son las dos a la vez, necesarias y que me gustan',
+      'de estas tres opciones cual me conviene primero, ordenalas',
+      'que pesa mas, lo que me costo hacerlo o lo que cobre',
+    ],
+  },
+  {
+    name: 'sweep: the money artifacts of a small business',
+    session: { ...SESSION, nickname: 'Chuy' },
+    script: [
+      'venden la bolsa grande a 20 y la chica a 12, cual conviene por unidad',
+      'tenia 20 vasos y ya vendi 8, cuantos me quedan',
+      'gane 50, gaste 20 en limones y luego gane 30 mas',
+      'tengo 100 para toda la semana y quiero comida, camion y un juego',
+      'tengo un billete de 10 y necesito monedas de 1 para dar cambio',
+    ],
+  },
+  {
+    name: 'sweep: time, cycles and what changed',
+    session: { ...SESSION, nickname: 'Vale' },
+    script: [
+      'que pasa primero, comprar los limones o vender la limonada?',
+      'y eso se repite cada semana igual, no?',
+      'como estaba mi alcancia antes y como esta ahora',
+      'si ahorro 20 a la semana y mi amiga 30, quien llega primero',
+      'y si mejor ahorro mas o menos, quiero probar cantidades',
+    ],
+  },
+  /*
+   * SWEEP 2 — the kinds the first sweep offered a situation and still missed.
+   *
+   * Reading those transcripts back showed the miss was rarely "chose a
+   * different board": it was "drew nothing and answered in words". The
+   * situation was real, and the model still narrated. So these lines ask for
+   * the PICTURE, in the way a child does — "hazme dos columnas", "ponlo en una
+   * tabla", "dibujame la línea del tiempo" — because a request to be SHOWN is
+   * the one signal that reliably beats the habit of explaining.
+   */
+  /*
+   * SWEEP 3 — the last ten, with the lesson of sweep 2 applied.
+   *
+   * Sweep 2 missed these not by choosing a different board but by promising a
+   * picture and drawing nothing ("te lo dibujo", then null) or by asking the
+   * child for the numbers first. Both are now prompt rules. These lines supply
+   * the numbers up front, so there is nothing left to ask for and nothing left
+   * to defer.
+   */
+  /*
+   * SWEEP 4 — the final five, each asked for by the ONE thing only that board
+   * does. Sweeps 2 and 3 produced the situation and the model described the
+   * board in words without attaching it ("aquí tienes la barra partida en 4",
+   * whiteboard null), which the new `promisesADrawing` check now catches. So
+   * these lines do not describe a scene: they ask for the specific comparison
+   * the board makes, which is harder to answer in a sentence than to draw.
+   */
+  {
+    name: 'sweep 4: the final five',
+    session: { ...SESSION, nickname: 'Bruno' },
+    script: [
+      'los mismos 60 pesos repartidos entre 2 amigos y luego entre 4: de cual manera le toca mas a cada quien?',
+    ],
+  },
+  {
+    name: 'sweep 3: the last ten, with their numbers already given',
+    session: { ...SESSION, nickname: 'Emi' },
+    script: [
+      'separa estas en dos cubetas: leche, cuaderno, dulce, juguete',
+      'de mis 100 de la semana: 45 comida, 30 camion, 40 un juego. muestralo',
+      'tenia 20 paletas, vendi 8. dibuja como va el inventario',
+      'el jabon de 24 trae 3 y quiero ver la etiqueta con su precio por pieza',
+      'el precio de 10 son 4 de material, 3 de trabajo y 3 de ganancia. apilalo',
+    ],
+  },
+  {
+    name: 'sweep 3: the last ten, second half',
+    session: { ...SESSION, nickname: 'Toño' },
+    script: [
+      'le di 5 estampas y me dio 3 canicas. dibuja que dio cada quien',
+      'lunes 3 dulces, martes 5, miercoles 2. un dibujito por dulce',
+      'parte una barra en 4 y marca 1',
+      'en enero tenia 10, en marzo 40, en junio 90. ponlo en el tiempo',
+      'de un lado 3 mas 4 y del otro 7: enseñame que son iguales',
+    ],
+  },
+  {
+    name: 'sweep 2: sorting and grouping, asked for as a picture',
+    session: { ...SESSION, nickname: 'Pau' },
+    script: [
+      'hazme dos columnas: en una lo que necesito y en otra lo que quiero',
+      'y las cosas que caen en las dos, donde van? dibujalo',
+      'ponme en grupos cuanto gasto en comida, en transporte y en dulces',
+      'de estas 4 cosas cual me da mas por mi dinero, ponlo en una tabla',
+    ],
+  },
+  {
+    name: 'sweep 2: the shop ledger, asked for as a picture',
+    session: { ...SESSION, nickname: 'Tere' },
+    script: [
+      'dibujame la etiqueta: el jabon grande cuesta 24 y trae 3, el chico 10 y trae 1',
+      'tenia 20 paletas y vendi 8, muestrame como va bajando',
+      'anota lo que entro y lo que salio hoy: gane 50, gaste 20, gane 30',
+      'tengo 100 para la semana, muestrame como se reparte entre comida, camion y un juego',
+      'muestrame como cambio un billete de 10 por monedas de 1',
+    ],
+  },
+  {
+    name: 'sweep 2: time and change, asked for as a picture',
+    session: { ...SESSION, nickname: 'Iker' },
+    script: [
+      'dibujame la linea del tiempo de mi ahorro por mes',
+      'y el ciclo de la limonada: comprar, vender, volver a comprar',
+      'muestrame como estaba mi alcancia antes y como esta ahora',
+      'dibujame las dos partes que sumadas dan mi mesada: 9 y 9',
+      'y una barra donde una parte no la se todavia',
+    ],
+  },
+  {
+    name: 'sweep 2: quantities a small child should see',
+    session: { ...SESSION, tier: 1, nickname: 'Mia' },
+    script: [
+      'dibujame 7 galletas en el cuadrito de diez',
+      'y con rayitas cuantos carritos tiene cada quien',
+      'ponme un dibujito por cada dulce que vendimos cada dia',
+      'parte la barra en tres pedazos y enseñame uno',
+      'y las dos cosas que deben pesar igual de los dos lados',
+    ],
+  },
+  {
+    name: 'sweep 2: the trade, the odds and the stack',
+    session: { ...SESSION, nickname: 'Rafa' },
+    script: [
+      'yo le di mis estampas y el me dio sus canicas, dibuja que dio cada quien',
+      'que tan probable es que se venda todo, dibujalo',
+      'muestrame de que esta hecho el precio: material, trabajo y ganancia',
+    ],
+  },
+  {
+    name: 'sweep: rows, chance and handing it over',
+    session: { ...SESSION, nickname: 'Kari' },
+    script: [
+      'si pongo 4 filas de 5 galletas cuantas son',
+      'que tan seguido crees que se venda todo un dia?',
+      'ya entendi como va, sigue tu la cuenta y yo la termino',
+      'entre 0 y 100 donde queda mi ahorro de 35',
+      'que puede salir bien y que puede salir mal si gasto todo',
     ],
   },
   {
@@ -1305,7 +1504,19 @@ async function main(): Promise<void> {
 
   let spent = 0;
   const allBeats: Beat[] = [];
-  for (const scenario of SCENARIOS) {
+  /*
+   * ONLY_SCENARIO lets a single scenario be re-run while iterating on the one
+   * behaviour it tests. A full sweep is 25 conversations and real money; when
+   * the question is "did that prompt line fix THIS turn", paying for the other
+   * twenty-four buys nothing.
+   */
+  const only = process.env.ONLY_SCENARIO;
+  const selected = only ? SCENARIOS.filter((s) => s.name.includes(only)) : SCENARIOS;
+  if (only && selected.length === 0) {
+    console.error(`no scenario matches ONLY_SCENARIO="${only}"`);
+    process.exit(1);
+  }
+  for (const scenario of selected) {
     // Per conversation, so each one walks the catalogue from the start.
     let activityIndex = 0;
     console.log('');
@@ -1342,6 +1553,16 @@ async function main(): Promise<void> {
       }
       if (turn.savePlan) {
         console.log('           [savePlan: true — this board would become the ongoing plan]');
+      }
+      /*
+       * A PROMISED PICTURE THAT NEVER APPEARED. Found by reading three sweep
+       * transcripts by hand; automated here so the fourth does not need to be.
+       */
+      if (promisesADrawing(turn.say) && turn.whiteboard == null) {
+        fault(
+          'promised a drawing and drew nothing',
+          turn.say.slice(0, 120),
+        );
       }
       beats.push({
         learner: line,
@@ -1485,7 +1706,24 @@ async function main(): Promise<void> {
   const boardKinds = new Set(used.map((u) => u.boardKind).filter((k): k is string => k != null));
   console.log('');
   console.log('== What the tutor actually reached for ==');
-  console.log(`  boards drawn:        ${boardKinds.size} distinct kind(s) of 45 — ${[...boardKinds].join(', ') || 'none'}`);
+  console.log(`  boards drawn:        ${boardKinds.size} distinct kind(s) of ${ALL_BOARD_KINDS.length} — ${[...boardKinds].join(', ') || 'none'}`);
+  /*
+   * WHICH KINDS THIS RUN NEVER REACHED, by name.
+   *
+   * The count alone was not actionable: "5 of 45" says something is wrong and
+   * nothing about what. Printing the MISSING names turns the census into a
+   * work list, and it is what made the six sweep scenarios writable at all —
+   * each one exists to produce the situation for names that appeared here.
+   *
+   * Reported, never gated: a single run of a non-deterministic model reaching
+   * every kind is not a thing to make a build depend on. What is gated is
+   * the reachability LEDGER (`boardReachability.test.ts`), which records the
+   * kinds a run has ever proven and fails when that record shrinks.
+   */
+  const missing = ALL_BOARD_KINDS.filter((k) => !boardKinds.has(k));
+  if (missing.length > 0) {
+    console.log(`  never reached:       ${missing.length} — ${missing.join(', ')}`);
+  }
   console.log(`  activities served:   ${allBeats.filter((b) => b.kind === 'activity').length}`);
   console.log(`  demonstrate:         ${used.filter((u) => u.demonstrateSteps > 0).length} turn(s)`);
   console.log(`  roleplay scenes:     ${used.filter((u) => u.roleplayScene != null).length}`);
@@ -1495,7 +1733,7 @@ async function main(): Promise<void> {
   console.log(`  strategies:          ${distinct(used.map((u) => u.strategy))} distinct — ${[...new Set(used.map((u) => u.strategy).filter(Boolean))].join(', ')}`);
 
   console.log('');
-  console.log(`  cost across ${SCENARIOS.length} conversations: $${spent.toFixed(4)}`);
+  console.log(`  cost across ${selected.length} conversations: $${spent.toFixed(4)}`);
   console.log(
     `  empty completions the provider forced us to retry: ${emptyCompletions}` +
       (emptyCompletions > 0 ? ' (absorbed — no learner saw one)' : ''),
