@@ -270,7 +270,25 @@ export default function TutorLabPage() {
   const { t, i18n } = useTranslation();
   const viewport = useViewport();
 
-  const [surface, setSurface] = useState<LabSurface>('introducing');
+  /*
+   * SEEDED FROM THE URL, so one navigation is a whole setup.
+   *
+   * `capture-conversation-evidence.mjs` photographs every board a real
+   * conversation drew, and driving the debug panel to get there proved
+   * unreliable: the phase does not survive a panel toggle, so a script that
+   * clicks its way into position measured zero lesson plates on all
+   * twenty-two boards. A query parameter cannot fall out of sync with itself.
+   *
+   * Dev-only by construction — this whole page is behind `import.meta.env.DEV`
+   * in `App.tsx` — and read ONCE, through the lazy initialiser, so the panel
+   * still owns the state afterwards exactly as it did before.
+   */
+  const [surface, setSurface] = useState<LabSurface>(() => {
+    const wanted = new URLSearchParams(window.location.search).get('surface');
+    return wanted && (LAB_SURFACES as readonly string[]).includes(wanted)
+      ? (wanted as LabSurface)
+      : 'introducing';
+  });
 
   /*
    * THE LOCALE, AND IT DRIVES BOTH HALVES.
@@ -282,7 +300,16 @@ export default function TutorLabPage() {
    * language only for itself would be one more way for the instrument and the
    * thing under measurement to disagree.
    */
-  const [locale, setLocale] = useState<Locale>(() => labLocaleOf(i18n.language ?? DEFAULT_LAB_LOCALE));
+  /*
+   * Seeded from the URL for the same reason `surface` is: the capture script
+   * needs one navigation to put the lab in a photographable state, and a
+   * screenshot of Spanish board content inside English chrome is a picture of
+   * a product nobody ships.
+   */
+  const [locale, setLocale] = useState<Locale>(() => {
+    const wanted = new URLSearchParams(window.location.search).get('locale');
+    return labLocaleOf(wanted ?? i18n.language ?? DEFAULT_LAB_LOCALE);
+  });
   useEffect(() => {
     if (labLocaleOf(i18n.language ?? DEFAULT_LAB_LOCALE) !== locale) void i18n.changeLanguage(locale);
   }, [i18n, locale]);

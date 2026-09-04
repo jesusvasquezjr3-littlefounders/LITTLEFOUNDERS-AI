@@ -1296,7 +1296,14 @@ function handshakeIp(request: IncomingMessage): string {
  * ways — the exact drift `computeSequence` being called out twice, by hand,
  * used to risk before this existed.
  */
-function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard | null {
+/*
+ * Exported for `scripts/converse.ts`'s board dump, which feeds
+ * `capture-conversation-evidence.mjs`. The dump previously wrote the MODEL's
+ * raw board and the renderer refused every kind that carries a
+ * server-computed field — the client is handed the wire shape, so a capture
+ * fed anything else photographs a different product.
+ */
+export function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard | null {
   if (board == null) return null;
   switch (board.kind) {
     case 'sequence': {

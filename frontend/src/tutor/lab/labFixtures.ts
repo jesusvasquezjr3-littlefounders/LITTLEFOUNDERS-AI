@@ -884,7 +884,62 @@ const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
  * "UI generativa acotada" (blueprint §10.4, ORACLE.md §20.5), a comparison
  * across 2-6 named things at one moment rather than one quantity over time.
  */
+/**
+ * A board payload passed in the URL, for `capture-conversation-evidence.mjs`.
+ *
+ * In the URL rather than on `globalThis` because the capture reloads the page
+ * for every board — the lab reads its own surface once, through a lazy
+ * initialiser, so the state has to exist BEFORE React mounts, and a global set
+ * from the outside does not survive the reload that makes it readable.
+ *
+ * Dev-only by construction: this module is only reachable from `/dev/tutor-lab`,
+ * which `App.tsx` mounts behind `import.meta.env.DEV`. Malformed input returns
+ * null and the lab behaves exactly as it always has.
+ */
+function readInjectedBoard(): unknown {
+  if (typeof window === 'undefined') return null;
+  const raw = new URLSearchParams(window.location.search).get('board');
+  if (!raw) return null;
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(raw))));
+  } catch {
+    return null;
+  }
+}
+
 export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY): TutorTurnState {
+  /*
+   * A REAL BOARD FROM A REAL CONVERSATION, replayed through the real renderer.
+   *
+   * `tutor:converse` is headless: it proves the model chose the right board
+   * and prints a summary of it, and can no more photograph the result than a
+   * transcript can. Screenshots of LAB FIXTURES are a different claim — they
+   * show that a kind renders, not that the tutor drew this one for this child.
+   *
+   * So the harness dumps every payload it drew and the capture script sets one
+   * here. Dev-only by construction: this whole module is behind
+   * `import.meta.env.DEV` in `App.tsx`, and nothing in the product ever writes
+   * this global — a build without the lab route cannot reach this line.
+   */
+  const injected = readInjectedBoard();
+  if (injected != null) {
+    const say = new URLSearchParams(window.location.search).get('say') ?? '';
+    return {
+      seq: 4,
+      text: say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      wordTimings: null,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      roleplayScene: null,
+      pointAt: null,
+      whiteboard: injected as TutorTurnState['whiteboard'],
+    };
+  }
   if (activity === 'whiteboard') {
     const text = LAB_WHITEBOARD_TEXT[locale];
     return {

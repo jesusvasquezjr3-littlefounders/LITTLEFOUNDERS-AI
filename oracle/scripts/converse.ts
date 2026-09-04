@@ -24,7 +24,7 @@
  * and one moderation call per turn.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
@@ -81,6 +81,7 @@ import {
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
+import { toWireWhiteboard } from '../src/ws/server.js';
 
 /** No audio: the synthesizer seam exists precisely so it can be inert here. */
 const silent = async (): Promise<SpeechResult> => ({
@@ -1443,6 +1444,22 @@ async function main(): Promise<void> {
   let spent = 0;
   const allBeats: Beat[] = [];
   /*
+   * EVERY BOARD THIS RUN DREW, AS THE REAL PAYLOAD.
+   *
+   * The transcript prints a human summary ("40/200, 160 to go"), which is
+   * enough to read and useless to RENDER. A report about visual instruments
+   * that cannot show what the child saw is a report about the wrong thing, so
+   * the payloads are dumped verbatim and `capture-conversation-evidence.mjs`
+   * replays them through the real renderer.
+   */
+  const drawnBoards: {
+    conversation: string;
+    turn: number;
+    learner: string;
+    tutor: string;
+    whiteboard: unknown;
+  }[] = [];
+  /*
    * ONLY_SCENARIO lets a single scenario be re-run while iterating on the one
    * behaviour it tests. A full sweep is 25 conversations and real money; when
    * the question is "did that prompt line fix THIS turn", paying for the other
@@ -1501,6 +1518,18 @@ async function main(): Promise<void> {
           'promised a drawing and drew nothing',
           turn.say.slice(0, 120),
         );
+      }
+      if (turn.whiteboard != null) {
+        drawnBoards.push({
+          conversation: scenario.name,
+          turn: beats.length + 1,
+          learner: line,
+          tutor: turn.say,
+          // The WIRE shape, not the model's raw board: the client renders
+          // what the server sends, and half the kinds carry fields the
+          // server computes.
+          whiteboard: toWireWhiteboard(turn.whiteboard),
+        });
       }
       beats.push({
         learner: line,
@@ -1642,6 +1671,11 @@ async function main(): Promise<void> {
   const used = allBeats.map((b) => b.used).filter((u): u is NonNullable<Beat['used']> => u != null);
   const distinct = (xs: (string | null)[]) => new Set(xs.filter((x): x is string => x != null)).size;
   const boardKinds = new Set(used.map((u) => u.boardKind).filter((k): k is string => k != null));
+  if (process.env.BOARD_DUMP) {
+    writeFileSync(process.env.BOARD_DUMP, JSON.stringify(drawnBoards, null, 2));
+    console.log(`\n  board payloads written to ${process.env.BOARD_DUMP} (${drawnBoards.length})`);
+  }
+
   console.log('');
   console.log('== What the tutor actually reached for ==');
   console.log(`  boards drawn:        ${boardKinds.size} distinct kind(s) of ${ALL_BOARD_KINDS.length} — ${[...boardKinds].join(', ') || 'none'}`);
