@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  saysNothingNew,
   offeredNoAnswer,
   praisesAnUnofferedAnswer,
   asksMultipleQuestions,
@@ -531,5 +532,44 @@ describe('offeredNoAnswer — who has actually tried', () => {
         numbersTheTutorAsked: [],
       }),
     ).toBe(true);
+  });
+});
+
+
+describe('saysNothingNew — the whole turn, not a sentence in it', () => {
+  const prior = [
+    'Tienes razón, de 3 no se pueden quitar 7. Mira, cambiemos una moneda de 1 peso por 100 centavos. ¿Cuánto nos queda si quitamos 7 centavos?',
+  ];
+
+  it('catches the turn the paid gate caught — the same turn twice', () => {
+    expect(saysNothingNew(prior[0]!, prior)).toBe(true);
+  });
+
+  it('catches it reworded, because a listener cannot tell the difference', () => {
+    expect(
+      saysNothingNew(
+        'Mira, cambiemos una moneda de 1 peso por 100 centavos: de 3 no se pueden quitar 7. ¿Cuánto nos queda si quitamos 7 centavos?',
+        prior,
+      ),
+    ).toBe(true);
+  });
+
+  /*
+   * The case that cost a measured regression. Routing every surviving repeat
+   * to the scripted line took the gate from 4 problems to 14 by replacing
+   * turns like this — one familiar sentence, then somewhere new to go — with
+   * a canned apology.
+   */
+  it('leaves a turn that reuses one sentence and then moves on', () => {
+    expect(
+      saysNothingNew(
+        'Tienes razón, de 3 no se pueden quitar 7. Ahora mira los pesos: tenemos 4 y necesitamos pagar 19, así que vamos a contar de diez en diez hasta llegar.',
+        prior,
+      ),
+    ).toBe(false);
+  });
+
+  it('leaves a short recurring question alone — that is what teaching sounds like', () => {
+    expect(saysNothingNew('¿Cuánto te falta?', prior)).toBe(false);
   });
 });

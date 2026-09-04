@@ -46,6 +46,7 @@ import {
   buildTurnMessages,
   praiseContradictsAnswer,
   praisesAnUnofferedAnswer,
+  saysNothingNew,
   reintroducesItself,
   isTooLongToSayAloud,
   contradictsCorrectAnswer,
@@ -2891,8 +2892,32 @@ export class TutorOrchestrator {
               if (givesAwayAnswer) {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');
               }
+              /*
+               * ONLY A WHOLE-TURN REPEAT BUYS THE SCRIPTED LINE, and the first
+               * version of this got it wrong in a way the gate measured.
+               *
+               * Routing EVERY surviving repeat to the scripted line took the
+               * paid run from 4 problems to 14: eight turns that had reused
+               * one sentence, and taught something new in the rest, became a
+               * canned apology that taught nothing. That is the mirror defect
+               * of the one being fixed — and worse, because a familiar
+               * sentence inside a moving turn is what "lets short teaching
+               * language recur, because that is what teaching sounds like"
+               * protects deliberately.
+               *
+               * The harm the gate actually caught was a turn that WAS the
+               * previous turn, 100% of its words. `saysNothingNew` asks that
+               * question about the whole turn instead of about a sentence
+               * inside it.
+               */
+              const nothingNew =
+                repeated !== null && saysNothingNew(parsed.turn.say, this.recentTutorLines);
               if (repeated !== null) {
-                console.warn('[oracle] repeated sentence SURVIVED the retry — scripted line instead');
+                console.warn(
+                  nothingNew
+                    ? '[oracle] the whole turn SURVIVED the retry unchanged — scripted line instead'
+                    : '[oracle] a repeated sentence survived the retry, but the turn moves on — delivered',
+                );
               }
               /*
                * A SURVIVING REPEAT JOINS THIS SET, and until 2026-09-04 it did
@@ -2920,7 +2945,7 @@ export class TutorOrchestrator {
                * least varies and hands the turn back with a question.
                */
               if (
-                repeated !== null ||
+                nothingNew ||
                 falsePraise ||
                 falseCorrection ||
                 falseAffordability ||

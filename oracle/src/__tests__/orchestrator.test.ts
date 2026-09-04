@@ -4199,6 +4199,30 @@ describe('a repeat that survives its retry never reaches the learner', () => {
    * merely imperfect" branch, and the paid gate caught the consequence on
    * 2026-09-04: turn 4 identical to turn 3, 100% of its words, delivered.
    */
+  it('delivers a turn that reuses one sentence but then moves on', async () => {
+    /*
+     * The other half of the rule, and the one a measured regression paid for:
+     * routing EVERY surviving repeat to the scripted line took the paid gate
+     * from 4 problems to 14, because eight turns like this one — a familiar
+     * opening, then somewhere new to go — became a canned apology instead.
+     */
+    const shared = 'Tienes razón, de 3 no se pueden quitar 7.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: `${shared} Cambiemos una moneda de 1 peso por 100 centavos y contamos juntos.` }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: `${shared} Ahora mira los pesos: tenemos 4 y hay que pagar 19, vamos de diez en diez.` }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: `${shared} Ahora mira los pesos: tenemos 4 y hay que pagar 19, vamos de diez en diez.` }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    await orchestrator.handleLearnerText('no puedo restar', Date.now());
+    const second = (await orchestrator.handleLearnerText('sigo sin poder', Date.now()))!;
+
+    expect(second.emission.source).toBe('model');
+    expect(second.emission.turn.say).toContain('de diez en diez');
+  });
+
   it('falls back to the scripted line rather than saying it twice', async () => {
     const line = 'Mira, cambiemos una moneda de 1 peso por 100 centavos. ¿Cuánto nos queda?';
     fetchMock

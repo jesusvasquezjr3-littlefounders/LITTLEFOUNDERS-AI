@@ -2943,3 +2943,43 @@ export function offeredNoAnswer(learnerText: string): boolean {
  */
 const NO_ANSWER_MARKERS =
   /\b(no s[eé]|no entiendo|no le entiendo|ni idea|no puedo|no me acuerdo|ay[uú]dame|no sei|n[aã]o sei|n[aã]o entendi|me ajuda|i don'?t know|no idea|i'?m stuck|help me)(?=$|[\s.,!?¿¡])/i;
+
+
+/**
+ * TRUE when a turn says essentially nothing the tutor has not already said.
+ *
+ * The distinction this draws cost a measured regression to find. Routing every
+ * surviving repeat to the scripted line took the paid gate from 4 problems to
+ * 14: eight turns that had repeated ONE SENTENCE, and taught something new in
+ * the rest, were replaced by a canned apology that taught nothing. A repeated
+ * sentence inside a moving turn is what `orchestrator.test.ts`'s "lets short
+ * teaching language recur, because that is what teaching sounds like" protects
+ * on purpose.
+ *
+ * The harm the gate actually caught was different in kind — turn 4 was turn 3,
+ * 100% of its words — and only that one is worth spending a scripted line on.
+ * So this asks about the WHOLE turn, not a sentence in it.
+ *
+ * Word-set overlap rather than string equality, because the failure reworded:
+ * "Mira, tengo 4 pesos y 30 centavos" against "tengo 4 pesos y 30 centavos,
+ * mira" is the same turn twice by every measure a listener has.
+ */
+export function saysNothingNew(say: string, priorTutorLines: readonly string[]): boolean {
+  const words = (s: string): string[] =>
+    s
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+  const now = words(say);
+  // Too short to judge: "¿Cuánto te falta?" recurring is teaching, not repetition.
+  if (now.length < 8) return false;
+  const nowSet = new Set(now);
+  return priorTutorLines.some((prior) => {
+    const before = new Set(words(prior));
+    if (before.size < 8) return false;
+    let shared = 0;
+    for (const w of nowSet) if (before.has(w)) shared += 1;
+    return shared / nowSet.size >= 0.8;
+  });
+}
