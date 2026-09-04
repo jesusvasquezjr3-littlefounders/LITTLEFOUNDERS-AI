@@ -190,15 +190,22 @@ export const RECALL_TRIGGER =
 
 const TURN_HISTORY_WINDOW = 20;
 /**
- * The window a retry uses after the provider returned whitespace.
+ * The windows a retry uses after the provider returned whitespace, indexed by
+ * how many empties this turn has already collected.
  *
- * Six, because `model:probe-empty` measured 0/12 at three turns and 3/12 at
- * ten: six sits inside the range that came back clean while keeping enough of
- * the exchange that the retry is still answering the same conversation. It is
- * a fallback path, entered on roughly one turn in seven, and never the shape
- * of an ordinary turn.
+ * `model:probe-empty` rounds 74-75 measured the rate as a function of exactly
+ * this number — 7/12 at twenty alternating turns, 3/12 at ten, 0/12 at three —
+ * so each successive empty steps further down that curve rather than asking
+ * the same question again. That matters because production's empties are
+ * CORRELATED: of 22 turns whose first attempt came back blank, five failed
+ * again and four of those a third time, which is what an identical retry buys.
+ *
+ * The cost is a retry that sees less of the conversation, and it rises as the
+ * window shrinks. That is the right direction for this path: the alternative
+ * at the end of it is a canned apology, which sees none of the conversation
+ * at all and teaches nothing.
  */
-const EMPTY_RETRY_HISTORY_WINDOW = 6;
+const EMPTY_RETRY_HISTORY_WINDOWS = [6, 3] as const;
 
 /**
  * What `speak()` resolves to: the clip's URL and, when the provider and the
@@ -2106,20 +2113,40 @@ export class TutorOrchestrator {
      * top of it so a provider failing instantly, forever, still terminates.
      */
     const REPAIR_BUDGET = 2;
+    /**
+     * The hard ceiling on calls for one turn — raised by one, and ONLY
+     * reachable while every failure so far has been whitespace.
+     *
+     * Three was right while every retry asked the identical question: a fourth
+     * identical call buys a fourth draw from the same correlated distribution.
+     * It is no longer identical — `EMPTY_RETRY_HISTORY_WINDOWS` steps the
+     * conversation down the curve the probe measured, so attempt 3 asks a
+     * materially different question than attempt 0 did.
+     *
+     * `retryDeadlineMs` remains the real bound and is checked before every
+     * attempt past the first: a reply that arrives after the learner gave up
+     * is two failures, not a recovery. This ceiling only guarantees that a
+     * provider failing instantly, forever, still terminates.
+     */
     const MAX_ATTEMPTS = 3;
+    const MAX_ATTEMPTS_WHEN_ONLY_EMPTIES = 4;
     /** Attempts that came back with an ANSWER — good or flagged. Empties do not count. */
     let answeredAttempts = 0;
     /**
-     * Whether the PREVIOUS attempt came back as whitespace, which is what
-     * shortens the next one's history window. Distinct from `transportFailure`,
-     * which is cleared per attempt and also covers timeouts: a timeout says
-     * nothing about the context, so it must not trigger the same response.
+     * How many attempts on THIS turn came back as whitespace. Drives the
+     * history window each retry uses, and buys one extra attempt.
+     *
+     * Distinct from `transportFailure`, which is cleared per attempt and also
+     * covers timeouts: a timeout says nothing about the context, so it must
+     * not shorten anything.
      */
-    let lastAttemptWasEmpty = false;
+    let emptyAttempts = 0;
     try {
       for (
         let attempt = 0;
-        answeredAttempts < REPAIR_BUDGET && attempt < MAX_ATTEMPTS && turn === null;
+        answeredAttempts < REPAIR_BUDGET &&
+        attempt < (emptyAttempts === attempt ? MAX_ATTEMPTS_WHEN_ONLY_EMPTIES : MAX_ATTEMPTS) &&
+        turn === null;
         attempt += 1
       ) {
         /*
@@ -2143,7 +2170,28 @@ export class TutorOrchestrator {
          * existing test rather than reasoned out — the first cut spent the
          * extra call on a self-answered question that never needed it.
          */
-        const fallbackWouldBeScripted = repairableIsRepeat || repairableIsFalseVerdict;
+        /*
+         * `repairable === null` BELONGS HERE, and its absence is what kept the
+         * empties-only attempt out of reach.
+         *
+         * This guard exists so a turn that already ends WELL does not buy a
+         * third call to maybe improve itself. But when every attempt so far
+         * came back as WHITESPACE there is no turn to end well with: the
+         * fallback is the scripted apology by definition, which is exactly
+         * what this guard's siblings are listed to avoid. Without this clause
+         * the loop broke at attempt 2 with nothing in hand, so
+         * `MAX_ATTEMPTS_WHEN_ONLY_EMPTIES` could never be reached and a turn
+         * one more call away from teaching became a canned line.
+         *
+         * `emptyAttempts === attempt`, NOT `repairable === null`, and two
+         * existing tests are why. A transport failure also leaves `repairable`
+         * null, and "retries a transport failure ONCE before giving up" pins a
+         * deliberate decision: a dead provider gets one retry, because making
+         * a child wait through a second timeout is worse than a graceful line.
+         * The broader condition quietly gave it two.
+         */
+        const fallbackWouldBeScripted =
+          repairableIsRepeat || repairableIsFalseVerdict || emptyAttempts === attempt;
         if (attempt >= REPAIR_BUDGET && !fallbackWouldBeScripted) break;
         // Cleared per attempt so it only ever holds the LAST one's failure:
         // without this, a transport failure on attempt 1 would still be thrown
@@ -2234,7 +2282,11 @@ export class TutorOrchestrator {
              * which is a canned apology that teaches nothing and blames the
              * child for asking.
              */
-            lastAttemptWasEmpty ? EMPTY_RETRY_HISTORY_WINDOW : TURN_HISTORY_WINDOW,
+            emptyAttempts > 0
+              ? EMPTY_RETRY_HISTORY_WINDOWS[
+                  Math.min(emptyAttempts - 1, EMPTY_RETRY_HISTORY_WINDOWS.length - 1)
+                ]!
+              : TURN_HISTORY_WINDOW,
           ) as {
             role: 'assistant' | 'user';
             content: string;
@@ -2278,7 +2330,6 @@ export class TutorOrchestrator {
           });
           this.addModelCost(estimateCostUsd(result.promptTokens, result.completionTokens));
           transportFailure = null;
-          lastAttemptWasEmpty = false;
           /*
            * THE PROVIDER ANSWERED, so this attempt spends the repair budget —
            * even if the answer turns out to be unparseable or to violate a
@@ -2925,7 +2976,7 @@ export class TutorOrchestrator {
           transportFailure = error;
           // Only whitespace shortens the next window — see its comment. A
           // timeout or a refused request says nothing about this context.
-          lastAttemptWasEmpty = error.message.includes('empty completion');
+          if (error.message.includes('empty completion')) emptyAttempts += 1;
           console.warn(`[oracle] model call failed (attempt ${attempt + 1}): ${error.message}`);
         }
       }

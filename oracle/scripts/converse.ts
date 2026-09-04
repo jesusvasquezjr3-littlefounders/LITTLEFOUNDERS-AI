@@ -28,6 +28,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
+import { SCRIPTED_TEXTS } from '../src/tutor/scripted.js';
 import {
   tierVocabularyViolation,
   promisesAnActivity,
@@ -35,7 +36,7 @@ import {
   reusesATemplate,
   contradictsItsOwnShortfall,
   EXPLICIT_REPEAT_REQUEST,
-  PRAISE_MARKERS,
+  CONFIRMATION_MARKERS,
 } from '../src/tutor/prompt.js';
 import {
   computeCategories,
@@ -1033,7 +1034,22 @@ function flatten(s: string): string {
  * misses one it can.
  */
 function praises(said: string): boolean {
-  return PRAISE_MARKERS.test(said);
+  /*
+   * CONFIRMATION, not encouragement — the same line the product draws.
+   *
+   * This used the broad praise vocabulary and reported "Muy bien, Mati. Vamos
+   * a contar esas juntas: tres de diez y cuatro de uno…" as praise for an
+   * answer nobody gave. It is not: it is a warm opening followed by teaching,
+   * and `orchestrator.test.ts` pins that exact shape as CORRECT — a child who
+   * says they do not know has done something worth praising, and the tutor is
+   * then doing its job.
+   *
+   * So the harness was flagging a rule the product deliberately does not
+   * hold, which is §1.14's "the metric is measuring the harness's
+   * assumptions" exactly. The product repairs `exacto`/`correcto`/`así es`
+   * said to someone who answered nothing; this now asks the same question.
+   */
+  return CONFIRMATION_MARKERS.test(said);
 }
 
 let problems = 0;
@@ -1398,8 +1414,24 @@ function reviewAcrossConversations(beats: Beat[]): void {
    * who hears it twice learns that the praise means nothing. No single
    * transcript can show it.
    */
+  /*
+   * SCRIPTED LINES ARE EXCLUDED, and this narrows the check rather than
+   * loosening it. It exists to catch the TUTOR developing a catchphrase —
+   * language it chose, reused until it means nothing. A fallback line is not
+   * that: it is a known, written, catalogued sentence, it is ALREADY reported
+   * by the "N of M turns were canned fallback lines" fault on the same run,
+   * and by construction no single child hears it twice — the variant counter
+   * advances within a session, and across sessions the learners differ.
+   *
+   * Left in, it reported the model-down line as a run-wide catchphrase "used
+   * 6 times", twice over (the line is two sentences), from six separate
+   * children's conversations that had one occurrence each. Three faults, one
+   * fact, and the fact was already counted.
+   */
   const sentences = new Map<string, number>();
+  const scripted = new Set([...SCRIPTED_TEXTS].map((s) => flatten(s)));
   for (const beat of beats) {
+    if (scripted.has(flatten(beat.tutor))) continue;
     for (const raw of beat.tutor.split(/(?<=[.!?])\s+/)) {
       const s = flatten(raw);
       // Long enough to be a distinctive flourish rather than "muy bien".

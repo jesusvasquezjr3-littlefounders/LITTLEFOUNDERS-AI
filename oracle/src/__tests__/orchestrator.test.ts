@@ -4131,3 +4131,60 @@ describe('a retry after whitespace sees a shorter conversation', () => {
     expect(messagesOf(1).length).toBeLessThan(messagesOf(0).length);
   });
 });
+
+describe('an all-whitespace turn gets one more attempt than a content failure', () => {
+  /*
+   * The extra attempt is reachable ONLY while every failure so far has been
+   * whitespace, and it is worth having only because the retry is no longer
+   * the same call: `EMPTY_RETRY_HISTORY_WINDOWS` steps the conversation from
+   * twenty turns to six to three, down the curve `model:probe-empty` measured
+   * (7/12, 3/12, 0/12). A fourth identical call would just be a fourth draw
+   * from the same correlated distribution.
+   */
+  it('makes a fourth call when the first three are all empty, and shrinks each time', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies('   '))
+      .mockResolvedValueOnce(modelReplies('   '))
+      .mockResolvedValueOnce(modelReplies('   '))
+      .mockResolvedValueOnce(modelReplies(GOOD_TURN))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const seed = new TutorOrchestrator(KID, Date.now(), silent);
+    await seed.greet(Date.now());
+    const snapshot = seed.snapshot();
+    snapshot.history = Array.from({ length: 18 }, (_, i) => ({
+      speaker: i % 2 === 0 ? ('learner' as const) : ('tutor' as const),
+      text: `una linea de conversacion numero ${i}`,
+    }));
+
+    const orchestrator = TutorOrchestrator.restore(snapshot, KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('y ahora que sigue?', Date.now()))!;
+
+    // A real turn, not the scripted apology — which is the whole point.
+    expect(outcome.emission.source).toBe('model');
+
+    const sizeOf = (i: number): number =>
+      ((JSON.parse(String(fetchMock.mock.calls[i]?.[1]?.body ?? '{}')) as { messages: unknown[] })
+        .messages ?? []).length;
+    // Strictly decreasing across the three retries: 20 turns, then 6, then 3.
+    expect(sizeOf(1)).toBeLessThan(sizeOf(0));
+    expect(sizeOf(2)).toBeLessThan(sizeOf(1));
+    expect(sizeOf(3)).toBe(sizeOf(2));
+  });
+
+  it('does NOT spend the extra attempt on a content failure', async () => {
+    // A parseable but malformed turn is an ANSWER: it spends the repair
+    // budget, and the extra empties-only attempt must stay out of reach.
+    // `mockImplementation`, not `mockResolvedValue`: a Response body can only
+    // be read once, and a single shared instance fails the SECOND attempt with
+    // "Body has already been read" rather than the shape error under test.
+    fetchMock.mockImplementation(() => Promise.resolve(modelReplies({ notATurn: true })));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    const outcome = (await orchestrator.handleLearnerText('hola otra vez', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+    expect(fetchMock.mock.calls.length).toBeLessThanOrEqual(3);
+  });
+});
