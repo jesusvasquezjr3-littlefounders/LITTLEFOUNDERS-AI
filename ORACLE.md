@@ -5172,3 +5172,42 @@ next time this environment's own unrelated bug is fixed.
 Full account (the exact hand-mirrored file list, the DOM-measurement race
 found and fixed, the new tests): /TUTOR_INSTRUMENTS.md §0.0's Class III
 (S16 amendment) row and its decision-log entry.
+
+### 20.17 What the Tutor actually reaches for, and the gate that keeps it honest (2026-09-04, SHIPPED)
+
+**A capability nobody counts is a capability that can quietly stop
+existing.** Every check this file describes asks whether a turn was GOOD.
+None asked how much of the product the tutor is USING, and the answer,
+when it was finally measured, was: five board kinds of forty-five, and
+`demonstrate`, `roleplay`, `point_at` and `savePlan` at exactly zero across
+nine conversations. Nothing was red. `tutor:converse` now prints a
+capability census on every run, naming the kinds it never reached, and
+`oracle/board-reachability.json` accumulates what a real model run has
+drawn — all 45 today, held there by `boardReachability.test.ts`.
+
+**None of the four dead capabilities was broken**, and that pattern is the
+lesson rather than the fix. Each was gated on a SITUATION no scenario
+produced: `demonstrate` needs an activity still on screen when the learner
+asks to be shown, and the harness graded every activity in the same step it
+served one, so the state never survived into a learner turn. A harness that
+cannot reach a state reports the product as broken — /AGENTS.md §1.14
+already names this class, and this is the fourth time in one session it
+cost a cycle.
+
+**The one real gap was upstream of all of it.** `selectSkill` fences every
+misconception-tagged move out of the generic path, so 21 of 36 moves are
+reachable only through `REMEDIATE`, which needs a `misconceptionCode`,
+which only a GRADED activity failure or a Core voice-check could set. A
+child who states a wrong idea in plain words set nothing, and REMEDIATE
+fired zero times in 27 conversations — the tutor's best teaching was
+unreachable in conversation. `statedMisconception.ts` closes it
+deterministically (never a model call: a model asked "which misconception
+is this" always answers something, and a confident wrong label is precisely
+the harm), biased hard toward silence, and emitting an event that carries a
+code and nothing else — no opportunity counted, no belief revised, no
+failure recorded. Saying a wrong idea is evidence about what a child
+BELIEVES, not that they answered a question wrongly; grading it would drag
+mastery down for talking.
+
+Full account, including the two published claims this session had to
+correct: /TUTOR_INSTRUMENTS.md §0.0's 2026-09-04 rows.

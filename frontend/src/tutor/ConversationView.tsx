@@ -251,9 +251,30 @@ export function ConversationView({
    * this safely runs on every mount and on every turn/segment/whiteboard
    * change, not only the ones where an edit happened to be in progress.
    */
+  /*
+   * KEYED ON IDENTITIES, NOT ON THE OBJECTS THEMSELVES.
+   *
+   * `socket.segment` and `turn?.whiteboard` are objects, and one caller builds
+   * them fresh on every render: `useLabSocket` derives its whole turn inline
+   * (`labTurn(locale, activity)`, no memo, and its own comment says so). Against
+   * that caller this effect re-ran on every render, and React reported
+   * "Maximum update depth exceeded" continuously — loud enough on `/dev/tutor-lab`
+   * to flood the console and starve the 3D canvas of a clean frame.
+   *
+   * PRODUCTION WAS NEVER AFFECTED, and that is worth writing down rather than
+   * leaving to be re-derived: `useTutorSocket` holds `turn` and `segment` in
+   * real `useState`, so both references are stable between turns and the effect
+   * fired exactly when it should. The defect was real, reproducible, and
+   * confined to the surface built to catch defects.
+   *
+   * `segmentId` and `turnSeq` are the same facts as primitives — a genuinely
+   * new segment and a genuinely new turn — so the behaviour is unchanged for
+   * every caller and correct for both. The third dependency is dropped: a
+   * whiteboard only ever arrives WITH a turn, so `turnSeq` already covers it.
+   */
   useEffect(() => {
     setEditing(false);
-  }, [turnSeq, socket.segment, turn?.whiteboard]);
+  }, [turnSeq, segmentId]);
 
   const submitTyped = () => {
     const value = typed.trim();
