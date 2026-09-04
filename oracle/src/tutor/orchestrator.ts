@@ -2220,7 +2220,13 @@ export class TutorOrchestrator {
              * 0.4 on the theory that the behaviour is temperature-sensitive.
              *
              * Measured: 18 empty completions across three scripted lessons at
-             * 0.6, and 40 at 0.4. The change made it worse, and the reasoning
+             * 0.6, and 40 at 0.4. (Both HALVE: `converse.ts` counted each
+             * empty twice until 2026-09-04, matching the retry loop's echo of
+             * the provider's own line as well as the line itself. So really 9
+             * and 20 — the ratio, and therefore this conclusion, is unchanged,
+             * but the magnitudes here and everywhere else this harness has
+             * reported them were double what happened.) The change made it
+             * worse, and the reasoning
              * behind it was wrong — the retry does not merely lower the
              * temperature, it also appends a correction message, and that is
              * the variable I had attributed to temperature. Reverted rather

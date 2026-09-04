@@ -1052,7 +1052,23 @@ let emptyCompletions = 0;
 const emptyBySite = new Map<string, number>();
 const realWarn = console.warn.bind(console);
 console.warn = (...args: unknown[]): void => {
-  const line = args.find((a) => typeof a === 'string' && a.includes('empty completion'));
+  /*
+   * MATCH THE PROVIDER'S OWN LINE, NOT EVERY LINE THAT MENTIONS ONE.
+   *
+   * This counted `.includes('empty completion')`, and an empty produces TWO
+   * lines: `complete()`'s own `[oracle] empty completion (site): ...` and then
+   * the retry loop's `[oracle] model call failed (attempt N): model returned
+   * an empty completion`. So every empty was counted TWICE, and every number
+   * this harness has ever reported for them is double what happened — the 38
+   * that started a five-round investigation among them.
+   *
+   * Found the moment the by-site breakdown landed: it reported `unlabelled 18`
+   * beside `turn:attempt0 16, turn:attempt1 2`, and there is no unlabelled
+   * call site. The echo was the unlabelled one. An instrument that inflates
+   * what it measures by a constant factor is worse than one that does not
+   * measure it, because the number still looks like evidence.
+   */
+  const line = args.find((a) => typeof a === 'string' && a.includes('[oracle] empty completion'));
   if (typeof line === 'string') {
     emptyCompletions += 1;
     const site = /empty completion \(([^)]*)\)/.exec(line)?.[1] ?? 'unlabelled';
