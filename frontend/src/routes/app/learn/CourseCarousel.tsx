@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Icon, ProgressBar } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { courseBadgeAsset } from '@/lib/courseBadges';
 
@@ -144,20 +144,23 @@ export function CourseCarousel({ courses, locale, activeSlug, resumeLessonNumber
               key={course.id}
               aria-roledescription="slide"
               aria-label={t('learn.carousel.slide', { n: i + 1, total: courses.length })}
-              className={`lf-tactile lf-sheen flex w-[calc(100%-3rem)] shrink-0 snap-start flex-col gap-5 rounded-lg border bg-surface p-6 sm:w-[26rem] ${
-                isActive ? 'border-accent/40' : 'border-outline'
+              className={`lf-panel lf-sheen flex w-[calc(100%-3rem)] shrink-0 snap-start flex-col gap-5 p-6 transition-shadow hover:shadow-pop sm:w-[26rem] sm:p-7 ${
+                isActive ? '!border-accent/40' : ''
               }`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex min-w-0 flex-col gap-2">
-                  <span
-                    className={`lf-label w-fit rounded-full px-2.5 py-1 ${
-                      isActive ? 'bg-accent-soft text-accent-strong' : 'bg-surface-sunken text-content-muted'
-                    }`}
-                  >
+                  {/*
+                    * An EYEBROW, not a pill. The study's lockup is wide-tracked
+                    * small caps sitting directly above the tightly-tracked
+                    * display line, and the only thing separating "active" from
+                    * "next" is its colour — which is enough, and quieter than
+                    * two different badges.
+                    */}
+                  <span className={`lf-eyebrow ${isActive ? 'text-accent' : 'text-content-faint'}`}>
                     {isActive ? t('learn.carousel.activeCourse') : t('learn.carousel.nextInPath')}
                   </span>
-                  <h3 className="lf-title text-content">{titleFor(course, locale)}</h3>
+                  <h3 className="lf-display-sm -tracking-[0.015em] text-content">{titleFor(course, locale)}</h3>
                 </div>
 
                 {/* Fixed box so a course with no artwork does not reflow the row. */}
@@ -173,18 +176,23 @@ export function CourseCarousel({ courses, locale, activeSlug, resumeLessonNumber
                       <Icon name="trending_up" className="!text-[16px]" aria-hidden />
                       {t('learn.carousel.progressTotal')}
                     </span>
-                    <span className="lf-caption lf-number rounded-full bg-accent-soft px-2 py-0.5 font-bold text-accent-strong">
+                    <span className="lf-chip lf-chip-accent lf-caption lf-number !px-2.5 !py-0.5">
                       {course.progress.pct}%
                     </span>
                   </div>
-                  <ProgressBar
-                    value={course.progress.pct}
-                    tone="accent"
-                    label={t('dashboard.learn.progressLabel', {
+                  <div
+                    className="lf-track"
+                    role="progressbar"
+                    aria-valuenow={course.progress.pct}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={t('dashboard.learn.progressLabel', {
                       passed: course.progress.passed,
                       total: course.progress.total,
                     })}
-                  />
+                  >
+                    <div className="lf-track-fill" style={{ width: `${course.progress.pct}%` }} />
+                  </div>
                 </div>
               ) : (
                 <p className="lf-caption text-content-faint">{t('learn.carousel.notStarted')}</p>

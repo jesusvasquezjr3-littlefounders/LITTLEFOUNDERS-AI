@@ -49,11 +49,26 @@ function useNumberFormat(): (n: number) => string {
 
 // ---- coin_count / make_change (shared money tray) ------------------------------
 
-/** Coin (< 20, round) vs bill (≥ 20, rounded rectangle) — visual only, via tokens. */
+/*
+ * Coin (< 20, round) vs bill (>= 20, rounded rectangle).
+ *
+ * A COIN IS NOW A COIN. It used to be a round div in `bg-warning-soft` — a
+ * pale amber circle with a number in it, which is a token standing FOR a coin
+ * rather than a coin. `.lf-coin` (/DESIGN.md §Tactile) is the design study's
+ * object: a gradient lit from up-left, an inset highlight and shade for
+ * thickness, a zero-blur gold side, and a dashed milled edge. It is the single
+ * most recognisable thing on the study's screens, and it costs no image
+ * request — a make-change exercise can put forty on screen.
+ *
+ * A BILL stays a rectangle, because it is one. Giving a banknote a milled edge
+ * would be inventing a detail the real object does not have, which is the
+ * cheapest way to make a learning material look wrong to a child who has held
+ * the thing.
+ */
 function denominationClasses(value: number): string {
   return value < 20
-    ? 'aspect-square min-w-14 rounded-full bg-warning-soft'
-    : 'min-w-20 rounded-sm bg-success-soft px-4'
+    ? 'lf-coin !h-14 !w-14 !text-[11px]'
+    : 'lf-tactile min-w-20 rounded-sm border-2 border-success/30 bg-success-soft px-4 text-success-strong'
 }
 
 function DenominationButton({
@@ -79,11 +94,13 @@ function DenominationButton({
         'inline-flex min-h-12 min-w-12 items-center justify-center lf-label lf-number',
         FOCUS_RING,
         'disabled:opacity-60',
-        optionStateClasses('idle'),
+        // A coin brings its OWN material; the shared answer surface would
+        // paint a flat fill straight over the gradient that makes it a coin.
+        value < 20 ? 'lf-press' : optionStateClasses('idle'),
         denominationClasses(value),
       )}
     >
-      {label}
+      {value < 20 ? <span>{label}</span> : label}
     </button>
   )
 }

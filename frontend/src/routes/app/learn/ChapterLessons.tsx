@@ -97,7 +97,14 @@ function LessonRow({
             {number}. {title}
           </span>
           {isCurrent && (
-            <span className="lf-label shrink-0 rounded-full bg-accent px-2 py-0.5 text-on-accent">
+            /*
+             * A LIVE badge, not a selected one. The dot breathes, which is the
+             * difference between "this is happening now" and "you tapped this";
+             * a static pill says the second and the row is trying to say the
+             * first. Reduced motion stills the dot and keeps the badge.
+             */
+            <span className="lf-label inline-flex shrink-0 items-center gap-1.5 rounded-full bg-accent px-2.5 py-0.5 text-on-accent">
+              <span className="lf-live-dot" aria-hidden />
               {t('learn.chapter.current')}
             </span>
           )}
@@ -124,9 +131,9 @@ function LessonRow({
     </>
   );
 
-  const shell = `flex items-center gap-4 rounded-md border p-3 ${
+  const shell = `flex items-center gap-4 rounded-md border p-3.5 sm:p-4 ${
     isCurrent
-      ? 'lf-tactile border-accent bg-surface ring-2 ring-accent/30'
+      ? 'lf-tactile lf-now shadow-tactile'
       : isLocked
         ? 'border-outline/60 bg-surface-sunken/60'
         : 'lf-tactile border-outline bg-surface'
@@ -177,13 +184,13 @@ export function ChapterLessons({
             {t('learn.chapter.label', { n: chapterNumber, title })}
           </h2>
         </div>
-        <span className="lf-caption inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full border border-outline bg-surface px-3 py-1.5 text-content-muted">
-          <Icon name="workspace_premium" className="!text-[16px] text-accent" aria-hidden />
+        <span className="lf-chip lf-chip-accent lf-caption w-fit shrink-0">
+          <Icon name="workspace_premium" fill className="!text-[16px]" aria-hidden />
           {t('learn.chapter.lessonsOf', { done, total: topic.lessons.length })}
         </span>
       </header>
 
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2.5">
         {topic.lessons.map((lesson, i) => (
           <LessonRow
             key={lesson.id}
@@ -200,7 +207,7 @@ export function ChapterLessons({
           <hr className="border-outline/60" />
           <Link
             to={`/learn/${courseSlug}`}
-            className="lf-tactile flex items-center gap-4 rounded-md border border-outline bg-surface p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+            className="lf-tactile flex items-center gap-4 rounded-md border border-outline bg-surface p-3.5 sm:p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-surface-sunken text-content-faint">
               <Icon name="lock" fill className="!text-[20px]" aria-hidden />

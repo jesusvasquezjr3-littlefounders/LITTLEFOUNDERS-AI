@@ -144,6 +144,8 @@ export function LearnPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-board flex-col gap-8">
+      {/* The study's soft indigo wash behind the hero (/DESIGN.md §Tactile). */}
+      <div className="lf-ambient" aria-hidden="true" />
       {/*
        * The greeting is not the point of the page and is not sized like it.
        * The course a learner is in the middle of is.

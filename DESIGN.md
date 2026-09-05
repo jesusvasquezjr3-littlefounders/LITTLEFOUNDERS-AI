@@ -1556,6 +1556,75 @@ the two disagreed — and the "rejected two-panel split" post-mortem in
 `hud/LessonPlate.tsx` already argued the case. A floating panel is a change to
 that contract, not a restyle.
 
+### The gamified surface — what the study actually looks like
+
+The study's token file was this document verbatim, so its LOOK lives entirely
+in composition. These are the pieces that carry it, and the codebase had no
+equivalent for any of them.
+
+**Borders are the single biggest difference.** Glass and `.lf-answer` draw
+their edges as inset hairlines mixed from the scene's shade — right over a
+moving render, and almost nothing on a flat page. The study draws real,
+visible 1px and 2px borders. On a gamified surface, which is a flat page and
+not the island, a visible border is what makes an object look like an object.
+
+| Class | What it is |
+|---|---|
+| `.lf-ambient` | Two huge blurred gradients fixed behind the page. Two composited layers that never repaint, and most of why the study's flat screens do not read as flat: the ground is never one colour twice |
+| `.lf-panel` | The white card: a real border and a soft clean shadow. NOT glass — glass is a lens over something, and these sit on a page with nothing behind them to refract |
+| `.lf-panel-head` | The header strip inside a panel: icon tile, what the surface IS, a readout, over a rule. Most of why the study's right column reads as a laboratory rather than as loose controls |
+| `.lf-chip` (+ `-warning/-error/-accent/-success`) | A counter badge: tinted fill AND a matching border. The border is the whole difference from a flat tinted pill — it gives the chip an edge against any background |
+| `.lf-term` | A marked term inside prose. CONTENT-DRIVEN: a lesson author already bolds the quantity a question turns on, so `MarkdownLite`'s `markTerms` renders emphasis the content already carries. Opt-in — a page of chips is a page of noise |
+| `.lf-track` / `.lf-track-fill` | A 12px gauge with an inner gloss on its top half. A progress bar in a game is read across a room; `ProgressBar` is sized for a dashboard row |
+| `.lf-token` | The two-line answer card: a large value over a small unit, 2px border thickening into the accent when picked. Reached through `TokenChip`'s `caption` prop |
+| `.lf-coin` | An actual coin: a gradient lit from up-left, inset highlight and shade for thickness, a zero-blur gold SIDE, and a dashed milled edge |
+| `.lf-slot` / `.lf-slot-tag` | The well a coin lands in. `column-reverse`, so coins stack UP from the floor the way objects dropped into a tube do |
+| `.lf-summary` | The equation row under a manipulable: the learner's own numbers read back as a sentence. The difference between a board you poke and a board that tells you what you just did |
+| `.lf-now` / `.lf-live-dot` | The row that is happening NOW: a three-stop gradient so it reads as lit rather than merely coloured, and a dot that breathes. A static pill says "you tapped this"; the row is trying to say "this is happening" |
+| `.lf-eyebrow` | Wide-tracked small caps over a negatively-tracked display line. The tracking is the point — it is what makes the pair read as one object rather than two sentences |
+
+**`.lf-token` is opt-in and that is semantic, not stylistic.** Seven families
+share `TokenChip`. A token with a unit ("+3 · monedas") is a QUANTITY the
+learner is choosing; a token without one is a word. Making the card
+unconditional would turn every word tile into an empty two-line box.
+
+**A coin is drawn in CSS, not shipped as an image.** A make-change exercise can
+put forty on screen, and forty requests for a 28px disc is a waterfall a
+mid-range phone pays for (§1.0 #5). A BILL stays a rectangle, because it is
+one — giving a banknote a milled edge invents a detail the real object does not
+have, which is the cheapest way to look wrong to a child who has held the thing.
+
+### The Tutor's stage chrome — and the white rim, resolved
+
+§Lumen rejects a white 1px rim because "a white lip on a warm island is the
+loudest sticker cue there is". **That is true of a BRIGHT island.** On the
+study's dark cinematic stage the same hairline is a RIM LIGHT — what a real
+edge does when the only light in the scene is behind it.
+
+So neither extreme: the rim's strength follows `--lf-sun-height`, already a
+registered, animatable property written once per backdrop change. Overhead sun
+→ almost nothing, which is the old behaviour and correct. Night → the study's
+visible white edge. **The plate learns the hour instead of being handed a
+constant that is wrong half the day.** `saturate(1.8)` stays rejected: chroma
+under 1 is half the contrast contract, not a taste.
+
+| Class | What it is |
+|---|---|
+| `.lf-stage-pill` | A chip floating in FRONT of the scene: less blur, cooler base, no chroma correction. A Lumen plate is something you read THROUGH; these are not the same material and the study distinguishes them |
+| `.lf-live-emerald` | An 8px dot throwing an 8px halo. The halo is the point — a flat dot on a dark plate is a pixel, and this has to read at a glance as "the microphone is actually open" |
+| `.lf-wave` | Bars whose HEIGHT is the animation. Three phases so the row never pulses in unison, which is what separates "listening" from "loading" |
+| `.lf-orb-ring` | The halo behind the mic orb while it listens. Bounded by the listening state, `z-index: -1` and `pointer-events: none` so it can never take a tap from the orb it surrounds |
+
+**The house hover for glass chrome brightens the HAIRLINE, never the fill.** A
+fill change on a translucent pill fights whatever is behind it and reads
+differently over every part of the scene; an edge change reads the same
+everywhere.
+
+Everything here that moves is bounded by the state that renders it (§Motion
+recipe 7) and has a reduced-motion modifier. The waveform collapses to a flat
+line rather than freezing: a stopped waveform is a graphical artefact, a flat
+one still says "audio".
+
 ### Layout measures
 
 `max-w-lesson` (768px) and `max-w-board` (1140px), both deliberately under

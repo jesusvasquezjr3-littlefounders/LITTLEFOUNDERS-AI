@@ -385,6 +385,18 @@ export function MicOrb({
         state === 'speaking' && 'opacity-60',
       )}
     >
+      {/*
+       * THE BREATHING RING — the design study's halo behind the orb while the
+       * microphone is open. Bounded by the LISTENING state and nothing else
+       * (§Motion recipe 7: nothing in chrome loops unconditionally), sits at
+       * z-index -1 so it can never take a tap from the orb it surrounds, and
+       * stills under reduced motion rather than freezing mid-scale.
+       *
+       * It earns its place because it is the only thing on the stage that says
+       * "your microphone is actually open" without a word — and a child who
+       * cannot tell whether the tutor is listening will simply stop talking.
+       */}
+      {state === 'listening' ? <span className="lf-orb-ring" aria-hidden="true" /> : null}
       <span
         /*
          * The face is inset far enough to clear both rings.

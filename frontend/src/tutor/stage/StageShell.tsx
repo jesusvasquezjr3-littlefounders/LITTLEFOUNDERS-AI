@@ -301,7 +301,16 @@ function SoundBlockedNotice({ onDismiss }: { onDismiss: () => void }) {
       <button
         type="button"
         onClick={onDismiss}
-        className="lf-press lf-lumen pointer-events-auto flex max-w-[min(92vw,26rem)] items-center gap-2 rounded-full px-4 py-2 text-left"
+        /*
+         * A STAGE PILL, not a Lumen plate. A plate is something you read
+         * THROUGH — heavier blur, chroma corrected so text stays legible over
+         * a moving render. This is a chip floating in front of the scene, and
+         * the study makes the distinction with a lighter material: less blur,
+         * a cooler base, and a hover that brightens the HAIRLINE rather than
+         * the fill (a fill change on a translucent pill reads differently over
+         * every part of the scene; an edge change reads the same everywhere).
+         */
+        className="lf-press lf-stage-pill pointer-events-auto flex max-w-[min(92vw,26rem)] items-center px-4 py-2 text-left"
       >
         <Icon name="volume_off" className="shrink-0 text-[18px] text-content-muted" aria-hidden />
         <span className="lf-caption text-content">{t('tutor.stage.soundBlocked')}</span>
