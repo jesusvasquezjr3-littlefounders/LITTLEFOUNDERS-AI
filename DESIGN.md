@@ -1582,6 +1582,13 @@ not the island, a visible border is what makes an object look like an object.
 | `.lf-now` / `.lf-live-dot` | The row that is happening NOW: a three-stop gradient so it reads as lit rather than merely coloured, and a dot that breathes. A static pill says "you tapped this"; the row is trying to say "this is happening" |
 | `.lf-eyebrow` | Wide-tracked small caps over a negatively-tracked display line. The tracking is the point — it is what makes the pair read as one object rather than two sentences |
 
+**Two more were built and then removed for the same reason: `.lf-term-accent`
+(a second highlight tone MarkdownLite never emits) and `.lf-wave` (a soundwave
+for a mic-dock caption our orb deliberately does not print — see §Lumen). The
+rule is checked by `designClasses.test.ts` in BOTH directions now: nothing may
+be referenced and undefined, and nothing gamified may be defined and never
+rendered.**
+
 **The study's two-line value+unit card was built and then REMOVED.** Seven
 families share `TokenChip` and not one of them offers a quantity with a unit —
 every token is a word, which the pill already serves. A class nobody renders is

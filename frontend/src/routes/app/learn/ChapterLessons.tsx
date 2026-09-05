@@ -184,7 +184,16 @@ export function ChapterLessons({
             {t('learn.chapter.label', { n: chapterNumber, title })}
           </h2>
         </div>
-        <span className="lf-chip lf-chip-accent lf-caption w-fit shrink-0">
+        {/*
+          * Success-toned once the chapter is finished. The counter is the only
+          * thing on this header that changes, so it is the only thing that
+          * should mark the moment it stops changing.
+          */}
+        <span
+          className={`lf-chip lf-caption w-fit shrink-0 ${
+            done === topic.lessons.length && done > 0 ? 'lf-chip-success' : 'lf-chip-accent'
+          }`}
+        >
           <Icon name="workspace_premium" fill className="!text-[16px]" aria-hidden />
           {t('learn.chapter.lessonsOf', { done, total: topic.lessons.length })}
         </span>

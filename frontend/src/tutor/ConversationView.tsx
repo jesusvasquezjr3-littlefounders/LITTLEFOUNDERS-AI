@@ -819,6 +819,16 @@ export function ConversationView({
           */}
           {budgetRune && (
             <WorldChip slot="sky.mark.3">
+              {/*
+               * A LIVE DOT beside the session's own clock. The design study
+               * pairs its session badge with a pulsing emerald dot, and here it
+               * is TRUE rather than decorative: it shows only while
+               * `socket.budget === 'running'`, which is one of the two states
+               * that produce this rune at all. When the session starts wrapping
+               * up the rune changes and the dot goes with it, so it can never
+               * claim a session that is not live.
+               */}
+              {socket.budget === 'running' ? <span className="lf-live-emerald" aria-hidden /> : null}
               <span className="lf-action">{budgetRune}</span>
             </WorldChip>
           )}
@@ -872,6 +882,16 @@ export function ConversationView({
           )}
           {budgetRune && (
             <HudPlate shape="chip">
+              {/*
+               * A LIVE DOT beside the session's own clock. The design study
+               * pairs its session badge with a pulsing emerald dot, and here it
+               * is TRUE rather than decorative: it shows only while
+               * `socket.budget === 'running'`, which is one of the two states
+               * that produce this rune at all. When the session starts wrapping
+               * up the rune changes and the dot goes with it, so it can never
+               * claim a session that is not live.
+               */}
+              {socket.budget === 'running' ? <span className="lf-live-emerald" aria-hidden /> : null}
               <span className="lf-action">{budgetRune}</span>
             </HudPlate>
           )}
