@@ -9,6 +9,94 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
+## The appearance migration: a third material, and what the design study turned out to be (2026-09-05)
+
+**The study's token file was our own `DESIGN.md`, verbatim.** Pulled from the
+Stitch MCP API, "LittleFounders Liquid Glass Gamified" declares `#f8fafc`,
+`#4f46e5`, `#8b5cf6`, dark `#0a0e1a`, glass blur 20px at 0.78, radii
+10/16/24/32, Sora + Inter — every value matching `index.css` and
+`tailwind.config.js` byte for byte. So the migration was never a palette
+change, and knowing that on day one is what kept it from becoming one. What
+the study actually adds is a way for a surface to have WEIGHT.
+
+**THE TACTILE TIER** (§Tactile) — a third material beside glass and Lumen.
+Glass says "this pane floats"; Lumen says "this plate is lit by the scene";
+tactile says "this is an object with a side, and you can press it". Two
+layers: a faint ambient diffusion and a hard zero-blur RIDGE under the bottom
+edge. `--lf-tactile-lift` is declared once because the ridge's offset and the
+pressed travel MUST be the same number — the face descends its own height
+while the side collapses, so the bottom edge never moves. In dark mode the
+ridge inverts to a light rim; against `#0a0e1a` there is nothing left to
+darken. A SECOND easing came with it: `--lf-ease` never passes its target,
+which is right for a panel settling and wrong for a coin landing.
+
+**It shipped scoped, was judged, then promoted.** Deliberately: a press
+physics is the most-repeated gesture in the product, and changing it
+everywhere before anyone had seen it once is a change nobody can review.
+
+**TWO CLASSES, and choosing between them is the whole judgement.**
+`.lf-tactile` for things that read as OBJECTS; `.lf-press` for things that are
+PART OF A SURFACE. Giving every tappable thing a side makes a page read as a
+pile of loose keys. Between them they replaced ten hand-written
+`active:translate-y-px` utilities and reached 34 more raw controls that
+previously answered a tap with nothing at all.
+
+**A MEASUREMENT MISTAKE WORTH KEEPING.** An audit counting per FILE reported
+the migration complete — one `<Card>` import marked a whole file as migrated.
+Counting per OCCURRENCE found 50 controls still on the old press across 34
+files. The rule that sorted them is SHAPE: a `rounded-*` class means a shaped,
+padded affordance and it presses; a bare `<Link>` is running text, and giving
+running text a 3px travel makes a paragraph twitch.
+
+**THE OWNER LOOKED AT THE FIRST LESSON PASS AND SAID IT LACKED THE STUDY'S
+QUALITY. That was correct, and the diagnosis is the useful part:** the first
+pass restructured the SHELL — header, columns, measures, press — and the
+study's quality does not live in the shell. Options are drawn by `.lf-answer`,
+which the redesign had not touched, so the most-looked-at control in the
+product still rendered exactly as before any of this began. Photographing our
+screen beside the study's is what made that visible; reading the diff never
+would have.
+
+**The answer object's side is expressed in ITS OWN idiom**, and that became
+the tier's general rule. `.lf-answer` is made of LIGHT — convex gradient,
+specular lip, seat mixed from `--lf-lumen-shade` — so the same object can
+composite over the Tutor's moving island. A flat tone ridge would go opaque
+the moment the sun moved. So: a fourth shadow layer, zero blur, mixed from the
+same shade. **A material that already has a physics gets the ridge in its own
+terms; only a plain surface takes `.lf-tactile` wholesale.**
+
+**WHERE THE STUDY IS DELIBERATELY NOT FOLLOWED,** written down rather than
+left as a difference somebody has to rediscover: its white `1px` panel rim and
+`saturate(1.8)` are both rejected by §Lumen in writing, and the reasons hold —
+a white lip over a warm island is the loudest "sticker" cue there is, and
+chroma under 1 is half the contrast contract. The study is drawn over a flat
+radial gradient and never had to solve either. Its PRESENCE is still owed, so
+it was bought where the material can afford it: a deeper seat, a stronger
+specular lip in the key light's own colour, and edge ink from 9% to 16%. The
+study's FLOATING lesson panel is also refused: ours stays `inset-y-0 right-0`
+because that geometry is what the speech caption's `docked: 'panel'` escape is
+computed from (adversarial review round 43), and a floating panel is a change
+to that contract rather than a restyle.
+
+**Three answer-surface guard violations, all mine, all fixed properly.** The
+instructive one: `answerSurfaces.test.tsx` exempts a red HEART from "no red
+wrong" by matching `/hearts|favorite/` on the same SOURCE LINE as the colour,
+so reformatting a className onto its own line silently dropped the exemption.
+The guard was right about the rule; the formatting is what gave.
+
+**A harness bug found and fixed in passing** — the capture driver scrolled a
+control into view and measured it in the same frame, so a target below the
+fold came back at its pre-scroll `y` (1405 on an 844px viewport), where
+`elementFromPoint` returns null and the click lands on nothing. It reported a
+working product as broken, which is §1.14's own lesson about harnesses.
+Scroll and measure are now two passes.
+
+Gates across the migration: type-check, lint, 1813 tests in 151 files,
+`docs:check`, `secrets:check`, `i18n:check` (3-locale parity for 19 new keys),
+`paths:check`, `seo:check`, `tools:test`, `repo:map`, and `verify:tutor-ui` —
+every control reachable with real pointer events across all instrument kinds,
+desktop light, desktop dark and mobile, 0 unreachable.
+
 ## The first frame: a boot dissolve, and the flash of the wrong theme it also closed (2026-09-04)
 
 **Reported as "al cargar la página lo primero que carga es el Texto".** It was
