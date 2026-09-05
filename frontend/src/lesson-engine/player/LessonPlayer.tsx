@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
-import { Button, Icon, ProgressBar, LottieIcon, CountUp } from '@/components/ui'
+import { Button, Icon, LottieIcon, CountUp } from '@/components/ui'
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
@@ -323,12 +323,26 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             type="button"
             onClick={onExit}
             aria-label={t('lesson.exit')}
-            className="lf-slab lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            className="lf-slab lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-content-muted transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           >
             <Icon name="close" />
           </button>
-          <div className="min-w-0 flex-1">
-            <ProgressBar value={progressPct(doc, state)} label={t('lesson.progress')} />
+          {/*
+            * The study's gauge, not a hairline. 12px tall with an inner gloss
+            * along the top half — a progress bar in a game is read across a
+            * room, and `ProgressBar` is sized for a dashboard row.
+            */}
+          <div className="mx-auto min-w-0 max-w-md flex-1 px-2">
+            <div
+              className="lf-track"
+              role="progressbar"
+              aria-valuenow={progressPct(doc, state)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t('lesson.progress')}
+            >
+              <div className="lf-track-fill" style={{ width: `${progressPct(doc, state)}%` }} />
+            </div>
           </div>
           {state.hearts !== null ? (
             /*
@@ -339,7 +353,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
              * reports a life counter as a mistake painted red. The guard is
              * right about the rule; the formatting is what has to give.
              */
-            <span className="flex items-center gap-1.5 rounded-full bg-error-soft px-3 py-1.5 lf-label text-error-strong" aria-label={t('lesson.chips.hearts', { count: state.hearts })}>
+            <span className="lf-chip lf-chip-error lf-label" aria-label={t('lesson.chips.hearts', { count: state.hearts })}>
               <Icon name="favorite" fill className="text-[18px]" />
               <span className="lf-number">{state.hearts}</span>
             </span>
@@ -356,14 +370,14 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
              */
             <span
               key={state.streak}
-              className="lf-pop relative flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1.5 lf-label text-warning-strong"
+              className="lf-pop lf-chip lf-chip-warning lf-label relative"
             >
               {comboBeat(state.streak, true).burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               <span className="lf-number">{state.streak}</span>
             </span>
           ) : null}
-          <span className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 lf-label text-primary">
+          <span className="lf-chip lf-chip-accent lf-label">
             <Icon name="bolt" fill className="text-[18px]" />
             <CountUp value={earnedXp(doc, state)} className="lf-number" />
           </span>
@@ -463,7 +477,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
                * says who is speaking, so a tail there would point at the
                * page.
                */}
-              <div className="lf-slab order-2 flex min-w-0 flex-1 flex-col gap-2 rounded-lg rounded-bl-sm px-4 py-3 lf-bubble-tail-md md:order-1 md:rounded-bl-lg">
+              <div className="lf-panel lf-bubble-tail-md order-2 flex min-w-0 flex-1 flex-col gap-2 p-4 sm:p-5 md:order-1">
                 {/*
                  * A HEADER LINE INSIDE THE BUBBLE, and both halves are read
                  * off real state rather than written into the copy: what kind
@@ -485,7 +499,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
                   </div>
                 ) : null}
                 <div className="flex min-w-0 items-start gap-2">
-                  <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
+                  <MarkdownLite text={segment.prompt_md} markTerms className="lf-title min-w-0 flex-1 text-content" />
                   <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
                 </div>
               </div>
@@ -499,7 +513,14 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
                * floating character — the same pixels reading as a broken
                * render. A frame makes the same cut read as a portrait.
                */}
-              <div className="lf-portrait order-1 shrink-0 md:order-2 md:mx-auto">
+              {/*
+               * The frame HUGS the bust rather than forcing a square. The
+               * study's avatar card is a square because it holds a photo that
+               * fills it edge to edge; ours holds a fixed 144px 3D bust, and a
+               * 304px square around it is 160px of empty frame — which reads
+               * as a missing image, not as a portrait.
+               */}
+              <div className="lf-portrait order-1 shrink-0 md:order-2 md:mx-auto md:grid md:place-items-center">
                 <CharacterActor3D
                   character={segment.narrator.character}
                   emotion={segment.narrator.emotion ?? 'neutral'}
@@ -557,7 +578,31 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
               and a frame around it turns a narrative moment into a form. The
               families draw their own full-bleed surfaces there.
             */}
-            <div className={isContent ? undefined : 'lf-worksurface'}>
+            <div className={isContent ? undefined : 'lf-panel flex flex-col gap-4 p-4 sm:p-6'}>
+              {/*
+                THE PANEL'S OWN HEADER — what this surface IS and how far the
+                learner has got inside it. The study gives every work surface
+                one, and it is most of why its right column reads as a
+                laboratory rather than as loose controls on a page. Both halves
+                are real state: the exercise's own kind, and the hint budget
+                that already governs the footer button.
+              */}
+              {!isContent ? (
+                <div className="lf-panel-head">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="lf-panel-head-icon">
+                      <Icon name="widgets" className="!text-[19px]" aria-hidden />
+                    </span>
+                    <span className="lf-label truncate font-bold text-content">{t('lesson.workSurface')}</span>
+                  </div>
+                  {hintsAvailable > 0 ? (
+                    <span className="lf-chip lf-chip-accent lf-caption">
+                      <Icon name="lightbulb" fill className="!text-[15px]" aria-hidden />
+                      {t('lesson.hintsLeft', { count: hintsAvailable })}
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
             <entry.component
               key={`${segment.id}:${retryCount}`}
               segment={segment}
@@ -666,6 +711,13 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
 function Shell({ children }: { children: React.ReactNode }) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-base">
+      {/*
+       * AMBIENT (/DESIGN.md §Tactile → gamified surfaces). Two huge blurred
+       * gradients behind everything. It is most of why the study's flat screens
+       * do not read as flat — the ground is never one colour twice — and it
+       * costs two composited layers that never repaint.
+       */}
+      <div className="lf-ambient" aria-hidden="true" />
       {/*
        * ONE canvas for every character in the lesson, drawn into the screen
        * rectangle of each placeholder (see CharacterLayer).

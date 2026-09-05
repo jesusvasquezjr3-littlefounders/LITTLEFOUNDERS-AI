@@ -7,7 +7,19 @@ import { cn } from '@/lib/utils'
  * literal text (we never use dangerouslySetInnerHTML).
  */
 
-function renderInline(text: string, keyPrefix: string): ReactNode[] {
+/*
+ * `markTerms` turns **bold** into a marked TERM rather than plain bold weight
+ * (/DESIGN.md §Tactile → gamified surfaces). The design study highlights the
+ * numbers that matter inside the mentor's own sentence — "reparte 4 monedas in
+ * each of the 3 chests" — instead of leaving a wall of one colour, and it is
+ * what makes a prompt read as a puzzle rather than as a paragraph.
+ *
+ * It is CONTENT-DRIVEN and not decoration: a lesson author already bolds the
+ * quantity the question turns on, so this renders the emphasis the content
+ * already carries. Opt-in, because the same emphasis inside a results screen or
+ * a hint is ordinary emphasis and a page of chips is a page of noise.
+ */
+function renderInline(text: string, keyPrefix: string, markTerms = false): ReactNode[] {
   const nodes: ReactNode[] = []
   // Tokenize: **bold** | *italic* | `code`
   const re = /(\*\*([^*]+)\*\*)|(\*([^*]+)\*)|(`([^`]+)`)/g
@@ -16,7 +28,12 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
   let i = 0
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) nodes.push(<Fragment key={`${keyPrefix}-t${i++}`}>{text.slice(last, m.index)}</Fragment>)
-    if (m[2] !== undefined) nodes.push(<strong key={`${keyPrefix}-b${i++}`} className="font-bold">{m[2]}</strong>)
+    if (m[2] !== undefined)
+      nodes.push(
+        <strong key={`${keyPrefix}-b${i++}`} className={markTerms ? 'lf-term' : 'font-bold'}>
+          {m[2]}
+        </strong>,
+      )
     else if (m[4] !== undefined) nodes.push(<em key={`${keyPrefix}-i${i++}`}>{m[4]}</em>)
     else if (m[6] !== undefined)
       nodes.push(
@@ -30,12 +47,23 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
   return nodes
 }
 
-export function MarkdownLite({ text, className, as }: { text: string; className?: string; as?: 'div' | 'span' }) {
+export function MarkdownLite({
+  text,
+  className,
+  as,
+  markTerms = false,
+}: {
+  text: string
+  className?: string
+  as?: 'div' | 'span'
+  /** Render **bold** as a marked term chip — mentor prompts only. */
+  markTerms?: boolean
+}) {
   // Inline mode — for fragments composed INSIDE another element (eavesdrop
   // splits a sentence around tappable highlight terms): no block wrappers,
   // just the inline tokens, valid inside a <p>.
   if (as === 'span') {
-    return <span className={className}>{renderInline(text, 'inline')}</span>
+    return <span className={className}>{renderInline(text, 'inline', markTerms)}</span>
   }
   const lines = text.split(/\r?\n/)
   const blocks: ReactNode[] = []
@@ -48,7 +76,7 @@ export function MarkdownLite({ text, className, as }: { text: string; className?
     blocks.push(
       <ul key={key} className="ml-5 list-disc space-y-1">
         {items.map((item, j) => (
-          <li key={j}>{renderInline(item, `${key}-li${j}`)}</li>
+          <li key={j}>{renderInline(item, `${key}-li${j}`, markTerms)}</li>
         ))}
       </ul>,
     )
@@ -62,7 +90,7 @@ export function MarkdownLite({ text, className, as }: { text: string; className?
     }
     flushList(`ul-${idx}`)
     if (trimmed.length === 0) return
-    blocks.push(<p key={`p-${idx}`}>{renderInline(trimmed, `p-${idx}`)}</p>)
+    blocks.push(<p key={`p-${idx}`}>{renderInline(trimmed, `p-${idx}`, markTerms)}</p>)
   })
   flushList('ul-end')
 

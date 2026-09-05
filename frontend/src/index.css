@@ -1767,6 +1767,236 @@
     display: none;
   }
 
+  /* ═════════════════════════════════════════════════════════════════════
+   * THE GAMIFIED SURFACE (/DESIGN.md §Tactile → Gamified surfaces)
+   *
+   * What the Stitch study actually LOOKS like, as opposed to what its token
+   * file says. The tokens matched ours byte for byte — and reading that as
+   * "there is little to do" was the mistake: identical tokens mean the
+   * COMPOSITION was the whole job. These are the pieces that carry the study's
+   * look and that this codebase had no equivalent for.
+   *
+   * The single biggest difference is BORDERS. Our glass and answer materials
+   * draw their edges as inset hairlines mixed from the scene's shade, which is
+   * right over a moving render and reads as almost nothing on a flat page. The
+   * study draws real, visible 1px and 2px borders. On the gamified surfaces —
+   * which are flat pages, not the island — a visible border is what makes an
+   * object look like an object.
+   * ═════════════════════════════════════════════════════════════════════ */
+
+  /*
+   * AMBIENT ORBS — huge, soft, blurred gradients fixed behind the page. Cheap
+   * (two composited layers, no per-frame paint) and most of why the study's
+   * flat screens do not read as flat: the ground is never one colour twice.
+   */
+  .lf-ambient {
+    position: fixed;
+    z-index: -10;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .lf-ambient::before,
+  .lf-ambient::after {
+    position: absolute;
+    border-radius: 9999px;
+    content: '';
+    filter: blur(64px);
+  }
+  .lf-ambient::before {
+    top: -9rem;
+    left: -7rem;
+    width: 34rem;
+    height: 34rem;
+    background: linear-gradient(135deg, rgb(var(--lf-primary) / 0.22), rgb(var(--lf-delight) / 0.14), transparent 70%);
+  }
+  .lf-ambient::after {
+    right: -7rem;
+    bottom: -9rem;
+    width: 32rem;
+    height: 32rem;
+    background: linear-gradient(300deg, rgb(var(--lf-warning) / 0.16), rgb(var(--lf-primary) / 0.14), transparent 70%);
+  }
+  .dark .lf-ambient::before {
+    background: linear-gradient(135deg, rgb(var(--lf-primary) / 0.3), rgb(var(--lf-delight) / 0.18), transparent 70%);
+  }
+  .dark .lf-ambient::after {
+    background: linear-gradient(300deg, rgb(var(--lf-delight) / 0.2), rgb(var(--lf-primary) / 0.16), transparent 70%);
+  }
+
+  /*
+   * A PANEL — the study's white card. A real border and a soft clean shadow,
+   * NOT the glass material: glass is a lens over something, and these sit on a
+   * page with nothing behind them to refract.
+   */
+  .lf-panel {
+    border: 1px solid rgb(var(--lf-outline) / 0.8);
+    border-radius: 24px;
+    background: rgb(var(--lf-surface));
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.04),
+      0 8px 24px -8px rgb(15 23 42 / 0.08);
+  }
+  .dark .lf-panel {
+    border-color: rgb(var(--lf-outline));
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.3),
+      0 8px 24px -8px rgb(0 0 0 / 0.5);
+  }
+
+  /* The header strip inside a panel: an icon tile, a title, a readout. */
+  .lf-panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgb(var(--lf-outline) / 0.7);
+    gap: 0.5rem;
+  }
+  .lf-panel-head-icon {
+    display: flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgb(var(--lf-accent-soft));
+    color: rgb(var(--lf-accent));
+  }
+
+  /*
+   * A COUNTER CHIP — the study's stat badges. Tinted fill, MATCHING BORDER,
+   * bold numerals. The border is the whole difference between this and the
+   * flat tinted pill we had: it gives the chip an edge against any background.
+   */
+  .lf-chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid;
+    border-radius: 9999px;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-weight: 700;
+  }
+  .lf-chip-warning {
+    border-color: rgb(var(--lf-warning) / 0.4);
+    background: rgb(var(--lf-warning-soft));
+    color: rgb(var(--lf-warning-strong));
+  }
+  .lf-chip-error {
+    border-color: rgb(var(--lf-error) / 0.35);
+    background: rgb(var(--lf-error-soft));
+    color: rgb(var(--lf-error-strong));
+  }
+  .lf-chip-accent {
+    border-color: rgb(var(--lf-accent) / 0.35);
+    background: rgb(var(--lf-accent-soft));
+    color: rgb(var(--lf-accent-strong));
+  }
+  .lf-chip-success {
+    border-color: rgb(var(--lf-success) / 0.4);
+    background: rgb(var(--lf-success-soft));
+    color: rgb(var(--lf-success-strong));
+  }
+
+  /*
+   * A HIGHLIGHTED TERM inside prose — the study marks the numbers that matter
+   * inside the mentor's own sentence instead of leaving a wall of one colour.
+   * It is an inline chip, so it must not disturb the line box: almost no
+   * vertical padding, only a tinted, bordered ground.
+   */
+  .lf-term {
+    padding: 0.05em 0.4em;
+    border: 1px solid rgb(var(--lf-warning) / 0.45);
+    border-radius: 8px;
+    background: rgb(var(--lf-warning-soft));
+    color: rgb(var(--lf-warning-strong));
+    font-weight: 700;
+  }
+  .lf-term-accent {
+    border-color: rgb(var(--lf-accent) / 0.35);
+    background: rgb(var(--lf-accent-soft));
+    color: rgb(var(--lf-accent-strong));
+  }
+
+  /*
+   * THE TRACK — 12px tall with an inner gloss along its top half, not a 6px
+   * hairline. A progress bar in a game is a gauge you read across a room.
+   */
+  .lf-track {
+    overflow: hidden;
+    height: 0.75rem;
+    padding: 2px;
+    border-radius: 9999px;
+    background: rgb(var(--lf-outline) / 0.7);
+    box-shadow: inset 0 1px 3px rgb(15 23 42 / 0.1);
+  }
+  .lf-track-fill {
+    position: relative;
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, rgb(var(--lf-accent)), rgb(var(--lf-accent-strong)));
+    transition: width var(--lf-dur-reveal) var(--lf-ease);
+  }
+  .lf-track-fill::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 50%;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.35);
+    content: '';
+  }
+
+  /*
+   * A TOKEN CARD — the study's answer tile: TWO LINES (a big value over a
+   * small caption) and a 2px border that thickens into the accent when picked.
+   * Ours was a single-line row with a hairline, which is the difference
+   * between choosing an object and ticking a list.
+   */
+  .lf-token {
+    display: flex;
+    min-height: 3.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgb(var(--lf-outline));
+    border-radius: 16px;
+    background: rgb(var(--lf-surface));
+    gap: 0.125rem;
+    padding: 0.75rem 0.5rem;
+  }
+  .lf-token:hover {
+    border-color: rgb(var(--lf-accent) / 0.5);
+  }
+  .lf-token-selected {
+    border-color: rgb(var(--lf-accent));
+    background: rgb(var(--lf-accent-soft));
+  }
+  .lf-token-value {
+    color: rgb(var(--lf-content));
+    font-weight: 800;
+  }
+  .lf-token-selected .lf-token-value {
+    color: rgb(var(--lf-accent-strong));
+  }
+  .lf-token-caption {
+    color: rgb(var(--lf-content-faint));
+    font-weight: 600;
+  }
+
+  /* The uppercase label above a group of answers, with its hint on the right. */
+  .lf-group-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-inline: 0.25rem;
+  }
+
   /* ─────────────────────────────────────────────────────────────────────
    * THE TACTILE TIER (/DESIGN.md §Tactile)
    *

@@ -264,5 +264,8 @@
   "combo_one": "{{count}} seguida!",
   "combo_other": "{{count}} seguidas!",
   "challenge": "DESAFIO",
-  "stepOf": "Passo {{n}} de {{total}}"
+  "stepOf": "Passo {{n}} de {{total}}",
+  "workSurface": "Seu espaço de trabalho",
+  "hintsLeft_one": "{{count}} dica",
+  "hintsLeft_other": "{{count}} dicas"
 }

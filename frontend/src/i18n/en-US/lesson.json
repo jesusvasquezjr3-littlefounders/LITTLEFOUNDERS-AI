@@ -264,5 +264,8 @@
   "combo_one": "{{count}} in a row!",
   "combo_other": "{{count}} in a row!",
   "challenge": "CHALLENGE",
-  "stepOf": "Step {{n}} of {{total}}"
+  "stepOf": "Step {{n}} of {{total}}",
+  "workSurface": "Your workspace",
+  "hintsLeft_one": "{{count}} hint",
+  "hintsLeft_other": "{{count}} hints"
 }

@@ -264,5 +264,8 @@
   "combo_one": "¡{{count}} seguida!",
   "combo_other": "¡{{count}} seguidas!",
   "challenge": "RETO",
-  "stepOf": "Paso {{n}} de {{total}}"
+  "stepOf": "Paso {{n}} de {{total}}",
+  "workSurface": "Tu espacio de trabajo",
+  "hintsLeft_one": "{{count}} pista",
+  "hintsLeft_other": "{{count}} pistas"
 }
