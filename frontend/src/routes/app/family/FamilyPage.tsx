@@ -162,7 +162,7 @@ export function FamilyPage() {
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}
-                className="lf-caption flex min-h-11 items-center gap-2 border-t border-outline/50 px-4 py-2.5 font-bold text-primary transition-[background-color] duration-150 hover:bg-surface-sunken/50"
+                className="lf-caption lf-press flex min-h-11 items-center gap-2 border-t border-outline/50 px-4 py-2.5 font-bold text-primary transition-[background-color] duration-150 hover:bg-surface-sunken/50"
               >
                 <Icon name="forum" className="text-[18px]" aria-hidden />
                 {t('tutor.guardian.linkFromFamily')}

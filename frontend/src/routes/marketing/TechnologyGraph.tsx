@@ -646,7 +646,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       ))}
       <div className="lf-atlas__title"><span>{t('marketing.technology.atlas.eyebrow')}</span><h2>{t('marketing.technology.atlas.titleLead')}<br /><em>{t('marketing.technology.atlas.titleAccent')}</em></h2><p>{t('marketing.technology.atlas.body')}</p><div className="lf-atlas__stats"><b>{NODE_COUNT}</b><span>{t('marketing.technology.atlas.nodes')}</span><b>{links.length}</b><span>{t('marketing.technology.atlas.paths')}</span></div></div>
       {inspectorOpen && <aside className="lf-atlas__inspector">
-        <button type="button" className="lf-atlas__close" onClick={() => setInspectorOpen(false)} aria-label={t('marketing.technology.atlas.close')}>×</button>
+        <button type="button" className="lf-atlas__close lf-press" onClick={() => setInspectorOpen(false)} aria-label={t('marketing.technology.atlas.close')}>×</button>
         <h3>{t(`marketing.technology.concepts.${active.conceptKey}.title`)}</h3>
         <img className="lf-atlas__concept-image" src={conceptImages[active.conceptKey]} alt={t(`marketing.technology.concepts.${active.conceptKey}.title`)} />
         <p>{t(`marketing.technology.concepts.${active.conceptKey}.body`)}</p>

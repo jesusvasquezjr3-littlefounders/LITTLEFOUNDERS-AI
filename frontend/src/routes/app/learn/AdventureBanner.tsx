@@ -89,7 +89,7 @@ export function AdventureBanner({ adventure, locale, expanded, onToggle }: Adven
       onClick={onToggle}
       aria-expanded={expanded}
       aria-label={stateLabel ? `${title}, ${stateLabel}` : title}
-      className="motion-safe-press relative isolate h-[126px] w-full overflow-hidden text-left transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary md:h-[280px]"
+      className="lf-press relative isolate h-[126px] w-full overflow-hidden text-left transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary md:h-[280px]"
     >
       {content}
     </button>
