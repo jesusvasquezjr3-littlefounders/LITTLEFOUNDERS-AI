@@ -279,10 +279,10 @@ function CourseDetailDialog({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="lf-display-sm text-content">{course.title}</h3>
+              <h3 className="lf-headline text-content">{course.title}</h3>
               <StatusBadge status={course.status} />
             </div>
-            <p className="lf-body-sm mt-2 max-w-2xl text-content-muted">{course.description}</p>
+            <p className="lf-caption mt-2 max-w-2xl text-content-muted">{course.description}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge className="bg-primary-soft text-primary">{course.subject}</Badge>
               <span className="lf-number lf-caption rounded-full bg-surface-sunken px-3 py-1 text-content-muted">{course.slug}</span>
@@ -371,7 +371,7 @@ function LessonReviewDialog({
   const audioByUnit = new Map(audioAssets.map((asset) => [asset.label, asset]));
 
   if (detailData.data.state === 'loading') {
-    return <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}><div className="py-16 text-center lf-body-sm text-content-muted">{t('admin.loading')}</div></AdminDialog>;
+    return <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}><div className="py-16 text-center lf-caption text-content-muted">{t('admin.loading')}</div></AdminDialog>;
   }
   if (detailData.data.state === 'error' || !detail || !documentRow) {
     return <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}><Unavailable code={detailData.data.state === 'error' ? detailData.data.code : 'DATA_UNAVAILABLE'} /></AdminDialog>;
@@ -402,11 +402,11 @@ function LessonReviewDialog({
         <div className="flex min-w-0 flex-col gap-6 pt-5">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="lf-display-sm text-content">{detail.title}</h3>
+            <h3 className="lf-headline text-content">{detail.title}</h3>
             <StatusBadge status={detail.status} />
           </div>
           <p className="lf-number lf-caption mt-1 text-content-muted">{detail.slug}</p>
-          <p className="lf-body-sm mt-3 text-content-muted">{detail.courseTitle} / {detail.adventureTitle} / {detail.sagaTitle} / {detail.topicTitle}</p>
+          <p className="lf-caption mt-3 text-content-muted">{detail.courseTitle} / {detail.adventureTitle} / {detail.sagaTitle} / {detail.topicTitle}</p>
         </div>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-5">

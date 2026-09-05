@@ -67,7 +67,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
   if (loading) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+        <p className="lf-caption flex items-center gap-2 text-content-muted">
           <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
         </p>
       </Card>
@@ -77,7 +77,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
   if (error || !analytics) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm text-content-muted">{error ?? t('admin.generation.analytics.empty')}</p>
+        <p className="lf-caption text-content-muted">{error ?? t('admin.generation.analytics.empty')}</p>
       </Card>
     );
   }
@@ -147,7 +147,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
           <Card className="p-4 sm:p-5">
             <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.analytics.forecast')}</h3>
             <div className="space-y-2">
-              <p className="lf-body-sm text-content-muted">
+              <p className="lf-caption text-content-muted">
                 {t('admin.generation.analytics.forecastPerLesson', { cost: usd.format(analytics.costForecast.perLesson ?? 0) })}
               </p>
               <p className="lf-headline text-content">

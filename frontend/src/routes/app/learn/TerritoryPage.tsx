@@ -121,7 +121,7 @@ export function TerritoryPage() {
         <Link to={`/learn/${courseSlug}`} className="lf-caption flex w-fit items-center gap-1 font-bold text-primary hover:underline">
           <Icon name="arrow_back" className="text-[16px]" aria-hidden /> {t('learn.territory.back')}
         </Link>
-        <h1 className="lf-display text-content">{t('learn.territory.title')}</h1>
+        <h1 className="lf-display-lg text-content">{t('learn.territory.title')}</h1>
         <TerritoryProgressStrip tree={state.tree} />
         {/*
           * A legend for a state nothing on this page is in explains a symbol

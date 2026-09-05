@@ -63,7 +63,7 @@ export function Table<Row>({ columns, rows, rowKey, onRowClick, className }: Tab
                 {rest.map((col) => (
                   <div key={col.key} className="grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] items-start gap-3">
                     <dt className="min-w-0 break-words lf-caption text-content-muted">{col.header}</dt>
-                    <dd className={cn('min-w-0 max-w-full break-words text-right lf-body-sm text-content', col.numeric && 'lf-number')}>{col.cell(row)}</dd>
+                    <dd className={cn('min-w-0 max-w-full break-words text-right lf-caption text-content', col.numeric && 'lf-number')}>{col.cell(row)}</dd>
                   </div>
                 ))}
               </dl>
@@ -99,7 +99,7 @@ export function Table<Row>({ columns, rows, rowKey, onRowClick, className }: Tab
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className={cn('lf-body-sm px-5 py-3.5 text-content', col.numeric && 'lf-number text-right')}
+                      className={cn('lf-caption px-5 py-3.5 text-content', col.numeric && 'lf-number text-right')}
                     >
                       {col.cell(row)}
                     </td>

@@ -96,7 +96,7 @@ function PreferencesDialog({
         <div className="flex items-start justify-between gap-4 border-b border-outline/50 p-5 sm:p-7">
           <div>
             <p className="lf-caption font-bold uppercase tracking-[0.14em] text-primary">{t('cookies.eyebrow')}</p>
-            <h2 id="cookie-preferences-title" className="lf-display-sm mt-2 text-content">{t('cookies.preferencesTitle')}</h2>
+            <h2 id="cookie-preferences-title" className="lf-headline mt-2 text-content">{t('cookies.preferencesTitle')}</h2>
           </div>
           <button
             type="button"

@@ -160,7 +160,7 @@ export function CourseCarousel({ courses, locale, activeSlug, resumeLessonNumber
                   <span className={`lf-eyebrow ${isActive ? 'text-accent' : 'text-content-faint'}`}>
                     {isActive ? t('learn.carousel.activeCourse') : t('learn.carousel.nextInPath')}
                   </span>
-                  <h3 className="lf-display-sm -tracking-[0.015em] text-content">{titleFor(course, locale)}</h3>
+                  <h3 className="lf-display-lg text-content">{titleFor(course, locale)}</h3>
                 </div>
 
                 {/* Fixed box so a course with no artwork does not reflow the row. */}

@@ -110,7 +110,7 @@ export function AdminGenerationPage() {
 
       {overview.state === 'loading' ? (
         <Card className="p-5">
-          <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+          <p className="lf-caption flex items-center gap-2 text-content-muted">
             <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
           </p>
         </Card>
@@ -231,7 +231,7 @@ function TrackCard({ track, t, nf, usd, dateFmt }: { track: TrackListItem; t: (k
         {track.courseSlug} · {t('admin.generation.track.shards', { count: track.shards })} ·{' '}
         {dateFmt.format(new Date(track.updatedAt))}
       </p>
-      <p className="lf-body-sm mt-3">
+      <p className="lf-caption mt-3">
         <span className="lf-number">{nf.format(track.totals.published ?? 0)}</span>{' '}
         {t('admin.generation.kpi.published')} · <span className="lf-number">{nf.format(track.totals.failed ?? 0)}</span>{' '}
         {t('admin.generation.kpi.failed')} ·{' '}
@@ -270,7 +270,7 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
   if (data.state === 'loading') {
     return (
       <Card className="p-5">
-        <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+        <p className="lf-caption flex items-center gap-2 text-content-muted">
           <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
         </p>
       </Card>
@@ -370,7 +370,7 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
           <Card className="p-5">
             <h2 id="gen-heatmap" className="lf-label mb-3 text-content-muted">{t('admin.generation.heatmap.title')}</h2>
             {failedTotal === 0 ? (
-              <p className="lf-body-sm text-content-muted">{t('admin.generation.heatmap.empty')}</p>
+              <p className="lf-caption text-content-muted">{t('admin.generation.heatmap.empty')}</p>
             ) : (
               <>
                 <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-sunken" role="img" aria-label={t('admin.generation.heatmap.title')}>
@@ -396,7 +396,7 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
             <h2 id="gen-judge" className="lf-label mb-1 text-content-muted">{t('admin.generation.judge.title', { count: judged.length })}</h2>
             <p className="lf-caption mb-3 text-content-faint">{t('admin.generation.judge.note')}</p>
             {dimensionMeans.length === 0 ? (
-              <p className="lf-body-sm text-content-muted">{t('admin.generation.judge.empty')}</p>
+              <p className="lf-caption text-content-muted">{t('admin.generation.judge.empty')}</p>
             ) : (
               <ul className="flex flex-col gap-2">
                 {dimensionMeans.map(({ dim, mean }) => (

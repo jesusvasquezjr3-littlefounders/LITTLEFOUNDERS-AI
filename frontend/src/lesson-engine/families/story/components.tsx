@@ -612,7 +612,7 @@ export function Eavesdrop({ segment, disabled, onContentDone, onCharacterCue }: 
                   <p className="lf-caption font-bold text-primary">
                     {t('lesson.families.story.noteTitle')}
                   </p>
-                  <MarkdownLite text={note} className="lf-body-sm text-content" />
+                  <MarkdownLite text={note} className="lf-caption text-content" />
                 </div>
               ) : null}
             </div>

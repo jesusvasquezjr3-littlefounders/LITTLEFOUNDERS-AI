@@ -152,7 +152,7 @@ export function AlertBanner({ heartbeat, analytics, className }: AlertBannerProp
           />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-0.5">
-              <p className="lf-body-sm font-medium text-content">{alert.message}</p>
+              <p className="lf-caption font-medium text-content">{alert.message}</p>
               <Badge className={alert.severity === 'critical' ? 'bg-error-soft text-error-strong' : 'bg-accent-soft text-accent-strong'}>
                 {alert.severity === 'critical' ? t('admin.generation.alerts.critical') : t('admin.generation.alerts.warning')}
               </Badge>

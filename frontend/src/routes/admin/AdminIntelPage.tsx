@@ -462,7 +462,7 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
           <p className="lf-label text-content">{t('admin.intel.home.consentTitle')}</p>
           <p className="lf-caption mt-1 text-content-muted">{t('admin.intel.home.consentHint')}</p>
         </div>
-        <p className="lf-display-sm tabular-nums text-primary">
+        <p className="lf-headline tabular-nums text-primary">
           {data.consent ? `${nf.format(data.consent.kidsConsented)} / ${nf.format(data.consent.kidsTotal)}` : t('admin.intel.home.consentPending')}
         </p>
       </Card>
@@ -856,7 +856,7 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
             <div className="max-w-2xl">
               <p className="lf-label text-primary">{t('admin.intel.learning.commandKicker')}</p>
               <h2 className="lf-headline mt-1 text-content">{t('admin.intel.learning.commandTitle')}</h2>
-              <p className="lf-body-sm mt-2 text-content-muted">{t('admin.intel.learning.commandSubtitle')}</p>
+              <p className="lf-caption mt-2 text-content-muted">{t('admin.intel.learning.commandSubtitle')}</p>
             </div>
             <EvidenceBadge status={overview.snapshot.evidenceStatus} t={t} />
           </div>

@@ -347,14 +347,14 @@ export function AdminUsersPage() {
             <div className="flex flex-wrap items-center gap-3 border-b border-outline/50 pb-4">
               <Icon name="person" className="!text-[28px] text-primary" />
               <div className="min-w-0">
-                <p className="lf-body-sm text-content-muted">{t('admin.users.profileSnapshot')}</p>
+                <p className="lf-caption text-content-muted">{t('admin.users.profileSnapshot')}</p>
                 {selectedUser.username && <p className="lf-caption text-content-muted font-mono">@{selectedUser.username}</p>}
               </div>
               {selectedUser.roles[0] && <RoleChip role={selectedUser.roles[0]} />}
             </div>
 
             <div className="flex flex-col gap-4">
-              <p className="lf-body-sm max-w-2xl text-content-muted">{t('admin.users.detailReadOnly')}</p>
+              <p className="lf-caption max-w-2xl text-content-muted">{t('admin.users.detailReadOnly')}</p>
 
               <div className="grid gap-3 rounded-xl bg-surface-sunken/40 p-4 sm:grid-cols-2">
                 <div className="min-w-0 sm:col-span-2">

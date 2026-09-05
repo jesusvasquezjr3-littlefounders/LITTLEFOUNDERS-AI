@@ -78,7 +78,7 @@ export function KidTerritoryPage() {
           <Link to="/family" className="lf-caption flex items-center gap-1 font-bold text-primary hover:underline">
             <Icon name="arrow_back" className="text-[16px]" aria-hidden /> {t('family.back')}
           </Link>
-          <h1 className="lf-display mt-1 text-content">{t('family.territoryTitle')}</h1>
+          <h1 className="lf-display-lg mt-1 text-content">{t('family.territoryTitle')}</h1>
           <p className="lf-body text-content-muted">{t('family.territorySubtitle')}</p>
         </div>
         <TerritoryProgressStrip tree={tree} />

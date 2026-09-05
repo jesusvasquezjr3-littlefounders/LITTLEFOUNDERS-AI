@@ -272,7 +272,7 @@ export function AdminPage({
             <h1 className="lf-display-lg">{t(titleKey)}</h1>
             <RoleChip role={tier} />
           </div>
-          {subtitleKey && <p className="lf-body-sm mt-1 text-content-muted">{t(subtitleKey)}</p>}
+          {subtitleKey && <p className="lf-caption mt-1 text-content-muted">{t(subtitleKey)}</p>}
         </div>
         {actions && <div className="flex items-center gap-2">{actions}</div>}
       </header>

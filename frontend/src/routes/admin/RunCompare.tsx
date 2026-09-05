@@ -92,7 +92,7 @@ export function RunCompare({ runs, className }: RunCompareProps) {
   if (runs.length < 2) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm text-content-muted">{t('admin.generation.compare.needTwo')}</p>
+        <p className="lf-caption text-content-muted">{t('admin.generation.compare.needTwo')}</p>
       </Card>
     );
   }
@@ -117,7 +117,7 @@ export function RunCompare({ runs, className }: RunCompareProps) {
 
       {loading && (
         <Card className="p-5">
-          <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+          <p className="lf-caption flex items-center gap-2 text-content-muted">
             <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
           </p>
         </Card>

@@ -82,7 +82,7 @@ export function PoseLabPage() {
   return (
     <div className="mx-auto flex w-full max-w-container flex-col gap-5 px-4 py-6 md:px-6">
       <header>
-        <h1 className="lf-display text-content">Pose lab</h1>
+        <h1 className="lf-display-lg text-content">Pose lab</h1>
         <p className="lf-body text-content-muted">
           {POSES.length} poses · {distinctPoseCount()} distinct renders · {CHARACTER_IDS.length} characters ·
           every entry playable by every one of them

@@ -93,7 +93,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
   if (loading) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+        <p className="lf-caption flex items-center gap-2 text-content-muted">
           <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
         </p>
       </Card>
@@ -103,7 +103,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
   if (error || !report) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm text-content-muted">{error ?? t('admin.generation.coach.empty')}</p>
+        <p className="lf-caption text-content-muted">{error ?? t('admin.generation.coach.empty')}</p>
       </Card>
     );
   }
@@ -143,7 +143,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
         <Card className="p-4 sm:p-5">
           <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.heatmap')}</h3>
           {totalFailures === 0 ? (
-            <p className="lf-body-sm text-content-muted">{t('admin.generation.heatmap.empty')}</p>
+            <p className="lf-caption text-content-muted">{t('admin.generation.heatmap.empty')}</p>
           ) : (
             <div className="space-y-2">
               {heatmapEntries.map(([stage, count]) => (
@@ -160,7 +160,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
         <Card className="p-4 sm:p-5">
           <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.topErrors')}</h3>
           {report.topErrors.length === 0 ? (
-            <p className="lf-body-sm text-content-muted">{t('admin.generation.coach.noErrors')}</p>
+            <p className="lf-caption text-content-muted">{t('admin.generation.coach.noErrors')}</p>
           ) : (
             <ul className="space-y-2">
               {report.topErrors.map((e, i) => (
@@ -275,7 +275,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
                 <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
                   <Badge className={actionTone(a.tag)}>{a.tag}</Badge>
                 </div>
-                <p className="lf-body-sm text-content">{a.proposal}</p>
+                <p className="lf-caption text-content">{a.proposal}</p>
                 <p className="lf-caption mt-1.5 text-content-faint">{a.evidence}</p>
               </li>
             ))}

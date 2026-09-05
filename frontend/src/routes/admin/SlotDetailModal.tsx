@@ -96,11 +96,11 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
 
         <div className="p-5 space-y-4">
           {loading ? (
-            <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+            <p className="lf-caption flex items-center gap-2 text-content-muted">
               <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
             </p>
           ) : !detail ? (
-            <p className="lf-body-sm text-content-muted">{t('admin.generation.slotDetail.notFound')}</p>
+            <p className="lf-caption text-content-muted">{t('admin.generation.slotDetail.notFound')}</p>
           ) : (
             <>
               {/* Status row */}

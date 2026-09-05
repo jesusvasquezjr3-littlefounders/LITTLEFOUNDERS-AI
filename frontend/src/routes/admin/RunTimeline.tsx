@@ -60,7 +60,7 @@ export function RunTimeline({ runId, className }: RunTimelineProps) {
   if (loading) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm flex items-center gap-2 text-content-muted">
+        <p className="lf-caption flex items-center gap-2 text-content-muted">
           <Icon name="progress_activity" className="animate-spin" /> {t('admin.generation.loading')}
         </p>
       </Card>
@@ -73,7 +73,7 @@ export function RunTimeline({ runId, className }: RunTimelineProps) {
   if (!data?.snapshots?.length || data.snapshots.length < 2) {
     return (
       <Card className={cn('p-5', className)}>
-        <p className="lf-body-sm text-content-muted">{t('admin.generation.timeline.insufficient')}</p>
+        <p className="lf-caption text-content-muted">{t('admin.generation.timeline.insufficient')}</p>
       </Card>
     );
   }

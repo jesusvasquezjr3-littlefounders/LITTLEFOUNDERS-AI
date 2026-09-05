@@ -96,7 +96,7 @@ export function FamilyPage() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6 md:px-6">
       <header>
-        <h1 className="lf-display text-content">{t('family.title')}</h1>
+        <h1 className="lf-display-lg text-content">{t('family.title')}</h1>
         <p className="lf-body text-content-muted">{t('family.subtitle')}</p>
       </header>
 
