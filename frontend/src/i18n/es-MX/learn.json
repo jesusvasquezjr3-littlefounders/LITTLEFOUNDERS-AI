@@ -38,5 +38,27 @@
   "courseInProgress": {
     "badge": "En construcción",
     "notice": "Seguimos construyendo este curso: por ahora algunas lecciones van sin voz ni ilustraciones. Gracias por la paciencia."
+  },
+  "carousel": {
+    "label": "Tus cursos",
+    "slide": "Curso {{n}} de {{total}}",
+    "prev": "Curso anterior",
+    "next": "Curso siguiente",
+    "goTo": "Ir a {{title}}",
+    "activeCourse": "CURSO ACTIVO",
+    "nextInPath": "SIGUIENTE EN TU RUTA",
+    "progressTotal": "Progreso del curso",
+    "notStarted": "Por iniciar",
+    "explore": "Explorar curso",
+    "continueLesson": "Continuar lección {{n}}"
+  },
+  "chapter": {
+    "label": "Capítulo {{n}}: {{title}}",
+    "short": "CAPÍTULO {{n}}",
+    "lessonsOf": "{{done}} de {{total}} lecciones",
+    "current": "ACTUAL",
+    "unlockHint": "Termina la lección {{n}} para desbloquear",
+    "lessonCount_one": "{{count}} lección",
+    "lessonCount_other": "{{count}} lecciones"
   }
 }

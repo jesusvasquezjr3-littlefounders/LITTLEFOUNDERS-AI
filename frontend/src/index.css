@@ -167,6 +167,31 @@
       0 16px 32px rgba(0, 0, 0, 0.08),
       0 32px 64px rgba(0, 0, 0, 0.12);
 
+    /*
+     * TACTILE — two layers, and the second one is the whole idea.
+     *
+     * The glass shadows above are ATMOSPHERIC: five diffuse layers describing
+     * how far a pane floats above the page. This is the opposite claim. A
+     * faint ambient diffusion carries the float, and then a hard, zero-blur
+     * RIDGE under the bottom edge says the thing has a side — that it is a
+     * key you could press rather than a card lying on glass. The ridge is
+     * what collapses under `.lf-tactile:active`, so the press is the object
+     * losing its own height and not a transform pretending to.
+     *
+     * --lf-tactile-lift is that height, declared once: the ridge's offset and
+     * the pressed translation MUST be the same number or the surface either
+     * sinks past its own base or never reaches it.
+     */
+    --lf-tactile-lift: 3px;
+    --lf-shadow-tactile:
+      0 10px 25px -5px rgba(15, 23, 42, 0.05),
+      0 var(--lf-tactile-lift) 0 0 rgba(15, 23, 42, 0.08);
+    --lf-shadow-tactile-accent:
+      0 10px 25px -5px rgb(var(--lf-accent) / 0.25),
+      0 var(--lf-tactile-lift) 0 0 rgb(var(--lf-accent-strong));
+    /* The polished top edge every tactile surface catches light on. */
+    --lf-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 100%);
+
     /* Caustic & mesh — barely-there atmosphere, never distracting */
     --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.22) 0%, transparent 55%);
     --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.04) 0deg, rgba(200,230,255,0.04) 90deg, rgba(230,200,255,0.04) 180deg, rgba(200,220,255,0.04) 270deg, rgba(210,210,255,0.04) 360deg);
@@ -380,6 +405,20 @@
       0 16px 32px rgba(0, 0, 0, 0.3),
       0 32px 64px rgba(0, 0, 0, 0.45);
 
+    /*
+     * The ridge in dark mode cannot be a darker black — there is nothing left
+     * to darken against a #0a0e1a ground, and the surface would simply lose
+     * its side. It becomes a LIGHT rim instead: the same physical claim read
+     * off the top of the edge rather than the shadow under it.
+     */
+    --lf-shadow-tactile:
+      0 10px 25px -5px rgba(0, 0, 0, 0.45),
+      0 var(--lf-tactile-lift) 0 0 rgba(255, 255, 255, 0.07);
+    --lf-shadow-tactile-accent:
+      0 10px 25px -5px rgba(0, 0, 0, 0.5),
+      0 var(--lf-tactile-lift) 0 0 rgb(var(--lf-primary-strong));
+    --lf-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+
     /* Caustic & mesh — even more restrained in the dark */
     --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.08) 0%, transparent 55%);
     --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.015) 0deg, rgba(200,230,255,0.015) 90deg, rgba(230,200,255,0.015) 180deg, rgba(200,220,255,0.015) 270deg, rgba(210,210,255,0.015) 360deg);
@@ -417,6 +456,22 @@
      * for half a second every time the light moves.
      */
     --lf-dur-atmosphere: 600ms;
+
+    /*
+     * THE TACTILE TIER (/DESIGN.md §Tactile).
+     *
+     * A seventh duration and a SECOND easing, and the easing is the reason
+     * this tier exists as its own thing rather than as more utilities.
+     * `--lf-ease` decelerates into its target and never passes it — which is
+     * exactly right for a panel settling and exactly wrong for a coin landing
+     * in a slot. `--lf-ease-tactile` overshoots. A reward that overshoots
+     * reads as a physical object with mass; the same motion on a page
+     * transition reads as a bug, which is why the two are separate tokens and
+     * why nothing outside a gamified surface may reach for this one.
+     */
+    --lf-ease-tactile: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --lf-dur-press: 80ms;
+    --lf-dur-reward: 400ms;
   }
 
   /* Global theme transition (Non-negotiable rule) */
@@ -1669,6 +1724,169 @@
   .lf-gaming-btn > * {
     position: relative;
     z-index: auto;
+  }
+
+  /*
+   * A horizontal scroller that keeps its gesture and loses its bar. Not
+   * `overflow: hidden` with a transform: this stays a REAL scroll container,
+   * so a trackpad swipe, a Tab to an offscreen child and a screen reader's
+   * own reading order all keep working (/DESIGN.md §Tactile → the carousel is
+   * a scroller). The bar is hidden because on desktop it sits under the dots,
+   * which already say the same thing more quietly.
+   */
+  .lf-scroll-x {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .lf-scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   * THE TACTILE TIER (/DESIGN.md §Tactile)
+   *
+   * A third material, beside glass (§Elevation) and Lumen (§Lumen). Glass
+   * says "this pane floats above the page"; Lumen says "this plate is lit by
+   * the scene"; tactile says "this is an object with a side, and you can
+   * press it". It exists only on the gamified surfaces — /learn, the lesson
+   * player and the Tutor — and deliberately NOT on marketing, auth, admin or
+   * profile, which keep §Motion recipe 4's quieter `active:translate-y-px`.
+   * Owner decision 2026-09-05: scope it, judge it, then propagate.
+   * ───────────────────────────────────────────────────────────────────── */
+
+  .lf-tactile {
+    box-shadow: var(--lf-shadow-tactile);
+    transition:
+      transform var(--lf-dur-press) ease,
+      box-shadow var(--lf-dur-press) ease;
+  }
+  /*
+   * The press. The surface travels exactly its own ridge height and the ridge
+   * goes to zero in the same frame, so the bottom edge stays put and only the
+   * TOP face moves — which is what a key does. Translating without collapsing
+   * the ridge slides the whole object down the page instead, and reads as a
+   * glitch rather than as a press.
+   */
+  .lf-tactile:active {
+    box-shadow:
+      0 4px 10px -4px rgba(15, 23, 42, 0.06),
+      0 0 0 0 rgba(15, 23, 42, 0.08);
+    transform: translateY(var(--lf-tactile-lift));
+  }
+  .lf-tactile-accent {
+    box-shadow: var(--lf-shadow-tactile-accent);
+  }
+  .lf-tactile-accent:active {
+    box-shadow:
+      0 4px 10px -4px rgb(var(--lf-accent) / 0.3),
+      0 0 0 0 rgb(var(--lf-accent-strong));
+  }
+
+  /*
+   * The polished top edge. An overlay rather than a background, so it composes
+   * over whatever fill the surface already has — a solid CTA, a glass card, a
+   * gradient — instead of replacing it. Inert to the pointer by construction:
+   * §1.14's synthetic-click lesson is that a decorative layer over a control
+   * is a control nobody can press.
+   */
+  .lf-sheen {
+    position: relative;
+    isolation: isolate;
+  }
+  .lf-sheen::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--lf-sheen);
+    content: '';
+    pointer-events: none;
+  }
+
+  /*
+   * A WELL — the inverse of a tactile surface: a recess an object drops into.
+   * Answer slots, coin trays, the empty state of a manipulable. Inset only, no
+   * outer shadow: a hole in the page cannot also float above it.
+   */
+  .lf-well {
+    background: linear-gradient(180deg, rgb(var(--lf-accent-soft)) 0%, rgb(var(--lf-surface)) 100%);
+    box-shadow:
+      inset 0 2px 5px rgb(var(--lf-accent) / 0.08),
+      inset 0 -1px 0 rgb(var(--lf-surface) / 0.8);
+  }
+
+  /*
+   * REWARD MOTION — the one place the overshoot easing is allowed.
+   * One-shot, like every other action in the system (§Motion recipe 7): it
+   * lands and it is over. Nothing here loops.
+   */
+  .lf-land {
+    animation: lf-land var(--lf-dur-reward) var(--lf-ease-tactile) both;
+  }
+  @keyframes lf-land {
+    0% {
+      opacity: 0;
+      transform: translateY(-16px) scale(0.65);
+    }
+    70% {
+      opacity: 1;
+      transform: translateY(2px) scale(1.08);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /*
+   * The mentor's speech tail. A drawn triangle rather than a rotated square,
+   * because a rotated square needs the bubble's exact background to hide its
+   * own corners and stops matching the moment the surface behind it changes.
+   * `currentColor` is set by the caller from the same token the bubble uses.
+   */
+  .lf-bubble-tail {
+    position: relative;
+  }
+  .lf-bubble-tail::after {
+    position: absolute;
+    width: 0;
+    height: 0;
+    content: '';
+    pointer-events: none;
+  }
+  .lf-bubble-tail-bottom::after {
+    bottom: -10px;
+    left: 42px;
+    border-top: 10px solid currentColor;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+  }
+  .lf-bubble-tail-left::after {
+    top: 24px;
+    left: -9px;
+    border-top: 7px solid transparent;
+    border-right: 9px solid currentColor;
+    border-bottom: 7px solid transparent;
+  }
+
+  /*
+   * Reduced motion is a MODIFIER, never a second surface (/DESIGN.md §Motion).
+   * The tactile object keeps its side and keeps answering a press — it simply
+   * stops travelling, and a reward appears where it would have landed. A
+   * control that gives no feedback at all is not a quieter interface, it is a
+   * broken one.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .lf-tactile {
+      transition: box-shadow var(--lf-dur-press) ease;
+    }
+    .lf-tactile:active {
+      transform: none;
+    }
+    .lf-land {
+      animation: none;
+    }
   }
 
 }

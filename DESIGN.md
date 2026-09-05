@@ -1420,6 +1420,121 @@ What the governor may NOT switch off is the shot damper in recipe 9. A locked
 permanently static island, and the damper costs the same single camera write
 per frame either way — so gating it buys no frames and loses the product.
 
+## Tactile — the third material (added 2026-09-05)
+
+Beside glass (§Elevation) and Lumen (§Lumen), a third material with a third
+claim. **Glass says "this pane floats above the page." Lumen says "this plate
+is lit by the scene." Tactile says "this is an object with a side, and you can
+press it."** It came from the Stitch design study *LittleFounders Liquid Glass
+Gamified*, whose own token file turned out to be **this document's colours,
+radii, fonts and glass values verbatim** — so this is not a new palette and
+nothing below changes one. What it adds is a way for a surface to have weight.
+
+### Where it applies, and where it deliberately does not
+
+**Only the gamified surfaces: `learn/`, the lesson player, and the Tutor.**
+Marketing, auth, admin and profile keep §Motion recipe 4's quieter
+`active:translate-y-px`. Owner decision, 2026-09-05: scope it, look at it,
+then propagate — a press physics is the single most-repeated gesture in the
+product and changing it everywhere before anyone has judged it once is a
+change nobody can review.
+
+### The ridge, which is the whole idea
+
+The glass shadows are ATMOSPHERIC: five diffuse layers describing how far a
+pane floats. Tactile makes the opposite claim in two layers — a faint ambient
+diffusion for the float, then a **hard, zero-blur ridge under the bottom edge**
+saying the thing has a SIDE.
+
+```
+--lf-tactile-lift: 3px;                       /* the object's own height */
+--lf-shadow-tactile:        0 10px 25px -5px rgba(15,23,42,.05), 0 3px 0 0 rgba(15,23,42,.08);
+--lf-shadow-tactile-accent: 0 10px 25px -5px accent/.25,        0 3px 0 0 accent-strong;
+```
+
+`--lf-tactile-lift` is declared once because the ridge's offset and the pressed
+translation **must be the same number**. Press travels exactly the object's own
+height and the ridge collapses to zero in the same frame, so the bottom edge
+stays put and only the top face moves — which is what a key does. Translate
+without collapsing the ridge and the whole object slides down the page instead:
+a glitch, not a press.
+
+**In dark mode the ridge inverts.** There is nothing left to darken against a
+`#0a0e1a` ground, so it becomes a light rim — the same physical claim read off
+the top of the edge rather than the shadow beneath it.
+
+### The parts
+
+| Class | What it is |
+|---|---|
+| `.lf-tactile` | The surface: ridge + press. The default for any pressable thing on a gamified screen |
+| `.lf-tactile-accent` | The same, with a tonal ridge in `accent-strong`. Primary CTAs only |
+| `.lf-sheen` | The polished top edge. An `::before` OVERLAY, so it composes over whatever fill the surface already has instead of replacing it — and `pointer-events: none`, because §1.14's synthetic-click lesson is that a decorative layer over a control is a control nobody can press |
+| `.lf-well` | The inverse: a recess an object drops into (answer slots, coin trays). Inset shadow ONLY — a hole in the page cannot also float above it |
+| `.lf-land` | Reward arrival. One-shot, like every other action in the system |
+| `.lf-bubble-tail-*` | The mentor's speech tail. A drawn triangle, not a rotated square: a rotated square needs the bubble's exact background to hide its own corners and stops matching the moment the surface behind it changes |
+| `.lf-scroll-x` | A horizontal scroller that keeps its gesture and loses its bar. A REAL scroll container, never `overflow: hidden` plus a transform |
+
+### A SECOND easing, and it is the reason this is a tier rather than more utilities
+
+```
+--lf-ease-tactile: cubic-bezier(0.34, 1.56, 0.64, 1);   /* overshoots */
+--lf-dur-press: 80ms;
+--lf-dur-reward: 400ms;
+```
+
+`--lf-ease` decelerates into its target and never passes it — exactly right for
+a panel settling, exactly wrong for a coin landing in a slot. A reward that
+overshoots reads as a physical object with mass; **the same motion on a page
+transition reads as a bug.** That is why they are two tokens and why nothing
+outside a gamified surface may reach for the second one.
+
+Reduced motion is a MODIFIER (§Motion): the object keeps its side and keeps
+answering a press, it simply stops travelling, and a reward appears where it
+would have landed. A control that gives no feedback at all is not a quieter
+interface, it is a broken one.
+
+### Layout measures
+
+`max-w-lesson` (768px) and `max-w-board` (1140px), both deliberately under
+`container` (1200px). A lesson stays narrow enough to hold one thought; a
+dashboard may use the freed width. Spreading a lesson to full desktop width is
+how a bite-sized exercise starts reading as a document.
+
+### Screen recipes → Learn
+
+**Carousel, then chapter.** Two objects in the order a learner needs them:
+WHICH course, then WHICH lesson.
+
+1. **Course carousel** — one card per course, the one in progress leading and
+   badged `ACTIVE COURSE`, the rest `NEXT IN YOUR PATH`. Progress bar and a
+   percentage chip when started, a quiet "not started" line when not. **It is a
+   scroller, not a slideshow**: a real overflow container with CSS scroll-snap,
+   so a touch drag, a trackpad swipe, a Tab to an offscreen card and a screen
+   reader's own reading order all work with no JavaScript. The arrows and dots
+   only call `scrollTo`. Two consequences that are easy to get wrong: the
+   active dot is read off the scroller (a state variable only the arrows write
+   goes out of phase the first time somebody swipes), and it is read from the
+   **leading** card, not the centred one — with three cards visible, "nearest
+   the middle" lights card 2 while card 1 is flush left, and it does so on the
+   first paint, before anybody has scrolled.
+2. **Chapter lesson list** — ONE chapter, the one the learner is inside, as a
+   run of rows: a state token, the number and title, a state line, minutes, an
+   XP chip. The current row takes the accent ring and a `CURRENT` badge; the
+   next chapter follows as a single collapsed row. Not the whole course — a
+   course is dozens of lessons and this screen answers "what do I do next",
+   which is exactly one of them. **Every state is server-derived** (`LessonNode.state`
+   from Core's course tree) and never recomputed here from progress numbers: a
+   client that decides for itself what is unlocked is a client that can be told
+   otherwise. A locked row is TEXT, not a disabled button — a disabled control
+   still takes focus in some assistive technologies and promises something
+   pressing will never deliver.
+
+This replaced a hero card for one course followed by a grid of the same
+courses. Two lists of the same objects, where the grid existed only to reach a
+course the hero was not showing — which is what a carousel does, in the space
+the hero already had.
+
 ## Shapes
 
 Pills (`rounded-full`) for everything interactive-and-small: buttons, badges,

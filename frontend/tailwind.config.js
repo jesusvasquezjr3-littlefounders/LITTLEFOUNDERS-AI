@@ -69,14 +69,27 @@ export default {
       glass: 'var(--lf-shadow-glass)',
       'glass-sm': 'var(--lf-shadow-glass-sm)',
       pop: 'var(--lf-shadow-pop)',
+      // The tactile tier (/DESIGN.md §Tactile). Prefer the `.lf-tactile`
+      // component class, which also carries the press; these exist for a
+      // surface that needs the ridge without being pressable.
+      tactile: 'var(--lf-shadow-tactile)',
+      'tactile-accent': 'var(--lf-shadow-tactile-accent)',
     },
     extend: {
       maxWidth: {
         container: '1200px',
+        // The gamified reading measures (/DESIGN.md §Tactile → Layout): a
+        // lesson stays narrow enough to hold one thought, a dashboard may use
+        // the freed width. Both are deliberately under `container`.
+        lesson: '768px',
+        board: '1140px',
       },
       spacing: {
         sidebar: '280px',
         'sidebar-sm': '88px',
+      },
+      transitionTimingFunction: {
+        tactile: 'var(--lf-ease-tactile)',
       },
     },
   },

@@ -40,8 +40,18 @@ function courses(count: number) {
   }));
 }
 
+/*
+ * Answer BY URL, not by call order. The page makes a second, dependent request
+ * for the featured course's tree (the chapter list), and a `mockResolvedValueOnce`
+ * left that one returning undefined — which the page now survives, but which
+ * also meant the test was quietly exercising a failure path rather than the
+ * screen a learner sees.
+ */
 function renderWith(count: number) {
-  mockedApi.mockResolvedValueOnce({ data: { courses: courses(count) }, error: null });
+  mockedApi.mockImplementation(async (path: string) => {
+    if (path.endsWith('/tree')) return { data: null, error: { code: 'NOT_FOUND', message: 'no tree in this fixture' } };
+    return { data: { courses: courses(count) }, error: null };
+  });
   return render(
     <MemoryRouter>
       <LearnPage />
@@ -83,11 +93,16 @@ describe('LearnPage', () => {
   it('says each course once: art, title, and one pair of numbers', async () => {
     renderWith(3);
 
-    // The resume card names the featured course, and its own card names it
-    // again. Nothing else does: no category caption echoing the filter that
-    // is not on screen, no lesson-count badge echoing the progress total,
-    // no per-card CTA echoing the card it sits in.
-    expect(await screen.findAllByText('First Business')).toHaveLength(2);
+    /*
+     * ONCE, and this is the assertion the redesign actually changed. It used
+     * to expect TWO — a hero card naming the featured course and a grid card
+     * naming it again — under a test whose own name said "once". The carousel
+     * replaced both with one card per course, so the number now agrees with
+     * the sentence. Nothing else echoes it: no category caption for a filter
+     * that is not on screen, no lesson-count badge repeating the progress
+     * total, no per-card CTA naming the card it sits in.
+     */
+    expect(await screen.findAllByText('First Business')).toHaveLength(1);
     expect(screen.queryByText('4 lessons')).not.toBeInTheDocument();
     expect(screen.queryByText('Financial Literacy')).not.toBeInTheDocument();
     expect(screen.queryByText('Open Course Map')).not.toBeInTheDocument();

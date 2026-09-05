@@ -93,6 +93,53 @@ export function localizedText(value: Json | null | undefined, locale: string, fa
   return first ?? fallback
 }
 
+/*
+ * The chapter a learner is inside, flattened out of the tree for the /learn
+ * chapter list. A course nests adventure > saga > topic > lesson; what that
+ * screen shows is ONE topic, so the walk is done once here rather than in the
+ * component, and the numbering comes from the walk order — the flat index a
+ * learner would count, which is what "Chapter 3" means to them and is not a
+ * field the tree carries.
+ *
+ * Returns null when nothing is in progress (a finished course, or one whose
+ * placement quiz has not run), and the caller renders no list rather than
+ * guessing at a chapter.
+ */
+export interface CurrentChapter {
+  topic: TopicNode
+  /** 1-based position among ALL topics in the course, in tree order. */
+  number: number
+  next: TopicNode | null
+  nextNumber: number | null
+}
+
+export function findCurrentChapter(tree: CourseTree): CurrentChapter | null {
+  const flat: TopicNode[] = []
+  for (const adventure of tree.adventures) {
+    for (const saga of adventure.sagas) {
+      for (const topic of saga.topics) flat.push(topic)
+    }
+  }
+  if (flat.length === 0) return null
+
+  // The chapter holding the next lesson, else the first with anything unfinished.
+  let at = tree.nextLessonId
+    ? flat.findIndex((topic) => topic.lessons.some((l) => l.id === tree.nextLessonId))
+    : -1
+  if (at === -1) at = flat.findIndex((topic) => topic.lessons.some((l) => l.state !== 'passed'))
+  if (at === -1) return null
+
+  const topic = flat[at]
+  if (!topic) return null
+
+  return {
+    topic,
+    number: at + 1,
+    next: flat[at + 1] ?? null,
+    nextNumber: flat[at + 1] ? at + 2 : null,
+  }
+}
+
 /** Which adventure (by id) a lesson belongs to — used to auto-open the accordion around nextLessonId. */
 export function findAdventureForLesson(tree: CourseTree, lessonId: string): string | null {
   for (const adventure of tree.adventures) {

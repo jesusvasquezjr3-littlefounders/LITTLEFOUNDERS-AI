@@ -1445,10 +1445,10 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## Class III actually closed: a market stall, placed by the real solver, and a live regression it found in the process (2026-09-03)
+## The first frame: a boot dissolve, and the flash of the wrong theme it also closed (2026-09-04)
 
-**A stall — the first object on the Tutor's island that is neither a rigged
-character nor a flat billboard.** Built as `three.js` primitives
+**Reported as "al cargar la página lo primero que carga es el Texto".** It was
+worse than reported, and photographing it rather than reasoning about it is what
 ```
 
 ### agent/README.md
@@ -25151,19 +25151,19 @@ import { visibleAdminSections } from '@/routes/admin/adminNav';
 ```
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
-import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
-import CharacterActor from '@/components/characters/control/CharacterActor';
+import { Card, LoadingOverlay, Reveal } from '@/components/ui';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
-import { courseBadgeAsset } from '@/lib/courseBadges';
+import { CourseCarousel, type CarouselCourse } from '@/routes/app/learn/CourseCarousel';
+import { ChapterLessons } from '@/routes/app/learn/ChapterLessons';
+import { findCurrentChapter, type CourseTree, type CurrentChapter } from '@/routes/app/learn/types';
 
 /*
- * learn/ — the learner's home (/DESIGN.md §Screen Recipes → Learn).
- * One greeting, one resume card, one grid. Every element that only restated
+ * learn/ — the learner's home (/DESIGN.md §Tactile → Screen recipes → Learn).
+ *
+ * Two objects, in the order a learner needs them: WHICH course, then WHICH
 ```
 
 ### frontend/src/routes/app/SectionComingSoon.tsx
@@ -25484,6 +25484,46 @@ import { localizedText, type AdventureNode } from './types';
 
 interface AdventureBannerProps {
   adventure: AdventureNode;
+```
+
+### frontend/src/routes/app/learn/ChapterLessons.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { Icon } from '@/components/ui';
+import { localizedText, type LessonNode, type TopicNode } from '@/routes/app/learn/types';
+
+/*
+ * The chapter lesson list (/DESIGN.md §Tactile → Screen recipes → Learn).
+ *
+ * One chapter — the one the learner is inside — as a vertical run of lesson
+ * rows, followed by the next chapter as a single collapsed row. Not the whole
+ * course: a course is dozens of lessons and the question this screen answers
+ * is "what do I do next", which is exactly one of them.
+ *
+ * EVERY STATE IS SERVER-DERIVED. `LessonNode.state` comes from Core's course
+ * tree (courseTree.ts, migration 0016) and is never recomputed here from
+```
+
+### frontend/src/routes/app/learn/CourseCarousel.tsx
+
+```
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { Icon, ProgressBar } from '@/components/ui';
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
+import { courseBadgeAsset } from '@/lib/courseBadges';
+
+/*
+ * The course carousel (/DESIGN.md §Tactile → Screen recipes → Learn).
+ *
+ * Replaces the old single hero card plus a grid of the same courses
+ * underneath. Two lists of the same objects is one list too many: the grid
+ * existed to let a learner reach a course the hero was not showing, and a
+ * carousel does that in the space the hero already occupied.
+ *
 ```
 
 ### frontend/src/routes/app/learn/CoursePage.tsx

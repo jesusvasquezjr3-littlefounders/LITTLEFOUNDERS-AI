@@ -38,5 +38,27 @@
   "courseInProgress": {
     "badge": "Still being built",
     "notice": "We're still building this course: some lessons don't have narration or illustrations yet. Thanks for your patience."
+  },
+  "carousel": {
+    "label": "Your courses",
+    "slide": "Course {{n}} of {{total}}",
+    "prev": "Previous course",
+    "next": "Next course",
+    "goTo": "Go to {{title}}",
+    "activeCourse": "ACTIVE COURSE",
+    "nextInPath": "NEXT IN YOUR PATH",
+    "progressTotal": "Course progress",
+    "notStarted": "Not started",
+    "explore": "Explore course",
+    "continueLesson": "Continue lesson {{n}}"
+  },
+  "chapter": {
+    "label": "Chapter {{n}}: {{title}}",
+    "short": "CHAPTER {{n}}",
+    "lessonsOf": "{{done}} of {{total}} lessons",
+    "current": "CURRENT",
+    "unlockHint": "Finish lesson {{n}} to unlock",
+    "lessonCount_one": "{{count}} lesson",
+    "lessonCount_other": "{{count}} lessons"
   }
 }
