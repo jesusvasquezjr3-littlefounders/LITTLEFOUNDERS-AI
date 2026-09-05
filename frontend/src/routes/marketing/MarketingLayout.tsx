@@ -56,7 +56,7 @@ export function MarketingLayout() {
         <div className="mx-auto flex h-[4.6rem] min-w-0 max-w-container items-center justify-between gap-2 px-4 sm:gap-4 sm:px-5 md:px-8">
           <Link
             to="/"
-            className="flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <img
               src="/logo-main-trimmed.png"
@@ -148,7 +148,7 @@ export function MarketingLayout() {
               <li>
                 <Link
                   to="/legal/terms"
-                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
+                  className="lf-press lf-body inline-flex min-h-11 items-center rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
                 >
                   {t('marketing.footer.terms')}
                 </Link>
@@ -159,7 +159,7 @@ export function MarketingLayout() {
               <li>
                 <Link
                   to="/legal/privacy"
-                  className="lf-body inline-flex min-h-11 items-center rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
+                  className="lf-press lf-body inline-flex min-h-11 items-center rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
                 >
                   {t('marketing.footer.privacy')}
                 </Link>

@@ -738,7 +738,7 @@ function IntroScreen({
           type="button"
           onClick={onExit}
           aria-label={t('lesson.exit')}
-          className="flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-content/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+          className="lf-press flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-content/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
         >
           <Icon name="close" />
         </button>
@@ -941,7 +941,7 @@ function FeedbackBanner({
               <button
                 type="button"
                 onClick={onNext}
-                className="rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                className="lf-press rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
               >
                 {t('lesson.skip')}
               </button>

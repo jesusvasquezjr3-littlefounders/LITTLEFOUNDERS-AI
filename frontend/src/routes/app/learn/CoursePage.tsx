@@ -146,7 +146,7 @@ export function CoursePage() {
           <Link
             to="/learn"
             aria-label={t('dashboard.nav.learn')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <Icon name="arrow_back" className="!text-[20px]" aria-hidden />
           </Link>
@@ -161,7 +161,7 @@ export function CoursePage() {
             to={`/learn/${tree.course.slug}/territory`}
             aria-label={t('learn.territory.open')}
             title={t('learn.territory.open')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <Icon name="map" className="!text-[20px]" aria-hidden />
           </Link>
@@ -221,7 +221,7 @@ export function CoursePage() {
         <button
           type="button"
           onClick={goToMyLesson}
-          className="lf-label motion-safe-press fixed bottom-20 right-4 z-40 flex min-h-11 items-center gap-2 rounded-full bg-accent px-5 py-3 text-on-accent shadow-pop transition-colors duration-150 hover:bg-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:bottom-8 lg:right-8"
+          className="lf-press lf-label motion-safe-press fixed bottom-20 right-4 z-40 flex min-h-11 items-center gap-2 rounded-full bg-accent px-5 py-3 text-on-accent shadow-pop transition-colors duration-150 hover:bg-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:bottom-8 lg:right-8"
         >
           <Icon name="target" className="!text-[18px] text-current" aria-hidden />
           {t('learn.goToMyLesson')}

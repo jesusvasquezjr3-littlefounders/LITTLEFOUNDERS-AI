@@ -653,7 +653,7 @@ export function ConversationView({
           onClick={submitTyped}
           disabled={typed.trim() === '' || ended || awaitingReply}
           aria-label={t('tutor.conversation.send')}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-content transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
+          className="lf-press grid h-11 w-11 shrink-0 place-items-center rounded-md text-content transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
         >
           <Icon name="send" />
         </button>

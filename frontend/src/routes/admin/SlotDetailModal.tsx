@@ -89,7 +89,7 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
               <p className="lf-caption text-content-muted">{detail.run.courseSlug} · {detail.run.register}</p>
             )}
           </div>
-          <button onClick={onClose} className="shrink-0 rounded-full p-1.5 hover:bg-surface-sunken transition-colors" aria-label={t('actions.close')}>
+          <button onClick={onClose} className="lf-press shrink-0 rounded-full p-1.5 hover:bg-surface-sunken transition-colors" aria-label={t('actions.close')}>
             <Icon name="close" className="text-[20px] text-content-muted" />
           </button>
         </div>

@@ -107,7 +107,7 @@ export function LoginPage() {
           />
           <Link
             to="/forgot-password"
-            className="lf-caption self-end rounded-sm text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press lf-caption self-end rounded-sm text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t('auth.login.forgotPassword')}
           </Link>

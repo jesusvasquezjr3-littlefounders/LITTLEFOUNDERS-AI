@@ -1514,6 +1514,48 @@ answering a press, it simply stops travelling, and a reward appears where it
 would have landed. A control that gives no feedback at all is not a quieter
 interface, it is a broken one.
 
+### The answer object's side, and why it is not `.lf-tactile`
+
+`.lf-answer` (§Answer surfaces) is made of LIGHT, not tone — a convex gradient,
+a specular lip, a seat mixed from `--lf-lumen-shade` — precisely so the same
+object can composite over the Tutor's moving island and over a flat page.
+`.lf-tactile`'s ridge is a flat tone and would go opaque and wrong the moment
+the sun moved. So the answer object gets its side in its OWN idiom: a fourth
+shadow layer, zero blur, mixed from the same shade at 1.7× the seat's alpha,
+offset by `--lf-obj-ridge`. The press travels that height and collapses the
+side in the same frame.
+
+**This is the general rule for the tier.** A material that already has a
+physics gets the ridge expressed in its own terms; only a plain surface takes
+`.lf-tactile` wholesale.
+
+### Where the Stitch study is deliberately NOT followed
+
+Two of the study's dark-panel values are rejected, and the reasons are already
+in §Lumen:
+
+- **`border: 1px rgba(255,255,255,.12)`** — a white lip over a warm island is
+  the single loudest "sticker" cue there is. The edge stays the scene's own
+  shade.
+- **`backdrop-filter: saturate(1.8)`** — `--lf-lumen-chroma` is deliberately
+  under 1 so what shows through keeps its luminance and loses its hue, and the
+  plate never picks up a colour that competes with the words on it. This is
+  half of the contrast contract, not a taste.
+
+The study is drawn over a flat radial gradient and never had to solve either
+problem. Its PRESENCE is still owed, so it is bought where this material can
+afford it: a deeper, longer seat, a stronger specular lip in the key light's
+own colour, and a more present edge ink (9% → 16%). Same read, no white edge,
+contract intact.
+
+**The Tutor's lesson panel stays full-height and docked** (`inset-y-0
+right-0`), against the study's floating card. That geometry is what the speech
+caption's `docked: 'panel'` escape is computed from — an adversarial review
+(round 43) found the caption falling back to an unwinnable clamp the last time
+the two disagreed — and the "rejected two-panel split" post-mortem in
+`hud/LessonPlate.tsx` already argued the case. A floating panel is a change to
+that contract, not a restyle.
+
 ### Layout measures
 
 `max-w-lesson` (768px) and `max-w-board` (1140px), both deliberately under

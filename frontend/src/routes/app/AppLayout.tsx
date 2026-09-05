@@ -180,7 +180,7 @@ export function AppLayout() {
           aria-label={collapsed ? t('dashboard.sidebar.expand') : t('dashboard.sidebar.collapse')}
           aria-expanded={!collapsed}
           onClick={toggleCollapsed}
-          className="absolute -right-3.5 top-7 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-outline bg-surface text-content-muted shadow-glass-sm transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="lf-press absolute -right-3.5 top-7 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-outline bg-surface text-content-muted shadow-glass-sm transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <Icon name={collapsed ? 'chevron_right' : 'chevron_left'} className="!text-[18px]" />
         </button>

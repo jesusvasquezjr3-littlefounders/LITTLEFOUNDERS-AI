@@ -388,7 +388,7 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
           <button
             type="button"
             onClick={onBackToWorld}
-            className="lf-glass absolute left-3 top-3 z-10 flex min-h-11 max-w-[38%] items-center gap-1.5 rounded-full border border-outline/50 px-3 py-1.5 font-bold text-content shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press lf-glass absolute left-3 top-3 z-10 flex min-h-11 max-w-[38%] items-center gap-1.5 rounded-full border border-outline/50 px-3 py-1.5 font-bold text-content shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <Icon name="arrow_back" className="!text-[18px] shrink-0" />
             <span className="lf-caption truncate">{t('admin.analytics.geo.backToWorld')}</span>

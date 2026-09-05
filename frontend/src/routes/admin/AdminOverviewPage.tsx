@@ -108,7 +108,7 @@ export function AdminOverviewPage() {
                 <Link
                   key={act.key}
                   to={act.path}
-                  className="motion-safe-press group flex flex-col gap-2 p-3.5 rounded-xl bg-surface-sunken/60 hover:bg-primary-soft/40 border border-outline/30 hover:border-primary/40 transition-all duration-150"
+                  className="lf-press motion-safe-press group flex flex-col gap-2 p-3.5 rounded-xl bg-surface-sunken/60 hover:bg-primary-soft/40 border border-outline/30 hover:border-primary/40 transition-all duration-150"
                 >
                   <div className="flex items-center justify-between">
                     <div className="p-2 rounded-lg bg-surface text-primary group-hover:bg-primary group-hover:text-white transition-colors">
@@ -149,7 +149,7 @@ export function AdminOverviewPage() {
               {o && o.content.reviewQueue > 0 && (
                 <Link
                   to="/admin/content"
-                  className="motion-safe-press flex items-center justify-between rounded-xl bg-warning-soft px-4 py-3 text-warning-strong transition-colors hover:bg-warning-soft/70"
+                  className="lf-press motion-safe-press flex items-center justify-between rounded-xl bg-warning-soft px-4 py-3 text-warning-strong transition-colors hover:bg-warning-soft/70"
                 >
                   <span className="lf-label flex items-center gap-2">
                     <Icon name="gpp_maybe" /> {t('admin.overview.reviewCta', { count: o.content.reviewQueue })}

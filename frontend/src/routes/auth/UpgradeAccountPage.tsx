@@ -93,7 +93,7 @@ export function UpgradeAccountPage() {
           {t('auth.upgrade.loginPrompt')}{' '}
           <Link
             to="/login"
-            className="lf-label rounded-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press lf-label rounded-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t('auth.upgrade.loginLink')}
           </Link>

@@ -66,7 +66,7 @@ export function MapOverlay({ map, onClose }: { map: TutorMapResponse; onClose: (
             onClick={onClose}
             aria-label={t('tutor.map.closeLabel')}
             title={t('tutor.map.closeLabel')}
-            className="pointer-events-auto shrink-0 rounded-full p-1.5 text-content-muted hover:bg-content/10 hover:text-content"
+            className="lf-press pointer-events-auto shrink-0 rounded-full p-1.5 text-content-muted hover:bg-content/10 hover:text-content"
           >
             <Icon name="close" />
           </button>

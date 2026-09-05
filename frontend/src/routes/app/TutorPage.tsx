@@ -76,7 +76,7 @@ function StageFailure() {
       <p className="lf-body max-w-[46ch] text-content-muted">{t('tutor.scene.loadFailed')}</p>
       <Link
         to={APP_HOME}
-        className="lf-glass lf-label flex min-h-11 items-center rounded-full px-5 text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="lf-press lf-glass lf-label flex min-h-11 items-center rounded-full px-5 text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         {t('tutor.stage.leave')}
       </Link>

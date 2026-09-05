@@ -16871,16 +16871,16 @@ import { cn } from '@/lib/utils';
 
 /*
  * /DESIGN.md §Components — Button: full pill (rounded-full), bold label,
- * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
+ * TACTILE press, color-shift hover. No scale, no 3D.
  *
- * Variant = the action's color, per the Action Color Contract (/DESIGN.md
- * §Colors): primary = the one main CTA (indigo), secondary = alternative/
- * lower-emphasis (outlined glass), success = positive completion, danger =
- * destructive. Never pick a variant by taste — pick by what the action does.
- */
-
-type Variant = 'primary' | 'secondary' | 'success' | 'danger';
-
+ * The press is the tactile tier's (/DESIGN.md §Tactile): the button carries a
+ * ridge the height of its own travel, and pressing collapses the ridge as the
+ * face descends, so the bottom edge never moves. It replaced a 1px
+ * `active:translate-y-px` across the whole product on 2026-09-05 — this is the
+ * single most-repeated gesture in the app, and one component owning it is what
+ * makes that a one-line change rather than a sweep.
+ *
+ * The ridge's COLOUR comes from the variant, through `--lf-ridge`, so a
 ```
 
 ### frontend/src/components/ui/Card.tsx
@@ -16894,13 +16894,13 @@ import { cn } from '@/lib/utils';
  * hairline edge, and layered atmospheric depth.
  * `onInverse` = deep glass variant for inverse bands.
  * `hero` = larger radius + padding for banner cards.
- */
-
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  hero?: boolean;
-  interactive?: boolean;
-  onInverse?: boolean;
-}
+ *
+ * `interactive` is the one that changed on 2026-09-05. A card you can press
+ * is an OBJECT, so it gets the tactile tier's ridge (/DESIGN.md §Tactile) and
+ * presses like every other control in the product. It keeps the hover lift —
+ * hover says "this responds" on a pointer device, and the press says "you got
+ * it" on every device; a phone only ever sees the second, which is exactly
+ * why the lift alone was never enough feedback.
 ```
 
 ### frontend/src/components/ui/Checkbox.tsx

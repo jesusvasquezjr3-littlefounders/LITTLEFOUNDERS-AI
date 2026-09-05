@@ -2325,7 +2325,7 @@ function YourTurnBoard({ board, seq, className }: { board: YourTurnWire; seq: nu
                       ? t('tutor.whiteboard.yourTurn.undo', { n: captionFor(i) })
                       : t('tutor.whiteboard.yourTurn.reveal', { n: captionFor(i) })
                 }
-                className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1 rounded-md p-1 enabled:hover:bg-primary/5"
+                className="lf-press flex min-w-[3.5rem] flex-1 flex-col items-center gap-1 rounded-md p-1 enabled:hover:bg-primary/5"
               >
                 <span className="lf-number lf-title text-content" aria-hidden="true">
                   {shown ? format(value) : ''}

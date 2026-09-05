@@ -40,7 +40,7 @@ export function AuthLayout() {
         <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-4 px-5 md:px-8">
           <Link
             to="/"
-            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <img
               src="/logo-main-trimmed.png"

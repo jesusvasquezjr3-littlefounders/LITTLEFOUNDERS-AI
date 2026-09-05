@@ -301,7 +301,7 @@ function SoundBlockedNotice({ onDismiss }: { onDismiss: () => void }) {
       <button
         type="button"
         onClick={onDismiss}
-        className="lf-lumen pointer-events-auto flex max-w-[min(92vw,26rem)] items-center gap-2 rounded-full px-4 py-2 text-left"
+        className="lf-press lf-lumen pointer-events-auto flex max-w-[min(92vw,26rem)] items-center gap-2 rounded-full px-4 py-2 text-left"
       >
         <Icon name="volume_off" className="shrink-0 text-[18px] text-content-muted" aria-hidden />
         <span className="lf-caption text-content">{t('tutor.stage.soundBlocked')}</span>

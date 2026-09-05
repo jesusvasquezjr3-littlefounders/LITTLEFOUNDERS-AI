@@ -277,12 +277,27 @@
      * would mean a style write per frame. Length and diffusion are what a
      * viewer actually reads as an hour, and they cost nothing.
      */
-    --lf-lumen-drop-y: calc(4px + (1 - var(--lf-sun-height)) * 12px);
-    --lf-lumen-drop-blur: calc(14px + (1 - var(--lf-sun-height)) * 28px);
-    --lf-lumen-drop-alpha: calc((0.12 + (1 - var(--lf-sun-height)) * 0.16) * 100%);
+    /*
+     * DEEPENED 2026-09-05, against the Stitch study.
+     *
+     * The study's dark panels read with far more presence than ours, and the
+     * two things doing it there are a white 1px rim and `saturate(1.8)`. This
+     * system rejects BOTH in writing, and the reasons hold: a white lip over a
+     * warm island is the loudest "sticker" cue there is, and chroma under 1
+     * exists so a plate never picks up a hue that competes with the words on
+     * it. The study is drawn over a flat radial gradient and never had to
+     * solve either problem.
+     *
+     * So the presence is bought where this material can afford it — a deeper,
+     * longer seat and a stronger specular lip IN THE KEY LIGHT'S OWN COLOUR.
+     * Same read, no white edge, contrast contract untouched.
+     */
+    --lf-lumen-drop-y: calc(8px + (1 - var(--lf-sun-height)) * 16px);
+    --lf-lumen-drop-blur: calc(28px + (1 - var(--lf-sun-height)) * 34px);
+    --lf-lumen-drop-alpha: calc((0.22 + (1 - var(--lf-sun-height)) * 0.24) * 100%);
     /* The specular lip, in the KEY light's own colour. Strong at noon, nearly
        gone at dusk — which is what a horizontal edge does under a low sun. */
-    --lf-lumen-rim: calc((0.10 + var(--lf-sun-height) * 0.26) * 100%);
+    --lf-lumen-rim: calc((0.18 + var(--lf-sun-height) * 0.34) * 100%);
 
     /* Where the sky's glow sits behind the island. Centred horizontally on
        purpose: the sun's world azimuth is not its screen azimuth once the
@@ -716,7 +731,7 @@
       inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-lumen-rim), transparent),
       /* the edge — the scene's own shade, never a white hairline. A white lip
          on a warm island is the single loudest "sticker" cue there is. */
-      inset 0 0 0 1px color-mix(in srgb, var(--lf-lumen-shade) 9%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--lf-lumen-shade) 16%, transparent),
       /* one shadow, agreeing with the sun, instead of five atmospheric layers
          that agree with nothing */
       0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)

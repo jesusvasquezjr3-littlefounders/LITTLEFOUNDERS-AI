@@ -249,7 +249,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="flex w-full items-center justify-center gap-2 rounded-md py-2 lf-caption text-content-muted hover:bg-surface-sunken hover:text-content"
+                className="lf-press flex w-full items-center justify-center gap-2 rounded-md py-2 lf-caption text-content-muted hover:bg-surface-sunken hover:text-content"
               >
                 <Icon name="arrow_upward" />
                 <span>{t('marketing.legal.meta.backToTop')}</span>

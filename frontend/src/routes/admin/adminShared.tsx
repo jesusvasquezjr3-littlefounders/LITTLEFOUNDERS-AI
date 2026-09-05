@@ -187,7 +187,7 @@ export function AdminDialog({
             type="button"
             onClick={onClose}
             aria-label={t('admin.close')}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-surface-sunken hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press flex min-h-11 min-w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-surface-sunken hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <Icon name="close" />
           </button>

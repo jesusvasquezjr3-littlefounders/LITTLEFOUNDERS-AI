@@ -80,7 +80,7 @@ export function AuthCallbackPage() {
         failed ? (
           <Link
             to="/login"
-            className="lf-label rounded-sm text-primary hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press lf-label rounded-sm text-primary hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t('auth.social.backToLogin')}
           </Link>
