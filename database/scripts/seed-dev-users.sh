@@ -50,7 +50,14 @@ create_user() {
 echo "==> Creating test users via GoTrue admin API"
 create_user universal@email.com          'Testing Universal'
 create_user tutor@email.com              'Testing Tutor'
-create_user kid@email.com                'Testing Niño'
+# A JSON \u escape, not a literal accented character. The name travels to
+# GoTrue as a JSON body built by shell interpolation, and on Git Bash for
+# Windows the UTF-8 bytes were replaced in transit: the script's own bytes
+# were correct (c3 b1) and the row landed as the REPLACEMENT character
+# (efbfbd), so the name was already lost before Postgres saw it. \u escapes
+# are pure ASCII, which no shell or locale can corrupt, and every JSON parser
+# decodes them correctly. Verified against the stored bytes, not assumed.
+create_user kid@email.com                'Testing Ni\u00f1o'
 create_user bigfounder@email.com         'Testing BigFounder'
 create_user admin@email.com              'Testing Admin'
 create_user superadmin@littlefounders.ai 'Testing Superadmin'

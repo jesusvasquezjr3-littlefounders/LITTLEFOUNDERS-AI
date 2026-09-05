@@ -947,10 +947,15 @@ function FeedbackBanner({
                  * something prominent (E5) — but it measured 32px, under
                  * DESIGN's 44px floor, on a control whose whole job is being
                  * pressed by someone who has just got an answer wrong.
-                 * `min-h-11` restores the floor and changes nothing about how
-                 * loud it looks: it is still small underlined muted text.
+                 * `min-h-12` and not `min-h-11`: inside the lesson engine, 48
+                 * is the TARGET and 44 is only the floor (§Answer surfaces),
+                 * and answerSurfaces.test.tsx enforces the difference. Picking
+                 * the floor for a control a frustrated child reaches for is
+                 * exactly the case the distinction was written for. It changes
+                 * nothing about how loud it looks: still small underlined
+                 * muted text.
                  */
-                className="lf-press inline-flex min-h-11 items-center rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                className="lf-press inline-flex min-h-12 items-center rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
               >
                 {t('lesson.skip')}
               </button>
