@@ -16425,6 +16425,26 @@ const RENDER_LIMIT = 25;
  * identity every render, so the effect re-ran every render, called
 ```
 
+### frontend/src/__tests__/bootVeil.test.ts
+
+```
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+/*
+ * The boot veil (/DESIGN.md §Motion recipe 11) lives in index.html, so its
+ * values sit OUTSIDE the module graph every other test can reach: nothing
+ * imports it, nothing type-checks it, and a change to the palette or to the
+ * prerenderer cannot break it loudly. That makes it exactly the shape §1.14
+ * keeps naming — a constant hand-copied into a second file, where the copies
+ * drift silently and the failure is cosmetic rather than thrown. This file is
+ * the gate that pins the copies together.
+ */
+
+const FRONTEND = resolve(__dirname, '../..');
+```
+
 ### frontend/src/auth/AuthContext.test.tsx
 
 ```
@@ -19934,6 +19954,26 @@ import { avataaars } from '@dicebear/collection';
  * S17, TUTOR_INSTRUMENTS.md §3.4) as of this comment — never duplicates
  * DiceBear's own options-to-URI shape.
  */
+```
+
+### frontend/src/lib/boot.ts
+
+```
+/*
+ * Releasing the boot veil (/DESIGN.md §Motion recipe 11).
+ *
+ * index.html arms the veil before the first paint and owns the release ITSELF
+ * (`window.__lfBoot.release`), so the dissolve's duration is read from the
+ * stylesheet that declares it instead of being hand-copied into this bundle —
+ * the drift class §1.14 keeps naming. What lives here is the only part the
+ * bundle is in a position to know: WHEN there is something worth looking at.
+ *
+ * Idempotent by construction. StrictMode double-invokes effects in
+ * development, and the fail-open in index.html can fire at any time; a second
+ * release must not restart a dissolve that is already running.
+ */
+
+declare global {
 ```
 
 ### frontend/src/lib/courseBadges.ts
@@ -26756,7 +26796,7 @@ import i18n from '@/i18n'
 ### frontend/src/theme/useTheme.tsx
 
 ```
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
 export type ThemeChoice = 'auto' | 'light' | 'dark';
 
@@ -32216,6 +32256,9 @@ describe('what counts as announcing an activity', () => {
 ```
 import { describe, expect, it } from 'vitest';
 import {
+  saysNothingNew,
+  offeredNoAnswer,
+  praisesAnUnofferedAnswer,
   asksMultipleQuestions,
   buildContextMessage,
   contradictsItsOwnShortfall,
@@ -32226,9 +32269,6 @@ import {
   reusesATemplate,
   TUTOR_SYSTEM_PROMPT,
 } from '../tutor/prompt.js';
-import { buildPlan, planState } from '../tutor/plan.js';
-import type { TutorContext } from '../context/schema.js';
-
 ```
 
 ### oracle/src/__tests__/review-moderation-batch.test.ts

@@ -9,6 +9,98 @@
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
+## The first frame: a boot dissolve, and the flash of the wrong theme it also closed (2026-09-04)
+
+**Reported as "al cargar la página lo primero que carga es el Texto".** It was
+worse than reported, and photographing it rather than reasoning about it is what
+showed the second half. Three defects shared one window — the interval between
+the browser's first frame and React's first commit — and nothing owned that
+window at all.
+
+**One: production served a screen of raw, unstyled marketing text.** The SEO
+prerenderer (§1.15) writes a real content shell inside `#root` so crawlers and
+unfurlers can read the page, and `createRoot` does not clear that container
+until it commits. So every visitor met the shell first: headings at body size,
+bare `<ul>`s, a naked link list, with Tailwind preflight applied and not one
+component class, because the DOM those classes live on did not exist yet.
+Measured against the real `dist` at fast-3G: on screen from **3.3 s and still
+there at 12 s**, which is simply how long a **2.9 MB / 767 kB gzip** entry
+bundle takes on that connection.
+
+**Two: a dark-mode visitor was shown a light page and then watched it get
+corrected.** `ThemeProvider` applied the `dark` class in an effect, so it could
+not run before the first paint by construction — and both the code comment
+above it and this file's own 2026-07-20 entry stated the opposite ("correct on
+first paint") for as long as they stood. The capture: **~530 ms of a fully
+rendered LIGHT page**, then `theme-transitioning` cross-fading the entire
+document into dark over another 500 ms. Recipe 6 was faithfully animating a
+bug so it could not be missed. This is the [[assertions-in-specs-decay]] shape
+exactly — a control named in prose, believed for weeks, never once photographed.
+
+**Three: nothing arrived; it appeared.** Text popped in at whatever instant its
+bytes landed, with no entrance at all.
+
+**The fix is one recipe (/DESIGN.md §Motion 11) and it lives inline in
+`index.html`, which is not a style choice.** That file's `<head>` is the only
+styling that exists when the browser paints frame one; `src/index.css` does not
+arrive until the bundle does, which is the entire window being covered. So a
+small inline `<style>` and `<script>` settle the theme before `<body>` is
+parsed and raise a full-bleed veil in the theme's own ground with one soft
+brand bloom breathing on it. When the app has painted a frame — `src/lib/boot.ts`,
+from an effect at the app root, after two `requestAnimationFrame`s and
+`document.fonts.ready` capped at 1.2 s — the veil dissolves over 560 ms, its
+`backdrop-filter` blur falling to zero as its opacity does, so the product
+arrives THROUGH a blur instead of appearing. `.lf-settle`'s gesture at the scale
+of the whole app.
+
+**The blur is on the veil and never on `#root`**, and that constraint chose the
+mechanism. A `filter` or a `transform` on `#root` would make it the containing
+block for every `position: fixed` descendant in the product — the header, the
+cookie banner, the Tutor's dock — which is a worse bug than the one being
+fixed. `opacity` creates a stacking context and no containing block, so opacity
+is all `#root` is given, and the driving attribute is REMOVED once the dissolve
+ends so nothing it introduced outlives it.
+
+**The fail-open was got wrong first, and measuring is what caught it.** The
+first version lifted the veil on a blind 8 s CSS deadline. Against the real
+production build at fast-3G that fired at 11.3 s on a **perfectly healthy**
+boot — bundle still downloading, nothing broken — and put the raw shell back on
+screen for **5.7 seconds**, reintroducing the reported defect for precisely the
+visitors who suffer it most. A clock cannot answer the actual question, which is
+"is the app still coming"; `load` can, because by then everything the page was
+ever going to fetch has arrived or failed. The fail-open is now armed on `load`
+plus a short grace, verified by serving the real `dist` with the entry chunk
+answering 404: the veil holds ~1.6 s and dissolves to the readable prerendered
+shell. `--lf-boot-deadline` survives only for `load` never firing at all, which
+is why it is 30 s and not a budget. The veil is also inert markup until the
+script arms it — no JavaScript, no veil, shell intact for every crawler that
+runs none — and `pointer-events: none` at all times, so a stuck veil can never
+swallow a control (§1.14, the synthetic-click lesson).
+
+**Also fixed, in the same window:** `ThemeProvider` no longer applies
+`theme-transitioning` on its FIRST pass. That pass is now a confirmation of what
+`index.html` already put on the element, and cross-fading a no-op is what made
+the old flash read as "the site loaded wrong and then fixed itself". The flag is
+a `useRef` and not a local, because the effect re-runs on every `choice` change
+and a local would have silently killed the cross-fade on the one event recipe 6
+exists for — a visitor pressing the toggle.
+
+**One thing this makes visible rather than causes, and it is worth its own
+work:** on a cold fast-3G load the icons render as their ligature NAMES
+("monetization_on", "handshake") for several seconds after the reveal.
+`public/fonts/material-symbols-outlined.woff2` is **2.3 MB** — the full
+unsubsetted family — and at `font-display: block` its 3 s block period expires
+long before it arrives. Every visitor downloads 2.3 MB to draw a few dozen
+glyphs. Not touched here; flagged.
+
+**Verified by looking** ([[verify-visually-not-just-numerically]]): filmstrips
+captured over CDP at desktop 1280 and mobile 390, light and dark, dev and the
+real production build, before and after — plus the deliberately-broken-bundle
+run. Gates: frontend type-check, lint, **1813 tests in 151 files** (11 of them
+new, pinning every value the veil duplicates), `npm run build`, and root
+`docs:check`, `secrets:check`, `i18n:check`, `paths:check`, `seo:check`,
+`tools:test`.
+
 ## Class III actually closed: a market stall, placed by the real solver, and a live regression it found in the process (2026-09-03)
 
 **A stall — the first object on the Tutor's island that is neither a rigged

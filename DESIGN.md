@@ -1298,7 +1298,7 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
 4. **Press physics** — buttons/pills `active:translate-y-px` + color-shift
    hover (`hover:bg-accent-strong`…). No scale-on-hover, no 3D borders.
 5. **Arrow nudge** — CTA arrow `group-hover:translate-x-0.5`.
-6. **Global theme transition (NON-NEGOTIABLE)** — Every color, background, and border change transitions smoothly when switching themes. Enforced globally in `index.css`.
+6. **Global theme transition (NON-NEGOTIABLE)** — Every color, background, and border change transitions smoothly when SWITCHING themes. Enforced globally in `index.css` (`.theme-transitioning`). The one exception is the FIRST apply on mount, which must not transition: recipe 11 settles the theme before the first paint, so the provider'"'"'s mount pass is a confirmation and not a change. Animating it animated a no-op — and when the two ever disagreed, cross-fading the correction is precisely what a visitor reads as "the site loaded wrong and then fixed itself".
 
 7. **Lesson Engine motion** (`LESSON_ENGINE.md` §9) — the character rig
    (`lf-act-*` wrapper keyframes + `lf-rig-*` limb hooks in
@@ -1351,8 +1351,61 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
     orb's 4 s 3% breathing loop, bounded by the IDLE state and stopping with it.
     Reduced motion is a modifier on the settle, never a second entrance.
 
+11. **First load — the boot dissolve** (`frontend/index.html`, released by
+    `src/lib/boot.ts`). The one recipe that is not in `index.css`, and cannot
+    be: it is the only styling that exists at the moment the browser paints its
+    first frame, so it is inline in the `<head>` along with the script that
+    settles the theme before `<body>` is parsed. A full-bleed veil in the
+    theme's own ground (`--lf-boot-ground`, mirroring `--lf-base`) carries one
+    soft brand bloom breathing at 2.4 s; when the app has painted, the veil
+    dissolves over `--lf-boot-dissolve` (560 ms) — its `backdrop-filter` blur
+    falling to zero as its opacity does, so the product arrives THROUGH a blur
+    rather than appearing. It is `.lf-settle`'s gesture at the scale of the
+    whole app, which is why it is longer than `--lf-dur-page`. Reduced motion
+    is a modifier: the veil still covers, it simply stops breathing, stops
+    blurring, and cuts at 120 ms.
+
+    **The blur is on the VEIL and never on `#root`.** A `filter` or a
+    `transform` on `#root` makes it the containing block for every
+    `position: fixed` descendant in the product — the header, the cookie
+    banner, the Tutor's dock — which is a worse bug than the one being fixed.
+    `opacity` creates a stacking context and no containing block, so opacity is
+    all `#root` is ever given, and the attribute driving it is REMOVED once the
+    dissolve ends so nothing it introduced outlives it.
+
+    **What it covers, all three photographed on 2026-09-04.** Production serves
+    a prerendered SEO shell inside `#root` (§1.15), so until the entry bundle
+    downloaded and mounted a visitor was looking at a full screen of raw,
+    unstyled marketing text — measured on screen from 3.3 s and still there at
+    12 s on fast-3G. The theme was applied in a React effect, so a dark-mode
+    visitor got a fully rendered LIGHT page for ~530 ms and then recipe 6's
+    500 ms cross-fade into dark — a bug with an animation drawing attention to
+    it. And nothing arrived; it appeared, at whatever instant its bytes landed.
+
+    **It must fail OPEN, and that is the part that may never regress.** The
+    veil is inert markup until the inline script arms it, so a reader with no
+    JavaScript — and every crawler that runs none — still gets the shell. Once
+    armed it is `pointer-events: none` at all times, so even a stuck veil can
+    never swallow a control (§1.14, the synthetic-click lesson). And the
+    fail-open is armed against the BUNDLE, not against a clock: by `load`,
+    everything the page was going to fetch has arrived or failed, so if the app
+    has not released a moment later it is not coming, and the shell is revealed.
+    A blind deadline was tried first and measured doing harm — at 8 s it lifted
+    the veil on a perfectly healthy fast-3G boot and put the raw shell back on
+    screen for 5.7 seconds, reintroducing the exact defect for the slowest
+    connections. `--lf-boot-deadline` survives only as a last resort for `load`
+    never firing at all, which is why it is 30 s rather than a budget.
+
+    The veil carries **no text**, and that is forced as well as chosen: nothing
+    at this point in the document can reach i18n (§1.8), and a hardcoded
+    "Loading…" would be a hardcoded string in one language. `src/__tests__/bootVeil.test.ts`
+    pins every value this recipe duplicates — the ground colours against
+    `--lf-base`, the storage key and `auto` semantics against `ThemeProvider`,
+    and the exact empty `#root` the prerenderer replaces by string.
+
 `.lf-float` (hero illustration) is the only UNCONDITIONALLY infinite animation
-in CHROME (lesson celebration loops are bounded by their overlay, per recipe 7).
+in CHROME (lesson celebration loops are bounded by their overlay, per recipe 7,
+and recipe 11'"'"'s bloom is bounded by the veil and stops with it).
 Everything is reduced-motion safe (wired in index.css / rig.css).
 
 **The Tutor stage's ambient camera drift is a second carve-out from "no new

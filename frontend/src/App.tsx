@@ -48,13 +48,14 @@ import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { LoadingOverlay } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
+import { releaseBootVeil } from '@/lib/boot';
 
 import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
 import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
 import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
 import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
 import { AdminGenerationPage } from '@/routes/admin/AdminGenerationPage';
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
  * DEV-gated so the lab (and its local grader) never reaches production bundles. */
@@ -120,6 +121,19 @@ function InsightsBeacon({ consentVersion }: { consentVersion: number }) {
 
 export function App() {
   const [consentVersion, setConsentVersion] = useState(0);
+
+  /*
+   * Dissolve the boot veil index.html armed before the first paint
+   * (/DESIGN.md §Motion recipe 11). Here rather than in main.tsx because an
+   * effect at the app root is the first moment React has actually COMMITTED —
+   * calling it beside createRoot().render() would only mean "render was
+   * requested", which under concurrent rendering can be several frames early,
+   * and revealing an empty #root is the defect this replaces, not a fix for it.
+   */
+  useEffect(() => {
+    void releaseBootVeil();
+  }, []);
+
   return (
     <ThemeProvider>
       <AuthProvider>

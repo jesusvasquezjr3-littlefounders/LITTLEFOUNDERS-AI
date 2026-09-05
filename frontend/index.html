@@ -17,9 +17,306 @@
       request that iOS Safari content blockers and locked-down school/
       corporate networks are known to drop. See src/index.css for the why.
     -->
+
+    <!--
+      THE BOOT VEIL (/DESIGN.md §Motion recipe 11).
+
+      This is INLINE, in the <head>, and it has to be: it is the only styling
+      that exists at the moment the browser paints its first frame. An external
+      stylesheet is another round trip, and src/index.css does not arrive until
+      the bundle does — which is the entire window this covers.
+
+      WHAT IT COVERS, all three photographed on 2026-09-04:
+
+      1. Production serves a prerendered SEO shell inside #root (see
+         scripts/seo/build-seo.mjs). Until the 2.8 MB entry bundle downloads,
+         parses and mounts, a visitor is looking at a full screen of RAW,
+         UNSTYLED marketing text — headings at body size, bare <ul>s, a naked
+         link list. Measured at fast-3G: on screen from 3.3 s and still there
+         at 12 s. That is the "lo primero que carga es el Texto" report.
+      2. The theme was applied in a React effect, so a dark-mode visitor got a
+         fully rendered LIGHT page for ~530 ms and then a 500 ms colour
+         cross-fade into dark — the .theme-transitioning rule animating a bug
+         so it could not be missed. The inline script below settles the theme
+         BEFORE the first paint instead.
+      3. Nothing arrived; it appeared. Text popped in at whatever instant its
+         bytes landed, with no entrance at all.
+
+      FAIL-OPEN, and this is the part that must never regress. The veil is
+      INERT markup until the script below arms it, so a visitor with no
+      JavaScript — and every crawler that does not run any — sees the shell
+      exactly as before, never a blank pane. And once armed it still cannot
+      trap anyone: it is pointer-events:none at all times, and BOTH the veil
+      and #root carry a pure-CSS deadline animation that reveals the app at
+      --lf-boot-deadline whether or not a single line of our JavaScript ever
+      runs. A chunk that 404s costs a slow reveal here, never a white screen.
+    -->
+    <style>
+      :root {
+        /*
+         * Mirrors --lf-base in src/index.css for the two themes. Duplicated on
+         * purpose — these must exist before that file has loaded — and pinned
+         * by src/__tests__/bootVeil.test.ts so the copies cannot drift.
+         */
+        --lf-boot-ground: #f8fafc;
+        --lf-boot-bloom: rgba(79, 70, 229, 0.16);
+        /* The dissolve. Longer than --lf-dur-page: this one is the whole app arriving. */
+        --lf-boot-dissolve: 560ms;
+        --lf-boot-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        /*
+         * The LAST-RESORT deadline, and the number is deliberately far past any
+         * real boot.
+         *
+         * A blind clock is the wrong instrument here and it was measured being
+         * wrong: at 8s, a fast-3G production load — bundle still downloading,
+         * app perfectly healthy — lifted the veil and put the raw shell back on
+         * screen for 5.7 seconds, reintroducing the exact defect this fixes for
+         * precisely the visitors who suffer it most. The real question is not
+         * "has it been a while", it is "is the app still coming", and only the
+         * `load` event answers that; the script below arms the fail-open
+         * against it. This value covers only the case where `load` itself never
+         * fires, and must stay long enough never to fire on a working boot.
+         */
+        --lf-boot-deadline: 30s;
+      }
+      html.dark {
+        --lf-boot-ground: #0a0e1a;
+        --lf-boot-bloom: rgba(129, 140, 248, 0.18);
+      }
+
+      /* Painted from the first frame, so there is no white flash under either theme. */
+      html[data-lf-boot] {
+        background-color: var(--lf-boot-ground);
+      }
+
+      #lf-boot {
+        position: fixed;
+        z-index: 2147483000;
+        display: none;
+        inset: 0;
+        background-color: var(--lf-boot-ground);
+        /* Never a click trap, armed or stuck (/AGENTS.md §1.14, synthetic-click). */
+        pointer-events: none;
+      }
+
+      /* The bloom — one soft brand light, breathing. No logo file, no string. */
+      #lf-boot::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: min(62vw, 34rem);
+        height: min(62vw, 34rem);
+        border-radius: 9999px;
+        background: radial-gradient(circle, var(--lf-boot-bloom), transparent 68%);
+        content: '';
+        transform: translate(-50%, -50%);
+      }
+
+      /* ── armed: the script ran, so the app is coming ───────────────── */
+
+      html[data-lf-boot='on'] #lf-boot {
+        display: block;
+        animation: lf-boot-hold var(--lf-boot-deadline) linear both;
+      }
+      html[data-lf-boot='on'] #lf-boot::after {
+        animation: lf-boot-breathe 2.4s ease-in-out infinite;
+      }
+      html[data-lf-boot='on'] #root {
+        animation: lf-boot-wait var(--lf-boot-deadline) linear both;
+      }
+
+      /*
+       * The blur lives on the VEIL, as a backdrop-filter, and never on #root.
+       * A filter or a transform on #root would make it the containing block for
+       * every position:fixed descendant in the product — the header, the cookie
+       * banner, the Tutor's dock — which is a far worse bug than the one being
+       * fixed. opacity creates a stacking context and no containing block, so
+       * that is all #root is ever given.
+       */
+      @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+        html[data-lf-boot='on'] #lf-boot {
+          -webkit-backdrop-filter: blur(18px) saturate(1.4);
+          backdrop-filter: blur(18px) saturate(1.4);
+        }
+      }
+
+      /* ── released: the app said it has painted ─────────────────────── */
+
+      html[data-lf-boot='off'] #lf-boot {
+        display: block;
+        animation: lf-boot-out var(--lf-boot-dissolve) var(--lf-boot-ease) forwards;
+      }
+      html[data-lf-boot='off'] #lf-boot::after {
+        animation: none;
+      }
+      html[data-lf-boot='off'] #root {
+        animation: lf-boot-in var(--lf-boot-dissolve) var(--lf-boot-ease) both;
+      }
+
+      @keyframes lf-boot-hold {
+        0%,
+        92% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      @keyframes lf-boot-wait {
+        0%,
+        92% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      @keyframes lf-boot-out {
+        from {
+          opacity: 1;
+          -webkit-backdrop-filter: blur(18px) saturate(1.4);
+          backdrop-filter: blur(18px) saturate(1.4);
+        }
+        to {
+          opacity: 0;
+          -webkit-backdrop-filter: blur(0px) saturate(1);
+          backdrop-filter: blur(0px) saturate(1);
+        }
+      }
+      @keyframes lf-boot-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes lf-boot-breathe {
+        0%,
+        100% {
+          opacity: 0.55;
+          transform: translate(-50%, -50%) scale(0.94);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      /*
+       * Reduced motion is a MODIFIER on this recipe, never a second entrance
+       * (/DESIGN.md §Motion). The veil still covers the raw shell and still
+       * dissolves — it simply stops breathing, stops blurring, and cuts.
+       */
+      @media (prefers-reduced-motion: reduce) {
+        /*
+         * The bloom holds still. The veil's OWN hold animation is deliberately
+         * left running: it is the last-resort fail-open, not decoration, and
+         * turning it off here would mean the one visitor group that asked for
+         * less motion is also the only group a dead bundle can leave behind a
+         * pane forever.
+         */
+        html[data-lf-boot] #lf-boot::after {
+          animation: none;
+        }
+        /*
+         * `!important` because the blur is declared inside lf-boot-out's
+         * keyframes, and an animation beats a normal declaration — without it
+         * the dissolve would still blur for its 120 ms. This is the modifier
+         * winning over the recipe, which is the only shape allowed here: a
+         * second set of keyframes would be a second entrance, and the
+         * accessible one is always the one nobody looks at.
+         */
+        html[data-lf-boot] #lf-boot {
+          -webkit-backdrop-filter: none !important;
+          backdrop-filter: none !important;
+        }
+        html[data-lf-boot='off'] #lf-boot,
+        html[data-lf-boot='off'] #root {
+          animation-duration: 120ms;
+        }
+      }
+    </style>
+    <script>
+      /*
+       * Runs before <body> is parsed, which is the only place it works.
+       *
+       * Two jobs: settle the theme so the FIRST painted frame is the right
+       * colour, and arm the veil. Both are wrapped in a try/catch and the
+       * attribute is set LAST — Safari private mode throws on localStorage, and
+       * a throw here would otherwise leave a page armed with nothing to
+       * disarm it. Nothing armed means the old behaviour, which is survivable;
+       * armed-and-never-released is not.
+       *
+       * The storage key and the 'auto' semantics are src/theme/useTheme.tsx's,
+       * copied because that module is inside the bundle this runs ahead of.
+       * src/theme/themeBoot.test.ts pins the two copies together.
+       */
+      (function () {
+        var root = document.documentElement;
+        try {
+          var stored = null;
+          try {
+            stored = window.localStorage.getItem('lf-theme');
+          } catch (e) {
+            /* storage denied — fall through to the system preference */
+          }
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' &&
+              typeof window.matchMedia === 'function' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) root.classList.add('dark');
+
+          /*
+           * The ONE release path, owned here so the dissolve's duration is
+           * read from the stylesheet above rather than hand-copied into the
+           * bundle. src/lib/boot.ts decides WHEN (after the app's first
+           * painted frame); this decides WHAT HAPPENS. Idempotent: the
+           * fail-open below and a healthy boot can both call it.
+           */
+          window.__lfBoot = {
+            release: function () {
+              if (root.getAttribute('data-lf-boot') !== 'on') return;
+              root.setAttribute('data-lf-boot', 'off');
+              var ms =
+                parseFloat(getComputedStyle(root).getPropertyValue('--lf-boot-dissolve')) || 560;
+              // Drop the attribute once the dissolve has run, so nothing the
+              // veil introduced — an animation, a background, a stacking
+              // context — outlives it.
+              window.setTimeout(function () {
+                root.removeAttribute('data-lf-boot');
+              }, ms);
+            },
+          };
+
+          /*
+           * FAIL-OPEN, armed against the bundle rather than against a clock.
+           *
+           * By `load`, everything the page was ever going to fetch has either
+           * arrived or failed. If the app has still not released the veil a
+           * moment later, it is not coming — a chunk 404'd, a module threw,
+           * JavaScript is half-blocked — and the visitor gets the prerendered
+           * shell, which is readable, instead of a pane that never lifts.
+           * On a healthy slow boot this fires long after the app already
+           * released, and does nothing.
+           */
+          window.addEventListener('load', function () {
+            window.setTimeout(function () {
+              window.__lfBoot.release();
+            }, 1500);
+          });
+
+          root.setAttribute('data-lf-boot', 'on');
+        } catch (e) {
+          /* Never arm a veil we could not fully set up. */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <div id="lf-boot" aria-hidden="true"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
