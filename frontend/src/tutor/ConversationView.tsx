@@ -870,7 +870,17 @@ export function ConversationView({
         >
           {turn?.text && (
             <HudPlate shape="plate" floorClassName="gap-3">
-              <TutorFace {...face} className="h-11 w-11 self-start sm:h-14 sm:w-14" />
+              <TutorFace
+                {...face}
+                /*
+                 * A TINTED RING, matching the design study's identity chip:
+                 * an indigo-tinted backplate and hairline around the speaker's
+                 * portrait, distinct from the plain photo it was. `bg-accent-soft`
+                 * only shows at the rounded corners the image itself doesn't
+                 * fill; the border is what reads as a chip rather than a crop.
+                 */
+                className="h-11 w-11 self-start border border-accent/30 bg-accent-soft sm:h-14 sm:w-14"
+              />
               <span
                 className="lf-speech min-w-0 flex-1 text-start"
                 aria-live="polite"
@@ -965,7 +975,22 @@ export function ConversationView({
            */
           <>
             {desktop && budgetRune && (
-              <span className="lf-caption whitespace-nowrap text-content-muted">{budgetRune}</span>
+              /*
+               * A CHIP, matching the icon buttons it shares this row with.
+               * Bare text sitting among four HudPlate chips (map/restart/finish)
+               * was the one thing in this header that had no material — visible
+               * on the real docked panel as a caption floating with no edge next
+               * to three bordered pills. The live dot is wired the same way as
+               * its sibling instances: true only while `socket.budget ===
+               * 'running'`, which is one of the two states that produce this
+               * rune at all.
+               */
+              <HudPlate shape="chip" className="pointer-events-none shrink-0">
+                <span className="flex items-center gap-1.5 whitespace-nowrap lf-caption text-content-muted">
+                  {socket.budget === 'running' ? <span className="lf-live-emerald" aria-hidden /> : null}
+                  {budgetRune}
+                </span>
+              </HudPlate>
             )}
             {/*
              * THE MAP, OPENED MID-CONVERSATION (Sprint 3, /TUTOR_INSTRUMENTS.md).

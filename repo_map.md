@@ -16445,6 +16445,26 @@ import { describe, expect, it } from 'vitest';
 const FRONTEND = resolve(__dirname, '../..');
 ```
 
+### frontend/src/__tests__/designClasses.test.ts
+
+```
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+/*
+ * EVERY `lf-*` CLASS THE APP USES MUST EXIST, AND EVERY GAMIFIED CLASS THAT
+ * EXISTS MUST BE USED.
+ *
+ * Both directions, because both failures happened and every one was SILENT:
+ *
+ *  1. `md:lf-bubble-tail`. Tailwind generates no variants for a class defined
+ *     in `@layer components`, so it compiled to nothing and the speech tail
+ *     never appeared.
+ *  2. Deleting one unused block from index.css with an index-based slice took
+ *     EIGHT more with it — the coin, the slot well, the summary bar, the stage
+```
+
 ### frontend/src/auth/AuthContext.test.tsx
 
 ```

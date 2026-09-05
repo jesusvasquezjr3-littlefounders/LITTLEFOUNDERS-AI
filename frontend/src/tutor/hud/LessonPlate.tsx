@@ -766,6 +766,23 @@ export function LessonPlate({
             // centres itself in it rather than sitting at the top of 88 px of
             // empty surface.
             resting && 'h-full pb-2',
+            /*
+             * A RULE UNDER THE HEADER, desktop only. The docked panel is one
+             * continuous fill from the minutes chip down to the composer, with
+             * nothing marking where the header ends and the conversation
+             * begins — photographed on 2026-09-05 next to the design study,
+             * whose own board separates every zone with a hairline
+             * (`border-b border-white/10`) at half the strength of its outer
+             * edge. `content/10` is the ink-based equivalent: on this dark
+             * glass `--lf-content` resolves near-white, so it reads as the
+             * same soft light seam.
+             *
+             * Not applied on mobile: there the row IS the drag handle, and its
+             * own grip bar already reads as the seam between "closed" and
+             * "open" — a second line under it would be a second divider for
+             * one boundary.
+             */
+            desktop && !resting && 'border-b border-content/10 pb-2 lg:pb-3',
           )}
         >
           {!desktop && (

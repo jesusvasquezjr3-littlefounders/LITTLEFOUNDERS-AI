@@ -327,8 +327,18 @@
      * of the key light because it is nearer to it.
      */
 
-    /* How much more key light an object catches than the pane under it. */
-    --lf-obj-lift: 7%;
+    /*
+     * How much more key light an object catches than the pane under it.
+     *
+     * Raised from 7% on 2026-09-05, against a real capture: inside a READING
+     * plate (`--lf-lumen-alpha-reading`, near-opaque) the pane's own fill is
+     * already almost the full `--lf-lumen-fill`, so a 7% lift left the option
+     * and the plate under it within a couple of percent of each other — nearly
+     * merged, on the Tutor's dark stage, exactly the "flat" read that a lit
+     * object exists to prevent. 13% is the difference that survives being
+     * screenshotted rather than only computed.
+     */
+    --lf-obj-lift: 13%;
     /* The object's body — opaque, and lit. Never a bare `surface`. */
     --lf-obj-fill: color-mix(in srgb, var(--lf-lumen-fill) calc(100% - var(--lf-obj-lift)), var(--lf-key) var(--lf-obj-lift));
 

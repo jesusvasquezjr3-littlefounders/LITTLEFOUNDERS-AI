@@ -1633,6 +1633,67 @@ recipe 7) and has a reduced-motion modifier. The waveform collapses to a flat
 line rather than freezing: a stopped waveform is a graphical artefact, a flat
 one still says "audio".
 
+### The Tutor's conversing panel, photographed a second time (2026-09-05)
+
+The first Tutor pass fixed the STAGE CHROME (the exit chip, the stage pill
+material, the mic orb's ring, the rim that learns the hour). It never looked at
+the docked lesson panel itself — the actual surface a learner spends a
+conversation looking at. Photographed beside it, three concrete gaps, all
+fixed:
+
+- **The session-minutes rune was bare text sitting among four bordered chips.**
+  Three render sites carry this string (desktop world chip, mobile HudPlate,
+  and the docked panel's own header) and only two had ever been touched. The
+  third — the one actually visible in the docked desktop view — is now the
+  same `.lf-stage-pill`-adjacent chip as its siblings, with the same live dot,
+  gated on the same `socket.budget === 'running'` truth.
+- **The panel had no seam between its header and its body.** One continuous
+  fill from the minutes chip to the composer, with nothing marking where
+  chrome ends and conversation begins. A `border-b border-content/10` under
+  the header row — ink-based, so it reads as a soft light line on this dark
+  glass the same way the design study's `border-white/10` does — desktop only,
+  because on mobile that row IS the drag handle and its own grip bar already
+  marks the seam.
+- **`.lf-answer` objects nearly merged into a READING-density Lumen plate.**
+  `--lf-obj-lift` (how much more key light an object catches than the pane
+  under it) was tuned at 7% against an ordinary 68%-alpha plate. Inside a
+  `reading` plate — the ONE surface per phase dense enough to carry paragraphs,
+  at 97% alpha — the pane's own fill is already most of the way to
+  `--lf-lumen-fill`, so a 7% lift left object and pane within a couple of
+  percent of each other on the Tutor's dark stage: nearly the exact "flat" read
+  a lit object exists to prevent. Raised to 13%, verified against a real
+  capture rather than only computed.
+
+Also: the speaker's portrait avatar (`TutorFace`, both call sites) gained the
+design study's identity-chip treatment — a tinted `accent/30` ring — in place
+of a bare photo crop.
+
+**Deliberately NOT done, and why:**
+
+- **The mockup's coin-grouping board (icon-tile header, colored group boxes,
+  gradient coins, formula chip) was drawn against ONE exercise — grouping
+  coins into four lots of three.** The Tutor's live board renders whichever of
+  ~20 lesson-engine segment types the conversation calls for, most of which
+  carry no coins and no groups. Re-skinning one demo's specific objects onto
+  every segment type would mean inventing visual meaning the content does not
+  carry. The money family's own instruments already got the coin/well/summary
+  treatment in the lesson engine pass; that is where it belongs.
+- **The mentor's live spoken caption was not given `markTerms`.** The lesson
+  player's version works because a lesson author writes `**4 monedas**` into
+  authored content. The Tutor's speech is a live word-by-word typewriter over
+  freeform model output with no such markup, synchronised to lip movement by
+  slicing the raw string char-by-char — invented client-side "important word"
+  detection on that text would be exactly the kind of decoration this
+  document elsewhere forbids, and slicing through a markdown token mid-reveal
+  would corrupt the very mechanism the caption depends on.
+- **`PersonalizeInWorld` was not rebuilt as the mockup's floating settings
+  dialog.** The owner rejected that shape twice, on the record in the
+  component's own header comment, for reading as "una configuración de uso"
+  rather than as a place — the file's whole architecture (in-world chips at
+  the mark of the thing they change, one resting row, a guaranteed list
+  behind it) is the fix for that rejection. Reverting to a modal would be
+  reintroducing the exact thing already fixed.
+
 ### Layout measures
 
 `max-w-lesson` (768px) and `max-w-board` (1140px), both deliberately under

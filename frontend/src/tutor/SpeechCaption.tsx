@@ -406,7 +406,19 @@ export function SpeechCaption({
         {/* `self-start`: a face beside a four-line caption belongs at the top of
             the paragraph, the way a speaker's portrait does. Centred, it drifts
             to the middle of the block and reads as an illustration. */}
-        {face && <TutorFace {...face} className="h-11 w-11 self-start sm:h-14 sm:w-14" />}
+        {face && (
+          <TutorFace
+            {...face}
+            /*
+             * A TINTED RING, matching the design study's identity chip: an
+             * indigo-tinted backplate and hairline around the speaker's
+             * portrait, distinct from the plain photo it was. `bg-accent-soft`
+             * only shows at the rounded corners the image itself doesn't
+             * fill; the border is what reads as a chip rather than a crop.
+             */
+            className="h-11 w-11 self-start border border-accent/30 bg-accent-soft sm:h-14 sm:w-14"
+          />
+        )}
         {/*
           `text-start`, because a sentence beside a portrait is a line of prose
           and a centred paragraph with a ragged left edge against a face reads
