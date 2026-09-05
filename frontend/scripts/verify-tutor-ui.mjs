@@ -54,7 +54,7 @@ async function startDevServer() {
       // Vite colours its banner; strip the escape codes or the URL is never
       // matched (same note as verify-lesson-engine's server starter).
       const plain = output.replace(/\[[0-9;]*m/g, '')
-      const match = plain.match(/http:\/\/127\.0\.0\.1:(\d+)\//)
+      const match = plain.match(/http:\/\/127\.0\.0\.1:(\d+)/)
       if (match) {
         clearTimeout(timer)
         resolve(`http://127.0.0.1:${match[1]}`)

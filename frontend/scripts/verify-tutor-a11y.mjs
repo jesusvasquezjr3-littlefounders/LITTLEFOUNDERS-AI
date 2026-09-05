@@ -172,8 +172,8 @@ async function startDevServer() {
     const timer = setTimeout(() => reject(new Error(`Vite never printed a URL:\n${output}`)), 90_000)
     const read = (chunk) => {
       output += chunk.toString()
-      const plain = output.replace(/\[[0-9;]*m/g, '')
-      const match = plain.match(/http:\/\/127\.0\.0\.1:(\d+)\//)
+      const plain = output.replace(/\[[0-9;]*m/g, '')
+      const match = plain.match(/http:\/\/127\.0\.0\.1:(\d+)/)
       if (match) {
         clearTimeout(timer)
         resolve(`http://127.0.0.1:${match[1]}`)

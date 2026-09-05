@@ -941,7 +941,16 @@ function FeedbackBanner({
               <button
                 type="button"
                 onClick={onNext}
-                className="lf-press rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                /*
+                 * QUIET IS A LOOK, NOT A SIZE. This is deliberately demoted to
+                 * a skip link so a child does not forfeit a retake by tapping
+                 * something prominent (E5) — but it measured 32px, under
+                 * DESIGN's 44px floor, on a control whose whole job is being
+                 * pressed by someone who has just got an answer wrong.
+                 * `min-h-11` restores the floor and changes nothing about how
+                 * loud it looks: it is still small underlined muted text.
+                 */
+                className="lf-press inline-flex min-h-11 items-center rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
               >
                 {t('lesson.skip')}
               </button>
