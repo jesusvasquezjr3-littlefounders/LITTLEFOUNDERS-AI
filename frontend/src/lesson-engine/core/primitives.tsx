@@ -256,13 +256,12 @@ export function OptionCard({
 /**
  * Compact tappable token (word tiles, bank items, coins…).
  *
- * `caption` turns it into the design study's TWO-LINE card: a large value over
- * a small unit, in a 2px-bordered tile that thickens into the accent when
- * picked. It is opt-in rather than the default because the difference is
- * semantic, not decorative — a token with a unit ("+3 · monedas", "12 · min")
- * is a QUANTITY the learner is choosing, and a token without one is a word.
- * Seven families share this control; making the card unconditional would turn
- * every word tile into an empty two-line box.
+ * A token here is always a WORD: seven families use this control and not one
+ * of them offers a quantity with a unit, which is what the design study's
+ * two-line value+caption card is for. The card was built and then removed
+ * rather than shipped with no call site — a class nobody renders is dead
+ * weight dressed as a deliverable. It comes back with a segment type that
+ * needs it.
  */
 export function TokenChip({
   state = 'idle',
@@ -271,28 +270,7 @@ export function TokenChip({
   children,
   className,
   shape = 'pill',
-  caption,
-}: OptionCardProps & { shape?: TokenShape; caption?: string }) {
-  if (caption) {
-    return (
-      <button
-        type="button"
-        aria-pressed={state === 'selected'}
-        disabled={disabled}
-        onClick={onSelect}
-        className={cn(
-          'lf-token lf-tactile min-w-12',
-          state === 'selected' && 'lf-token-selected',
-          FOCUS_RING,
-          className,
-        )}
-      >
-        <span className="lf-token-value lf-title lf-number">{children}</span>
-        <span className="lf-token-caption lf-caption">{caption}</span>
-        {state === 'correct' || state === 'wrong' ? <VerdictGlyph state={state} /> : null}
-      </button>
-    )
-  }
+}: OptionCardProps & { shape?: TokenShape }) {
   return (
     <button
       type="button"

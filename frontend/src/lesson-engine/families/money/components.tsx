@@ -135,7 +135,14 @@ function MoneyTray({
         ))}
       </div>
       <div role="group" aria-label={t('lesson.families.money.tray')}>
-        <SunkenWell active={picked.length > 0} className="min-h-20">
+        {/*
+         * A SLOT WELL, not a flat box (/DESIGN.md §Tactile). The tray is where
+         * money LANDS, and the study draws that as a recess: an inset gradient
+         * going light toward the floor and a tinted 2px edge. `SunkenWell`
+         * already carries the engine's inset material; the well adds the shape
+         * that says "things go in here" rather than "this is another card".
+         */}
+        <SunkenWell active={picked.length > 0} className="lf-slot !justify-center !p-4 min-h-24">
           {picked.length === 0 ? (
             <p className="lf-caption text-center text-content-faint">{t('lesson.families.money.trayEmpty')}</p>
           ) : (
@@ -169,17 +176,21 @@ function TrayTotal({
   format: (n: number) => string
   verdict: ExerciseProps['verdict']
 }) {
+  /*
+   * THE SUMMARY BAR (/DESIGN.md §Tactile). The study reads a learner's own
+   * numbers back to them as a sentence instead of parking a figure under the
+   * board — the difference between a board you poke and a board that tells you
+   * what you just did. Once the answer is right the result takes the success
+   * tone and a check, so the confirmation is in the same object as the number.
+   */
+  const right = Boolean(verdict?.correct)
   return (
-    <div className="text-center" aria-live="polite">
-      <p className="lf-caption text-content-muted">{label}</p>
-      <p
-        className={cn(
-          'lf-display-lg lf-number',
-          verdict ? (verdict.correct ? 'text-success-strong' : 'text-warning-strong') : 'text-content',
-        )}
-      >
+    <div className="lf-summary lf-label" aria-live="polite">
+      <span className="text-content-muted">{label}</span>
+      <span className={cn('lf-title lf-number', right ? 'lf-summary-result' : 'lf-summary-term')}>
+        {right ? <Icon name="check_circle" fill className="!text-[18px]" aria-hidden /> : null}
         {format(total)}
-      </p>
+      </span>
     </div>
   )
 }

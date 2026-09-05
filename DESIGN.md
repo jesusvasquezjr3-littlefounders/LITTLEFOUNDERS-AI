@@ -1576,17 +1576,18 @@ not the island, a visible border is what makes an object look like an object.
 | `.lf-chip` (+ `-warning/-error/-accent/-success`) | A counter badge: tinted fill AND a matching border. The border is the whole difference from a flat tinted pill — it gives the chip an edge against any background |
 | `.lf-term` | A marked term inside prose. CONTENT-DRIVEN: a lesson author already bolds the quantity a question turns on, so `MarkdownLite`'s `markTerms` renders emphasis the content already carries. Opt-in — a page of chips is a page of noise |
 | `.lf-track` / `.lf-track-fill` | A 12px gauge with an inner gloss on its top half. A progress bar in a game is read across a room; `ProgressBar` is sized for a dashboard row |
-| `.lf-token` | The two-line answer card: a large value over a small unit, 2px border thickening into the accent when picked. Reached through `TokenChip`'s `caption` prop |
 | `.lf-coin` | An actual coin: a gradient lit from up-left, inset highlight and shade for thickness, a zero-blur gold SIDE, and a dashed milled edge |
 | `.lf-slot` / `.lf-slot-tag` | The well a coin lands in. `column-reverse`, so coins stack UP from the floor the way objects dropped into a tube do |
 | `.lf-summary` | The equation row under a manipulable: the learner's own numbers read back as a sentence. The difference between a board you poke and a board that tells you what you just did |
 | `.lf-now` / `.lf-live-dot` | The row that is happening NOW: a three-stop gradient so it reads as lit rather than merely coloured, and a dot that breathes. A static pill says "you tapped this"; the row is trying to say "this is happening" |
 | `.lf-eyebrow` | Wide-tracked small caps over a negatively-tracked display line. The tracking is the point — it is what makes the pair read as one object rather than two sentences |
 
-**`.lf-token` is opt-in and that is semantic, not stylistic.** Seven families
-share `TokenChip`. A token with a unit ("+3 · monedas") is a QUANTITY the
-learner is choosing; a token without one is a word. Making the card
-unconditional would turn every word tile into an empty two-line box.
+**The study's two-line value+unit card was built and then REMOVED.** Seven
+families share `TokenChip` and not one of them offers a quantity with a unit —
+every token is a word, which the pill already serves. A class nobody renders is
+dead weight dressed as a deliverable, so it goes until a numeric-choice segment
+type exists to render it. This is the rule for everything in this section: if
+it is here, something calls it.
 
 **A coin is drawn in CSS, not shipped as an image.** A make-change exercise can
 put forty on screen, and forty requests for a 28px disc is a waterfall a
