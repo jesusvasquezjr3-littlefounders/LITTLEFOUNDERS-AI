@@ -337,6 +337,22 @@
     --lf-obj-drop-y: calc(1px + (1 - var(--lf-sun-height)) * 4px);
     --lf-obj-drop-blur: calc(5px + (1 - var(--lf-sun-height)) * 11px);
     --lf-obj-drop-alpha: calc((0.09 + (1 - var(--lf-sun-height)) * 0.09) * 100%);
+    /*
+     * THE RIDGE, in this material's own idiom (/DESIGN.md §Tactile).
+     *
+     * The answer object had a seat — one soft drop agreeing with the scene's
+     * sun — and no SIDE. Photographed against the design study on 2026-09-05,
+     * that is the single biggest difference between our option and theirs:
+     * theirs is a key you could press, ours was a panel with a hairline. It is
+     * added as a fourth shadow layer rather than by putting `.lf-tactile` on
+     * top, because that class's ridge is a flat tone and this material is
+     * deliberately made of LIGHT so it can composite over a moving render.
+     * Here the ridge is mixed from `--lf-lumen-shade` like every other layer,
+     * so it follows the hour of the island instead of fighting it.
+     *
+     * It is a property so a surface that must stay flat can zero it.
+     */
+    --lf-obj-ridge: 3px;
     /* The specular top lip, in the key light's colour — the same ramp Lumen
        uses, at half strength, because a small object catches less of it. */
     --lf-obj-rim: calc((0.16 + var(--lf-sun-height) * 0.30) * 50%);
@@ -988,8 +1004,11 @@
       inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
       /* the edge — ink, so it darkens a light theme and lightens a dark one */
       inset 0 0 0 1px var(--lf-obj-edge),
+      /* the SIDE — zero blur, so it reads as an edge rather than as more seat */
+      0 var(--lf-obj-ridge) 0 0
+        color-mix(in srgb, var(--lf-lumen-shade) calc(var(--lf-obj-drop-alpha) * 1.7), transparent),
       /* the seat — one shadow, agreeing with the same sun the plate's does */
-      0 var(--lf-obj-drop-y) var(--lf-obj-drop-blur) calc(var(--lf-obj-drop-y) * -0.5)
+      0 calc(var(--lf-obj-drop-y) + var(--lf-obj-ridge)) var(--lf-obj-drop-blur) calc(var(--lf-obj-drop-y) * -0.5)
         color-mix(in srgb, var(--lf-lumen-shade) var(--lf-obj-drop-alpha), transparent);
     transition:
       box-shadow var(--lf-dur-base) var(--lf-ease),
@@ -1030,12 +1049,25 @@
       transform: translateY(-1px);
     }
   }
+  /* Reduced motion keeps the side and loses the travel — a modifier, never a
+     second material (/DESIGN.md §Motion). */
+  @media (prefers-reduced-motion: reduce) {
+    .lf-answer:not(:disabled):not([aria-disabled='true']):active {
+      transform: none;
+    }
+  }
 
   /* Pressed: the object seats itself into the pane. Its shadow collapses with
      it, because a shadow that stays put while the thing above it moves is the
      tell that neither is real. */
   .lf-answer:not(:disabled):not([aria-disabled='true']):active {
-    transform: translateY(1px);
+    /*
+     * Travels its OWN ridge height, not a token 1px. The side collapses in the
+     * same frame, so the bottom edge never moves and only the top face
+     * descends — which is what pressing a key does, and what a 1px nudge over
+     * an unchanged shadow did not.
+     */
+    transform: translateY(var(--lf-obj-ridge));
     box-shadow:
       inset 0 0 0 1px var(--lf-obj-edge-hover),
       0 0 0 0 transparent;
@@ -1859,6 +1891,64 @@
   }
 
   /*
+   * THE WORK SURFACE — the place a learner works, drawn as a place.
+   *
+   * The exercise used to sit straight on the page ground, so the question, the
+   * options and the empty base colour were one plane. Photographed against the
+   * design study on 2026-09-05, this was the second-biggest difference after
+   * the answer object's missing side: theirs has a surface, ours had a
+   * background.
+   *
+   * It is `--lf-obj-fill` and the same edge ink the answer material uses, NOT
+   * `bg-surface` — partly because `answerSurfaces.test.tsx` forbids the engine
+   * from hand-drawing surfaces, and mostly because this frame has to sit under
+   * answer objects that are themselves lit by the scene. A tone-based card
+   * would go opaque and wrong the moment this runs over the Tutor's island.
+   *
+   * `padding` only from `sm` up: on a phone the viewport IS the frame, and
+   * 16px of chrome on each side is 32px taken from the thing being worked on.
+   */
+  .lf-worksurface {
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--lf-obj-fill) 55%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      inset 0 0 0 1px var(--lf-obj-edge);
+  }
+  @media (min-width: 640px) {
+    .lf-worksurface {
+      padding: 1.25rem;
+    }
+  }
+
+  /*
+   * A PORTRAIT FRAME — a well the mentor's bust sits in, desktop only.
+   *
+   * `presence="talk"` is a BUST crop: the render ends at the box's bottom edge
+   * by design. Beside the speech bubble that edge lines up with the bubble's
+   * baseline and reads as the character standing behind it. Below the bubble —
+   * which is where the two-column lesson layout puts it — the same pixels
+   * became a hard horizontal cut across a floating character, reading as a
+   * broken render. A frame makes the same cut read as a portrait.
+   *
+   * It is `.lf-well` plus a border rather than a hand-drawn surface because
+   * `answerSurfaces.test.tsx` forbids the lesson engine from drawing its own,
+   * and because a recess an object sits in is exactly what a well is.
+   */
+  @media (min-width: 768px) {
+    .lf-portrait {
+      overflow: hidden;
+      border: 1px solid rgb(var(--lf-outline));
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgb(var(--lf-accent-soft)) 0%, rgb(var(--lf-surface)) 100%);
+      box-shadow:
+        inset 0 2px 5px rgb(var(--lf-accent) / 0.08),
+        inset 0 -1px 0 rgb(var(--lf-surface) / 0.8);
+      padding: 0.5rem;
+    }
+  }
+
+  /*
    * REWARD MOTION — the one place the overshoot easing is allowed.
    * One-shot, like every other action in the system (§Motion recipe 7): it
    * lands and it is over. Nothing here loops.
@@ -1887,7 +1977,15 @@
    * own corners and stops matching the moment the surface behind it changes.
    * `currentColor` is set by the caller from the same token the bubble uses.
    */
+  /*
+   * The tail's colour is its OWN property, not `currentColor`. Reading it off
+   * `color` means the bubble has to set `color` to its own background, which
+   * then cascades into every child that did not name a colour — the caller
+   * ends up fighting their own tail for the text inside it. `--lf-tail`
+   * defaults to the surface, which is what a bubble is nine times out of ten.
+   */
   .lf-bubble-tail {
+    --lf-tail: rgb(var(--lf-surface));
     position: relative;
   }
   .lf-bubble-tail::after {
@@ -1900,7 +1998,7 @@
   .lf-bubble-tail-bottom::after {
     bottom: -10px;
     left: 42px;
-    border-top: 10px solid currentColor;
+    border-top: 10px solid var(--lf-tail);
     border-right: 10px solid transparent;
     border-left: 10px solid transparent;
   }
@@ -1908,8 +2006,39 @@
     top: 24px;
     left: -9px;
     border-top: 7px solid transparent;
-    border-right: 9px solid currentColor;
+    border-right: 9px solid var(--lf-tail);
     border-bottom: 7px solid transparent;
+  }
+  /*
+   * The breakpoint lives HERE, not in a `md:` utility prefix. A Tailwind
+   * variant on a class defined in `@layer components` generates NOTHING and
+   * says nothing about it — `md:lf-bubble-tail` compiled to zero rules and the
+   * tail simply never appeared, which is the quietest kind of failure this
+   * codebase has a name for. Checked against the built stylesheet, not
+   * assumed.
+   *
+   * It is desktop-only because that is where the arrangement earns it: the
+   * bubble sits above the portrait and has something to point at. On mobile
+   * the character is beside the bubble, so a downward tail would point at the
+   * page.
+   */
+  @media (min-width: 768px) {
+    .lf-bubble-tail-md {
+      --lf-tail: rgb(var(--lf-surface));
+      position: relative;
+    }
+    .lf-bubble-tail-md::after {
+      position: absolute;
+      bottom: -10px;
+      left: 42px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid var(--lf-tail);
+      border-right: 10px solid transparent;
+      border-left: 10px solid transparent;
+      content: '';
+      pointer-events: none;
+    }
   }
 
   /*

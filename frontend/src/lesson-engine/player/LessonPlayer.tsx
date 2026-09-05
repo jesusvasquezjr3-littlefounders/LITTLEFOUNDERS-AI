@@ -306,12 +306,24 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
     <Shell>
       {/* Sticky glass header */}
       <header className="lf-glass sticky top-0 z-30 shadow-glass-sm">
-        <div className="mx-auto flex max-w-[720px] items-center gap-3 px-4 py-3 md:px-0">
+        {/*
+          * Close, then the bar, then the score. The three counters used to be
+          * three different objects — a bare icon+number for hearts, a pill for
+          * the streak, a pill for XP — which read as three unrelated pieces of
+          * information rather than as one score. They are now one chip shape
+          * (§Tactile), and the difference between them is tone, which is what
+          * distinguishes them anyway.
+          *
+          * `max-w-board` and not 720: at 1440 a lesson header pinned to 720px
+          * leaves the counters floating in the middle of the screen while the
+          * close button is nowhere near the corner a learner reaches for.
+          */}
+        <div className="mx-auto flex w-full max-w-board items-center gap-3 px-4 py-3">
           <button
             type="button"
             onClick={onExit}
             aria-label={t('lesson.exit')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-content/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            className="lf-slab lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           >
             <Icon name="close" />
           </button>
@@ -319,8 +331,16 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             <ProgressBar value={progressPct(doc, state)} label={t('lesson.progress')} />
           </div>
           {state.hearts !== null ? (
-            <span className="flex items-center gap-1 lf-label text-error-strong" aria-label={t('lesson.chips.hearts', { count: state.hearts })}>
-              <Icon name="favorite" fill className="text-[20px]" />
+            /*
+             * One line, deliberately. `answerSurfaces.test.tsx` exempts a red
+             * HEART from P3's "no red wrong" by matching /hearts|favorite/ on
+             * the same source line as the colour — so splitting the className
+             * onto its own line silently drops the exemption and the guard
+             * reports a life counter as a mistake painted red. The guard is
+             * right about the rule; the formatting is what has to give.
+             */
+            <span className="flex items-center gap-1.5 rounded-full bg-error-soft px-3 py-1.5 lf-label text-error-strong" aria-label={t('lesson.chips.hearts', { count: state.hearts })}>
+              <Icon name="favorite" fill className="text-[18px]" />
               <span className="lf-number">{state.hearts}</span>
             </span>
           ) : null}
@@ -336,14 +356,14 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
              */
             <span
               key={state.streak}
-              className="lf-pop relative flex items-center gap-1 rounded-full bg-warning-soft px-3 py-1 lf-label text-warning-strong"
+              className="lf-pop relative flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1.5 lf-label text-warning-strong"
             >
               {comboBeat(state.streak, true).burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               <span className="lf-number">{state.streak}</span>
             </span>
           ) : null}
-          <span className="flex items-center gap-1 rounded-full bg-primary-soft px-3 py-1 lf-label text-primary">
+          <span className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 lf-label text-primary">
             <Icon name="bolt" fill className="text-[18px]" />
             <CountUp value={earnedXp(doc, state)} className="lf-number" />
           </span>
@@ -376,8 +396,46 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
         Mobile is deliberately untouched: at 375 the same content already fills
         the viewport, and `pb-40` is reserving room for the fixed footer there.
       */}
-      <main className="mx-auto flex w-full max-w-[720px] flex-1 flex-col px-5 pb-40 pt-6 md:px-0">
-        <div key={segment.id} className="lf-pop space-y-5 md:my-auto">
+      {/*
+        TWO COLUMNS ON DESKTOP, AND ONLY WHEN THERE IS A MENTOR TO PUT IN ONE.
+
+        The mentor and the work are two different acts — being told the
+        situation, and doing something about it — and stacking them meant a
+        1440px screen showed a 720px column with the character scrolled off the
+        top by the time the learner was working. Side by side, the mentor stays
+        present while the answer is being built, which is the entire reason a
+        mentor is on this screen.
+
+        A segment with NO narrator keeps the single column at `max-w-lesson`:
+        a two-column grid with an empty left half is worse than a centred
+        column, and a plain prompt does not need to be pushed to one side to
+        make room for nothing.
+
+        Mobile is one column either way, and untouched. `pb-40` is still
+        reserving room for the fixed footer there.
+      */}
+      <main
+        className={`mx-auto flex w-full flex-1 flex-col px-5 pb-40 pt-6 ${
+          segment.narrator ? 'max-w-board md:px-6' : 'max-w-lesson md:px-0'
+        }`}
+      >
+        <div
+          key={segment.id}
+          className={`lf-pop md:my-auto ${
+            segment.narrator
+              /*
+               * The work column is CAPPED, not `1fr`. Given the whole board
+               * width it stretched to ~1000px and put two answer buttons a
+               * third of a metre apart — the §Tactile layout rule says a
+               * lesson stays narrow enough to hold one thought, and `1fr`
+               * hands it every pixel that is going spare. `justify-center`
+               * then keeps the pair centred instead of leaving the slack on
+               * one side.
+               */
+              ? 'grid gap-5 md:grid-cols-[minmax(0,20rem)_minmax(0,42rem)] md:items-start md:justify-center md:gap-8'
+              : 'space-y-5'
+          }`}
+        >
           {/* Narrator strip */}
           {segment.narrator ? (
             /*
@@ -390,16 +448,64 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
              * because the character is framed as a BUST: the old box spent its
              * pixels on legs. See the presence scale.
              */
-            <div className="grid grid-cols-[auto_1fr] items-end gap-2 sm:gap-3">
-              <CharacterActor3D
-                character={segment.narrator.character}
-                emotion={segment.narrator.emotion ?? 'neutral'}
-                presence="talk"
-                className="shrink-0"
-              />
-              <div className="lf-slab flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm px-4 py-3">
-                <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
-                <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
+            /*
+             * Mobile: character beside the bubble, as before — vertical space
+             * is the scarce thing on a phone. Desktop: the bubble ABOVE the
+             * character, both in the left column, so the mentor reads as
+             * speaking down into the work rather than across the page. The
+             * tail flips with the arrangement for the same reason.
+             */
+            <div className="grid grid-cols-[auto_1fr] items-end gap-2 sm:gap-3 md:grid-cols-1 md:items-stretch md:gap-4">
+              {/*
+               * The tail only exists on DESKTOP, where the bubble sits above
+               * the portrait and has something to point at. On mobile the
+               * character is beside the bubble and the arrangement already
+               * says who is speaking, so a tail there would point at the
+               * page.
+               */}
+              <div className="lf-slab order-2 flex min-w-0 flex-1 flex-col gap-2 rounded-lg rounded-bl-sm px-4 py-3 lf-bubble-tail-md md:order-1 md:rounded-bl-lg">
+                {/*
+                 * A HEADER LINE INSIDE THE BUBBLE, and both halves are read
+                 * off real state rather than written into the copy: what kind
+                 * of beat this is, and where the learner is in the lesson.
+                 * The counter is the half that earns its place — a lesson is a
+                 * run of segments behind a progress bar that says a
+                 * percentage, and a percentage does not answer "how many more
+                 * of these". Hidden on a content segment, which is being read
+                 * rather than answered and is not a step in that sense.
+                 */}
+                {!isContent && doc.segments.length > 1 ? (
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="lf-label rounded-full bg-accent-soft px-2.5 py-1 text-accent-strong">
+                      {t('lesson.challenge')}
+                    </span>
+                    <span className="lf-caption lf-number shrink-0 text-content-faint">
+                      {t('lesson.stepOf', { n: state.index + 1, total: doc.segments.length })}
+                    </span>
+                  </div>
+                ) : null}
+                <div className="flex min-w-0 items-start gap-2">
+                  <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
+                  <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
+                </div>
+              </div>
+              {/*
+               * A PORTRAIT FRAME, on desktop only, and it is not decoration.
+               * `presence="talk"` is a BUST crop: the render ends at the box's
+               * bottom edge by design. Beside the bubble (mobile, and the old
+               * single-column layout) that edge lines up with the bubble's own
+               * baseline and reads as the character standing behind it. Moved
+               * BELOW the bubble it became a hard horizontal cut across a
+               * floating character — the same pixels reading as a broken
+               * render. A frame makes the same cut read as a portrait.
+               */}
+              <div className="lf-portrait order-1 shrink-0 md:order-2 md:mx-auto">
+                <CharacterActor3D
+                  character={segment.narrator.character}
+                  emotion={segment.narrator.emotion ?? 'neutral'}
+                  presence="talk"
+                  className="shrink-0"
+                />
               </div>
             </div>
           ) : (
@@ -409,41 +515,71 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             </div>
           )}
 
-          {/* Scene anchor — one concrete illustration setting up the situation,
-              shown for any segment the pipeline illustrated at the segment level. */}
-          {segment.image_url ? <SceneAnchor imageUrl={segment.image_url} /> : null}
+          {/*
+            THE WORK SURFACE.
 
-          {/* Hints shown so far */}
-          {segment.hints?.slice(0, segState?.hintsShown ?? 0).map((hint, i) => (
-            <div key={i} className="lf-pop flex items-start gap-2 rounded-md bg-delight-soft px-4 py-3">
-              <Icon name="lightbulb" className="mt-0.5 text-[20px] text-content" />
-              <p className="lf-body text-content">{hint}</p>
+            One wrapper, and it is load-bearing rather than decorative: in the
+            two-column arrangement above, every sibling of the narrator would
+            otherwise become its own grid cell — the illustration in one, the
+            hints in the next, the exercise in a third — and the layout would
+            silently rearrange itself per segment depending on how many of them
+            happened to be present. Grouping them makes the right column ONE
+            cell whose contents stack, which is also what it is conceptually:
+            the place the learner works.
+          */}
+          <div className="flex min-w-0 flex-col gap-4">
+            {/* Scene anchor — one concrete illustration setting up the situation,
+                shown for any segment the pipeline illustrated at the segment level. */}
+            {segment.image_url ? <SceneAnchor imageUrl={segment.image_url} /> : null}
+
+            {/* Hints shown so far */}
+            {segment.hints?.slice(0, segState?.hintsShown ?? 0).map((hint, i) => (
+              <div key={i} className="lf-pop flex items-start gap-2 rounded-md bg-delight-soft px-4 py-3">
+                <Icon name="lightbulb" className="mt-0.5 text-[20px] text-content" />
+                <p className="lf-body text-content">{hint}</p>
+              </div>
+            ))}
+
+            {/* Exercise body — keyed by segment + retry count so "Intentar de
+                nuevo" forces a clean remount (timers, boards and keypads reset;
+                no stale phase state survives into the new attempt). */}
+            {/*
+              THE WORK SURFACE, as an actual surface.
+
+              The exercise used to be drawn straight onto the page background,
+              so a question, its options and the empty base colour were all the
+              same plane and nothing said where the work was. Framing it makes
+              the answer area a place — which is most of what separated this
+              screen from the design study it was built against.
+
+              CONTENT segments are deliberately NOT framed: a dialogue, a story
+              beat or a reveal is something being read, not somewhere to work,
+              and a frame around it turns a narrative moment into a form. The
+              families draw their own full-bleed surfaces there.
+            */}
+            <div className={isContent ? undefined : 'lf-worksurface'}>
+            <entry.component
+              key={`${segment.id}:${retryCount}`}
+              segment={segment}
+              value={draft}
+              onChange={setDraft}
+              disabled={inFeedback || checking || Boolean(segState?.done)}
+              onFinish={isFlow ? (answer) => void submit(answer) : undefined}
+              onContentDone={
+                isContent
+                  ? (signal) => dispatch({ type: 'CONTENT_DONE', segmentId: segment.id, selfMark: signal })
+                  : undefined
+              }
+              verdict={verdict}
+            />
             </div>
-          ))}
 
-          {/* Exercise body — keyed by segment + retry count so "Intentar de
-              nuevo" forces a clean remount (timers, boards and keypads reset;
-              no stale phase state survives into the new attempt). */}
-          <entry.component
-            key={`${segment.id}:${retryCount}`}
-            segment={segment}
-            value={draft}
-            onChange={setDraft}
-            disabled={inFeedback || checking || Boolean(segState?.done)}
-            onFinish={isFlow ? (answer) => void submit(answer) : undefined}
-            onContentDone={
-              isContent
-                ? (signal) => dispatch({ type: 'CONTENT_DONE', segmentId: segment.id, selfMark: signal })
-                : undefined
-            }
-            verdict={verdict}
-          />
-
-          {gradeError ? (
-            <div className="rounded-md bg-warning-soft px-4 py-3 lf-body text-content" role="alert">
-              {t('lesson.gradeError')}
-            </div>
-          ) : null}
+            {gradeError ? (
+              <div className="rounded-md bg-warning-soft px-4 py-3 lf-body text-content" role="alert">
+                {t('lesson.gradeError')}
+              </div>
+            ) : null}
+          </div>
         </div>
       </main>
 
@@ -466,7 +602,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
           />
         ) : (
           <div className="lf-glass shadow-pop">
-            <div className="mx-auto flex max-w-[720px] items-center justify-between gap-3 px-4 py-3 md:px-0">
+            <div className="mx-auto flex w-full max-w-board items-center justify-between gap-3 px-4 py-3">
               {preview ? (
                 <Button variant="primary" onClick={handleNext} className="ml-auto">
                   {previewNextLabel ?? t('lesson.continue')}

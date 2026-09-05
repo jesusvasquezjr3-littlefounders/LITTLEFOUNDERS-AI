@@ -262,5 +262,7 @@
     "replay": "Escuchar de nuevo"
   },
   "combo_one": "¡{{count}} seguida!",
-  "combo_other": "¡{{count}} seguidas!"
+  "combo_other": "¡{{count}} seguidas!",
+  "challenge": "RETO",
+  "stepOf": "Paso {{n}} de {{total}}"
 }
