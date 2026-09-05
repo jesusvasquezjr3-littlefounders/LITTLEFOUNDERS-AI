@@ -380,7 +380,7 @@ export function MicOrb({
          */
         !reason && 'lf-settle lf-lumen',
         'pointer-events-auto relative grid h-24 w-24 place-items-center rounded-full lg:h-28 lg:w-28',
-        'active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        'lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         !available && 'cursor-not-allowed',
         state === 'speaking' && 'opacity-60',
       )}

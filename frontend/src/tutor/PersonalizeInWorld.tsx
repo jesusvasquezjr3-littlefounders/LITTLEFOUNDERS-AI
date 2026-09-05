@@ -1079,7 +1079,7 @@ function PlateChip({
       className={cn(
         // ≥44px, because this is used by six-year-olds on phones.
         'lf-action flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-center',
-        'transition-[background-color,box-shadow] duration-200 active:translate-y-px',
+        'transition-[background-color,box-shadow] duration-200 lf-press',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         selected
           ? 'bg-accent-soft text-content shadow-[inset_0_0_0_2px_rgb(var(--lf-primary))]'

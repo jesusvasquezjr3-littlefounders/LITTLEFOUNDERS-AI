@@ -113,7 +113,7 @@ export function FamilyPage() {
             <li key={kid.userId} className="rounded-lg border border-outline/70 bg-surface shadow-glass-sm">
               <Link
                 to={`/family/${kid.userId}/territory`}
-                className="flex min-h-14 items-center gap-4 rounded-t-lg px-4 py-3 transition-[background-color] duration-150 hover:bg-surface-sunken/50 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="flex min-h-14 items-center gap-4 rounded-t-lg px-4 py-3 transition-[background-color] duration-150 hover:bg-surface-sunken/50 lf-press focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft lf-title font-bold text-primary">
                   {(kid.displayName ?? kid.username ?? '?').charAt(0).toUpperCase()}

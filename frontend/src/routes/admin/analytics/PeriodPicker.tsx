@@ -81,7 +81,7 @@ export function PeriodPicker({
               onClick={applyCustom}
               disabled={invalid}
               className={cn(
-                'lf-gaming-btn inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 font-bold transition-colors',
+                'lf-tactile inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 font-bold transition-colors',
                 invalid
                   ? 'cursor-not-allowed bg-surface-sunken text-content-faint'
                   : 'bg-accent text-on-accent hover:bg-accent-strong',

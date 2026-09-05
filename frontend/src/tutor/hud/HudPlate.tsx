@@ -207,7 +207,7 @@ export const HudPlate = forwardRef<HTMLElement, HudPlateProps>(function HudPlate
      * the closed motion set carry the whole interaction, and they work on a
      * thumb.
      */
-    interactive && 'min-h-12 min-w-12 active:translate-y-px disabled:pointer-events-none',
+    interactive && 'min-h-12 min-w-12 lf-press disabled:pointer-events-none',
     className,
   );
 

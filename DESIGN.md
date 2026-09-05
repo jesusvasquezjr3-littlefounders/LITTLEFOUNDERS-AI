@@ -1295,8 +1295,14 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
 1. **Page transition** — `.lf-page-enter` on `<main>` keyed by route (uses a softer `ease-out` rather than the bouncy default).
 2. **Scroll reveal** — `<Reveal>`; grids stagger ≤3 × 80ms.
 3. **Pop** — `.lf-pop` for floating panels.
-4. **Press physics** — buttons/pills `active:translate-y-px` + color-shift
-   hover (`hover:bg-accent-strong`…). No scale-on-hover, no 3D borders.
+4. **Press physics** — the TACTILE press (§Tactile), product-wide since
+   2026-09-05: `.lf-tactile` for anything that reads as an object,
+   `.lf-press` for anything that is part of a surface. Colour-shift hover
+   (`hover:bg-accent-strong`…) stays; still no scale-on-hover and no 3D
+   borders — the ridge is a side, not a bevel. The previous
+   `active:translate-y-px` is gone from the codebase; a new one is a
+   regression, because it re-forks the duration and the reduced-motion
+   handling this recipe exists to hold in one place.
 5. **Arrow nudge** — CTA arrow `group-hover:translate-x-0.5`.
 6. **Global theme transition (NON-NEGOTIABLE)** — Every color, background, and border change transitions smoothly when SWITCHING themes. Enforced globally in `index.css` (`.theme-transitioning`). The one exception is the FIRST apply on mount, which must not transition: recipe 11 settles the theme before the first paint, so the provider'"'"'s mount pass is a confirmation and not a change. Animating it animated a no-op — and when the two ever disagreed, cross-fading the correction is precisely what a visitor reads as "the site loaded wrong and then fixed itself".
 
@@ -1430,14 +1436,28 @@ Gamified*, whose own token file turned out to be **this document's colours,
 radii, fonts and glass values verbatim** — so this is not a new palette and
 nothing below changes one. What it adds is a way for a surface to have weight.
 
-### Where it applies, and where it deliberately does not
+### Where it applies
 
-**Only the gamified surfaces: `learn/`, the lesson player, and the Tutor.**
-Marketing, auth, admin and profile keep §Motion recipe 4's quieter
-`active:translate-y-px`. Owner decision, 2026-09-05: scope it, look at it,
-then propagate — a press physics is the single most-repeated gesture in the
-product and changing it everywhere before anyone has judged it once is a
-change nobody can review.
+**Everywhere.** It was introduced scoped to the gamified surfaces so it could
+be judged on one screen before it reached every button in the product; that
+happened on 2026-09-05, and the owner promoted it. Marketing, auth, admin and
+profile now press the same way `learn/` does.
+
+**Two classes, and picking between them is the whole judgement.**
+
+| | Use when |
+|---|---|
+| `.lf-tactile` | The thing reads as an OBJECT: a button, a card you press, a control pill, an option tile. It gets a side and it presses |
+| `.lf-press` | The thing is PART OF A SURFACE: a sidebar row, a list row, an icon button inside chrome. It takes the travel and leaves the ridge behind |
+
+Giving `.lf-tactile` to everything that answers a tap makes a page read as a
+pile of loose keys. `.lf-press` exists because that distinction is real and
+because it replaced ten hand-written `active:translate-y-px` utilities
+scattered across the app, each with its own duration and its own idea of
+reduced motion. One press, one duration, one modifier.
+
+The Tutor's HUD takes `.lf-press` and never `.lf-tactile`: a plate lit by the
+scene (§Lumen) has no side, and the ridge belongs to a different material.
 
 ### The ridge, which is the whole idea
 

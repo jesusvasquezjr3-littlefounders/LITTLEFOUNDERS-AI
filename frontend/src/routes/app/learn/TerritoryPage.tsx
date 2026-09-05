@@ -66,7 +66,7 @@ function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: Topic
           state={courseSlug ? { courseSlug } : undefined}
           className={cn(
             'flex min-h-11 items-center gap-2.5 rounded-lg border border-outline/50 bg-surface px-3 py-2.5',
-            'transition-[border-color,transform] duration-150 hover:border-primary/60 active:translate-y-px',
+            'transition-[border-color,transform] duration-150 hover:border-primary/60 lf-press',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
             topic.state === 'review-due' && 'border-warning/60 bg-warning-soft/30',
           )}

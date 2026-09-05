@@ -6,6 +6,13 @@ import { cn } from '@/lib/utils';
  * hairline edge, and layered atmospheric depth.
  * `onInverse` = deep glass variant for inverse bands.
  * `hero` = larger radius + padding for banner cards.
+ *
+ * `interactive` is the one that changed on 2026-09-05. A card you can press
+ * is an OBJECT, so it gets the tactile tier's ridge (/DESIGN.md §Tactile) and
+ * presses like every other control in the product. It keeps the hover lift —
+ * hover says "this responds" on a pointer device, and the press says "you got
+ * it" on every device; a phone only ever sees the second, which is exactly
+ * why the lift alone was never enough feedback.
  */
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
@@ -28,7 +35,7 @@ export function Card({
           ? 'lf-glass-deep text-on-inverse'
           : 'lf-glass',
         hero ? 'rounded-xl p-8' : 'rounded-lg p-6',
-        interactive && 'motion-safe-lift transition-transform duration-300 hover:-translate-y-1',
+        interactive && 'lf-tactile motion-safe-lift hover:-translate-y-1',
         className,
       )}
       {...props}

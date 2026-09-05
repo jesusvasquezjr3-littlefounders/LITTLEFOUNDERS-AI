@@ -164,7 +164,7 @@ export function AvatarEditorPage() {
                       aria-pressed={isSelected(section, value)}
                       onClick={() => choose(section, value)}
                       className={cn(
-                        'motion-safe-press h-10 w-10 rounded-full border border-outline/60 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                        'motion-safe-press h-10 w-10 rounded-full border border-outline/60 transition-transform duration-150 hover:-translate-y-0.5 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                         isSelected(section, value) && 'ring-2 ring-primary ring-offset-2 ring-offset-base',
                       )}
                       style={{ backgroundColor: `#${value}` }}
@@ -177,7 +177,7 @@ export function AvatarEditorPage() {
                       aria-pressed={isSelected(section, value)}
                       onClick={() => choose(section, value)}
                       className={cn(
-                        'motion-safe-press rounded-full p-1 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                        'motion-safe-press rounded-full p-1 transition-transform duration-150 hover:-translate-y-0.5 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                         isSelected(section, value) ? 'bg-primary-soft ring-2 ring-primary' : 'bg-surface-sunken hover:bg-outline/50',
                       )}
                     >

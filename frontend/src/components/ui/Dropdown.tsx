@@ -110,7 +110,7 @@ export function Dropdown<T extends string>({
         aria-label={selected ? `${ariaLabel}: ${selected.label}` : ariaLabel}
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          'lf-label motion-safe-press flex items-center rounded-full bg-surface-sunken text-content transition-all duration-150 hover:bg-outline/60 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          'lf-label motion-safe-press flex items-center rounded-full bg-surface-sunken text-content transition-all duration-150 hover:bg-outline/60 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
           compact ? 'h-11 px-3 gap-1' : 'min-h-11 px-4 py-2 gap-1.5',
         )}
       >

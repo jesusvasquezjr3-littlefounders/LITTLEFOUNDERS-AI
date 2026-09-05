@@ -1703,29 +1703,6 @@
   }
 
   /* ── Gaming Button — Flat, no glow or sheen. ── */
-  .lf-gaming-btn {
-    box-shadow: none;
-    position: relative;
-    overflow: visible;
-    isolation: auto;
-    transition:
-      background-color var(--lf-dur-base) var(--lf-ease),
-      transform var(--lf-dur-base) var(--lf-ease);
-  }
-  .lf-gaming-btn::after {
-    display: none;
-  }
-  .lf-gaming-btn:hover {
-    box-shadow: none;
-  }
-  .lf-gaming-btn:hover::after {
-    display: none;
-  }
-  .lf-gaming-btn > * {
-    position: relative;
-    z-index: auto;
-  }
-
   /*
    * A horizontal scroller that keeps its gesture and loses its bar. Not
    * `overflow: hidden` with a transform: this stays a REAL scroll container,
@@ -1755,11 +1732,44 @@
    * Owner decision 2026-09-05: scope it, judge it, then propagate.
    * ───────────────────────────────────────────────────────────────────── */
 
+  /*
+   * The ridge is a PROPERTY, not four copies of a shadow. A success button, a
+   * destructive one and a neutral card all want the same physics and a
+   * different colour of side; expressing that as `.lf-tactile-success`,
+   * `.lf-tactile-danger`… duplicates the geometry into every tone and lets one
+   * of them drift. Here the geometry is written once and a tone only sets
+   * `--lf-ridge`.
+   */
   .lf-tactile {
-    box-shadow: var(--lf-shadow-tactile);
+    --lf-ridge: rgba(15, 23, 42, 0.08);
+    --lf-ridge-ambient: rgba(15, 23, 42, 0.05);
+    box-shadow:
+      0 10px 25px -5px var(--lf-ridge-ambient),
+      0 var(--lf-tactile-lift) 0 0 var(--lf-ridge);
     transition:
       transform var(--lf-dur-press) ease,
       box-shadow var(--lf-dur-press) ease;
+  }
+  .dark .lf-tactile {
+    /* Nothing left to darken against a #0a0e1a ground — the side becomes light. */
+    --lf-ridge: rgba(255, 255, 255, 0.07);
+    --lf-ridge-ambient: rgba(0, 0, 0, 0.45);
+  }
+  .lf-tactile-accent {
+    --lf-ridge: rgb(var(--lf-accent-strong));
+    --lf-ridge-ambient: rgb(var(--lf-accent) / 0.25);
+  }
+  .lf-tactile-success {
+    --lf-ridge: rgb(var(--lf-success-strong));
+    --lf-ridge-ambient: rgb(var(--lf-success) / 0.25);
+  }
+  .lf-tactile-danger {
+    --lf-ridge: rgb(var(--lf-error-strong));
+    --lf-ridge-ambient: rgb(var(--lf-error) / 0.25);
+  }
+  .lf-tactile-warning {
+    --lf-ridge: rgb(var(--lf-warning-strong));
+    --lf-ridge-ambient: rgb(var(--lf-warning) / 0.25);
   }
   /*
    * The press. The surface travels exactly its own ridge height and the ridge
@@ -1768,19 +1778,51 @@
    * the ridge slides the whole object down the page instead, and reads as a
    * glitch rather than as a press.
    */
+  /*
+   * The press. The surface travels exactly its own ridge height and the ridge
+   * goes to zero in the same frame, so the bottom edge stays put and only the
+   * TOP face moves — which is what a key does. One rule for every tone,
+   * because the tone lives in the property.
+   */
   .lf-tactile:active {
     box-shadow:
-      0 4px 10px -4px rgba(15, 23, 42, 0.06),
-      0 0 0 0 rgba(15, 23, 42, 0.08);
+      0 4px 10px -4px var(--lf-ridge-ambient),
+      0 0 0 0 var(--lf-ridge);
     transform: translateY(var(--lf-tactile-lift));
   }
-  .lf-tactile-accent {
-    box-shadow: var(--lf-shadow-tactile-accent);
+  /*
+   * THE PRESS WITHOUT THE RIDGE.
+   *
+   * Not everything that answers a tap is an OBJECT. A sidebar row, a list
+   * row, an icon button sitting inside chrome — those are part of a surface,
+   * and giving them a side makes the page read as a pile of loose keys. They
+   * still have to acknowledge the tap, so they take the travel and leave the
+   * ridge behind.
+   *
+   * It exists as its own class because it replaced ten hand-written
+   * `active:translate-y-px` utilities scattered across the app, each with its
+   * own duration and its own idea of reduced motion. One press, one duration,
+   * one modifier.
+   */
+  .lf-press {
+    transition: transform var(--lf-dur-press) ease;
   }
-  .lf-tactile-accent:active {
-    box-shadow:
-      0 4px 10px -4px rgb(var(--lf-accent) / 0.3),
-      0 0 0 0 rgb(var(--lf-accent-strong));
+  .lf-press:active {
+    transform: translateY(var(--lf-tactile-lift));
+  }
+  .lf-press:disabled,
+  .lf-press[aria-disabled='true'] {
+    transform: none;
+  }
+
+  /*
+   * A disabled control keeps its LOOK and loses its physics. Flattening it
+   * entirely makes it read as a label; leaving the press makes it read as a
+   * control that swallowed the tap.
+   */
+  .lf-tactile:disabled,
+  .lf-tactile[aria-disabled='true'] {
+    transform: none;
   }
 
   /*
@@ -1881,7 +1923,8 @@
     .lf-tactile {
       transition: box-shadow var(--lf-dur-press) ease;
     }
-    .lf-tactile:active {
+    .lf-tactile:active,
+    .lf-press:active {
       transform: none;
     }
     .lf-land {

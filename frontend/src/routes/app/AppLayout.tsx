@@ -62,7 +62,7 @@ function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[
       onClick={() => playPlatformSound('nav_tap')}
       className={({ isActive }) =>
         cn(
-          'motion-safe-press flex min-h-12 items-center gap-3 rounded-full transition-colors duration-150 active:translate-y-px',
+          'motion-safe-press flex min-h-12 items-center gap-3 rounded-full transition-colors duration-150 lf-press',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
           collapsed ? 'justify-center px-0' : 'px-4',
           isActive
@@ -221,7 +221,7 @@ export function AppLayout() {
                   title={collapsed ? t(`admin.nav.${s.key}`) : undefined}
                   className={({ isActive }) =>
                     cn(
-                      'motion-safe-press flex min-h-11 items-center gap-3 rounded-full transition-colors duration-150 active:translate-y-px',
+                      'motion-safe-press flex min-h-11 items-center gap-3 rounded-full transition-colors duration-150 lf-press',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                       collapsed ? 'justify-center px-0' : 'px-4',
                       isActive ? 'bg-primary-soft font-bold text-primary' : 'text-content-muted hover:bg-surface-sunken hover:text-content',

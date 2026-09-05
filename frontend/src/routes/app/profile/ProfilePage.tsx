@@ -116,7 +116,7 @@ export function ProfilePage() {
           <button
             type="button"
             onClick={() => setPickingCover((p) => !p)}
-            className="lf-caption motion-safe-press flex items-center gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 font-bold text-content shadow-glass-sm transition-colors duration-150 hover:text-primary active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-caption motion-safe-press flex items-center gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 font-bold text-content shadow-glass-sm transition-colors duration-150 hover:text-primary lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <Icon name="palette" className="!text-[16px]" />
             {t('profile.editCover')}
@@ -127,7 +127,7 @@ export function ProfilePage() {
             to="/profile/avatar"
             aria-label={t('profile.editAvatar')}
             title={t('profile.editAvatar')}
-            className="motion-safe-press flex h-9 w-9 items-center justify-center rounded-full bg-accent text-on-accent shadow-pop transition-colors duration-150 hover:bg-accent-strong active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="motion-safe-press flex h-9 w-9 items-center justify-center rounded-full bg-accent text-on-accent shadow-pop transition-colors duration-150 hover:bg-accent-strong lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <Icon name="edit" className="!text-[18px]" />
           </Link>
@@ -154,7 +154,7 @@ export function ProfilePage() {
                 disabled={savingCover !== null}
                 onClick={() => void chooseCover(p.id)}
                 className={
-                  'motion-safe-press flex h-12 items-center justify-center rounded-md transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ' +
+                  'motion-safe-press flex h-12 items-center justify-center rounded-md transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ' +
                   ((data.cover as { preset?: string }).preset === p.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-base' : '')
                 }
                 style={{ backgroundImage: p.css }}
