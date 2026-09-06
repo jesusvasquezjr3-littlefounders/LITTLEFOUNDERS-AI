@@ -46,6 +46,16 @@ import type { Microphone } from '../useMicrophone';
  * with a caption stuck to its shoe. In that form the ring is a plain element,
  * because /DESIGN.md forbids stacking glass on glass: the plate is the
  * material, the ring is drawn on it.
+ *
+ * DESKTOP PRINTS ITS NAME AGAIN, AS OF 2026-09-06 — owner direction, matching
+ * the design study's dock caption ("Toca para hablar con Leo"). The risk the
+ * 2026-08-22 fix above was actually removing was never the text, it was a
+ * flex-participating plate competing with the composer for width on the
+ * SAME mobile row (`StageShell.tsx`'s `attachBelow` — see `min-w-[9.5rem]`'s
+ * own history there). The caption is back at `lg:` only, as an `absolute`,
+ * `aria-hidden` `.lf-stage-pill` beside the orb: it costs the row nothing to
+ * lay out, so it cannot reopen that bug, and it is decorative rather than
+ * the accessible name, so nothing is announced twice.
  */
 
 export type MicOrbState = 'unavailable' | 'idle' | 'listening' | 'thinking' | 'speaking';
@@ -497,6 +507,33 @@ export function MicOrb({
    * The wrapper is a bare box rather than a surface, so the only thing painted
    * here is the orb itself — which is the state five of the seven phases are
    * in, and 36 px of the dock's height back on every one of them.
+   *
+   * DESKTOP GAINS A CAPTION, 2026-09-06 — owner direction, matching the
+   * design study's dock ("Toca para hablar con Leo" printed beside the
+   * mic). The study is right that the label reads as unfinished sitting on
+   * nothing, and wrong that repeating it is free: this component's own
+   * header comment records that a stacked orb-plus-plate was tried, was two
+   * surfaces for one control, and was fixed by deleting the plate. Both are
+   * true at once because the risk was never the TEXT, it was the LAYOUT —
+   * on mobile this row is shared with the portalled composer
+   * (`StageShell.tsx`'s `attachBelow`), and a wider participating flex child
+   * here is the exact bug `min-w-[9.5rem]` on that slot was written to fix
+   * (a blocked-mic sentence had starved the composer to a 10px input).
+   *
+   * So the caption is `absolute`, not a flex participant: it costs the row
+   * NOTHING to lay out, on any breakpoint, which is what makes it safe to
+   * add without re-auditing every consumer of this row's width. It is
+   * `hidden` below `lg:`, because 96px of orb plus a caption wide enough to
+   * read is close to the whole 375px viewport the mobile dock already
+   * shares with the composer and the suggestion chips above it — the
+   * mockup's own mobile screen gives the dock a full-width row with nothing
+   * beside it, which is not this route's layout, and forcing it here would
+   * be the derived-not-designed mistake /DESIGN.md already warns against
+   * for this exact surface.
+   *
+   * Decorative (`aria-hidden`): the button's own `aria-label` is the real
+   * accessible name, and a screen reader that read both would hear the name
+   * twice for one control.
    */
   if (!reason) {
     /*
@@ -509,9 +546,22 @@ export function MicOrb({
      * reflow when the row is tight — so it deliberately does NOT get this.
      */
     return (
-      <div className={cn('flex shrink-0 flex-col items-center', className)}>
+      <div className={cn('relative flex shrink-0 flex-col items-center', className)}>
         <style>{ORB_KEYFRAMES}</style>
         {orb}
+        <span
+          aria-hidden="true"
+          /*
+           * `.lf-stage-pill`, not bare text: this reads over the same moving
+           * render as the exit chip and the live badge, and neither of those
+           * risks contrast against a bright backdrop by going unbacked — the
+           * caption should not be the one exception `verify:tutor-a11y`
+           * happens not to have a fixture for.
+           */
+          className="lf-action lf-stage-pill pointer-events-none absolute left-full top-1/2 ml-3 hidden w-max max-w-[16ch] -translate-y-1/2 whitespace-normal px-3 py-1.5 lg:inline-flex"
+        >
+          {label}
+        </span>
         {hint}
       </div>
     );

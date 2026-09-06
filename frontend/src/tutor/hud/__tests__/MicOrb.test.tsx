@@ -152,11 +152,15 @@ describe('MicOrb presence', () => {
    * conversation. "Hold to talk" there asks a child to hold a button with
    * nothing behind it.
    *
-   * It is the orb's NAME and nothing else, since 2026-08-22. It used to be the
-   * name AND a printed line on a second plate underneath — two surfaces for one
-   * control, in five of the seven phases (/DESIGN.md §Lumen → What to delete).
+   * It was the orb's NAME and nothing else from 2026-08-22 to 2026-09-06 — a
+   * printed line on a second plate underneath used to be two surfaces for one
+   * control (/DESIGN.md §Lumen → What to delete). It is back, at `lg:` only,
+   * as a decorative caption beside the orb (owner direction, matching the
+   * design study's dock) rather than as a second plate underneath: the
+   * ACCESSIBLE name still comes from `aria-label` alone, so a screen reader
+   * hears the name exactly once regardless of the printed caption existing.
    */
-  it('lets one screen override the resting wording, and spends no surface on it', () => {
+  it('lets one screen override the resting wording, spoken and printed once each', () => {
     render(
       <MicOrb
         state="idle"
@@ -168,8 +172,9 @@ describe('MicOrb presence', () => {
 
     expect(screen.getByRole('button')).toHaveAttribute('aria-label', 'Start talking with your tutor');
     expect(screen.queryByText(/hold to talk/i)).not.toBeInTheDocument();
-    // The name is spoken, never printed: a usable microphone needs no caption.
-    expect(screen.queryByText('Start talking with your tutor')).not.toBeInTheDocument();
+    // Printed once, decoratively, never as a second accessible name.
+    const caption = screen.getByText('Start talking with your tutor');
+    expect(caption).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('says "hold to talk" everywhere else, because everywhere else that is true', () => {

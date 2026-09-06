@@ -1691,6 +1691,32 @@ body renderers the Tutor's live board hosts (still not re-skinned per
 segment — see the same entry). The shape reversal is a material-tier change;
 it does not argue with either of those structural decisions.
 
+### The mic orb prints its name again, on desktop (2026-09-06)
+
+The owner supplied the actual Stitch export (the zip, not a description of
+it) and its real screenshots settled a question this document had been
+answering from a text extraction: the design study's mic dock is not a bare
+orb, it is the orb with "Toca para hablar con Leo" printed beside it, always.
+`MicOrb.tsx`'s own header comment records why that caption was removed on
+2026-08-22 — a stacked orb-plus-plate was two surfaces for one control — and
+that reasoning was never wrong; what it did not anticipate is that the study's
+caption is not a SECOND surface at all, it sits beside the orb in one
+conceptual dock. Restoring it plainly risked a real, previously-fixed bug: on
+mobile this row is shared with the portalled composer (`StageShell.tsx`,
+`attachBelow`), and `min-w-[9.5rem]` on that slot exists specifically because
+a wide sentence next to the orb once starved the composer to an unusable 10px
+input.
+
+The caption is back at `lg:` only, as an `absolute`, `aria-hidden`
+`.lf-stage-pill` positioned beside the orb rather than as a flex participant —
+it costs the shared row nothing to lay out, on any breakpoint, so it cannot
+reopen that bug, and `aria-hidden` keeps the button's own `aria-label` as the
+one accessible name. Below `lg:` the orb is exactly what it was: the mockup's
+own mobile screen gives its dock a full-width row with nothing sharing it,
+which is not this route's layout, and forcing the caption into a row it does
+not have room for would be exactly the "derived, not designed" mistake this
+document exists to catch.
+
 ### The Tutor's conversing panel, photographed a second time (2026-09-05)
 
 The first Tutor pass fixed the STAGE CHROME (the exit chip, the stage pill
