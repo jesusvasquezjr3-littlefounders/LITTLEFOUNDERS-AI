@@ -761,6 +761,36 @@
   }
 
   /*
+   * THE HOUSE HOVER FOR GLASS CHROME, added 2026-09-05 — it never existed.
+   * DESIGN.md already stated the rule ("brightens the HAIRLINE, never the
+   * fill") for a hover that had no CSS behind it anywhere in the file: every
+   * `HudPlate` button — map, restart, "Leave the tutor", the personalize
+   * list toggle — sat completely still under a pointer, with feedback arriving
+   * only on `:active`. A fill change on a translucent pill fights whatever
+   * scene is behind it and reads differently over every part of the stage; an
+   * edge change reads the same everywhere, which is why the edge is the knob.
+   *
+   * Scoped to `.lf-press` rather than to `.lf-lumen` itself: `HudPlate` only
+   * adds `.lf-press` when the element is an interactive button, so a
+   * non-interactive plate (a caption, a status chip) is correctly excluded —
+   * there is nothing for a pointer to be hovering FOR on those.
+   *
+   * `@media (hover: hover)` so a touch tap does not leave a chip looking
+   * "hovered" after the finger lifts, which is the standing trap of `:hover`
+   * on a touchscreen.
+   */
+  @media (hover: hover) {
+    .lf-lumen.lf-press:hover:not(:disabled):not([aria-disabled='true']) {
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-lumen-rim), transparent),
+        inset 0 0 0 1px color-mix(in srgb, var(--lf-lumen-shade) 16%, transparent),
+        inset 0 0 0 1.5px rgb(255 255 255 / calc((1 - var(--lf-sun-height)) * 0.14 + 0.18)),
+        0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
+          color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
+    }
+  }
+
+  /*
    * ONE INK ON CHROME, AND THE MATERIAL ENFORCES IT.
    *
    * At the chrome alpha, `content-muted` measures 3.6:1 over the worst backdrop
@@ -840,14 +870,47 @@
    * An ACTION is an object, not a pane. It keeps the seated shadow so it
    * belongs to the same light, and drops the glass so a CTA never reads as one
    * more window onto the island.
+   *
+   * IT ALSO GLOWS ITS OWN COLOUR, added 2026-09-05 against the design study's
+   * "Verificar" button. The seated shadow alone is what every OTHER surface
+   * on the stage wears — a plate, a chip, an option all drop the same
+   * ground-toned shadow, so the one indigo action of the phase read as just
+   * another dark shape with no light of its own. The study's button throws an
+   * ambient shadow TINTED BY ITS OWN FILL (`shadow-indigo-600/30`) and wears a
+   * lighter rim of the same hue, which is what a lit, opaque object made of
+   * that colour actually does — it doesn't just occupy space, it colours the
+   * air around it. A dedicated press transform rides with it: this is the one
+   * control the study asks to feel like a key rather than a pane, so instead
+   * of the ordinary `.lf-press` travel it gets a scale as well.
    */
   .lf-lumen-solid {
     background-color: transparent;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+    transition:
+      transform var(--lf-dur-press) ease,
+      box-shadow var(--lf-dur-press) ease;
     box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      inset 0 0 0 1px color-mix(in srgb, rgb(var(--lf-accent)) 55%, white 15%),
+      0 10px 24px -8px color-mix(in srgb, rgb(var(--lf-accent)) 50%, transparent),
       0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
         color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
+  }
+  .lf-lumen-solid:active {
+    transform: translateY(var(--lf-tactile-lift)) scale(0.97);
+  }
+  .lf-lumen-solid:disabled,
+  .lf-lumen-solid[aria-disabled='true'] {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lf-lumen-solid:active {
+      transform: none;
+    }
   }
 
   /*
@@ -2249,6 +2312,25 @@
     }
   }
 
+  /*
+   * THE ORB'S OWN BODY, added 2026-09-05. `bg-accent` painted the mic's inner
+   * disc as one flat colour — correct as a fill, but the one large gradient
+   * OBJECT the design study puts on this stage (`bg-gradient-to-tr
+   * from-indigo-600 to-indigo-500`) was the one thing a flat utility class
+   * cannot express. Lit from the lower-left the same direction as `.lf-coin`
+   * and the stage's own key light, so the darkest stop sits at
+   * `--lf-accent-strong` and the lightest is a mix toward white rather than a
+   * second named token — the study's two stops are one step apart on the SAME
+   * ramp, not two different colours.
+   */
+  .lf-orb-fill {
+    background: linear-gradient(
+      to top right,
+      rgb(var(--lf-accent-strong)) 0%,
+      rgb(var(--lf-accent)) 55%,
+      color-mix(in srgb, rgb(var(--lf-accent)) 100%, white 16%) 100%
+    );
+  }
 
   /* ─────────────────────────────────────────────────────────────────────
    * THE TACTILE TIER (/DESIGN.md §Tactile)

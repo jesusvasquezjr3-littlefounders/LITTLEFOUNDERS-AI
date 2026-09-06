@@ -1633,6 +1633,64 @@ recipe 7) and has a reduced-motion modifier. The waveform collapses to a flat
 line rather than freezing: a stopped waveform is a graphical artefact, a flat
 one still says "audio".
 
+### The Tutor's shape reversal — chips are capsules again (2026-09-05, owner direction)
+
+The two passes above tuned box-shadows and hairlines and were told, correctly,
+that the Tutor still looked like "the same old button configuration." They
+did — every fix so far had kept `HudPlate`'s own shape rule intact, and that
+rule was written the OPPOSITE of the design study: "the shape is not a pill,
+and that is the point" argued a capsule over a photographic frame reads as a
+sticker, so every chip sat at a quiet `rounded-md`. The study disagrees on
+exactly this, everywhere: its exit chip, live badge, stat pills, suggestion
+chips and both 36px icon buttons are full capsules, and its cards are rounder
+than `md` as well. No amount of glass tuning changes a shape, so the shape
+itself was reversed:
+
+- `HudPlate`'s `chip` shape: `rounded-md` → `rounded-full`. This is the single
+  highest-leverage change in either pass, because EVERY small control on the
+  Tutor route is a `HudPlate` — map, restart, "Leave the tutor", "Finish", the
+  personalize list toggle, every `OfferChips` suggestion — so the reversal
+  cascades to the whole surface from one token, with no per-call-site work.
+  An icon-only chip (map, restart) is now a true circle because its padding is
+  already near-square; a labelled chip is now a real capsule.
+- `plate` and `sheet` shapes: `rounded-md` / `rounded-lg` → `rounded-2xl` (16px),
+  matching the study's own card and board radius. This reaches the speech
+  card, the docked lesson panel, the transcript sheet and the personalize
+  panel's own sheet.
+- The accent action (`.lf-lumen-solid`, `floor="accent"` on `HudPlate`) gained
+  the study's "breaks the glass language" treatment: an ambient shadow tinted
+  by the action's OWN colour rather than the scene's neutral ground-shade
+  (`0 10px 24px -8px color-mix(accent 50%, transparent)`), a lighter accent
+  rim, and a dedicated `scale(0.97)` press riding alongside the ordinary
+  `.lf-press` travel. This is the "I'm ready" / "Check" / "Done" button on
+  every Tutor screen.
+- `.lf-lumen` gained its first hover state, ever: `@media (hover: hover)`
+  brightens the edge (never the fill — a fill change on a translucent pill
+  fights whatever scene is behind it) on any interactive glass control. The
+  rule existed in prose already; there was no CSS behind it.
+- The mic orb's fill went from flat `bg-accent` to a real two-stop gradient
+  (`.lf-orb-fill`, lit from the lower-left on the same ramp as `.lf-coin` and
+  the stage's own key light) — the study's one gradient BUTTON, reproduced
+  with the project's own tokens rather than a second named colour.
+- `PersonalizeInWorld`'s panel gained the study's strongest typographic
+  signature: a `SectionHeading` helper pairing a tinted icon with
+  `.lf-eyebrow` (already defined, unused for this) over each group — "YOUR
+  TUTOR" (accent/`smart_toy`), "WHERE" (delight/`public`, standing in for the
+  study's cyan — DESIGN.md's closed palette has no cyan token), "THE LIGHT"
+  (warning/`wb_sunny`). `PlateChip`'s selected state gained an outer glow
+  alongside its existing inset ring, matching the study's "solid fill + border
+  + glow" selection language instead of the border alone.
+
+`HudPlate.test.tsx`'s "is a pane, not a pill" test asserted the OLD rule by
+name and was rewritten rather than deleted — it now pins the reversal itself,
+so a future accidental revert fails loudly instead of silently.
+
+**What this deliberately did NOT touch:** `PersonalizeInWorld`'s architecture
+(still not a modal — see the entry above), and the ~20 lesson-engine segment
+body renderers the Tutor's live board hosts (still not re-skinned per
+segment — see the same entry). The shape reversal is a material-tier change;
+it does not argue with either of those structural decisions.
+
 ### The Tutor's conversing panel, photographed a second time (2026-09-05)
 
 The first Tutor pass fixed the STAGE CHROME (the exit chip, the stage pill

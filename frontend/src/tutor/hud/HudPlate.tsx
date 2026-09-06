@@ -107,29 +107,35 @@ export interface HudPlateProps extends HTMLAttributes<HTMLElement> {
 }
 
 /**
- * THE SHAPE IS NOT A PILL, AND THAT IS THE POINT.
+ * THE SHAPE FOLLOWS THE STUDY NOW — reversed 2026-09-05, owner direction.
  *
- * /DESIGN.md makes `rounded-full` the shape of everything interactive and
- * small, and it is right everywhere the product is a page. Over a photographic
- * frame a capsule is the silhouette of a sticker: the eye reads a shape with no
- * corners as something applied to the picture, not something in it. A soft
- * rectangle at the `md` radius reads as a PANE, which is what this material is.
- * The orb keeps its circle because it is a physical object rather than a label,
- * and the sheet keeps `xl` because it is a piece of furniture.
+ * This used to read "the shape is not a pill, and that is the point": a
+ * capsule over a photographic frame was held to read as a sticker applied to
+ * the picture rather than something in it, so every chip sat at a quiet `md`
+ * radius instead. That reasoning was never wrong on its own terms, but the
+ * owner's mandate for this route is the Stitch study, verbatim, and the study
+ * disagrees on exactly this point — its exit chip, live badge, stat pills,
+ * suggestion chips and both 36px icon buttons are ALL `rounded-full`, and its
+ * cards (speech card, whiteboard, the settings dialog) are ALL rounder than
+ * `md` as well (16px, 24px). Photographed side by side with the study three
+ * times over, the quiet-radius chip was named each time as part of "the same
+ * old button configuration" — a soft rectangle reads as generic chrome
+ * regardless of how carefully its glass is tuned, and no amount of box-shadow
+ * work changes a shape.
+ *
+ * So: chips are full capsules again, plates and sheets are as round as the
+ * study's own cards. The orb keeps its circle, unchanged — it was always
+ * right.
  */
 const FRAME: Record<HudPlateShape, string> = {
-  chip: 'rounded-md',
-  // `md` for the plate too, and that is a MEASUREMENT rather than a taste.
-  // `lg` is 24 px, and a plate carrying one line is about 44 px tall — so a
-  // 24 px radius on it IS a capsule, and half the HUD went on reading as pills
-  // after the shape rule said it should not. 16 px cannot become a capsule
-  // above 32 px of height, which is below the tap floor.
-  plate: 'rounded-md',
+  chip: 'rounded-full',
+  // 16px — the study's own card radius (`rounded-2xl`) for the speech card
+  // and the whiteboard panel, both `shape="plate"` here.
+  plate: 'rounded-2xl',
   orb: 'rounded-full',
-  // The two furniture shapes are large enough that a bigger radius stays a
-  // radius. The sheet is the one surface that is a piece of furniture rather
-  // than a label, and it is never short.
-  sheet: 'rounded-lg',
+  // The docked panel and the transcript sheet: furniture, not a label, and
+  // the study's board sits at the same 16px its cards do.
+  sheet: 'rounded-2xl',
 };
 
 /*

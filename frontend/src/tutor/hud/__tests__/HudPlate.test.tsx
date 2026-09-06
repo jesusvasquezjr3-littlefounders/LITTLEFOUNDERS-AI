@@ -242,15 +242,18 @@ describe('HudPlate material', () => {
 });
 
 describe('HudPlate shape', () => {
-  it('is a pane, not a pill', () => {
+  it('is a pill, matching the design study (reversed 2026-09-05, owner direction)', () => {
     const { container } = render(<HudPlate shape="chip">Dusk</HudPlate>);
     /*
-     * /DESIGN.md makes `rounded-full` the shape of everything interactive and
-     * small, and it is right everywhere the product is a page. Over a
-     * photographic frame a capsule is the silhouette of a sticker.
+     * This used to assert the opposite: a quiet `rounded-md` pane, on the
+     * theory that a capsule over a photographic frame reads as a sticker.
+     * The owner's mandate for this route is the Stitch study verbatim, and
+     * the study's own exit chip, live badge, stat pills and suggestion chips
+     * are all full capsules — photographed against it three times, the
+     * quiet-radius chip was named each time as part of "the same old button
+     * configuration." See the shape rationale in `HudPlate.tsx`.
      */
-    expect(container.firstElementChild?.className).toContain('rounded-md');
-    expect(container.firstElementChild?.className).not.toContain('rounded-full');
+    expect(container.firstElementChild?.className).toContain('rounded-full');
   });
 
   it('keeps the orb a circle, because it is an object rather than a label', () => {

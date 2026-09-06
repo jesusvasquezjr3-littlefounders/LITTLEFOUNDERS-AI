@@ -415,8 +415,11 @@ export function MicOrb({
           !available
             ? 'text-content'
             : recording
-              ? 'bg-error text-on-error'
-              : 'bg-accent text-on-accent',
+              ? // Solid, deliberately: red flat is the clearer "you are being
+                // recorded" signal, and a gradient here would soften the one
+                // state where soft is the wrong read.
+                'bg-error text-on-error'
+              : 'lf-orb-fill text-on-accent',
           state === 'idle' && available && 'lf-mic-breathe',
         )}
       >

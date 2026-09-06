@@ -753,7 +753,13 @@ export function PersonalizeInWorld({
                   stored as a fact about them, and the tutor may only ever ask
                   to add one.
                 */}
-                <p id={adaptHeadingId} className="lf-title mb-2 text-content">
+                {/*
+                  Heading-only, no icon — matching the study's own "Ajustes
+                  Rápidos" section, which is the one uppercase header on that
+                  screen with no leading glyph. `id` moves onto the eyebrow
+                  itself so `aria-labelledby` still resolves.
+                */}
+                <p id={adaptHeadingId} className="mb-2 lf-eyebrow text-content">
                   {t('tutor.personalize.adaptTitle')}
                 </p>
                 {/*
@@ -786,7 +792,9 @@ export function PersonalizeInWorld({
               */}
               {listedCharacters.length > 0 && (
                 <div role="group" aria-label={t('tutor.personalize.whoTitle')}>
-                  <p className="lf-title mb-2 text-content">{t('tutor.personalize.whoTitle')}</p>
+                  <SectionHeading icon="smart_toy" tone="accent">
+                    {t('tutor.personalize.whoTitle')}
+                  </SectionHeading>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {listedCharacters.map((id) => (
                       <div key={id} className="flex items-center gap-2">
@@ -830,7 +838,9 @@ export function PersonalizeInWorld({
 
               {listedIslands.length > 1 && (
                 <div role="group" aria-label={t('tutor.personalize.whereTitle')}>
-                  <p className="lf-title mb-2 text-content">{t('tutor.personalize.whereTitle')}</p>
+                  <SectionHeading icon="public" tone="delight">
+                    {t('tutor.personalize.whereTitle')}
+                  </SectionHeading>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {listedIslands.map((id) => (
                       <PlateChip
@@ -847,7 +857,9 @@ export function PersonalizeInWorld({
 
               {listedSun.length > 0 && (
                 <div role="group" aria-label={t('tutor.personalize.lightTitle')}>
-                  <p className="lf-title mb-2 text-content">{t('tutor.personalize.lightTitle')}</p>
+                  <SectionHeading icon="wb_sunny" tone="warning">
+                    {t('tutor.personalize.lightTitle')}
+                  </SectionHeading>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {listedSun.map((id) => (
                       <PlateChip
@@ -1057,6 +1069,36 @@ function WorldSlot({ slot, children }: { slot: AnchorId; children: ReactNode }) 
  * unselected chip now has no border at all; it is a slightly recessed pane, and
  * the only thing an outline means here is "this one is chosen".
  */
+/**
+ * A SECTION HEADER, matching the design study's strongest typographic
+ * signature: a small tinted icon beside wide-tracked uppercase small caps
+ * (`.lf-eyebrow`, already defined for exactly this — /DESIGN.md §Typography).
+ * The study keys each section's icon to a different hue, which then keys the
+ * selected-state colour of the cards below it; this panel has no cyan token
+ * (DESIGN.md's closed palette stops at accent/delight/success/warning/error),
+ * so `delight` (violet) stands in for the study's cyan on the "where" section
+ * — a different hue from `accent`, which is the property that actually
+ * matters here, not the exact wavelength.
+ */
+function SectionHeading({ icon, tone, children }: { icon?: string; tone?: 'accent' | 'delight' | 'warning'; children: ReactNode }) {
+  return (
+    <p className="mb-2 flex items-center gap-1.5 lf-eyebrow text-content">
+      {icon && (
+        <Icon
+          name={icon}
+          className={cn(
+            '!text-[16px]',
+            tone === 'accent' && 'text-accent',
+            tone === 'delight' && 'text-delight',
+            tone === 'warning' && 'text-warning-strong',
+          )}
+        />
+      )}
+      {children}
+    </p>
+  );
+}
+
 function PlateChip({
   selected,
   onSelect,
@@ -1081,8 +1123,15 @@ function PlateChip({
         'lf-action flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-center',
         'transition-[background-color,box-shadow] duration-200 lf-press',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        /*
+         * Selection now carries an outer glow alongside the inset ring,
+         * matching the design study's card language: solid fill + a coloured
+         * border + a coloured ambient shadow, all three at once rather than
+         * the border alone. The glow is the same ring colour at low alpha, so
+         * the two never disagree.
+         */
         selected
-          ? 'bg-accent-soft text-content shadow-[inset_0_0_0_2px_rgb(var(--lf-primary))]'
+          ? 'bg-accent-soft text-content shadow-[inset_0_0_0_2px_rgb(var(--lf-primary)),0_0_16px_-2px_rgb(var(--lf-primary)/0.45)]'
           : 'bg-content/[0.06] text-content hover:bg-content/[0.11]',
         className,
       )}
