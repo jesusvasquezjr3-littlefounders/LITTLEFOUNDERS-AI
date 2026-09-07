@@ -9,7 +9,6 @@
 "LEGAL/
 .github/
   workflows/
-.tmp-rho/
 agent/
   core/
     checklists/
@@ -1468,9 +1467,9 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## NSM analytics + the shareable-achievement-badge viral loop (2026-09-07)
+## Rho's arms were welded to his torso, and five rounds of pose tuning went into working around it (2026-09-07)
 
-**Two growth-workstream deliverables, built together because the second needs the first.** (1) `lesson_complete` was already shipping client-side only (`LessonPlayer.tsx`, since the first Insights pass); it is now emitted SERVER-side instead (`backend/src/routes/learn.ts`, same gate as `first_lesson_complete`/`streak_extend`) and the client copy was DELETED rather than kept alongside it — a client beacon and a server emission for the same completion would double-count the platform's own North Star Metric, since `client_event_id` dedup only collapses retries of the SAME event, not two independently-generated ones. `parent_report_viewed` is new, fired once when `KidTerritoryPage` (the parent's view of a kid's stats — that IS the parent report) loads successfully. (2) A parent can mint a shareable 1080x1920 achievement image (`POST /family/kids/:kidId/badge` → Depot's new templated SVG→PNG compositor, `filebase/src/lib/badge.ts` — NOT Prism/picturegen, which is AI-generation only) for an ALREADY-EARNED course badge or a streak ≥3 days, get a `/badge/:token` link, and share it via `navigator.share` (clipboard fallback). The public landing page is opened by strangers with no account: a Vercel Edge Function (`frontend/api/badge/[token].ts`, this repo's first) injects per-share Open Graph tags into the app-shell before the SPA boots, so a shared link unfurls with the right image/title in WhatsApp/iMessage/Slack — the React route underneath does the actual consent-gated click tracking. Four new closed-vocabulary events (`parent_report_viewed`, `badge_generated`, `badge_shared`, `badge_link_click`) via migration `0072`; a new `badge_shares` table (`0073`) — both **applied to production the same day**, via `tutor-deploy.yml step:migrate`; the ledger probe inside that run confirmed 73/73, per ROADMAP.md. "Registros" (the loop's fourth conversion step) needed no new event: it rides the EXISTING `signup_complete` → `attributeSignup` UTM-attribution path, tagged `utm_campaign=badge-share` on the share link itself (not the in-page CTA — `captureLandingContext()` snapshots UTM params on first script execution, i.e. on the URL the visitor actually landed on).
+**The owner reported that Rho deforms when he raises his hands. He was right, and the cause was in the mesh rather than in any code.** Rho ships from Meshy with the inner surface of each arm FUSED to his torso and thigh — 91 triangles with corners in both a hand and a hip, closest hand vertex 1.2 cm from his leg — and the auto-rigger painted weights across the contact, giving 259 arm vertices torso/leg weight. Raising both arms 120° dragged his LEGS 0.333 and his torso 0.275, against Zara's 0.000 and 0.063, and stretched 6.53% of his triangles past double area against her 0.31%. Rendered, it shortened his trousers, narrowed his waistcoat and fanned sheets of geometry from each shoulder to the hip. **`TUTOR_3D.md` §4.2's `celebrate@rho` and `point@rho` overrides — five measured tuning rounds, and a written note that an automated search "returned high-scoring poses with the arm inside the torso" — were all working around this.** Type-check, lint, 1804 tests and `verify:rig` were green throughout, because it is a property of the geometry inside the `.glb` and `verify:rig` reasons only about bones.
 
 ```
 

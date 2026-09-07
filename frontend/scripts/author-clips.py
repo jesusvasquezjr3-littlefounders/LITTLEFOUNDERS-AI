@@ -279,6 +279,33 @@ CLIPS = {
         ],
     },
 
+    # `peek` leans the torso 13 degrees sideways and rotates the hips with it,
+    # and it never touches the arms — on Zara and Liruf that is fine. Rho stands
+    # with his hands 1.2 cm from his thighs (TUTOR_3D.md §4.2a), so the lean
+    # brings the thigh up THROUGH his hand: at t=0.80 more than half of it was
+    # inside his trousers with only the fingers still showing. The fix is the
+    # smallest one that works — hold both arms a few degrees out for the length
+    # of the lean, which is what a person does to look around a corner anyway.
+    # Found by `verify:clearance`; invisible to every other gate, because a hand
+    # inside a leg deforms nothing at all.
+    "peek@rho": {
+        "frames": 45,
+        "keys": [
+            (0, {}),
+            (7, {"Spine01": (0, 0, 4), "Head": (0, -6, 3),
+                 "LeftArm": (0, 0, -6), "RightArm": (0, 0, 6)}),
+            (20, {"Spine01": (0, 0, -13), "Spine02": (0, 0, -9), "Hips": (0, 0, -4),
+                  "neck": (0, 8, -6), "Head": (-4, 17, -11),
+                  "LeftArm": (0, 0, -14), "RightArm": (0, 0, 14)}),
+            (30, {"Spine01": (0, 0, -14), "Spine02": (0, 0, -10), "Hips": (0, 0, -4),
+                  "neck": (0, 9, -6), "Head": (-5, 19, -12),
+                  "LeftArm": (0, 0, -15), "RightArm": (0, 0, 15)}),
+            (39, {"Spine01": (0, 0, 3), "Head": (0, -4, 2),
+                  "LeftArm": (0, 0, -5), "RightArm": (0, 0, 5)}),
+            (45, {}),
+        ],
+    },
+
     # ---- EMOTION LAYER -------------------------------------------------
     #
     # These are composed ADDITIVELY over whichever action is playing, so they
@@ -465,14 +492,22 @@ CLIPS = {
         "frames": 42,
         "keys": [
             (0, {}),
-            (6, {"RightArm": (0, 0, -12), "Spine02": (0, -5, 0), "Head": (0, -6, 0)}),
+            # The anticipation pulls the arm OUT, not back. This override was
+            # written to fix the REACH and kept the shared clip's own -12 on Z,
+            # which on Zara's rig pulls the arm behind her and on Liruf — whose
+            # rest orientation differs by 73 degrees (TUTOR_3D.md §3) — drove his
+            # forearm INSIDE his belly. At t=0.23 only his claws were still
+            # visible. `verify:clearance` found it; nothing else could, because
+            # interpenetration deforms no triangle.
+            (6, {"RightArm": (0, 0, 10), "Spine02": (0, -5, 0), "Head": (0, -6, 0)}),
             (15, {"RightArm": (-75, -20, -30), "RightForeArm": (-10, 0, 6),
                   "RightShoulder": (0, 0, 8), "Spine02": (0, 10, 0), "Spine01": (0, 5, 0),
                   "Head": (0, 12, 0), "Hips": (0, 3, 0)}),
             (26, {"RightArm": (-72, -19, -28), "RightForeArm": (-8, 0, 5),
                   "RightShoulder": (0, 0, 8), "Spine02": (0, 10, 0), "Spine01": (0, 5, 0),
                   "Head": (0, 12, 0), "Hips": (0, 3, 0)}),
-            (36, {"RightArm": (0, 0, -6), "Spine02": (0, 2, 0), "Head": (0, 3, 0)}),
+            # The settle out, like the anticipation above, goes OUT rather than in.
+            (36, {"RightArm": (0, 0, 5), "Spine02": (0, 2, 0), "Head": (0, 3, 0)}),
             (42, {}),
         ],
     },

@@ -658,6 +658,55 @@ from a defect. The FRACTION of severely stretched triangles can, because a torn
 weld tears in dozens of places at once while an armpit stretches in one. The
 worst triangle is still reported, and never failed on.
 
+### §4.4b `verify:pose` and `verify:clearance` — the clips, not just the mesh (2026-09-07)
+
+`verify-skin` (§4.4a) measures ONE synthetic pose. `verify-rig` plays all 23
+clips but reasons only about BONES. Between them sat a gap wide enough for two
+real defects, and both were in the authored library rather than in any asset.
+
+**`npm run verify:pose` — does a clip DEFORM anyone.** Plays every action and
+emotion, resolved through the same `<action>@<id>` rule the runtime uses, at 21
+sampled frames each, and measures the mesh two ways: triangles that blow up
+(a sheet being pulled) and triangles crushed to nothing (a joint pinching shut).
+A stretch check alone cannot see the second, which is the opposite failure.
+Everything is a FRACTION of the mesh, never a maximum — see §4.4a for the Zara
+false alarm that settled that. It is validated in both directions: the repaired
+characters pass at 0.47%/1.16%, and restoring the welded originals fails it at
+6.27% and 2.14%, so a green result means something.
+
+**`npm run verify:clearance` — does a clip put a body part INSIDE another.**
+This is the one nothing else could ever have caught, because interpenetration
+deforms nothing: every triangle keeps its exact area while the hand slides into
+the chest. §4.2 records the check being done by eye and getting it wrong — an
+automated pose search "returned high-scoring poses with the arm inside the
+torso", judged from the wrong side three rounds running.
+
+It fits a capsule per bone from the vertices that bone actually owns, then
+probes real vertices against those capsules — never capsule against capsule,
+which adds the fat of both approximations and cannot tell a hand resting on a
+chest from a hand buried in one. Everything is relative to the REST pose, because
+Rho stands with his hands 1.2 cm from his thighs and Liruf's arms rest on his
+belly; an absolute test fails all three standing still.
+
+**Two defects it found immediately, both fixed in `author-clips.py`:**
+
+| clip | what happened | why |
+|---|---|---|
+| `point@liruf` | at t=0.23 his forearms were INSIDE his belly — only his claws still visible | the override fixed the REACH and kept the shared clip's own `RightArm (0,0,-12)` anticipation. On Zara's rig that pulls the arm back; on Liruf's, 73° away in rest orientation (§3), it pulls it in. The settle at frame 36 had the same sign |
+| `peek` on rho | at t=0.80 more than half his hand was inside his trousers | `peek` leans the torso 13° and never touches the arms. On Zara and Liruf that is fine. Rho's hands rest 1.2 cm from his thighs, so the lean brings the thigh up through the hand. Fixed with a `peek@rho` that holds both arms a few degrees out for the length of the lean |
+
+**Two things about the gate's own design are worth keeping.** It counts the
+SHARE of a part's vertices that end up buried rather than the depth of the
+deepest one — by depth alone the real defect scored 0.72 against 0.59 for an arm
+merely pressed against a torso, and six points is not a margin anyone should
+trust; by share they separate 54% against 11%. And it deliberately judges only
+hand-or-forearm into torso-or-leg: one capsule per bone over-approximates badly
+on a stylised character, and Liruf's head capsule reaches down over his chest,
+which reported his correctly-placed little arms as 99% buried inside his own
+head. Rendering that frame is what settled it. **A gate that reports a correct
+pose as a defect gets switched off**, so the questions a capsule cannot answer
+are left to the eye rather than guessed at.
+
 ### §4.3 The seven emotions need NO per-character overrides — audited
 
 The obvious follow-up to §4.2 is "if the actions needed per-character values, the
