@@ -54,9 +54,22 @@ optimized output is published. Everything below was MEASURED with
 | `diorama-a` | 43.67 MB | 1.35 MB | 954,100 → 44,996 | Stone circle: table, curved back wall, plants |
 | `diorama-b` | 69.23 MB | 1.97 MB | 1,512,830 → 66,868 | Oasis: pond, palms, benches |
 | `dina` | 12.17 MB | 0.65 MB | 170,910 → 49,997 | **Quadruped**, 27-joint rig, Unreal unit scale |
-| `liruf` | 4.73 MB | 0.31 MB | 3,132 | Bipedal cartoon dinosaur |
-| `rho` | 4.65 MB | 0.29 MB | 3,080 | Adult human, moustache + glasses |
-| `zara` | 14.12 MB | 0.62 MB | 235,014 → 49,999 | Young woman |
+| `liruf` | 4.73 MB | 0.29 MB | 3,132 → 3,106 | Bipedal cartoon dinosaur. Skin-repaired (§4.2a) |
+| `rho` | 4.65 MB | 0.27 MB | 3,080 → 2,982 | Adult human, moustache + glasses. Skin-repaired (§4.2a) |
+| `zara` | 14.12 MB | 0.61 MB | 235,014 → 49,999 | Young woman |
+
+Rho and Liruf lost triangles to `npm run assets:repair`, which cuts the arms
+free of the torso — see §4.2a. Their Meshy originals are preserved byte-for-byte
+at `glb/originals/` and the repair always reads from there, so the numbers above
+are reproducible from a fresh copy rather than a state the pipeline drifted into.
+
+**These exports carry no animation.** Each shipped with a baked `walking_man`
+action that nothing has ever read — every consumer of `useSceneModel`
+destructures `{ scene }` alone, and clips come from `clips-biped.glb` through
+`useClipLibrary`. The repair drops it, which also removes a real hazard: an
+armature action is re-evaluated at EXPORT time, so a pose held by hand can be
+silently overwritten by frame 1 of a walk cycle on the way out. It cost this
+session six renders that showed a rest pose while the bones reported otherwise.
 
 `diorama-b` stops at 66,868 rather than its 45,000 target: the simplifier hit
 its 1% error bound and stopped rather than wreck the silhouette. That is
@@ -509,10 +522,18 @@ direction **measured** from its own `headfront` bone rather than assumed:
 
 **Three findings worth keeping.**
 
-- **Rho physically cannot raise his arms overhead.** Arm reach 15.99 from a
-  shoulder at ~3.2 tops out at 19.2; his crown is at 25.94. His `celebrate` is
-  *arms up and out with the torso carrying it* — a different pose, not a
-  retarget of Zara's.
+- **Rho physically cannot raise his arms overhead.** His hand tops out at 71% of
+  his own height against Zara's 97%, so his `celebrate` is *arms up and out with
+  the torso carrying it* — a different pose, not a retarget of Zara's.
+
+  **Re-measured 2026-09-07, and the reason stated here was wrong.** This bullet
+  blamed arm reach. Rho's arms are 23.0% of his height against Zara's 25.3% —
+  near enough the same. What differs is the SHOULDER: his sits at 48% of his
+  height, hers at 72%, because his head is enormous. The arm is fine; it is
+  mounted halfway up a body that is mostly head. That matters because it is the
+  one part of this that CANNOT be fixed — lengthening the arm to clear his crown
+  would be redrawing the character, where the weld below was a defect with a
+  repair. Do not spend another tuning round trying to get his hands over his hat.
 - **Liruf's rig has no mirror at all.** Reflecting his right hand across his own
   sagittal plane misses the left by 23.4 under *every* euler negation (Rho's
   best is 1.4). His two arms are stated independently in `author-clips.py`;
@@ -521,6 +542,121 @@ direction **measured** from its own `headfront` bone rather than assumed:
   (identity check on the authoring rig: 2e-6, so the maths is right). It *helps*
   Liruf and *hurts* Rho — the rests differ in incompatible ways and no single
   linear rule serves both.
+
+### §4.2a The arms were WELDED to the torso — the defect under §4.2 (2026-09-07)
+
+Everything in §4.2 is a story about tuning poses. It should have been a story
+about a broken mesh, and five rounds of `point@rho` candidates were spent
+optimising around a defect nobody had measured.
+
+**Rho shipped from Meshy with the inner surface of each arm fused to his torso
+and thigh.** 91 triangles had corners in both a hand and a hip; his closest hand
+vertex sat 1.2 cm from his leg at 1.70 m scale. The auto-rigger then painted
+weights straight across that contact, so 259 arm vertices carried torso and leg
+weight and 114 body vertices carried arm weight. One vertex was torso 0.27 / leg
+0.26 / **hand 0.25** / forearm 0.22 — a quarter of it belonged to the hand.
+
+Raise both arms 120° and measure what moves:
+
+| | legs move | torso moves | tris over 2x area | worst |
+|---|---|---|---|---|
+| zara — a clean mesh | **0.000** | 0.063 | 0.31% | — |
+| rho, as shipped | **0.333** | 0.275 | 6.53% | x8.9 |
+| liruf, as shipped | 0.215 | 0.443 | 2.81% | x7.6 |
+
+Zara's legs do not move at all. Rho's followed his hands 38% of the way. On
+screen his trousers shortened, his waistcoat narrowed and sheets of geometry
+fanned from each shoulder to the hip. **This is what `celebrate@rho` was really
+working around.**
+
+**NEITHER HALF OF THE REPAIR WORKS ALONE, AND ONE OF THEM MAKES IT WORSE.**
+Measured on Rho before committing to anything:
+
+| | tris over 2x | worst | legs |
+|---|---|---|---|
+| as shipped | 6.53% | x8.9 | 0.333 |
+| clean the weights only | 2.99% | **x92.4** | 0.000 |
+| cut the geometry only | 5.10% | x8.9 | 0.333 |
+| **both** | **0.10%** | **x2.9** | **0.000** |
+
+Cleaning weights first looks like the safe, non-destructive half. It is the
+dangerous one: it lets hand and thigh move independently and pulls the still-
+welded sheet TAUT, trading a drag for a visible web. A repair that fixed
+isolation and reported success on that number alone would have shipped a
+character that looked worse.
+
+**The cut is anatomical, not regional.** An early version severed every face
+joining "arm" to "body" and produced arms hanging off in ribbons, because the
+SHOULDER is how an arm attaches at all and the upper arm meeting the SPINE is
+the armpit. Both are real. The exemption stops at the spine and does not reach
+the pelvis — that last clause is what finally caught Liruf, whose rig hands 365
+of his 468 torso vertices, at his WAIST, up to 0.60 of upper-arm weight. Bone
+NAMES do not sit at the same height across these three rigs (§3), so the rule
+names the pelvis rather than trusting a `Spine02` to be low.
+
+**Four things the repair had to learn, each found only by looking:**
+
+- `fill_holes()` across every opening RE-WELDS the seam it just cut — Rho went
+  from 122 bridging triangles to 136. These meshes are not watertight (Rho has
+  278 pre-existing open boundaries in his hat, glasses and moustache), so only
+  the openings the cut itself made may be capped.
+- Capping fans each opening from a hub vertex whose weights average the rim, and
+  a rim borders BOTH sides of the cut — so a single pass hands the hub mixed
+  weights and re-bridges the seam more quietly. The cut runs to a fixed point.
+- Removing the faces that straddle the weld leaves SLIVERS whose corners all
+  landed on one side. They are invisible to the anatomical rule and visible on
+  screen as tongues of cloth standing off the hip.
+- A hub's UV must come from its own face's two rim vertices, not from one
+  average over the whole rim, or the cap samples wherever the mean lands in the
+  atlas — which put patches of skin on Rho's trousers.
+
+**What is left, and it is not a regression.** A few skin-toned specks remain at
+the hips when his arms are fully up. They are pre-existing: Rho's ORIGINAL mesh
+is not one surface but **287 disconnected components**, the largest 43 faces,
+including 193 islands of ≤12 faces. The repair added 7. The welded sheet used to
+cover those fragments; with it gone they are visible from some angles. Fixing
+them means rebuilding the asset, not repairing it.
+
+**Run `npm run assets:repair`** (Blender) then **`npm run verify:skin`**, which
+is the gate that proves it — §4.4a. The repair is idempotent by construction:
+`glb/originals/` holds the Meshy exports byte-for-byte and every run reads from
+there, so it can never cut twice or compound a reweight.
+
+Final state — Rho is now cleaner than Zara on stretch:
+
+| | weld | bleed | legs | torso | >2x | >5x |
+|---|---|---|---|---|---|---|
+| zara | 0 | 0 | 0.000 | 0.063 | 0.32% | 0.20% |
+| rho | 0 | 0 | 0.000 | 0.073 | **0.10%** | 0.00% |
+| liruf | 0 | 0 | 0.000 | 0.108 | 0.39% | 0.00% |
+
+`verify:rig` still passes at 0.00% stance drift and 1.2e-4% bone-length drift on
+Rho, which is the check that matters most here: the repair touched the MESH and
+left the skeleton and the rest pose exactly where the clip library expects them.
+
+### §4.4a `npm run verify:skin` — the gate for the mesh, not the bones
+
+`verify-rig` reasons about BONES and is blind to the mesh they drag, which is
+why the weld above survived every gate for months. `verify-skin` raises both
+arms 120° by forward kinematics, skins the mesh by hand and asserts:
+
+| check | invariant |
+|---|---|
+| `weld` | no triangle spans an anatomically impossible pair of bones. A shoulder blending into the torso is anatomy — Zara has 384 — a hand sharing a face with a thigh is not |
+| `bleed` | no vertex carries weight from a bone on the far side of such a pair |
+| `isolation` | raising the arms must not move the legs, and must barely move the torso |
+| `stretch` | what FRACTION of triangles blow up in area — guards the weights-only failure above |
+
+Like `verify-rig` it is LOCAL (`/glb/` is outside the repo) and exits non-zero
+rather than passing quietly when the sources are absent.
+
+**Its first version cried wolf and the fix is worth keeping.** It failed ZARA —
+the clean control — on a single x130 triangle, and an area floor did not rescue
+it, because that triangle is not a sliver: it is armpit skin, which genuinely
+stretches enormously when an arm goes up 120°. A MAXIMUM cannot tell anatomy
+from a defect. The FRACTION of severely stretched triangles can, because a torn
+weld tears in dozens of places at once while an armpit stretches in one. The
+worst triangle is still reported, and never failed on.
 
 ### §4.3 The seven emotions need NO per-character overrides — audited
 
@@ -1425,6 +1561,13 @@ gitignored — they are build outputs). Re-create them from the source exports:
 ```bash
 # Source .glb files are in /glb/ (also gitignored — copy them across separately)
 npm run assets:inspect -- ../glb/Rho.glb           # read-only report
+
+# FIRST: cut the arms free of the torso (§4.2a). Needs Blender. Reads from
+# glb/originals/ and rewrites glb/*.glb, so it must run BEFORE the optimizer or
+# the runtime assets carry the weld. Idempotent — safe to re-run.
+npm run assets:repair
+npm run verify:skin                                 # the gate that proves it
+
 npm run assets:3d -- ../glb/Rho.glb  public/scenes/rho.glb   --max-triangles=50000
 npm run assets:3d -- ../glb/Dina.glb public/scenes/dina.glb  --max-triangles=50000
 npm run assets:3d -- ../glb/Zara.glb public/scenes/zara.glb  --max-triangles=50000
@@ -1465,6 +1608,15 @@ entire cast in the pond (§5).
 - The artist exports **uncompressed**; the script does the compression.
 - Meshopt over Draco: no externally hosted decoder, faster decode on the
   low-end phones the budget exists for.
+- **KTX2 has never actually run here, and §1.2 of AGENTS.md says the stack uses
+  it.** Every asset in `public/scenes/` — including `dina` and `diorama-a`,
+  untouched since they were first built — declares `EXT_texture_webp` and no
+  `KHR_texture_basisu`. `optimize-glb` prints a loud SKIP when KTX-Software is
+  absent and carries on, so the whole set ships WebP that decodes to full RGBA
+  in VRAM. That is a texture-memory cost on exactly the low-end phones the
+  budget exists for, and it is invisible because nothing fails. Install
+  KTX-Software and re-run before publishing to Depot; do not read the sizes in
+  §2 as evidence the compression happened.
 - Lighting lives in code, never baked — DESIGN.md mandates light AND dark mode,
   so an asset lit at export time is wrong in one of them by construction. Baked
   ambient occlusion in textures is fine; baked lightmaps are not.
