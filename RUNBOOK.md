@@ -14904,3 +14904,56 @@ no Lesson Engine renderer and no character layer; `LiveSegmentPanel` reuses
 the engine's registry but is not part of it. It is a second headless-Chrome
 gate with a long walk, and running it concurrently with the two above is the
 one thing the machine could not take.
+
+## `frontend CI` stopped triggering on push for three days, silently, and self-resolved before anyone found the cause (2026-09-04 → 2026-09-07)
+
+**Symptom.** A separate working session (different machine) pushed to `main`
+and, per its own prior-session note ("a push does not imply a deploy —
+confirm it"), checked production rather than assuming it was current. It
+found `littlefounders.ai` still serving commit `9bad0526` — three days and,
+by its count, 35 commits stale — and diagnosed the Vercel project as either
+paused or its GitHub integration as disconnected (`get_project` showed
+`live: false` and no `link` field), and correctly refused to touch either
+without a human, since both are account-level changes an agent cannot
+authorize (`BOUNDARIES.md` #1).
+
+**That diagnosis was half right and had already gone stale by the time it
+was relayed to the next session.** Two things were true at once:
+
+1. **The `live: false` / no-git-link reading was a false positive.**
+   `frontend-cd.yml`'s own header comment records this as VERIFIED,
+   deliberate architecture: "no native Git integration is configured on the
+   Vercel project." This repo never relied on Vercel's own GitHub App — it
+   deploys via a GitHub Actions workflow (`frontend CI` → `workflow_run` →
+   `frontend CD`) that runs `vercel deploy --prebuilt --prod` with a token.
+   There was nothing to "reconnect."
+2. **The real defect was upstream of Vercel entirely: `frontend CI` did not
+   trigger at all** for roughly 21 commits between 2026-09-04 15:30 and
+   2026-09-07 15:38 that matched its own path filter (`frontend/**`) and
+   should have run. `gh run list` shows a clean gap — not a queue of failed
+   or skipped runs, just nothing recorded. Root cause was never found: the
+   workflow's `state` was `active` throughout (not disabled/re-enabled), and
+   it started firing again on its own with the next push, before the
+   session that reported it took any corrective action of its own. It is
+   recorded here unresolved rather than omitted, because "self-resolved,
+   cause unknown" is still a fact worth a future operator having.
+
+**What the next session actually did, and how it verified rather than
+trusted the incoming diagnosis:** re-ran the same checks live instead of
+carrying the report forward — `gh run list` against the actual repo (found
+CI running normally again for the two most recent pushes), then the Vercel
+API directly (`get_deployment` on the `littlefounders.ai` alias) to confirm
+a READY production deployment existed for the latest commit, not just that
+a workflow had exited 0. Both matched. It also applied the two pending
+migrations that had been blocked by this window's own missing CI/CD
+receipts, and re-verified the applied migrations' effects live (curled the
+new API routes in production, screenshotted the new page in a real
+browser) rather than treating a green pipeline as proof the feature worked.
+
+**The generalizable lesson, doubled:** a stale diagnosis handed between
+sessions is still just a claim — verify it fresh against the live system
+before acting on it OR before repeating it forward, the same way a push is
+verified against a deploy rather than assumed. And: `live: false` / no git
+link on a Vercel project is not evidence of breakage by itself — read the
+deploy mechanism's own documentation (here, `frontend-cd.yml`'s header
+comment) before concluding an integration needs reconnecting.
