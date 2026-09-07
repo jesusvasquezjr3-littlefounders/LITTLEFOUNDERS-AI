@@ -5,7 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { Button, Icon, LoadingOverlay } from '@/components/ui';
-import CharacterActor from '@/components/characters/control/CharacterActor';
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
 import type { LessonDocument } from '@/lesson-engine/core/types';
@@ -131,7 +131,7 @@ export function LessonRoute() {
   if (state.status === 'error') {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-base px-5 text-center">
-        <CharacterActor character="dina" emotion="neutral" action="idle" size="lg" />
+        <CharacterActor3D character="dina" emotion="neutral" action="idle" size="lg" />
         <div className="w-full max-w-md">
           <ErrorBanner code={state.code} />
         </div>

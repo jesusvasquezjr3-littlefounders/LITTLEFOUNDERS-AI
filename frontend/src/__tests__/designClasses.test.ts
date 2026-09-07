@@ -243,6 +243,40 @@ describe('design classes', () => {
     expect(offenders.size, `radius outside the closed scale: ${report.join(' | ')}`).toBe(0);
   });
 
+  it('renders the flat cast in exactly one place', () => {
+    /*
+     * /DESIGN.md §Characters, owner rule 2026-09-07: the 3D cast everywhere,
+     * the flat characters ONLY in the Tutor's chat bubble. Two renderings of
+     * one character is two products sharing a login, and the failure is
+     * silent — a screen that quietly kept the flat actor looks finished.
+     *
+     * The allow-list is the bubble's own rendering (`TutorFace`), the
+     * component that OWNS the exception (`CharacterActor3D`, which hands back
+     * the flat character only when `bubble` is asked for), the flat
+     * components themselves, and the layer that holds them for the bubble.
+     */
+    const ALLOWED = [
+      'tutor/TutorFace.tsx',
+      'components/characters/',
+      'tutor-scene/CharacterLayer.tsx',
+    ];
+    const offenders: string[] = [];
+
+    for (const { file, text } of SOURCES) {
+      // Built without a backslash literal on purpose: this rule has now been
+      // written through a heredoc twice and mangled its own escapes both
+      // times, once into a BACKSPACE character and once into an unterminated
+      // regex. `fromCharCode(92)` cannot be corrupted in transit.
+      const rel = file.slice(SRC.length + 1).split(String.fromCharCode(92)).join('/');
+      if (ALLOWED.some((a) => rel.includes(a))) continue;
+      // The 3D wrapper's name contains the 2D one, so match the import rather
+      // than the bare identifier.
+      if (text.includes("control/CharacterActor'")) offenders.push(rel);
+    }
+
+    expect(offenders, `renders the flat cast outside the chat bubble: ${offenders.join(', ')}`).toEqual([]);
+  });
+
   it('keeps the type scale closed', () => {
     /*
      * DESIGN.md §Typography: the scale is the ONLY way to set type, and it is

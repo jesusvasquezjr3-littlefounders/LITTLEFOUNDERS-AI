@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import { TutorFace } from './TutorFace';
 import { HudPlate } from './hud/HudPlate';
 import { listSessions } from './tutorApi';
 import type { SessionSummary } from './types';
@@ -83,11 +83,20 @@ export function SessionHistory({ token, onReplay }: SessionHistoryProps) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <span className="h-10 w-10 shrink-0">
-                <CharacterActor
+                {/*
+                  THE PORTRAIT, NOT THE ACTOR (/DESIGN.md §Characters).
+                  The flat cast is for the Tutor's chat bubble; this is a 40px
+                  row avatar in a list, which is the same thing the speech card
+                  shows and is what `TutorFace` exists to be. A 3D canvas here
+                  would be one WebGL context per session in the list.
+                */}
+                <TutorFace
                   character={session.character}
                   emotion="neutral"
-                  size="fill"
-                  enableMouseTracking={false}
+                  action="idle"
+                  actionKey={0}
+                  speaking={false}
+                  className="h-full w-full border border-accent/30 bg-accent-soft"
                 />
               </span>
               <div className="min-w-0">

@@ -2,12 +2,12 @@
 // §Screen Recipes → Lesson: focused ~720px column, sticky glass progress header,
 // one segment at a time, earned celebration, results screen.
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useReducer, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
-import { Button, Icon, LottieIcon, CountUp } from '@/components/ui'
+import { Button, CountUp, Icon, LottieIcon, SectionHeading } from '@/components/ui'
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
@@ -1056,6 +1056,7 @@ function ResultsScreen({
   const circumference = 2 * Math.PI * 52
   const xpShown = useCountUp(xp, 1000)
   const streakShown = useCountUp(streakDays, 800)
+  const runId = useId()
 
   // One celebratory fanfare as the summary reveals (after the streak overlay,
   // which plays its own 'streak' sound). Passing only — a failed run exits quiet.
@@ -1064,8 +1065,25 @@ function ResultsScreen({
     // mount-once by design: the fanfare fires as the summary first reveals
   }, [])
 
+  /*
+   * "Today vs your best" — a fact the payload has ALWAYS carried and the
+   * screen never showed. `best_score` is documented in `completion.ts` as
+   * existing for exactly this comparison, and a summary that reports a score
+   * with nothing to measure it against is a number, not a result.
+   */
+  const best = server?.best_score ?? null
+  const beatBest = best !== null && score > best
+
+  /*
+   * `justify-center` is not decoration: this column is `flex-1` inside a
+   * full-height shell, and without it a short summary — a lesson with no
+   * graded segments renders no Glows & Grows — sits jammed against the top
+   * with a third of the viewport empty under the one button. Photographed
+   * exactly that way before it went back.
+   */
   return (
-    <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-6 px-5 py-10 text-center md:px-0">
+    <div className="mx-auto flex w-full max-w-[46rem] flex-1 flex-col justify-center gap-6 px-5 py-10 md:px-0">
+      {/* THE CAST, IN 3D. Never the flat actors — see DESIGN.md §Characters. */}
       <div className="flex items-end justify-center gap-1 sm:gap-2">
         {doc.meta.cast.map((c) => (
           <CharacterActor3D
@@ -1078,53 +1096,111 @@ function ResultsScreen({
           />
         ))}
       </div>
-      <h2 className="lf-display-lg text-content">
-        {t(passed ? 'lesson.results.passedTitle' : 'lesson.results.failedTitle')}
-      </h2>
-      <div className="relative h-32 w-32" role="img" aria-label={t('lesson.results.score', { score })}>
-        <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
-          <circle cx="60" cy="60" r="52" fill="none" strokeWidth="12" className="stroke-surface-sunken" />
-          <circle
-            cx="60"
-            cy="60"
-            r="52"
-            fill="none"
-            strokeWidth="12"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * (1 - score / 100)}
-            className={cn('transition-[stroke-dashoffset] duration-700', passed ? 'stroke-success' : 'stroke-warning')}
-            style={{ transitionTimingFunction: 'var(--lf-ease)' }}
+
+      {/*
+        THE VERDICT AND ITS SCORE, ONE OBJECT.
+        They were a centred heading with a bare SVG donut floating under it —
+        two things about the same fact, neither framed. The study makes a
+        result a CARD: the ring on one side, what it means on the other, so the
+        number is read as a sentence rather than as a gauge on its own.
+      */}
+      <section className="lf-glass flex flex-col items-center gap-5 rounded-md p-6 text-center sm:flex-row sm:gap-7 sm:text-left">
+        <div
+          className="relative h-32 w-32 shrink-0"
+          role="img"
+          aria-label={t('lesson.results.score', { score })}
+        >
+          <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
+            <circle cx="60" cy="60" r="52" fill="none" strokeWidth="12" className="stroke-surface-sunken" />
+            <circle
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - score / 100)}
+              className={cn('transition-[stroke-dashoffset] duration-700', passed ? 'stroke-success' : 'stroke-warning')}
+              style={{ transitionTimingFunction: 'var(--lf-ease)' }}
+            />
+          </svg>
+          <span className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="lf-headline lf-number leading-none text-content">{score}</span>
+            <span className="lf-caption text-content-faint">{t('lesson.results.today')}</span>
+          </span>
+        </div>
+        <div className="flex min-w-0 flex-col items-center gap-2 sm:items-start">
+          <h2 className="lf-display-lg text-content">
+            {t(passed ? 'lesson.results.passedTitle' : 'lesson.results.failedTitle')}
+          </h2>
+          <p className="lf-body text-content-muted">
+            {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
+          </p>
+          {best !== null && (
+            <span
+              className={cn(
+                'lf-caption inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3',
+                beatBest
+                  ? 'border-success/40 bg-success/15 text-content'
+                  : 'border-content/15 bg-content/5 text-content-muted',
+              )}
+            >
+              <Icon
+                name={beatBest ? 'trending_up' : 'military_tech'}
+                className={cn('!text-[15px]', beatBest ? 'text-success' : 'text-content-faint')}
+              />
+              {beatBest
+                ? t('lesson.results.newBest')
+                : `${t('lesson.results.yourBest')} ${best}`}
+            </span>
+          )}
+        </div>
+      </section>
+
+      {/* THE RUN, under a lockup: four facts about what just happened. */}
+      <section aria-labelledby={runId}>
+        <SectionHeading id={runId} icon="insights" tone="accent">
+          {t('lesson.results.runTitle')}
+        </SectionHeading>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <ResultStat
+            icon={<div className="flex h-14 w-14 shrink-0 items-center justify-center"><LottieIcon name="gold-coin" value={xpShown} activated={true} className="h-full w-full scale-150" /></div>}
+            label={t('lesson.results.xp')}
+            value={`+${xpShown}`}
+            tone="text-primary"
           />
-        </svg>
-        <span className="absolute inset-0 flex items-center justify-center lf-headline lf-number text-content">
-          {score}
-        </span>
-      </div>
-      {/* v1-parity stat row: XP · real time · day streak · best answer streak */}
-      <div className="grid w-full max-w-4xl grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
-        <ResultStat icon={<div className="flex w-14 h-14 shrink-0 items-center justify-center"><LottieIcon name="gold-coin" value={xpShown} activated={true} className="w-full h-full scale-150" /></div>} label={t('lesson.results.xp')} value={`+${xpShown}`} tone="text-primary" />
-        <ResultStat icon={<div className="flex w-14 h-14 shrink-0 items-center justify-center"><LottieIcon name="time" value={secondsSpent} activated={true} className="w-full h-full scale-150" /></div>} label={t('lesson.results.time')} value={formatDuration(secondsSpent)} tone="text-content" />
-        <ResultStat
-          icon={<div className="flex w-14 h-14 shrink-0 items-center justify-center"><LottieIcon name="streak" value={streakShown} activated={true} className="w-full h-full scale-150" /></div>}
-          label={t('lesson.results.dayStreak')}
-          value={String(streakShown)}
-          tone={streakDays > 0 ? 'text-warning-strong' : 'text-content-faint'}
-        />
-        <ResultStat
-          icon="target"
-          label={t('lesson.results.bestStreak')}
-          // All-time longest day streak (0013): always >= today's streak, so it
-          // never reads as the incoherent "Mejor racha 0" next to "Racha 1".
-          value={String(server?.longest_streak ?? streakDays)}
-          tone="text-success-strong"
-        />
-      </div>
+          <ResultStat
+            icon={<div className="flex h-14 w-14 shrink-0 items-center justify-center"><LottieIcon name="time" value={secondsSpent} activated={true} className="h-full w-full scale-150" /></div>}
+            label={t('lesson.results.time')}
+            value={formatDuration(secondsSpent)}
+            tone="text-content"
+          />
+          <ResultStat
+            icon={<div className="flex h-14 w-14 shrink-0 items-center justify-center"><LottieIcon name="streak" value={streakShown} activated={true} className="h-full w-full scale-150" /></div>}
+            label={t('lesson.results.dayStreak')}
+            value={String(streakShown)}
+            tone={streakDays > 0 ? 'text-warning-strong' : 'text-content-faint'}
+          />
+          <ResultStat
+            icon="target"
+            label={t('lesson.results.bestStreak')}
+            // All-time longest day streak (0013): always >= today's streak, so it
+            // never reads as the incoherent "Best streak 0" next to "Streak 1".
+            value={String(server?.longest_streak ?? streakDays)}
+            tone="text-success-strong"
+          />
+        </div>
+      </section>
+
       <GlowsGrowsBlock doc={doc} state={state} />
-      <p className="lf-body text-content-muted">
-        {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
-      </p>
-      <Button variant={passed ? 'success' : 'primary'} onClick={onExit} className="px-10">
+
+      {/*
+        ONE ACTION, AND IT OWNS THE ROW. The study's footer is a hierarchy;
+        here there is exactly one thing to do, so it gets the full width on a
+        phone and stops competing with nothing on a desktop.
+      */}
+      <Button variant={passed ? 'success' : 'primary'} onClick={onExit} className="w-full sm:w-auto sm:self-center sm:px-10">
         {t('lesson.results.done')}
       </Button>
     </div>

@@ -1,8 +1,6 @@
-import { Suspense, lazy, useMemo, type ReactNode } from 'react';
+import { Suspense, lazy, type ReactNode } from 'react';
 import { Icon, ProgressBar } from '@/components/ui';
-import { CharacterActor } from '@/components/characters/control/CharacterActor';
 import type { CharacterId } from '@/components/characters/control/types';
-import { getDeviceProbe } from '@/tutor-scene/quality';
 import type { GuidedVoice } from './useGuidedVoice';
 
 /*
@@ -82,14 +80,6 @@ export function GuidedStage({
   error,
   children,
 }: GuidedStageProps) {
-  /*
-   * Probed ONCE per mount, not per render: `probeDevice` creates a canvas and
-   * asks it for a context, which is not something to do on every keystroke in
-   * the field beside it. `getDeviceProbe` caches, and the answer cannot change
-   * while the page is open.
-   */
-  const threeD = useMemo(() => getDeviceProbe().webgl !== 'none', []);
-
   return (
     <div className="flex min-h-screen flex-col bg-base">
       {/* Controls: back, progress, sound. One thin row, never more. */}
@@ -134,50 +124,37 @@ export function GuidedStage({
         <div className="grid w-full max-w-5xl items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
           <div className="mx-auto flex w-full max-w-md flex-col items-center gap-4">
             {/*
-              3D WHERE THE DEVICE CAN DRAW IT, 2D WHERE IT CANNOT — and the
-              fallback is the REAL 2D actor rather than an apology.
-              `SceneCanvas` prints "this device cannot show 3D" when there is
-              no context, which is honest on the Tutor's route because the
-              island IS the product there. Here it would replace a working
-              character with a sentence about WebGL on the first screen of the
-              product, so this branch never reaches that message: no context,
-              no canvas, and the flat actor that always worked stays.
+              3D, FULL STOP — the universal rule (/DESIGN.md §Characters,
+              2026-09-07): the flat cast is for the Tutor's chat bubble and
+              nowhere else. `CharacterActor3D` already encodes exactly that
+              rule (it hands back the 2D character only when `bubble` is asked
+              for), so this uses it rather than branching here.
+
+              WHAT REPLACED THE 2D FALLBACKS. This screen briefly had two: one
+              while the lazy chunk arrived and one for a device with no WebGL.
+              Both are gone. The loading case is covered by `CharacterSlot`'s
+              own hold — it renders nothing until the layer draws — and the
+              no-WebGL case is covered by `SceneCanvas`, which says so plainly
+              in words rather than silently substituting a different character
+              rendering the rule forbids. That is the honest trade the rule
+              buys: one device class sees a sentence instead of a picture, and
+              no device ever sees two different products.
             */}
-            {threeD ? (
-              <Suspense
-                fallback={
-                  <CharacterActor
-                    character={character}
-                    emotion={speaking ? 'happy' : 'neutral'}
-                    speaking={speaking}
-                    size="md"
-                    className="h-44 w-44 lg:h-60 lg:w-60"
-                  />
-                }
-              >
-                <CharacterStage
-                  id={character}
-                  emotion={speaking ? 'happy' : 'neutral'}
-                  action="idle"
-                  speaking={speaking}
-                  /*
-                   * A conversation framing rather than a full-body one: this is
-                   * a character talking to you, and the reason they are on
-                   * screen at all is that you can read their expression.
-                   */
-                  fill={0.72}
-                  className="h-44 w-44 lg:h-60 lg:w-60"
-                />
-              </Suspense>
-            ) : (
-              <CharacterActor
-                character={character}
+            <Suspense fallback={<div className="h-44 w-44 lg:h-60 lg:w-60" aria-hidden />}>
+              <CharacterStage
+                id={character}
                 emotion={speaking ? 'happy' : 'neutral'}
+                action="idle"
                 speaking={speaking}
-                size="md"
+                /*
+                 * A conversation framing rather than a full-body one: this is a
+                 * character talking to you, and the reason they are on screen at
+                 * all is that you can read their expression.
+                 */
+                fill={0.72}
                 className="h-44 w-44 lg:h-60 lg:w-60"
               />
-            )}
+            </Suspense>
 
             {/*
              * The line and the way to hear it again are ONE control, not a

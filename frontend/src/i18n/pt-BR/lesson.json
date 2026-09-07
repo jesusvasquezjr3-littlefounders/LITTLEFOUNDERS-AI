@@ -84,7 +84,12 @@
         "storyplay": "Escolha seu caminho com cuidado.",
         "maker": "Monte suas invenções peça por peça."
       }
-    }
+    },
+    "runTitle": "Sua rodada",
+    "progressTitle": "O que você leva",
+    "yourBest": "Seu melhor",
+    "newBest": "Novo recorde!",
+    "today": "Hoje"
   },
   "flow": {
     "start": "Começar!",

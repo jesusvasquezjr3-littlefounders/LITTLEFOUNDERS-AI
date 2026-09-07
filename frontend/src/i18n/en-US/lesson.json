@@ -84,7 +84,12 @@
         "storyplay": "Pick your path with care.",
         "maker": "Build your inventions piece by piece."
       }
-    }
+    },
+    "runTitle": "Your run",
+    "progressTitle": "What you took away",
+    "yourBest": "Your best",
+    "newBest": "New best!",
+    "today": "Today"
   },
   "flow": {
     "start": "Start!",

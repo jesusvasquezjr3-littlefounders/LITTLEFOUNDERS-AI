@@ -337,6 +337,67 @@ above a 260px chart costs more height than it earns), and single-field screens
 like Forgot Password (a lockup names a GROUP; one field is not one). Readability
 of a data tool beats decoration — that is a rule, not a compromise.
 
+### The lesson summary, recomposed (2026-09-07)
+
+The screen a child reaches after finishing a lesson was a centred column of
+loose pieces: a cast row, a heading, a bare SVG donut floating under it, four
+slabs, a feedback block and a button, each at its own vertical rhythm and none
+framed. It reported the run without composing it.
+
+What it is now, in the study's language:
+
+- **The verdict and its score are ONE card.** The ring on one side, what it
+  means on the other, so a number is read as a sentence rather than as a gauge
+  standing on its own.
+- **"Today vs your best" is finally shown.** `best_score` has always been in
+  the completion payload — `completion.ts` documents it as existing for exactly
+  this comparison — and the screen never rendered it. A score with nothing to
+  measure it against is a number, not a result. Beating it swaps the chip to
+  the success tone and says so.
+- **The run sits under a lockup**, so four facts read as one group rather than
+  as four cards that happen to be adjacent.
+- **One action owns the footer**, full width on a phone.
+
+**The cast on this screen is 3D**, as it is everywhere but the Tutor's chat
+bubble (§Characters above).
+
+**A note on what could not be gated.** No automated check photographs this
+screen, because reaching it means finishing a lesson. It was verified by
+playing a fixture to completion with real pointer events at 1280 and 390 —
+which is also how the one defect in the first cut was found: dropping
+`justify-center` while restructuring left a short summary jammed against the
+top of a full-height shell with a third of the viewport empty beneath it.
+
+## Characters — 3D everywhere, flat in exactly one place (NON-NEGOTIABLE)
+
+**The cast is 3D. The only surface allowed to render the flat characters is the
+Tutor's chat bubble.** Owner rule, 2026-09-07, and it is universal: a product
+whose whole identity is that these characters are REAL and standing somewhere
+cannot introduce them as stickers on its first screen and as models on its
+fourth. Two renderings of one character is two products sharing a login.
+
+| Surface | What it renders |
+|---|---|
+| The Tutor's speech card, and a row avatar that is the same portrait | `TutorFace` — the flat face, framed. This IS the exception |
+| Everything else with a character in it | `CharacterActor3D` / `CharacterStage` |
+
+`CharacterActor3D` already encodes the rule: it hands back the flat character
+only when `bubble` is asked for. **Call it rather than branching at the call
+site** — a component that decides this once cannot be forgotten fourteen times.
+
+**What the rule costs, stated rather than hidden.** A device with no WebGL used
+to get the flat character and now gets `SceneCanvas`'s plain sentence saying
+the device cannot show 3D. That is the honest trade: one device class reads a
+sentence instead of seeing a picture, and no device ever sees two different
+products. A loading state shows NOTHING rather than a flat stand-in that
+swaps — a substitution the eye reads as a glitch, and the very thing this rule
+exists to stop.
+
+**The 2D components are not deleted.** They are the chat bubble's rendering and
+the source of truth for every character's proportions and expression
+vocabulary, which the 3D rig maps onto. Deleting them would delete the
+definition of the thing the models are models OF.
+
 ## Shape — the radius scale is CLOSED (NON-NEGOTIABLE)
 
 `tailwind.config.js` REPLACES Tailwind's radius scale rather than extending it.

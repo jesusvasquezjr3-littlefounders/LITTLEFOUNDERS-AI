@@ -84,7 +84,12 @@
         "storyplay": "Elige tu camino con cuidado.",
         "maker": "Arma tus inventos pieza por pieza."
       }
-    }
+    },
+    "runTitle": "Tu partida",
+    "progressTitle": "Lo que te llevas",
+    "yourBest": "Tu mejor",
+    "newBest": "¡Nuevo récord!",
+    "today": "Hoy"
   },
   "flow": {
     "start": "¡Empezar!",

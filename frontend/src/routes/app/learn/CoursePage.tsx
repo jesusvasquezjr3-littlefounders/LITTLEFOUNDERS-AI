@@ -6,7 +6,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
-import CharacterActor from '@/components/characters/control/CharacterActor';
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
 import { SagaSection } from './SagaSection';
@@ -125,7 +125,7 @@ export function CoursePage() {
   if (tree.adventures.length === 0) {
     return (
       <Card hero className="flex flex-col items-center gap-4 text-center">
-        <CharacterActor character="dina" emotion="happy" action="idle" size="lg" />
+        <CharacterActor3D character="dina" emotion="happy" action="idle" size="lg" />
         <h2 className="lf-title text-content">{t('learn.emptyTitle')}</h2>
         <p className="lf-body max-w-md text-content-muted">{t('learn.emptyBody')}</p>
       </Card>
