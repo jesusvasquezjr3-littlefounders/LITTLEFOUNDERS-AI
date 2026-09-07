@@ -1,0 +1,72 @@
+name: NSM weekly export
+
+# Weekly RAW export of the events the North Star Metric is computed from
+# (lesson_complete, parent_report_viewed, badge_generated, badge_shared,
+# badge_link_click — /AGENTS.md-adjacent ROADMAP entry, growth workstream).
+# Read-only against Vault: database/scripts/export-nsm-weekly.sh runs one
+# `\copy ... TO STDOUT` over the same railway-ssh mechanism
+# insights-maintenance.yml uses nightly, never a write.
+#
+# Mechanics mirror insights-maintenance.yml deliberately: one `railway ssh`
+# per command with args as distinct tokens (never a quoted script string —
+# Railway space-joins and the remote re-parses), SSH key + config written the
+# same way, and failures printed rather than swallowed (§1.14 / §1.0 rule 5).
+#
+# Output lands as a private, org-scoped GitHub Actions artifact — NOT
+# committed, NOT public. This is the one part of this job that is a genuine
+# change to what data leaves Vault (INSIGHTS.md rule 4's "first-party
+# forever" was written about third-party AI/Pulse, not CI storage, but it is
+# still new egress and is called out as such here and in the export script's
+# own header). 14-day artifact retention, well inside the raw table's own
+# 400-day retention (prune_learning_events).
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # 08:00 UTC every Monday — after Sunday's activity is in
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'How many trailing days to export (default 7)'
+        required: false
+        default: '7'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export raw NSM events to CSV
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Export
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          NSM_EXPORT_DAYS: ${{ github.event.inputs.days || '7' }}
+        run: |
+          set -euo pipefail
+          bash database/scripts/export-nsm-weekly.sh nsm-events.csv
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nsm-events-${{ github.run_id }}
+          path: nsm-events.csv
+          retention-days: 14

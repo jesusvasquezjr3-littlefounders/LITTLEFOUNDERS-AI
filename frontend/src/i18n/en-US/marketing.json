@@ -248,6 +248,15 @@
     "badge": "Coming soon",
     "body": "We are preparing this page. Check back soon."
   },
+  "badgeShare": {
+    "loading": "Loading the achievement…",
+    "notFoundTitle": "This badge link has expired",
+    "notFoundBody": "It may have been shared a while ago. Start your own founder's journey instead.",
+    "heading": "{{name}} just earned {{achievement}}!",
+    "body": "LittleFounders helps kids learn real money and business skills through stories, games and a friendly AI tutor.",
+    "cta": "Start for free",
+    "imageAlt": "{{name}}'s achievement badge: {{achievement}}"
+  },
   "pages": {
     "howItWorks": {
       "title": "How it works",

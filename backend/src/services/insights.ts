@@ -18,7 +18,7 @@ import { serviceRest } from './supabaseRest.js';
  *    third-party API.
  */
 
-/** Mirrors the 0028 CHECK exactly. Closed by design (§1.9 rule 2). */
+/** Mirrors the 0028/0072 CHECK exactly. Closed by design (§1.9 rule 2). */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -44,6 +44,11 @@ export const RECORDABLE_EVENTS = [
   'profile_edit', 'avatar_edit', 'tutor_open',
   // retention / family
   'streak_extend', 'territory_view', 'consent_grant', 'consent_revoke',
+  // parent report + shareable-achievement-badge loop (0072). badge_link_click
+  // is the one value of the four an ANONYMOUS caller may report — see
+  // ANON_EVENTS in routes/events.ts — because it fires on the public badge
+  // landing page, before any account exists.
+  'parent_report_viewed', 'badge_generated', 'badge_shared', 'badge_link_click',
 ] as const;
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;

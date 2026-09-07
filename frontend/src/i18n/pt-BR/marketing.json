@@ -248,6 +248,15 @@
     "badge": "Em breve",
     "body": "Estamos preparando esta página. Volte em breve."
   },
+  "badgeShare": {
+    "loading": "Carregando a conquista…",
+    "notFoundTitle": "Este link de selo expirou",
+    "notFoundBody": "Ele pode ter sido compartilhado há um tempo. Comece sua própria jornada de founder.",
+    "heading": "{{name}} acabou de conquistar {{achievement}}!",
+    "body": "A LittleFounders ajuda crianças a aprender sobre dinheiro e negócios de verdade com histórias, jogos e um tutor de IA amigável.",
+    "cta": "Comece grátis",
+    "imageAlt": "Selo de conquista de {{name}}: {{achievement}}"
+  },
   "pages": {
     "howItWorks": {
       "title": "Como funciona",

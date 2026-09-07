@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, Icon, LoadingOverlay } from '@/components/ui';
+import { trackInsight } from '@/lib/insights';
+import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { TerritoryProgressStrip, TerritoryView } from '@/routes/app/learn/TerritoryPage';
 import { type CourseTree } from '@/routes/app/learn/types';
@@ -38,11 +39,29 @@ async function firstCourseSlug(token: string): Promise<string | null> {
   return data.courses[0]?.slug ?? null;
 }
 
+type SupportedLocale = 'en-US' | 'es-MX' | 'pt-BR';
+const SUPPORTED_LOCALES: readonly SupportedLocale[] = ['en-US', 'es-MX', 'pt-BR'];
+function toSupportedLocale(resolved: string | undefined): SupportedLocale {
+  return SUPPORTED_LOCALES.includes(resolved as SupportedLocale) ? (resolved as SupportedLocale) : 'en-US';
+}
+
+/** Mirrors backend/src/routes/family.ts's MIN_SHAREABLE_STREAK_DAYS — a client-side hide, not the enforcement (the server re-checks). */
+const MIN_SHAREABLE_STREAK_DAYS = 3;
+
+interface BadgeIssued {
+  token: string;
+  imageUrl: string;
+  shareUrl: string;
+}
+
+type ShareStatus = 'idle' | 'busy' | 'shared' | 'copied' | 'error';
+
 export function KidTerritoryPage() {
   const { t, i18n } = useTranslation();
   const { kidId = '' } = useParams();
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const [shareStatus, setShareStatus] = useState<ShareStatus>('idle');
   const locale = i18n.resolvedLanguage ?? 'en-US';
 
   useEffect(() => {
@@ -59,7 +78,15 @@ export function KidTerritoryPage() {
       }
       const { data, error } = await api<TerritoryPayload>(`/family/kids/${kidId}/courses/${slug}/territory`, { token });
       if (cancelled) return;
-      setState(error ? { status: 'error', code: error.code } : { status: 'ready', payload: data });
+      if (error) {
+        setState({ status: 'error', code: error.code });
+        return;
+      }
+      setState({ status: 'ready', payload: data });
+      // This IS the parent report: a guardian looking at their kid's stats
+      // and progress through Core's guardian-guarded endpoint. Fired once
+      // per successful load, never on error/loading (0072).
+      trackInsight('parent_report_viewed', { routeClass: 'family' });
     })();
     return () => {
       cancelled = true;
@@ -70,6 +97,50 @@ export function KidTerritoryPage() {
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
 
   const { tree, stats } = state.payload;
+
+  /*
+   * "Compartir logro" — issues a streak badge (backend/src/routes/family.ts
+   * re-enforces MIN_SHAREABLE_STREAK_DAYS server-side regardless of the
+   * client-side hide above) and hands it to the OS share sheet, falling back
+   * to copy-to-clipboard where navigator.share is unavailable (desktop
+   * Safari/Firefox). badge_generated is emitted SERVER-side (0072) on issue;
+   * badge_shared is emitted here only on an actually-completed share/copy —
+   * never on a cancelled share sheet (AbortError), which is not a share.
+   */
+  async function handleShare() {
+    setShareStatus('busy');
+    const token = await getToken();
+    if (!token) {
+      setShareStatus('error');
+      return;
+    }
+    const { data, error } = await api<BadgeIssued>(`/family/kids/${kidId}/badge`, {
+      method: 'POST',
+      token,
+      body: { kind: 'streak', locale: toSupportedLocale(i18n.resolvedLanguage) },
+    });
+    if (error || !data) {
+      setShareStatus('error');
+      return;
+    }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: t('family.badge.share'), url: data.shareUrl });
+        trackInsight('badge_shared', { routeClass: 'family' });
+        setShareStatus('shared');
+        setTimeout(() => setShareStatus('idle'), 2500);
+      } catch {
+        // AbortError (user dismissed the share sheet) or any other failure —
+        // not a completed share either way, so no event and no error state.
+        setShareStatus('idle');
+      }
+      return;
+    }
+    await navigator.clipboard.writeText(data.shareUrl);
+    trackInsight('badge_shared', { routeClass: 'family' });
+    setShareStatus('copied');
+    setTimeout(() => setShareStatus('idle'), 2500);
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 md:px-6">
@@ -104,6 +175,26 @@ export function KidTerritoryPage() {
             <p className="lf-title lf-number mt-1 text-success-strong">{stats.longestStreak}</p>
           </Card>
         </div>
+      ) : null}
+
+      {stats && stats.streakDays >= MIN_SHAREABLE_STREAK_DAYS ? (
+        <Button
+          onClick={() => void handleShare()}
+          disabled={shareStatus === 'busy'}
+          className="w-fit gap-2"
+          variant={shareStatus === 'shared' || shareStatus === 'copied' ? 'success' : shareStatus === 'error' ? 'secondary' : 'primary'}
+        >
+          <Icon name={shareStatus === 'shared' || shareStatus === 'copied' ? 'check' : 'ios_share'} />
+          {shareStatus === 'busy'
+            ? t('family.badge.sharing')
+            : shareStatus === 'shared'
+              ? t('family.badge.shared')
+              : shareStatus === 'copied'
+                ? t('family.badge.copied')
+                : shareStatus === 'error'
+                  ? t('family.badge.error')
+                  : t('family.badge.share')}
+        </Button>
       ) : null}
 
       <TerritoryView tree={tree} locale={locale} chipLinkTo="/family" />

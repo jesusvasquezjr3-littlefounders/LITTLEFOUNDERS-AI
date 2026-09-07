@@ -17,7 +17,8 @@
  *
  * Source of truth: the final `learning_events_event_check` in
  * database/migrations (0028 at the time of writing; 0033 removed the game
- * vocabulary, which is why no `game_*` member appears here).
+ * vocabulary, which is why no `game_*` member appears here; 0072 added the
+ * parent-report + shareable-achievement-badge loop's four events).
  */
 export const INSTRUMENTED_EVENTS = [
   'session_start',
@@ -51,6 +52,10 @@ export const INSTRUMENTED_EVENTS = [
   'territory_view',
   'consent_grant',
   'consent_revoke',
+  'parent_report_viewed',
+  'badge_generated',
+  'badge_shared',
+  'badge_link_click',
 ] as const;
 
 export type InstrumentedEvent = (typeof INSTRUMENTED_EVENTS)[number];

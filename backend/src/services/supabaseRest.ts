@@ -1069,3 +1069,49 @@ export async function insertPlacementCredits(
   });
   return res !== null;
 }
+
+// ── Shareable achievement badges (0073) ─────────────────────
+
+export interface BadgeShareInsert {
+  token: string;
+  kid_user_id: string;
+  created_by: string;
+  achievement_kind: 'course_badge' | 'streak';
+  achievement_label: string;
+  first_name: string;
+  age_band: '6-8' | '9-11' | '12-14' | null;
+  image_bucket: string;
+  image_hash: string;
+  image_ext: string;
+  /** The exact URL Depot returned — NOT reconstructed from bucket/hash/ext (see 0073's column comment). */
+  image_url: string;
+}
+
+/** Service role only — badge_shares has no client INSERT policy (0073). */
+export async function insertBadgeShare(row: BadgeShareInsert): Promise<boolean> {
+  const res = await serviceRest<unknown>('/badge_shares', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(row),
+  });
+  return res !== null;
+}
+
+export interface BadgeShareRow extends BadgeShareInsert {
+  id: string;
+  created_at: string;
+}
+
+const BADGE_SHARE_FIELDS =
+  'token,kid_user_id,created_by,achievement_kind,achievement_label,first_name,age_band,image_bucket,image_hash,image_ext,image_url,id,created_at';
+
+/**
+ * Looked up by the PUBLIC badge landing page (routes/badgePublic.ts) — a
+ * stranger's request, so this reads ONLY by the opaque token (never by kid
+ * or user id) and the route layer whitelists the response down to the four
+ * display fields (no kid_user_id/created_by leaves Core on that path).
+ */
+export async function getBadgeShareByToken(token: string): Promise<BadgeShareRow | null> {
+  const rows = await serviceRest<BadgeShareRow[]>(`/badge_shares?token=eq.${es(token)}&select=${BADGE_SHARE_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}

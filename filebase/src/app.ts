@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { getConfig } from './config.js';
+import { badgesRouter } from './routes/badges.js';
 import { downloadRouter } from './routes/download.js';
 import { filesRouter } from './routes/files.js';
 
@@ -17,7 +18,7 @@ export function createApp(): express.Express {
   });
 
   // Management API — service-to-service only (/AGENTS.md §1.5).
-  app.use('/api/v1/files', (req, res, next) => {
+  const requireInternalKey = (req: Request, res: Response, next: NextFunction) => {
     const provided = req.get('x-internal-api-key') ?? '';
     const expected = config.INTERNAL_API_KEY;
     if (!crypto.timingSafeEqual(crypto.createHash('sha256').update(provided).digest(), crypto.createHash('sha256').update(expected).digest())) {
@@ -25,8 +26,11 @@ export function createApp(): express.Express {
       return;
     }
     next();
-  });
+  };
+  app.use('/api/v1/files', requireInternalKey);
   app.use('/api/v1/files', filesRouter());
+  app.use('/api/v1/badges', requireInternalKey);
+  app.use('/api/v1/badges', badgesRouter());
 
   // Public streaming download — visibility is enforced per-object inside
   // the router (public objects are world-readable, internal ones require

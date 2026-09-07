@@ -248,6 +248,15 @@
     "badge": "Próximamente",
     "body": "Estamos preparando esta página. Vuelve pronto."
   },
+  "badgeShare": {
+    "loading": "Cargando el logro…",
+    "notFoundTitle": "Este enlace de insignia ha expirado",
+    "notFoundBody": "Puede que se haya compartido hace tiempo. Empieza tu propio camino de founder.",
+    "heading": "¡{{name}} acaba de lograr {{achievement}}!",
+    "body": "LittleFounders ayuda a los niños a aprender sobre dinero y negocios de verdad con historias, juegos y un tutor de IA amigable.",
+    "cta": "Empieza gratis",
+    "imageAlt": "Insignia de logro de {{name}}: {{achievement}}"
+  },
   "pages": {
     "howItWorks": {
       "title": "Cómo funciona",

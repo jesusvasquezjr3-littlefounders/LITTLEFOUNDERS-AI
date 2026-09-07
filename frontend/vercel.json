@@ -2,6 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/badge/:token",
+      "destination": "/api/badge/:token"
+    },
+    {
       "source": "/(.*)",
       "destination": "/app-shell.html"
     }

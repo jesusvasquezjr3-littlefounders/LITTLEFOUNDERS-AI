@@ -48,6 +48,13 @@
       "streak": "Day streak",
       "longestStreak": "Best streak"
     },
+    "badge": {
+      "share": "Share achievement",
+      "sharing": "Preparing…",
+      "shared": "Shared!",
+      "copied": "Link copied",
+      "error": "Could not create the badge right now"
+    },
     "insightsConsent": {
       "label": "Share usage insights",
       "hint": "Help improve lessons with anonymous-style usage signals. You can turn this off anytime."

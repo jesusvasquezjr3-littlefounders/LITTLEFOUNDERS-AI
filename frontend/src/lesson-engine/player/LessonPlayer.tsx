@@ -153,18 +153,15 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
       narration.stop()
       stopLessonBgm()
       secondsSpentRef.current = Math.max(1, Math.round((Date.now() - lessonStartRef.current) / 1000))
-      // The results screen is reached on BOTH outcomes (hearts exhausted or a
-      // score below threshold also finish the run), so lesson_complete must be
-      // gated on actually passing — otherwise the activation funnel's last
-      // step counts failures as completions and reads higher than reality.
-      // results_view is unconditional: reaching the screen IS the event.
-      if (state.outcome === 'passed') {
-        trackInsight('lesson_complete', {
-          routeClass: 'learn',
-          lessonId,
-          value: lessonScore(doc, state),
-        })
-      }
+      // lesson_complete is emitted SERVER-SIDE only (backend/src/routes/learn.ts,
+      // 0072) as of the NSM hardening pass — the results screen is reached on
+      // BOTH outcomes (hearts exhausted or a score below threshold also finish
+      // the run) after the same POST /complete round trip the server event
+      // rides on, so a client-side copy here would double-count every passing
+      // completion (client_event_id dedup only collapses RETRIES of the same
+      // beacon, not two independently-generated events for one completion).
+      // results_view is unconditional: reaching the screen IS the event, and
+      // stays client-side since it has no server-side equivalent to duplicate.
       trackInsight('results_view', {
         routeClass: 'learn',
         lessonId,

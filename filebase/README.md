@@ -33,6 +33,7 @@ All JSON routes use the standard envelope (`/AGENTS.md` §1.6): `{ "data": <payl
 | POST | `/api/v1/files` | `x-internal-api-key` | Multipart upload. Fields: `bucket` (slug), `visibility` (`public`\|`internal`), `file` (the binary, allowlisted mime, ≤ `FILEBASE_MAX_BYTES`). Streams to a temp file, hashes, dedups, atomically commits. Optional `x-service-name` header is recorded as `uploaderService`. → `{ id, url, bytes, mime, visibility, deduplicated }` |
 | GET | `/api/v1/files` | `x-internal-api-key` | Paginated listing. Query: `bucket` (required), `cursor` (opaque, the last hash of the previous page), `limit` (1–200, default 50). → `{ items: [...], nextCursor }` |
 | DELETE | `/api/v1/files/:bucket/:hash.:ext` | `x-internal-api-key` | Deletes the object + its metadata sidecar. 404 if it doesn't exist or the extension doesn't match the stored one. |
+| POST | `/api/v1/badges` | `x-internal-api-key` | Composites a 1080x1920 achievement-badge PNG from `{ bucket, kind: 'course_badge'\|'streak', label, firstName, ageBand? }` (templated, not AI-generated — see `AGENTS.md`) and stores it content-addressed like an upload. Always `visibility: 'public'`. → `{ url, bucket, hash, ext, bytes, mime, deduplicated }` |
 | **GET/HEAD** | **`/files/:bucket/:hash.:ext`** | none for `public` objects; `x-internal-api-key` for `internal` objects | **Streaming exception** (see below) — serves the raw object bytes, not the JSON envelope, on success. |
 
 ### The streaming exception

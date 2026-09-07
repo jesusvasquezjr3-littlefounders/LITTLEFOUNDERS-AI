@@ -397,7 +397,7 @@ function filterCacheKey(filters?: PlausibleFilter[]): string {
  * events that were never in scope drop out. Measured against production the
  * day it shipped: 539 stored pageviews → 110 in scope, 57 visitors → 48.
  */
-const MARKETING_ROOTS = ['how-it-works', 'families', 'faq', 'legal'] as const;
+const MARKETING_ROOTS = ['how-it-works', 'families', 'faq', 'legal', 'badge'] as const;
 
 const SCOPE_PAGES = ['/', ...MARKETING_ROOTS.map((r) => `/${r}`)];
 const SCOPE_PATTERN = `^/(${MARKETING_ROOTS.join('|')})/.*$`;

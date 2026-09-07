@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import { composeBadgeImage, firstNameOnly, generateBadgeToken } from '../services/badges.js';
 import { assembleCourseTree } from '../services/courseTree.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import {
@@ -14,6 +16,7 @@ import {
 } from '../services/insights.js';
 import {
   getAdventuresByCourseIds,
+  getCompletedCourseBadgesByUserId,
   getKidLearningStats,
   getKidLessonProgress,
   getKidProfiles,
@@ -24,6 +27,7 @@ import {
   getVerifiedKidLinks,
   grantRole,
   insertAuditLog,
+  insertBadgeShare,
   insertVerifiedGuardianLink,
   patchKidProfile,
   patchKidProfileFields,
@@ -413,6 +417,108 @@ export function familyRouter(): Router {
           }
         : null,
     });
+  });
+
+  /*
+   * SHAREABLE ACHIEVEMENT BADGE — "Compartir logro" (0072/0073). Issues a
+   * new badge image + share token for a REAL, ALREADY-EARNED achievement.
+   * Every field that reaches Depot's compositor (and therefore a public,
+   * unauthenticated URL) is bounded by the SAME "age band + first name"
+   * ceiling /AGENTS.md §1.9 sets for third-party AI context — no surname
+   * (firstNameOnly), no exact age (age_band not collected here at all), no
+   * school, no real photo. The achievement label is never client-supplied
+   * text: for `course_badge` it comes from the course's own published title
+   * (only after verifying the course is actually in this kid's completed
+   * list — a parent cannot mint a badge for a course never finished), and
+   * for `streak` it is built server-side from the stat itself.
+   */
+  const STREAK_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (days: number) => string> = {
+    'en-US': (d) => `${d}-day streak`,
+    'es-MX': (d) => `Racha de ${d} días`,
+    'pt-BR': (d) => `Sequência de ${d} dias`,
+  };
+  // Below this, a shared badge would read as noise rather than an
+  // achievement. A product judgment call, not a technical one — easy to
+  // retune without touching the compositor or the schema.
+  const MIN_SHAREABLE_STREAK_DAYS = 3;
+
+  const CreateBadge = z.object({
+    kind: z.enum(['course_badge', 'streak']),
+    courseSlug: z.string().min(1).max(80).optional(),
+    locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
+  });
+
+  router.post('/kids/:kidId/badge', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const parsed = CreateBadge.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the badge request');
+    const { kind, courseSlug, locale } = parsed.data;
+
+    const profiles = await getKidProfiles([kidId]);
+    if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child profile');
+    const displayName = profiles[0]?.display_name;
+    if (!displayName) return fail(res, 502, DATA_UNAVAILABLE, 'Child has no display name to show on a badge');
+    const firstName = firstNameOnly(displayName);
+
+    let label: string;
+    if (kind === 'course_badge') {
+      if (!courseSlug) return fail(res, 400, 'VALIDATION_ERROR', 'courseSlug is required for a course_badge');
+      const completed = await getCompletedCourseBadgesByUserId(kidId);
+      const earned = completed.find((c) => c.course_slug === courseSlug);
+      if (!earned) return fail(res, 403, 'FORBIDDEN', 'This course badge has not been earned yet');
+      const titles = earned.course_title as Record<string, string>;
+      label = titles[locale] ?? titles['en-US'] ?? Object.values(titles)[0] ?? courseSlug;
+    } else {
+      const statsRows = await getKidLearningStats(kidId);
+      if (!statsRows) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load learning stats');
+      const streakDays = statsRows[0]?.streak_days ?? 0;
+      if (streakDays < MIN_SHAREABLE_STREAK_DAYS) {
+        return fail(res, 403, 'FORBIDDEN', `A streak needs at least ${MIN_SHAREABLE_STREAK_DAYS} days before it can be shared`);
+      }
+      label = STREAK_LABELS[locale](streakDays);
+    }
+
+    const composed = await composeBadgeImage({ kind, label, firstName });
+    if (!composed) return fail(res, 502, DATA_UNAVAILABLE, 'Could not render the badge image');
+
+    const token = generateBadgeToken();
+    const user = authedUser(res);
+    const stored = await insertBadgeShare({
+      token,
+      kid_user_id: kidId,
+      created_by: user.id,
+      achievement_kind: kind,
+      achievement_label: label,
+      first_name: firstName,
+      age_band: null,
+      image_bucket: composed.bucket,
+      image_hash: composed.hash,
+      image_ext: composed.ext,
+      image_url: composed.url,
+    });
+    if (!stored) return fail(res, 502, DATA_UNAVAILABLE, 'Badge image was rendered but could not be saved');
+
+    // Subject is the PARENT (the caller), same posture as territory_view
+    // above — a kid identifier never enters this event.
+    void (async () => {
+      const callerRoles = await getRolesForGate(user.id);
+      if (!callerRoles || callerRoles.length === 0 || callerRoles.includes('kid')) return;
+      await insertLearningEvents([
+        { user_id: user.id, role: stampRole(callerRoles), event: 'badge_generated', route_class: 'family' },
+      ]);
+    })();
+
+    // utm_campaign=badge-share on the share link itself — not on the /signup
+    // CTA inside the landing page — because captureLandingContext()
+    // (frontend/src/lib/visitor.ts) snapshots UTM params on FIRST script
+    // execution, i.e. on whichever URL the visitor actually lands on. That
+    // is this one; a later internal navigation to /signup has nothing to
+    // capture and "first landing wins" already holds the attribution.
+    const { FRONTEND_URL } = getConfig();
+    const shareUrl = new URL(`/badge/${token}`, FRONTEND_URL);
+    shareUrl.searchParams.set('utm_campaign', 'badge-share');
+    return ok(res, { token, imageUrl: composed.url, shareUrl: shareUrl.toString() }, 201);
   });
 
   return router;

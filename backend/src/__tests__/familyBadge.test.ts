@@ -1,0 +1,144 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { randomUUID } from 'node:crypto';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+/*
+ * POST /api/v1/family/kids/:kidId/badge — the shareable-achievement-badge
+ * loop's issuance endpoint (0072/0073). The invariant under test is that a
+ * badge can only be minted for a REAL, ALREADY-EARNED achievement and for a
+ * kid this caller is a VERIFIED guardian of — never a course never
+ * completed, never a streak too short to be meaningful, never someone
+ * else's child.
+ */
+
+const KID_ID = randomUUID();
+const PARENT_ID = randomUUID();
+const IMAGE_HASH = 'a'.repeat(64);
+
+afterEach(() => vi.unstubAllGlobals());
+
+interface StubOptions {
+  courseBadges?: { course_slug: string; course_title: Record<string, string>; badge_asset: string; completed_at: string }[];
+  streakDays?: number;
+  composeFails?: boolean;
+  insertFails?: boolean;
+  guardianLinked?: boolean;
+}
+
+function stub(opts: StubOptions = {}) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = init?.method ?? 'GET';
+
+      if (url.includes('/rest/v1/user_roles?user_id=eq.')) {
+        return Promise.resolve(jsonResponse(200, [{ role: 'parent' }]));
+      }
+      if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.')) {
+        const rows = opts.guardianLinked === false ? [] : [{ parent_user_id: PARENT_ID, kid_user_id: KID_ID, verification_status: 'verified' }];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/profiles?user_id=')) {
+        return Promise.resolve(jsonResponse(200, [{ user_id: KID_ID, display_name: 'Sofía García', username: 'sofia' }]));
+      }
+      if (url.includes('/rpc/get_completed_course_badges')) {
+        return Promise.resolve(jsonResponse(200, opts.courseBadges ?? []));
+      }
+      if (url.includes('/rest/v1/learning_stats?user_id=eq.')) {
+        return Promise.resolve(
+          jsonResponse(200, [
+            { user_id: KID_ID, xp_points: 100, lessons_completed: 5, streak_days: opts.streakDays ?? 7, longest_streak: 7, last_active_date: '2026-09-01' },
+          ]),
+        );
+      }
+      if (url.includes(':4006/api/v1/badges')) {
+        if (opts.composeFails) return Promise.resolve(jsonResponse(502, { data: null, error: { code: 'INTERNAL', message: 'nope' } }));
+        return Promise.resolve(
+          jsonResponse(200, {
+            data: {
+              url: `http://localhost:4006/files/badges/${IMAGE_HASH}.png`,
+              bucket: 'badges',
+              hash: IMAGE_HASH,
+              ext: 'png',
+              bytes: 4096,
+              mime: 'image/png',
+              deduplicated: false,
+            },
+            error: null,
+          }),
+        );
+      }
+      if (url.includes('/rest/v1/badge_shares') && method === 'POST') {
+        if (opts.insertFails) return Promise.resolve(jsonResponse(500, { message: 'nope' }));
+        return Promise.resolve(new Response(null, { status: 201 }));
+      }
+      return Promise.resolve(new Response(null, { status: 201 }));
+    }),
+  );
+}
+
+function post(body: unknown) {
+  return request(createApp())
+    .post(`/api/v1/family/kids/${KID_ID}/badge`)
+    .set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`)
+    .send(body as string | object);
+}
+
+describe('POST /api/v1/family/kids/:kidId/badge', () => {
+  it('rejects a course_badge for a course never completed', async () => {
+    stub({ courseBadges: [] });
+    const res = await post({ kind: 'course_badge', courseSlug: 'financial-education' });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it('issues a course_badge for an actually-completed course, localized', async () => {
+    stub({
+      courseBadges: [
+        { course_slug: 'financial-education', course_title: { 'en-US': 'Financial Education', 'es-MX': 'Educación Financiera' }, badge_asset: 'x.png', completed_at: '2026-09-01' },
+      ],
+    });
+    const res = await post({ kind: 'course_badge', courseSlug: 'financial-education', locale: 'es-MX' });
+    expect(res.status).toBe(201);
+    expect(res.body.error).toBeNull();
+    expect(res.body.data.token).toMatch(/^[A-Za-z0-9_-]{16,64}$/);
+    expect(res.body.data.imageUrl).toContain(IMAGE_HASH);
+    expect(res.body.data.shareUrl).toContain(`/badge/${res.body.data.token}`);
+  });
+
+  it('rejects a streak below the minimum shareable length', async () => {
+    stub({ streakDays: 2 });
+    const res = await post({ kind: 'streak' });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it('issues a streak badge at or above the minimum', async () => {
+    stub({ streakDays: 7 });
+    const res = await post({ kind: 'streak', locale: 'en-US' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.token).toBeTruthy();
+  });
+
+  it('404s for a kid this caller is not a verified guardian of', async () => {
+    stub({ guardianLinked: false });
+    const res = await post({ kind: 'streak' });
+    expect(res.status).toBe(404);
+  });
+
+  it('502s when Depot cannot render the image, and never fabricates a badge row', async () => {
+    stub({ streakDays: 7, composeFails: true });
+    const res = await post({ kind: 'streak' });
+    expect(res.status).toBe(502);
+    expect(res.body.data).toBeNull();
+  });
+
+  it('rejects an invalid kind', async () => {
+    stub({ streakDays: 7 });
+    const res = await post({ kind: 'not-a-kind' });
+    expect(res.status).toBe(400);
+  });
+});

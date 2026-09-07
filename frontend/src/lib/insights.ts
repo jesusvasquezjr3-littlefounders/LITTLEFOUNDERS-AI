@@ -27,7 +27,7 @@ import {
  * rather than growing without bound.
  */
 
-/** Mirrors the 0028 CHECK and Core's enum exactly. Closed by design. */
+/** Mirrors the 0028/0072 CHECK and Core's enum exactly. Closed by design. */
 export type InsightEvent =
   | 'session_start' | 'session_heartbeat' | 'session_end' | 'nav_view'
   | 'page_view' | 'cta_click' | 'scroll_depth'
@@ -37,7 +37,12 @@ export type InsightEvent =
   | 'hint_open' | 'explanation_view' | 'audio_replay' | 'results_view'
   | 'task_view'
   | 'profile_edit' | 'avatar_edit' | 'tutor_open'
-  | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke';
+  | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke'
+  // parent report + shareable-achievement-badge loop (0072). badge_link_click
+  // is emitted from the public, unauthenticated badge landing page (see
+  // ANON_EVENTS on Core) — every other new value here requires a signed-in
+  // caller and rides the normal consent-gated authenticated batch.
+  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared' | 'badge_link_click';
 
 export type InsightRouteClass =
   | 'learn'

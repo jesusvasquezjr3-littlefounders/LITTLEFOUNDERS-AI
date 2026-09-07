@@ -10,6 +10,19 @@ generates). `coursegen` (Forge) and `audiogen` (Echo) write objects here;
 `backend` (Core) issues download URLs; the frontend reads `public` objects
 directly, no proxy hop through Core required.
 
+`POST /api/v1/badges` (`src/routes/badges.ts`, 0072/0073) is the one place
+Depot draws pixels instead of only storing someone else's: a templated
+(NOT AI-generated) SVG→PNG compositor for the shareable-achievement-badge
+loop, using `sharp` (added 2026-09-07, pinned to picturegen's own version
+for consistency — the only other service that needed an image library).
+It is still storage-shaped underneath: deterministic input → deterministic
+bytes → the same content-addressed dedup every other object gets, and it
+knows nothing about kids, courses or achievements as domain concepts — Core
+decides WHAT a badge says (`backend/src/services/badges.ts`), this route
+only decides how it looks. Never confuse this with Prism/picturegen: Prism
+is the ONLY AI-image-generation service (§1.5); this compositor calls no
+model and spends nothing per badge.
+
 ## Owns / does not own
 
 - **Owns:** the object bytes themselves, their content hash, mime type,

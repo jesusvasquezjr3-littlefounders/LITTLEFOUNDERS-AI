@@ -48,6 +48,13 @@
       "streak": "Sequência de dias",
       "longestStreak": "Melhor sequência"
     },
+    "badge": {
+      "share": "Compartilhar conquista",
+      "sharing": "Preparando…",
+      "shared": "Compartilhado!",
+      "copied": "Link copiado",
+      "error": "Não foi possível criar o selo agora"
+    },
     "insightsConsent": {
       "label": "Compartilhar dados de uso",
       "hint": "Ajude a melhorar as lições com sinais de uso. Você pode desativar quando quiser."

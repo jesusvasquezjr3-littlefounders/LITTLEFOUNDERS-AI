@@ -11,6 +11,7 @@ import { Landing } from '@/routes/marketing/Landing';
 import { ComingSoon } from '@/routes/marketing/ComingSoon';
 import { HowItWorks } from '@/routes/marketing/HowItWorks';
 import { LegalPage } from '@/routes/marketing/LegalPage';
+import { BadgeLandingPage } from '@/routes/marketing/BadgeLandingPage';
 import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
@@ -389,6 +390,14 @@ export function App() {
             <Route path=":handle/following" element={<PublicFollowingPage />} />
             <Route path=":handle" element={<PublicProfilePage />} />
           </Route>
+
+          {/* Shareable-achievement-badge landing page (0072/0073) — the ONE
+              route in this app a stranger opens with no account and no
+              session. No chrome, no auth: its own fullscreen layer like
+              Lesson/Tutor below, but reachable by anyone. The <head> OG tags
+              a crawler reads come from frontend/api/badge/[token].ts, which
+              injects them into this same app-shell before the SPA boots. */}
+          <Route path="badge/:token" element={<BadgeLandingPage />} />
 
           {/* Lesson Player — its own fullscreen layer, no app chrome (DESIGN.md
               Screen Recipes → Lesson). RequireAuth only, deliberately outside

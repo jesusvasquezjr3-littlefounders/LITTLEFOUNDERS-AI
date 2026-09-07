@@ -48,6 +48,13 @@
       "streak": "Racha de días",
       "longestStreak": "Mejor racha"
     },
+    "badge": {
+      "share": "Compartir logro",
+      "sharing": "Preparando…",
+      "shared": "¡Compartido!",
+      "copied": "Enlace copiado",
+      "error": "No se pudo crear la insignia en este momento"
+    },
     "insightsConsent": {
       "label": "Compartir datos de uso",
       "hint": "Ayuda a mejorar las lecciones con señales de uso. Puedes desactivarlo cuando quieras."

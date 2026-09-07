@@ -235,6 +235,27 @@ export const PAGES = [
     },
   },
   {
+    // /badge/:token — one row per share (0072/0073), never a fixed page, so
+    // there is nothing here for build-seo.mjs to prerender per-badge. This
+    // entry exists only to (a) satisfy assertRoutesAgree's app/site
+    // agreement check against src/lib/analytics.tsx's MARKETING_PREFIXES,
+    // and (b) provide a safe generic fallback if the bare, tokenless
+    // /badge path is ever hit directly. The REAL per-share title/description
+    // /image an unfurler sees comes from frontend/api/badge/[token].ts at
+    // request time, not from this file.
+    path: '/badge',
+    index: false, // Personal share link — never sitemapped, never search-indexed.
+    lastmod: '2026-09-07',
+    priority: '0.1',
+    changefreq: 'monthly',
+    agentSummary: null,
+    meta: {
+      'en-US': { title: 'Achievement badge | LittleFounders', description: 'A LittleFounders learner just earned an achievement badge.', h1: 'Achievement badge' },
+      'es-MX': { title: 'Insignia de logro | LittleFounders', description: 'Un alumno de LittleFounders acaba de ganar una insignia de logro.', h1: 'Insignia de logro' },
+      'pt-BR': { title: 'Selo de conquista | LittleFounders', description: 'Um aluno da LittleFounders acabou de conquistar um selo.', h1: 'Selo de conquista' },
+    },
+  },
+  {
     path: '/legal/terms',
     index: true,
     lastmod: '2026-08-11',

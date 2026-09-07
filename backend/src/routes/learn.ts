@@ -485,6 +485,25 @@ export function learnRouter(): Router {
      * actually get" is answerable without touching learning_stats.
      * Fire-and-forget and consent-gated like every other kid event.
      */
+    // Server-authoritative lesson_complete (0072), alongside the client's own
+    // emission in LessonPlayer.tsx. The client beacon can be lost (tab closed
+    // before flush, a blocked request) or, in principle, spoofed — this is
+    // the NSM's primary input, so it gets a server-side source that cannot
+    // silently under-count. Same semantics as the client: fires on EVERY
+    // passing run, not just the first (passedNow, not newlyPassed) — a
+    // repeat pass is still a completion the funnel should count.
+    if (passedNow) {
+      void (async () => {
+        const roles = await getRolesForGate(user.id);
+        if (!roles || roles.length === 0) return;
+        if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
+        await insertLearningEvents([{
+          user_id: user.id, role: stampRole(roles), event: 'lesson_complete',
+          route_class: 'learn', lesson_id: lessonId, value: lessonScore,
+        }]);
+      })();
+    }
+
     // Activation milestone: the FIRST lesson this learner ever passed. Only
     // the server can assert it (it sees lessons_completed before the update),
     // and it is the single most predictive early-retention event there is.

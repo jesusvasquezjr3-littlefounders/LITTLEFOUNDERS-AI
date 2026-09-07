@@ -61,6 +61,11 @@ const ANON_EVENTS = new Set([
   'page_view', 'cta_click', 'scroll_depth',
   'signup_start', 'signup_submit', 'signup_complete', 'login_complete',
   'session_start', 'session_end', 'nav_view',
+  // The badge-share landing page (frontend `/badge/:token`) fires this
+  // before any account exists — the whole point of the loop is a click
+  // from a stranger. route_class is 'marketing' (see ANON_ROUTE_CLASSES),
+  // same acquisition bucket as every other pre-signup surface.
+  'badge_link_click',
 ]);
 
 const EventBody = z.object({
