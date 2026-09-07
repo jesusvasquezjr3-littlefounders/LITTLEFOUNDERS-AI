@@ -90,7 +90,22 @@
     "done": "I'm ready",
     "lightNext": "Move the sun to {{name}}",
     "showList": "Show the list",
-    "hideList": "Hide the list"
+    "hideList": "Hide the list",
+    "dialogTitle": "Personalize your experience",
+    "dialogSubtitle": "Set up your learning companion, your world and your style.",
+    "close": "Close",
+    "nicknameSection": "Your name in class",
+    "nicknameSectionHint": "This is the only name your tutor is ever told.",
+    "nicknameActive": "Active",
+    "tutorsUnlocked": "{{count}} tutors unlocked",
+    "worldLive": "Live world",
+    "worldActive": "Active now",
+    "select": "Select",
+    "inUse": "In use",
+    "quickTitle": "Quick interaction settings",
+    "defaults": "Reset to defaults",
+    "cancel": "Cancel",
+    "saveAndContinue": "Save and continue"
   },
   "character": {
     "dina": {

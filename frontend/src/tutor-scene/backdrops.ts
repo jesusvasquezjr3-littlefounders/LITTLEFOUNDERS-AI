@@ -64,13 +64,42 @@ const AUTO_LIGHT: BackdropLighting = {
   sunPosition: [4, 8, 5],
 };
 
+/*
+ * THE DARK STAGE, RETUNED TO THE DESIGN STUDY (2026-09-06, owner direction).
+ *
+ * This was `sky: '#2a3550'` — a desaturated blue-grey that lit the island like
+ * an overcast evening. The study's stage is a VIOLET-INDIGO one
+ * (`#232062` at the core of its vignette, falling to near-black), which is what
+ * makes it read as a lit cinematic stage rather than as a dark app. The sky
+ * colour is the hemisphere term, so it is also what the HUD's whole Lumen
+ * material mixes its fill against (`atmosphere.ts` publishes it as `--lf-sky`)
+ * — moving it moves the chrome and the island together, which is the point.
+ *
+ * The key light keeps a real direction and a cool-violet cast rather than
+ * going ambient-only: an unlit character at night is a silhouette of a bug
+ * (see the note on the four chosen hours below), and the study's own character
+ * is clearly keyed from above-left.
+ */
 const AUTO_DARK: BackdropLighting = {
-  sky: '#2a3550',
-  ground: '#0b0f1a',
-  hemisphereIntensity: 1.1,
-  sun: '#93b4ff',
-  sunIntensity: 1.0,
-  sunPosition: [4, 8, 5],
+  sky: '#232062',
+  ground: '#080b18',
+  hemisphereIntensity: 1.15,
+  sun: '#a5a0ff',
+  sunIntensity: 1.05,
+  /*
+   * A LOW KEY, and this is the fix the vignette exposed.
+   *
+   * This was `[4, 8, 5]` — a sun 0.78 of the way to the zenith, i.e. NOON,
+   * on the preset whose whole job is "it is dark". `sunHeight` is the single
+   * number every night-ward ramp in the stylesheet reads (`index.css` →
+   * LUMEN, and the stage vignette): the white rim that only appears as the
+   * sun drops, the lengthening shadows, the corner falloff. At 0.78 none of
+   * them engaged, so dark mode rendered as an overcast afternoon and every
+   * ramp written "for night" was dead code in the one condition it existed
+   * for. The intensity is unchanged — the character stays lit, and is now
+   * RAKED from the side the way the study's is, rather than flooded.
+   */
+  sunPosition: [4, 3.4, 5],
 };
 
 /*
@@ -111,13 +140,18 @@ const BACKDROPS: Readonly<Record<Exclude<SceneBackdropId, 'auto'>, BackdropLight
     sunIntensity: 1.35,
     sunPosition: [7, 2.2, -5],
   },
+  // Retuned with `AUTO_DARK` above, and deeper than it: this is the hour a
+  // learner CHOSE, so it goes further into the study's violet than the theme's
+  // own default dark does.
   night: {
-    sky: '#2f3a5c',
-    ground: '#080c16',
-    hemisphereIntensity: 0.85,
-    sun: '#9fc0ff',
-    sunIntensity: 0.75,
-    sunPosition: [-5, 7, -4],
+    sky: '#2b2470',
+    ground: '#06080f',
+    hemisphereIntensity: 0.9,
+    sun: '#b0a8ff',
+    sunIntensity: 0.8,
+    // Lower still than `AUTO_DARK`, for the same reason: 0.74 was noon
+    // wearing a blue filter.
+    sunPosition: [-5, 2.6, -4],
   },
 });
 

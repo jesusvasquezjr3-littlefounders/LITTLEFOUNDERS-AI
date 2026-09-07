@@ -1510,11 +1510,26 @@ socket.
 
 ## §10 Personalization
 
-**Personalization is not a settings screen. It is the learner making the place
-theirs, in the place itself** — every axis below is picked by touching the
-thing it changes, and the change is visible on the live island under your
-finger. That is the whole reason this section exists near the top of the flow
-instead of inside a profile page.
+> **SUPERSEDED IN SHAPE, 2026-09-06 (owner decision).** This section's rule was
+> "not a settings screen — the learner making the place theirs, in the place
+> itself", and every axis below is documented as picked by touching the thing it
+> changes out on the island. The owner reviewed that build beside the Stitch
+> design study's own configuration screen and chose the study: personalization
+> is now **a centred dialog** (`frontend/src/tutor/PersonalizeInWorld.tsx`),
+> because it shows every axis at once and groups them under headings a person
+> can scan — two things the in-world version could not do, and the reason it was
+> reported as hard to navigate and hard to configure.
+>
+> **What did NOT change, and is still the invariant this section is really
+> about:** every axis is still an immediate WRITE against the live scene, not a
+> preview. Choosing Dusk moves the real sun; choosing a tutor puts that
+> character on the real island; the dialog's scrim is blurred rather than opaque
+> so the change is visible behind it as it happens. The `Picked by` column below
+> now describes a control inside the dialog rather than a chip in the world; the
+> `Choice`, `Options today` and `Notes` columns are unchanged and still
+> authoritative. Cancel restores the snapshot the dialog opened with — new, and
+> required by the study drawing Cancel beside Save on a surface that writes every
+> tap.
 
 | Choice | Options today | Picked by | Notes |
 |---|---|---|---|

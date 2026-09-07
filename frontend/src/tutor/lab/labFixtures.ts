@@ -99,7 +99,17 @@ export const LAB_PREFERENCES: TutorPreferences = {
   character: 'rho',
   companion: 'liruf',
   diorama: 'diorama-a',
-  backdrop: 'day',
+  /*
+   * `auto`, not `day` (2026-09-06). The lab hardcoded a DAYLIGHT backdrop,
+   * so every screenshot ever taken of this route — including the ones a
+   * redesign was judged against — showed a bright island that a learner on
+   * the default preference never sees in dark mode. A harness that
+   * misrepresents the product's own default reports on something nobody
+   * ships (/AGENTS.md §1.14). `auto` follows the theme, which is what an
+   * untouched preference actually does, and the lab already has a theme
+   * toggle to drive both sides of it.
+   */
+  backdrop: 'auto',
   nickname: 'Robi',
   adaptations: ['more_examples'],
 };
@@ -405,7 +415,7 @@ export function labSession(locale: Locale): StartedSession {
     character: 'rho',
     companion: 'liruf',
     diorama: 'diorama-a',
-    backdrop: 'day',
+    backdrop: 'auto',
     locale,
     voiceAvailable: true,
     microphoneAvailable: true,

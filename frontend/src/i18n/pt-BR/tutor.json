@@ -90,7 +90,22 @@
     "done": "Pronto, vamos",
     "lightNext": "Mover o sol para {{name}}",
     "showList": "Ver a lista",
-    "hideList": "Esconder a lista"
+    "hideList": "Esconder a lista",
+    "dialogTitle": "Personalizar experiência",
+    "dialogSubtitle": "Ajuste seu companheiro de aprendizagem, seu mundo e seu estilo.",
+    "close": "Fechar",
+    "nicknameSection": "Seu apelido na turma",
+    "nicknameSectionHint": "É o único nome que seu tutor chega a saber.",
+    "nicknameActive": "Ativo",
+    "tutorsUnlocked": "{{count}} tutores desbloqueados",
+    "worldLive": "Mundo ao vivo",
+    "worldActive": "Ativo agora",
+    "select": "Selecionar",
+    "inUse": "Em uso",
+    "quickTitle": "Ajustes rápidos de interação",
+    "defaults": "Valores padrão",
+    "cancel": "Cancelar",
+    "saveAndContinue": "Salvar e continuar"
   },
   "character": {
     "dina": {

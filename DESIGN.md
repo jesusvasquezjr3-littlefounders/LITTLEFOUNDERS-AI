@@ -1633,6 +1633,68 @@ recipe 7) and has a reduced-motion modifier. The waveform collapses to a flat
 line rather than freezing: a stopped waveform is a graphical artefact, a flat
 one still says "audio".
 
+### The Tutor's configuration dialog, and the night that was never night (2026-09-06)
+
+Three passes of material tuning were told, correctly, that the Tutor still did
+not look like the study. Reading the study's own screens instead of a
+second-hand summary of them found why, and neither cause was a radius or a
+shadow.
+
+**THE STAGE WAS NEVER ACTUALLY DARK.** Three separate faults, each invisible
+alone, stacked into "dark mode renders as an overcast afternoon":
+
+1. `AUTO_DARK` and `night` both put the sun at **0.78 and 0.74 of the way to the
+   zenith** — noon, on the two presets whose entire job is that it is dark.
+   `--lf-sun-height` is the one number every night-ward ramp in the stylesheet
+   reads (the Lumen rim that only appears as the sun drops, the lengthening
+   shadows, the object seat), so at 0.78 the whole "as the sun goes down" half of
+   this material was unreachable in the theme it was written for.
+2. The stage's sun bloom was a flat **55% of the key light across 130%×78% of
+   the frame, at every hour**, including the ones with no sun in the sky. A
+   violet-indigo night sky was being washed by a light-violet flood covering most
+   of the screen. It is now scaled by `--lf-sun-height`: noon is byte-identical,
+   night reaches black.
+3. `index.css` carries a **hand-mirrored copy** of `AUTO_DARK` (its own comment
+   says so) and that copy had only three of the four values — no
+   `--lf-sun-height` — so dark mode inherited the light theme's noon elevation
+   from `@property`'s initial value. This is the hand-mirrored-constant class
+   /AGENTS.md §5 already has four gates for, one layer lower.
+
+Plus a fourth, in the instrument rather than the product: the Tutor lab
+hardcoded `backdrop: 'day'`, so **every screenshot ever taken of this route —
+including the ones a redesign was judged against — showed a bright island that a
+learner on the default preference never sees.** A harness that misrepresents the
+product's own default reports on something nobody ships (§1.14). It follows the
+theme now.
+
+The stage also gained the study's **cinematic vignette** — one off-centre radial
+fall from the violet core to near-black at the corners, tied to `--lf-sun-height`
+so it contributes nothing at noon.
+
+**AND PERSONALIZATION IS NOW THE STUDY'S DIALOG.** The in-world picker — chips
+on each candidate's crown, a sun on an arc, rim pads, a corner plate — is
+replaced by a centred modal, by owner decision, because it shows every axis at
+once and groups them under scannable headings. `/ORACLE.md` §10 carries the
+supersession and what did NOT change: every axis is still an immediate write
+against the live scene, and the scrim is blurred rather than opaque so the island
+visibly changes behind it. New material for it: `.lf-config-scrim`,
+`.lf-config-dialog`, `.lf-config-head`/`-foot`, `.lf-tile` (the study's
+three-steps-of-one-hue icon tile), `.lf-pick-card` (+ `-on`, `-check`),
+`.lf-config-row` and `.lf-switch`.
+
+Two things the build itself taught:
+
+- **A modal has to leave the stage's tree.** The shell mounts every HUD layer
+  inside `pointer-events-none absolute inset-0 z-30`, which is a stacking
+  context — so the dialog could not rise above the microphone dock's `z-40`
+  sibling at `z-50`, and photographed with the dock's plate punched through its
+  middle at `z-[60]` too. Only `createPortal` to `document.body` actually made it
+  modal.
+- **Cancel has to really cancel.** The study draws Cancel beside Save on a
+  surface that writes every tap, which would be a lie; the dialog snapshots
+  `preferences` on mount and restores every axis on Cancel, Escape or a scrim
+  press.
+
 ### The Tutor's shape reversal — chips are capsules again (2026-09-05, owner direction)
 
 The two passes above tuned box-shadows and hairlines and were told, correctly,

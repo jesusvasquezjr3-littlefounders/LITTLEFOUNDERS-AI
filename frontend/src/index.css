@@ -477,9 +477,22 @@
      * root and are deliberately IDENTICAL in both themes — someone who picked
      * Dusk asked for dusk, not for dusk-unless-you-are-in-light-mode.
      */
-    --lf-sky: #2a3550;
-    --lf-key: #93b4ff;
-    --lf-ground: #0b0f1a;
+    --lf-sky: #232062;
+    --lf-key: #a5a0ff;
+    --lf-ground: #080b18;
+    /*
+     * AND THE FOURTH VALUE, which was missing (2026-09-06).
+     *
+     * `--lf-sun-height`'s initial value is 0.78 — `AUTO_LIGHT`'s noon sun —
+     * and the dark half of this mirror never overrode it. So in dark mode
+     * every ramp that reads it (`--lf-lumen-rim`, the drop shadows above,
+     * `--lf-stage-sun-y`, the object seat, the stage vignette) computed as
+     * though the sun were nearly overhead, and the entire "as the sun goes
+     * down" half of this material was unreachable in the theme it was written
+     * for. It is `AUTO_DARK`'s own elevation, derived the same way
+     * `atmosphere.ts` derives it: y / |sunPosition| for [4, 3.4, 5].
+     */
+    --lf-sun-height: 0.469;
   }
 
   :root {
@@ -1400,9 +1413,44 @@
   .lf-stage-ground {
     background-color: rgb(var(--lf-base));
     background-image:
+      /*
+       * THE CINEMATIC VIGNETTE (2026-09-06, from the design study).
+       *
+       * The study's stage is one off-centre radial fall from a violet-indigo
+       * core to near-black at the corners — that single gradient is most of
+       * why its screen reads as a LIT STAGE rather than as a dark app, and we
+       * had nothing like it: our ground was a sky-over-earth gradient, which
+       * is right for a daylit island and flat for a night one.
+       *
+       * It is a layer ON TOP of that sky rather than a replacement, and its
+       * strength is tied to `--lf-sun-height` exactly as the Lumen rim is: at
+       * noon it contributes nothing at all (the daylight island is unchanged,
+       * byte for byte, which is the regression this must not cause), and as
+       * the sun drops it closes the corners down to the study's black. Centred
+       * at 45%/42% — the study's own off-centre core, biased up and left of
+       * centre so the character stands in the light rather than beside it.
+       */
+      radial-gradient(
+        118% 96% at 45% 42%,
+        transparent 0%,
+        transparent 34%,
+        rgb(6 9 19 / calc((1 - var(--lf-sun-height)) * 0.82)) 100%
+      ),
+      /*
+       * THE SUN'S BLOOM, and it now SETS with the sun (2026-09-06).
+       *
+       * It was a flat 55% of the key light across 130% x 78% of the frame —
+       * at every hour, including the ones with no sun in the sky. That single
+       * constant is why "dark mode" photographed as an overcast afternoon:
+       * a violet-indigo night sky was being washed by a light-violet bloom
+       * covering most of the frame, so the stage never actually got dark and
+       * the vignette above it had nothing to fall off FROM. Scaling it by
+       * `--lf-sun-height` leaves noon byte-identical (1.0 x 55% = 55%) and
+       * lets the night reach the study's black.
+       */
       radial-gradient(
         130% 78% at 50% var(--lf-stage-sun-y),
-        color-mix(in srgb, var(--lf-key) 55%, transparent),
+        color-mix(in srgb, var(--lf-key) calc(var(--lf-sun-height) * 55%), transparent),
         transparent 64%
       ),
       linear-gradient(
@@ -2323,6 +2371,161 @@
    * second named token — the study's two stops are one step apart on the SAME
    * ramp, not two different colours.
    */
+  /* ══════════════════════════════════════════════════════════════════════
+     THE TUTOR'S CONFIGURATION DIALOG (2026-09-06, owner direction).
+
+     The design study's "Personalizar Experiencia" modal, built as its own
+     small material rather than by stacking Lumen on Lumen: this dialog sits
+     over a BLURRED SCRIM, so what is behind it is already diffuse and there is
+     nothing left for a glass plate to refract. Every recipe below is the
+     study's, mapped onto this project's tokens — the study names raw Tailwind
+     ramps (indigo-500/20, cyan-400/70, amber-300/30) and the closed palette
+     answers each of them with accent / delight / warning.
+     ────────────────────────────────────────────────────────────────────── */
+
+  /* The scrim: never an opaque veil. The stage stays perceptible as soft
+     colour behind it, which is the whole reason the glass system exists. */
+  .lf-config-scrim {
+    background: rgb(var(--lf-inverse) / 0.72);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+
+  /* The dialog shell. 24px radius — the largest on the route, one step above
+     the 16px cards inside it, which is what makes the stack read as
+     dialog > section > card rather than as three boxes. */
+  .lf-config-dialog {
+    background: rgb(var(--lf-surface) / 0.94);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid rgb(var(--lf-content) / 0.14);
+    border-radius: 24px;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.12),
+      0 25px 60px -15px rgb(0 0 0 / 0.55);
+  }
+  .dark .lf-config-dialog {
+    background: rgb(var(--lf-surface) / 0.86);
+  }
+
+  /* The header's own wash: tinted left-to-right so the header separates from
+     the body by more than the 1px rule under it. */
+  .lf-config-head {
+    background: linear-gradient(
+      to right,
+      rgb(var(--lf-accent) / 0.16),
+      rgb(var(--lf-accent) / 0.05) 45%,
+      transparent
+    );
+    border-bottom: 1px solid rgb(var(--lf-content) / 0.1);
+  }
+  .lf-config-foot {
+    background: rgb(var(--lf-content) / 0.04);
+    border-top: 1px solid rgb(var(--lf-content) / 0.1);
+  }
+
+  /*
+   * THE TINTED ICON TILE — the study's most reused recipe, and its own note
+   * calls it "three matched steps of the same hue at three opacities": a
+   * 20%-fill, a 30%-border and a full-strength glyph. `currentColor` carries
+   * the hue, so one class serves accent, delight, warning and success and a
+   * caller only names a colour.
+   */
+  .lf-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: color-mix(in srgb, currentColor 18%, transparent);
+    border: 1px solid color-mix(in srgb, currentColor 34%, transparent);
+  }
+
+  /*
+   * A PICKABLE CARD — tutor, world, hour. Selection is signalled FOUR ways at
+   * once because the study signals it four ways at once: a solid fill that
+   * drops the glass entirely, a 2px border at full strength where an
+   * unselected card has 1px at a tenth, an outer coloured glow, and a corner
+   * check. One of those alone is a state you have to look for.
+   */
+  .lf-pick-card {
+    position: relative;
+    border-radius: 16px;
+    border: 1px solid rgb(var(--lf-content) / 0.12);
+    background: rgb(var(--lf-content) / 0.03);
+    transition:
+      border-color var(--lf-dur-base) var(--lf-ease),
+      background-color var(--lf-dur-base) var(--lf-ease),
+      box-shadow var(--lf-dur-base) var(--lf-ease);
+  }
+  @media (hover: hover) {
+    .lf-pick-card:hover:not(.lf-pick-card-on) {
+      border-color: rgb(var(--lf-content) / 0.3);
+    }
+  }
+  .lf-pick-card-on {
+    border-width: 2px;
+    border-color: rgb(var(--lf-accent));
+    background: rgb(var(--lf-accent) / 0.1);
+    box-shadow: 0 0 20px rgb(var(--lf-accent) / 0.3);
+  }
+  .dark .lf-pick-card-on {
+    background: rgb(var(--lf-accent) / 0.22);
+  }
+  /* The corner check disc — a 16px filled circle, not a tick floating on the
+     card, so it reads as a stamp rather than as more content. */
+  .lf-pick-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: rgb(var(--lf-accent));
+    color: rgb(var(--lf-on-accent));
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  }
+
+  /* A settings ROW: the shared skeleton the study gives its quick settings —
+     icon, two lines, and a control pinned right. */
+  .lf-config-row {
+    border-radius: 16px;
+    border: 1px solid rgb(var(--lf-content) / 0.12);
+    background: rgb(var(--lf-content) / 0.03);
+  }
+
+  /*
+   * THE TOGGLE. 40x20 with the knob sunk into the track by an inset shadow,
+   * and the ON position expressed as a flex alignment rather than a transform
+   * — the study's own construction, and it means the knob cannot drift out of
+   * the track when the row's font size changes.
+   */
+  .lf-switch {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 24px;
+    padding: 2px;
+    border-radius: 9999px;
+    background: rgb(var(--lf-content) / 0.18);
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.3);
+    transition: background-color var(--lf-dur-base) var(--lf-ease);
+  }
+  .lf-switch-on {
+    background: rgb(var(--lf-success));
+    justify-content: flex-end;
+  }
+  .lf-switch-knob {
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+  }
+
   .lf-orb-fill {
     background: linear-gradient(
       to top right,
