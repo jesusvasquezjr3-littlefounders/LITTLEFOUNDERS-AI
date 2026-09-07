@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Icon, Dropdown, Badge, StatCard, Table, LoadingOverlay } from '@/components/ui';
+import { Button, Card, Icon, Dropdown, Badge, SectionHeading, StatCard, Table, LoadingOverlay } from '@/components/ui';
 import type { DropdownOption, TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
@@ -409,12 +409,34 @@ const CHURN_COLORS: Record<string, string> = {
 /*  Shared sub-components                                              */
 /* ------------------------------------------------------------------ */
 
-function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
+/*
+ * Every analytical panel on this page is a ChartCard, so the study's lockup
+ * goes in HERE rather than at nineteen call sites — but the icon and the hue
+ * are REQUIRED props rather than defaults, because a lockup whose colour is
+ * the same everywhere has stopped saying anything (/DESIGN.md: "the hue is
+ * load-bearing"). Churn is warning, retention is success, an anomaly feed is
+ * warning; a caller has to decide what its panel IS.
+ */
+function ChartCard({
+  title,
+  subtitle,
+  icon,
+  tone,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  icon: string;
+  tone: 'accent' | 'delight' | 'success' | 'warning' | 'error' | 'muted';
+  children: ReactNode;
+}) {
   return (
     <Card className="flex flex-col gap-3 p-5">
       <div>
-        <h3 className="lf-title text-content">{title}</h3>
-        {subtitle ? <p className="lf-caption mt-0.5 text-content-muted">{subtitle}</p> : null}
+        <SectionHeading icon={icon} tone={tone} as="h3" className={subtitle ? 'mb-1' : 'mb-0'}>
+          {title}
+        </SectionHeading>
+        {subtitle ? <p className="lf-caption text-content-muted">{subtitle}</p> : null}
       </div>
       <ChartErrorBoundary>{children}</ChartErrorBoundary>
     </Card>
@@ -467,7 +489,7 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
         </p>
       </Card>
 
-      <ChartCard title={t(`${'admin.intel.trends.dauTitle'}`) || `DAU (${days}d)`} subtitle={String(t('admin.intel.trends.sparklineHint'))}>
+      <ChartCard icon="show_chart" tone="accent" title={t(`${'admin.intel.trends.dauTitle'}`) || `DAU (${days}d)`} subtitle={String(t('admin.intel.trends.sparklineHint'))}>
         {data.trends && data.trends.length > 0 ? (
           <div className="h-[200px] w-full">
             <ResponsiveContainer>
@@ -492,7 +514,7 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
       </ChartCard>
 
       {data.summary?.adoption && data.summary.adoption.length > 0 ? (
-        <ChartCard title={t('admin.intel.adoption.title')} subtitle={t('admin.intel.adoption.subtitle')}>
+        <ChartCard icon="trending_up" tone="delight" title={t('admin.intel.adoption.title')} subtitle={t('admin.intel.adoption.subtitle')}>
           <div className="h-[280px] w-full">
             <ResponsiveContainer>
               <BarChart data={data.summary.adoption} layout="vertical" margin={{ left: 80, right: 20 }}>
@@ -508,7 +530,7 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
       ) : null}
 
       {data.anomalies && data.anomalies.filter((a) => !a.resolved).length > 0 ? (
-        <ChartCard title={t('admin.intel.anomalies.title')} subtitle={t('admin.intel.anomalies.subtitle')}>
+        <ChartCard icon="crisis_alert" tone="warning" title={t('admin.intel.anomalies.title')} subtitle={t('admin.intel.anomalies.subtitle')}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -568,7 +590,7 @@ function TrendsTab({ data, t }: { data: IntelBundle; t: (k: string) => string })
         <Dropdown value={granularity} options={granularityOptions} onChange={setGranularity} ariaLabel={t('admin.intel.filters.granularity')} />
       </div>
 
-      <ChartCard title={t('admin.intel.trends.title')} subtitle={t('admin.intel.trends.subtitle')}>
+      <ChartCard icon="timeline" tone="accent" title={t('admin.intel.trends.title')} subtitle={t('admin.intel.trends.subtitle')}>
         {data.trends && data.trends.length > 0 ? (
           <div className="h-[360px] w-full">
             <ResponsiveContainer>
@@ -603,7 +625,7 @@ function TrendsTab({ data, t }: { data: IntelBundle; t: (k: string) => string })
 function FunnelsTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => string; pf: Intl.NumberFormat }) {
   return (
     <div className="flex flex-col gap-6">
-      <ChartCard title={t('admin.intel.funnel.title')} subtitle={t('admin.intel.funnel.subtitle')}>
+      <ChartCard icon="filter_alt" tone="delight" title={t('admin.intel.funnel.title')} subtitle={t('admin.intel.funnel.subtitle')}>
         {data.funnel && data.funnel.length > 0 ? (
           <div className="h-[320px] w-full">
             <ResponsiveContainer>
@@ -626,7 +648,7 @@ function FunnelsTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => stri
       </ChartCard>
 
       {data.funnel && data.funnel.length > 0 ? (
-        <ChartCard title={t('admin.intel.funnel.stepTitle')} subtitle={t('admin.intel.funnel.stepSubtitle')}>
+        <ChartCard icon="stairs" tone="delight" title={t('admin.intel.funnel.stepTitle')} subtitle={t('admin.intel.funnel.stepSubtitle')}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -689,7 +711,7 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
 
   return (
     <div className="flex flex-col gap-6">
-      <ChartCard title={t('admin.intel.retention.cohortTitle')} subtitle={t('admin.intel.retention.cohortSubtitle')}>
+      <ChartCard icon="grid_view" tone="success" title={t('admin.intel.retention.cohortTitle')} subtitle={t('admin.intel.retention.cohortSubtitle')}>
         {chartData.length > 0 && cohortLabels.length > 0 ? (
           <div className="h-[360px] w-full">
             <ResponsiveContainer>
@@ -711,7 +733,7 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
       </ChartCard>
 
       {cohortLabels.length > 0 ? (
-        <ChartCard title={t('admin.intel.retention.heatmapTitle')} subtitle={t('admin.intel.retention.heatmapSubtitle')}>
+        <ChartCard icon="blur_on" tone="success" title={t('admin.intel.retention.heatmapTitle')} subtitle={t('admin.intel.retention.heatmapSubtitle')}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -737,7 +759,7 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
                           <td key={w} className="py-2 pr-3">
                             {pct === null ? null : (
                               <span
-                                className="lf-caption inline-block rounded px-2 py-0.5 text-content"
+                                className="lf-caption inline-block rounded-sm px-2 py-0.5 text-content"
                                 style={{ backgroundColor: `color-mix(in srgb, rgb(var(--lf-primary)) ${Math.round(pct * 100)}%, transparent)` }}
                               >
                                 {pf.format(pct)}
@@ -854,7 +876,7 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
         <div className="relative flex flex-col gap-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="max-w-2xl">
-              <p className="lf-label text-primary">{t('admin.intel.learning.commandKicker')}</p>
+              <p className="lf-eyebrow text-accent">{t('admin.intel.learning.commandKicker')}</p>
               <h2 className="lf-headline mt-1 text-content">{t('admin.intel.learning.commandTitle')}</h2>
               <p className="lf-caption mt-2 text-content-muted">{t('admin.intel.learning.commandSubtitle')}</p>
             </div>
@@ -871,7 +893,7 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
       </Card>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.75fr)]">
-        <ChartCard title={t('admin.intel.learning.pulseTitle')} subtitle={t('admin.intel.learning.pulseSubtitle')}>
+        <ChartCard icon="monitoring" tone="accent" title={t('admin.intel.learning.pulseTitle')} subtitle={t('admin.intel.learning.pulseSubtitle')}>
           {overview.trends.length > 0 ? (
             <div className="h-[300px] w-full">
               <ResponsiveContainer>
@@ -890,7 +912,10 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
           ) : <EmptyChartIcon name="monitoring" />}
         </ChartCard>
         <Card className="flex flex-col gap-4 p-5">
-          <div><h3 className="lf-title text-content">{t('admin.intel.learning.readinessTitle')}</h3><p className="lf-caption mt-1 text-content-muted">{t('admin.intel.learning.readinessSubtitle')}</p></div>
+          <div>
+            <SectionHeading icon="checklist" tone="success" as="h3" className="mb-1">{t('admin.intel.learning.readinessTitle')}</SectionHeading>
+            <p className="lf-caption text-content-muted">{t('admin.intel.learning.readinessSubtitle')}</p>
+          </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3"><span className="lf-caption text-content-muted">{t('admin.intel.learning.colScore')}</span><span className="lf-number text-content">{score(overview.snapshot.avgScore)}</span></div>
             <div className="flex items-center justify-between gap-3"><span className="lf-caption text-content-muted">{t('admin.intel.learning.colFirstTry')}</span><span className="lf-number text-content">{score(overview.snapshot.firstTryAvgScore)}</span></div>
@@ -901,9 +926,9 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
         </Card>
       </div>
 
-      <ChartCard title={t('admin.intel.learning.directoryTitle')} subtitle={t('admin.intel.learning.directorySubtitle')}>
-        <div className="mb-4 flex gap-1.5 overflow-x-auto rounded-xl border border-outline/30 bg-surface-sunken p-1">
-          {directoryButtons.map(({ key, icon }) => <button key={key} type="button" onClick={() => setDirectory(key)} className={cn('flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-1.5 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', directory === key ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content')}><Icon name={icon} className="!text-[17px]" />{t(`admin.intel.learning.directory.${key}`)}</button>)}
+      <ChartCard icon="folder_open" tone="accent" title={t('admin.intel.learning.directoryTitle')} subtitle={t('admin.intel.learning.directorySubtitle')}>
+        <div className="mb-4 flex gap-1.5 overflow-x-auto rounded-md border border-outline/30 bg-surface-sunken p-1">
+          {directoryButtons.map(({ key, icon }) => <button key={key} type="button" onClick={() => setDirectory(key)} className={cn('flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', directory === key ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content')}><Icon name={icon} className="!text-[17px]" />{t(`admin.intel.learning.directory.${key}`)}</button>)}
         </div>
         {directory === 'courses' ? <Table<IntelCourseHealth> rows={overview.courses} rowKey={(row) => row.courseId} onRowClick={(item) => setDetail({ kind: 'course', item })} columns={[
           { key: 'course', header: t('admin.intel.learning.course'), primary: true, cell: (row) => <div><p>{row.courseTitleEn || row.courseSlug || t('admin.intel.learning.untitledCourse')}</p><p className="lf-caption text-content-muted">{t('admin.intel.learning.lessonsCount', { count: row.lessons })}</p></div> },
@@ -932,7 +957,7 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
         ] satisfies TableColumn<IntelLearnerProfile>[]} /> : null}
       </ChartCard>
 
-      <ChartCard title={t('admin.intel.learning.skillHealthTitle')} subtitle={t('admin.intel.learning.skillHealthSubtitle')}>
+      <ChartCard icon="psychology" tone="success" title={t('admin.intel.learning.skillHealthTitle')} subtitle={t('admin.intel.learning.skillHealthSubtitle')}>
         {data.skillHealth && data.skillHealth.length > 0 ? <Table<IntelSkillHealth> rows={data.skillHealth} rowKey={(row) => row.skillKey} columns={[
           { key: 'skill', header: t('admin.intel.learning.colSkill'), cell: (row) => row.skillKey, primary: true },
           { key: 'priority', header: t('admin.intel.learning.colPriority'), cell: (row) => <Badge className={row.priority === 'review' ? 'bg-error-soft text-error-strong' : row.priority === 'monitor' ? 'bg-warning-soft text-warning-strong' : 'bg-surface-sunken text-content-muted'}>{t(`admin.intel.learning.priority.${row.priority}`)}</Badge> },
@@ -968,7 +993,7 @@ function LearnerDetailDialog({ detail, learner, loading, onClose, t, nf, pf }: {
             <StatCard dense icon={<Icon name="support" />} label={t('admin.intel.learning.supportSkills')} value={nf.format(profile.skillsNeedingSupport)} />
           </div>
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.8fr)]">
-            <ChartCard title={t('admin.intel.learning.learnerPulseTitle')} subtitle={t('admin.intel.learning.learnerPulseSubtitle')}>
+            <ChartCard icon="monitoring" tone="accent" title={t('admin.intel.learning.learnerPulseTitle')} subtitle={t('admin.intel.learning.learnerPulseSubtitle')}>
               {detail.trends.length > 0 ? <div className="h-[260px] w-full"><ResponsiveContainer><ComposedChart data={detail.trends}><CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} vertical={false} /><XAxis dataKey="date" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} /><YAxis tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} /><Tooltip content={<CustomTooltip />} /><Bar dataKey="attempts" name={t('admin.intel.learning.attemptsLabel')} fill={SVG_PRIMARY} radius={[4, 4, 0, 0]} /></ComposedChart></ResponsiveContainer></div> : <EmptyChartIcon name="monitoring" />}
             </ChartCard>
             <Card className="flex flex-col gap-3 p-5">
@@ -979,14 +1004,14 @@ function LearnerDetailDialog({ detail, learner, loading, onClose, t, nf, pf }: {
             </Card>
           </div>
           <div className="grid gap-6 xl:grid-cols-2">
-            <ChartCard title={t('admin.intel.learning.learnerCoursesTitle')} subtitle={t('admin.intel.learning.learnerCoursesSubtitle')}>
+            <ChartCard icon="menu_book" tone="accent" title={t('admin.intel.learning.learnerCoursesTitle')} subtitle={t('admin.intel.learning.learnerCoursesSubtitle')}>
               {detail.courses.length ? <Table<IntelCourseHealth> rows={detail.courses} rowKey={(row) => row.courseId} columns={[
                 { key: 'course', header: t('admin.intel.learning.course'), primary: true, cell: (row) => row.courseTitleEn || row.courseSlug || t('admin.intel.learning.untitledCourse') },
                 { key: 'score', header: t('admin.intel.learning.colScore'), numeric: true, cell: (row) => row.avgScore === null ? t('admin.intel.learning.unavailable') : pf.format(row.avgScore / 100) },
                 { key: 'attempts', header: t('admin.intel.learning.attemptsLabel'), numeric: true, cell: (row) => nf.format(row.attempts) },
               ] satisfies TableColumn<IntelCourseHealth>[]} /> : <EmptyChartIcon name="menu_book" />}
             </ChartCard>
-            <ChartCard title={t('admin.intel.learning.learnerSkillsTitle')} subtitle={t('admin.intel.learning.learnerSkillsSubtitle')}>
+            <ChartCard icon="psychology" tone="success" title={t('admin.intel.learning.learnerSkillsTitle')} subtitle={t('admin.intel.learning.learnerSkillsSubtitle')}>
               {detail.states.length ? <Table<typeof detail.states[number]> rows={detail.states} rowKey={(row) => row.skillKey} columns={[
                 { key: 'skill', header: t('admin.intel.learning.colSkill'), primary: true, cell: (row) => row.skillKey },
                 { key: 'mastery', header: t('admin.intel.learning.colMastery'), numeric: true, cell: (row) => pf.format(row.masteryProbability) },
@@ -1027,7 +1052,7 @@ function PeopleTab({ data, t, pf: _pf }: { data: IntelBundle; t: (k: string) => 
 
   return (
     <div className="flex flex-col gap-6">
-      <ChartCard title={t('admin.intel.people.leaderboardTitle')} subtitle={t('admin.intel.people.leaderboardSubtitle')}>
+      <ChartCard icon="leaderboard" tone="delight" title={t('admin.intel.people.leaderboardTitle')} subtitle={t('admin.intel.people.leaderboardSubtitle')}>
         {data.engagement && data.engagement.length > 0 ? (
           <Table<IntelEngagementEntry>
             rows={data.engagement.slice(0, 25)}
@@ -1045,7 +1070,7 @@ function PeopleTab({ data, t, pf: _pf }: { data: IntelBundle; t: (k: string) => 
         )}
       </ChartCard>
 
-      <ChartCard title={t('admin.intel.people.churnTitle')} subtitle={t('admin.intel.people.churnSubtitle')}>
+      <ChartCard icon="person_off" tone="warning" title={t('admin.intel.people.churnTitle')} subtitle={t('admin.intel.people.churnSubtitle')}>
         {churnData.length > 0 ? (
           <div className="h-[280px] w-full">
             <ResponsiveContainer>
@@ -1088,7 +1113,7 @@ function PeopleTab({ data, t, pf: _pf }: { data: IntelBundle; t: (k: string) => 
       </ChartCard>
 
       {data.churnRisk && data.churnRisk.length > 0 ? (
-        <ChartCard title={t('admin.intel.people.churnTableTitle')}>
+        <ChartCard icon="table_rows" tone="warning" title={t('admin.intel.people.churnTableTitle')}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -1129,7 +1154,7 @@ function ExperimentsTab({ data, t }: { data: IntelBundle; t: (k: string) => stri
   return (
     <div className="flex flex-col gap-6">
       {data.experiments && data.experiments.length > 0 ? (
-        <ChartCard title={t('admin.intel.experiments.listTitle')} subtitle={t('admin.intel.experiments.listSubtitle')}>
+        <ChartCard icon="science" tone="delight" title={t('admin.intel.experiments.listTitle')} subtitle={t('admin.intel.experiments.listSubtitle')}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -1182,7 +1207,7 @@ function AlertsTab({ data, t }: { data: IntelBundle; t: (k: string) => string })
   return (
     <div className="flex flex-col gap-6">
       {data.alerts && data.alerts.length > 0 ? (
-        <ChartCard title={t('admin.intel.alerts.listTitle')} subtitle={t('admin.intel.alerts.listSubtitle')}>
+        <ChartCard icon="notifications_active" tone="warning" title={t('admin.intel.alerts.listTitle')} subtitle={t('admin.intel.alerts.listSubtitle')}>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -1336,7 +1361,7 @@ export function AdminIntelPage() {
 
   return (
     <AdminPage titleKey="admin.intel.title" subtitleKey="admin.intel.subtitle">
-      <div className="flex flex-col gap-3 rounded-lg border border-outline/70 bg-surface p-4">
+      <div className="flex flex-col gap-3 rounded-md border border-outline/70 bg-surface p-4">
         <div className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1">
             <span className="lf-caption text-content-muted">{t('admin.intel.filters.period')}</span>
@@ -1347,14 +1372,14 @@ export function AdminIntelPage() {
         <StaffExclusionNote windowQuery={windowQuery} />
       </div>
 
-      <div className="flex gap-1.5 overflow-x-auto bg-surface-sunken p-1 rounded-xl border border-outline/30">
+      <div className="flex gap-1.5 overflow-x-auto bg-surface-sunken p-1 rounded-md border border-outline/30">
         {TABS_WITH_ICONS.map(({ key: k, icon }) => (
           <button
             key={k}
             type="button"
             onClick={() => setTab(k)}
             className={cn(
-              'flex items-center gap-1.5 min-h-11 shrink-0 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
+              'flex items-center gap-1.5 min-h-11 shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               tab === k ? 'bg-surface text-content shadow-glass-sm border border-outline/30 font-bold' : 'text-content-muted hover:text-content',
             )}

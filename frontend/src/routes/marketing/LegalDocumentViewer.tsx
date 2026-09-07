@@ -121,7 +121,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
       {/* Header Banner */}
-      <div className="rounded-xl border border-outline bg-surface-sunken/60 p-6 sm:p-10 backdrop-blur-md">
+      <div className="rounded-md border border-outline bg-surface-sunken/60 p-6 sm:p-10 backdrop-blur-md">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -188,7 +188,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* TOC Navigation Sidebar (Desktop ≥1024px) */}
         <aside className="lg:col-span-4 print:hidden">
-          <div className="sticky top-24 rounded-xl border border-outline bg-surface p-5 shadow-glass-sm">
+          <div className="sticky top-24 rounded-md border border-outline bg-surface p-5 shadow-glass-sm">
             <h2 className="lf-title text-content">
               {t('marketing.legal.meta.tocTitle')}
             </h2>
@@ -284,7 +284,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
                 <section
                   key={key}
                   id={key}
-                  className="scroll-mt-28 rounded-xl border border-outline bg-surface p-6 shadow-glass-sm transition-shadow hover:shadow-glass"
+                  className="scroll-mt-28 rounded-md border border-outline bg-surface p-6 shadow-glass-sm transition-shadow hover:shadow-glass"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <h2 className="lf-headline text-content">{title}</h2>
@@ -317,7 +317,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
 
           {/* Privacy Cookie Controls & Contact Footer */}
           {!isTerms && (
-            <section id="cookie-controls" className="rounded-xl border border-primary-soft bg-primary-soft/20 p-6">
+            <section id="cookie-controls" className="rounded-md border border-primary-soft bg-primary-soft/20 p-6">
               <h2 className="lf-headline text-content">
                 {t('marketing.legal.privacy.cookiesTitle')}
               </h2>

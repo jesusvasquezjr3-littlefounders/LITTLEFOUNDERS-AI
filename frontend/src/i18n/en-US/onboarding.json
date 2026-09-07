@@ -35,6 +35,7 @@
   "discovery": {
     "title": "Where did you hear about us?",
     "subtitle": "Completely optional.",
+    "section": "Choose one",
     "options": {
       "friend": "A friend or family member",
       "social_media": "Social media",

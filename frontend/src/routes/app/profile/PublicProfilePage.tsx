@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Badge, Button, Card, Icon, StatCard, LottieIcon } from '@/components/ui';
+import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
 import { CourseBadgeCollection } from './CourseBadgeCollection';
@@ -52,6 +52,7 @@ export function PublicProfilePage() {
   const { getToken } = useAuth();
   const { handle = '' } = useParams();
   const navigate = useNavigate();
+  const statsHeadingId = useId();
   const username = handle.startsWith('@') ? handle.slice(1).toLowerCase() : null;
 
   const [data, setData] = useState<PublicProfile | null>(null);
@@ -98,7 +99,7 @@ export function PublicProfilePage() {
   if (!data) {
     return (
       <div aria-busy="true">
-        <div className="h-36 animate-pulse rounded-xl bg-surface-sunken sm:h-48" />
+        <div className="h-36 animate-pulse rounded-md bg-surface-sunken sm:h-48" />
         <div className="-mt-14 ml-5 h-28 w-28 animate-pulse rounded-full bg-surface-sunken ring-4 ring-base sm:ml-8" />
       </div>
     );
@@ -201,21 +202,26 @@ export function PublicProfilePage() {
         )}
       </div>
 
-      {/* Gamified stats */}
-      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {/* Gamified stats — same lockup as the owner's view, so one profile
+          reads identically wherever it appears (/DESIGN.md §The study's
+          component set). */}
+      <SectionHeading id={statsHeadingId} icon="insights" tone="accent" className="mt-8">
+        {t('profile.stats.title')}
+      </SectionHeading>
+      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
         <StatCard icon={<LottieIcon name="time" value={data.learningStats.minutesLearned} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
         <Link
           to={`/${handle}/followers`}
-          className="lf-press block rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
         >
           <StatCard icon={<LottieIcon name="followers" value={data.followers} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
         </Link>
         <Link
           to={`/${handle}/following`}
-          className="lf-press block rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
         >
           <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
         </Link>

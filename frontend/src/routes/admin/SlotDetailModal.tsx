@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, ProgressBar } from '@/components/ui';
+import { Badge, Card, Icon, ProgressBar, SectionHeading } from '@/components/ui';
 import { failedFromI18nKey, formatFixed } from './generationI18n';
 
 /*
@@ -89,7 +89,8 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
               <p className="lf-caption text-content-muted">{detail.run.courseSlug} · {detail.run.register}</p>
             )}
           </div>
-          <button onClick={onClose} className="lf-press shrink-0 rounded-full p-1.5 hover:bg-surface-sunken transition-colors" aria-label={t('actions.close')}>
+          {/* 44px, like every other dismiss in the console — this one was 32. */}
+          <button onClick={onClose} className="lf-press flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full hover:bg-surface-sunken transition-colors" aria-label={t('actions.close')}>
             <Icon name="close" className="text-[20px] text-content-muted" />
           </button>
         </div>
@@ -128,7 +129,7 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
               {/* Error */}
               {detail.error && (
                 <Card className="p-4 border-l-4 border-l-error bg-error-soft/30">
-                  <h3 className="lf-label mb-1 text-error">{t('admin.generation.slotDetail.error')}</h3>
+                  <SectionHeading icon="error" tone="error" as="h3" className="mb-1">{t('admin.generation.slotDetail.error')}</SectionHeading>
                   <pre className="lf-caption whitespace-pre-wrap break-words text-content">{detail.error}</pre>
                 </Card>
               )}
@@ -136,7 +137,7 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
               {/* Rubric */}
               {detail.rubric && (
                 <div className="space-y-2">
-                  <h3 className="lf-label text-content-muted">{t('admin.generation.judge.title', { count: 1 })}</h3>
+                  <SectionHeading icon="gavel" tone="delight" as="h3" className="mb-0">{t('admin.generation.judge.title', { count: 1 })}</SectionHeading>
                   {DIMS.map((dim) => {
                     const v = detail.rubric?.[dim];
                     if (typeof v !== 'number') return null;
@@ -168,7 +169,7 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-surface-sunken px-3 py-2">
+    <div className="rounded-md bg-surface-sunken px-3 py-2">
       <p className="lf-caption text-content-faint">{label}</p>
       <p className="lf-number lf-title">{value}</p>
     </div>

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Icon } from '@/components/ui';
+import { Icon, SectionHeading } from '@/components/ui';
 import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { courseBadgeAsset } from '@/lib/courseBadges';
 
@@ -47,6 +47,7 @@ function titleFor(course: CarouselCourse, locale: string): string {
 
 export function CourseCarousel({ courses, locale, activeSlug, resumeLessonNumber }: CourseCarouselProps) {
   const { t } = useTranslation();
+  const headingId = useId();
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
 
@@ -104,30 +105,43 @@ export function CourseCarousel({ courses, locale, activeSlug, resumeLessonNumber
   const atEnd = index >= courses.length - 1;
 
   return (
-    <section aria-roledescription="carousel" aria-label={t('learn.carousel.label')} className="flex flex-col gap-4">
+    <section aria-roledescription="carousel" aria-labelledby={headingId} className="flex flex-col gap-4">
       {/*
-       * The arrows sit ABOVE the track and only from `sm` up. On a phone the
-       * gesture is the control and a pair of 44px targets would be two tap
-       * targets competing with the card they scroll.
+       * THE SECTION LOCKUP, and the arrows ride the same row (/DESIGN.md §The
+       * study's component set). The heading NAMES the carousel — the section
+       * used to carry the same string as a hidden `aria-label`, which is a
+       * label nobody who can see the screen ever gets — and the tile is accent
+       * because the card's own resume CTA and its ACTIVE eyebrow are accent.
+       *
+       * The arrows are a CONTROL, so they sit beside the lockup rather than in
+       * its `meta` slot, which is for a count or a status and never a control.
+       * They still appear only from `sm` up: on a phone the gesture is the
+       * control and a pair of 44px targets would compete with the card they
+       * scroll.
        */}
-      {courses.length > 1 && (
-        <div className="hidden justify-end gap-2 sm:flex">
-          {([['chevron_left', -1, atStart, 'prev'], ['chevron_right', 1, atEnd, 'next']] as const).map(
-            ([icon, step, disabled, key]) => (
-              <button
-                key={key}
-                type="button"
-                disabled={disabled}
-                onClick={() => scrollToCard(index + step)}
-                aria-label={t(`learn.carousel.${key}`)}
-                className="lf-tactile flex h-11 w-11 items-center justify-center rounded-full border border-outline bg-surface text-content-muted transition-colors hover:text-content disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
-              >
-                <Icon name={icon} aria-hidden />
-              </button>
-            ),
-          )}
-        </div>
-      )}
+      <div className="flex items-center justify-between gap-3">
+        <SectionHeading id={headingId} icon="school" tone="accent" className="min-w-0 flex-1">
+          {t('learn.carousel.label')}
+        </SectionHeading>
+        {courses.length > 1 && (
+          <div className="mb-3 hidden shrink-0 gap-2 sm:flex">
+            {([['chevron_left', -1, atStart, 'prev'], ['chevron_right', 1, atEnd, 'next']] as const).map(
+              ([icon, step, disabled, key]) => (
+                <button
+                  key={key}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => scrollToCard(index + step)}
+                  aria-label={t(`learn.carousel.${key}`)}
+                  className="lf-tactile flex h-11 w-11 items-center justify-center rounded-full border border-outline bg-surface text-content-muted transition-colors hover:text-content disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+                >
+                  <Icon name={icon} aria-hidden />
+                </button>
+              ),
+            )}
+          </div>
+        )}
+      </div>
 
       <div
         ref={trackRef}

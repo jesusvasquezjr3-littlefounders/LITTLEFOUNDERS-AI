@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Icon } from '@/components/ui';
+import { Badge, Card, Icon, SectionHeading } from '@/components/ui';
 import { useAdminData } from '../adminShared';
 import { bandOf, INSTRUMENTED_EVENTS } from './usageShared';
 import type { ActivityData, AdoptionData, SessionDepthData } from './analyticsShared';
@@ -93,18 +93,25 @@ export function ProductUsageSection({ days }: { days: number }) {
 
   return (
     <section aria-labelledby="admin-usage" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="admin-usage" className="lf-headline font-bold text-content">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <SectionHeading
+          icon="explore"
+          tone="accent"
+          id="admin-usage"
+          className="mb-0 min-w-0 flex-1"
+          meta={t('admin.analytics.usage.source')}
+        >
           {t('admin.analytics.usage.title')}
-        </h2>
-        <span className="lf-caption text-content-muted">{t('admin.analytics.usage.source')}</span>
+        </SectionHeading>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* ── Which surfaces get reached ───────────────────────── */}
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
-          <div className="flex flex-col gap-1">
-            <h3 className="lf-title text-content">{t('admin.analytics.usage.surfacesTitle')}</h3>
+          <div className="flex flex-col">
+            <SectionHeading icon="dashboard" tone="accent" as="h3" className="mb-1">
+              {t('admin.analytics.usage.surfacesTitle')}
+            </SectionHeading>
             <p className="lf-caption text-content-muted">{t('admin.analytics.usage.surfacesSub')}</p>
           </div>
           {surfaces.length === 0 ? (
@@ -128,8 +135,10 @@ export function ProductUsageSection({ days }: { days: number }) {
 
         {/* ── How deep a session goes ──────────────────────────── */}
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
-          <div className="flex flex-col gap-1">
-            <h3 className="lf-title text-content">{t('admin.analytics.usage.depthTitle')}</h3>
+          <div className="flex flex-col">
+            <SectionHeading icon="vertical_align_bottom" tone="delight" as="h3" className="mb-1">
+              {t('admin.analytics.usage.depthTitle')}
+            </SectionHeading>
             <p className="lf-caption text-content-muted">{t('admin.analytics.usage.depthSub')}</p>
           </div>
           {depth === null ? (
@@ -163,21 +172,33 @@ export function ProductUsageSection({ days }: { days: number }) {
       {/* ── Instrumentation health ─────────────────────────────── */}
       {eventHealth && (
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="lf-title text-content">{t('admin.analytics.usage.healthTitle')}</h3>
-            {eventHealth.silent.length > 0 && (
-              <Badge className="bg-warning-soft text-warning-strong">
-                {t('admin.analytics.usage.silentBadge', { count: eventHealth.silent.length })}
-              </Badge>
-            )}
-          </div>
+          {/*
+            An instrumentation-health card is exactly the surface where the hue
+            has to be a reading: warning while any instrumented event is silent,
+            success when they all report. A permanently accent-coloured tile
+            here would say nothing on the one card whose whole job is to say
+            whether we can see.
+          */}
+          <SectionHeading
+            icon="sensors"
+            tone={eventHealth.silent.length > 0 ? 'warning' : 'success'}
+            as="h3"
+            className="mb-1"
+            meta={
+              eventHealth.silent.length > 0 ? (
+                <Badge className="bg-warning-soft text-warning-strong">
+                  {t('admin.analytics.usage.silentBadge', { count: eventHealth.silent.length })}
+                </Badge>
+              ) : undefined
+            }
+          >
+            {t('admin.analytics.usage.healthTitle')}
+          </SectionHeading>
           <p className="lf-caption text-content-muted">{t('admin.analytics.usage.healthSub')}</p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex min-w-0 flex-col gap-1.5">
-              <h4 className="lf-caption font-semibold uppercase tracking-wide text-content-faint">
-                {t('admin.analytics.usage.firing')}
-              </h4>
+              <h4 className="lf-eyebrow text-content-faint">{t('admin.analytics.usage.firing')}</h4>
               <ul className="flex flex-wrap gap-1.5">
                 {eventHealth.firing.map((e) => (
                   <li key={e.event}>
@@ -189,9 +210,7 @@ export function ProductUsageSection({ days }: { days: number }) {
               </ul>
             </div>
             <div className="flex min-w-0 flex-col gap-1.5">
-              <h4 className="lf-caption font-semibold uppercase tracking-wide text-content-faint">
-                {t('admin.analytics.usage.silent')}
-              </h4>
+              <h4 className="lf-eyebrow text-content-faint">{t('admin.analytics.usage.silent')}</h4>
               {eventHealth.silent.length === 0 ? (
                 <p className="lf-caption text-content-muted">{t('admin.analytics.usage.allFiring')}</p>
               ) : (
@@ -216,8 +235,10 @@ export function ProductUsageSection({ days }: { days: number }) {
       {/* ── Who reaches what ───────────────────────────────────── */}
       {adoption.state === 'ready' && Array.isArray(adoption.data?.entries) && adoption.data.entries.length > 0 && (
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
-          <div className="flex flex-col gap-1">
-            <h3 className="lf-title text-content">{t('admin.analytics.usage.adoptionTitle')}</h3>
+          <div className="flex flex-col">
+            <SectionHeading icon="diversity_3" tone="delight" as="h3" className="mb-1">
+              {t('admin.analytics.usage.adoptionTitle')}
+            </SectionHeading>
             <p className="lf-caption text-content-muted">{t('admin.analytics.usage.adoptionSub')}</p>
           </div>
           <div className="overflow-x-auto">

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, Icon, TrendChart } from '@/components/ui';
+import { Card, Icon, SectionHeading, TrendChart } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { TrendPoint } from '@/components/ui';
 import { processedSlots } from './generationTypes';
@@ -101,18 +101,18 @@ export function RunTimeline({ runId, className }: RunTimelineProps) {
   return (
     <div className={cn('space-y-4', className)}>
       <Card className="p-4 sm:p-5">
-        <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.timeline.progress')}</h3>
+        <SectionHeading icon="trending_up" tone="accent" as="h3">{t('admin.generation.timeline.progress')}</SectionHeading>
         <TrendChart points={completedPoints} ariaLabel={t('admin.generation.timeline.progress')} />
       </Card>
 
       <Card className="p-4 sm:p-5">
-        <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.timeline.cost')}</h3>
+        <SectionHeading icon="payments" tone="accent" as="h3">{t('admin.generation.timeline.cost')}</SectionHeading>
         <TrendChart points={costPoints} ariaLabel={t('admin.generation.timeline.cost')} />
       </Card>
 
       {/* Per-stage mini charts */}
       <Card className="p-4 sm:p-5">
-        <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.timeline.stages')}</h3>
+        <SectionHeading icon="linear_scale" tone="muted" as="h3">{t('admin.generation.timeline.stages')}</SectionHeading>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {stages.map((stage) => {
             const points: TrendPoint[] = snaps.map((s) => ({
@@ -128,7 +128,7 @@ export function RunTimeline({ runId, className }: RunTimelineProps) {
             const line = coords.length > 1 ? `M${coords.join(' L')}` : '';
 
             return (
-              <div key={stage} className="rounded-xl bg-surface-sunken p-2">
+              <div key={stage} className="rounded-md bg-surface-sunken p-2">
                 <p className="lf-caption text-content-muted truncate">{t(`admin.generation.stages.${stage}`, { defaultValue: stage })}</p>
                 <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-10 mt-1" preserveAspectRatio="none">
                   {line && <path d={line} className={cn('fill-none', stageColors[stage] ?? 'stroke-outline')} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />}

@@ -179,8 +179,11 @@ export function CoursePage() {
          * the product is broken rather than unfinished.
          */}
         {tree.course.inProgress && (
-          <div className="flex items-start gap-3 rounded-xl border border-outline/50 bg-surface-sunken px-4 py-3">
-            <Icon name="construction" className="mt-0.5 !text-[20px] shrink-0 text-content-muted" aria-hidden />
+          <div className="flex items-start gap-3 rounded-md border border-outline/50 bg-surface-sunken px-4 py-3">
+            {/* The study's small icon well, in the notice's own hue (§The study's component set). */}
+            <span className="lf-tile mt-0.5 h-7 w-7 text-warning-strong">
+              <Icon name="construction" className="!text-[16px]" aria-hidden />
+            </span>
             <p className="lf-caption text-content-muted">{t('learn.courseInProgress.notice')}</p>
           </div>
         )}
@@ -189,7 +192,7 @@ export function CoursePage() {
           const isOpen = adventure.id === openAdventureId;
           return (
             <Reveal key={adventure.id} delay={(idx % 3) * 60}>
-              <div className="flex flex-col overflow-hidden rounded-xl border border-outline/50 bg-surface">
+              <div className="flex flex-col overflow-hidden rounded-md border border-outline/50 bg-surface">
                 <AdventureBanner
                   adventure={adventure}
                   locale={locale}

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { COVER_PRESETS } from '@/lib/coverPresets';
-import { Badge, Button, Card, Icon, StatCard, LottieIcon } from '@/components/ui';
+import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
 import { CourseBadgeCollection } from './CourseBadgeCollection';
@@ -41,6 +42,8 @@ interface OwnProfile {
 export function ProfilePage() {
   const { t, i18n } = useTranslation();
   const { session, roles, getToken, refreshMe } = useAuth();
+  const coverHeadingId = useId();
+  const statsHeadingId = useId();
   const [data, setData] = useState<OwnProfile | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [pickingCover, setPickingCover] = useState(false);
@@ -96,7 +99,7 @@ export function ProfilePage() {
   if (!data) {
     return (
       <div aria-busy="true">
-        <div className="h-36 animate-pulse rounded-xl bg-surface-sunken sm:h-48" />
+        <div className="h-36 animate-pulse rounded-md bg-surface-sunken sm:h-48" />
         <div className="-mt-14 ml-5 h-28 w-28 animate-pulse rounded-full bg-surface-sunken ring-4 ring-base sm:ml-8" />
       </div>
     );
@@ -135,37 +138,53 @@ export function ProfilePage() {
       />
 
       {pickingCover && (
-        <Card className="lf-pop mt-4 p-4 sm:p-5">
-          <div className="flex items-start gap-3">
-            <Icon className="mt-0.5 text-primary" name="palette" aria-hidden />
-            <div>
-              <p className="lf-label text-content">{t('profile.coverPicker.title')}</p>
-              <p className="lf-caption mt-1 text-content-muted">{t('profile.coverPicker.hint')}</p>
-            </div>
-          </div>
+        <Card className="lf-pop mt-4 p-4 sm:p-5" aria-labelledby={coverHeadingId}>
+          {/*
+           * PICK ONE OF TEN, so these are the study's pick cards (/DESIGN.md
+           * §The study's component set): a 2px border at full strength, an
+           * outer coloured glow and a corner check disc, where the resting
+           * card has a 1px hairline. The old treatment was an offset focus
+           * ring doubling as a selected ring — one signal, and the same one
+           * the keyboard already uses for something else.
+           *
+           * `-on`'s fill never shows here on purpose: an inline
+           * `background-image` gradient IS the swatch, and it wins over the
+           * class's background. The border, the glow and the disc are what
+           * carry the state.
+           */}
+          <SectionHeading id={coverHeadingId} icon="palette" tone="delight">
+            {t('profile.coverPicker.title')}
+          </SectionHeading>
+          <p className="lf-caption text-content-muted">{t('profile.coverPicker.hint')}</p>
           <div className="mt-4 grid grid-cols-5 gap-2 sm:grid-cols-10">
-            {COVER_PRESETS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                aria-label={t(`profile.covers.${p.id}`)}
-                aria-pressed={(data.cover as { preset?: string }).preset === p.id}
-                title={t(`profile.covers.${p.id}`)}
-                disabled={savingCover !== null}
-                onClick={() => void chooseCover(p.id)}
-                className={
-                  'motion-safe-press flex h-12 items-center justify-center rounded-md transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ' +
-                  ((data.cover as { preset?: string }).preset === p.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-base' : '')
-                }
-                style={{ backgroundImage: p.css }}
-              >
-                {savingCover === p.id ? (
-                  <Icon name="progress_activity" className="animate-spin text-on-inverse" aria-hidden />
-                ) : (data.cover as { preset?: string }).preset === p.id ? (
-                  <Icon name="check" className="text-on-inverse" aria-hidden />
-                ) : null}
-              </button>
-            ))}
+            {COVER_PRESETS.map((p) => {
+              const selected = (data.cover as { preset?: string }).preset === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  aria-label={t(`profile.covers.${p.id}`)}
+                  aria-pressed={selected}
+                  title={t(`profile.covers.${p.id}`)}
+                  disabled={savingCover !== null}
+                  onClick={() => void chooseCover(p.id)}
+                  className={cn(
+                    'lf-pick-card motion-safe-press flex h-12 items-center justify-center lf-press',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                    selected && 'lf-pick-card-on',
+                  )}
+                  style={{ backgroundImage: p.css }}
+                >
+                  {savingCover === p.id ? (
+                    <Icon name="progress_activity" className="animate-spin text-on-inverse" aria-hidden />
+                  ) : selected ? (
+                    <span className="lf-pick-check" aria-hidden>
+                      <Icon name="check" className="!text-[12px]" />
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
           </div>
         </Card>
       )}
@@ -198,20 +217,28 @@ export function ProfilePage() {
         </Link>
       </div>
 
-      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {/*
+       * The stats grid was named by a hidden `aria-label` and headed by
+       * nothing. The lockup gives it the same name on screen, keyed `accent`
+       * — the hue three of these six tiles already carry.
+       */}
+      <SectionHeading id={statsHeadingId} icon="insights" tone="accent" className="mt-8">
+        {t('profile.stats.title')}
+      </SectionHeading>
+      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
         <StatCard icon={<LottieIcon name="time" value={data.learningStats.minutesLearned} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
         <Link
           to="/profile/followers"
-          className="lf-press block rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
         >
           <StatCard icon={<LottieIcon name="followers" value={data.followers} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
         </Link>
         <Link
           to="/profile/following"
-          className="lf-press block rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
+          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
         >
           <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
         </Link>
@@ -222,8 +249,9 @@ export function ProfilePage() {
       {/* Share / invite */}
       <Card className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-delight-soft">
-            <Icon name="celebration" className="text-content" />
+          {/* The study's icon well: one class, one colour named by the caller. */}
+          <span className="lf-tile h-12 w-12 text-delight">
+            <Icon name="celebration" />
           </span>
           <div>
             <h2 className="lf-title text-content">{t('profile.share.title')}</h2>

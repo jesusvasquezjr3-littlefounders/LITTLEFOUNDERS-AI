@@ -55,7 +55,7 @@ export function MapOverlay({ map, onClose }: { map: TutorMapResponse; onClose: (
         role="dialog"
         aria-modal="true"
         aria-labelledby="tutor-map-overlay-title"
-        className="lf-glass flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl min-w-0 flex-col overflow-hidden rounded-xl shadow-pop sm:max-h-[calc(100dvh-3rem)]"
+        className="lf-glass flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl min-w-0 flex-col overflow-hidden rounded-md shadow-pop sm:max-h-[calc(100dvh-3rem)]"
       >
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-outline/50 p-4 sm:p-5">
           <h2 id="tutor-map-overlay-title" className="lf-headline text-content">

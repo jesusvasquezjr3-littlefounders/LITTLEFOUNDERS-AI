@@ -62,7 +62,7 @@ export function PeriodPicker({
       />
 
       {open && (
-        <div className="flex flex-col gap-2 rounded-xl border border-outline/50 bg-surface-sunken/40 p-3">
+        <div className="flex flex-col gap-2 rounded-md border border-outline/50 bg-surface-sunken/40 p-3">
           <div className="flex flex-wrap items-end gap-2">
             <DateField
               label={t('admin.analytics.customFrom')}

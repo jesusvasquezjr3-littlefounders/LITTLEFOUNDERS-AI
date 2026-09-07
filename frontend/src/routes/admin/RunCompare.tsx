@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Dropdown, Icon } from '@/components/ui';
+import { Badge, Card, Dropdown, Icon, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { formatPct, formatFixed } from './generationI18n';
 import type { DropdownOption } from '@/components/ui';
@@ -129,7 +129,7 @@ export function RunCompare({ runs, className }: RunCompareProps) {
           <div className="grid grid-cols-2 gap-3">
             {comparison.runs.map((run) => (
               <Card key={run.runId} className="p-4 sm:p-5">
-                <h3 className="lf-label mb-2 truncate text-content-muted">{run.runId.slice(0, 24)}</h3>
+                <SectionHeading icon="tag" tone="muted" as="h3" className="mb-2">{run.runId.slice(0, 24)}</SectionHeading>
                 <div className="space-y-3">
                   <CompareRow label={t('admin.generation.kpi.published')} value={`${run.published}/${run.slotsEnumerated}`} />
                   <CompareRow label={t('admin.generation.kpi.failed')} value={String(run.failed)} />
@@ -144,7 +144,7 @@ export function RunCompare({ runs, className }: RunCompareProps) {
           {/* Deltas */}
           {comparison.deltas && (
             <Card className="p-4 sm:p-5">
-              <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.compare.deltas')}</h3>
+              <SectionHeading icon="difference" tone="delight" as="h3">{t('admin.generation.compare.deltas')}</SectionHeading>
               <div className="flex flex-wrap gap-4">
                 <DeltaBadge label={t('admin.generation.kpi.published')} delta={comparison.deltas.published} />
                 <DeltaBadge label={t('admin.generation.kpi.failed')} delta={comparison.deltas.failed} invert />
@@ -156,7 +156,7 @@ export function RunCompare({ runs, className }: RunCompareProps) {
 
           {/* Judge comparison */}
           <Card className="p-4 sm:p-5">
-            <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.compare.judge')}</h3>
+            <SectionHeading icon="gavel" tone="delight" as="h3">{t('admin.generation.compare.judge')}</SectionHeading>
             <div className="grid grid-cols-[auto_1fr_auto_1fr] gap-x-3 gap-y-2 items-center">
               {DIMS.map((dim) => {
                 const a = comparison.runs[0]?.judgeMeans[dim] ?? null;

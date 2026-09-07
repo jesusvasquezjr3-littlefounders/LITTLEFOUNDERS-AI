@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Icon, StatCard } from '@/components/ui';
+import { Badge, Card, Icon, SectionHeading, StatCard } from '@/components/ui';
 import { useAdminData } from '../adminShared';
 import { AudienceChart } from './AudienceChart';
 import type { AcquisitionData, AudienceData, FunnelIntegrityData } from './analyticsShared';
@@ -41,7 +41,13 @@ function RankedList({ title, rows, locale }: { title: string; rows: { label: str
   const max = Math.max(...rows.map((r) => r.visitors), 1);
   return (
     <div className="flex min-w-0 flex-col gap-2">
-      <h4 className="lf-caption font-semibold uppercase tracking-wide text-content-faint">{title}</h4>
+      {/*
+        The study's own eyebrow class, not a hand-rolled imitation of it. Four
+        of these sit side by side INSIDE a card that already carries a full
+        lockup, so they take the typography and not the tile — four more tinted
+        squares here would be decoration competing with the bars underneath.
+      */}
+      <h4 className="lf-eyebrow text-content-faint">{title}</h4>
       <ul className="flex flex-col gap-1.5">
         {rows.slice(0, 6).map((row) => (
           <li key={row.label} className="flex flex-col gap-0.5">
@@ -77,11 +83,16 @@ export function AudienceSection({ days }: { days: number }) {
 
   return (
     <section aria-labelledby="admin-audience" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="admin-audience" className="lf-headline font-bold text-content">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <SectionHeading
+          icon="groups"
+          tone="accent"
+          id="admin-audience"
+          className="mb-0 min-w-0 flex-1"
+          meta={t('admin.analytics.audience.source')}
+        >
           {t('admin.analytics.audience.title')}
-        </h2>
-        <span className="lf-caption text-content-muted">{t('admin.analytics.audience.source')}</span>
+        </SectionHeading>
       </div>
 
       {/* ── Who was here ───────────────────────────────────────── */}
@@ -117,8 +128,10 @@ export function AudienceSection({ days }: { days: number }) {
       </div>
 
       <Card className="flex flex-col gap-3 p-5 shadow-glass">
-        <div className="flex flex-col gap-1">
-          <h3 className="lf-title text-content">{t('admin.analytics.audience.chartTitle')}</h3>
+        <div className="flex flex-col">
+          <SectionHeading icon="stacked_line_chart" tone="accent" as="h3" className="mb-1">
+            {t('admin.analytics.audience.chartTitle')}
+          </SectionHeading>
           <p className="lf-caption text-content-muted">{t('admin.analytics.audience.chartSub')}</p>
         </div>
         {audience.state === 'ready' && audience.data?.series ? (
@@ -133,14 +146,26 @@ export function AudienceSection({ days }: { days: number }) {
       {/* ── How far the client funnel can be trusted ───────────── */}
       {integrity.state === 'ready' && typeof integrity.data?.accountsCreated === 'number' && (
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="lf-title text-content">{t('admin.analytics.audience.integrityTitle')}</h3>
-            {integrity.data.unobserved > 0 && (
-              <Badge className="bg-warning-soft text-warning-strong">
-                {t('admin.analytics.audience.unobservedBadge', { count: integrity.data.unobserved })}
-              </Badge>
-            )}
-          </div>
+          {/*
+            Warning when the client funnel has a gap, success when the two
+            sources agree — the hue says which of those two the card is
+            reporting before the numbers are read.
+          */}
+          <SectionHeading
+            icon="fact_check"
+            tone={integrity.data.unobserved > 0 ? 'warning' : 'success'}
+            as="h3"
+            className="mb-0"
+            meta={
+              integrity.data.unobserved > 0 ? (
+                <Badge className="bg-warning-soft text-warning-strong">
+                  {t('admin.analytics.audience.unobservedBadge', { count: integrity.data.unobserved })}
+                </Badge>
+              ) : undefined
+            }
+          >
+            {t('admin.analytics.audience.integrityTitle')}
+          </SectionHeading>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div>
               <p className="lf-number text-2xl font-semibold text-content">{nf.format(integrity.data.accountsCreated)}</p>
@@ -174,8 +199,10 @@ export function AudienceSection({ days }: { days: number }) {
       {/* ── Anonymous visitors, and whether they ever came back ── */}
       {acquisition.state === 'ready' && typeof acquisition.data?.visitors === 'number' && (
         <Card className="flex flex-col gap-4 p-5 shadow-glass">
-          <div className="flex flex-col gap-1">
-            <h3 className="lf-title text-content">{t('admin.analytics.audience.acquisitionTitle')}</h3>
+          <div className="flex flex-col">
+            <SectionHeading icon="travel_explore" tone="delight" as="h3" className="mb-1">
+              {t('admin.analytics.audience.acquisitionTitle')}
+            </SectionHeading>
             <p className="lf-caption text-content-muted">{t('admin.analytics.audience.acquisitionSub')}</p>
           </div>
           <div className="grid grid-cols-3 gap-4">

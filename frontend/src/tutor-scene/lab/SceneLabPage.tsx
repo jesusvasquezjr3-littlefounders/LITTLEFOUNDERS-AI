@@ -552,7 +552,7 @@ export default function SceneLabPage() {
                     </button>
                   ))
                 : null}
-              <label className="lf-caption inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2 font-semibold text-on-accent">
+              <label className="lf-caption inline-flex cursor-pointer items-center gap-2 rounded-md bg-accent px-4 py-2 font-semibold text-on-accent">
                 <input type="file" accept=".glb,model/gltf-binary" className="hidden" onChange={onPick} />
                 {t('tutor.lab.loadModel')}
               </label>

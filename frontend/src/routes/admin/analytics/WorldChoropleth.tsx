@@ -219,7 +219,7 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
 
   return (
     <div className="min-w-0">
-      <div className="relative w-full overflow-hidden rounded-xl border border-outline/40 bg-surface-sunken/30">
+      <div className="relative w-full overflow-hidden rounded-md border border-outline/40 bg-surface-sunken/30">
         <svg
           viewBox={viewBoxFor(zoomed)}
           className="block h-auto w-full [transition:view-box_400ms_var(--lf-ease)] motion-reduce:transition-none"
@@ -422,7 +422,7 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
         */}
         {activeCode && activePosition && activeValue > 0 && (
           <div
-            className="lf-glass pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[130%] rounded-lg border border-outline/50 px-3 py-2 shadow-pop"
+            className="lf-glass pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[130%] rounded-md border border-outline/50 px-3 py-2 shadow-pop"
             style={{ left: `${(activePosition[0] / 1000) * 100}%`, top: `${(activePosition[1] / 500) * 100}%` }}
           >
             <p className="lf-caption font-bold text-content">{activeLabel}</p>
@@ -441,7 +441,7 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
         a state with no visitors, which is how a labelling mismatch would hide.
       */}
       {zoomed && unresolvedRegions.length > 0 && (
-        <p className="lf-caption mt-2 rounded-lg border border-outline/40 bg-surface-sunken/40 p-2 text-content-muted">
+        <p className="lf-caption mt-2 rounded-md border border-outline/40 bg-surface-sunken/40 p-2 text-content-muted">
           {t('admin.analytics.geo.unmatchedRegions', { regions: unresolvedRegions.slice(0, 6).join(', ') })}
         </p>
       )}

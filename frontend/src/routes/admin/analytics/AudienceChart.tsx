@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Checkbox } from '@/components/ui';
 import type { AudienceSeriesPoint } from './analyticsShared';
 
 /*
@@ -66,15 +67,19 @@ export function AudienceChart({ series }: { series: AudienceSeriesPoint[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="flex w-fit cursor-pointer items-center gap-2">
-        <input
-          type="checkbox"
-          checked={includeStaff}
-          onChange={(e) => setIncludeStaff(e.target.checked)}
-          className="size-4 accent-[rgb(var(--lf-primary))]"
-        />
-        <span className="lf-caption text-content-muted">{t('admin.analytics.audience.includeStaff')}</span>
-      </label>
+      {/*
+        The system Checkbox rather than a raw input with an `accent-[…]` colour
+        poked through it: same role, same test surface, the study's own square
+        control. Left as a CHECKBOX and not promoted to a `.lf-switch` row —
+        this is a chart's own filter, not a setting the operator owns, and a
+        settings row above a 260px chart would cost more height than it earns.
+      */}
+      <Checkbox
+        label={t('admin.analytics.audience.includeStaff')}
+        checked={includeStaff}
+        onChange={(e) => setIncludeStaff(e.target.checked)}
+        className="w-fit"
+      />
 
       <div className="h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">

@@ -16,7 +16,7 @@ import {
 import type { TooltipProps } from 'recharts';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
+import { Badge, Card, Dropdown, Icon, ProgressBar, SectionHeading, StatCard, type DropdownOption } from '@/components/ui';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage } from './adminShared';
 import { cn } from '@/lib/utils';
 
@@ -168,7 +168,7 @@ function EmailActivityChart({ points, locale }: { points: EmailTrendPoint[]; loc
     const point = payload.find((item) => item.dataKey === 'value')?.payload as EmailChartPoint | undefined;
     if (!point) return null;
     return (
-      <div className="lf-glass rounded-lg border border-outline/50 bg-surface p-3 shadow-pop">
+      <div className="lf-glass rounded-md border border-outline/50 bg-surface p-3 shadow-pop">
         <p className="lf-caption text-content-muted">{dateFormat.format(toChartDate(label))}</p>
         <p className="lf-number mt-1 text-content">{numberFormat.format(point.value)}</p>
         <p className="lf-caption text-content-muted">{t(metric === 'daily' ? 'admin.emails.dailyVolume' : 'admin.emails.cumulativeVolume')}</p>
@@ -180,14 +180,14 @@ function EmailActivityChart({ points, locale }: { points: EmailTrendPoint[]; loc
   return (
     <div className="flex flex-col gap-4" role="img" aria-label={t('admin.emails.trendAria')}>
       <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-        <div className="flex items-center gap-2 rounded-xl border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.emails.chartMetricAria')}>
+        <div className="flex items-center gap-2 rounded-md border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.emails.chartMetricAria')}>
           {(['daily', 'cumulative'] as const).map((item) => (
             <button
               key={item}
               type="button"
               aria-pressed={metric === item}
               onClick={() => setMetric(item)}
-              className={`min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors ${metric === item ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
+              className={`min-h-10 rounded-full px-3 text-sm font-semibold transition-colors ${metric === item ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
             >
               {t(item === 'daily' ? 'admin.emails.metricDaily' : 'admin.emails.metricCumulative')}
             </button>
@@ -199,7 +199,7 @@ function EmailActivityChart({ points, locale }: { points: EmailTrendPoint[]; loc
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/50 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-2.5">
+      <div className="flex min-w-0 flex-col gap-3 rounded-md border border-outline/40 bg-surface-sunken/50 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-2.5">
         <div className="flex min-w-max items-center gap-1 overflow-x-auto" role="group" aria-label={t('admin.emails.chartRangeAria')}>
           {EMAIL_RANGE_PRESETS.map((preset) => (
             <button
@@ -207,7 +207,7 @@ function EmailActivityChart({ points, locale }: { points: EmailTrendPoint[]; loc
               type="button"
               aria-pressed={selectedPreset === preset.key}
               onClick={() => selectPreset(preset.key)}
-              className={`min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors ${selectedPreset === preset.key ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
+              className={`min-h-10 rounded-full px-3 text-sm font-semibold transition-colors ${selectedPreset === preset.key ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
             >
               {t(`admin.emails.range${preset.key}`)}
             </button>
@@ -217,13 +217,13 @@ function EmailActivityChart({ points, locale }: { points: EmailTrendPoint[]; loc
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t('admin.emails.chartSummaryAria')}>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartEmails')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.emails)}</p></div>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartDailyAverage')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.average)}</p></div>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartPeak')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.peak)}</p></div>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartChange')}</p><p className={`lf-number mt-1 ${change >= 0 ? 'text-success' : 'text-error'}`}>{change >= 0 ? '+' : ''}{numberFormat.format(change)}</p></div>
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartEmails')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.emails)}</p></div>
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartDailyAverage')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.average)}</p></div>
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartPeak')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.peak)}</p></div>
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartChange')}</p><p className={`lf-number mt-1 ${change >= 0 ? 'text-success' : 'text-error'}`}>{change >= 0 ? '+' : ''}{numberFormat.format(change)}</p></div>
       </div>
 
-      <div className="rounded-xl border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3">
+      <div className="rounded-md border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3">
         <div className="h-80 w-full sm:h-96">
           <ResponsiveContainer>
             <ComposedChart data={visibleData} margin={{ top: 16, right: 8, left: -12, bottom: 4 }}>
@@ -396,7 +396,7 @@ export function AdminEmailDashboard() {
           {(logsError || summaryError) && (
             <Card className="flex flex-col gap-3 border border-warning/40 bg-warning-soft/30 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
-                <Icon name="warning" className="mt-0.5 text-warning-strong" />
+                <span className="lf-tile h-9 w-9 shrink-0 text-warning-strong"><Icon name="warning" className="!text-[18px]" /></span>
                 <div>
                   <p className="lf-label text-content">{t('admin.emails.partialErrorTitle')}</p>
                   <p className="lf-caption mt-1 text-content-muted">
@@ -430,9 +430,9 @@ export function AdminEmailDashboard() {
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.75fr)]">
               <Card className="flex min-w-0 flex-col gap-4 p-4 sm:p-5">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h2 className="lf-title text-content">{t('admin.emails.trendTitle')}</h2>
-                    <p className="lf-caption mt-1 text-content-muted">{t('admin.emails.trendSubtitle')}</p>
+                  <div className="min-w-0">
+                    <SectionHeading icon="show_chart" tone="accent" className="mb-1">{t('admin.emails.trendTitle')}</SectionHeading>
+                    <p className="lf-caption text-content-muted">{t('admin.emails.trendSubtitle')}</p>
                   </div>
                   <Badge className="self-start bg-surface-sunken text-content-muted">{t('admin.emails.chartWindow')}</Badge>
                 </div>
@@ -440,12 +440,18 @@ export function AdminEmailDashboard() {
               </Card>
 
               <Card className="flex flex-col gap-4 p-4 sm:p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 className="lf-title text-content">{t('admin.emails.statusBreakdown')}</h2>
-                    <p className="lf-caption mt-1 text-content-muted">{t('admin.emails.statusBreakdownSubtitle')}</p>
-                  </div>
-                  <Icon name="fact_check" className="text-primary" />
+                {/*
+                  The stray right-hand icon is gone: the study puts the icon IN
+                  the lockup, at the head of the label it belongs to, rather
+                  than opposite it where it reads as a control nobody can press.
+                  The hue is error when any delivery failed, because that is the
+                  one number on this card a staff member is looking for.
+                */}
+                <div>
+                  <SectionHeading icon="fact_check" tone={failedCount > 0 ? 'error' : 'success'} className="mb-1">
+                    {t('admin.emails.statusBreakdown')}
+                  </SectionHeading>
+                  <p className="lf-caption text-content-muted">{t('admin.emails.statusBreakdownSubtitle')}</p>
                 </div>
                 <div className="flex flex-col gap-3">
                   {statusBreakdownKeys.map((status) => {
@@ -470,10 +476,9 @@ export function AdminEmailDashboard() {
             <div className="grid gap-4 md:grid-cols-2">
               {templateBreakdown.length > 0 && (
                 <Card className="flex flex-col gap-3 p-4 sm:p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <h2 className="lf-title text-content">{t('admin.emails.templatesBreakdown')}</h2>
-                    <Badge className="bg-surface-sunken text-content-muted">{numberFormat.format(templateBreakdown.length)}</Badge>
-                  </div>
+                  <SectionHeading icon="layers" tone="accent" className="mb-0" meta={<Badge className="bg-surface-sunken text-content-muted">{numberFormat.format(templateBreakdown.length)}</Badge>}>
+                    {t('admin.emails.templatesBreakdown')}
+                  </SectionHeading>
                   <div className="flex flex-col gap-3">
                     {templateBreakdown.slice(0, 6).map((item) => (
                       <div key={item.name} className="flex flex-col gap-1">
@@ -489,10 +494,9 @@ export function AdminEmailDashboard() {
               )}
               {localeBreakdown.length > 0 && (
                 <Card className="flex flex-col gap-3 p-4 sm:p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <h2 className="lf-title text-content">{t('admin.emails.localesBreakdown')}</h2>
-                    <Badge className="bg-surface-sunken text-content-muted">{topLocale}</Badge>
-                  </div>
+                  <SectionHeading icon="translate" tone="delight" className="mb-0" meta={<Badge className="bg-surface-sunken text-content-muted">{topLocale}</Badge>}>
+                    {t('admin.emails.localesBreakdown')}
+                  </SectionHeading>
                   <div className="flex flex-col gap-3">
                     {localeBreakdown.slice(0, 6).map((item) => (
                       <div key={item.name} className="flex flex-col gap-1">
@@ -519,7 +523,7 @@ export function AdminEmailDashboard() {
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder={t('admin.emails.searchPlaceholder')}
                   aria-label={t('admin.emails.searchLabel')}
-                  className="min-h-11 w-full rounded-full border border-outline/40 bg-surface-sunken pl-10 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="min-h-11 w-full rounded-md border border-outline/40 bg-surface-sunken pl-10 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -545,7 +549,7 @@ export function AdminEmailDashboard() {
             <AdminEmpty icon="mail" message={total === 0 ? t('admin.emails.empty') : t('admin.emails.noMatch')} />
           ) : (
             <div className="flex flex-col gap-4">
-              <div className="hidden overflow-x-auto rounded-xl border border-outline/50 bg-surface shadow-glass md:block">
+              <div className="hidden overflow-x-auto rounded-md border border-outline/50 bg-surface shadow-glass md:block">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-outline bg-surface-sunken/40">
@@ -578,7 +582,7 @@ export function AdminEmailDashboard() {
 
               <div className="grid gap-3 md:hidden">
                 {entries.map((entry) => (
-                  <button key={entry.id} type="button" onClick={() => setSelectedEntry(entry)} className="lf-glass flex min-h-11 flex-col gap-3 rounded-xl p-4 text-left transition-colors hover:bg-surface-sunken/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                  <button key={entry.id} type="button" onClick={() => setSelectedEntry(entry)} className="lf-glass flex min-h-11 flex-col gap-3 rounded-md p-4 text-left transition-colors hover:bg-surface-sunken/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="lf-body truncate font-semibold text-content">{entry.to}</p>
@@ -613,7 +617,7 @@ export function AdminEmailDashboard() {
                 <span className="lf-caption text-content-muted">{selectedEntry.to}</span>
                 <StatusBadge status={selectedEntry.status} />
               </div>
-              <div className="flex flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/60 p-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 rounded-md border border-outline/40 bg-surface-sunken/60 p-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <span className="lf-caption block text-content-muted">{t('admin.emails.colMessageId')}</span>
                   <span className="block truncate font-mono text-xs font-semibold text-content">{selectedEntry.messageId || selectedEntry.id}</span>
@@ -622,7 +626,7 @@ export function AdminEmailDashboard() {
                   {copiedId ? t('admin.emails.copied') : t('admin.emails.copyId')}
                 </AdminAction>
               </div>
-              <div className="grid grid-cols-2 gap-4 rounded-xl border border-outline/30 bg-surface-sunken/30 p-4 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-4 rounded-md border border-outline/30 bg-surface-sunken/30 p-4 sm:grid-cols-3">
                 <div><span className="lf-caption block text-content-muted">{t('admin.emails.colType')}</span><span className="lf-caption mt-1 block font-mono text-content">{selectedEntry.templateType}</span></div>
                 <div><span className="lf-caption block text-content-muted">{t('admin.emails.topLocale')}</span><span className="lf-caption mt-1 block font-mono text-content">{selectedEntry.locale || t('admin.emails.noData')}</span></div>
                 <div><span className="lf-caption block text-content-muted">{t('admin.emails.colUserId')}</span><span className="lf-caption mt-1 block truncate font-mono text-content">{selectedEntry.userId || t('admin.emails.noData')}</span></div>
@@ -632,7 +636,7 @@ export function AdminEmailDashboard() {
               {Object.keys(selectedEntry.detail).length > 0 && (
                 <div className="flex flex-col gap-2">
                   <span className="lf-caption font-bold text-content">{t('admin.emails.colDetail')}</span>
-                  <pre className="max-h-56 overflow-x-auto rounded-xl border border-outline/40 bg-surface-sunken p-4 font-mono text-xs leading-relaxed text-content-muted">{JSON.stringify(selectedEntry.detail, null, 2)}</pre>
+                  <pre className="max-h-56 overflow-x-auto rounded-md border border-outline/40 bg-surface-sunken p-4 font-mono text-xs leading-relaxed text-content-muted">{JSON.stringify(selectedEntry.detail, null, 2)}</pre>
                 </div>
               )}
               <div className="flex justify-end pt-2"><AdminAction tone="neutral" onClick={() => setSelectedEntry(null)}>{t('admin.emails.close')}</AdminAction></div>

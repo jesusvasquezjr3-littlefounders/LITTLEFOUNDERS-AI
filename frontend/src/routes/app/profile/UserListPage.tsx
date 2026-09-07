@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Icon, IconChip } from '@/components/ui';
+import { Button, Card, Icon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
 
@@ -69,9 +69,9 @@ export function UserListPage({
     <div className="mx-auto max-w-xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <IconChip tone="primary" size="md">
+          <span className="lf-tile h-12 w-12 text-accent">
             <Icon name="group" />
-          </IconChip>
+          </span>
           <h1 className="lf-display-lg text-content">{title}</h1>
         </div>
         <Link
@@ -89,7 +89,7 @@ export function UserListPage({
         {!users && !errorCode && (
           <div className="flex flex-col gap-2" aria-busy="true">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-[68px] animate-pulse rounded-lg bg-surface-sunken" />
+              <div key={i} className="h-[68px] animate-pulse rounded-md bg-surface-sunken" />
             ))}
           </div>
         )}

@@ -78,6 +78,23 @@ function dontKnowIndex(probe: Probe): number {
   return probe.options.length;
 }
 
+/*
+ * THE GHOST TIER (/DESIGN.md §Three tiers of action). A stack that ends in a
+ * second outlined button gives two answers the same weight, and on these two
+ * screens they are not: "skip the conversation" and "keep what you found" are
+ * the way OUT of a step, not alternatives to it. Ghost = no surface, muted
+ * ink, the full 44px target and a pill focus ring like every other control.
+ *
+ * The welcome screen's "start from zero" deliberately stays at the glass tier:
+ * it is an explicit, always-present route through the whole flow rather than a
+ * way past one question, and demoting it would contradict why it exists.
+ */
+const GHOST_ACTION =
+  'lf-press lf-label inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-3 ' +
+  'text-content-muted transition-colors duration-150 hover:text-content ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base ' +
+  'disabled:pointer-events-none disabled:opacity-50';
+
 export function PlacementPage() {
   const { t } = useTranslation();
   const { courseSlug = '' } = useParams();
@@ -325,9 +342,9 @@ export function PlacementPage() {
           <Button type="submit" className="w-full" disabled={thinking || busy || !learnerText.trim()}>
             {thinking ? t('placement.intake.thinking') : t('placement.intake.cta')}
           </Button>
-          <Button variant="secondary" className="w-full" disabled={thinking || busy} onClick={() => void runStep([], undefined)}>
+          <button type="button" className={GHOST_ACTION} disabled={thinking || busy} onClick={() => void runStep([], undefined)}>
             {t('placement.intake.skip')}
-          </Button>
+          </button>
         </form>
       )}
 
@@ -393,9 +410,9 @@ export function PlacementPage() {
           <Button variant="secondary" className="w-full" disabled={busy} onClick={() => void commit({ chosenFrontier: 0 })}>
             {t('placement.result.adjustBeginning')}
           </Button>
-          <Button variant="secondary" className="w-full" disabled={busy} onClick={() => setAdjusting(false)}>
+          <button type="button" className={GHOST_ACTION} disabled={busy} onClick={() => setAdjusting(false)}>
             {t('placement.result.adjustKeep')}
-          </Button>
+          </button>
         </div>
       )}
     </GuidedStage>

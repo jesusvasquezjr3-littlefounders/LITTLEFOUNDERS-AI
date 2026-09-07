@@ -335,7 +335,9 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
     return (
       <Card className={cn('p-5', className)}>
         <div className="flex items-start gap-3">
-          <Icon name={pollError ? 'cloud_off' : 'check_circle'} className={pollError ? 'text-error' : 'text-success'} />
+          <span className={cn('lf-tile h-10 w-10 shrink-0', pollError ? 'text-error-strong' : 'text-success-strong')}>
+            <Icon name={pollError ? 'cloud_off' : 'check_circle'} className="!text-[20px]" />
+          </span>
           <div className="min-w-0">
             <p className="lf-body font-medium">{t(pollError ? 'admin.generation.live.unavailableTitle' : 'admin.generation.live.idle')}</p>
             <p className="lf-caption mt-1 text-content-muted">{t(pollError ? 'admin.generation.live.unavailableNote' : 'admin.generation.live.idleNote')}</p>
@@ -359,7 +361,7 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
       <Card className="p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <Icon name="precision_manufacturing" className="shrink-0 text-accent" />
+            <span className="lf-tile h-10 w-10 shrink-0 text-accent"><Icon name="precision_manufacturing" className="!text-[20px]" /></span>
             <div className="min-w-0">
               <p className="lf-title truncate">{heartbeat.runId}</p>
               <p className="lf-caption text-content-muted">

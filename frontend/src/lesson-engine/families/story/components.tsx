@@ -221,7 +221,7 @@ export function StoryScene({ segment, onContentDone, onCharacterCue }: ExerciseP
     return () => onCharacterCue(null)
   }, [onCharacterCue, payload.character, payload.emotion, payload.action])
   return (
-    <div className={cn('rounded-xl p-6 md:p-8', BACKDROP_CLASSES[payload.backdrop])}>
+    <div className={cn('rounded-md p-6 md:p-8', BACKDROP_CLASSES[payload.backdrop])}>
       <div className="flex flex-col items-center gap-4 text-center">
         {payload.character && !onCharacterCue ? (
           <CharacterActor3D

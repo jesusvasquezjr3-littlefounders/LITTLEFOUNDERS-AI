@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
+import { Card, Icon, LoadingOverlay, ProgressBar, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
-import { localizedText, type CourseTree, type TopicNode, type TopicState } from './types';
+import { localizedText, type CourseTree, type SagaNode, type TopicNode, type TopicState } from './types';
 
 /*
  * /learn/:courseSlug/territory — the skill-territory map (roadmap.sh's
@@ -32,6 +32,41 @@ const STATE_META: Record<TopicState, { icon: string; tone: string; labelKey: str
   'not-started': { icon: 'circle', tone: 'text-content-faint', labelKey: 'learn.territory.state.notStarted' },
 };
 
+/*
+ * ONE SAGA'S COLUMN OF TOPIC CHIPS, headed by the study's lockup.
+ *
+ * A component of its own rather than an inline `.map`, because the lockup owns
+ * the id that names its own group and `useId` cannot be called inside a loop.
+ * The tone is `muted`: every chip under it carries its OWN state hue — success
+ * when passed, warning when a review is due — so a coloured tile here would
+ * claim the group selects in a colour it does not.
+ */
+function SagaColumn({
+  saga,
+  locale,
+  courseSlug,
+  chipLinkTo,
+}: {
+  saga: SagaNode;
+  locale: string;
+  courseSlug?: string;
+  chipLinkTo?: string;
+}) {
+  const headingId = useId();
+  return (
+    <section aria-labelledby={headingId}>
+      <SectionHeading id={headingId} as="h3" icon={saga.icon || 'auto_stories'} tone="muted">
+        {localizedText(saga.title, locale)}
+      </SectionHeading>
+      <ul className="flex flex-col gap-2">
+        {saga.topics.map((topic) => (
+          <TopicChip key={topic.id} topic={topic} locale={locale} courseSlug={courseSlug} fallbackLinkTo={chipLinkTo} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: TopicNode; locale: string; courseSlug?: string; fallbackLinkTo?: string }) {
   const { t } = useTranslation();
   const meta = STATE_META[topic.state];
@@ -45,7 +80,15 @@ function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: Topic
   const linkTo = firstPlayableLesson ? `/learn/lesson/${firstPlayableLesson.id}` : fallbackLinkTo;
   const content = (
     <>
-      <Icon name={meta.icon} className={cn('shrink-0 text-[20px]', meta.tone)} aria-hidden />
+      {/*
+       * The study's small icon WELL rather than a bare glyph (/DESIGN.md §The
+       * study's component set). `.lf-tile` takes its fill and its border from
+       * `currentColor`, so the state's own hue — success, warning, primary,
+       * faint — is the only thing this row has to name.
+       */}
+      <span className={cn('lf-tile h-7 w-7', meta.tone)}>
+        <Icon name={meta.icon} className="!text-[16px]" aria-hidden />
+      </span>
       <span className="lf-label min-w-0 flex-1 break-words text-content">{localizedText(topic.title, locale)}</span>
       {topic.state === 'review-due' ? (
         <span className="lf-caption shrink-0 rounded-full bg-warning-soft px-2 py-0.5 font-bold text-warning-strong">
@@ -65,7 +108,9 @@ function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: Topic
           to={linkTo}
           state={courseSlug ? { courseSlug } : undefined}
           className={cn(
-            'flex min-h-11 items-center gap-2.5 rounded-lg border border-outline/50 bg-surface px-3 py-2.5',
+            // `md` (16px), not `lg` (24px): 24 is the modal shell's radius and
+            // every card, panel and row in the product sits at 16 (§Shape).
+            'flex min-h-11 items-center gap-2.5 rounded-md border border-outline/50 bg-surface px-3 py-2.5',
             'transition-[border-color,transform] duration-150 hover:border-primary/60 lf-press',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
             topic.state === 'review-due' && 'border-warning/60 bg-warning-soft/30',
@@ -74,7 +119,7 @@ function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: Topic
           {content}
         </Link>
       ) : (
-        <div className="flex min-h-11 items-center gap-2.5 rounded-lg border border-dashed border-outline/60 bg-surface-sunken/40 px-3 py-2.5 opacity-75">
+        <div className="flex min-h-11 items-center gap-2.5 rounded-md border border-dashed border-outline/60 bg-surface-sunken/40 px-3 py-2.5 opacity-75">
           {content}
           <Icon name="lock" className="shrink-0 text-[16px] text-content-faint" aria-hidden />
         </div>
@@ -87,6 +132,7 @@ export function TerritoryPage() {
   const { t, i18n } = useTranslation();
   const { courseSlug = '' } = useParams();
   const { getToken } = useAuth();
+  const legendId = useId();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const locale = i18n.resolvedLanguage ?? 'en-US';
 
@@ -128,14 +174,25 @@ export function TerritoryPage() {
           * the learner will not meet, which is the same cost as the symbol it
           * was meant to save them.
           */}
-        <div className="flex flex-wrap gap-2" aria-label={t('learn.territory.legendLabel')}>
-          {presentStates.map((stateKey) => (
-            <span key={stateKey} className="lf-caption inline-flex items-center gap-1.5 rounded-full bg-surface-sunken px-3 py-1 font-semibold text-content-muted">
-              <Icon name={STATE_META[stateKey].icon} className={cn('!text-[15px]', STATE_META[stateKey].tone)} aria-hidden />
-              {t(STATE_META[stateKey].labelKey)}
-            </span>
-          ))}
-        </div>
+        {/*
+         * The legend was a bare `<div aria-label>`, which names NOTHING — a
+         * div has no role, so the label is dropped and the group had no
+         * accessible name at all. The lockup gives it a real heading that both
+         * a reader and a screen reader get, from the same string.
+         */}
+        <section aria-labelledby={legendId}>
+          <SectionHeading id={legendId} as="h2" icon="legend_toggle" tone="muted">
+            {t('learn.territory.legendLabel')}
+          </SectionHeading>
+          <div className="flex flex-wrap gap-2">
+            {presentStates.map((stateKey) => (
+              <span key={stateKey} className="lf-caption inline-flex items-center gap-1.5 rounded-full bg-surface-sunken px-3 py-1 font-semibold text-content-muted">
+                <Icon name={STATE_META[stateKey].icon} className={cn('!text-[15px]', STATE_META[stateKey].tone)} aria-hidden />
+                {t(STATE_META[stateKey].labelKey)}
+              </span>
+            ))}
+          </div>
+        </section>
       </header>
       <TerritoryView tree={state.tree} locale={locale} courseSlug={courseSlug} />
     </div>
@@ -189,17 +246,13 @@ export function TerritoryView({ tree, locale, courseSlug, chipLinkTo }: { tree: 
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {adventure.sagas.map((saga) => (
-                <section key={saga.id}>
-                  <h3 className="lf-caption mb-2 flex items-center gap-1.5 font-bold text-content-muted">
-                    <Icon name={saga.icon} className="text-[18px]" aria-hidden />
-                    {localizedText(saga.title, locale)}
-                  </h3>
-                  <ul className="flex flex-col gap-2">
-                    {saga.topics.map((topic) => (
-                      <TopicChip key={topic.id} topic={topic} locale={locale} courseSlug={courseSlug} fallbackLinkTo={chipLinkTo} />
-                    ))}
-                  </ul>
-                </section>
+                <SagaColumn
+                  key={saga.id}
+                  saga={saga}
+                  locale={locale}
+                  courseSlug={courseSlug}
+                  chipLinkTo={chipLinkTo}
+                />
               ))}
             </div>
           </Card>

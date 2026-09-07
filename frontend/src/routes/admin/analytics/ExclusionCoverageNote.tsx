@@ -39,7 +39,7 @@ export function ExclusionCoverageNote({ windowStart }: { windowStart: string | n
       : 'border-outline/40 bg-surface-sunken/30 text-content-muted';
 
   return (
-    <p className={cn('lf-caption flex items-start gap-2 rounded-xl border p-3', tone)}>
+    <p className={cn('lf-caption flex items-start gap-2 rounded-md border p-3', tone)}>
       <Icon name={active.length === 0 ? 'warning' : 'info'} className="!text-[18px] shrink-0" />
       <span>
         {active.length === 0

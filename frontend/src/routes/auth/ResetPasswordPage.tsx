@@ -62,8 +62,9 @@ export function ResetPasswordPage() {
     return (
       <AuthShell character={MENTOR} title={t('auth.resetPassword.doneTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
-            <Icon name="check_circle" className="text-success-strong" />
+          {/* The study's icon well, in place of a hand-rolled tinted circle. */}
+          <span className="lf-tile h-14 w-14 text-success-strong">
+            <Icon name="check_circle" aria-hidden className="!text-[26px]" />
           </span>
           <p className="lf-body text-content">{t('auth.resetPassword.doneBody')}</p>
           <Link
@@ -81,6 +82,13 @@ export function ResetPasswordPage() {
     return (
       <AuthShell character={MENTOR} title={t('auth.resetPassword.expiredTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
+          {/* The expired state was the one terminal screen in the auth surface
+              with no icon at all, so it read as a paragraph that had lost its
+              page. Same well, warning hue — the state is recoverable, not an
+              error. */}
+          <span className="lf-tile h-14 w-14 text-warning-strong">
+            <Icon name="link_off" aria-hidden className="!text-[26px]" />
+          </span>
           <p className="lf-body text-content-muted">{t('auth.resetPassword.expiredBody')}</p>
           <Link
             to="/forgot-password"

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, Icon, Table, type TableColumn } from '@/components/ui';
+import { Card, Icon, SectionHeading, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useAdminData } from '../adminShared';
 import { countryLabel, type BreakdownData, type BreakdownRow, type DimensionKey, type PeriodQuery } from './analyticsShared';
@@ -96,10 +96,15 @@ export function BreakdownCard({
 
   return (
     <section className="flex min-w-0 flex-col gap-2" aria-label={t(`admin.analytics.breakdowns.cards.${dimension}`)}>
-      <h3 className="lf-title flex items-center gap-2">
-        <Icon name={icon} className="!text-[20px] text-content-muted" />
+      {/*
+        The dimension's own icon moves INTO the lockup's tile. Every card in
+        this grid belongs to one section, so they all wear that section's hue
+        rather than nine different ones — the tile says "breakdown", the
+        glyph says which breakdown.
+      */}
+      <SectionHeading icon={icon} tone="delight" as="h3" className="mb-0">
         {t(`admin.analytics.breakdowns.cards.${dimension}`)}
-      </h3>
+      </SectionHeading>
       {data.state === 'error' ? (
         <PanelNote
           icon="cloud_off"

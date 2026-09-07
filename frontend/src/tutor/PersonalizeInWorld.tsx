@@ -355,7 +355,7 @@ export function PersonalizeInWorld({
                   aria-invalid={nicknameError ? true : undefined}
                   onChange={(event) => setNickname(event.target.value)}
                   onBlur={() => void commitNickname()}
-                  className="lf-action min-h-11 w-44 rounded-xl border border-accent/40 bg-content/5 px-3.5 py-2 pr-9 text-content focus:border-accent focus:outline-none"
+                  className="lf-action min-h-11 w-44 rounded-md border border-accent/40 bg-content/5 px-3.5 py-2 pr-9 text-content focus:border-accent focus:outline-none"
                 />
                 <Icon
                   name="edit"
@@ -650,7 +650,7 @@ export function PersonalizeInWorld({
           <button
             type="button"
             onClick={resetToDefaults}
-            className="lf-press flex min-h-11 items-center gap-1.5 rounded-xl px-3 lf-action text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press flex min-h-11 items-center gap-1.5 rounded-md px-3 lf-action text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <Icon name="refresh" className="!text-[18px]" />
             {t('tutor.personalize.defaults')}
@@ -659,7 +659,7 @@ export function PersonalizeInWorld({
             <button
               type="button"
               onClick={cancel}
-              className="lf-press min-h-11 rounded-xl border border-content/15 bg-content/5 px-4 lf-action text-content transition-colors hover:bg-content/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="lf-press min-h-11 rounded-md border border-content/15 bg-content/5 px-4 lf-action text-content transition-colors hover:bg-content/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {t('tutor.personalize.cancel')}
             </button>
@@ -667,7 +667,7 @@ export function PersonalizeInWorld({
               type="button"
               onClick={confirm}
               disabled={saving}
-              className="lf-lumen-solid lf-press flex min-h-11 items-center gap-1.5 rounded-xl bg-accent px-5 lf-action text-on-accent disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="lf-lumen-solid lf-press flex min-h-11 items-center gap-1.5 rounded-md bg-accent px-5 lf-action text-on-accent disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {t('tutor.personalize.saveAndContinue')}
               <Icon name="auto_awesome" className="!text-[18px]" />

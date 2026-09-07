@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
@@ -12,7 +12,7 @@ import {
   type CatalogKey,
 } from '@/lib/avatarOptions';
 import { Avatar } from '@/components/Avatar';
-import { Button, Card, Icon, IconChip } from '@/components/ui';
+import { Button, Card, Icon, SectionHeading } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { cn } from '@/lib/utils';
 
@@ -113,9 +113,10 @@ export function AvatarEditorPage() {
           <Card hero className="relative flex flex-col items-center gap-5 overflow-hidden py-8">
             <div className="absolute inset-x-0 top-0 h-24 bg-primary-soft/60" aria-hidden="true" />
             <div className="relative flex flex-col items-center gap-3">
-              <IconChip tone="primary" size="md">
+              {/* The study's icon well, in the hue this page's cards select in. */}
+              <span className="lf-tile h-12 w-12 text-accent">
                 <Icon name="visibility" />
-              </IconChip>
+              </span>
               <p className="lf-label text-content">{t('profile.avatarEditor.preview')}</p>
             </div>
             <Avatar options={options} seed={userId} className="h-44 w-44 bg-surface-sunken" />
@@ -133,67 +134,123 @@ export function AvatarEditorPage() {
         {/* Option sections */}
         <div className="flex flex-col gap-6">
           {SECTIONS.map((section) => (
-            <Card key={section.key} className="p-5">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="lf-label flex items-center gap-2 text-content">
-                  <Icon name={section.icon} className="text-primary" />
-                  {t(`profile.avatarEditor.sections.${section.key}`)}
-                </h2>
-                {section.probabilityKey && (
-                  <button
-                    type="button"
-                    onClick={() => clearOptional(section)}
-                    className={cn(
-                      'lf-caption rounded-full px-3 py-1 font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                      (options[section.probabilityKey] ?? 0) === 0
-                        ? 'bg-primary-soft text-primary'
-                        : 'bg-surface-sunken text-content-muted hover:text-content',
-                    )}
-                  >
-                    {t('profile.avatarEditor.none')}
-                  </button>
-                )}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {AVATAR_CATALOG[section.key].map((value) =>
-                  COLOR_KEYS.includes(section.key) ? (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-label={value}
-                      aria-pressed={isSelected(section, value)}
-                      onClick={() => choose(section, value)}
-                      className={cn(
-                        'motion-safe-press h-10 w-10 rounded-full border border-outline/60 transition-transform duration-150 hover:-translate-y-0.5 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                        isSelected(section, value) && 'ring-2 ring-primary ring-offset-2 ring-offset-base',
-                      )}
-                      style={{ backgroundColor: `#${value}` }}
-                    />
-                  ) : (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-label={value}
-                      aria-pressed={isSelected(section, value)}
-                      onClick={() => choose(section, value)}
-                      className={cn(
-                        'motion-safe-press rounded-full p-1 transition-transform duration-150 hover:-translate-y-0.5 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                        isSelected(section, value) ? 'bg-primary-soft ring-2 ring-primary' : 'bg-surface-sunken hover:bg-outline/50',
-                      )}
-                    >
-                      <Avatar
-                        options={{ ...options, [section.key]: [value], ...(section.probabilityKey ? { [section.probabilityKey]: 100 } : {}) }}
-                        seed={userId}
-                        className="h-14 w-14 bg-transparent"
-                      />
-                    </button>
-                  ),
-                )}
-              </div>
-            </Card>
+            <OptionSection
+              key={section.key}
+              section={section}
+              options={options}
+              userId={userId}
+              isSelected={isSelected}
+              onChoose={choose}
+              onClearOptional={clearOptional}
+            />
           ))}
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * ONE DRESS-UP SECTION — the study's lockup over a grid of pick cards.
+ *
+ * A component of its own because the lockup owns the id that NAMES its own
+ * radio-ish group, and `useId` cannot be called inside a `.map`. The tone is
+ * `accent` on every section for one reason: `.lf-pick-card-on` fills, borders
+ * and glows in `--lf-accent`, so accent is what these cards actually select
+ * in, and a tile in any other hue would be the section teaching the wrong
+ * thing about its own colour (/DESIGN.md §The section heading is a lockup).
+ *
+ * The "None" chip stays OUTSIDE the lockup's `meta` slot: meta is a count, a
+ * status or a reward, and never a control.
+ */
+function OptionSection({
+  section,
+  options,
+  userId,
+  isSelected,
+  onChoose,
+  onClearOptional,
+}: {
+  section: Section;
+  options: AvatarOptions & { seed?: string };
+  userId: string;
+  isSelected: (section: Section, value: string) => boolean;
+  onChoose: (section: Section, value: string) => void;
+  onClearOptional: (section: Section) => void;
+}) {
+  const { t } = useTranslation();
+  const headingId = useId();
+  const isColor = COLOR_KEYS.includes(section.key);
+  const cleared = section.probabilityKey ? (options[section.probabilityKey] ?? 0) === 0 : false;
+
+  return (
+    <Card className="p-5">
+      <div className="flex items-center justify-between gap-3">
+        <SectionHeading
+          id={headingId}
+          icon={section.icon}
+          tone="accent"
+          className="min-w-0 flex-1"
+        >
+          {t(`profile.avatarEditor.sections.${section.key}`)}
+        </SectionHeading>
+        {section.probabilityKey && (
+          <button
+            type="button"
+            onClick={() => onClearOptional(section)}
+            aria-pressed={cleared}
+            className={cn(
+              // A chip, so `rounded-full`, and 44px tall like every other tap
+              // target on the page (§Shape, §Tap floor).
+              'lf-caption mb-3 inline-flex min-h-11 shrink-0 items-center rounded-full px-4 font-bold transition-colors duration-150 lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              cleared ? 'bg-accent text-on-accent' : 'bg-surface-sunken text-content-muted hover:text-content',
+            )}
+          >
+            {t('profile.avatarEditor.none')}
+          </button>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-2" role="group" aria-labelledby={headingId}>
+        {AVATAR_CATALOG[section.key].map((value) => {
+          const selected = isSelected(section, value);
+          return (
+            <button
+              key={value}
+              type="button"
+              aria-label={value}
+              aria-pressed={selected}
+              onClick={() => onChoose(section, value)}
+              className={cn(
+                'lf-pick-card motion-safe-press lf-press focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                /*
+                 * A COLOUR SWATCH IS A DISC, so it keeps `rounded-full` and
+                 * takes its fill from an inline style that beats the class's
+                 * own background — the 2px border, the glow and the corner
+                 * disc are what carry selection. It was 40px, which is under
+                 * the 44px tap floor; 48 clears it and still fits five across
+                 * a 375px viewport.
+                 */
+                isColor ? 'h-12 w-12 !rounded-full' : 'p-1',
+                selected && 'lf-pick-card-on',
+              )}
+              style={isColor ? { backgroundColor: `#${value}` } : undefined}
+            >
+              {selected && (
+                <span className="lf-pick-check" aria-hidden>
+                  <Icon name="check" className="!text-[12px]" />
+                </span>
+              )}
+              {!isColor && (
+                <Avatar
+                  options={{ ...options, [section.key]: [value], ...(section.probabilityKey ? { [section.probabilityKey]: 100 } : {}) }}
+                  seed={userId}
+                  className="h-14 w-14 bg-transparent"
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </Card>
   );
 }

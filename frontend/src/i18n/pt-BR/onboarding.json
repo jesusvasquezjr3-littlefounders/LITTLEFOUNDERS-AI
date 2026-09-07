@@ -35,6 +35,7 @@
   "discovery": {
     "title": "Onde você ouviu falar da gente?",
     "subtitle": "Totalmente opcional.",
+    "section": "Escolha uma",
     "options": {
       "friend": "Um amigo ou familiar",
       "social_media": "Redes sociais",

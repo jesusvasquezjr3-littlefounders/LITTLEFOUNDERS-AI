@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
+import { Badge, Card, Icon, SectionHeading, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminPage, useAdminData } from './adminShared';
 import {
@@ -34,8 +34,12 @@ import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
 
 function UnavailableCard({ title, body }: { title: string; body: string }) {
   return (
-    <Card className="flex flex-col items-center gap-2 py-10 text-center shadow-glass border border-outline/50">
-      <Icon name="cloud_off" className="!text-[40px] text-content-faint" />
+    <Card className="flex flex-col items-center gap-3 py-10 text-center shadow-glass border border-outline/50">
+      {/* Same tile, same hue, as `Unavailable` in adminShared — one failure
+          state should not look like two different ones across the console. */}
+      <span className="lf-tile h-14 w-14 text-error-strong">
+        <Icon name="cloud_off" className="!text-[28px]" />
+      </span>
       <p className="lf-label text-content font-bold">{title}</p>
       <p className="lf-caption max-w-sm text-content-muted">{body}</p>
     </Card>
@@ -252,10 +256,10 @@ export function AnalyticsHealthPage() {
 
       {/* ── Web analytics (Plausible) ─────────────────── */}
       <section aria-labelledby="admin-web-analytics" className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="admin-web-analytics" className="lf-headline font-bold text-content">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <SectionHeading icon="public" tone="accent" id="admin-web-analytics" className="mb-0 min-w-0 flex-1">
             {t('admin.analytics.web.title')}
-          </h2>
+          </SectionHeading>
           {/*
             The window the figures actually cover, resolved by the server.
             Restating the label the page asked for would hide the difference
@@ -361,8 +365,8 @@ export function AnalyticsHealthPage() {
       {/* ── Geography and audience composition ── */}
       <section aria-labelledby="admin-geography" className="flex flex-col gap-4">
         <div>
-          <h2 id="admin-geography" className="lf-headline font-bold text-content">{t('admin.analytics.geo.sectionTitle')}</h2>
-          <p className="lf-caption mt-1 text-content-faint">{t('admin.analytics.geo.sectionSubtitle')}</p>
+          <SectionHeading icon="map" tone="delight" id="admin-geography" className="mb-1">{t('admin.analytics.geo.sectionTitle')}</SectionHeading>
+          <p className="lf-caption text-content-faint">{t('admin.analytics.geo.sectionSubtitle')}</p>
         </div>
         <AnalyticsGeoMap
           periodQuery={periodQuery}
@@ -374,9 +378,9 @@ export function AnalyticsHealthPage() {
 
       {/* ── Behavioral (Umami) ── */}
       <section aria-labelledby="admin-behavior" className="flex flex-col gap-4">
-        <h2 id="admin-behavior" className="lf-headline font-bold text-content">
+        <SectionHeading icon="ads_click" tone="accent" id="admin-behavior" className="mb-0">
           {t('admin.analytics.behavior.title')}
-        </h2>
+        </SectionHeading>
         <p className="lf-caption -mt-2 text-content-faint">{t('admin.analytics.behavior.scopeNote')}</p>
         {behavior.state === 'error' ? (
           <UnavailableCard
@@ -434,7 +438,7 @@ export function AnalyticsHealthPage() {
              * the summable metric would leave the card internally
              * inconsistent. `null` reads as "unknown", never as clean.
              */
-            <p className="lf-caption flex items-start gap-1.5 rounded-lg bg-warning-soft p-2.5 text-warning-strong">
+            <p className="lf-caption flex items-start gap-1.5 rounded-md bg-warning-soft p-2.5 text-warning-strong">
               <Icon name="info" className="!text-[16px] shrink-0" />
               <span>
                 {behavior.data.outOfBoundaryPageviews === null
@@ -468,9 +472,9 @@ export function AnalyticsHealthPage() {
 
       {/* ── Breakdowns ── */}
       <section aria-labelledby="admin-breakdowns" className="flex flex-col gap-4">
-        <h2 id="admin-breakdowns" className="lf-headline font-bold text-content">
+        <SectionHeading icon="pie_chart" tone="delight" id="admin-breakdowns" className="mb-0">
           {t('admin.analytics.breakdowns.title')}
-        </h2>
+        </SectionHeading>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {BREAKDOWN_CARDS.map((c) => (
             <BreakdownCard
@@ -483,9 +487,9 @@ export function AnalyticsHealthPage() {
             />
           ))}
         </div>
-        <details className="group rounded-lg border border-outline/50 bg-surface-sunken/20 p-4">
+        <details className="group rounded-md border border-outline/50 bg-surface-sunken/20 p-4">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-md text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [&::-webkit-details-marker]:hidden">
-            <span className="flex items-center gap-2"><Icon name="manage_search" className="!text-[21px] text-primary" /><span><span className="lf-title block">{t('admin.analytics.breakdowns.explorerTitle')}</span><span className="lf-caption text-content-muted">{t('admin.analytics.breakdowns.explorerSubtitle')}</span></span></span>
+            <span className="flex items-center gap-2"><span className="lf-tile h-8 w-8 text-accent"><Icon name="manage_search" className="!text-[18px]" /></span><span><span className="lf-title block">{t('admin.analytics.breakdowns.explorerTitle')}</span><span className="lf-caption text-content-muted">{t('admin.analytics.breakdowns.explorerSubtitle')}</span></span></span>
             <Icon name="expand_more" className="!text-[22px] text-content-muted transition-transform group-open:rotate-180" />
           </summary>
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -498,9 +502,9 @@ export function AnalyticsHealthPage() {
 
       {/* ── Exports & controls ── */}
       <section aria-labelledby="admin-analytics-tools" className="flex flex-col gap-4">
-        <h2 id="admin-analytics-tools" className="lf-headline font-bold text-content">
+        <SectionHeading icon="build" tone="muted" id="admin-analytics-tools" className="mb-0">
           {t('admin.analytics.toolsTitle')}
-        </h2>
+        </SectionHeading>
         <div className="grid gap-4 xl:grid-cols-2 xl:items-start">
           <ReportExportCard periodQuery={periodQuery} filterQuery={filterQuery} />
           <ExclusionsCard />
@@ -509,19 +513,31 @@ export function AnalyticsHealthPage() {
 
       {/* ── System health (Uptime Kuma) ───────────────── */}
       <section aria-labelledby="admin-health" className="flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <h2 id="admin-health" className="lf-headline font-bold text-content">
-            {t('admin.health.title')}
-          </h2>
-          {health.state === 'ready' &&
-            (health.data.summary.down === 0 ? (
-              <Badge className="bg-success-soft text-success-strong">{t('admin.health.allUp')}</Badge>
-            ) : (
-              <Badge className="bg-error-soft text-error-strong">
-                {t('admin.health.someDown', { count: health.data.summary.down })}
-              </Badge>
-            ))}
-        </div>
+        {/*
+          Health is the one section on this page whose HUE is a reading rather
+          than a label: success while every monitor answers, error the moment
+          one stops, muted while the answer has not come back. The badge stays
+          as `meta` — a status, never a control.
+        */}
+        <SectionHeading
+          icon="monitor_heart"
+          tone={health.state !== 'ready' ? 'muted' : health.data.summary.down === 0 ? 'success' : 'error'}
+          id="admin-health"
+          className="mb-0"
+          meta={
+            health.state === 'ready' ? (
+              health.data.summary.down === 0 ? (
+                <Badge className="bg-success-soft text-success-strong">{t('admin.health.allUp')}</Badge>
+              ) : (
+                <Badge className="bg-error-soft text-error-strong">
+                  {t('admin.health.someDown', { count: health.data.summary.down })}
+                </Badge>
+              )
+            ) : undefined
+          }
+        >
+          {t('admin.health.title')}
+        </SectionHeading>
         {health.state === 'error' ? (
           <UnavailableCard
             title={t('admin.health.unavailableTitle')}
@@ -567,7 +583,7 @@ function KpiCard({
   return (
     <Card className="flex flex-col gap-2 border border-outline/50 p-4 shadow-glass">
       <div className="flex items-center gap-2">
-        <Icon name={icon} className="!text-[20px] text-primary" />
+        <span className="lf-tile h-7 w-7 text-accent"><Icon name={icon} className="!text-[16px]" /></span>
         <p className="lf-caption truncate text-content-muted">{label}</p>
       </div>
       <p className="lf-number text-2xl text-content">{value}</p>
@@ -584,7 +600,7 @@ function KpiCard({
 function SignalCard({ icon, label, value, valueClassName }: { icon: string; label: string; value: string; valueClassName?: string }) {
   return (
     <Card className="flex items-center gap-3 border border-outline/40 p-4">
-      <Icon name={icon} className="!text-[22px] text-primary" />
+      <span className="lf-tile h-9 w-9 text-accent"><Icon name={icon} className="!text-[20px]" /></span>
       <div className="min-w-0"><p className="lf-caption truncate text-content-muted">{label}</p><p className={cn('lf-number mt-1', valueClassName ?? 'text-content')}>{value}</p></div>
     </Card>
   );

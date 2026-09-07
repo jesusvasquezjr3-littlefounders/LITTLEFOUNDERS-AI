@@ -112,7 +112,7 @@ lumen:                            # CLOSED — the immersive layer's ONE materia
   chroma: 0.45                    # backdrop saturate(): keep luminance, drop hue
   tint: 6%                        # how far the fill leans toward the scene's sky
   atmosphere: [--lf-sky, --lf-key, --lf-ground, --lf-sun-height]   # published per backdrop
-  radius: {chip: md, plate: md, orb: full, sheet: lg}   # panes, not pills
+  radius: {chip: full, plate: md, orb: full, sheet: md}   # capsules — reversed 2026-09-05
   tap-floor: 44px rendered / 48px authored
 
 answer-surfaces:                  # CLOSED — the lesson engine's THREE objects (§Answer surfaces)
@@ -301,6 +301,112 @@ place — that somebody DECIDED how many of these there are:
   (1 / 2 / 3). In-scene placement is a PRESENTATION of a list, never an
   excuse for not having decided what the list is.
 
+### The propagation (2026-09-07) — what "standardized" now means
+
+The study's composition was applied to every product surface except marketing,
+which the owner deliberately excluded so `site.mjs`, the sitemap and the share
+cards stay valid. What landed, and what it is safe to assume from now on:
+
+- **Shape is settled everywhere.** 82 panels at 32px moved to the study's 16px;
+  `Card` went hero 32→24 and ordinary 24→16; admin's remaining 24px panels and
+  two bare `rounded` (which compiles to nothing) went to 16px; icon buttons that
+  were soft rectangles became circles. Buttons were already capsules in the
+  shared primitive, which is why that half of the decision reached every screen
+  for free.
+- **`SectionHeading` exists** (`components/ui`), so the study's lockup is a
+  component rather than something each surface re-invents. Its `tone` is
+  REQUIRED: a lockup whose colour never changes has stopped saying anything,
+  and the hue is what keys the controls beneath it.
+- **`OptionGroup` is a pick-card group.** It is the platform's only generic
+  "choose one of N", so recomposing it reached onboarding as well as the
+  surfaces that called it directly.
+- **Onboarding and placement introduce the cast in 3D.** Both share
+  `GuidedStage`, so the swap happened once. It uses `CharacterStage` ("one
+  character, no world"), lazily imported because it pulls three.js onto the
+  FIRST screen a guest sees, with the real 2D actor rendering underneath while
+  the chunk arrives and standing in permanently where there is no WebGL —
+  `SceneCanvas`'s honest "this device cannot show 3D" message is right on the
+  Tutor's route, where the island IS the product, and would be a regression on
+  a first-run screen where a flat character already worked.
+
+**Where the composition was deliberately NOT applied, and why it is not an
+omission:** admin's filter and search bars (a lockup there costs 40px above the
+first data row and names what the field labels already name), tables (none was
+wrapped in a decorative card), a chart's own filter checkbox (a settings row
+above a 260px chart costs more height than it earns), and single-field screens
+like Forgot Password (a lockup names a GROUP; one field is not one). Readability
+of a data tool beats decoration — that is a rule, not a compromise.
+
+## Shape — the radius scale is CLOSED (NON-NEGOTIABLE)
+
+`tailwind.config.js` REPLACES Tailwind's radius scale rather than extending it.
+These six are the whole set, and a utility naming anything else **compiles to
+nothing and renders as a square corner** — silently, with the class still
+sitting in the markup saying otherwise.
+
+| Token | Value | What wears it |
+|---|---|---|
+| `rounded-none` | 0 | full-bleed surfaces only |
+| `rounded-sm` | 10px | inline marks: a term, a small tag |
+| `rounded-md` | 16px | **every card, panel, sheet and dialog body** |
+| `rounded-lg` | 24px | the largest furniture: a modal shell |
+| `rounded-xl` | 32px | reserved; nothing should need it below a hero |
+| `rounded-full` | 9999px | **every button, chip, badge, pill and orb** |
+
+**Two shapes carry the product's whole silhouette:** `full` for anything you
+press, `md` for anything you read on. A screen built from those two reads as
+the study; a screen with a third radius in it reads as an accident.
+
+**Where those two rules meet — a card you press — the CARD wins.** An answer
+option, a `.lf-pick-card`, a course tile and a lesson row are all tapped and
+all stay at `md`: they carry content you read before you choose, and a capsule
+around a paragraph is a lozenge, not a button. `full` is for controls whose
+whole body is a label or a glyph. The test is not "does it respond to a tap",
+it is "would you read this if it did nothing".
+
+**Two things that look like buttons and are not.** A text link keeps its small
+radius, which exists only to shape its focus ring — a capsule around underlined
+prose is a badge. And a text input stays at `md` for the reason above: a
+capsule moves the caret off the field's own left edge and reads as a search box
+wherever it is not one.
+
+**`2xl`, `3xl` and `xs` DO NOT EXIST HERE.** Tailwind's stock `2xl` is 16px,
+which this scale calls `md` — so the rename is exact, never an approximation.
+On 2026-09-06 fifteen call sites were asking for `rounded-2xl`, including the
+Tutor's floating panel and its speech card, and every one of them was measured
+in a real browser at `border-radius: 0px`. `designClasses.test.ts` now fails on
+any radius outside this table; that guard shipped broken first (its regex
+reached the file with two backspace characters where `` was meant) and was
+only trusted after a violation was deliberately re-injected and watched to
+fail.
+
+## The study's component set — what a recomposed surface is made of
+
+Every surface in the platform is composed from these. They are defined once in
+`index.css` and named here so a screen can be reviewed against a list rather
+than against somebody's memory of a screenshot.
+
+| Class | What it is | Where it belongs |
+|---|---|---|
+| `.lf-tile` | A small square well at 12px carrying an icon: an 18%-fill and a 34%-border of `currentColor`, so one class serves every hue and a caller only names a colour | Beside a section heading, at the head of a card, in a settings row |
+| `.lf-pick-card` (+ `-on`, `-check`) | A choosable card. Selection is signalled FOUR ways at once — solid fill, 2px border at full strength where the resting card has 1px at a tenth, an outer coloured glow, and a corner check disc | Any grid where one of N is chosen: a tutor, a world, a plan, an avatar |
+| `.lf-config-row` | The settings-row skeleton: icon, two lines of label, a control pinned right | Preference rows, toggles, segmented controls |
+| `.lf-switch` (+ `-on`, `-knob`) | 44x24, the knob sunk into the track by an inset shadow, ON expressed as a flex alignment rather than a transform | Any boolean a learner owns |
+| `.lf-config-dialog` / `-scrim` / `-head` / `-foot` | The modal shell at 24px over a BLURRED scrim — never an opaque veil, because what is behind it is the product still running | Any full-screen dialog |
+| `.lf-rail-bare` | Stops a positioned column from painting, so the cards inside it become the surfaces and the background shows through the gaps | A rail of separate cards over a scene |
+| `.lf-eyebrow` | Wide-tracked small caps. Paired with a `.lf-tile` in the section's own hue, this is the study's strongest typographic signature | Above every group of controls |
+
+**The section heading is a lockup, not a heading.** Icon tile in the section's
+hue, `.lf-eyebrow` label, and an optional meta note pinned right. The hue then
+KEYS the cards below it, so a glance at the icon says which set you are
+choosing from — that is the whole reason it is coloured, and why a section
+whose cards select in indigo must not have a cyan icon.
+
+**Three tiers of action, in this order, left to right:** ghost (no surface,
+muted ink) → glass (the material, ordinary ink) → primary (solid accent, a
+coloured ambient glow of its OWN hue, a lighter rim, and a press). A row with
+two primaries has no primary.
+
 ## Elevation & Depth — Liquid Glass
 
 Depth comes from layered light, not heavy drop shadows. Every glass surface uses
@@ -373,7 +479,7 @@ remembered fourteen times.
 | lip | `inset 0 1px 0` in `--lf-key`, alpha ramped by sun height | a specular edge in the scene's own light — never a white hairline |
 | edge | `inset 0 0 0 1px` in `--lf-lumen-shade` at 9% | the scene's shade, not a lighter ring |
 | shadow | one drop, made of the ground's colour, length/diffusion/darkness ramped by sun height | it agrees with the light behind it instead of with the stylesheet |
-| radius | chip `md`, plate `md`, orb `full`, sheet `lg` | panes, not pills |
+| radius | chip `full`, plate `md`, orb `full`, sheet `md` | capsules and 16px cards — reversed 2026-09-05 by owner direction to match the design study, which makes every chip, badge and small button a capsule and every card 16px. The superseded rule ("panes, not pills") argued a capsule over a photographic frame reads as a sticker; it lost to the study, three times over, in front of the owner |
 
 **Two densities, and the density is decided by how much text the surface
 carries, never by taste.**

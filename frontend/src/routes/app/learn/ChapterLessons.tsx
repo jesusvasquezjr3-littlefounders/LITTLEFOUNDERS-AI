@@ -1,6 +1,7 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Icon } from '@/components/ui';
+import { Icon, SectionHeading } from '@/components/ui';
 import { localizedText, type LessonNode, type TopicNode } from '@/routes/app/learn/types';
 
 /*
@@ -173,30 +174,50 @@ export function ChapterLessons({
   locale,
 }: ChapterLessonsProps) {
   const { t } = useTranslation();
+  const eyebrowId = useId();
+  const titleId = useId();
   const done = topic.lessons.filter((l) => l.state === 'passed').length;
   const title = localizedText(topic.title, locale, topic.slug);
+  const complete = done === topic.lessons.length && done > 0;
 
   return (
-    <section className="flex flex-col gap-4">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-        <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="lf-title text-content">
-            {t('learn.chapter.label', { n: chapterNumber, title })}
-          </h2>
-        </div>
+    /*
+     * NAMED BY BOTH HALVES OF THE LOCKUP. `aria-labelledby` takes a LIST, so
+     * the section announces "Chapter 3 — Saving basics" from the two elements
+     * a sighted learner reads, rather than from a third string written only
+     * for a screen reader.
+     */
+    <section className="flex flex-col gap-4" aria-labelledby={`${eyebrowId} ${titleId}`}>
+      <header>
         {/*
-          * Success-toned once the chapter is finished. The counter is the only
-          * thing on this header that changes, so it is the only thing that
-          * should mark the moment it stops changing.
-          */}
-        <span
-          className={`lf-chip lf-caption w-fit shrink-0 ${
-            done === topic.lessons.length && done > 0 ? 'lf-chip-success' : 'lf-chip-accent'
-          }`}
+         * THE STUDY'S LOCKUP: wide-tracked small caps over a display line
+         * (/DESIGN.md §The study's component set). The chapter NUMBER is the
+         * eyebrow and the chapter TITLE is the line under it — the eyebrow
+         * truncates and a title never should, and this is also the pairing the
+         * study names as its strongest typographic signature.
+         *
+         * Accent keys the rows below: the current lesson's play token fills in
+         * accent and so does its LIVE badge. Success once the chapter is done,
+         * because then nothing under the heading is accent any more — the
+         * counter is the only thing on this header that changes, so it marks
+         * the moment it stops changing.
+         */}
+        <SectionHeading
+          id={eyebrowId}
+          icon={complete ? 'workspace_premium' : 'menu_book'}
+          tone={complete ? 'success' : 'accent'}
+          meta={
+            <span className={`lf-chip lf-caption ${complete ? 'lf-chip-success' : 'lf-chip-accent'}`}>
+              <Icon name="workspace_premium" fill className="!text-[16px]" aria-hidden />
+              {t('learn.chapter.lessonsOf', { done, total: topic.lessons.length })}
+            </span>
+          }
         >
-          <Icon name="workspace_premium" fill className="!text-[16px]" aria-hidden />
-          {t('learn.chapter.lessonsOf', { done, total: topic.lessons.length })}
-        </span>
+          {t('learn.chapter.short', { n: chapterNumber })}
+        </SectionHeading>
+        <h3 id={titleId} className="lf-title text-content">
+          {title}
+        </h3>
       </header>
 
       <ul className="flex flex-col gap-2.5">

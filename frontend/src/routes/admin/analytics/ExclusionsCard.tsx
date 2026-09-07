@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Icon } from '@/components/ui';
+import { Badge, Card, Icon, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { isDeviceOptedOut, setDeviceOptOut } from '@/lib/analytics';
 import { AdminAction, useAdminData, useAdminMutation } from '../adminShared';
@@ -70,31 +70,34 @@ export function ExclusionsCard() {
   return (
     <Card className="flex flex-col gap-4 p-4 sm:p-5">
       <div>
-        <h3 className="lf-title flex items-center gap-2 text-content">
-          <Icon name="filter_alt_off" className="!text-[21px] text-primary" />
+        {/*
+          Warning, not accent: everything this card does REMOVES traffic from
+          every figure elsewhere on the page, and the hue is the cheapest
+          possible reminder of that while reading the numbers next to it.
+        */}
+        <SectionHeading icon="filter_alt_off" tone="warning" as="h3" className="mb-1">
           {t('admin.analytics.exclusions.title')}
-        </h3>
-        <p className="lf-caption mt-1 text-content-muted">{t('admin.analytics.exclusions.caption')}</p>
+        </SectionHeading>
+        <p className="lf-caption text-content-muted">{t('admin.analytics.exclusions.caption')}</p>
       </div>
 
       {data.state === 'error' ? (
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-outline/40 bg-surface-sunken/30 py-8 text-center">
+        <div className="flex flex-col items-center gap-2 rounded-md border border-outline/40 bg-surface-sunken/30 py-8 text-center">
           <Icon name="cloud_off" className="!text-[34px] text-content-faint" />
           <p className="lf-caption text-content-muted">
             {t(`errors.api.${data.code}`, { defaultValue: t('admin.analytics.exclusions.unavailable') })}
           </p>
         </div>
       ) : data.state === 'loading' ? (
-        <div className="min-h-32 animate-pulse rounded-xl border border-outline/40 bg-surface-sunken/40" />
+        <div className="min-h-32 animate-pulse rounded-md border border-outline/40 bg-surface-sunken/40" />
       ) : (
         <>
           {/* Your own device, and the one button that needs no knowledge at all. */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/40 bg-surface-sunken/30 p-3">
+          <div className="lf-config-row flex flex-wrap items-center justify-between gap-3 p-3">
             <div className="flex min-w-0 items-center gap-3">
-              <Icon
-                name={data.data.self.excluded ? 'visibility_off' : 'my_location'}
-                className={cn('!text-[22px]', data.data.self.excluded ? 'text-success-strong' : 'text-primary')}
-              />
+              <span className={cn('lf-tile h-9 w-9', data.data.self.excluded ? 'text-success-strong' : 'text-accent')}>
+                <Icon name={data.data.self.excluded ? 'visibility_off' : 'my_location'} className="!text-[20px]" />
+              </span>
               <div className="min-w-0">
                 <p className="lf-caption text-content-muted">{t('admin.analytics.exclusions.yourDevice')}</p>
                 <p className="lf-number truncate text-content">{data.data.self.ip ?? t('admin.analytics.exclusions.unknownAddress')}</p>
@@ -117,12 +120,11 @@ export function ExclusionsCard() {
             * lives only in this browser, affects nobody else, and no server
             * answer clears it.
             */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/40 bg-surface-sunken/40 p-3">
+          <div className="lf-config-row flex flex-wrap items-center justify-between gap-3 p-3">
             <div className="flex min-w-0 items-center gap-3">
-              <Icon
-                name={deviceOptedOut ? 'phonelink_off' : 'devices'}
-                className={cn('!text-[22px]', deviceOptedOut ? 'text-success-strong' : 'text-content-muted')}
-              />
+              <span className={cn('lf-tile h-9 w-9', deviceOptedOut ? 'text-success-strong' : 'text-content-muted')}>
+                <Icon name={deviceOptedOut ? 'phonelink_off' : 'devices'} className="!text-[20px]" />
+              </span>
               <div className="min-w-0">
                 <p className="lf-caption text-content-muted">{t('admin.analytics.exclusions.deviceTitle')}</p>
                 <p className="lf-caption text-content-faint">{t('admin.analytics.exclusions.deviceHint')}</p>
@@ -142,14 +144,17 @@ export function ExclusionsCard() {
 
           {/* Automatic detection: addresses staff have actually worked from. */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <p className="lf-label font-bold text-content">{t('admin.analytics.exclusions.detectedTitle')}</p>
-              <span className="lf-caption text-content-faint">
-                {t('admin.analytics.exclusions.detectedWindow', { days: data.data.windowDays })}
-              </span>
-            </div>
+            <SectionHeading
+              icon="travel_explore"
+              tone="muted"
+              as="h3"
+              className="mb-0"
+              meta={t('admin.analytics.exclusions.detectedWindow', { days: data.data.windowDays })}
+            >
+              {t('admin.analytics.exclusions.detectedTitle')}
+            </SectionHeading>
             {data.data.suggestions.length === 0 ? (
-              <p className="lf-caption rounded-lg border border-outline/30 bg-surface-sunken/30 p-3 text-content-muted">
+              <p className="lf-caption rounded-md border border-outline/30 bg-surface-sunken/30 p-3 text-content-muted">
                 {t('admin.analytics.exclusions.detectedEmpty')}
               </p>
             ) : (
@@ -157,7 +162,7 @@ export function ExclusionsCard() {
                 {data.data.suggestions.map((sighting) => (
                   <li
                     key={`${sighting.address}-${sighting.userId}`}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/30 bg-surface-sunken/20 p-3"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-outline/30 bg-surface-sunken/20 p-3"
                   >
                     <div className="min-w-0">
                       <p className="lf-number truncate text-content">{sighting.address}</p>
@@ -190,7 +195,7 @@ export function ExclusionsCard() {
                        * Warned, not blocked: an office IP is a legitimate
                        * exclusion and only the operator knows which this is.
                        */
-                      <p className="lf-caption flex w-full items-start gap-1.5 rounded-lg bg-warning-soft p-2 text-warning-strong">
+                      <p className="lf-caption flex w-full items-start gap-1.5 rounded-md bg-warning-soft p-2 text-warning-strong">
                         <Icon name="warning" className="!text-[16px] shrink-0" />
                         <span>
                           {t('admin.analytics.exclusions.sharedEgress', { count: sighting.distinctStaffUsers })}
@@ -209,7 +214,7 @@ export function ExclusionsCard() {
               {t('admin.analytics.exclusions.activeTitle', { count: data.data.active.length })}
             </p>
             {data.data.active.length === 0 ? (
-              <p className="lf-caption rounded-lg border border-outline/30 bg-surface-sunken/30 p-3 text-content-muted">
+              <p className="lf-caption rounded-md border border-outline/30 bg-surface-sunken/30 p-3 text-content-muted">
                 {t('admin.analytics.exclusions.activeEmpty')}
               </p>
             ) : (
@@ -217,7 +222,7 @@ export function ExclusionsCard() {
                 {data.data.active.map((row) => (
                   <li
                     key={row.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/30 bg-surface-sunken/20 p-3"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-outline/30 bg-surface-sunken/20 p-3"
                   >
                     <div className="min-w-0">
                       <p className="lf-number truncate text-content">{row.network}</p>
@@ -235,7 +240,7 @@ export function ExclusionsCard() {
           </div>
 
           {/* Manual entry, for an office range nobody has browsed from yet. */}
-          <div className="flex flex-col gap-2 rounded-xl border border-outline/40 bg-surface-sunken/20 p-3">
+          <div className="flex flex-col gap-2 rounded-md border border-outline/40 bg-surface-sunken/20 p-3">
             <p className="lf-label font-bold text-content">{t('admin.analytics.exclusions.manualTitle')}</p>
             <div className="flex flex-wrap items-end gap-2">
               <label className="flex min-w-0 flex-1 flex-col gap-1">
@@ -244,7 +249,7 @@ export function ExclusionsCard() {
                   value={manual.network}
                   onChange={(event) => setManual((m) => ({ ...m, network: event.target.value }))}
                   placeholder="203.0.113.0/24"
-                  className="w-full rounded-lg border border-outline bg-surface px-3 py-2 font-mono text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="w-full rounded-md border border-outline bg-surface px-3 py-2 font-mono text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 />
               </label>
               <label className="flex min-w-0 flex-1 flex-col gap-1">
@@ -253,7 +258,7 @@ export function ExclusionsCard() {
                   value={manual.label}
                   onChange={(event) => setManual((m) => ({ ...m, label: event.target.value }))}
                   placeholder={t('admin.analytics.exclusions.namePlaceholder')}
-                  className="w-full rounded-lg border border-outline bg-surface px-3 py-2 text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="w-full rounded-md border border-outline bg-surface px-3 py-2 text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 />
               </label>
               <AdminAction
@@ -267,7 +272,7 @@ export function ExclusionsCard() {
             </div>
           </div>
 
-          <p className="lf-caption rounded-lg border border-warning/30 bg-warning-soft/40 p-3 text-warning-strong">
+          <p className="lf-caption rounded-md border border-warning/30 bg-warning-soft/40 p-3 text-warning-strong">
             {t('admin.analytics.exclusions.forwardOnly')}
           </p>
         </>

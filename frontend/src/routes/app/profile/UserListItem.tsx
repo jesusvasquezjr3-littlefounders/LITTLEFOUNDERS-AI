@@ -15,7 +15,7 @@ export interface ListedUser {
 /** One row in a followers/following/blocked list — avatar, name, @handle, optional action slot. */
 export function UserListItem({ user, tutorLabel, action }: { user: ListedUser; tutorLabel: string; action?: ReactNode }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg p-2.5 transition-colors duration-150 hover:bg-surface-sunken">
+    <div className="flex items-center gap-3 rounded-md p-2.5 transition-colors duration-150 hover:bg-surface-sunken">
       <Link
         to={user.username ? `/@${user.username}` : '#'}
         className="lf-press flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

@@ -323,7 +323,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             type="button"
             onClick={onExit}
             aria-label={t('lesson.exit')}
-            className="lf-slab lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-content-muted transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            className="lf-slab lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           >
             <Icon name="close" />
           </button>

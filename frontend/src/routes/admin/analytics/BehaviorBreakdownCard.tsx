@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, Icon, Table, type TableColumn } from '@/components/ui';
+import { Card, Icon, SectionHeading, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useAdminData } from '../adminShared';
 import {
@@ -119,10 +119,7 @@ export function BehaviorBreakdownCard({
 
   return (
     <Card className="flex flex-col gap-3 shadow-glass border border-outline/50">
-      <div className="flex items-center gap-2">
-        <Icon name={icon} className="!text-[20px] text-content-muted" />
-        <h3 className="lf-label font-bold text-content">{title}</h3>
-      </div>
+      <SectionHeading icon={icon} tone="accent" as="h3" className="mb-0">{title}</SectionHeading>
       {rows.length === 0 ? (
         <p className="lf-caption py-6 text-center text-content-muted">{t('admin.analytics.behavior.noRows')}</p>
       ) : (

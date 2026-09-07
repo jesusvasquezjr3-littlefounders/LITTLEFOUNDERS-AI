@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, Table, TrendChart, type DropdownOption, type TableColumn } from '@/components/ui';
+import { Badge, Card, Dropdown, Icon, ProgressBar, SectionHeading, StatCard, Table, TrendChart, type DropdownOption, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminPage, AdminEmpty, Unavailable, useAdminData } from './adminShared';
 import { PipelineFlow } from './PipelineFlow';
@@ -76,7 +76,7 @@ export function AdminGenerationPage() {
   return (
     <AdminPage titleKey="admin.generation.title" subtitleKey="admin.generation.subtitle">
       {/* Tab bar */}
-      <nav className="mb-5 flex gap-1 rounded-xl bg-surface-sunken p-1 w-fit border border-outline/30 shadow-sm" role="tablist" aria-label={t('admin.generation.tabs.aria')}>
+      <nav className="mb-5 flex gap-1 rounded-md bg-surface-sunken p-1 w-fit border border-outline/30 shadow-sm" role="tablist" aria-label={t('admin.generation.tabs.aria')}>
         {TABS.map(({ key, icon }) => (
           <button
             key={key}
@@ -85,7 +85,7 @@ export function AdminGenerationPage() {
             aria-selected={tab === key}
             onClick={() => setTab(key)}
             className={cn(
-              'flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
+              'flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               tab === key
                 ? 'bg-surface text-content shadow-glass-sm border border-outline/30 font-bold'
@@ -98,7 +98,7 @@ export function AdminGenerationPage() {
         ))}
         {/* Live indicator dot when a run is active */}
         {liveHeartbeat && (
-          <span className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold text-accent bg-accent-soft">
+          <span className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold text-accent bg-accent-soft">
             <span className="h-2 w-2 rounded-full bg-accent animate-pulse" aria-hidden />
             <span className="hidden sm:inline">{t('admin.generation.live.badge')}</span>
           </span>
@@ -162,7 +162,7 @@ function HistoryTab({ overview }: { overview: GenerationOverview }) {
     <div className="space-y-5">
       {tracks.length > 0 && (
         <section aria-labelledby="gen-tracks">
-          <h2 id="gen-tracks" className="lf-headline mb-3">{t('admin.generation.tracks')}</h2>
+          <SectionHeading icon="route" tone="accent" id="gen-tracks">{t('admin.generation.tracks')}</SectionHeading>
           <div className="grid gap-4 md:grid-cols-2">
             {tracks.map((track) => (
               <TrackCard key={track.trackId} track={track} t={t} nf={nf} usd={usd} dateFmt={dateFmt} />
@@ -171,8 +171,8 @@ function HistoryTab({ overview }: { overview: GenerationOverview }) {
         </section>
       )}
 
-      <div className="flex items-center justify-between">
-        <h2 className="lf-headline">{t('admin.generation.history.runs')}</h2>
+      <div className="flex items-center justify-between gap-3">
+        <SectionHeading icon="history" tone="accent" className="mb-0 min-w-0 flex-1">{t('admin.generation.history.runs')}</SectionHeading>
         {runs.length > 0 && (
           <Dropdown
             value={effectiveRunId ?? ''}
@@ -199,7 +199,7 @@ function HistoryTab({ overview }: { overview: GenerationOverview }) {
       {/* Run comparison */}
       {runs.length >= 2 && (
         <section>
-          <h2 className="lf-headline mb-3">{t('admin.generation.compare.title')}</h2>
+          <SectionHeading icon="compare_arrows" tone="delight">{t('admin.generation.compare.title')}</SectionHeading>
           <RunCompare runs={runs} />
         </section>
       )}
@@ -352,9 +352,9 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
   return (
     <>
       <section aria-labelledby="gen-kpis">
-        <h2 id="gen-kpis" className="lf-headline mb-3">
+        <SectionHeading icon="precision_manufacturing" tone="accent" id="gen-kpis">
           {t('admin.generation.runTitle', { runId: run.runId })}
-        </h2>
+        </SectionHeading>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-6">
           <StatCard dense icon={<Icon name="task_alt" />} tone="primary" value={`${nf.format(publishedCount)}/${nf.format(slots.length)}`} label={t('admin.generation.kpi.published')} />
           <StatCard dense icon={<Icon name="error" />} tone="accent" value={nf.format(failedCount)} label={t('admin.generation.kpi.failed')} />
@@ -368,7 +368,10 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
       <div className="grid gap-4 lg:grid-cols-2">
         <section aria-labelledby="gen-heatmap">
           <Card className="p-5">
-            <h2 id="gen-heatmap" className="lf-label mb-3 text-content-muted">{t('admin.generation.heatmap.title')}</h2>
+            {/* The tone IS the reading: a failure heatmap with nothing in it
+                is a healthy run, and saying so in green costs a glance rather
+                than a comparison. */}
+            <SectionHeading icon="warning" tone={failedTotal === 0 ? 'success' : 'error'} as="h3" id="gen-heatmap">{t('admin.generation.heatmap.title')}</SectionHeading>
             {failedTotal === 0 ? (
               <p className="lf-caption text-content-muted">{t('admin.generation.heatmap.empty')}</p>
             ) : (
@@ -393,7 +396,7 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
 
         <section aria-labelledby="gen-judge">
           <Card className="p-5">
-            <h2 id="gen-judge" className="lf-label mb-1 text-content-muted">{t('admin.generation.judge.title', { count: judged.length })}</h2>
+            <SectionHeading icon="gavel" tone="delight" as="h3" id="gen-judge" className="mb-1">{t('admin.generation.judge.title', { count: judged.length })}</SectionHeading>
             <p className="lf-caption mb-3 text-content-faint">{t('admin.generation.judge.note')}</p>
             {dimensionMeans.length === 0 ? (
               <p className="lf-caption text-content-muted">{t('admin.generation.judge.empty')}</p>
@@ -415,14 +418,14 @@ function RunDetailSection({ runId, onSlotClick }: { runId: string; onSlotClick?:
       {durationPoints.length > 1 && (
         <section aria-labelledby="gen-duration">
           <Card className="p-5">
-            <h2 id="gen-duration" className="lf-label mb-3 text-content-muted">{t('admin.generation.duration.title')}</h2>
+            <SectionHeading icon="timer" tone="muted" as="h3" id="gen-duration">{t('admin.generation.duration.title')}</SectionHeading>
             <TrendChart points={durationPoints} ariaLabel={t('admin.generation.duration.title')} />
           </Card>
         </section>
       )}
 
       <section aria-labelledby="gen-slots">
-        <h2 id="gen-slots" className="lf-headline mb-3">{t('admin.generation.slots.title', { count: slots.length })}</h2>
+        <SectionHeading icon="inventory_2" tone="accent" id="gen-slots">{t('admin.generation.slots.title', { count: slots.length })}</SectionHeading>
         {slots.length === 0 ? (
           <AdminEmpty icon="inventory_2" message={t('admin.generation.slots.empty')} />
         ) : (

@@ -1,6 +1,6 @@
 import { Suspense, lazy, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Icon } from '@/components/ui';
+import { Card, Icon, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useAdminData } from '../adminShared';
 import { countryLabel, type BreakdownData, type BreakdownRow, type DimensionKey, type PeriodQuery } from './analyticsShared';
@@ -112,7 +112,7 @@ export function AnalyticsGeoMap({
         {zoomed && <RegionRows country={zoomed} periodQuery={periodQuery} onRows={setRegionRows} />}
         <Suspense
           fallback={
-            <div className="min-h-56 animate-pulse rounded-xl border border-outline/40 bg-surface-sunken/40" />
+            <div className="min-h-56 animate-pulse rounded-md border border-outline/40 bg-surface-sunken/40" />
           }
         >
           <WorldChoropleth
@@ -163,7 +163,7 @@ export function AnalyticsGeoMap({
                       if (!zoomed) selectCountry(row.label.toUpperCase());
                     }}
                     className={cn(
-                      'group flex w-full min-w-0 flex-col gap-2 rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                      'group flex w-full min-w-0 flex-col gap-2 rounded-md border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                       isSelected
                         ? 'border-primary/60 bg-primary-soft/40'
                         : 'border-outline/30 bg-surface-sunken/30 hover:border-outline hover:bg-surface-sunken/60',
@@ -198,7 +198,7 @@ export function AnalyticsGeoMap({
             beats letting it vanish between a map and a top-8 list.
           */}
           {unplaceable.length > 0 && (
-            <p className="lf-caption mt-2 rounded-lg border border-outline/40 bg-surface-sunken/40 p-2 text-content-muted">
+            <p className="lf-caption mt-2 rounded-md border border-outline/40 bg-surface-sunken/40 p-2 text-content-muted">
               {t('admin.analytics.geo.unmapped', {
                 countries: unplaceable.map((code) => countryLabel(code, i18n.resolvedLanguage)).join(', '),
               })}
@@ -239,11 +239,8 @@ function MapShell({ title, subtitle, children }: { title: string; subtitle: stri
   return (
     <Card className="flex min-w-0 flex-col gap-4 p-4 sm:p-5">
       <div>
-        <h3 className="lf-title flex items-center gap-2 text-content">
-          <Icon name="public" className="!text-[21px] text-primary" />
-          {title}
-        </h3>
-        <p className="lf-caption mt-1 text-content-muted">{subtitle}</p>
+        <SectionHeading icon="public" tone="delight" as="h3" className="mb-1">{title}</SectionHeading>
+        <p className="lf-caption text-content-muted">{subtitle}</p>
       </div>
       {children}
     </Card>
@@ -252,7 +249,7 @@ function MapShell({ title, subtitle, children }: { title: string; subtitle: stri
 
 function MapState({ icon, text, spin = false }: { icon: string; text: string; spin?: boolean }) {
   return (
-    <div className="flex min-h-64 flex-col items-center justify-center gap-2 rounded-xl border border-outline/30 bg-surface-sunken/30 text-center">
+    <div className="flex min-h-64 flex-col items-center justify-center gap-2 rounded-md border border-outline/30 bg-surface-sunken/30 text-center">
       <Icon name={icon} className={cn('!text-[38px] text-content-faint', spin && 'animate-spin')} />
       <p className="lf-caption text-content-muted">{text}</p>
     </div>

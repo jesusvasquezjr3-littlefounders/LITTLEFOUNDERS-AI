@@ -7,6 +7,14 @@ import { Icon } from './Icon';
  * resolves to a selected value), `value` may be `null` — the whole point for
  * onboarding/placement's optional questions, where no answer is a valid,
  * honest state rather than a silently-defaulted first option.
+ *
+ * IT IS THE STUDY'S CHOOSABLE CARD (2026-09-07, /DESIGN.md §The study's
+ * component set). "Any grid where one of N is chosen" is the definition of
+ * `.lf-pick-card`, and this component is the platform's only generic one of
+ * those — so selection is signalled the four ways the study signals it (fill,
+ * 2px border, outer glow, corner check disc) rather than by a tinted border
+ * and a trailing tick. The trailing tick is gone because the disc replaces it:
+ * two checks for one state is the state saying it twice.
  */
 
 export interface OptionGroupOption<T extends string> {
@@ -36,18 +44,20 @@ export function OptionGroup<T extends string>({ value, options, onChange, ariaLa
             aria-checked={selected}
             onClick={() => onChange(option.value)}
             className={cn(
-              'lf-label motion-safe-press flex min-h-11 w-full items-center justify-between gap-3 rounded-md border px-4 py-3 text-left transition-colors duration-150',
+              'lf-pick-card lf-label motion-safe-press flex min-h-11 w-full items-center justify-between gap-3 px-4 py-3 text-left text-content',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-              selected
-                ? 'border-primary/60 bg-primary-soft text-primary'
-                : 'border-outline/30 bg-surface-sunken text-content hover:border-outline/60',
+              selected && 'lf-pick-card-on',
             )}
           >
+            {selected && (
+              <span className="lf-pick-check" aria-hidden>
+                <Icon name="check" className="!text-[12px]" />
+              </span>
+            )}
             <span className="flex flex-col gap-0.5">
               <span>{option.label}</span>
               {option.description && <span className="lf-caption text-content-muted">{option.description}</span>}
             </span>
-            {selected && <Icon name="check_circle" className="shrink-0 text-primary" />}
           </button>
         );
       })}

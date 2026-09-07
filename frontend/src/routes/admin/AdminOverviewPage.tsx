@@ -1,7 +1,8 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
+import { Badge, Card, Icon, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
 
@@ -68,6 +69,9 @@ export function AdminOverviewPage() {
   const { data } = useAdminData<Overview>('/admin/overview');
   const { data: health } = useAdminData<Health>('/admin/health/services');
   const { data: retention } = useAdminData<Retention>('/admin/learning/retention');
+  const quickId = useId();
+  const rolesId = useId();
+  const healthId = useId();
 
   const nf = new Intl.NumberFormat();
   const o = data.state === 'ready' ? data.data : null;
@@ -100,20 +104,22 @@ export function AdminOverviewPage() {
           {/* Quick Staff Action Shortcuts Hub */}
           <Card className="flex flex-col gap-3 p-5 shadow-glass border border-outline/50">
             <div>
-              <h2 className="lf-title font-bold text-content">{t('admin.overview.quickActionsTitle')}</h2>
+              <SectionHeading icon="bolt" tone="accent" id={quickId} className="mb-1">
+                {t('admin.overview.quickActionsTitle')}
+              </SectionHeading>
               <p className="lf-caption text-content-muted">{t('admin.overview.quickActionsSubtitle')}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-1">
+            <div role="group" aria-labelledby={quickId} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-1">
               {quickActions.map((act) => (
                 <Link
                   key={act.key}
                   to={act.path}
-                  className="lf-press motion-safe-press group flex flex-col gap-2 p-3.5 rounded-xl bg-surface-sunken/60 hover:bg-primary-soft/40 border border-outline/30 hover:border-primary/40 transition-all duration-150"
+                  className="lf-press motion-safe-press group flex flex-col gap-2 p-3.5 rounded-md bg-surface-sunken/60 hover:bg-primary-soft/40 border border-outline/30 hover:border-primary/40 transition-all duration-150"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="p-2 rounded-lg bg-surface text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <span className="lf-tile h-9 w-9 text-primary">
                       <Icon name={act.icon} className="!text-[20px]" />
-                    </div>
+                    </span>
                     <Icon name="arrow_forward" className="!text-[16px] text-content-muted group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <div>
@@ -132,9 +138,14 @@ export function AdminOverviewPage() {
           <div className="grid gap-4 lg:grid-cols-2">
             {/* Content status */}
             <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
-              <div className="flex items-center justify-between">
-                <h2 className="lf-title font-bold text-content">{t('admin.overview.contentTitle')}</h2>
-                <Link to="/admin/content" className="lf-caption font-bold text-primary hover:underline">
+              <div className="flex items-center justify-between gap-3">
+                <SectionHeading icon="menu_book" tone="accent" className="mb-0 min-w-0 flex-1">
+                  {t('admin.overview.contentTitle')}
+                </SectionHeading>
+                <Link
+                  to="/admin/content"
+                  className="lf-caption inline-flex min-h-11 shrink-0 items-center font-bold text-primary hover:underline"
+                >
                   {t('admin.overview.manage')}
                 </Link>
               </div>
@@ -149,7 +160,7 @@ export function AdminOverviewPage() {
               {o && o.content.reviewQueue > 0 && (
                 <Link
                   to="/admin/content"
-                  className="lf-press motion-safe-press flex items-center justify-between rounded-xl bg-warning-soft px-4 py-3 text-warning-strong transition-colors hover:bg-warning-soft/70"
+                  className="lf-press motion-safe-press flex items-center justify-between rounded-md bg-warning-soft px-4 py-3 text-warning-strong transition-colors hover:bg-warning-soft/70"
                 >
                   <span className="lf-label flex items-center gap-2">
                     <Icon name="gpp_maybe" /> {t('admin.overview.reviewCta', { count: o.content.reviewQueue })}
@@ -161,15 +172,20 @@ export function AdminOverviewPage() {
 
             {/* Roles distribution */}
             <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
-              <div className="flex items-center justify-between">
-                <h2 className="lf-title font-bold text-content">{t('admin.overview.rolesTitle')}</h2>
+              <div className="flex items-center justify-between gap-3">
+                <SectionHeading icon="badge" tone="delight" id={rolesId} className="mb-0 min-w-0 flex-1">
+                  {t('admin.overview.rolesTitle')}
+                </SectionHeading>
                 {isSuperadmin && (
-                  <Link to="/admin/roles" className="lf-caption font-bold text-primary hover:underline">
+                  <Link
+                    to="/admin/roles"
+                    className="lf-caption inline-flex min-h-11 shrink-0 items-center font-bold text-primary hover:underline"
+                  >
                     {t('admin.overview.manage')}
                   </Link>
                 )}
               </div>
-              <ul className="flex flex-col divide-y divide-outline/50">
+              <ul aria-labelledby={rolesId} className="flex flex-col divide-y divide-outline/50">
                 {ROLE_ORDER.filter((r) => o?.users.byRole[r]).map((r) => (
                   <li key={r} className="flex items-center justify-between py-2">
                     <RoleChip role={r} />
@@ -186,14 +202,16 @@ export function AdminOverviewPage() {
           {/* Learning retention module */}
           <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
             <div>
-              <h2 className="lf-title font-bold text-content">{t('admin.overview.retentionTitle')}</h2>
-              <p className="lf-caption mt-1 text-content-muted">{t('admin.overview.retentionSubtitle')}</p>
+              <SectionHeading icon="psychology" tone="success" className="mb-1">
+                {t('admin.overview.retentionTitle')}
+              </SectionHeading>
+              <p className="lf-caption text-content-muted">{t('admin.overview.retentionSubtitle')}</p>
             </div>
             {retention.state === 'ready' && retention.data.buckets.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="flex flex-col gap-3">
                   {retention.data.buckets.map((b) => (
-                    <div key={b.bucket} className="flex flex-col gap-1.5 p-3 rounded-xl bg-surface-sunken/40 border border-outline/30">
+                    <div key={b.bucket} className="flex flex-col gap-1.5 p-3 rounded-md bg-surface-sunken/40 border border-outline/30">
                       <div className="flex items-center justify-between">
                         <span className="lf-label text-content font-bold">{t('admin.overview.retentionBucket', { bucket: b.bucket })}</span>
                         <span className="flex items-baseline gap-2">
@@ -216,7 +234,7 @@ export function AdminOverviewPage() {
                   <p className="lf-caption font-bold text-content-muted">{t('admin.overview.retentionWeakest')}</p>
                   <div className="flex flex-col gap-2.5">
                     {retention.data.byTopic.slice(0, 4).map((row) => (
-                      <div key={row.slug} className="flex flex-col gap-1 p-2.5 rounded-xl bg-surface-sunken/40 border border-outline/30">
+                      <div key={row.slug} className="flex flex-col gap-1 p-2.5 rounded-md bg-surface-sunken/40 border border-outline/30">
                         <div className="flex items-center justify-between">
                           <span className="lf-label truncate pr-3 text-content font-medium">{row.title}</span>
                           <span className={cn('lf-number font-bold text-sm shrink-0', retentionTone(row.avgFirstAttemptScore))}>
@@ -242,22 +260,39 @@ export function AdminOverviewPage() {
 
           {/* Health strip */}
           <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <h2 className="lf-title font-bold text-content">{t('admin.overview.healthTitle')}</h2>
-              <div className="flex items-center gap-2">
-                {health.state === 'ready' &&
-                  (health.data.summary.down === 0 ? (
-                    <Badge className="bg-success-soft text-success-strong">{t('admin.health.allUp')}</Badge>
-                  ) : (
-                    <Badge className="bg-error-soft text-error-strong">{t('admin.health.someDown', { count: health.data.summary.down })}</Badge>
-                  ))}
-                <Link to="/admin/analytics" className="lf-caption font-bold text-primary hover:underline">
-                  {t('admin.overview.details')}
-                </Link>
-              </div>
+            {/*
+              THE TONE IS THE READING. A health panel whose lockup is always
+              the same colour says nothing; this one is success while every
+              monitor answers, error the moment one stops, and muted while we
+              genuinely do not know — which is a third state, not a green one.
+            */}
+            <div className="flex items-center justify-between gap-3">
+              <SectionHeading
+                icon="monitor_heart"
+                tone={health.state !== 'ready' ? 'muted' : health.data.summary.down === 0 ? 'success' : 'error'}
+                id={healthId}
+                className="mb-0 min-w-0 flex-1"
+                meta={
+                  health.state === 'ready' ? (
+                    health.data.summary.down === 0 ? (
+                      <Badge className="bg-success-soft text-success-strong">{t('admin.health.allUp')}</Badge>
+                    ) : (
+                      <Badge className="bg-error-soft text-error-strong">{t('admin.health.someDown', { count: health.data.summary.down })}</Badge>
+                    )
+                  ) : undefined
+                }
+              >
+                {t('admin.overview.healthTitle')}
+              </SectionHeading>
+              <Link
+                to="/admin/analytics"
+                className="lf-caption inline-flex min-h-11 shrink-0 items-center font-bold text-primary hover:underline"
+              >
+                {t('admin.overview.details')}
+              </Link>
             </div>
             {health.state === 'ready' ? (
-              <div className="flex flex-wrap gap-2">
+              <div role="group" aria-labelledby={healthId} className="flex flex-wrap gap-2">
                 {health.data.monitors.map((m) => (
                   <span
                     key={m.id}

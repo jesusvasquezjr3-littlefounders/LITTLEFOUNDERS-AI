@@ -1,8 +1,33 @@
-import type { ReactNode } from 'react';
+import { Suspense, lazy, useMemo, type ReactNode } from 'react';
 import { Icon, ProgressBar } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
 import type { CharacterId } from '@/components/characters/control/types';
+import { getDeviceProbe } from '@/tutor-scene/quality';
 import type { GuidedVoice } from './useGuidedVoice';
+
+/*
+ * THE CHARACTER IS 3D HERE NOW (2026-09-07, owner direction).
+ *
+ * Onboarding and placement are the first two screens a person meets, and they
+ * were introducing the cast as flat 2D actors while the product's whole
+ * identity is that these characters are REAL and standing somewhere. The owner
+ * asked for the 3D cast on both.
+ *
+ * `CharacterStage` is the right surface and already existed: "one character, no
+ * world" — no diorama, no walk mask, no camera director, no time of day,
+ * lighting pinned to `auto` so the character is lit like the page rather than
+ * like an island at some hour. It is what the pose lab and the Lesson Engine
+ * already compose from, so this adds a caller rather than a second answer to
+ * "how do we render a character on its own".
+ *
+ * LAZY, because it pulls three.js and the model pipeline, and this is the
+ * FIRST screen: a guest who bounces before the character loads must not have
+ * paid for the renderer. The 2D actor renders immediately underneath while the
+ * chunk arrives, so the screen is never characterless.
+ */
+const CharacterStage = lazy(() =>
+  import('@/tutor-scene/CharacterStage').then((m) => ({ default: m.CharacterStage })),
+);
 
 /*
  * The shared stage for the two guided flows — onboarding and placement.
@@ -57,6 +82,14 @@ export function GuidedStage({
   error,
   children,
 }: GuidedStageProps) {
+  /*
+   * Probed ONCE per mount, not per render: `probeDevice` creates a canvas and
+   * asks it for a context, which is not something to do on every keystroke in
+   * the field beside it. `getDeviceProbe` caches, and the answer cannot change
+   * while the page is open.
+   */
+  const threeD = useMemo(() => getDeviceProbe().webgl !== 'none', []);
+
   return (
     <div className="flex min-h-screen flex-col bg-base">
       {/* Controls: back, progress, sound. One thin row, never more. */}
@@ -100,13 +133,51 @@ export function GuidedStage({
          */}
         <div className="grid w-full max-w-5xl items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
           <div className="mx-auto flex w-full max-w-md flex-col items-center gap-4">
-            <CharacterActor
-              character={character}
-              emotion={speaking ? 'happy' : 'neutral'}
-              speaking={speaking}
-              size="md"
-              className="h-44 w-44 lg:h-60 lg:w-60"
-            />
+            {/*
+              3D WHERE THE DEVICE CAN DRAW IT, 2D WHERE IT CANNOT — and the
+              fallback is the REAL 2D actor rather than an apology.
+              `SceneCanvas` prints "this device cannot show 3D" when there is
+              no context, which is honest on the Tutor's route because the
+              island IS the product there. Here it would replace a working
+              character with a sentence about WebGL on the first screen of the
+              product, so this branch never reaches that message: no context,
+              no canvas, and the flat actor that always worked stays.
+            */}
+            {threeD ? (
+              <Suspense
+                fallback={
+                  <CharacterActor
+                    character={character}
+                    emotion={speaking ? 'happy' : 'neutral'}
+                    speaking={speaking}
+                    size="md"
+                    className="h-44 w-44 lg:h-60 lg:w-60"
+                  />
+                }
+              >
+                <CharacterStage
+                  id={character}
+                  emotion={speaking ? 'happy' : 'neutral'}
+                  action="idle"
+                  speaking={speaking}
+                  /*
+                   * A conversation framing rather than a full-body one: this is
+                   * a character talking to you, and the reason they are on
+                   * screen at all is that you can read their expression.
+                   */
+                  fill={0.72}
+                  className="h-44 w-44 lg:h-60 lg:w-60"
+                />
+              </Suspense>
+            ) : (
+              <CharacterActor
+                character={character}
+                emotion={speaking ? 'happy' : 'neutral'}
+                speaking={speaking}
+                size="md"
+                className="h-44 w-44 lg:h-60 lg:w-60"
+              />
+            )}
 
             {/*
              * The line and the way to hear it again are ONE control, not a

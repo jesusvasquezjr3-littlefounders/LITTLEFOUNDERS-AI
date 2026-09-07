@@ -338,6 +338,7 @@
     "manageAccess": "Gerenciar Acessos",
     "accessControlTitle": "Controle de Acessos para {{name}}",
     "accessControlDesc": "Revise a origem dos papéis e altere permissões específicas deste perfil da equipe.",
+    "permissionsHeading": "Permissões",
     "assignmentHistory": "Histórico de atribuição de papéis",
     "grantedBy": "Concedido por {{id}}…",
     "systemAssignment": "Atribuição do sistema",

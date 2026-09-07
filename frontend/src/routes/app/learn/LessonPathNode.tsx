@@ -65,7 +65,7 @@ export function LessonPathNode({
       aria-disabled={!clickable}
       aria-label={`${title}, ${t(`learn.state.${lesson.state}`)}`}
       className={cn(
-        'group flex w-full items-center gap-3.5 rounded-xl border p-3.5 text-left transition-[border-color,background-color] duration-200',
+        'group flex w-full items-center gap-3.5 rounded-md border p-3.5 text-left transition-[border-color,background-color] duration-200',
         clickable
           ? 'cursor-pointer border-outline/50 bg-surface hover:border-primary/50 hover:bg-primary-soft/15'
           : 'cursor-not-allowed border-outline/40 bg-surface-sunken/40 opacity-70',

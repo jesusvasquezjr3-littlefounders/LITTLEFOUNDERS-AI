@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
+import { Badge, Card, Icon, SectionHeading, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
 import { UsersFunnelCard } from './UsersFunnelCard';
@@ -197,7 +197,7 @@ export function AdminUsersPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Role distribution */}
             <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
-              <h3 className="lf-label text-content-muted font-bold">{t('admin.users.statsRoles')}</h3>
+              <SectionHeading icon="badge" tone="delight" as="h3" className="mb-0">{t('admin.users.statsRoles')}</SectionHeading>
               <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-sunken">
                 {ROLE_ORDER.filter((r) => stats.roles[r]).map((r) => (
                   <div key={r} className={cn('h-full', ROLE_COLORS[r])} style={{ width: `${((stats.roles[r] ?? 0) / Math.max(stats.total, 1)) * 100}%` }} />
@@ -215,7 +215,7 @@ export function AdminUsersPage() {
 
             {/* Locale distribution */}
             <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
-              <h3 className="lf-label text-content-muted font-bold">{t('admin.users.statsLocales')}</h3>
+              <SectionHeading icon="translate" tone="success" as="h3" className="mb-0">{t('admin.users.statsLocales')}</SectionHeading>
               <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-sunken">
                 {LOCALE_ORDER.filter((k) => stats.locales[k]).map((k) => (
                     <div key={k} className={cn('h-full', LOCALE_COLORS[k] ?? 'bg-primary')} style={{ width: `${((stats.locales[k] ?? 0) / Math.max(stats.total, 1)) * 100}%` }} />
@@ -233,7 +233,7 @@ export function AdminUsersPage() {
 
             {/* Age groups */}
             <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
-              <h3 className="lf-label text-content-muted font-bold">{t('admin.users.statsAges')}</h3>
+              <SectionHeading icon="cake" tone="accent" as="h3" className="mb-0">{t('admin.users.statsAges')}</SectionHeading>
               {Object.keys(stats.ages).length > 0 ? (
                 <>
                   <div className="flex items-end gap-1 h-10">
@@ -275,7 +275,7 @@ export function AdminUsersPage() {
               onChange={(e) => setQ(e.target.value)}
               aria-label={t('admin.users.searchLabel')}
               placeholder={t('admin.users.search')}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-full bg-surface-sunken border border-outline/40 text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-md bg-surface-sunken border border-outline/40 text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>
 
@@ -356,7 +356,7 @@ export function AdminUsersPage() {
             <div className="flex flex-col gap-4">
               <p className="lf-caption max-w-2xl text-content-muted">{t('admin.users.detailReadOnly')}</p>
 
-              <div className="grid gap-3 rounded-xl bg-surface-sunken/40 p-4 sm:grid-cols-2">
+              <div className="grid gap-3 rounded-md bg-surface-sunken/40 p-4 sm:grid-cols-2">
                 <div className="min-w-0 sm:col-span-2">
                   <span className="lf-caption text-content-muted">{t('admin.users.colUserId')}</span>
                   <div className="mt-1 flex min-w-0 items-center justify-between gap-3">

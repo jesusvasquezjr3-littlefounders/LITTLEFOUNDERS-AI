@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
+import { Badge, Card, Icon, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { failedFromI18nKey, formatPct } from './generationI18n';
 
@@ -117,8 +117,8 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
       {/* Header */}
       <Card className="p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h2 className="lf-headline">{t('admin.generation.coach.title')}</h2>
+          <div className="min-w-0">
+            <SectionHeading icon="school" tone="accent" className="mb-1">{t('admin.generation.coach.title')}</SectionHeading>
             <p className="lf-caption text-content-muted">
               {report.courseSlug
                 ? `${report.courseSlug} · `
@@ -141,7 +141,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
       {/* Failure heatmap + Top errors */}
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.heatmap')}</h3>
+          <SectionHeading icon="warning" tone={totalFailures === 0 ? 'success' : 'error'} as="h3">{t('admin.generation.coach.heatmap')}</SectionHeading>
           {totalFailures === 0 ? (
             <p className="lf-caption text-content-muted">{t('admin.generation.heatmap.empty')}</p>
           ) : (
@@ -158,7 +158,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
         </Card>
 
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.topErrors')}</h3>
+          <SectionHeading icon="bug_report" tone={report.topErrors.length === 0 ? 'success' : 'error'} as="h3">{t('admin.generation.coach.topErrors')}</SectionHeading>
           {report.topErrors.length === 0 ? (
             <p className="lf-caption text-content-muted">{t('admin.generation.coach.noErrors')}</p>
           ) : (
@@ -177,9 +177,9 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
       {/* Judge dimensions */}
       {report.judge.judged > 0 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-1 text-content-muted">
+          <SectionHeading icon="gavel" tone="delight" as="h3" className="mb-1">
             {t('admin.generation.coach.judgeTitle', { count: report.judge.judged })}
-          </h3>
+          </SectionHeading>
           <p className="lf-caption mb-3 text-content-faint">{t('admin.generation.judge.note')}</p>
           <div className="space-y-2">
             {DIMS.map((dim) => {
@@ -220,7 +220,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
       {/* Worst lessons */}
       {report.judge.worstLessons.length > 0 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.worstLessons')}</h3>
+          <SectionHeading icon="thumb_down" tone="warning" as="h3">{t('admin.generation.coach.worstLessons')}</SectionHeading>
           <ul className="space-y-1">
             {report.judge.worstLessons.map((l) => (
               <li key={l.slotId} className="lf-caption flex flex-wrap items-center gap-1.5 text-content-muted">
@@ -236,7 +236,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
 
       {/* Cost breakdown */}
       <Card className="p-4 sm:p-5">
-        <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.costTitle')}</h3>
+        <SectionHeading icon="payments" tone="accent" as="h3">{t('admin.generation.coach.costTitle')}</SectionHeading>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div>
             <p className="lf-caption text-content-faint">{t('admin.generation.coach.costTotal')}</p>
@@ -267,11 +267,11 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
       {/* Proposed actions */}
       {report.proposedActions.length > 0 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.coach.actionsTitle')}</h3>
+          <SectionHeading icon="checklist" tone="warning" as="h3" className="mb-1">{t('admin.generation.coach.actionsTitle')}</SectionHeading>
           <p className="lf-caption mb-3 text-content-faint">{t('admin.generation.coach.actionsNote')}</p>
           <ul className="space-y-3">
             {report.proposedActions.map((a, i) => (
-              <li key={i} className="rounded-xl border border-outline/30 bg-surface-sunken p-3 sm:p-4">
+              <li key={i} className="rounded-md border border-outline/30 bg-surface-sunken p-3 sm:p-4">
                 <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
                   <Badge className={actionTone(a.tag)}>{a.tag}</Badge>
                 </div>
@@ -287,7 +287,7 @@ export function CoachTab({ courseSlug, trackId, className }: CoachTabProps) {
       {report.proposedActions.length === 0 && totalFailures === 0 && (
         <Card className={cn('p-5', className)}>
           <div className="flex items-center gap-3">
-            <Icon name="check_circle" className="text-success" />
+            <span className="lf-tile h-10 w-10 text-success-strong"><Icon name="check_circle" className="!text-[20px]" /></span>
             <p className="lf-body text-content">{t('admin.generation.coach.allClear')}</p>
           </div>
         </Card>

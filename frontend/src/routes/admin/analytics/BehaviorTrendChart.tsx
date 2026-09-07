@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Card, Icon } from '@/components/ui';
+import { Card, Icon, SectionHeading } from '@/components/ui';
 import type { BehaviorSeriesPoint } from './analyticsShared';
 
 /*
@@ -53,8 +53,8 @@ export function BehaviorTrendChart({ data }: { data: BehaviorSeriesPoint[] }) {
 
   return (
     <Card className="flex flex-col gap-4 shadow-glass border border-outline/50">
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h3 className="lf-label font-bold text-content">{t('admin.analytics.behavior.trendTitle')}</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <SectionHeading icon="timeline" tone="accent" as="h3" className="mb-0 min-w-0">{t('admin.analytics.behavior.trendTitle')}</SectionHeading>
         <div className="flex flex-wrap items-center gap-4">
           <span className="lf-caption flex items-center gap-1.5 text-content-muted">
             <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: PAGEVIEWS }} />

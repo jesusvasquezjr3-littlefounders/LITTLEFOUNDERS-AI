@@ -34,7 +34,16 @@ export function Card({
         onInverse
           ? 'lf-glass-deep text-on-inverse'
           : 'lf-glass',
-        hero ? 'rounded-xl p-8' : 'rounded-lg p-6',
+        /*
+         * THE STUDY'S TWO CARD RADII (2026-09-07, §Shape).
+         *
+         * Was `xl` (32px) for a hero and `lg` (24px) for everything else. The
+         * study has nothing at 32px: its cards are 16px and only its modal
+         * shell reaches 24px, and a 32px corner on a dense panel reads as a
+         * different product sharing the screen. A hero keeps the larger of the
+         * two because it is furniture rather than a card.
+         */
+        hero ? 'rounded-lg p-8' : 'rounded-md p-6',
         interactive && 'lf-tactile motion-safe-lift hover:-translate-y-1',
         className,
       )}

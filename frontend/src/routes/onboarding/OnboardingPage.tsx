@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
-import { Button, Field, OptionGroup, type OptionGroupOption } from '@/components/ui';
+import { Button, Field, OptionGroup, SectionHeading, type OptionGroupOption } from '@/components/ui';
 import { GuidedStage } from '@/guided-voice/GuidedStage';
 import { characterFor, useGuidedVoice } from '@/guided-voice/useGuidedVoice';
 
@@ -238,18 +238,37 @@ export function OnboardingPage() {
             <h1 className="lf-display-lg text-content">{t('onboarding.discovery.title')}</h1>
             <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.discovery.subtitle')}</p>
           </div>
-          <OptionGroup
-            value={discoveryChannel}
-            options={discoveryOptions}
-            ariaLabel={t('onboarding.discovery.title')}
-            onChange={(value) => {
-              setDiscoveryChannel(value);
-              advance(1);
-            }}
-          />
-          <Button variant="secondary" className="w-full" onClick={() => advance(1)}>
+          {/*
+            THE ONE GROUP OF CONTROLS IN THE WHOLE FLOW gets the study's
+            section lockup (/DESIGN.md §The study's component set): a tinted
+            icon well plus a wide-tracked small-caps label, wired to the
+            radiogroup with `aria-labelledby` so the list is NAMED rather than
+            merely decorated. Delight, because this question is curiosity
+            rather than something the product needs.
+          */}
+          <div>
+            <SectionHeading as="h2" icon="travel_explore" tone="delight">
+              {t('onboarding.discovery.section')}
+            </SectionHeading>
+            <OptionGroup
+              value={discoveryChannel}
+              options={discoveryOptions}
+              ariaLabel={t('onboarding.discovery.title')}
+              onChange={(value) => {
+                setDiscoveryChannel(value);
+                advance(1);
+              }}
+            />
+          </div>
+          {/* Ghost tier: skipping is a real answer here, and it must not look
+              like a second call to action beside seven live options. */}
+          <button
+            type="button"
+            onClick={() => advance(1)}
+            className="lf-press lf-label inline-flex min-h-11 items-center justify-center self-center rounded-full px-4 text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
             {t('onboarding.skip')}
-          </Button>
+          </button>
         </div>
       )}
 
@@ -259,12 +278,31 @@ export function OnboardingPage() {
             <h1 className="lf-display-lg text-content">{t('onboarding.account.title')}</h1>
             <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.account.subtitle')}</p>
           </div>
-          <Button className="w-full" disabled={submitting} onClick={() => void complete('created_now')}>
-            {submitting ? t('onboarding.submitting') : t('onboarding.account.createNow')}
-          </Button>
-          <Button variant="secondary" className="w-full" disabled={submitting} onClick={() => void complete('later')}>
-            {submitting ? t('onboarding.submitting') : t('onboarding.account.later')}
-          </Button>
+          {/*
+            THE STUDY'S ACTION TIERS, and this is the row that most needed
+            them: two full-width buttons stacked one on the other read as two
+            equal offers, and the whole point of this step is that saving your
+            progress is the recommended one. Ghost (no surface, muted ink) for
+            "Later", primary for the account — and `flex-col-reverse` keeps the
+            primary on top at 375px, where a column has no left and right.
+          */}
+          <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              disabled={submitting}
+              onClick={() => void complete('later')}
+              className="lf-press lf-label inline-flex min-h-11 items-center justify-center rounded-full px-4 text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50"
+            >
+              {submitting ? t('onboarding.submitting') : t('onboarding.account.later')}
+            </button>
+            <Button
+              className="w-full sm:w-auto"
+              disabled={submitting}
+              onClick={() => void complete('created_now')}
+            >
+              {submitting ? t('onboarding.submitting') : t('onboarding.account.createNow')}
+            </Button>
+          </div>
         </div>
       )}
     </GuidedStage>

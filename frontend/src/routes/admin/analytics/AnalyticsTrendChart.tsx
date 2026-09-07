@@ -117,7 +117,7 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
     const point = payload.find((item) => item.dataKey === 'value')?.payload as ChartPoint | undefined;
     if (!point) return null;
     return (
-      <div className="lf-glass rounded-lg border border-outline/50 bg-surface p-3 shadow-pop">
+      <div className="lf-glass rounded-md border border-outline/50 bg-surface p-3 shadow-pop">
         <p className="lf-caption text-content-muted">{dateFormat.format(toDate(label))}</p>
         <p className="lf-number mt-1 text-content">{numberFormat.format(point.value)}</p>
         <p className="lf-caption text-content-muted">{t(`admin.analytics.web.${metric}`)}</p>
@@ -139,7 +139,7 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
           <p className="lf-label font-bold text-content-muted">{t('admin.analytics.web.trend')}</p>
           <p className="lf-caption mt-1 text-content-faint">{t('admin.analytics.web.chartSubtitle')}</p>
         </div>
-        <div className="flex items-center gap-1 self-start rounded-xl border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.analytics.web.metricAria')}>
+        <div className="flex items-center gap-1 self-start rounded-md border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.analytics.web.metricAria')}>
           {(['visitors', 'pageviews'] as Metric[]).map((item) => (
             <button
               key={item}
@@ -147,7 +147,7 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
               aria-pressed={metric === item}
               onClick={() => setMetric(item)}
               className={cn(
-                'min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors',
+                'min-h-10 rounded-full px-3 text-sm font-semibold transition-colors',
                 metric === item ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content',
               )}
             >
@@ -157,7 +157,7 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/40 bg-surface-sunken/50 p-2.5">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-md border border-outline/40 bg-surface-sunken/50 p-2.5">
         <div className="flex items-center gap-2">
           <Icon name="date_range" className="!text-[18px] text-primary" />
           <span className="lf-caption whitespace-nowrap text-content-muted">{rangeLabel}</span>
@@ -183,7 +183,7 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
         />
       </div>
 
-      <div className="rounded-xl border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3">
+      <div className="rounded-md border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3">
         <div className="h-80 w-full sm:h-96">
           <ResponsiveContainer>
             <ComposedChart data={visibleData} margin={{ top: 16, right: 8, left: -12, bottom: 4 }}>
@@ -233,7 +233,7 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
 
 function Summary({ label, value, valueClassName }: { label: string; value: string; valueClassName?: string }) {
   return (
-    <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3">
+    <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3">
       <p className="lf-caption text-content-muted">{label}</p>
       <p className={cn('lf-number mt-1 text-content', valueClassName)}>{value}</p>
     </div>

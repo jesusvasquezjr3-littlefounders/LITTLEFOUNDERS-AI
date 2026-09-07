@@ -338,6 +338,7 @@
     "manageAccess": "Gestionar Accesos",
     "accessControlTitle": "Control de Accesos para {{name}}",
     "accessControlDesc": "Revisa el origen de los roles y cambia permisos específicos para este perfil del staff.",
+    "permissionsHeading": "Permisos",
     "assignmentHistory": "Historial de asignación de roles",
     "grantedBy": "Asignado por {{id}}…",
     "systemAssignment": "Asignación del sistema",

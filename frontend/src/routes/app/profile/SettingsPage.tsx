@@ -1,11 +1,11 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { LOCALES, type Locale } from '@/i18n';
-import { Button, Card, Dropdown, Icon, IconChip, LocaleFlag, type DropdownOption } from '@/components/ui';
+import { Button, Card, Dropdown, Icon, LocaleFlag, SectionHeading, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
@@ -33,6 +33,16 @@ const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { session, getToken, refreshMe, isGuest } = useAuth();
+
+  /*
+   * Every card on this page is a GROUP, so every card is named by its own
+   * lockup and wired to it with `aria-labelledby` — the heading a reader sees
+   * and the name the group announces are the same element (/DESIGN.md §The
+   * study's component set).
+   */
+  const identityHeadingId = useId();
+  const accountHeadingId = useId();
+  const blockedHeadingId = useId();
 
   const [loaded, setLoaded] = useState(false);
   const [displayName, setDisplayName] = useState('');
@@ -174,9 +184,9 @@ export function SettingsPage() {
     <div className="mx-auto max-w-4xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <IconChip tone="primary" size="md" className="mt-1">
+          <span className="lf-tile mt-1 h-12 w-12 text-accent">
             <Icon name="settings" />
-          </IconChip>
+          </span>
           <div>
             <h1 className="lf-display-lg text-content">{t('profile.settings.title')}</h1>
             <p className="lf-body mt-1 max-w-xl text-content-muted">{t('profile.settings.intro')}</p>
@@ -194,9 +204,9 @@ export function SettingsPage() {
       {isGuest && (
         <Card className="mt-6 flex flex-wrap items-center justify-between gap-4 border border-primary/30 bg-primary-soft">
           <div className="flex items-start gap-3">
-            <IconChip tone="primary" size="md">
+            <span className="lf-tile h-12 w-12 text-accent">
               <Icon name="person_add" />
-            </IconChip>
+            </span>
             <div>
               <p className="lf-label text-content">{t('profile.settings.guestBanner.title')}</p>
               <p className="lf-body mt-1 text-content-muted">{t('profile.settings.guestBanner.body')}</p>
@@ -211,8 +221,15 @@ export function SettingsPage() {
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 grid gap-6 lg:grid-cols-2">
         {errorCode && <div className="lg:col-span-2"><ErrorBanner code={errorCode} /></div>}
 
-        <Card className="flex h-full flex-col gap-5" aria-busy={!loaded}>
-          <h2 className="lf-title text-content">{t('profile.settings.identity')}</h2>
+        <Card className="flex h-full flex-col gap-5" aria-busy={!loaded} aria-labelledby={identityHeadingId}>
+          {/*
+           * Warning-toned, and deliberately the SAME hue the Tutor's own
+           * identity row wears: "who you are" is one group across the product,
+           * and the tile is how a learner recognises it in two places.
+           */}
+          <SectionHeading id={identityHeadingId} icon="badge" tone="warning">
+            {t('profile.settings.identity')}
+          </SectionHeading>
           <Field
             label={t('profile.settings.displayName')}
             required
@@ -246,23 +263,40 @@ export function SettingsPage() {
           </div>
         </Card>
 
-        <Card className="flex h-full flex-col gap-5">
-          <h2 className="lf-title text-content">{t('profile.settings.account')}</h2>
+        <Card className="flex h-full flex-col gap-5" aria-labelledby={accountHeadingId}>
+          <SectionHeading id={accountHeadingId} icon="lock" tone="accent">
+            {t('profile.settings.account')}
+          </SectionHeading>
 
           {isGuest ? (
             <Field label={t('profile.settings.email')} value={t('profile.settings.guestBanner.title')} disabled readOnly />
           ) : (
             <>
               {!editingEmail && (
-                <div className="flex items-end justify-between gap-3">
-                  <Field
-                    label={t('profile.settings.email')}
-                    value={session?.user.email ?? ''}
-                    disabled
-                    readOnly
-                    className="flex-1"
-                    hint={emailPending ? t('profile.settings.emailPending', { email: newEmail }) : undefined}
-                  />
+                /*
+                 * THE STUDY'S SETTINGS ROW (/DESIGN.md §The study's component
+                 * set): icon, two lines of label, a control pinned right. It
+                 * was a DISABLED text input beside a button — a field that can
+                 * never be typed in, drawn as a field, which is the shape
+                 * promising the one thing it does not do. The value it showed
+                 * is the row's second line now, and the button that actually
+                 * changes it is the only control in the row.
+                 */
+                <div className="lf-config-row flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="lf-tile h-9 w-9 shrink-0 text-accent">
+                      <Icon name="mail" className="!text-[20px]" />
+                    </span>
+                    <div className="min-w-0">
+                      <span className="lf-label block text-content">{t('profile.settings.email')}</span>
+                      <span className="lf-caption block truncate text-content-muted">{session?.user.email ?? ''}</span>
+                      {emailPending && (
+                        <span className="lf-caption block text-warning-strong">
+                          {t('profile.settings.emailPending', { email: newEmail })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                   <Button
                     type="button"
                     variant="secondary"
@@ -325,13 +359,21 @@ export function SettingsPage() {
               <div className="h-px bg-outline/50" />
 
               {!editingPassword && (
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="lf-label text-content">{t('profile.settings.password')}</p>
-                    <p className="lf-body mt-1 tracking-widest text-content-muted" aria-hidden="true">
-                      ••••••••
-                    </p>
-                    {passwordChanged && <p className="lf-caption mt-1 text-success-strong">{t('profile.settings.changePasswordSuccess')}</p>}
+                /* The same settings row as the email above it — two rows that
+                   do the same kind of thing now look like the same kind of
+                   thing. */
+                <div className="lf-config-row flex items-center justify-between gap-3 p-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="lf-tile h-9 w-9 shrink-0 text-accent">
+                      <Icon name="key" className="!text-[20px]" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="lf-label text-content">{t('profile.settings.password')}</p>
+                      <p className="lf-caption tracking-widest text-content-muted" aria-hidden="true">
+                        ••••••••
+                      </p>
+                      {passwordChanged && <p className="lf-caption text-success-strong">{t('profile.settings.changePasswordSuccess')}</p>}
+                    </div>
                   </div>
                   <Button
                     type="button"
@@ -399,11 +441,18 @@ export function SettingsPage() {
           )}
         </Card>
 
-        <Card className="flex flex-col gap-4 lg:col-span-2">
-          <h2 className="lf-title text-content">{t('profile.settings.blockedTitle')}</h2>
+        <Card className="flex flex-col gap-4 lg:col-span-2" aria-labelledby={blockedHeadingId}>
+          <SectionHeading
+            id={blockedHeadingId}
+            icon="block"
+            tone="warning"
+            meta={blocked && blocked.length > 0 ? new Intl.NumberFormat(i18n.resolvedLanguage).format(blocked.length) : undefined}
+          >
+            {t('profile.settings.blockedTitle')}
+          </SectionHeading>
           {blocked === null && (
             <div className="flex flex-col gap-2" aria-busy="true">
-              <div className="h-[60px] animate-pulse rounded-lg bg-surface-sunken" />
+              <div className="h-[60px] animate-pulse rounded-md bg-surface-sunken" />
             </div>
           )}
           {blocked !== null && blocked.length === 0 && (

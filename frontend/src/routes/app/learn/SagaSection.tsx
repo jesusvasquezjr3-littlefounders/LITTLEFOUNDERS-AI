@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '@/components/ui';
+import { SectionHeading } from '@/components/ui';
 import { LessonPathNode } from './LessonPathNode';
 import { localizedText, type SagaNode } from './types';
 
@@ -22,6 +22,7 @@ interface SagaSectionProps {
 
 export function SagaSection({ saga, locale, courseSlug, nextLessonId, registerNodeRef }: SagaSectionProps) {
   const { t } = useTranslation();
+  const headingId = useId();
 
   const setNodeRef = useCallback(
     (lessonId: string) => (el: HTMLElement | null) => {
@@ -31,16 +32,31 @@ export function SagaSection({ saga, locale, courseSlug, nextLessonId, registerNo
   );
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-center gap-2.5">
-        <Icon name={saga.icon || 'auto_stories'} className="!text-[20px] shrink-0 text-primary" aria-hidden />
-        <h3 className="lf-title min-w-0 flex-1 truncate text-content">
-          {localizedText(saga.title, locale, saga.slug)}
-        </h3>
-        <span className="lf-caption lf-number shrink-0 font-bold text-content-muted">
-          {t('learn.lessonsProgress', { passed: saga.progress.passed, total: saga.progress.total })}
-        </span>
-      </div>
+    <section className="flex flex-col gap-4" aria-labelledby={headingId}>
+      {/*
+       * THE SECTION LOCKUP (/DESIGN.md §The study's component set): the saga's
+       * OWN icon in a tinted tile, its name in wide-tracked small caps, and the
+       * progress count pinned right as `meta` — a count, never a control. The
+       * hue is accent because the lesson rows under it mark the next lesson in
+       * accent; a tile in any other colour would say the group selects in one.
+       *
+       * It used to be a bare icon, an `lf-title` and a number laid out by hand
+       * — the same three parts, arranged for this one screen instead of built
+       * from the piece the whole platform shares.
+       */}
+      <SectionHeading
+        id={headingId}
+        as="h3"
+        icon={saga.icon || 'auto_stories'}
+        tone="accent"
+        meta={
+          <span className="lf-number font-bold">
+            {t('learn.lessonsProgress', { passed: saga.progress.passed, total: saga.progress.total })}
+          </span>
+        }
+      >
+        {localizedText(saga.title, locale, saga.slug)}
+      </SectionHeading>
 
       <div className="flex flex-col gap-5">
         {saga.topics.map((topic) => (

@@ -34,10 +34,14 @@ export function ForgotPasswordPage() {
     return (
       <AuthShell character={MENTOR} title={t('auth.forgotPassword.sentTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
-            <Icon name="mark_email_read" className="text-success-strong" />
+          {/* The study's icon well (`.lf-tile`), replacing a hand-rolled tinted
+              circle: the hue is named once and the fill, the border and the
+              glyph all take it from `currentColor`. */}
+          <span className="lf-tile h-14 w-14 text-success-strong">
+            <Icon name="mark_email_read" aria-hidden className="!text-[26px]" />
           </span>
           <p className="lf-body text-content">{t('auth.forgotPassword.sentBody', { email })}</p>
+          {/* Ghost tier — the way back, never a second call to action. */}
           <Link
             to="/login"
             className={AUTH_LINK_CLASS}

@@ -91,7 +91,7 @@ function PreferencesDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="cookie-preferences-title"
-        className="lf-glass flex max-h-[calc(100dvh-2rem)] min-w-0 w-full max-w-2xl flex-col overflow-hidden rounded-xl shadow-pop sm:max-h-[calc(100dvh-3rem)]"
+        className="lf-glass flex max-h-[calc(100dvh-2rem)] min-w-0 w-full max-w-2xl flex-col overflow-hidden rounded-md shadow-pop sm:max-h-[calc(100dvh-3rem)]"
       >
         <div className="flex items-start justify-between gap-4 border-b border-outline/50 p-5 sm:p-7">
           <div>

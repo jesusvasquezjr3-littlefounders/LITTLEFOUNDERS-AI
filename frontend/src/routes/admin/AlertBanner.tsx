@@ -143,13 +143,15 @@ export function AlertBanner({ heartbeat, analytics, className }: AlertBannerProp
               : 'border-l-accent bg-accent-soft/50',
           )}
         >
-          <Icon
-            name={alert.severity === 'critical' ? 'error' : 'warning'}
+          {/* The study's icon well, in the alert's own severity hue. */}
+          <span
             className={cn(
-              'shrink-0 mt-0.5',
-              alert.severity === 'critical' ? 'text-error' : 'text-accent',
+              'lf-tile mt-0.5 h-9 w-9',
+              alert.severity === 'critical' ? 'text-error-strong' : 'text-warning-strong',
             )}
-          />
+          >
+            <Icon name={alert.severity === 'critical' ? 'error' : 'warning'} className="!text-[18px]" />
+          </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-0.5">
               <p className="lf-caption font-medium text-content">{alert.message}</p>

@@ -145,7 +145,7 @@ export function DateField({
                     setOpen(false);
                   }}
                   className={cn(
-                    'flex h-9 items-center justify-center rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                    'flex h-9 items-center justify-center rounded-full text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                     disabled && 'cursor-not-allowed text-content-faint/50',
                     !disabled && !isSelected && 'text-content hover:bg-surface-sunken',
                     isSelected && 'bg-accent font-bold text-on-accent',

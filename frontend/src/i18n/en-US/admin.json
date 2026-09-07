@@ -338,6 +338,7 @@
     "manageAccess": "Manage Access",
     "accessControlTitle": "Access Control for {{name}}",
     "accessControlDesc": "Review role provenance and toggle specific permissions for this staff profile.",
+    "permissionsHeading": "Permissions",
     "assignmentHistory": "Role assignment history",
     "grantedBy": "Granted by {{id}}…",
     "systemAssignment": "System assignment",

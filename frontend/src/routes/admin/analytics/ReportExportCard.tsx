@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
+import { Card, Dropdown, Icon, SectionHeading, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction } from '../adminShared';
 import { API_BASE_URL, type PeriodQuery } from './analyticsShared';
@@ -109,11 +109,10 @@ export function ReportExportCard({ periodQuery, filterQuery }: { periodQuery: Pe
   return (
     <Card className="flex flex-col gap-4 p-5">
       <div>
-        <h3 className="lf-title flex items-center gap-2 text-content">
-          <Icon name="download" className="!text-[20px] text-primary" />
+        <SectionHeading icon="download" tone="accent" as="h3" className="mb-1">
           {t('admin.analytics.reports.title')}
-        </h3>
-        <p className="lf-caption mt-1 text-content-muted">{t('admin.analytics.reports.caption')}</p>
+        </SectionHeading>
+        <p className="lf-caption text-content-muted">{t('admin.analytics.reports.caption')}</p>
       </div>
 
       {/* Format first: it is the choice that changes what the file is for. */}
@@ -128,7 +127,7 @@ export function ReportExportCard({ periodQuery, filterQuery }: { periodQuery: Pe
               aria-checked={format === item.id}
               onClick={() => setFormat(item.id)}
               className={cn(
-                'flex items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                'flex items-center gap-3 rounded-md border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                 format === item.id
                   ? 'border-primary/60 bg-primary-soft/40'
                   : 'border-outline/40 bg-surface-sunken/30 hover:border-outline',
@@ -169,7 +168,7 @@ export function ReportExportCard({ periodQuery, filterQuery }: { periodQuery: Pe
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/40 bg-surface-sunken/30 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-outline/40 bg-surface-sunken/30 p-3">
         <div className="flex min-w-0 items-center gap-2">
           <Icon name={AUDIENCE_ICONS[audience]} className="!text-[20px] text-primary" />
           <span className="lf-caption truncate text-content-muted">

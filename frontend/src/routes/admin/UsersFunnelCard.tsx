@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, Icon } from '@/components/ui';
+import { Card, Icon, SectionHeading } from '@/components/ui';
 import { useAdminData } from './adminShared';
 import type { AcquisitionData, FunnelIntegrityData, RegistrationsData } from './analytics/analyticsShared';
 
@@ -65,7 +65,7 @@ export function UsersFunnelCard({ days = 90 }: { days?: number }) {
   return (
     <Card className="flex flex-col gap-4 p-5 shadow-glass">
       <div className="flex flex-col gap-1">
-        <h3 className="lf-title text-content">{t('admin.users.funnel.title')}</h3>
+        <SectionHeading icon="filter_alt" tone="success" as="h3" className="mb-0">{t('admin.users.funnel.title')}</SectionHeading>
         <p className="lf-caption text-content-muted">{t('admin.users.funnel.subtitle', { days })}</p>
       </div>
 

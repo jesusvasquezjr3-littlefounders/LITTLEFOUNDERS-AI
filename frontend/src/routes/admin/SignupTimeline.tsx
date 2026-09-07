@@ -16,7 +16,7 @@ import {
 import type { TooltipProps } from 'recharts';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, Icon } from '@/components/ui';
+import { Card, Icon, SectionHeading } from '@/components/ui';
 
 interface Day {
   date: string;
@@ -170,7 +170,7 @@ export function SignupTimeline() {
     const point = payload.find((item) => item.dataKey === 'value')?.payload as ChartPoint | undefined;
     if (!point) return null;
     return (
-      <div className="lf-glass rounded-lg border border-outline/50 bg-surface p-3 shadow-pop">
+      <div className="lf-glass rounded-md border border-outline/50 bg-surface p-3 shadow-pop">
         <p className="lf-caption text-content-muted">{dateFormat.format(toDate(label))}</p>
         <p className="lf-number mt-1 text-content">{numberFormat.format(point.value)}</p>
         <p className="lf-caption text-content-muted">{t(metric === 'daily' ? 'admin.users.timelineSignups' : 'admin.users.timelineCumulative')}</p>
@@ -185,17 +185,17 @@ export function SignupTimeline() {
     <Card className="flex flex-col gap-4 overflow-hidden p-4 sm:p-5">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <h3 className="lf-title text-content">{t('admin.users.timelineTitle')}</h3>
-          <p className="lf-caption mt-1 text-content-muted">{t('admin.users.timelineSubtitle')}</p>
+          <SectionHeading icon="show_chart" tone="accent" as="h3" className="mb-1">{t('admin.users.timelineTitle')}</SectionHeading>
+          <p className="lf-caption text-content-muted">{t('admin.users.timelineSubtitle')}</p>
         </div>
-        <div className="flex items-center gap-2 self-start rounded-xl border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.users.timelineMetricAria')}>
+        <div className="flex items-center gap-2 self-start rounded-md border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.users.timelineMetricAria')}>
           {(['daily', 'cumulative'] as ChartMetric[]).map((item) => (
             <button
               key={item}
               type="button"
               aria-pressed={metric === item}
               onClick={() => setMetric(item)}
-              className={`min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors ${metric === item ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
+              className={`min-h-10 rounded-full px-3 text-sm font-semibold transition-colors ${metric === item ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
             >
               {t(`admin.users.timelineMetric${item === 'daily' ? 'Daily' : 'Cumulative'}`)}
             </button>
@@ -203,7 +203,7 @@ export function SignupTimeline() {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/50 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-2.5">
+      <div className="flex min-w-0 flex-col gap-3 rounded-md border border-outline/40 bg-surface-sunken/50 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-2.5">
         <div className="flex min-w-max items-center gap-1 overflow-x-auto" role="group" aria-label={t('admin.users.timelineRangeAria')}>
           {RANGE_PRESETS.map((preset) => (
             <button
@@ -211,7 +211,7 @@ export function SignupTimeline() {
               type="button"
               aria-pressed={selectedPreset === preset.key}
               onClick={() => selectPreset(preset.key)}
-              className={`min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors ${selectedPreset === preset.key ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
+              className={`min-h-10 rounded-full px-3 text-sm font-semibold transition-colors ${selectedPreset === preset.key ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
             >
               {t(`admin.users.timelineRange${preset.key}`)}
             </button>
@@ -224,25 +224,25 @@ export function SignupTimeline() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t('admin.users.timelineSummaryAria')}>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3">
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3">
           <p className="lf-caption text-content-muted">{t('admin.users.timelineSignups')}</p>
           <p className="lf-number mt-1 text-content">{numberFormat.format(summary.signups)}</p>
         </div>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3">
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3">
           <p className="lf-caption text-content-muted">{t('admin.users.timelineDailyAverage')}</p>
           <p className="lf-number mt-1 text-content">{numberFormat.format(summary.average)}</p>
         </div>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3">
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3">
           <p className="lf-caption text-content-muted">{t('admin.users.timelinePeak')}</p>
           <p className="lf-number mt-1 text-content">{numberFormat.format(summary.peak)}</p>
         </div>
-        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3">
+        <div className="rounded-md border border-outline/30 bg-surface-sunken/40 p-3">
           <p className="lf-caption text-content-muted">{t('admin.users.timelineChange')}</p>
           <p className={`lf-number mt-1 ${changeTone}`}>{change >= 0 ? '+' : ''}{numberFormat.format(change)}</p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3" aria-label={t('admin.users.timelineAria')}>
+      <div className="rounded-md border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3" aria-label={t('admin.users.timelineAria')}>
         <div className="h-80 w-full sm:h-96">
           <ResponsiveContainer>
             <ComposedChart data={visibleData} margin={{ top: 16, right: 8, left: -12, bottom: 4 }}>

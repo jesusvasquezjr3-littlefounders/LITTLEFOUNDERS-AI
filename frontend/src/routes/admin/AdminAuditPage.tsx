@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Dropdown, Icon, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
+import { Badge, Card, Dropdown, Icon, SectionHeading, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable, useAdminData } from './adminShared';
 
 interface AuditEntry {
@@ -102,7 +102,7 @@ export function AdminAuditPage() {
       key: 'detail',
       header: t('admin.audit.colDetail'),
       cell: (entry) => (
-        <code className="lf-caption block max-w-xs truncate rounded bg-surface-sunken px-2 py-0.5 font-mono text-content-muted">
+        <code className="lf-caption block max-w-xs truncate rounded-sm bg-surface-sunken px-2 py-0.5 font-mono text-content-muted">
           {Object.keys(entry.detail).length ? JSON.stringify(entry.detail) : t('admin.audit.emptyValue')}
         </code>
       ),
@@ -143,7 +143,7 @@ export function AdminAuditPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t('admin.audit.searchPlaceholder')}
-                className="w-full rounded-full border border-outline/40 bg-surface-sunken py-2 pl-9 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full rounded-md border border-outline/40 bg-surface-sunken py-2 pl-9 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <p className="lf-caption text-content-muted">{t('admin.audit.searchScope')}</p>
@@ -166,7 +166,7 @@ export function AdminAuditPage() {
             ) : (
               <Table columns={columns} rows={filteredEntries} rowKey={(entry) => entry.id} />
             )}
-            <div className="flex flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 rounded-md border border-outline/40 bg-surface-sunken/40 p-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="lf-caption text-content-muted">{t('admin.audit.rangeSummary', { start: pageStart, end: pageEnd, total: data.data.total })}</p>
               <div className="flex items-center gap-2">
                 <AdminAction tone="neutral" icon="chevron_left" onClick={() => setOffset(Math.max(0, offset - pageSize))} disabled={!hasPrevious}>{t('admin.audit.previous')}</AdminAction>
@@ -182,7 +182,7 @@ export function AdminAuditPage() {
           <AdminDialog title={t('admin.audit.modalTitle')} onClose={() => setSelectedEntry(null)} className="max-w-2xl gap-5">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline/50 pb-4">
               <div className="flex items-center gap-3">
-                <Icon name="history" className="!text-[24px] text-primary" />
+                <span className="lf-tile h-10 w-10 text-accent"><Icon name="history" className="!text-[20px]" /></span>
                 <div>
                   <p className="lf-label text-content">{selectedEntry.action}</p>
                   <p className="lf-caption text-content-muted">{dtf.format(new Date(selectedEntry.createdAt))}</p>
@@ -190,7 +190,7 @@ export function AdminAuditPage() {
               </div>
               <Badge className="bg-success-soft text-success-strong">{t('admin.audit.immutableRecord')}</Badge>
             </div>
-            <div className="grid gap-4 rounded-xl border border-outline/30 bg-surface-sunken/30 p-4 sm:grid-cols-2">
+            <div className="grid gap-4 rounded-md border border-outline/30 bg-surface-sunken/30 p-4 sm:grid-cols-2">
               <div><span className="lf-caption block text-content-muted">{t('admin.audit.colEventId')}</span><span className="mt-0.5 block font-mono font-bold text-content">#{selectedEntry.id}</span></div>
               <div><span className="lf-caption block text-content-muted">{t('admin.audit.colSubject')}</span><span className="mt-0.5 block break-all font-mono text-sm text-content">{selectedEntry.subject || t('admin.audit.emptyValue')}</span></div>
               <div className="sm:col-span-2">
@@ -206,8 +206,8 @@ export function AdminAuditPage() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3"><span className="lf-label font-bold text-content">{t('admin.audit.colDetail')}</span><span className="lf-caption text-content-muted">{t('admin.audit.readOnly')}</span></div>
-              <pre className="max-h-[42vh] overflow-auto rounded-xl border border-outline/40 bg-surface-sunken p-4 text-xs leading-relaxed text-content-muted">{JSON.stringify(selectedEntry.detail, null, 2)}</pre>
+              <SectionHeading icon="data_object" tone="muted" as="h3" className="mb-0" meta={t('admin.audit.readOnly')}>{t('admin.audit.colDetail')}</SectionHeading>
+              <pre className="max-h-[42vh] overflow-auto rounded-md border border-outline/40 bg-surface-sunken p-4 text-xs leading-relaxed text-content-muted">{JSON.stringify(selectedEntry.detail, null, 2)}</pre>
             </div>
             <div className="flex justify-end pt-1"><AdminAction tone="neutral" onClick={() => setSelectedEntry(null)}>{t('admin.audit.close')}</AdminAction></div>
           </AdminDialog>

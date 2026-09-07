@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, LoadingOverlay, Reveal } from '@/components/ui';
+import { Card, LoadingOverlay, Reveal, SectionHeading } from '@/components/ui';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { CourseCarousel, type CarouselCourse } from '@/routes/app/learn/CourseCarousel';
@@ -62,6 +62,10 @@ type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { s
 export function LearnPage() {
   const { t, i18n } = useTranslation();
   const { profile, getToken } = useAuth();
+  // The filter group is NAMED by its lockup rather than by a hidden label, so
+  // the heading a sighted learner reads and the name the group announces are
+  // the same string (/DESIGN.md §The study's component set).
+  const filterHeadingId = useId();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
   /*
@@ -155,25 +159,36 @@ export function LearnPage() {
       </h1>
 
       {showFilters && (
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('dashboard.learn.filterLabel')}>
-          {FILTERS.map((cat) => {
-            const isActive = activeFilter === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveFilter(cat)}
-                aria-pressed={isActive}
-                className={`lf-label lf-tactile inline-flex min-h-11 items-center rounded-full px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base ${
-                  isActive
-                    ? 'lf-tactile-accent bg-accent font-bold text-on-accent'
-                    : 'border border-outline/70 bg-surface font-medium text-content-muted hover:border-primary/50 hover:text-content'
-                }`}
-              >
-                {t(FILTER_LABEL_KEYS[cat])}
-              </button>
-            );
-          })}
+        <div>
+          {/*
+           * The lockup keys the pills below it: the selected pill fills in
+           * accent, so the tile is accent. A section whose cards select in one
+           * hue and whose icon is another teaches the wrong thing about its
+           * own colour (/DESIGN.md §The section heading is a lockup).
+           */}
+          <SectionHeading id={filterHeadingId} icon="filter_list" tone="accent">
+            {t('dashboard.learn.filterLabel')}
+          </SectionHeading>
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby={filterHeadingId}>
+            {FILTERS.map((cat) => {
+              const isActive = activeFilter === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveFilter(cat)}
+                  aria-pressed={isActive}
+                  className={`lf-label lf-tactile inline-flex min-h-11 items-center rounded-full px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base ${
+                    isActive
+                      ? 'lf-tactile-accent bg-accent font-bold text-on-accent'
+                      : 'border border-outline/70 bg-surface font-medium text-content-muted hover:border-primary/50 hover:text-content'
+                  }`}
+                >
+                  {t(FILTER_LABEL_KEYS[cat])}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 

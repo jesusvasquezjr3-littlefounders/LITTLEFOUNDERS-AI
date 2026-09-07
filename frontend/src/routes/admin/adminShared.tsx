@@ -179,7 +179,7 @@ export function AdminDialog({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={cn('lf-glass flex max-h-[calc(100dvh-2rem)] min-w-0 w-full max-w-4xl flex-col overflow-x-hidden overflow-y-auto rounded-xl p-5 shadow-pop sm:max-h-[calc(100dvh-3rem)] sm:p-7', className)}
+        className={cn('lf-glass flex max-h-[calc(100dvh-2rem)] min-w-0 w-full max-w-4xl flex-col overflow-x-hidden overflow-y-auto rounded-md p-5 shadow-pop sm:max-h-[calc(100dvh-3rem)] sm:p-7', className)}
       >
         <div className="flex items-start justify-between gap-4 border-b border-outline/50 pb-4">
           <h2 className="lf-title font-bold text-content">{title}</h2>
@@ -202,8 +202,12 @@ export function AdminDialog({
 export function Unavailable({ code }: { code: string }) {
   const { t } = useTranslation();
   return (
-    <Card className="flex flex-col items-center gap-2 py-12 text-center">
-      <Icon name="cloud_off" className="!text-[40px] text-content-faint" />
+    <Card className="flex flex-col items-center gap-3 py-12 text-center">
+      {/* The study's tile, in the hue the state actually is: an endpoint that
+          did not answer is an error, not a blank. */}
+      <span className="lf-tile h-14 w-14 text-error-strong">
+        <Icon name="cloud_off" className="!text-[28px]" />
+      </span>
       <p className="lf-label text-content">{t('admin.unavailable.title')}</p>
       <p className="lf-caption max-w-sm text-content-muted">
         {t(`errors.api.${code}`, { defaultValue: t('admin.unavailable.body') })}
@@ -214,8 +218,11 @@ export function Unavailable({ code }: { code: string }) {
 
 export function AdminEmpty({ icon, message }: { icon: string; message: string }) {
   return (
-    <Card className="flex flex-col items-center gap-2 py-12 text-center">
-      <Icon name={icon} className="!text-[40px] text-content-faint" />
+    <Card className="flex flex-col items-center gap-3 py-12 text-center">
+      {/* Muted, and deliberately NOT the error hue: nothing here is a failure. */}
+      <span className="lf-tile h-14 w-14 text-content-muted">
+        <Icon name={icon} className="!text-[28px]" />
+      </span>
       <p className="lf-caption text-content-muted">{message}</p>
     </Card>
   );

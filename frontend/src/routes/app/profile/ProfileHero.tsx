@@ -25,7 +25,7 @@ export function ProfileHero({
   return (
     <div>
       <div
-        className="relative h-36 overflow-hidden rounded-xl shadow-glass sm:h-48"
+        className="relative h-36 overflow-hidden rounded-md shadow-glass sm:h-48"
         style={{ backgroundImage: coverCss(cover) }}
         role="img"
         aria-hidden="true"

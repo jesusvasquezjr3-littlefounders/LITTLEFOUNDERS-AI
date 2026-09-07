@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, Icon, ProgressBar, StatCard, TrendChart } from '@/components/ui';
+import { Card, Icon, ProgressBar, SectionHeading, StatCard, TrendChart } from '@/components/ui';
 import { AlertBanner } from './AlertBanner';
 import { cn } from '@/lib/utils';
 import { toTrendPoints, type GenerationAnalytics } from './generationTypes';
@@ -118,7 +118,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
       {/* Cost trend */}
       {costPoints.length > 1 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.analytics.costTrend')}</h3>
+          <SectionHeading icon="payments" tone="accent" as="h3">{t('admin.generation.analytics.costTrend')}</SectionHeading>
           <TrendChart points={costPoints} ariaLabel={t('admin.generation.analytics.costTrend')} />
         </Card>
       )}
@@ -126,7 +126,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
       {/* Cache efficiency trend */}
       {cachePoints.length > 1 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.analytics.cacheTrend')}</h3>
+          <SectionHeading icon="bolt" tone="success" as="h3">{t('admin.generation.analytics.cacheTrend')}</SectionHeading>
           <TrendChart points={cachePoints} ariaLabel={t('admin.generation.analytics.cacheTrend')} />
         </Card>
       )}
@@ -134,7 +134,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
       {/* Success rate + cost forecast */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.analytics.successRate')}</h3>
+          <SectionHeading icon="task_alt" tone="success" as="h3">{t('admin.generation.analytics.successRate')}</SectionHeading>
           <StatCard
             dense
             icon={<Icon name="task_alt" />}
@@ -145,7 +145,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
         </Card>
         {analytics.costForecast && (
           <Card className="p-4 sm:p-5">
-            <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.analytics.forecast')}</h3>
+            <SectionHeading icon="query_stats" tone="accent" as="h3">{t('admin.generation.analytics.forecast')}</SectionHeading>
             <div className="space-y-2">
               <p className="lf-caption text-content-muted">
                 {t('admin.generation.analytics.forecastPerLesson', { cost: usd.format(analytics.costForecast.perLesson ?? 0) })}
@@ -164,9 +164,9 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
       {/* Quality dimensions over time */}
       {analytics.qualityTrend.length > 0 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">
+          <SectionHeading icon="grade" tone="delight" as="h3">
             {t('admin.generation.analytics.qualityTrend', { runs: analytics.qualityTrend.length })}
-          </h3>
+          </SectionHeading>
           <p className="lf-caption mb-3 text-content-faint">{t('admin.generation.judge.note')}</p>
           <div className="space-y-2">
             {RUBRIC_DIMENSIONS.map((dim) => {
@@ -187,7 +187,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
       {/* Failure breakdown by stage */}
       {analytics.failureByStage.length > 0 && (
         <Card className="p-4 sm:p-5">
-          <h3 className="lf-label mb-3 text-content-muted">{t('admin.generation.analytics.failureByStage')}</h3>
+          <SectionHeading icon="warning" tone="error" as="h3">{t('admin.generation.analytics.failureByStage')}</SectionHeading>
           <div className="space-y-2">
             {analytics.failureByStage.map((f) => (
               <div key={f.stage} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 sm:grid-cols-[10rem_minmax(0,1fr)_auto]">
@@ -204,7 +204,7 @@ export function AnalyticsCharts({ courseSlug, className }: AnalyticsChartsProps)
 
       {/* Platform totals */}
       <Card className="p-4 sm:p-5">
-        <h3 className="lf-label mb-1 text-content-muted">{t('admin.generation.analytics.summary')}</h3>
+        <SectionHeading icon="summarize" tone="muted" as="h3" className="mb-1">{t('admin.generation.analytics.summary')}</SectionHeading>
         <p className="lf-caption text-content-muted">
           {t('admin.generation.analytics.runsAnalyzed', { count: analytics.runsAnalyzed })}
         </p>

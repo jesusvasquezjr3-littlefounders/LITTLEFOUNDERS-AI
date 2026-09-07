@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Button, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
+import { Badge, Button, Card, Icon, SectionHeading, StatCard, Table, type TableColumn } from '@/components/ui';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
 import type { Grader, LessonDocument } from '@/lesson-engine/core/types';
 import type { AudioManifest } from '@/lesson-engine/player/narration';
@@ -196,7 +196,7 @@ function InspectorTabButton({
       aria-selected={active}
       onClick={onSelect}
       className={cn(
-        'flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        'flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3 py-2 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         active ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content',
       )}
     >
@@ -212,7 +212,7 @@ function ImageAssetDialog({ asset, onClose }: { asset: MediaAsset; onClose: () =
     <AdminDialog title={t('admin.moderation.imagePreviewTitle')} onClose={onClose} className="max-w-5xl">
       <div className="flex flex-col gap-4 pt-5">
         <p className="lf-caption break-all text-content-muted">{asset.label}</p>
-        <div className="flex min-h-64 items-center justify-center rounded-lg bg-surface-sunken p-4">
+        <div className="flex min-h-64 items-center justify-center rounded-md bg-surface-sunken p-4">
           <img src={asset.url} alt={t('admin.moderation.imagePreviewAlt', { label: asset.label })} className="max-h-[68dvh] max-w-full rounded-md object-contain" />
         </div>
       </div>
@@ -242,15 +242,15 @@ function ComponentDetailDialog({
           {typeof segment.xp === 'number' && <Badge className="bg-surface-sunken text-content-muted">{t('admin.content.xp')}: {segment.xp}</Badge>}
         </div>
         {audio && (
-          <section className="rounded-lg bg-surface-sunken/60 p-4">
-            <h3 className="lf-label font-bold text-content">{t('admin.moderation.componentAudio')}</h3>
-            <p className="lf-caption mt-1 text-content-muted">{audio.label}</p>
+          <section className="rounded-md bg-surface-sunken/60 p-4">
+            <SectionHeading icon="graphic_eq" tone="accent" as="h3" className="mb-1">{t('admin.moderation.componentAudio')}</SectionHeading>
+            <p className="lf-caption text-content-muted">{audio.label}</p>
             <audio className="mt-3 w-full" controls preload="metadata" src={audio.url} />
           </section>
         )}
         <section>
-          <h3 className="lf-label font-bold text-content">{t('admin.moderation.componentData')}</h3>
-          <pre className="mt-3 max-h-[52dvh] overflow-auto rounded-lg bg-surface-sunken p-4 font-code text-xs leading-relaxed text-content">{JSON.stringify(segment, null, 2)}</pre>
+          <SectionHeading icon="data_object" tone="muted" as="h3">{t('admin.moderation.componentData')}</SectionHeading>
+          <pre className="mt-0 max-h-[52dvh] overflow-auto rounded-md bg-surface-sunken p-4 font-code text-xs leading-relaxed text-content">{JSON.stringify(segment, null, 2)}</pre>
         </section>
       </div>
     </AdminDialog>
@@ -308,8 +308,8 @@ function CourseDetailDialog({
         </div>
 
         <section>
-          <h4 className="lf-label font-bold text-content">{t('admin.content.hierarchySummary')}</h4>
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-5">
+          <SectionHeading icon="account_tree" tone="accent" as="h3">{t('admin.content.hierarchySummary')}</SectionHeading>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
             <Metric label={t('admin.content.adventures')} value={nf.format(course.adventureCount)} />
             <Metric label={t('admin.content.sagas')} value={nf.format(course.sagaCount)} />
             <Metric label={t('admin.content.topics')} value={nf.format(course.topicCount)} />
@@ -319,11 +319,10 @@ function CourseDetailDialog({
         </section>
 
         <section>
-          <div className="flex items-center justify-between gap-3">
-            <h4 className="lf-label font-bold text-content">{t('admin.content.lessonBreakdown')}</h4>
-            <span className="lf-caption text-content-muted">{t('admin.content.created', { date: formatDate(course.createdAt, locale) })}</span>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <SectionHeading icon="menu_book" tone="accent" as="h3" meta={t('admin.content.created', { date: formatDate(course.createdAt, locale) })}>
+            {t('admin.content.lessonBreakdown')}
+          </SectionHeading>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Metric label={t('admin.status.published')} value={nf.format(lessons.published ?? 0)} tone="text-success-strong" />
             <Metric label={t('admin.status.review')} value={nf.format(lessons.review ?? 0)} tone="text-warning-strong" />
             <Metric label={t('admin.status.draft')} value={nf.format(lessons.draft ?? 0)} />
@@ -417,15 +416,15 @@ function LessonReviewDialog({
           <Metric label={t('admin.content.segments')} value={nf.format(segmentCount)} />
         </div>
 
-          <div className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-outline/40 bg-surface-sunken p-1" role="tablist" aria-label={t('admin.moderation.inspectorTabs.aria')}>
+          <div className="flex max-w-full gap-1 overflow-x-auto rounded-md border border-outline/40 bg-surface-sunken p-1" role="tablist" aria-label={t('admin.moderation.inspectorTabs.aria')}>
             {INSPECTOR_TABS.map((tab) => <InspectorTabButton key={tab.key} tab={tab} active={inspectorTab === tab.key} onSelect={() => setInspectorTab(tab.key)} />)}
           </div>
 
-          {inspectorTab === 'review' && <div className="flex flex-col gap-3 rounded-lg bg-surface-sunken/60 p-4">
+          {inspectorTab === 'review' && <div className="flex flex-col gap-3 rounded-md bg-surface-sunken/60 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h4 className="lf-label font-bold text-content">{t('admin.moderation.renderTitle')}</h4>
-              <p className="lf-caption mt-1 text-content-muted">{t('admin.moderation.renderDescription')}</p>
+              <SectionHeading icon="play_circle" tone="accent" as="h3" className="mb-1">{t('admin.moderation.renderTitle')}</SectionHeading>
+              <p className="lf-caption text-content-muted">{t('admin.moderation.renderDescription')}</p>
             </div>
             <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('admin.moderation.localeTabs')}>
               {detail.documents.map((row) => (
@@ -457,15 +456,12 @@ function LessonReviewDialog({
 
           {inspectorTab === 'components' && (
             <section>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.componentsTitle')}</h4>
-                  <p className="lf-caption mt-1 text-content-muted">{t('admin.moderation.componentsDescription')}</p>
-                </div>
-                <span className="lf-number lf-caption text-content-muted">{nf.format(components.length)}</span>
-              </div>
+              <SectionHeading icon="widgets" tone="accent" as="h3" className="mb-1" meta={<span className="lf-number">{nf.format(components.length)}</span>}>
+                {t('admin.moderation.componentsTitle')}
+              </SectionHeading>
+              <p className="lf-caption text-content-muted">{t('admin.moderation.componentsDescription')}</p>
               {components.length === 0 ? (
-                <div className="mt-3 rounded-lg bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noComponents')}</div>
+                <div className="mt-3 rounded-md bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noComponents')}</div>
               ) : (
                 <div className="mt-3 grid gap-2">
                   {components.map((segment, index) => {
@@ -476,7 +472,7 @@ function LessonReviewDialog({
                         key={id}
                         type="button"
                         onClick={() => setSelectedComponent(segment)}
-                        className="flex min-h-11 w-full items-center gap-3 rounded-lg bg-surface p-3 text-left shadow-glass-sm transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="flex min-h-11 w-full items-center gap-3 rounded-md bg-surface p-3 text-left shadow-glass-sm transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       >
                         <span className="lf-number flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-soft lf-caption font-bold text-primary">{index + 1}</span>
                         <span className="min-w-0 flex-1">
@@ -495,14 +491,13 @@ function LessonReviewDialog({
           {inspectorTab === 'media' && (
             <section className="grid gap-5 lg:grid-cols-2">
               <div>
-                <div className="flex items-center justify-between gap-3">
-                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.audioTitle')}</h4>
-                  <span className="lf-number lf-caption text-content-muted">{nf.format(audioAssets.length)}</span>
-                </div>
-                {audioAssets.length === 0 ? <div className="mt-3 rounded-lg bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noAudio')}</div> : (
+                <SectionHeading icon="graphic_eq" tone="accent" as="h3" className="mb-0" meta={<span className="lf-number">{nf.format(audioAssets.length)}</span>}>
+                  {t('admin.moderation.audioTitle')}
+                </SectionHeading>
+                {audioAssets.length === 0 ? <div className="mt-3 rounded-md bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noAudio')}</div> : (
                   <div className="mt-3 flex flex-col gap-3">
                     {audioAssets.map((asset) => (
-                      <div key={asset.id} className="rounded-lg bg-surface-sunken/60 p-3">
+                      <div key={asset.id} className="rounded-md bg-surface-sunken/60 p-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="min-w-0 break-all lf-caption font-bold text-content">{asset.label}</p>
                           {formatDuration(asset.durationMs) && <Badge className="bg-surface text-content-muted">{formatDuration(asset.durationMs)}</Badge>}
@@ -514,14 +509,13 @@ function LessonReviewDialog({
                 )}
               </div>
               <div>
-                <div className="flex items-center justify-between gap-3">
-                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.imagesTitle')}</h4>
-                  <span className="lf-number lf-caption text-content-muted">{nf.format(imageAssets.length)}</span>
-                </div>
-                {imageAssets.length === 0 ? <div className="mt-3 rounded-lg bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noImages')}</div> : (
+                <SectionHeading icon="image" tone="delight" as="h3" className="mb-0" meta={<span className="lf-number">{nf.format(imageAssets.length)}</span>}>
+                  {t('admin.moderation.imagesTitle')}
+                </SectionHeading>
+                {imageAssets.length === 0 ? <div className="mt-3 rounded-md bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noImages')}</div> : (
                   <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                     {imageAssets.map((asset) => (
-                      <button key={asset.id} type="button" onClick={() => setSelectedImage(asset)} className="group min-w-0 overflow-hidden rounded-lg bg-surface text-left shadow-glass-sm transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                      <button key={asset.id} type="button" onClick={() => setSelectedImage(asset)} className="group min-w-0 overflow-hidden rounded-md bg-surface text-left shadow-glass-sm transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                         <img src={asset.url} alt="" className="aspect-square w-full object-cover" loading="lazy" />
                         <span className="block truncate px-2 py-2 lf-caption text-content-muted">{asset.label}</span>
                       </button>
@@ -534,14 +528,11 @@ function LessonReviewDialog({
 
           {inspectorTab === 'json' && (
             <section>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.jsonTitle')}</h4>
-                  <p className="lf-caption mt-1 text-content-muted">{t('admin.moderation.jsonSafeNote')}</p>
-                </div>
-                <Badge className="bg-surface-sunken text-content-muted">{documentRow.locale}</Badge>
-              </div>
-              <pre className="mt-3 max-h-[56dvh] overflow-auto rounded-lg bg-surface-sunken p-4 font-code text-xs leading-relaxed text-content">{JSON.stringify(documentRow.document, null, 2)}</pre>
+              <SectionHeading icon="data_object" tone="muted" as="h3" className="mb-1" meta={<Badge className="bg-surface-sunken text-content-muted">{documentRow.locale}</Badge>}>
+                {t('admin.moderation.jsonTitle')}
+              </SectionHeading>
+              <p className="lf-caption text-content-muted">{t('admin.moderation.jsonSafeNote')}</p>
+              <pre className="mt-3 max-h-[56dvh] overflow-auto rounded-md bg-surface-sunken p-4 font-code text-xs leading-relaxed text-content">{JSON.stringify(documentRow.document, null, 2)}</pre>
             </section>
           )}
 
@@ -682,11 +673,11 @@ export function AdminContentPage() {
           </div>
         )}
 
-        <nav className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-xl border border-outline/40 bg-surface-sunken p-1 shadow-sm" role="tablist" aria-label={t('admin.content.tabs.aria')}>
+        <nav className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-md border border-outline/40 bg-surface-sunken p-1 shadow-sm" role="tablist" aria-label={t('admin.content.tabs.aria')}>
           {TABS.map(({ key, icon }) => {
             const count = key === 'lessons' ? reviewTotal : key === 'tutor' ? tutorReviewTotal : null;
             return (
-              <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={cn('flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-4 py-2 lf-label font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', tab === key ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content')}>
+              <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={cn('flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 py-2 lf-label font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', tab === key ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content')}>
                 <Icon name={icon} className="!text-[18px]" />
                 <span>{t(`admin.content.tabs.${key}`)}</span>
                 {count !== null && count > 0 && <span className="lf-number rounded-full bg-warning-soft px-2 py-0.5 lf-caption text-warning-strong">{nf.format(count)}</span>}
@@ -695,18 +686,18 @@ export function AdminContentPage() {
           })}
         </nav>
 
-        {actionError && <div role="alert" className="flex items-center gap-2 rounded-xl bg-error-soft p-3 lf-caption font-semibold text-error-strong"><Icon name="error" className="shrink-0 !text-[18px]" />{actionError}</div>}
+        {actionError && <div role="alert" className="flex items-center gap-2 rounded-md bg-error-soft p-3 lf-caption font-semibold text-error-strong"><Icon name="error" className="shrink-0 !text-[18px]" />{actionError}</div>}
 
         {tab === 'courses' && (
           <section className="flex flex-col gap-4">
             <div>
-              <h2 className="lf-title font-bold text-content">{t('admin.content.coursesHeading')}</h2>
-              <p className="lf-caption mt-1 text-content-muted">{t('admin.content.coursesHelper')}</p>
+              <SectionHeading icon="menu_book" tone="accent" className="mb-1">{t('admin.content.coursesHeading')}</SectionHeading>
+              <p className="lf-caption text-content-muted">{t('admin.content.coursesHelper')}</p>
             </div>
             <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="relative min-w-0 flex-1 basis-full sm:basis-auto">
                 <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-content-muted" />
-                <input type="text" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('admin.content.searchPlaceholder')} className="w-full rounded-full border border-outline/40 bg-surface-sunken py-2 pl-9 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                <input type="text" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('admin.content.searchPlaceholder')} className="w-full rounded-md border border-outline/40 bg-surface-sunken py-2 pl-9 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50" />
               </div>
               <div className="flex max-w-full gap-1 overflow-x-auto rounded-full border border-outline/30 bg-surface-sunken p-1">
                 <button type="button" onClick={() => setStatusFilter('all')} className={cn('min-h-11 shrink-0 rounded-full px-3 lf-caption font-bold', statusFilter === 'all' ? 'bg-surface text-content shadow-sm' : 'text-content-muted hover:text-content')}>{t('admin.content.allStatuses')}</button>
@@ -720,11 +711,15 @@ export function AdminContentPage() {
         {tab === 'lessons' && (
           <section className="flex flex-col gap-4">
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="lf-title font-bold text-content">{t('admin.moderation.heading')}</h2>
-                {reviewTotal !== null && <Badge className="bg-warning-soft text-warning-strong">{t('admin.moderation.queueCount', { count: reviewTotal })}</Badge>}
-              </div>
-              <p className="lf-caption mt-1 max-w-3xl text-content-muted">{t('admin.moderation.note')}</p>
+              <SectionHeading
+                icon="gpp_maybe"
+                tone="warning"
+                className="mb-1"
+                meta={reviewTotal !== null ? <Badge className="bg-warning-soft text-warning-strong">{t('admin.moderation.queueCount', { count: reviewTotal })}</Badge> : undefined}
+              >
+                {t('admin.moderation.heading')}
+              </SectionHeading>
+              <p className="lf-caption max-w-3xl text-content-muted">{t('admin.moderation.note')}</p>
             </div>
             {moderationData.data.state === 'error' ? <Unavailable code={moderationData.data.code} /> : moderationData.data.state === 'ready' ? reviewLessons.length === 0 ? <AdminEmpty icon="task_alt" message={t('admin.moderation.empty')} /> : <ul className="flex flex-col gap-3">{reviewLessons.map((lesson) => <li key={lesson.id}><Card className="flex flex-col gap-3 p-4 sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate lf-label font-bold text-content">{lesson.title}</p><StatusBadge status={lesson.status} /></div><p className="lf-caption mt-1 text-content-muted">{lesson.courseTitle} / {lesson.topicTitle}</p></div><AdminAction tone="neutral" icon="visibility" onClick={() => { setLessonLocale('es-MX'); setLessonDetailId(lesson.id); }}>{t('admin.moderation.preview')}</AdminAction></div><div className="flex flex-wrap gap-2"><Badge className="bg-surface-sunken text-content-muted">{lesson.subject}</Badge><Badge className="bg-surface-sunken text-content-muted">{t('admin.content.locales')}: {lesson.locales.length}</Badge></div></Card></li>)}</ul> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
           </section>
@@ -732,15 +727,21 @@ export function AdminContentPage() {
         {tab === 'tutor' && (
           <section className="flex flex-col gap-4">
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="lf-title font-bold text-content">{t('admin.tutorReview.heading')}</h2>
-                {tutorReviewTotal !== null && tutorReviewTotal > 0 && (
-                  <Badge className="bg-warning-soft text-warning-strong">
-                    {t('admin.tutorReview.queueCount', { count: tutorReviewTotal })}
-                  </Badge>
-                )}
-              </div>
-              <p className="lf-caption mt-1 max-w-3xl text-content-muted">{t('admin.tutorReview.note')}</p>
+              <SectionHeading
+                icon="record_voice_over"
+                tone="warning"
+                className="mb-1"
+                meta={
+                  tutorReviewTotal !== null && tutorReviewTotal > 0 ? (
+                    <Badge className="bg-warning-soft text-warning-strong">
+                      {t('admin.tutorReview.queueCount', { count: tutorReviewTotal })}
+                    </Badge>
+                  ) : undefined
+                }
+              >
+                {t('admin.tutorReview.heading')}
+              </SectionHeading>
+              <p className="lf-caption max-w-3xl text-content-muted">{t('admin.tutorReview.note')}</p>
             </div>
             {tutorReviewData.data.state === 'error' ? (
               <Unavailable code={tutorReviewData.data.code} />

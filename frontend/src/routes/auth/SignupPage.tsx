@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
@@ -6,9 +6,9 @@ import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
-import { Button, DateField, Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { Button, DateField, Icon, SectionHeading } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { Checkbox } from '@/components/ui/Checkbox';
 import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
@@ -35,6 +35,9 @@ export function SignupPage() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [confirmationPending, setConfirmationPending] = useState(false);
 
+  const detailsId = useId();
+  const roleId = useId();
+  const roleHelpId = useId();
   const startedRef = useRef(false);
 
   const passwordTooShort = password.length > 0 && password.length < 8;
@@ -98,8 +101,10 @@ export function SignupPage() {
     return (
       <AuthShell character={MENTOR} title={t('auth.signup.ageBlockedTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft">
-            <Icon name="escalator_warning" className="text-primary" />
+          {/* The study's icon well, not a hand-rolled tinted circle: one class,
+              one named hue, three matched steps of it. */}
+          <span className="lf-tile h-14 w-14 text-accent">
+            <Icon name="escalator_warning" aria-hidden className="!text-[26px]" />
           </span>
           <p className="lf-body text-content">{t('auth.signup.ageBlockedBody')}</p>
           <Link to="/">
@@ -114,8 +119,8 @@ export function SignupPage() {
     return (
       <AuthShell character={MENTOR} title={t('auth.signup.confirmTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
-            <Icon name="mark_email_read" className="text-success-strong" />
+          <span className="lf-tile h-14 w-14 text-success-strong">
+            <Icon name="mark_email_read" aria-hidden className="!text-[26px]" />
           </span>
           <p className="lf-body text-content">{t('auth.signup.confirmBody', { email })}</p>
         </div>
@@ -142,64 +147,119 @@ export function SignupPage() {
       <SocialAuth />
       <form onSubmit={(e) => void onSubmit(e)} onFocusCapture={markSignupStart} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
-        <Field
-          label={t('auth.signup.displayName')}
-          autoComplete="name"
-          required
-          maxLength={80}
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-        />
-        <Field
-          label={t('auth.signup.email')}
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Field
-          label={t('auth.signup.password')}
-          type={showPassword ? 'text' : 'password'}
-          autoComplete="new-password"
-          required
-          minLength={8}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          hint={t('auth.signup.passwordHint')}
-          error={passwordTooShort ? t('auth.signup.passwordTooShort') : undefined}
-          trailing={
-            <button
-              type="button"
-              aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
-              aria-pressed={showPassword}
-              onClick={() => setShowPassword((s) => !s)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <Icon name={showPassword ? 'visibility_off' : 'visibility'} />
-            </button>
-          }
-        />
-        <DateField
-          label={t('auth.signup.birthDate')}
-          hint={t('auth.signup.birthDateHint')}
-          required
-          value={birthDate}
-          onChange={setBirthDate}
-          dayLabel={t('auth.signup.dayLabel')}
-          monthLabel={t('auth.signup.monthLabel')}
-          yearLabel={t('auth.signup.yearLabel')}
-        />
-        <Checkbox
-          label={t('auth.signup.tutorIntent')}
-          help={t('auth.signup.tutorIntentHelp')}
-          checked={parentIntent}
-          onChange={(e) => setParentIntent(e.target.checked)}
-        />
+        {/* GROUP ONE — what the account is made of. */}
+        <section aria-labelledby={detailsId}>
+          <SectionHeading as="h2" id={detailsId} icon="badge" tone="accent">
+            {t('auth.section.details')}
+          </SectionHeading>
+          <div className="flex flex-col gap-5">
+            <Field
+              label={t('auth.signup.displayName')}
+              autoComplete="name"
+              required
+              maxLength={80}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+            <Field
+              label={t('auth.signup.email')}
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Field
+              label={t('auth.signup.password')}
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              hint={t('auth.signup.passwordHint')}
+              error={passwordTooShort ? t('auth.signup.passwordTooShort') : undefined}
+              trailing={
+                <button
+                  type="button"
+                  aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <Icon name={showPassword ? 'visibility_off' : 'visibility'} />
+                </button>
+              }
+            />
+            <DateField
+              label={t('auth.signup.birthDate')}
+              hint={t('auth.signup.birthDateHint')}
+              required
+              value={birthDate}
+              onChange={setBirthDate}
+              dayLabel={t('auth.signup.dayLabel')}
+              monthLabel={t('auth.signup.monthLabel')}
+              yearLabel={t('auth.signup.yearLabel')}
+            />
+          </div>
+        </section>
+
+        {/*
+          GROUP TWO — the one boolean on this form, in the study's settings-row
+          skeleton: icon well, two lines of label, the control pinned right
+          (/DESIGN.md §The study's component set). It was a Checkbox, which is
+          the right control for consent inside a legal block and the wrong one
+          for a preference the person OWNS — the study gives an owned boolean a
+          switch, and the row is what makes the whole 44px-tall band the target
+          rather than a 24px square.
+
+          The tone is `success` on purpose: `.lf-switch-on` is green, and the
+          heading's hue is supposed to KEY the control under it. Nothing here
+          grants the `parent` role — the switch records intent, and Guardian
+          verification is still the only path (see the file header).
+        */}
+        <section aria-labelledby={roleId}>
+          <SectionHeading as="h2" id={roleId} icon="family_restroom" tone="success">
+            {t('auth.section.role')}
+          </SectionHeading>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={parentIntent}
+            aria-describedby={roleHelpId}
+            onClick={() => setParentIntent((v) => !v)}
+            className="lf-config-row lf-press flex min-h-11 w-full items-start justify-between gap-3 p-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {/* Top-aligned, not centred: the help text runs to four lines at
+                375px, and a well floating at the mid-height of a paragraph
+                reads as unattached to the label it belongs to. */}
+            <span className="flex min-w-0 items-start gap-3">
+              <span
+                className={cn(
+                  'lf-tile h-9 w-9',
+                  parentIntent ? 'text-success-strong' : 'text-content-muted',
+                )}
+              >
+                <Icon name="escalator_warning" aria-hidden className="!text-[18px]" />
+              </span>
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span className="lf-label text-content">{t('auth.signup.tutorIntent')}</span>
+                <span id={roleHelpId} className="lf-caption text-content-muted">
+                  {t('auth.signup.tutorIntentHelp')}
+                </span>
+              </span>
+            </span>
+            <span className={cn('lf-switch', parentIntent && 'lf-switch-on')} aria-hidden>
+              <span className="lf-switch-knob" />
+            </span>
+          </button>
+        </section>
+
+        {/* Primary tier, and the only one on the card. */}
         <Button
           type="submit"
           disabled={submitting || !displayName || !email || password.length < 8 || !birthDateReady}
-          className="mt-1 w-full"
+          className="w-full"
         >
           {submitting ? t('auth.signup.submitting') : t('auth.signup.submit')}
         </Button>

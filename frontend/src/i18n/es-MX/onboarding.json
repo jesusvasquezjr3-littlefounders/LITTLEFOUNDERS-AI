@@ -35,6 +35,7 @@
   "discovery": {
     "title": "¿Dónde oíste hablar de nosotros?",
     "subtitle": "Totalmente opcional.",
+    "section": "Elige una",
     "options": {
       "friend": "Un amigo o familiar",
       "social_media": "Redes sociales",

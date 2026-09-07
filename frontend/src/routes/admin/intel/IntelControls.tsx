@@ -74,7 +74,7 @@ export function IntelPeriodPicker({
         align="left"
       />
       {open && (
-        <div className="flex flex-wrap items-end gap-2 rounded-xl border border-outline/50 bg-surface-sunken/40 p-3">
+        <div className="flex flex-wrap items-end gap-2 rounded-md border border-outline/50 bg-surface-sunken/40 p-3">
           <DateField
             label={t('admin.analytics.customFrom')}
             value={draft.from}
@@ -128,13 +128,15 @@ export function StaffExclusionNote({ windowQuery }: { windowQuery: string }) {
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border p-3',
+        'flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border p-3',
         excludedShare !== null && excludedShare > 0.5
           ? 'border-warning/40 bg-warning-soft/30'
           : 'border-outline/40 bg-surface-sunken/30',
       )}
     >
-      <Icon name="filter_alt" className="!text-[18px] text-primary" />
+      <span className={cn('lf-tile h-7 w-7', excludedShare !== null && excludedShare > 0.5 ? 'text-warning-strong' : 'text-accent')}>
+        <Icon name="filter_alt" className="!text-[16px]" />
+      </span>
       <span className="lf-caption text-content">{t('admin.intel.staffExcluded.title')}</span>
       <Badge className="bg-surface-sunken text-content-muted">
         {t('admin.intel.staffExcluded.events', {
@@ -205,7 +207,7 @@ export function IntelExportCard({ selection }: { selection: IntelSelection }) {
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="lf-caption text-content-muted">{t('admin.intel.export.label')}</span>
+      <span className="lf-eyebrow text-content-muted">{t('admin.intel.export.label')}</span>
       <div className="flex flex-wrap items-center gap-2">
         {FORMATS.map((format) => (
           <AdminAction
