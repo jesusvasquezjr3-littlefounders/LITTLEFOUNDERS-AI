@@ -742,6 +742,11 @@ export function LessonPlate({
       aria-hidden={standDown ? true : undefined}
       className={cn(
         'pointer-events-auto fixed z-30 flex w-full flex-col overflow-hidden',
+        // Desktop is a COLUMN OF CARDS, not one panel: the frame stops painting
+        // and each zone inside carries its own Lumen (`index.css` →
+        // `.lf-rail-bare`). Mobile keeps the single sheet, which is what a
+        // drag-to-resize surface has to be.
+        desktop && 'lf-rail-bare',
         desktop
           ? /*
              * A DOCKED FULL-HEIGHT PANEL (owner sign-off 2026-08-28), replacing
@@ -914,7 +919,8 @@ export function LessonPlate({
            */
           style={resting ? { display: 'none' } : undefined}
           className={cn(
-            'min-h-0 flex-1 px-4 pb-4 pt-2 lg:px-5 lg:pb-5',
+            'min-h-0 flex-1',
+            desktop ? 'p-0' : 'px-4 pb-4 pt-2 lg:px-5 lg:pb-5',
             bodyLayout === 'column'
               ? // The body does not scroll; one child does. See `bodyLayout`.
                 'flex flex-col gap-3 overflow-hidden'

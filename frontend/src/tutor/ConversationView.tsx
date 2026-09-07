@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, useDesktopPlate, type LessonPlateDetent } from './hud/LessonPlate';
@@ -1195,6 +1196,8 @@ export function ConversationView({
         )}
 
         {socket.segment ? (
+          <RailCard desktop={desktop} className="flex-auto">
+          <BoardFrame>
           <LiveSegmentPanel
             live={socket.segment}
             token={token}
@@ -1210,6 +1213,8 @@ export function ConversationView({
             // The one child of the column that takes the free height and scrolls.
             className="min-h-0 flex-auto"
           />
+          </BoardFrame>
+          </RailCard>
         ) : turn?.whiteboard ? (
           /*
             V4: THE LIVE WHITEBOARD. A graded segment always wins the plate if
@@ -1221,17 +1226,27 @@ export function ConversationView({
             text.
           */
           <>
-            <TutorWhiteboard
-              board={turn.whiteboard}
-              seq={turn.seq}
-              className="min-h-0 flex-auto"
-            />
-            <NotebookKeepButton
-              key={turn.seq}
-              token={token}
-              sessionId={session.sessionId}
-              turnSeq={turn.seq}
-            />
+            <RailCard desktop={desktop} className="flex-auto">
+            <BoardFrame>
+              <TutorWhiteboard
+                board={turn.whiteboard}
+                seq={turn.seq}
+                className="min-h-0 flex-auto"
+              />
+            </BoardFrame>
+              {/*
+                INSIDE THE CARD IT ACTS ON. On the bare rail it sat in the gap
+                BETWEEN two cards, over the stage, reading as a stray link
+                rather than as this board's own control — and what it keeps is
+                this board.
+              */}
+              <NotebookKeepButton
+                key={turn.seq}
+                token={token}
+                sessionId={session.sessionId}
+                turnSeq={turn.seq}
+              />
+            </RailCard>
           </>
         ) : ended ? (
           <p className="shrink-0 lf-body text-content-muted" role="status">
@@ -1274,6 +1289,7 @@ export function ConversationView({
           </HudPlate>
         )}
 
+        <RailCard desktop={desktop} className="min-h-0 flex-auto">
         <TutorTranscript
           history={socket.history}
           spokenSeq={turn ? turnSeq : null}
@@ -1300,6 +1316,7 @@ export function ConversationView({
           onEditLast={ended || socket.segment !== null || turn?.whiteboard != null ? undefined : beginEdit}
           editLabel={t('tutor.conversation.editMessage')}
         />
+        </RailCard>
 
         {/*
           ON DESKTOP THE COMPOSER LIVES IN THE PANEL — conversation, activity
@@ -1309,7 +1326,11 @@ export function ConversationView({
           during an adaptation offer in both homes, for the same reason: a
           yes-or-no already has both its answers on screen.
         */}
-        {desktop && !adaptation && <div className="shrink-0">{composer}</div>}
+        {desktop && !adaptation && (
+          <RailCard desktop className="shrink-0 !py-2.5">
+            {composer}
+          </RailCard>
+        )}
       </LessonPlate>
 
       {/*
@@ -1413,4 +1434,83 @@ function DockSlot({
   if (!dock) return <>{children}</>;
   if (!target) return null;
   return createPortal(children, target);
+}
+
+/**
+ * THE BOARD'S OWN CHROME — the design study's "Pizarrón Interactivo" header.
+ *
+ * The activity used to sit in the panel as bare content: a question, some
+ * answers, a Check button, with nothing saying it was a BOARD or where it
+ * started. The study frames it — a tinted icon tile, a title, a status word,
+ * and a hairline rule under the lot — and that frame is most of why its right
+ * column reads as an instrument rather than as loose controls.
+ *
+ * It wraps rather than replaces: every renderer inside it is the lesson
+ * engine's own (`LiveSegmentPanel` reuses the real registry), so this adds a
+ * header and a rule and touches nothing about how an exercise is played or
+ * graded.
+ */
+function BoardFrame({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+  return (
+    <section className="flex min-h-0 flex-auto flex-col gap-3">
+      <div className="flex shrink-0 items-center gap-2.5 border-b border-content/10 pb-2.5">
+        <span className="lf-tile h-7 w-7 text-accent">
+          <Icon name="widgets" className="!text-[16px]" />
+        </span>
+        <span className="min-w-0">
+          <span className="lf-action block truncate text-content">
+            {t('tutor.conversation.boardTitle')}
+          </span>
+        </span>
+        <span className="ml-auto flex shrink-0 items-center gap-1.5">
+          <span className="lf-live-emerald" aria-hidden />
+          <span className="lf-caption text-content-muted">
+            {t('tutor.conversation.boardLive')}
+          </span>
+        </span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * ONE CARD IN THE RIGHT RAIL.
+ *
+ * The study's rail is a column of SEPARATE cards with the stage showing
+ * through the gap between them — the board is one, the quick-ask input is
+ * another. Ours had the board, the conversation and the composer stacked
+ * inside a single sheet, which is why they read as one undivided slab however
+ * carefully the sheet itself was styled.
+ *
+ * Desktop only, on purpose. Below `lg:` the plate is a drag-to-resize BOTTOM
+ * SHEET, and a sheet is by definition one surface: cards inside it would be
+ * glass on glass, which /DESIGN.md forbids and which reads as a bug in the
+ * blur rather than as depth. There the fragment passes straight through and
+ * the sheet stays exactly what it was.
+ */
+function RailCard({
+  desktop,
+  className,
+  children,
+}: {
+  desktop: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  if (!desktop) return <>{children}</>;
+  return (
+    <div
+      className={cn(
+        // `overflow-hidden`: the transcript scrolls INSIDE this card, and
+        // without it the top bubble was sliced flat across the card's own
+        // rounded corner — the one place a radius is most visible.
+        'lf-lumen lf-lumen-reading flex min-h-0 flex-col overflow-hidden rounded-md px-4 py-3.5',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
 }

@@ -319,7 +319,7 @@ export function PlacementPage() {
               value={learnerText}
               onChange={(e) => setLearnerText(e.target.value)}
               placeholder={t('placement.intake.placeholder')}
-              className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-content placeholder:text-content-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-full rounded-md border border-border bg-surface px-4 py-3 text-content placeholder:text-content-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             />
           </label>
           <Button type="submit" className="w-full" disabled={thinking || busy || !learnerText.trim()}>
@@ -356,7 +356,7 @@ export function PlacementPage() {
             </p>
           </div>
 
-          <div className="rounded-2xl bg-surface-sunken px-4 py-3">
+          <div className="rounded-md bg-surface-sunken px-4 py-3">
             <p className="lf-caption text-content-muted">{t('placement.result.positionLabel')}</p>
             <p className="lf-body-lg text-content">
               {t('placement.result.positionValue', { position: result.frontier + 1, total: result.totalTopicCount })}

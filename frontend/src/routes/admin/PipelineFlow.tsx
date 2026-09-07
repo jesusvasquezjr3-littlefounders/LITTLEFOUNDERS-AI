@@ -55,7 +55,7 @@ function PipelineNode({ data }: NodeProps) {
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-1 rounded-2xl border px-4 py-3 text-center transition-all duration-500',
+        'flex flex-col items-center justify-center gap-1 rounded-md border px-4 py-3 text-center transition-all duration-500',
         d.terminal
           ? 'border-success-strong/30 bg-success-soft'
           : d.active
@@ -230,7 +230,7 @@ export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
   return (
     <div
       className={cn(
-        'relative rounded-2xl border border-outline/30 bg-base',
+        'relative rounded-md border border-outline/30 bg-base',
         'h-[220px] sm:h-[280px]',
         '[&_.react-flow__attribution]:hidden',
         '[&_.react-flow__controls]:hidden',

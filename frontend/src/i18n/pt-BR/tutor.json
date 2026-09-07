@@ -216,7 +216,9 @@
     "peekOpenActivity": "Atividade pronta",
     "peekActivityWaiting": "Já tem uma atividade.",
     "lessonThread": "Lição · passo {{step}} de {{of}}",
-    "liveWith": "{{name}} ao vivo"
+    "liveWith": "{{name}} ao vivo",
+    "boardTitle": "Quadro interativo",
+    "boardLive": "Atividade ao vivo"
   },
   "mic": {
     "listening": "Estou ouvindo…",

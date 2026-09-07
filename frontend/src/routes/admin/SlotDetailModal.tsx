@@ -78,11 +78,11 @@ export function SlotDetailModal({ runId, slotId, onClose }: SlotDetailModalProps
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-outline/30 bg-surface shadow-pop"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-md border border-outline/30 bg-surface shadow-pop"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-outline/20 bg-surface px-5 py-4 rounded-t-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-outline/20 bg-surface px-5 py-4 rounded-t-md">
           <div className="min-w-0">
             <h2 className="lf-title truncate">{slotId.split('/').slice(-2).join(' / ')}</h2>
             {detail?.run && (

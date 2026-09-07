@@ -211,7 +211,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     bubblePosition === 'top' && "-top-14 sm:-top-10 left-1/2 -translate-x-1/2",
                     showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
                 )}>
-                    <div className="relative bg-white rounded-2xl shadow-lg px-4 py-2 border border-slate-100 min-w-[180px] max-w-[240px] w-auto text-center">
+                    <div className="relative bg-white rounded-md shadow-lg px-4 py-2 border border-slate-100 min-w-[180px] max-w-[240px] w-auto text-center">
                         <p className="text-slate-700 font-bold text-xs leading-snug">
                             {currentText}
                         </p>

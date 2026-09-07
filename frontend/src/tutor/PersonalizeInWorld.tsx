@@ -423,7 +423,7 @@ export function PersonalizeInWorld({
                       */}
                       <span
                         className={cn(
-                          'lf-tile h-14 w-14 overflow-hidden !rounded-2xl',
+                          'lf-tile h-14 w-14 overflow-hidden !rounded-md',
                           isLead ? SECTION_TONE.tutor : 'text-delight',
                         )}
                       >

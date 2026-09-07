@@ -119,7 +119,7 @@ export function GuidedStage({
               onClick={onReplay}
               disabled={voice.muted}
               aria-label={replayLabel}
-              className="group flex w-full items-start gap-2.5 rounded-2xl bg-surface-sunken px-4 py-3 text-left transition-colors duration-150 enabled:hover:bg-surface-sunken/70 disabled:cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="group flex w-full items-start gap-2.5 rounded-md bg-surface-sunken px-4 py-3 text-left transition-colors duration-150 enabled:hover:bg-surface-sunken/70 disabled:cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Icon
                 name={speaking ? 'graphic_eq' : 'replay'}

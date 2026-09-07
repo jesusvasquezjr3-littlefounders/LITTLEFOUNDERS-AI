@@ -197,6 +197,52 @@ describe('design classes', () => {
     }
   });
 
+  it('asks for no corner radius the scale does not have', () => {
+    /*
+     * `tailwind.config.js` REPLACES Tailwind's borderRadius scale with a closed
+     * five — `none`, `sm` 10, `md` 16, `lg` 24, `xl` 32, `full`. A utility
+     * outside that set compiles to NOTHING, and an element that asked for a
+     * radius and got none renders with SQUARE CORNERS while its class list
+     * still says `rounded-2xl`. Nothing throws; the only symptom is a corner.
+     *
+     * Fifteen call sites were doing exactly that when this test was written —
+     * four character cards, an admin modal, the placement page, the guided
+     * stage, and the Tutor's own speech card and floating panel, which is how
+     * the owner came to be looking at square dialog boxes in a screenshot
+     * while the source said `rounded-2xl`. Tailwind's stock `2xl` is 16px and
+     * this scale calls 16px `md`, so every one of them was a rename away from
+     * being right.
+     */
+    const ALLOWED = new Set(['none', 'sm', 'md', 'lg', 'xl', 'full']);
+    /*
+     * A SIDE on its own is not a size. `rounded-t`, `rounded-br` and friends
+     * round those corners at the scale's DEFAULT key, which this config also
+     * defines — the learn-map scenes use them heavily and correctly. Without
+     * this set the guard reports every one of them as an unknown size, which
+     * is how a gate earns the reputation that gets it skipped.
+     */
+    const SIDES = new Set(['t', 'r', 'b', 'l', 'tl', 'tr', 'bl', 'br', 's', 'e']);
+    const offenders = new Map<string, string[]>();
+
+    for (const { file, text } of SOURCES) {
+      for (const m of text.matchAll(/rounded(?:-[trbl][trbl]?)?-([a-z0-9]+)/g)) {
+        const size = m[1]!;
+        if (ALLOWED.has(size) || SIDES.has(size)) continue;
+        // `rounded-[inherit]` and other arbitrary values are literal CSS and
+        // bypass the scale on purpose; the bracket is not matched by `[a-z0-9]`
+        // so they never reach here. `rounded` on its own is the DEFAULT key,
+        // which this config also defines.
+        const rel = file.slice(SRC.length + 1);
+        const where = offenders.get(`rounded-${size}`) ?? [];
+        if (!where.includes(rel)) where.push(rel);
+        offenders.set(`rounded-${size}`, where);
+      }
+    }
+
+    const report = [...offenders.entries()].map(([c, f]) => `${c} (${f.join(', ')})`);
+    expect(offenders.size, `radius outside the closed scale: ${report.join(' | ')}`).toBe(0);
+  });
+
   it('keeps the type scale closed', () => {
     /*
      * DESIGN.md §Typography: the scale is the ONLY way to set type, and it is

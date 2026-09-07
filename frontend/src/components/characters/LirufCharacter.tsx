@@ -125,7 +125,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
                 )}
             >
                 <div className={cn(
-                    "relative bg-white rounded-2xl shadow-lg px-4 py-2",
+                    "relative bg-white rounded-md shadow-lg px-4 py-2",
                     "min-w-[180px] max-w-[240px] w-auto text-center"
                 )}>
                     <p className="text-slate-700 font-bold text-xs leading-snug">

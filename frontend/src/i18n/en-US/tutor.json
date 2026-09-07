@@ -216,7 +216,9 @@
     "peekOpenActivity": "Activity ready",
     "peekActivityWaiting": "An activity is ready.",
     "lessonThread": "Lesson · step {{step}} of {{of}}",
-    "liveWith": "{{name}} is live"
+    "liveWith": "{{name}} is live",
+    "boardTitle": "Interactive board",
+    "boardLive": "Live activity"
   },
   "mic": {
     "listening": "Listening…",

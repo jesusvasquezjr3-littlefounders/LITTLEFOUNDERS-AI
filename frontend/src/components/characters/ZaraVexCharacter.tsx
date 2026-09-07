@@ -133,7 +133,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 bubblePosition === 'right' && "top-8 -right-2",
                 showBubble ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-50 pointer-events-none"
             )}>
-                <div className="bg-white border-2 border-slate-200 rounded-2xl px-4 py-2 shadow-lg relative min-w-[180px] max-w-[240px]">
+                <div className="bg-white border-2 border-slate-200 rounded-md px-4 py-2 shadow-lg relative min-w-[180px] max-w-[240px]">
                     <p className="font-bold text-slate-600 text-xs leading-snug text-center">
                         {currentText}
                     </p>

@@ -129,13 +129,13 @@ export interface HudPlateProps extends HTMLAttributes<HTMLElement> {
  */
 const FRAME: Record<HudPlateShape, string> = {
   chip: 'rounded-full',
-  // 16px — the study's own card radius (`rounded-2xl`) for the speech card
+  // 16px — the study's own card radius (`rounded-md`) for the speech card
   // and the whiteboard panel, both `shape="plate"` here.
-  plate: 'rounded-2xl',
+  plate: 'rounded-md',
   orb: 'rounded-full',
   // The docked panel and the transcript sheet: furniture, not a label, and
   // the study's board sits at the same 16px its cards do.
-  sheet: 'rounded-2xl',
+  sheet: 'rounded-md',
 };
 
 /*

@@ -101,7 +101,7 @@ export function DateField({
         <div
           role="dialog"
           aria-label={label}
-          className="lf-glass absolute top-full z-30 mt-2 w-[17.5rem] rounded-2xl border border-outline/50 p-3 shadow-pop"
+          className="lf-glass absolute top-full z-30 mt-2 w-[17.5rem] rounded-md border border-outline/50 p-3 shadow-pop"
         >
           <div className="flex items-center justify-between gap-2">
             <button
