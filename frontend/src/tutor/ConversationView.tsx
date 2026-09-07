@@ -12,7 +12,6 @@ import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { TutorWhiteboard } from './TutorWhiteboard';
 import { NotebookKeepButton } from './NotebookKeepButton';
-import { lessonStepDots } from './lessonStepDots';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
@@ -128,6 +127,17 @@ export function ConversationView({
   const { t } = useTranslation();
   const safeArea = useSafeArea();
   const dock = useStageDock();
+
+  /*
+   * THE SESSION'S OWN XP, and it is a SUM of real awards rather than a number
+   * this component invents. `LiveSegmentPanel` reads `xpAwarded` off each grade
+   * response and now reports it; nothing else on this route knew the total,
+   * which is why the study's "+45 XP" chip had nothing true behind it until
+   * now. Zero renders no chip at all — a reward counter that starts at zero and
+   * sits there is a promise the session has not kept yet.
+   */
+  const [sessionXp, setSessionXp] = useState(0);
+  const addXp = useCallback((xp: number) => setSessionXp((total) => total + xp), []);
   const desktop = useDesktopPlate();
 
   const [typed, setTyped] = useState('');
@@ -687,8 +697,179 @@ export function ConversationView({
     </div>
   );
 
+  /*
+   * THE HEADER GROUP (2026-09-06, from the design study).
+   *
+   * These four chips used to live inside the lesson plate's own header row, an
+   * inch inboard of the corner and only while the plate was mounted — so the
+   * minutes vanished with the plate, and the study's top-right cluster had
+   * nothing in it. They are the SESSION's, so they still belong to this layer;
+   * the ROW is the shell's, so they are portalled into the slot it publishes.
+   */
+  const headerChips = (
+    <>
+          {/*
+            THE LIVE BADGE. Its dot is real state, not decoration: it burns
+            only while the socket is actually running, so a learner glancing at
+            it learns whether the tutor is listening or the session has stopped.
+          */}
+          {socket.budget === 'running' && (
+            /*
+             * STATUS YIELDS TO CONTROLS BELOW `lg:`. On the panel's own header
+             * row at 390px this badge, the minutes, two icon buttons and Finish
+             * do not fit, and what overflowed off the right edge was Finish —
+             * the only way to END a session. The badge is the one item here
+             * that reports rather than acts, and the microphone's own state
+             * already says whether the tutor is listening, so it is the one
+             * that gives way.
+             */
+            <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
+              <span className="flex items-center gap-2 whitespace-nowrap">
+                <span className="lf-live-emerald" aria-hidden />
+                <span className="lf-caption text-content">
+                  {t('tutor.conversation.liveWith', {
+                    name: t(`tutor.character.${session.character}.name`),
+                  })}
+                </span>
+              </span>
+            </HudPlate>
+          )}
+
+          {budgetRune && (
+            /*
+             * Desktop-only, for the same reason as the badge above and measured
+             * the same way: with it on the 390px panel row, "Finish" clipped to
+             * "Finis". Every chip here is `shrink-0` — correctly, a control that
+             * shrinks is a control that stops being tappable — so the row cannot
+             * absorb the overflow and something has to leave. Below `lg:` this
+             * row carries CONTROLS ONLY; the minutes are reported by the tutor
+             * itself when they start to matter (`budget === 'wrapping'` prints
+             * a line in the panel), which is the actionable half of the fact.
+             */
+            <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <Icon name="schedule" className="!text-[16px] text-warning-strong" />
+                <span className="lf-caption text-content-muted">{budgetRune}</span>
+              </span>
+            </HudPlate>
+          )}
+
+          {/*
+            XP, and only once there is some. The study's chip is the one place a
+            learner sees the session adding up; a counter that opens at zero and
+            stays there is a promise nobody made.
+          */}
+          {sessionXp > 0 && (
+            <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <Icon name="bolt" className="!text-[16px] text-warning-strong" />
+                <span className="lf-caption font-bold text-accent-strong">
+                  {t('tutor.segment.xpEarned', { count: sessionXp })}
+                </span>
+              </span>
+            </HudPlate>
+          )}
+
+          {mapAvailable && (
+            <HudPlate
+              as="button"
+              shape="chip"
+              onClick={onOpenMap}
+              aria-label={t('tutor.map.openLabel')}
+              title={t('tutor.map.openLabel')}
+              className="pointer-events-auto shrink-0"
+              /*
+               * A single glyph does not need a label's side padding, and on the
+               * 390px panel row those two unused columns per icon button were
+               * what pushed "Finish" — the only way to end a session — off the
+               * right edge. The 48px tap floor is untouched: it comes from
+               * `min-h-12 min-w-12` on the frame, not from this padding.
+               */
+              floorClassName="!px-3"
+            >
+              <Icon name="map" className="!text-[18px]" />
+            </HudPlate>
+          )}
+
+          {/*
+            DISABLED WHILE THE TUTOR IS STILL ANSWERING (adversarial review,
+            round 90): `end_session` claims the same turn slot the tutor's reply
+            is holding, and tearing the socket down without waiting records a
+            deliberate "Finish" as `learner_left` instead of `completed`,
+            skipping the farewell (/ORACLE.md §9.5).
+          */}
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={onRestart}
+            disabled={awaitingReply}
+            aria-label={t('tutor.conversation.startOver')}
+            title={t('tutor.conversation.startOver')}
+            className="pointer-events-auto shrink-0"
+            floorClassName="!px-3"
+          >
+            <Icon name="refresh" className="!text-[18px]" />
+          </HudPlate>
+
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={onExit}
+            disabled={awaitingReply}
+            className="pointer-events-auto shrink-0"
+          >
+            <span className="lf-action">{t('tutor.conversation.finish')}</span>
+          </HudPlate>
+    </>
+  );
+
+  /*
+   * INTO THE SHELL'S HEADER ROW WHEN THERE IS ONE, AND IN PLACE WHEN THERE IS
+   * NOT.
+   *
+   * The fallback is not defensive noise: these five controls include the only
+   * way to END a session and the only way to restart it, and a portal whose
+   * target is missing renders NOTHING — silently. Any consumer that mounts this
+   * layer outside `StageShell` (the test suite does exactly that) would lose
+   * "Finish" with no error anywhere. A control that can disappear because a
+   * layout slot was absent is the shape of bug this route has already shipped
+   * twice, so the slot is an ENHANCEMENT and never a precondition.
+   */
+  /*
+   * DESKTOP PUTS THEM IN THE SKY; MOBILE PUTS THEM BACK ON THE PANEL.
+   *
+   * The study has no mobile pass for this HUD — its own notes say so — and
+   * deriving one is what /DESIGN.md warns against for exactly this surface.
+   * Photographed at 390px: five chips beside the exit chip wrap onto a second
+   * row and land across the speech card. So above `lg:` they take the shell's
+   * header row, which is where the study puts them and where there is room;
+   * below it they go back to the panel's OWN header row, which exists on that
+   * breakpoint anyway because it doubles as the drag handle. One set of chips,
+   * two homes, and no third rendering of them.
+   */
+  const inStageHeader = desktop && dock?.header ? dock.header : null;
+  const headerGroup = inStageHeader
+    ? createPortal(headerChips, inStageHeader)
+    : /*
+       * The last-resort rendering, for a consumer that mounts this layer with
+       * neither a stage header nor a plate — the test suite does exactly that.
+       * These five controls include the only way to END a session: a portal
+       * with no target renders NOTHING, silently, and a control that can vanish
+       * because a layout slot was absent is the shape of bug this route has
+       * already shipped twice.
+       */
+      !desktop
+      ? null
+      : createPortal(
+          <div className="pointer-events-none fixed right-4 top-4 z-50 flex flex-wrap items-center justify-end gap-2 md:right-6 md:top-6">
+            {headerChips}
+          </div>,
+          document.body,
+        );
+
   return (
     <>
+      {headerGroup}
       {/*
         `ready && !stageTimedOut`, NOT `ready` ALONE — found live, 2026-09-01.
         `ready` alone answers "has the veil lifted", which a stage that timed
@@ -761,43 +942,37 @@ export function ConversationView({
             never actually given the muted-slate color every other `-muted`
             surface on this route uses on purpose.
           */}
-          {socket.lesson !== null && docked === null && (
-            <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 flex max-w-[60vw] items-center gap-1.5 rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-content-muted)] backdrop-blur-sm">
-              <span className="truncate">
-                {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
-                {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}
-              </span>
-              {/*
-                STEP DOTS (ORACLE.md §19.5): a purely visual companion to the
-                sentence above, never a second source of truth for it —
-                `aria-hidden` because that sentence already carries the
-                accessible name, and a screen reader hearing "step 2 of 4"
-                followed by an announced row of four dots would be told the
-                same fact twice. `shrink-0` so a long, truncating topic name
-                loses ITS OWN space first; the dots are the smaller, more
-                stable of the two and the one least useful to lose.
-              */}
-              <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
-                {lessonStepDots(socket.lesson.step, socket.lesson.of).map((state, i) => (
-                  <span
-                    key={i}
-                    data-lesson-step={state}
-                    className={
-                      'h-1.5 w-1.5 rounded-full transition-colors duration-150 ' +
-                      (state === 'upcoming'
-                        ? 'bg-[color:var(--lf-content-muted)]/30'
-                        : state === 'done'
-                          ? 'bg-[color:var(--lf-content-muted)]/60'
-                          : 'bg-[color:var(--lf-content-muted)]')
-                    }
-                  />
-                ))}
-              </span>
-            </div>
-          )}
+          {/*
+            THE LESSON CHIP IS GONE, and its content is not (2026-09-06).
+            It floated at `top-16` on the left saying "topic — step 2 of 4",
+            which is the same fact the speech card's own identity row now
+            carries beside the face that is teaching it. Two surfaces for one
+            fact is what the study's speech card exists to collapse, and this
+            one was additionally hidden in exactly the layout that had the most
+            room for it. The step DOTS went with it: they were an `aria-hidden`
+            visual companion to a sentence that has moved.
+          */}
 
           <SpeechCaption
             text={turn?.text ?? null}
+            /*
+             * The speaker's own name and the lesson they are in, folded into the
+             * card that carries their portrait — the study's identity row. The
+             * lesson line used to be a separate chip floating at the top-left
+             * (removed below): a second surface for a fact that belongs beside
+             * the face saying it.
+             */
+            speaker={{
+              name: t(`tutor.character.${session.character}.name`),
+              lesson:
+                socket.lesson !== null
+                  ? (socket.lesson.topic !== null ? `${socket.lesson.topic} · ` : '') +
+                    t('tutor.conversation.lessonThread', {
+                      step: socket.lesson.step,
+                      of: socket.lesson.of,
+                    })
+                  : null,
+            }}
             turnSeq={turnSeq}
             face={face}
             docked={docked}
@@ -917,6 +1092,7 @@ export function ConversationView({
       */}
 
       <LessonPlate
+        header={inStageHeader ? undefined : headerChips}
         label={t('tutor.conversation.plateLabel')}
         resizeLabel={t('tutor.conversation.resizePanel')}
         /*
@@ -959,102 +1135,6 @@ export function ConversationView({
          * the plate (`LessonPlate` -> `bodyLayout`, `LiveSegmentPanel`).
          */
         bodyLayout="column"
-        header={
-          /*
-           * Finishing is a first-class turn, so it lives on the one surface
-           * that is never culled and never scrolls away. The shell's way out
-           * LEAVES the route; this ends the session, and the tutor gets to say
-           * goodbye (/ORACLE.md §9.5). Starting over sits beside it — the one
-           * chat affordance the owner named as missing — and on desktop the
-           * minutes ride here too, where the docked panel is the conversation's
-           * home (the sky rune stays for the stage).
-           *
-           * HudPlates rather than the design system's `Button`, and that is
-           * the material rather than a preference (§Lumen — a capsule over a
-           * photographic frame is the silhouette of a sticker).
-           */
-          <>
-            {desktop && budgetRune && (
-              /*
-               * A CHIP, matching the icon buttons it shares this row with.
-               * Bare text sitting among four HudPlate chips (map/restart/finish)
-               * was the one thing in this header that had no material — visible
-               * on the real docked panel as a caption floating with no edge next
-               * to three bordered pills. The live dot is wired the same way as
-               * its sibling instances: true only while `socket.budget ===
-               * 'running'`, which is one of the two states that produce this
-               * rune at all.
-               */
-              <HudPlate shape="chip" className="pointer-events-none shrink-0">
-                <span className="flex items-center gap-1.5 whitespace-nowrap lf-caption text-content-muted">
-                  {socket.budget === 'running' ? <span className="lf-live-emerald" aria-hidden /> : null}
-                  {budgetRune}
-                </span>
-              </HudPlate>
-            )}
-            {/*
-             * THE MAP, OPENED MID-CONVERSATION (Sprint 3, /TUTOR_INSTRUMENTS.md).
-             * Icon-only, matching the restart chip beside it rather than
-             * `OfferChips`'s own labelled "Mi isla" — that one stands alone in
-             * a cluster with room to spend on a word; this one shares a row
-             * with two other controls on a 375px header. Omitted rather than
-             * disabled when there is no map to show, the same posture restart/
-             * finish already have (they are never rendered "off").
-             */}
-            {mapAvailable && (
-              <HudPlate
-                as="button"
-                shape="chip"
-                onClick={onOpenMap}
-                aria-label={t('tutor.map.openLabel')}
-                title={t('tutor.map.openLabel')}
-                className="pointer-events-auto shrink-0"
-              >
-                <Icon name="map" className="!text-[18px]" />
-              </HudPlate>
-            )}
-            {/*
-             * DISABLED WHILE THE TUTOR IS STILL ANSWERING (found by
-             * adversarial review, round 90, 2026-08-31, MEDIUM). Every other
-             * way to speak over the tutor already refuses to fire during
-             * `awaitingReply` — the composer's send button a few lines down,
-             * the "explain differently" chip — but these two had no such
-             * guard, and unlike those, the actual cost of firing anyway is
-             * not a duplicate turn: `end_session` claims the SAME turn slot
-             * the tutor's reply is still holding, `oracle/src/ws/server.ts`'s
-             * `claimTurn` sees it busy, and (before the server-side half of
-             * this fix, RUNBOOK.md Round 90) the request was refused
-             * outright while this file's `onRestart`/`onExit`
-             * (`TutorExperience.tsx`) tear the socket down regardless,
-             * without waiting to find out — recording a deliberate "Start
-             * over"/"Finish" as `learner_left` instead of `completed` and
-             * skipping the tutor's farewell entirely (/ORACLE.md §9.5). The
-             * server now defers rather than drops a busy `end_session`, but
-             * a learner who can never trigger the race in the first place is
-             * the cheaper and clearer fix, so both ship together.
-             */}
-            <HudPlate
-              as="button"
-              shape="chip"
-              onClick={onRestart}
-              disabled={awaitingReply}
-              aria-label={t('tutor.conversation.startOver')}
-              title={t('tutor.conversation.startOver')}
-              className="pointer-events-auto shrink-0"
-            >
-              <Icon name="refresh" className="!text-[18px]" />
-            </HudPlate>
-            <HudPlate
-              as="button"
-              shape="chip"
-              onClick={onExit}
-              disabled={awaitingReply}
-              className="pointer-events-auto shrink-0"
-            >
-              <span className="lf-action">{t('tutor.conversation.finish')}</span>
-            </HudPlate>
-          </>
-        }
       >
         {/*
           NO SECOND PRINTING OF THE LIVE LINE HERE (2026-08-22, /DESIGN.md
@@ -1119,6 +1199,7 @@ export function ConversationView({
             live={socket.segment}
             token={token}
             onGraded={socket.reportGrade}
+            onXpAwarded={addXp}
             // v3: a turn may carry tray-demonstration steps for the open activity.
             demo={turn?.demonstrate ? { seq: turn.seq, steps: turn.demonstrate } : null}
             // A `story` family segment has no character layer of its own here —

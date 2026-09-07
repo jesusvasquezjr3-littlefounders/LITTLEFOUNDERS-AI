@@ -215,7 +215,8 @@
     "resizePanel": "Resize this panel",
     "peekOpenActivity": "Activity ready",
     "peekActivityWaiting": "An activity is ready.",
-    "lessonThread": "Lesson · step {{step}} of {{of}}"
+    "lessonThread": "Lesson · step {{step}} of {{of}}",
+    "liveWith": "{{name}} is live"
   },
   "mic": {
     "listening": "Listening…",

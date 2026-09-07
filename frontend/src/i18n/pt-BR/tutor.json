@@ -215,7 +215,8 @@
     "resizePanel": "Mudar o tamanho deste painel",
     "peekOpenActivity": "Atividade pronta",
     "peekActivityWaiting": "Já tem uma atividade.",
-    "lessonThread": "Lição · passo {{step}} de {{of}}"
+    "lessonThread": "Lição · passo {{step}} de {{of}}",
+    "liveWith": "{{name}} ao vivo"
   },
   "mic": {
     "listening": "Estou ouvindo…",

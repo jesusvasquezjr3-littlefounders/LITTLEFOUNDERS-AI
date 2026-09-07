@@ -64,6 +64,8 @@ function renderDialog(overrides: Partial<PersonalizeLayerProps> = {}) {
   const onSave = vi.fn<PersonalizeLayerProps['onSave']>().mockResolvedValue(true);
   const onDone = vi.fn();
   const props: PersonalizeLayerProps = {
+    phase: 'personalizing',
+    timedOut: false,
     preferences: PREFERENCES,
     catalog: CATALOG,
     saving: false,

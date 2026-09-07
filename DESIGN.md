@@ -1633,6 +1633,59 @@ recipe 7) and has a reduced-motion modifier. The waveform collapses to a flat
 line rather than freezing: a stopped waveform is a graphical artefact, a flat
 one still says "audio".
 
+### The Tutor's conversing screen, rebuilt to the study (2026-09-06)
+
+The configuration dialog landed first; this is the screen behind it. Read
+against the study's own `Tutor IA` screen rather than a summary of it, four
+structural differences, all now closed:
+
+- **THE PANEL FLOATS AGAIN.** It was `inset-y-0 right-0` — a full-height slab
+  flush to the viewport edge, an owner decision from 2026-08-28 taken against a
+  floating CORNER plate whose content was folded away. The study answers the
+  same question a third way: a 380px card inset from the top-right, four
+  rounded corners, the stage visible around and behind it. It keeps a DEFINITE
+  height (`h-[calc(100vh-11rem)]`, not `max-h-`) because several boards draw
+  bars with `height: N%`, which collapses to zero against a content-sized
+  parent — `verify:tutor-ui` reported 3/3, 2/2 and 3/3 bars at zero the moment
+  the card became content-sized, the failure /AGENTS.md §5 already names for
+  `sequence` and `CategoriesBoard`.
+- **THE STAGE OWNS A HEADER ROW.** `StageShell` publishes a `header` slot
+  beside the two dock slots it already had; the exit chip sits in that row
+  rather than positioning itself, and the session's chips portal into it. They
+  used to live inside the lesson plate's own header, an inch inboard of the
+  corner and only while the plate was mounted.
+- **THE LIVE BADGE AND THE XP CHIP ARE REAL.** The badge burns only while
+  `budget === 'running'`. The XP chip SUMS what the grader actually awarded:
+  `LiveSegmentPanel` already read `xpAwarded` off each grade response to print
+  it beside the verdict, and that number died there, so the session had no
+  running total and the study's chip had nothing true behind it. Zero renders
+  no chip.
+- **THE SPEECH CARD NAMES ITS SPEAKER.** It carried a portrait and a sentence
+  and nothing identifying either. The study puts the name over a lesson
+  breadcrumb beside the avatar — and that breadcrumb was already on this route
+  as a separate chip floating at `top-16`, a second surface for a fact that
+  belongs to this one. The chip is deleted; its sentence is in the card.
+
+**MOBILE HAD TO BE DESIGNED, NOT DERIVED** — the study says outright it has no
+mobile pass for this HUD. Below `lg:` the session chips go back to the panel's
+own header row (which exists there anyway, doubling as the drag handle), and
+that row carries **controls only**: the badge, the minutes and the XP hide,
+because with them present at 390px "Finish" — the only way to end a session —
+clipped to "Finis". Every chip is `shrink-0` on purpose (a control that shrinks
+stops being tappable), so the row cannot absorb overflow and something has to
+leave; status is what leaves. The speech card's breadcrumb hides there too: it
+wrapped to two lines and grew the caption until it overlapped the microphone
+dock by 308x43px.
+
+**Two gate findings worth keeping.** `verify:tutor-ui` caught the exit chip
+hit-testing to the CANVAS on all 56 fixtures: moved into a
+`pointer-events-none` row, it had not opted back in, so the only way off the
+route was dead while looking perfectly normal in a screenshot. And
+`verify:tutor-a11y` caught the dialog's "Active" badge as a serious contrast
+failure — it used the house success chip (`bg-success-soft
+text-success-strong`), tuned for a light page and dark-on-dark in dark mode; it
+was the first surface to use that pairing over dark glass.
+
 ### The Tutor's configuration dialog, and the night that was never night (2026-09-06)
 
 Three passes of material tuning were told, correctly, that the Tutor still did

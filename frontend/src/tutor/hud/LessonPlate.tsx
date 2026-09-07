@@ -722,11 +722,18 @@ export function LessonPlate({
        * route. An inline style wins outright.
        */
       style={{
-        maxWidth: desktop ? 'min(27.5rem, 34vw)' : 'calc(100vw - 2rem)',
+        maxWidth: desktop ? 'min(25.625rem, 34vw)' : 'calc(100vw - 2rem)',
         height: desktop ? undefined : heights[detent],
-        // Docked panels do not float: square off the edge that meets the
-        // viewport, keep the radius on the side that meets the island.
-        ...(desktop ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 } : {}),
+        /*
+         * IT FLOATS AGAIN (2026-09-06, owner direction), and the two square
+         * corners go with the dock. The panel was full-height and flush to the
+         * right edge — an owner decision from 2026-08-28, made against a
+         * floating CORNER plate that had its content folded away. The Stitch
+         * study answers the same question a third way: a floating card that is
+         * neither full-height nor folded, with the stage visible under and
+         * behind it, and the owner has now chosen that. A card that floats has
+         * four corners.
+         */
         ...(standDown ? { display: 'none' } : {}),
       }}
       // Out of the accessibility tree, and out of the tab order with it (the
@@ -753,12 +760,39 @@ export function LessonPlate({
              * never squeezed into a half-width cell — the canvas stays
              * full-bleed underneath.
              */
-            'inset-y-0 right-0'
+            /*
+             * The study's own geometry: a 380px card (410 at `xl`) inset from
+             * the top-right corner, capped so it can never reach the
+             * microphone dock at the bottom of the frame. `top-20` clears the
+             * header row of chips above it.
+             */
+            /*
+             * A DEFINITE HEIGHT, not `max-h`, and that is the whiteboard's
+             * requirement rather than a taste. Several boards draw their bars
+             * with `height: N%`, which resolves against a DEFINITE parent
+             * height and collapses to zero pixels without one — the failure
+             * /AGENTS.md §5 already names for `sequence` and `CategoriesBoard`.
+             * Floating the card with `max-h` made it content-sized, and
+             * `verify:tutor-ui` immediately reported 3/3, 2/2 and 3/3 bars at
+             * zero across whiteboard, compare and categories. It still floats:
+             * inset from the corner, four rounded corners, stage visible
+             * around and behind it.
+             */
+            'right-4 top-20 h-[calc(100vh-11rem)] xl:right-6'
           : 'inset-x-0 bottom-4 mx-auto motion-safe:transition-[height] motion-safe:duration-300 motion-safe:ease-[var(--lf-ease)]',
         className,
       )}
     >
       <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[inherit] text-content">
+        {/*
+          THE ROW ONLY EXISTS IF IT HAS SOMETHING IN IT (2026-09-06).
+          On desktop the session chips moved out to the shell's own header row,
+          which left this one holding nothing and still paying its padding and
+          its rule — photographed as an empty 40px bar across the top of the
+          card. Below `lg:` the row is the DRAG HANDLE and is never empty, so
+          the condition is desktop-only.
+        */}
+        {(!desktop || header) && (
         <div
           className={cn(
             'flex shrink-0 items-center gap-2 px-2 pt-2 lg:px-3 lg:pt-3',
@@ -839,6 +873,7 @@ export function LessonPlate({
           )}
           <div className={cn('flex items-center gap-2', desktop ? 'ml-auto' : 'shrink-0')}>{header}</div>
         </div>
+        )}
 
         {/*
           Announced, not merely drawn. The body below is not mounted at PEEK, so

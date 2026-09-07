@@ -1295,85 +1295,26 @@ describe('the caption docks to the desktop panel even with no activity open', ()
  * chip's own `left-4` column on a phone. The caption is the surface that
  * "may never hide" for a deaf/hard-of-hearing learner, so the chip yields.
  */
-describe('the lesson-thread chip yields the top band to the docked caption at FULL', () => {
-  const LESSON = { topic: 'Ahorro', step: 2, of: 4 };
-
-  it('shows the chip at a resting detent, with a lesson active', () => {
-    render(conversation(makeSocket({ lesson: LESSON }), true));
-    expect(screen.getByText(/Ahorro/)).toBeInTheDocument();
-  });
-
-  it('hides the chip once the sheet reaches FULL, where it would collide with the caption', () => {
-    render(conversation(makeSocket({ lesson: LESSON }), true));
-    expect(screen.queryByText(/Ahorro/)).not.toBeNull();
-
-    fireEvent.keyDown(resizeHandle(), { key: 'End' });
-
-    expect(screen.queryByText(/Ahorro/)).toBeNull();
-  });
-
-  it('brings the chip back once the sheet leaves FULL again', () => {
-    render(conversation(makeSocket({ lesson: LESSON }), true));
-    fireEvent.keyDown(resizeHandle(), { key: 'End' });
-    expect(screen.queryByText(/Ahorro/)).toBeNull();
-
-    fireEvent.keyDown(resizeHandle(), { key: 'Home' });
-    expect(screen.queryByText(/Ahorro/)).not.toBeNull();
-  });
-
-  /*
-   * Found by adversarial review, round 61 (2026-08-30, MEDIUM): the guard
-   * above only excluded the mobile `docked === 'sheet'` state. On desktop,
-   * `docked` is `'panel'` for essentially every ordinary conversing screen
-   * (round 43) — a state this describe block never exercised, since none of
-   * its tests stub `matchMedia` to desktop. The chip and the panel-docked
-   * caption share the identical `top-16`/`top-20` band there too.
-   */
-  it('hides the chip on desktop too, where the caption docks to the panel instead of the sheet', () => {
-    vi.stubGlobal('matchMedia', (query: string) => ({
-      matches: true,
-      media: query,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
-    render(conversation(makeSocket({ lesson: LESSON }), true));
-    expect(screen.queryByText(/Ahorro/)).toBeNull();
-    vi.unstubAllGlobals();
-  });
-});
-
 /*
- * ORACLE.md §19.5 — the step dots half of "the conversing-phase screen-state
- * machine and step dots". A purely visual companion beside the lessonThread
- * text above: the arithmetic itself is `lessonStepDots.test.ts`'s job, so
- * this only has to prove the dots actually reach the DOM, in the right
- * count, hidden from assistive tech (the sentence beside them already
- * announces "step X of Y" — a screen reader must not hear it twice).
+ * THE LESSON-THREAD CHIP'S TESTS ARE GONE WITH THE CHIP (2026-09-06).
+ *
+ * Two describe blocks lived here: one asserting the chip yields the top band to
+ * a docked caption, one asserting it draws a step dot per plan step. The chip
+ * itself is gone — its sentence moved into the speech card's identity row,
+ * beside the face teaching it, which is where the design study puts it and
+ * which is what made the "does the chip collide with the caption" question stop
+ * existing. Deleted rather than repaired: they assert a surface, not a
+ * behaviour, and the behaviour they were protecting (one fact, one printing)
+ * is now structural rather than arbitrated at runtime.
+ *
+ * A LEAK WORTH RECORDING. The desktop test in the first block stubbed
+ * `matchMedia` to `matches: true` and called `vi.unstubAllGlobals()` on its
+ * LAST line — so the moment its assertion started failing, the stub leaked into
+ * every test after it and five unrelated sheet-height and drag-handle tests
+ * failed with it. Five red tests, one real cause, and none of the five was
+ * about the thing that broke. Prefer `afterEach(() => vi.unstubAllGlobals())`
+ * to an unstub the failure path skips.
  */
-describe('the lesson-thread chip draws one step dot per plan step', () => {
-  it('draws exactly `of` dots, marking the current one distinctly from what is done and upcoming', () => {
-    const { container } = render(conversation(makeSocket({ lesson: { topic: 'Ahorro', step: 2, of: 4 } }), true));
-    const dots = container.querySelectorAll('[data-lesson-step]');
-    expect(dots).toHaveLength(4);
-    expect(Array.from(dots).map((dot) => dot.getAttribute('data-lesson-step'))).toEqual([
-      'done',
-      'current',
-      'upcoming',
-      'upcoming',
-    ]);
-  });
-
-  it('hides the dot row from assistive tech, since the chip text already announces the step', () => {
-    const { container } = render(conversation(makeSocket({ lesson: { topic: 'Ahorro', step: 2, of: 4 } }), true));
-    const row = container.querySelector('[data-lesson-step]')?.parentElement;
-    expect(row?.getAttribute('aria-hidden')).toBe('true');
-  });
-
-  it('draws no dots at all while there is no active lesson thread', () => {
-    const { container } = render(conversation(makeSocket({ lesson: null }), true));
-    expect(container.querySelectorAll('[data-lesson-step]')).toHaveLength(0);
-  });
-});
 
 describe('the bottom edge the sheet and the microphone share', () => {
   it('lifts the dock over the resting sheet, and hands the edge back when the sheet goes', () => {

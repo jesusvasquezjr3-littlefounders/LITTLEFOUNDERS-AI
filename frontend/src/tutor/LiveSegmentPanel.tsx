@@ -62,6 +62,16 @@ export interface LiveSegmentPanelProps {
     pedagogy?: { echo: string; attemptNumber: number },
   ) => void;
   /**
+   * XP the SESSION has just earned, reported as it lands.
+   *
+   * The panel already knows — it reads `xpAwarded` off the grade response to
+   * print "you earned N" beside the verdict — but that number died here, so the
+   * session had no running total and the header had nothing true to show. It is
+   * a separate callback from `onGraded` because that one is the socket's
+   * pedagogy report and its shape is a protocol, not a place to add UI facts.
+   */
+  onXpAwarded?: (xp: number) => void;
+  /**
    * v3: a demonstration the tutor performs on the OPEN tray while speaking.
    * `seq` is the turn that carried it, so the same steps never replay.
    */
@@ -84,7 +94,15 @@ export interface LiveSegmentPanelProps {
 }
 
 
-export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, className }: LiveSegmentPanelProps) {
+export function LiveSegmentPanel({
+  live,
+  token,
+  onGraded,
+  onXpAwarded,
+  demo,
+  onCharacterCue,
+  className,
+}: LiveSegmentPanelProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<unknown>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -267,6 +285,7 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
 
       setVerdict(result.data.verdict);
       setXpAwarded(result.data.xpAwarded);
+      if (result.data.xpAwarded > 0) onXpAwarded?.(result.data.xpAwarded);
 
       const done = result.data.verdict.correct || attempt >= MAX_ATTEMPTS;
       if (done) {
@@ -280,7 +299,7 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         setAttempt((n) => n + 1);
       }
     },
-    [token, live.segmentId, attempt, onGraded],
+    [token, live.segmentId, attempt, onGraded, onXpAwarded],
   );
 
   if (!entry) {

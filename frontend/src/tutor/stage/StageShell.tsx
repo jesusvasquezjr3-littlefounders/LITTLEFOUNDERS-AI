@@ -126,6 +126,19 @@ export interface StageDockValue {
   /** Rows that ride BELOW it: the composer. */
   below: HTMLElement | null;
   /**
+   * The stage's own header row, right-hand group — session status and the
+   * controls that leave or restart it.
+   *
+   * A SLOT rather than a prop, and for the reason the two dock slots already
+   * are: the chips belong to whichever layer owns the session (their state is
+   * the socket's), while the ROW belongs to the shell, which is the only thing
+   * that knows where the top edge is and what else is claiming it. Before this
+   * they lived inside the lesson plate's own header, which is why the session
+   * minutes disappeared with the plate and reappeared 400px inboard of the
+   * corner the study puts them in.
+   */
+  header: HTMLElement | null;
+  /**
    * Keep the dock clear of a surface this many pixels tall, measured from the
    * bottom of the viewport.
    *
@@ -469,6 +482,7 @@ function StageShellInner({
   const dockRef = useRef<HTMLDivElement | null>(null);
   const footprintRef = useRef(0);
   const [above, setAbove] = useState<HTMLElement | null>(null);
+  const [header, setHeader] = useState<HTMLElement | null>(null);
   const [below, setBelow] = useState<HTMLElement | null>(null);
 
   /*
@@ -579,6 +593,7 @@ function StageShellInner({
    * extra render per route, not per frame.
    */
   const attachAbove = useCallback((node: HTMLDivElement | null) => setAbove(node), []);
+  const attachHeader = useCallback((node: HTMLDivElement | null) => setHeader(node), []);
   const attachBelow = useCallback((node: HTMLDivElement | null) => setBelow(node), []);
 
   /*
@@ -597,8 +612,8 @@ function StageShellInner({
   const besidePlate = cornerPlate;
 
   const dock = useMemo<StageDockValue>(
-    () => ({ above, below, setFootprint, keepClearOf, setCornerPlate }),
-    [above, below, setFootprint, keepClearOf],
+    () => ({ above, below, header, setFootprint, keepClearOf, setCornerPlate }),
+    [above, below, header, setFootprint, keepClearOf],
   );
 
   return (
@@ -719,6 +734,16 @@ function StageShellInner({
          * chip charged as a 60 px top inset would push the subject down the
          * frame in every phase of every session to make room for a back arrow.
          */}
+        {/*
+          THE HEADER ROW (2026-09-06, from the design study).
+          One row owning the whole top edge: the way out on the left, session
+          status and session controls on the right. It is `pointer-events-none`
+          with opt-in children, so the 3D stage stays draggable in the gap
+          between the two groups — the same discipline the study's own HUD
+          layer uses, and the reason the middle of the top edge is not a dead
+          strip.
+        */}
+        <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex items-start justify-between gap-3 px-4 md:top-6 md:px-6">
         <HudPlate
           ref={safeArea?.measure('exit')}
           as="button"
@@ -730,7 +755,12 @@ function StageShellInner({
            */
           aria-label={t('tutor.stage.leave')}
           onClick={() => navigate(APP_HOME)}
-          className="fixed left-4 top-4 z-50 md:left-6 md:top-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          // It is a child of the header row now, so it neither positions itself nor
+          // carries its own z-index — and it MUST opt back into pointer events,
+          // because the row is `pointer-events-none` so the 3D stage stays
+          // draggable in the gap. Found by `verify:tutor-ui`: without this the
+          // only way off the route hit-tested to the canvas, on all 56 fixtures.
+          className="pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <Icon name="arrow_back" />
           {/*
@@ -747,6 +777,17 @@ function StageShellInner({
           */}
           <span className="lf-action hidden md:inline">{t('tutor.stage.leave')}</span>
         </HudPlate>
+
+          {/*
+            The right-hand group is a SLOT: the chips are the session's, the
+            row is the shell's. Empty until a layer fills it, and it takes no
+            space and no pointer events while it is.
+          */}
+          <div
+            ref={attachHeader}
+            className="pointer-events-none ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2"
+          />
+        </div>
 
         <div className="pointer-events-none absolute inset-0 z-30">{children}</div>
 

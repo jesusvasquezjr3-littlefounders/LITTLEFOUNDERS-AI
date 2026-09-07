@@ -72,6 +72,20 @@ import type { WordTiming } from './types';
 
 export interface SpeechCaptionProps {
   text: string | null;
+  /**
+   * WHO IS SPEAKING, AND WHAT ABOUT — the design study's identity row.
+   *
+   * The card carried a portrait and a sentence and nothing that named either.
+   * The study puts the speaker's name over a lesson breadcrumb beside the
+   * avatar, and that breadcrumb was ALREADY on this route as a separate chip
+   * floating at `top-16` on the left — a second surface for a fact that
+   * belongs to this one. Passing it in folds the two together and gives the
+   * portrait something to be the portrait OF.
+   *
+   * Optional: the replay director and the no-face branches have no identity to
+   * print, and a row that renders an empty name is worse than no row.
+   */
+  speaker?: { name: string; lesson?: string | null } | null;
   /** Bump when a NEW line starts, so the same text can replay. */
   turnSeq: number;
   /**
@@ -177,6 +191,7 @@ const MIN_SPEECH_PX = 15;
 
 export function SpeechCaption({
   text,
+  speaker,
   turnSeq,
   slot = 'lead.crown',
   className,
@@ -429,6 +444,31 @@ export function SpeechCaption({
           by stylesheet order rather than by which one was written last.
         */}
         <span className={face ? 'min-w-0 flex-1 text-start' : undefined}>
+          {/*
+            The identity line. `aria-hidden`, because the caption's own live
+            region already announces the sentence and a screen reader does not
+            need the speaker's name repeated on every turn — it is a visual
+            anchor for a face, not new information.
+          */}
+          {speaker && (
+            <span aria-hidden="true" className="mb-1 flex flex-wrap items-baseline gap-x-2">
+              <span className="lf-action leading-none text-content">{speaker.name}</span>
+              {speaker.lesson && (
+                /*
+                 * The breadcrumb is DESKTOP-ONLY, and that is a measurement.
+                 * "Ahorrar para una meta · Lesson · step 2 of 4" wraps to two
+                 * lines at 390px, and `verify:tutor-ui` caught what those two
+                 * lines cost: the caption grew until it overlapped the
+                 * microphone dock by 308x43px — a control under a card. The
+                 * NAME is what the identity row is for; the breadcrumb is
+                 * context, and context is the half a small screen gives up.
+                 */
+                <span className="hidden lf-caption leading-none text-content-muted lg:inline">
+                  {speaker.lesson}
+                </span>
+              )}
+            </span>
+          )}
           <span aria-hidden="true">{shown}</span>
           <span className="sr-only">{text}</span>
         </span>

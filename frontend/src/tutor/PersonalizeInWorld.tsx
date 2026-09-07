@@ -363,9 +363,20 @@ export function PersonalizeInWorld({
                   className="pointer-events-none absolute right-3 !text-[16px] text-content-faint"
                 />
               </div>
+              {/*
+                THE LABEL IS INK, THE SEMANTICS ARE THE BORDER AND THE GLYPH.
+                It was `bg-success-soft text-success-strong`, the house success
+                chip, which is tuned for a LIGHT page: in dark mode
+                `success-soft` is emerald-950 and `success-strong` is
+                emerald-700, so the pair is dark-on-dark — `verify:tutor-a11y`
+                caught it as a serious contrast failure on the first surface
+                that uses it over dark glass. The word now carries the theme's
+                own ink, legible in both themes by construction; the check and
+                the rim carry the meaning.
+              */}
               {nickname.trim() !== '' && (
-                <span className="lf-caption hidden shrink-0 items-center gap-1 rounded-lg border border-success/30 bg-success-soft px-2 py-1 text-success-strong sm:flex">
-                  <Icon name="check" className="!text-[14px]" />
+                <span className="lf-caption hidden shrink-0 items-center gap-1 rounded-lg border border-success/40 bg-success/15 px-2 py-1 text-content sm:flex">
+                  <Icon name="check" className="!text-[14px] text-success" />
                   {t('tutor.personalize.nicknameActive')}
                 </span>
               )}
