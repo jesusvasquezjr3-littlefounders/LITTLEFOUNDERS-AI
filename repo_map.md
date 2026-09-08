@@ -8318,9 +8318,11 @@ import {
 
 ```
 import { Router } from 'express';
+import multer from 'multer';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import { EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, uploadEvidence } from '../services/evidence.js';
 import {
   allocateTaskReward,
   archiveGoal,
@@ -8330,8 +8332,6 @@ import {
   getCatalogItemById,
   getGoalById,
   getGoalProgress,
-  getGoalsForKid,
-  getRedemptionById,
 ```
 
 ### backend/src/routes/tutor.ts
@@ -8652,6 +8652,26 @@ type Json = Record<string, unknown>;
 
 export interface CourseRowLite {
   id: string;
+```
+
+### backend/src/services/evidence.ts
+
+```
+import { getConfig } from '../config.js';
+
+/*
+ * Task evidence photos (0077, FAMILY_HUB.md) — the same "Core decides,
+ * Depot stores" split badges.ts already uses, with one difference: a badge
+ * is server-composited and always public; a photo of a kid's room or
+ * homework is a KID-UPLOADED image and NEVER public (§1.9 — a materially
+ * different privacy class). It is stored `visibility: internal` and only
+ * ever reaches a browser through fetchEvidenceBytes below, never a raw
+ * Depot URL — mirrors verification.ts's "forward the buffer, never persist
+ * it ourselves beyond the pointer" shape for the Guardian ID photo.
+ */
+
+const EVIDENCE_BUCKET = 'task-evidence';
+const MIME_EXT: Readonly<Record<string, string>> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 ```
 
 ### backend/src/services/gotrue.ts

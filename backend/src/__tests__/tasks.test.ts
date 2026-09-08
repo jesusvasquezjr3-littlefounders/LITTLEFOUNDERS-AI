@@ -40,6 +40,10 @@ interface StubOptions {
   catalogItem?: Record<string, unknown> | null;
   redemption?: Record<string, unknown> | null;
   writes?: { url: string; method: string; body: unknown }[];
+  /** filebase upload — omit for a working default, false to simulate a Depot failure. */
+  filebaseUploadOk?: boolean;
+  /** filebase byte fetch (GET /:id/evidence) — omit for a working default, false for a failure. */
+  filebaseDownloadOk?: boolean;
 }
 
 function stub(opts: StubOptions = {}) {
@@ -57,6 +61,17 @@ function stub(opts: StubOptions = {}) {
       }
       if (url.includes('/rest/v1/audit_logs') && method === 'POST') {
         return Promise.resolve(new Response(null, { status: 201 }));
+      }
+
+      if (url.includes('/api/v1/files') && method === 'POST') {
+        if (opts.filebaseUploadOk === false) return Promise.resolve(new Response(null, { status: 500 }));
+        return Promise.resolve(
+          jsonResponse(200, { data: { id: 'task-evidence/aa11bb22.jpg', url: '/files/task-evidence/aa11bb22.jpg', bucket: 'task-evidence' } }),
+        );
+      }
+      if (url.includes('/files/') && !url.includes('/rest/v1/') && method === 'GET') {
+        if (opts.filebaseDownloadOk === false) return Promise.resolve(new Response(null, { status: 404 }));
+        return Promise.resolve(new Response(new Uint8Array([1, 2, 3]), { status: 200, headers: { 'content-type': 'image/jpeg' } }));
       }
 
       if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
@@ -87,6 +102,12 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(
           jsonResponse(201, [{ id: TASK_ID, assigned_to: KID_ID, assigned_by: PARENT_ID, status: 'open', reward_coins: 10, allocated: false, recurrence: 'once', due_at: null, title: 'Clean the room', created_at: new Date().toISOString() }]),
         );
+      }
+      if (url.includes('/rest/v1/tasks?id=eq.') && method === 'PATCH' && !url.includes('status=eq')) {
+        // setTaskEvidence's PATCH — no status filter, updates evidence_* only.
+        if (opts.taskPatchSucceeds === false) return Promise.resolve(jsonResponse(200, []));
+        const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+        return Promise.resolve(jsonResponse(200, [{ ...(opts.task ?? defaultTask()), ...body }]));
       }
       if (url.includes('/rest/v1/tasks?id=eq.') && method === 'PATCH') {
         if (opts.taskPatchSucceeds === false) return Promise.resolve(jsonResponse(200, []));
@@ -153,7 +174,22 @@ function stub(opts: StubOptions = {}) {
 }
 
 function defaultTask(): Record<string, unknown> {
-  return { id: TASK_ID, assigned_to: KID_ID, assigned_by: PARENT_ID, status: 'open', reward_coins: 10, allocated: false, recurrence: 'once', due_at: null, title: 'Clean the room', created_at: new Date().toISOString() };
+  return {
+    id: TASK_ID,
+    assigned_to: KID_ID,
+    assigned_by: PARENT_ID,
+    status: 'open',
+    reward_coins: 10,
+    allocated: false,
+    recurrence: 'once',
+    due_at: null,
+    title: 'Clean the room',
+    created_at: new Date().toISOString(),
+    evidence_bucket: null,
+    evidence_hash: null,
+    evidence_ext: null,
+    evidence_uploaded_at: null,
+  };
 }
 function defaultGoal(): Record<string, unknown> {
   return { id: GOAL_ID, kid_user_id: KID_ID, title: 'A bike', target: 50, icon: 'bike', status: 'active', created_at: new Date().toISOString(), reached_at: null };
@@ -369,5 +405,95 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
     stub({ catalogItem: defaultCatalogItem(), kidsParents: [PARENT_ID], roles: ['kid'] });
     const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
     expect(res.status).toBe(201);
+  });
+});
+
+describe('POST /api/v1/tasks/:id/evidence (kid)', () => {
+  it('rejects a task that already has a decision', async () => {
+    stub({ task: { ...defaultTask(), status: 'approved' }, roles: ['kid'] });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(409);
+  });
+
+  it("404s a task that is not this kid's own", async () => {
+    stub({ task: { ...defaultTask(), assigned_to: OTHER_KID_ID }, roles: ['kid'] });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(404);
+  });
+
+  it('rejects a missing or unsupported file', async () => {
+    stub({ task: defaultTask(), roles: ['kid'] });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(400);
+  });
+
+  it('502s when Depot upload fails, and never invents a pointer to bytes never stored', async () => {
+    stub({ task: defaultTask(), roles: ['kid'], filebaseUploadOk: false });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(502);
+  });
+
+  it('uploads a photo and reports it attached', async () => {
+    stub({ task: defaultTask(), roles: ['kid'] });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.task.hasEvidence).toBe(true);
+  });
+});
+
+describe('GET /api/v1/tasks/:id/evidence', () => {
+  it('404s for a stranger — no guardian link and not the kid themself', async () => {
+    stub({ task: { ...defaultTask(), evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' }, parentsKids: [OTHER_KID_ID], roles: ['parent'] });
+    const res = await request(createApp())
+      .get(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('404s a task with no photo attached', async () => {
+    stub({ task: defaultTask(), roles: ['kid'] });
+    const res = await request(createApp())
+      .get(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('streams the photo back to the kid who owns the task', async () => {
+    stub({ task: { ...defaultTask(), evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' }, roles: ['kid'] });
+    const res = await request(createApp())
+      .get(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('image/jpeg');
+  });
+
+  it('streams the photo back to a verified guardian', async () => {
+    stub({ task: { ...defaultTask(), evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' }, parentsKids: [KID_ID], roles: ['parent'] });
+    const res = await request(createApp())
+      .get(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`);
+    expect(res.status).toBe(200);
+  });
+
+  it('502s when Depot cannot serve the bytes', async () => {
+    stub({ task: { ...defaultTask(), evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' }, roles: ['kid'], filebaseDownloadOk: false });
+    const res = await request(createApp())
+      .get(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(502);
   });
 });

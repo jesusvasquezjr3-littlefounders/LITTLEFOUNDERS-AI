@@ -1141,9 +1141,14 @@ export interface TaskRow {
   status: string;
   allocated: boolean;
   created_at: string;
+  evidence_bucket: string | null;
+  evidence_hash: string | null;
+  evidence_ext: string | null;
+  evidence_uploaded_at: string | null;
 }
 
-const TASK_FIELDS = 'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at';
+const TASK_FIELDS =
+  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at';
 
 export async function insertTask(row: {
   assigned_by: string;
@@ -1172,6 +1177,24 @@ export function getTasksForKids(kidIds: string[]): Promise<TaskRow[] | null> {
 
 export async function getTaskById(taskId: string): Promise<TaskRow | null> {
   const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}&select=${TASK_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+/** Attaches (or replaces) a proof-of-work photo pointer on a task the caller already confirmed is their own and still open for evidence (0077). */
+export async function setTaskEvidence(
+  taskId: string,
+  evidence: { bucket: string; hash: string; ext: string },
+): Promise<TaskRow | null> {
+  const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      evidence_bucket: evidence.bucket,
+      evidence_hash: evidence.hash,
+      evidence_ext: evidence.ext,
+      evidence_uploaded_at: new Date().toISOString(),
+    }),
+  });
   return rows?.[0] ?? null;
 }
 

@@ -198,6 +198,8 @@ wired to a schedule; run it by hand as a standing curation backlog check.
 | POST | /api/v1/tasks/redemptions/:id/decide | Bearer + parent | `{approve}`. Approving debits the spend bucket atomically inside `decide_redemption` (0075/0076) — 409 if the balance no longer covers the cost or it was already decided |
 | GET | /api/v1/tasks/mine | Bearer + kid | The caller's own tasks |
 | POST | /api/v1/tasks/:id/complete | Bearer + kid | `open → done` on the caller's own task only |
+| POST | /api/v1/tasks/:id/evidence | Bearer + kid | Attaches (or replaces) a proof-of-work photo, multipart field `photo` (jpeg/png/webp, ≤8MB). Allowed while the task is `open` or `done`; 409 once a parent has decided. Uploaded to Depot (`filebase`) `visibility: internal` — never a public URL |
+| GET | /api/v1/tasks/:id/evidence | Bearer + kid or parent | Streams the photo's raw bytes (never a redirect to Depot) to the assigned kid or one of their verified guardians. 404 if no photo is attached or the caller has no relationship to the task |
 | POST | /api/v1/tasks/:id/allocate | Bearer + kid | Splits an `approved` task's FIXED `reward_coins` across Save/Spend/Share (body: `{save, spend, share, goalId?}`, must sum to exactly `reward_coins`) via `allocate_task_reward` (0075/0076) — the total is never client-supplied, only the split is. 409 if already allocated, not approved, or the split is invalid; optionally tags the Save portion to an active goal of the caller's own |
 | GET | /api/v1/tasks/wallet | Bearer + kid | The caller's own bucket balances — `SUM(wallet_ledger.amount)` per bucket, never a stored counter (§1.14) |
 | GET | /api/v1/tasks/wallet/ledger | Bearer + kid | The caller's own ledger, most recent first (the "receipts" behind each jar) |

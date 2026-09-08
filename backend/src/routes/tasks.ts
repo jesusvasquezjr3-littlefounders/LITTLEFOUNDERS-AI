@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import { EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, uploadEvidence } from '../services/evidence.js';
 import {
   allocateTaskReward,
   archiveGoal,
@@ -29,6 +31,7 @@ import {
   insertTask,
   markGoalReached,
   setCatalogItemActive,
+  setTaskEvidence,
   transitionTaskStatus,
   type CatalogItemRow,
   type GoalRow,
@@ -58,6 +61,10 @@ function toWireTask(t: TaskRow) {
     status: t.status,
     allocated: t.allocated,
     createdAt: t.created_at,
+    // The pointer (bucket/hash/ext) never leaves Core — only whether one
+    // exists. The image itself is fetched through the authenticated
+    // GET /:id/evidence proxy below, never a raw Depot URL (§1.9).
+    hasEvidence: t.evidence_bucket !== null && t.evidence_hash !== null && t.evidence_ext !== null,
   };
 }
 
@@ -141,6 +148,11 @@ const MAX_REWARD_COINS = 500;
 
 const GOAL_ICONS = ['star', 'game', 'toy', 'book', 'bike', 'trip', 'gift'] as const;
 
+// Mirrors verification.ts's own upload multer instance: memory storage (the
+// buffer is forwarded to Depot and dropped, never written to Core's own
+// disk), a small size ceiling for a phone-camera photo.
+const evidenceUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024, files: 1 } });
+
 export function tasksRouter(): Router {
   const router = Router();
   router.use(requireAuth);
@@ -159,6 +171,13 @@ export function tasksRouter(): Router {
       return false;
     }
     return true;
+  }
+
+  /** Same check as guardParentOf, without writing a response — for routes reachable by EITHER role, where the caller decides the final status after also checking "is this my own". */
+  async function isVerifiedGuardianOfSilently(kidId: string, parentId: string): Promise<boolean | null> {
+    const links = await getVerifiedKidLinks(parentId);
+    if (links === null) return null;
+    return links.some((l) => l.kid_user_id === kidId);
   }
 
   // ── PARENT: tasks ──────────────────────────────────────────────────────
@@ -375,6 +394,58 @@ export function tasksRouter(): Router {
     const updated = await transitionTaskStatus(id.data, 'open', 'done');
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not open');
     return ok(res, { task: toWireTask(updated) });
+  });
+
+  /*
+   * Proof-of-work photo (0077). Attachable while the task is still `open`
+   * or `done` — before or right when marking it done, and replaceable up
+   * until a parent decides — never after `approved`/`cancelled`, the same
+   * "nothing changes once decided" boundary /:id/allocate already enforces
+   * for the wallet side.
+   */
+  router.post('/:id/evidence', requireRole(['kid']), evidenceUpload.single('photo'), async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const task = await guardOwnTask(id.data, res, kid.id);
+    if (!task) return;
+    if (task.status !== 'open' && task.status !== 'done') {
+      return fail(res, 409, CONFLICT, 'This task already has a decision — a photo can no longer be attached');
+    }
+    if (!req.file || !EVIDENCE_ALLOWED_MIME.has(req.file.mimetype)) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'A jpeg/png/webp photo is required');
+    }
+
+    const uploaded = await uploadEvidence(req.file.buffer, req.file.mimetype);
+    if (!uploaded) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the photo');
+    const updated = await setTaskEvidence(id.data, uploaded);
+    if (!updated) return fail(res, 502, DATA_UNAVAILABLE, 'Could not attach the photo to the task');
+    return ok(res, { task: toWireTask(updated) });
+  });
+
+  /** Streams the photo back — never a raw Depot URL (§1.9). Either the assigned kid or a verified guardian of theirs may view it. */
+  router.get('/:id/evidence', requireRole(['parent', 'kid']), async (req, res) => {
+    const caller = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const task = await getTaskById(id.data);
+    if (!task) return fail(res, 404, NOT_FOUND, 'No such task');
+
+    const isOwnKid = task.assigned_to === caller.id;
+    if (!isOwnKid) {
+      const isGuardian = await isVerifiedGuardianOfSilently(task.assigned_to, caller.id);
+      if (isGuardian === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+      if (!isGuardian) return fail(res, 404, NOT_FOUND, 'No such task');
+    }
+
+    if (!task.evidence_bucket || !task.evidence_hash || !task.evidence_ext) {
+      return fail(res, 404, NOT_FOUND, 'No photo attached to this task');
+    }
+    const bytes = await fetchEvidenceBytes(task.evidence_bucket, task.evidence_hash, task.evidence_ext);
+    if (!bytes) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the photo');
+    res.set('Content-Type', bytes.mime);
+    res.set('Cache-Control', 'private, max-age=3600');
+    return res.send(bytes.buffer);
   });
 
   const AllocateReward = z
