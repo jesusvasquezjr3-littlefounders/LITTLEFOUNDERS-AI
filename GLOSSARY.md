@@ -27,6 +27,9 @@
 | **avatar** | The user's DiceBear **Avataaars** option set (`avatars.options`), rendered locally as SVG. Never an uploaded photo — same rule for covers (token-gradient presets only). |
 | **block** | A one-directional `blocks` edge that (a) prevents new `follows` rows between the pair in either direction (DB-enforced, `is_blocked()`) and (b) hides both public profiles from each other (mutual 404 — never reveals who blocked whom). Blocking clears any existing follow edge both ways. |
 | **learning stats** | `learning_stats` — XP points, minutes learned, lessons completed, `streak_days` + `longest_streak` (0013). One row per user (auto-created at signup), system-written only (no client INSERT/UPDATE policy). Lessons write all of them. |
+| **LF Coins** | The Family Hub's virtual currency (FAMILY_HUB.md). Earned by a `kid` completing a `parent`-assigned task, credited via `wallet_ledger` (append-only — a bucket balance is `SUM(amount)`, never a stored counter). No cash-out path, no real-money equivalence, and deliberately NOT convertible to/from `learning_stats` XP — a separate economy on purpose, so a kid cannot "buy" academic-looking progress. |
+| **Save / Spend / Share** | The three `wallet_ledger.bucket` values every LF Coins credit is split across at allocation time (`POST /api/v1/tasks/:id/allocate`) — the same three-way split the platform's own financial-education courses teach in lesson form. A Save-bucket credit may optionally carry a `goal_id` TAG (not a transfer) toward one of the kid's own active `savings_goals`. |
+| **redemption catalog** | `redemption_catalog` — parent-authored, free-text privileges ("30 extra minutes of tablet") with an LF Coins cost, redeemed against a kid's `spend` bucket via `redemptions` + the `decide_redemption` DB function (atomic balance check, same shape as `allocate_task_reward`). |
 
 ## Services & codenames
 

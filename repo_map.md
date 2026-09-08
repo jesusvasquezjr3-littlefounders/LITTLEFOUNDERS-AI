@@ -7533,6 +7533,26 @@ import { getKidLessonProgress, getLessonProgressForLessons, getLessonsByTopicIds
  * batch are combined, and a failure on any batch propagates instead of
 ```
 
+### backend/src/__tests__/tasks.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { randomUUID } from 'node:crypto';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+/*
+ * /api/v1/tasks — FAMILY_HUB.md's earn/allocate/goal/redeem loop.
+ *
+ * Unlike /api/v1/family (entirely `requireRole(['parent'])`), this router is
+ * reachable by BOTH roles, each scoped to their own rows. The invariant under
+ * test throughout is the one that matters most for a kid-facing money
+ * surface: a caller can never reach another family's task, wallet or
+ * redemption — proven here as a 404 (not a 403), matching family.ts's own
+ * "an outsider learns nothing about whether it exists" posture.
+```
+
 ### backend/src/__tests__/tutor-retention.test.ts
 
 ```
@@ -7730,7 +7750,7 @@ import { learnRouter } from './routes/learn.js';
 import { onboardingRouter } from './routes/onboarding.js';
 import { placementRouter } from './routes/placement.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
-import { tutorRouter } from './routes/tutor.js';
+import { tasksRouter } from './routes/tasks.js';
 ```
 
 ### backend/src/assets/lfLogo.ts
@@ -8291,6 +8311,26 @@ import {
   getLearningStats,
   getLearningStatsByUserId,
   getOwnAvatar,
+```
+
+### backend/src/routes/tasks.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import {
+  allocateTaskReward,
+  archiveGoal,
+  decideRedemption,
+  getCatalogForGuardians,
+  getCatalogForParent,
+  getCatalogItemById,
+  getGoalById,
+  getGoalProgress,
+  getGoalsForKid,
+  getRedemptionById,
 ```
 
 ### backend/src/routes/tutor.ts

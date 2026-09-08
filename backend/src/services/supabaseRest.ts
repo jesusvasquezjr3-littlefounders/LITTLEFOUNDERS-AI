@@ -875,6 +875,15 @@ export function getVerifiedKidLinks(parentUserId: string): Promise<GuardianLinkR
   );
 }
 
+/** The mirror image of getVerifiedKidLinks, read from the KID's own side — a kid's own verified guardians (routes/tasks.ts, resolving "my guardians' redemption catalog"). */
+export async function getVerifiedGuardiansOfKid(kidUserId: string): Promise<string[] | null> {
+  const rows = await serviceRest<{ parent_user_id: string }[]>(
+    `/guardian_links?kid_user_id=eq.${eu(kidUserId)}&verification_status=eq.verified&select=parent_user_id`,
+  );
+  if (rows === null) return null;
+  return rows.map((r) => r.parent_user_id);
+}
+
 /*
  * The link that makes a kid account legitimate. §1.3: a `kid` row without a
  * VERIFIED guardian link is a bug, not a state - so this is written `verified`
@@ -1114,4 +1123,311 @@ const BADGE_SHARE_FIELDS =
 export async function getBadgeShareByToken(token: string): Promise<BadgeShareRow | null> {
   const rows = await serviceRest<BadgeShareRow[]>(`/badge_shares?token=eq.${es(token)}&select=${BADGE_SHARE_FIELDS}&limit=1`);
   return rows?.[0] ?? null;
+}
+
+// ── Family Hub: tasks, wallet, goals, redemption catalog ────────────────────
+// FAMILY_HUB.md. "Family" here is a kid + their verified guardians, derived
+// from guardian_links (0074, D1) — there is no separate family/household
+// entity anywhere in this schema.
+
+export interface TaskRow {
+  id: string;
+  assigned_by: string;
+  assigned_to: string;
+  title: string;
+  reward_coins: number;
+  recurrence: string;
+  due_at: string | null;
+  status: string;
+  allocated: boolean;
+  created_at: string;
+}
+
+const TASK_FIELDS = 'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at';
+
+export async function insertTask(row: {
+  assigned_by: string;
+  assigned_to: string;
+  title: string;
+  reward_coins: number;
+  recurrence: string;
+  due_at: string | null;
+}): Promise<TaskRow | null> {
+  const rows = await serviceRest<TaskRow[]>('/tasks', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+export function getTasksForKid(kidId: string): Promise<TaskRow[] | null> {
+  return serviceRest<TaskRow[]>(`/tasks?assigned_to=eq.${eu(kidId)}&select=${TASK_FIELDS}&order=created_at.desc`);
+}
+
+export function getTasksForKids(kidIds: string[]): Promise<TaskRow[] | null> {
+  if (kidIds.length === 0) return Promise.resolve([]);
+  return serviceRest<TaskRow[]>(`/tasks?assigned_to=${inFilter(kidIds)}&select=${TASK_FIELDS}&order=created_at.desc`);
+}
+
+export async function getTaskById(taskId: string): Promise<TaskRow | null> {
+  const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}&select=${TASK_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+/**
+ * Compare-and-swap status transition: succeeds only if the row's CURRENT
+ * status is exactly `fromStatus`. This is the row-level conditional PATCH
+ * idiom `closeTutorSession` already established (tutorData.ts) for
+ * first-write-wins on a single row — correct here because every task
+ * transition (open→done, done→approved, open|done→cancelled) is exactly one
+ * row, unlike the wallet's multi-row aggregate which needed the 0075/0076
+ * Postgres functions instead. Returns null on no-match (already transitioned,
+ * or never was in `fromStatus`) exactly like a transport failure — the
+ * caller cannot and must not distinguish "someone else already approved
+ * this" from "the network dropped it"; either way nothing further should
+ * happen from this request (§1.14).
+ */
+export async function transitionTaskStatus(taskId: string, fromStatus: string, toStatus: string): Promise<TaskRow | null> {
+  const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}&status=eq.${es(fromStatus)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ status: toStatus }),
+  });
+  return rows?.[0] ?? null;
+}
+
+export interface WalletLedgerRow {
+  id: number;
+  kid_user_id: string;
+  bucket: string;
+  amount: number;
+  reason: string;
+  task_id: string | null;
+  goal_id: string | null;
+  redemption_id: string | null;
+  created_at: string;
+}
+
+const WALLET_LEDGER_FIELDS = 'id,kid_user_id,bucket,amount,reason,task_id,goal_id,redemption_id,created_at';
+
+export function getWalletLedger(kidId: string, limit: number): Promise<WalletLedgerRow[] | null> {
+  return serviceRest<WalletLedgerRow[]>(
+    `/wallet_ledger?kid_user_id=eq.${eu(kidId)}&select=${WALLET_LEDGER_FIELDS}&order=created_at.desc&limit=${limit}`,
+  );
+}
+
+export interface WalletBalances {
+  save: number;
+  spend: number;
+  share: number;
+}
+
+/**
+ * A bucket balance is SUM(amount), computed here rather than read from a
+ * counter — /AGENTS.md §1.14: a value derived from a corrupted read must
+ * degrade to "unreadable, refuse" (a `null` return), never a silently wrong
+ * number. Row volume per kid is small (an occasional chore, not a
+ * high-frequency ledger), so summing in Node rather than adding a
+ * server-side view is the "boring, cheap, verifiable" choice (§1.0).
+ */
+export async function getWalletBalances(kidId: string): Promise<WalletBalances | null> {
+  const rows = await serviceRest<{ bucket: string; amount: number }[]>(
+    `/wallet_ledger?kid_user_id=eq.${eu(kidId)}&select=bucket,amount`,
+  );
+  if (rows === null) return null;
+  const balances: WalletBalances = { save: 0, spend: 0, share: 0 };
+  for (const row of rows) {
+    if (row.bucket === 'save' || row.bucket === 'spend' || row.bucket === 'share') {
+      balances[row.bucket] += row.amount;
+    }
+  }
+  return balances;
+}
+
+/**
+ * The only path that credits a task's reward. The TOTAL is never
+ * client-supplied — it is the task's own `reward_coins`, read and enforced
+ * inside `allocate_task_reward` (0075/0076) — only the three-way SPLIT is,
+ * and the function rejects any split that doesn't sum to exactly that total.
+ * `null` means the RPC call itself failed (network/transport); `false` means
+ * the function ran and refused (already allocated, wrong status, bad split,
+ * bad goal tag) — the caller (the route) turns `false` into a 409 and `null`
+ * into a 502, never treating either as "nothing happened, safe to retry
+ * silently" for a request that could also have partially landed server-side.
+ */
+export async function allocateTaskReward(input: {
+  taskId: string;
+  kidId: string;
+  save: number;
+  spend: number;
+  share: number;
+  createdBy: string;
+  goalId: string | null;
+}): Promise<boolean | null> {
+  const res = await serviceRest<boolean>('/rpc/allocate_task_reward', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_task_id: input.taskId,
+      p_kid_user_id: input.kidId,
+      p_save: input.save,
+      p_spend: input.spend,
+      p_share: input.share,
+      p_created_by: input.createdBy,
+      p_goal_id: input.goalId,
+    }),
+  });
+  return typeof res === 'boolean' ? res : null;
+}
+
+export interface GoalRow {
+  id: string;
+  kid_user_id: string;
+  title: string;
+  target: number;
+  icon: string;
+  status: string;
+  created_at: string;
+  reached_at: string | null;
+}
+
+const GOAL_FIELDS = 'id,kid_user_id,title,target,icon,status,created_at,reached_at';
+
+export async function insertGoal(row: { kid_user_id: string; title: string; target: number; icon: string }): Promise<GoalRow | null> {
+  const rows = await serviceRest<GoalRow[]>('/savings_goals', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+export function getGoalsForKid(kidId: string): Promise<GoalRow[] | null> {
+  return serviceRest<GoalRow[]>(`/savings_goals?kid_user_id=eq.${eu(kidId)}&select=${GOAL_FIELDS}&order=created_at.desc`);
+}
+
+export async function getGoalById(goalId: string): Promise<GoalRow | null> {
+  const rows = await serviceRest<GoalRow[]>(`/savings_goals?id=eq.${eu(goalId)}&select=${GOAL_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+/** A goal's progress is a TAG on wallet_ledger rows, never a second copy of the total (FAMILY_HUB.md §6, 0076's own header). */
+export async function getGoalProgress(goalId: string): Promise<number | null> {
+  const rows = await serviceRest<{ amount: number }[]>(`/wallet_ledger?goal_id=eq.${eu(goalId)}&select=amount`);
+  if (rows === null) return null;
+  return rows.reduce((sum, r) => sum + r.amount, 0);
+}
+
+export async function markGoalReached(goalId: string): Promise<boolean> {
+  const res = await serviceRest<unknown>(`/savings_goals?id=eq.${eu(goalId)}&status=eq.active`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ status: 'reached', reached_at: new Date().toISOString() }),
+  });
+  return res !== null;
+}
+
+export async function archiveGoal(goalId: string, kidId: string): Promise<boolean> {
+  const res = await serviceRest<unknown>(`/savings_goals?id=eq.${eu(goalId)}&kid_user_id=eq.${eu(kidId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ status: 'archived' }),
+  });
+  return res !== null;
+}
+
+export interface CatalogItemRow {
+  id: string;
+  parent_user_id: string;
+  title: string;
+  cost: number;
+  active: boolean;
+  created_at: string;
+}
+
+const CATALOG_FIELDS = 'id,parent_user_id,title,cost,active,created_at';
+
+export async function insertCatalogItem(row: { parent_user_id: string; title: string; cost: number }): Promise<CatalogItemRow | null> {
+  const rows = await serviceRest<CatalogItemRow[]>('/redemption_catalog', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+export function getCatalogForParent(parentId: string): Promise<CatalogItemRow[] | null> {
+  return serviceRest<CatalogItemRow[]>(`/redemption_catalog?parent_user_id=eq.${eu(parentId)}&select=${CATALOG_FIELDS}&order=created_at.desc`);
+}
+
+/** Only ACTIVE items — a kid never sees something a parent turned off. */
+export function getCatalogForGuardians(parentIds: string[]): Promise<CatalogItemRow[] | null> {
+  if (parentIds.length === 0) return Promise.resolve([]);
+  return serviceRest<CatalogItemRow[]>(
+    `/redemption_catalog?parent_user_id=${inFilter(parentIds)}&active=eq.true&select=${CATALOG_FIELDS}&order=created_at.desc`,
+  );
+}
+
+export async function getCatalogItemById(itemId: string): Promise<CatalogItemRow | null> {
+  const rows = await serviceRest<CatalogItemRow[]>(`/redemption_catalog?id=eq.${eu(itemId)}&select=${CATALOG_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+export async function setCatalogItemActive(itemId: string, parentId: string, active: boolean): Promise<boolean> {
+  const res = await serviceRest<unknown>(`/redemption_catalog?id=eq.${eu(itemId)}&parent_user_id=eq.${eu(parentId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ active }),
+  });
+  return res !== null;
+}
+
+export interface RedemptionRow {
+  id: string;
+  catalog_id: string;
+  kid_user_id: string;
+  status: string;
+  created_at: string;
+  decided_at: string | null;
+  decided_by: string | null;
+}
+
+const REDEMPTION_FIELDS = 'id,catalog_id,kid_user_id,status,created_at,decided_at,decided_by';
+
+export async function insertRedemption(row: { catalog_id: string; kid_user_id: string }): Promise<RedemptionRow | null> {
+  const rows = await serviceRest<RedemptionRow[]>('/redemptions', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+export function getRedemptionsForKid(kidId: string): Promise<RedemptionRow[] | null> {
+  return serviceRest<RedemptionRow[]>(`/redemptions?kid_user_id=eq.${eu(kidId)}&select=${REDEMPTION_FIELDS}&order=created_at.desc`);
+}
+
+export function getRedemptionsForKids(kidIds: string[]): Promise<RedemptionRow[] | null> {
+  if (kidIds.length === 0) return Promise.resolve([]);
+  return serviceRest<RedemptionRow[]>(`/redemptions?kid_user_id=${inFilter(kidIds)}&select=${REDEMPTION_FIELDS}&order=created_at.desc`);
+}
+
+export async function getRedemptionById(redemptionId: string): Promise<RedemptionRow | null> {
+  const rows = await serviceRest<RedemptionRow[]>(`/redemptions?id=eq.${eu(redemptionId)}&select=${REDEMPTION_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+/**
+ * Approving debits the kid's spend bucket by the catalog item's cost, checked
+ * against the CURRENT balance inside the same locked transaction
+ * (0075/0076's `decide_redemption`) — never trusted from a prior read here.
+ * Same null/false split as `allocateTaskReward`: null is a transport
+ * failure, false is a refusal (already decided, or balance now insufficient).
+ */
+export async function decideRedemption(redemptionId: string, approve: boolean, decidedBy: string): Promise<boolean | null> {
+  const res = await serviceRest<boolean>('/rpc/decide_redemption', {
+    method: 'POST',
+    body: JSON.stringify({ p_redemption_id: redemptionId, p_approve: approve, p_decided_by: decidedBy }),
+  });
+  return typeof res === 'boolean' ? res : null;
 }

@@ -180,6 +180,33 @@ wired to a schedule; run it by hand as a standing curation backlog check.
 | GET | /api/v1/family/kids/:kidId/courses/:slug/territory | Bearer + parent | A kid's course territory through the parent's eyes: the SAME CourseTree shape the kid sees, computed from THEIR progress (service-role post-guard), plus a stats strip (xp/lessons/streaks). 403 without a VERIFIED guardian link for that kid |
 | POST | /api/v1/family/kids/:kidId/badge | Bearer + parent | Issues a shareable achievement badge (0072/0073) for an ALREADY-EARNED course badge or a streak ≥3 days — 403 otherwise, and 403/404 without a VERIFIED guardian link for that kid. Composites via Depot (`filebase`), stores a `badge_shares` row with a fresh opaque token, emits `badge_generated`. → `{ token, imageUrl, shareUrl }`, `shareUrl` carries `?utm_campaign=badge-share` |
 | GET | /api/v1/badges/:token | **none — the one deliberately unauthenticated Core read** | The badge landing page's data source, opened by strangers with no account (see routes/badgePublic.ts). Returns ONLY whitelisted display fields (`firstName`, `achievementKind`, `achievementLabel`, `imageUrl`) — never `kid_user_id`/`created_by`/the row id. 404 for a malformed or unknown token |
+
+**`/api/v1/tasks` (routes/tasks.ts, FAMILY_HUB.md) — the earn/allocate/goal/redeem loop.** Unlike `/api/v1/family` (entirely `requireRole(['parent'])`), this router is reachable by both `parent` and `kid`, each scoped to their own rows — mirrors `learn`/`tutor`'s shape (`requireAuth` at the router, `requireRole([...])` per route) rather than family's. A caller reaching another family's task/wallet/redemption always gets 404, never 403 (family.ts's own posture: an outsider learns nothing about whether it exists). LF Coins never touch `learning_stats`/XP — a deliberately separate economy (FAMILY_HUB.md §3).
+
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| POST | /api/v1/tasks | Bearer + parent | Create a task for a verified kid. Body: `{assignedTo, title, rewardCoins (1-500), recurrence?, dueAt?}`. 404 for a kid not verified under this parent |
+| GET | /api/v1/tasks | Bearer + parent | List tasks — `?kidId=` for one verified kid, or across every verified kid otherwise |
+| POST | /api/v1/tasks/:id/approve | Bearer + parent | `done → approved` (compare-and-swap; 409 if the task is not `done`). Does NOT credit the wallet — see `/allocate` |
+| POST | /api/v1/tasks/:id/cancel | Bearer + parent | `open\|done → cancelled` |
+| GET | /api/v1/tasks/:kidId/wallet | Bearer + parent | A verified kid's bucket balances (monitoring, read-only) |
+| GET | /api/v1/tasks/:kidId/goals | Bearer + parent | A verified kid's savings goals with computed progress |
+| POST | /api/v1/tasks/catalog | Bearer + parent | Create a redemption-catalog item (a parent-authored privilege + its LF Coins cost). Body: `{title, cost (1-500)}` |
+| GET | /api/v1/tasks/catalog | Bearer + parent | This parent's own catalog (including inactive items) |
+| PATCH | /api/v1/tasks/catalog/:id | Bearer + parent | `{active}` toggle |
+| GET | /api/v1/tasks/redemptions | Bearer + parent | Redemption requests — `?kidId=` for one verified kid, or across every verified kid otherwise |
+| POST | /api/v1/tasks/redemptions/:id/decide | Bearer + parent | `{approve}`. Approving debits the spend bucket atomically inside `decide_redemption` (0075/0076) — 409 if the balance no longer covers the cost or it was already decided |
+| GET | /api/v1/tasks/mine | Bearer + kid | The caller's own tasks |
+| POST | /api/v1/tasks/:id/complete | Bearer + kid | `open → done` on the caller's own task only |
+| POST | /api/v1/tasks/:id/allocate | Bearer + kid | Splits an `approved` task's FIXED `reward_coins` across Save/Spend/Share (body: `{save, spend, share, goalId?}`, must sum to exactly `reward_coins`) via `allocate_task_reward` (0075/0076) — the total is never client-supplied, only the split is. 409 if already allocated, not approved, or the split is invalid; optionally tags the Save portion to an active goal of the caller's own |
+| GET | /api/v1/tasks/wallet | Bearer + kid | The caller's own bucket balances — `SUM(wallet_ledger.amount)` per bucket, never a stored counter (§1.14) |
+| GET | /api/v1/tasks/wallet/ledger | Bearer + kid | The caller's own ledger, most recent first (the "receipts" behind each jar) |
+| POST | /api/v1/tasks/goals | Bearer + kid | Create a savings goal. Body: `{title, target (1-100000), icon}` |
+| GET | /api/v1/tasks/goals | Bearer + kid | The caller's own goals with computed progress (`SUM(wallet_ledger.amount) WHERE goal_id=...`, a TAG on money already counted in the plain `save` bucket, never a second pool) |
+| PATCH | /api/v1/tasks/goals/:id | Bearer + kid | Archive the caller's own goal |
+| GET | /api/v1/tasks/catalog/available | Bearer + kid | Active catalog items across the caller's own verified guardians |
+| POST | /api/v1/tasks/redemptions | Bearer + kid | Request a redemption. Body: `{catalogId}` — 404 unless the item belongs to one of the caller's verified guardians |
+| GET | /api/v1/tasks/redemptions/mine | Bearer + kid | The caller's own redemption requests |
 | GET | /api/v1/admin/learning/retention | Bearer + admin/superadmin | Always-on retention: first-EVER-attempt scores on spaced-review lessons bucketed by days since the learner last practiced the cited source topics, plus per-source-topic decay rows. Computed in Vault (`admin_retention_*` fns, migration 0016 — EXECUTE revoked from client roles); the platform's spaced reviews ARE the delayed test, zero extra assessments |
 | GET | /api/v1/admin/generation | Bearer + admin/superadmin | Generation telemetry overview (migration 0017, written by coursegen at the end of every non-dry run): last 10 `generate:track` reports (totals, failure heatmap by stage, mop-up list, halt cause) + last 20 runs (published/failed, cost, cache-hit, images). 502 `DATA_UNAVAILABLE` when Vault does not answer |
 | GET | /api/v1/admin/generation/runs/:runId | Bearer + admin/superadmin | One run's full record: RunSummary + params + per-slot outcomes (state, failure stage, salvage, duration, judge rubric, revise cycles, early-stop). `runId` validated `^[A-Za-z0-9._-]{1,200}$` → 400 `VALIDATION_ERROR`; unknown id or Vault down → 502 `DATA_UNAVAILABLE` |
