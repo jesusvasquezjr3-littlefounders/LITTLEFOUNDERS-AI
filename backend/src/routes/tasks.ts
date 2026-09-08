@@ -30,7 +30,86 @@ import {
   markGoalReached,
   setCatalogItemActive,
   transitionTaskStatus,
+  type CatalogItemRow,
+  type GoalRow,
+  type RedemptionRow,
+  type TaskRow,
+  type WalletLedgerRow,
 } from '../services/supabaseRest.js';
+
+/*
+ * Wire shapes: every OTHER route in this codebase (routes/family.ts above
+ * all) translates snake_case DB rows into camelCase before they reach the
+ * browser — /AGENTS.md §1.7's naming split is DB vs TS, not DB vs wire, but
+ * the actual convention every response in this API already follows is
+ * camelCase JSON. These mappers are the one place that translation happens
+ * for this router, so a caller reading the wire shape never has to know a
+ * Postgres column name.
+ */
+function toWireTask(t: TaskRow) {
+  return {
+    id: t.id,
+    assignedBy: t.assigned_by,
+    assignedTo: t.assigned_to,
+    title: t.title,
+    rewardCoins: t.reward_coins,
+    recurrence: t.recurrence,
+    dueAt: t.due_at,
+    status: t.status,
+    allocated: t.allocated,
+    createdAt: t.created_at,
+  };
+}
+
+function toWireGoal(g: GoalRow, saved: number) {
+  return {
+    id: g.id,
+    kidUserId: g.kid_user_id,
+    title: g.title,
+    target: g.target,
+    icon: g.icon,
+    status: g.status,
+    createdAt: g.created_at,
+    reachedAt: g.reached_at,
+    saved,
+  };
+}
+
+function toWireCatalogItem(c: CatalogItemRow) {
+  return {
+    id: c.id,
+    parentUserId: c.parent_user_id,
+    title: c.title,
+    cost: c.cost,
+    active: c.active,
+    createdAt: c.created_at,
+  };
+}
+
+function toWireRedemption(r: RedemptionRow) {
+  return {
+    id: r.id,
+    catalogId: r.catalog_id,
+    kidUserId: r.kid_user_id,
+    status: r.status,
+    createdAt: r.created_at,
+    decidedAt: r.decided_at,
+    decidedBy: r.decided_by,
+  };
+}
+
+function toWireLedgerEntry(e: WalletLedgerRow) {
+  return {
+    id: e.id,
+    bucket: e.bucket,
+    amount: e.amount,
+    reason: e.reason,
+    taskId: e.task_id,
+    goalId: e.goal_id,
+    redemptionId: e.redemption_id,
+    createdAt: e.created_at,
+  };
+}
 
 /*
  * /api/v1/tasks — the earn (chores) -> allocate (Save/Spend/Share) -> goal
@@ -109,7 +188,7 @@ export function tasksRouter(): Router {
     });
     if (!task) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the task');
     await insertAuditLog(parent.id, 'tasks.created', task.id, { assignedTo, rewardCoins });
-    return ok(res, { task }, 201);
+    return ok(res, { task: toWireTask(task) }, 201);
   });
 
   const ListTasksQuery = z.object({ kidId: z.string().uuid().optional() });
@@ -123,14 +202,14 @@ export function tasksRouter(): Router {
       if (!(await guardParentOf(q.data.kidId, res, parent.id))) return;
       const tasks = await getTasksForKid(q.data.kidId);
       if (tasks === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load tasks');
-      return ok(res, { tasks });
+      return ok(res, { tasks: tasks.map(toWireTask) });
     }
 
     const links = await getVerifiedKidLinks(parent.id);
     if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
     const tasks = await getTasksForKids(links.map((l) => l.kid_user_id));
     if (tasks === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load tasks');
-    return ok(res, { tasks });
+    return ok(res, { tasks: tasks.map(toWireTask) });
   });
 
   router.post('/:id/approve', requireRole(['parent']), async (req, res) => {
@@ -144,7 +223,7 @@ export function tasksRouter(): Router {
     const updated = await transitionTaskStatus(id.data, 'done', 'approved');
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not awaiting approval');
     await insertAuditLog(parent.id, 'tasks.approved', id.data, {});
-    return ok(res, { task: updated });
+    return ok(res, { task: toWireTask(updated) });
   });
 
   router.post('/:id/cancel', requireRole(['parent']), async (req, res) => {
@@ -161,7 +240,7 @@ export function tasksRouter(): Router {
     const updated = await transitionTaskStatus(id.data, task.status, 'cancelled');
     if (!updated) return fail(res, 409, CONFLICT, 'This task changed state — refresh and try again');
     await insertAuditLog(parent.id, 'tasks.cancelled', id.data, {});
-    return ok(res, { task: updated });
+    return ok(res, { task: toWireTask(updated) });
   });
 
   // ── PARENT: a kid's wallet/goals, read-only (family monitoring) ────────
@@ -183,7 +262,7 @@ export function tasksRouter(): Router {
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
     const goals = await getGoalsForKid(kidId.data);
     if (goals === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals');
-    const withProgress = await Promise.all(goals.map(async (g) => ({ ...g, saved: (await getGoalProgress(g.id)) ?? 0 })));
+    const withProgress = await Promise.all(goals.map(async (g) => toWireGoal(g, (await getGoalProgress(g.id)) ?? 0)));
     return ok(res, { goals: withProgress });
   });
 
@@ -200,14 +279,14 @@ export function tasksRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the reward details');
     const item = await insertCatalogItem({ parent_user_id: parent.id, title: parsed.data.title, cost: parsed.data.cost });
     if (!item) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the catalog item');
-    return ok(res, { item }, 201);
+    return ok(res, { item: toWireCatalogItem(item) }, 201);
   });
 
   router.get('/catalog', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const items = await getCatalogForParent(parent.id);
     if (items === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the catalog');
-    return ok(res, { items });
+    return ok(res, { items: items.map(toWireCatalogItem) });
   });
 
   const UpdateCatalogItem = z.object({ active: z.boolean() });
@@ -222,7 +301,7 @@ export function tasksRouter(): Router {
     if (!item || item.parent_user_id !== parent.id) return fail(res, 404, NOT_FOUND, 'No such catalog item');
     const okWrite = await setCatalogItemActive(id.data, parent.id, parsed.data.active);
     if (!okWrite) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the catalog item');
-    return ok(res, { item: { ...item, active: parsed.data.active } });
+    return ok(res, { item: toWireCatalogItem({ ...item, active: parsed.data.active }) });
   });
 
   const ListRedemptionsQuery = z.object({ kidId: z.string().uuid().optional() });
@@ -236,14 +315,14 @@ export function tasksRouter(): Router {
       if (!(await guardParentOf(q.data.kidId, res, parent.id))) return;
       const redemptions = await getRedemptionsForKid(q.data.kidId);
       if (redemptions === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load redemptions');
-      return ok(res, { redemptions });
+      return ok(res, { redemptions: redemptions.map(toWireRedemption) });
     }
 
     const links = await getVerifiedKidLinks(parent.id);
     if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
     const redemptions = await getRedemptionsForKids(links.map((l) => l.kid_user_id));
     if (redemptions === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load redemptions');
-    return ok(res, { redemptions });
+    return ok(res, { redemptions: redemptions.map(toWireRedemption) });
   });
 
   const DecideRedemption = z.object({ approve: z.boolean() });
@@ -273,7 +352,7 @@ export function tasksRouter(): Router {
     const kid = authedUser(res);
     const tasks = await getTasksForKid(kid.id);
     if (tasks === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load tasks');
-    return ok(res, { tasks });
+    return ok(res, { tasks: tasks.map(toWireTask) });
   });
 
   /** Verifies the caller (a kid) is the task's own assignee. */
@@ -295,7 +374,7 @@ export function tasksRouter(): Router {
 
     const updated = await transitionTaskStatus(id.data, 'open', 'done');
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not open');
-    return ok(res, { task: updated });
+    return ok(res, { task: toWireTask(updated) });
   });
 
   const AllocateReward = z
@@ -356,7 +435,7 @@ export function tasksRouter(): Router {
     const kid = authedUser(res);
     const entries = await getWalletLedger(kid.id, 100);
     if (entries === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the ledger');
-    return ok(res, { entries });
+    return ok(res, { entries: entries.map(toWireLedgerEntry) });
   });
 
   // ── KID: goals ───────────────────────────────────────────────────────────
@@ -373,14 +452,14 @@ export function tasksRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the goal details');
     const goal = await insertGoal({ kid_user_id: kid.id, title: parsed.data.title, target: parsed.data.target, icon: parsed.data.icon });
     if (!goal) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the goal');
-    return ok(res, { goal }, 201);
+    return ok(res, { goal: toWireGoal(goal, 0) }, 201);
   });
 
   router.get('/goals', requireRole(['kid']), async (req, res) => {
     const kid = authedUser(res);
     const goals = await getGoalsForKid(kid.id);
     if (goals === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals');
-    const withProgress = await Promise.all(goals.map(async (g) => ({ ...g, saved: (await getGoalProgress(g.id)) ?? 0 })));
+    const withProgress = await Promise.all(goals.map(async (g) => toWireGoal(g, (await getGoalProgress(g.id)) ?? 0)));
     return ok(res, { goals: withProgress });
   });
 
@@ -392,7 +471,8 @@ export function tasksRouter(): Router {
     if (!goal || goal.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such goal');
     const archived = await archiveGoal(id.data, kid.id);
     if (!archived) return fail(res, 502, DATA_UNAVAILABLE, 'Could not archive the goal');
-    return ok(res, { goal: { ...goal, status: 'archived' } });
+    const progress = (await getGoalProgress(id.data)) ?? 0;
+    return ok(res, { goal: toWireGoal({ ...goal, status: 'archived' }, progress) });
   });
 
   // ── KID: redemption catalog + requests ──────────────────────────────────
@@ -405,7 +485,7 @@ export function tasksRouter(): Router {
     if (guardians === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
     const items = await getCatalogForGuardians(guardians);
     if (items === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the catalog');
-    return ok(res, { items });
+    return ok(res, { items: items.map(toWireCatalogItem) });
   });
 
   const RequestRedemption = z.object({ catalogId: z.string().uuid() });
@@ -422,14 +502,14 @@ export function tasksRouter(): Router {
 
     const redemption = await insertRedemption({ catalog_id: item.id, kid_user_id: kid.id });
     if (!redemption) return fail(res, 502, DATA_UNAVAILABLE, 'Could not request the redemption');
-    return ok(res, { redemption }, 201);
+    return ok(res, { redemption: toWireRedemption(redemption) }, 201);
   });
 
   router.get('/redemptions/mine', requireRole(['kid']), async (req, res) => {
     const kid = authedUser(res);
     const redemptions = await getRedemptionsForKid(kid.id);
     if (redemptions === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load redemptions');
-    return ok(res, { redemptions });
+    return ok(res, { redemptions: redemptions.map(toWireRedemption) });
   });
 
   return router;

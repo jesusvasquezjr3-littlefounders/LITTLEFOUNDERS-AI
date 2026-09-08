@@ -210,7 +210,11 @@ describe('POST /api/v1/tasks (parent creates)', () => {
     stub({ parentsKids: [KID_ID], writes });
     const res = await postAsParent('/api/v1/tasks', { assignedTo: KID_ID, title: 'Clean the room', rewardCoins: 10 });
     expect(res.status).toBe(201);
-    expect(res.body.data.task).toMatchObject({ id: TASK_ID, status: 'open' });
+    // Wire shape is camelCase like every other endpoint (routes/family.ts) —
+    // the raw DB row (assigned_to/reward_coins) must never leak onto the wire.
+    expect(res.body.data.task).toMatchObject({ id: TASK_ID, status: 'open', assignedTo: KID_ID, rewardCoins: 10 });
+    expect(res.body.data.task.assigned_to).toBeUndefined();
+    expect(res.body.data.task.reward_coins).toBeUndefined();
     expect(writes.some((w) => w.url.includes('/audit_logs'))).toBe(true);
   });
 });
@@ -319,7 +323,8 @@ describe('POST /api/v1/tasks/goals (kid)', () => {
     stub({ roles: ['kid'] });
     const res = await postAsKid('/api/v1/tasks/goals', { title: 'A bike', target: 50, icon: 'bike' });
     expect(res.status).toBe(201);
-    expect(res.body.data.goal).toMatchObject({ id: GOAL_ID, title: 'A bike', target: 50, status: 'active' });
+    expect(res.body.data.goal).toMatchObject({ id: GOAL_ID, title: 'A bike', target: 50, status: 'active', kidUserId: KID_ID, saved: 0 });
+    expect(res.body.data.goal.kid_user_id).toBeUndefined();
   });
 });
 
