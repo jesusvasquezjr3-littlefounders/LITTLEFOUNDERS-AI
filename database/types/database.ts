@@ -2361,6 +2361,10 @@ export type Database = {
           assigned_to: string
           created_at: string
           due_at: string | null
+          evidence_bucket: string | null
+          evidence_ext: string | null
+          evidence_hash: string | null
+          evidence_uploaded_at: string | null
           id: string
           recurrence: string
           reward_coins: number
@@ -2373,6 +2377,10 @@ export type Database = {
           assigned_to: string
           created_at?: string
           due_at?: string | null
+          evidence_bucket?: string | null
+          evidence_ext?: string | null
+          evidence_hash?: string | null
+          evidence_uploaded_at?: string | null
           id?: string
           recurrence?: string
           reward_coins: number
@@ -2385,6 +2393,10 @@ export type Database = {
           assigned_to?: string
           created_at?: string
           due_at?: string | null
+          evidence_bucket?: string | null
+          evidence_ext?: string | null
+          evidence_hash?: string | null
+          evidence_uploaded_at?: string | null
           id?: string
           recurrence?: string
           reward_coins?: number

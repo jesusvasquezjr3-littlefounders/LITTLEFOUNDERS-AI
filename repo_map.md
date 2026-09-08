@@ -13920,6 +13920,26 @@ BEGIN
 -- editing 0075, per this repo's own "never edit, write a delta" rule.
 ```
 
+### database/migrations/0077_task_evidence.sql
+
+```
+-- 0077_task_evidence.sql — a kid can attach a photo as proof of work; a
+-- parent sees it before approving.
+-- @phase: expand
+--
+-- WHY THIS EXISTS. FAMILY_HUB.md's loop asked a parent to trust "done" on
+-- their word alone. A photo turns "I did it" into something the parent can
+-- actually look at before spending an approval — the same shape a real
+-- chore chart already has (a kid holds up the clean room, the parent looks).
+--
+-- WHAT IS STORED, AND WHERE THE BYTES ACTUALLY LIVE. Only a pointer.
+-- `evidence_bucket/hash/ext` is the same triple filebase's own `id` field
+-- already returns (`${bucket}/${hash}.${ext}`, filebase/src/routes/files.ts) —
+-- split into three columns instead of one string so the CHECK on `ext` can
+-- reject anything that isn't a photo without parsing. The bytes are NEVER
+-- written here and NEVER made `public` in Depot: a photo of a child's room,
+```
+
 ### database/package.json
 
 ```
