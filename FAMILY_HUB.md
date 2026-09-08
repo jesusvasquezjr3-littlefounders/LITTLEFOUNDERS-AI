@@ -37,6 +37,8 @@
 
 A real correctness bug was caught and fixed before any frontend code depended on it: the first draft of `tasks.ts` returned raw snake_case DB rows (`assigned_to`, `reward_coins`) instead of the camelCase every other endpoint in this API uses (`routes/family.ts`'s own convention) — see the dedicated commit fixing it, with two regression tests asserting the snake_case fields are `undefined` on the wire.
 
+**2026-09-08, round 2 — UI redesign, proof-of-work photo, and a 5-lens deep audit.** The owner flagged the first cut's UI as not using desktop space deliberately (a stretched single column at 1280px — the exact §1.11 violation) and asked for a photo-evidence feature so a kid can attach proof of a completed chore. Both shipped: a real 2-column desktop dashboard (documented as a new DESIGN.md screen recipe) and `0077_task_evidence.sql` + `POST`/`GET /:id/evidence`, the photo stored `visibility: internal` in Depot and only ever reached through Core's own authenticated proxy (§1.9 — a kid's photo is a different privacy class than a public badge). A follow-up ask for a detailed audit ("no genérico, encuentra áreas de oportunidad") ran 5 parallel reviews (security/privacy, backend edge cases, frontend UX, accessibility, product quality) against the shipped code — no critical bugs, but real ones: a race where a photo could attach after a parent had already decided the task, a permanent per-replace storage leak in Depot, evidence type-checked only by declared Content-Type, several one-click destructive actions with no confirmation and no visible error on failure. All fixed in `0078_task_hardening.sql` + the same commit's backend/frontend changes, backend tests 36 → 55, both suites green. See §8.1 below for the one finding that was accepted as a documented risk rather than fixed.
+
 ---
 
 ## §1 Vision
@@ -330,6 +332,26 @@ locales in the same commit as the screen (§1.8).
 | `oracle/` (Tutor) and `coursegen/` (model calls) | **Explicit boundary, not an integration**: task titles, redemption catalog text and goal names are parent/kid-authored free text about household life. None of it may ever reach a third-party model — no task, wallet or goal content is added to the Tutor's sealed context or any generation prompt. Worth stating here because §1.9's field-by-field review process exists precisely to catch a new data source getting added to that context without going through it. |
 
 ---
+
+### §8.1 Accepted risk: no moderation on a kid-uploaded evidence photo
+
+The proof-of-work photo (0077, §7) has no content moderation of any kind — a
+kid can upload any image that passes the jpeg/png/webp magic-byte check
+(`sniffImageMime`, `evidence.ts`), and a verified guardian sees it through
+Core's authenticated proxy with no filter in between. This is deliberately
+**not** the same class of gap §1.9's moderation rule exists for: that rule
+gates AI-*generated* content reaching a minor, where nobody has looked at the
+output before a child sees it. Here the direction is reversed — a child's own
+upload, viewed only by their own already-fully-visible-into-their-account
+parent — so the harm model is different and much narrower (a kid uploading
+something unrelated or in poor taste, seen only by the parent it was already
+meant for, not redistributed). Accepted for launch on that basis, with two
+compensating controls already in place: `visibility: internal` in Depot (the
+photo is never a public URL, §1.9's actual non-negotiable) and the 20/15min
+evidence-upload rate limiter (0078, `evidenceUploadRateLimiter`) bounding how
+many attempts a kid gets. **Not accepted as a permanent decision** — revisit
+if evidence photos are ever shown to anyone besides the uploading kid's own
+verified guardian (a sibling, a shared family feed, anything social).
 
 ## §9 Invariant checklist (nothing here is optional — this is what "done" checks against)
 
