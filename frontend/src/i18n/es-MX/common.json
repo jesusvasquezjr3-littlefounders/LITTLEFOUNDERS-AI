@@ -4,7 +4,11 @@
     "tagline": "Aprende, juega y construye tu futuro"
   },
   "actions": {
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "confirmQuestion": "¿Seguro?",
+    "confirmYes": "Sí",
+    "confirmNo": "No",
+    "retry": "Reintentar"
   },
   "theme": {
     "toggle": "Tema",
@@ -177,10 +181,24 @@
       "redemptionStatusFulfilled": "Entregada",
       "redemptionInsufficientBalance": "Ya no tiene suficientes LF Coins para esto",
       "tasksHeading": "Tareas",
-      "statAwaiting": "Esperando aprobación",
-      "statRedemptions": "Canjes pendientes",
-      "statAwarded": "LF Coins otorgados",
-      "evidenceAlt": "Foto que agregó como prueba de \"{{title}}\""
+      "statAwaiting": "Por aprobar",
+      "statRedemptions": "Por decidir",
+      "statAwarded": "Coins otorgados",
+      "evidenceAlt": "Foto que agregó como prueba de \"{{title}}\"",
+      "emptyNoKidsTitle": "Vincula primero a un hijo",
+      "emptyNoKidsBody": "Una vez que vincules y verifiques a un hijo, su primera tarea puede ir aquí.",
+      "emptyNoKidsCta": "Ir a Familia",
+      "cancelReasonLabel": "Cuéntale por qué (opcional)",
+      "cancelReasonPlaceholder": "p. ej. \"A la cama todavía le faltan las almohadas\"",
+      "cancelConfirmQuestion": "¿Cancelar esta tarea?",
+      "cancelConfirmQuestionWithEvidence": "¿Cancelar esta tarea? También se eliminará su foto.",
+      "requiresEvidenceLabel": "Necesita foto",
+      "requiresEvidenceToggle": "Requerir una foto antes de poder aprobarla",
+      "denyConfirmQuestion": "¿Rechazar esta solicitud?",
+      "approvedAnnounce": "\"{{title}}\" aprobada.",
+      "cancelledAnnounce": "\"{{title}}\" cancelada.",
+      "redemptionApprovedAnnounce": "Canje aprobado.",
+      "redemptionDeniedAnnounce": "Canje rechazado."
     },
     "kid": {
       "subtitle": "Haz tus quehaceres, gana LF Coins y decide qué hacer con ellos.",
@@ -227,7 +245,14 @@
       "tasksHeading": "Mis tareas",
       "evidenceAdd": "Agregar foto",
       "evidenceUploading": "Guardando…",
-      "evidenceAlt": "Foto que agregaste como prueba de \"{{title}}\""
+      "evidenceAlt": "Foto que agregaste como prueba de \"{{title}}\"",
+      "evidenceReplace": "Reemplazar foto",
+      "evidenceRetryLabel": "Reintentar",
+      "evidenceRetry": "La foto no cargó — toca para reintentar",
+      "goalArchiveConfirmQuestion": "¿Archivar esta meta?",
+      "requiresEvidenceHint": "Agrega una foto para terminar esta tarea",
+      "completedAnnounce": "\"{{title}}\" marcada como hecha, esperando aprobación.",
+      "goalArchivedAnnounce": "Meta \"{{title}}\" archivada."
     },
     "goalIcons": {
       "star": "Estrella",
@@ -237,6 +262,7 @@
       "bike": "Bicicleta",
       "trip": "Viaje",
       "gift": "Regalo"
-    }
+    },
+    "recurrenceBadgeWeekly": "Semanal"
   }
 }

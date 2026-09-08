@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, Checkbox, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
@@ -39,9 +40,15 @@ export function ParentTaskBoard() {
   const [token, setToken] = useState<string | null>(null);
   const [busyTask, setBusyTask] = useState<string | null>(null);
   const [busyRedemption, setBusyRedemption] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [taskActionError, setTaskActionError] = useState<{ id: string; code: string } | null>(null);
+  const [redemptionActionError, setRedemptionActionError] = useState<{ id: string; code: string } | null>(null);
+  const [liveMessage, setLiveMessage] = useState('');
+  const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setState((prev) => (prev.status === 'error' ? { status: 'loading' } : prev));
     void (async () => {
       const tok = await getToken();
       if (!tok || cancelled) return;
@@ -69,27 +76,44 @@ export function ParentTaskBoard() {
     return () => {
       cancelled = true;
     };
-  }, [getToken]);
+  }, [getToken, reloadKey]);
+
+  function announce(message: string) {
+    setLiveMessage(message);
+    liveRegionRef.current?.focus();
+  }
 
   const kidName = useMemo(() => {
     const byId = new Map((state.status === 'ready' ? state.kids : []).map((k) => [k.userId, k.displayName ?? k.username ?? '?']));
     return (id: string) => byId.get(id) ?? '?';
   }, [state]);
 
-  async function onApprove(taskId: string) {
+  async function onApprove(taskId: string, title: string) {
     if (!token || busyTask) return;
     setBusyTask(taskId);
+    setTaskActionError(null);
     const res = await api<{ task: WireTask }>(`/tasks/${taskId}/approve`, { method: 'POST', token });
     setBusyTask(null);
-    if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
+    if (res.error) {
+      setTaskActionError({ id: taskId, code: res.error.code });
+      return;
+    }
+    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
+    announce(t('tasks.parent.approvedAnnounce', { title }));
   }
 
-  async function onCancel(taskId: string) {
+  async function onCancel(taskId: string, reason: string) {
     if (!token || busyTask) return;
     setBusyTask(taskId);
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/cancel`, { method: 'POST', token });
+    setTaskActionError(null);
+    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/cancel`, { method: 'POST', token, body: { reason: reason.trim() || null } });
     setBusyTask(null);
-    if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
+    if (res.error) {
+      setTaskActionError({ id: taskId, code: res.error.code });
+      return;
+    }
+    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
+    announce(t('tasks.parent.cancelledAnnounce', { title: res.data.task.title }));
   }
 
   async function onToggleCatalog(item: WireCatalogItem) {
@@ -101,19 +125,23 @@ export function ParentTaskBoard() {
   async function onDecideRedemption(redemptionId: string, approve: boolean) {
     if (!token || busyRedemption) return;
     setBusyRedemption(redemptionId);
+    setRedemptionActionError(null);
     const res = await api<{ decided: boolean }>(`/tasks/redemptions/${redemptionId}/decide`, { method: 'POST', token, body: { approve } });
     setBusyRedemption(null);
-    if (res.data) {
-      setState((prev) =>
-        prev.status === 'ready'
-          ? { ...prev, redemptions: prev.redemptions.map((r) => (r.id === redemptionId ? { ...r, status: approve ? 'approved' : 'denied' } : r)) }
-          : prev,
-      );
+    if (res.error) {
+      setRedemptionActionError({ id: redemptionId, code: res.error.code });
+      return;
     }
+    setState((prev) =>
+      prev.status === 'ready'
+        ? { ...prev, redemptions: prev.redemptions.map((r) => (r.id === redemptionId ? { ...r, status: approve ? 'approved' : 'denied' } : r)) }
+        : prev,
+    );
+    announce(approve ? t('tasks.parent.redemptionApprovedAnnounce') : t('tasks.parent.redemptionDeniedAnnounce'));
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('tasks.loading')} />;
-  if (state.status === 'error') return <ErrorBanner code={state.code} />;
+  if (state.status === 'error') return <ErrorBanner code={state.code} onRetry={() => setReloadKey((k) => k + 1)} />;
 
   const awaitingApproval = state.tasks.filter((tt) => tt.status === 'done');
   const open = state.tasks.filter((tt) => tt.status === 'open');
@@ -123,6 +151,9 @@ export function ParentTaskBoard() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
+      <div ref={liveRegionRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
+        {liveMessage}
+      </div>
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
@@ -130,6 +161,17 @@ export function ParentTaskBoard() {
         </div>
         {state.kids.length > 0 && <CreateTaskButton kids={state.kids} token={token} onCreated={(task) => setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: [task, ...prev.tasks] } : prev))} />}
       </header>
+
+      {state.kids.length === 0 && (
+        <Card className="flex flex-col items-center gap-2 p-8 text-center">
+          <Icon name="family_restroom" className="text-[40px] text-content-faint" aria-hidden />
+          <h2 className="lf-title text-content">{t('tasks.parent.emptyNoKidsTitle')}</h2>
+          <p className="lf-body max-w-md text-content-muted">{t('tasks.parent.emptyNoKidsBody')}</p>
+          <Link to="/family" className="lf-caption lf-press mt-2 inline-flex min-h-9 items-center rounded-full bg-accent px-4 font-bold text-on-accent hover:bg-accent-strong">
+            {t('tasks.parent.emptyNoKidsCta')}
+          </Link>
+        </Card>
+      )}
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         <StatCard icon={<Icon name="pending_actions" />} value={String(awaitingApproval.length)} label={t('tasks.parent.statAwaiting')} tone="warning" />
@@ -157,8 +199,9 @@ export function ParentTaskBoard() {
                   kidName={kidName(task.assignedTo)}
                   token={token}
                   busy={busyTask === task.id}
-                  onApprove={task.status === 'done' ? () => void onApprove(task.id) : undefined}
-                  onCancel={() => void onCancel(task.id)}
+                  errorCode={taskActionError?.id === task.id ? taskActionError.code : null}
+                  onApprove={task.status === 'done' ? () => void onApprove(task.id, task.title) : undefined}
+                  onCancel={(reason) => void onCancel(task.id, reason)}
                 />
               ))}
             </ul>
@@ -220,10 +263,21 @@ export function ParentTaskBoard() {
                         </span>
                         <span className="lf-caption block text-content-faint">{t('tasks.parent.redemptionStatusRequested')}</span>
                       </span>
+                      {redemptionActionError?.id === r.id && (
+                        <span className="lf-caption text-error-strong">
+                          {t(`errors.api.${redemptionActionError.code}`, { defaultValue: t('errors.api.INTERNAL') })}
+                        </span>
+                      )}
                       <div className="flex gap-2">
-                        <Button type="button" variant="secondary" className="min-h-8 flex-1 px-2.5 lf-caption" disabled={busyRedemption === r.id} onClick={() => void onDecideRedemption(r.id, false)}>
+                        <ConfirmButton
+                          variant="secondary"
+                          className="min-h-8 flex-1 px-2.5 lf-caption"
+                          disabled={busyRedemption === r.id}
+                          confirmQuestion={t('tasks.parent.denyConfirmQuestion')}
+                          onConfirm={() => void onDecideRedemption(r.id, false)}
+                        >
                           {t('tasks.parent.redemptionDeny')}
-                        </Button>
+                        </ConfirmButton>
                         <Button type="button" variant="success" className="min-h-8 flex-1 px-2.5 lf-caption" disabled={busyRedemption === r.id} onClick={() => void onDecideRedemption(r.id, true)}>
                           {t('tasks.parent.redemptionApprove')}
                         </Button>
@@ -245,6 +299,7 @@ function TaskRow({
   kidName,
   token,
   busy,
+  errorCode,
   onApprove,
   onCancel,
 }: {
@@ -252,11 +307,16 @@ function TaskRow({
   kidName: string;
   token: string | null;
   busy: boolean;
+  errorCode?: string | null;
   onApprove?: () => void;
-  onCancel?: () => void;
+  onCancel?: (reason: string) => void;
 }) {
   const { t } = useTranslation();
+  const [cancelling, setCancelling] = useState(false);
+  const [reason, setReason] = useState('');
   const statusKey = { open: 'statusOpen', done: 'statusDone', approved: 'statusApproved', cancelled: 'statusCancelled' }[task.status];
+  const blockedByMissingEvidence = task.status === 'done' && task.requiresEvidence && !task.hasEvidence;
+
   return (
     <li className="flex flex-col gap-2.5 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm sm:flex-row sm:items-center sm:gap-3">
       <Icon
@@ -265,26 +325,64 @@ function TaskRow({
         aria-hidden
       />
       <span className="min-w-0 flex-1">
-        <span className="lf-label block truncate text-content">
+        <span className="lf-label flex flex-wrap items-center gap-x-2 truncate text-content">
           {task.title} — {kidName}
+          {task.recurrence === 'weekly' && (
+            <span className="lf-caption rounded-full bg-surface-sunken px-2 py-0.5 font-bold text-content-faint">{t('tasks.recurrenceBadgeWeekly')}</span>
+          )}
+          {task.requiresEvidence && (
+            <span className="lf-caption rounded-full bg-warning-soft px-2 py-0.5 font-bold text-warning-strong">{t('tasks.parent.requiresEvidenceLabel')}</span>
+          )}
         </span>
         <span className="lf-caption block text-content-faint">
           {t(`tasks.parent.${statusKey}`)} · {t('tasks.parent.rewardLabel', { count: task.rewardCoins })}
         </span>
+        {task.status === 'cancelled' && task.cancelReason && <span className="lf-caption block italic text-content-faint">“{task.cancelReason}”</span>}
+        {errorCode && <span className="lf-caption block text-error-strong">{t(`errors.api.${errorCode}`, { defaultValue: t('errors.api.INTERNAL') })}</span>}
       </span>
-      <div className="flex shrink-0 items-center gap-2">
-        {task.hasEvidence && <EvidenceThumbnail taskId={task.id} token={token} alt={t('tasks.parent.evidenceAlt', { title: task.title })} />}
-        {onCancel && (
-          <Button type="button" variant="secondary" className="min-h-9 px-3 lf-caption" disabled={busy} onClick={onCancel}>
-            {busy ? t('tasks.parent.cancelling') : t('tasks.parent.cancelTask')}
-          </Button>
-        )}
-        {onApprove && (
-          <Button type="button" variant="success" className="min-h-9 px-3 lf-caption" disabled={busy} onClick={onApprove}>
-            {busy ? t('tasks.parent.approving') : t('tasks.parent.approve')}
-          </Button>
-        )}
-      </div>
+
+      {cancelling ? (
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-end">
+          <Field
+            label={t('tasks.parent.cancelReasonLabel')}
+            placeholder={t('tasks.parent.cancelReasonPlaceholder')}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            maxLength={240}
+            className="sm:w-56"
+          />
+          <div className="flex shrink-0 gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="min-h-9 px-3 lf-caption"
+              onClick={() => {
+                setCancelling(false);
+                setReason('');
+              }}
+            >
+              {t('actions.confirmNo')}
+            </Button>
+            <Button type="button" variant="danger" className="min-h-9 px-3 lf-caption" disabled={busy} onClick={() => onCancel?.(reason)}>
+              {busy ? t('tasks.parent.cancelling') : t('tasks.parent.cancelTask')}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex shrink-0 items-center gap-2">
+          {task.hasEvidence && <EvidenceThumbnail taskId={task.id} token={token} alt={t('tasks.parent.evidenceAlt', { title: task.title })} />}
+          {onCancel && (
+            <Button type="button" variant="secondary" className="min-h-9 px-3 lf-caption" disabled={busy} onClick={() => setCancelling(true)}>
+              {t('tasks.parent.cancelTask')}
+            </Button>
+          )}
+          {onApprove && (
+            <Button type="button" variant="success" className="min-h-9 px-3 lf-caption" disabled={busy || blockedByMissingEvidence} onClick={onApprove}>
+              {busy ? t('tasks.parent.approving') : t('tasks.parent.approve')}
+            </Button>
+          )}
+        </div>
+      )}
     </li>
   );
 }
@@ -296,6 +394,7 @@ function CreateTaskButton({ kids, token, onCreated }: { kids: Kid[]; token: stri
   const [title, setTitle] = useState('');
   const [rewardCoins, setRewardCoins] = useState(5);
   const [recurrence, setRecurrence] = useState<'once' | 'weekly'>('once');
+  const [requiresEvidence, setRequiresEvidence] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
@@ -306,7 +405,7 @@ function CreateTaskButton({ kids, token, onCreated }: { kids: Kid[]; token: stri
     if (!ready || submitting || !token) return;
     setSubmitting(true);
     setErrorCode(null);
-    const res = await api<{ task: WireTask }>('/tasks', { method: 'POST', token, body: { assignedTo, title: title.trim(), rewardCoins, recurrence } });
+    const res = await api<{ task: WireTask }>('/tasks', { method: 'POST', token, body: { assignedTo, title: title.trim(), rewardCoins, recurrence, requiresEvidence } });
     setSubmitting(false);
     if (res.error) {
       setErrorCode(res.error.code);
@@ -315,6 +414,7 @@ function CreateTaskButton({ kids, token, onCreated }: { kids: Kid[]; token: stri
     onCreated(res.data.task);
     setTitle('');
     setRewardCoins(5);
+    setRequiresEvidence(false);
     setOpen(false);
   }
 
@@ -349,6 +449,12 @@ function CreateTaskButton({ kids, token, onCreated }: { kids: Kid[]; token: stri
         </div>
         <Field className="sm:col-span-2" label={t('tasks.parent.taskTitle')} hint={t('tasks.parent.taskTitleHint')} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
         <Field label={t('tasks.parent.reward')} type="number" min={1} max={MAX_REWARD_COINS} value={rewardCoins} onChange={(e) => setRewardCoins(Number(e.target.value))} />
+        <Checkbox
+          className="sm:col-span-2"
+          label={t('tasks.parent.requiresEvidenceToggle')}
+          checked={requiresEvidence}
+          onChange={(e) => setRequiresEvidence(e.target.checked)}
+        />
         {errorCode && (
           <div className="sm:col-span-2">
             <ErrorBanner code={errorCode} />

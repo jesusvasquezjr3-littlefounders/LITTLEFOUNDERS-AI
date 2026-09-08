@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { ConfirmButton } from './ConfirmButton';
 export { Icon } from './Icon';
 export { LocaleFlag } from './LocaleFlag';
 export { Dropdown } from './Dropdown';

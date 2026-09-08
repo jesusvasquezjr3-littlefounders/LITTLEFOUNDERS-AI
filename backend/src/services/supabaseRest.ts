@@ -1145,10 +1145,12 @@ export interface TaskRow {
   evidence_hash: string | null;
   evidence_ext: string | null;
   evidence_uploaded_at: string | null;
+  cancel_reason: string | null;
+  requires_evidence: boolean;
 }
 
 const TASK_FIELDS =
-  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at';
+  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at,cancel_reason,requires_evidence';
 
 export async function insertTask(row: {
   assigned_by: string;
@@ -1157,6 +1159,7 @@ export async function insertTask(row: {
   reward_coins: number;
   recurrence: string;
   due_at: string | null;
+  requires_evidence: boolean;
 }): Promise<TaskRow | null> {
   const rows = await serviceRest<TaskRow[]>('/tasks', {
     method: 'POST',
@@ -1180,12 +1183,22 @@ export async function getTaskById(taskId: string): Promise<TaskRow | null> {
   return rows?.[0] ?? null;
 }
 
-/** Attaches (or replaces) a proof-of-work photo pointer on a task the caller already confirmed is their own and still open for evidence (0077). */
+/**
+ * Attaches (or replaces) a proof-of-work photo pointer on a task — but ONLY
+ * if the row is still `open` or `done` at the moment of the write, the same
+ * compare-and-swap idiom `transitionTaskStatus` uses below. Without this
+ * filter, a photo uploaded in the seconds between the route's earlier status
+ * read and this PATCH lands on the row regardless of what happened to it in
+ * between — including a parent's `approve` racing in first, attaching
+ * "evidence" to a decision that has already been made. Returns null on
+ * no-match exactly like transitionTaskStatus: the caller must not try to
+ * tell "someone decided it first" apart from a transport failure (§1.14).
+ */
 export async function setTaskEvidence(
   taskId: string,
   evidence: { bucket: string; hash: string; ext: string },
 ): Promise<TaskRow | null> {
-  const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}`, {
+  const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}&status=in.(open,done)`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify({
@@ -1196,6 +1209,29 @@ export async function setTaskEvidence(
     }),
   });
   return rows?.[0] ?? null;
+}
+
+/**
+ * True if some OTHER task row still points at this exact bucket/hash/ext.
+ * Depot is content-addressed (identical bytes dedupe to one object), so
+ * before deleting a superseded evidence photo the caller must confirm
+ * nothing else still needs it — otherwise a byte-for-byte-identical replace
+ * on one task could delete the photo out from under a different task that
+ * happens to share the same image. Returns null on a transport failure, in
+ * which case the caller must treat it as "still referenced" and skip the
+ * delete (§1.14 — never destroy on an ambiguous read).
+ */
+export async function evidenceStillReferencedElsewhere(
+  excludeTaskId: string,
+  bucket: string,
+  hash: string,
+  ext: string,
+): Promise<boolean | null> {
+  const rows = await serviceRest<{ id: string }[]>(
+    `/tasks?id=neq.${eu(excludeTaskId)}&evidence_bucket=eq.${es(bucket)}&evidence_hash=eq.${es(hash)}&evidence_ext=eq.${es(ext)}&select=id&limit=1`,
+  );
+  if (rows === null) return null;
+  return rows.length > 0;
 }
 
 /**
@@ -1211,11 +1247,16 @@ export async function setTaskEvidence(
  * this" from "the network dropped it"; either way nothing further should
  * happen from this request (§1.14).
  */
-export async function transitionTaskStatus(taskId: string, fromStatus: string, toStatus: string): Promise<TaskRow | null> {
+export async function transitionTaskStatus(
+  taskId: string,
+  fromStatus: string,
+  toStatus: string,
+  extra?: Record<string, unknown>,
+): Promise<TaskRow | null> {
   const rows = await serviceRest<TaskRow[]>(`/tasks?id=eq.${eu(taskId)}&status=eq.${es(fromStatus)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
-    body: JSON.stringify({ status: toStatus }),
+    body: JSON.stringify({ status: toStatus, ...extra }),
   });
   return rows?.[0] ?? null;
 }

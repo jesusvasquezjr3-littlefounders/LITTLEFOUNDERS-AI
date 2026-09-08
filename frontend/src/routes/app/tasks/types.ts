@@ -20,6 +20,8 @@ export interface WireTask {
   allocated: boolean;
   createdAt: string;
   hasEvidence: boolean;
+  requiresEvidence: boolean;
+  cancelReason: string | null;
 }
 
 export interface WireGoal {

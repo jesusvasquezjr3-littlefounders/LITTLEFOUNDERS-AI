@@ -3,11 +3,13 @@ import multer from 'multer';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
-import { EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, uploadEvidence } from '../services/evidence.js';
+import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
+import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
 import {
   allocateTaskReward,
   archiveGoal,
   decideRedemption,
+  evidenceStillReferencedElsewhere,
   getCatalogForGuardians,
   getCatalogForParent,
   getCatalogItemById,
@@ -65,7 +67,13 @@ function toWireTask(t: TaskRow) {
     // exists. The image itself is fetched through the authenticated
     // GET /:id/evidence proxy below, never a raw Depot URL (§1.9).
     hasEvidence: t.evidence_bucket !== null && t.evidence_hash !== null && t.evidence_ext !== null,
+    requiresEvidence: t.requires_evidence,
+    cancelReason: t.cancel_reason,
   };
+}
+
+function hasEvidence(t: Pick<TaskRow, 'evidence_bucket' | 'evidence_hash' | 'evidence_ext'>): boolean {
+  return t.evidence_bucket !== null && t.evidence_hash !== null && t.evidence_ext !== null;
 }
 
 function toWireGoal(g: GoalRow, saved: number) {
@@ -150,8 +158,15 @@ const GOAL_ICONS = ['star', 'game', 'toy', 'book', 'bike', 'trip', 'gift'] as co
 
 // Mirrors verification.ts's own upload multer instance: memory storage (the
 // buffer is forwarded to Depot and dropped, never written to Core's own
-// disk), a small size ceiling for a phone-camera photo.
-const evidenceUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024, files: 1 } });
+// disk), a small size ceiling for a phone-camera photo. `fields`/`parts` are
+// capped explicitly too — the single-file form this route expects has no
+// legitimate reason to carry more than a couple of extra text fields, and an
+// unbounded multipart body could otherwise burn memory before `fileSize`
+// alone would reject it.
+const evidenceUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024, files: 1, fields: 5, parts: 10 },
+});
 
 export function tasksRouter(): Router {
   const router = Router();
@@ -182,19 +197,22 @@ export function tasksRouter(): Router {
 
   // ── PARENT: tasks ──────────────────────────────────────────────────────
 
-  const CreateTask = z.object({
-    assignedTo: z.string().uuid(),
-    title: z.string().trim().min(1).max(120),
-    rewardCoins: z.number().int().min(1).max(MAX_REWARD_COINS),
-    recurrence: z.enum(['once', 'weekly']).default('once'),
-    dueAt: z.string().datetime().nullable().optional(),
-  });
+  const CreateTask = z
+    .object({
+      assignedTo: z.string().uuid(),
+      title: z.string().trim().min(1).max(120),
+      rewardCoins: z.number().int().min(1).max(MAX_REWARD_COINS),
+      recurrence: z.enum(['once', 'weekly']).default('once'),
+      dueAt: z.string().datetime().nullable().optional(),
+      requiresEvidence: z.boolean().default(false),
+    })
+    .strict();
 
   router.post('/', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const parsed = CreateTask.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the task details');
-    const { assignedTo, title, rewardCoins, recurrence, dueAt } = parsed.data;
+    const { assignedTo, title, rewardCoins, recurrence, dueAt, requiresEvidence } = parsed.data;
     if (!(await guardParentOf(assignedTo, res, parent.id))) return;
 
     const task = await insertTask({
@@ -204,13 +222,14 @@ export function tasksRouter(): Router {
       reward_coins: rewardCoins,
       recurrence,
       due_at: dueAt ?? null,
+      requires_evidence: requiresEvidence,
     });
     if (!task) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the task');
     await insertAuditLog(parent.id, 'tasks.created', task.id, { assignedTo, rewardCoins });
     return ok(res, { task: toWireTask(task) }, 201);
   });
 
-  const ListTasksQuery = z.object({ kidId: z.string().uuid().optional() });
+  const ListTasksQuery = z.object({ kidId: z.string().uuid().optional() }).strict();
 
   router.get('/', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
@@ -238,6 +257,9 @@ export function tasksRouter(): Router {
     const task = await getTaskById(id.data);
     if (!task) return fail(res, 404, NOT_FOUND, 'No such task');
     if (!(await guardParentOf(task.assigned_to, res, parent.id))) return;
+    if (task.requires_evidence && !hasEvidence(task)) {
+      return fail(res, 409, CONFLICT, 'This task requires a photo before it can be approved');
+    }
 
     const updated = await transitionTaskStatus(id.data, 'done', 'approved');
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not awaiting approval');
@@ -245,10 +267,14 @@ export function tasksRouter(): Router {
     return ok(res, { task: toWireTask(updated) });
   });
 
+  const CancelTask = z.object({ reason: z.string().trim().min(1).max(240).nullable().optional() }).strict();
+
   router.post('/:id/cancel', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const parsedBody = CancelTask.safeParse(req.body ?? {});
+    if (!parsedBody.success) return fail(res, 400, 'VALIDATION_ERROR', 'reason must be 240 characters or fewer');
     const task = await getTaskById(id.data);
     if (!task) return fail(res, 404, NOT_FOUND, 'No such task');
     if (!(await guardParentOf(task.assigned_to, res, parent.id))) return;
@@ -256,9 +282,11 @@ export function tasksRouter(): Router {
       return fail(res, 409, CONFLICT, 'This task can no longer be cancelled');
     }
 
-    const updated = await transitionTaskStatus(id.data, task.status, 'cancelled');
+    const updated = await transitionTaskStatus(id.data, task.status, 'cancelled', {
+      cancel_reason: parsedBody.data.reason ?? null,
+    });
     if (!updated) return fail(res, 409, CONFLICT, 'This task changed state — refresh and try again');
-    await insertAuditLog(parent.id, 'tasks.cancelled', id.data, {});
+    await insertAuditLog(parent.id, 'tasks.cancelled', id.data, { reason: parsedBody.data.reason ?? null });
     return ok(res, { task: toWireTask(updated) });
   });
 
@@ -287,10 +315,12 @@ export function tasksRouter(): Router {
 
   // ── PARENT: redemption catalog + decisions ──────────────────────────────
 
-  const CreateCatalogItem = z.object({
-    title: z.string().trim().min(1).max(120),
-    cost: z.number().int().min(1).max(MAX_REWARD_COINS),
-  });
+  const CreateCatalogItem = z
+    .object({
+      title: z.string().trim().min(1).max(120),
+      cost: z.number().int().min(1).max(MAX_REWARD_COINS),
+    })
+    .strict();
 
   router.post('/catalog', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
@@ -308,7 +338,7 @@ export function tasksRouter(): Router {
     return ok(res, { items: items.map(toWireCatalogItem) });
   });
 
-  const UpdateCatalogItem = z.object({ active: z.boolean() });
+  const UpdateCatalogItem = z.object({ active: z.boolean() }).strict();
 
   router.patch('/catalog/:id', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
@@ -323,7 +353,7 @@ export function tasksRouter(): Router {
     return ok(res, { item: toWireCatalogItem({ ...item, active: parsed.data.active }) });
   });
 
-  const ListRedemptionsQuery = z.object({ kidId: z.string().uuid().optional() });
+  const ListRedemptionsQuery = z.object({ kidId: z.string().uuid().optional() }).strict();
 
   router.get('/redemptions', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
@@ -344,7 +374,7 @@ export function tasksRouter(): Router {
     return ok(res, { redemptions: redemptions.map(toWireRedemption) });
   });
 
-  const DecideRedemption = z.object({ approve: z.boolean() });
+  const DecideRedemption = z.object({ approve: z.boolean() }).strict();
 
   router.post('/redemptions/:id/decide', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
@@ -403,7 +433,7 @@ export function tasksRouter(): Router {
    * "nothing changes once decided" boundary /:id/allocate already enforces
    * for the wallet side.
    */
-  router.post('/:id/evidence', requireRole(['kid']), evidenceUpload.single('photo'), async (req, res) => {
+  router.post('/:id/evidence', requireRole(['kid']), evidenceUploadRateLimiter, evidenceUpload.single('photo'), async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -415,11 +445,39 @@ export function tasksRouter(): Router {
     if (!req.file || !EVIDENCE_ALLOWED_MIME.has(req.file.mimetype)) {
       return fail(res, 400, 'VALIDATION_ERROR', 'A jpeg/png/webp photo is required');
     }
+    // The declared Content-Type is client-controlled and trivially spoofable
+    // — confirm the bytes actually ARE what the header claims before this
+    // goes anywhere near Depot or a parent's screen.
+    const sniffed = sniffImageMime(req.file.buffer);
+    if (!sniffed || sniffed !== req.file.mimetype) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'The uploaded file is not a valid jpeg/png/webp photo');
+    }
 
     const uploaded = await uploadEvidence(req.file.buffer, req.file.mimetype);
     if (!uploaded) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the photo');
     const updated = await setTaskEvidence(id.data, uploaded);
-    if (!updated) return fail(res, 502, DATA_UNAVAILABLE, 'Could not attach the photo to the task');
+    if (!updated) {
+      // The CAS in setTaskEvidence lost the race (a parent decided the task
+      // between our read above and this write) — never distinguish that
+      // from a transport failure to the caller (§1.14), but DO clean up the
+      // orphaned upload we just made, best-effort.
+      await deleteEvidence(uploaded.bucket, uploaded.hash, uploaded.ext);
+      return fail(res, 409, CONFLICT, 'This task already has a decision — a photo can no longer be attached');
+    }
+
+    // Replaced a prior photo — clean up the superseded object, but only once
+    // confirmed no other task row still points at the same content-addressed
+    // bytes (evidenceStillReferencedElsewhere).
+    if (hasEvidence(task) && task.evidence_bucket && task.evidence_hash && task.evidence_ext) {
+      const changed = task.evidence_bucket !== uploaded.bucket || task.evidence_hash !== uploaded.hash || task.evidence_ext !== uploaded.ext;
+      if (changed) {
+        const stillReferenced = await evidenceStillReferencedElsewhere(id.data, task.evidence_bucket, task.evidence_hash, task.evidence_ext);
+        if (stillReferenced === false) {
+          await deleteEvidence(task.evidence_bucket, task.evidence_hash, task.evidence_ext);
+        }
+      }
+    }
+
     return ok(res, { task: toWireTask(updated) });
   });
 
@@ -455,6 +513,7 @@ export function tasksRouter(): Router {
       share: z.number().int().min(0),
       goalId: z.string().uuid().nullable().optional(),
     })
+    .strict()
     .refine((v) => v.save + v.spend + v.share > 0, 'Split must add up to more than zero');
 
   router.post('/:id/allocate', requireRole(['kid']), async (req, res) => {
@@ -511,11 +570,13 @@ export function tasksRouter(): Router {
 
   // ── KID: goals ───────────────────────────────────────────────────────────
 
-  const CreateGoal = z.object({
-    title: z.string().trim().min(1).max(80),
-    target: z.number().int().min(1).max(100000),
-    icon: z.enum(GOAL_ICONS).default('star'),
-  });
+  const CreateGoal = z
+    .object({
+      title: z.string().trim().min(1).max(80),
+      target: z.number().int().min(1).max(100000),
+      icon: z.enum(GOAL_ICONS).default('star'),
+    })
+    .strict();
 
   router.post('/goals', requireRole(['kid']), async (req, res) => {
     const kid = authedUser(res);
@@ -559,7 +620,7 @@ export function tasksRouter(): Router {
     return ok(res, { items: items.map(toWireCatalogItem) });
   });
 
-  const RequestRedemption = z.object({ catalogId: z.string().uuid() });
+  const RequestRedemption = z.object({ catalogId: z.string().uuid() }).strict();
 
   router.post('/redemptions', requireRole(['kid']), async (req, res) => {
     const kid = authedUser(res);

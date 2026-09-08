@@ -4,7 +4,11 @@
     "tagline": "Learn, play, and build your future"
   },
   "actions": {
-    "close": "Close"
+    "close": "Close",
+    "confirmQuestion": "Are you sure?",
+    "confirmYes": "Yes",
+    "confirmNo": "No",
+    "retry": "Try again"
   },
   "theme": {
     "toggle": "Theme",
@@ -177,10 +181,24 @@
       "redemptionStatusFulfilled": "Fulfilled",
       "redemptionInsufficientBalance": "They no longer have enough LF Coins for this",
       "tasksHeading": "Tasks",
-      "statAwaiting": "Awaiting approval",
-      "statRedemptions": "Pending redemptions",
-      "statAwarded": "LF Coins awarded",
-      "evidenceAlt": "Photo Sofia attached as proof for \"{{title}}\""
+      "statAwaiting": "To approve",
+      "statRedemptions": "To decide",
+      "statAwarded": "Coins awarded",
+      "evidenceAlt": "Photo Sofia attached as proof for \"{{title}}\"",
+      "emptyNoKidsTitle": "Link a child first",
+      "emptyNoKidsBody": "Once you've linked and verified a child, their first task can go here.",
+      "emptyNoKidsCta": "Go to Family",
+      "cancelReasonLabel": "Let them know why (optional)",
+      "cancelReasonPlaceholder": "e.g. \"The bed still needs the pillows\"",
+      "cancelConfirmQuestion": "Cancel this task?",
+      "cancelConfirmQuestionWithEvidence": "Cancel this task? Their photo will be removed too.",
+      "requiresEvidenceLabel": "Needs a photo",
+      "requiresEvidenceToggle": "Require a photo before I can approve this",
+      "denyConfirmQuestion": "Deny this request?",
+      "approvedAnnounce": "\"{{title}}\" approved.",
+      "cancelledAnnounce": "\"{{title}}\" cancelled.",
+      "redemptionApprovedAnnounce": "Redemption approved.",
+      "redemptionDeniedAnnounce": "Redemption denied."
     },
     "kid": {
       "subtitle": "Do your chores, earn LF Coins, and decide what to do with them.",
@@ -227,7 +245,14 @@
       "tasksHeading": "My tasks",
       "evidenceAdd": "Add photo",
       "evidenceUploading": "Saving…",
-      "evidenceAlt": "Photo you added as proof for \"{{title}}\""
+      "evidenceAlt": "Photo you added as proof for \"{{title}}\"",
+      "evidenceReplace": "Replace photo",
+      "evidenceRetryLabel": "Retry",
+      "evidenceRetry": "Photo didn't load — tap to retry",
+      "goalArchiveConfirmQuestion": "Archive this goal?",
+      "requiresEvidenceHint": "Add a photo to finish this one",
+      "completedAnnounce": "\"{{title}}\" marked done, waiting for approval.",
+      "goalArchivedAnnounce": "\"{{title}}\" goal archived."
     },
     "goalIcons": {
       "star": "Star",
@@ -237,6 +262,7 @@
       "bike": "Bike",
       "trip": "Trip",
       "gift": "Gift"
-    }
+    },
+    "recurrenceBadgeWeekly": "Weekly"
   }
 }

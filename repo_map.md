@@ -8322,16 +8322,16 @@ import multer from 'multer';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
-import { EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, uploadEvidence } from '../services/evidence.js';
+import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
+import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
 import {
   allocateTaskReward,
   archiveGoal,
   decideRedemption,
+  evidenceStillReferencedElsewhere,
   getCatalogForGuardians,
   getCatalogForParent,
   getCatalogItemById,
-  getGoalById,
-  getGoalProgress,
 ```
 
 ### backend/src/routes/tutor.ts
@@ -13960,6 +13960,26 @@ BEGIN
 -- written here and NEVER made `public` in Depot: a photo of a child's room,
 ```
 
+### database/migrations/0078_task_hardening.sql
+
+```
+-- 0078_task_hardening.sql — three fixes from the 2026-09-08 deep audit of
+-- the Family Hub (tasks/wallet/goals/evidence): a cancellation a kid can see
+-- a reason for, a parent-settable "this task needs a photo" gate, and a
+-- database-level backstop on who may ever set the evidence_* pointer.
+-- @phase: expand
+--
+-- WHY cancel_reason. A parent cancelling a task with an already-uploaded
+-- evidence photo (backend/src/routes/tasks.ts POST /:id/cancel) previously
+-- gave the kid no explanation — the task and its photo simply vanished from
+-- their list. Optional, short, kid-facing.
+--
+-- WHY requires_evidence. Today an evidence photo (0077) is always optional —
+-- a parent can approve any task with nothing attached. This lets a parent
+-- opt a specific task INTO requiring one; enforcement lives in Core
+-- (POST /:id/approve), not here, matching how every other task-state
+```
+
 ### database/package.json
 
 ```
@@ -17346,6 +17366,26 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'typ
 
 ```
 
+### frontend/src/components/ui/ConfirmButton.tsx
+
+```
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from './Button';
+
+/*
+ * A destructive one-click action (cancel a task, deny a request, archive a
+ * goal) becomes a two-step inline confirm — this product has never used a
+ * true modal (/DESIGN.md), so the confirm step replaces the button in place
+ * rather than layering a dialog on top of it. Confirming moves keyboard
+ * focus to "Yes" so a keyboard user never loses their place.
+ */
+export function ConfirmButton({
+  children,
+  confirmQuestion,
+  variant = 'secondary',
+```
+
 ### frontend/src/components/ui/CountUp.tsx
 
 ```
@@ -17770,6 +17810,7 @@ import { DateField } from '../DateField';
 
 ```
 export { Button } from './Button';
+export { ConfirmButton } from './ConfirmButton';
 export { Icon } from './Icon';
 export { LocaleFlag } from './LocaleFlag';
 export { Dropdown } from './Dropdown';
@@ -17783,7 +17824,6 @@ export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
-export { LottieIcon } from './LottieIcon';
 ```
 
 ### frontend/src/guided-voice/GuidedStage.tsx
@@ -17955,15 +17995,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "tagline": "Learn, play, and build your future"
   },
   "actions": {
-    "close": "Close"
+    "close": "Close",
+    "confirmQuestion": "Are you sure?",
+    "confirmYes": "Yes",
+    "confirmNo": "No",
+    "retry": "Try again"
   },
   "theme": {
     "toggle": "Theme",
     "auto": "Match system",
-    "light": "Light",
-    "dark": "Dark"
-  },
-  "language": {
 ```
 
 ### frontend/src/i18n/en-US/dashboard.json
@@ -18195,15 +18235,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "tagline": "Aprende, juega y construye tu futuro"
   },
   "actions": {
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "confirmQuestion": "¿Seguro?",
+    "confirmYes": "Sí",
+    "confirmNo": "No",
+    "retry": "Reintentar"
   },
   "theme": {
     "toggle": "Tema",
     "auto": "Igual que el sistema",
-    "light": "Claro",
-    "dark": "Oscuro"
-  },
-  "language": {
 ```
 
 ### frontend/src/i18n/es-MX/dashboard.json
@@ -18455,15 +18495,15 @@ import enErrors from './en-US/errors.json';
     "tagline": "Aprenda, jogue e construa seu futuro"
   },
   "actions": {
-    "close": "Fechar"
+    "close": "Fechar",
+    "confirmQuestion": "Tem certeza?",
+    "confirmYes": "Sim",
+    "confirmNo": "Não",
+    "retry": "Tentar novamente"
   },
   "theme": {
     "toggle": "Tema",
     "auto": "Igual ao sistema",
-    "light": "Claro",
-    "dark": "Escuro"
-  },
-  "language": {
 ```
 
 ### frontend/src/i18n/pt-BR/dashboard.json
@@ -26709,11 +26749,11 @@ export function EvidenceUploadButton({
 ### frontend/src/routes/app/tasks/KidTaskBoard.tsx
 
 ```
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireRedemption, type WireTask } from './types';
@@ -26729,11 +26769,12 @@ import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type W
 ### frontend/src/routes/app/tasks/ParentTaskBoard.tsx
 
 ```
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, Checkbox, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
@@ -26743,7 +26784,6 @@ import type { WireCatalogItem, WireRedemption, WireTask } from './types';
  * done — the ONLY action that credits the kid's wallet, see KidTaskBoard's
  * allocate step — and manage the reward catalog + redemption decisions.
  *
- * Layout mirrors KidTaskBoard's: three aggregate StatCards up top (the same
 ```
 
 ### frontend/src/routes/app/tasks/TasksPage.tsx
@@ -26861,7 +26901,7 @@ import { Icon } from '@/components/ui';
  * colours all three matched steps and this banner reads as the same object as
  * every other tinted row in the recomposed auth surface.
  */
-export function ErrorBanner({ code }: { code: string }) {
+export function ErrorBanner({ code, onRetry }: { code: string; onRetry?: () => void }) {
   const { t } = useTranslation();
   return (
 ```

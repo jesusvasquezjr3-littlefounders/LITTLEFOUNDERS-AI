@@ -16,6 +16,39 @@ const MIME_EXT: Readonly<Record<string, string>> = { 'image/jpeg': 'jpg', 'image
 
 export const EVIDENCE_ALLOWED_MIME = new Set(Object.keys(MIME_EXT));
 
+/**
+ * Confirms the buffer's own magic bytes match a real jpeg/png/webp, rather
+ * than trusting the `Content-Type` multer read off the client's multipart
+ * header — a value the client fully controls and can declare as anything
+ * regardless of what bytes actually follow. Returns the sniffed mime, or
+ * null if the signature matches none of the three formats this feature ever
+ * accepts, corrupt/truncated files included.
+ */
+export function sniffImageMime(buffer: Buffer): string | null {
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) return 'image/jpeg';
+  if (
+    buffer.length >= 8 &&
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0d &&
+    buffer[5] === 0x0a &&
+    buffer[6] === 0x1a &&
+    buffer[7] === 0x0a
+  ) {
+    return 'image/png';
+  }
+  if (
+    buffer.length >= 12 &&
+    buffer.toString('ascii', 0, 4) === 'RIFF' &&
+    buffer.toString('ascii', 8, 12) === 'WEBP'
+  ) {
+    return 'image/webp';
+  }
+  return null;
+}
+
 export interface UploadedEvidence {
   bucket: string;
   hash: string;
@@ -73,5 +106,28 @@ export async function fetchEvidenceBytes(bucket: string, hash: string, ext: stri
     return { buffer, mime: EXT_MIME[ext] ?? 'application/octet-stream' };
   } catch {
     return null;
+  }
+}
+
+/**
+ * Best-effort delete of a superseded evidence object — called only after the
+ * caller has confirmed no other task row still points at the same
+ * bucket/hash/ext (Depot is content-addressed, so an identical-bytes replay
+ * could theoretically be shared; the route layer checks that first). Never
+ * throws: a failed cleanup here is a storage leak, not a correctness bug —
+ * the new pointer is already live either way, so this must never be allowed
+ * to fail the request that just successfully attached a new photo.
+ */
+export async function deleteEvidence(bucket: string, hash: string, ext: string): Promise<void> {
+  const { FILEBASE_URL, FILEBASE_INTERNAL_KEY } = getConfig();
+  try {
+    const res = await fetch(`${FILEBASE_URL}/api/v1/files/${bucket}/${hash}.${ext}`, {
+      method: 'DELETE',
+      headers: { 'x-internal-api-key': FILEBASE_INTERNAL_KEY },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) console.warn(`[evidence] cleanup failed for ${bucket}/${hash}.${ext} (status ${res.status}) — orphaned object left in Depot`);
+  } catch (err) {
+    console.warn(`[evidence] cleanup failed for ${bucket}/${hash}.${ext} — orphaned object left in Depot`, err);
   }
 }

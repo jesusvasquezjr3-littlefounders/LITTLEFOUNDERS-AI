@@ -61,6 +61,21 @@ export const eventsRateLimiter = rateLimit({
   store: getStore(),
 });
 
+// Evidence-photo uploads are the only binary payload (up to 8MB) this router
+// accepts, and the only one worth metering separately from the 200-req/15min
+// budget every other Family Hub action shares on the same IP — an abusive
+// loop of uploads would otherwise burn real bandwidth AND starve the rest of
+// a household's legitimate requests against the same shared limit.
+export const evidenceUploadRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  passOnStoreError: true,
+  message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many photo uploads, please try again later.' } },
+  store: getStore(),
+});
+
 // Strict auth rate limiter (e.g., 10 requests per 15 minutes per IP)
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

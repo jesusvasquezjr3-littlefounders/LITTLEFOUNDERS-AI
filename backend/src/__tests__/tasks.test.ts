@@ -23,6 +23,11 @@ const GOAL_ID = randomUUID();
 const CATALOG_ID = randomUUID();
 const REDEMPTION_ID = randomUUID();
 
+// A real (if tiny) JPEG signature — sniffImageMime reads only the first
+// bytes, so this is enough to pass the magic-byte check without a full,
+// decodable image.
+const REAL_JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00]);
+
 afterEach(() => vi.unstubAllGlobals());
 
 interface StubOptions {
@@ -44,6 +49,10 @@ interface StubOptions {
   filebaseUploadOk?: boolean;
   /** filebase byte fetch (GET /:id/evidence) — omit for a working default, false for a failure. */
   filebaseDownloadOk?: boolean;
+  /** evidenceStillReferencedElsewhere's answer — omit for "not referenced" (the common case), true to simulate a content-addressed hash collision with another task's evidence. */
+  evidenceStillReferenced?: boolean;
+  /** captures every DELETE sent to filebase's /api/v1/files/:bucket/:file, so a test can assert cleanup happened (or didn't). */
+  deleteCalls?: string[];
 }
 
 function stub(opts: StubOptions = {}) {
@@ -72,6 +81,13 @@ function stub(opts: StubOptions = {}) {
       if (url.includes('/files/') && !url.includes('/rest/v1/') && method === 'GET') {
         if (opts.filebaseDownloadOk === false) return Promise.resolve(new Response(null, { status: 404 }));
         return Promise.resolve(new Response(new Uint8Array([1, 2, 3]), { status: 200, headers: { 'content-type': 'image/jpeg' } }));
+      }
+      if (url.includes('/api/v1/files/') && method === 'DELETE') {
+        opts.deleteCalls?.push(url);
+        return Promise.resolve(jsonResponse(200, { deleted: true, id: 'task-evidence/aa11bb22.jpg' }));
+      }
+      if (url.includes('/rest/v1/tasks?id=neq.') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, opts.evidenceStillReferenced ? [{ id: OTHER_KID_ID }] : []));
       }
 
       if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
@@ -104,15 +120,23 @@ function stub(opts: StubOptions = {}) {
         );
       }
       if (url.includes('/rest/v1/tasks?id=eq.') && method === 'PATCH' && !url.includes('status=eq')) {
-        // setTaskEvidence's PATCH — no status filter, updates evidence_* only.
+        // setTaskEvidence's PATCH — CAS on status=in.(open,done), not status=eq.<x>,
+        // so this branch (matched by the ABSENCE of "status=eq") still isolates it
+        // from transitionTaskStatus's PATCH below. opts.taskPatchSucceeds === false
+        // simulates the CAS losing the race (status changed since guardOwnTask read it).
         if (opts.taskPatchSucceeds === false) return Promise.resolve(jsonResponse(200, []));
         const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
         return Promise.resolve(jsonResponse(200, [{ ...(opts.task ?? defaultTask()), ...body }]));
       }
       if (url.includes('/rest/v1/tasks?id=eq.') && method === 'PATCH') {
+        // transitionTaskStatus always sends the target status IN THE BODY
+        // ({ status: toStatus, ...extra }) — reading it from there (rather
+        // than re-deriving it from the `status=eq.<from>` filter, which
+        // cannot distinguish open->done from open->cancelled) is what the
+        // real PATCH actually does.
         if (opts.taskPatchSucceeds === false) return Promise.resolve(jsonResponse(200, []));
-        const status = /status=eq\.([a-z]+)/.exec(url)?.[1];
-        return Promise.resolve(jsonResponse(200, [{ ...(opts.task ?? defaultTask()), status: statusAfter(status) }]));
+        const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+        return Promise.resolve(jsonResponse(200, [{ ...(opts.task ?? defaultTask()), ...body }]));
       }
       if (url.includes('/rest/v1/tasks?id=eq.') && method === 'GET') {
         const rows = opts.task === null ? [] : [opts.task ?? defaultTask()];
@@ -189,6 +213,8 @@ function defaultTask(): Record<string, unknown> {
     evidence_hash: null,
     evidence_ext: null,
     evidence_uploaded_at: null,
+    cancel_reason: null,
+    requires_evidence: false,
   };
 }
 function defaultGoal(): Record<string, unknown> {
@@ -199,11 +225,6 @@ function defaultCatalogItem(): Record<string, unknown> {
 }
 function defaultRedemption(): Record<string, unknown> {
   return { id: REDEMPTION_ID, catalog_id: CATALOG_ID, kid_user_id: KID_ID, status: 'requested', created_at: new Date().toISOString(), decided_at: null, decided_by: null };
-}
-function statusAfter(fromInUrl: string | undefined): string {
-  // The route always PATCHes ?status=eq.<from>, so the mock doesn't need to
-  // know the target — it only has to prove the CONDITIONAL filter was sent.
-  return fromInUrl === 'open' ? 'done' : fromInUrl === 'done' ? 'approved' : 'cancelled';
 }
 
 function asParent(path: string, sub = PARENT_ID) {
@@ -289,6 +310,59 @@ describe('POST /api/v1/tasks/:id/approve (parent)', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.task.status).toBe('approved');
   });
+
+  it('409s approving a task that requires a photo but has none attached yet', async () => {
+    stub({ task: { ...defaultTask(), status: 'done', requires_evidence: true }, parentsKids: [KID_ID] });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    expect(res.status).toBe(409);
+  });
+
+  it('approves a photo-required task once evidence is attached', async () => {
+    stub({
+      task: { ...defaultTask(), status: 'done', requires_evidence: true, evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' },
+      parentsKids: [KID_ID],
+    });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('POST /api/v1/tasks/:id/cancel (parent)', () => {
+  it('404s cancelling a task belonging to a child not verified under this parent', async () => {
+    stub({ task: defaultTask(), parentsKids: [OTHER_KID_ID] });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
+    expect(res.status).toBe(404);
+  });
+
+  it('409s cancelling a task that is already decided (approved/cancelled)', async () => {
+    stub({ task: { ...defaultTask(), status: 'approved' }, parentsKids: [KID_ID] });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
+    expect(res.status).toBe(409);
+  });
+
+  it('cancels an open task with no reason given', async () => {
+    stub({ task: defaultTask(), parentsKids: [KID_ID] });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
+    expect(res.status).toBe(200);
+    expect(res.body.data.task.status).toBe('cancelled');
+    expect(res.body.data.task.cancelReason).toBeNull();
+  });
+
+  it("cancels a task with a reason, and returns it on the wire so the kid can see why", async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ task: defaultTask(), parentsKids: [KID_ID], writes });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'The bed still needs the pillows' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.task.cancelReason).toBe('The bed still needs the pillows');
+    const patch = writes.find((w) => w.url.includes(`/tasks?id=eq.${TASK_ID}&status=eq.open`));
+    expect((patch?.body as Record<string, unknown>).cancel_reason).toBe('The bed still needs the pillows');
+  });
+
+  it('rejects a reason over 240 characters', async () => {
+    stub({ task: defaultTask(), parentsKids: [KID_ID] });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'x'.repeat(241) });
+    expect(res.status).toBe(400);
+  });
 });
 
 describe('POST /api/v1/tasks/:id/allocate (kid)', () => {
@@ -323,6 +397,27 @@ describe('POST /api/v1/tasks/:id/allocate (kid)', () => {
     stub({ task: { ...approvedTask, assigned_to: OTHER_KID_ID }, roles: ['kid'] });
     const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 10, spend: 0, share: 0 });
     expect(res.status).toBe(404);
+  });
+
+  it('flips a goal to reached once its progress meets the target', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    // defaultGoal()'s target is 50 — getGoalProgress re-reads the ledger AFTER
+    // the allocate RPC (mocked here as a static total, since this stub can't
+    // simulate the RPC actually writing a new row) at exactly the target.
+    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 50 }] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 10, spend: 0, share: 0, goalId: GOAL_ID });
+    expect(res.status).toBe(200);
+    const markReached = writes.find((w) => w.url.includes(`/savings_goals?id=eq.${GOAL_ID}`) && w.method === 'PATCH');
+    expect(markReached).toBeDefined();
+    expect((markReached?.body as Record<string, unknown>).status).toBe('reached');
+  });
+
+  it('does NOT flip a goal that has not yet met its target', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 5 }] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 5, spend: 0, share: 0, goalId: GOAL_ID });
+    expect(res.status).toBe(200);
+    expect(writes.some((w) => w.url.includes(`/savings_goals?id=eq.${GOAL_ID}`) && w.method === 'PATCH')).toBe(false);
   });
 });
 
@@ -361,6 +456,42 @@ describe('POST /api/v1/tasks/goals (kid)', () => {
     expect(res.status).toBe(201);
     expect(res.body.data.goal).toMatchObject({ id: GOAL_ID, title: 'A bike', target: 50, status: 'active', kidUserId: KID_ID, saved: 0 });
     expect(res.body.data.goal.kid_user_id).toBeUndefined();
+  });
+});
+
+describe('PATCH /api/v1/tasks/goals/:id (kid archives)', () => {
+  it("404s archiving a goal that is not this kid's own", async () => {
+    stub({ goal: { ...defaultGoal(), kid_user_id: OTHER_KID_ID }, roles: ['kid'] });
+    const res = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({});
+    expect(res.status).toBe(404);
+  });
+
+  it('archives an own goal', async () => {
+    stub({ goal: defaultGoal(), roles: ['kid'], ledgerRows: [] });
+    const res = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({});
+    expect(res.status).toBe(200);
+    expect(res.body.data.goal.status).toBe('archived');
+  });
+});
+
+describe('PATCH /api/v1/tasks/catalog/:id (parent toggles a reward)', () => {
+  it('404s toggling a catalog item that belongs to a different parent', async () => {
+    stub({ catalogItem: { ...defaultCatalogItem(), parent_user_id: OTHER_KID_ID } });
+    const res = await request(createApp()).patch(`/api/v1/tasks/catalog/${CATALOG_ID}`).set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`).send({ active: false });
+    expect(res.status).toBe(404);
+  });
+
+  it('rejects a non-boolean active value', async () => {
+    stub({ catalogItem: defaultCatalogItem() });
+    const res = await request(createApp()).patch(`/api/v1/tasks/catalog/${CATALOG_ID}`).set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`).send({ active: 'off' });
+    expect(res.status).toBe(400);
+  });
+
+  it('turns a reward off', async () => {
+    stub({ catalogItem: defaultCatalogItem() });
+    const res = await request(createApp()).patch(`/api/v1/tasks/catalog/${CATALOG_ID}`).set('Authorization', `Bearer ${mintToken({ sub: PARENT_ID })}`).send({ active: false });
+    expect(res.status).toBe(200);
+    expect(res.body.data.item.active).toBe(false);
   });
 });
 
@@ -408,13 +539,23 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
   });
 });
 
+describe('GET /api/v1/tasks/redemptions/mine (kid)', () => {
+  it("lists the caller's own redemption requests", async () => {
+    stub({ roles: ['kid'] });
+    const res = await request(createApp()).get('/api/v1/tasks/redemptions/mine').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.redemptions).toHaveLength(1);
+    expect(res.body.data.redemptions[0].id).toBe(REDEMPTION_ID);
+  });
+});
+
 describe('POST /api/v1/tasks/:id/evidence (kid)', () => {
   it('rejects a task that already has a decision', async () => {
     stub({ task: { ...defaultTask(), status: 'approved' }, roles: ['kid'] });
     const res = await request(createApp())
       .post(`/api/v1/tasks/${TASK_ID}/evidence`)
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
-      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
     expect(res.status).toBe(409);
   });
 
@@ -423,7 +564,7 @@ describe('POST /api/v1/tasks/:id/evidence (kid)', () => {
     const res = await request(createApp())
       .post(`/api/v1/tasks/${TASK_ID}/evidence`)
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
-      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
     expect(res.status).toBe(404);
   });
 
@@ -440,7 +581,7 @@ describe('POST /api/v1/tasks/:id/evidence (kid)', () => {
     const res = await request(createApp())
       .post(`/api/v1/tasks/${TASK_ID}/evidence`)
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
-      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
     expect(res.status).toBe(502);
   });
 
@@ -449,9 +590,61 @@ describe('POST /api/v1/tasks/:id/evidence (kid)', () => {
     const res = await request(createApp())
       .post(`/api/v1/tasks/${TASK_ID}/evidence`)
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
-      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
     expect(res.status).toBe(200);
     expect(res.body.data.task.hasEvidence).toBe(true);
+  });
+
+  it('rejects a file whose real bytes do not match its declared Content-Type', async () => {
+    stub({ task: defaultTask(), roles: ['kid'] });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', Buffer.from([1, 2, 3]), { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(400);
+  });
+
+  it('409s (never 502) when a parent decides the task between the status check and the write, and cleans up the orphaned upload', async () => {
+    const deleteCalls: string[] = [];
+    stub({ task: defaultTask(), roles: ['kid'], taskPatchSucceeds: false, deleteCalls });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(409);
+    expect(deleteCalls.some((u) => u.includes('aa11bb22.jpg'))).toBe(true);
+  });
+
+  it('deletes the superseded photo when replacing one, once confirmed no other task still points at it', async () => {
+    const deleteCalls: string[] = [];
+    stub({
+      task: { ...defaultTask(), evidence_bucket: 'task-evidence', evidence_hash: 'oldhash', evidence_ext: 'jpg' },
+      roles: ['kid'],
+      deleteCalls,
+      evidenceStillReferenced: false,
+    });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(200);
+    expect(deleteCalls.some((u) => u.includes('oldhash.jpg'))).toBe(true);
+  });
+
+  it('does NOT delete the superseded photo if another task still points at the same content-addressed bytes', async () => {
+    const deleteCalls: string[] = [];
+    stub({
+      task: { ...defaultTask(), evidence_bucket: 'task-evidence', evidence_hash: 'oldhash', evidence_ext: 'jpg' },
+      roles: ['kid'],
+      deleteCalls,
+      evidenceStillReferenced: true,
+    });
+    const res = await request(createApp())
+      .post(`/api/v1/tasks/${TASK_ID}/evidence`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .attach('photo', REAL_JPEG, { filename: 'proof.jpg', contentType: 'image/jpeg' });
+    expect(res.status).toBe(200);
+    expect(deleteCalls).toHaveLength(0);
   });
 });
 

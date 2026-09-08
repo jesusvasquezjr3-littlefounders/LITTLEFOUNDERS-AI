@@ -10,7 +10,7 @@ import { Icon } from '@/components/ui';
  * colours all three matched steps and this banner reads as the same object as
  * every other tinted row in the recomposed auth surface.
  */
-export function ErrorBanner({ code }: { code: string }) {
+export function ErrorBanner({ code, onRetry }: { code: string; onRetry?: () => void }) {
   const { t } = useTranslation();
   return (
     <div
@@ -20,9 +20,18 @@ export function ErrorBanner({ code }: { code: string }) {
       <span className="lf-tile h-8 w-8 text-error-strong">
         <Icon name="error" aria-hidden className="!text-[18px]" />
       </span>
-      <p className="lf-body pt-1 text-content">
+      <p className="lf-body flex-1 pt-1 text-content">
         {t(`errors.api.${code}`, { defaultValue: t('errors.api.INTERNAL') })}
       </p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="lf-caption lf-press mt-1 shrink-0 rounded-full border border-error-strong/40 px-3 py-1.5 font-bold text-error-strong hover:bg-error/10"
+        >
+          {t('actions.retry')}
+        </button>
+      )}
     </div>
   );
 }

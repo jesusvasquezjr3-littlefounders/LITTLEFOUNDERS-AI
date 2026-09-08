@@ -1,8 +1,8 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireRedemption, type WireTask } from './types';
@@ -41,9 +41,13 @@ export function KidTaskBoard() {
   const [busyTask, setBusyTask] = useState<string | null>(null);
   const [busyRedemption, setBusyRedemption] = useState<string | null>(null);
   const [evidenceVersion, setEvidenceVersion] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [liveMessage, setLiveMessage] = useState('');
+  const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setState((prev) => (prev.status === 'error' ? { status: 'loading' } : prev));
     void (async () => {
       const tok = await getToken();
       if (!tok || cancelled) return;
@@ -75,7 +79,17 @@ export function KidTaskBoard() {
     return () => {
       cancelled = true;
     };
-  }, [getToken]);
+  }, [getToken, reloadKey]);
+
+  function announce(message: string) {
+    setLiveMessage(message);
+    // Focus moves to the live region itself — the control that triggered the
+    // change (a "Mark done" button, an "Archive" link) is about to leave the
+    // DOM as the row re-renders, so focus would otherwise silently fall back
+    // to <body> with nothing announced to a screen reader (§1.14-style gap:
+    // the UI updated, but nothing said so).
+    liveRegionRef.current?.focus();
+  }
 
   async function refreshWallet() {
     if (!token) return;
@@ -83,12 +97,15 @@ export function KidTaskBoard() {
     if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, balances: res.data.balances } : prev));
   }
 
-  async function onComplete(taskId: string) {
+  async function onComplete(taskId: string, title: string) {
     if (!token || busyTask) return;
     setBusyTask(taskId);
     const res = await api<{ task: WireTask }>(`/tasks/${taskId}/complete`, { method: 'POST', token });
     setBusyTask(null);
-    if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
+    if (res.data) {
+      setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
+      announce(t('tasks.kid.completedAnnounce', { title }));
+    }
   }
 
   function onEvidenceUploaded(taskId: string) {
@@ -109,10 +126,13 @@ export function KidTaskBoard() {
     setState((prev) => (prev.status === 'ready' ? { ...prev, goals: [goal, ...prev.goals] } : prev));
   }
 
-  async function onArchiveGoal(goalId: string) {
+  async function onArchiveGoal(goalId: string, title: string) {
     if (!token) return;
     const res = await api<{ goal: WireGoal }>(`/tasks/goals/${goalId}`, { method: 'PATCH', token });
-    if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, goals: prev.goals.filter((g) => g.id !== goalId) } : prev));
+    if (res.data) {
+      setState((prev) => (prev.status === 'ready' ? { ...prev, goals: prev.goals.filter((g) => g.id !== goalId) } : prev));
+      announce(t('tasks.kid.goalArchivedAnnounce', { title }));
+    }
   }
 
   async function onRedeem(catalogId: string) {
@@ -124,7 +144,7 @@ export function KidTaskBoard() {
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('tasks.loading')} />;
-  if (state.status === 'error') return <ErrorBanner code={state.code} />;
+  if (state.status === 'error') return <ErrorBanner code={state.code} onRetry={() => setReloadKey((k) => k + 1)} />;
 
   const activeGoals = state.goals.filter((g) => g.status !== 'archived');
   const openTasks = state.tasks.filter((tt) => tt.status === 'open');
@@ -134,6 +154,13 @@ export function KidTaskBoard() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
+      {/* Focus lands here after an action removes its own trigger from the
+          DOM (Mark done, Archive) — announced to a screen reader and, being
+          focusable, keeps a keyboard user's position sane instead of losing
+          it to <body>. */}
+      <div ref={liveRegionRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
+        {liveMessage}
+      </div>
       <header>
         <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
         <p className="lf-body text-content-muted">{t('tasks.kid.subtitle')}</p>
@@ -185,19 +212,22 @@ export function KidTaskBoard() {
                 <li key={task.id} className="flex flex-col gap-2.5 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm sm:flex-row sm:items-center sm:gap-3">
                   <Icon name={task.status === 'done' ? 'pending_actions' : 'radio_button_unchecked'} className="hidden shrink-0 text-[20px] text-content-faint sm:block" aria-hidden />
                   <span className="min-w-0 flex-1">
-                    <span className="lf-label block truncate text-content">{task.title}</span>
+                    <span className="lf-label flex flex-wrap items-center gap-x-2 truncate text-content">
+                      {task.title}
+                      {task.recurrence === 'weekly' && (
+                        <span className="lf-caption rounded-full bg-surface-sunken px-2 py-0.5 font-bold text-content-faint">{t('tasks.recurrenceBadgeWeekly')}</span>
+                      )}
+                    </span>
                     <span className="lf-caption block text-content-faint">
                       {t(`tasks.kid.${task.status === 'done' ? 'statusDone' : 'statusOpen'}`)} · {t('tasks.parent.rewardLabel', { count: task.rewardCoins })}
+                      {task.requiresEvidence && !task.hasEvidence ? ` · ${t('tasks.kid.requiresEvidenceHint')}` : ''}
                     </span>
                   </span>
                   <div className="flex shrink-0 items-center gap-2">
-                    {task.hasEvidence ? (
-                      <EvidenceThumbnail key={evidenceVersion} taskId={task.id} token={token} alt={t('tasks.kid.evidenceAlt', { title: task.title })} />
-                    ) : (
-                      <EvidenceUploadButton taskId={task.id} token={token} onUploaded={() => onEvidenceUploaded(task.id)} />
-                    )}
+                    {task.hasEvidence && <EvidenceThumbnail key={evidenceVersion} taskId={task.id} token={token} alt={t('tasks.kid.evidenceAlt', { title: task.title })} />}
+                    <EvidenceUploadButton taskId={task.id} token={token} replace={task.hasEvidence} onUploaded={() => onEvidenceUploaded(task.id)} />
                     {task.status === 'open' && (
-                      <Button type="button" variant="success" className="min-h-9 px-3 lf-caption" disabled={busyTask === task.id} onClick={() => void onComplete(task.id)}>
+                      <Button type="button" variant="success" className="min-h-9 px-3 lf-caption" disabled={busyTask === task.id} onClick={() => void onComplete(task.id, task.title)}>
                         {busyTask === task.id ? t('tasks.kid.completing') : t('tasks.kid.complete')}
                       </Button>
                     )}
@@ -228,9 +258,14 @@ export function KidTaskBoard() {
                         <span className="lf-label block truncate text-content">{goal.title}</span>
                         <span className="lf-caption block text-content-faint">{goal.status === 'reached' ? t('tasks.kid.goalReached') : `${goal.saved} / ${goal.target}`}</span>
                       </span>
-                      <button type="button" onClick={() => void onArchiveGoal(goal.id)} className="lf-caption shrink-0 text-content-faint underline decoration-dotted hover:text-content-muted">
+                      <ConfirmButton
+                        variant="secondary"
+                        className="min-h-8 shrink-0 px-2.5 lf-caption"
+                        confirmQuestion={t('tasks.kid.goalArchiveConfirmQuestion')}
+                        onConfirm={() => void onArchiveGoal(goal.id, goal.title)}
+                      >
                         {t('tasks.kid.goalArchive')}
-                      </button>
+                      </ConfirmButton>
                     </div>
                     <ProgressBar value={(goal.saved / goal.target) * 100} label={goal.title} tone={goal.status === 'reached' ? 'accent' : 'primary'} />
                   </li>
