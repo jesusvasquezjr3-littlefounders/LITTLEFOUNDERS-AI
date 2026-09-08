@@ -13859,6 +13859,26 @@ BEGIN
 -- into one function per operation, serialized with a Postgres advisory lock
 ```
 
+### database/migrations/0076_family_hub_goal_tagged_allocation.sql
+
+```
+-- 0076_family_hub_goal_tagged_allocation.sql — allocate_task_reward learns to
+-- tag a save-bucket credit to a goal at the moment it is earned.
+-- @phase: expand
+--
+-- FAMILY_HUB.md §6 step 4-5: a kid allocates an approved task's reward across
+-- Save/Spend/Share and, for the Save portion, may point it at an active goal
+-- in the SAME action — not a separate "move money into a goal" step, which
+-- would need to either double-count a bucket total or retroactively re-tag an
+-- append-only ledger row. Neither is necessary: a goal's progress is simply
+-- SUM(wallet_ledger.amount) WHERE goal_id = that goal, a tag on money that
+-- was always also counted in the plain 'save' bucket total
+-- (SUM(...) WHERE bucket='save', regardless of tag). 0075 shipped the
+-- function one migration before this tag existed as a requirement, caught
+-- while writing the service layer that calls it — fixed here rather than by
+-- editing 0075, per this repo's own "never edit, write a delta" rule.
+```
+
 ### database/package.json
 
 ```

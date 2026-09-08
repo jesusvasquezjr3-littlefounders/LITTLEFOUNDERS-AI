@@ -3724,6 +3724,7 @@ export type Database = {
       allocate_task_reward: {
         Args: {
           p_created_by: string
+          p_goal_id?: string
           p_kid_user_id: string
           p_save: number
           p_share: number
