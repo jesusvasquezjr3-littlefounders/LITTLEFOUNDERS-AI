@@ -39,8 +39,9 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 ## Invariants owned here (DB-level enforcement of /AGENTS.md §1.3)
 
 - 6-role CHECK on `user_roles.role`; superadmin `@littlefounders.ai` trigger.
-- Families = `family_members` join table (multiple parents by construction).
+- Families = `guardian_links` (multiple `parent_user_id` rows may verify against the same `kid_user_id` — multiple parents by construction, no separate join table). `families`/`family_members` (`0001`) shipped with zero rows/zero writers and were dropped in `0074_family_hub.sql`, 2026-09-08 — see `FAMILY_HUB.md` §5.1.
 - `guardian_links.verification_status` — only Guardian-driven flows move it to `verified`.
+- `0002_content_skeleton.sql`'s `tasks` table is no longer provisional as of `0074_family_hub.sql` (`FAMILY_HUB.md`): `family_id` (dead FK to the dropped `families`) and the free-form `reward` jsonb are gone, replaced by `reward_coins`/`recurrence`/`due_at` and real INSERT/UPDATE RLS. `wallet_ledger` is append-only like `audit_logs` — no client INSERT/UPDATE policy exists anywhere, every row is server-computed.
 - `audit_logs` append-only: no UPDATE/DELETE policies, ever (`npm test` gates this).
 - Signup bootstrap (`0003`): every `auth.users` INSERT auto-creates a profile + grants `universal` (§1.4 default role). Role grants/revokes are audited into `audit_logs` by trigger.
 - Profile identity (`0005`): `profiles.username` (unique, `^[a-z0-9_]{3,20}$`), `profiles.cover` = jsonb PRESET config and `avatars.options` = DiceBear option sets — **no image/binary storage exists for covers or avatars, NON-NEGOTIABLE**. `follows` edges are self-managed via RLS (you only write rows where you are the follower); public exposure of profile fields happens ONLY through Core's whitelisted endpoint, never by loosening profiles RLS.

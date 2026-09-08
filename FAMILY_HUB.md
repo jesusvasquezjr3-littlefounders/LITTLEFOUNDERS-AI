@@ -27,10 +27,9 @@
 
 | | |
 |---|---|
-| **Status** | PLAN ONLY. §11's open decisions are UNRESOLVED. No code, no migration, no UI exists for anything in §5–§10. |
-| **What's real today** | `family` (guardian identity → `parent` role, kid account CRUD, kid territory view, analytics consent, shareable badge) is SHIPPED but has **zero real families in production** (verified live 2026-09-07: 0 `parent`, 0 `kid`, 0 rows in `families`/`family_members`/`guardian_links`). `tasks/` is a nav placeholder (`SectionComingSoon`) over a schema table explicitly marked PROVISIONAL in its own migration comment. Full detail: this session's transcript before this file. |
-| **Blocking this plan's Wave 0** | §11's decisions, in priority order: D1 (families/family_members vs `guardian_links`), D2 (approval model), D3 (currency name/branding). Nothing in §5 can be migrated until D1 lands — it decides the foreign key everything else hangs off. |
-| **Next action once unblocked** | Wave 0 per §10: the schema/RLS foundation, no user-facing surface yet. |
+| **Status** | IN PROGRESS. Owner approved this plan's recommended option on every §11 decision (D1–D6) on 2026-09-08 ("procede con las opciones recomendadas") — none of them are open anymore; §11 is kept below as the record of what was decided and why. **Wave 0's database half is DONE**: `0074_family_hub.sql` (drops `families`/`family_members`, redesigns `tasks`, adds `wallet_ledger`/`savings_goals`/`redemption_catalog`/`redemptions` with RLS, fixes `insights_family_engagement`), verified with two clean `db:reset` runs + `database`'s own test suite (74 files, migration-phase gate green) + regenerated `types/database.ts`. `/AGENTS.md` + `/CLAUDE.md` + `database/AGENTS.md` wording updated in the same commit per D1's own requirement. **Not yet applied to production** — that is a BOUNDARIES action (`database/AGENTS.md` #8), pending explicit owner sign-off separate from this build-out. |
+| **What's real today** | Same as before this session's build started: `family` (guardian identity → `parent` role, kid account CRUD, kid territory view, analytics consent, shareable badge) is SHIPPED but has **zero real families in production** (verified live 2026-09-07). Local dev now has the Wave 0 schema; nothing above the DB layer exists yet. |
+| **Next action** | Wave 0's backend service layer (Zod schemas + service functions for tasks/wallet/goals/redemptions), then Wave 1's endpoints + frontend. Tracked as this session's task list, not duplicated here. |
 
 ---
 
@@ -378,7 +377,9 @@ approval queue polish for the two-guardian case.
 
 ---
 
-## §11 Open decisions — owner sign-off required before Wave 0
+## §11 Decisions — DECIDED 2026-09-08 (owner approved every recommended option)
+
+> Kept as the record of what was decided and why, not as a live blocker list — §0 links here.
 
 | # | Decision | This plan's recommendation | Why it can't default |
 |---|---|---|---|

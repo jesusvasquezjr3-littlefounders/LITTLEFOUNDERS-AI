@@ -338,6 +338,69 @@ export type Database = {
           },
         ]
       }
+      badge_shares: {
+        Row: {
+          achievement_kind: string
+          achievement_label: string
+          age_band: string | null
+          created_at: string
+          created_by: string
+          first_name: string
+          id: string
+          image_bucket: string
+          image_ext: string
+          image_hash: string
+          image_url: string
+          kid_user_id: string
+          token: string
+        }
+        Insert: {
+          achievement_kind: string
+          achievement_label: string
+          age_band?: string | null
+          created_at?: string
+          created_by: string
+          first_name: string
+          id?: string
+          image_bucket: string
+          image_ext: string
+          image_hash: string
+          image_url: string
+          kid_user_id: string
+          token: string
+        }
+        Update: {
+          achievement_kind?: string
+          achievement_label?: string
+          age_band?: string | null
+          created_at?: string
+          created_by?: string
+          first_name?: string
+          id?: string
+          image_bucket?: string
+          image_ext?: string
+          image_hash?: string
+          image_url?: string
+          kid_user_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "badge_shares_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "badge_shares_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       blocks: {
         Row: {
           blocked_id: string
@@ -589,78 +652,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "email_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "dataintel_users_sync"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      families: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          name?: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "families_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "dataintel_users_sync"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      family_members: {
-        Row: {
-          family_id: string
-          joined_at: string
-          member_role: string
-          user_id: string
-        }
-        Insert: {
-          family_id: string
-          joined_at?: string
-          member_role: string
-          user_id: string
-        }
-        Update: {
-          family_id?: string
-          joined_at?: string
-          member_role?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "family_members_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_members_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "insights_family_engagement"
-            referencedColumns: ["family_id"]
-          },
-          {
-            foreignKeyName: "family_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
@@ -2128,6 +2119,93 @@ export type Database = {
           },
         ]
       }
+      redemption_catalog: {
+        Row: {
+          active: boolean
+          cost: number
+          created_at: string
+          id: string
+          parent_user_id: string
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          cost: number
+          created_at?: string
+          id?: string
+          parent_user_id: string
+          title: string
+        }
+        Update: {
+          active?: boolean
+          cost?: number
+          created_at?: string
+          id?: string
+          parent_user_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemption_catalog_parent_user_id_fkey"
+            columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      redemptions: {
+        Row: {
+          catalog_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          kid_user_id: string
+          status: string
+        }
+        Insert: {
+          catalog_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          kid_user_id: string
+          status?: string
+        }
+        Update: {
+          catalog_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          kid_user_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemptions_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "redemption_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "redemptions_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "redemptions_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       sagas: {
         Row: {
           adventure_id: string
@@ -2169,6 +2247,47 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "adventures"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      savings_goals: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          kid_user_id: string
+          reached_at: string | null
+          status: string
+          target: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          kid_user_id: string
+          reached_at?: string | null
+          status?: string
+          target: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          kid_user_id?: string
+          reached_at?: string | null
+          status?: string
+          target?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "savings_goals_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2240,9 +2359,10 @@ export type Database = {
           assigned_by: string
           assigned_to: string
           created_at: string
-          family_id: string
+          due_at: string | null
           id: string
-          reward: Json
+          recurrence: string
+          reward_coins: number
           status: string
           title: string
         }
@@ -2250,9 +2370,10 @@ export type Database = {
           assigned_by: string
           assigned_to: string
           created_at?: string
-          family_id: string
+          due_at?: string | null
           id?: string
-          reward?: Json
+          recurrence?: string
+          reward_coins: number
           status?: string
           title: string
         }
@@ -2260,9 +2381,10 @@ export type Database = {
           assigned_by?: string
           assigned_to?: string
           created_at?: string
-          family_id?: string
+          due_at?: string | null
           id?: string
-          reward?: Json
+          recurrence?: string
+          reward_coins?: number
           status?: string
           title?: string
         }
@@ -2280,20 +2402,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tasks_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tasks_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "insights_family_engagement"
-            referencedColumns: ["family_id"]
           },
         ]
       }
@@ -2883,6 +2991,8 @@ export type Database = {
           emotion: string | null
           id: string
           moderation: Json
+          point_at: number | null
+          roleplay_scene: string | null
           seq: number
           session_id: string
           source: string
@@ -2899,6 +3009,8 @@ export type Database = {
           emotion?: string | null
           id?: string
           moderation?: Json
+          point_at?: number | null
+          roleplay_scene?: string | null
           seq: number
           session_id: string
           source?: string
@@ -2915,6 +3027,8 @@ export type Database = {
           emotion?: string | null
           id?: string
           moderation?: Json
+          point_at?: number | null
+          roleplay_scene?: string | null
           seq?: number
           session_id?: string
           source?: string
@@ -3024,6 +3138,81 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      wallet_ledger: {
+        Row: {
+          amount: number
+          bucket: string
+          created_at: string
+          created_by: string
+          goal_id: string | null
+          id: number
+          kid_user_id: string
+          reason: string
+          redemption_id: string | null
+          task_id: string | null
+        }
+        Insert: {
+          amount: number
+          bucket: string
+          created_at?: string
+          created_by: string
+          goal_id?: string | null
+          id?: never
+          kid_user_id: string
+          reason: string
+          redemption_id?: string | null
+          task_id?: string | null
+        }
+        Update: {
+          amount?: number
+          bucket?: string
+          created_at?: string
+          created_by?: string
+          goal_id?: string | null
+          id?: never
+          kid_user_id?: string
+          reason?: string
+          redemption_id?: string | null
+          task_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_ledger_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "wallet_ledger_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "savings_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_ledger_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "wallet_ledger_redemption_id_fkey"
+            columns: ["redemption_id"]
+            isOneToOne: false
+            referencedRelation: "redemptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_ledger_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -3336,14 +3525,22 @@ export type Database = {
       }
       insights_family_engagement: {
         Row: {
-          family_created_at: string | null
-          family_id: string | null
+          first_guardian_link_at: string | null
+          guardians: number | null
+          kid_user_id: string | null
           last_task_at: string | null
-          members: number | null
-          tasks_completed: number | null
+          tasks_approved: number | null
           tasks_created: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "guardian_links_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       insights_feature_adoption: {
         Row: {

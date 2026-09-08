@@ -81,7 +81,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 - Exactly **6 roles**: `universal`, `parent`, `kid`, `bigfounder`, `admin`, `superadmin`.
 - `superadmin` is grantable **only** to `@littlefounders.ai` emails — enforced in the DB (trigger) AND the app layer.
 - A `kid` account MUST have ≥ 1 **verified guardian link** (verified through `parent-id-check/`). A kid row without one is a bug, not a state.
-- Families support **multiple parents**: membership lives in the `family_members` join table. Never model it as a `parent_id` column.
+- Families support **multiple parents** per kid: a family is one kid + their verified guardians, derived from `guardian_links` (multiple `parent_user_id` rows may point at the same `kid_user_id`) — never a separate `families`/`family_members` entity. *(Amended 2026-09-08: the original `families`/`family_members` join tables from `0001_identity.sql` were dropped in `0074_family_hub.sql` after shipping with zero rows and zero writers for six weeks — every real parent-kid link went through `guardian_links` from day one. Full trace: `FAMILY_HUB.md` §5.1.)*
 - `audit_logs` is **append-only** — no UPDATE/DELETE, at policy level.
 - Every user-content table has **RLS enabled before merge**. Kid rows are readable by their verified guardians.
 - Migrations: sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), **never edit an applied migration** — write a delta.
@@ -134,7 +134,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 
 | Thing | Convention | Example |
 |---|---|---|
-| DB tables/columns | `snake_case` | `family_members.user_id` |
+| DB tables/columns | `snake_case` | `guardian_links.kid_user_id` |
 | TypeScript vars/functions | `camelCase` | `guardianLink` |
 | React components | `PascalCase` | `DinaCharacter.tsx` |
 | Routes / URLs | `kebab-case` | `/api/v1/guardian-links` |
