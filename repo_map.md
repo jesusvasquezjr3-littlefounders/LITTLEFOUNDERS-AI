@@ -13839,6 +13839,26 @@ BEGIN
 -- (parent_user_id, kid_user_id) — because that is what /family/kids has
 ```
 
+### database/migrations/0075_family_hub_atomic_wallet.sql
+
+```
+-- 0075_family_hub_atomic_wallet.sql — the earn/allocate/redeem loop's two
+-- money-moving actions, made atomic the same way 0055 made XP atomic.
+-- @phase: expand
+--
+-- WHY THIS EXISTS. wallet_ledger (0074) is append-only and correct in
+-- isolation, but the two operations that write to it — a kid allocating an
+-- approved task's reward across Save/Spend/Share, and a parent approving a
+-- redemption request — are each a read-check-write sequence over more than
+-- one row (a task's `allocated` flag plus up to three new ledger rows; a
+-- redemption's status plus the kid's current spend-bucket balance). Doing
+-- that as separate PostgREST calls from Core is exactly the shape 0055's own
+-- header describes: two concurrent requests (a double-tap, a retried
+-- request, two open tabs) both read the same "not yet allocated"/"balance
+-- sufficient" state before either write lands, and both act on it. Moved
+-- into one function per operation, serialized with a Postgres advisory lock
+```
+
 ### database/package.json
 
 ```

@@ -2356,6 +2356,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          allocated: boolean
           assigned_by: string
           assigned_to: string
           created_at: string
@@ -2367,6 +2368,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          allocated?: boolean
           assigned_by: string
           assigned_to: string
           created_at?: string
@@ -2378,6 +2380,7 @@ export type Database = {
           title: string
         }
         Update: {
+          allocated?: boolean
           assigned_by?: string
           assigned_to?: string
           created_at?: string
@@ -3718,6 +3721,17 @@ export type Database = {
           source_topic_title: Json
         }[]
       }
+      allocate_task_reward: {
+        Args: {
+          p_created_by: string
+          p_kid_user_id: string
+          p_save: number
+          p_share: number
+          p_spend: number
+          p_task_id: string
+        }
+        Returns: boolean
+      }
       award_tutor_xp: {
         Args: {
           p_cap: number
@@ -3736,6 +3750,14 @@ export type Database = {
           p_verdict: string
         }
         Returns: string
+      }
+      decide_redemption: {
+        Args: {
+          p_approve: boolean
+          p_decided_by: string
+          p_redemption_id: string
+        }
+        Returns: boolean
       }
       get_completed_course_badges: {
         Args: { p_user_id: string }
