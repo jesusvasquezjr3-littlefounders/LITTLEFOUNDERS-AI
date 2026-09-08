@@ -175,7 +175,12 @@
       "redemptionStatusApproved": "Aprovado",
       "redemptionStatusDenied": "Recusado",
       "redemptionStatusFulfilled": "Entregue",
-      "redemptionInsufficientBalance": "Não há mais LF Coins suficientes para isso"
+      "redemptionInsufficientBalance": "Não há mais LF Coins suficientes para isso",
+      "tasksHeading": "Tarefas",
+      "statAwaiting": "Esperando aprovação",
+      "statRedemptions": "Trocas pendentes",
+      "statAwarded": "LF Coins concedidos",
+      "evidenceAlt": "Foto que ela adicionou como prova de \"{{title}}\""
     },
     "kid": {
       "subtitle": "Faça suas tarefas, ganhe LF Coins e decida o que fazer com elas.",
@@ -218,7 +223,11 @@
       "catalogRequesting": "Solicitando…",
       "catalogNotEnough": "Ainda não há LF Coins suficientes",
       "redemptionsTitle": "Meus pedidos",
-      "redemptionsEmpty": "Nada solicitado ainda."
+      "redemptionsEmpty": "Nada solicitado ainda.",
+      "tasksHeading": "Minhas tarefas",
+      "evidenceAdd": "Adicionar foto",
+      "evidenceUploading": "Salvando…",
+      "evidenceAlt": "Foto que você adicionou como prova de \"{{title}}\""
     },
     "goalIcons": {
       "star": "Estrela",

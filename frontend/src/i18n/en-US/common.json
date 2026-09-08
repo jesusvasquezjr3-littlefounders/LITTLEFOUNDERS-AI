@@ -175,7 +175,12 @@
       "redemptionStatusApproved": "Approved",
       "redemptionStatusDenied": "Denied",
       "redemptionStatusFulfilled": "Fulfilled",
-      "redemptionInsufficientBalance": "They no longer have enough LF Coins for this"
+      "redemptionInsufficientBalance": "They no longer have enough LF Coins for this",
+      "tasksHeading": "Tasks",
+      "statAwaiting": "Awaiting approval",
+      "statRedemptions": "Pending redemptions",
+      "statAwarded": "LF Coins awarded",
+      "evidenceAlt": "Photo Sofia attached as proof for \"{{title}}\""
     },
     "kid": {
       "subtitle": "Do your chores, earn LF Coins, and decide what to do with them.",
@@ -218,7 +223,11 @@
       "catalogRequesting": "Requesting…",
       "catalogNotEnough": "Not enough LF Coins yet",
       "redemptionsTitle": "My requests",
-      "redemptionsEmpty": "Nothing requested yet."
+      "redemptionsEmpty": "Nothing requested yet.",
+      "tasksHeading": "My tasks",
+      "evidenceAdd": "Add photo",
+      "evidenceUploading": "Saving…",
+      "evidenceAlt": "Photo you added as proof for \"{{title}}\""
     },
     "goalIcons": {
       "star": "Star",

@@ -26686,6 +26686,26 @@ import { UserListItem, type ListedUser } from './UserListItem';
  */
 ```
 
+### frontend/src/routes/app/tasks/EvidencePhoto.tsx
+
+```
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BASE_URL, api } from '@/lib/api';
+import { Icon } from '@/components/ui';
+
+/*
+ * Proof-of-work photo (0077, FAMILY_HUB.md). The image is never a plain
+ * <img src> — it lives behind Core's authenticated GET /tasks/:id/evidence
+ * proxy (never a raw Depot URL, §1.9), so every render here fetches it with
+ * the caller's own token and turns the bytes into a local blob: URL.
+ */
+
+export function EvidenceUploadButton({
+  taskId,
+  token,
+```
+
 ### frontend/src/routes/app/tasks/KidTaskBoard.tsx
 
 ```
@@ -26693,17 +26713,17 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
+import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireRedemption, type WireTask } from './types';
 
 /*
- * The kid's half of FAMILY_HUB.md's loop: complete a task, sort the reward
- * across Save/Spend/Share once a grown-up approves it, watch goals fill up,
- * and redeem what a grown-up has offered.
- */
-
-type LoadState =
+ * The kid's half of FAMILY_HUB.md's loop: complete a task (with an optional
+ * photo as proof), sort the reward across Save/Spend/Share once a grown-up
+ * approves it, watch goals fill up, and redeem what a grown-up has offered.
+ *
+ * Layout: a real desktop dashboard, not a stretched single column
 ```
 
 ### frontend/src/routes/app/tasks/ParentTaskBoard.tsx
@@ -26713,17 +26733,17 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Dropdown, Field, Icon, LoadingOverlay } from '@/components/ui';
+import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
 
 /*
  * The parent's half of FAMILY_HUB.md's loop: assign a task, approve it once
- * done (the ONLY action that credits the kid's wallet — see KidTaskBoard's
- * allocate step), and manage the reward catalog + redemption decisions.
+ * done — the ONLY action that credits the kid's wallet, see KidTaskBoard's
+ * allocate step — and manage the reward catalog + redemption decisions.
  *
- * Loads everything once in parallel (kids, tasks, catalog, redemptions) —
- * the same "one screen, one load" shape FamilyPage already uses, rather than
+ * Layout mirrors KidTaskBoard's: three aggregate StatCards up top (the same
 ```
 
 ### frontend/src/routes/app/tasks/TasksPage.tsx

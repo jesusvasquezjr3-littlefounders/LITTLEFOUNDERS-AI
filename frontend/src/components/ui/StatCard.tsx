@@ -22,7 +22,8 @@ interface StatCardProps {
   icon: ReactNode;
   value: string;
   label: string;
-  tone?: 'primary' | 'secondary' | 'accent';
+  /** The full IconChip tone set — StatCard is a thin frame around it, so anything IconChip can key (e.g. `success`/`delight` for a semantic 3-way split) is fair game here too. */
+  tone?: 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'delight';
   /**
    * Console-density variant (/DESIGN.md §Screen Recipes → Console): the
    * 6-col KPI track leaves ~70-100px for the numeral, where `lf-display-lg`

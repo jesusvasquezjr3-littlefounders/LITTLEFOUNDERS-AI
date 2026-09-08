@@ -19,6 +19,7 @@ export interface WireTask {
   status: TaskStatus;
   allocated: boolean;
   createdAt: string;
+  hasEvidence: boolean;
 }
 
 export interface WireGoal {

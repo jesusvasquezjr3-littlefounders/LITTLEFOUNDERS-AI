@@ -156,8 +156,11 @@ motion:                           # CLOSED 5-recipe system
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-08-24 (§Screen Recipes —
-> *Learn*, the recipe the four learn routes were built without; 2026-08-23 —
+> those files don't define. **Last updated:** 2026-09-08 (§Screen Recipes —
+> *Tasks*, the Family Hub recipe the surface was built without, plus the
+> **Dashboard content (2-column)** grid shape and the fixed-3-column Stat row
+> exception; 2026-08-24 — *Learn*, the recipe the four learn routes were
+> built without; 2026-08-23 —
 > §Answer surfaces — "the tap
 > floor has two sides" and "a broken-glyph check must measure the GLYPH", after
 > looking at all 57 exercise renderers; 2026-08-22 — the lesson engine's three
@@ -2316,6 +2319,67 @@ a `hero` card, same grammar as Learn's empty state. Destructive-ish actions
 that aren't truly destructive (block) use a two-step inline confirm — label
 flips to a `danger`-tone confirmation for a few seconds — rather than a
 modal; true modals stay reserved for nothing in this app so far.
+
+**Tasks (`/tasks`, the Family Hub)** — added 2026-09-08, and the ABSENCE of
+this entry is why it exists. §0 makes building outside a recipe a design
+bug; there was no Tasks recipe, so the first cut was assembled out of
+`FamilyPage`'s **List rows** grammar (a `max-w-3xl` single centered column)
+even at desktop, which is the wrong category for this surface and reads as
+exactly the bug §Layout → Responsive Adaptation names by its own words: "a
+stretched mobile column on desktop." List rows is for a flat list of peers
+(a follower, a settings section); Tasks is a real dashboard — a wallet, a
+worklist, goals, a catalog — and the **Dashboard content** shape below is
+what should have been reached for from the start.
+
+**Dashboard content (2-column)** — the shape this recipe adds to the closed
+grid set (§Layout → Grid Systems), for any surface inside the app shell that
+is a working dashboard rather than a single list: `grid-cols-1
+lg:grid-cols-[minmax(0,1fr)_360px] gap-6`. The wide column is where a
+decision is DUE (a worklist, an inbox); the fixed 360px column is what the
+decisions are IN SERVICE OF (progress, a catalog, a summary) — never the
+reverse, and never split evenly, because an even split says both columns
+matter equally and here they don't. Collapses to one stacked column on
+mobile in that same order (main first, secondary second), never a tab
+switcher — the secondary column's content is short enough to just scroll
+past. Two roles use this shape on the SAME route (`/tasks` branches by role
+before rendering, `TasksPage.tsx`), and it is deliberately the same shape
+for both, not a coincidence: a parent's worklist is "what needs a decision",
+a kid's is "what needs doing," and the pattern underneath is identical.
+
+**The wallet is a Stat row, fixed at 3 columns on every breakpoint** — a
+deliberate, documented exception to the Stat row category's own 2/3/6 track
+(§Layout → Grid Systems), because Save/Spend/Share is a permanently
+closed, semantically fixed set of exactly three named things, not a growing
+stat list that happens to have three entries today. Splitting it 2-then-1 on
+mobile (what the general Stat row rule would do) would break the group's own
+meaning — the three buckets are one sentence, not three separate facts — so
+this is a designed grid for a designed set, the same discipline the general
+rule exists to protect, applied to the one shape it doesn't fit. Colour is
+load-bearing here (`success` = Save, `primary` = Spend, `delight` = Share,
+via `StatCard`'s `tone`) and repeats everywhere the three buckets appear —
+the allocate form's three fields, the parent's own read of a kid's wallet —
+so a colour never has to be relearned per screen.
+
+**The parent's own three `StatCard`s echo the shape without echoing the
+meaning** (`statAwaiting` / `statRedemptions` / `statAwarded`, `warning` /
+`delight` / `success`): not the same three buckets, but the same 3-up rhythm,
+so the two role views of one route read as one product rather than two
+unrelated screens that happen to share a URL.
+
+**A task row carries a fourth slot — proof.** A kid may attach a photo as
+evidence before a parent spends an approval on their word alone (`0077`,
+`EvidencePhoto.tsx`). Reuses `FileField`'s own sr-only-input-behind-a-label
+accessibility shape at a COMPACT size (a dashed pill, not the full drop
+well — the row already carries a title, a status caption and an action) with
+`capture="environment"` so a phone opens its camera directly rather than a
+picker. The photo is never a plain `<img src>`: it is fetched through Core's
+own authenticated proxy with the caller's token and rendered from a local
+`blob:` URL, because the bytes live in Depot as `visibility: internal`
+(§1.9 — a photo of a child's room or homework is a different privacy class
+than a public achievement badge, and never gets a public URL). Tapping the
+thumbnail opens the full image in a new tab — never a modal, this app's own
+standing rule (§List rows, above) — rather than inventing this surface's
+first lightbox for one photo.
 
 **Learn (`/learn`, `/learn/:slug`, `/learn/:slug/territory`,
 `/learn/:slug/placement`)** — added 2026-08-24, and like the Tutor entry, the
