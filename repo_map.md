@@ -177,6 +177,7 @@ frontend/
           lab/
           scenes/
         profile/
+        tasks/
       auth/
         __tests__/
       marketing/
@@ -25571,21 +25572,6 @@ import { findCurrentChapter, type CourseTree, type CurrentChapter } from '@/rout
 ### frontend/src/routes/app/SectionComingSoon.tsx
 
 ```
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { trackInsight } from '@/lib/insights';
-import { Badge, Card, Icon, IconChip } from '@/components/ui';
-
-/*
- * In-app placeholder for product sections whose real feature ships later.
- * The section EXISTS in nav (discoverable, gamified) — the content says
- * honestly that it's on the way.
- */
-/** Opening a locked surface IS the demand signal for building it. */
-const DEMAND_EVENT = { tutor: 'tutor_open', tasks: 'task_view' } as const;
-
-export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'tasks'; icon: string }) {
-  const { t } = useTranslation();
 ```
 
 ### frontend/src/routes/app/TutorPage.tsx
@@ -26422,7 +26408,7 @@ export interface NavItem {
   key: string; // i18n: dashboard.nav.<key>
   path: string;
   icon: string; // Material Symbols ligature
-  requiresRole?: string;
+  /** A single role, or "at least one of" a set — e.g. tasks/ is reachable by BOTH parent (assign/approve) and kid (complete/allocate), a shape family/ never needed. */
 ```
 
 ### frontend/src/routes/app/profile/AvatarEditorPage.tsx
@@ -26663,6 +26649,86 @@ import { UserListItem, type ListedUser } from './UserListItem';
  * routes from one component. `allowUnfollow` only makes sense on the
  * viewer's OWN following list (these are edges the viewer controls).
  */
+```
+
+### frontend/src/routes/app/tasks/KidTaskBoard.tsx
+
+```
+import { useEffect, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, Dropdown, Field, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireRedemption, type WireTask } from './types';
+
+/*
+ * The kid's half of FAMILY_HUB.md's loop: complete a task, sort the reward
+ * across Save/Spend/Share once a grown-up approves it, watch goals fill up,
+ * and redeem what a grown-up has offered.
+ */
+
+type LoadState =
+```
+
+### frontend/src/routes/app/tasks/ParentTaskBoard.tsx
+
+```
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, Dropdown, Field, Icon, LoadingOverlay } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import type { WireCatalogItem, WireRedemption, WireTask } from './types';
+
+/*
+ * The parent's half of FAMILY_HUB.md's loop: assign a task, approve it once
+ * done (the ONLY action that credits the kid's wallet — see KidTaskBoard's
+ * allocate step), and manage the reward catalog + redemption decisions.
+ *
+ * Loads everything once in parallel (kids, tasks, catalog, redemptions) —
+ * the same "one screen, one load" shape FamilyPage already uses, rather than
+```
+
+### frontend/src/routes/app/tasks/TasksPage.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { ParentTaskBoard } from './ParentTaskBoard';
+import { KidTaskBoard } from './KidTaskBoard';
+
+/*
+ * /tasks — FAMILY_HUB.md's earn (chores) -> allocate (Save/Spend/Share) ->
+ * goal loop. Unlike every other product-section page, this ONE branches by
+ * role at the top rather than being two separate routes: a `parent` assigns
+ * and approves, a `kid` completes and allocates, and `RequireRole` in
+ * App.tsx already lets both roles reach `/tasks` (navConfig's
+ * `requiresRole: ['parent', 'kid']`). A family where the SAME account somehow
+ * held both roles would see the parent view — `parent` is checked first
+ * because approving/assigning is the higher-stakes action, and no real
+ * account is expected to ever hold both.
+```
+
+### frontend/src/routes/app/tasks/types.ts
+
+```
+/*
+ * Wire shapes for /api/v1/tasks — camelCase, mirroring backend/src/routes/tasks.ts's
+ * toWire* mappers (never the raw snake_case DB row).
+ */
+
+export type TaskStatus = 'open' | 'done' | 'approved' | 'cancelled';
+export type GoalStatus = 'active' | 'reached' | 'archived';
+export type RedemptionStatus = 'requested' | 'approved' | 'denied' | 'fulfilled';
+export type GoalIcon = 'star' | 'game' | 'toy' | 'book' | 'bike' | 'trip' | 'gift';
+
+export interface WireTask {
+  id: string;
+  assignedBy: string;
+  assignedTo: string;
+  title: string;
 ```
 
 ### frontend/src/routes/auth/AuthCallbackPage.tsx

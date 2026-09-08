@@ -12,13 +12,14 @@ export interface NavItem {
   key: string; // i18n: dashboard.nav.<key>
   path: string;
   icon: string; // Material Symbols ligature
-  requiresRole?: string;
+  /** A single role, or "at least one of" a set — e.g. tasks/ is reachable by BOTH parent (assign/approve) and kid (complete/allocate), a shape family/ never needed. */
+  requiresRole?: string | string[];
 }
 
 export const NAV_ITEMS: NavItem[] = [
   { key: 'learn', path: '/learn', icon: 'school' },
   { key: 'tutor', path: '/tutor', icon: 'smart_toy' },
-  { key: 'tasks', path: '/tasks', icon: 'checklist', requiresRole: 'parent' },
+  { key: 'tasks', path: '/tasks', icon: 'checklist', requiresRole: ['parent', 'kid'] },
   { key: 'family', path: '/family', icon: 'family_restroom', requiresRole: 'parent' },
   { key: 'profile', path: '/profile', icon: 'account_circle' },
 ];
@@ -27,5 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
 export const APP_HOME = '/learn';
 
 export function isUnlocked(item: NavItem, roles: string[]): boolean {
-  return !item.requiresRole || roles.includes(item.requiresRole);
+  if (!item.requiresRole) return true;
+  const required = Array.isArray(item.requiresRole) ? item.requiresRole : [item.requiresRole];
+  return required.some((r) => roles.includes(r));
 }

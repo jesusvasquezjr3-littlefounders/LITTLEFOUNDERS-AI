@@ -30,7 +30,7 @@ import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
-import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
+import { TasksPage } from '@/routes/app/tasks/TasksPage';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
 import { AvatarEditorPage } from '@/routes/app/profile/AvatarEditorPage';
 import { SettingsPage } from '@/routes/app/profile/SettingsPage';
@@ -330,8 +330,8 @@ export function App() {
             <Route
               path="tasks"
               element={
-                <RequireRole role="parent">
-                  <SectionComingSoon section="tasks" icon="checklist" />
+                <RequireRole role={['parent', 'kid']}>
+                  <TasksPage />
                 </RequireRole>
               }
             />
