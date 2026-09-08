@@ -1153,6 +1153,26 @@ colors:
   surface-sunken: "#f1f5f9"       # wells, segmented controls (slate-100)
 ```
 
+### FAMILY_HUB.md
+
+```
+# FAMILY_HUB.md — Family functions: tasks, rewards, monitoring — product plan
+
+> **Authority:** engine spec (`/AGENTS.md` §1.1 tier 6). Subordinate to `/AGENTS.md`,
+> `ROADMAP.md`, `GLOSSARY.md`, `DESIGN.md`, `backend/AGENTS.md`, `frontend/AGENTS.md`,
+> `database/AGENTS.md`. Authoritative over `WALKTHROUGH.md`, `repo_map.md` and
+> `doc_map.md` on this topic. Where this plan's recommendations would change the
+> literal wording of an `/AGENTS.md` invariant (§5.1 flags the one case), that
+> change is NOT authorized by this file alone — it requires explicit owner
+> sign-off, applied to `/AGENTS.md` **and** `/CLAUDE.md` in the same commit as the
+> code, per `/AGENTS.md`'s own sync rule.
+>
+> **Created:** 2026-09-08 · **Language:** English, per `/AGENTS.md` §1.0 #4.
+>
+> **What this file is.** A product plan, not a record of built work. Nothing in
+> §5–§10 exists yet. It was derived by reading the actual repo state (schema,
+```
+
 ### GLOSSARY.md
 
 ```
@@ -1469,7 +1489,7 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 ## NSM analytics + the shareable-achievement-badge viral loop (2026-09-07)
 
-**Two growth-workstream deliverables, built together because the second needs the first.** (1) `lesson_complete` was already shipping client-side only (`LessonPlayer.tsx`, since the first Insights pass); it is now emitted SERVER-side instead (`backend/src/routes/learn.ts`, same gate as `first_lesson_complete`/`streak_extend`) and the client copy was DELETED rather than kept alongside it — a client beacon and a server emission for the same completion would double-count the platform's own North Star Metric, since `client_event_id` dedup only collapses retries of the SAME event, not two independently-generated ones. `parent_report_viewed` is new, fired once when `KidTerritoryPage` (the parent's view of a kid's stats — that IS the parent report) loads successfully. (2) A parent can mint a shareable 1080x1920 achievement image (`POST /family/kids/:kidId/badge` → Depot's new templated SVG→PNG compositor, `filebase/src/lib/badge.ts` — NOT Prism/picturegen, which is AI-generation only) for an ALREADY-EARNED course badge or a streak ≥3 days, get a `/badge/:token` link, and share it via `navigator.share` (clipboard fallback). The public landing page is opened by strangers with no account: a Vercel Edge Function (`frontend/api/badge/[token].ts`, this repo's first) injects per-share Open Graph tags into the app-shell before the SPA boots, so a shared link unfurls with the right image/title in WhatsApp/iMessage/Slack — the React route underneath does the actual consent-gated click tracking. Four new closed-vocabulary events (`parent_report_viewed`, `badge_generated`, `badge_shared`, `badge_link_click`) via migration `0072`; a new `badge_shares` table (`0073`) — both **unapplied, pending the manual migrate step**, per ROADMAP.md's ledger. "Registros" (the loop's fourth conversion step) needed no new event: it rides the EXISTING `signup_complete` → `attributeSignup` UTM-attribution path, tagged `utm_campaign=badge-share` on the share link itself (not the in-page CTA — `captureLandingContext()` snapshots UTM params on first script execution, i.e. on the URL the visitor actually landed on).
+**Two growth-workstream deliverables, built together because the second needs the first.** (1) `lesson_complete` was already shipping client-side only (`LessonPlayer.tsx`, since the first Insights pass); it is now emitted SERVER-side instead (`backend/src/routes/learn.ts`, same gate as `first_lesson_complete`/`streak_extend`) and the client copy was DELETED rather than kept alongside it — a client beacon and a server emission for the same completion would double-count the platform's own North Star Metric, since `client_event_id` dedup only collapses retries of the SAME event, not two independently-generated ones. `parent_report_viewed` is new, fired once when `KidTerritoryPage` (the parent's view of a kid's stats — that IS the parent report) loads successfully. (2) A parent can mint a shareable 1080x1920 achievement image (`POST /family/kids/:kidId/badge` → Depot's new templated SVG→PNG compositor, `filebase/src/lib/badge.ts` — NOT Prism/picturegen, which is AI-generation only) for an ALREADY-EARNED course badge or a streak ≥3 days, get a `/badge/:token` link, and share it via `navigator.share` (clipboard fallback). The public landing page is opened by strangers with no account: a Vercel Edge Function (`frontend/api/badge/[token].ts`, this repo's first) injects per-share Open Graph tags into the app-shell before the SPA boots, so a shared link unfurls with the right image/title in WhatsApp/iMessage/Slack — the React route underneath does the actual consent-gated click tracking. Four new closed-vocabulary events (`parent_report_viewed`, `badge_generated`, `badge_shared`, `badge_link_click`) via migration `0072`; a new `badge_shares` table (`0073`) — both **applied to production the same day**, via `tutor-deploy.yml step:migrate`; the ledger probe inside that run confirmed 73/73, per ROADMAP.md. "Registros" (the loop's fourth conversion step) needed no new event: it rides the EXISTING `signup_complete` → `attributeSignup` UTM-attribution path, tagged `utm_campaign=badge-share` on the share link itself (not the in-page CTA — `captureLandingContext()` snapshots UTM params on first script execution, i.e. on the URL the visitor actually landed on).
 
 ```
 
@@ -15239,11 +15259,11 @@ export default defineConfig({
 |---|---|---|
 | 3D characters outside the diorama, the pose library, Lesson Engine gamification | [GOAL_3D_CHARACTERS.md](GOAL_3D_CHARACTERS.md) | Scope + acceptance for the 2026-08-27 request. Draft: three decisions outstanding |
 | MCP / school integrations (harness backlog line, `ROADMAP.md` line ~261) | [MCP_SCHOOL_INTEGRATIONS_SCOPING.md](MCP_SCHOOL_INTEGRATIONS_SCOPING.md) | Scoping only, no code — two interpretations laid out, recommendation + required owner/legal/role decisions in §8-§9 |
+| Family tasks/rewards/monitoring (`tasks/` product section, family wallet, savings goals) | [FAMILY_HUB.md](FAMILY_HUB.md) | Plan only, no code — §0 is the live status; §11 lists owner decisions blocking Wave 0 |
 | Operating rules, invariants, gates | /AGENTS.md (== /CLAUDE.md) | §0–§8 |
 | Roles & permissions | /AGENTS.md | §1.3–§1.4 |
 | Child safety & minor PII | /AGENTS.md | §1.9 |
 | Service map, ports, codenames | /AGENTS.md | §1.5 |
-| API envelope & conventions | /AGENTS.md §1.6 + agent/core/CONVENTIONS.md | — |
 ```
 
 ### email-server/AGENTS.md
