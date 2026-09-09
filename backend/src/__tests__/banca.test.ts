@@ -232,6 +232,28 @@ describe('GET /api/v1/banca/accounts/:kidId (parent) and /account (kid)', () => 
   });
 });
 
+describe('PATCH /api/v1/banca/accounts/:kidId (parent edits nickname/design)', () => {
+  it('404s a kid the caller does not guard', async () => {
+    stub({ account: defaultAccount(), parentsKids: [OTHER_KID_ID] });
+    const res = await patchAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'New Bike Fund' });
+    expect(res.status).toBe(404);
+  });
+
+  it('a guardian can rename and re-color the card', async () => {
+    stub({ account: defaultAccount() });
+    const res = await patchAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'New Bike Fund', cardDesign: 'ocean' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.account.nickname).toBe('New Bike Fund');
+    expect(res.body.data.account.cardDesign).toBe('ocean');
+  });
+
+  it('404s when there is no account to update yet', async () => {
+    stub({ account: null });
+    const res = await patchAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'New Bike Fund' });
+    expect(res.status).toBe(404);
+  });
+});
+
 describe('PATCH /api/v1/banca/account (kid edits nickname/design)', () => {
   it('a kid can rename their own card', async () => {
     stub({ account: defaultAccount(), roles: ['kid'] });
