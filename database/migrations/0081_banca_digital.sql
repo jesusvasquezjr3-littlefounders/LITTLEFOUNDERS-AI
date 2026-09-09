@@ -1,7 +1,16 @@
--- @phase: expand
--- @after-release: none — additive only. No existing reader is affected;
---   wallet_ledger's reason CHECK widens (never narrows) and gains one
---   nullable-by-default column read only by the new code path.
+-- @phase: contract
+-- @after-release: dad9bf0d (this DROP/ADD CONSTRAINT on wallet_ledger's
+--   reason CHECK is a pure widen — 'allowance' and 'savings_bonus' are
+--   ADDED, nothing already-allowed is removed — but check-migration-phase.mjs
+--   classifies every dropped-and-re-added CHECK as a contraction regardless
+--   of direction, deliberately, since the gate cannot parse old-vs-new value
+--   sets semantically (same shape as 0072/0079's identical case). Nothing
+--   here depends on an older deploy retiring a removed value, so the named
+--   release is simply the current HEAD at authoring time: this migration
+--   must still land BEFORE any code writes an 'allowance'/'savings_bonus'
+--   ledger row, exactly like a normal expand — the gate's mechanical
+--   caution costs one manual dispatch, which is cheaper than the outage an
+--   under-called contraction risks (database/AGENTS.md).
 --
 -- 0081_banca_digital.sql — BANCA_DIGITAL.md Waves 0-2: a named account +
 -- card the kid can see and freeze, automated allowance, a "Parent-Paid"
