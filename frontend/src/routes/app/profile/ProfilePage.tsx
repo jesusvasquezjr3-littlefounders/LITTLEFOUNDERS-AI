@@ -225,7 +225,18 @@ export function ProfilePage() {
       <SectionHeading id={statsHeadingId} icon="insights" tone="accent" className="mt-8">
         {t('profile.stats.title')}
       </SectionHeading>
-      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {/*
+       * 2/3/3, not the Stat row category's own 2/3/6 (/DESIGN.md §Layout →
+       * Grid Systems, "Profile's Stat row is 2/3/3" — a documented exception,
+       * corrected 2026-09-09 alongside this call site). Six columns at the
+       * 1280px width `lg:` actually ships at leaves under 50px for a
+       * label's text column after the icon chip and padding — nowhere near
+       * enough for "Lecciones completadas" or "Minutos aprendidos" even
+       * wrapped (line-clamp-2 in StatCard.tsx is the defense-in-depth floor
+       * for whatever space a caller gives the label, not a substitute for
+       * giving it enough).
+       */}
+      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />

@@ -208,7 +208,8 @@ export function PublicProfilePage() {
       <SectionHeading id={statsHeadingId} icon="insights" tone="accent" className="mt-8">
         {t('profile.stats.title')}
       </SectionHeading>
-      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {/* 2/3/3, not 2/3/6 — same content, same /DESIGN.md exception as ProfilePage.tsx's own stat grid; see its comment. */}
+      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />

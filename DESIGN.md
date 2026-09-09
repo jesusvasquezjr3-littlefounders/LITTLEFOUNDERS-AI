@@ -285,6 +285,27 @@ still uses these exact column tracks (the last row is intentionally
 incomplete, never re-flowed to "fill nicely") — a designed grid with a
 short last row beats an ad hoc one that's always full.
 
+**Profile's Stat row is 2/3/3, not 2/3/6** — corrected 2026-09-09, a second
+deliberate, documented exception to the category's own desktop column count
+(the Wallet's fixed-3 exception below is the first). The `6` in the closed
+table assumes a label short enough to read at the width six columns leaves
+per card; `StatCard`'s own caption is a full, translated sentence fragment
+("Lecciones completadas," "Minutos aprendidos" — not "Users," "Sessions"),
+and at the 1280px width `lg:` actually ships at, six columns leave under
+50px for that text after the icon chip and padding — measured live in
+production, both truncated to 2-4 characters even after `StatCard.tsx`'s
+own `line-clamp-2` (a real, separate, still-worth-keeping fix: it is the
+floor for whatever space a caller gives the label, not a substitute for
+giving it enough). This is the same lesson AGENTS.md §1.14 already names
+for a hand-measured space reservation: the closed `6` was correct for a
+narrower assumption about content than what this call site actually carries,
+and reusing the same number for a still-longer future label would recreate
+the class error, not fix an instance of it. `PublicProfilePage.tsx`'s
+identical row takes the same correction, being the same content. Admin's
+own 6-up stat rows are NOT included in this correction — their captions are
+short, English, staff-authored metric names, a different content class this
+finding was not measured against.
+
 **The one exemption: the in-scene HUD cluster** (Tutor route only, added
 2026-08-21, owner-driven rebuild). Controls anchored to points inside a 3D
 scene are placed by the WORLD, not by a column track: an offer chip sits at
@@ -2302,8 +2323,9 @@ overlapping `-mt-14/-mt-16` with `ring-4 ring-base`; own profile adds a
 indigo pencil badge on the avatar (→ /profile/avatar) and a glass "edit
 cover" chip (inline preset-swatch grid in an `.lf-pop` card). Below: display
 name + Tutor badge, `primary` @username, member-since caption, secondary
-Settings pill; StatCard row is the **Stat row grid** (2/3/6, §Layout → Grid
-Systems: streak, lessons, XP, minutes learned, followers, following — the
+Settings pill; StatCard row is the **Stat row grid, at 2/3/3 rather than the
+category's own 2/3/6** (§Layout → Grid Systems — see that section's own
+documented exception for why): streak, lessons, XP, minutes learned, followers, following — the
 last two link out to their list pages); share-to-invite card with one indigo
 copy CTA (flips to `success` on copy). Avatar editor: sticky live-preview
 card (desktop) + option-section cards — color swatches as `rounded-full`
