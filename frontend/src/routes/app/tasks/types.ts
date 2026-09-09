@@ -61,6 +61,20 @@ export interface WalletBalances {
   share: number;
 }
 
+export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment';
+export type LedgerBucket = 'save' | 'spend' | 'share';
+
+export interface WireLedgerEntry {
+  id: number;
+  bucket: LedgerBucket;
+  amount: number;
+  reason: LedgerReason;
+  taskId: string | null;
+  goalId: string | null;
+  redemptionId: string | null;
+  createdAt: string;
+}
+
 export const GOAL_ICONS: GoalIcon[] = ['star', 'game', 'toy', 'book', 'bike', 'trip', 'gift'];
 
 /** Material Symbols ligature for a goal icon — a closed, verified-real set (Icon.tsx's own fallback would swap in "help" for anything invented). */

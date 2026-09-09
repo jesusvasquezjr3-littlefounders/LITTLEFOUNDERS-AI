@@ -253,7 +253,14 @@
       "goalArchiveConfirmQuestion": "Archive this goal?",
       "requiresEvidenceHint": "Add a photo to finish this one",
       "completedAnnounce": "\"{{title}}\" marked done, waiting for approval.",
-      "goalArchivedAnnounce": "\"{{title}}\" goal archived."
+      "goalArchivedAnnounce": "\"{{title}}\" goal archived.",
+      "activityTitle": "Recent activity",
+      "activityEmpty": "Nothing yet — complete a task to see it here.",
+      "activityEarned": "Earned for \"{{title}}\"",
+      "activityEarnedUntitled": "Earned from a completed task",
+      "activitySpent": "Spent on \"{{title}}\"",
+      "activitySpentUntitled": "Spent on a reward",
+      "activityAdjustment": "Adjustment"
     },
     "goalIcons": {
       "star": "Star",

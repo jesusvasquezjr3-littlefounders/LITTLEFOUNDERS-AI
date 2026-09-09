@@ -253,7 +253,14 @@
       "goalArchiveConfirmQuestion": "¿Archivar esta meta?",
       "requiresEvidenceHint": "Agrega una foto para terminar esta tarea",
       "completedAnnounce": "\"{{title}}\" marcada como hecha, esperando aprobación.",
-      "goalArchivedAnnounce": "Meta \"{{title}}\" archivada."
+      "goalArchivedAnnounce": "Meta \"{{title}}\" archivada.",
+      "activityTitle": "Actividad reciente",
+      "activityEmpty": "Todavía nada — completa una tarea para verla aquí.",
+      "activityEarned": "Ganado por \"{{title}}\"",
+      "activityEarnedUntitled": "Ganado por una tarea completada",
+      "activitySpent": "Gastado en \"{{title}}\"",
+      "activitySpentUntitled": "Gastado en una recompensa",
+      "activityAdjustment": "Ajuste"
     },
     "goalIcons": {
       "star": "Estrella",

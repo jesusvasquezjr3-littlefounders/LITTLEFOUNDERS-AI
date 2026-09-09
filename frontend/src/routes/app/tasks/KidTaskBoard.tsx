@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
-import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireRedemption, type WireTask } from './types';
+import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireLedgerEntry, type WireRedemption, type WireTask } from './types';
 
 /*
  * The kid's half of FAMILY_HUB.md's loop: complete a task (with an optional
@@ -30,10 +30,11 @@ type LoadState =
       goals: WireGoal[];
       catalog: WireCatalogItem[];
       redemptions: WireRedemption[];
+      ledger: WireLedgerEntry[];
     };
 
 export function KidTaskBoard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
@@ -52,18 +53,19 @@ export function KidTaskBoard() {
       const tok = await getToken();
       if (!tok || cancelled) return;
       setToken(tok);
-      const [tasksRes, walletRes, goalsRes, catalogRes, redemptionsRes] = await Promise.all([
+      const [tasksRes, walletRes, goalsRes, catalogRes, redemptionsRes, ledgerRes] = await Promise.all([
         api<{ tasks: WireTask[] }>('/tasks/mine', { token: tok }),
         api<{ balances: WalletBalances }>('/tasks/wallet', { token: tok }),
         api<{ goals: WireGoal[] }>('/tasks/goals', { token: tok }),
         api<{ items: WireCatalogItem[] }>('/tasks/catalog/available', { token: tok }),
         api<{ redemptions: WireRedemption[] }>('/tasks/redemptions/mine', { token: tok }),
+        api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token: tok }),
       ]);
       if (cancelled) return;
       // Direct property accesses (not a merged variable) so TypeScript can
       // narrow each result's `.data` to non-null below.
-      if (tasksRes.error || walletRes.error || goalsRes.error || catalogRes.error || redemptionsRes.error) {
-        const code = (tasksRes.error ?? walletRes.error ?? goalsRes.error ?? catalogRes.error ?? redemptionsRes.error)?.code ?? 'INTERNAL';
+      if (tasksRes.error || walletRes.error || goalsRes.error || catalogRes.error || redemptionsRes.error || ledgerRes.error) {
+        const code = (tasksRes.error ?? walletRes.error ?? goalsRes.error ?? catalogRes.error ?? redemptionsRes.error ?? ledgerRes.error)?.code ?? 'INTERNAL';
         setState({ status: 'error', code });
         return;
       }
@@ -74,6 +76,7 @@ export function KidTaskBoard() {
         goals: goalsRes.data.goals,
         catalog: catalogRes.data.items,
         redemptions: redemptionsRes.data.redemptions,
+        ledger: ledgerRes.data.entries,
       });
     })();
     return () => {
@@ -118,8 +121,12 @@ export function KidTaskBoard() {
     setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === task.id ? { ...tt, allocated: true } : tt)) } : prev));
     await refreshWallet();
     if (!token) return;
-    const goalsRes = await api<{ goals: WireGoal[] }>('/tasks/goals', { token });
+    const [goalsRes, ledgerRes] = await Promise.all([
+      api<{ goals: WireGoal[] }>('/tasks/goals', { token }),
+      api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token }),
+    ]);
     if (goalsRes.data) setState((prev) => (prev.status === 'ready' ? { ...prev, goals: goalsRes.data.goals } : prev));
+    if (ledgerRes.data) setState((prev) => (prev.status === 'ready' ? { ...prev, ledger: ledgerRes.data.entries } : prev));
   }
 
   function onCreateGoal(goal: WireGoal) {
@@ -151,6 +158,29 @@ export function KidTaskBoard() {
   const doneTasks = state.tasks.filter((tt) => tt.status === 'done');
   const toAllocate = state.tasks.filter((tt) => tt.status === 'approved' && !tt.allocated);
   const todo = [...openTasks, ...doneTasks];
+
+  // A receipt list needs names, not ids — resolved from state already
+  // loaded for the tasks/rewards sections above, not a second fetch.
+  const taskTitleById = new Map(state.tasks.map((tt) => [tt.id, tt.title]));
+  const catalogTitleByRedemptionId = new Map(
+    state.redemptions.map((r) => [r.id, state.catalog.find((c) => c.id === r.catalogId)?.title]),
+  );
+  const recentLedger = state.ledger.slice(0, 12);
+  const dateFormatter = new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'short', day: 'numeric' });
+
+  function ledgerLabel(entry: WireLedgerEntry): string {
+    if (entry.reason === 'task_approved') {
+      const title = entry.taskId ? taskTitleById.get(entry.taskId) : undefined;
+      return title ? t('tasks.kid.activityEarned', { title }) : t('tasks.kid.activityEarnedUntitled');
+    }
+    if (entry.reason === 'redemption') {
+      const title = entry.redemptionId ? catalogTitleByRedemptionId.get(entry.redemptionId) : undefined;
+      return title ? t('tasks.kid.activitySpent', { title }) : t('tasks.kid.activitySpentUntitled');
+    }
+    return t('tasks.kid.activityAdjustment');
+  }
+
+  const BUCKET_DOT: Record<WireLedgerEntry['bucket'], string> = { save: 'bg-success', spend: 'bg-primary', share: 'bg-delight' };
 
   return (
     <div className="flex flex-col gap-8 pb-8">
@@ -311,6 +341,31 @@ export function KidTaskBoard() {
                     </li>
                   );
                 })}
+              </ul>
+            )}
+          </section>
+
+          <section aria-labelledby="kid-activity-heading">
+            <SectionHeading id="kid-activity-heading" icon="receipt_long" tone="muted">
+              {t('tasks.kid.activityTitle')}
+            </SectionHeading>
+            {recentLedger.length === 0 ? (
+              <p className="lf-caption text-content-muted">{t('tasks.kid.activityEmpty')}</p>
+            ) : (
+              <ul className="flex flex-col gap-1.5">
+                {recentLedger.map((entry) => (
+                  <li key={entry.id} className="flex items-center gap-2.5 rounded-lg border border-outline/50 bg-surface px-3.5 py-2.5">
+                    <span className={`h-2 w-2 shrink-0 rounded-full ${BUCKET_DOT[entry.bucket]}`} aria-hidden />
+                    <span className="min-w-0 flex-1">
+                      <span className="lf-caption block truncate text-content">{ledgerLabel(entry)}</span>
+                      <span className="lf-caption block text-content-faint">{dateFormatter.format(new Date(entry.createdAt))}</span>
+                    </span>
+                    <span className={`lf-label lf-number shrink-0 tabular-nums ${entry.amount >= 0 ? 'text-success' : 'text-content-muted'}`}>
+                      {entry.amount >= 0 ? '+' : ''}
+                      {entry.amount}
+                    </span>
+                  </li>
+                ))}
               </ul>
             )}
           </section>
