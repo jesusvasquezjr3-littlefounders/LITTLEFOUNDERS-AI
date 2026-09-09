@@ -57,7 +57,8 @@
       "sharing": "Preparing…",
       "shared": "Shared!",
       "copied": "Link copied",
-      "error": "Could not create the badge right now"
+      "error": "Could not create the badge right now",
+      "shareGoal": "Share \"{{title}}\""
     },
     "insightsConsent": {
       "label": "Share usage insights",

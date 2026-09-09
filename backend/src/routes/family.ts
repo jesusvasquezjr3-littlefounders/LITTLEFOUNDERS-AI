@@ -17,6 +17,7 @@ import {
 import {
   getAdventuresByCourseIds,
   getCompletedCourseBadgesByUserId,
+  getGoalById,
   getKidLearningStats,
   getKidLessonProgress,
   getKidProfiles,
@@ -442,9 +443,18 @@ export function familyRouter(): Router {
   // retune without touching the compositor or the schema.
   const MIN_SHAREABLE_STREAK_DAYS = 3;
 
+  // Family Hub (0079) — reuses the SAME badge system for a reached savings
+  // goal, per FAMILY_HUB.md §8's "no new image/compositor work" commitment.
+  const GOAL_REACHED_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (title: string, target: number) => string> = {
+    'en-US': (title, target) => `Saved ${target} LF Coins for "${title}"`,
+    'es-MX': (title, target) => `Ahorró ${target} LF Coins para "${title}"`,
+    'pt-BR': (title, target) => `Guardou ${target} LF Coins para "${title}"`,
+  };
+
   const CreateBadge = z.object({
-    kind: z.enum(['course_badge', 'streak']),
+    kind: z.enum(['course_badge', 'streak', 'goal_reached']),
     courseSlug: z.string().min(1).max(80).optional(),
+    goalId: z.string().uuid().optional(),
     locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
   });
 
@@ -453,7 +463,7 @@ export function familyRouter(): Router {
     if (!kidId) return res;
     const parsed = CreateBadge.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the badge request');
-    const { kind, courseSlug, locale } = parsed.data;
+    const { kind, courseSlug, goalId, locale } = parsed.data;
 
     const profiles = await getKidProfiles([kidId]);
     if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child profile');
@@ -469,6 +479,16 @@ export function familyRouter(): Router {
       if (!earned) return fail(res, 403, 'FORBIDDEN', 'This course badge has not been earned yet');
       const titles = earned.course_title as Record<string, string>;
       label = titles[locale] ?? titles['en-US'] ?? Object.values(titles)[0] ?? courseSlug;
+    } else if (kind === 'goal_reached') {
+      if (!goalId) return fail(res, 400, 'VALIDATION_ERROR', 'goalId is required for a goal_reached badge');
+      const goal = await getGoalById(goalId);
+      // Ownership AND achievement both re-checked server-side — the same
+      // "never trust a client-supplied fact about their own achievement"
+      // posture as the course_badge branch above.
+      if (!goal || goal.kid_user_id !== kidId || goal.status !== 'reached') {
+        return fail(res, 403, 'FORBIDDEN', 'This goal has not been reached yet');
+      }
+      label = GOAL_REACHED_LABELS[locale](goal.title, goal.target);
     } else {
       const statsRows = await getKidLearningStats(kidId);
       if (!statsRows) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load learning stats');

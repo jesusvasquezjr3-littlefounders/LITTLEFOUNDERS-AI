@@ -1085,7 +1085,7 @@ export interface BadgeShareInsert {
   token: string;
   kid_user_id: string;
   created_by: string;
-  achievement_kind: 'course_badge' | 'streak';
+  achievement_kind: 'course_badge' | 'streak' | 'goal_reached';
   achievement_label: string;
   first_name: string;
   age_band: '6-8' | '9-11' | '12-14' | null;

@@ -57,7 +57,8 @@
       "sharing": "Preparando…",
       "shared": "Compartilhado!",
       "copied": "Link copiado",
-      "error": "Não foi possível criar o selo agora"
+      "error": "Não foi possível criar o selo agora",
+      "shareGoal": "Compartilhar \"{{title}}\""
     },
     "insightsConsent": {
       "label": "Compartilhar dados de uso",

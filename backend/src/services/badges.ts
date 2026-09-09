@@ -37,7 +37,7 @@ export interface ComposedBadge {
 }
 
 export interface BadgeCompositeParams {
-  kind: 'course_badge' | 'streak';
+  kind: 'course_badge' | 'streak' | 'goal_reached';
   label: string;
   firstName: string;
   ageBand?: '6-8' | '9-11' | '12-14';

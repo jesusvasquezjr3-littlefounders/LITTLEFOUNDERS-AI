@@ -57,7 +57,8 @@
       "sharing": "Preparando…",
       "shared": "¡Compartido!",
       "copied": "Enlace copiado",
-      "error": "No se pudo crear la insignia en este momento"
+      "error": "No se pudo crear la insignia en este momento",
+      "shareGoal": "Compartir \"{{title}}\""
     },
     "insightsConsent": {
       "label": "Compartir datos de uso",

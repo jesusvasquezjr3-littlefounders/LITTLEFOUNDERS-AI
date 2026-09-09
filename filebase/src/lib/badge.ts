@@ -14,7 +14,7 @@ import sharp from 'sharp';
  * draws pixels. Core decides WHAT the badge says; Depot decides how it looks.
  */
 
-export type BadgeKind = 'course_badge' | 'streak';
+export type BadgeKind = 'course_badge' | 'streak' | 'goal_reached';
 
 export interface BadgeParams {
   kind: BadgeKind;
@@ -34,6 +34,9 @@ const HEIGHT = 1920;
 const PALETTES: Record<BadgeKind, { from: string; to: string; accent: string }> = {
   course_badge: { from: '#4f46e5', to: '#4338ca', accent: '#eef2ff' },
   streak: { from: '#d97706', to: '#b45309', accent: '#fffbeb' },
+  // The Family Hub wallet's own Save-jar green (StatCard tone="success",
+  // /DESIGN.md), not a new hue — a goal is a savings achievement.
+  goal_reached: { from: '#0e9f6e', to: '#0a7a55', accent: '#e3f8ef' },
 };
 
 /** XML-escapes text so a kid's name or a label can never break out of the SVG document. */
@@ -58,7 +61,10 @@ function buildSvg(params: BadgeParams): string {
   const palette = PALETTES[params.kind];
   const name = xmlEscape(params.firstName);
   const label = xmlEscape(params.label);
-  const kicker = params.kind === 'streak' ? xmlEscape('¡Racha!') : xmlEscape('¡Logro desbloqueado!');
+  const kicker = xmlEscape(
+    params.kind === 'streak' ? '¡Racha!' : params.kind === 'goal_reached' ? '¡Meta alcanzada!' : '¡Logro desbloqueado!',
+  );
+  const emoji = params.kind === 'streak' ? '🔥' : params.kind === 'goal_reached' ? '🎯' : '⭐';
 
   return `<svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -71,7 +77,7 @@ function buildSvg(params: BadgeParams): string {
   <circle cx="${WIDTH / 2}" cy="640" r="260" fill="${palette.accent}" opacity="0.16" />
   <circle cx="${WIDTH / 2}" cy="640" r="200" fill="${palette.accent}" opacity="0.9" />
   <text x="${WIDTH / 2}" y="660" font-family="Nunito, 'Segoe UI', sans-serif" font-size="120" font-weight="800"
-        fill="${palette.to}" text-anchor="middle">${params.kind === 'streak' ? '🔥' : '⭐'}</text>
+        fill="${palette.to}" text-anchor="middle">${emoji}</text>
   <text x="${WIDTH / 2}" y="980" font-family="Nunito, 'Segoe UI', sans-serif" font-size="56" font-weight="700"
         fill="${palette.accent}" text-anchor="middle" opacity="0.85">${kicker}</text>
   <text x="${WIDTH / 2}" y="1080" font-family="Nunito, 'Segoe UI', sans-serif" font-size="88" font-weight="800"

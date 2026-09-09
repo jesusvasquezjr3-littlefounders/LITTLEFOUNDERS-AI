@@ -15,6 +15,7 @@ import { jsonResponse, mintToken } from './helpers.js';
 
 const KID_ID = randomUUID();
 const PARENT_ID = randomUUID();
+const GOAL_ID = randomUUID();
 const IMAGE_HASH = 'a'.repeat(64);
 
 afterEach(() => vi.unstubAllGlobals());
@@ -25,6 +26,7 @@ interface StubOptions {
   composeFails?: boolean;
   insertFails?: boolean;
   guardianLinked?: boolean;
+  goal?: Record<string, unknown> | null;
 }
 
 function stub(opts: StubOptions = {}) {
@@ -46,6 +48,10 @@ function stub(opts: StubOptions = {}) {
       }
       if (url.includes('/rpc/get_completed_course_badges')) {
         return Promise.resolve(jsonResponse(200, opts.courseBadges ?? []));
+      }
+      if (url.includes('/rest/v1/savings_goals?id=eq.')) {
+        const rows = opts.goal === null ? [] : [opts.goal ?? { id: GOAL_ID, kid_user_id: KID_ID, title: 'A bike', target: 50, icon: 'bike', status: 'reached', created_at: '2026-09-01', reached_at: '2026-09-08' }];
+        return Promise.resolve(jsonResponse(200, rows));
       }
       if (url.includes('/rest/v1/learning_stats?user_id=eq.')) {
         return Promise.resolve(
@@ -140,5 +146,30 @@ describe('POST /api/v1/family/kids/:kidId/badge', () => {
     stub({ streakDays: 7 });
     const res = await post({ kind: 'not-a-kind' });
     expect(res.status).toBe(400);
+  });
+
+  it('issues a goal_reached badge for a goal actually reached', async () => {
+    stub({});
+    const res = await post({ kind: 'goal_reached', goalId: GOAL_ID, locale: 'es-MX' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.token).toBeTruthy();
+  });
+
+  it('rejects a goal_reached badge without a goalId', async () => {
+    stub({});
+    const res = await post({ kind: 'goal_reached' });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects a goal that has not been reached yet', async () => {
+    stub({ goal: { id: GOAL_ID, kid_user_id: KID_ID, title: 'A bike', target: 50, icon: 'bike', status: 'active', created_at: '2026-09-01', reached_at: null } });
+    const res = await post({ kind: 'goal_reached', goalId: GOAL_ID });
+    expect(res.status).toBe(403);
+  });
+
+  it("rejects a goal belonging to a different kid — no leak of another family's goal", async () => {
+    stub({ goal: { id: GOAL_ID, kid_user_id: randomUUID(), title: 'A bike', target: 50, icon: 'bike', status: 'reached', created_at: '2026-09-01', reached_at: '2026-09-08' } });
+    const res = await post({ kind: 'goal_reached', goalId: GOAL_ID });
+    expect(res.status).toBe(403);
   });
 });

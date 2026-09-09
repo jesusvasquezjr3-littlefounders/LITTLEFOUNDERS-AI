@@ -21,7 +21,7 @@ import { getConfig } from '../config.js';
 
 const BadgeBody = z.object({
   bucket: z.string().regex(BUCKET_RE, 'bucket must match [a-z0-9-]{3,40}'),
-  kind: z.enum(['course_badge', 'streak']),
+  kind: z.enum(['course_badge', 'streak', 'goal_reached']),
   label: z.string().min(1).max(80),
   firstName: z.string().min(1).max(40),
   ageBand: z.enum(['6-8', '9-11', '12-14']).optional(),

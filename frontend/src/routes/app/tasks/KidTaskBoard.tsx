@@ -251,9 +251,12 @@ export function KidTaskBoard() {
             ) : (
               <ul className="flex flex-col gap-2">
                 {activeGoals.map((goal) => (
-                  <li key={goal.id} className="flex flex-col gap-2 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
+                  <li
+                    key={goal.id}
+                    className={`flex flex-col gap-2 rounded-lg border px-4 py-3 shadow-glass-sm ${goal.status === 'reached' ? 'border-2 border-success/60 bg-success-soft' : 'border-outline/70 bg-surface'}`}
+                  >
                     <div className="flex items-center gap-2.5">
-                      <Icon name={GOAL_ICON_GLYPH[goal.icon]} className="shrink-0 text-[18px] text-success" aria-hidden />
+                      <Icon name={goal.status === 'reached' ? 'emoji_events' : GOAL_ICON_GLYPH[goal.icon]} className="shrink-0 text-[18px] text-success" aria-hidden />
                       <span className="min-w-0 flex-1">
                         <span className="lf-label block truncate text-content">{goal.title}</span>
                         <span className="lf-caption block text-content-faint">{goal.status === 'reached' ? t('tasks.kid.goalReached') : `${goal.saved} / ${goal.target}`}</span>

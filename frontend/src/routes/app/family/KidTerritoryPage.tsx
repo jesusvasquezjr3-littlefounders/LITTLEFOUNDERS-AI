@@ -54,6 +54,11 @@ interface BadgeIssued {
   shareUrl: string;
 }
 
+interface ReachedGoal {
+  id: string;
+  title: string;
+}
+
 type ShareStatus = 'idle' | 'busy' | 'shared' | 'copied' | 'error';
 
 export function KidTerritoryPage() {
@@ -62,7 +67,66 @@ export function KidTerritoryPage() {
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [shareStatus, setShareStatus] = useState<ShareStatus>('idle');
+  const [reachedGoal, setReachedGoal] = useState<ReachedGoal | null>(null);
+  const [goalShareStatus, setGoalShareStatus] = useState<ShareStatus>('idle');
   const locale = i18n.resolvedLanguage ?? 'en-US';
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const token = await getToken();
+      if (!token || cancelled) return;
+      // Independent of the territory load above — the Family Hub's goals
+      // are a different domain (tasks.ts, not courseTree), so a failure
+      // here degrades to "no share button" rather than blocking the page.
+      const { data } = await api<{ goals: { id: string; title: string; status: string }[] }>(`/tasks/${kidId}/goals`, { token });
+      if (cancelled || !data) return;
+      const reached = data.goals.find((g) => g.status === 'reached');
+      setReachedGoal(reached ? { id: reached.id, title: reached.title } : null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [kidId, getToken]);
+
+  /** Hands an issued badge's share URL to the OS share sheet, or clipboard where unavailable — shared logic between the streak and goal share buttons. */
+  async function shareBadgeUrl(url: string, setStatus: (s: ShareStatus) => void) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: t('family.badge.share'), url });
+        trackInsight('badge_shared', { routeClass: 'family' });
+        setStatus('shared');
+        setTimeout(() => setStatus('idle'), 2500);
+      } catch {
+        setStatus('idle');
+      }
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    trackInsight('badge_shared', { routeClass: 'family' });
+    setStatus('copied');
+    setTimeout(() => setStatus('idle'), 2500);
+  }
+
+  async function handleShareGoal() {
+    if (!reachedGoal) return;
+    setGoalShareStatus('busy');
+    const token = await getToken();
+    if (!token) {
+      setGoalShareStatus('error');
+      return;
+    }
+    const { data, error } = await api<BadgeIssued>(`/family/kids/${kidId}/badge`, {
+      method: 'POST',
+      token,
+      body: { kind: 'goal_reached', goalId: reachedGoal.id, locale: toSupportedLocale(i18n.resolvedLanguage) },
+    });
+    if (error || !data) {
+      setGoalShareStatus('error');
+      return;
+    }
+    await shareBadgeUrl(data.shareUrl, setGoalShareStatus);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -123,23 +187,7 @@ export function KidTerritoryPage() {
       setShareStatus('error');
       return;
     }
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: t('family.badge.share'), url: data.shareUrl });
-        trackInsight('badge_shared', { routeClass: 'family' });
-        setShareStatus('shared');
-        setTimeout(() => setShareStatus('idle'), 2500);
-      } catch {
-        // AbortError (user dismissed the share sheet) or any other failure —
-        // not a completed share either way, so no event and no error state.
-        setShareStatus('idle');
-      }
-      return;
-    }
-    await navigator.clipboard.writeText(data.shareUrl);
-    trackInsight('badge_shared', { routeClass: 'family' });
-    setShareStatus('copied');
-    setTimeout(() => setShareStatus('idle'), 2500);
+    await shareBadgeUrl(data.shareUrl, setShareStatus);
   }
 
   return (
@@ -194,6 +242,26 @@ export function KidTerritoryPage() {
                 : shareStatus === 'error'
                   ? t('family.badge.error')
                   : t('family.badge.share')}
+        </Button>
+      ) : null}
+
+      {reachedGoal ? (
+        <Button
+          onClick={() => void handleShareGoal()}
+          disabled={goalShareStatus === 'busy'}
+          className="w-fit gap-2"
+          variant={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'success' : goalShareStatus === 'error' ? 'secondary' : 'primary'}
+        >
+          <Icon name={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'check' : 'savings'} />
+          {goalShareStatus === 'busy'
+            ? t('family.badge.sharing')
+            : goalShareStatus === 'shared'
+              ? t('family.badge.shared')
+              : goalShareStatus === 'copied'
+                ? t('family.badge.copied')
+                : goalShareStatus === 'error'
+                  ? t('family.badge.error')
+                  : t('family.badge.shareGoal', { title: reachedGoal.title })}
         </Button>
       ) : null}
 
