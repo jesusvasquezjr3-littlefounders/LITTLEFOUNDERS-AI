@@ -101,6 +101,12 @@
       "removeCta": "Remover para sempre",
       "cancel": "Cancelar",
       "usernameFixed": "O usuário não pode ser alterado. É com ele que entra."
+    },
+    "card": {
+      "wallet": "{{count}} LF Coins",
+      "walletUnknown": "Carteira indisponível",
+      "streak": "Sequência de {{count}} dias",
+      "pendingApproval": "{{count}} aguardando aprovação"
     }
   },
   "cookies": {

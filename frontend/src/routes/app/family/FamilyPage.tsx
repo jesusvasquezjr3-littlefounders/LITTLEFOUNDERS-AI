@@ -27,6 +27,9 @@ interface Kid {
   displayName: string | null;
   username: string | null;
   analyticsConsent: boolean;
+  pendingApprovalCount: number;
+  walletTotal: number | null;
+  taskStreakDays: number;
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; kids: Kid[] };
@@ -71,7 +74,10 @@ export function FamilyPage() {
   }
 
   function onKidCreated(kid: CreatedKid) {
-    setState((prev) => (prev.status === 'ready' ? { ...prev, kids: [...prev.kids, kid] } : prev));
+    // A brand-new kid has no tasks, wallet or streak history yet — these
+    // three are known-zero by construction, not fetched.
+    const withDefaults: Kid = { ...kid, pendingApprovalCount: 0, walletTotal: 0, taskStreakDays: 0 };
+    setState((prev) => (prev.status === 'ready' ? { ...prev, kids: [...prev.kids, withDefaults] } : prev));
   }
 
   // Both apply the server's outcome to the list in place. A refetch would be a
@@ -127,6 +133,33 @@ export function FamilyPage() {
                   {t('family.viewTerritory')}
                 </span>
               </Link>
+
+              {/* "What needs my attention" per kid (FAMILY_HUB.md §7) — a
+                  wallet total and chore streak are always shown; the
+                  awaiting-approval count only appears when it is non-zero,
+                  since that is the one fact this row exists to surface. */}
+              <div className="flex flex-wrap items-center gap-2 border-t border-outline/50 px-4 py-2.5">
+                <span className="lf-caption flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 font-bold text-success-strong">
+                  <Icon name="savings" className="text-[15px]" aria-hidden />
+                  {kid.walletTotal === null ? t('family.card.walletUnknown') : t('family.card.wallet', { count: kid.walletTotal })}
+                </span>
+                {kid.taskStreakDays > 0 && (
+                  <span className="lf-caption flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 font-bold text-warning-strong">
+                    <Icon name="local_fire_department" fill className="text-[15px]" aria-hidden />
+                    {t('family.card.streak', { count: kid.taskStreakDays })}
+                  </span>
+                )}
+                {kid.pendingApprovalCount > 0 && (
+                  <Link
+                    to="/tasks"
+                    className="lf-caption lf-press flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 font-bold text-accent hover:bg-accent/20"
+                  >
+                    <Icon name="pending_actions" className="text-[15px]" aria-hidden />
+                    {t('family.card.pendingApproval', { count: kid.pendingApprovalCount })}
+                  </Link>
+                )}
+              </div>
+
               <div className="flex items-center gap-3 border-t border-outline/50 px-4 py-2.5">
                 <Icon name="query_stats" className="shrink-0 text-[18px] text-content-faint" aria-hidden />
                 <span className="min-w-0 flex-1">

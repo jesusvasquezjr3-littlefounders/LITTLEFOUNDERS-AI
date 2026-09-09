@@ -24,8 +24,11 @@ import {
   getLessonsByTopicIds,
   getPublishedCourseBySlug,
   getSagasByAdventureIds,
+  getTaskStreak,
+  getTasksForKids,
   getTopicsBySagaIds,
   getVerifiedKidLinks,
+  getWalletBalances,
   grantRole,
   insertAuditLog,
   insertBadgeShare,
@@ -86,22 +89,52 @@ export function familyRouter(): Router {
     const user = authedUser(res);
     const links = await getVerifiedKidLinks(user.id);
     if (!links) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
-    const profiles = await getKidProfiles(links.map((l) => l.kid_user_id));
+    const kidIds = links.map((l) => l.kid_user_id);
+    const profiles = await getKidProfiles(kidIds);
     if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load kid profiles');
     const byId = new Map(profiles.map((p) => [p.user_id, p]));
     // Consent state rides along so the dashboard can render the toggle
     // without an extra round trip. A failed lookup FAILS the request like
     // every sibling lookup above: rendering "off" while collection continues
     // would mislead the parent in exactly the §1.9-sensitive direction.
-    const consents = await getConsentsForKids(links.map((l) => l.kid_user_id));
+    const consents = await getConsentsForKids(kidIds);
     if (!consents) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load consent state');
+
+    // The Family Hub landing card (FAMILY_HUB.md §7): "what needs my
+    // attention" per kid, not just a name to tap into. Three numbers, each
+    // already owned by tasks.ts's domain (never duplicated here, only read):
+    // tasks awaiting THIS parent's approval, the kid's total LF Coins across
+    // all three buckets, and their chore-completion streak (kid_task_streaks,
+    // 0080 — deliberately the CHORE streak, not learning_stats' lesson
+    // streak, since this card is this surface's own domain).
+    const tasksByKid = await getTasksForKids(kidIds);
+    if (tasksByKid === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load task summaries');
+    const pendingByKid = new Map<string, number>();
+    for (const t of tasksByKid) {
+      if (t.status === 'done') pendingByKid.set(t.assigned_to, (pendingByKid.get(t.assigned_to) ?? 0) + 1);
+    }
+    const walletAndStreak = await Promise.all(
+      kidIds.map(async (id) => {
+        const [balances, streak] = await Promise.all([getWalletBalances(id), getTaskStreak(id)]);
+        return { id, balances, streak };
+      }),
+    );
+    const walletByKid = new Map(walletAndStreak.map((w) => [w.id, w.balances]));
+    const streakByKid = new Map(walletAndStreak.map((w) => [w.id, w.streak]));
+
     return ok(res, {
-      kids: links.map((l) => ({
-        userId: l.kid_user_id,
-        displayName: byId.get(l.kid_user_id)?.display_name ?? null,
-        username: byId.get(l.kid_user_id)?.username ?? null,
-        analyticsConsent: consents.get(l.kid_user_id) ?? false,
-      })),
+      kids: links.map((l) => {
+        const balances = walletByKid.get(l.kid_user_id);
+        return {
+          userId: l.kid_user_id,
+          displayName: byId.get(l.kid_user_id)?.display_name ?? null,
+          username: byId.get(l.kid_user_id)?.username ?? null,
+          analyticsConsent: consents.get(l.kid_user_id) ?? false,
+          pendingApprovalCount: pendingByKid.get(l.kid_user_id) ?? 0,
+          walletTotal: balances ? balances.save + balances.spend + balances.share : null,
+          taskStreakDays: streakByKid.get(l.kid_user_id)?.current_streak_days ?? 0,
+        };
+      }),
     });
   });
 

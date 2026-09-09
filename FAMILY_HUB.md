@@ -37,6 +37,18 @@
 
 A real correctness bug was caught and fixed before any frontend code depended on it: the first draft of `tasks.ts` returned raw snake_case DB rows (`assigned_to`, `reward_coins`) instead of the camelCase every other endpoint in this API uses (`routes/family.ts`'s own convention) — see the dedicated commit fixing it, with two regression tests asserting the snake_case fields are `undefined` on the wire.
 
+**2026-09-08, round 2 close-out.** Every finding from the 5-lens audit below is
+now either fixed or a documented, accepted risk (§8.1) — including the four
+product-quality gaps it flagged as scope, not bugs: celebration on
+task-approved/goal-reached (badge reuse, 0079), a real `/family` landing
+(this section, just above), the kid's own ledger history (§7's "receipt
+list," `GET /tasks/wallet/ledger` finally consumed), and a chore streak
+(0080). Verified live at ~1280px and mobile (~390px, real narrow viewport
+this round — browser-tool coordinate/resize quirks made a couple of clicks
+misfire during verification, root-caused via `elementFromPoint` and a direct
+DOM `.click()` rather than assumed away; not a product defect). Backend
+961/961, frontend 1804/1804.
+
 **2026-09-08, round 2 — UI redesign, proof-of-work photo, and a 5-lens deep audit.** The owner flagged the first cut's UI as not using desktop space deliberately (a stretched single column at 1280px — the exact §1.11 violation) and asked for a photo-evidence feature so a kid can attach proof of a completed chore. Both shipped: a real 2-column desktop dashboard (documented as a new DESIGN.md screen recipe) and `0077_task_evidence.sql` + `POST`/`GET /:id/evidence`, the photo stored `visibility: internal` in Depot and only ever reached through Core's own authenticated proxy (§1.9 — a kid's photo is a different privacy class than a public badge). A follow-up ask for a detailed audit ("no genérico, encuentra áreas de oportunidad") ran 5 parallel reviews (security/privacy, backend edge cases, frontend UX, accessibility, product quality) against the shipped code — no critical bugs, but real ones: a race where a photo could attach after a parent had already decided the task, a permanent per-replace storage leak in Depot, evidence type-checked only by declared Content-Type, several one-click destructive actions with no confirmation and no visible error on failure. All fixed in `0078_task_hardening.sql` + the same commit's backend/frontend changes, backend tests 36 → 55, both suites green. See §8.1 below for the one finding that was accepted as a documented risk rather than fixed.
 
 ---
@@ -297,11 +309,19 @@ Per `/AGENTS.md` §1.11, every screen below ships verified at ~375px and
 locales in the same commit as the screen (§1.8).
 
 - **`/family` gains a Family Hub landing** above the existing per-kid manage
-  view: one card per kid — avatar, streak (already tracked in
-  `learning_stats`), a badge count for tasks awaiting approval, wallet total.
-  This replaces "a list of children" with "what needs my attention," which
-  is the ClassDojo-style proactive-visibility idea from §2 applied to our
-  own data.
+  view: one card per kid — avatar, streak, a badge count for tasks awaiting
+  approval, wallet total. This replaces "a list of children" with "what needs
+  my attention," which is the ClassDojo-style proactive-visibility idea from
+  §2 applied to our own data. **Shipped 2026-09-08 using the CHORE streak
+  (`kid_task_streaks`, 0080), not `learning_stats`'s lesson streak this
+  paragraph originally named** — a deliberate substitution once the chore
+  streak existed: this card's whole point is "what needs my attention IN
+  THIS DOMAIN," and the lesson streak is already visible on the kid's own
+  territory page a parent can already reach from here. `GET /family/kids`
+  now rolls up all three facts server-side (tasksForKids grouped by
+  `status='done'`, `getWalletBalances`, `getTaskStreak`, one call per kid via
+  `Promise.all` — kid counts per parent are small enough that this beats a
+  bespoke aggregate endpoint).
 - **`/tasks` stops being `SectionComingSoon`.** Parent view: tabs for
   *Awaiting approval* / *Active* / *Redemption catalog* (the catalog editor
   lives here, not in a separate settings page). Kid view: a single task list

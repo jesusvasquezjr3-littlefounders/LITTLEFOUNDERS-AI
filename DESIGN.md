@@ -2381,6 +2381,22 @@ thumbnail opens the full image in a new tab — never a modal, this app's own
 standing rule (§List rows, above) — rather than inventing this surface's
 first lightbox for one photo.
 
+**`/family`'s kid card gained a summary-chip row** (2026-09-08) — the same
+day the deep audit that found the Tasks recipe missing (above) also found
+`FamilyPage` had never been updated to reflect it: a parent's own landing
+page was still "a list of children," not "what needs my attention" (FAMILY_HUB.md
+§7's own framing). Three pills sit under the existing kid header row, `flex
+flex-wrap gap-2` so they wrap rather than overflow on a narrow card: a wallet
+total (`success`, always shown), a chore streak (`warning`, `kid_task_streaks`
+— shown only once non-zero, so a brand-new kid's card doesn't open with a
+zero), and an awaiting-approval count (`accent`, shown only when non-zero
+— the ONE fact this row exists to surface, and it is also a `Link` straight
+to `/tasks`, not decorative). Same restraint as the Stat row rule above:
+each pill's colour is load-bearing and matches its meaning everywhere else
+that fact appears (Save's `success` green, `local_fire_department`'s
+`warning` amber already established on the kid's own board), never a fourth
+invented hue for the same three concepts.
+
 **Learn (`/learn`, `/learn/:slug`, `/learn/:slug/territory`,
 `/learn/:slug/placement`)** — added 2026-08-24, and like the Tutor entry, the
 ABSENCE of this one is why it exists. §0 makes building outside a recipe a

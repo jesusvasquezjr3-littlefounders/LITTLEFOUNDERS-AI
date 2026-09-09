@@ -101,6 +101,12 @@
       "removeCta": "Remove permanently",
       "cancel": "Cancel",
       "usernameFixed": "The username cannot be changed. It is how they sign in."
+    },
+    "card": {
+      "wallet": "{{count}} LF Coins",
+      "walletUnknown": "Wallet unavailable",
+      "streak": "{{count}}-day streak",
+      "pendingApproval": "{{count}} awaiting approval"
     }
   },
   "cookies": {

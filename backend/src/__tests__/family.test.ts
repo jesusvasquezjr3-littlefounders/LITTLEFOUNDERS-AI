@@ -53,8 +53,32 @@ describe('GET /api/v1/family/kids', () => {
         displayName: 'Niño Test',
         username: 'ninotest',
         analyticsConsent: false,
+        pendingApprovalCount: 0,
+        walletTotal: 0,
+        taskStreakDays: 0,
       },
     ]);
+  });
+
+  it('rolls up the Family Hub card facts: tasks awaiting approval, wallet total, chore streak', async () => {
+    db.tasks = [
+      { id: 'aaaaaaaa-0000-4000-8000-000000000001', assigned_to: KID_ID, assigned_by: PARENT_ID, status: 'done', reward_coins: 5, allocated: false, recurrence: 'once', due_at: null, title: 'Make the bed', created_at: '2026-09-08T00:00:00Z' },
+      { id: 'aaaaaaaa-0000-4000-8000-000000000002', assigned_to: KID_ID, assigned_by: PARENT_ID, status: 'done', reward_coins: 5, allocated: false, recurrence: 'once', due_at: null, title: 'Feed the dog', created_at: '2026-09-08T00:00:00Z' },
+      { id: 'aaaaaaaa-0000-4000-8000-000000000003', assigned_to: KID_ID, assigned_by: PARENT_ID, status: 'open', reward_coins: 5, allocated: false, recurrence: 'once', due_at: null, title: 'Tidy the desk', created_at: '2026-09-08T00:00:00Z' },
+    ];
+    db.wallet_ledger = [
+      { id: 1, kid_user_id: KID_ID, bucket: 'save', amount: 10, reason: 'task_approved', task_id: null, goal_id: null, redemption_id: null, created_by: PARENT_ID, created_at: '2026-09-01T00:00:00Z' },
+      { id: 2, kid_user_id: KID_ID, bucket: 'spend', amount: 3, reason: 'task_approved', task_id: null, goal_id: null, redemption_id: null, created_by: PARENT_ID, created_at: '2026-09-01T00:00:00Z' },
+    ];
+    db.kid_task_streaks = [{ kid_user_id: KID_ID, current_streak_days: 4, longest_streak_days: 6, last_completed_date: '2026-09-08' }];
+
+    const res = await auth(request(createApp()).get('/api/v1/family/kids'));
+    expect(res.status).toBe(200);
+    const kid = res.body.data.kids[0];
+    // Two `done` tasks await this parent's approval; `open` does not count.
+    expect(kid.pendingApprovalCount).toBe(2);
+    expect(kid.walletTotal).toBe(13);
+    expect(kid.taskStreakDays).toBe(4);
   });
 
   it('403s for a non-parent role', async () => {
