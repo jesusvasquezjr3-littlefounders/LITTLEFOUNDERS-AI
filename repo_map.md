@@ -170,6 +170,7 @@ frontend/
         intel/
       app/
         __tests__/
+        banca/
         family/
           __tests__/
         learn/
@@ -1032,6 +1033,26 @@ name: Vault drift probe
 2. **Domain rules** — read the target service's own `AGENTS.md` (every service has one).
 3. **Route** — check `doc_map.md` for the authoritative document on your topic.
 4. **State** — skim the *Current State* header of `WALKTHROUGH.md`.
+```
+
+### BANCA_DIGITAL.md
+
+```
+# BANCA_DIGITAL.md — a family-bank experience over the LF Coins economy — product design
+
+> **Authority:** engine spec (`/AGENTS.md` §1.1 tier 6), same tier as `FAMILY_HUB.md`.
+> Subordinate to `/AGENTS.md`, `ROADMAP.md`, `GLOSSARY.md`, `DESIGN.md`,
+> `backend/AGENTS.md`, `frontend/AGENTS.md`, `database/AGENTS.md`, and to
+> `FAMILY_HUB.md` itself — this document extends that one's data model and UI
+> recipe rather than replacing them. Where a recommendation below would change
+> the literal wording of an `/AGENTS.md` invariant, or reopen `FAMILY_HUB.md`
+> §3's "real money" non-goal, that change is NOT authorized by this file alone
+> — it needs explicit owner sign-off, applied to `/AGENTS.md` **and**
+> `/CLAUDE.md` in the same commit as the code, per the sync rule.
+>
+> **Created:** 2026-09-08 · **Language:** English, per `/AGENTS.md` §1.0 #4.
+>
+> **What this file is.** Originally a product design; §5-§11 (Waves 0-2) were
 ```
 
 ### CLAUDE.md
@@ -6934,6 +6955,26 @@ function stub(rows: unknown[]) {
   vi.stubGlobal(
 ```
 
+### backend/src/__tests__/banca.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { randomUUID } from 'node:crypto';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+import { computeNextRunAt } from '../routes/banca.js';
+
+/*
+ * /api/v1/banca — BANCA_DIGITAL.md Waves 0-2. Same posture as tasks.test.ts:
+ * a caller can never reach another family's account/rule/credit, proven as
+ * a 404 rather than a 403.
+ */
+
+const PARENT_ID = randomUUID();
+const KID_ID = randomUUID();
+```
+
 ### backend/src/__tests__/behavior-analytics.test.ts
 
 ```
@@ -7744,6 +7785,7 @@ import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { badgePublicRouter } from './routes/badgePublic.js';
+import { bancaRouter } from './routes/banca.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
@@ -7751,7 +7793,6 @@ import { learnRouter } from './routes/learn.js';
 import { onboardingRouter } from './routes/onboarding.js';
 import { placementRouter } from './routes/placement.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
-import { tasksRouter } from './routes/tasks.js';
 ```
 
 ### backend/src/assets/lfLogo.ts
@@ -8192,6 +8233,26 @@ import { getBadgeShareByToken } from '../services/supabaseRest.js';
  * The response is whitelisted down to display fields only: no
  * kid_user_id, no created_by, no row id. `token` is a 32-char base64url
  * opaque string (backend/src/services/badges.ts, ~144 bits of entropy),
+```
+
+### backend/src/routes/banca.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import {
+  allocatePendingCredit,
+  getAllowanceRule,
+  getBancaAccount,
+  getPendingCreditById,
+  getPendingCreditsForKid,
+  getSavingsBonusRule,
+  getSpendLimit,
+  getSpendUsedThisPeriod,
+  getVerifiedKidLinks,
+  getWalletLedgerInRange,
 ```
 
 ### backend/src/routes/events.ts
@@ -9057,6 +9118,7 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 ### backend/src/services/supabaseRest.ts
 
 ```
+import { randomInt } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 
@@ -9071,7 +9133,6 @@ const es = (val: string) => encodeURIComponent(val.toString());
  *    reserves to the service role (role grants, parent_verifications,
  *    audit_logs) — never for reads on behalf of a user.
  */
-
 ```
 
 ### backend/src/services/tutorData.ts
@@ -14020,6 +14081,26 @@ BEGIN
 -- nextStreak()/isCalendarDate() are pure, already covered by
 ```
 
+### database/migrations/0081_banca_digital.sql
+
+```
+-- @phase: expand
+-- @after-release: none — additive only. No existing reader is affected;
+--   wallet_ledger's reason CHECK widens (never narrows) and gains one
+--   nullable-by-default column read only by the new code path.
+--
+-- 0081_banca_digital.sql — BANCA_DIGITAL.md Waves 0-2: a named account +
+-- card the kid can see and freeze, automated allowance, a "Parent-Paid"
+-- savings bonus, and a parent-set spend limit. Still rung 1 of the research
+-- brief's regulatory ladder (BANCA_DIGITAL.md §0/§13) — closed-loop LF
+-- Coins, zero real money, zero new regulatory surface.
+--
+-- SCOPE NOTE vs BANCA_DIGITAL.md §5.7: `family_gifts` (the sibling-transfer
+-- mechanic) is NOT part of this migration. §12 D5 left its ledger shape an
+-- open question, and building it well needs a second cross-kid
+-- authorization surface on top of everything else here — building it
+```
+
 ### database/package.json
 
 ```
@@ -15461,10 +15542,10 @@ export default defineConfig({
 | 3D characters outside the diorama, the pose library, Lesson Engine gamification | [GOAL_3D_CHARACTERS.md](GOAL_3D_CHARACTERS.md) | Scope + acceptance for the 2026-08-27 request. Draft: three decisions outstanding |
 | MCP / school integrations (harness backlog line, `ROADMAP.md` line ~261) | [MCP_SCHOOL_INTEGRATIONS_SCOPING.md](MCP_SCHOOL_INTEGRATIONS_SCOPING.md) | Scoping only, no code — two interpretations laid out, recommendation + required owner/legal/role decisions in §8-§9 |
 | Family tasks/rewards/monitoring (`tasks/` product section, family wallet, savings goals, proof-of-work photos, chore streak, `/family` landing) | [FAMILY_HUB.md](FAMILY_HUB.md) | SHIPPED — §0 is the live status (round-2 close-out: every 2026-09-08 deep-audit finding fixed or accepted as a documented risk, §8.1); §7 is the UI spec, §9 the invariant checklist |
+| Banca Digital (`/banca` product section — account/card, allowance automation, savings bonus, spend limit, statement) | [BANCA_DIGITAL.md](BANCA_DIGITAL.md) | Waves 0-2 SHIPPED and verified locally 2026-09-08 (§0 is the live status, §14 the build closure + live-verification findings); §7 the UI spec, §12 the open decisions, `family_gifts` (§5.7) deliberately NOT built yet |
 | Operating rules, invariants, gates | /AGENTS.md (== /CLAUDE.md) | §0–§8 |
 | Roles & permissions | /AGENTS.md | §1.3–§1.4 |
 | Child safety & minor PII | /AGENTS.md | §1.9 |
-| Service map, ports, codenames | /AGENTS.md | §1.5 |
 ```
 
 ### email-server/AGENTS.md
@@ -18059,11 +18140,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "learn": "Learn",
     "tutor": "AI Tutor",
     "tasks": "Tasks",
+    "banca": "Banca Digital",
     "lockedBadge": "Tutor",
     "lockedHint": "Unlocks when your account becomes a verified Tutor",
     "profile": "Profile",
     "family": "Family"
-  },
 ```
 
 ### frontend/src/i18n/en-US/errors.json
@@ -18299,11 +18380,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "learn": "Aprende",
     "tutor": "Tutor IA",
     "tasks": "Tareas",
+    "banca": "Banca Digital",
     "lockedBadge": "Tutor",
     "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado",
     "profile": "Perfil",
     "family": "Familia"
-  },
 ```
 
 ### frontend/src/i18n/es-MX/errors.json
@@ -18559,11 +18640,11 @@ import enErrors from './en-US/errors.json';
     "learn": "Aprenda",
     "tutor": "Tutor IA",
     "tasks": "Tarefas",
+    "banca": "Banca Digital",
     "lockedBadge": "Tutor",
     "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado",
     "profile": "Perfil",
     "family": "Família"
-  },
 ```
 
 ### frontend/src/i18n/pt-BR/errors.json
@@ -25729,6 +25810,86 @@ vi.mock('@/components/characters/DinaCharacter', () => ({ DinaCharacter: () => <
 
 ```
 
+### frontend/src/routes/app/banca/BancaPage.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { ParentBancaControlPanel } from './ParentBancaControlPanel';
+import { KidBancaHome } from './KidBancaHome';
+
+/*
+ * /banca — BANCA_DIGITAL.md's money home: a named account, a card, goals in
+ * full, allowance automation, a spend limit, a "Parent-Paid" savings bonus,
+ * and the monthly statement. Same role-branch shape as TasksPage.tsx — a
+ * `parent` sees the control panel, a `kid` sees their own account — because
+ * `navConfig`'s `requiresRole: ['parent', 'kid']` already lets both reach
+ * this one route, and no real account is expected to hold both roles.
+ */
+export function BancaPage() {
+  const { t } = useTranslation();
+```
+
+### frontend/src/routes/app/banca/KidBancaHome.tsx
+
+```
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, ConfirmButton, Dropdown, Field, Icon, IconChip, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireGoal, type WireLedgerEntry } from '../tasks/types';
+import { CARD_DESIGNS, type CardDesign, type WireBancaAccount, type WirePendingCredit, type WireSpendLimitStatus, type WireStatement } from './types';
+
+/*
+ * The kid's half of BANCA_DIGITAL.md §7.1: the account/card, the wallet
+ * (unchanged FAMILY_HUB.md Save/Spend/Share, now the primary reference
+```
+
+### frontend/src/routes/app/banca/ParentBancaControlPanel.tsx
+
+```
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, Dropdown, Field, Icon, ProgressBar, SectionHeading } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import type { WireRedemption } from '../tasks/types';
+import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBancaAccount, type WireSavingsBonusRule, type WireSpendLimitStatus } from './types';
+
+/*
+ * The parent's half of BANCA_DIGITAL.md §7.2: open the account, then
+ * configure allowance automation, a spend limit and the savings bonus —
+ * each a `.lf-config-row` toggle + fields, exactly the shape AdminRolesPage
+ * and PersonalizeInWorld already use for the same grammar — plus the
+```
+
+### frontend/src/routes/app/banca/types.ts
+
+```
+/*
+ * Wire shapes for /api/v1/banca — camelCase, mirroring backend/src/routes/banca.ts's
+ * toWire* mappers (never the raw snake_case DB row). See ../tasks/types.ts
+ * for the sibling shapes this feature reads alongside (WireTask, WireGoal).
+ */
+
+export type CardDesign = 'indigo' | 'emerald' | 'violet' | 'amber' | 'sunrise' | 'ocean';
+export type AllowanceFrequency = 'weekly' | 'biweekly' | 'monthly';
+export type SpendLimitPeriod = 'weekly' | 'monthly';
+
+export const CARD_DESIGNS: CardDesign[] = ['indigo', 'emerald', 'violet', 'amber', 'sunrise', 'ocean'];
+
+export interface WireBancaAccount {
+  nickname: string;
+  cardDesign: CardDesign;
+```
+
 ### frontend/src/routes/app/family/AddKidCard.tsx
 
 ```
@@ -26791,6 +26952,7 @@ export function EvidenceUploadButton({
 ```
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
@@ -26803,7 +26965,6 @@ import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type W
  * photo as proof), sort the reward across Save/Spend/Share once a grown-up
  * approves it, watch goals fill up, and redeem what a grown-up has offered.
  *
- * Layout: a real desktop dashboard, not a stretched single column
 ```
 
 ### frontend/src/routes/app/tasks/ParentTaskBoard.tsx

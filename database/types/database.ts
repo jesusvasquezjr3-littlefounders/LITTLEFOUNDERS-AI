@@ -102,6 +102,57 @@ export type Database = {
           },
         ]
       }
+      allowance_rules: {
+        Row: {
+          active: boolean
+          amount: number
+          anchor_day: number
+          created_at: string
+          frequency: string
+          id: string
+          kid_user_id: string
+          next_run_at: string
+          parent_user_id: string
+        }
+        Insert: {
+          active?: boolean
+          amount: number
+          anchor_day: number
+          created_at?: string
+          frequency: string
+          id?: string
+          kid_user_id: string
+          next_run_at: string
+          parent_user_id: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          anchor_day?: number
+          created_at?: string
+          frequency?: string
+          id?: string
+          kid_user_id?: string
+          next_run_at?: string
+          parent_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "allowance_rules_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "allowance_rules_parent_user_id_fkey"
+            columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       analytics_consents: {
         Row: {
           granted_at: string
@@ -395,6 +446,64 @@ export type Database = {
           {
             foreignKeyName: "badge_shares_kid_user_id_fkey"
             columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      banca_accounts: {
+        Row: {
+          card_design: string
+          display_number: string
+          frozen: boolean
+          frozen_at: string | null
+          frozen_by: string | null
+          kid_user_id: string
+          nickname: string
+          opened_at: string
+          opened_by: string
+        }
+        Insert: {
+          card_design?: string
+          display_number: string
+          frozen?: boolean
+          frozen_at?: string | null
+          frozen_by?: string | null
+          kid_user_id: string
+          nickname?: string
+          opened_at?: string
+          opened_by: string
+        }
+        Update: {
+          card_design?: string
+          display_number?: string
+          frozen?: boolean
+          frozen_at?: string | null
+          frozen_by?: string | null
+          kid_user_id?: string
+          nickname?: string
+          opened_at?: string
+          opened_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banca_accounts_frozen_by_fkey"
+            columns: ["frozen_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "banca_accounts_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "banca_accounts_opened_by_fkey"
+            columns: ["opened_by"]
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
@@ -2007,6 +2116,44 @@ export type Database = {
           },
         ]
       }
+      pending_credits: {
+        Row: {
+          allocated: boolean
+          amount: number
+          created_at: string
+          id: string
+          kid_user_id: string
+          source: string
+          source_ref: string | null
+        }
+        Insert: {
+          allocated?: boolean
+          amount: number
+          created_at?: string
+          id?: string
+          kid_user_id: string
+          source: string
+          source_ref?: string | null
+        }
+        Update: {
+          allocated?: boolean
+          amount?: number
+          created_at?: string
+          id?: string
+          kid_user_id?: string
+          source?: string
+          source_ref?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_credits_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       picture_assets: {
         Row: {
           bytes: number | null
@@ -2282,6 +2429,48 @@ export type Database = {
           },
         ]
       }
+      savings_bonus_rules: {
+        Row: {
+          active: boolean
+          created_at: string
+          kid_user_id: string
+          next_run_at: string
+          parent_user_id: string
+          rate_bp: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          kid_user_id: string
+          next_run_at: string
+          parent_user_id: string
+          rate_bp: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          kid_user_id?: string
+          next_run_at?: string
+          parent_user_id?: string
+          rate_bp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "savings_bonus_rules_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "savings_bonus_rules_parent_user_id_fkey"
+            columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       savings_goals: {
         Row: {
           created_at: string
@@ -2385,6 +2574,48 @@ export type Database = {
           voice?: string
         }
         Relationships: []
+      }
+      spend_limits: {
+        Row: {
+          active: boolean
+          cap: number
+          created_at: string
+          kid_user_id: string
+          parent_user_id: string
+          period: string
+        }
+        Insert: {
+          active?: boolean
+          cap: number
+          created_at?: string
+          kid_user_id: string
+          parent_user_id: string
+          period: string
+        }
+        Update: {
+          active?: boolean
+          cap?: number
+          created_at?: string
+          kid_user_id?: string
+          parent_user_id?: string
+          period?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spend_limits_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "spend_limits_parent_user_id_fkey"
+            columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -3771,6 +4002,17 @@ export type Database = {
           source_topic_title: Json
         }[]
       }
+      allocate_pending_credit: {
+        Args: {
+          p_created_by: string
+          p_credit_id: string
+          p_kid_user_id: string
+          p_save: number
+          p_share: number
+          p_spend: number
+        }
+        Returns: boolean
+      }
       allocate_task_reward: {
         Args: {
           p_created_by: string
@@ -3889,6 +4131,10 @@ export type Database = {
           sagas_published: number
           topics_published: number
         }[]
+      }
+      run_due_scheduled_credits: {
+        Args: { p_kid_user_id: string }
+        Returns: number
       }
       search_tutor_turns: {
         Args: {

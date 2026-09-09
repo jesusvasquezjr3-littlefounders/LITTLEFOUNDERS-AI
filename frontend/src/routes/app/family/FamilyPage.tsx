@@ -139,10 +139,13 @@ export function FamilyPage() {
                   awaiting-approval count only appears when it is non-zero,
                   since that is the one fact this row exists to surface. */}
               <div className="flex flex-wrap items-center gap-2 border-t border-outline/50 px-4 py-2.5">
-                <span className="lf-caption flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 font-bold text-success-strong">
+                <Link
+                  to="/banca"
+                  className="lf-caption lf-press flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 font-bold text-success-strong hover:bg-success/20"
+                >
                   <Icon name="savings" className="text-[15px]" aria-hidden />
                   {kid.walletTotal === null ? t('family.card.walletUnknown') : t('family.card.wallet', { count: kid.walletTotal })}
-                </span>
+                </Link>
                 {kid.taskStreakDays > 0 && (
                   <span className="lf-caption flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 font-bold text-warning-strong">
                     <Icon name="local_fire_department" fill className="text-[15px]" aria-hidden />

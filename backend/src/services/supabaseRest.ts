@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 
@@ -1525,4 +1526,270 @@ export async function decideRedemption(redemptionId: string, approve: boolean, d
     body: JSON.stringify({ p_redemption_id: redemptionId, p_approve: approve, p_decided_by: decidedBy }),
   });
   return typeof res === 'boolean' ? res : null;
+}
+
+// ── Banca Digital (0081) — BANCA_DIGITAL.md Waves 0-2: a named account +
+// card, automated allowance, a "Parent-Paid" savings bonus, and a spend
+// limit. Still LF Coins, still closed-loop — see BANCA_DIGITAL.md §0/§13. ──
+
+export interface BancaAccountRow {
+  kid_user_id: string;
+  nickname: string;
+  card_design: string;
+  display_number: string;
+  frozen: boolean;
+  frozen_by: string | null;
+  frozen_at: string | null;
+  opened_by: string;
+  opened_at: string;
+}
+
+const BANCA_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,display_number,frozen,frozen_by,frozen_at,opened_by,opened_at';
+
+/**
+ * `undefined` means "couldn't check" (transport failure) — DISTINCT from
+ * `null`, "confirmed no account yet." Collapsing them would show a parent
+ * the "open your account" empty state over an account that actually exists,
+ * on nothing worse than a blip (/AGENTS.md §1.14). The four config reads
+ * below (allowance/bonus/spend-limit rules) make the same distinction for
+ * the same reason.
+ */
+export async function getBancaAccount(kidId: string): Promise<BancaAccountRow | null | undefined> {
+  const rows = await serviceRest<BancaAccountRow[]>(`/banca_accounts?kid_user_id=eq.${eu(kidId)}&select=${BANCA_ACCOUNT_FIELDS}&limit=1`);
+  if (rows === null) return undefined;
+  return rows[0] ?? null;
+}
+
+/**
+ * Structurally NOT a real card number: 8 digits, letter prefix, a grouping
+ * (LF-####-####) no card network uses. A kid who screenshots this and types
+ * it into a real payment field gets an obvious reject by FORMAT alone — see
+ * `displayNumber.test.ts`, which is the regression this function exists to
+ * keep passing (BANCA_DIGITAL.md §2, §10).
+ */
+export function generateDisplayNumber(): string {
+  const group = () => String(Math.floor(1000 + randomInt(9000))).padStart(4, '0');
+  return `LF-${group()}-${group()}`;
+}
+
+export async function insertBancaAccount(row: {
+  kid_user_id: string;
+  nickname: string;
+  card_design: string;
+  opened_by: string;
+}): Promise<BancaAccountRow | null> {
+  const rows = await serviceRest<BancaAccountRow[]>('/banca_accounts', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ ...row, display_number: generateDisplayNumber() }),
+  });
+  return rows?.[0] ?? null;
+}
+
+export async function updateBancaAccount(kidId: string, patch: { nickname?: string; card_design?: string }): Promise<BancaAccountRow | null> {
+  const rows = await serviceRest<BancaAccountRow[]>(`/banca_accounts?kid_user_id=eq.${eu(kidId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(patch),
+  });
+  return rows?.[0] ?? null;
+}
+
+export async function setBancaAccountFrozen(kidId: string, frozen: boolean, frozenBy: string): Promise<BancaAccountRow | null> {
+  const rows = await serviceRest<BancaAccountRow[]>(`/banca_accounts?kid_user_id=eq.${eu(kidId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ frozen, frozen_by: frozenBy, frozen_at: frozen ? new Date().toISOString() : null }),
+  });
+  return rows?.[0] ?? null;
+}
+
+export interface AllowanceRuleRow {
+  id: string;
+  kid_user_id: string;
+  parent_user_id: string;
+  amount: number;
+  frequency: string;
+  anchor_day: number;
+  active: boolean;
+  next_run_at: string;
+  created_at: string;
+}
+
+const ALLOWANCE_RULE_FIELDS = 'id,kid_user_id,parent_user_id,amount,frequency,anchor_day,active,next_run_at,created_at';
+
+export async function getAllowanceRule(kidId: string): Promise<AllowanceRuleRow | null | undefined> {
+  const rows = await serviceRest<AllowanceRuleRow[]>(`/allowance_rules?kid_user_id=eq.${eu(kidId)}&select=${ALLOWANCE_RULE_FIELDS}&limit=1`);
+  if (rows === null) return undefined;
+  return rows[0] ?? null;
+}
+
+/** One rule per kid (0081's `unique (kid_user_id)`) — an edit REPLACES the whole row, including `next_run_at`, computed fresh by the caller from today. */
+export async function upsertAllowanceRule(row: {
+  kid_user_id: string;
+  parent_user_id: string;
+  amount: number;
+  frequency: string;
+  anchor_day: number;
+  active: boolean;
+  next_run_at: string;
+}): Promise<AllowanceRuleRow | null> {
+  const rows = await serviceRest<AllowanceRuleRow[]>('/allowance_rules?on_conflict=kid_user_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation,resolution=merge-duplicates' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+export interface SavingsBonusRuleRow {
+  kid_user_id: string;
+  parent_user_id: string;
+  rate_bp: number;
+  active: boolean;
+  next_run_at: string;
+  created_at: string;
+}
+
+const SAVINGS_BONUS_RULE_FIELDS = 'kid_user_id,parent_user_id,rate_bp,active,next_run_at,created_at';
+
+export async function getSavingsBonusRule(kidId: string): Promise<SavingsBonusRuleRow | null | undefined> {
+  const rows = await serviceRest<SavingsBonusRuleRow[]>(`/savings_bonus_rules?kid_user_id=eq.${eu(kidId)}&select=${SAVINGS_BONUS_RULE_FIELDS}&limit=1`);
+  if (rows === null) return undefined;
+  return rows[0] ?? null;
+}
+
+export async function upsertSavingsBonusRule(row: {
+  kid_user_id: string;
+  parent_user_id: string;
+  rate_bp: number;
+  active: boolean;
+  next_run_at: string;
+}): Promise<SavingsBonusRuleRow | null> {
+  const rows = await serviceRest<SavingsBonusRuleRow[]>('/savings_bonus_rules?on_conflict=kid_user_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation,resolution=merge-duplicates' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+export interface SpendLimitRow {
+  kid_user_id: string;
+  parent_user_id: string;
+  period: string;
+  cap: number;
+  active: boolean;
+  created_at: string;
+}
+
+const SPEND_LIMIT_FIELDS = 'kid_user_id,parent_user_id,period,cap,active,created_at';
+
+export async function getSpendLimit(kidId: string): Promise<SpendLimitRow | null | undefined> {
+  const rows = await serviceRest<SpendLimitRow[]>(`/spend_limits?kid_user_id=eq.${eu(kidId)}&select=${SPEND_LIMIT_FIELDS}&limit=1`);
+  if (rows === null) return undefined;
+  return rows[0] ?? null;
+}
+
+export async function upsertSpendLimit(row: {
+  kid_user_id: string;
+  parent_user_id: string;
+  period: string;
+  cap: number;
+  active: boolean;
+}): Promise<SpendLimitRow | null> {
+  const rows = await serviceRest<SpendLimitRow[]>('/spend_limits?on_conflict=kid_user_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation,resolution=merge-duplicates' },
+    body: JSON.stringify(row),
+  });
+  return rows?.[0] ?? null;
+}
+
+/**
+ * Rolling window, not a calendar-aligned week/month — `spend_limits` carries
+ * no anchor day (unlike allowance), and a rolling "last N days" is simpler,
+ * unambiguous across time zones, and still resets continuously the way the
+ * UI promises ("resets in 3 days"). Sums only `redemption` debits — a
+ * `manual_adjustment` a parent grants around the limit is, by definition,
+ * the parent's own exception and must never count against their own cap.
+ */
+export async function getSpendUsedThisPeriod(kidId: string, period: string): Promise<number | null> {
+  const days = period === 'weekly' ? 7 : 30;
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const rows = await serviceRest<{ amount: number }[]>(
+    `/wallet_ledger?kid_user_id=eq.${eu(kidId)}&bucket=eq.spend&reason=eq.redemption&created_at=gte.${es(since)}&select=amount`,
+  );
+  if (rows === null) return null;
+  return rows.reduce((sum, r) => sum - r.amount, 0); // debits are negative amounts; "used" reads positive
+}
+
+export interface PendingCreditRow {
+  id: string;
+  kid_user_id: string;
+  amount: number;
+  source: string;
+  source_ref: string | null;
+  allocated: boolean;
+  created_at: string;
+}
+
+const PENDING_CREDIT_FIELDS = 'id,kid_user_id,amount,source,source_ref,allocated,created_at';
+
+export function getPendingCreditsForKid(kidId: string): Promise<PendingCreditRow[] | null> {
+  return serviceRest<PendingCreditRow[]>(
+    `/pending_credits?kid_user_id=eq.${eu(kidId)}&allocated=eq.false&select=${PENDING_CREDIT_FIELDS}&order=created_at.asc`,
+  );
+}
+
+export async function getPendingCreditById(creditId: string): Promise<PendingCreditRow | null> {
+  const rows = await serviceRest<PendingCreditRow[]>(`/pending_credits?id=eq.${eu(creditId)}&select=${PENDING_CREDIT_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+/** Mirrors allocateTaskReward's null/false split exactly (0081's `allocate_pending_credit`). */
+export async function allocatePendingCredit(input: {
+  creditId: string;
+  kidId: string;
+  save: number;
+  spend: number;
+  share: number;
+  createdBy: string;
+}): Promise<boolean | null> {
+  const res = await serviceRest<boolean>('/rpc/allocate_pending_credit', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_credit_id: input.creditId,
+      p_kid_user_id: input.kidId,
+      p_save: input.save,
+      p_spend: input.spend,
+      p_share: input.share,
+      p_created_by: input.createdBy,
+    }),
+  });
+  return typeof res === 'boolean' ? res : null;
+}
+
+/**
+ * The no-cron "catch up on access" job (0081's `run_due_scheduled_credits`)
+ * — called at the top of every banca route that reads a kid's own data, so
+ * a due allowance/bonus posts the moment anyone actually looks, never later
+ * than that. `null` is a transport failure; the caller should still serve
+ * the (possibly slightly stale) read rather than fail the whole request —
+ * a late-arriving allowance is a UX delay, not a correctness bug, unlike
+ * every OTHER function in this section.
+ */
+export async function runDueScheduledCredits(kidId: string): Promise<number | null> {
+  const res = await serviceRest<number>('/rpc/run_due_scheduled_credits', {
+    method: 'POST',
+    body: JSON.stringify({ p_kid_user_id: kidId }),
+  });
+  return typeof res === 'number' ? res : null;
+}
+
+/** Every ledger row in [fromISO, toISO) — the statement's only data source, re-aggregated on every read, never stored (BANCA_DIGITAL.md §6.5). */
+export function getWalletLedgerInRange(kidId: string, fromISO: string, toISO: string): Promise<WalletLedgerRow[] | null> {
+  return serviceRest<WalletLedgerRow[]>(
+    `/wallet_ledger?kid_user_id=eq.${eu(kidId)}&created_at=gte.${es(fromISO)}&created_at=lt.${es(toISO)}&select=${WALLET_LEDGER_FIELDS}&order=created_at.asc`,
+  );
 }

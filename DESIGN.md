@@ -2387,15 +2387,68 @@ day the deep audit that found the Tasks recipe missing (above) also found
 page was still "a list of children," not "what needs my attention" (FAMILY_HUB.md
 §7's own framing). Three pills sit under the existing kid header row, `flex
 flex-wrap gap-2` so they wrap rather than overflow on a narrow card: a wallet
-total (`success`, always shown), a chore streak (`warning`, `kid_task_streaks`
-— shown only once non-zero, so a brand-new kid's card doesn't open with a
-zero), and an awaiting-approval count (`accent`, shown only when non-zero
-— the ONE fact this row exists to surface, and it is also a `Link` straight
-to `/tasks`, not decorative). Same restraint as the Stat row rule above:
-each pill's colour is load-bearing and matches its meaning everywhere else
-that fact appears (Save's `success` green, `local_fire_department`'s
-`warning` amber already established on the kid's own board), never a fourth
-invented hue for the same three concepts.
+total (`success`, always shown — a `Link` to `/banca` since Banca Digital
+shipped 2026-09-08, was a plain `span` before that), a chore streak
+(`warning`, `kid_task_streaks` — shown only once non-zero, so a brand-new
+kid's card doesn't open with a zero), and an awaiting-approval count
+(`accent`, shown only when non-zero — the ONE fact this row exists to
+surface, and it is also a `Link` straight to `/tasks`, not decorative). Same
+restraint as the Stat row rule above: each pill's colour is load-bearing and
+matches its meaning everywhere else that fact appears (Save's `success`
+green, `local_fire_department`'s `warning` amber already established on the
+kid's own board), never a fourth invented hue for the same three concepts.
+
+**Banca Digital (`/banca`)** — added 2026-09-08, the money HOME the Tasks
+recipe's wallet `StatCard` row was always an echo of (`FAMILY_HUB.md` §7's
+own framing, carried forward). Same role-branch shape as `/tasks`
+(`BancaPage.tsx` picks `parent`/`kid` before rendering) and the same
+Dashboard-content 2-column asymmetry — decisions/config due on the wide
+column, what they serve on the fixed 360px one — never the reverse.
+
+- **The account card is the one surface in the product allowed to look like
+  a literal debit card.** A `Card` with zero padding wrapping a
+  `bg-gradient-to-br` band in one of six closed pairs (`card_design`:
+  `indigo` = `from-primary to-primary-strong`, `emerald` =
+  `from-success to-success-strong`, `violet` = `from-delight to-delight/70`,
+  `amber` = `from-warning to-warning-strong`, `sunrise` =
+  `from-warning to-error/70`, `ocean` = `from-primary to-success/70`) — every
+  pair built from existing semantic tokens, never a new hex, so the card
+  reads as THIS product's palette even where nothing else on the page is
+  saturated. `display_number` renders in `font-mono` letter-spaced, a
+  structural safety property (§10's own invariant) worn as a visual one: it
+  reads as "obviously not a real card number" on sight, not just on
+  inspection. A `.lf-switch` for freeze sits directly on the gradient band
+  (`text-on-accent`, not a `content-*` token — DESIGN.md's own inverse-band
+  contrast rule, §Colors, applied to a gradient rather than the `inverse`
+  band it was written for).
+- **Kid view** (`KidBancaHome.tsx`): the account card, the SAME fixed
+  3-column Save/Spend/Share `StatCard` row `/tasks` already established (now
+  the primary reference, `/tasks`'s own row links here), an unallocated-
+  credit banner reusing `/tasks`'s `AllocateCard` shape verbatim for any
+  source (chore or allowance — `pending_credits`, §5.6), a spend-limit meter
+  when configured, goals promoted to the main column, and a statement
+  teaser that expands in place (month-stepped, `Intl.DateTimeFormat`) rather
+  than routing to a second screen. The card-details dialog (freeze,
+  nickname, design) is a `.lf-config-scrim`/`.lf-config-dialog` modal
+  portalled to `document.body` — **do not render this pattern inline
+  inside the normal app-shell tree**: an ancestor's own transition wrapper
+  establishes a CSS containing block for `position: fixed` and the "fixed,
+  centered overlay" silently degrades to flowing inside the page instead of
+  pinning to the viewport (found live, §BANCA_DIGITAL.md §14.3 has the full
+  trace). `AdminDialog` already portals for exactly this reason; this is the
+  second component to need it, which makes it a pattern, not a one-off —
+  any NEW `.lf-config-dialog` usage outside the Tutor's own immersive layer
+  should portal from the start rather than rediscover this by screenshot.
+- **Parent view** (`ParentBancaControlPanel.tsx`): a kid switcher (pill row,
+  `.lf-tactile`, hidden entirely for a single-kid family — no control for a
+  choice that isn't one) above a compact account-summary `Card` (design
+  swatch, nickname, masked number, freeze switch), then three
+  `.lf-config-row` sections (allowance, spend limit, savings bonus) each a
+  toggle that reveals its own fields only when active — never a form asking
+  a question nobody turned on. The savings-bonus section's static copy is
+  load-bearing, not decorative: *"A bonus your family adds to their Save jar
+  every week — not a bank interest rate"* is BANCA_DIGITAL.md §4's language-
+  discipline rule, shipped verbatim rather than paraphrased at build time.
 
 **Learn (`/learn`, `/learn/:slug`, `/learn/:slug/territory`,
 `/learn/:slug/placement`)** — added 2026-08-24, and like the Tutor entry, the

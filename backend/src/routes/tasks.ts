@@ -17,6 +17,8 @@ import {
   getGoalById,
   getGoalProgress,
   getGoalsForKid,
+  getSpendLimit,
+  getSpendUsedThisPeriod,
   getRedemptionById,
   getRedemptionsForKid,
   getRedemptionsForKids,
@@ -663,6 +665,20 @@ export function tasksRouter(): Router {
     const guardians = await getVerifiedGuardiansOfKid(kid.id);
     if (guardians === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
     if (!guardians.includes(item.parent_user_id)) return fail(res, 404, NOT_FOUND, 'No such reward');
+
+    // BANCA_DIGITAL.md §5.5/§6.3: a parent-set spend limit is enforced at
+    // REQUEST time, before this ever reaches their approval queue — a limit
+    // discovered only after a parent says no teaches nothing; hitting it
+    // yourself, immediately, with a clear reason, is the actual lesson.
+    const limit = await getSpendLimit(kid.id);
+    if (limit === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the spend limit');
+    if (limit && limit.active) {
+      const used = await getSpendUsedThisPeriod(kid.id, limit.period);
+      if (used === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the spend limit');
+      if (used + item.cost > limit.cap) {
+        return fail(res, 409, 'SPEND_LIMIT_REACHED', `This would go over the ${limit.period} spending limit`);
+      }
+    }
 
     const redemption = await insertRedemption({ catalog_id: item.id, kid_user_id: kid.id });
     if (!redemption) return fail(res, 502, DATA_UNAVAILABLE, 'Could not request the redemption');

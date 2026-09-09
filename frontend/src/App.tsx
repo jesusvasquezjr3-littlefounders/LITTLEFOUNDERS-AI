@@ -31,6 +31,7 @@ import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { TasksPage } from '@/routes/app/tasks/TasksPage';
+import { BancaPage } from '@/routes/app/banca/BancaPage';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
 import { AvatarEditorPage } from '@/routes/app/profile/AvatarEditorPage';
 import { SettingsPage } from '@/routes/app/profile/SettingsPage';
@@ -332,6 +333,14 @@ export function App() {
               element={
                 <RequireRole role={['parent', 'kid']}>
                   <TasksPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="banca"
+              element={
+                <RequireRole role={['parent', 'kid']}>
+                  <BancaPage />
                 </RequireRole>
               }
             />

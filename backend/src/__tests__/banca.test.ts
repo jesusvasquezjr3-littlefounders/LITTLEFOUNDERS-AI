@@ -1,0 +1,420 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { randomUUID } from 'node:crypto';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+import { computeNextRunAt } from '../routes/banca.js';
+
+/*
+ * /api/v1/banca — BANCA_DIGITAL.md Waves 0-2. Same posture as tasks.test.ts:
+ * a caller can never reach another family's account/rule/credit, proven as
+ * a 404 rather than a 403.
+ */
+
+const PARENT_ID = randomUUID();
+const KID_ID = randomUUID();
+const OTHER_KID_ID = randomUUID();
+const CREDIT_ID = randomUUID();
+
+afterEach(() => vi.unstubAllGlobals());
+
+interface StubOptions {
+  roles?: string[];
+  parentsKids?: string[];
+  kidsParents?: string[];
+  account?: Record<string, unknown> | null;
+  accountInsertConflict?: boolean;
+  allowanceRule?: Record<string, unknown> | null;
+  savingsBonusRule?: Record<string, unknown> | null;
+  spendLimit?: Record<string, unknown> | null;
+  ledgerRows?: { bucket: string; amount: number; created_at?: string }[];
+  pendingCredit?: Record<string, unknown> | null;
+  allocateResult?: boolean | null;
+  scheduledCreditsResult?: number | null;
+}
+
+function defaultAccount(): Record<string, unknown> {
+  return {
+    kid_user_id: KID_ID,
+    nickname: 'Rocket Fund',
+    card_design: 'indigo',
+    display_number: 'LF-1234-5678',
+    frozen: false,
+    frozen_by: null,
+    frozen_at: null,
+    opened_by: PARENT_ID,
+    opened_at: new Date().toISOString(),
+  };
+}
+
+function defaultPendingCredit(): Record<string, unknown> {
+  return { id: CREDIT_ID, kid_user_id: KID_ID, amount: 10, source: 'allowance', source_ref: null, allocated: false, created_at: new Date().toISOString() };
+}
+
+function stub(opts: StubOptions = {}) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = init?.method ?? 'GET';
+
+      if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
+      }
+      if (url.includes('/rest/v1/audit_logs') && method === 'POST') {
+        return Promise.resolve(new Response(null, { status: 201 }));
+      }
+      if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
+        const rows = (opts.parentsKids ?? [KID_ID]).map((kid_user_id) => ({ parent_user_id: PARENT_ID, kid_user_id, verification_status: 'verified' }));
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/guardian_links?kid_user_id=eq.') && method === 'GET') {
+        const rows = (opts.kidsParents ?? [PARENT_ID]).map((parent_user_id) => ({ parent_user_id }));
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+
+      if (url.includes('/rest/v1/rpc/run_due_scheduled_credits') && method === 'POST') {
+        return opts.scheduledCreditsResult === undefined
+          ? Promise.resolve(jsonResponse(200, 0))
+          : Promise.resolve(jsonResponse(200, opts.scheduledCreditsResult));
+      }
+
+      if (url.includes('/rest/v1/banca_accounts') && method === 'POST') {
+        if (opts.accountInsertConflict) return Promise.resolve(new Response(null, { status: 409 }));
+        return Promise.resolve(jsonResponse(201, [defaultAccount()]));
+      }
+      if (url.includes('/rest/v1/banca_accounts?kid_user_id=eq.') && method === 'GET') {
+        const rows = opts.account === null ? [] : [opts.account ?? defaultAccount()];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/banca_accounts?kid_user_id=eq.') && method === 'PATCH') {
+        const rows = opts.account === null ? [] : [{ ...(opts.account ?? defaultAccount()), ...(init?.body ? JSON.parse(String(init.body)) : {}) }];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+
+      if (url.includes('/rest/v1/allowance_rules?kid_user_id=eq.') && method === 'GET') {
+        const rows = opts.allowanceRule === null ? [] : [opts.allowanceRule ?? null].filter(Boolean);
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/allowance_rules') && method === 'POST') {
+        const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+        return Promise.resolve(jsonResponse(201, [{ id: randomUUID(), created_at: new Date().toISOString(), ...body }]));
+      }
+
+      if (url.includes('/rest/v1/savings_bonus_rules?kid_user_id=eq.') && method === 'GET') {
+        const rows = opts.savingsBonusRule === null ? [] : [opts.savingsBonusRule ?? null].filter(Boolean);
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/savings_bonus_rules') && method === 'POST') {
+        const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+        return Promise.resolve(jsonResponse(201, [{ created_at: new Date().toISOString(), ...body }]));
+      }
+
+      if (url.includes('/rest/v1/spend_limits?kid_user_id=eq.') && method === 'GET') {
+        const rows = opts.spendLimit === null ? [] : [opts.spendLimit ?? null].filter(Boolean);
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/spend_limits') && method === 'POST') {
+        const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+        return Promise.resolve(jsonResponse(201, [{ created_at: new Date().toISOString(), ...body }]));
+      }
+
+      if (url.includes('/rest/v1/wallet_ledger') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, opts.ledgerRows ?? [{ bucket: 'save', amount: 5, created_at: new Date().toISOString() }]));
+      }
+
+      if (url.includes('/rest/v1/pending_credits?id=eq.') && method === 'GET') {
+        const rows = opts.pendingCredit === null ? [] : [opts.pendingCredit ?? defaultPendingCredit()];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/pending_credits?kid_user_id=eq.') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, [defaultPendingCredit()]));
+      }
+      if (url.includes('/rest/v1/rpc/allocate_pending_credit') && method === 'POST') {
+        return opts.allocateResult === undefined
+          ? Promise.resolve(jsonResponse(200, true))
+          : Promise.resolve(jsonResponse(200, opts.allocateResult));
+      }
+
+      return Promise.resolve(new Response(null, { status: 201 }));
+    }),
+  );
+}
+
+function asParent(path: string, sub = PARENT_ID) {
+  return request(createApp()).get(path).set('Authorization', `Bearer ${mintToken({ sub })}`);
+}
+function asKid(path: string, sub = KID_ID) {
+  return request(createApp()).get(path).set('Authorization', `Bearer ${mintToken({ sub })}`);
+}
+function postAsParent(path: string, body: unknown, sub = PARENT_ID) {
+  return request(createApp()).post(path).set('Authorization', `Bearer ${mintToken({ sub })}`).send(body as object);
+}
+function putAsParent(path: string, body: unknown, sub = PARENT_ID) {
+  return request(createApp()).put(path).set('Authorization', `Bearer ${mintToken({ sub })}`).send(body as object);
+}
+function patchAsParent(path: string, body: unknown, sub = PARENT_ID) {
+  return request(createApp()).patch(path).set('Authorization', `Bearer ${mintToken({ sub })}`).send(body as object);
+}
+function postAsKid(path: string, body: unknown, sub = KID_ID) {
+  return request(createApp()).post(path).set('Authorization', `Bearer ${mintToken({ sub })}`).send(body as object);
+}
+
+describe('computeNextRunAt', () => {
+  it('lands on the next matching weekday, same day if it already matches', () => {
+    // 2026-09-08 is a Tuesday (day 2).
+    const tuesday = new Date('2026-09-08T12:00:00Z');
+    expect(computeNextRunAt('weekly', 2, tuesday).toISOString().slice(0, 10)).toBe('2026-09-08');
+    expect(computeNextRunAt('weekly', 5, tuesday).toISOString().slice(0, 10)).toBe('2026-09-11'); // next Friday
+  });
+
+  it('monthly rolls to next month once the anchor day has passed', () => {
+    const sept20 = new Date('2026-09-20T12:00:00Z');
+    expect(computeNextRunAt('monthly', 5, sept20).toISOString().slice(0, 10)).toBe('2026-10-05');
+    expect(computeNextRunAt('monthly', 25, sept20).toISOString().slice(0, 10)).toBe('2026-09-25');
+  });
+});
+
+describe('POST /api/v1/banca/accounts/:kidId (parent opens)', () => {
+  it('401s without a session', async () => {
+    stub();
+    const res = await request(createApp()).post(`/api/v1/banca/accounts/${KID_ID}`).send({});
+    expect(res.status).toBe(401);
+  });
+
+  it('404s for a kid the caller does not guard', async () => {
+    stub({ parentsKids: [OTHER_KID_ID] });
+    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, {});
+    expect(res.status).toBe(404);
+  });
+
+  it('409s if the account is already open', async () => {
+    stub({ account: defaultAccount() });
+    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, {});
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('CONFLICT');
+  });
+
+  it('opens the account and returns it', async () => {
+    stub({ account: null });
+    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'Rocket Fund', cardDesign: 'emerald' });
+    expect(res.status).toBe(201);
+    expect(res.body.data.account.nickname).toBe('Rocket Fund');
+    expect(res.body.data.account.displayNumber).toMatch(/^LF-\d{4}-\d{4}$/);
+  });
+
+  it('rejects an unknown card design', async () => {
+    stub({ account: null });
+    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, { cardDesign: 'gold' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('GET /api/v1/banca/accounts/:kidId (parent) and /account (kid)', () => {
+  it('returns null when no account exists yet, not an error', async () => {
+    stub({ account: null });
+    const res = await asParent(`/api/v1/banca/accounts/${KID_ID}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.account).toBeNull();
+  });
+
+  it('a kid reads their own account', async () => {
+    stub({ account: defaultAccount(), roles: ['kid'] });
+    const res = await asKid('/api/v1/banca/account');
+    expect(res.status).toBe(200);
+    expect(res.body.data.account.nickname).toBe('Rocket Fund');
+  });
+
+  it('runs the scheduled-credits catch-up before reading (best-effort, never fails the request)', async () => {
+    stub({ account: defaultAccount(), scheduledCreditsResult: null, roles: ['kid'] });
+    const res = await asKid('/api/v1/banca/account');
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('PATCH /api/v1/banca/account (kid edits nickname/design)', () => {
+  it('a kid can rename their own card', async () => {
+    stub({ account: defaultAccount(), roles: ['kid'] });
+    const res = await request(createApp())
+      .patch('/api/v1/banca/account')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
+      .send({ nickname: 'New Bike Fund' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.account.nickname).toBe('New Bike Fund');
+  });
+});
+
+describe('POST /api/v1/banca/accounts/:kidId/freeze and /account/freeze', () => {
+  it('a parent can freeze', async () => {
+    stub({ account: defaultAccount() });
+    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}/freeze`, { frozen: true });
+    expect(res.status).toBe(200);
+    expect(res.body.data.account.frozen).toBe(true);
+  });
+
+  it('a kid can freeze their own card', async () => {
+    stub({ account: defaultAccount(), roles: ['kid'] });
+    const res = await postAsKid('/api/v1/banca/account/freeze', { frozen: true });
+    expect(res.status).toBe(200);
+  });
+
+  it('rejects a non-boolean frozen value', async () => {
+    stub({ account: defaultAccount() });
+    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}/freeze`, { frozen: 'yes' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('PUT /api/v1/banca/allowance/:kidId', () => {
+  it('409s if the account is not open yet', async () => {
+    stub({ account: null });
+    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 5 });
+    expect(res.status).toBe(409);
+  });
+
+  it('rejects anchorDay 0-6 violated for weekly', async () => {
+    stub({ account: defaultAccount() });
+    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 12 });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects anchorDay 0 for monthly', async () => {
+    stub({ account: defaultAccount() });
+    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'monthly', anchorDay: 0 });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects an amount over the ceiling', async () => {
+    stub({ account: defaultAccount() });
+    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 5000, frequency: 'weekly', anchorDay: 5 });
+    expect(res.status).toBe(400);
+  });
+
+  it('saves a valid rule', async () => {
+    stub({ account: defaultAccount() });
+    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 5 });
+    expect(res.status).toBe(200);
+    expect(res.body.data.rule.amount).toBe(10);
+    expect(res.body.data.rule.frequency).toBe('weekly');
+  });
+});
+
+describe('GET /api/v1/banca/allowance/:kidId', () => {
+  it('returns null when unconfigured', async () => {
+    stub({ allowanceRule: null });
+    const res = await asParent(`/api/v1/banca/allowance/${KID_ID}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.rule).toBeNull();
+  });
+});
+
+describe('PUT /api/v1/banca/savings-bonus/:kidId', () => {
+  it('rejects a rate over the 20% ceiling', async () => {
+    stub({ account: defaultAccount() });
+    const res = await putAsParent(`/api/v1/banca/savings-bonus/${KID_ID}`, { rateBp: 3000 });
+    expect(res.status).toBe(400);
+  });
+
+  it('saves a valid rate', async () => {
+    stub({ account: defaultAccount() });
+    const res = await putAsParent(`/api/v1/banca/savings-bonus/${KID_ID}`, { rateBp: 500 });
+    expect(res.status).toBe(200);
+    expect(res.body.data.rule.rateBp).toBe(500);
+  });
+});
+
+describe('PUT /api/v1/banca/spend-limit/:kidId', () => {
+  it('saves a valid limit and reports usage', async () => {
+    stub({ account: defaultAccount(), ledgerRows: [{ bucket: 'spend', amount: -15, created_at: new Date().toISOString() }] });
+    const res = await putAsParent(`/api/v1/banca/spend-limit/${KID_ID}`, { period: 'weekly', cap: 60 });
+    expect(res.status).toBe(200);
+    expect(res.body.data.status.configured).toBe(true);
+    expect(res.body.data.status.cap).toBe(60);
+  });
+});
+
+describe('GET /api/v1/banca/spend-limit/:kidId and /spend-limit (kid)', () => {
+  it('reports unconfigured when no limit is set', async () => {
+    stub({ spendLimit: null });
+    const res = await asParent(`/api/v1/banca/spend-limit/${KID_ID}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.status).toEqual({ configured: false });
+  });
+
+  it('computes remaining from actual spend redemptions', async () => {
+    stub({
+      roles: ['kid'],
+      spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 60, active: true, created_at: new Date().toISOString() },
+      ledgerRows: [
+        { bucket: 'spend', amount: -20, created_at: new Date().toISOString() },
+        { bucket: 'spend', amount: -10, created_at: new Date().toISOString() },
+      ],
+    });
+    const res = await asKid('/api/v1/banca/spend-limit');
+    expect(res.status).toBe(200);
+    expect(res.body.data.status).toEqual({ configured: true, period: 'weekly', cap: 60, used: 30, remaining: 30 });
+  });
+});
+
+describe('GET/POST pending credits (kid)', () => {
+  it('lists unallocated credits', async () => {
+    stub({ roles: ['kid'] });
+    const res = await asKid('/api/v1/banca/wallet/pending-credits');
+    expect(res.status).toBe(200);
+    expect(res.body.data.credits).toHaveLength(1);
+    expect(res.body.data.credits[0].source).toBe('allowance');
+  });
+
+  it('rejects a split that does not sum to the credit amount', async () => {
+    stub({ allocateResult: false, roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 3, spend: 3, share: 3 });
+    expect(res.status).toBe(409);
+  });
+
+  it('rejects an all-zero split before even calling the RPC', async () => {
+    stub({ roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 0, spend: 0, share: 0 });
+    expect(res.status).toBe(400);
+  });
+
+  it('404s for a credit belonging to another kid', async () => {
+    stub({ pendingCredit: { ...defaultPendingCredit(), kid_user_id: OTHER_KID_ID }, roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 10, spend: 0, share: 0 });
+    expect(res.status).toBe(404);
+  });
+
+  it('allocates a valid split', async () => {
+    stub({ roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 5, spend: 3, share: 2 });
+    expect(res.status).toBe(200);
+    expect(res.body.data.allocated).toBe(true);
+  });
+});
+
+describe('GET /api/v1/banca/statement/:kidId and /statement (kid)', () => {
+  it('rejects a malformed month', async () => {
+    stub();
+    const res = await asParent(`/api/v1/banca/statement/${KID_ID}?month=september`);
+    expect(res.status).toBe(400);
+  });
+
+  it('aggregates earned/spent/saved from the ledger', async () => {
+    stub({
+      roles: ['kid'],
+      ledgerRows: [
+        { bucket: 'save', amount: 10, created_at: new Date().toISOString() },
+        { bucket: 'spend', amount: 5, created_at: new Date().toISOString() },
+        { bucket: 'spend', amount: -8, created_at: new Date().toISOString() },
+      ],
+    });
+    const res = await asKid('/api/v1/banca/statement?month=2026-09');
+    expect(res.status).toBe(200);
+    expect(res.body.data.statement).toEqual({
+      month: '2026-09',
+      earned: 15,
+      spent: 8,
+      saved: 10,
+      entries: expect.any(Array),
+    });
+  });
+});

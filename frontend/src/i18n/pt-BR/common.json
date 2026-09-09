@@ -205,10 +205,12 @@
       "approvedAnnounce": "\"{{title}}\" aprovada.",
       "cancelledAnnounce": "\"{{title}}\" cancelada.",
       "redemptionApprovedAnnounce": "Resgate aprovado.",
-      "redemptionDeniedAnnounce": "Resgate recusado."
+      "redemptionDeniedAnnounce": "Resgate recusado.",
+      "bancaLink": "Ver detalhes da carteira na Banca Digital"
     },
     "kid": {
       "subtitle": "Faça suas tarefas, ganhe LF Coins e decida o que fazer com elas.",
+      "bancaLink": "Ver sua conta da Banca Digital",
       "walletTitle": "Minha carteira",
       "save": "Guardar",
       "spend": "Gastar",
@@ -279,5 +281,89 @@
       "gift": "Presente"
     },
     "recurrenceBadgeWeekly": "Semanal"
+  },
+  "banca": {
+    "loading": "Carregando sua conta…",
+    "title": "Banca Digital",
+    "kid": {
+      "subtitle": "Sua própria conta, cartão e poupança, com suas LF Coins.",
+      "emptyTitle": "Sua conta ainda não está aberta",
+      "emptyBody": "Peça a um adulto para abrir sua conta da Banca Digital. Seu saldo de Guardar, Gastar e Compartilhar já está esperando por ela.",
+      "accountLabel": "Sua conta",
+      "cardDetails": "Detalhes do cartão",
+      "frozenBadge": "Congelado",
+      "allowanceArrived": "Sua mesada chegou!",
+      "spendLimit": { "weekly": "Limite semanal de gastos", "monthly": "Limite mensal de gastos" },
+      "spendLimitUsed": "{{used}} de {{cap}} usados",
+      "frozenAnnounce": "Cartão congelado.",
+      "unfrozenAnnounce": "Cartão descongelado.",
+      "freezeToggle": "Congelar este cartão",
+      "frozenByYou": "Você congelou este cartão",
+      "frozenByGuardian": "Um adulto congelou este cartão",
+      "freezeHint": "Bloqueia novos pedidos de resgate",
+      "nicknameLabel": "Nome da conta",
+      "designLabel": "Cor do cartão",
+      "saving": "Salvando…",
+      "done": "Pronto",
+      "reasonAllowance": "Mesada",
+      "reasonSavingsBonus": "Bônus que sua família adicionou",
+      "redeemLink": "Resgate suas LF Coins em Tarefas"
+    },
+    "statement": {
+      "title": "Extrato",
+      "viewCta": "Ver o extrato deste mês",
+      "prevMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "earned": "Ganho",
+      "spent": "Gasto",
+      "saved": "Guardado"
+    },
+    "cardDesigns": {
+      "indigo": "Índigo",
+      "emerald": "Esmeralda",
+      "violet": "Violeta",
+      "amber": "Âmbar",
+      "sunrise": "Amanhecer",
+      "ocean": "Oceano"
+    },
+    "parent": {
+      "subtitle": "Abra contas, automatize a mesada e ative um bônus de poupança.",
+      "kidSwitcher": "Escolha um filho ou filha",
+      "accountOpenedAnnounce": "Conta aberta.",
+      "decisionsHeading": "Aguardando sua decisão",
+      "openTitle": "Abra a conta dele(a)",
+      "openBody": "Dê a ele(a) uma conta com nome e um cartão. O saldo de Guardar, Gastar e Compartilhar já vem junto.",
+      "openNicknamePlaceholder": "por exemplo, \"Fundo da bicicleta\"",
+      "opening": "Abrindo…",
+      "openCta": "Abrir conta",
+      "allowanceHeading": "Mesada",
+      "allowanceActive": "Mesada automática",
+      "allowanceAmount": "LF Coins",
+      "allowanceFrequency": "Com que frequência",
+      "frequencyWeekly": "Toda semana",
+      "frequencyBiweekly": "A cada duas semanas",
+      "frequencyMonthly": "Todo mês",
+      "allowanceDayOfMonth": "Dia do mês",
+      "allowanceDayOfWeek": "Dia da semana",
+      "saving": "Salvando…",
+      "save": "Salvar",
+      "spendLimitHeading": "Limite de gastos",
+      "spendLimitActive": "Definir um limite de gastos",
+      "spendLimitPeriod": "Reinicia",
+      "spendLimitCap": "LF Coins",
+      "bonusHeading": "Bônus de poupança",
+      "bonusActive": "Adicionar um bônus à poupança",
+      "bonusRate": "Porcentagem do bônus",
+      "bonusHint": "Um bônus que sua família adiciona ao pote de Guardar toda semana. Não é uma taxa de juros bancária."
+    },
+    "days": {
+      "sun": "Domingo",
+      "mon": "Segunda",
+      "tue": "Terça",
+      "wed": "Quarta",
+      "thu": "Quinta",
+      "fri": "Sexta",
+      "sat": "Sábado"
+    }
   }
 }

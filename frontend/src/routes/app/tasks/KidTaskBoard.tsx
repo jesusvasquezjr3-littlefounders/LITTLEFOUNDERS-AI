@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
@@ -228,6 +229,10 @@ export function KidTaskBoard() {
         <StatCard icon={<Icon name="shopping_bag" />} value={String(state.balances.spend)} label={t('tasks.kid.spend')} tone="primary" />
         <StatCard icon={<Icon name="volunteer_activism" />} value={String(state.balances.share)} label={t('tasks.kid.share')} tone="delight" />
       </div>
+      <Link to="/banca" className="-mt-4 inline-flex items-center gap-1 self-start lf-caption font-bold text-primary">
+        {t('tasks.kid.bancaLink')}
+        <Icon name="arrow_forward" className="text-[16px]" aria-hidden />
+      </Link>
 
       {toAllocate.length > 0 && (
         <div className="flex flex-col gap-3">

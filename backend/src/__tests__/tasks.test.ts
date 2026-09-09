@@ -55,6 +55,10 @@ interface StubOptions {
   deleteCalls?: string[];
   /** the kid's kid_task_streaks row — omit for "no row yet" (a fresh kid). */
   taskStreak?: Record<string, unknown> | null;
+  /** the kid's spend_limits row (BANCA_DIGITAL.md §5.5) — omit for "no limit configured". */
+  spendLimit?: Record<string, unknown> | null;
+  /** wallet_ledger rows spend_limit checking sums over — omit for "nothing spent yet". */
+  spendLedgerRows?: { bucket: string; amount: number }[];
 }
 
 function stub(opts: StubOptions = {}) {
@@ -155,6 +159,16 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(200, opts.task === null ? [] : [opts.task ?? defaultTask()]));
       }
 
+      if (url.includes('/rest/v1/spend_limits?kid_user_id=eq.') && method === 'GET') {
+        const rows = opts.spendLimit === null ? [] : [opts.spendLimit ?? null].filter(Boolean);
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      // Spend-limit's own usage query (created_at=gte.) is a DIFFERENT shape
+      // than the balances query below — must be matched first, or it falls
+      // through to the balances default and always reads "nothing spent".
+      if (url.includes('/rest/v1/wallet_ledger') && url.includes('created_at=gte.') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, opts.spendLedgerRows ?? []));
+      }
       if (url.includes('/rest/v1/wallet_ledger') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, opts.ledgerRows ?? [{ bucket: 'save', amount: 3 }, { bucket: 'spend', amount: 5 }]));
       }
@@ -620,6 +634,45 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
 
   it('requests a redemption against a verified guardian catalog item', async () => {
     stub({ catalogItem: defaultCatalogItem(), kidsParents: [PARENT_ID], roles: ['kid'] });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    expect(res.status).toBe(201);
+  });
+
+  // BANCA_DIGITAL.md §5.5/§6.3 — enforced at REQUEST time, before this ever
+  // reaches a parent's approval queue.
+  it('blocks a request that would push past an active weekly spend limit', async () => {
+    stub({
+      catalogItem: defaultCatalogItem(), // cost: 5
+      kidsParents: [PARENT_ID],
+      roles: ['kid'],
+      spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 10, active: true, created_at: new Date().toISOString() },
+      spendLedgerRows: [{ bucket: 'spend', amount: -8 }], // 8 already used, +5 more would exceed a cap of 10
+    });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('SPEND_LIMIT_REACHED');
+  });
+
+  it('allows a request that stays within an active spend limit', async () => {
+    stub({
+      catalogItem: defaultCatalogItem(), // cost: 5
+      kidsParents: [PARENT_ID],
+      roles: ['kid'],
+      spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 10, active: true, created_at: new Date().toISOString() },
+      spendLedgerRows: [{ bucket: 'spend', amount: -3 }],
+    });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    expect(res.status).toBe(201);
+  });
+
+  it('ignores an INACTIVE spend limit entirely', async () => {
+    stub({
+      catalogItem: defaultCatalogItem(),
+      kidsParents: [PARENT_ID],
+      roles: ['kid'],
+      spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 1, active: false, created_at: new Date().toISOString() },
+      spendLedgerRows: [{ bucket: 'spend', amount: -100 }],
+    });
     const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
     expect(res.status).toBe(201);
   });
