@@ -30,6 +30,7 @@
 | **LF Coins** | The Family Hub's virtual currency (FAMILY_HUB.md). Earned by a `kid` completing a `parent`-assigned task, credited via `wallet_ledger` (append-only — a bucket balance is `SUM(amount)`, never a stored counter). No cash-out path, no real-money equivalence, and deliberately NOT convertible to/from `learning_stats` XP — a separate economy on purpose, so a kid cannot "buy" academic-looking progress. |
 | **Save / Spend / Share** | The three `wallet_ledger.bucket` values every LF Coins credit is split across at allocation time (`POST /api/v1/tasks/:id/allocate`) — the same three-way split the platform's own financial-education courses teach in lesson form. A Save-bucket credit may optionally carry a `goal_id` TAG (not a transfer) toward one of the kid's own active `savings_goals`. |
 | **redemption catalog** | `redemption_catalog` — parent-authored, free-text privileges ("30 extra minutes of tablet") with an LF Coins cost, redeemed against a kid's `spend` bucket via `redemptions` + the `decide_redemption` DB function (atomic balance check, same shape as `allocate_task_reward`). |
+| **chore streak** | `kid_task_streaks` (0080) — consecutive days a kid has completed at least one task, tracked in `services/streak.ts`'s pure day-streak math (same rules as **learning stats**' lesson streak: same day never double-counts, a gap restarts at 1, the longest-ever mark is kept). Deliberately its own table, never merged with or convertible to the lesson streak above — one more instance of the LF Coins/XP separation rule. |
 
 ## Services & codenames
 

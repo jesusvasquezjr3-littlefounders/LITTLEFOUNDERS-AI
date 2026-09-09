@@ -1237,6 +1237,38 @@ export type Database = {
           },
         ]
       }
+      kid_task_streaks: {
+        Row: {
+          current_streak_days: number
+          kid_user_id: string
+          last_completed_date: string | null
+          longest_streak_days: number
+          updated_at: string
+        }
+        Insert: {
+          current_streak_days?: number
+          kid_user_id: string
+          last_completed_date?: string | null
+          longest_streak_days?: number
+          updated_at?: string
+        }
+        Update: {
+          current_streak_days?: number
+          kid_user_id?: string
+          last_completed_date?: string | null
+          longest_streak_days?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kid_task_streaks_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       learner_kc_mastery: {
         Row: {
           attempts: number
@@ -2359,6 +2391,7 @@ export type Database = {
           allocated: boolean
           assigned_by: string
           assigned_to: string
+          cancel_reason: string | null
           created_at: string
           due_at: string | null
           evidence_bucket: string | null
@@ -2367,6 +2400,7 @@ export type Database = {
           evidence_uploaded_at: string | null
           id: string
           recurrence: string
+          requires_evidence: boolean
           reward_coins: number
           status: string
           title: string
@@ -2375,6 +2409,7 @@ export type Database = {
           allocated?: boolean
           assigned_by: string
           assigned_to: string
+          cancel_reason?: string | null
           created_at?: string
           due_at?: string | null
           evidence_bucket?: string | null
@@ -2383,6 +2418,7 @@ export type Database = {
           evidence_uploaded_at?: string | null
           id?: string
           recurrence?: string
+          requires_evidence?: boolean
           reward_coins: number
           status?: string
           title: string
@@ -2391,6 +2427,7 @@ export type Database = {
           allocated?: boolean
           assigned_by?: string
           assigned_to?: string
+          cancel_reason?: string | null
           created_at?: string
           due_at?: string | null
           evidence_bucket?: string | null
@@ -2399,6 +2436,7 @@ export type Database = {
           evidence_uploaded_at?: string | null
           id?: string
           recurrence?: string
+          requires_evidence?: boolean
           reward_coins?: number
           status?: string
           title?: string

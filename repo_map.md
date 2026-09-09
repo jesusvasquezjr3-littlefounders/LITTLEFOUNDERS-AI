@@ -1488,9 +1488,9 @@ untracked by default; a skill the team wants versioned gets a scoped
 > The section below restores it; the v2 log stays underneath as the
 > historical record it already was, not because it is still current.
 
-## The Family Hub: tasks/wallet/goals/redemption, Waves 1-3 (2026-09-08)
+## The Family Hub, round 2: UI redesign, proof-of-work photos, a 5-lens audit, and closing every finding (2026-09-08)
 
-**`tasks/` went from a nav placeholder over a provisional schema table to a complete earn → allocate → goal → redeem loop, backend and frontend, in one session** — `FAMILY_HUB.md` is the authoritative product plan; this entry is the closure record. The tesis: LittleFounders already teaches saving/budgeting/earning as course content, and the missing piece was letting a kid *practice* it — a chore becomes LF Coins (a closed virtual currency, never real money, never convertible to/from `learning_stats` XP on purpose), split across Save/Spend/Share, optionally tagged to a savings goal, redeemable against a parent-authored catalog.
+**The owner flagged the Wave 1-3 UI as a stretched single column even at 1280px — the exact §1.11 violation, and the correct diagnosis: the surface had been assembled out of `FamilyPage`'s List-rows grammar with no Tasks recipe of its own.** Fixed with a real 2-column dashboard shape (`grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px]`), documented as a new closed grid-set entry in `DESIGN.md` rather than a one-screen fix. In the same pass: a kid can attach a photo as proof of a completed chore (`0077_task_evidence.sql`, `POST`/`GET /:id/evidence`) — stored `visibility: internal` in Depot and only ever reached through Core's own authenticated proxy, never a public URL, because a photo of a child's room is a different privacy class than a public badge (§1.9).
 
 ```
 
@@ -13985,19 +13985,19 @@ BEGIN
 ```
 -- 0079_goal_reached_badge.sql — widens the shareable-achievement-badge loop
 -- (0072/0073) with a third kind: a reached savings goal.
--- @phase: expand
+-- @phase: contract
+-- @after-release: 8a19a59e (this DROP/ADD CONSTRAINT is a pure widen — no
+--   value is removed — but check-migration-phase.mjs classifies every
+--   dropped-and-re-added CHECK as a contraction regardless of direction,
+--   deliberately, since the gate cannot parse old-vs-new value sets
+--   semantically (see 0072's identical case). Nothing here depends on an
+--   older deploy retiring a removed value, so the named release is simply
+--   the current HEAD at authoring time: this migration must still land
+--   BEFORE any code issues a `goal_reached` badge, exactly like a normal
+--   expand — the gate's mechanical caution costs one manual dispatch, which
+--   is cheaper than the outage an under-called contraction risks
+--   (database/AGENTS.md).
 --
--- WHY THIS EXISTS. FAMILY_HUB.md §8 committed to reusing the badge system
--- "as-is" for goal reached — "no new image/compositor work" — but the
--- `achievement_kind` CHECK only ever allowed `course_badge`/`streak`. This is
--- the delta that keeps that promise: 0073 is applied to production and is
--- never edited (§1.3), so the constraint is dropped and recreated rather
--- than altered in place.
---
--- No RLS change: badge_shares' existing policies scope by kid/creator
--- already and do not reference achievement_kind's vocabulary.
-
-ALTER TABLE public.badge_shares
 ```
 
 ### database/migrations/0080_task_streak.sql
@@ -15460,7 +15460,7 @@ export default defineConfig({
 |---|---|---|
 | 3D characters outside the diorama, the pose library, Lesson Engine gamification | [GOAL_3D_CHARACTERS.md](GOAL_3D_CHARACTERS.md) | Scope + acceptance for the 2026-08-27 request. Draft: three decisions outstanding |
 | MCP / school integrations (harness backlog line, `ROADMAP.md` line ~261) | [MCP_SCHOOL_INTEGRATIONS_SCOPING.md](MCP_SCHOOL_INTEGRATIONS_SCOPING.md) | Scoping only, no code — two interpretations laid out, recommendation + required owner/legal/role decisions in §8-§9 |
-| Family tasks/rewards/monitoring (`tasks/` product section, family wallet, savings goals) | [FAMILY_HUB.md](FAMILY_HUB.md) | Plan only, no code — §0 is the live status; §11 lists owner decisions blocking Wave 0 |
+| Family tasks/rewards/monitoring (`tasks/` product section, family wallet, savings goals, proof-of-work photos, chore streak, `/family` landing) | [FAMILY_HUB.md](FAMILY_HUB.md) | SHIPPED — §0 is the live status (round-2 close-out: every 2026-09-08 deep-audit finding fixed or accepted as a documented risk, §8.1); §7 is the UI spec, §9 the invariant checklist |
 | Operating rules, invariants, gates | /AGENTS.md (== /CLAUDE.md) | §0–§8 |
 | Roles & permissions | /AGENTS.md | §1.3–§1.4 |
 | Child safety & minor PII | /AGENTS.md | §1.9 |

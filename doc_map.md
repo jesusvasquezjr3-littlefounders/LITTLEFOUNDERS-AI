@@ -8,7 +8,7 @@
 |---|---|---|
 | 3D characters outside the diorama, the pose library, Lesson Engine gamification | [GOAL_3D_CHARACTERS.md](GOAL_3D_CHARACTERS.md) | Scope + acceptance for the 2026-08-27 request. Draft: three decisions outstanding |
 | MCP / school integrations (harness backlog line, `ROADMAP.md` line ~261) | [MCP_SCHOOL_INTEGRATIONS_SCOPING.md](MCP_SCHOOL_INTEGRATIONS_SCOPING.md) | Scoping only, no code — two interpretations laid out, recommendation + required owner/legal/role decisions in §8-§9 |
-| Family tasks/rewards/monitoring (`tasks/` product section, family wallet, savings goals) | [FAMILY_HUB.md](FAMILY_HUB.md) | Plan only, no code — §0 is the live status; §11 lists owner decisions blocking Wave 0 |
+| Family tasks/rewards/monitoring (`tasks/` product section, family wallet, savings goals, proof-of-work photos, chore streak, `/family` landing) | [FAMILY_HUB.md](FAMILY_HUB.md) | SHIPPED — §0 is the live status (round-2 close-out: every 2026-09-08 deep-audit finding fixed or accepted as a documented risk, §8.1); §7 is the UI spec, §9 the invariant checklist |
 | Operating rules, invariants, gates | /AGENTS.md (== /CLAUDE.md) | §0–§8 |
 | Roles & permissions | /AGENTS.md | §1.3–§1.4 |
 | Child safety & minor PII | /AGENTS.md | §1.9 |
