@@ -23,16 +23,25 @@ const COLLAPSE_KEY = 'lf-sidebar-collapsed';
 
 function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[]; collapsed: boolean }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const unlocked = isUnlocked(item, roles);
   const label = t(`dashboard.nav.${item.key}`);
 
   if (!unlocked) {
+    // Locked items are a call to action, not a dead end (owner report,
+    // 2026-09-09): tapping used to do nothing, and the explanation lived
+    // ONLY in a hover title — invisible on mobile, which has no hover
+    // (§1.11). It now routes straight to the same upgrade flow the sidebar's
+    // own "Become a Tutor" panel already links to.
     return (
-      <div
-        aria-disabled="true"
+      <button
+        type="button"
         title={t('dashboard.nav.lockedHint')}
+        onClick={() => navigate('/verify-parent')}
         className={cn(
-          'flex min-h-12 items-center gap-3 rounded-full text-content-faint',
+          'flex min-h-12 items-center gap-3 rounded-full text-content-faint transition-colors duration-150',
+          'hover:bg-surface-sunken hover:text-content-muted',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
           collapsed ? 'justify-center px-0' : 'px-4',
         )}
       >
@@ -44,14 +53,14 @@ function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[
         </span>
         {!collapsed && (
           <>
-            <span className="lf-label flex-1">{label}</span>
+            <span className="lf-label flex-1 text-left">{label}</span>
             <span className="flex items-center gap-1 rounded-full bg-surface-sunken px-2 py-0.5">
               <Icon name="lock" className="!text-[14px]" />
               <span className="lf-caption font-bold">{t('dashboard.nav.lockedBadge')}</span>
             </span>
           </>
         )}
-      </div>
+      </button>
     );
   }
 
@@ -83,14 +92,21 @@ function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[
 
 function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const unlocked = isUnlocked(item, roles);
 
   if (!unlocked) {
+    // Same tap-to-explain fix as SidebarItem — mobile never had a hover
+    // hint to fall back on, so a locked tab was a pure dead end (§1.11).
     return (
-      <div aria-disabled="true" className="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-content-faint">
+      <button
+        type="button"
+        onClick={() => navigate('/verify-parent')}
+        className="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-content-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      >
         <Icon name="lock" />
         <span className="lf-caption">{t(`dashboard.nav.${item.key}`)}</span>
-      </div>
+      </button>
     );
   }
 

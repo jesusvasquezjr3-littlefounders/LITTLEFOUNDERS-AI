@@ -306,11 +306,25 @@ const VEIL_TIMEOUT_MS = 8000;
  * modal would punish the learner for a decision their browser made. Tapping it
  * IS a user gesture, which is what `armAudioUnlock` is waiting for, so the
  * control fixes the thing it is complaining about simply by being pressed.
+ *
+ * RENDERED INSIDE THE DOCK'S OWN FLEX COLUMN, not a second fixed-position
+ * layer with its own hand-measured offset. It used to be `absolute
+ * bottom-28` — a number sized against the compact mic orb (~96-136px tall,
+ * this file's own comment on the dock above) — which put it correctly above
+ * the mic in every conversing-phase screenshot anyone took. But the SAME
+ * dock hosts `ClosingInWorld`'s goodbye card in the closing phase: a
+ * headline plate plus a button row, sometimes plus a 52vh history sheet — far
+ * taller than 112px, so the fixed offset landed the notice mid-card instead
+ * of above it (owner report, 2026-09-09). A hand-measured reservation is
+ * only valid for the state it was measured in (/AGENTS.md §1.14). Stacking
+ * it as the dock's own first flex child instead means it is always exactly
+ * above whatever the dock is currently showing, in every phase, without a
+ * number to keep in sync.
  */
 function SoundBlockedNotice({ onDismiss }: { onDismiss: () => void }) {
   const { t } = useTranslation();
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-28 z-40 flex justify-center px-4">
+    <div className="pointer-events-none flex w-full justify-center">
       <button
         type="button"
         onClick={onDismiss}
@@ -688,13 +702,6 @@ function StageShellInner({
         />
 
         {/*
-         * One line, in the world's own material, only when it is true. It is
-         * not a modal and not a toast: the tutor keeps talking in captions
-         * while it is up, because the session must never depend on sound.
-         */}
-        {soundBlocked && <SoundBlockedNotice onDismiss={() => setSoundBlocked(false)} />}
-
-        {/*
          * THE WAY OUT. Always visible, always focusable, first in the tab
          * order, and anchored to the VIEWPORT rather than to the world.
          *
@@ -882,6 +889,15 @@ function StageShellInner({
             besidePlate && 'lg:right-[min(27.5rem,34vw)] lg:max-w-[min(30rem,100%)]',
           )}
         >
+          {/*
+           * FIRST child of the dock's own column, not a second fixed layer —
+           * see `SoundBlockedNotice`'s own comment for why. It is one line,
+           * in the world's own material, only when it is true: not a modal
+           * and not a toast, since the tutor keeps talking in captions while
+           * it is up and the session must never depend on sound.
+           */}
+          {soundBlocked && <SoundBlockedNotice onDismiss={() => setSoundBlocked(false)} />}
+
           <div ref={attachAbove} className="flex w-full flex-col items-center gap-2 empty:hidden" />
 
           {/*

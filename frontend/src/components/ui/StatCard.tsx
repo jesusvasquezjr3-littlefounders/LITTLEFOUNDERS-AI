@@ -55,7 +55,18 @@ export function StatCard({ icon, value, label, tone = 'primary', dense = false, 
       </IconChip>
       <div className="flex w-full min-w-0 flex-col">
         <p className={cn('lf-number leading-none truncate', dense ? 'lf-headline' : 'lf-display-lg')}>{value}</p>
-        <p className="lf-caption text-content-muted mt-1 truncate">{label}</p>
+        {/*
+         * `truncate` forces a single line and silently drops anything past
+         * it — fine for a short call-site label, but /profile's 6-up desktop
+         * row (`lg:grid-cols-6`) leaves under 100px for labels like
+         * "Lecciones completadas" or "Minutos aprendidos", which is a
+         * different width state than the stacked-mobile case this file's
+         * own header comment was measured against (2026-09-05). Same
+         * deterministic ceiling already used for the Tutor's live-authored
+         * captions (WALKTHROUGH.md, 2026-09-02): wrap up to two lines
+         * instead of losing the tail silently.
+         */}
+        <p className="lf-caption text-content-muted mt-1 line-clamp-2">{label}</p>
       </div>
     </Card>
   );

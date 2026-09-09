@@ -10,7 +10,7 @@
     "tasks": "Tasks",
     "banking": "Banking",
     "lockedBadge": "Tutor",
-    "lockedHint": "Unlocks when your account becomes a verified Tutor",
+    "lockedHint": "Verify your identity to unlock this as a Tutor — tap to start",
     "profile": "Profile",
     "family": "Family"
   },
