@@ -452,7 +452,7 @@ export type Database = {
           },
         ]
       }
-      banca_accounts: {
+      banking_accounts: {
         Row: {
           card_design: string
           display_number: string
@@ -488,21 +488,21 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "banca_accounts_frozen_by_fkey"
+            foreignKeyName: "banking_accounts_frozen_by_fkey"
             columns: ["frozen_by"]
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "banca_accounts_kid_user_id_fkey"
+            foreignKeyName: "banking_accounts_kid_user_id_fkey"
             columns: ["kid_user_id"]
             isOneToOne: true
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "banca_accounts_opened_by_fkey"
+            foreignKeyName: "banking_accounts_opened_by_fkey"
             columns: ["opened_by"]
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"

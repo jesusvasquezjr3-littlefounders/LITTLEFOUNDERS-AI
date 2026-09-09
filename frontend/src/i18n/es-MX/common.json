@@ -206,11 +206,11 @@
       "cancelledAnnounce": "\"{{title}}\" cancelada.",
       "redemptionApprovedAnnounce": "Canje aprobado.",
       "redemptionDeniedAnnounce": "Canje rechazado.",
-      "bancaLink": "Ver detalles del monedero en Banca Digital"
+      "bankingLink": "Ver detalles del monedero en Banca Digital"
     },
     "kid": {
       "subtitle": "Haz tus quehaceres, gana LF Coins y decide qué hacer con ellos.",
-      "bancaLink": "Ver tu cuenta de Banca Digital",
+      "bankingLink": "Ver tu cuenta de Banca Digital",
       "walletTitle": "Mi monedero",
       "save": "Ahorrar",
       "spend": "Gastar",
@@ -282,7 +282,7 @@
     },
     "recurrenceBadgeWeekly": "Semanal"
   },
-  "banca": {
+  "banking": {
     "loading": "Cargando tu cuenta…",
     "title": "Banca Digital",
     "kid": {
@@ -293,7 +293,10 @@
       "cardDetails": "Detalles de la tarjeta",
       "frozenBadge": "Congelada",
       "allowanceArrived": "¡Tu mesada llegó!",
-      "spendLimit": { "weekly": "Límite semanal de gasto", "monthly": "Límite mensual de gasto" },
+      "spendLimit": {
+        "weekly": "Límite semanal de gasto",
+        "monthly": "Límite mensual de gasto"
+      },
       "spendLimitUsed": "{{used}} de {{cap}} usados",
       "frozenAnnounce": "Tarjeta congelada.",
       "unfrozenAnnounce": "Tarjeta descongelada.",

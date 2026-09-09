@@ -178,8 +178,8 @@ export function ParentTaskBoard() {
         <StatCard icon={<Icon name="redeem" />} value={String(pendingRedemptions.length)} label={t('tasks.parent.statRedemptions')} tone="delight" />
         <StatCard icon={<Icon name="savings" />} value={String(coinsAwarded)} label={t('tasks.parent.statAwarded')} tone="success" />
       </div>
-      <Link to="/banca" className="-mt-4 inline-flex items-center gap-1 self-start lf-caption font-bold text-primary">
-        {t('tasks.parent.bancaLink')}
+      <Link to="/banking" className="-mt-4 inline-flex items-center gap-1 self-start lf-caption font-bold text-primary">
+        {t('tasks.parent.bankingLink')}
         <Icon name="arrow_forward" className="text-[16px]" aria-hidden />
       </Link>
 

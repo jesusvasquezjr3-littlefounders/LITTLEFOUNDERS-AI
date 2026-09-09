@@ -1,4 +1,4 @@
-# BANCA_DIGITAL.md — a family-bank experience over the LF Coins economy — product design
+# BANKING.md — a family-bank experience over the LF Coins economy — product design
 
 > **Authority:** engine spec (`/AGENTS.md` §1.1 tier 6), same tier as `FAMILY_HUB.md`.
 > Subordinate to `/AGENTS.md`, `ROADMAP.md`, `GLOSSARY.md`, `DESIGN.md`,
@@ -17,7 +17,7 @@
 > versus what's still a proposal. It is built on two things read in full in
 > the same session it was authored: the shipped `FAMILY_HUB.md` foundation (`wallet_ledger`,
 > Save/Spend/Share, `savings_goals`, `redemption_catalog`, `guardian_links`) and
-> a competitive/regulatory research brief — *Banca Digital: a Family Banking
+> a competitive/regulatory research brief — *Digital Banking: a Family Banking
 > Strategy Brief* — covering Greenlight, GoHenry, Step, Chase First Banking,
 > Copper, BusyKid, Revolut Kids & Teens, Nubank/Banco Inter/C6 Bank in Brazil,
 > and the 2024 Synapse/Evolve BaaS collapse. That brief's conclusions are cited
@@ -30,7 +30,7 @@
 
 | | |
 |---|---|
-| **Status** | **WAVES 0-2 SHIPPED AND LIVE IN PRODUCTION, 2026-09-09.** A named account + card (freeze, nickname, design), automated allowance with the pending-credit allocate loop, a "Parent-Paid" savings bonus, a spend limit enforced at request time, and the derived statement are all built, verified locally end-to-end against a real Postgres instance (§14), and now deployed: `0081_banca_digital.sql` applied via `tutor-deploy.yml step:migrate` (pre-migration restore point taken automatically), production confirmed at **81/81**, and independently re-verified live — `/health` 200, `GET /api/v1/banca/account` 401 (mounted, not 404), `https://littlefounders.ai/banca` 200 — see `ROADMAP.md`'s migration-handoff paragraph for the full receipt. `family_gifts` (§5.7) is explicitly NOT built. |
+| **Status** | **WAVES 0-2 SHIPPED AND LIVE IN PRODUCTION, 2026-09-09.** A named account + card (freeze, nickname, design), automated allowance with the pending-credit allocate loop, a "Parent-Paid" savings bonus, a spend limit enforced at request time, and the derived statement are all built, verified locally end-to-end against a real Postgres instance (§14), and now deployed: `0081_banca_digital.sql` applied via `tutor-deploy.yml step:migrate` (pre-migration restore point taken automatically), production confirmed at **81/81**. **Corrected the same day (§14.6):** the route, table, files and identifiers originally used the Spanish word "banca" as a permanent code identifier, which violates `/AGENTS.md` §1.0 #4 — migration `0082_rename_banking_accounts.sql` renamed the table, and the same commit renamed the route to `/banking`, the mount path to `/api/v1/banking`, every backend/frontend file and identifier, and the i18n key group, while correcting D2 (§12) to make "Banca Digital"/"Banco Digital" a localized DISPLAY name only (es-MX/pt-BR), never a code identifier or the en-US name. Independently re-verified live after the correction — `/health` 200, `GET /api/v1/banking/account` 401 (mounted, not 404), `https://littlefounders.ai/banking` 200 — see `ROADMAP.md`'s migration-handoff paragraphs for the full receipt. `family_gifts` (§5.7) is explicitly NOT built. |
 | **Depends on** | `FAMILY_HUB.md`, shipped and live in production 2026-09-08 (`wallet_ledger`, `savings_goals`, `redemption_catalog`, `guardian_links`, `kid_task_streaks`) — this design adds a presentation and mechanics layer on top, not a replacement. |
 | **Regulatory posture** | Stays entirely at **rung 1 — simulation** of the research brief's ladder [Brief §5]. No real money, no bank partner, no new regulatory surface. Every mechanic below is closed-loop LF Coins, exactly like `FAMILY_HUB.md`'s existing economy — this document changes what the economy *feels like*, never what it *is*. |
 | **Next action** | None outstanding for Waves 0-2. `family_gifts` (Wave 3) is the next build increment, not a blocker. |
@@ -58,7 +58,7 @@ friction, a "Parent-Paid" savings bonus, and a monthly statement.
 
 **The wedge stays what the research found it to be, independently, twice
 [Brief §7]: every competitor is a bank bolting on financial-education content
-after the fact. We are the reverse.** Banca Digital is not LittleFounders
+after the fact. We are the reverse.** Digital Banking is not LittleFounders
 adding a bank. It is LittleFounders' financial-education platform finally
 giving a kid somewhere to *practice* what the courses teach, styled exactly
 like the real thing they'll use as an adult — because the entire pedagogical
@@ -80,7 +80,7 @@ citations now behind it, plus two additions this design introduces:
 | Real money, bank transfers, a real debit card | Unchanged from `FAMILY_HUB.md` §3. The research brief's whole regulatory ladder [Brief §5] exists to answer "what would it take" — the answer for a company our size is rungs 3-5 (embed a licensed partner, or never touch custody), not something this design reaches for. |
 | Device screen-time limits, GPS/geofencing | Unchanged, same reasoning as `FAMILY_HUB.md` §3. |
 | Converting LF Coins ↔ XP | Unchanged — the two economies stay separate. |
-| **A "card number" that looks real** *(new)* | The displayed account/card number must be **structurally, visibly fake** — not a Luhn-valid 16-digit PAN, not formatted like a real IBAN/CLABE. A kid who screenshots their Banca Digital card and pastes the number into an actual payment field must get an obvious reject, not a coincidence. §5.1 specifies the format. |
+| **A "card number" that looks real** *(new)* | The displayed account/card number must be **structurally, visibly fake** — not a Luhn-valid 16-digit PAN, not formatted like a real IBAN/CLABE. A kid who screenshots their Digital Banking card and pastes the number into an actual payment field must get an obvious reject, not a coincidence. §5.1 specifies the format. |
 | **Any claim of deposit insurance, real interest, or bank-account status** *(new)* | Never "FDIC-insured," never "bank account," never "interest rate" or "APY," anywhere in UI copy, in any of the three locales. This is the single most load-bearing copy rule in this document — see §4's language-discipline callout. It is not a nice-to-have; it is the line the research brief identifies as the exact one Synapse-adjacent products blurred [Brief §4]. |
 
 ---
@@ -92,9 +92,9 @@ rest of this document is drafted against it, the same way `FAMILY_HUB.md`
 drafted its schema against its own D1 recommendation before the owner had
 ruled.
 
-**Recommendation: a new nav item, `/banca`, role-gated identically to
+**Recommendation: a new nav item, `/banking`, role-gated identically to
 `/tasks` (`['parent', 'kid']`).** `/tasks` keeps its current job — the
-worklist: assign, complete, approve, the redemption catalog editor. `/banca`
+worklist: assign, complete, approve, the redemption catalog editor. `/banking`
 becomes the money home: the account, the card, goals in full (not just the
 Save `StatCard`), the statement, allowance automation, spend limits. The two
 routes cross-link:
@@ -103,7 +103,7 @@ routes cross-link:
   bank →" link (kid) / "View wallet details →" (parent), rather than
   disappearing — a kid mid-chore should still see the number move without
   leaving the worklist.
-- `/banca`'s home shows a small "N tasks awaiting" teaser back to `/tasks`
+- `/banking`'s home shows a small "N tasks awaiting" teaser back to `/tasks`
   when relevant (parent) or "N chores to do" (kid) — the ClassDojo-style
   proactive-visibility idea `FAMILY_HUB.md` §2 already established, applied
   to the reverse direction.
@@ -128,7 +128,7 @@ compact echo in both places, in sync because both read the same
 
 | Capability | universal | parent | kid | bigfounder | admin | superadmin |
 |---|---|---|---|---|---|---|
-| See the `/banca` nav item | — | ✅ | ✅ | — | — | — |
+| See the `/banking` nav item | — | ✅ | ✅ | — | — | — |
 | Open a kid's account | — | ✅ | — | — | — | — |
 | Use own account/card/statement | — | — | ✅ | — | — | — |
 | View a kid's account (as guardian) | — | ✅ *(any verified guardian, no hierarchy)* | — | — | — | — |
@@ -163,13 +163,13 @@ compact echo in both places, in sync because both read the same
 
 ### §3.2 Integration surface — what this plugs into, and what it deliberately doesn't touch
 
-| System | How Banca Digital connects to it |
+| System | How Digital Banking connects to it |
 |---|---|
 | `navConfig.ts` | One new `NavItem`, `requiresRole: ['parent', 'kid']` — identical gating shape to `tasks`, zero new permission mechanism |
 | `wallet_ledger` / `savings_goals` / `redemption_catalog` | Read and extended in place (§5) — a kid's existing balance carries over the moment an account is opened; this is a presentation layer, never a migration of value |
-| `FamilyPage.tsx`'s kid-card summary chips | The existing wallet-total pill (`FAMILY_HUB.md` §7, 2026-09-08) repoints to `/banca` instead of `/tasks` once this ships |
+| `FamilyPage.tsx`'s kid-card summary chips | The existing wallet-total pill (`FAMILY_HUB.md` §7, 2026-09-08) repoints to `/banking` instead of `/tasks` once this ships |
 | `events.ts` (the existing notification pipeline) | Extended with new event types (allowance posted, statement ready, spend limit reached) into the SAME weekly digest `FAMILY_HUB.md` §6 step 8 already rides — no new transport |
-| i18n | A new `banca.*` key group, same 3-locale-parity discipline as `tasks.*` |
+| i18n | A new `banking.*` key group, same 3-locale-parity discipline as `tasks.*` |
 | `DESIGN.md` | Gains a Screen Recipe entry at build time (§7 is written in that exact grammar already, so this is a copy-in, not a re-derivation) |
 | `frontend/scripts/seo/site.mjs` | **Not yet touched — required by `/AGENTS.md` §1.15 the moment this ships for real.** If this is meant to be a major draw, that claim has to reach the public `ELEVATOR`/value proposition, not stay inside the authenticated app |
 | Admin analytics | Aggregate-only, via the existing admin-console pattern (§3.1) |
@@ -182,7 +182,7 @@ compact echo in both places, in sync because both read the same
 
 | Concept | Draft en-US | Draft es-MX | Draft pt-BR |
 |---|---|---|---|
-| Product name | Digital Bank *or keep "Banca Digital" as a proper noun in all three, the way "LF Coins" already is* | Banca Digital | Banco Digital |
+| Product name | **Digital Banking** — a translated English name, never the Spanish word used as a code identifier or an en-US label (§14.6 corrects the original recommendation, which wrongly generalized "LF Coins" stays untranslated as a proper noun to this product name too) | Banca Digital | Banco Digital |
 | The kid's account | "your account" | "tu cuenta" | "sua conta" |
 | The card | "your card" | "tu tarjeta" | "seu cartão" |
 | Monthly recap | "statement" | "estado de cuenta" | "extrato" |
@@ -215,10 +215,10 @@ are illustrative (next real number assigned at build time, per
 `/AGENTS.md` §7's migration workflow) — drafted starting at `0081` as a
 placeholder sequence, not a claim about what else may land first.
 
-### §5.1 `banca_accounts` — one row per kid, created at onboarding
+### §5.1 `banking_accounts` — one row per kid, created at onboarding
 
 ```sql
-CREATE TABLE public.banca_accounts (
+CREATE TABLE public.banking_accounts (
     kid_user_id  uuid PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
     nickname     text NOT NULL DEFAULT 'My Account' CHECK (char_length(nickname) BETWEEN 1 AND 40),
     -- Closed vocabulary, never free-text — same discipline savings_goals.icon
@@ -404,14 +404,14 @@ CREDIT on the recipient (`allocated = false`, `reason = 'family_gift_received'`
 
 ### §6.1 Opening the account (onboarding)
 
-1. A parent who has never used Banca Digital for a given kid sees an "Open
-   {kid}'s account" card on `/banca` instead of the account view.
+1. A parent who has never used Digital Banking for a given kid sees an "Open
+   {kid}'s account" card on `/banking` instead of the account view.
 2. Parent picks a nickname and a card design (six closed options, §5.1) — the
    kid can change either later themselves, so this is a starting point, not
    a permanent parental choice.
-3. `POST /banca/accounts` creates the row, generates `display_number`
+3. `POST /banking/accounts` creates the row, generates `display_number`
    server-side.
-4. The KID sees a one-time "welcome" moment next time they open `/banca` —
+4. The KID sees a one-time "welcome" moment next time they open `/banking` —
    the account card animates in with `.lf-land` (§7's reward-arrival motion,
    already in the design system, not a new one), any existing Save/Spend/Share
    balance from `FAMILY_HUB.md`'s prior life is already sitting in it (this
@@ -420,8 +420,8 @@ CREDIT on the recipient (`allocated = false`, `reason = 'family_gift_received'`
 
 ### §6.2 Auto-allowance
 
-1. Parent sets an amount + frequency on `/banca`'s control panel
-   (§7.5) — `POST /banca/allowance-rules`.
+1. Parent sets an amount + frequency on `/banking`'s control panel
+   (§7.5) — `POST /banking/allowance-rules`.
 2. On schedule, the job (§5.3) writes an unallocated `wallet_ledger` credit.
 3. Kid sees it in the SAME "you have something to allocate" surface tasks
    already use (§5.6) — "Your allowance arrived! Split it up."
@@ -462,7 +462,7 @@ CREDIT on the recipient (`allocated = false`, `reason = 'family_gift_received'`
 
 ### §6.6 Freezing the card
 
-1. Either the kid or a guardian can freeze from `/banca`'s account header —
+1. Either the kid or a guardian can freeze from `/banking`'s account header —
    a single toggle, `.lf-switch` (§7's existing component, not a new one).
 2. Frozen blocks NEW redemption requests only — chores, allowance, and the
    savings bonus keep running; freezing your OWN spending is a self-control
@@ -476,7 +476,7 @@ CREDIT on the recipient (`allocated = false`, `reason = 'family_gift_received'`
 1. From the Share `StatCard`, a kid picks a sibling (only kids sharing a
    guardian appear — never a cross-family list) and an amount up to their
    Share balance, with an optional 140-character note.
-2. `POST /banca/gifts` — status `requested`.
+2. `POST /banking/gifts` — status `requested`.
 3. A common guardian approves or denies from the control panel, same visual
    shape as a redemption decision.
 4. On approval: sender's Share balance debits immediately; recipient gets an
@@ -494,7 +494,7 @@ in the same commit as the code). Per `/AGENTS.md` §1.11, every screen below
 ships verified at ~375px and ~1280px before being called done; every string
 exists in all three locales in the same commit.
 
-### §7.1 `/banca` — kid view, "your account"
+### §7.1 `/banking` — kid view, "your account"
 
 Uses the **Dashboard content** 2-column shape `FAMILY_HUB.md`'s Tasks recipe
 already established (`grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-6`)
@@ -525,7 +525,7 @@ money is FOR.
   the kid can fill out themselves; opening the account is a parent action
   (§6.1).
 
-### §7.2 `/banca` — parent view, "the control panel"
+### §7.2 `/banking` — parent view, "the control panel"
 
 Same 2-column Dashboard shape, **decisions due** in the wide column,
 **what they're in service of** in the 360px one — the identical principle
@@ -543,7 +543,7 @@ Same 2-column Dashboard shape, **decisions due** in the wide column,
   when inactive.
 - **Secondary column**: pending decisions — redemption requests, gift
   requests (Wave 3) — reusing `ParentTaskBoard.tsx`'s existing approve/deny
-  row pattern verbatim, just fed from `/banca`'s own data.
+  row pattern verbatim, just fed from `/banking`'s own data.
 
 ### §7.3 Card / freeze detail
 
@@ -596,7 +596,7 @@ already uses.
 
 ---
 
-## §8 API routes — `/api/v1/banca/*`
+## §8 API routes — `/api/v1/banking/*`
 
 Mounted the same way `tasks.ts` is: `requireAuth` at the router,
 `requireRole(['parent', 'kid'])` or a narrower per-route role, envelope
@@ -604,18 +604,18 @@ response, Zod validation at the edge, per `/AGENTS.md` §1.6.
 
 | Route | Method | Role | Purpose |
 |---|---|---|---|
-| `/banca/accounts/:kidId` | `POST` | parent | Open the account (§6.1) |
-| `/banca/accounts/:kidId` | `GET` | both | Account header (nickname, design, number, frozen) |
-| `/banca/accounts/:kidId` | `PATCH` | both | Nickname, card design |
-| `/banca/accounts/:kidId/freeze` | `POST` | both | Toggle frozen |
-| `/banca/allowance-rules/:kidId` | `GET`/`PUT` | parent | Read/set the allowance rule |
-| `/banca/spend-limits/:kidId` | `GET`/`PUT` | parent | Read/set the spend limit |
-| `/banca/savings-bonus/:kidId` | `GET`/`PUT` | parent | Read/set the bonus rate |
-| `/banca/wallet/pending-allocation` | `GET` | kid | The generalized §5.6 queue |
-| `/banca/wallet/allocate/:ledgerId` | `POST` | kid | Split an unallocated credit (any source) |
-| `/banca/statements/:kidId?month=YYYY-MM` | `GET` | both | §7.4's derived aggregation |
-| `/banca/gifts` | `POST` | kid | Request a family gift (Wave 3) |
-| `/banca/gifts/:id/decide` | `POST` | parent | Approve/deny (Wave 3) |
+| `/banking/accounts/:kidId` | `POST` | parent | Open the account (§6.1) |
+| `/banking/accounts/:kidId` | `GET` | both | Account header (nickname, design, number, frozen) |
+| `/banking/accounts/:kidId` | `PATCH` | both | Nickname, card design |
+| `/banking/accounts/:kidId/freeze` | `POST` | both | Toggle frozen |
+| `/banking/allowance-rules/:kidId` | `GET`/`PUT` | parent | Read/set the allowance rule |
+| `/banking/spend-limits/:kidId` | `GET`/`PUT` | parent | Read/set the spend limit |
+| `/banking/savings-bonus/:kidId` | `GET`/`PUT` | parent | Read/set the bonus rate |
+| `/banking/wallet/pending-allocation` | `GET` | kid | The generalized §5.6 queue |
+| `/banking/wallet/allocate/:ledgerId` | `POST` | kid | Split an unallocated credit (any source) |
+| `/banking/statements/:kidId?month=YYYY-MM` | `GET` | both | §7.4's derived aggregation |
+| `/banking/gifts` | `POST` | kid | Request a family gift (Wave 3) |
+| `/banking/gifts/:id/decide` | `POST` | parent | Approve/deny (Wave 3) |
 
 `POST /tasks/redemptions` (existing route, unchanged path) gains the §5.5
 spend-limit check server-side — the one existing endpoint this design
@@ -626,8 +626,8 @@ change doesn't get lost inside a "new routes only" reading of this table.
 
 ## §9 i18n
 
-A new `banca` key group, structured like `tasks`'s existing group
-(`banca.kid.*`, `banca.parent.*`, `banca.common.*`), added to `en-US` first
+A new `banking` key group, structured like `tasks`'s existing group
+(`banking.kid.*`, `banking.parent.*`, `banking.common.*`), added to `en-US` first
 and mirrored to `es-MX`/`pt-BR` in the same commit, per `/AGENTS.md` §1.8.
 The language-discipline checklist in §4 applies to every key in this group
 without exception — `i18n:check`'s hardcoded-string scan catches a literal
@@ -669,7 +669,7 @@ enforce.
 
 | Wave | Ships | Depends on |
 |---|---|---|
-| **0** | Schema (§5.1, §5.2, §5.6) + `GET/PATCH /banca/accounts`, the account-opening flow, `/banca` nav item and the kid/parent home screens (§7.1, §7.2) reading EXISTING `FAMILY_HUB.md` data through the new presentation — no new mechanics yet, just the place | Owner sign-off on D1 (IA), D2 (naming) |
+| **0** | Schema (§5.1, §5.2, §5.6) + `GET/PATCH /banking/accounts`, the account-opening flow, `/banking` nav item and the kid/parent home screens (§7.1, §7.2) reading EXISTING `FAMILY_HUB.md` data through the new presentation — no new mechanics yet, just the place | Owner sign-off on D1 (IA), D2 (naming) |
 | **1** | Allowance automation (§5.3, §7.5) + the generalized unallocated-credit queue (§5.6) | Wave 0 |
 | **2** | Savings bonus (§5.4) + spend limits (§5.5, §7.6) + card freeze (§7.3) | Wave 0 |
 | **3** | Statement (§7.4, derived-only, no new storage) + family gifts (§5.7, §7.7) | Wave 1 (statement needs allowance in the aggregation to be meaningful; gifts need the account to exist) |
@@ -681,12 +681,12 @@ enforce.
 
 | # | Question | Recommendation (this document is drafted against it) |
 |---|---|---|
-| **D1** | Own nav item (`/banca`) vs. a tab inside `/tasks`? | **Own nav item** — §3's full reasoning. **BUILT 2026-09-08** as recommended. |
-| **D2** | Product name across locales — "Banca Digital" as a proper noun everywhere (like "LF Coins"), or a translated name per locale? | Lean toward the proper-noun path for brand consistency across a family that may mix languages, but this is a branding call, not an engineering one — same footing `FAMILY_HUB.md` §4 gave LF Coins' own naming. **BUILT 2026-09-08** as the proper-noun path, in all three locales — still an owner call to revisit, not closed by having shipped. |
+| **D1** | Own nav item (`/banking`) vs. a tab inside `/tasks`? | **Own nav item** — §3's full reasoning. **BUILT 2026-09-08** as recommended. |
+| **D2** | Product name across locales — "Banca Digital" as a proper noun everywhere (like "LF Coins"), or a translated name per locale? | **RESOLVED 2026-09-09, correcting an owner-flagged error.** The 2026-09-08 build shipped the proper-noun path — "Banca Digital" as the literal en-US label AND as every code-level identifier (route `/banca`, table `banca_accounts`, files, i18n namespace). The owner caught this the same day: `/AGENTS.md` §1.0 #4's English-only rule is non-negotiable, and generalizing "LF Coins stays untranslated" to "therefore a Spanish word can be a permanent code identifier" was an unauthorized, incorrect extension — LF Coins is a brand token used consistently as ENGLISH text in every locale, not a foreign word substituted for one. Corrected shape (§14.6): every code-level identifier is English (`/banking`, `banking_accounts`, `banking.ts`, `banking.*` i18n keys); the DISPLAY name is `"Digital Banking"` in en-US and may legitimately stay `"Banca Digital"` / `"Banco Digital"` as localized marketing copy in es-MX/pt-BR, same as any other translated product label. |
 | **D3** | Does a specific existing character (Dina/Liruf/Dr. Rho/Zara Vex) host the onboarding moment (§6.1) as "the family's banker," or does onboarding stay character-neutral? | No recommendation — this is a narrative-casting choice for whoever owns character voice, flagged so it doesn't get decided by whoever happens to build §6.1 first. |
 | **D4** | Statement export (PDF/share) — Wave 4 addition or explicitly out of scope? | Out of scope for now (§6.5) — nothing in the competitive research suggests a kid audience needs a downloadable statement; revisit if real usage says otherwise. |
 | **D5** | `family_gifts`' sender-side debit — a new `wallet_ledger.reason` value (`family_gift_sent`), or reuse `redemption`'s shape since both are Spend/Share-side debits? | Lean new value for query clarity (a statement wants to say "gift sent," not "redeemed"), but this is a schema-taste call worth a second look at Wave 3 build time, not now. |
-| **D6** | Should `/banca` exist for a kid with NO guardian-approved account yet, showing an empty "ask a parent" state (§7.1), or should the nav item itself stay hidden until an account exists? | Lean toward showing the empty state — a locked/hidden nav item teaches a kid the feature doesn't exist for them; an empty state with one clear next step is the same pattern `navConfig.ts`'s own `requiresRole` already uses for a locked-but-visible item. **BUILT 2026-09-08** as recommended — no CTA button in the empty state (§14 revises this out of the original mockup: nothing for a kid to actually submit there). |
+| **D6** | Should `/banking` exist for a kid with NO guardian-approved account yet, showing an empty "ask a parent" state (§7.1), or should the nav item itself stay hidden until an account exists? | Lean toward showing the empty state — a locked/hidden nav item teaches a kid the feature doesn't exist for them; an empty state with one clear next step is the same pattern `navConfig.ts`'s own `requiresRole` already uses for a locked-but-visible item. **BUILT 2026-09-08** as recommended — no CTA button in the empty state (§14 revises this out of the original mockup: nothing for a kid to actually submit there). |
 | **D7** | Does `admin`/`superadmin` ever get a support-specific, audited path to inspect ONE kid's ledger for troubleshooting (e.g. "my kid's allowance never posted"), or does support stay limited to what a parent can already see and screenshot? | No recommendation — §3.1 holds the line that admin visibility defaults to aggregate-only, on the same footing `/AGENTS.md` §1.9 gives parent visibility as a guardian-only invariant. If a support path is ever needed, it should be its own audited, logged exception (mirroring the discipline `/AGENTS.md` §1.5 already applies to every other internal-access exception), not a quiet admin query added under deadline pressure. |
 
 ---
@@ -714,18 +714,18 @@ and what live browser verification caught that no other gate would have.
 
 ### §14.1 What's real
 
-Migration `0081_banca_digital.sql`: `banca_accounts`, `pending_credits`,
+Migration `0081_banca_digital.sql`: `banking_accounts`, `pending_credits`,
 `allowance_rules`, `savings_bonus_rules`, `spend_limits`, `wallet_ledger`'s
 widened reason vocabulary, and the `allocate_pending_credit` /
 `run_due_scheduled_credits` functions — applied locally twice (idempotent,
-per `/AGENTS.md` §7's own migration workflow). Backend: `routes/banca.ts`
-(mounted at `/api/v1/banca`) plus a spend-limit check added to the existing
-`POST /tasks/redemptions`. Frontend: `/banca` (nav item, both roles),
-`KidBancaHome.tsx`, `ParentBancaControlPanel.tsx`, cross-links from `/tasks`
-and `/family`'s kid card. i18n: `banca.*` in all three locales plus
-`dashboard.nav.banca` (missed on the first pass — caught by the nav item
-literally reading `dashboard.nav.banca` on screen, §14.3). Tests: 32 new
-backend tests (`banca.test.ts`) plus 4 new spend-limit cases added to
+per `/AGENTS.md` §7's own migration workflow). Backend: `routes/banking.ts`
+(mounted at `/api/v1/banking`) plus a spend-limit check added to the existing
+`POST /tasks/redemptions`. Frontend: `/banking` (nav item, both roles),
+`KidBankingHome.tsx`, `ParentBankingControlPanel.tsx`, cross-links from `/tasks`
+and `/family`'s kid card. i18n: `banking.*` in all three locales plus
+`dashboard.nav.banking` (missed on the first pass — caught by the nav item
+literally reading `dashboard.nav.banking` on screen, §14.3). Tests: 32 new
+backend tests (`banking.test.ts`) plus 4 new spend-limit cases added to
 `tasks.test.ts`; suites green at 996/996 (backend) and 1804/1804 (frontend).
 
 ### §14.2 Design revision: §5.6's `wallet_ledger.allocated` never got built
@@ -739,7 +739,7 @@ until the split is chosen. `pending_credits` (§5.6, as actually shipped)
 generalizes that same pattern to allowance instead of bending the ledger's
 own invariant — one small table, one `allocate_pending_credit` function that
 mirrors `allocate_task_reward` exactly. The kid's "you have something to
-sort" surface (`KidBancaHome`'s `AllocateCreditCard`) reads from this table
+sort" surface (`KidBankingHome`'s `AllocateCreditCard`) reads from this table
 instead of a `wallet_ledger.allocated = false` filter.
 
 ### §14.3 Two defects live browser verification caught, that no other gate would have
@@ -752,9 +752,9 @@ fetch proves the code ran, not that a user could reach it.
 
 1. **The nav item's own label was missing.** `navConfig.ts`'s own comment
    says every entry reads `dashboard.nav.<key>` — a SEPARATE i18n namespace
-   from the `banca.*` group this feature's content lives in, and easy to
+   from the `banking.*` group this feature's content lives in, and easy to
    miss because nothing type-checks a nav key against that namespace. It
-   rendered as the literal string `dashboard.nav.banca` in the sidebar and
+   rendered as the literal string `dashboard.nav.banking` in the sidebar and
    the bottom tab bar until the first screenshot. Fixed by adding the key to
    `dashboard.json` in all three locales.
 2. **The card-details dialog was reachable, and invisible.** `CardDialog`
@@ -787,7 +787,7 @@ A parent (`tutor@email.com`) opened an account, configured a 10-coin weekly
 Friday allowance, a 50-coin weekly spend limit, and a 5% savings bonus — all
 three persisted correctly on reload. Forcing `allowance_rules.next_run_at`
 and `savings_bonus_rules.next_run_at` into the past and reloading the kid's
-`/banca` fired `run_due_scheduled_credits` exactly as designed: an
+`/banking` fired `run_due_scheduled_credits` exactly as designed: an
 unallocated "Your allowance arrived!" credit appeared, a Save/Spend/Share
 split of 5/3/2 posted correctly to `wallet_ledger` through
 `allocate_pending_credit`, and — after manually raising the Save balance to
@@ -806,3 +806,68 @@ authorization surface on top of everything else in this pass — building it
 half-verified under the same session would be exactly what `FAMILY_HUB.md`
 §3/D4 already refused to do with the Share bucket once ("deliberately
 deferred rather than built half-way"). Tracked as the next increment.
+
+### §14.6 Round 2 (2026-09-09): correcting a Spanish code identifier the owner caught
+
+`/AGENTS.md` §1.0 #4 is explicit and non-negotiable: all documentation,
+comments and commit messages are written in English. §14.1 shipped with the
+Spanish word "banca" as the route (`/banca`), the table (`banca_accounts`),
+the mount path (`/api/v1/banca`), every backend/frontend file
+(`routes/banca.ts`, `KidBancaHome.tsx`, `ParentBancaControlPanel.tsx`, …), and
+the i18n namespace (`banca.*`, `dashboard.nav.banca`) — a violation the owner
+caught in production and named a **monumental failure**, correctly: every
+other table and route this platform ships (`wallet_ledger`, `savings_goals`,
+`redemption_catalog`, `spend_limits`, `allowance_rules`, `/tasks`, `/family`)
+is English, and this feature was the one exception.
+
+**Root cause.** §12 D2's original recommendation conflated two different
+questions: "can a brand token stay untranslated across locales, the way `LF
+Coins` does" (legitimate — `LF Coins` is English text used consistently) with
+"can a permanent CODE identifier be a Spanish word" (never legitimate — it
+has nothing to do with translation and everything to do with `/AGENTS.md`
+§1.0 #4). Resolving D2 by making "Banca Digital" the literal en-US label
+AND the route/table/file name was an unauthorized, incorrect generalization
+made without owner sign-off, on a decision this document itself had flagged
+as needing one.
+
+**What changed, same commit:**
+
+- `database/migrations/0082_rename_banking_accounts.sql` — `banca_accounts`
+  → `banking_accounts`, RLS policies recreated under the new name. Declared
+  `@phase: contract` (any `RENAME` is a contraction per
+  `database/scripts/check-migration-phase.mjs`, deliberately, so a rolling
+  deploy can never have old code querying a name that no longer exists).
+  `0081_banca_digital.sql` itself is untouched — per `/AGENTS.md` §1.3, an
+  applied migration is never edited, only superseded by a delta.
+- Backend: `routes/banca.ts` → `routes/banking.ts`, mounted at
+  `/api/v1/banking`; every function, type and audit-log action string
+  (`banca.*` → `banking.*`) renamed in `supabaseRest.ts` and the route file;
+  tests renamed to `banking.test.ts`.
+- Frontend: `routes/app/banca/` → `routes/app/banking/`, `BancaPage.tsx` →
+  `BankingPage.tsx`, `KidBancaHome.tsx` → `KidBankingHome.tsx`,
+  `ParentBancaControlPanel.tsx` → `ParentBankingControlPanel.tsx`, the
+  `WireBancaAccount` type → `WireBankingAccount`, the route in `App.tsx`,
+  the `navConfig.ts` entry, and the cross-links from `/family` and
+  `/tasks` — all repointed to `/banking`.
+- i18n: the `banca` key group renamed to `banking` in all three locales,
+  `tasks.parent.bancaLink`/`tasks.kid.bancaLink` renamed to `bankingLink`,
+  and `dashboard.nav.banca` renamed to `dashboard.nav.banking` — **and the
+  display values corrected**, not just the keys: en-US now reads "Digital
+  Banking"/"Banking" (never the Spanish word), while es-MX ("Banca Digital")
+  and pt-BR ("Banco Digital") keep a legitimate LOCALIZED product name, the
+  same footing any other translated marketing label sits on.
+- This document: renamed `BANCA_DIGITAL.md` → `BANKING.md`, and every
+  internal cross-reference, route mention and prose use of "Banca Digital"
+  as the product name corrected to "Digital Banking" (English prose keeps an
+  English name; §4's vocabulary table, §12 D2 and this section are the
+  record of why).
+- `GLOSSARY.md`, `doc_map.md`, `ROADMAP.md`, `DESIGN.md`, `repo_map.md` —
+  updated in the same commit per `/AGENTS.md` §8's stewardship table.
+
+**Gates re-run clean after the rename:** backend `type-check`/`lint`/`test`
+(999/999)/`build`; frontend `type-check`/`lint`/`test` (1804/1804)/`build`;
+root `i18n:check`. A repo-wide grep for `banca`/`Banca`/`BANCA` after the
+rename returns only the untouched, historical `0081_banca_digital.sql` and
+the legitimate es-MX/pt-BR localized display strings and legal prose
+(`bancaria` — Spanish for "banking-related," an ordinary adjective, not the
+product name).

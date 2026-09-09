@@ -206,11 +206,11 @@
       "cancelledAnnounce": "\"{{title}}\" cancelled.",
       "redemptionApprovedAnnounce": "Redemption approved.",
       "redemptionDeniedAnnounce": "Redemption denied.",
-      "bancaLink": "View wallet details in Banca Digital"
+      "bankingLink": "View wallet details in Digital Banking"
     },
     "kid": {
       "subtitle": "Do your chores, earn LF Coins, and decide what to do with them.",
-      "bancaLink": "View your Banca Digital account",
+      "bankingLink": "View your Digital Banking account",
       "walletTitle": "My wallet",
       "save": "Save",
       "spend": "Spend",
@@ -282,18 +282,21 @@
     },
     "recurrenceBadgeWeekly": "Weekly"
   },
-  "banca": {
+  "banking": {
     "loading": "Loading your account…",
-    "title": "Banca Digital",
+    "title": "Digital Banking",
     "kid": {
       "subtitle": "Your own account, card and savings — powered by your LF Coins.",
       "emptyTitle": "Your account isn't open yet",
-      "emptyBody": "Ask a parent to open your Banca Digital account — your Save, Spend and Share balance is already waiting for it.",
+      "emptyBody": "Ask a parent to open your Digital Banking account — your Save, Spend and Share balance is already waiting for it.",
       "accountLabel": "Your account",
       "cardDetails": "Card details",
       "frozenBadge": "Frozen",
       "allowanceArrived": "Your allowance arrived!",
-      "spendLimit": { "weekly": "Weekly spending limit", "monthly": "Monthly spending limit" },
+      "spendLimit": {
+        "weekly": "Weekly spending limit",
+        "monthly": "Monthly spending limit"
+      },
       "spendLimitUsed": "{{used}} of {{cap}} used",
       "frozenAnnounce": "Card frozen.",
       "unfrozenAnnounce": "Card unfrozen.",

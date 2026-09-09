@@ -8,10 +8,10 @@ import { Button, Card, ConfirmButton, Dropdown, Field, Icon, IconChip, LoadingOv
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireGoal, type WireLedgerEntry } from '../tasks/types';
-import { CARD_DESIGNS, type CardDesign, type WireBancaAccount, type WirePendingCredit, type WireSpendLimitStatus, type WireStatement } from './types';
+import { CARD_DESIGNS, type CardDesign, type WireBankingAccount, type WirePendingCredit, type WireSpendLimitStatus, type WireStatement } from './types';
 
 /*
- * The kid's half of BANCA_DIGITAL.md §7.1: the account/card, the wallet
+ * The kid's half of BANKING.md §7.1: the account/card, the wallet
  * (unchanged FAMILY_HUB.md Save/Spend/Share, now the primary reference
  * rather than /tasks's echo), goals promoted to first-class, an allowance
  * catch-up banner, a spend-limit meter, and the statement.
@@ -19,7 +19,7 @@ import { CARD_DESIGNS, type CardDesign, type WireBancaAccount, type WirePendingC
  * SCOPE NOTE: the redemption catalog stays on /tasks — it already works
  * well there, and duplicating a full redeem UI here would double the
  * surface to keep in sync for no product benefit. This page links through
- * instead (BANCA_DIGITAL.md's own §3 cross-link principle, applied here).
+ * instead (BANKING.md's own §3 cross-link principle, applied here).
  */
 
 const CARD_GRADIENT: Record<CardDesign, string> = {
@@ -37,7 +37,7 @@ type LoadState =
   | { status: 'no-account' }
   | {
       status: 'ready';
-      account: WireBancaAccount;
+      account: WireBankingAccount;
       balances: WalletBalances;
       goals: WireGoal[];
       ledger: WireLedgerEntry[];
@@ -45,7 +45,7 @@ type LoadState =
       spendLimit: WireSpendLimitStatus;
     };
 
-export function KidBancaHome() {
+export function KidBankingHome() {
   const { t, i18n } = useTranslation();
   const { getToken, session } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
@@ -67,7 +67,7 @@ export function KidBancaHome() {
       const tok = await getToken();
       if (!tok || cancelled) return;
       setToken(tok);
-      const accountRes = await api<{ account: WireBancaAccount | null }>('/banca/account', { token: tok });
+      const accountRes = await api<{ account: WireBankingAccount | null }>('/banking/account', { token: tok });
       if (cancelled) return;
       if (accountRes.error) {
         setState({ status: 'error', code: accountRes.error.code });
@@ -81,8 +81,8 @@ export function KidBancaHome() {
         api<{ balances: WalletBalances }>('/tasks/wallet', { token: tok }),
         api<{ goals: WireGoal[] }>('/tasks/goals', { token: tok }),
         api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token: tok }),
-        api<{ credits: WirePendingCredit[] }>('/banca/wallet/pending-credits', { token: tok }),
-        api<{ status: WireSpendLimitStatus }>('/banca/spend-limit', { token: tok }),
+        api<{ credits: WirePendingCredit[] }>('/banking/wallet/pending-credits', { token: tok }),
+        api<{ status: WireSpendLimitStatus }>('/banking/spend-limit', { token: tok }),
       ]);
       if (cancelled) return;
       if (balancesRes.error || goalsRes.error || ledgerRes.error || creditsRes.error || spendLimitRes.error) {
@@ -112,8 +112,8 @@ export function KidBancaHome() {
 
   async function refreshAccount() {
     if (!token) return;
-    const res = await api<{ account: WireBancaAccount | null }>('/banca/account', { token });
-    if (res.data?.account) setState((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account as WireBancaAccount } : prev));
+    const res = await api<{ account: WireBankingAccount | null }>('/banking/account', { token });
+    if (res.data?.account) setState((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account as WireBankingAccount } : prev));
   }
 
   async function refreshWalletAndCredits() {
@@ -122,7 +122,7 @@ export function KidBancaHome() {
       api<{ balances: WalletBalances }>('/tasks/wallet', { token }),
       api<{ goals: WireGoal[] }>('/tasks/goals', { token }),
       api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token }),
-      api<{ credits: WirePendingCredit[] }>('/banca/wallet/pending-credits', { token }),
+      api<{ credits: WirePendingCredit[] }>('/banking/wallet/pending-credits', { token }),
     ]);
     setState((prev) => {
       if (prev.status !== 'ready') return prev;
@@ -139,17 +139,17 @@ export function KidBancaHome() {
   async function onToggleFreeze(next: boolean) {
     if (!token || freezeBusy) return;
     setFreezeBusy(true);
-    const res = await api<{ account: WireBancaAccount }>('/banca/account/freeze', { method: 'POST', token, body: { frozen: next } });
+    const res = await api<{ account: WireBankingAccount }>('/banking/account/freeze', { method: 'POST', token, body: { frozen: next } });
     setFreezeBusy(false);
     if (res.data) {
       setState((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
-      announce(next ? t('banca.kid.frozenAnnounce') : t('banca.kid.unfrozenAnnounce'));
+      announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
     }
   }
 
   async function loadStatement(month: string) {
     if (!token) return;
-    const res = await api<{ statement: WireStatement }>(`/banca/statement?month=${month}`, { token });
+    const res = await api<{ statement: WireStatement }>(`/banking/statement?month=${month}`, { token });
     if (res.data) setStatement(res.data.statement);
   }
 
@@ -176,21 +176,21 @@ export function KidBancaHome() {
     }
   }
 
-  if (state.status === 'loading') return <LoadingOverlay label={t('banca.loading')} />;
+  if (state.status === 'loading') return <LoadingOverlay label={t('banking.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} onRetry={() => setReloadKey((k) => k + 1)} />;
 
   if (state.status === 'no-account') {
     return (
       <div className="flex flex-col gap-8 pb-8">
         <header>
-          <h1 className="lf-display-lg text-content">{t('banca.title')}</h1>
+          <h1 className="lf-display-lg text-content">{t('banking.title')}</h1>
         </header>
         <Card className="mx-auto flex max-w-md flex-col items-center gap-3 p-8 text-center">
           <IconChip tone="primary" size="lg">
             <Icon name="account_balance" aria-hidden />
           </IconChip>
-          <h2 className="lf-title text-content">{t('banca.kid.emptyTitle')}</h2>
-          <p className="lf-body max-w-sm text-content-muted">{t('banca.kid.emptyBody')}</p>
+          <h2 className="lf-title text-content">{t('banking.kid.emptyTitle')}</h2>
+          <p className="lf-body max-w-sm text-content-muted">{t('banking.kid.emptyBody')}</p>
         </Card>
       </div>
     );
@@ -205,8 +205,8 @@ export function KidBancaHome() {
   const BUCKET_DOT: Record<WireLedgerEntry['bucket'], string> = { save: 'bg-success', spend: 'bg-primary', share: 'bg-delight' };
 
   function ledgerReasonLabel(reason: string): string {
-    if (reason === 'allowance') return t('banca.kid.reasonAllowance');
-    if (reason === 'savings_bonus') return t('banca.kid.reasonSavingsBonus');
+    if (reason === 'allowance') return t('banking.kid.reasonAllowance');
+    if (reason === 'savings_bonus') return t('banking.kid.reasonSavingsBonus');
     if (reason === 'task_approved') return t('tasks.kid.activityEarnedUntitled');
     if (reason === 'redemption') return t('tasks.kid.activitySpentUntitled');
     return t('tasks.kid.activityAdjustment');
@@ -219,17 +219,17 @@ export function KidBancaHome() {
       </div>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="lf-display-lg text-content">{t('banca.title')}</h1>
-          <p className="lf-body text-content-muted">{t('banca.kid.subtitle')}</p>
+          <h1 className="lf-display-lg text-content">{t('banking.title')}</h1>
+          <p className="lf-body text-content-muted">{t('banking.kid.subtitle')}</p>
         </div>
       </header>
 
-      {/* The one surface allowed to look like a literal card (BANCA_DIGITAL.md §7.1). */}
+      {/* The one surface allowed to look like a literal card (BANKING.md §7.1). */}
       <Card className={cn('overflow-hidden p-0')}>
         <div className={cn('flex min-h-[150px] flex-col justify-between gap-4 bg-gradient-to-br p-6 text-on-accent', CARD_GRADIENT[account.cardDesign])}>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="lf-eyebrow text-on-accent/75">{t('banca.kid.accountLabel')}</p>
+              <p className="lf-eyebrow text-on-accent/75">{t('banking.kid.accountLabel')}</p>
               <p className="lf-headline">{account.nickname}</p>
             </div>
             <button
@@ -238,7 +238,7 @@ export function KidBancaHome() {
               className="lf-press flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 lf-caption font-bold text-on-accent"
             >
               <Icon name="tune" className="text-[16px]" aria-hidden />
-              {t('banca.kid.cardDetails')}
+              {t('banking.kid.cardDetails')}
             </button>
           </div>
           <div className="flex items-end justify-between">
@@ -246,7 +246,7 @@ export function KidBancaHome() {
             {account.frozen && (
               <span className="lf-caption flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 font-bold text-on-accent">
                 <Icon name="lock" className="text-[14px]" aria-hidden />
-                {t('banca.kid.frozenBadge')}
+                {t('banking.kid.frozenBadge')}
               </span>
             )}
           </div>
@@ -279,7 +279,7 @@ export function KidBancaHome() {
                   <Icon name="redeem" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="lf-label block truncate text-content">{t('banca.kid.allowanceArrived')}</span>
+                  <span className="lf-label block truncate text-content">{t('banking.kid.allowanceArrived')}</span>
                   <span className="lf-caption block text-content-faint">{t('tasks.kid.allocateTitle', { count: credit.amount })}</span>
                 </span>
                 <Button type="button" variant="primary" className="min-h-9 shrink-0 px-3 lf-caption" onClick={() => setAllocatingCreditId(credit.id)}>
@@ -294,16 +294,16 @@ export function KidBancaHome() {
       {state.spendLimit.configured && (
         <Card className="flex flex-col gap-2 p-4">
           <div className="flex items-center justify-between">
-            <span className="lf-label text-content">{t(`banca.kid.spendLimit.${state.spendLimit.period}`)}</span>
-            <span className="lf-caption text-content-muted">{t('banca.kid.spendLimitUsed', { used: state.spendLimit.used, cap: state.spendLimit.cap })}</span>
+            <span className="lf-label text-content">{t(`banking.kid.spendLimit.${state.spendLimit.period}`)}</span>
+            <span className="lf-caption text-content-muted">{t('banking.kid.spendLimitUsed', { used: state.spendLimit.used, cap: state.spendLimit.cap })}</span>
           </div>
-          <ProgressBar value={(state.spendLimit.used / state.spendLimit.cap) * 100} label={t('banca.kid.spendLimit.weekly')} tone="accent" />
+          <ProgressBar value={(state.spendLimit.used / state.spendLimit.cap) * 100} label={t('banking.kid.spendLimit.weekly')} tone="accent" />
         </Card>
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <section aria-labelledby="banca-goals-heading">
-          <SectionHeading id="banca-goals-heading" icon="savings" tone="success">
+        <section aria-labelledby="banking-goals-heading">
+          <SectionHeading id="banking-goals-heading" icon="savings" tone="success">
             {t('tasks.kid.goalsTitle')}
           </SectionHeading>
           {activeGoals.length === 0 ? (
@@ -337,23 +337,23 @@ export function KidBancaHome() {
         </section>
 
         <div className="flex flex-col gap-6">
-          <section aria-labelledby="banca-statement-heading">
-            <SectionHeading id="banca-statement-heading" icon="receipt_long" tone="muted">
-              {t('banca.statement.title')}
+          <section aria-labelledby="banking-statement-heading">
+            <SectionHeading id="banking-statement-heading" icon="receipt_long" tone="muted">
+              {t('banking.statement.title')}
             </SectionHeading>
             <Card className="flex flex-col gap-3 p-4">
               {!statementOpen ? (
                 <button type="button" className="lf-press text-left" onClick={() => { setStatementOpen(true); void loadStatement(statementMonth); }}>
-                  <span className="lf-caption text-primary">{t('banca.statement.viewCta')}</span>
+                  <span className="lf-caption text-primary">{t('banking.statement.viewCta')}</span>
                 </button>
               ) : (
                 <>
                   <div className="flex items-center justify-between">
-                    <button type="button" aria-label={t('banca.statement.prevMonth')} onClick={() => stepMonth(-1)} className="lf-press p-1">
+                    <button type="button" aria-label={t('banking.statement.prevMonth')} onClick={() => stepMonth(-1)} className="lf-press p-1">
                       <Icon name="chevron_left" aria-hidden />
                     </button>
                     <span className="lf-label capitalize text-content">{monthFormatter.format(new Date(`${statementMonth}-01T00:00:00Z`))}</span>
-                    <button type="button" aria-label={t('banca.statement.nextMonth')} onClick={() => stepMonth(1)} className="lf-press p-1">
+                    <button type="button" aria-label={t('banking.statement.nextMonth')} onClick={() => stepMonth(1)} className="lf-press p-1">
                       <Icon name="chevron_right" aria-hidden />
                     </button>
                   </div>
@@ -361,15 +361,15 @@ export function KidBancaHome() {
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div>
                         <p className="lf-number text-success">+{statement.earned}</p>
-                        <p className="lf-caption text-content-muted">{t('banca.statement.earned')}</p>
+                        <p className="lf-caption text-content-muted">{t('banking.statement.earned')}</p>
                       </div>
                       <div>
                         <p className="lf-number text-content">-{statement.spent}</p>
-                        <p className="lf-caption text-content-muted">{t('banca.statement.spent')}</p>
+                        <p className="lf-caption text-content-muted">{t('banking.statement.spent')}</p>
                       </div>
                       <div>
                         <p className="lf-number text-success">{statement.saved}</p>
-                        <p className="lf-caption text-content-muted">{t('banca.statement.saved')}</p>
+                        <p className="lf-caption text-content-muted">{t('banking.statement.saved')}</p>
                       </div>
                     </div>
                   )}
@@ -378,8 +378,8 @@ export function KidBancaHome() {
             </Card>
           </section>
 
-          <section aria-labelledby="banca-activity-heading">
-            <SectionHeading id="banca-activity-heading" icon="history" tone="muted">
+          <section aria-labelledby="banking-activity-heading">
+            <SectionHeading id="banking-activity-heading" icon="history" tone="muted">
               {t('tasks.kid.activityTitle')}
             </SectionHeading>
             {recentLedger.length === 0 ? (
@@ -402,7 +402,7 @@ export function KidBancaHome() {
               </ul>
             )}
             <Link to="/tasks" className="mt-3 inline-block lf-caption text-primary">
-              {t('banca.kid.redeemLink')}
+              {t('banking.kid.redeemLink')}
             </Link>
           </section>
         </div>
@@ -434,7 +434,7 @@ function CardDialog({
   onClose,
   onSaved,
 }: {
-  account: WireBancaAccount;
+  account: WireBankingAccount;
   token: string | null;
   isFrozenByMe: boolean;
   onToggleFreeze: (next: boolean) => void;
@@ -450,7 +450,7 @@ function CardDialog({
   async function onSave() {
     if (!token || saving) return;
     setSaving(true);
-    await api('/banca/account', { method: 'PATCH', token, body: { nickname: nickname.trim() || account.nickname, cardDesign: design } });
+    await api('/banking/account', { method: 'PATCH', token, body: { nickname: nickname.trim() || account.nickname, cardDesign: design } });
     setSaving(false);
     onSaved();
     onClose();
@@ -485,11 +485,11 @@ function CardDialog({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={t('banca.kid.cardDetails')}
+        aria-label={t('banking.kid.cardDetails')}
         className="lf-config-dialog my-auto flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden border-2 border-white/25 shadow-2xl focus-visible:outline-none"
       >
         <div className="lf-config-head flex shrink-0 items-center justify-between gap-3 px-5 py-4 sm:px-6 sm:py-5">
-          <span className="lf-title text-content">{t('banca.kid.cardDetails')}</span>
+          <span className="lf-title text-content">{t('banking.kid.cardDetails')}</span>
           <button type="button" onClick={onClose} aria-label={t('tasks.parent.cancel')} className="lf-press flex min-h-9 min-w-9 items-center justify-center rounded-full text-content-muted hover:text-content">
             <Icon name="close" aria-hidden />
           </button>
@@ -501,8 +501,8 @@ function CardDialog({
                 <Icon name="lock" aria-hidden />
               </span>
               <span>
-                <span className="lf-label block text-content">{t('banca.kid.freezeToggle')}</span>
-                <span className="lf-caption block text-content-muted">{account.frozen ? (isFrozenByMe ? t('banca.kid.frozenByYou') : t('banca.kid.frozenByGuardian')) : t('banca.kid.freezeHint')}</span>
+                <span className="lf-label block text-content">{t('banking.kid.freezeToggle')}</span>
+                <span className="lf-caption block text-content-muted">{account.frozen ? (isFrozenByMe ? t('banking.kid.frozenByYou') : t('banking.kid.frozenByGuardian')) : t('banking.kid.freezeHint')}</span>
               </span>
             </span>
             <button
@@ -516,15 +516,15 @@ function CardDialog({
               <span className="lf-switch-knob" />
             </button>
           </div>
-          <Field label={t('banca.kid.nicknameLabel')} value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={40} />
+          <Field label={t('banking.kid.nicknameLabel')} value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={40} />
           <div>
-            <span className="lf-label mb-2 block text-content">{t('banca.kid.designLabel')}</span>
+            <span className="lf-label mb-2 block text-content">{t('banking.kid.designLabel')}</span>
             <div className="flex gap-2">
               {CARD_DESIGNS.map((d) => (
                 <button
                   key={d}
                   type="button"
-                  aria-label={t(`banca.cardDesigns.${d}`)}
+                  aria-label={t(`banking.cardDesigns.${d}`)}
                   aria-pressed={design === d}
                   onClick={() => setDesign(d)}
                   className={cn('h-8 w-8 rounded-full bg-gradient-to-br', CARD_GRADIENT[d], design === d && 'ring-2 ring-content ring-offset-2 ring-offset-surface')}
@@ -535,7 +535,7 @@ function CardDialog({
         </div>
         <div className="lf-config-foot flex shrink-0 px-5 py-4 sm:px-6">
           <Button type="button" variant="primary" className="w-full justify-center" disabled={saving} onClick={() => void onSave()}>
-            {saving ? t('banca.kid.saving') : t('banca.kid.done')}
+            {saving ? t('banking.kid.saving') : t('banking.kid.done')}
           </Button>
         </div>
       </div>
@@ -561,7 +561,7 @@ function AllocateCreditCard({ credit, token, onDone, onCancel }: { credit: WireP
     if (!ready || submitting || !token) return;
     setSubmitting(true);
     setErrorCode(null);
-    const res = await api(`/banca/wallet/pending-credits/${credit.id}/allocate`, { method: 'POST', token, body: { save, spend, share } });
+    const res = await api(`/banking/wallet/pending-credits/${credit.id}/allocate`, { method: 'POST', token, body: { save, spend, share } });
     setSubmitting(false);
     if (res.error) {
       setErrorCode(res.error.code);
@@ -659,4 +659,4 @@ function AddGoalCard({ token, onCreated }: { token: string | null; onCreated: (g
   );
 }
 
-export default KidBancaHome;
+export default KidBankingHome;

@@ -6,10 +6,10 @@ import { Button, Card, Dropdown, Field, Icon, ProgressBar, SectionHeading } from
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import type { WireRedemption } from '../tasks/types';
-import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBancaAccount, type WireSavingsBonusRule, type WireSpendLimitStatus } from './types';
+import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBankingAccount, type WireSavingsBonusRule, type WireSpendLimitStatus } from './types';
 
 /*
- * The parent's half of BANCA_DIGITAL.md §7.2: open the account, then
+ * The parent's half of BANKING.md §7.2: open the account, then
  * configure allowance automation, a spend limit and the savings bonus —
  * each a `.lf-config-row` toggle + fields, exactly the shape AdminRolesPage
  * and PersonalizeInWorld already use for the same grammar — plus the
@@ -36,14 +36,14 @@ type KidDataState =
   | { status: 'error'; code: string }
   | {
       status: 'ready';
-      account: WireBancaAccount | null;
+      account: WireBankingAccount | null;
       allowance: WireAllowanceRule | null;
       spendLimit: WireSpendLimitStatus;
       savingsBonus: WireSavingsBonusRule | null;
       redemptions: WireRedemption[];
     };
 
-export function ParentBancaControlPanel() {
+export function ParentBankingControlPanel() {
   const { t } = useTranslation();
   const { getToken } = useAuth();
   const [token, setToken] = useState<string | null>(null);
@@ -81,10 +81,10 @@ export function ParentBancaControlPanel() {
     setKidData({ status: 'loading' });
     void (async () => {
       const [accountRes, allowanceRes, spendLimitRes, bonusRes, redemptionsRes] = await Promise.all([
-        api<{ account: WireBancaAccount | null }>(`/banca/accounts/${selectedKidId}`, { token }),
-        api<{ rule: WireAllowanceRule | null }>(`/banca/allowance/${selectedKidId}`, { token }),
-        api<{ status: WireSpendLimitStatus }>(`/banca/spend-limit/${selectedKidId}`, { token }),
-        api<{ rule: WireSavingsBonusRule | null }>(`/banca/savings-bonus/${selectedKidId}`, { token }),
+        api<{ account: WireBankingAccount | null }>(`/banking/accounts/${selectedKidId}`, { token }),
+        api<{ rule: WireAllowanceRule | null }>(`/banking/allowance/${selectedKidId}`, { token }),
+        api<{ status: WireSpendLimitStatus }>(`/banking/spend-limit/${selectedKidId}`, { token }),
+        api<{ rule: WireSavingsBonusRule | null }>(`/banking/savings-bonus/${selectedKidId}`, { token }),
         api<{ redemptions: WireRedemption[] }>(`/tasks/redemptions?kidId=${selectedKidId}`, { token }),
       ]);
       if (cancelled) return;
@@ -114,19 +114,19 @@ export function ParentBancaControlPanel() {
 
   async function onOpenAccount(nickname: string, cardDesign: CardDesign) {
     if (!token || !selectedKidId) return;
-    const res = await api<{ account: WireBancaAccount }>(`/banca/accounts/${selectedKidId}`, { method: 'POST', token, body: { nickname, cardDesign } });
+    const res = await api<{ account: WireBankingAccount }>(`/banking/accounts/${selectedKidId}`, { method: 'POST', token, body: { nickname, cardDesign } });
     if (res.data) {
       setKidData((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
-      announce(t('banca.parent.accountOpenedAnnounce'));
+      announce(t('banking.parent.accountOpenedAnnounce'));
     }
   }
 
   async function onToggleFreeze(next: boolean) {
     if (!token || !selectedKidId) return;
-    const res = await api<{ account: WireBancaAccount }>(`/banca/accounts/${selectedKidId}/freeze`, { method: 'POST', token, body: { frozen: next } });
+    const res = await api<{ account: WireBankingAccount }>(`/banking/accounts/${selectedKidId}/freeze`, { method: 'POST', token, body: { frozen: next } });
     if (res.data) {
       setKidData((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
-      announce(next ? t('banca.kid.frozenAnnounce') : t('banca.kid.unfrozenAnnounce'));
+      announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
     }
   }
 
@@ -140,12 +140,12 @@ export function ParentBancaControlPanel() {
   }
 
   if (kidsError) return <ErrorBanner code={kidsError} onRetry={() => window.location.reload()} />;
-  if (!kids) return <p className="lf-body p-6 text-content-muted">{t('banca.loading')}</p>;
+  if (!kids) return <p className="lf-body p-6 text-content-muted">{t('banking.loading')}</p>;
 
   if (kids.length === 0) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="lf-display-lg text-content">{t('banca.title')}</h1>
+        <h1 className="lf-display-lg text-content">{t('banking.title')}</h1>
         <Card className="flex flex-col items-center gap-2 p-8 text-center">
           <Icon name="family_restroom" className="text-[40px] text-content-faint" aria-hidden />
           <h2 className="lf-title text-content">{t('tasks.parent.emptyNoKidsTitle')}</h2>
@@ -161,12 +161,12 @@ export function ParentBancaControlPanel() {
         {liveMessage}
       </div>
       <header>
-        <h1 className="lf-display-lg text-content">{t('banca.title')}</h1>
-        <p className="lf-body text-content-muted">{t('banca.parent.subtitle')}</p>
+        <h1 className="lf-display-lg text-content">{t('banking.title')}</h1>
+        <p className="lf-body text-content-muted">{t('banking.parent.subtitle')}</p>
       </header>
 
       {kids.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('banca.parent.kidSwitcher')}>
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label={t('banking.parent.kidSwitcher')}>
           {kids.map((kid) => (
             <button
               key={kid.userId}
@@ -185,7 +185,7 @@ export function ParentBancaControlPanel() {
         </div>
       )}
 
-      {kidData.status === 'loading' && <p className="lf-body p-4 text-content-muted">{t('banca.loading')}</p>}
+      {kidData.status === 'loading' && <p className="lf-body p-4 text-content-muted">{t('banking.loading')}</p>}
       {kidData.status === 'error' && <ErrorBanner code={kidData.code} onRetry={() => setReloadKey((k) => k + 1)} />}
 
       {kidData.status === 'ready' && !kidData.account && (
@@ -202,7 +202,7 @@ export function ParentBancaControlPanel() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="lf-caption text-content-muted">{kidData.account.frozen ? t('banca.kid.frozenBadge') : t('banca.kid.freezeToggle')}</span>
+            <span className="lf-caption text-content-muted">{kidData.account.frozen ? t('banking.kid.frozenBadge') : t('banking.kid.freezeToggle')}</span>
             <button
               type="button"
               role="switch"
@@ -230,9 +230,9 @@ export function ParentBancaControlPanel() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <section aria-labelledby="banca-decisions-heading">
-              <SectionHeading id="banca-decisions-heading" icon="pending_actions" tone="warning" meta={kidData.redemptions.length > 0 ? String(kidData.redemptions.length) : undefined}>
-                {t('banca.parent.decisionsHeading')}
+            <section aria-labelledby="banking-decisions-heading">
+              <SectionHeading id="banking-decisions-heading" icon="pending_actions" tone="warning" meta={kidData.redemptions.length > 0 ? String(kidData.redemptions.length) : undefined}>
+                {t('banking.parent.decisionsHeading')}
               </SectionHeading>
               {kidData.redemptions.length === 0 ? (
                 <p className="lf-caption text-content-muted">{t('tasks.parent.redemptionsEmpty')}</p>
@@ -273,18 +273,18 @@ function OpenAccountCard({ onOpen }: { onOpen: (nickname: string, cardDesign: Ca
         <span className="lf-tile h-11 w-11 text-primary">
           <Icon name="account_balance" aria-hidden />
         </span>
-        <h2 className="lf-title text-content">{t('banca.parent.openTitle')}</h2>
-        <p className="lf-body text-content-muted">{t('banca.parent.openBody')}</p>
+        <h2 className="lf-title text-content">{t('banking.parent.openTitle')}</h2>
+        <p className="lf-body text-content-muted">{t('banking.parent.openBody')}</p>
       </div>
-      <Field label={t('banca.kid.nicknameLabel')} value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder={t('banca.parent.openNicknamePlaceholder')} maxLength={40} />
+      <Field label={t('banking.kid.nicknameLabel')} value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder={t('banking.parent.openNicknamePlaceholder')} maxLength={40} />
       <div>
-        <span className="lf-label mb-2 block text-content">{t('banca.kid.designLabel')}</span>
+        <span className="lf-label mb-2 block text-content">{t('banking.kid.designLabel')}</span>
         <div className="flex gap-2">
           {CARD_DESIGNS.map((d) => (
             <button
               key={d}
               type="button"
-              aria-label={t(`banca.cardDesigns.${d}`)}
+              aria-label={t(`banking.cardDesigns.${d}`)}
               aria-pressed={cardDesign === d}
               onClick={() => setCardDesign(d)}
               className={cn('h-8 w-8 rounded-full bg-gradient-to-br', CARD_GRADIENT[d], cardDesign === d && 'ring-2 ring-content ring-offset-2 ring-offset-surface')}
@@ -303,7 +303,7 @@ function OpenAccountCard({ onOpen }: { onOpen: (nickname: string, cardDesign: Ca
           setSubmitting(false);
         }}
       >
-        {submitting ? t('banca.parent.opening') : t('banca.parent.openCta')}
+        {submitting ? t('banking.parent.opening') : t('banking.parent.openCta')}
       </Button>
     </Card>
   );
@@ -322,7 +322,7 @@ function AllowanceSection({ token, kidId, rule, onSaved }: { token: string | nul
     if (!token || saving) return;
     setSaving(true);
     setErrorCode(null);
-    const res = await api<{ rule: WireAllowanceRule }>(`/banca/allowance/${kidId}`, { method: 'PUT', token, body: { amount, frequency, anchorDay, active } });
+    const res = await api<{ rule: WireAllowanceRule }>(`/banking/allowance/${kidId}`, { method: 'PUT', token, body: { amount, frequency, anchorDay, active } });
     setSaving(false);
     if (res.error) {
       setErrorCode(res.error.code);
@@ -332,13 +332,13 @@ function AllowanceSection({ token, kidId, rule, onSaved }: { token: string | nul
   }
 
   return (
-    <section aria-labelledby="banca-allowance-heading">
-      <SectionHeading id="banca-allowance-heading" icon="calendar_month" tone="accent">
-        {t('banca.parent.allowanceHeading')}
+    <section aria-labelledby="banking-allowance-heading">
+      <SectionHeading id="banking-allowance-heading" icon="calendar_month" tone="accent">
+        {t('banking.parent.allowanceHeading')}
       </SectionHeading>
       <Card className="flex flex-col gap-4 p-5">
         <div className="lf-config-row flex items-center justify-between gap-3 p-3.5">
-          <span className="lf-label text-content">{t('banca.parent.allowanceActive')}</span>
+          <span className="lf-label text-content">{t('banking.parent.allowanceActive')}</span>
           <button type="button" role="switch" aria-checked={active} onClick={() => setActive(!active)} className={cn('lf-switch', active && 'lf-switch-on')}>
             <span className="lf-switch-knob" />
           </button>
@@ -346,38 +346,38 @@ function AllowanceSection({ token, kidId, rule, onSaved }: { token: string | nul
         {active && (
           <>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field label={t('banca.parent.allowanceAmount')} type="number" min={1} max={1000} value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
+              <Field label={t('banking.parent.allowanceAmount')} type="number" min={1} max={1000} value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
               <div className="flex flex-col gap-1.5">
-                <span className="lf-label text-content">{t('banca.parent.allowanceFrequency')}</span>
+                <span className="lf-label text-content">{t('banking.parent.allowanceFrequency')}</span>
                 <Dropdown
                   value={frequency}
                   options={[
-                    { value: 'weekly', label: t('banca.parent.frequencyWeekly') },
-                    { value: 'biweekly', label: t('banca.parent.frequencyBiweekly') },
-                    { value: 'monthly', label: t('banca.parent.frequencyMonthly') },
+                    { value: 'weekly', label: t('banking.parent.frequencyWeekly') },
+                    { value: 'biweekly', label: t('banking.parent.frequencyBiweekly') },
+                    { value: 'monthly', label: t('banking.parent.frequencyMonthly') },
                   ]}
                   onChange={(v) => {
                     setFrequency(v as AllowanceFrequency);
                     if (v === 'monthly' && anchorDay > 28) setAnchorDay(1);
                     if (v !== 'monthly' && anchorDay > 6) setAnchorDay(0);
                   }}
-                  ariaLabel={t('banca.parent.allowanceFrequency')}
+                  ariaLabel={t('banking.parent.allowanceFrequency')}
                 />
               </div>
             </div>
             {frequency === 'monthly' ? (
-              <Field label={t('banca.parent.allowanceDayOfMonth')} type="number" min={1} max={28} value={anchorDay} onChange={(e) => setAnchorDay(Number(e.target.value))} />
+              <Field label={t('banking.parent.allowanceDayOfMonth')} type="number" min={1} max={28} value={anchorDay} onChange={(e) => setAnchorDay(Number(e.target.value))} />
             ) : (
               <div className="flex flex-col gap-1.5">
-                <span className="lf-label text-content">{t('banca.parent.allowanceDayOfWeek')}</span>
-                <Dropdown value={String(anchorDay)} options={DAY_OF_WEEK_KEYS.map((k, i) => ({ value: String(i), label: t(`banca.days.${k}`) }))} onChange={(v) => setAnchorDay(Number(v))} ariaLabel={t('banca.parent.allowanceDayOfWeek')} />
+                <span className="lf-label text-content">{t('banking.parent.allowanceDayOfWeek')}</span>
+                <Dropdown value={String(anchorDay)} options={DAY_OF_WEEK_KEYS.map((k, i) => ({ value: String(i), label: t(`banking.days.${k}`) }))} onChange={(v) => setAnchorDay(Number(v))} ariaLabel={t('banking.parent.allowanceDayOfWeek')} />
               </div>
             )}
           </>
         )}
         {errorCode && <ErrorBanner code={errorCode} />}
         <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
-          {saving ? t('banca.parent.saving') : t('banca.parent.save')}
+          {saving ? t('banking.parent.saving') : t('banking.parent.save')}
         </Button>
       </Card>
     </section>
@@ -396,7 +396,7 @@ function SpendLimitSection({ token, kidId, status, onSaved }: { token: string | 
     if (!token || saving) return;
     setSaving(true);
     setErrorCode(null);
-    const res = await api<{ status: WireSpendLimitStatus }>(`/banca/spend-limit/${kidId}`, { method: 'PUT', token, body: { period, cap, active } });
+    const res = await api<{ status: WireSpendLimitStatus }>(`/banking/spend-limit/${kidId}`, { method: 'PUT', token, body: { period, cap, active } });
     setSaving(false);
     if (res.error) {
       setErrorCode(res.error.code);
@@ -406,13 +406,13 @@ function SpendLimitSection({ token, kidId, status, onSaved }: { token: string | 
   }
 
   return (
-    <section aria-labelledby="banca-spend-limit-heading">
-      <SectionHeading id="banca-spend-limit-heading" icon="trending_down" tone="warning">
-        {t('banca.parent.spendLimitHeading')}
+    <section aria-labelledby="banking-spend-limit-heading">
+      <SectionHeading id="banking-spend-limit-heading" icon="trending_down" tone="warning">
+        {t('banking.parent.spendLimitHeading')}
       </SectionHeading>
       <Card className="flex flex-col gap-4 p-5">
         <div className="lf-config-row flex items-center justify-between gap-3 p-3.5">
-          <span className="lf-label text-content">{t('banca.parent.spendLimitActive')}</span>
+          <span className="lf-label text-content">{t('banking.parent.spendLimitActive')}</span>
           <button type="button" role="switch" aria-checked={active} onClick={() => setActive(!active)} className={cn('lf-switch', active && 'lf-switch-on')}>
             <span className="lf-switch-knob" />
           </button>
@@ -420,29 +420,29 @@ function SpendLimitSection({ token, kidId, status, onSaved }: { token: string | 
         {active && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <span className="lf-label text-content">{t('banca.parent.spendLimitPeriod')}</span>
+              <span className="lf-label text-content">{t('banking.parent.spendLimitPeriod')}</span>
               <Dropdown
                 value={period}
                 options={[
-                  { value: 'weekly', label: t('banca.parent.frequencyWeekly') },
-                  { value: 'monthly', label: t('banca.parent.frequencyMonthly') },
+                  { value: 'weekly', label: t('banking.parent.frequencyWeekly') },
+                  { value: 'monthly', label: t('banking.parent.frequencyMonthly') },
                 ]}
                 onChange={(v) => setPeriod(v as SpendLimitPeriod)}
-                ariaLabel={t('banca.parent.spendLimitPeriod')}
+                ariaLabel={t('banking.parent.spendLimitPeriod')}
               />
             </div>
-            <Field label={t('banca.parent.spendLimitCap')} type="number" min={1} value={cap} onChange={(e) => setCap(Number(e.target.value))} />
+            <Field label={t('banking.parent.spendLimitCap')} type="number" min={1} value={cap} onChange={(e) => setCap(Number(e.target.value))} />
           </div>
         )}
         {status.configured && (
           <div className="flex flex-col gap-1.5">
-            <span className="lf-caption text-content-muted">{t('banca.kid.spendLimitUsed', { used: status.used, cap: status.cap })}</span>
-            <ProgressBar value={(status.used / status.cap) * 100} label={t('banca.parent.spendLimitHeading')} tone="accent" />
+            <span className="lf-caption text-content-muted">{t('banking.kid.spendLimitUsed', { used: status.used, cap: status.cap })}</span>
+            <ProgressBar value={(status.used / status.cap) * 100} label={t('banking.parent.spendLimitHeading')} tone="accent" />
           </div>
         )}
         {errorCode && <ErrorBanner code={errorCode} />}
         <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
-          {saving ? t('banca.parent.saving') : t('banca.parent.save')}
+          {saving ? t('banking.parent.saving') : t('banking.parent.save')}
         </Button>
       </Card>
     </section>
@@ -460,7 +460,7 @@ function SavingsBonusSection({ token, kidId, rule, onSaved }: { token: string | 
     if (!token || saving) return;
     setSaving(true);
     setErrorCode(null);
-    const res = await api<{ rule: WireSavingsBonusRule }>(`/banca/savings-bonus/${kidId}`, { method: 'PUT', token, body: { rateBp: Math.round(ratePercent * 100), active } });
+    const res = await api<{ rule: WireSavingsBonusRule }>(`/banking/savings-bonus/${kidId}`, { method: 'PUT', token, body: { rateBp: Math.round(ratePercent * 100), active } });
     setSaving(false);
     if (res.error) {
       setErrorCode(res.error.code);
@@ -470,26 +470,26 @@ function SavingsBonusSection({ token, kidId, rule, onSaved }: { token: string | 
   }
 
   return (
-    <section aria-labelledby="banca-bonus-heading">
-      <SectionHeading id="banca-bonus-heading" icon="savings" tone="success">
-        {t('banca.parent.bonusHeading')}
+    <section aria-labelledby="banking-bonus-heading">
+      <SectionHeading id="banking-bonus-heading" icon="savings" tone="success">
+        {t('banking.parent.bonusHeading')}
       </SectionHeading>
       <Card className="flex flex-col gap-4 p-5">
         <div className="lf-config-row flex items-center justify-between gap-3 p-3.5">
-          <span className="lf-label text-content">{t('banca.parent.bonusActive')}</span>
+          <span className="lf-label text-content">{t('banking.parent.bonusActive')}</span>
           <button type="button" role="switch" aria-checked={active} onClick={() => setActive(!active)} className={cn('lf-switch', active && 'lf-switch-on')}>
             <span className="lf-switch-knob" />
           </button>
         </div>
-        {active && <Field label={t('banca.parent.bonusRate')} type="number" min={0} max={20} value={ratePercent} onChange={(e) => setRatePercent(Number(e.target.value))} />}
-        <p className="lf-caption text-content-muted">{t('banca.parent.bonusHint')}</p>
+        {active && <Field label={t('banking.parent.bonusRate')} type="number" min={0} max={20} value={ratePercent} onChange={(e) => setRatePercent(Number(e.target.value))} />}
+        <p className="lf-caption text-content-muted">{t('banking.parent.bonusHint')}</p>
         {errorCode && <ErrorBanner code={errorCode} />}
         <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
-          {saving ? t('banca.parent.saving') : t('banca.parent.save')}
+          {saving ? t('banking.parent.saving') : t('banking.parent.save')}
         </Button>
       </Card>
     </section>
   );
 }
 
-export default ParentBancaControlPanel;
+export default ParentBankingControlPanel;

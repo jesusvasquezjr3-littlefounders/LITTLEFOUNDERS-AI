@@ -55,7 +55,7 @@ interface StubOptions {
   deleteCalls?: string[];
   /** the kid's kid_task_streaks row — omit for "no row yet" (a fresh kid). */
   taskStreak?: Record<string, unknown> | null;
-  /** the kid's spend_limits row (BANCA_DIGITAL.md §5.5) — omit for "no limit configured". */
+  /** the kid's spend_limits row (BANKING.md §5.5) — omit for "no limit configured". */
   spendLimit?: Record<string, unknown> | null;
   /** wallet_ledger rows spend_limit checking sums over — omit for "nothing spent yet". */
   spendLedgerRows?: { bucket: string; amount: number }[];
@@ -638,7 +638,7 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
     expect(res.status).toBe(201);
   });
 
-  // BANCA_DIGITAL.md §5.5/§6.3 — enforced at REQUEST time, before this ever
+  // BANKING.md §5.5/§6.3 — enforced at REQUEST time, before this ever
   // reaches a parent's approval queue.
   it('blocks a request that would push past an active weekly spend limit', async () => {
     stub({

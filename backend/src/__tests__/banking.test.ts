@@ -3,10 +3,10 @@ import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
-import { computeNextRunAt } from '../routes/banca.js';
+import { computeNextRunAt } from '../routes/banking.js';
 
 /*
- * /api/v1/banca — BANCA_DIGITAL.md Waves 0-2. Same posture as tasks.test.ts:
+ * /api/v1/banking — BANKING.md Waves 0-2. Same posture as tasks.test.ts:
  * a caller can never reach another family's account/rule/credit, proven as
  * a 404 rather than a 403.
  */
@@ -79,15 +79,15 @@ function stub(opts: StubOptions = {}) {
           : Promise.resolve(jsonResponse(200, opts.scheduledCreditsResult));
       }
 
-      if (url.includes('/rest/v1/banca_accounts') && method === 'POST') {
+      if (url.includes('/rest/v1/banking_accounts') && method === 'POST') {
         if (opts.accountInsertConflict) return Promise.resolve(new Response(null, { status: 409 }));
         return Promise.resolve(jsonResponse(201, [defaultAccount()]));
       }
-      if (url.includes('/rest/v1/banca_accounts?kid_user_id=eq.') && method === 'GET') {
+      if (url.includes('/rest/v1/banking_accounts?kid_user_id=eq.') && method === 'GET') {
         const rows = opts.account === null ? [] : [opts.account ?? defaultAccount()];
         return Promise.resolve(jsonResponse(200, rows));
       }
-      if (url.includes('/rest/v1/banca_accounts?kid_user_id=eq.') && method === 'PATCH') {
+      if (url.includes('/rest/v1/banking_accounts?kid_user_id=eq.') && method === 'PATCH') {
         const rows = opts.account === null ? [] : [{ ...(opts.account ?? defaultAccount()), ...(init?.body ? JSON.parse(String(init.body)) : {}) }];
         return Promise.resolve(jsonResponse(200, rows));
       }
@@ -175,29 +175,29 @@ describe('computeNextRunAt', () => {
   });
 });
 
-describe('POST /api/v1/banca/accounts/:kidId (parent opens)', () => {
+describe('POST /api/v1/banking/accounts/:kidId (parent opens)', () => {
   it('401s without a session', async () => {
     stub();
-    const res = await request(createApp()).post(`/api/v1/banca/accounts/${KID_ID}`).send({});
+    const res = await request(createApp()).post(`/api/v1/banking/accounts/${KID_ID}`).send({});
     expect(res.status).toBe(401);
   });
 
   it('404s for a kid the caller does not guard', async () => {
     stub({ parentsKids: [OTHER_KID_ID] });
-    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, {});
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}`, {});
     expect(res.status).toBe(404);
   });
 
   it('409s if the account is already open', async () => {
     stub({ account: defaultAccount() });
-    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, {});
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}`, {});
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('CONFLICT');
   });
 
   it('opens the account and returns it', async () => {
     stub({ account: null });
-    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'Rocket Fund', cardDesign: 'emerald' });
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}`, { nickname: 'Rocket Fund', cardDesign: 'emerald' });
     expect(res.status).toBe(201);
     expect(res.body.data.account.nickname).toBe('Rocket Fund');
     expect(res.body.data.account.displayNumber).toMatch(/^LF-\d{4}-\d{4}$/);
@@ -205,43 +205,43 @@ describe('POST /api/v1/banca/accounts/:kidId (parent opens)', () => {
 
   it('rejects an unknown card design', async () => {
     stub({ account: null });
-    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}`, { cardDesign: 'gold' });
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}`, { cardDesign: 'gold' });
     expect(res.status).toBe(400);
   });
 });
 
-describe('GET /api/v1/banca/accounts/:kidId (parent) and /account (kid)', () => {
+describe('GET /api/v1/banking/accounts/:kidId (parent) and /account (kid)', () => {
   it('returns null when no account exists yet, not an error', async () => {
     stub({ account: null });
-    const res = await asParent(`/api/v1/banca/accounts/${KID_ID}`);
+    const res = await asParent(`/api/v1/banking/accounts/${KID_ID}`);
     expect(res.status).toBe(200);
     expect(res.body.data.account).toBeNull();
   });
 
   it('a kid reads their own account', async () => {
     stub({ account: defaultAccount(), roles: ['kid'] });
-    const res = await asKid('/api/v1/banca/account');
+    const res = await asKid('/api/v1/banking/account');
     expect(res.status).toBe(200);
     expect(res.body.data.account.nickname).toBe('Rocket Fund');
   });
 
   it('runs the scheduled-credits catch-up before reading (best-effort, never fails the request)', async () => {
     stub({ account: defaultAccount(), scheduledCreditsResult: null, roles: ['kid'] });
-    const res = await asKid('/api/v1/banca/account');
+    const res = await asKid('/api/v1/banking/account');
     expect(res.status).toBe(200);
   });
 });
 
-describe('PATCH /api/v1/banca/accounts/:kidId (parent edits nickname/design)', () => {
+describe('PATCH /api/v1/banking/accounts/:kidId (parent edits nickname/design)', () => {
   it('404s a kid the caller does not guard', async () => {
     stub({ account: defaultAccount(), parentsKids: [OTHER_KID_ID] });
-    const res = await patchAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'New Bike Fund' });
+    const res = await patchAsParent(`/api/v1/banking/accounts/${KID_ID}`, { nickname: 'New Bike Fund' });
     expect(res.status).toBe(404);
   });
 
   it('a guardian can rename and re-color the card', async () => {
     stub({ account: defaultAccount() });
-    const res = await patchAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'New Bike Fund', cardDesign: 'ocean' });
+    const res = await patchAsParent(`/api/v1/banking/accounts/${KID_ID}`, { nickname: 'New Bike Fund', cardDesign: 'ocean' });
     expect(res.status).toBe(200);
     expect(res.body.data.account.nickname).toBe('New Bike Fund');
     expect(res.body.data.account.cardDesign).toBe('ocean');
@@ -249,16 +249,16 @@ describe('PATCH /api/v1/banca/accounts/:kidId (parent edits nickname/design)', (
 
   it('404s when there is no account to update yet', async () => {
     stub({ account: null });
-    const res = await patchAsParent(`/api/v1/banca/accounts/${KID_ID}`, { nickname: 'New Bike Fund' });
+    const res = await patchAsParent(`/api/v1/banking/accounts/${KID_ID}`, { nickname: 'New Bike Fund' });
     expect(res.status).toBe(404);
   });
 });
 
-describe('PATCH /api/v1/banca/account (kid edits nickname/design)', () => {
+describe('PATCH /api/v1/banking/account (kid edits nickname/design)', () => {
   it('a kid can rename their own card', async () => {
     stub({ account: defaultAccount(), roles: ['kid'] });
     const res = await request(createApp())
-      .patch('/api/v1/banca/account')
+      .patch('/api/v1/banking/account')
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`)
       .send({ nickname: 'New Bike Fund' });
     expect(res.status).toBe(200);
@@ -266,99 +266,99 @@ describe('PATCH /api/v1/banca/account (kid edits nickname/design)', () => {
   });
 });
 
-describe('POST /api/v1/banca/accounts/:kidId/freeze and /account/freeze', () => {
+describe('POST /api/v1/banking/accounts/:kidId/freeze and /account/freeze', () => {
   it('a parent can freeze', async () => {
     stub({ account: defaultAccount() });
-    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}/freeze`, { frozen: true });
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}/freeze`, { frozen: true });
     expect(res.status).toBe(200);
     expect(res.body.data.account.frozen).toBe(true);
   });
 
   it('a kid can freeze their own card', async () => {
     stub({ account: defaultAccount(), roles: ['kid'] });
-    const res = await postAsKid('/api/v1/banca/account/freeze', { frozen: true });
+    const res = await postAsKid('/api/v1/banking/account/freeze', { frozen: true });
     expect(res.status).toBe(200);
   });
 
   it('rejects a non-boolean frozen value', async () => {
     stub({ account: defaultAccount() });
-    const res = await postAsParent(`/api/v1/banca/accounts/${KID_ID}/freeze`, { frozen: 'yes' });
+    const res = await postAsParent(`/api/v1/banking/accounts/${KID_ID}/freeze`, { frozen: 'yes' });
     expect(res.status).toBe(400);
   });
 });
 
-describe('PUT /api/v1/banca/allowance/:kidId', () => {
+describe('PUT /api/v1/banking/allowance/:kidId', () => {
   it('409s if the account is not open yet', async () => {
     stub({ account: null });
-    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 5 });
+    const res = await putAsParent(`/api/v1/banking/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 5 });
     expect(res.status).toBe(409);
   });
 
   it('rejects anchorDay 0-6 violated for weekly', async () => {
     stub({ account: defaultAccount() });
-    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 12 });
+    const res = await putAsParent(`/api/v1/banking/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 12 });
     expect(res.status).toBe(400);
   });
 
   it('rejects anchorDay 0 for monthly', async () => {
     stub({ account: defaultAccount() });
-    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'monthly', anchorDay: 0 });
+    const res = await putAsParent(`/api/v1/banking/allowance/${KID_ID}`, { amount: 10, frequency: 'monthly', anchorDay: 0 });
     expect(res.status).toBe(400);
   });
 
   it('rejects an amount over the ceiling', async () => {
     stub({ account: defaultAccount() });
-    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 5000, frequency: 'weekly', anchorDay: 5 });
+    const res = await putAsParent(`/api/v1/banking/allowance/${KID_ID}`, { amount: 5000, frequency: 'weekly', anchorDay: 5 });
     expect(res.status).toBe(400);
   });
 
   it('saves a valid rule', async () => {
     stub({ account: defaultAccount() });
-    const res = await putAsParent(`/api/v1/banca/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 5 });
+    const res = await putAsParent(`/api/v1/banking/allowance/${KID_ID}`, { amount: 10, frequency: 'weekly', anchorDay: 5 });
     expect(res.status).toBe(200);
     expect(res.body.data.rule.amount).toBe(10);
     expect(res.body.data.rule.frequency).toBe('weekly');
   });
 });
 
-describe('GET /api/v1/banca/allowance/:kidId', () => {
+describe('GET /api/v1/banking/allowance/:kidId', () => {
   it('returns null when unconfigured', async () => {
     stub({ allowanceRule: null });
-    const res = await asParent(`/api/v1/banca/allowance/${KID_ID}`);
+    const res = await asParent(`/api/v1/banking/allowance/${KID_ID}`);
     expect(res.status).toBe(200);
     expect(res.body.data.rule).toBeNull();
   });
 });
 
-describe('PUT /api/v1/banca/savings-bonus/:kidId', () => {
+describe('PUT /api/v1/banking/savings-bonus/:kidId', () => {
   it('rejects a rate over the 20% ceiling', async () => {
     stub({ account: defaultAccount() });
-    const res = await putAsParent(`/api/v1/banca/savings-bonus/${KID_ID}`, { rateBp: 3000 });
+    const res = await putAsParent(`/api/v1/banking/savings-bonus/${KID_ID}`, { rateBp: 3000 });
     expect(res.status).toBe(400);
   });
 
   it('saves a valid rate', async () => {
     stub({ account: defaultAccount() });
-    const res = await putAsParent(`/api/v1/banca/savings-bonus/${KID_ID}`, { rateBp: 500 });
+    const res = await putAsParent(`/api/v1/banking/savings-bonus/${KID_ID}`, { rateBp: 500 });
     expect(res.status).toBe(200);
     expect(res.body.data.rule.rateBp).toBe(500);
   });
 });
 
-describe('PUT /api/v1/banca/spend-limit/:kidId', () => {
+describe('PUT /api/v1/banking/spend-limit/:kidId', () => {
   it('saves a valid limit and reports usage', async () => {
     stub({ account: defaultAccount(), ledgerRows: [{ bucket: 'spend', amount: -15, created_at: new Date().toISOString() }] });
-    const res = await putAsParent(`/api/v1/banca/spend-limit/${KID_ID}`, { period: 'weekly', cap: 60 });
+    const res = await putAsParent(`/api/v1/banking/spend-limit/${KID_ID}`, { period: 'weekly', cap: 60 });
     expect(res.status).toBe(200);
     expect(res.body.data.status.configured).toBe(true);
     expect(res.body.data.status.cap).toBe(60);
   });
 });
 
-describe('GET /api/v1/banca/spend-limit/:kidId and /spend-limit (kid)', () => {
+describe('GET /api/v1/banking/spend-limit/:kidId and /spend-limit (kid)', () => {
   it('reports unconfigured when no limit is set', async () => {
     stub({ spendLimit: null });
-    const res = await asParent(`/api/v1/banca/spend-limit/${KID_ID}`);
+    const res = await asParent(`/api/v1/banking/spend-limit/${KID_ID}`);
     expect(res.status).toBe(200);
     expect(res.body.data.status).toEqual({ configured: false });
   });
@@ -372,7 +372,7 @@ describe('GET /api/v1/banca/spend-limit/:kidId and /spend-limit (kid)', () => {
         { bucket: 'spend', amount: -10, created_at: new Date().toISOString() },
       ],
     });
-    const res = await asKid('/api/v1/banca/spend-limit');
+    const res = await asKid('/api/v1/banking/spend-limit');
     expect(res.status).toBe(200);
     expect(res.body.data.status).toEqual({ configured: true, period: 'weekly', cap: 60, used: 30, remaining: 30 });
   });
@@ -381,7 +381,7 @@ describe('GET /api/v1/banca/spend-limit/:kidId and /spend-limit (kid)', () => {
 describe('GET/POST pending credits (kid)', () => {
   it('lists unallocated credits', async () => {
     stub({ roles: ['kid'] });
-    const res = await asKid('/api/v1/banca/wallet/pending-credits');
+    const res = await asKid('/api/v1/banking/wallet/pending-credits');
     expect(res.status).toBe(200);
     expect(res.body.data.credits).toHaveLength(1);
     expect(res.body.data.credits[0].source).toBe('allowance');
@@ -389,34 +389,34 @@ describe('GET/POST pending credits (kid)', () => {
 
   it('rejects a split that does not sum to the credit amount', async () => {
     stub({ allocateResult: false, roles: ['kid'] });
-    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 3, spend: 3, share: 3 });
+    const res = await postAsKid(`/api/v1/banking/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 3, spend: 3, share: 3 });
     expect(res.status).toBe(409);
   });
 
   it('rejects an all-zero split before even calling the RPC', async () => {
     stub({ roles: ['kid'] });
-    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 0, spend: 0, share: 0 });
+    const res = await postAsKid(`/api/v1/banking/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 0, spend: 0, share: 0 });
     expect(res.status).toBe(400);
   });
 
   it('404s for a credit belonging to another kid', async () => {
     stub({ pendingCredit: { ...defaultPendingCredit(), kid_user_id: OTHER_KID_ID }, roles: ['kid'] });
-    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 10, spend: 0, share: 0 });
+    const res = await postAsKid(`/api/v1/banking/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 10, spend: 0, share: 0 });
     expect(res.status).toBe(404);
   });
 
   it('allocates a valid split', async () => {
     stub({ roles: ['kid'] });
-    const res = await postAsKid(`/api/v1/banca/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 5, spend: 3, share: 2 });
+    const res = await postAsKid(`/api/v1/banking/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 5, spend: 3, share: 2 });
     expect(res.status).toBe(200);
     expect(res.body.data.allocated).toBe(true);
   });
 });
 
-describe('GET /api/v1/banca/statement/:kidId and /statement (kid)', () => {
+describe('GET /api/v1/banking/statement/:kidId and /statement (kid)', () => {
   it('rejects a malformed month', async () => {
     stub();
-    const res = await asParent(`/api/v1/banca/statement/${KID_ID}?month=september`);
+    const res = await asParent(`/api/v1/banking/statement/${KID_ID}?month=september`);
     expect(res.status).toBe(400);
   });
 
@@ -429,7 +429,7 @@ describe('GET /api/v1/banca/statement/:kidId and /statement (kid)', () => {
         { bucket: 'spend', amount: -8, created_at: new Date().toISOString() },
       ],
     });
-    const res = await asKid('/api/v1/banca/statement?month=2026-09');
+    const res = await asKid('/api/v1/banking/statement?month=2026-09');
     expect(res.status).toBe(200);
     expect(res.body.data.statement).toEqual({
       month: '2026-09',

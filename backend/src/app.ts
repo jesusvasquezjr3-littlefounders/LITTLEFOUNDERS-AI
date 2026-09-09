@@ -5,7 +5,7 @@ import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { badgePublicRouter } from './routes/badgePublic.js';
-import { bancaRouter } from './routes/banca.js';
+import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
@@ -75,7 +75,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/tutor', tutorRouter());
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/tasks', tasksRouter());
-  app.use('/api/v1/banca', bancaRouter());
+  app.use('/api/v1/banking', bankingRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
   app.use('/api/v1/admin', adminRouter());

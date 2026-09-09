@@ -1,5 +1,5 @@
 /*
- * Wire shapes for /api/v1/banca — camelCase, mirroring backend/src/routes/banca.ts's
+ * Wire shapes for /api/v1/banking — camelCase, mirroring backend/src/routes/banking.ts's
  * toWire* mappers (never the raw snake_case DB row). See ../tasks/types.ts
  * for the sibling shapes this feature reads alongside (WireTask, WireGoal).
  */
@@ -10,7 +10,7 @@ export type SpendLimitPeriod = 'weekly' | 'monthly';
 
 export const CARD_DESIGNS: CardDesign[] = ['indigo', 'emerald', 'violet', 'amber', 'sunrise', 'ocean'];
 
-export interface WireBancaAccount {
+export interface WireBankingAccount {
   nickname: string;
   cardDesign: CardDesign;
   displayNumber: string;

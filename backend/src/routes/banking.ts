@@ -5,7 +5,7 @@ import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import {
   allocatePendingCredit,
   getAllowanceRule,
-  getBancaAccount,
+  getBankingAccount,
   getPendingCreditById,
   getPendingCreditsForKid,
   getSavingsBonusRule,
@@ -14,15 +14,15 @@ import {
   getVerifiedKidLinks,
   getWalletLedgerInRange,
   insertAuditLog,
-  insertBancaAccount,
+  insertBankingAccount,
   runDueScheduledCredits,
-  setBancaAccountFrozen,
-  updateBancaAccount,
+  setBankingAccountFrozen,
+  updateBankingAccount,
   upsertAllowanceRule,
   upsertSavingsBonusRule,
   upsertSpendLimit,
   type AllowanceRuleRow,
-  type BancaAccountRow,
+  type BankingAccountRow,
   type PendingCreditRow,
   type SavingsBonusRuleRow,
   type SpendLimitRow,
@@ -30,15 +30,15 @@ import {
 } from '../services/supabaseRest.js';
 
 /*
- * /api/v1/banca — BANCA_DIGITAL.md's presentation-and-mechanics layer over
+ * /api/v1/banking — BANKING.md's presentation-and-mechanics layer over
  * FAMILY_HUB.md's wallet_ledger: a named account + card, automated
  * allowance, a "Parent-Paid" savings bonus, and a spend limit. Same router
  * shape as routes/tasks.ts on purpose (requireAuth at the router,
  * requireRole per route) — a kid reads their own account, a parent reads
- * and configures a verified kid's. `family_gifts` (BANCA_DIGITAL.md §5.7) is
+ * and configures a verified kid's. `family_gifts` (BANKING.md §5.7) is
  * NOT here yet — see that file's Wave tracking.
  *
- * Language discipline (BANCA_DIGITAL.md §4, NON-NEGOTIABLE): nothing this
+ * Language discipline (BANKING.md §4, NON-NEGOTIABLE): nothing this
  * router returns or the frontend built on it may say "bank account,"
  * "interest," "APY," or "FDIC-insured." There is no real money here to
  * protect or grow — only LF Coins, same as FAMILY_HUB.md's economy.
@@ -77,7 +77,7 @@ export function computeNextRunAt(frequency: 'weekly' | 'biweekly' | 'monthly', a
   return new Date(today.getTime() + deltaDays * 24 * 60 * 60 * 1000);
 }
 
-function toWireAccount(a: BancaAccountRow) {
+function toWireAccount(a: BankingAccountRow) {
   return {
     nickname: a.nickname,
     cardDesign: a.card_design,
@@ -144,7 +144,7 @@ async function buildStatement(kidId: string, month?: string) {
   return { month: label, earned, spent, saved, entries: entries.map(toWireLedgerEntry) };
 }
 
-export function bancaRouter(): Router {
+export function bankingRouter(): Router {
   const router = Router();
   router.use(requireAuth);
 
@@ -179,18 +179,18 @@ export function bancaRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the account details');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
 
-    const existing = await getBancaAccount(kidId.data);
+    const existing = await getBankingAccount(kidId.data);
     if (existing === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check for an existing account');
     if (existing !== null) return fail(res, 409, CONFLICT, 'This account is already open');
 
-    const account = await insertBancaAccount({
+    const account = await insertBankingAccount({
       kid_user_id: kidId.data,
       nickname: parsed.data.nickname,
       card_design: parsed.data.cardDesign,
       opened_by: parent.id,
     });
     if (!account) return fail(res, 502, DATA_UNAVAILABLE, 'Could not open the account');
-    await insertAuditLog(parent.id, 'banca.account_opened', kidId.data, {});
+    await insertAuditLog(parent.id, 'banking.account_opened', kidId.data, {});
     return ok(res, { account: toWireAccount(account) }, 201);
   });
 
@@ -201,7 +201,7 @@ export function bancaRouter(): Router {
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
 
     await runDueScheduledCredits(kidId.data); // best-effort — a late allowance is a UX delay, not a failed request
-    const account = await getBancaAccount(kidId.data);
+    const account = await getBankingAccount(kidId.data);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
     return ok(res, { account: account ? toWireAccount(account) : null });
   });
@@ -216,7 +216,7 @@ export function bancaRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the account details');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
 
-    const account = await updateBancaAccount(kidId.data, { nickname: parsed.data.nickname, card_design: parsed.data.cardDesign });
+    const account = await updateBankingAccount(kidId.data, { nickname: parsed.data.nickname, card_design: parsed.data.cardDesign });
     if (!account) return fail(res, 404, NOT_FOUND, 'No account to update yet');
     return ok(res, { account: toWireAccount(account) });
   });
@@ -231,9 +231,9 @@ export function bancaRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'frozen must be a boolean');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
 
-    const account = await setBancaAccountFrozen(kidId.data, parsed.data.frozen, parent.id);
+    const account = await setBankingAccountFrozen(kidId.data, parsed.data.frozen, parent.id);
     if (!account) return fail(res, 404, NOT_FOUND, 'No account to freeze yet');
-    await insertAuditLog(parent.id, parsed.data.frozen ? 'banca.frozen' : 'banca.unfrozen', kidId.data, {});
+    await insertAuditLog(parent.id, parsed.data.frozen ? 'banking.frozen' : 'banking.unfrozen', kidId.data, {});
     return ok(res, { account: toWireAccount(account) });
   });
 
@@ -267,7 +267,7 @@ export function bancaRouter(): Router {
     const parsed = SetAllowance.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the allowance details');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
-    const account = await getBancaAccount(kidId.data);
+    const account = await getBankingAccount(kidId.data);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the account');
     if (account === null) return fail(res, 409, CONFLICT, 'Open the account before setting up an allowance');
 
@@ -281,7 +281,7 @@ export function bancaRouter(): Router {
       next_run_at: computeNextRunAt(parsed.data.frequency, parsed.data.anchorDay, new Date()).toISOString(),
     });
     if (!rule) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the allowance rule');
-    await insertAuditLog(parent.id, 'banca.allowance_set', kidId.data, { amount: parsed.data.amount, frequency: parsed.data.frequency });
+    await insertAuditLog(parent.id, 'banking.allowance_set', kidId.data, { amount: parsed.data.amount, frequency: parsed.data.frequency });
     return ok(res, { rule: toWireAllowanceRule(rule) });
   });
 
@@ -306,13 +306,13 @@ export function bancaRouter(): Router {
     const parsed = SetSpendLimit.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the spend limit');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
-    const account = await getBancaAccount(kidId.data);
+    const account = await getBankingAccount(kidId.data);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the account');
     if (account === null) return fail(res, 409, CONFLICT, 'Open the account before setting a spend limit');
 
     const limit = await upsertSpendLimit({ kid_user_id: kidId.data, parent_user_id: parent.id, period: parsed.data.period, cap: parsed.data.cap, active: parsed.data.active });
     if (!limit) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the spend limit');
-    await insertAuditLog(parent.id, 'banca.spend_limit_set', kidId.data, { period: parsed.data.period, cap: parsed.data.cap });
+    await insertAuditLog(parent.id, 'banking.spend_limit_set', kidId.data, { period: parsed.data.period, cap: parsed.data.cap });
     const status = await spendLimitStatus(kidId.data, limit);
     return ok(res, { status: status ?? { configured: true, period: limit.period, cap: limit.cap, used: 0, remaining: limit.cap } });
   });
@@ -336,7 +336,7 @@ export function bancaRouter(): Router {
     const parsed = SetSavingsBonus.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the savings bonus rate');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
-    const account = await getBancaAccount(kidId.data);
+    const account = await getBankingAccount(kidId.data);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the account');
     if (account === null) return fail(res, 409, CONFLICT, 'Open the account before setting a savings bonus');
 
@@ -344,7 +344,7 @@ export function bancaRouter(): Router {
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     const rule = await upsertSavingsBonusRule({ kid_user_id: kidId.data, parent_user_id: parent.id, rate_bp: parsed.data.rateBp, active: parsed.data.active, next_run_at: nextWeek.toISOString() });
     if (!rule) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the savings bonus rule');
-    await insertAuditLog(parent.id, 'banca.savings_bonus_set', kidId.data, { rateBp: parsed.data.rateBp });
+    await insertAuditLog(parent.id, 'banking.savings_bonus_set', kidId.data, { rateBp: parsed.data.rateBp });
     return ok(res, { rule: toWireSavingsBonusRule(rule) });
   });
 
@@ -365,7 +365,7 @@ export function bancaRouter(): Router {
   router.get('/account', requireRole(['kid']), async (req, res) => {
     const kid = authedUser(res);
     await runDueScheduledCredits(kid.id); // best-effort catch-up, same as the parent read above
-    const account = await getBancaAccount(kid.id);
+    const account = await getBankingAccount(kid.id);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
     return ok(res, { account: account ? toWireAccount(account) : null });
   });
@@ -374,7 +374,7 @@ export function bancaRouter(): Router {
     const kid = authedUser(res);
     const parsed = UpdateAccount.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the account details');
-    const account = await updateBancaAccount(kid.id, { nickname: parsed.data.nickname, card_design: parsed.data.cardDesign });
+    const account = await updateBankingAccount(kid.id, { nickname: parsed.data.nickname, card_design: parsed.data.cardDesign });
     if (!account) return fail(res, 404, NOT_FOUND, 'No account to update yet');
     return ok(res, { account: toWireAccount(account) });
   });
@@ -383,9 +383,9 @@ export function bancaRouter(): Router {
     const kid = authedUser(res);
     const parsed = SetFrozen.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'frozen must be a boolean');
-    const account = await setBancaAccountFrozen(kid.id, parsed.data.frozen, kid.id);
+    const account = await setBankingAccountFrozen(kid.id, parsed.data.frozen, kid.id);
     if (!account) return fail(res, 404, NOT_FOUND, 'No account to freeze yet');
-    await insertAuditLog(kid.id, parsed.data.frozen ? 'banca.frozen' : 'banca.unfrozen', kid.id, {});
+    await insertAuditLog(kid.id, parsed.data.frozen ? 'banking.frozen' : 'banking.unfrozen', kid.id, {});
     return ok(res, { account: toWireAccount(account) });
   });
 

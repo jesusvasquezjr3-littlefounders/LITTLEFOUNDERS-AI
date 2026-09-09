@@ -229,8 +229,8 @@ export function KidTaskBoard() {
         <StatCard icon={<Icon name="shopping_bag" />} value={String(state.balances.spend)} label={t('tasks.kid.spend')} tone="primary" />
         <StatCard icon={<Icon name="volunteer_activism" />} value={String(state.balances.share)} label={t('tasks.kid.share')} tone="delight" />
       </div>
-      <Link to="/banca" className="-mt-4 inline-flex items-center gap-1 self-start lf-caption font-bold text-primary">
-        {t('tasks.kid.bancaLink')}
+      <Link to="/banking" className="-mt-4 inline-flex items-center gap-1 self-start lf-caption font-bold text-primary">
+        {t('tasks.kid.bankingLink')}
         <Icon name="arrow_forward" className="text-[16px]" aria-hidden />
       </Link>
 

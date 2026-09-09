@@ -1528,11 +1528,11 @@ export async function decideRedemption(redemptionId: string, approve: boolean, d
   return typeof res === 'boolean' ? res : null;
 }
 
-// ── Banca Digital (0081) — BANCA_DIGITAL.md Waves 0-2: a named account +
+// ── Digital Banking (0081) — BANKING.md Waves 0-2: a named account +
 // card, automated allowance, a "Parent-Paid" savings bonus, and a spend
-// limit. Still LF Coins, still closed-loop — see BANCA_DIGITAL.md §0/§13. ──
+// limit. Still LF Coins, still closed-loop — see BANKING.md §0/§13. ──
 
-export interface BancaAccountRow {
+export interface BankingAccountRow {
   kid_user_id: string;
   nickname: string;
   card_design: string;
@@ -1544,7 +1544,7 @@ export interface BancaAccountRow {
   opened_at: string;
 }
 
-const BANCA_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,display_number,frozen,frozen_by,frozen_at,opened_by,opened_at';
+const BANKING_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,display_number,frozen,frozen_by,frozen_at,opened_by,opened_at';
 
 /**
  * `undefined` means "couldn't check" (transport failure) — DISTINCT from
@@ -1554,8 +1554,8 @@ const BANCA_ACCOUNT_FIELDS = 'kid_user_id,nickname,card_design,display_number,fr
  * below (allowance/bonus/spend-limit rules) make the same distinction for
  * the same reason.
  */
-export async function getBancaAccount(kidId: string): Promise<BancaAccountRow | null | undefined> {
-  const rows = await serviceRest<BancaAccountRow[]>(`/banca_accounts?kid_user_id=eq.${eu(kidId)}&select=${BANCA_ACCOUNT_FIELDS}&limit=1`);
+export async function getBankingAccount(kidId: string): Promise<BankingAccountRow | null | undefined> {
+  const rows = await serviceRest<BankingAccountRow[]>(`/banking_accounts?kid_user_id=eq.${eu(kidId)}&select=${BANKING_ACCOUNT_FIELDS}&limit=1`);
   if (rows === null) return undefined;
   return rows[0] ?? null;
 }
@@ -1565,20 +1565,20 @@ export async function getBancaAccount(kidId: string): Promise<BancaAccountRow | 
  * (LF-####-####) no card network uses. A kid who screenshots this and types
  * it into a real payment field gets an obvious reject by FORMAT alone — see
  * `displayNumber.test.ts`, which is the regression this function exists to
- * keep passing (BANCA_DIGITAL.md §2, §10).
+ * keep passing (BANKING.md §2, §10).
  */
 export function generateDisplayNumber(): string {
   const group = () => String(Math.floor(1000 + randomInt(9000))).padStart(4, '0');
   return `LF-${group()}-${group()}`;
 }
 
-export async function insertBancaAccount(row: {
+export async function insertBankingAccount(row: {
   kid_user_id: string;
   nickname: string;
   card_design: string;
   opened_by: string;
-}): Promise<BancaAccountRow | null> {
-  const rows = await serviceRest<BancaAccountRow[]>('/banca_accounts', {
+}): Promise<BankingAccountRow | null> {
+  const rows = await serviceRest<BankingAccountRow[]>('/banking_accounts', {
     method: 'POST',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify({ ...row, display_number: generateDisplayNumber() }),
@@ -1586,8 +1586,8 @@ export async function insertBancaAccount(row: {
   return rows?.[0] ?? null;
 }
 
-export async function updateBancaAccount(kidId: string, patch: { nickname?: string; card_design?: string }): Promise<BancaAccountRow | null> {
-  const rows = await serviceRest<BancaAccountRow[]>(`/banca_accounts?kid_user_id=eq.${eu(kidId)}`, {
+export async function updateBankingAccount(kidId: string, patch: { nickname?: string; card_design?: string }): Promise<BankingAccountRow | null> {
+  const rows = await serviceRest<BankingAccountRow[]>(`/banking_accounts?kid_user_id=eq.${eu(kidId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify(patch),
@@ -1595,8 +1595,8 @@ export async function updateBancaAccount(kidId: string, patch: { nickname?: stri
   return rows?.[0] ?? null;
 }
 
-export async function setBancaAccountFrozen(kidId: string, frozen: boolean, frozenBy: string): Promise<BancaAccountRow | null> {
-  const rows = await serviceRest<BancaAccountRow[]>(`/banca_accounts?kid_user_id=eq.${eu(kidId)}`, {
+export async function setBankingAccountFrozen(kidId: string, frozen: boolean, frozenBy: string): Promise<BankingAccountRow | null> {
+  const rows = await serviceRest<BankingAccountRow[]>(`/banking_accounts?kid_user_id=eq.${eu(kidId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify({ frozen, frozen_by: frozenBy, frozen_at: frozen ? new Date().toISOString() : null }),
@@ -1772,7 +1772,7 @@ export async function allocatePendingCredit(input: {
 
 /**
  * The no-cron "catch up on access" job (0081's `run_due_scheduled_credits`)
- * — called at the top of every banca route that reads a kid's own data, so
+ * — called at the top of every banking route that reads a kid's own data, so
  * a due allowance/bonus posts the moment anyone actually looks, never later
  * than that. `null` is a transport failure; the caller should still serve
  * the (possibly slightly stale) read rather than fail the whole request —
@@ -1787,7 +1787,7 @@ export async function runDueScheduledCredits(kidId: string): Promise<number | nu
   return typeof res === 'number' ? res : null;
 }
 
-/** Every ledger row in [fromISO, toISO) — the statement's only data source, re-aggregated on every read, never stored (BANCA_DIGITAL.md §6.5). */
+/** Every ledger row in [fromISO, toISO) — the statement's only data source, re-aggregated on every read, never stored (BANKING.md §6.5). */
 export function getWalletLedgerInRange(kidId: string, fromISO: string, toISO: string): Promise<WalletLedgerRow[] | null> {
   return serviceRest<WalletLedgerRow[]>(
     `/wallet_ledger?kid_user_id=eq.${eu(kidId)}&created_at=gte.${es(fromISO)}&created_at=lt.${es(toISO)}&select=${WALLET_LEDGER_FIELDS}&order=created_at.asc`,

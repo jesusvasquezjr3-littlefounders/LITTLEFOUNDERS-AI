@@ -140,7 +140,7 @@ export function FamilyPage() {
                   since that is the one fact this row exists to surface. */}
               <div className="flex flex-wrap items-center gap-2 border-t border-outline/50 px-4 py-2.5">
                 <Link
-                  to="/banca"
+                  to="/banking"
                   className="lf-caption lf-press flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 font-bold text-success-strong hover:bg-success/20"
                 >
                   <Icon name="savings" className="text-[15px]" aria-hidden />
