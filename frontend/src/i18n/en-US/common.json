@@ -260,7 +260,8 @@
       "activityEarnedUntitled": "Earned from a completed task",
       "activitySpent": "Spent on \"{{title}}\"",
       "activitySpentUntitled": "Spent on a reward",
-      "activityAdjustment": "Adjustment"
+      "activityAdjustment": "Adjustment",
+      "streakLabel": "{{count}}-day streak"
     },
     "goalIcons": {
       "star": "Star",

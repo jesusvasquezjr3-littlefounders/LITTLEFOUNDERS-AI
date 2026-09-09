@@ -1309,6 +1309,37 @@ export async function getWalletBalances(kidId: string): Promise<WalletBalances |
   return balances;
 }
 
+// ── Task streak (0080) — a chore-completion day-streak, deliberately its
+// own table and never converted to/from learning_stats' lesson streak
+// (FAMILY_HUB.md §8's non-conversion boundary). ─────────────────────────
+
+export interface TaskStreakRow {
+  kid_user_id: string;
+  current_streak_days: number;
+  longest_streak_days: number;
+  last_completed_date: string | null;
+}
+
+const TASK_STREAK_FIELDS = 'kid_user_id,current_streak_days,longest_streak_days,last_completed_date';
+
+export async function getTaskStreak(kidId: string): Promise<TaskStreakRow | null> {
+  const rows = await serviceRest<TaskStreakRow[]>(`/kid_task_streaks?kid_user_id=eq.${eu(kidId)}&select=${TASK_STREAK_FIELDS}&limit=1`);
+  return rows?.[0] ?? null;
+}
+
+/** Upserts the kid's row — a single-row, last-write-wins update (no advisory lock: a lost update costs at most one day of streak credit, not a duplicated coin, unlike the wallet). */
+export async function upsertTaskStreak(
+  kidId: string,
+  values: { current_streak_days: number; longest_streak_days: number; last_completed_date: string },
+): Promise<boolean> {
+  const res = await serviceRest<unknown>('/kid_task_streaks?on_conflict=kid_user_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
+    body: JSON.stringify({ kid_user_id: kidId, ...values, updated_at: new Date().toISOString() }),
+  });
+  return res !== null;
+}
+
 /**
  * The only path that credits a task's reward. The TOTAL is never
  * client-supplied — it is the task's own `reward_coins`, read and enforced

@@ -44,6 +44,7 @@ export function KidTaskBoard() {
   const [evidenceVersion, setEvidenceVersion] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const [liveMessage, setLiveMessage] = useState('');
+  const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0 });
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -84,6 +85,16 @@ export function KidTaskBoard() {
     };
   }, [getToken, reloadKey]);
 
+  async function refreshStreak() {
+    if (!token) return;
+    const res = await api<{ currentStreak: number; longestStreak: number }>('/tasks/streak', { token });
+    if (res.data) setStreak(res.data);
+  }
+
+  useEffect(() => {
+    void refreshStreak();
+  }, [token]);
+
   function announce(message: string) {
     setLiveMessage(message);
     // Focus moves to the live region itself — the control that triggered the
@@ -103,11 +114,19 @@ export function KidTaskBoard() {
   async function onComplete(taskId: string, title: string) {
     if (!token || busyTask) return;
     setBusyTask(taskId);
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/complete`, { method: 'POST', token });
+    // The kid's LOCAL calendar day anchors the streak (same construction as
+    // LessonRoute.tsx's local_date — guaranteed YYYY-MM-DD, unlike
+    // toLocaleDateString('sv') on some browsers).
+    const localDate = (() => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    })();
+    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/complete`, { method: 'POST', token, body: { localDate } });
     setBusyTask(null);
     if (res.data) {
       setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
       announce(t('tasks.kid.completedAnnounce', { title }));
+      void refreshStreak();
     }
   }
 
@@ -191,9 +210,17 @@ export function KidTaskBoard() {
       <div ref={liveRegionRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
         {liveMessage}
       </div>
-      <header>
-        <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
-        <p className="lf-body text-content-muted">{t('tasks.kid.subtitle')}</p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
+          <p className="lf-body text-content-muted">{t('tasks.kid.subtitle')}</p>
+        </div>
+        {streak.currentStreak > 0 && (
+          <span className="lf-caption flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1.5 font-bold text-warning-strong">
+            <Icon name="local_fire_department" fill className="text-[16px]" aria-hidden />
+            {t('tasks.kid.streakLabel', { count: streak.currentStreak })}
+          </span>
+        )}
       </header>
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4">

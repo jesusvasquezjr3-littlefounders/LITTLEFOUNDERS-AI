@@ -5,6 +5,7 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
 import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
+import { isCalendarDate, nextStreak } from '../services/streak.js';
 import {
   allocateTaskReward,
   archiveGoal,
@@ -22,10 +23,12 @@ import {
   getTaskById,
   getTasksForKid,
   getTasksForKids,
+  getTaskStreak,
   getVerifiedGuardiansOfKid,
   getVerifiedKidLinks,
   getWalletBalances,
   getWalletLedger,
+  upsertTaskStreak,
   insertAuditLog,
   insertCatalogItem,
   insertGoal,
@@ -414,16 +417,45 @@ export function tasksRouter(): Router {
     return task;
   }
 
+  const CompleteTask = z.object({ localDate: z.string().refine(isCalendarDate, 'localDate must be YYYY-MM-DD').optional() }).strict();
+
   router.post('/:id/complete', requireRole(['kid']), async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const parsedBody = CompleteTask.safeParse(req.body ?? {});
+    if (!parsedBody.success) return fail(res, 400, 'VALIDATION_ERROR', 'localDate must be YYYY-MM-DD');
     const task = await guardOwnTask(id.data, res, kid.id);
     if (!task) return;
 
     const updated = await transitionTaskStatus(id.data, 'open', 'done');
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not open');
+
+    // Awaited (unlike a fire-and-forget side effect) so a write failure is at
+    // least observable here — but its own failure must never turn an
+    // already-landed "mark done" into a reported failure (§1.14): the
+    // response is always the completed task, streak write or not.
+    const todayLocal = parsedBody.data.localDate ?? new Date().toISOString().slice(0, 10);
+    const streak = await getTaskStreak(kid.id);
+    const newStreak = nextStreak(streak?.last_completed_date ?? null, streak?.current_streak_days ?? 0, todayLocal);
+    const newLongest = Math.max(streak?.longest_streak_days ?? 0, newStreak);
+    const wrote = await upsertTaskStreak(kid.id, {
+      current_streak_days: newStreak,
+      longest_streak_days: newLongest,
+      last_completed_date: todayLocal,
+    });
+    if (!wrote) console.warn(`[tasks] streak write failed for kid ${kid.id} — today's completion will not be reflected`);
+
     return ok(res, { task: toWireTask(updated) });
+  });
+
+  router.get('/streak', requireRole(['kid']), async (req, res) => {
+    const kid = authedUser(res);
+    const streak = await getTaskStreak(kid.id);
+    return ok(res, {
+      currentStreak: streak?.current_streak_days ?? 0,
+      longestStreak: streak?.longest_streak_days ?? 0,
+    });
   });
 
   /*

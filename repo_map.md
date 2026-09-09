@@ -8324,6 +8324,7 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
 import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
+import { isCalendarDate, nextStreak } from '../services/streak.js';
 import {
   allocateTaskReward,
   archiveGoal,
@@ -8331,7 +8332,6 @@ import {
   evidenceStillReferencedElsewhere,
   getCatalogForGuardians,
   getCatalogForParent,
-  getCatalogItemById,
 ```
 
 ### backend/src/routes/tutor.ts
@@ -13998,6 +13998,26 @@ BEGIN
 -- already and do not reference achievement_kind's vocabulary.
 
 ALTER TABLE public.badge_shares
+```
+
+### database/migrations/0080_task_streak.sql
+
+```
+-- 0080_task_streak.sql — a chore-completion streak, separate from
+-- learning_stats' lesson-day streak.
+-- @phase: expand
+--
+-- WHY A SEPARATE TABLE, NOT A COLUMN ON learning_stats. FAMILY_HUB.md §8 is
+-- explicit that learning_stats has "no conversion path to/from LF Coins" —
+-- the two economies are deliberately kept apart. A chore streak living on
+-- the SAME row as the lesson streak would blur that boundary the moment
+-- anyone reads the table, even with the columns kept logically separate.
+-- kid_task_streaks is its own table, in its own domain, updated by its own
+-- route (POST /tasks/:id/complete), exactly the isolation §3's non-goal
+-- already asks for.
+--
+-- WHY THE SAME DAY-STREAK MATH AS LEARNING. `services/streak.ts`'s
+-- nextStreak()/isCalendarDate() are pure, already covered by
 ```
 
 ### database/package.json

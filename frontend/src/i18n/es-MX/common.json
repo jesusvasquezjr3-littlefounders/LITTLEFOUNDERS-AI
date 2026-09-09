@@ -260,7 +260,8 @@
       "activityEarnedUntitled": "Ganado por una tarea completada",
       "activitySpent": "Gastado en \"{{title}}\"",
       "activitySpentUntitled": "Gastado en una recompensa",
-      "activityAdjustment": "Ajuste"
+      "activityAdjustment": "Ajuste",
+      "streakLabel": "Racha de {{count}} días"
     },
     "goalIcons": {
       "star": "Estrella",

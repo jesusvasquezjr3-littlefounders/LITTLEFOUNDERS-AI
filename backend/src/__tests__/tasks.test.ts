@@ -53,6 +53,8 @@ interface StubOptions {
   evidenceStillReferenced?: boolean;
   /** captures every DELETE sent to filebase's /api/v1/files/:bucket/:file, so a test can assert cleanup happened (or didn't). */
   deleteCalls?: string[];
+  /** the kid's kid_task_streaks row — omit for "no row yet" (a fresh kid). */
+  taskStreak?: Record<string, unknown> | null;
 }
 
 function stub(opts: StubOptions = {}) {
@@ -88,6 +90,13 @@ function stub(opts: StubOptions = {}) {
       }
       if (url.includes('/rest/v1/tasks?id=neq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, opts.evidenceStillReferenced ? [{ id: OTHER_KID_ID }] : []));
+      }
+      if (url.includes('/rest/v1/kid_task_streaks?kid_user_id=eq.') && method === 'GET') {
+        const rows = opts.taskStreak === undefined ? [] : opts.taskStreak === null ? [] : [opts.taskStreak];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/kid_task_streaks') && method === 'POST') {
+        return Promise.resolve(new Response(null, { status: 201 }));
       }
 
       if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
@@ -294,6 +303,83 @@ describe('POST /api/v1/tasks/:id/complete (kid)', () => {
     const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, {});
     expect(res.status).toBe(200);
     expect(res.body.data.task.status).toBe('done');
+  });
+
+  it('rejects a malformed localDate', async () => {
+    stub({ task: defaultTask(), roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '09/08/2026' });
+    expect(res.status).toBe(400);
+  });
+
+  it('starts a streak at 1 on a first-ever completion', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ task: defaultTask(), roles: ['kid'], writes, taskStreak: null });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    expect(res.status).toBe(200);
+    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
+    expect(write).toBeDefined();
+    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(1);
+    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(1);
+  });
+
+  it('does not double-count a second completion on the same day', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({
+      task: defaultTask(),
+      roles: ['kid'],
+      writes,
+      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 5, last_completed_date: '2026-09-08' },
+    });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    expect(res.status).toBe(200);
+    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
+    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(3);
+  });
+
+  it('extends the streak on the very next calendar day', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({
+      task: defaultTask(),
+      roles: ['kid'],
+      writes,
+      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 5, last_completed_date: '2026-09-07' },
+    });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    expect(res.status).toBe(200);
+    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
+    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(4);
+    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(5);
+  });
+
+  it('restarts the streak at 1 after a gap day, but keeps the longest-ever mark', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({
+      task: defaultTask(),
+      roles: ['kid'],
+      writes,
+      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 7, last_completed_date: '2026-09-05' },
+    });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    expect(res.status).toBe(200);
+    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
+    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(1);
+    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(7);
+  });
+});
+
+describe('GET /api/v1/tasks/streak (kid)', () => {
+  it('reports zero for a kid with no streak row yet', async () => {
+    stub({ roles: ['kid'], taskStreak: null });
+    const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ currentStreak: 0, longestStreak: 0 });
+  });
+
+  it("reports the kid's own current and longest streak", async () => {
+    stub({ roles: ['kid'], taskStreak: { kid_user_id: KID_ID, current_streak_days: 4, longest_streak_days: 9, last_completed_date: '2026-09-08' } });
+    const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ currentStreak: 4, longestStreak: 9 });
   });
 });
 
