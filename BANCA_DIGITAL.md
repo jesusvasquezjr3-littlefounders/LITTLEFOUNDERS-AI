@@ -30,10 +30,10 @@
 
 | | |
 |---|---|
-| **Status** | **WAVES 0-2 SHIPPED AND VERIFIED LOCALLY, 2026-09-08.** A named account + card (freeze, nickname, design), automated allowance with the pending-credit allocate loop, a "Parent-Paid" savings bonus, a spend limit enforced at request time, and the derived statement are all built and driven end-to-end through the real UI against a real Postgres instance, not just unit-tested — see §14. `family_gifts` (§5.7) is explicitly NOT built. Not yet deployed to production; migration `0081` is declared PENDING in `ROADMAP.md`. |
+| **Status** | **WAVES 0-2 SHIPPED AND LIVE IN PRODUCTION, 2026-09-09.** A named account + card (freeze, nickname, design), automated allowance with the pending-credit allocate loop, a "Parent-Paid" savings bonus, a spend limit enforced at request time, and the derived statement are all built, verified locally end-to-end against a real Postgres instance (§14), and now deployed: `0081_banca_digital.sql` applied via `tutor-deploy.yml step:migrate` (pre-migration restore point taken automatically), production confirmed at **81/81**, and independently re-verified live — `/health` 200, `GET /api/v1/banca/account` 401 (mounted, not 404), `https://littlefounders.ai/banca` 200 — see `ROADMAP.md`'s migration-handoff paragraph for the full receipt. `family_gifts` (§5.7) is explicitly NOT built. |
 | **Depends on** | `FAMILY_HUB.md`, shipped and live in production 2026-09-08 (`wallet_ledger`, `savings_goals`, `redemption_catalog`, `guardian_links`, `kid_task_streaks`) — this design adds a presentation and mechanics layer on top, not a replacement. |
 | **Regulatory posture** | Stays entirely at **rung 1 — simulation** of the research brief's ladder [Brief §5]. No real money, no bank partner, no new regulatory surface. Every mechanic below is closed-loop LF Coins, exactly like `FAMILY_HUB.md`'s existing economy — this document changes what the economy *feels like*, never what it *is*. |
-| **Next action** | Deploy `0081_banca_digital.sql` via `tutor-deploy.yml step:migrate` (the same path `0074`-`0080` went out through), then deploy backend + frontend, then re-verify live per `ROADMAP.md`'s migration-handoff discipline. `family_gifts` (Wave 3) is the next build increment. |
+| **Next action** | None outstanding for Waves 0-2. `family_gifts` (Wave 3) is the next build increment, not a blocker. |
 
 ---
 
