@@ -842,8 +842,28 @@
    *
    * Same `:where()` trick as the ink rule: 0-2-0, so it beats the utility
    * without an `!important` and without touching specificity anywhere else.
+   *
+   * `.lf-stage-pill` IS WORLD-ANCHORED CHROME AND WAS NOT IN THIS SELECTOR.
+   *
+   * The rule above says "chrome". The guard said `.lf-lumen`. A stage pill is
+   * neither a Lumen plate nor a reading surface — it is the lightest chrome
+   * there is, floating directly in front of a moving render — so it fell
+   * through the guard and kept the raw 12 px, which is the ONE size this whole
+   * block exists to prevent. Nothing failed: it rendered, it was reachable, it
+   * was simply too small to read, which is exactly how a defect in a value
+   * survives every gate (/AGENTS.md §1.14).
+   *
+   * The live cost, found by a 2026-09-09 audit against production: the sound
+   * blocked notice — the ONLY control that restores the tutor's voice after the
+   * browser blocks autoplay — is a `lf-caption` on a stage pill. A whole
+   * session ran in silence past a 12 px grey line nobody reads. Voice is not a
+   * decoration here; it is the product (/AGENTS.md §1.2).
+   *
+   * So the guard now names both chrome materials. A caption on either is held
+   * at `lf-action`'s metrics; inside a `reading` surface it stays quiet.
    */
-  .lf-lumen:not(.lf-lumen-reading) :where(.lf-caption) {
+  .lf-lumen:not(.lf-lumen-reading) :where(.lf-caption),
+  .lf-stage-pill :where(.lf-caption) {
     font-size: 15px;
     font-weight: 600;
     line-height: 20px;
@@ -2301,6 +2321,36 @@
       border-color: rgb(255 255 255 / 0.3);
       color: rgb(var(--lf-on-inverse));
     }
+  }
+
+  /*
+   * ELEVATION IS A PROMISE THAT THE THING CAN BE PRESSED. `.lf-inert` withdraws
+   * it.
+   *
+   * `lf-lumen` and `lf-stage-pill` describe a MATERIAL — blur, base, hairline,
+   * shadow. Neither says anything about whether the thing accepts a tap, so a
+   * label and a button built from the same material are painted identically and
+   * the only difference left is `cursor`, which does not exist on touch.
+   *
+   * The 2026-09-09 production audit measured this in BOTH directions on one
+   * screen, which is why the fix is a class and not two patches:
+   *
+   *  - "2 cosas para repasar hoy" is a `<div pointer-events-none>` whose
+   *    computed `background-color`, `border-radius` and `box-shadow` are
+   *    BYTE-IDENTICAL to the real buttons flanking it. It was tapped three
+   *    times and did nothing.
+   *  - 37 px from the sound-blocked BUTTON sits the mic's tooltip `<span>`,
+   *    same `lf-stage-pill`, same base, same radius, same ink. One restores the
+   *    tutor's voice; the other is decoration.
+   *
+   * So: a surface that cannot be pressed lies flat and keeps only its hairline.
+   * It still reads as one of the family — same material, same shape — it just
+   * stops claiming to be liftable. Applied at the passive call sites, never as
+   * a blanket rule on `pointer-events-none`: that utility also wraps purely
+   * decorative layers where flattening would mean nothing.
+   */
+  .lf-inert {
+    box-shadow: none;
   }
 
   /*

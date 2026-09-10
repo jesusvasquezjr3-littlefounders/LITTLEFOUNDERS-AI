@@ -53,7 +53,22 @@ export function NotebookKeepButton({
       onClick={status === 'idle' || status === 'error' ? keep : undefined}
       disabled={status === 'saving' || status === 'kept'}
       className={cn(
-        'lf-caption pointer-events-auto flex shrink-0 items-center gap-1 self-end transition-colors',
+        /*
+         * 44 px OF TAP, not 16.
+         *
+         * Text plus a 16 px icon with no floor measured 94x16 in production
+         * (2026-09-09) — under WCAG 2.5.8's 24 px minimum and well under
+         * /DESIGN.md §Layout's non-negotiable 44, on a control aimed at a
+         * six-year-old's finger. It was also the only thing on that rail with
+         * no floor at all, which is why it was the one that shrank: measured
+         * a frame earlier, while the board was still laying out, its rect was
+         * 0x0 — a keyboard-focusable button with no dimensions.
+         *
+         * `px-2 -mr-2` keeps the LABEL optically flush with the board's right
+         * edge while the target itself extends past it, so the floor costs
+         * the layout nothing.
+         */
+        'lf-caption pointer-events-auto flex min-h-11 shrink-0 items-center gap-1 self-end px-2 -mr-2 transition-colors',
         status === 'kept' ? 'text-content-muted' : 'text-primary hover:underline',
         className,
       )}

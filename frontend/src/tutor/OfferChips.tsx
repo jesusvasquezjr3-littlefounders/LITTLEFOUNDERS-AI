@@ -8,6 +8,7 @@ import { playPlatformSound } from '@/lib/sound';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
+import { useScrollEdges } from './hud/useScrollEdges';
 import { micBlockedReason } from './mic';
 import { PlanNotebookPanel } from './PlanNotebookPanel';
 import { SessionHistory } from './SessionHistory';
@@ -697,11 +698,36 @@ export function OfferChips({
     [choose, startInputForNode],
   );
 
+  /** The graph's own scroller — the greeting and the openings above it are pinned. */
+  const mapScrollRef = useRef<HTMLDivElement>(null);
+  useScrollEdges(mapScrollRef);
+
+  /** Past conversations / the plan notebook: an unbounded list in a 52vh plate. */
+  const archiveScrollRef = useRef<HTMLDivElement>(null);
+  useScrollEdges(archiveScrollRef);
+
   const mapPanel =
     map && map.nodes.length > 0 ? (
+      /*
+       * THE GREETING AND THE OPENINGS DO NOT SCROLL. ONLY THE GRAPH DOES.
+       *
+       * This whole plate used to be one `overflow-y-auto` box, which meant the
+       * CONTINUE chip — the single accent-floored control on the screen, the
+       * one thing the design is asking the learner to press — was scrollable
+       * content. A 2026-09-09 production audit measured it at `top: -315px`
+       * after one wheel gesture: gone, with no way back except scrolling up,
+       * and what replaced it on screen was a field of locked padlocks. A
+       * learner exploring by scrolling paid for it with the only opening the
+       * tutor had offered them.
+       *
+       * So the frame is a column, the header is `shrink-0`, and the scroll
+       * moves to the graph alone. A curriculum graph is legitimately taller
+       * than the plate (306 of 889 px visible at 1280x666, measured); an
+       * offer is not.
+       */
       <HudPlate
         shape="sheet"
-        className={cn('pointer-events-auto max-h-full w-full overflow-y-auto overscroll-contain', settleStep(0))}
+        className={cn('pointer-events-auto flex max-h-full w-full flex-col overflow-hidden', settleStep(0))}
         /*
          * INLINE for the same reason the chips do it: `cn` is a plain join, so
          * a `max-w-*` class here would land beside the sheet's own 44ch cap
@@ -709,8 +735,15 @@ export function OfferChips({
          * graph is not a 44ch reading column.
          */
         style={{ maxWidth: '100%' }}
+        /*
+         * The core is `flex items-center justify-center` for the chip case and
+         * has to become a stretching column here. `cn` is a plain join, so the
+         * override needs `!` — the same idiom the map button's `!px-3` uses —
+         * or Tailwind's output order decides the winner instead of this file.
+         */
+        floorClassName="!flex-col !items-stretch !justify-start min-h-0 flex-1 gap-3"
       >
-        <div className="flex w-full flex-col gap-3">
+        <div className="flex w-full shrink-0 flex-col gap-3">
           {/*
             The greeting lives IN the map while the map is the home: the
             crown caption is projected over the character, and with the camera
@@ -741,6 +774,15 @@ export function OfferChips({
               </HudPlate>
             )}
             {map.review.count > 0 && (
+              /*
+               * A COUNT, NOT A CONTROL. It sits BETWEEN two real buttons in
+               * this row and used to be painted identically to them — a
+               * 2026-09-09 audit tapped it three times before deciding the
+               * product was broken. `HudPlate` now flattens any chip that is
+               * not a `<button>`, so this needs no class of its own; the note
+               * stays because "the middle of three" is why it was the
+               * expensive one.
+               */
               <HudPlate shape="chip" className="pointer-events-none">
                 <Icon name="history" className="text-warning-strong" />
                 <span className="lf-caption">{t('tutor.map.reviewCount', { count: map.review.count })}</span>
@@ -760,7 +802,30 @@ export function OfferChips({
               </HudPlate>
             )}
           </div>
-          <MapGraph map={map} onPick={pickNode} disabled={disabled} />
+        </div>
+        {/*
+          `lf-scroll-edge` marks the scroller's PARENT (see `useScrollEdges`).
+          The edge is what tells a learner the graph continues: an overlay
+          scrollbar only appears once they are ALREADY scrolling, which is
+          after the moment they needed to be told, and on this route the page
+          body never scrolls — a wheel gesture anywhere off the plate does
+          nothing at all, so "it did not move" reads as "there is no more".
+        */}
+        <div className="lf-scroll-edge flex min-h-0 flex-1 flex-col">
+          <div
+            ref={mapScrollRef}
+            /*
+             * A scrollable region with no focusable descendant is reachable by
+             * wheel and touch but never by keyboard (`scrollable-region-focusable`).
+             * Every unlocked node here IS a button, but a map that is entirely
+             * locked has none, and that is exactly the learner who most needs
+             * to read the whole thing.
+             */
+            tabIndex={0}
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          >
+            <MapGraph map={map} onPick={pickNode} disabled={disabled} />
+          </div>
         </div>
       </HudPlate>
     ) : null;
@@ -935,21 +1000,41 @@ export function OfferChips({
    */
   const archive =
     replaysOpen || plannerOpen ? (
-      <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
+      <HudPlate
+        shape="sheet"
+        className="pointer-events-auto flex max-h-[52vh] flex-col overflow-hidden"
+        /*
+         * The plate's own floor centres its content, which is right for a
+         * one-line chip and wrong for a list. `cn` is a plain join, so the
+         * override needs `!` or Tailwind's output order picks the winner.
+         */
+        floorClassName="!flex-col !items-stretch !justify-start min-h-0 flex-1 text-left"
+      >
         {/*
-          The plate's own floor centres its content, which is right for a one-line
-          chip and wrong for a list. The list sets its own alignment rather than
-          the primitive growing a variant for it.
+          `lf-scroll-edge` on the scroller's PARENT (see `useScrollEdges`).
+          The list is unbounded — the comment above already reckons with "a
+          learner with thirty conversations", and a real account had exactly
+          thirty on 2026-09-09, showing two at a time inside 276 px against
+          3,805 px of content. The page body does not scroll on this route, so
+          a wheel gesture anywhere off this plate does nothing at all, and an
+          overlay scrollbar does not appear until the learner is already
+          scrolling. Without the edge, "there are two conversations" and "there
+          are thirty" look identical.
         */}
-        <div className="flex w-full flex-col gap-3 text-left">
-          {replaysOpen ? (
-            <>
-              <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-              <SessionHistory token={token} onReplay={onReplay} />
-            </>
-          ) : (
-            <PlanNotebookPanel token={token} />
-          )}
+        <div className="lf-scroll-edge flex min-h-0 flex-1 flex-col">
+          <div
+            ref={archiveScrollRef}
+            className="flex min-h-0 w-full flex-1 flex-col gap-3 overflow-y-auto overscroll-contain text-left"
+          >
+            {replaysOpen ? (
+              <>
+                <span className="lf-headline text-content">{t('tutor.history.title')}</span>
+                <SessionHistory token={token} onReplay={onReplay} />
+              </>
+            ) : (
+              <PlanNotebookPanel token={token} />
+            )}
+          </div>
         </div>
       </HudPlate>
     ) : null;
@@ -1277,14 +1362,31 @@ export function OfferChips({
             to keep up with, and a line that types itself out on a fallback
             screen is a delay rather than a character speaking.
           */}
-          <HudPlate shape="plate" className="pointer-events-none">
-            {/* `lf-speech`, exactly as the caption it stands in for: this is
-                still the tutor talking, and a device with no WebGL does not
-                make its voice smaller. */}
-            <span className="lf-speech" aria-live="polite" aria-atomic="true">
-              {greeting}
-            </span>
-          </HudPlate>
+          {/*
+            ...AND ONLY WHEN THE MAP IS NOT ALREADY CARRYING IT.
+
+            `mapPanel` renders this same sentence in its own header — that is
+            the "one sentence, one place" rule the plate above states, and the
+            stage branch honours it (`{!mapPanel && <SpeechCaption …>}`). This
+            branch did not: it painted the greeting here and then rendered
+            `mapPanel` directly underneath, so a device with no WebGL — the
+            cheapest phone in the room, and the learner least able to shrug it
+            off — read the same line twice, stacked.
+
+            Found by code review while chasing a duplication that turned out to
+            be a broken-window artifact on the desktop path (2026-09-09). The
+            reported bug was not real; this one, one branch over, was.
+          */}
+          {!mapPanel && (
+            <HudPlate shape="plate" className="pointer-events-none">
+              {/* `lf-speech`, exactly as the caption it stands in for: this is
+                  still the tutor talking, and a device with no WebGL does not
+                  make its voice smaller. */}
+              <span className="lf-speech" aria-live="polite" aria-atomic="true">
+                {greeting}
+              </span>
+            </HudPlate>
+          )}
           {status}
           {mapPanel ?? chips}
           {/*

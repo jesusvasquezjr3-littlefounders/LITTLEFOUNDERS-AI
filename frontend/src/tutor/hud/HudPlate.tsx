@@ -214,6 +214,25 @@ export const HudPlate = forwardRef<HTMLElement, HudPlateProps>(function HudPlate
      * thumb.
      */
     interactive && 'min-h-12 min-w-12 lf-press disabled:pointer-events-none',
+    /*
+     * A CHIP THAT IS NOT A BUTTON MUST NOT BE PAINTED LIKE ONE.
+     *
+     * The line above gives every interactive plate its tap floor and its press
+     * physics. The non-interactive branch gave nothing, so a `<div>` chip and a
+     * `<button>` chip came out of here with the same base, the same radius and
+     * the same shadow — and `cursor` was the only difference left, which does
+     * not exist on a thumb.
+     *
+     * The 2026-09-09 production audit tapped `tutor.map.reviewCount` three
+     * times before deciding the product was broken. It is a COUNT, and it sits
+     * between two real buttons in the same row.
+     *
+     * Scoped to `chip` on purpose. Elevation on a plate or a sheet is not an
+     * affordance claim — it is what holds a reading surface off a moving render
+     * so the text stays legible. Nobody taps a sheet. It is the chip, the shape
+     * every button in this HUD is built from, that has to earn its shadow.
+     */
+    !interactive && shape === 'chip' && 'lf-inert',
     className,
   );
 
