@@ -140,6 +140,23 @@ Railway bills almost entirely on **memory used** (diagnose: Project → Usage �
 - The authoritative Terms & Privacy text lives in the frontend i18n legal sections (`frontend/src/i18n/*/marketing.json`) — any edit must keep the three locales (`en-US`, `es-MX`, `pt-BR`) in structural parity in the same commit.
 - No PII of minors ever reaches a third-party AI API beyond age band + first name (the Tutor's voice path is the one signed-off exception, gated by blocking guardian consent). AI output for kids passes moderation before display/speech. RLS on every user table; `audit_logs` append-only; `superadmin` only for `@littlefounders.ai`.
 
+## Non-obvious invariants & traps
+
+Things a fresh session cannot derive from the code, each learned the expensive way. Deep history (incident post-mortems, the old rulebook) is recoverable from git history before commit `77b55596`.
+
+- **No shared types across the 11 packages** (no workspaces, on purpose) — wire shapes are hand-mirrored: whiteboard instruments in 5 copies, `demonstrate` steps in 6, provider config in 2. The parity gates catch drift, but they don't order deploys: when adding a whiteboard kind, deploy **Core before Oracle** — Core's body union has no fallback member, so an unknown `kind` 400s the entire turn instead of dropping the board.
+- **The dev machine is small (Apple M2, 8 GB).** Parallel subagents + headless Chrome + several Vite servers make it swap, and a swapping machine doesn't fail loudly — it fails as flaky timing tests. Prefer sequential work, keep ONE dev server, and re-run any timing-sensitive failure on a quiet machine before believing it. `verify:tutor-*` spawn their own Vite on 5173 and fail with a misleading "timed out waiting for lab chrome" if the port is already held.
+- **Every model/image/TTS call is billed per learner, forever.** Prism caches by request hash (an identical image request never hits the paid API twice); `release:readiness` dry-runs spend $0. Never add a retry loop or fallback that silently doubles paid work.
+- **Two TTS paths is deliberate, not duplication:** Echo (`audiogen/`) does batch, cached lesson narration (Qwen3-TTS); Oracle's live voice is Inworld, interim, and reachable ONLY through `oracle/src/voice/provider.ts` — nothing outside that directory imports a provider SDK. ElevenLabs is sound-effects-only and never called at runtime.
+- **Inworld SPEAKS prosody tags** — `[warm]` is read aloud to the child as "corchete warm". Probe before shipping direction tags (`gh workflow run tutor-deploy.yml -f step=probe-prosody`). The tutor model must be **non-reasoning** (`deepseek-chat`); a reasoner spent 87% of latency thinking (38 s/turn). `step=probe-models` asks the provider instead of guessing.
+- **Kid voice consent is enforced server-side, per audio frame,** in Oracle's websocket — not just hidden client-side — and re-checked each turn so mid-session revocation bites immediately. Without consent the session connects but stays silent-mic. A raw Supabase JWT on that socket is a bug: only Core-minted, single-use, session-scoped tokens.
+- **Oracle's context schema is `.strict()` and pinned to 14 fields by test** (`oracle/src/__tests__/privacy-contract-docs.test.ts`). Widening what reaches a third-party model about a child is a reviewed decision, never a refactor.
+- **Failure must be distinguishable from emptiness.** A read-modify-write helper must never default a failed upstream read to zeros — that once erased a child's XP, minutes and streaks behind a `200`. Return `null`/throw and make the caller refuse; defaulting is for display-only reads.
+- **`railway ssh` / the Railway CLI do not propagate remote exit codes** — parse the output, never trust `$?`. Piping a gate through `| tail` masks its exit code the same way.
+- **Synthetic clicks don't hit-test.** `element.click()` dispatches straight at the node, so a full-viewport overlay (the character canvas) once swallowed every control while every audit stayed green. The `verify:*` suites use real pointer events + `elementFromPoint` — keep any new UI verification on that standard.
+- **Families are derived from `guardian_links`** (multiple parents may point at one kid) — there is no `families` table, and a `kid` row without a verified guardian link is a bug, not a state. `superadmin` is DB-enforced to `@littlefounders.ai` emails.
+- **English-only identifiers** everywhere — routes, tables, files, i18n keys. Locale text is what gets translated; code never is.
+
 ## License
 
 Proprietary — all rights reserved. Third-party skills under `.github/skills/` retain their original licenses (see each skill's `_SOURCE.md`/`LICENSE`).
