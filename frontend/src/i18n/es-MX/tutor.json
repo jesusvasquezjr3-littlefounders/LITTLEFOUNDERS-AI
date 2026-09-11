@@ -15,7 +15,7 @@
     "replayLayer": "Una conversación, reproduciéndose otra vez",
     "replayControls": "Controles de la repetición",
     "closeControls": "Qué sigue",
-    "soundBlocked": "Tu navegador silenció esta página. Toca aquí para que el tutor pueda hablar."
+    "soundBlocked": "Toca para escucharme"
   },
   "lab": {
     "title": "Laboratorio de escena",
@@ -203,6 +203,7 @@
     "reconnecting": "Reconectando con tu tutor…",
     "replyTimeout": "Esto tardó demasiado. Intenta preguntar de nuevo.",
     "startOver": "Empezar de nuevo",
+    "startOverConfirm": "¿Empezar de nuevo?",
     "explainDifferently": "¿Me lo explicas de otra forma?",
     "editMessage": "Reformular este mensaje",
     "editPlaceholder": "Reformula tu mensaje…",
@@ -251,6 +252,7 @@
     "empty": "Todavía no hay conversaciones.",
     "loadFailed": "No pudimos cargar esa conversación.",
     "replay": "Volver a reproducir",
+    "titleWith": "{{what}} con {{name}}",
     "xp": "{{count}} XP",
     "lines_one": "{{count}} línea",
     "lines_other": "{{count}} líneas",
@@ -480,7 +482,8 @@
   },
   "planNotebook": {
     "title": "Plan de ahorro y pizarrones guardados",
-    "loadFailed": "No pudimos cargar el plan ni los pizarrones guardados.",
+    "loading": "Cargando tu plan y tus pizarrones…",
+      "loadFailed": "No pudimos cargar el plan ni los pizarrones guardados.",
     "planUpdatedOn": "Actualizado {{date}}",
     "notebookLabel_one": "{{count}} pizarrón guardado",
     "notebookLabel_other": "{{count}} pizarrones guardados",

@@ -144,6 +144,63 @@ function rememberPicker(userId: string | undefined): void {
   }
 }
 
+/*
+ * THE ACTIVE SESSION, PERSISTED SO A PAGE RELOAD RESUMES IT INSTEAD OF
+ * ABANDONING IT.
+ *
+ * The server already parks a dropped conversation and replays its whole
+ * history over a fresh socket — that is exactly what the in-page
+ * CONNECTION_LOST resume below relies on. The one gap was a full PAGE RELOAD:
+ * it wipes `session` from React state, so on remount the client had no id to
+ * resume from and silently started a brand-new conversation. The child's
+ * turns, the board, and the tutor's read of where they were stuck were all
+ * abandoned, leaving a "0-line" ghost in the history. Found live driving the
+ * tutor as a real user who pressed F5 mid-conversation (2026-09-10).
+ *
+ * `sessionStorage`, NOT `localStorage`: the scope is precisely one tab across
+ * a reload. Closing the tab is a deliberate leave and must not resurrect a
+ * conversation later — and the server's park grace window would have expired
+ * anyway, so a stale id would only ever resolve to a refused resume.
+ *
+ * The WHOLE `StartedSession` is stored, not just the id: the scene and the
+ * voice/mic-consent flags were computed by the server at session start and
+ * have to survive the reload unchanged. Only the single-use `socketUrl` is
+ * discarded and replaced, by a fresh one from `resumeSession`, on the way
+ * back in — and the server still re-checks voice consent per turn regardless,
+ * so a resumed flag can never open a microphone the guardian has since closed.
+ */
+const ACTIVE_SESSION_KEY_PREFIX = 'lf.tutor.activeSession.';
+
+function readActiveSession(userId: string | undefined): StartedSession | null {
+  if (!userId) return null;
+  try {
+    const raw = window.sessionStorage.getItem(ACTIVE_SESSION_KEY_PREFIX + userId);
+    return raw ? (JSON.parse(raw) as StartedSession) : null;
+  } catch {
+    // Private browsing, a blocked origin, malformed JSON. A missed resume
+    // costs one fresh start, never a throw on the way into the route.
+    return null;
+  }
+}
+
+function rememberActiveSession(userId: string | undefined, session: StartedSession): void {
+  if (!userId) return;
+  try {
+    window.sessionStorage.setItem(ACTIVE_SESSION_KEY_PREFIX + userId, JSON.stringify(session));
+  } catch {
+    /* See PERSONALIZED_KEY_PREFIX: never worth failing a session over. */
+  }
+}
+
+function clearActiveSession(userId: string | undefined): void {
+  if (!userId) return;
+  try {
+    window.sessionStorage.removeItem(ACTIVE_SESSION_KEY_PREFIX + userId);
+  } catch {
+    /* ignore — see above. */
+  }
+}
+
 /**
  * The daily session cap's own boundary, mirrored from the server.
  *
@@ -494,6 +551,34 @@ export function TutorExperience() {
         clearSessionLimit(userIdRef.current);
       }
       /*
+       * A RELOAD MID-CONVERSATION RESUMES IT, before deciding on the home
+       * screen. If this tab has a persisted active session, ask the server to
+       * re-open it: a live park hands back a fresh single-use socket and the
+       * socket replays the entire conversation, so the learner lands back
+       * exactly where they were — same turns, same open board. A refused
+       * resume (the park expired, or the session already closed) clears the
+       * record and falls through to the normal openings; it is never an error
+       * the learner sees, just a fresh start. This sits BEFORE the phase
+       * decision below so a resumable conversation never flashes the home
+       * screen on its way back in.
+       */
+      const storedSession = readActiveSession(userIdRef.current);
+      if (storedSession) {
+        const resumed = await resumeSession(authToken, storedSession.sessionId);
+        if (cancelled) return;
+        if (resumed.data) {
+          setSession({
+            ...storedSession,
+            socketUrl: resumed.data.socketUrl,
+            socketExpiresAt: resumed.data.socketExpiresAt,
+          });
+          setPhase('conversing');
+          return;
+        }
+        clearActiveSession(userIdRef.current);
+      }
+
+      /*
        * The picker opens on the first visit and never again — and the SERVER
        * remembers now (`personalized`: a preferences row exists, which the
        * picker's Done guarantees). The nickname and the localStorage marker
@@ -633,6 +718,9 @@ export function TutorExperience() {
          */
         clearSessionLimit(userIdRef.current);
         setSession(result.data);
+        // Persist it so a reload resumes this exact conversation rather than
+        // silently starting over — see ACTIVE_SESSION_KEY_PREFIX.
+        rememberActiveSession(userIdRef.current, result.data);
         setPhase('conversing');
         /*
          * A FRESH SESSION STARTS A FRESH TURN-SEQ COUNTER, AND SOME STATE HERE
@@ -714,6 +802,7 @@ export function TutorExperience() {
      * what the introduction is supposed to show, would be ignored until they
      * started another one.
      */
+    clearActiveSession(userIdRef.current);
     setSession(null);
     setPhase('introducing');
   }, []);
@@ -818,12 +907,19 @@ export function TutorExperience() {
         // `session` captured at effect-run time is the OLD one.
         setResuming(false);
         if (sessionRef.current?.sessionId === resumeTargetId) {
+          clearActiveSession(userIdRef.current);
           setPhase('closing');
         }
       });
       return;
     }
 
+    // The conversing session has genuinely ended (goodbye, a drop that could
+    // not be resumed, or a socket that never opened) — the persisted record
+    // must not outlive it and resume a dead session on the next reload. This
+    // is a socket-driven end, distinct from the offers-read failure above
+    // which reaches 'unavailable' without ever having a session to clear.
+    clearActiveSession(userIdRef.current);
     const heldAConversation = socket.history.length > 0;
     setPhase(heldAConversation ? 'closing' : 'unavailable');
   }, [phase, socket.closedReason, socket.connection, socket.history.length, socket.error, resuming, session, token]);
@@ -1294,12 +1390,14 @@ export function TutorExperience() {
              * quietly stopped being available must say so, not fail.
              */
             socket.endSession();
+            clearActiveSession(userIdRef.current);
             setSession(null);
             setPhase('introducing');
             refreshOffersAndMap();
           },
           onExit: () => {
             socket.endSession();
+            clearActiveSession(userIdRef.current);
             setPhase('closing');
           },
         }

@@ -37,13 +37,32 @@ export function NotebookKeepButton({
   const { t } = useTranslation();
   const [status, setStatus] = useState<'idle' | 'saving' | 'kept' | 'error'>('idle');
 
-  const keep = async () => {
-    setStatus('saving');
-    const result = await api('/tutor/notebook', {
+  const save = () =>
+    api('/tutor/notebook', {
       method: 'POST',
       token,
       body: { sessionId, turnSeq },
     });
+
+  const keep = async () => {
+    setStatus('saving');
+    /*
+     * ONE SILENT RETRY BEFORE THE CHILD EVER SEES A FAILURE.
+     *
+     * A live audit (2026-09-10) hit "No se pudo guardar — intenta de nuevo" on
+     * the first tap and success on the second: an intermittent, transient
+     * failure of a keep the child had already decided to make. The request is
+     * idempotent — it only names `(sessionId, turnSeq)`, and the server refuses
+     * a duplicate — so re-issuing it once costs nothing and turns the common
+     * transient blip into a save the learner never had to notice. A second
+     * failure is a real one and DOES surface, with the retry still available:
+     * this narrows the error window, it does not hide a persistent problem.
+     */
+    let result = await save();
+    if (result.error) {
+      await new Promise((r) => setTimeout(r, 600));
+      result = await save();
+    }
     setStatus(result.error ? 'error' : 'kept');
   };
 
@@ -53,7 +72,22 @@ export function NotebookKeepButton({
       onClick={status === 'idle' || status === 'error' ? keep : undefined}
       disabled={status === 'saving' || status === 'kept'}
       className={cn(
-        'lf-caption pointer-events-auto flex shrink-0 items-center gap-1 self-end transition-colors',
+        /*
+         * 44 px OF TAP, not 16.
+         *
+         * Text plus a 16 px icon with no floor measured 94x16 in production
+         * (2026-09-09) — under WCAG 2.5.8's 24 px minimum and well under
+         * /DESIGN.md §Layout's non-negotiable 44, on a control aimed at a
+         * six-year-old's finger. It was also the only thing on that rail with
+         * no floor at all, which is why it was the one that shrank: measured
+         * a frame earlier, while the board was still laying out, its rect was
+         * 0x0 — a keyboard-focusable button with no dimensions.
+         *
+         * `px-2 -mr-2` keeps the LABEL optically flush with the board's right
+         * edge while the target itself extends past it, so the floor costs
+         * the layout nothing.
+         */
+        'lf-caption pointer-events-auto flex min-h-11 shrink-0 items-center gap-1 self-end px-2 -mr-2 transition-colors',
         status === 'kept' ? 'text-content-muted' : 'text-primary hover:underline',
         className,
       )}

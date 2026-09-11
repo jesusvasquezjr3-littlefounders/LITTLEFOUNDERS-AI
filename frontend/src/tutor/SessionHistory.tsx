@@ -100,8 +100,26 @@ export function SessionHistory({ token, onReplay }: SessionHistoryProps) {
                 />
               </span>
               <div className="min-w-0">
+                {/*
+                  THE INTENT ALONE IS NOT A NAME. Every `open` session is
+                  "Una plática", so a learner with thirty of them has thirty
+                  rows carrying one word between them — measured on a real
+                  account, 2026-09-09 — and the only way to tell any two apart
+                  was the timestamp underneath.
+
+                  WHO it was with is the part a child actually remembers, and
+                  `character` is already on the summary. The real fix is the
+                  TOPIC, and that is deliberately not here: `SessionNarrative`
+                  carries it for the guardian view and `listSessions` does not,
+                  so putting it on this row is a Core change and a decision
+                  about what a child's own history is allowed to hold — not a
+                  rename in this file.
+                */}
                 <p className="lf-title text-content">
-                  {t(`tutor.intent.${session.intent}`, { defaultValue: session.intent })}
+                  {t('tutor.history.titleWith', {
+                    what: t(`tutor.intent.${session.intent}`, { defaultValue: session.intent }),
+                    name: t(`tutor.character.${session.character}.name`),
+                  })}
                 </p>
                 {/*
                   WHAT IS IN IT, not what it scored. The date answers "which one

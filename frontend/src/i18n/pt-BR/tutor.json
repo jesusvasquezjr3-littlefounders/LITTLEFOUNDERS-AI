@@ -15,7 +15,7 @@
     "replayLayer": "Uma conversa, tocando de novo",
     "replayControls": "Controles da repetição",
     "closeControls": "O que vem agora",
-    "soundBlocked": "Seu navegador silenciou esta página. Toque aqui para o tutor poder falar."
+    "soundBlocked": "Toque para me ouvir"
   },
   "lab": {
     "title": "Laboratório de cena",
@@ -203,6 +203,7 @@
     "reconnecting": "Reconectando com seu tutor…",
     "replyTimeout": "Isso demorou demais. Tente perguntar de novo.",
     "startOver": "Começar de novo",
+    "startOverConfirm": "Começar de novo?",
     "explainDifferently": "Pode explicar de outro jeito?",
     "editMessage": "Reformular esta mensagem",
     "editPlaceholder": "Reformule sua mensagem…",
@@ -251,6 +252,7 @@
     "empty": "Ainda não há conversas.",
     "loadFailed": "Não conseguimos carregar essa conversa.",
     "replay": "Reproduzir de novo",
+    "titleWith": "{{what}} com {{name}}",
     "xp": "{{count}} XP",
     "lines_one": "{{count}} fala",
     "lines_other": "{{count}} falas",
@@ -480,7 +482,8 @@
   },
   "planNotebook": {
     "title": "Plano de poupança e quadros guardados",
-    "loadFailed": "Não conseguimos carregar o plano ou os quadros guardados.",
+    "loading": "Carregando seu plano e seus quadros…",
+      "loadFailed": "Não conseguimos carregar o plano ou os quadros guardados.",
     "planUpdatedOn": "Atualizado {{date}}",
     "notebookLabel_one": "{{count}} quadro guardado",
     "notebookLabel_other": "{{count}} quadros guardados",

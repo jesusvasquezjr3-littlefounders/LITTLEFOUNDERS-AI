@@ -558,7 +558,14 @@ export function MicOrb({
            * caption should not be the one exception `verify:tutor-a11y`
            * happens not to have a fixture for.
            */
-          className="lf-action lf-stage-pill pointer-events-none absolute left-full top-1/2 ml-3 hidden w-max max-w-[16ch] -translate-y-1/2 whitespace-normal px-3 py-1.5 lg:inline-flex"
+          /*
+           * `lf-inert`: this is a caption for the orb, not a second control.
+           * It shares `lf-stage-pill` with the sound-blocked BUTTON that sits
+           * ~37 px above it, and until the flattening the two were painted
+           * identically — same base, same radius, same ink. One is decoration;
+           * the other is the only way to give the tutor its voice back.
+           */
+          className="lf-action lf-stage-pill lf-inert pointer-events-none absolute left-full top-1/2 ml-3 hidden w-max max-w-[16ch] -translate-y-1/2 whitespace-normal px-3 py-1.5 lg:inline-flex"
         >
           {label}
         </span>

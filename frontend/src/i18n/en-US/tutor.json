@@ -15,7 +15,7 @@
     "replayLayer": "A conversation, playing again",
     "replayControls": "Replay controls",
     "closeControls": "What next",
-    "soundBlocked": "Your browser muted this page. Tap here to let the tutor speak."
+    "soundBlocked": "Tap to hear me"
   },
   "lab": {
     "title": "Scene Lab",
@@ -203,6 +203,7 @@
     "reconnecting": "Reconnecting to your tutor…",
     "replyTimeout": "That took too long. Try asking again.",
     "startOver": "Start over",
+    "startOverConfirm": "Start over?",
     "explainDifferently": "Can you explain it another way?",
     "editMessage": "Rephrase this message",
     "editPlaceholder": "Rephrase your message…",
@@ -251,6 +252,7 @@
     "empty": "No conversations yet.",
     "loadFailed": "We couldn't load that conversation.",
     "replay": "Play it again",
+    "titleWith": "{{what}} with {{name}}",
     "xp": "{{count}} XP",
     "lines_one": "{{count}} line",
     "lines_other": "{{count}} lines",
@@ -480,7 +482,8 @@
   },
   "planNotebook": {
     "title": "Savings plan & kept boards",
-    "loadFailed": "We couldn’t load the plan or kept boards.",
+    "loading": "Loading your plan and boards…",
+      "loadFailed": "We couldn’t load the plan or kept boards.",
     "planUpdatedOn": "Updated {{date}}",
     "notebookLabel_one": "{{count}} kept board",
     "notebookLabel_other": "{{count}} kept boards",

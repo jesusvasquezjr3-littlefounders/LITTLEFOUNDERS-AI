@@ -181,6 +181,45 @@ export function ConversationView({
   const [detent, setDetent] = useState<LessonPlateDetent>('peek');
 
   /*
+   * "START OVER" IS DESTRUCTIVE AND WAS ONE UNLABELLED TAP.
+   *
+   * It is a bare `refresh` glyph in the header row, two controls from the exit.
+   * That glyph means RELOAD everywhere else a person has ever seen it, which
+   * makes it the single most likely thing a confused learner presses when they
+   * think the screen is stuck — and it threw away the live conversation, the
+   * whiteboard and the tutor's diagnosis of what the child had got wrong, with
+   * no confirmation and no undo. A 2026-09-09 production audit lost a five-turn
+   * session to it on the first press.
+   *
+   * The transcript itself survives in "past conversations", so this is not data
+   * loss; it is losing the session the learner is IN, which for a child who has
+   * just been understood is the part that matters.
+   *
+   * Two-step inline confirm, the same contract as `ConfirmButton`: the control
+   * is REPLACED in place rather than covered by a dialog (/DESIGN.md — this
+   * product has never shipped a modal), and confirming takes focus so a
+   * keyboard user never loses their place. It is built from `HudPlate` instead
+   * of reusing `ConfirmButton` because that component paints with `Button`, and
+   * flat app chrome inside the scene reads as a different product.
+   */
+  const [confirmingRestart, setConfirmingRestart] = useState(false);
+  const restartYesRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (confirmingRestart) restartYesRef.current?.focus();
+  }, [confirmingRestart]);
+
+  /*
+   * Disarm whenever the control that armed it would itself be disabled. The
+   * plain button is gated on `!awaitingReply` (tearing the socket down mid-turn
+   * records a deliberate restart as `learner_left`), so leaving a live "Yes"
+   * on screen through the tutor's reply would route around that gate.
+   */
+  useEffect(() => {
+    if (awaitingReply) setConfirmingRestart(false);
+  }, [awaitingReply]);
+
+  /*
    * Where the plate is, readable from a subscription callback.
    *
    * The keyboard listener below is registered once for the life of the layer
@@ -749,7 +788,29 @@ export function ConversationView({
              */
             <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
               <span className="flex items-center gap-1.5 whitespace-nowrap">
-                <Icon name="schedule" className="!text-[16px] text-warning-strong" />
+                {/*
+                 * WARNING COLOUR ONLY WHEN THERE IS SOMETHING TO WARN ABOUT.
+                 *
+                 * This clock was `text-warning-strong` in every state. On
+                 * desktop the sky rune renders the SAME minutes a few hundred
+                 * pixels away with a calm emerald dot, so a 2026-09-09 audit
+                 * photographed one number wearing two opposite emotions at
+                 * once — and the number was 480, eight hours, with nothing
+                 * whatever to hurry about. An amber clock permanently lit on a
+                 * child's screen is manufactured urgency, and a warning that is
+                 * always on is a warning nobody will read on the day it is
+                 * true.
+                 *
+                 * `wrapping` is that day: the one budget state that changes
+                 * what a learner should do with the time left (/ORACLE.md §9.5).
+                 */}
+                <Icon
+                  name="schedule"
+                  className={cn(
+                    '!text-[16px]',
+                    socket.budget === 'wrapping' ? 'text-warning-strong' : 'text-content-faint',
+                  )}
+                />
                 <span className="lf-caption text-content-muted">{budgetRune}</span>
               </span>
             </HudPlate>
@@ -771,7 +832,8 @@ export function ConversationView({
             </HudPlate>
           )}
 
-          {mapAvailable && (
+          {/* Stands down while "start over" is asking — see the confirm branch below. */}
+          {mapAvailable && !confirmingRestart && (
             <HudPlate
               as="button"
               shape="chip"
@@ -799,28 +861,70 @@ export function ConversationView({
             deliberate "Finish" as `learner_left` instead of `completed`,
             skipping the farewell (/ORACLE.md §9.5).
           */}
-          <HudPlate
-            as="button"
-            shape="chip"
-            onClick={onRestart}
-            disabled={awaitingReply}
-            aria-label={t('tutor.conversation.startOver')}
-            title={t('tutor.conversation.startOver')}
-            className="pointer-events-auto shrink-0"
-            floorClassName="!px-3"
-          >
-            <Icon name="refresh" className="!text-[18px]" />
-          </HudPlate>
+          {confirmingRestart ? (
+            /*
+             * While armed, the row is ONLY the question and its two answers.
+             *
+             * Every chip in this row is `shrink-0` (a control that shrinks is a
+             * control that stops being tappable), so the row cannot absorb
+             * overflow — at 390px the question plus two answers plus "Finish"
+             * clips, and what clips off the right edge is Finish. Rather than
+             * shave the question down to "Are you sure?", which tells a learner
+             * who just pressed an unlabelled glyph nothing about what they are
+             * agreeing to, the two controls that are not part of the question
+             * stand down until it is answered. "No" brings them straight back.
+             */
+            <>
+              <HudPlate shape="chip" className="pointer-events-none shrink-0">
+                <span className="lf-action text-content">{t('tutor.conversation.startOverConfirm')}</span>
+              </HudPlate>
+              <HudPlate
+                as="button"
+                shape="chip"
+                ref={restartYesRef}
+                onClick={() => {
+                  setConfirmingRestart(false);
+                  onRestart();
+                }}
+                className="pointer-events-auto shrink-0"
+              >
+                <span className="lf-action">{t('actions.confirmYes')}</span>
+              </HudPlate>
+              <HudPlate
+                as="button"
+                shape="chip"
+                onClick={() => setConfirmingRestart(false)}
+                className="pointer-events-auto shrink-0"
+              >
+                <span className="lf-action">{t('actions.confirmNo')}</span>
+              </HudPlate>
+            </>
+          ) : (
+            <>
+              <HudPlate
+                as="button"
+                shape="chip"
+                onClick={() => setConfirmingRestart(true)}
+                disabled={awaitingReply}
+                aria-label={t('tutor.conversation.startOver')}
+                title={t('tutor.conversation.startOver')}
+                className="pointer-events-auto shrink-0"
+                floorClassName="!px-3"
+              >
+                <Icon name="refresh" className="!text-[18px]" />
+              </HudPlate>
 
-          <HudPlate
-            as="button"
-            shape="chip"
-            onClick={onExit}
-            disabled={awaitingReply}
-            className="pointer-events-auto shrink-0"
-          >
-            <span className="lf-action">{t('tutor.conversation.finish')}</span>
-          </HudPlate>
+              <HudPlate
+                as="button"
+                shape="chip"
+                onClick={onExit}
+                disabled={awaitingReply}
+                className="pointer-events-auto shrink-0"
+              >
+                <span className="lf-action">{t('tutor.conversation.finish')}</span>
+              </HudPlate>
+            </>
+          )}
     </>
   );
 

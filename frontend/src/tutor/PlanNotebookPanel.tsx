@@ -163,7 +163,34 @@ export function PlanNotebookPanel({
     // without a remount, and re-fetched per learner for the same reason.
   }, [kidUserId, token]);
 
-  if (load.status === 'loading') return null;
+  /*
+   * A DELIBERATELY-OPENED SHEET SHOWS "LOADING", NEVER NOTHING.
+   *
+   * This panel fetches four things (plan, notebook, the recent session's
+   * summary and its transcript) before it can render, and it used to return
+   * `null` for that whole window. On desktop the reads land fast enough that
+   * nobody notices; on a phone a live audit (2026-09-10) opened "Mi progreso"
+   * and saw an apparently-empty sheet — a drag handle over blank space —
+   * because the panel was still loading and rendering nothing. An opened sheet
+   * that shows nothing reads as broken, so the load now says it is loading.
+   *
+   * The ready-but-EMPTY case below still returns `null` on purpose (the panel
+   * is hidden entirely when a learner genuinely has nothing kept yet — see the
+   * file header); this only covers the transient fetch.
+   */
+  if (load.status === 'loading') {
+    return (
+      <Wrap variant={variant}>
+        <h2 className="lf-title flex items-center gap-2 text-content">
+          <Icon name="savings" className="text-primary" aria-hidden />
+          {t('tutor.planNotebook.title')}
+        </h2>
+        <p role="status" className="lf-body text-content-muted">
+          {t('tutor.planNotebook.loading')}
+        </p>
+      </Wrap>
+    );
+  }
 
   if (load.status === 'failed') {
     return (

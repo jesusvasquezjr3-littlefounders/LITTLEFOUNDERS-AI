@@ -1442,6 +1442,52 @@ matter:
   Reading a maths problem while the frame breathes is nausea, not atmosphere
   (DESIGN.md §Motion).
 
+#### §9.3.1 Four teaching rules tightened after a live low-comprehension audit (2026-09-09)
+
+A production session driven as a deliberately low-retention learner — answers
+`no sé`, then repeats one wrong operation three times — found four faults, and
+**three of them were the prompt telling the model to do exactly what it did**.
+All four are `oracle/src/tutor/prompt.ts`; none changes the schema or the wire.
+
+1. **"Casi" is a measurement, not a cushion.** The prompt said to name a wrong
+   answer *"plainly and kindly — `casi`, then the correct result"*, which hands
+   the model one softener for every error. Asked `20 menos 8`, the learner
+   answered `28`; the tutor said *"Casi"*. 28 is not almost 12 — it is the other
+   operation answered correctly, and calling it close teaches a child that
+   adding was nearly right. The rule now requires working out the distance
+   first: `casi` is for a near miss, and a wrong-operation answer gets the
+   operation NAMED instead. A learner who repeats one mistake is usually a
+   learner who was told it was close.
+2. **New numbers are not a new explanation.** The existing rule — *"when they
+   are stuck twice, change the EXPLANATION rather than repeating it louder"* —
+   was already there and was obeyed in letter only: the reply to failure #3 was
+   the reply to failure #1 with the numbers swapped (82 % token overlap after
+   normalizing digits). The rule now names that specific move and makes it
+   checkable by the model itself: if the SENTENCE FRAME survives the swap, it is
+   the same explanation.
+3. **Show it instead of asking again.** The tutor said *"cuenta conmigo"* twice
+   and *"aquí lo tienes:"* once while drawing nothing. The board only appeared
+   after the learner pressed "explain it another way" AND accepted a second
+   yes/no — two explicit opt-ins, five turns deep, from the learner least likely
+   to know a drawing was on the menu. From the second failure on one idea the
+   tutor now sets the board unasked, and any turn using *mira / cuenta conmigo /
+   te lo muestro / aquí lo tienes* must carry the thing it points at.
+4. **The lemonade stand, again.** `prompt.ts` offered *"suppose a lemonade costs
+   8"* as its illustrative amount, and the live tutor opened a child's first
+   real turn with a lemonade stand selling at 8 pesos — subject and number
+   copied verbatim. This is /AGENTS.md §1.14's documented class (a template that
+   reaches every generation must never name a SUBJECT) recurring one layer above
+   the `LF_VISUAL_IDENTITY` incident that produced a thousand identical lesson
+   images. The examples are now shapes (`<amount>`, `<the thing>`), and the rule
+   is stated POSITIVELY — where the subject comes from, in order — because
+   naming no subject does not produce a neutral one, it produces the same one
+   for everyone.
+
+Gated by `verify:pedagogy` and `gym:pedagogy` (both green, both free). Neither
+can see rules 1–4, which live in prose the model reads: the instrument that
+would catch a regression here is `tutor-deploy.yml -f step=converse`, and it is
+paid and model-dependent by design.
+
 ### §9.4 Adapt
 Per §11. The tutor may notice friction and **offer** a different explanation.
 It is not a card that pushes the conversation down the page — because the moment
