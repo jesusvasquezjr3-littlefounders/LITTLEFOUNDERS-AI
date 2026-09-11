@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Stamps a new Express+TS service from the canonical template.
 # Usage: new-service.sh <name> <port>
-# Then follow agent/workflows/service-scaffold.md for CI + docs wiring.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
