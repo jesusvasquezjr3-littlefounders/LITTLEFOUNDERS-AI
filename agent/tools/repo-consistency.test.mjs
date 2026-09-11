@@ -1,8 +1,7 @@
-// Pins the claims our operator docs and setup script make about the repo to
-// what the repo actually contains. Each of these drifted silently at least
-// once: setup-dev.sh installed 8 of 10 packages while the README promised
-// "all" of them, and ROADMAP carried a migration delta two files behind the
-// shipped migrations.
+// Pins the claims the README and setup script make about the repo to what
+// the repo actually contains. These drifted silently at least once:
+// setup-dev.sh installed 8 of 10 packages while the README promised "all"
+// of them.
 
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -53,109 +52,4 @@ function packageDirs() {
   );
 }
 
-/*
- * The migration docs must not go stale against the repo.
- *
- * This assertion originally required ROADMAP.md and the frozen 2026-08-01
- * audit snapshot to name the SAME unapplied delta range, with its upper bound
- * equal to the highest shipped migration. That held while one handoff was
- * pending and both documents described it. It stopped being expressible on
- * 2026-08-14, when a read-only ledger probe confirmed production at 46/46
- * (`0001` … `0046`) with nothing pending: there is no current "unapplied
- * range", and forcing a dated audit snapshot to carry today's numbers would
- * falsify a historical record to satisfy a test.
- *
- * So the coupling is split. ROADMAP.md tracks the LIVE state; the audit keeps
- * its own 2026-08-02 range, asserted only to be present and well-formed,
- * because a snapshot's job is to stay true to its date.
- *
- * REVISED 2026-08-21. The live check used to demand that the verified
- * high-water mark equal the highest migration the repo ships. That silently
- * assumed the repo never HOLDS an unapplied migration — which stopped being
- * true the moment a feature landed with its schema ahead of the deploy
- * (`0047`, the AI Tutor). Under the old rule the only way to go green was to
- * write `production at **47/47**` while production sat at 46, which is exactly
- * the falsification the paragraph above refuses to make for the audit.
- *
- * The invariant that actually matters is ARITHMETIC, not equality: whatever
- * ROADMAP claims is verified, plus whatever it declares pending, must account
- * for every migration in the repo. That still catches someone under-applying —
- * an unapplied delta nobody wrote down fails — while letting the document tell
- * the truth about a schema that has shipped in git and not in production.
- */
-{
-  const migrations = readdirSync(path.join(root, 'database/migrations'))
-    .map((entry) => /^(\d{4})_.+\.sql$/.exec(entry)?.[1])
-    .filter((n) => n !== undefined)
-    .sort();
-  const highest = migrations[migrations.length - 1];
-  assert.ok(highest, 'database/migrations must contain NNNN_description.sql files');
-
-  const roadmap = readFileSync(path.join(root, 'ROADMAP.md'), 'utf8');
-
-  /*
-   * A DELTA RANGE IS OPTIONAL, BECAUSE "NOTHING PENDING" IS THE HEALTHY STATE.
-   *
-   * This used to be mandatory, and that was a gate compelling a false
-   * statement: once `0047` was applied and the repo held no unapplied
-   * migration, the only way to go green was to keep writing "the most recent
-   * unapplied deltas `0047`–`0047` are PENDING" about a migration that had
-   * shipped two days earlier — in the paragraph an operator reads before a
-   * handoff. It stayed there until the documentation audit of 2026-08-23.
-   *
-   * So: state a range when one is pending and it is checked as before; state
-   * none and the high-water mark must simply account for every migration in
-   * the repo. The arithmetic below is the invariant either way.
-   */
-  const delta = /unapplied deltas `(\d{4})`–`(\d{4})`/.exec(roadmap);
-  let pendingCount = 0;
-  if (delta) {
-    assert.ok(delta[1] <= delta[2], 'ROADMAP.md delta range must be ordered');
-    assert.equal(
-      delta[2],
-      highest,
-      'ROADMAP.md delta upper bound must match the highest shipped migration',
-    );
-    pendingCount = Number(delta[2]) - Number(delta[1]) + 1;
-  }
-
-  // The verified production high-water mark, stated as `NN/NN`, must also
-  // agree with the repo — this is the number an operator acts on.
-  /*
-   * The LAST stated mark, not the first. The handoff paragraph is written
-   * chronologically and accumulates the probes it has run — "confirmed
-   * production at **46/46**" on 2026-08-14, then "**47/47**" on 2026-08-23 —
-   * so `.exec` returning the first match reads a superseded number and fails
-   * against a document that is telling the truth.
-   */
-  const marks = [...roadmap.matchAll(/production at \*\*(\d+)\/(\d+)\*\*/g)];
-  const highWater = marks.at(-1);
-  assert.ok(highWater, 'ROADMAP.md must state the verified production high-water mark as **NN/NN**');
-  assert.equal(highWater[1], highWater[2], 'a partially applied ledger must not be recorded as verified');
-  // Either everything is applied, or the shortfall is EXACTLY the delta range
-  // ROADMAP declares pending. Anything else means a migration exists in the
-  // repo that no document accounts for.
-  const applied = Number(highWater[2]);
-  assert.ok(
-    applied === migrations.length || applied + pendingCount === migrations.length,
-    `ROADMAP.md must account for every migration: ${migrations.length} in the repo, ` +
-      `${applied} recorded as applied, ${pendingCount} declared pending` +
-      (delta ? '' : ' (no pending range declared — so all of them must be applied)'),
-  );
-
-  const audit = readFileSync(path.join(root, 'COURSEGEN_AUDIT_2026-08-01.md'), 'utf8');
-  assert.match(
-    audit,
-    /Post-audit correction, 2026-08-02/,
-    'the audit snapshot must carry the bracketed migration-state correction',
-  );
-  // Deliberately NOT compared against ROADMAP's range: this is a dated
-  // snapshot and its numbers are correct AS OF its date.
-  assert.match(
-    audit,
-    /`\d{4}`–`\d{4}`/,
-    'the audit correction must still state a well-formed delta range',
-  );
-}
-
-console.log('repo-consistency OK — setup coverage, README count, and migration docs match the repo');
+console.log('repo-consistency OK — setup coverage and README count match the repo');

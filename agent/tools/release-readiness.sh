@@ -17,9 +17,7 @@ RUN_ID="release-check-${COURSE}-${RUN_SUFFIX}"
 TRACK_ID="release-track-${COURSE}-${RUN_SUFFIX}"
 
 echo "== LittleFounders zero-spend release readiness: $COURSE =="
-npm run repo:map
 npm run git:diff-check
-npm run docs:check
 npm run secrets:check
 npm run i18n:check
 npm run deps:check

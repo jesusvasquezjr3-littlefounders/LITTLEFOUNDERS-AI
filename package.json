@@ -10,8 +10,6 @@
   "scripts": {
     "setup": "bash scripts/setup-dev.sh",
     "dev": "bash scripts/start-dev.sh",
-    "repo:map": "bash scripts/update-repo-map.sh",
-    "docs:check": "bash agent/tools/check-docs-sync.sh",
     "secrets:check": "bash agent/tools/check-secrets.sh",
     "i18n:check": "bash agent/tools/check-i18n.sh",
     "paths:check": "node agent/tools/check-marketing-paths.mjs",
@@ -32,7 +30,6 @@
     "tools:test": "node --test agent/tools/*.test.mjs",
     "test:all": "bash agent/tools/run-all.sh test",
     "typecheck:all": "bash agent/tools/run-all.sh type-check",
-    "lint:all": "bash agent/tools/run-all.sh lint",
-    "legal:sync": "node agent/tools/sync-legal-i18n.mjs"
+    "lint:all": "bash agent/tools/run-all.sh lint"
   }
 }

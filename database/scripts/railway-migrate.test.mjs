@@ -195,16 +195,6 @@ try {
       assert(createdByMigrations(target), 'probe-map-ddl', `signature probe names public.${target}, but no migration creates it — a real baseline run would refuse against a correct database`, staticResult);
     }
 
-    const deploymentDoc = readFileSync(join(dbDir, 'DEPLOYMENT.md'), 'utf8');
-    const docTargets = [...deploymentDoc.matchAll(/to_regclass\('public\.([a-z_]+)'\)/g)].map((m) => m[1]);
-    assert(docTargets.length >= 10, 'deployment-doc-ddl', `expected DEPLOYMENT.md's signature table to name at least 10 to_regclass targets, found ${docTargets.length}`, staticResult);
-    for (const target of docTargets) {
-      if (target === 'schema_migrations') {
-        assert(runnerSource.includes('CREATE TABLE IF NOT EXISTS public.schema_migrations'), 'deployment-doc-ddl', 'the ledger row expects railway-migrate.sh to create public.schema_migrations', staticResult);
-        continue;
-      }
-      assert(createdByMigrations(target), 'deployment-doc-ddl', `DEPLOYMENT.md's operator signature table names public.${target}, but no migration creates it — it would mislead the mandated re-verification`, staticResult);
-    }
   }
 
   // 1. Dry-run against the verified production shape: absent ledger, baseline

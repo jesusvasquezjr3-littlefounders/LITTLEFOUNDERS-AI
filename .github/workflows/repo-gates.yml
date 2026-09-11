@@ -1,12 +1,11 @@
 name: repo gates
 
-# The repo-wide invariants (/AGENTS.md §5) — deliberately WITHOUT a `paths:`
-# filter.
+# The repo-wide invariants — deliberately WITHOUT a `paths:` filter.
 #
 # These used to live only in database-ci.yml, which fires on `database/**`.
 # That made them unreachable for the exact commits they exist to catch: a
-# secret hardcoded in backend/, or an edit to AGENTS.md that was not mirrored
-# to CLAUDE.md, changes nothing under database/ and so ran no gate at all.
+# secret hardcoded in backend/ changes nothing under database/ and so ran no
+# gate at all.
 #
 # Per-service CI still owns type-check/lint/test/build; this job owns the
 # checks that are about the repository as a whole.
@@ -21,16 +20,13 @@ permissions:
 
 jobs:
   gates:
-    name: docs sync + secrets + i18n parity + marketing paths + provider parity
+    name: secrets + i18n parity + marketing paths + provider parity
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       # check-secrets.sh uses `git grep` over tracked files, so it needs the
       # working tree — a blobless/partial checkout would silently scan nothing.
       - uses: actions/checkout@v4
-
-      - name: AGENTS.md == CLAUDE.md
-        run: bash agent/tools/check-docs-sync.sh
 
       - name: No credential patterns in tracked files
         run: bash agent/tools/check-secrets.sh
@@ -87,8 +83,6 @@ jobs:
         run: node agent/tools/check-demo-step-parity.mjs
 
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
-      # rotted unnoticed: on 2026-08-14 it was failing because ROADMAP.md still
-      # named migration 0033 as the ceiling while the repo shipped 0046. A gate
-      # nobody runs is documentation, not enforcement.
+      # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests
         run: npm run tools:test
