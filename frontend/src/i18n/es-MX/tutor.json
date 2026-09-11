@@ -482,7 +482,8 @@
   },
   "planNotebook": {
     "title": "Plan de ahorro y pizarrones guardados",
-    "loadFailed": "No pudimos cargar el plan ni los pizarrones guardados.",
+    "loading": "Cargando tu plan y tus pizarrones…",
+      "loadFailed": "No pudimos cargar el plan ni los pizarrones guardados.",
     "planUpdatedOn": "Actualizado {{date}}",
     "notebookLabel_one": "{{count}} pizarrón guardado",
     "notebookLabel_other": "{{count}} pizarrones guardados",

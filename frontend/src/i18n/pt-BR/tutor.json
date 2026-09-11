@@ -482,7 +482,8 @@
   },
   "planNotebook": {
     "title": "Plano de poupança e quadros guardados",
-    "loadFailed": "Não conseguimos carregar o plano ou os quadros guardados.",
+    "loading": "Carregando seu plano e seus quadros…",
+      "loadFailed": "Não conseguimos carregar o plano ou os quadros guardados.",
     "planUpdatedOn": "Atualizado {{date}}",
     "notebookLabel_one": "{{count}} quadro guardado",
     "notebookLabel_other": "{{count}} quadros guardados",

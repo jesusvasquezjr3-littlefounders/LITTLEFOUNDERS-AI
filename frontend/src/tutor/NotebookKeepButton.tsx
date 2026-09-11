@@ -37,13 +37,32 @@ export function NotebookKeepButton({
   const { t } = useTranslation();
   const [status, setStatus] = useState<'idle' | 'saving' | 'kept' | 'error'>('idle');
 
-  const keep = async () => {
-    setStatus('saving');
-    const result = await api('/tutor/notebook', {
+  const save = () =>
+    api('/tutor/notebook', {
       method: 'POST',
       token,
       body: { sessionId, turnSeq },
     });
+
+  const keep = async () => {
+    setStatus('saving');
+    /*
+     * ONE SILENT RETRY BEFORE THE CHILD EVER SEES A FAILURE.
+     *
+     * A live audit (2026-09-10) hit "No se pudo guardar — intenta de nuevo" on
+     * the first tap and success on the second: an intermittent, transient
+     * failure of a keep the child had already decided to make. The request is
+     * idempotent — it only names `(sessionId, turnSeq)`, and the server refuses
+     * a duplicate — so re-issuing it once costs nothing and turns the common
+     * transient blip into a save the learner never had to notice. A second
+     * failure is a real one and DOES surface, with the retry still available:
+     * this narrows the error window, it does not hide a persistent problem.
+     */
+    let result = await save();
+    if (result.error) {
+      await new Promise((r) => setTimeout(r, 600));
+      result = await save();
+    }
     setStatus(result.error ? 'error' : 'kept');
   };
 

@@ -482,7 +482,8 @@
   },
   "planNotebook": {
     "title": "Savings plan & kept boards",
-    "loadFailed": "We couldn’t load the plan or kept boards.",
+    "loading": "Loading your plan and boards…",
+      "loadFailed": "We couldn’t load the plan or kept boards.",
     "planUpdatedOn": "Updated {{date}}",
     "notebookLabel_one": "{{count}} kept board",
     "notebookLabel_other": "{{count}} kept boards",
