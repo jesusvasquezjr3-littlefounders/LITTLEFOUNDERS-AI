@@ -43,16 +43,47 @@ Migrations are sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), 
 
 Secrets: only `.env.example` files are tracked. Real values live in Railway variables / Vercel env / GitHub secrets. If a secret ever lands in git: **rotate first**, then purge history.
 
-## Gates (local + CI)
+## Mandatory testing — before every commit
+
+A red push to `main` wastes a full CI fan-out across all services and can ship a broken deploy through CD. Run these locally first; they are the same checks CI runs.
+
+**Always (any change):**
 
 ```bash
 npm run typecheck:all && npm run lint:all && npm run test:all
 npm run secrets:check     # no credential patterns in tracked files
-npm run i18n:check        # 3-locale key parity + hardcoded-string scan
-npm run tools:test        # the repo's own gate self-tests
+npm run tools:test        # the repo's own gate self-tests + repo consistency
 ```
 
-`.github/workflows/repo-gates.yml` runs the repo-wide checks (secrets, i18n, marketing paths, provider/instrument/demo-step parity, tools self-tests) on every PR and push to `main`, without a `paths:` filter. Per-service CI owns type-check/lint/test/build. Before a release: `npm run release:readiness -- <course>` (all local gates + zero-spend dry-runs) and `npm run production:preflight` (read-only Railway inventory/config check — operator-only, never in CI).
+In the service(s) you touched, `npm run build` must also pass — CD only deploys after that service's CI (type-check, lint, test, build) is green on `main`.
+
+**Conditional, by area touched** (each catches a class of silent drift that no per-service test can see):
+
+| If you touched… | Run |
+|---|---|
+| `frontend/` (anything user-facing) | `npm run i18n:check` — 3-locale key parity + hardcoded-string scan |
+| Public pages, titles, share copy, `site.mjs` | `npm run seo:check` + `npm run paths:check` |
+| DeepSeek/Qwen config in `coursegen/` or `oracle/` | `npm run provider:check` |
+| Tutor whiteboard / segment / demonstrate shapes | `npm run instruments:check`, `npm run preferred-types:check`, `npm run demo-step:check` |
+| Roleplay scenes or their voices | `npm run roleplay-voices:check` |
+| Tutor runtime, prompts or safety (`oracle/`) | `npm run verify:tutor` (context rejects unlisted fields + injection canaries) |
+| Tutor pedagogy/controller (`oracle/`) | `npm run verify:pedagogy` + `npm run gym:pedagogy` (free — no network, no model) |
+| Lesson Engine or character layer (`frontend/`) | `npm run verify:lesson-engine` — real pointer events, hit-testing |
+| Tutor HUD/layout (`frontend/`) | `npm run verify:tutor-ui` (+ `verify:tutor-a11y` for captions/phases) |
+| 3D clips/rigs or island placement (`frontend/`) | `npm run verify:rig` / `npm run verify:placement` |
+| Migrations (`database/`) | `npm run db:reset` twice (both green) + regenerate types (`db:types`) |
+| Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
+
+`.github/workflows/repo-gates.yml` re-runs the repo-wide set (secrets, i18n, marketing paths, provider/instrument/demo-step parity, tools self-tests) on every PR and push, without a `paths:` filter — but CI is the backstop, not the gate. Commit locally as you go; **push once, at the end, when everything is green together** (every push to `main` fans out CI+CD across all services).
+
+## Mandatory before production
+
+```bash
+npm run release:readiness -- <course>   # ALL local gates + zero-spend course/audio dry-runs
+npm run production:preflight            # read-only Railway inventory/config check (operator-only, never CI)
+```
+
+`release:readiness` requires a clean tree and never deploys, migrates, publishes or calls a paid provider. `production:preflight` must pass before any migration/deploy handoff and before authorizing paid generation. For Tutor prompt/strategy changes, the paid conversation gate `gh workflow run tutor-deploy.yml -f step=converse` (~$0.03) is the only check that answers "was that a good lesson" — deliberately not in CI so a flaky provider can't block a deploy. After a frontend deploy that touches the public surface: `npm run seo:live` (prove the CDN served it) and `npm run seo:indexnow`.
 
 ## Deploying
 
