@@ -28,18 +28,50 @@ All Railway services live in one project (**`littlefounders-b2c`**) and talk ove
 
 ## Local development
 
-Set up the whole workspace — install dependencies for all 11 npm packages, provision the local Supabase stack, load test users and QA courses:
+**Prerequisites:** Docker Desktop (running — the database is a container stack), Node **24** (`.nvmrc`), and the `supabase` CLI only if you need to regenerate DB types.
+
+### Initialize from zero
 
 ```bash
 npm run setup
-npm run dev                              # Vite only (lightweight default)
-DEV_PROFILE=core DEV_DB=1 npm run dev    # frontend + Core + Supabase
-DEV_PROFILE=all  DEV_DB=1 npm run dev    # everything (9 watchers — heavy)
 ```
 
-Database (from `database/`): `npm run db:up` / `db:reset` (run twice after schema changes — both must pass) / `db:types` (regenerate the shared TS types — never hand-edit) / `db:sync` (materialize the pinned Supabase clone at `database/SUPABASE_VERSION`). Local and production run the **same pinned Supabase release**; to upgrade, bump `SUPABASE_VERSION`, `db:sync`, prove locally, then update the Railway image tags to match.
+One command does the whole provisioning (`scripts/setup-dev.sh`):
+1. `npm install` in all 11 npm packages, and copies each `.env.example` → `.env` (local defaults work out of the box; only paid-provider keys need real values, and only if you use those services).
+2. `db:sync` — materializes the pinned `supabase/supabase` clone (`database/SUPABASE_VERSION` → `database/supabase/`, gitignored). Local and production run the **same pinned release**.
+3. `db:reset` — starts the container stack from zero and applies every migration. First run generates the local secrets into `docker/.env` and flips the dev toggles (`ENABLE_EMAIL_AUTOCONFIRM=true`, `ENABLE_ANONYMOUS_USERS=true`).
+4. `db:seed` + `db:seed:users` — role-stub users and a linked demo family.
+5. Imports and publishes the QA smoketest course (`first-lemonade-stand`).
 
-Migrations are sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), and **an applied migration is never edited — write a delta**.
+**Local ports:** Kong (Supabase gateway) `:8000` — both `backend/.env` (`SUPABASE_URL`) and `frontend/.env` (`VITE_SUPABASE_URL`) point there; Postgres session pooler `:54322` (**not** 5432, deliberately — dev machines often have a Postgres there already); Core `:4000`; Vite `:5173`; other services per the service map.
+
+### Day-to-day: containers and services
+
+```bash
+npm run dev                              # Vite only (lightweight default)
+DEV_PROFILE=core DEV_DB=1 npm run dev    # frontend + Core + Supabase containers
+DEV_PROFILE=all  DEV_DB=1 npm run dev    # 10 watchers + containers (several GB of RAM — opt-in)
+```
+
+`DEV_DB=1` is what starts the containers; without it only the TS watchers run. Ctrl+C stops everything cleanly.
+
+Container lifecycle, from `database/` (each wraps the pinned upstream compose via `scripts/local-stack.sh`):
+
+| Command | Effect |
+|---|---|
+| `npm run db:up` | Start the stack (first run generates secrets into `docker/.env`) |
+| `npm run db:down` | Stop containers, **data kept** |
+| `npm run db:nuke` | Stop + delete ALL volumes (data gone; `.env` kept) |
+| `npm run db:reset` | nuke → up → migrate — the from-zero gate. **Run it twice after schema changes; both must pass** |
+| `npm run db:migrate` | Apply only migrations not yet in the ledger |
+| `npm run db:seed` / `db:seed:users` | Dev seeds (never production) |
+| `npm run db:status` | `docker compose ps` |
+| `bash scripts/local-stack.sh psql …` | psql inside the db container (no npm alias) |
+| `npm run db:types` | Regenerate `database/types/database.ts` from the live local schema — the shared-type hub, **never hand-edit** |
+
+Migrations are sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), and **an applied migration is never edited — write a delta**. After any schema change: `db:reset` twice, then `db:types` and commit the regenerated types.
+
+To upgrade Supabase: bump `database/SUPABASE_VERSION`, `db:sync`, prove locally (`db:reset` twice + tests + auth smoke), then update the Railway image tags to match in the same change.
 
 Secrets: only `.env.example` files are tracked. Real values live in Railway variables / Vercel env / GitHub secrets. If a secret ever lands in git: **rotate first**, then purge history.
 
