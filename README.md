@@ -30,6 +30,8 @@ All Railway services live in one project (**`littlefounders-b2c`**) and talk ove
 
 **Prerequisites:** Docker Desktop (running — the database is a container stack), Node **24** (`.nvmrc`), and the `supabase` CLI only if you need to regenerate DB types.
 
+**NON-NEGOTIABLE — before starting any work:** confirm your machine's actual capabilities (Node version matches `.nvmrc`, Docker is running, available RAM/CPU, which CLIs are installed) rather than assuming they match another collaborator's setup — dev machines on this project vary, and an under-resourced one doesn't fail loudly, it fails as flaky timing tests (see "the dev machine is small" under Non-obvious invariants).
+
 ### Initialize from zero
 
 ```bash
@@ -77,7 +79,7 @@ Secrets: only `.env.example` files are tracked. Real values live in Railway vari
 
 ## Mandatory testing — before every commit
 
-A red push to `main` wastes a full CI fan-out across all services and can ship a broken deploy through CD. Run these locally first; they are the same checks CI runs.
+**NON-NEGOTIABLE:** a red push to `main` wastes a full CI fan-out across all services and can ship a broken deploy through CD. Run these locally first, before every commit and again before every push — they are the same checks CI runs, and passing locally is required, not optional on the assumption CI will catch it.
 
 **Always (any change):**
 
