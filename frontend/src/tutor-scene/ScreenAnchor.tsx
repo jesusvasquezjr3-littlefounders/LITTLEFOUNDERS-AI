@@ -786,7 +786,6 @@ function cull(entry: AnchoredNode): void {
  * naming a value here would be this system guessing at a layout it does not own.
  */
 const PROJECTED_STYLE_PROPS = [
-  'position',
   'left',
   'top',
   'margin',
@@ -794,6 +793,31 @@ const PROJECTED_STYLE_PROPS = [
   'willChange',
   'transform',
 ] as const;
+
+/*
+ * `position` IS DELIBERATELY NOT IN THAT LIST, and leaving it out is a fix for
+ * the fix.
+ *
+ * The first version of this release cleared all seven, which is what symmetry
+ * argues for and what the caption bug did not need — the stale declarations
+ * that beat `top-20 mx-auto` are `top`, `left` and `margin`. Clearing
+ * `position` as well returns a released node to `static`, and a static node
+ * REJOINS THE NORMAL FLOW and starts taking up space in whatever container it
+ * is in. Not every anchored node declares its own position in CSS, so for
+ * those the stale `position: fixed` was the only thing keeping them out of
+ * layout.
+ *
+ * `verify:tutor-ui` caught it within one run: at mobile-es the speech caption
+ * came out overlapping the microphone dock by 323x67 px — the escape
+ * arithmetic is fine, the boxes it was escaping had moved. Reverting this one
+ * property returns the gate to green while `top`/`left`/`margin` still go
+ * back, which is all the caption ever needed.
+ *
+ * Being left `fixed` is also the correct resting state rather than a
+ * concession: every node this projector positions is HUD chrome, both of the
+ * caption's own modes are `fixed`, and out-of-flow is what the rest of the
+ * layout is measured against.
+ */
 
 /** Takes a node over for per-frame projection. Paired with `releaseProjection`. */
 function claimProjection(node: HTMLElement): void {

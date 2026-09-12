@@ -26,8 +26,8 @@ import { AnchorProvider, useAnchorSlot } from '../ScreenAnchor';
  * regression.
  */
 
-/** Every property `claimProjection` writes, which is what release must clear. */
-const CLAIMED = ['position', 'left', 'top', 'margin', 'transformOrigin', 'willChange', 'transform'] as const;
+/** Every positioning property the release must hand back. */
+const RELEASED = ['left', 'top', 'margin', 'transformOrigin', 'willChange', 'transform'] as const;
 
 function Anchored({ anchored }: { anchored: boolean }) {
   const anchorRef = useAnchorSlot('lead.crown');
@@ -79,11 +79,28 @@ describe('a node released by the anchor projector', () => {
     // The caption docking: same node, still mounted, no longer projected.
     rerender(<Harness anchored={false} />);
 
-    for (const prop of CLAIMED) {
+    for (const prop of RELEASED) {
       expect(node.style[prop], `style.${prop} survived the release`).toBe('');
     }
     // And nothing else was touched on the way out.
     expect(node.className).toBe('fixed top-20 mx-auto');
     expect(node.hidden).toBe(false);
+  });
+
+  /*
+   * AND IT STAYS OUT OF THE FLOW. `position` is the one claimed property the
+   * release deliberately keeps, and the first version of this fix did not: a
+   * released node dropped to `static`, rejoined the normal flow and started
+   * taking up space in its container. `verify:tutor-ui` measured the
+   * consequence at mobile-es as the speech caption overlapping the microphone
+   * dock by 323x67 px. See `PROJECTED_STYLE_PROPS`.
+   */
+  it('is still out of the flow afterwards, so nothing else re-lays-out around it', () => {
+    const { getByTestId, rerender } = render(<Harness anchored />);
+    const node = getByTestId('node');
+
+    rerender(<Harness anchored={false} />);
+
+    expect(node.style.position).toBe('fixed');
   });
 });

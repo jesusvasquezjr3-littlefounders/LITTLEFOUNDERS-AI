@@ -616,8 +616,35 @@ export function ConversationView({
    * happens to be open. Hoisted to its own variable (was inline on the
    * prop) so the lesson-thread chip below can read it too.
    */
-  const docked: 'panel' | 'sheet' | null =
-    desktop && adaptation === null ? 'panel' : !desktop && detent === 'full' ? 'sheet' : null;
+  /*
+   * THE PHONE DOES NOT DOCK ANY MORE, and that is a defect being retired
+   * rather than a feature being dropped.
+   *
+   * `'sheet'` docked the caption to `inset-x-0 top-16` whenever the mobile
+   * sheet stood at FULL, on the argument that a caption cannot win an escape
+   * against a full-width surface. The argument accounted for the SHEET and for
+   * nothing else — and the other thing in that band is the microphone dock,
+   * which on a phone is the orb and the composer together.
+   *
+   * It had never actually run. `ScreenAnchor` left its inline `top: 0; left: 0`
+   * on the node when it released it, so the docked classes lost to stale
+   * declarations and the caption sat in the top-left corner in both docked
+   * modes. Fixing that release (same branch) made this path live for the first
+   * time, and `verify:tutor-ui` measured what it does at mobile-es with the
+   * sheet open: the caption overlapping the dock by 323x67 px, the orb painted
+   * across the tutor's own last two lines.
+   *
+   * Anchored is the answer the codebase already has. The exit chip, the sheet
+   * and the dock all publish their rectangles to `SafeAreaContext`, and an
+   * anchored node registered with `avoid` is displaced out of all three by the
+   * shortest move that stays in frame (`hudSpace.ts`, its own golden fixture).
+   * Docking opted out of that machinery and then collided with one of the very
+   * surfaces it knows about.
+   *
+   * Desktop still docks: there the panel is a genuinely unescapable full-height
+   * column, the band beside it is wide, and the dock steps aside for it.
+   */
+  const docked: 'panel' | 'sheet' | null = desktop && adaptation === null ? 'panel' : null;
 
   /*
    * WHAT THE RESTING SHEET SAYS ABOUT ITSELF.
