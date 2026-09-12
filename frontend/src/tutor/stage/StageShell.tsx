@@ -795,6 +795,14 @@ function StageShellInner({
            * the only navigation on the route may not depend on a breakpoint.
            */
           aria-label={t('tutor.stage.leave')}
+          /*
+           * A stable hook for the overlap audit. It is found by NAME everywhere
+           * else, which is right for a reachability sweep and useless for a
+           * geometry one: `verify:tutor-ui` needs this rect regardless of
+           * locale, and in production a speech card once covered all 152x48 px
+           * of it while every gate stayed green.
+           */
+          data-hud-exit=""
           onClick={() => navigate(APP_HOME)}
           // It is a child of the header row now, so it neither positions itself nor
           // carries its own z-index — and it MUST opt back into pointer events,

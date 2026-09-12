@@ -105,6 +105,22 @@ const SWEEP =
  * was "unreachable"). This measures the rects of the surfaces that share the
  * conversing screen and fails on any pair that intersects by more than 8 px
  * on both axes. Names, not selectors, so the report reads like the defect.
+ *
+ * THE WAY OUT JOINED THE LIST ON 2026-09-12, and it should have been first.
+ * The audit knew three rects, and the one surface this codebase calls "the
+ * only navigation on the route" was not among them — so when a stale inline
+ * style parked the speech card at (0, 0) in production, covering the exit chip
+ * completely, 152x48 px of it, every gate stayed green and a person found it by
+ * looking. It is `pointer-events-none` over a `z-50` chip, so the sweep could
+ * not see it either: the control stayed clickable underneath a card that made
+ * it unreadable.
+ *
+ * A DISCLOSURE PANEL IS THE OTHER ADDITION. The redesign moves secondary
+ * surfaces behind panels that open over the stage, and a panel is exactly the
+ * shape of thing that lands on a caption. The caller opens each one and runs
+ * this audit again, which is also what stops a collapsed panel's contents from
+ * being silently skipped by the sweep — the same blindness the activity pass
+ * was added to close.
  */
 const OVERLAPS =
   '(() => { const rects = [];' +
@@ -113,7 +129,21 @@ const OVERLAPS =
   ' grab("caption", document.querySelector(".lf-speech"));' +
   ' grab("lesson-plate", document.querySelector("[data-plate-body]"));' +
   ' grab("dock", document.querySelector(\'[data-mic-dock]\'));' +
+  ' grab("way-out", document.querySelector(\'[data-hud-exit]\'));' +
+  ' document.querySelectorAll(\'section[id^="hud-disclosure-"]\').forEach((el, i) => {' +
+  '   if (!el.hidden) grab("panel:" + (el.id.split("-")[2] || i), el); });' +
   ' const out = [];' +
+  /*
+   * A SELECTOR THAT MATCHES NOTHING IS A GATE THAT PASSES. `grab` skips a
+   * missing element in silence, which is correct for the surfaces that come and
+   * go (a panel, a plate) and wrong for the one that is on screen in every
+   * phase of every session. `data-sheet-peek` is this file's own cautionary
+   * tale: it is named in the mobile pass and exists nowhere in the source, so
+   * that pass has been riding on an aria-label regex alone. The way out must be
+   * measured or the run must say it could not be.
+   */
+  ' if (!rects.some((r) => r.name === "way-out"))' +
+  '   out.push("way-out rect not found: [data-hud-exit] matched nothing, so this audit measured one surface fewer than it thinks");' +
   ' for (let i = 0; i < rects.length; i += 1) for (let j = i + 1; j < rects.length; j += 1) {' +
   '   const a = rects[i], b = rects[j];' +
   '   const w = Math.min(a.r, b.r) - Math.max(a.l, b.l);' +

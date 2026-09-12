@@ -223,9 +223,7 @@
     "peekOpenActivity": "Actividad lista",
     "peekActivityWaiting": "Ya hay una actividad.",
     "lessonThread": "Lección · paso {{step}} de {{of}}",
-    "liveWith": "{{name}} en vivo",
-    "boardTitle": "Pizarrón interactivo",
-    "boardLive": "Actividad en vivo"
+    "liveWith": "{{name}} en vivo"
   },
   "mic": {
     "listening": "Te escucho…",

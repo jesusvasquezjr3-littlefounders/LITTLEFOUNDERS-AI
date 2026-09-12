@@ -207,7 +207,26 @@ export function MapGraph({ map, onPick, disabled = false }: MapGraphProps) {
               }
               className={cn(
                 'absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 rounded-md p-2 text-center',
-                'min-h-12 transition-opacity',
+                /*
+                 * 74 px, NOT the 48 px tap floor, and that makes this file's
+                 * own claim true for the first time.
+                 *
+                 * `NODE_WIDTH_PX`'s comment says "every node is 74 px tall, so
+                 * the 92 px row pitch and the SVG edge layer keep agreeing by
+                 * construction" — and the class under it was `min-h-12`, which
+                 * is 48. A node was therefore 74 px when its title wrapped to
+                 * two lines and 59 px when it did not, so the real grid had an
+                 * 18 px gutter next to a 33 px one and the edge layer was
+                 * drawing against a pitch the nodes did not keep. Measured in
+                 * production across 24 tiles: both heights present in the same
+                 * graph, in the same locale.
+                 *
+                 * A minimum rather than a fixed height: `line-clamp-2` already
+                 * caps the title at two lines, so 74 is both the floor and the
+                 * ceiling in practice — but a floor cannot clip a third line if
+                 * one ever appears, and a fixed height silently would.
+                 */
+                'min-h-[4.625rem] transition-opacity',
                 NODE_STATE_CLASSES[node.state],
                 startable && 'cursor-pointer hover:opacity-90',
               )}
