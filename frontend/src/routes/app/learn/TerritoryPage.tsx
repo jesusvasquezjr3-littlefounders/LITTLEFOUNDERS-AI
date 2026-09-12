@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay, ProgressBar, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { coursePath, lessonPath } from './paths';
 import { localizedText, type CourseTree, type SagaNode, type TopicNode, type TopicState } from './types';
 
 /*
@@ -77,7 +78,7 @@ function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: Topic
       ?? topic.lessons.find((lesson) => lesson.state === 'passed')
       ?? null)
     : null;
-  const linkTo = firstPlayableLesson ? `/learn/lesson/${firstPlayableLesson.id}` : fallbackLinkTo;
+  const linkTo = firstPlayableLesson ? lessonPath(firstPlayableLesson.id) : fallbackLinkTo;
   const content = (
     <>
       {/*
@@ -164,7 +165,7 @@ export function TerritoryPage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <header className="flex flex-col gap-4">
-        <Link to={`/learn/${courseSlug}`} className="lf-caption flex w-fit items-center gap-1 font-bold text-primary hover:underline">
+        <Link to={coursePath(courseSlug)} className="lf-caption flex w-fit items-center gap-1 font-bold text-primary hover:underline">
           <Icon name="arrow_back" className="text-[16px]" aria-hidden /> {t('learn.territory.back')}
         </Link>
         <h1 className="lf-display-lg text-content">{t('learn.territory.title')}</h1>

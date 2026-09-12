@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Icon, SectionHeading } from '@/components/ui';
+import { coursePath, lessonPath } from '@/routes/app/learn/paths';
 import { localizedText, type LessonNode, type TopicNode } from '@/routes/app/learn/types';
 
 /*
@@ -155,8 +156,13 @@ function LessonRow({
 
   return (
     <li>
+      {/* lessonPath() and the <Route> pattern are one fact in paths.ts — this
+          row hand-wrote the URL once and shipped a week of white screens.
+          `courseSlug` rides in router state: it is what the player reads to
+          decide where "exit lesson" goes. */}
       <Link
-        to={`/learn/${courseSlug}/lesson/${lesson.slug}`}
+        to={lessonPath(lesson.id)}
+        state={{ courseSlug }}
         className={`${shell} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base`}
       >
         {body}
@@ -220,6 +226,20 @@ export function ChapterLessons({
         </h3>
       </header>
 
+      {/*
+       * NUMBER BY PLACE IN THIS CHAPTER, not by `lesson.position`.
+       *
+       * `position` is a storage ordinal, unique per (topic_id, position) but
+       * not required to be contiguous, and in production it is not: the
+       * three-lesson chapter "No todos queremos lo mismo" renders as 1, 3, 4 —
+       * directly beside its own "2 of 3 lessons" badge. A learner reads that
+       * as a missing lesson, and the locked row below it then promises it
+       * "unlocks after lesson 3" while pointing at the row labelled 4.
+       *
+       * The count a learner is being shown is "which of this chapter's lessons
+       * is this", so render that. Core already sorts by position
+       * (courseTree.ts byPosition), so the index IS the reading order.
+       */}
       <ul className="flex flex-col gap-2.5">
         {topic.lessons.map((lesson, i) => (
           <LessonRow
@@ -227,7 +247,7 @@ export function ChapterLessons({
             lesson={lesson}
             courseSlug={courseSlug}
             locale={locale}
-            number={lesson.position || i + 1}
+            number={i + 1}
           />
         ))}
       </ul>
@@ -236,7 +256,7 @@ export function ChapterLessons({
         <>
           <hr className="border-outline/60" />
           <Link
-            to={`/learn/${courseSlug}`}
+            to={coursePath(courseSlug)}
             className="lf-tactile flex items-center gap-4 rounded-md border border-outline bg-surface p-3.5 sm:p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-surface-sunken text-content-faint">

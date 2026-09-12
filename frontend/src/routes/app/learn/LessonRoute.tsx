@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
@@ -12,6 +12,7 @@ import type { LessonDocument } from '@/lesson-engine/core/types';
 import type { AudioManifest } from '@/lesson-engine/player/narration';
 import type { ServerCompletion } from '@/lesson-engine/player/completion';
 import { createCoreGrader } from './coreGrader';
+import { coursePath, placementPath } from './paths';
 
 /*
  * /learn/lesson/:lessonId — the fullscreen Lesson Player wired to Core
@@ -91,7 +92,7 @@ export function LessonRoute() {
   }, [lessonId, getToken]);
 
   function goBack() {
-    navigate(courseSlug ? `/learn/${courseSlug}` : '/learn');
+    navigate(courseSlug ? coursePath(courseSlug) : '/learn');
   }
 
   async function persistCompletion(secondsSpent: number): Promise<ServerCompletion | null> {
@@ -126,6 +127,27 @@ export function LessonRoute() {
         <LoadingOverlay label={t('learn.loading')} />
       </div>
     );
+  }
+
+  /*
+   * PLACEMENT_REQUIRED is not an error the learner can act on — it is a
+   * missing STEP, and that step is one route away. As a banner it left a kid
+   * who tapped the lesson their own /learn page had just offered them looking
+   * at "Complete this course's placement quiz first" with a single button,
+   * "Back to course" — which lands on the course page and is redirected to
+   * that very quiz (CoursePage.tsx). Two screens and a red error to reach
+   * where the first tap could have gone.
+   *
+   * So take them there. `replace` keeps the 403ing lesson URL out of history:
+   * the quiz navigates forward into the lesson when it commits, and Back
+   * should return to the list rather than to a URL that fails until it does.
+   *
+   * Only possible when the course is known — courseSlug rides in router state
+   * from the link that opened the player. A bare deep link carries no state,
+   * so it keeps the banner, which is honest about being stuck.
+   */
+  if (state.status === 'error' && state.code === 'PLACEMENT_REQUIRED' && courseSlug) {
+    return <Navigate to={placementPath(courseSlug)} replace />;
   }
 
   if (state.status === 'error') {

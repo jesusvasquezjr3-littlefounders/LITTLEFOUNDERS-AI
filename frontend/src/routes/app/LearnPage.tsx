@@ -143,8 +143,16 @@ export function LearnPage() {
       )
     : filteredCourses;
 
-  const resumeLessonNumber =
-    chapter?.current.topic.lessons.find((l) => l.state === 'current')?.position ?? null;
+  /*
+   * "Continue lesson N" counts the lesson's place in its chapter, not its
+   * storage ordinal. `lesson.position` is unique per topic but not contiguous,
+   * and reading it raw put "Continue lesson 4" on the card above a chapter
+   * list whose own badge said "2 of 3 lessons" — see the numbering note in
+   * ChapterLessons.tsx. Both surfaces now count the same way.
+   */
+  const resumeLessonIndex =
+    chapter?.current.topic.lessons.findIndex((l) => l.state === 'current') ?? -1;
+  const resumeLessonNumber = resumeLessonIndex >= 0 ? resumeLessonIndex + 1 : null;
 
   return (
     <div className="mx-auto flex w-full max-w-board flex-col gap-8">

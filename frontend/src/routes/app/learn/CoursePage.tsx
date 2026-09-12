@@ -9,6 +9,7 @@ import { Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
+import { placementPath, territoryPath } from './paths';
 import { SagaSection } from './SagaSection';
 import { findAdventureForLesson, localizedText, type CourseTree } from './types';
 
@@ -119,7 +120,7 @@ export function CoursePage() {
   // PLACEMENT_REQUIRED 403 on every lesson-access endpoint). Replace, not
   // push, so the back button doesn't bounce the learner into a 403 loop.
   if (tree.course.placementRequired) {
-    return <Navigate to={`/learn/${courseSlug}/placement`} replace />;
+    return <Navigate to={placementPath(courseSlug)} replace />;
   }
 
   if (tree.adventures.length === 0) {
@@ -158,7 +159,7 @@ export function CoursePage() {
           </span>
 
           <Link
-            to={`/learn/${tree.course.slug}/territory`}
+            to={territoryPath(tree.course.slug)}
             aria-label={t('learn.territory.open')}
             title={t('learn.territory.open')}
             className="lf-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"

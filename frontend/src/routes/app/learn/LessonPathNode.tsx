@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
+import { lessonPath } from './paths';
 import { localizedText, type LessonNode } from './types';
 
 /*
@@ -53,7 +54,7 @@ export function LessonPathNode({
 
   function go() {
     if (!clickable) return;
-    navigate(`/learn/lesson/${lesson.id}`, { state: { courseSlug } });
+    navigate(lessonPath(lesson.id), { state: { courseSlug } });
   }
 
   return (

@@ -21,6 +21,7 @@ import { ResetPasswordPage } from '@/routes/auth/ResetPasswordPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { UpgradeAccountPage } from '@/routes/auth/UpgradeAccountPage';
 import { OnboardingPage } from '@/routes/onboarding/OnboardingPage';
+import { NotFoundPage } from '@/routes/NotFoundPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
@@ -30,6 +31,12 @@ import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
+import {
+  COURSE_ROUTE_PATH,
+  LESSON_ROUTE_PATH,
+  PLACEMENT_ROUTE_PATH,
+  TERRITORY_ROUTE_PATH,
+} from '@/routes/app/learn/paths';
 import { TasksPage } from '@/routes/app/tasks/TasksPage';
 import { BankingPage } from '@/routes/app/banking/BankingPage';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -305,7 +312,7 @@ export function App() {
               /onboarding first (RequireOnboarded) so the two one-time flows
               never interleave out of order. */}
           <Route
-            path="learn/:courseSlug/placement"
+            path={PLACEMENT_ROUTE_PATH}
             element={
               <RequireAuth>
                 <RequireOnboarded>
@@ -326,8 +333,8 @@ export function App() {
             }
           >
             <Route path="learn" element={<LearnPage />} />
-            <Route path="learn/:courseSlug" element={<CoursePage />} />
-            <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
+            <Route path={COURSE_ROUTE_PATH} element={<CoursePage />} />
+            <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryPage />} />
             <Route
               path="tasks"
               element={
@@ -412,7 +419,7 @@ export function App() {
               Screen Recipes → Lesson). RequireAuth only, deliberately outside
               the AppLayout route group above. */}
           <Route
-            path="learn/lesson/:lessonId"
+            path={LESSON_ROUTE_PATH}
             element={
               <RequireAuth>
                 <LessonRoute />
@@ -440,6 +447,14 @@ export function App() {
               </RequireAuth>
             }
           />
+
+          {/* The route of last resort. Without it an unmatched URL matched no
+              branch and React Router rendered nothing at all — a white screen
+              with no error and no way back, which is how a single wrong `to=`
+              in the /learn chapter list stayed invisible for a week. It never
+              redirects: the URL has to stay in the address bar for the next
+              broken link to be reportable. Must be LAST. */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </ThemeProvider>

@@ -3,6 +3,13 @@
     "name": "LittleFounders",
     "tagline": "Learn, play, and build your future"
   },
+  "notFound": {
+    "title": "We couldn't find that page",
+    "body": "The link may be old, or something in the app pointed to the wrong place. Nothing you did caused this.",
+    "backToLearn": "Go to my lessons",
+    "backHome": "Go to the home page",
+    "goBack": "Back"
+  },
   "actions": {
     "close": "Close",
     "confirmQuestion": "Are you sure?",

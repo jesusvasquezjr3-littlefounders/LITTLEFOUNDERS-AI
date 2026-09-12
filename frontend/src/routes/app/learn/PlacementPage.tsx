@@ -7,6 +7,7 @@ import { Button, LoadingOverlay, OptionGroup, type OptionGroupOption } from '@/c
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { GuidedStage } from '@/guided-voice/GuidedStage';
 import { characterFor, useGuidedVoice } from '@/guided-voice/useGuidedVoice';
+import { coursePath, lessonPath } from '@/routes/app/learn/paths';
 
 /*
  * /learn/:courseSlug/placement — finding where a learner actually belongs.
@@ -244,9 +245,9 @@ export function PlacementPage() {
 
   if (committed) {
     return committedLessonId ? (
-      <Navigate to={`/learn/lesson/${committedLessonId}`} state={{ courseSlug }} replace />
+      <Navigate to={lessonPath(committedLessonId)} state={{ courseSlug }} replace />
     ) : (
-      <Navigate to={`/learn/${courseSlug}`} replace />
+      <Navigate to={coursePath(courseSlug)} replace />
     );
   }
 

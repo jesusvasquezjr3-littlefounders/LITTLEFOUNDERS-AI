@@ -3,6 +3,13 @@
     "name": "LittleFounders",
     "tagline": "Aprende, juega y construye tu futuro"
   },
+  "notFound": {
+    "title": "No encontramos esa página",
+    "body": "Puede que el enlace sea viejo, o que algo en la app apuntara al lugar equivocado. No hiciste nada mal.",
+    "backToLearn": "Ir a mis lecciones",
+    "backHome": "Ir al inicio",
+    "goBack": "Volver"
+  },
   "actions": {
     "close": "Cerrar",
     "confirmQuestion": "¿Seguro?",

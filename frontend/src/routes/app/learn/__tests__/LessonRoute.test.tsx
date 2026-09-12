@@ -119,4 +119,42 @@ describe('LessonRoute', () => {
     fireEvent.click(screen.getByRole('button', { name: /Back to course/ }));
     expect(mockNavigate).toHaveBeenCalledWith('/learn');
   });
+
+  /*
+   * PLACEMENT_REQUIRED is a missing step, not an error: Core 403s every
+   * lesson-access endpoint until the course's placement quiz is taken, and
+   * /learn will happily offer the lesson anyway. Showing the banner made the
+   * learner read a red message and then press a button that lands on the
+   * course page, which redirects to that same quiz — so go straight there.
+   */
+  it('sends the learner to the placement quiz instead of a dead-end error', async () => {
+    mockedApi.mockResolvedValueOnce({
+      data: null,
+      error: { code: 'PLACEMENT_REQUIRED', message: "Complete this course's placement quiz first" },
+    });
+
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]}>
+        <Routes>
+          <Route path="/learn/lesson/:lessonId" element={<LessonRoute />} />
+          <Route path="/learn/:courseSlug/placement" element={<div>placement quiz</div>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText('placement quiz')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('keeps the banner when the course is unknown, rather than guessing a quiz URL', async () => {
+    // A bare deep link carries no router state, so there is no courseSlug to
+    // build the placement URL from. Being visibly stuck beats a wrong redirect.
+    mockedApi.mockResolvedValueOnce({
+      data: null,
+      error: { code: 'PLACEMENT_REQUIRED', message: "Complete this course's placement quiz first" },
+    });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/placement quiz first/i);
+  });
 });

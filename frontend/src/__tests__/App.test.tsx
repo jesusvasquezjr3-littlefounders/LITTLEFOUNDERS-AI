@@ -174,6 +174,31 @@ describe('Marketing site', () => {
     expect(screen.getAllByRole('button', { name: 'Light' }).length).toBeGreaterThan(0);
   });
 
+  /*
+   * The regression this file could not see before.
+   *
+   * <Routes> had no `path="*"`, so an unmatched URL matched no branch and React
+   * Router rendered NOTHING — a white screen with no error, no chrome and no
+   * way back. A single wrong `to=` in the /learn chapter list therefore looked,
+   * to the owner and to every learner, like "the Lesson Engine is dead", and it
+   * stayed that way for a week because a blank page reports nothing.
+   *
+   * The assertion is deliberately about the FLOOR, not the copy: whatever the
+   * 404 says, an unknown URL must never render an empty document again.
+   */
+  it('renders a real 404 for an unknown URL instead of a blank page', () => {
+    // Multi-segment on purpose: `/:handle` already claims every single-segment
+    // path for public profiles, and a malformed in-app link is deep anyway.
+    const { container } = renderApp('/learn/money-basics/lesson/some-slug');
+
+    expect(container).not.toBeEmptyDOMElement();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(i18n.t('notFound.title'));
+    // The URL stays visible: it is the one detail that makes a broken link
+    // reportable, and a redirect here would hide the next one exactly as the
+    // blank page hid this one.
+    expect(screen.getByText('/learn/money-basics/lesson/some-slug')).toBeInTheDocument();
+  });
+
   it('language switcher is a custom dropdown (no native select) and switches locale', async () => {
     renderApp();
     expect(document.querySelector('select')).not.toBeInTheDocument();

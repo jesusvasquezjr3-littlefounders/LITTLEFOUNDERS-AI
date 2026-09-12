@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Icon, SectionHeading } from '@/components/ui';
 import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { courseBadgeAsset } from '@/lib/courseBadges';
+import { coursePath } from '@/routes/app/learn/paths';
 
 /*
  * The course carousel (/DESIGN.md §Tactile → Screen recipes → Learn).
@@ -220,7 +221,7 @@ export function CourseCarousel({ courses, locale, activeSlug, resumeLessonNumber
               )}
 
               <Link
-                to={`/learn/${course.slug}`}
+                to={coursePath(course.slug)}
                 className={`lf-tactile group mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base ${
                   started
                     ? 'lf-tactile-accent lf-sheen bg-accent text-on-accent hover:bg-accent-strong'
