@@ -1034,6 +1034,38 @@ export interface CoursePlacementRow {
 }
 
 /** Existence check + result — the idempotency marker for POST /placement/:slug/complete, and the source of CourseTree.course.placementRequired. Own-row RLS: the caller's token is enough. */
+/*
+ * The PLURAL placement reads exist so GET /learn/courses can ask once for the
+ * whole shelf instead of once per course. Same table, same columns, one
+ * `in.()` — no extra concurrency, which is the point: running the per-course
+ * reads in parallel would multiply Core's outbound connections by a number
+ * content controls, against a PostgREST pool sized in Railway.
+ */
+export function getCoursePlacementsForCourses(
+  accessToken: string,
+  userId: string,
+  courseIds: string[],
+): Promise<CoursePlacementRow[] | null> {
+  if (courseIds.length === 0) return Promise.resolve([]);
+  return rest<CoursePlacementRow[]>(
+    `/course_placements?user_id=eq.${eu(userId)}&course_id=${inFilter(courseIds)}&select=user_id,course_id,claimed_level,education_level,method,created_at`,
+    accessToken,
+  );
+}
+
+/** `course_id` is selected here and not in the singular read, because the caller has to group by it. */
+export function getPlacementCreditsForCourses(
+  accessToken: string,
+  userId: string,
+  courseIds: string[],
+): Promise<(PlacementCreditRow & { course_id: string })[] | null> {
+  if (courseIds.length === 0) return Promise.resolve([]);
+  return rest<(PlacementCreditRow & { course_id: string })[]>(
+    `/placement_credits?user_id=eq.${eu(userId)}&course_id=${inFilter(courseIds)}&select=lesson_id,course_id`,
+    accessToken,
+  );
+}
+
 export function getCoursePlacement(accessToken: string, userId: string, courseId: string): Promise<CoursePlacementRow[] | null> {
   return rest<CoursePlacementRow[]>(
     `/course_placements?user_id=eq.${eu(userId)}&course_id=eq.${eu(courseId)}&select=user_id,course_id,claimed_level,education_level,method,created_at`,

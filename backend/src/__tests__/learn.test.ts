@@ -65,22 +65,21 @@ describe('GET /api/v1/learn/courses', () => {
   });
 
   /*
-   * One sick course used to take the whole shelf down: the handler awaited
-   * each course's tree in turn and returned 502 on the first that failed, so a
-   * learner with a perfectly healthy course in progress got an empty /learn
-   * because some OTHER course could not be assembled. Nothing pinned that.
+   * THE SHAPE OF THE READ, which is where /learn's 2.0-2.4 s lived.
+   *
+   * The handler used to await the whole adventures -> sagas -> topics ->
+   * lessons -> progress chain once PER COURSE. Nothing asserted that, and the
+   * fixture had a single course, so the per-course cost was invisible to the
+   * suite by construction. A second course makes it measurable.
    */
-  describe('when one course cannot be assembled', () => {
-    const BROKEN_COURSE_ID = '44444444-4444-4444-8444-444444444444';
+  describe('reads the whole shelf one level at a time', () => {
+    const SECOND_COURSE_ID = '44444444-4444-4444-8444-444444444444';
 
-    /** Fails only the adventures lookup for BROKEN_COURSE_ID; everything else is the real fake. */
-    function fetchWithOneBrokenCourse(): typeof fetch {
+    function countingFetch(counts: Record<string, number>): typeof fetch {
       const real = createFakeFetch(db);
       return (async (input: RequestInfo | URL, init?: RequestInit) => {
-        const url = String(input);
-        if (url.includes('/rest/v1/adventures') && url.includes(BROKEN_COURSE_ID)) {
-          return new Response('boom', { status: 500 });
-        }
+        const table = String(input).split('/rest/v1/')[1]?.split('?')[0];
+        if (table) counts[table] = (counts[table] ?? 0) + 1;
         return real(input, init);
       }) as typeof fetch;
     }
@@ -88,33 +87,30 @@ describe('GET /api/v1/learn/courses', () => {
     beforeEach(() => {
       db.courses!.push({
         ...db.courses![0]!,
-        id: BROKEN_COURSE_ID,
-        slug: 'broken-course',
-        title: { 'en-US': 'Broken Course' },
+        id: SECOND_COURSE_ID,
+        slug: 'second-course',
+        title: { 'en-US': 'Second Course' },
       });
-      vi.stubGlobal('fetch', fetchWithOneBrokenCourse());
     });
 
-    it('still serves the courses that are healthy', async () => {
+    it('asks each level ONCE, however many courses are published', async () => {
+      const counts: Record<string, number> = {};
+      vi.stubGlobal('fetch', countingFetch(counts));
+
       const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
 
       expect(res.status).toBe(200);
-      expect(res.body.data.courses.map((c: { slug: string }) => c.slug)).toEqual([COURSE_SLUG]);
+      expect(res.body.data.courses).toHaveLength(2);
+      // One request per level for the whole shelf — not one chain per course.
+      for (const table of ['adventures', 'sagas', 'topics', 'lessons', 'course_placements', 'placement_credits']) {
+        expect(counts[table], `${table} was read ${counts[table]} time(s)`).toBe(1);
+      }
     });
 
-    it('drops the broken one rather than serving it with invented progress', async () => {
-      const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
-
-      // Omitted, not zeroed: a course whose tree will not load cannot be
-      // opened either, and "0%" would be a number we made up.
-      expect(res.body.data.courses.some((c: { slug: string }) => c.slug === 'broken-course')).toBe(false);
-    });
-
-    it('still 502s when EVERY course fails — that is a real outage, not one sick row', async () => {
+    it('still 502s when a level read fails — that is the content service, not one bad row', async () => {
       const real = createFakeFetch(db);
       vi.stubGlobal('fetch', (async (input: RequestInfo | URL, init?: RequestInit) => {
-        const url = String(input);
-        if (url.includes('/rest/v1/adventures')) return new Response('boom', { status: 500 });
+        if (String(input).includes('/rest/v1/adventures')) return new Response('boom', { status: 500 });
         return real(input, init);
       }) as typeof fetch);
 

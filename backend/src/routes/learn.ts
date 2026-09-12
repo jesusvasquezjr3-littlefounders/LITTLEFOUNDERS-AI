@@ -19,6 +19,7 @@ import {
   getAdventureById,
   getAdventuresByCourseIds,
   getCoursePlacement,
+  getCoursePlacementsForCourses,
   getFullOwnProfile,
   getLearningStatsForUpdate,
   getLessonById,
@@ -27,6 +28,7 @@ import {
   getLessonProgressRow,
   getLessonsByTopicIds,
   getPlacementCreditsForCourse,
+  getPlacementCreditsForCourses,
   getPublishedCourseById,
   getPublishedCourseBySlug,
   getPublishedCourseRows,
@@ -86,6 +88,111 @@ export async function loadCourseTree(accessToken: string, userId: string, course
   if (placement === null || credits === null) return null;
   const placementCreditedLessonIds = new Set(credits.map((c) => c.lesson_id));
   return assembleCourseTree(course, adventures, sagas, topics, lessons, progress, placementCreditedLessonIds, placement.length > 0);
+}
+
+/*
+ * EVERY COURSE'S TREE, IN ONE PASS PER LEVEL.
+ *
+ * loadCourseTree walks adventures -> sagas -> topics -> lessons -> progress,
+ * and each step needs the ids the step before returned, so that chain is
+ * genuinely serial. What was NOT necessary was paying for it once per course:
+ * GET /learn/courses awaited the whole chain for every published course in
+ * turn, which is ~18 sequential round-trips for three courses and measured
+ * 2.0-2.4 s in production, in front of the /learn spinner.
+ *
+ * The levels are the same five reads either way — they just take every
+ * course's ids at once, which the helpers already accept (`ByCourseIds`,
+ * `BySagaIds`, ...). Seven round-trips total, and CRUCIALLY the same ONE
+ * request in flight at a time: running the courses concurrently instead would
+ * multiply Core's outbound PostgREST connections by a number that content
+ * controls, against a pool whose production size lives only in Railway.
+ *
+ * Trees are assembled and handed back one course at a time so the caller can
+ * summarise and drop each one; peak memory stays at the raw rows plus a single
+ * tree rather than every tree at once, and Railway bills Core on memory.
+ *
+ * Returns a Map keyed by course id. A course missing from it could not be
+ * assembled — the caller decides what that means.
+ */
+export async function loadCourseTrees(
+  accessToken: string,
+  userId: string,
+  courses: readonly CourseHierarchyRow[],
+): Promise<Map<string, CourseTree> | null> {
+  if (courses.length === 0) return new Map();
+
+  const courseIds = courses.map((c) => c.id);
+  const adventures = await getAdventuresByCourseIds(accessToken, courseIds);
+  if (!adventures) return null;
+  const sagas = await getSagasByAdventureIds(accessToken, adventures.map((a) => a.id));
+  if (!sagas) return null;
+  const topics = await getTopicsBySagaIds(accessToken, sagas.map((s) => s.id));
+  if (!topics) return null;
+  const lessons = await getLessonsByTopicIds(accessToken, topics.map((t) => t.id));
+  if (!lessons) return null;
+  const progress = await getLessonProgressForLessons(accessToken, userId, lessons.map((l) => l.id));
+  if (!progress) return null;
+  // Placement (0043) is read fresh every time, never cached: a credit granted
+  // mid-session must show on the very next read.
+  const placements = await getCoursePlacementsForCourses(accessToken, userId, courseIds);
+  if (!placements) return null;
+  const credits = await getPlacementCreditsForCourses(accessToken, userId, courseIds);
+  if (!credits) return null;
+
+  // Regroup by course. Doing this in memory is what buys the round-trips back:
+  // every row above was fetched once for the whole shelf.
+  const adventuresByCourse = groupBy(adventures, (a) => a.course_id);
+  const sagasByAdventure = groupBy(sagas, (s) => s.adventure_id);
+  const topicsBySaga = groupBy(topics, (t) => t.saga_id);
+  const lessonsByTopic = groupBy(lessons, (l) => l.topic_id);
+  const placedCourseIds = new Set(placements.map((p) => p.course_id));
+  const creditsByCourse = groupBy(credits, (c) => c.course_id);
+
+  const trees = new Map<string, CourseTree>();
+  for (const course of courses) {
+    const courseAdventures = adventuresByCourse.get(course.id) ?? [];
+    const courseSagas = courseAdventures.flatMap((a) => sagasByAdventure.get(a.id) ?? []);
+    const courseTopics = courseSagas.flatMap((sg) => topicsBySaga.get(sg.id) ?? []);
+    const courseLessons = courseTopics.flatMap((t) => lessonsByTopic.get(t.id) ?? []);
+    const courseLessonIds = new Set(courseLessons.map((l) => l.id));
+    /*
+     * Assembly is the only PER-COURSE failure left. Every read above is one
+     * request for the whole shelf, so a read that fails takes the request down
+     * (502, below) — correctly, because that is the content service being
+     * unreachable rather than one bad row. But malformed rows for a single
+     * course can still throw in here, and one course's data must not be able
+     * to empty a learner's whole shelf.
+     */
+    try {
+      trees.set(
+        course.id,
+        assembleCourseTree(
+          course,
+          courseAdventures,
+          courseSagas,
+          courseTopics,
+          courseLessons,
+          progress.filter((row) => courseLessonIds.has(row.lesson_id)),
+          new Set((creditsByCourse.get(course.id) ?? []).map((c) => c.lesson_id)),
+          placedCourseIds.has(course.id),
+        ),
+      );
+    } catch (error) {
+      console.warn(`[backend] course tree assembly failed for "${course.slug}":`, error);
+    }
+  }
+  return trees;
+}
+
+function groupBy<T, K>(rows: readonly T[], key: (row: T) => K): Map<K, T[]> {
+  const out = new Map<K, T[]>();
+  for (const row of rows) {
+    const k = key(row);
+    const bucket = out.get(k);
+    if (bucket) bucket.push(row);
+    else out.set(k, [row]);
+  }
+  return out;
 }
 
 interface LessonContext {
@@ -178,29 +285,34 @@ export function learnRouter(): Router {
      * outage, not one bad row, and a learner deserves an error rather than an
      * empty product.
      *
-     * DELIBERATELY STILL SERIAL, and the cost is real — 2.0-2.4 s measured in
-     * production, in front of the /learn spinner. Two things must be settled
-     * before that is fixed, and neither is a drive-by:
-     *   1. Running the courses concurrently multiplies Core's outbound
-     *      PostgREST concurrency by the number of PUBLISHED courses — a number
-     *      content can change with no code review. PostgREST's default pool is
-     *      10 (database/supabase/docker/CONFIG.md); production's value lives
-     *      only in Railway. Exceeding it turns this latency problem into the
-     *      all-or-nothing 502 signature of the 2026-08-10 incident, and Core
-     *      is billed on memory it would then hold every tree in at once.
-     *   2. The deeper waste: summarizeCourseTree reads exactly three numbers
-     *      off the tree (adventure count, lesson total, passed), so this
-     *      assembles 8 adventures x 5 sagas x 327 topics x 475 lessons —
-     *      placement probes and all — to produce them. Counting instead would
-     *      dwarf any concurrency gain, but `lessons` has no course_id (0007
-     *      dropped it), so the adventure->saga->topic->lesson walk is the only
-     *      way to enumerate a course's lessons without a migration, and
-     *      `progress` counts real passes UNION placement credits. Getting that
-     *      union wrong would misreport every learner's progress silently.
+     * ONE PASS PER LEVEL, not one pass per course. This endpoint awaited the
+     * whole adventures -> sagas -> topics -> lessons -> progress chain once per
+     * published course — ~18 sequential round-trips for three courses, and
+     * 2.0-2.4 s measured in production, in front of the /learn spinner with the
+     * SPA's own tree fetch still queued behind it. loadCourseTrees asks each
+     * level for every course's ids at once: seven round-trips, whatever the
+     * catalogue grows to, with the same ONE request in flight at a time.
+     *
+     * Concurrency was the obvious alternative and the wrong one: it multiplies
+     * Core's outbound PostgREST connections by a number CONTENT controls,
+     * against a pool whose production size lives only in Railway, which turns a
+     * slow screen into the all-or-nothing 502 of the 2026-08-10 incident.
+     *
+     * Still wasteful, and left alone on purpose: summarizeCourseTree reads
+     * exactly three numbers off each tree (adventure count, lesson total,
+     * passed), so this assembles 8 adventures x 5 sagas x 327 topics x 475
+     * lessons — placement probes and all — to produce them. Counting instead
+     * would dwarf this, but `lessons` has no course_id (0007 dropped it), so
+     * the level walk is the only way to enumerate a course's lessons without a
+     * migration, and `progress` counts real passes UNION placement credits.
+     * Getting that union wrong misreports every learner silently.
      */
+    const trees = await loadCourseTrees(user.accessToken, user.id, courseRows);
+    if (!trees) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+
     const courses = [];
     for (const course of courseRows) {
-      const tree = await loadCourseTree(user.accessToken, user.id, course);
+      const tree = trees.get(course.id);
       if (!tree) {
         console.warn(`[backend] /learn/courses: dropped "${course.slug}" — tree unavailable`);
         continue;
