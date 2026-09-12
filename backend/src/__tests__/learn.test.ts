@@ -63,6 +63,65 @@ describe('GET /api/v1/learn/courses', () => {
     const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
     expect(res.status).toBe(502);
   });
+
+  /*
+   * One sick course used to take the whole shelf down: the handler awaited
+   * each course's tree in turn and returned 502 on the first that failed, so a
+   * learner with a perfectly healthy course in progress got an empty /learn
+   * because some OTHER course could not be assembled. Nothing pinned that.
+   */
+  describe('when one course cannot be assembled', () => {
+    const BROKEN_COURSE_ID = '44444444-4444-4444-8444-444444444444';
+
+    /** Fails only the adventures lookup for BROKEN_COURSE_ID; everything else is the real fake. */
+    function fetchWithOneBrokenCourse(): typeof fetch {
+      const real = createFakeFetch(db);
+      return (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/adventures') && url.includes(BROKEN_COURSE_ID)) {
+          return new Response('boom', { status: 500 });
+        }
+        return real(input, init);
+      }) as typeof fetch;
+    }
+
+    beforeEach(() => {
+      db.courses!.push({
+        ...db.courses![0]!,
+        id: BROKEN_COURSE_ID,
+        slug: 'broken-course',
+        title: { 'en-US': 'Broken Course' },
+      });
+      vi.stubGlobal('fetch', fetchWithOneBrokenCourse());
+    });
+
+    it('still serves the courses that are healthy', async () => {
+      const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.courses.map((c: { slug: string }) => c.slug)).toEqual([COURSE_SLUG]);
+    });
+
+    it('drops the broken one rather than serving it with invented progress', async () => {
+      const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
+
+      // Omitted, not zeroed: a course whose tree will not load cannot be
+      // opened either, and "0%" would be a number we made up.
+      expect(res.body.data.courses.some((c: { slug: string }) => c.slug === 'broken-course')).toBe(false);
+    });
+
+    it('still 502s when EVERY course fails — that is a real outage, not one sick row', async () => {
+      const real = createFakeFetch(db);
+      vi.stubGlobal('fetch', (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/adventures')) return new Response('boom', { status: 500 });
+        return real(input, init);
+      }) as typeof fetch);
+
+      const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
+      expect(res.status).toBe(502);
+    });
+  });
 });
 
 describe('GET /api/v1/learn/courses/:slug/tree', () => {

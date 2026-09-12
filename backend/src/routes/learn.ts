@@ -162,10 +162,49 @@ export function learnRouter(): Router {
     const courseRows = await getPublishedCourseRows(user.accessToken);
     if (!courseRows) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
+    /*
+     * ONE SICK COURSE USED TO EMPTY THE WHOLE SHELF.
+     *
+     * This loop returned 502 the moment any course's tree failed to assemble,
+     * so a learner with a perfectly healthy course in progress got a blank
+     * /learn because some OTHER course could not be read. Drop that course
+     * instead and serve the rest: it is unopenable anyway — its tree is what
+     * the course page and every lesson gate need — and README's "failure must
+     * be distinguishable from emptiness" rule names display-only reads as
+     * exactly the case where degrading is the right answer. It is logged, so
+     * the failure is visible to us even though the shelf keeps working.
+     *
+     * If EVERY course fails it still 502s below: that is a content-service
+     * outage, not one bad row, and a learner deserves an error rather than an
+     * empty product.
+     *
+     * DELIBERATELY STILL SERIAL, and the cost is real — 2.0-2.4 s measured in
+     * production, in front of the /learn spinner. Two things must be settled
+     * before that is fixed, and neither is a drive-by:
+     *   1. Running the courses concurrently multiplies Core's outbound
+     *      PostgREST concurrency by the number of PUBLISHED courses — a number
+     *      content can change with no code review. PostgREST's default pool is
+     *      10 (database/supabase/docker/CONFIG.md); production's value lives
+     *      only in Railway. Exceeding it turns this latency problem into the
+     *      all-or-nothing 502 signature of the 2026-08-10 incident, and Core
+     *      is billed on memory it would then hold every tree in at once.
+     *   2. The deeper waste: summarizeCourseTree reads exactly three numbers
+     *      off the tree (adventure count, lesson total, passed), so this
+     *      assembles 8 adventures x 5 sagas x 327 topics x 475 lessons —
+     *      placement probes and all — to produce them. Counting instead would
+     *      dwarf any concurrency gain, but `lessons` has no course_id (0007
+     *      dropped it), so the adventure->saga->topic->lesson walk is the only
+     *      way to enumerate a course's lessons without a migration, and
+     *      `progress` counts real passes UNION placement credits. Getting that
+     *      union wrong would misreport every learner's progress silently.
+     */
     const courses = [];
     for (const course of courseRows) {
       const tree = await loadCourseTree(user.accessToken, user.id, course);
-      if (!tree) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+      if (!tree) {
+        console.warn(`[backend] /learn/courses: dropped "${course.slug}" — tree unavailable`);
+        continue;
+      }
       const summary = summarizeCourseTree(course, tree);
       courses.push({
         id: summary.id,
@@ -184,6 +223,14 @@ export function learnRouter(): Router {
         progress: summary.progress,
       });
     }
+
+    // Every published course failed to assemble: that is the content service
+    // being down, not one bad row, and an empty shelf would report an outage
+    // as "there are no courses" — the emptiness README warns about.
+    if (courseRows.length > 0 && courses.length === 0) {
+      return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    }
+
     return ok(res, { courses });
   });
 
