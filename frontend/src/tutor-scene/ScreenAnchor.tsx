@@ -367,7 +367,7 @@ export function useAnchorSlot(
         // released while culled would otherwise stay permanently hidden and
         // inert, which looks exactly like a component that failed to render.
         hide(previous.element, false);
-        previous.element.style.transform = '';
+        releaseProjection(previous.element);
         attached.current = null;
       }
 
@@ -409,19 +409,7 @@ export function useAnchorSlot(
        */
       const minScale = Math.max(readableScale, tapFloor(node));
 
-      node.style.position = 'fixed';
-      node.style.left = '0';
-      node.style.top = '0';
-      node.style.margin = '0';
-      /*
-       * Centred for BOTH placements. `above` is expressed as a rise applied to
-       * the projected point (see the frame loop), never as a different transform
-       * origin: the centre is the fixed point of a scale, so the box the cull
-       * test and the HUD escape are computed against stays the box that is
-       * actually painted, at every camera distance.
-       */
-      node.style.transformOrigin = 'center center';
-      node.style.willChange = 'transform';
+      claimProjection(node);
       // Hidden until the first projection: a node placed at 0,0 for one frame is
       // a control that flashes in the top-left corner of the stage on mount —
       // and a node whose slot is NEVER published stays there for good, which is
@@ -765,6 +753,75 @@ function cull(entry: AnchoredNode): void {
   entry.culled = true;
   entry.placed = false;
   hide(entry.element, true);
+}
+
+/**
+ * Every inline property the projector writes, in the one list that both
+ * `claimProjection` and `releaseProjection` read.
+ *
+ * IT IS A PAIR, AND IT WAS NOT (2026-09-12). The projector took a node over by
+ * writing six properties onto it and gave it back by clearing exactly one —
+ * `transform`. An inline declaration beats every class, so the other five
+ * outlived the takeover: `position: fixed; left: 0; top: 0; margin: 0` stayed on
+ * the node for the rest of the session and quietly won against whatever
+ * stylesheet was supposed to place it next.
+ *
+ * MEASURED IN PRODUCTION, desktop 1604x677, es-MX. `SpeechCaption` positions
+ * itself two ways: anchored over the speaking character's crown while
+ * `docked === null`, and by CSS (`top-20 mx-auto right-[min(27.5rem,34vw)]`)
+ * once it docks beside the desktop panel. Crossing the `lg` breakpoint — a
+ * rotation, a window drag, a tablet entering split view — flips `docked` from
+ * `null` to `'panel'`, so React drops the ref and this release path runs. The
+ * caption then went from (326, 80) to **(0, 0)**: `.top-20` and `.mx-auto`
+ * still matched, and `.top-20 { top: 5rem }` was still in the stylesheet, but
+ * the stale inline `top: 0; margin: 0` outranked both. At (0, 0) the caption's
+ * 512x220 box covered the "way out" chip at (24, 24, 152, 48) completely — all
+ * 152x48 px of it, the ONLY navigation on the route. The chip sits at `z-50`
+ * against the caption's `z-20` so it stayed clickable, which made it worse
+ * rather than better: the tutor's own identity row was painted underneath a
+ * control, unreadable, with nothing on screen to say why.
+ *
+ * So the release writes the EMPTY STRING for each one, for the same reason
+ * `hide` does below: the node's real position belongs to its classes, and
+ * naming a value here would be this system guessing at a layout it does not own.
+ */
+const PROJECTED_STYLE_PROPS = [
+  'position',
+  'left',
+  'top',
+  'margin',
+  'transformOrigin',
+  'willChange',
+  'transform',
+] as const;
+
+/** Takes a node over for per-frame projection. Paired with `releaseProjection`. */
+function claimProjection(node: HTMLElement): void {
+  node.style.position = 'fixed';
+  node.style.left = '0';
+  node.style.top = '0';
+  node.style.margin = '0';
+  /*
+   * Centred for BOTH placements. `above` is expressed as a rise applied to the
+   * projected point (see the frame loop), never as a different transform
+   * origin: the centre is the fixed point of a scale, so the box the cull test
+   * and the HUD escape are computed against stays the box that is actually
+   * painted, at every camera distance.
+   */
+  node.style.transformOrigin = 'center center';
+  node.style.willChange = 'transform';
+}
+
+/**
+ * Hands a node back to its own stylesheet, completely.
+ *
+ * Called from the ref callback's release path — the moment a component stops
+ * being anchored, whether it unmounted or merely switched to a CSS-positioned
+ * mode while staying on screen. The second case is the one that bit us; see
+ * `PROJECTED_STYLE_PROPS`.
+ */
+function releaseProjection(element: HTMLElement): void {
+  for (const prop of PROJECTED_STYLE_PROPS) element.style[prop] = '';
 }
 
 /**
