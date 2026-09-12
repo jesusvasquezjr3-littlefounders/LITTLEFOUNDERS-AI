@@ -2987,4 +2987,42 @@
       transform: none !important;
     }
   }
+
+  /*
+   * A WHITEBOARD MAY NEVER PAINT OVER ITS OWN QUESTION.
+   *
+   * Every board body is a `justify-center` flex column and every diagram inside
+   * one is authored at fixed pixel sizes. `justify-content: center` centres
+   * overflow as well as content, which means a column given less room than its
+   * diagram needs spills out of BOTH ends — including the start edge, where the
+   * board's own label sits one row above.
+   *
+   * Measured in production 2026-09-12, desktop 1604x677, es-MX, on a live
+   * `change` board: the plate handed the body 88 px for a ~152 px diagram, so
+   * the `$10` node painted at y=152 inside a container whose top was y=173 — 21
+   * px ABOVE its own parent, across the prompt "¿Cuánto cambio le devuelves?",
+   * a 31x7 px overlap. A child was asked a question they could not finish
+   * reading, by the picture that was supposed to help.
+   *
+   * `safe` is the one-word answer the sizing spec already has for this: centre
+   * while there is room, behave as `start` the moment there is not. So the
+   * overflow can only ever go the way the plate is already `overflow-hidden`
+   * against, and the question stays legible.
+   *
+   * Declared as a PAIR so the fallback is the old behaviour rather than no
+   * behaviour: a browser that does not parse `safe center` drops that line and
+   * keeps the `center` above it. Scoped to `[data-tutor-whiteboard]` (the
+   * attribute `WhiteboardShell` already stamps) so it reaches all forty-one
+   * instruments at once and nothing else in the product — the alternative was
+   * `shrink-0` remembered in forty-one components, which would have stopped the
+   * crushing and made the escape worse, since there would be no give left to
+   * absorb it.
+   *
+   * Specificity, not source order, is what makes this win against Tailwind's own
+   * `.justify-center`: 0,2,0 against 0,1,0.
+   */
+  [data-tutor-whiteboard] .justify-center {
+    justify-content: center;
+    justify-content: safe center;
+  }
 }
