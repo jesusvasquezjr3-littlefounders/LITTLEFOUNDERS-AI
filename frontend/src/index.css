@@ -1777,6 +1777,51 @@
     }
   }
 
+  /*
+   * ── The loading indicator ──────────────────────────────────────────────
+   *
+   * CSS, not Lottie, and that is a payload decision rather than a taste one.
+   * LoadingOverlay is the Suspense fallback and the first thing painted on a
+   * cold visit, so rendering it through the dotlottie player made every
+   * visitor download 635 KB (brotli) of WebAssembly from a third-party CDN
+   * before the spinner could animate — to draw a spinner. The celebratory
+   * Lottie icons (streak, gold coin, time) keep the player; they live on
+   * screens a learner reaches after finishing a lesson, where the cost is
+   * paid once and buys something.
+   *
+   * Reduced motion keeps the signal and loses the travel, the same modifier
+   * rule the rest of this file follows: the ring stops rotating but breathes,
+   * because the one thing a loading indicator may never do is go still — that
+   * reads as "frozen", which is exactly what it is there to deny.
+   */
+  .lf-spinner {
+    display: block;
+    border-radius: 9999px;
+    border: 4px solid var(--color-outline, rgba(8, 15, 40, 0.12));
+    border-top-color: var(--color-accent, #4f46e5);
+    animation: lf-spinner-rotate 0.9s linear infinite;
+  }
+  @keyframes lf-spinner-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lf-spinner {
+      animation: lf-spinner-breathe 1.8s var(--lf-ease) infinite;
+      border-top-color: var(--color-accent, #4f46e5);
+    }
+    @keyframes lf-spinner-breathe {
+      0%,
+      100% {
+        opacity: 0.35;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+  }
+
   /* ── Day-streak celebration (Lesson Player) — v1 StreakCelebration echo ── */
   .lf-streak-flame {
     animation: lf-streak-flame-bob 2.2s var(--lf-ease) infinite;
