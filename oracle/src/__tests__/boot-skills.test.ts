@@ -30,7 +30,23 @@ import { afterEach, describe, expect, it } from 'vitest';
  */
 
 const ORACLE_ROOT = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
-const TSX_BIN = path.join(ORACLE_ROOT, 'node_modules/.bin/tsx');
+/*
+ * Spawn tsx's CLI through `node` rather than through `node_modules/.bin/tsx`.
+ *
+ * That shim is a POSIX shell script with no extension, so `spawn()` without a
+ * shell asked Windows to execute it directly and both cases in this file died
+ * with ENOENT on every Windows checkout — green in CI, red on the machine the
+ * owner actually runs the mandatory gates from, which makes it a gate they
+ * cannot use. Its `.cmd` sibling is no better: Node ≥20 refuses to spawn
+ * .cmd/.bat without `shell: true` (CVE-2024-27980), and a shell would sit
+ * between us and the child, breaking the process-group kill below.
+ *
+ * This is not a workaround — it is literally what the shim does:
+ *   exec node "$basedir/../tsx/dist/cli.mjs" "$@"
+ * so POSIX behaviour is unchanged, and `detached` still makes the runtime
+ * itself the process-group leader.
+ */
+const TSX_CLI = path.join(ORACLE_ROOT, 'node_modules/tsx/dist/cli.mjs');
 const ENV_EXAMPLE = path.join(ORACLE_ROOT, '.env.example');
 
 /** Minimal dotenv, same approach as env-example.test.ts: enough for a file we control. */
@@ -93,7 +109,7 @@ function bootOracle(entry: string, env: NodeJS.ProcessEnv): Booted {
   // characterizing this fix, to leave the actual runtime process alive as an
   // orphan holding its stdio pipes open (the loader wrapper dies; the real
   // process it launched does not), hanging whatever awaited stream EOF next.
-  const child = spawn(TSX_BIN, [entry], { env, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+  const child = spawn(process.execPath, [TSX_CLI, entry], { env, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
   let stdout = '';
   let stderr = '';
   child.stdout?.on('data', (d: Buffer) => {

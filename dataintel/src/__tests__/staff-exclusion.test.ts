@@ -28,7 +28,24 @@ function scratch(): string {
   return dir;
 }
 afterAll(() => {
-  for (const dir of tempDirs) rmSync(dir, { recursive: true, force: true });
+  /*
+   * Deleting the scratch dir is HOUSEKEEPING, not an assertion, so it must not
+   * be able to fail the file. On Windows DuckDB still holds a handle on its
+   * .db when the suite ends and `rmSync` throws EPERM — which vitest counts as
+   * a failed test FILE even though every test in it passed, leaving the repo's
+   * mandatory `test:all` permanently red on a Windows checkout. `force: true`
+   * does not cover this: it suppresses ENOENT, not a locked file.
+   *
+   * These live under the OS temp dir, which the OS reclaims on its own, so the
+   * worst case of giving up is a few stale megabytes in %TEMP%.
+   */
+  for (const dir of tempDirs) {
+    try {
+      rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
+    } catch {
+      // Leave it to the OS rather than fail a green suite.
+    }
+  }
 });
 
 function open(dir: string): duckdb.Database {
