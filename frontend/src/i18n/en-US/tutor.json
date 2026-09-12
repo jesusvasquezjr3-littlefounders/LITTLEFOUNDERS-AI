@@ -4,6 +4,9 @@
     "contextLost": "The 3D view will come back in a moment.",
     "loadFailed": "The 3D scene didn't load. Check your connection."
   },
+  "disclosure": {
+    "close": "Close {{name}}"
+  },
   "stage": {
     "leave": "Leave the tutor",
     "personalizeLayer": "Make this place yours",

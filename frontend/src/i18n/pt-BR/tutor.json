@@ -4,6 +4,9 @@
     "contextLost": "A vista 3D volta em um instante.",
     "loadFailed": "A cena 3D não carregou. Confira sua conexão."
   },
+  "disclosure": {
+    "close": "Fechar {{name}}"
+  },
   "stage": {
     "leave": "Sair do tutor",
     "personalizeLayer": "Deixe este lugar do seu jeito",

@@ -4,6 +4,9 @@
     "contextLost": "La vista 3D vuelve en un momento.",
     "loadFailed": "No se cargó la escena 3D. Revisa tu conexión."
   },
+  "disclosure": {
+    "close": "Cerrar {{name}}"
+  },
   "stage": {
     "leave": "Salir del tutor",
     "personalizeLayer": "Haz tuyo este lugar",
