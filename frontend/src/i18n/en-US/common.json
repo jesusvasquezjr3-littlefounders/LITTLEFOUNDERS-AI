@@ -10,6 +10,14 @@
     "backHome": "Go to the home page",
     "goBack": "Back"
   },
+  "routeError": {
+    "title": "This screen ran into a problem",
+    "body": "Something went wrong loading this part of the app. It is not something you did.",
+    "staleTitle": "There is a new version",
+    "staleBody": "The app updated while this tab was open, so this screen could not finish loading. A refresh picks up the new one.",
+    "reload": "Refresh",
+    "goHome": "Go to my lessons"
+  },
   "actions": {
     "close": "Close",
     "confirmQuestion": "Are you sure?",

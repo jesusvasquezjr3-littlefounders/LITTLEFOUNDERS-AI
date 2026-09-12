@@ -30,7 +30,6 @@ import { PlacementPage } from '@/routes/app/learn/PlacementPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
-import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import {
   COURSE_ROUTE_PATH,
   LESSON_ROUTE_PATH,
@@ -47,24 +46,15 @@ import { FollowingPage } from '@/routes/app/profile/FollowingPage';
 import { PublicProfilePage } from '@/routes/app/profile/PublicProfilePage';
 import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
 import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
-import { AdminOverviewPage } from '@/routes/admin/AdminOverviewPage';
-import { AdminContentPage } from '@/routes/admin/AdminContentPage';
-import { AdminEmailDashboard } from '@/routes/admin/AdminEmailDashboard';
-import { AdminInsightsPage } from '@/routes/admin/AdminInsightsPage';
-import { AdminIntelPage } from '@/routes/admin/AdminIntelPage';
 import { useInsightsBeacon } from '@/lib/useInsightsBeacon';
 import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
+import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import { LoadingOverlay } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { releaseBootVeil } from '@/lib/boot';
 
-import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
-import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
-import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
-import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
-import { AdminGenerationPage } from '@/routes/admin/AdminGenerationPage';
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
  * DEV-gated so the lab (and its local grader) never reaches production bundles. */
@@ -92,6 +82,32 @@ const AudienceLab = lazy(() => import('@/routes/admin/analytics/AudienceLab'));
  * the Tutor. */
 const TutorPage = lazy(() => import('@/routes/app/TutorPage'));
 
+/*
+ * STAFF AND LESSON SURFACES, OFF THE FIRST-LOAD PATH.
+ *
+ * These were eager imports, so every learner downloaded the whole admin
+ * console and the Lesson Engine's 57 segment renderers before /learn could
+ * paint. Admin is reachable only behind RequireRole, and the lesson player
+ * only after a learner picks a lesson — neither belongs in the bytes that
+ * gate the first screen.
+ *
+ * Each is wrapped in RouteErrorBoundary at its route: a lazy chunk can fail
+ * to arrive (most often right after a deploy, when an open tab asks for a
+ * hash that no longer exists), and an unhandled rejection inside Suspense is
+ * a blank page — the one outcome this app has already shipped once.
+ */
+const LessonRoute = lazy(() => import('@/routes/app/learn/LessonRoute'));
+const AdminOverviewPage = lazy(() => import('@/routes/admin/AdminOverviewPage').then((m) => ({ default: m.AdminOverviewPage })));
+const AdminContentPage = lazy(() => import('@/routes/admin/AdminContentPage').then((m) => ({ default: m.AdminContentPage })));
+const AdminEmailDashboard = lazy(() => import('@/routes/admin/AdminEmailDashboard').then((m) => ({ default: m.AdminEmailDashboard })));
+const AdminInsightsPage = lazy(() => import('@/routes/admin/AdminInsightsPage').then((m) => ({ default: m.AdminInsightsPage })));
+const AdminIntelPage = lazy(() => import('@/routes/admin/AdminIntelPage').then((m) => ({ default: m.AdminIntelPage })));
+const AdminUsersPage = lazy(() => import('@/routes/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })));
+const AdminAuditPage = lazy(() => import('@/routes/admin/AdminAuditPage').then((m) => ({ default: m.AdminAuditPage })));
+const AdminRolesPage = lazy(() => import('@/routes/admin/AdminRolesPage').then((m) => ({ default: m.AdminRolesPage })));
+const AnalyticsHealthPage = lazy(() => import('@/routes/admin/AnalyticsHealthPage').then((m) => ({ default: m.AnalyticsHealthPage })));
+const AdminGenerationPage = lazy(() => import('@/routes/admin/AdminGenerationPage').then((m) => ({ default: m.AdminGenerationPage })));
+
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
 
@@ -102,6 +118,23 @@ const STAFF = ['admin', 'superadmin'];
  * the stage's own veil could even mount. The overlay paints the app surface
  * and says loading, in the learner's language, from the first frame.
  */
+/*
+ * The wrapper every lazy route goes through.
+ *
+ * Suspense alone is not enough: it handles the WAIT, never the FAILURE. When a
+ * dynamic import rejects — which happens routinely to a tab left open across a
+ * deploy, whose chunk hashes no longer exist — the rejection escapes Suspense,
+ * unmounts the tree and leaves an empty #root. RouteErrorBoundary catches that
+ * and says so, with a refresh that actually fixes the stale-chunk case.
+ */
+function LazyRoute({ children, home }: { children: ReactNode; home?: string }) {
+  return (
+    <RouteErrorBoundary home={home}>
+      <Suspense fallback={<TutorChunkFallback />}>{children}</Suspense>
+    </RouteErrorBoundary>
+  );
+}
+
 function TutorChunkFallback() {
   const { t } = useTranslation();
   return (
@@ -389,17 +422,17 @@ export function App() {
                 RequireRole redirect). Both admin & superadmin see the sections;
                 Roles & Access is superadmin-only (§1.4). Static paths above the
                 :handle catch-all, and static routes always outrank it. */}
-            <Route path="admin" element={<RequireRole role={STAFF}><AdminOverviewPage /></RequireRole>} />
-            <Route path="admin/content" element={<RequireRole role={STAFF}><AdminContentPage /></RequireRole>} />
+            <Route path="admin" element={<RequireRole role={STAFF}><LazyRoute><AdminOverviewPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/content" element={<RequireRole role={STAFF}><LazyRoute><AdminContentPage /></LazyRoute></RequireRole>} />
 
-            <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
-            <Route path="admin/emails" element={<RequireRole role={STAFF}><AdminEmailDashboard /></RequireRole>} />
-            <Route path="admin/insights" element={<RequireRole role={STAFF}><AdminInsightsPage /></RequireRole>} />
-            <Route path="admin/intel" element={<RequireRole role={STAFF}><AdminIntelPage /></RequireRole>} />
-            <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
-            <Route path="admin/generation" element={<RequireRole role={STAFF}><AdminGenerationPage /></RequireRole>} />
-            <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />
-            <Route path="admin/roles" element={<RequireRole role="superadmin"><AdminRolesPage /></RequireRole>} />
+            <Route path="admin/users" element={<RequireRole role={STAFF}><LazyRoute><AdminUsersPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/emails" element={<RequireRole role={STAFF}><LazyRoute><AdminEmailDashboard /></LazyRoute></RequireRole>} />
+            <Route path="admin/insights" element={<RequireRole role={STAFF}><LazyRoute><AdminInsightsPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/intel" element={<RequireRole role={STAFF}><LazyRoute><AdminIntelPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/analytics" element={<RequireRole role={STAFF}><LazyRoute><AnalyticsHealthPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/generation" element={<RequireRole role={STAFF}><LazyRoute><AdminGenerationPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/audit" element={<RequireRole role={STAFF}><LazyRoute><AdminAuditPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/roles" element={<RequireRole role="superadmin"><LazyRoute><AdminRolesPage /></LazyRoute></RequireRole>} />
 
             {/* /@username — public profiles (static routes above always win) */}
             <Route path=":handle/followers" element={<PublicFollowersPage />} />
@@ -422,7 +455,11 @@ export function App() {
             path={LESSON_ROUTE_PATH}
             element={
               <RequireAuth>
-                <LessonRoute />
+                {/* home="/learn" — a learner stranded here should land on the
+                    shelf, not on the marketing site. */}
+                <LazyRoute home="/learn">
+                  <LessonRoute />
+                </LazyRoute>
               </RequireAuth>
             }
           />

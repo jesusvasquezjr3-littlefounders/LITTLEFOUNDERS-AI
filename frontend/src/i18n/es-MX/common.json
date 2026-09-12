@@ -10,6 +10,14 @@
     "backHome": "Ir al inicio",
     "goBack": "Volver"
   },
+  "routeError": {
+    "title": "Esta pantalla tuvo un problema",
+    "body": "Algo falló al cargar esta parte de la app. No fue algo que hiciste.",
+    "staleTitle": "Hay una versión nueva",
+    "staleBody": "La app se actualizó mientras esta pestaña estaba abierta, por eso esta pantalla no terminó de cargar. Recargar toma la nueva.",
+    "reload": "Recargar",
+    "goHome": "Ir a mis lecciones"
+  },
   "actions": {
     "close": "Cerrar",
     "confirmQuestion": "¿Seguro?",
