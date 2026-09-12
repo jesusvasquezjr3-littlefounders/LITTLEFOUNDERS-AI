@@ -145,6 +145,31 @@ async function main() {
 
   try {
     const page = await openPage(browser, { width: WIDTH, height: HEIGHT, dark: DARK })
+
+    /*
+     * WARM THE DEV SERVER ON THE ROOT ROUTE FIRST, then go to the lab.
+     *
+     * Navigating a cold Vite straight to a lazy route made this gate
+     * unrunnable: the app never mounted, `#root` stayed empty and
+     * `document.readyState` sat at "interactive" for the whole 60-second poll
+     * below, with ZERO console errors and ZERO failed requests to say why —
+     * so the harness reported "No fixtures found in /dev/lesson-lab" and the
+     * only browser-driven gate the Lesson Engine has could not be run at all
+     * on a Windows checkout. (Verified against a clean tree: the failure is
+     * the harness's, not the app's. The same page renders all 57 fixtures in
+     * the same headless browser once Vite is warm.)
+     *
+     * The root route pays for dependency optimisation on a page with nothing
+     * lazy to race, and the lab then loads from a warm server. Cheap, and it
+     * removes a start-up race instead of widening a timeout around it.
+     */
+    const MOUNTED = '(document.getElementById("root") || {innerHTML: ""}).innerHTML.length > 0'
+    await page.send('Page.navigate', { url: `${dev.url}/` })
+    for (let tries = 0; tries < 60; tries += 1) {
+      await sleep(1000)
+      if (await page.evaluate(MOUNTED)) break
+    }
+
     await page.send('Page.navigate', { url: lab })
 
     /*
@@ -170,7 +195,25 @@ async function main() {
 
     for (const fixture of fixtures) {
       const label = fixture.split(/XP |D\d/)[0].slice(0, 24).trim()
-      const row = { label, reachable: true, starts: false, verdict: false, finishes: false, blocked: [] }
+      /*
+       * `errors` and `failedRequests` are initialised HERE, not only on the
+       * happy path below. The early `continue` for "lab card never appeared"
+       * pushed a row without them, and the summary's
+       * `rows.reduce((n, r) => n + r.errors.length, 0)` then threw
+       * `Cannot read properties of undefined` — so the moment a single card
+       * was slow, the gate crashed instead of printing its report or setting
+       * an exit code. A gate that cannot report its own result is not a gate.
+       */
+      const row = {
+        label,
+        reachable: true,
+        starts: false,
+        verdict: false,
+        finishes: false,
+        blocked: [],
+        errors: [],
+        failedRequests: [],
+      }
       const errorsBefore = page.errors.length
       const requestsBefore = page.failedRequests.length
 
@@ -178,10 +221,23 @@ async function main() {
       let card = null
       for (let tries = 0; tries < 18 && !card; tries += 1) {
         await sleep(500)
+        /*
+         * Match the card the SAME WAY the list was built.
+         *
+         * The list above strips the "play_circle" ligature out of each
+         * button's text before recording the fixture name; this finder used to
+         * compare the RAW `textContent`, which still begins with that
+         * ligature, so `startsWith(<clean name>)` was false for every card
+         * whose icon renders before its label — 32 of 57 in the last run. They
+         * were reported as "lab card never appeared", i.e. the harness failing
+         * to find a control that was on the page the whole time, which is
+         * exactly the class of false negative /AGENTS.md §1.14 is about.
+         */
         card = await coords(
           page,
           '[...document.querySelectorAll("button")]' +
-            `.find((n) => n.textContent.trim().startsWith(${JSON.stringify(fixture.slice(0, 22))}))`,
+            '.find((n) => n.textContent.replace("play_circle", "").trim()' +
+            `.startsWith(${JSON.stringify(fixture.slice(0, 22))}))`,
         )
       }
       if (!card) {
