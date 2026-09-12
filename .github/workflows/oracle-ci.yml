@@ -44,4 +44,11 @@ jobs:
       # reaches a network.
       - run: npm test
       - run: npm run verify:tutor
+      # The pedagogy gates were honour-system: verify:tutor was the only one
+      # any workflow invoked, so the controller's guardrails — no thrash, no
+      # repeated rescue, no endless questioning — were asserted by nothing on
+      # a push. Both are free by construction (README: "no network, no model"),
+      # which makes leaving them out of CI a choice with no upside.
+      - run: npm run verify:pedagogy
+      - run: npm run gym:pedagogy
       - run: npm run build

@@ -64,7 +64,10 @@ jobs:
   browser-gates:
     needs: ci
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # ~20 min for lesson-engine, ~8 for tutor-ui, ~10 for a11y, measured on a
+    # developer machine; runners are slower and a timeout kill reads as a
+    # product failure rather than a slow one.
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: frontend
@@ -87,3 +90,10 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
         run: npm run verify:tutor-ui
+      # WCAG A/AA across all 8 stage phases, both themes, desktop and mobile.
+      # A kid using a screen reader is the one learner who cannot tell us the
+      # product is broken, so this is the gate with the quietest failure mode.
+      - name: Tutor a11y — zero WCAG A/AA violations
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run verify:tutor-a11y
