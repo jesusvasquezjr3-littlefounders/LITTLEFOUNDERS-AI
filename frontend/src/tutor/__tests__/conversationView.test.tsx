@@ -145,6 +145,20 @@ function plateHeight(): string {
 }
 
 /**
+ * Whether the board surface is mounted AT ALL.
+ *
+ * It is not, unless there is a board: since 2026-09-12 the plate is gated on
+ * `hasBoard`, because the version that mounted for every conversation was
+ * measured in production at 410x501 with ZERO children for most of a lesson.
+ * Every test below that exercises the SHEET's own mechanics — its detents, the
+ * keyboard borrow, the bottom edge it shares with the dock — therefore has to
+ * give it something to hold first. The mechanics themselves are unchanged.
+ */
+function plateExists(): boolean {
+  return screen.queryByLabelText('Your tutor and your activity') !== null;
+}
+
+/**
  * The one control that moves the sheet by hand.
  *
  * Matched on a fragment, because at PEEK the handle also carries what the sheet
@@ -283,10 +297,12 @@ describe('the live whiteboard (V4)', () => {
    */
   it('raises a resting sheet and renders the board, not the segment panel', () => {
     const { rerender } = render(conversation(makeSocket(), false));
-    expect(plateHeight()).toBe('88px');
+    // No board, no surface: the sheet is not resting at 88px, it does not exist.
+    expect(plateExists()).toBe(false);
 
     rerender(conversation(makeSocket({ turn: WHITEBOARD_TURN }), false));
 
+    expect(plateExists()).toBe(true);
     expect(plateHeight()).not.toBe('88px');
     expect(screen.getByText('Cada día te dan 2 más')).toBeInTheDocument();
     expect(screen.queryByRole('img', { name: /Cada día te dan 2 más/ })).toBeInTheDocument();
@@ -625,8 +641,10 @@ describe('an in-progress rephrase is abandoned once an activity opens', () => {
     const socket = makeSocket({ history: historyWithLearnerLine, editLast, sendText });
     const { rerender } = render(conversation(socket, false));
 
-    // Begin rephrasing the learner's last message.
-    fireEvent.click(resizeHandle());
+    // Begin rephrasing the learner's last message. The transcript that carries
+    // that affordance is a section of the session menu now, not a card in the
+    // sheet, so this is where a learner reaches it.
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
     fireEvent.click(screen.getByRole('button', { name: 'Rephrase this message' }));
     expect(screen.getByPlaceholderText('Rephrase your message…')).toHaveValue(LEARNER_LINE);
 
@@ -852,26 +870,28 @@ describe('answering the adaptation offer', () => {
    * answer is the same wherever the sheet was standing, so it is the same rule.
    */
   it('stands a raised lesson sheet down while the question is up', () => {
-    const { rerender } = render(conversation(makeSocket(), false));
-    // The sheet rests at PEEK, so the learner has to raise it to reach the
-    // states this case is about.
+    // A segment, because the sheet only exists when it is holding something —
+    // and an UNANNOUNCED one, so it still rests at PEEK for the learner to
+    // raise, which is the state this case is about.
+    const board = { segment: SEGMENT };
+    const { rerender } = render(conversation(makeSocket(board), false));
     expect(plateHeight()).toBe('88px');
 
     fireEvent.click(resizeHandle());
     const half = plateHeight();
     expect(half).not.toBe('88px');
 
-    rerender(conversation(makeSocket({ adaptationOffer: OFFER }), false));
+    rerender(conversation(makeSocket({ ...board, adaptationOffer: OFFER }), false));
     expect(plateHeight()).toBe('88px');
 
     // Open the transcript all the way and ask again: the detent it was at makes
     // no difference to the answer.
-    rerender(conversation(makeSocket(), false));
+    rerender(conversation(makeSocket(board), false));
     fireEvent.click(resizeHandle());
     fireEvent.click(resizeHandle());
     expect(plateHeight()).not.toBe(half);
 
-    rerender(conversation(makeSocket({ adaptationOffer: OFFER }), false));
+    rerender(conversation(makeSocket({ ...board, adaptationOffer: OFFER }), false));
     expect(plateHeight()).toBe('88px');
   });
 });
@@ -997,10 +1017,22 @@ const SEGMENT = {
  * 88 px of CLIPPED panel — is how the auto-raise came to be written.
  */
 describe('the resting lesson sheet', () => {
-  it('rests at PEEK rather than taking half the phone the moment it mounts', () => {
+  /*
+   * The stronger answer, since 2026-09-12: with nothing to show there is no
+   * sheet to rest. PEEK still has to earn it the moment a board arrives, which
+   * the next test asserts — but "88 px of chrome over the island for a
+   * conversation that never opens a board" is not a resting state worth
+   * defending, it is the defect the mount gate closed.
+   */
+  it('does not exist at all while there is no board and no activity', () => {
     renderConversation(makeSocket(), { ready: true });
-    expect(plateHeight()).toBe('88px');
-    expect(plateBodyShown()).toBe(false);
+    expect(plateExists()).toBe(false);
+  });
+
+  it('rests at PEEK rather than taking half the phone the moment a board arrives', () => {
+    renderConversation(makeSocket({ turn: WHITEBOARD_TURN }), { ready: true });
+    expect(plateExists()).toBe(true);
+    expect(plateBodyShown()).toBe(true);
   });
 
   it('says what is waiting instead of opening itself over the tutor', () => {
@@ -1064,7 +1096,18 @@ describe('the resting lesson sheet', () => {
    * still its accessible name, so nobody loses the control.
    */
   it('spends no words on the resting row when nothing has arrived', () => {
-    renderConversation(makeSocket(), { ready: true });
+    /*
+     * A whiteboard turn, so the sheet exists to have a resting row at all, and
+     * no SEGMENT, so there is still no activity news for it to carry. A
+     * whiteboard raises the sheet on arrival (the tutor is showing something),
+     * so the learner puts it back down first — which is the only way to reach
+     * a resting row with a board now, and exactly what a learner does.
+     */
+    renderConversation(makeSocket({ turn: WHITEBOARD_TURN }), { ready: true });
+    for (let i = 0; i < 4 && plateHeight() !== '88px'; i += 1) {
+      fireEvent.click(resizeHandle());
+    }
+    expect(plateHeight()).toBe('88px');
     const handle = resizeHandle();
     expect(handle.textContent).not.toContain('Conversation');
     // The chevron is the whole statement, and it is still there.
@@ -1204,9 +1247,25 @@ describe('the tutor says it once', () => {
     expect(face?.closest('[aria-hidden="true"]')).not.toBeNull();
   });
 
-  it('makes the conversation log yield to an activity, without unmounting it', () => {
-    // Two turns of history, so that filtering the LIVE one out still leaves a
-    // log to look at.
+  /*
+   * THE LOG NO LONGER COMPETES WITH THE BOARD, so it no longer has to yield to
+   * it (2026-09-12).
+   *
+   * The `max-h-24 shrink-[999]` cap existed because the transcript and the
+   * activity were siblings in one flex column, splitting whatever height the
+   * plate had: 192 px of history under a question was the difference between a
+   * `Check` control on screen and one past the bottom edge. They are not
+   * siblings any more. The board owns the plate, the transcript is a section of
+   * the session menu with the panel's own scroller, and neither can take height
+   * from the other. The cap has nothing left to protect against.
+   *
+   * What survives is the property the cap was protecting, and it is now
+   * structural rather than arithmetic: the transcript is never UNMOUNTED. It is
+   * a live region and the only place a learner sees what the microphone
+   * actually heard, so `HudDisclosure` hides it and keeps it mounted — the rule
+   * `HudDisclosure.test.tsx` pins directly.
+   */
+  it('keeps the conversation log mounted whether or not a board is up', () => {
     const earlier = [
       { speaker: 'tutor' as const, text: 'Shall we count some coins?', seq: 0 },
       { speaker: 'tutor' as const, text: TUTOR_LINE, seq: 1 },
@@ -1214,19 +1273,12 @@ describe('the tutor says it once', () => {
     const { rerender } = render(
       conversation(makeSocket({ segment: SEGMENT, history: earlier }), true),
     );
-    fireEvent.click(resizeHandle());
-    const log = screen.getByLabelText('Everything said so far');
-    const withActivity = log.parentElement?.className ?? '';
+    const withActivity = screen.getByLabelText('Everything said so far');
 
     rerender(conversation(makeSocket({ history: earlier }), true));
-    const without = screen.getByLabelText('Everything said so far').parentElement?.className ?? '';
 
-    // Capped and able to give the rest back while an exercise is up; free to
-    // take the plate when there is none. Never removed: it is a live region and
-    // the only place a learner sees what the microphone actually heard.
-    expect(withActivity).toContain('max-h-24');
-    expect(withActivity).toContain('shrink-[999]');
-    expect(without).not.toContain('max-h-24');
+    // The same node, across a board arriving and leaving.
+    expect(screen.getByLabelText('Everything said so far')).toBe(withActivity);
   });
 
   /*
@@ -1347,7 +1399,7 @@ describe('the bottom edge the sheet and the microphone share', () => {
      * the screen with nothing underneath it. The shell cannot infer the absence
      * of a surface it was never told about, so the surface has to say so.
      */
-    const view = renderInShell(makeSocket(), true);
+    const view = renderInShell(makeSocket({ segment: SEGMENT }), true);
     const dock = screen.getByRole('group', { name: 'Talk to your tutor' });
     // PEEK (88) + the sheet's own 16 px inset + the 12 px the dock keeps.
     expect(dock.style.bottom).toBe('116px');
@@ -1408,7 +1460,7 @@ describe('the soft keyboard and the lesson plate', () => {
   }
 
   it('gives the plate its height back when the keyboard closes', () => {
-    renderConversation(makeSocket(), { wrapper: withSafeArea });
+    renderConversation(makeSocket({ segment: SEGMENT }), { wrapper: withSafeArea });
 
     // The sheet rests at PEEK, so there is nothing to borrow until a learner
     // has raised it. Raising it is the whole precondition of this test.
@@ -1432,7 +1484,15 @@ describe('the soft keyboard and the lesson plate', () => {
   });
 
   it('leaves a plate the learner moved while typing exactly where they left it', () => {
-    renderConversation(makeSocket(), { wrapper: withSafeArea });
+    /*
+     * A whiteboard rather than a segment, because this case needs THREE
+     * reachable heights and an announced activity only has two: a resting row
+     * that is announcing something opens straight to the detent it can be
+     * answered in (`peekOpensTo`), so peek and full are the only stops. With a
+     * board and no announcement the handle steps through peek, half and full,
+     * which is what "past where it started" requires.
+     */
+    renderConversation(makeSocket({ turn: WHITEBOARD_TURN }), { wrapper: withSafeArea });
 
     // Raised once, so the keyboard has a height to borrow.
     fireEvent.click(resizeHandle());
@@ -1440,10 +1500,18 @@ describe('the soft keyboard and the lesson plate', () => {
     act(() => viewport.resizeTo(Math.round(window.innerHeight / 2)));
     expect(plateHeight()).toBe('88px');
 
-    // The learner drags it back up themselves, past where it started.
+    /*
+     * The learner drags it back up themselves, to somewhere that is neither
+     * minimised nor where the keyboard found it. Driven by the OUTCOME rather
+     * than by a fixed number of clicks: the handle cycles the detents and the
+     * cycle's exact order is `LessonPlate`'s business, not this test's — what
+     * this test is about is that a choice made AFTER the keyboard opened
+     * survives it closing.
+     */
     const handle = resizeHandle();
-    fireEvent.click(handle);
-    fireEvent.click(handle);
+    for (let i = 0; i < 4 && (plateHeight() === '88px' || plateHeight() === resting); i += 1) {
+      fireEvent.click(handle);
+    }
     const chosen = plateHeight();
     expect(chosen).not.toBe('88px');
     expect(chosen).not.toBe(resting);
@@ -1454,7 +1522,7 @@ describe('the soft keyboard and the lesson plate', () => {
   });
 
   it('borrows nothing from a plate that is already resting', () => {
-    renderConversation(makeSocket(), { wrapper: withSafeArea });
+    renderConversation(makeSocket({ segment: SEGMENT }), { wrapper: withSafeArea });
 
     // No clicks: PEEK is where the sheet starts on a phone now.
     expect(plateHeight()).toBe('88px');
@@ -1478,7 +1546,7 @@ describe('the soft keyboard and the lesson plate', () => {
    * deferred until the keyboard actually closes.
    */
   it('does not raise the sheet for an announced segment while the keyboard is still open', () => {
-    const socket = makeSocket();
+    const socket = makeSocket({ segment: SEGMENT });
     const { rerender } = renderConversation(socket, { wrapper: withSafeArea });
 
     // The keyboard opens while the sheet rests at PEEK — an ordinary learner

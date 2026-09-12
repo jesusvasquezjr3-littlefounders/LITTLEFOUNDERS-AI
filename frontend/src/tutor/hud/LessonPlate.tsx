@@ -106,8 +106,30 @@ const DRAG_SLOP_PX = 4;
  * where a learner is least able to see what they pushed off the screen. What
  * the shorter cluster buys is spent on the scene at PEEK and HALF, where the
  * learner actually sits, rather than on 56 px more transcript.
+ *
+ * RAISED TO 348 ON 2026-09-12, because the worst dock got worse by exactly one
+ * row. The session controls — the menu and Finish — used to ride the top-right
+ * corner at every width. At 390 px that corner is the only band the ANCHORED
+ * caption has, and putting controls in it pushed the caption 72 px down and
+ * into the dock; moving them into the dock instead, where a thumb already is
+ * and where the rect is already published, made the dock 48 px taller and the
+ * caption met it from the other side. `verify:tutor-ui` measured every step of
+ * that: 263x49, then 262x33 once the caption dropped its identity row on a
+ * phone with a board up, then 262x19.
+ *
+ * Shaving the caption further was the alternative and it is the wrong one: the
+ * next thing to go would have been the 2D portrait, which is the only mouth
+ * `liruf` and `dina` have and the one channel /ORACLE.md forbids taking from a
+ * deaf learner. The dock grew, so the reserve grows. 48 px, the height of the
+ * row that caused it, plus nothing.
+ *
+ * What it costs, stated rather than discovered later: at 375x812 the FULL
+ * detent goes from 512 px to 464 px. An activity needs 363 px at 390x844
+ * (measured, TUTOR_QA_2026-09-02 D2), so FULL still clears it by a hundred
+ * pixels, and `ACTIVITY_FLOOR_PX` and `DETENT_STEP_PX` below keep the three
+ * detents separated structurally at every viewport regardless.
  */
-const STAGE_RESERVE_PX = 300;
+const STAGE_RESERVE_PX = 348;
 
 /**
  * Found by adversarial review, round 88 (2026-08-31, HIGH). `STAGE_RESERVE_PX`
@@ -742,11 +764,26 @@ export function LessonPlate({
       aria-hidden={standDown ? true : undefined}
       className={cn(
         'pointer-events-auto fixed z-30 flex w-full flex-col overflow-hidden',
-        // Desktop is a COLUMN OF CARDS, not one panel: the frame stops painting
-        // and each zone inside carries its own Lumen (`index.css` →
-        // `.lf-rail-bare`). Mobile keeps the single sheet, which is what a
-        // drag-to-resize surface has to be.
-        desktop && 'lf-rail-bare',
+        /*
+         * ONE SURFACE AT BOTH WIDTHS AGAIN (2026-09-12).
+         *
+         * Desktop used to be a COLUMN OF CARDS — the frame stopped painting,
+         * through a rail-bare class in index.css that is deleted with this
+         * change, and each zone inside carried its own Lumen, because there
+         * were three of them: the
+         * activity, the transcript and the composer. There is one now. The
+         * transcript is a section of the session menu and the composer has one
+         * home in the dock, so the plate holds the board and nothing else — and
+         * a bare frame around a single card is a material that exists to
+         * separate things that are no longer there.
+         *
+         * It is also not optional. Photographed at 1280x900 the moment the
+         * cards came out: the question, its three options and the Check control
+         * were painting straight onto the 3D scene, with the companion
+         * character showing through the middle of the answers. The plate's own
+         * Lumen is what makes a reading surface legible over a moving island —
+         * `HudPlate.test.tsx` re-derives the contrast bound it guarantees.
+         */
         desktop
           ? /*
              * A DOCKED FULL-HEIGHT PANEL (owner sign-off 2026-08-28), replacing
@@ -783,7 +820,24 @@ export function LessonPlate({
              * inset from the corner, four rounded corners, stage visible
              * around and behind it.
              */
-            'right-4 top-20 h-[calc(100vh-11rem)] xl:right-6'
+            /*
+             * CAPPED AT 34rem (2026-09-12), and still DEFINITE.
+             *
+             * The full `calc(100vh-11rem)` was right while the card held three
+             * zones — a board, a transcript and a composer stacked down it. It
+             * holds one now, and a three-option quiz in a 724 px column left
+             * about 400 px of empty Lumen between the last answer and the Check
+             * control: the same "panel with nothing in it" this branch was
+             * meant to cure, wearing a different shape.
+             *
+             * `min()` of two lengths is still a LENGTH, so every percentage bar
+             * inside keeps the definite containing block the comment above says
+             * it cannot live without — which is why this is a cap and not the
+             * `max-h` that put 3/3, 2/2 and 3/3 bars at zero. A board taller
+             * than the cap scrolls in the body's own scroller, with the edge
+             * cue that says so.
+             */
+            'right-4 top-20 h-[min(calc(100vh-11rem),34rem)] xl:right-6'
           : 'inset-x-0 bottom-4 mx-auto motion-safe:transition-[height] motion-safe:duration-300 motion-safe:ease-[var(--lf-ease)]',
         className,
       )}
@@ -920,7 +974,15 @@ export function LessonPlate({
           style={resting ? { display: 'none' } : undefined}
           className={cn(
             'min-h-0 flex-1',
-            desktop ? 'p-0' : 'px-4 pb-4 pt-2 lg:px-5 lg:pb-5',
+            /*
+             * DESKTOP HAS ITS OWN PADDING NOW. It was `p-0` because each card
+             * inside the bare rail brought its own (`px-4 py-3.5`); with the
+             * cards gone the board was painting flush to the plate's rounded
+             * edge — its model-written label touching the top hairline and the
+             * keep control against the right edge. The plate is the reading
+             * surface, so the plate holds the measure.
+             */
+            desktop ? 'px-5 pb-5 pt-4' : 'px-4 pb-4 pt-2 lg:px-5 lg:pb-5',
             bodyLayout === 'column'
               ? // The body does not scroll; one child does. See `bodyLayout`.
                 'flex flex-col gap-3 overflow-hidden'

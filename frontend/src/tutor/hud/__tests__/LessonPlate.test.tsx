@@ -122,20 +122,39 @@ describe('detentHeights, the mobile sheet arithmetic', () => {
     );
   });
 
-  describe('unchanged where it was already correct: portrait phones and desktop-height viewports', () => {
-    it('reproduces the EXACT numbers this file already documents at 375x812, the verify-tutor-ui mobile gate', () => {
+  describe('the portrait phone and desktop-height viewports, byte for byte', () => {
+    /*
+     * THESE NUMBERS MOVED ON 2026-09-12, deliberately and once.
+     *
+     * `STAGE_RESERVE_PX` went from 300 to 348 because the worst dock got worse
+     * by exactly one row: the session controls moved off the top-right corner,
+     * where at 390 px they pushed the ANCHORED caption down into the dock, and
+     * into the dock itself where a thumb already is. The dock grew 48 px, so
+     * the stage reserve grew 48 px — see that constant's own comment for the
+     * three `verify:tutor-ui` measurements that led there and for why shaving
+     * the caption instead was the wrong trade.
+     *
+     * FULL therefore drops 48 (512 -> 464 at 812; 600 -> 552 at 900). HALF
+     * drops ONE pixel at 812 and none at 900, which is worth understanding
+     * rather than pattern-matching: HALF is the /DESIGN.md 45vh fraction
+     * CLAMPED to `ceiling - DETENT_STEP_PX`. At 812 the fraction is 365 and the
+     * new clamp is 364, so the clamp now binds by a pixel; at 900 the fraction
+     * (405) is still well under its clamp (452) and is untouched.
+     *
+     * Asserted exactly, byte for byte, so the next change to the reserve or to
+     * the short-viewport branch cannot quietly nudge the portrait case without
+     * this test noticing — which is the job it has always had.
+     */
+    it('reproduces the EXACT numbers at 375x812, the verify-tutor-ui mobile gate', () => {
       setViewportHeight(812);
-      // These are not new: `STAGE_RESERVE_PX`'s own comment states FULL lands
-      // "about 63vh" on this exact phone (512 / 812 = 63.05%), and HALF is the
-      // un-clamped /DESIGN.md fraction (round(812 * 0.45)). Asserted exactly,
-      // byte for byte, so a future change to the short-viewport branch cannot
-      // quietly nudge the portrait case without this test noticing.
-      expect(detentHeights()).toEqual({ peek: 88, half: 365, full: 512 });
+      expect(detentHeights()).toEqual({ peek: 88, half: 364, full: 464 });
     });
 
     it('reproduces the same numbers at 1280x900, the verify-tutor-ui desktop-height gate', () => {
       setViewportHeight(900);
-      expect(detentHeights()).toEqual({ peek: 88, half: 405, full: 600 });
+      // HALF is untouched here: the 45vh fraction (405) is well under its
+      // clamp (552 - 100), so only FULL moves with the reserve.
+      expect(detentHeights()).toEqual({ peek: 88, half: 405, full: 552 });
     });
   });
 

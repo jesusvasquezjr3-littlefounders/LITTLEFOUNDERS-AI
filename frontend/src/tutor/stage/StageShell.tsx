@@ -618,8 +618,30 @@ function StageShellInner({
    * extra render per route, not per frame.
    */
   const attachAbove = useCallback((node: HTMLDivElement | null) => setAbove(node), []);
-  const attachHeader = useCallback((node: HTMLDivElement | null) => setHeader(node), []);
   const attachHeaderPanel = useCallback((node: HTMLDivElement | null) => setHeaderPanel(node), []);
+
+  /*
+   * THE HEADER ROW'S RIGHT-HAND GROUP IS BOTH A SLOT AND A MEASURED RECT.
+   *
+   * The exit chip has been in the shared chrome registry since the day an
+   * anchored caption and a fixed chip both claimed the top-left corner. The
+   * right-hand group never was, which was harmless while it was desktop-only:
+   * the desktop caption is CSS-docked at `top-20` and clears the row by
+   * construction. Anything that puts controls there at phone width, where the
+   * caption is ANCHORED, needs the band published or the caption lands under
+   * them.
+   *
+   * One callback rather than two refs on one node, because
+   * `SafeAreaContext.measure` returns a fresh function per render and a ref
+   * whose identity changes detaches and re-registers the node on every one.
+   */
+  const measureHeader = safeArea?.measure('header');
+  const measureHeaderRef = useRef(measureHeader);
+  measureHeaderRef.current = measureHeader;
+  const attachHeaderRow = useCallback((node: HTMLDivElement | null) => {
+    setHeader(node);
+    measureHeaderRef.current?.(node);
+  }, []);
   const attachBelow = useCallback((node: HTMLDivElement | null) => setBelow(node), []);
 
   /*
@@ -802,9 +824,26 @@ function StageShellInner({
             row is the shell's. Empty until a layer fills it, and it takes no
             space and no pointer events while it is.
           */}
+          {/*
+            IT PUBLISHES ITS RECTANGLE TOO, and until 2026-09-12 only its
+            left-hand neighbour did.
+
+            The exit chip has been in the shared chrome registry since the day
+            an anchored caption and a fixed chip both claimed the top-left
+            corner. The right-hand group was never registered, which was
+            harmless while it was desktop-only — the desktop caption is
+            CSS-docked at `top-20` and clears the row by construction. The
+            moment the session controls came back to the phone, the anchored
+            caption had nothing to escape and the Menu chip landed across
+            "Dr. Rho" and the first line of what the tutor was saying.
+
+            Registered on the GROUP rather than on each chip: what an anchored
+            node has to clear is the band, and one rect it can be displaced out
+            of is a better answer than two it has to solve simultaneously.
+          */}
           <div
-            ref={attachHeader}
-            className="pointer-events-none ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2"
+            ref={attachHeaderRow}
+            className="pointer-events-none ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2 empty:hidden"
           />
         </div>
 

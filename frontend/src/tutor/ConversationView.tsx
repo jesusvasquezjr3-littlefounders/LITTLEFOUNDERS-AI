@@ -298,6 +298,20 @@ export function ConversationView({
   const segmentId = socket.segment?.segmentId ?? null;
   const ended = socket.closedReason !== null || socket.connection === 'closed';
 
+  /**
+   * Whether there is anything to put on the board surface at all.
+   *
+   * This is the condition the lesson plate is now MOUNTED on, and it is the
+   * whole of the desktop rail's story. The plate used to render for the entire
+   * conversation, `inset-y-0 right-0`, whether or not it had anything in it —
+   * measured in production at 410x501 with a 425 px reading plate holding ZERO
+   * children, for most of every lesson, over the island the route exists to
+   * show. A panel that is on screen with nothing in it is not a neutral
+   * container; it is the product telling a child that the interesting part is
+   * elsewhere.
+   */
+  const hasBoard = socket.segment !== null || turn?.whiteboard != null;
+
   /*
    * THE GLOBAL SPACE-BAR LISTENER IS GONE, and removing it is the fix rather
    * than a regression. It used to hold the microphone from anywhere on the page
@@ -640,17 +654,34 @@ export function ConversationView({
    * quiet caption as the rest would lose the distinction this collapse exists
    * to protect.
    */
-  const statusLine: { text: string; loud: boolean } | null = resuming
-    ? { text: t('tutor.conversation.reconnecting'), loud: false }
-    : replyTimedOut
-      ? { text: t('tutor.conversation.replyTimeout'), loud: false }
-      : socket.budget === 'wrapping'
-        ? { text: t('tutor.conversation.wrappingUp'), loud: true }
-        : awaitingReply
-          ? { text: t('tutor.mic.thinking'), loud: false }
-          : socket.intelDegraded
-            ? { text: t('tutor.conversation.gettingToKnowYou'), loud: false }
-            : null;
+  const statusLine: { text: string; loud: boolean } | null = ended
+    ? { text: t('tutor.conversation.ended'), loud: false }
+    : resuming
+      ? { text: t('tutor.conversation.reconnecting'), loud: false }
+      : replyTimedOut
+        ? { text: t('tutor.conversation.replyTimeout'), loud: false }
+        : socket.budget === 'wrapping'
+          ? { text: t('tutor.conversation.wrappingUp'), loud: true }
+          : awaitingReply
+            ? { text: t('tutor.mic.thinking'), loud: false }
+            : !hasBoard && turn?.next === 'segment'
+              ? { text: t('tutor.conversation.listening'), loud: false }
+              : socket.intelDegraded
+                ? { text: t('tutor.conversation.gettingToKnowYou'), loud: false }
+                : null;
+
+  /**
+   * The learner's own last words, as the microphone heard them.
+   *
+   * The transcript is where this used to be read, and the transcript is now
+   * inside the session menu — which is `hidden` while it is closed, so nothing
+   * in it reaches a screen reader. For a learner who TYPED that is no loss;
+   * for one who SPOKE it would remove the only confirmation that they were
+   * heard correctly, which on a voice product is the difference between a
+   * tutor that misunderstood and a microphone that did.
+   */
+  const lastLearnerLine =
+    [...socket.history].reverse().find((entry) => entry.speaker === 'learner')?.text ?? null;
 
   const adaptation = socket.adaptationOffer;
   const adaptationQuestion = adaptation ? t(`tutor.adaptationOffer.${adaptation}`) : '';
@@ -927,6 +958,34 @@ export function ConversationView({
           because tearing the socket down mid-turn records a deliberate restart
           as `learner_left`.
         */}
+        {/*
+          WHAT WE SAID, and this is where the transcript lives now.
+
+          It was a card in the desktop rail and a block in the mobile sheet,
+          and in both it was the surface that got whatever height was left:
+          measured in production at 74 px holding 140 px of content after
+          exactly two messages, with the tutor's own first sentence clipped
+          mid-word. A log that can only ever show its last line and a half is
+          not a record, it is a tease.
+
+          Here it gets the panel's own scroller and its full natural height,
+          and it costs nothing when nobody asks for it. `HudDisclosure` keeps
+          it MOUNTED while closed, so its scroll position and its state
+          survive being put away.
+        */}
+        <TutorTranscript
+          history={socket.history}
+          spokenSeq={turn ? turnSeq : null}
+          label={t('tutor.conversation.transcriptLabel')}
+          /*
+           * No edit affordance while a board is open — same reasoning as the
+           * repair chip: mid-activity, rewinding the conversation is not a
+           * flow we honour.
+           */
+          onEditLast={ended || hasBoard ? undefined : beginEdit}
+          editLabel={t('tutor.conversation.editMessage')}
+        />
+
         {confirmingRestart ? (
           <div className="flex flex-wrap items-center gap-2">
             <span className="lf-action min-w-0 flex-1 text-content">
@@ -979,12 +1038,13 @@ export function ConversationView({
         label={t('tutor.session.label')}
         icon="menu"
         /*
-         * The shell's header-panel host, which hangs just below the row this
-         * trigger sits in. With no shell — the test suite mounts this layer
-         * bare, and so does the lab — the panel renders IN PLACE, which is a
-         * first-class state of the primitive rather than a fallback.
+         * The panel opens where its trigger is. On desktop that is the shell's
+         * header-panel host, hanging just below the row. On a phone the trigger
+         * rides the dock, so the panel renders IN PLACE — growing upward out of
+         * the dock column, which is a first-class state of the primitive rather
+         * than a fallback, and the same thing that happens with no shell at all.
          */
-        host={dock?.headerPanel ?? null}
+        host={desktop ? (dock?.headerPanel ?? null) : null}
         open={sessionOpen}
         onOpenChange={setSessionOpen}
       >
@@ -1023,36 +1083,64 @@ export function ConversationView({
    * twice, so the slot is an ENHANCEMENT and never a precondition.
    */
   /*
-   * DESKTOP PUTS THEM IN THE SKY; MOBILE PUTS THEM BACK ON THE PANEL.
+   * THE HEADER ROW AT BOTH WIDTHS NOW, and the collapse above is what paid
+   * for it.
    *
-   * The study has no mobile pass for this HUD — its own notes say so — and
-   * deriving one is what /DESIGN.md warns against for exactly this surface.
-   * Photographed at 390px: five chips beside the exit chip wrap onto a second
-   * row and land across the speech card. So above `lg:` they take the shell's
-   * header row, which is where the study puts them and where there is room;
-   * below it they go back to the panel's OWN header row, which exists on that
-   * breakpoint anyway because it doubles as the drag handle. One set of chips,
-   * two homes, and no third rendering of them.
+   * These chips used to go back onto the plate's own header row below `lg:`,
+   * because five chips beside the exit chip wrapped onto a second row and
+   * landed across the speech card at 390 px. Two do not — and the plate they
+   * were falling back to is no longer always mounted, so a fallback that
+   * depends on it would take the only way to END a session off screen for
+   * every conversation that never opens a board.
+   *
+   * AND THE LAST-RESORT RENDERING IS NO LONGER DESKTOP-ONLY. It used to be
+   * `!desktop ? null : createPortal(...)`, which was correct while the phone
+   * had the plate to fall back on and became a hole the moment it did not: a
+   * consumer with no shell (the test suite mounts this layer bare, and so does
+   * the lab) lost "Finish" entirely at phone width. A portal whose target is
+   * missing renders NOTHING, silently, and a control that can vanish because a
+   * layout slot was absent is the shape of bug this route has already shipped
+   * twice. The slot is an ENHANCEMENT and never a precondition — at either
+   * width.
    */
-  const inStageHeader = desktop && dock?.header ? dock.header : null;
-  const headerGroup = inStageHeader
-    ? createPortal(headerChips, inStageHeader)
+  /*
+   * DESKTOP PUTS THEM IN THE SKY; THE PHONE PUTS THEM UNDER THE THUMB.
+   *
+   * Both homes are the shell's, and which one is not a taste. At 1280 px the
+   * top-right corner is empty sky and the caption is CSS-docked at `top-20`,
+   * clear of it by construction. At 390 px that corner is the only band the
+   * ANCHORED caption has: measured by `verify:tutor-ui`, the session controls
+   * there pushed the caption 72 px down and straight into the microphone dock
+   * (263x49 px) — this file already records the identical failure once, when a
+   * two-line breadcrumb grew the caption into the dock by 308x43.
+   *
+   * So on a phone they ride the dock, with the orb and the composer. That is
+   * where a thumb already is, the dock publishes its own rect so the caption
+   * escapes it for free, and the top edge goes back to carrying one thing: the
+   * way out.
+   */
+  const headerHome = desktop ? (dock?.header ?? null) : (dock?.above ?? null);
+  const headerGroup = headerHome
+    ? createPortal(
+        <div className="pointer-events-auto flex shrink-0 flex-wrap items-center justify-center gap-2">
+          {headerChips}
+        </div>,
+        headerHome,
+      )
     : /*
-       * The last-resort rendering, for a consumer that mounts this layer with
-       * neither a stage header nor a plate — the test suite does exactly that.
-       * These five controls include the only way to END a session: a portal
-       * with no target renders NOTHING, silently, and a control that can vanish
-       * because a layout slot was absent is the shape of bug this route has
-       * already shipped twice.
+       * The last-resort rendering, for a consumer with no shell at all — the
+       * test suite mounts this layer bare, and so does the lab. A portal whose
+       * target is missing renders NOTHING, silently, and these controls include
+       * the only way to END a session: a control that can vanish because a
+       * layout slot was absent is the shape of bug this route has already
+       * shipped twice, so the slot is an ENHANCEMENT and never a precondition.
        */
-      !desktop
-      ? null
-      : createPortal(
-          <div className="pointer-events-none fixed right-4 top-4 z-50 flex flex-wrap items-center justify-end gap-2 md:right-6 md:top-6">
-            {headerChips}
-          </div>,
-          document.body,
-        );
+      createPortal(
+        <div className="pointer-events-none fixed right-4 top-4 z-50 flex flex-wrap items-center justify-end gap-2 md:right-6 md:top-6">
+          {headerChips}
+        </div>,
+        document.body,
+      );
 
   return (
     <>
@@ -1149,17 +1237,36 @@ export function ConversationView({
              * (removed below): a second surface for a fact that belongs beside
              * the face saying it.
              */
-            speaker={{
-              name: t(`tutor.character.${session.character}.name`),
-              lesson:
-                socket.lesson !== null
-                  ? (socket.lesson.topic !== null ? `${socket.lesson.topic} · ` : '') +
-                    t('tutor.conversation.lessonThread', {
-                      step: socket.lesson.step,
-                      of: socket.lesson.of,
-                    })
-                  : null,
-            }}
+            /*
+             * NO IDENTITY ROW ON A PHONE WITH A BOARD UP, and this file has
+             * made the same trade once already: the lesson breadcrumb is
+             * `hidden lg:inline` because two wrapped lines of it grew the
+             * caption into the microphone dock by 308x43 px.
+             *
+             * Same band, same arithmetic. At 390 px with the sheet at FULL the
+             * stage keeps `STAGE_RESERVE_PX` = 300, and that 300 now has to
+             * hold the caption AND a dock carrying the orb, the composer and
+             * the session controls. `verify:tutor-ui` measured the shortfall at
+             * 262x33. The NAME is the part that goes: the speaker's portrait is
+             * beside it, articulating, and the 3D character is behind — a child
+             * who can see two faces does not need the word "Dr. Rho" to know
+             * who is talking. The words never move.
+             */
+            speaker={
+              !desktop && hasBoard
+                ? null
+                : {
+                    name: t(`tutor.character.${session.character}.name`),
+                    lesson:
+                      socket.lesson !== null
+                        ? (socket.lesson.topic !== null ? `${socket.lesson.topic} · ` : '') +
+                          t('tutor.conversation.lessonThread', {
+                            step: socket.lesson.step,
+                            of: socket.lesson.of,
+                          })
+                        : null,
+                  }
+            }
             turnSeq={turnSeq}
             face={face}
             docked={docked}
@@ -1272,141 +1379,75 @@ export function ConversationView({
         into the dock below, where nothing the camera does can clip it.
       */}
 
-      <LessonPlate
-        header={inStageHeader ? undefined : headerChips}
-        label={t('tutor.conversation.plateLabel')}
-        resizeLabel={t('tutor.conversation.resizePanel')}
-        /*
-         * OUT OF THE WAY WHILE THE TUTOR IS WAITING ON A YES OR NO. Hidden,
-         * never unmounted: a half-answered exercise keeps its state, and the
-         * sheet comes back at PEEK the moment the question is answered. See the
-         * offer effect above for what the reviewer measured without it.
-         */
-        standDown={adaptation !== null}
-        detent={detent}
-        onDetentChange={changeDetent}
-        onFootprint={publishFootprint}
-        /*
-         * And the OTHER axis: whether the corner is occupied, which is what
-         * decides where the microphone stands at 1280 px. It is the plate's
-         * fact and not the phase's — an adaptation question is still
-         * `conversing` with the plate standing down.
-         */
-        onCornerHeld={dock?.setCornerPlate}
-        peekLabel={peekLabel}
-        peekStatus={peekStatus}
-        /*
-         * ONE TAP ON "AN ACTIVITY IS WAITING" LANDS SOMEWHERE IT CAN BE DONE.
-         *
-         * HALF is the next detent up and it is the right one for a learner who
-         * just wants to see the conversation. It is the wrong one for an
-         * exercise: at 375x812 it leaves about 90 px between the pinned prompt
-         * and the pinned check control. The row that announces the activity
-         * opens to the detent the activity is answerable in, and the learner can
-         * still drag it anywhere afterwards.
-         */
-        peekOpensTo="full"
-        /*
-         * THE BODY IS A COLUMN, NOT A SCROLLER (2026-08-22).
-         *
-         * Exactly one child below owns the free height and scrolls — the
-         * activity while there is one, the conversation log while there is not.
-         * Everything else is `shrink-0`. That is what keeps a question and its
-         * answers on screen together on the exercise types that are taller than
-         * the plate (`LessonPlate` -> `bodyLayout`, `LiveSegmentPanel`).
-         */
-        bodyLayout="column"
-      >
-        {/*
-          NO SECOND PRINTING OF THE LIVE LINE HERE (2026-08-22, /DESIGN.md
-          §Lumen → *One line, one printing, two channels*).
+      {/*
+        THE BOARD SURFACE, AND IT ONLY EXISTS WHEN THERE IS A BOARD.
+        See `hasBoard` for what the always-mounted version cost.
 
-          The plate used to open with the 2D bubble: the tutor's head beside the
-          exact sentence the caption was already carrying 252 px above it. Both
-          channels the owner asked for survive — the words and the moving mouth
-          are in the caption together now — and what the plate got back is the
-          132 px that sentence was costing the exercise underneath it.
-        */}
-        {/*
-          THE SESSION'S ONE STATUS LINE. See `statusLine` above for the
-          precedence and for what the five stacked paragraphs cost.
-
-          KEYED ON THE SENTENCE, which is how this codebase already makes a
-          live region announce reliably (`LiveSegmentPanel`'s round-87 fix): a
-          changed `key` REMOUNTS the node, and a freshly inserted
-          `role="status"` is announced, where an `aria-live` region whose text
-          merely mutates is not dependably read.
-
-          Keyed rather than always-mounted, and that is the deliberate half. An
-          empty region left in the document for the whole session would be a
-          SECOND nameless `role="status"` beside `LiveSegmentPanel`'s, and two
-          nameless live regions give a screen-reader user no way to tell which
-          one just spoke. Absent when there is nothing to say, there is only
-          ever one.
-
-          The thinking state reaches a learner who TYPED through this line; the
-          orb carries it for one who spoke. Neither repeats the other, which is
-          what the collapse bought.
-        */}
-        {statusLine && (
-          <p
-            key={statusLine.text}
-            role="status"
-            className={cn(
-              'shrink-0',
-              statusLine.loud
-                ? 'lf-body rounded-md bg-warning-soft px-3 py-2 text-content'
-                : 'lf-caption text-content-muted',
-            )}
-          >
-            {statusLine.text}
-          </p>
-        )}
-
-        {socket.segment ? (
-          <RailCard desktop={desktop} className="flex-auto">
-          <BoardFrame>
-          <LiveSegmentPanel
-            live={socket.segment}
-            token={token}
-            onGraded={socket.reportGrade}
-            onXpAwarded={addXp}
-            // v3: a turn may carry tray-demonstration steps for the open activity.
-            demo={turn?.demonstrate ? { seq: turn.seq, steps: turn.demonstrate } : null}
-            // A `story` family segment has no character layer of its own here —
-            // see `LiveSegmentPanel`'s own doc comment. Bubbled straight up:
-            // this layer does not drive the scene (see the file header note
-            // above), so the cue passes through to whoever does, one level up.
-            onCharacterCue={onCharacterCue}
-            // The one child of the column that takes the free height and scrolls.
-            className="min-h-0 flex-auto"
-          />
-          </BoardFrame>
-          </RailCard>
-        ) : turn?.whiteboard ? (
+        What is inside it is now the board and nothing else. It used to be a
+        stack: a status paragraph or five, a framed card with a generic
+        "Interactive whiteboard" header and a permanently-lit "Live activity"
+        badge, the exercise, an "explain it another way" chip, the whole
+        transcript in a second card, and the composer in a third. Six surfaces
+        of chrome around one drawing. The status line and the chip ride the
+        dock, the transcript is a section of the session menu, the composer has
+        one home at both widths, and the board's own model-written label is the
+        only title it needs.
+      */}
+      {hasBoard && (
+        <LessonPlate
           /*
-            V4: THE LIVE WHITEBOARD. A graded segment always wins the plate if
-            one is somehow also present (the orchestrator's own schema refuses
-            a turn carrying both, so this is a belt-and-braces resolution, not
-            the common case). Otherwise this is exactly the surface the owner
-            asked for: the numbers the tutor is narrating, growing on screen as
-            it speaks, instead of an unrelated activity sitting beside plain
-            text.
-          */
-          <>
-            <RailCard desktop={desktop} className="flex-auto">
-            <BoardFrame>
-              <TutorWhiteboard
-                board={turn.whiteboard}
-                seq={turn.seq}
-                className="min-h-0 flex-auto"
-              />
-            </BoardFrame>
+           * NO HEADER CHIPS HERE ANY MORE. The session controls have ONE home
+           * now — the shell's header row, or the fallback portal when there is
+           * no shell — and passing them here as well rendered them twice for
+           * any consumer without a dock: once in the fallback and once on the
+           * plate's own handle row.
+           */
+          label={t('tutor.conversation.plateLabel')}
+          resizeLabel={t('tutor.conversation.resizePanel')}
+          /*
+           * OUT OF THE WAY WHILE THE TUTOR IS WAITING ON A YES OR NO. Hidden,
+           * never unmounted: a half-answered exercise keeps its state, and the
+           * sheet comes back at PEEK the moment the question is answered.
+           */
+          standDown={adaptation !== null}
+          detent={detent}
+          onDetentChange={changeDetent}
+          onFootprint={publishFootprint}
+          /*
+           * And the OTHER axis: whether the corner is occupied, which is what
+           * decides where the microphone stands at 1280 px. It is the plate's
+           * fact and not the phase's — and now that the plate is mounted only
+           * with a board, the claim is automatically false the rest of the
+           * time, which is the answer the dock always wanted.
+           */
+          onCornerHeld={dock?.setCornerPlate}
+          peekLabel={peekLabel}
+          peekStatus={peekStatus}
+          peekOpensTo="full"
+          bodyLayout="column"
+        >
+          {socket.segment ? (
+            <LiveSegmentPanel
+              live={socket.segment}
+              token={token}
+              onGraded={socket.reportGrade}
+              onXpAwarded={addXp}
+              // v3: a turn may carry tray-demonstration steps for the open activity.
+              demo={turn?.demonstrate ? { seq: turn.seq, steps: turn.demonstrate } : null}
+              // A `story` family segment has no character layer of its own here —
+              // see `LiveSegmentPanel`'s own doc comment. Bubbled straight up:
+              // this layer does not drive the scene, so the cue passes through to
+              // whoever does, one level up.
+              onCharacterCue={onCharacterCue}
+              className="min-h-0 flex-auto"
+            />
+          ) : turn?.whiteboard ? (
+            <>
+              <TutorWhiteboard board={turn.whiteboard} seq={turn.seq} className="min-h-0 flex-auto" />
               {/*
-                INSIDE THE CARD IT ACTS ON. On the bare rail it sat in the gap
-                BETWEEN two cards, over the stage, reading as a stray link
-                rather than as this board's own control — and what it keeps is
-                this board.
+                THE BOARD'S OWN CONTROL, under the board it keeps. On the bare
+                rail it sat in the gap BETWEEN two cards, over the stage,
+                reading as a stray link rather than as this drawing's control.
               */}
               <NotebookKeepButton
                 key={turn.seq}
@@ -1414,92 +1455,10 @@ export function ConversationView({
                 sessionId={session.sessionId}
                 turnSeq={turn.seq}
               />
-            </RailCard>
-          </>
-        ) : ended ? (
-          <p className="shrink-0 lf-body text-content-muted" role="status">
-            {t('tutor.conversation.ended')}
-          </p>
-        ) : (
-          turn?.next === 'segment' && (
-            <p className="shrink-0 lf-body text-content-muted" role="status">
-              {t('tutor.conversation.listening')}
-            </p>
-          )
-        )}
-
-        {/*
-          THE RECORD, AND IT YIELDS TO THE ACTIVITY.
-
-          `spokenSeq` keeps the live line out of the log — the caption above the
-          speaker's crown is where the present tense lives, and a log that also
-          carries it is a log catching up with itself. `compact` is the other
-          half: with an exercise on the plate the learner is answering a
-          question, and 192 px of history under it was the difference between a
-          `Check` control on screen and a `Check` control past the bottom edge
-          (measured at 1280x800 in es-MX). It is capped, never hidden — it is a
-          live region, and the only place a learner ever sees what the
-          microphone actually heard.
-        */}
-        {/*
-          ONE TAP FOR "I DIDN'T GET THAT". Shown once the lesson is properly
-          under way and the tutor is between turns — never over an activity,
-          where the learner has a task, and never while a reply is in flight.
-        */}
-        {turn && turnSeq > 1 && !socket.segment && !awaitingReply && !ended && (
-          <HudPlate
-            as="button"
-            shape="chip"
-            onClick={askDifferently}
-            className="pointer-events-auto shrink-0 self-start"
-          >
-            <span className="lf-action">{t('tutor.conversation.explainDifferently')}</span>
-          </HudPlate>
-        )}
-
-        <RailCard desktop={desktop} className="min-h-0 flex-auto">
-        <TutorTranscript
-          history={socket.history}
-          spokenSeq={turn ? turnSeq : null}
-          /*
-            An open activity wins the height on EVERY breakpoint. The old
-            exemption assumed the docked panel "has the height for both", and
-            it does not: the panel is full-viewport-height but the transcript
-            keeps flex-auto at the same shrink factor, so the answers scroller
-            and the log split the shortfall and the exercise squeezes against
-            its own Check button — which is what the owner saw as "elements
-            overlapping". The transcript stays mounted (its live region keeps
-            announcing the learner's speech) and returns the moment the
-            activity is graded.
-          */
-          compact={socket.segment !== null || turn?.whiteboard != null}
-          label={t('tutor.conversation.transcriptLabel')}
-          /*
-           * No edit affordance while an activity is open — same reasoning as
-           * the explain-differently chip: mid-activity, rewinding the
-           * conversation is not a flow we honour, and in the compacted log
-           * the pencil was a control that existed but sat scrolled out of a
-           * 96 px window, which the reachability gate rightly flagged.
-           */
-          onEditLast={ended || socket.segment !== null || turn?.whiteboard != null ? undefined : beginEdit}
-          editLabel={t('tutor.conversation.editMessage')}
-        />
-        </RailCard>
-
-        {/*
-          ON DESKTOP THE COMPOSER LIVES IN THE PANEL — conversation, activity
-          and the way to answer, one ordered column (owner sign-off
-          2026-08-28). On a phone it stays in the shell's dock beside the orb,
-          where the sheet's footprint keeps it above the bottom edge. Absent
-          during an adaptation offer in both homes, for the same reason: a
-          yes-or-no already has both its answers on screen.
-        */}
-        {desktop && !adaptation && (
-          <RailCard desktop className="shrink-0 !py-2.5">
-            {composer}
-          </RailCard>
-        )}
-      </LessonPlate>
+            </>
+          ) : null}
+        </LessonPlate>
+      )}
 
       {/*
         THE ROWS THAT RIDE WITH THE MICROPHONE.
@@ -1556,20 +1515,93 @@ export function ConversationView({
           </HudPlate>
         )}
 
+        {/*
+          ONE TAP FOR "I DIDN'T GET THAT". It used to sit in the plate, which
+          is why it disappeared for the whole of every conversation that never
+          opened one. It is the child's own repair action — the only one they
+          have when a sentence did not land — so it belongs beside the
+          microphone, in the band that is always there.
+
+          Shown once the lesson is properly under way and the tutor is between
+          turns: never over a board, where the learner has a task, and never
+          while a reply is in flight.
+        */}
+        {turn && turnSeq > 1 && !hasBoard && !awaitingReply && !ended && (
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={askDifferently}
+            className="pointer-events-auto lf-focus shrink-0"
+          >
+            <span className="lf-action">{t('tutor.conversation.explainDifferently')}</span>
+          </HudPlate>
+        )}
+
+        {/*
+          THE SESSION'S ONE STATUS LINE, and it rides the dock now rather than
+          the plate. See `statusLine` for the precedence and for what five
+          stacked paragraphs cost; it moved here for the same reason the chip
+          above did — the plate it used to live in is no longer always there.
+
+          KEYED ON THE SENTENCE, which is how this codebase already makes a
+          live region announce reliably (`LiveSegmentPanel`'s round-87 fix): a
+          changed `key` REMOUNTS the node, and a freshly inserted
+          `role="status"` is announced, where an `aria-live` region whose text
+          merely mutates is not dependably read. Keyed rather than
+          always-mounted, so there is never a second nameless live region for a
+          screen-reader user to disambiguate against the board's own.
+
+          The thinking state reaches a learner who TYPED through this line; the
+          orb carries it for one who spoke. Neither repeats the other.
+        */}
+        {statusLine && (
+          <p
+            key={statusLine.text}
+            role="status"
+            className={cn(
+              'shrink-0 text-center',
+              statusLine.loud
+                ? 'lf-lumen lf-body rounded-md bg-warning-soft px-3 py-2 text-content'
+                : 'lf-caption text-content-muted',
+            )}
+          >
+            {statusLine.text}
+          </p>
+        )}
+
+        {/*
+          WHAT THE MICROPHONE HEARD, for a screen reader only.
+          The visible transcript is a section of the session menu, and a closed
+          disclosure is `hidden`, so nothing inside it reaches assistive tech.
+          A learner who typed loses nothing by that; a learner who SPOKE would
+          lose the only confirmation that they were heard correctly, which is
+          the difference between a tutor who misunderstood and a microphone
+          that did.
+        */}
+        {lastLearnerLine && (
+          <span key={lastLearnerLine} role="status" className="sr-only">
+            {lastLearnerLine}
+          </span>
+        )}
       </DockSlot>
 
       {/*
-        The phone's home for the composer: the shell's dock, beside the orb.
+        THE COMPOSER HAS ONE HOME NOW, at both widths: the shell's dock, beside
+        the orb, where the sheet's footprint keeps it above the bottom edge.
+
+        On desktop it used to be the third card down inside the rail — which
+        meant the way to answer the tutor moved house at 1024 px, and vanished
+        entirely on any desktop conversation that never opened a board. One
+        home, always present, is what "the one channel that cannot be taken
+        away" actually requires.
+
         Suppressed at the PORTAL for the length of a yes-or-no (both answers
         are already on screen; a third way to answer a closed question costs
         56 px of a small screen) — React keeps the field's state either way.
-        On desktop it is not rendered here at all; the docked panel holds it.
       */}
-      {!desktop && (
-        <DockSlot dock={dock} target={adaptation ? null : (dock?.below ?? null)}>
-          {composer}
-        </DockSlot>
-      )}
+      <DockSlot dock={dock} target={adaptation ? null : (dock?.below ?? null)}>
+        {composer}
+      </DockSlot>
     </>
   );
 }
@@ -1604,81 +1636,20 @@ function DockSlot({
   return createPortal(children, target);
 }
 
-/**
- * THE BOARD'S OWN CHROME — the design study's "Pizarrón Interactivo" header.
- *
- * The activity used to sit in the panel as bare content: a question, some
- * answers, a Check button, with nothing saying it was a BOARD or where it
- * started. The study frames it — a tinted icon tile, a title, a status word,
- * and a hairline rule under the lot — and that frame is most of why its right
- * column reads as an instrument rather than as loose controls.
- *
- * It wraps rather than replaces: every renderer inside it is the lesson
- * engine's own (`LiveSegmentPanel` reuses the real registry), so this adds a
- * header and a rule and touches nothing about how an exercise is played or
- * graded.
- */
-function BoardFrame({ children }: { children: ReactNode }) {
-  const { t } = useTranslation();
-  return (
-    <section className="flex min-h-0 flex-auto flex-col gap-3">
-      <div className="flex shrink-0 items-center gap-2.5 border-b border-content/10 pb-2.5">
-        <span className="lf-tile h-7 w-7 text-accent">
-          <Icon name="widgets" className="!text-[16px]" />
-        </span>
-        <span className="min-w-0">
-          <span className="lf-action block truncate text-content">
-            {t('tutor.conversation.boardTitle')}
-          </span>
-        </span>
-        <span className="ml-auto flex shrink-0 items-center gap-1.5">
-          <span className="lf-live-emerald" aria-hidden />
-          <span className="lf-caption text-content-muted">
-            {t('tutor.conversation.boardLive')}
-          </span>
-        </span>
-      </div>
-      {children}
-    </section>
-  );
-}
 
-/**
- * ONE CARD IN THE RIGHT RAIL.
+/*
+ * `BoardFrame` AND `RailCard` ARE GONE (2026-09-12).
  *
- * The study's rail is a column of SEPARATE cards with the stage showing
- * through the gap between them — the board is one, the quick-ask input is
- * another. Ours had the board, the conversation and the composer stacked
- * inside a single sheet, which is why they read as one undivided slab however
- * carefully the sheet itself was styled.
+ * `BoardFrame` was the board's chrome: a tinted `widgets` tile, the title
+ * "Interactive whiteboard", and a pulsing dot beside the words "Live
+ * activity" — about 50 px off the top of every drawing, saying the same thing
+ * in every state on a surface that only ever exists while it is live. The
+ * board already carries its own model-written label, which names THIS
+ * drawing rather than the category of drawings. Chanel's rule: take one
+ * accessory off before leaving the house.
  *
- * Desktop only, on purpose. Below `lg:` the plate is a drag-to-resize BOTTOM
- * SHEET, and a sheet is by definition one surface: cards inside it would be
- * glass on glass, which /DESIGN.md forbids and which reads as a bug in the
- * blur rather than as depth. There the fragment passes straight through and
- * the sheet stays exactly what it was.
+ * `RailCard` was the desktop-only reading card that wrapped each of the
+ * rail's three blocks. With the board as the only thing in the plate there
+ * is one block, and the plate is already a Lumen surface — a Lumen card
+ * nested inside a Lumen plate was two materials for one object.
  */
-function RailCard({
-  desktop,
-  className,
-  children,
-}: {
-  desktop: boolean;
-  className?: string;
-  children: ReactNode;
-}) {
-  if (!desktop) return <>{children}</>;
-  return (
-    <div
-      className={cn(
-        // `overflow-hidden`: the transcript scrolls INSIDE this card, and
-        // without it the top bubble was sliced flat across the card's own
-        // rounded corner — the one place a radius is most visible.
-        'lf-lumen lf-lumen-reading flex min-h-0 flex-col overflow-hidden rounded-md px-4 py-3.5',
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
-}

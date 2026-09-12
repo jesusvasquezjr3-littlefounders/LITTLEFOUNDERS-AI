@@ -2497,26 +2497,15 @@
   /* The scrim: never an opaque veil. The stage stays perceptible as soft
      colour behind it, which is the whole reason the glass system exists. */
   /*
-   * THE RAIL THAT STOPS BEING A SURFACE (2026-09-06, from the design study).
+   * `.lf-rail-bare` IS GONE (2026-09-12).
    *
-   * The study's right column is not one panel holding three things: it is a
-   * COLUMN OF SEPARATE CARDS with a gap between them — the board is its own
-   * card, the quick-ask input is another, and the stage shows through the
-   * space between. Ours was a single sheet with everything stacked inside it,
-   * which is why the board and the conversation read as one undivided slab.
-   *
-   * Rather than restructure the plate — it is also the mobile drag-sheet,
-   * where ONE surface is exactly right — the frame stops painting on desktop
-   * and each zone inside becomes its own Lumen card. Every geometric and
-   * behavioural property of the plate (its position, its measured rect, its
-   * safe-area registration) is untouched; only the paint is.
+   * It stopped the desktop plate painting so that each zone inside could carry
+   * its own Lumen card, which was right while the rail held three of them: the
+   * board, the transcript and the composer. It holds one now — the transcript
+   * is a section of the session menu and the composer has a single home in the
+   * dock — and a bare frame around a single card is a material whose only job
+   * was separating things that are no longer there.
    */
-  .lf-rail-bare {
-    background: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
-  }
 
   .lf-config-scrim {
     background: rgb(var(--lf-inverse) / 0.72);

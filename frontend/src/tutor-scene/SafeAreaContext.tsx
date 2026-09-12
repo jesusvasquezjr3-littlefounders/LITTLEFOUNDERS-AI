@@ -81,14 +81,28 @@ export const SAFE_AREA_SLOTS = ['lesson', 'sheet', 'mic'] as const satisfies rea
  * /DESIGN.md → Screen Recipes → Tutor fixes the count of viewport-anchored
  * elements at three; a fourth is an owner decision, and `exit` is one of the
  * three, not a fourth.
+ *
+ * `header` JOINED THEM ON 2026-09-12, and it is the other half of `exit` rather
+ * than a new kind of thing. They are the two ends of ONE band — the row across
+ * the top edge, the way out on the left and the session controls on the right —
+ * and only the left end had ever been registered. That was harmless while the
+ * right end was desktop-only, where the caption is CSS-docked at `top-20` and
+ * clears the row by construction. The session menu brought those controls back
+ * to the phone, where the caption is ANCHORED, and the first thing it did was
+ * land across the speaker's own name.
+ *
+ * Camera-ignored, exactly like `exit`, and for the identical reason: charging a
+ * 48 px corner group as a top inset would push the subject down the frame in
+ * every phase of every session to make room for two chips.
  */
-export type HudChromeSlot = SafeAreaSlot | 'exit';
+export type HudChromeSlot = SafeAreaSlot | 'exit' | 'header';
 
 export const HUD_CHROME_SLOTS = [
   'lesson',
   'sheet',
   'mic',
   'exit',
+  'header',
 ] as const satisfies readonly HudChromeSlot[];
 
 /** The subset of the chrome the CAMERA composes around. */
