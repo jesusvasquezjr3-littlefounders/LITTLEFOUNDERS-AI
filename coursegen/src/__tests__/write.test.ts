@@ -13,7 +13,15 @@ function baseInput(): WriteInput {
       topic: { concept: 'x', learningObjective: 'x', keyVocabulary: ['moneda'], priorKnowledge: 'x', factRefs: [] },
       lesson: { microObjective: 'x', narrativeBeat: 'x', difficulty: 1, suggestedFamilies: ['money'] },
     },
-    skeleton: { segments: [{ type: 'story_scene', brief: 'intro' }] },
+    /*
+     * The skeleton is DERIVED from the document the fake author returns, so the
+     * fixture models what the pipeline actually produces: a document is its
+     * approved plan expanded, one segment per entry, same order, same types.
+     * It used to be a single hard-coded `story_scene` against a multi-segment
+     * document — harmless while nothing compared them, and immediately wrong
+     * once gate 10 did.
+     */
+    skeleton: { segments: baseSegments().map((segment) => ({ type: segment.type, brief: 'x' })) },
     facts: buildFacts(),
     locale: 'es-MX',
     slug: 'test-lesson',

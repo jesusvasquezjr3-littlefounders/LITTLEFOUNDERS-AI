@@ -694,7 +694,19 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
           return { ok: false, issues: lastIssues };
         }
         if (input.gateCtx) {
-          const gateReport = runAllGates(parsed.data, input.gateCtx);
+          /*
+           * Gate 10 is wired HERE and not at run.ts's second gate pass, because
+           * this is the only point where the comparison is exact: run.ts may
+           * append a recap segment (appendRecapSegment) before it gates, so the
+           * document it checks can legitimately be one segment longer than the
+           * plan. Here the document is the author's answer to the skeleton and
+           * nothing else, and a drift is still inside the corrective-retry
+           * loop — the author gets told which position moved and rewrites it.
+           */
+          const gateReport = runAllGates(parsed.data, {
+            ...input.gateCtx,
+            plannedSegmentTypes: input.skeleton.segments.map((segment) => segment.type),
+          });
           if (!gateReport.ok || !gateReport.document) {
             lastIssues = gateReport.problems
               .slice(0, WRITE_ISSUE_TRUNCATE)

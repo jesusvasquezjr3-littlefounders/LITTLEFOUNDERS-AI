@@ -18,7 +18,7 @@ import { runGenerationQualityGate } from './generationQuality.js';
 import { runReadabilityGate } from './readability.js';
 import { CONTENT_TYPES } from '../contract/registry.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -2499,6 +2499,73 @@ export interface GateContext {
   topicTitle?: string;
   /** COURSE_ENGINE.md §3.3 — adult register skips gate 2 (the Piaget vocabulary gate is a kid-only invariant). */
   skipVocabularyGate?: boolean;
+  /**
+   * The APPROVED plan's segment types, in order — gate 10's input.
+   * Optional so callers that gate a document with no plan behind it
+   * (review, localization) stay valid; the write stage always passes it.
+   */
+  plannedSegmentTypes?: readonly string[];
+}
+
+/*
+ * GATE 10 — the written document must be the plan that was approved.
+ *
+ * planRepair (plan.ts) enforces the mix rules deterministically: the palette,
+ * a minimum of distinct types, a money segment where the topic needs one, a
+ * cap on storyplay flows, and — the one this gate exists for — RULE 2, that
+ * segment 1 is a `story` family type which introduces the concept BEFORE
+ * anything is graded.
+ *
+ * All of that was then handed to the author as prose: "Produce EXACTLY one
+ * segment per skeleton entry, IN THE SAME ORDER, with the SAME `type`"
+ * (write.ts). Nine gates then ran on the result and not one of them looked at
+ * a segment's type, so whether the author actually obeyed was never checked —
+ * a rule stated in a prompt and pinned by nothing.
+ *
+ * It does not always obey. The production lesson "Mismo deseo, distinta razón"
+ * (financial-education) ships opening with `sort_buckets`: a graded challenge
+ * asking which of four characters wanted which object, in a lesson that has
+ * not introduced any of them. The mapping appears only in that segment's own
+ * explanation_md, after the attempt is scored. Both hints say "drag each wish
+ * to the character who mentioned it"; nothing ever says who did.
+ *
+ * A mismatch is a corrective-retry issue rather than a hard failure: the
+ * author is told exactly which position drifted and writes it again. That
+ * costs one extra call where it fires, which is the cheaper side of the trade
+ * against publishing a lesson whose first question cannot be answered.
+ */
+export function runPlanFidelityGate(
+  document: LessonDocumentParsed,
+  plannedTypes: readonly string[] | undefined,
+): GateProblem[] {
+  if (!plannedTypes || plannedTypes.length === 0) return [];
+
+  const written = document.segments.map((segment) => segment.type);
+  const problems: GateProblem[] = [];
+
+  if (written.length !== plannedTypes.length) {
+    problems.push({
+      gate: 10,
+      message:
+        `the plan has ${plannedTypes.length} segment(s) and the document has ${written.length} — ` +
+        'produce exactly one segment per plan entry, in the same order, with the same type',
+    });
+  }
+
+  for (let i = 0; i < Math.min(written.length, plannedTypes.length); i += 1) {
+    if (written[i] === plannedTypes[i]) continue;
+    problems.push({
+      gate: 10,
+      segmentId: document.segments[i]?.id,
+      message:
+        `segment ${i + 1} is "${written[i]}" but the approved plan says "${plannedTypes[i]}" — ` +
+        (i === 0
+          ? 'segment 1 carries the mix rule that a lesson TEACHES before it grades; a graded opener asks the learner to recall something the lesson has not said yet'
+          : 'keep the planned type, or the mix rules the plan was repaired to satisfy no longer hold'),
+    });
+  }
+
+  return problems;
 }
 
 export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport {
@@ -2518,6 +2585,7 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     // Gate 9 — deterministic readability band per tier×locale (readability.ts);
     // catches text that reads like an adult paragraph BEFORE a paid judge call.
     ...runReadabilityGate(document, ctx.tier),
+    ...runPlanFidelityGate(document, ctx.plannedSegmentTypes),
   ];
   return { ok: problems.length === 0, problems, document };
 }
