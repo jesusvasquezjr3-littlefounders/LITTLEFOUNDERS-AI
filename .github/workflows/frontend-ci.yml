@@ -35,3 +35,55 @@ jobs:
       - name: i18n key parity
         working-directory: .
         run: bash agent/tools/check-i18n.sh
+      # Asset gates — no browser, seconds each, so they belong in the fast job.
+      # verify:rig proves no animation clip drags a character out of its own
+      # stance; verify:placement proves every character stands on walkable
+      # ground, inside the rim, facing the learner. Both were honour-system.
+      - run: npm run verify:rig
+      - run: npm run verify:placement
+
+  # ── The browser gates ───────────────────────────────────────────────────────
+  #
+  # THE REASON THIS JOB EXISTS. On 2026-09-04 a single wrong `to=` in the /learn
+  # chapter list pointed every lesson at a route that does not exist. React
+  # Router matched nothing, rendered nothing, and the owner's main screen was a
+  # blank page for SEVEN DAYS — through type-check, lint, 1,800 unit tests and a
+  # green build, because none of them opens the app and presses anything.
+  #
+  # verify:lesson-engine does: 57 fixtures driven with real pointer events, every
+  # control hit-tested with elementFromPoint (element.click() does no hit-testing,
+  # which is how a full-viewport canvas once swallowed the whole product while
+  # every audit stayed green). It is the only gate that would have caught it.
+  #
+  # verify:tutor-ui is here for the same reason on the Tutor's side: it sweeps
+  # every whiteboard instrument and affordance for reachability, and it was
+  # equally honour-system.
+  #
+  # Their own job because together they take ~30 minutes, and `needs: ci` so a
+  # push that fails type-check does not also pay for them.
+  browser-gates:
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      # ubuntu-latest ships Chrome at /usr/bin/google-chrome, which is already
+      # in browser.mjs's candidate list; naming it makes a runner image change
+      # fail loudly here instead of somewhere deep in the run.
+      - name: Lesson Engine — every control reachable, every lesson starts
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run verify:lesson-engine
+      - name: Tutor UI — every instrument and affordance reachable
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run verify:tutor-ui

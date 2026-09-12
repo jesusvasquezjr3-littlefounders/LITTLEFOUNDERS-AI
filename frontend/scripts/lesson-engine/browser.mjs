@@ -60,6 +60,14 @@ export async function launchBrowser(userDataDir) {
       '--use-angle=swiftshader',
       '--enable-unsafe-swiftshader',
       '--force-device-scale-factor=1',
+      /*
+       * CI runners are the one place Chrome's sandbox cannot always start
+       * (no user namespaces inside the container), and the failure is a
+       * launch error rather than a test result — which reads as "the gate is
+       * broken" instead of "the gate could not start". Dropped ONLY under CI:
+       * a developer machine keeps the sandbox.
+       */
+      ...(process.env.CI ? ['--no-sandbox', '--disable-dev-shm-usage'] : []),
       `--user-data-dir=${userDataDir}`,
       '--remote-debugging-port=0',
       'about:blank',

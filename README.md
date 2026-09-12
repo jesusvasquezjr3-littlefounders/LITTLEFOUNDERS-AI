@@ -110,6 +110,8 @@ In the service(s) you touched, `npm run build` must also pass — CD only deploy
 
 `.github/workflows/repo-gates.yml` re-runs the repo-wide set (secrets, i18n, marketing paths, provider/instrument/demo-step parity, tools self-tests) on every PR and push, without a `paths:` filter — but CI is the backstop, not the gate. Commit locally as you go; **push once, at the end, when everything is green together** (every push to `main` fans out CI+CD across all services).
 
+**The four `verify:*` gates now run in `frontend-ci.yml`, and that is new.** They were honour-system until 2026-09-11, which is how a wrong `to=` in the /learn chapter list put every lesson behind a blank page for seven days with type-check, lint, 1,800 unit tests and the build all green — none of them opens the app and presses anything. `verify:rig` and `verify:placement` are asset checks and ride in the fast job; `verify:lesson-engine` and `verify:tutor-ui` drive real headless Chrome and live in a `browser-gates` job that `needs: ci`, so a push that fails type-check does not also pay for ~30 minutes of runner. **Still run them locally first** — a browser gate that only ever fails in CI costs a round trip per defect, and the whole reason this one was worth wiring is that it catches things nothing else can.
+
 ## Mandatory before production
 
 ```bash
