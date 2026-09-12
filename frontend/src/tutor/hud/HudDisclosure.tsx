@@ -236,8 +236,15 @@ export function HudDisclosure({
         <span className="flex items-center gap-1.5 whitespace-nowrap">
           {icon ? <Icon name={icon} className="!text-[18px]" aria-hidden /> : null}
           <span className="lf-action">{label}</span>
+          {/*
+            The chevron says WHERE THE PANEL WILL GO, not where the trigger
+            is. Closed it points the way the panel opens — down, from a header
+            row — and open it points back at the word that will collapse it.
+            Photographed the other way round first, which reads as a control
+            that has already been used.
+          */}
           <Icon
-            name={open ? 'expand_more' : 'expand_less'}
+            name={open ? 'expand_less' : 'expand_more'}
             className="!text-[18px] text-content-faint"
             aria-hidden
           />

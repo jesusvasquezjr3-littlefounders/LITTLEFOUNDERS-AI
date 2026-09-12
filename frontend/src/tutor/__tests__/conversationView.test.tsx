@@ -548,8 +548,24 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
     );
   }
 
+  /*
+   * "Start over" moved INSIDE the session menu (2026-09-12), which is the
+   * point of the menu: a bare `refresh` glyph two controls from the exit, that
+   * threw away the live conversation with no confirmation, was the most
+   * dangerous control on the screen. The guard under test is unchanged — it is
+   * still `disabled={awaitingReply}` on the same control reaching the same
+   * `onRestart` — so these tests open the menu first and assert exactly what
+   * they asserted before.
+   *
+   * `Finish` is deliberately still OUTSIDE the menu and needs no opening: it
+   * is the only way to end a session, and a child who wants to stop should not
+   * have to find it first.
+   */
+  const openMenu = () => fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+
   it('disables Start over', () => {
     render(conversationAwaitingReply(makeSocket()));
+    openMenu();
     expect(screen.getByRole('button', { name: 'Start over' })).toBeDisabled();
   });
 
@@ -563,6 +579,7 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
     const onExit = vi.fn();
     render(conversationAwaitingReply(makeSocket(), { onRestart, onExit }));
 
+    openMenu();
     fireEvent.click(screen.getByRole('button', { name: 'Start over' }));
     fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
 
@@ -572,9 +589,12 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
 
   it('re-enables both once the reply lands and awaitingReply clears', () => {
     const { rerender } = render(conversationAwaitingReply(makeSocket()));
+    openMenu();
     expect(screen.getByRole('button', { name: 'Start over' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Finish' })).toBeDisabled();
 
+    // Same component type in the same position, so the menu it opened above is
+    // still open — clicking the trigger again would close it.
     rerender(conversation(makeSocket(), false));
 
     expect(screen.getByRole('button', { name: 'Start over' })).not.toBeDisabled();
@@ -1566,15 +1586,23 @@ describe('a failure says what actually failed', () => {
  * here is the same posture the restart/finish chips beside it already have:
  * omitted rather than shown-disabled when there is nothing to open.
  */
-describe('the map chip in the conversation header', () => {
+describe('the map row in the session menu', () => {
+  /*
+   * It was an unlabelled `map` glyph in the header row until 2026-09-12 and is
+   * now a NAMED row inside the session menu. Two things are unchanged and both
+   * are what these tests are for: it reaches the same `onOpenMap`, and it is
+   * OMITTED rather than shown-disabled when there is nothing to open.
+   */
   it('is omitted when there is no map to show', () => {
     renderConversation(makeSocket(), { ready: true, mapAvailable: false });
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
     expect(screen.queryByRole('button', { name: 'My island' })).not.toBeInTheDocument();
   });
 
   it('opens the map when the learner asks for it', () => {
     const onOpenMap = vi.fn();
     renderConversation(makeSocket(), { ready: true, mapAvailable: true, onOpenMap });
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
     fireEvent.click(screen.getByRole('button', { name: 'My island' }));
     expect(onOpenMap).toHaveBeenCalledTimes(1);
   });

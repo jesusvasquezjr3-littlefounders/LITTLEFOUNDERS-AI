@@ -139,6 +139,16 @@ export interface StageDockValue {
    */
   header: HTMLElement | null;
   /**
+   * Where a panel belonging to a control in the header row opens.
+   *
+   * A second slot rather than the same one, because the row is a `flex-wrap`
+   * of chips and a 30rem reading panel dropped into it would wrap the controls
+   * it belongs to onto another line. It hangs just below the row, over the sky,
+   * and it is a SIBLING of the children layer — that layer is a stacking
+   * context nothing inside it can escape (see the comment at its own host).
+   */
+  headerPanel: HTMLElement | null;
+  /**
    * Keep the dock clear of a surface this many pixels tall, measured from the
    * bottom of the viewport.
    *
@@ -497,6 +507,7 @@ function StageShellInner({
   const footprintRef = useRef(0);
   const [above, setAbove] = useState<HTMLElement | null>(null);
   const [header, setHeader] = useState<HTMLElement | null>(null);
+  const [headerPanel, setHeaderPanel] = useState<HTMLElement | null>(null);
   const [below, setBelow] = useState<HTMLElement | null>(null);
 
   /*
@@ -608,6 +619,7 @@ function StageShellInner({
    */
   const attachAbove = useCallback((node: HTMLDivElement | null) => setAbove(node), []);
   const attachHeader = useCallback((node: HTMLDivElement | null) => setHeader(node), []);
+  const attachHeaderPanel = useCallback((node: HTMLDivElement | null) => setHeaderPanel(node), []);
   const attachBelow = useCallback((node: HTMLDivElement | null) => setBelow(node), []);
 
   /*
@@ -626,8 +638,8 @@ function StageShellInner({
   const besidePlate = cornerPlate;
 
   const dock = useMemo<StageDockValue>(
-    () => ({ above, below, header, setFootprint, keepClearOf, setCornerPlate }),
-    [above, below, header, setFootprint, keepClearOf],
+    () => ({ above, below, header, headerPanel, setFootprint, keepClearOf, setCornerPlate }),
+    [above, below, header, headerPanel, setFootprint, keepClearOf],
   );
 
   return (
@@ -795,6 +807,31 @@ function StageShellInner({
             className="pointer-events-none ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2"
           />
         </div>
+
+        {/*
+          WHERE A HEADER CONTROL'S PANEL OPENS, and it is a SIBLING of the
+          children layer rather than a child of it.
+
+          That layer is `absolute inset-0 z-30`, which makes it a stacking
+          context no z-index inside it can escape — photographed once at `z-50`
+          and again at `z-[60]` with the dock still punching through. A
+          disclosure panel opening from the header row has to sit over the sky
+          and under nothing, so it is hosted here, next to the row that owns
+          its trigger, and not inside the layer that renders it.
+
+          It registers no rect with `SafeAreaContext`. It does not need to: it
+          occupies the top-right corner over empty sky, the only product
+          `WorldChip` there was the minutes rune this redesign deletes, and the
+          caption's own escape already treats the header row it hangs from.
+
+          `empty:hidden` because an empty flex row still spends layout, and
+          `pointer-events-none` with opt-in children so the stage stays
+          draggable in the gap — the same discipline as the row above.
+        */}
+        <div
+          ref={attachHeaderPanel}
+          className="pointer-events-none fixed right-4 top-16 z-50 flex justify-end empty:hidden md:right-6 md:top-20"
+        />
 
         <div className="pointer-events-none absolute inset-0 z-30">{children}</div>
 

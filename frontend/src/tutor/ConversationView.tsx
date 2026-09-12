@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { HudDisclosure } from './hud/HudDisclosure';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, useDesktopPlate, type LessonPlateDetent } from './hud/LessonPlate';
-import { WorldChip } from './hud/WorldChip';
 import { SpeechCaption } from './SpeechCaption';
 import { TutorFace } from './TutorFace';
 import { TutorTranscript } from './TutorTranscript';
@@ -205,9 +205,35 @@ export function ConversationView({
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const restartYesRef = useRef<HTMLButtonElement>(null);
 
+  /*
+   * Whether the session menu is open. One boolean rather than a group id,
+   * because during a live session there is exactly one disclosure — the board
+   * is a surface, not a menu. `useOneOpen` is for the arrival, which has two.
+   */
+  const [sessionOpen, setSessionOpen] = useState(false);
+
   useEffect(() => {
     if (confirmingRestart) restartYesRef.current?.focus();
   }, [confirmingRestart]);
+
+  /*
+   * THE MENU STANDS DOWN FOR A QUESTION AND FOR THE END.
+   *
+   * An adaptation offer is a moment the tutor owns: the camera swings to the
+   * two-shot and the two answers are the only other thing on screen. A reading
+   * panel left open across it would be a third surface over that question, and
+   * the lesson plate already stands down for exactly this reason.
+   *
+   * `ended` is the other one: a menu describing a live session — the emerald
+   * dot, the minutes, "start over" — is a menu describing something that is
+   * over. The disarm of `confirmingRestart` rides along, so a half-asked
+   * question is never what the learner finds when they next open it.
+   */
+  useEffect(() => {
+    if (socket.adaptationOffer === null && socket.closedReason === null) return;
+    setSessionOpen(false);
+    setConfirmingRestart(false);
+  }, [socket.adaptationOffer, socket.closedReason]);
 
   /*
    * Disarm whenever the control that armed it would itself be disabled. The
@@ -592,6 +618,40 @@ export function ConversationView({
         ? t('tutor.conversation.minutesLeft', { count: minutes })
         : null;
 
+  /*
+   * ONE LINE, ONE MESSAGE, BY PRECEDENCE.
+   *
+   * These five sentences used to be five separate `role="status"` paragraphs
+   * stacked in the plate, each `shrink-0`, each mounted on its own condition —
+   * and the conditions are not exclusive. "We are nearly done", "getting to
+   * know you", "your tutor is thinking", "reconnecting" and "that took too
+   * long" can all be true at once, and when they were, a child looking for
+   * their exercise found a paragraph of system status where it used to be.
+   * Five voices is not five channels; it is the same channel shouting.
+   *
+   * The order is severity, and each rung outranks the next because it changes
+   * what the learner should DO: a dropped connection beats a slow reply, which
+   * beats a session winding down, which beats a reply on its way, which beats
+   * a tutor that does not know them well yet — the only one of the five that
+   * asks for nothing at all.
+   *
+   * `wrapping` keeps its own surface. It is the one budget state that changes
+   * how the remaining time should be spent, and flattening it into the same
+   * quiet caption as the rest would lose the distinction this collapse exists
+   * to protect.
+   */
+  const statusLine: { text: string; loud: boolean } | null = resuming
+    ? { text: t('tutor.conversation.reconnecting'), loud: false }
+    : replyTimedOut
+      ? { text: t('tutor.conversation.replyTimeout'), loud: false }
+      : socket.budget === 'wrapping'
+        ? { text: t('tutor.conversation.wrappingUp'), loud: true }
+        : awaitingReply
+          ? { text: t('tutor.mic.thinking'), loud: false }
+          : socket.intelDegraded
+            ? { text: t('tutor.conversation.gettingToKnowYou'), loud: false }
+            : null;
+
   const adaptation = socket.adaptationOffer;
   const adaptationQuestion = adaptation ? t(`tutor.adaptationOffer.${adaptation}`) : '';
 
@@ -765,193 +825,188 @@ export function ConversationView({
   );
 
   /*
-   * THE HEADER GROUP (2026-09-06, from the design study).
+   * THE SESSION MENU, AND THE ONE CONTROL THAT STAYS OUTSIDE IT.
    *
-   * These four chips used to live inside the lesson plate's own header row, an
-   * inch inboard of the corner and only while the plate was mounted — so the
-   * minutes vanished with the plate, and the study's top-right cluster had
-   * nothing in it. They are the SESSION's, so they still belong to this layer;
-   * the ROW is the shell's, so they are portalled into the slot it publishes.
+   * The top-right corner used to carry five chips at once: a live badge, the
+   * minutes, the XP, an unlabelled map glyph, an unlabelled refresh glyph and
+   * "Finish" — six, when "start over" was armed and replaced itself with a
+   * question and two answers. They did not fit at 390 px, so three of them
+   * were `hidden lg:flex`, which is less a layout decision than an admission:
+   * a learner on a phone simply never saw how much time they had.
+   *
+   * Now the corner is TWO things. A menu that says "menu", and the way to end
+   * the session. Everything that REPORTS rather than acts moved inside the
+   * menu, where it fits at every width — so the phone gained the minutes and
+   * the XP it never had.
+   *
+   * `Finish` stays outside, visible, one press, and that is deliberate: it is
+   * the only way to end a session, and a child who wants to stop should not
+   * have to open something first. It is the same argument the way-out chip
+   * already won in the opposite corner.
+   *
+   * The refresh glyph went in with them, and it was the most dangerous control
+   * on the screen — a bare reload icon two places from the exit that threw
+   * away the live conversation, the whiteboard and the tutor's diagnosis of
+   * what the child had got wrong. It is now a NAMED row inside the menu, still
+   * two-step, where nobody reaches it by accident.
    */
-  const headerChips = (
-    <>
-          {/*
-            THE LIVE BADGE. Its dot is real state, not decoration: it burns
-            only while the socket is actually running, so a learner glancing at
-            it learns whether the tutor is listening or the session has stopped.
-          */}
-          {socket.budget === 'running' && (
-            /*
-             * STATUS YIELDS TO CONTROLS BELOW `lg:`. On the panel's own header
-             * row at 390px this badge, the minutes, two icon buttons and Finish
-             * do not fit, and what overflowed off the right edge was Finish —
-             * the only way to END a session. The badge is the one item here
-             * that reports rather than acts, and the microphone's own state
-             * already says whether the tutor is listening, so it is the one
-             * that gives way.
-             */
-            <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
-              <span className="flex items-center gap-2 whitespace-nowrap">
-                <span className="lf-live-emerald" aria-hidden />
-                <span className="lf-caption text-content">
-                  {t('tutor.conversation.liveWith', {
-                    name: t(`tutor.character.${session.character}.name`),
-                  })}
-                </span>
-              </span>
-            </HudPlate>
-          )}
+  const sessionPanel = (
+    <div className="flex flex-col gap-4">
+      {/*
+        WHAT THE SESSION IS, in one row of numbers. The live dot is real state
+        rather than decoration: it burns only while the socket is running, so a
+        glance says whether the tutor is still listening.
+      */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        {socket.budget === 'running' && (
+          <span className="flex items-center gap-2">
+            <span className="lf-live-emerald" aria-hidden />
+            <span className="lf-caption text-content">
+              {t('tutor.conversation.liveWith', {
+                name: t(`tutor.character.${session.character}.name`),
+              })}
+            </span>
+          </span>
+        )}
 
-          {budgetRune && (
-            /*
-             * Desktop-only, for the same reason as the badge above and measured
-             * the same way: with it on the 390px panel row, "Finish" clipped to
-             * "Finis". Every chip here is `shrink-0` — correctly, a control that
-             * shrinks is a control that stops being tappable — so the row cannot
-             * absorb the overflow and something has to leave. Below `lg:` this
-             * row carries CONTROLS ONLY; the minutes are reported by the tutor
-             * itself when they start to matter (`budget === 'wrapping'` prints
-             * a line in the panel), which is the actionable half of the fact.
-             */
-            <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
-              <span className="flex items-center gap-1.5 whitespace-nowrap">
-                {/*
-                 * WARNING COLOUR ONLY WHEN THERE IS SOMETHING TO WARN ABOUT.
-                 *
-                 * This clock was `text-warning-strong` in every state. On
-                 * desktop the sky rune renders the SAME minutes a few hundred
-                 * pixels away with a calm emerald dot, so a 2026-09-09 audit
-                 * photographed one number wearing two opposite emotions at
-                 * once — and the number was 480, eight hours, with nothing
-                 * whatever to hurry about. An amber clock permanently lit on a
-                 * child's screen is manufactured urgency, and a warning that is
-                 * always on is a warning nobody will read on the day it is
-                 * true.
-                 *
-                 * `wrapping` is that day: the one budget state that changes
-                 * what a learner should do with the time left (/ORACLE.md §9.5).
-                 */}
-                <Icon
-                  name="schedule"
-                  className={cn(
-                    '!text-[16px]',
-                    socket.budget === 'wrapping' ? 'text-warning-strong' : 'text-content-faint',
-                  )}
-                />
-                <span className="lf-caption text-content-muted">{budgetRune}</span>
-              </span>
-            </HudPlate>
-          )}
+        {budgetRune && (
+          <span className="flex items-center gap-1.5">
+            {/*
+              WARNING COLOUR ONLY WHEN THERE IS SOMETHING TO WARN ABOUT. This
+              clock was `text-warning-strong` in every state, and a 2026-09-09
+              audit photographed it reading 480 minutes in amber with nothing
+              whatever to hurry about. A warning that is always on is a warning
+              nobody reads on the day it is true.
+            */}
+            <Icon
+              name="schedule"
+              className={cn(
+                '!text-[16px]',
+                socket.budget === 'wrapping' ? 'text-warning-strong' : 'text-content-faint',
+              )}
+            />
+            <span className="lf-caption text-content-muted">{budgetRune}</span>
+          </span>
+        )}
 
-          {/*
-            XP, and only once there is some. The study's chip is the one place a
-            learner sees the session adding up; a counter that opens at zero and
-            stays there is a promise nobody made.
-          */}
-          {sessionXp > 0 && (
-            <HudPlate shape="chip" className="pointer-events-auto hidden shrink-0 lg:flex">
-              <span className="flex items-center gap-1.5 whitespace-nowrap">
-                <Icon name="bolt" className="!text-[16px] text-warning-strong" />
-                <span className="lf-caption font-bold text-accent-strong">
-                  {t('tutor.segment.xpEarned', { count: sessionXp })}
-                </span>
-              </span>
-            </HudPlate>
-          )}
+        {/*
+          XP, and only once there is some: a counter that opens at zero and
+          sits there is a promise nobody made.
+        */}
+        {sessionXp > 0 && (
+          <span className="flex items-center gap-1.5">
+            <Icon name="bolt" className="!text-[16px] text-warning-strong" />
+            <span className="lf-caption font-bold text-accent-strong">
+              {t('tutor.segment.xpEarned', { count: sessionXp })}
+            </span>
+          </span>
+        )}
+      </div>
 
-          {/* Stands down while "start over" is asking — see the confirm branch below. */}
-          {mapAvailable && !confirmingRestart && (
+      <div className="flex flex-col gap-2">
+        {mapAvailable && (
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={onOpenMap}
+            className="pointer-events-auto w-full !max-w-none"
+            floorClassName="!justify-start !text-start"
+          >
+            <span className="flex items-center gap-2">
+              <Icon name="map" className="!text-[18px]" />
+              <span className="lf-action">{t('tutor.map.openLabel')}</span>
+            </span>
+          </HudPlate>
+        )}
+
+        {/*
+          START OVER, NAMED, AND STILL TWO-STEP.
+          The control is REPLACED in place rather than covered by a dialog —
+          this product has never shipped a modal — and confirming takes focus so
+          a keyboard user never loses their place. Gated on `!awaitingReply`,
+          because tearing the socket down mid-turn records a deliberate restart
+          as `learner_left`.
+        */}
+        {confirmingRestart ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="lf-action min-w-0 flex-1 text-content">
+              {t('tutor.conversation.startOverConfirm')}
+            </span>
             <HudPlate
               as="button"
               shape="chip"
-              onClick={onOpenMap}
-              aria-label={t('tutor.map.openLabel')}
-              title={t('tutor.map.openLabel')}
+              ref={restartYesRef}
+              onClick={() => {
+                setConfirmingRestart(false);
+                onRestart();
+              }}
               className="pointer-events-auto shrink-0"
-              /*
-               * A single glyph does not need a label's side padding, and on the
-               * 390px panel row those two unused columns per icon button were
-               * what pushed "Finish" — the only way to end a session — off the
-               * right edge. The 48px tap floor is untouched: it comes from
-               * `min-h-12 min-w-12` on the frame, not from this padding.
-               */
-              floorClassName="!px-3"
             >
-              <Icon name="map" className="!text-[18px]" />
+              <span className="lf-action">{t('actions.confirmYes')}</span>
             </HudPlate>
-          )}
+            <HudPlate
+              as="button"
+              shape="chip"
+              onClick={() => setConfirmingRestart(false)}
+              className="pointer-events-auto shrink-0"
+            >
+              <span className="lf-action">{t('actions.confirmNo')}</span>
+            </HudPlate>
+          </div>
+        ) : (
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={() => setConfirmingRestart(true)}
+            disabled={awaitingReply}
+            className="pointer-events-auto w-full !max-w-none"
+            floorClassName="!justify-start !text-start"
+          >
+            <span className="flex items-center gap-2">
+              <Icon name="refresh" className="!text-[18px]" />
+              <span className="lf-action">{t('tutor.conversation.startOver')}</span>
+            </span>
+          </HudPlate>
+        )}
+      </div>
+    </div>
+  );
 
-          {/*
-            DISABLED WHILE THE TUTOR IS STILL ANSWERING (adversarial review,
-            round 90): `end_session` claims the same turn slot the tutor's reply
-            is holding, and tearing the socket down without waiting records a
-            deliberate "Finish" as `learner_left` instead of `completed`,
-            skipping the farewell (/ORACLE.md §9.5).
-          */}
-          {confirmingRestart ? (
-            /*
-             * While armed, the row is ONLY the question and its two answers.
-             *
-             * Every chip in this row is `shrink-0` (a control that shrinks is a
-             * control that stops being tappable), so the row cannot absorb
-             * overflow — at 390px the question plus two answers plus "Finish"
-             * clips, and what clips off the right edge is Finish. Rather than
-             * shave the question down to "Are you sure?", which tells a learner
-             * who just pressed an unlabelled glyph nothing about what they are
-             * agreeing to, the two controls that are not part of the question
-             * stand down until it is answered. "No" brings them straight back.
-             */
-            <>
-              <HudPlate shape="chip" className="pointer-events-none shrink-0">
-                <span className="lf-action text-content">{t('tutor.conversation.startOverConfirm')}</span>
-              </HudPlate>
-              <HudPlate
-                as="button"
-                shape="chip"
-                ref={restartYesRef}
-                onClick={() => {
-                  setConfirmingRestart(false);
-                  onRestart();
-                }}
-                className="pointer-events-auto shrink-0"
-              >
-                <span className="lf-action">{t('actions.confirmYes')}</span>
-              </HudPlate>
-              <HudPlate
-                as="button"
-                shape="chip"
-                onClick={() => setConfirmingRestart(false)}
-                className="pointer-events-auto shrink-0"
-              >
-                <span className="lf-action">{t('actions.confirmNo')}</span>
-              </HudPlate>
-            </>
-          ) : (
-            <>
-              <HudPlate
-                as="button"
-                shape="chip"
-                onClick={() => setConfirmingRestart(true)}
-                disabled={awaitingReply}
-                aria-label={t('tutor.conversation.startOver')}
-                title={t('tutor.conversation.startOver')}
-                className="pointer-events-auto shrink-0"
-                floorClassName="!px-3"
-              >
-                <Icon name="refresh" className="!text-[18px]" />
-              </HudPlate>
+  const headerChips = (
+    <>
+      <HudDisclosure
+        id="session"
+        label={t('tutor.session.label')}
+        icon="menu"
+        /*
+         * The shell's header-panel host, which hangs just below the row this
+         * trigger sits in. With no shell — the test suite mounts this layer
+         * bare, and so does the lab — the panel renders IN PLACE, which is a
+         * first-class state of the primitive rather than a fallback.
+         */
+        host={dock?.headerPanel ?? null}
+        open={sessionOpen}
+        onOpenChange={setSessionOpen}
+      >
+        {sessionPanel}
+      </HudDisclosure>
 
-              <HudPlate
-                as="button"
-                shape="chip"
-                onClick={onExit}
-                disabled={awaitingReply}
-                className="pointer-events-auto shrink-0"
-              >
-                <span className="lf-action">{t('tutor.conversation.finish')}</span>
-              </HudPlate>
-            </>
-          )}
+      <HudPlate
+        as="button"
+        shape="chip"
+        onClick={onExit}
+        /*
+         * DISABLED WHILE THE TUTOR IS STILL ANSWERING (adversarial review,
+         * round 90): `end_session` claims the same turn slot the reply is
+         * holding, and tearing the socket down without waiting records a
+         * deliberate "Finish" as `learner_left` instead of `completed`,
+         * skipping the farewell.
+         */
+        disabled={awaitingReply}
+        className="pointer-events-auto shrink-0"
+      >
+        <span className="lf-action">{t('tutor.conversation.finish')}</span>
+      </HudPlate>
     </>
   );
 
@@ -1114,31 +1169,25 @@ export function ConversationView({
           />
 
           {/*
-            Time is a rune over the island, not a chip in a header bar, because
-            there is no header bar. It reports and is not a control, so it is
-            not in the tab order (/DESIGN.md → Screen Recipes → Tutor: one sky
-            rune, this one; the way out is viewport-anchored precisely so it
-            cannot be culled the way this one can). The wrap-up state is
-            repeated on the plate below, where it cannot be culled by the camera
-            turning away: the minutes are ambient, but "we are nearly done"
-            changes what the learner should spend the rest of the session on
-            (/ORACLE.md §9.5).
+            THE SKY RUNE IS GONE, and it was the THIRD printing of one number.
+            The minutes were on this rune, on a header chip, and — while
+            wrapping up — in a paragraph on the plate.
+
+            It was also the printing nobody saw. It is a `WorldChip`, so it is
+            culled the moment its world point leaves the frame, and the frame
+            during a conversation is a close-up on the character rather than
+            the sky: measured in production at 1604x677 the rune's node was
+            `display: none` with a zero box while the header chip beside it
+            rendered the same "Quedan 465 min" perfectly. A surface that is
+            correct and invisible still costs a reader the question "which of
+            these two is the real one".
+
+            The minutes live in the session menu now, where they fit at every
+            width — which is also the first time a learner on a phone has been
+            able to see them at all. "We are nearly done" keeps its own line on
+            the plate, because that is the one budget state that changes what
+            the remaining time should be spent on.
           */}
-          {budgetRune && (
-            <WorldChip slot="sky.mark.3">
-              {/*
-               * A LIVE DOT beside the session's own clock. The design study
-               * pairs its session badge with a pulsing emerald dot, and here it
-               * is TRUE rather than decorative: it shows only while
-               * `socket.budget === 'running'`, which is one of the two states
-               * that produce this rune at all. When the session starts wrapping
-               * up the rune changes and the dot goes with it, so it can never
-               * claim a session that is not live.
-               */}
-              {socket.budget === 'running' ? <span className="lf-live-emerald" aria-hidden /> : null}
-              <span className="lf-action">{budgetRune}</span>
-            </WorldChip>
-          )}
         </>
       ) : (
         /*
@@ -1278,51 +1327,39 @@ export function ConversationView({
           are in the caption together now — and what the plate got back is the
           132 px that sentence was costing the exercise underneath it.
         */}
-        {socket.budget === 'wrapping' && (
-          <p className="shrink-0 lf-body rounded-md bg-warning-soft px-3 py-2 text-content" role="status">
-            {t('tutor.conversation.wrappingUp')}
-          </p>
-        )}
-
-        {socket.intelDegraded && (
-          <p className="shrink-0 lf-caption text-content-muted">
-            {t('tutor.conversation.gettingToKnowYou')}
-          </p>
-        )}
-
         {/*
-          The thinking state has to be visible even when the microphone is not,
-          which today is every session: the orb carries it for a learner who
-          spoke, and this carries it for the many more who typed.
-        */}
-        {awaitingReply && (
-          <p className="shrink-0 lf-caption text-content-muted" role="status">
-            {t('tutor.mic.thinking')}
-          </p>
-        )}
+          THE SESSION'S ONE STATUS LINE. See `statusLine` above for the
+          precedence and for what the five stacked paragraphs cost.
 
-        {/*
-          A dropped connection being quietly repaired. Said in place, because
-          the alternative the learner experiences is the tutor freezing
-          mid-sentence with no explanation — and the repair usually wins the
-          race against their patience only if they know it is running.
-        */}
-        {resuming && (
-          <p className="shrink-0 lf-caption text-content-muted" role="status">
-            {t('tutor.conversation.reconnecting')}
-          </p>
-        )}
+          KEYED ON THE SENTENCE, which is how this codebase already makes a
+          live region announce reliably (`LiveSegmentPanel`'s round-87 fix): a
+          changed `key` REMOUNTS the node, and a freshly inserted
+          `role="status"` is announced, where an `aria-live` region whose text
+          merely mutates is not dependably read.
 
-        {/*
-          The wait ran out of patience before the server did. Honest and
-          actionable: the spinner has already stopped (upstream owns that), and
-          this says what to do instead of leaving a child staring at a tutor
-          who appears to have wandered off. If the reply does eventually land,
-          the arriving turn clears this with everything else.
+          Keyed rather than always-mounted, and that is the deliberate half. An
+          empty region left in the document for the whole session would be a
+          SECOND nameless `role="status"` beside `LiveSegmentPanel`'s, and two
+          nameless live regions give a screen-reader user no way to tell which
+          one just spoke. Absent when there is nothing to say, there is only
+          ever one.
+
+          The thinking state reaches a learner who TYPED through this line; the
+          orb carries it for one who spoke. Neither repeats the other, which is
+          what the collapse bought.
         */}
-        {replyTimedOut && (
-          <p className="shrink-0 lf-caption text-content-muted" role="status">
-            {t('tutor.conversation.replyTimeout')}
+        {statusLine && (
+          <p
+            key={statusLine.text}
+            role="status"
+            className={cn(
+              'shrink-0',
+              statusLine.loud
+                ? 'lf-body rounded-md bg-warning-soft px-3 py-2 text-content'
+                : 'lf-caption text-content-muted',
+            )}
+          >
+            {statusLine.text}
           </p>
         )}
 

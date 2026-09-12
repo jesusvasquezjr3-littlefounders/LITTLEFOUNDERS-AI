@@ -7,6 +7,9 @@
   "disclosure": {
     "close": "Close {{name}}"
   },
+  "session": {
+    "label": "Menu"
+  },
   "stage": {
     "leave": "Leave the tutor",
     "personalizeLayer": "Make this place yours",
