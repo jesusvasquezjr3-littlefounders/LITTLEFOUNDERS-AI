@@ -71,24 +71,51 @@ const STRICT = flag('strict')
 const ONLY = value('only')?.split(',').map((s) => s.trim()) ?? null
 const TAP_TARGET_FLOOR = 44
 
-/* Every visible control, hit-tested the way a finger reaches one. */
+/*
+ * Every visible control, hit-tested the way a finger reaches one.
+ *
+ * `height` is the HIT height, not the box height, and the difference is the
+ * difference between a real finding and three permanent false alarms. A
+ * glossary term set inline in running prose cannot be padded to 44px without
+ * pushing the sentence's lines apart, so it carries an invisible
+ * pseudo-element that extends its hit area instead
+ * (lesson-engine/families/story/components.tsx). getBoundingClientRect knows
+ * nothing about that — it reported 27px for a target a thumb gets 47px of, and
+ * the run named the same three chips every time. Noise that never goes away is
+ * noise a reader learns to skip, and the next genuinely small control would
+ * have hidden in it.
+ *
+ * So measure it the way this file measures everything else: probe outward from
+ * the box with elementFromPoint until the point stops belonging to the control.
+ * A pseudo-element hit area answers with its originating element, so this sees
+ * exactly what the finger would.
+ */
 const CONTROLS =
   '(() => { const out = [];' +
   ' for (const b of document.querySelectorAll("button:not([disabled]),a[href]")) {' +
   '   let r = b.getBoundingClientRect();' +
   '   if (r.width < 4 || r.height < 4) continue;' +
   '   if (r.right < 0 || r.left > innerWidth) continue;' +
+  '   const owns = (t) => t === b || b.contains(t) || (t && t.closest("button,a") === b);' +
   '   const test = () => { const x = r.left + r.width / 2, y = r.top + r.height / 2;' +
   '     if (y < 0 || y > innerHeight) return null;' +
   '     const t = document.elementFromPoint(x, y);' +
-  '     return { x: Math.round(x), y: Math.round(y),' +
-  '       ok: t === b || b.contains(t) || (t && t.closest("button,a") === b),' +
+  '     return { x: Math.round(x), y: Math.round(y), ok: owns(t),' +
   '       topmost: t ? t.tagName : "null" } };' +
   '   let hit = test();' +
   '   if (!hit || !hit.ok) { b.scrollIntoView({ block: "center", behavior: "instant" });' +
   '     r = b.getBoundingClientRect(); hit = test(); }' +
   '   if (!hit) continue;' +
-  '   out.push({ label: (b.textContent || "").trim().slice(0, 30), height: Math.round(r.height),' +
+  // Walk out from each edge, at most one floor's worth — past that the target
+  // already passes and the extra probing buys nothing.
+  '   let top = r.top, bottom = r.bottom;' +
+  '   if (hit.ok) { const cx = r.left + r.width / 2;' +
+  '     for (let k = 1; k <= 44; k += 1) { const y = r.top - k;' +
+  '       if (y < 0 || !owns(document.elementFromPoint(cx, y))) break; top = y; }' +
+  '     for (let k = 1; k <= 44; k += 1) { const y = r.bottom + k;' +
+  '       if (y > innerHeight || !owns(document.elementFromPoint(cx, y))) break; bottom = y; } }' +
+  '   out.push({ label: (b.textContent || "").trim().slice(0, 30),' +
+  '     height: Math.round(bottom - top), inkHeight: Math.round(r.height),' +
   '     reaches: hit.ok, topmost: hit.topmost }); }' +
   ' return out })()'
 
@@ -257,7 +284,9 @@ async function main() {
             row.blocked.push(`${where}: "${control.label}" is under ${control.topmost}`)
           }
           if (control.height < TAP_TARGET_FLOOR) {
-            smallTargets.set(control.label, control.height)
+            // Both numbers: the hit height is the verdict, the ink height says
+            // whether the fix is padding or a hit extender.
+            smallTargets.set(control.label, { hit: control.height, ink: control.inkHeight ?? control.height })
           }
         }
       }
@@ -341,7 +370,10 @@ async function main() {
 
     if (smallTargets.size) {
       console.log(`\ntap targets under ${TAP_TARGET_FLOOR}px (reported, not gated):`)
-      for (const [label, height] of smallTargets) console.log(`   ${label} (${height}px)`)
+      for (const [label, size] of smallTargets) {
+        const ink = size.ink !== size.hit ? `, ${size.ink}px of ink` : ''
+        console.log(`   ${label} (${size.hit}px${ink})`)
+      }
     }
 
     for (const row of failures) {
