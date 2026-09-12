@@ -59,6 +59,12 @@ interface Live {
   measured: Measured | null;
 }
 
+/**
+ * How long the layer waits, with no frame having drawn a character, before it
+ * puts the 2D stand-ins back. See the note on `drawing` below.
+ */
+const STALE_MS = 1000;
+
 export function CharacterLayerCanvas({
   slots,
   slotsRef,
@@ -78,10 +84,50 @@ export function CharacterLayerCanvas({
   // `CharacterStage`: Zara 100,122 -> 50,123 triangles per frame.
   const stageSettings = useMemo(() => (settings ? { ...settings, shadows: false } : null), [settings]);
 
+  /*
+   * `drawing` MEANS "A CHARACTER IS ON SCREEN", and it did not used to.
+   *
+   * It was `Boolean(stageSettings)` — true the moment SceneCanvas reported a
+   * quality tier, which happens on the canvas's very first commit: before a
+   * .glb has downloaded, before a slot has been measured, before this layer has
+   * rendered anything. CharacterSlot drops its 2D stand-in on that flag, so
+   * ANY failure after it presented to a child as an empty box rather than as
+   * the flat character the fallback exists to be.
+   *
+   * Now the frame loop reports the frames it actually drew, and a watchdog
+   * turns the flag back off when they stop — which is what a lost WebGL
+   * context looks like from here (three.js's render() early-returns while
+   * `_isContextLost`, so the loop keeps running and draws nothing). The
+   * portraits go flat instead of blank, and recover by themselves when the
+   * context is restored.
+   *
+   * STALE_MS is one second: long enough that a slow frame or a backgrounded
+   * tab's throttling never flickers a character back to 2D, short enough that
+   * a real loss is covered before a learner reads the screen.
+   */
+  const lastDrewRef = useRef(0);
+  const drawingRef = useRef(false);
+
+  const handleDrew = useCallback(() => {
+    lastDrewRef.current = Date.now();
+    if (drawingRef.current) return;
+    drawingRef.current = true;
+    onDrawing(true);
+  }, [onDrawing]);
+
   useEffect(() => {
-    onDrawing(Boolean(stageSettings));
-    return () => onDrawing(false);
-  }, [stageSettings, onDrawing]);
+    const timer = setInterval(() => {
+      if (!drawingRef.current) return;
+      if (Date.now() - lastDrewRef.current < STALE_MS) return;
+      drawingRef.current = false;
+      onDrawing(false);
+    }, STALE_MS);
+    return () => {
+      clearInterval(timer);
+      drawingRef.current = false;
+      onDrawing(false);
+    };
+  }, [onDrawing]);
 
   return (
     <SceneCanvas
@@ -97,7 +143,7 @@ export function CharacterLayerCanvas({
        */
       interactive={false}
     >
-      {stageSettings && <LayerScene slots={slots} slotsRef={slotsRef} settings={stageSettings} />}
+      {stageSettings && <LayerScene slots={slots} slotsRef={slotsRef} settings={stageSettings} onDrew={handleDrew} />}
     </SceneCanvas>
   );
 }
@@ -172,10 +218,13 @@ function LayerScene({
   slots,
   slotsRef,
   settings,
+  onDrew,
 }: {
   slots: readonly Slot[];
   slotsRef: { current: Map<string, Slot> };
   settings: QualitySettings;
+  /** Called after a frame that actually rendered at least one slot. */
+  onDrew: () => void;
 }) {
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
@@ -222,6 +271,7 @@ function LayerScene({
    * as the characters sliding into place.
    */
   useFrame(() => {
+    let drawn = 0;
     gl.info.reset();
     gl.setScissorTest(false);
     gl.clear();
@@ -319,9 +369,25 @@ function LayerScene({
       entry.group.visible = true;
       gl.render(scene, entry.camera);
       entry.group.visible = false;
+      drawn += 1;
     }
 
     gl.setScissorTest(false);
+    /*
+     * TELL THE LAYER A CHARACTER WAS ACTUALLY DRAWN.
+     *
+     * `drawing` used to mean "the quality settings resolved", which is true on
+     * the canvas's first commit — before a single .glb has downloaded, before
+     * any slot has been measured and before this loop has run once. The 2D
+     * stand-in was removed on that signal, so every downstream 3D failure
+     * presented to a child as an EMPTY BOX where a character should be. It is
+     * reproducible: background the tab, lose the WebGL context, and every
+     * portrait in the lesson goes blank rather than flat.
+     *
+     * A count of slots rendered this frame is the honest signal. It is a ref
+     * and a callback that self-guards, never per-frame React state.
+     */
+    if (drawn > 0) onDrew();
   }, 1);
 
   return (

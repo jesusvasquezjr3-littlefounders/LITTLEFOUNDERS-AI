@@ -16,7 +16,22 @@
       this one font resolving, so it must not depend on a third-party
       request that iOS Safari content blockers and locked-down school/
       corporate networks are known to drop. See src/index.css for the why.
+
+      PRELOADED, because self-hosting moved the discovery point. The browser
+      only learns this font exists when src/index.css parses — and that CSS
+      arrives with the bundle, so a 2.23 MB download starts late and
+      `font-display: block` keeps EVERY icon in the product invisible until it
+      lands. The preload starts it alongside the bundle instead. `crossorigin`
+      is required even same-origin: fonts are fetched in CORS mode, and without
+      it the preload is discarded and fetched a second time.
     -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/material-symbols-outlined.woff2"
+      crossorigin
+    />
 
     <!--
       THE BOOT VEIL (/DESIGN.md §Motion recipe 11).

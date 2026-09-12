@@ -57,4 +57,36 @@ describe('CharacterLayerProvider', () => {
     expect(container.querySelector('[data-character="zara"]')).not.toBeNull()
     expect(container.querySelector('[data-render="2d"]')).not.toBeNull()
   })
+
+  /*
+   * THE PROMISE IN THIS FILE'S OWN HEADER — "a lesson never shows a hole where
+   * a character should be" — and it was not kept.
+   *
+   * The layer's `drawing` flag used to mean "the quality settings resolved",
+   * which is true on the canvas's FIRST COMMIT: before a .glb has downloaded,
+   * before a slot is measured, before a frame has drawn anything. The 2D
+   * stand-in was dropped on that signal, so every failure after it — a slow
+   * model, a lost WebGL context, a backgrounded tab — presented to a child as
+   * an EMPTY BOX. Reproduced live in production before the fix.
+   *
+   * `drawing` now comes from the frame loop reporting frames it actually drew
+   * (CharacterLayerCanvas), with a watchdog that puts the flat characters back
+   * when they stop. jsdom cannot run that loop, so what is checkable here is
+   * the contract it depends on: while the layer is not drawing, a slot INSIDE
+   * a provider is still a visible 2D character and never an empty div. The
+   * mocked canvas never reports a draw, which is exactly that state.
+   */
+  it('a slot inside a provider stays a visible 2D character until the layer draws', () => {
+    const { container } = render(
+      <CharacterLayerProvider>
+        <CharacterSlot character="dina" />
+      </CharacterLayerProvider>,
+    )
+
+    const slot = container.querySelector('[data-character="dina"]')
+    expect(slot).not.toBeNull()
+    expect(slot?.getAttribute('data-render')).toBe('2d')
+    // The thing that actually matters: something is IN the well.
+    expect(slot?.childElementCount).toBeGreaterThan(0)
+  })
 })
