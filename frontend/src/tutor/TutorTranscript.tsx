@@ -231,7 +231,7 @@ export function TutorTranscript({
                   onClick={() => onEditLast(entry.text)}
                   aria-label={editLabel}
                   title={editLabel}
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-content-muted transition-colors hover:text-content lf-focus"
                 >
                   <Icon name="edit" className="!text-[16px]" />
                 </button>

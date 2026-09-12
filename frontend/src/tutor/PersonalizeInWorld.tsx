@@ -309,7 +309,7 @@ export function PersonalizeInWorld({
             type="button"
             onClick={cancel}
             aria-label={t('tutor.personalize.close')}
-            className="lf-press grid h-11 w-11 shrink-0 place-items-center rounded-full border border-content/15 text-content-muted transition-colors hover:bg-content/10 hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press grid h-11 w-11 shrink-0 place-items-center rounded-full border border-content/15 text-content-muted transition-colors hover:bg-content/10 hover:text-content lf-focus"
           >
             <Icon name="close" />
           </button>
@@ -407,7 +407,7 @@ export function PersonalizeInWorld({
                       aria-pressed={isLead}
                       aria-label={t('tutor.personalize.chooseTutor', { name: nameOf(id) })}
                       className={cn(
-                        'lf-pick-card lf-press flex h-full w-full flex-col items-center gap-2 p-3 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                        'lf-pick-card lf-press flex h-full w-full flex-col items-center gap-2 p-3 text-center lf-focus',
                         isLead && 'lf-pick-card-on',
                       )}
                     >
@@ -473,7 +473,7 @@ export function PersonalizeInWorld({
                             : t('tutor.personalize.inviteCompanion', { name: nameOf(id) })
                         }
                         className={cn(
-                          'lf-press absolute right-1.5 top-1.5 grid h-9 w-9 place-items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                          'lf-press absolute right-1.5 top-1.5 grid h-9 w-9 place-items-center rounded-full border transition-colors lf-focus',
                           isCompanion
                             ? 'border-delight/50 bg-delight/20 text-delight'
                             : 'border-content/15 bg-surface/70 text-content-muted hover:text-content',
@@ -510,7 +510,7 @@ export function PersonalizeInWorld({
                       aria-pressed={active}
                       aria-label={t('tutor.personalize.goToIsland', { name: islandName(id) })}
                       className={cn(
-                        'lf-pick-card lf-press flex min-h-11 flex-col gap-1 p-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                        'lf-pick-card lf-press flex min-h-11 flex-col gap-1 p-3.5 text-left lf-focus',
                         active && 'lf-pick-card-on',
                       )}
                     >
@@ -553,7 +553,7 @@ export function PersonalizeInWorld({
                       onClick={() => void setLight(id)}
                       aria-pressed={active}
                       className={cn(
-                        'lf-pick-card lf-press flex min-h-11 items-center gap-2 p-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                        'lf-pick-card lf-press flex min-h-11 items-center gap-2 p-2.5 text-left lf-focus',
                         active && 'lf-pick-card-on',
                       )}
                     >
@@ -613,7 +613,7 @@ export function PersonalizeInWorld({
                       role="switch"
                       aria-checked={on}
                       onClick={() => void toggleAdaptation(adaptation)}
-                      className="lf-config-row lf-press flex min-h-11 items-center justify-between gap-3 p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      className="lf-config-row lf-press flex min-h-11 items-center justify-between gap-3 p-3 text-left lf-focus"
                     >
                       <span className="flex min-w-0 items-center gap-2.5">
                         <span
@@ -650,7 +650,7 @@ export function PersonalizeInWorld({
           <button
             type="button"
             onClick={resetToDefaults}
-            className="lf-press flex min-h-11 items-center gap-1.5 rounded-md px-3 lf-action text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-press flex min-h-11 items-center gap-1.5 rounded-md px-3 lf-action text-content-muted transition-colors hover:text-content lf-focus"
           >
             <Icon name="refresh" className="!text-[18px]" />
             {t('tutor.personalize.defaults')}
@@ -659,7 +659,7 @@ export function PersonalizeInWorld({
             <button
               type="button"
               onClick={cancel}
-              className="lf-press min-h-11 rounded-md border border-content/15 bg-content/5 px-4 lf-action text-content transition-colors hover:bg-content/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="lf-press min-h-11 rounded-md border border-content/15 bg-content/5 px-4 lf-action text-content transition-colors hover:bg-content/10 lf-focus"
             >
               {t('tutor.personalize.cancel')}
             </button>
@@ -667,7 +667,7 @@ export function PersonalizeInWorld({
               type="button"
               onClick={confirm}
               disabled={saving}
-              className="lf-lumen-solid lf-press flex min-h-11 items-center gap-1.5 rounded-md bg-accent px-5 lf-action text-on-accent disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="lf-lumen-solid lf-press flex min-h-11 items-center gap-1.5 rounded-md bg-accent px-5 lf-action text-on-accent disabled:opacity-50 lf-focus"
             >
               {t('tutor.personalize.saveAndContinue')}
               <Icon name="auto_awesome" className="!text-[18px]" />

@@ -2764,6 +2764,38 @@
   }
 
   /*
+   * THE KEYBOARD'S OWN RING — one, in `outline`, because `ring` destroys the
+   * material it lands on.
+   *
+   * Two facts that only matter together. This stylesheet contains no
+   * `:focus-visible` rule at all, so every focusable control on the Tutor route
+   * hand-wrote the same three utilities — `focus-visible:outline-none
+   * focus-visible:ring-2 focus-visible:ring-primary`, sixteen times. And
+   * Tailwind's `ring-*` is not an outline: it compiles to `box-shadow: var(
+   * --tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)`, from
+   * the utilities layer, which OVERRIDES a `box-shadow` set in the components
+   * layer.
+   *
+   * `.lf-lumen`'s box-shadow is the material: the specular lip, two edge
+   * layers that track the sun, and the one drop shadow that agrees with it. So
+   * on every Lumen control, focusing it with a keyboard replaced the whole
+   * plate with a flat indigo halo. `MicOrb` is the proof and the worst case —
+   * `'lf-settle lf-lumen'` and `focus-visible:ring-2` land on the SAME element,
+   * so the largest, most important control in the product loses its lip, its
+   * edge and its seat at the exact moment a keyboard user needs to see where
+   * they are.
+   *
+   * `outline` is drawn outside the box, composes with any box-shadow, and has
+   * followed `border-radius` in every engine since 2021 — so one rule serves a
+   * pill, a plate and the orb without knowing which it is. The offset keeps it
+   * clear of the lip rather than sitting on it.
+   */
+  .lf-focus:focus-visible {
+    outline: 3px solid rgb(var(--lf-primary));
+    outline-offset: 2px;
+  }
+
+  /*
    * A disabled control keeps its LOOK and loses its physics. Flattening it
    * entirely makes it read as a label; leaving the press makes it read as a
    * control that swallowed the tap.

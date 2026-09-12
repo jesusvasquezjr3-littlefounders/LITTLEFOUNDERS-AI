@@ -255,7 +255,7 @@ function LabSwitch({
       onClick={onClick}
       className={cn(
         'lf-caption shrink-0 whitespace-nowrap rounded-sm px-2 py-1 transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        'lf-focus',
         on ? 'bg-primary text-on-primary' : 'bg-surface-sunken text-content-muted hover:text-content',
       )}
     >

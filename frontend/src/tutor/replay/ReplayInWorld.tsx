@@ -720,7 +720,7 @@ function ReplayTranscript({
               aria-current={isCurrent ? 'true' : undefined}
               className={cn(
                 'block w-full min-h-11 rounded-md px-3 py-2 text-left transition-colors',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                'lf-focus',
                 beat.kind === 'learner' ? 'bg-accent-soft' : 'bg-surface-sunken',
                 // Past and present at full ink; what has not played yet is quiet.
                 beat.index <= current ? 'text-content' : 'text-content-muted',

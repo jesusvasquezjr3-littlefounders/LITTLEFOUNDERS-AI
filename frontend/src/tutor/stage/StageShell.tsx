@@ -767,7 +767,7 @@ function StageShellInner({
           // because the row is `pointer-events-none` so the 3D stage stays
           // draggable in the gap. Found by `verify:tutor-ui`: without this the
           // only way off the route hit-tested to the canvas, on all 56 fixtures.
-          className="pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="pointer-events-auto lf-focus"
         >
           <Icon name="arrow_back" />
           {/*

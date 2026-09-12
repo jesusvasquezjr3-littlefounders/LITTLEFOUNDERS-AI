@@ -844,7 +844,7 @@ export function LessonPlate({
               // `touch-none` or the browser scrolls the page instead of giving
               // us the pointermove stream, and the sheet simply will not move.
               className={cn(
-                'flex min-h-11 flex-1 cursor-grab touch-none items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                'flex min-h-11 flex-1 cursor-grab touch-none items-center rounded-md lf-focus',
                 resting ? 'gap-2 px-2 text-left' : 'justify-center',
               )}
             >
