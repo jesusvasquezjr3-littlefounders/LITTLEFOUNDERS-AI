@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { api, type ApiError } from '@/lib/api';
 import { getAnonId } from '@/lib/visitor';
+import { clearCoursesCache } from '@/routes/app/learn/coursesCache';
 
 /*
  * Session state for the whole app. Tokens live in localStorage (SPA + Core
@@ -341,6 +342,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     const token = sessionRef.current?.accessToken;
+    // Progress is personal: a cache that outlived a sign-out would show the
+    // next account this one's shelf. The cache checks the user id too, but one
+    // child seeing another's progress is not a thing to leave to a single guard.
+    clearCoursesCache();
     persist(null);
     setProfile(null);
     setRoles([]);

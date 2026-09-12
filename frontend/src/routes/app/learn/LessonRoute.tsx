@@ -12,6 +12,7 @@ import type { LessonDocument } from '@/lesson-engine/core/types';
 import type { AudioManifest } from '@/lesson-engine/player/narration';
 import type { ServerCompletion } from '@/lesson-engine/player/completion';
 import { createCoreGrader } from './coreGrader';
+import { clearCoursesCache } from './coursesCache';
 import { coursePath, placementPath } from './paths';
 
 /*
@@ -118,6 +119,13 @@ export function LessonRoute() {
         })(),
       },
     });
+    /*
+     * The shelf's cached progress is now wrong — this lesson just changed it.
+     * Dropped whether or not the persist succeeded: on failure the player
+     * falls back to its own numbers and the server may still have recorded
+     * the attempt, so a cache kept here could show a stale count either way.
+     */
+    clearCoursesCache();
     return error ? null : data;
   }
 

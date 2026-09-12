@@ -7,6 +7,7 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { CourseCarousel, type CarouselCourse } from '@/routes/app/learn/CourseCarousel';
 import { ChapterLessons } from '@/routes/app/learn/ChapterLessons';
+import { readCoursesCache, writeCoursesCache } from '@/routes/app/learn/coursesCache';
 import { findCurrentChapter, type CourseTree, type CurrentChapter } from '@/routes/app/learn/types';
 
 /*
@@ -25,7 +26,7 @@ import { findCurrentChapter, type CourseTree, type CurrentChapter } from '@/rout
  * the space the hero already had.
  */
 
-interface Course extends CarouselCourse {
+export interface Course extends CarouselCourse {
   lessonCount: number;
 }
 
@@ -61,7 +62,7 @@ type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { s
 
 export function LearnPage() {
   const { t, i18n } = useTranslation();
-  const { profile, getToken } = useAuth();
+  const { profile, getToken, session } = useAuth();
   // The filter group is NAMED by its lockup rather than by a hidden label, so
   // the heading a sighted learner reads and the name the group announces are
   // the same string (/DESIGN.md §The study's component set).
@@ -78,18 +79,37 @@ export function LearnPage() {
    */
   const [chapter, setChapter] = useState<{ slug: string; current: CurrentChapter } | null>(null);
 
+  /*
+   * STALE-WHILE-REVALIDATE. The shelf a learner already saw paints
+   * immediately and a fresh read always goes out behind it, so the
+   * /learn -> lesson -> back -> /learn loop — which IS the product — stops
+   * showing a spinner for data that has not changed. The cache is dropped
+   * when a lesson completes (LessonRoute) precisely because that is the one
+   * moment the progress here DID change and a stale number would read as a
+   * bug; that path takes the honest spinner.
+   */
+  const userId = session?.user.id ?? null;
+
   useEffect(() => {
     let cancelled = false;
+    const cached = readCoursesCache(userId);
+    if (cached) setState({ status: 'ready', courses: cached });
     void (async () => {
       const token = await getToken();
       const { data, error } = await api<{ courses: Course[] }>('/learn/courses', { token });
       if (cancelled) return;
-      setState(error ? { status: 'error', code: error.code } : { status: 'ready', courses: data.courses });
+      if (error) {
+        // A failed revalidation must not blank a shelf the learner is reading.
+        if (!cached) setState({ status: 'error', code: error.code });
+        return;
+      }
+      writeCoursesCache(userId, data.courses);
+      setState({ status: 'ready', courses: data.courses });
     })();
     return () => {
       cancelled = true;
     };
-  }, [getToken]);
+  }, [getToken, userId]);
 
   const locale = i18n.resolvedLanguage ?? 'en-US';
   const firstName = (profile?.display_name ?? '').split(/\s+/)[0] ?? '';
