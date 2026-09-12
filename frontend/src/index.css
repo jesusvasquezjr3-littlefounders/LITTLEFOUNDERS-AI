@@ -26,14 +26,30 @@
  * this app's own static assets, same-origin, same caching and reliability
  * guarantee as everything else in `public/`.
  *
- * The file is the exact variable-font woff2 Google Fonts itself serves for
- * this family (fetched once, vendored — see frontend/README.md), so it still
- * carries the opsz/wght/FILL/GRAD axes `.lf-icon`/`.lf-icon-fill` rely on.
+ * The file is Google's own variable-font woff2 for this family (fetched once,
+ * vendored — see frontend/README.md), INSTANCED down to the one axis this
+ * product actually varies. Google ships FILL, opsz and wght, which is 2.34 MB
+ * of every weight at every optical size; `.lf-icon` below fixes the weight at
+ * 400 and `.lf-icon-fill` toggles FILL, and nothing anywhere varies the other
+ * two. Pinning wght=400 and opsz=24 leaves FILL live and takes the file to
+ * 457 KB — 80.5% smaller, with all 6,597 glyphs and all 4,386 cmap entries
+ * intact. Nothing is subset AWAY on purpose: coursegen may emit any Material
+ * Symbols name it likes, and a missing glyph would quietly become the `help`
+ * fallback across the corpus.
+ *
+ * src/__tests__/iconFont.test.ts guards it and carries the re-pinning command.
+ *
+ * `font-display: block` is deliberate and stays: a swap would flash the raw
+ * ligature text ("play_circle") in place of every icon, which is the defect
+ * Icon.tsx's runtime fallback exists to prevent. It also means the font is
+ * render-blocking for icons, which is why index.html preloads it — and why
+ * the 1.9 MB this instancing removes was worth removing.
  */
 @font-face {
   font-family: 'Material Symbols Outlined';
   font-style: normal;
-  font-weight: 400 700;
+  /* Pinned to 400 in the file itself; the range is what the family declares. */
+  font-weight: 400;
   font-display: block;
   src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
 }
