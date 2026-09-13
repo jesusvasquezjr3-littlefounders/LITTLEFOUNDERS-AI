@@ -588,6 +588,13 @@ export function MicOrb({
     <HudPlate
       shape="plate"
       /*
+       * A stable name for the geometry tools — see `SpeechCaption`'s own. This
+       * plate exists only when the microphone has a REASON to print, and the
+       * reason is a sentence that changes with the cause and the locale, so a
+       * fixture naming it by content could not survive either.
+       */
+      data-hud-surface="mic reason"
+      /*
        * `min-w-0`, NOT `shrink-0` — found live, at a phone width, sharing a
        * row with the composer (StageShell.tsx): this plate's own `max-w` is
        * `min(38ch,86vw)`, sized for standing ALONE, and a flex sibling that

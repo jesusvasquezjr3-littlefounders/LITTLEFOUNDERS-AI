@@ -22,25 +22,19 @@
  * the evidence a human pastes in, deliberately, when the layout changed on
  * purpose.
  *
- * WHAT IT FOUND ON ITS FIRST RUN, AND WHY THE FIXTURE IS NOT YET UPDATED FROM
- * IT (2026-09-12). At 375x812 in en-US, with the sheet at rest, the speech
- * caption overlaps the way-out chip by 11x14 px and the session menu by 73x14.
- * The caption is registered `avoid: true`, so it is supposed to be displaced
- * out of both — and at 375 it cannot do that horizontally: it is 258 px wide
- * and the gap between the two ends of the header row is 174, so the only
- * solution is vertical and the escape settles for a partial horizontal move
- * instead.
+ * WHAT IT FOUND ON ITS FIRST RUN (2026-09-12). At 375x812 in en-US, with the
+ * sheet at rest, the speech caption overlapped the way-out chip by 11x14 px and
+ * the session menu by 73x14 — while the projector's own arithmetic said it
+ * overlapped nothing, correctly. Two true statements about two different
+ * positions: the escape runs on the TARGET and the node paints at the SMOOTHED
+ * position, so a moving camera carried it through chrome the escape had already
+ * cleared. `ScreenAnchor` now re-applies the escape to the painted box as well;
+ * the mechanism and the measurement are recorded there.
  *
- * It is a real defect in `hudSpace`'s escape for the "two reserved rects, no
- * horizontal room" case, not in this tool, and the old fixture could not have
- * caught it: until the anchor-release fix landed in the same branch, the
- * caption was pinned at (0, 0) by stale inline styles and never ran that code
- * at all. `verify:tutor-ui` does not catch it either, because its phone
- * configuration is es-MX, where the same sentence is short enough to clear.
- *
- * So: this tool works, the finding is recorded, and `hudSpace.test.ts` keeps
- * its historical numbers until the escape is fixed. Pasting a capture of a
- * broken arrangement would turn a collision into a baseline.
+ * Neither existing gate could have caught it. `hudSpace.test.ts` is a fixture,
+ * so it moves only when somebody moves it, and `verify:tutor-ui` drives its
+ * phone configuration in es-MX, where the same sentence is short enough to
+ * clear on its own. This tool found it on the first run it was ever given.
  */
 import { spawn } from 'node:child_process'
 import { tmpdir } from 'node:os'
@@ -117,7 +111,8 @@ const SURVEY =
   '   const box = node.getBoundingClientRect();' +
   '   if (box.width <= 0 || box.height <= 0) continue;' +
   '   if (found.some((e) => e.node.contains(node))) continue;' +
-  '   const name = (node.getAttribute("aria-label") || "").trim() ||' +
+  '   const name = (node.getAttribute("data-hud-surface") || "").trim() ||' +
+  '     (node.getAttribute("aria-label") || "").trim() ||' +
   '     visibleText(node).slice(0, 32) || "unnamed surface";' +
   '   found.push({ node, name, left: box.left, top: box.top, width: box.width, height: box.height });' +
   ' }' +

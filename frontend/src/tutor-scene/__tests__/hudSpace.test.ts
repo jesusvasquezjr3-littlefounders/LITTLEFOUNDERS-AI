@@ -205,64 +205,77 @@ describe('escapeReserved', () => {
  * re-capture it when the layout changes on purpose, and the lab's live readout
  * is what catches it in the meantime.
  *
+ * RE-CAPTURE IT WITH `node scripts/capture-hud-space.mjs` (2026-09-12). That
+ * sentence above had no tool behind it for as long as it has existed, which
+ * made "re-capture" mean "do the original verification pass again, somehow" —
+ * and a fixture nobody can regenerate is one that quietly stops describing the
+ * product while its assertions keep passing, because rectangles in a file do
+ * not move. The script drives the same lab through the same phases at the same
+ * two viewports, runs the same survey the live readout uses, and prints this
+ * block ready to paste.
+ *
+ * Its first run found a defect these numbers had been hiding: the caption over
+ * the way-out chip at 375, by 11x14. The escape ran on the node's TARGET while
+ * the node painted at its SMOOTHED position, so a moving camera carried it
+ * through chrome the arithmetic had already cleared. Fixed in `ScreenAnchor`;
+ * the numbers below are from after that.
+ *
  * The three phases below are the ones the defects were in; the other four were
  * measured in the same pass and were clean.
  */
 const MEASURED: Record<string, NamedRect[]> = {
   'introducing@375': [
-    { name: 'way out', rect: rect(16, 16, 44, 44) },
-    { name: 'greeting caption', rect: rect(68, 4, 265, 67) },
-    { name: 'offer: course topic', rect: rect(49, 423, 135, 47) },
-    { name: 'offer: practise', rect: rect(191, 423, 135, 61) },
-    { name: 'offer: what does saving mean', rect: rect(49, 490, 135, 64) },
-    { name: 'offer: ask me anything', rect: rect(191, 490, 135, 47) },
-    { name: 'change my island', rect: rect(26, 612, 154, 44) },
-    { name: 'past conversations', rect: rect(188, 612, 161, 44) },
-    { name: 'mic orb', rect: rect(140, 664, 96, 96) },
-    { name: 'mic line', rect: rect(95, 768, 184, 32) },
+    { name: 'way-out', rect: rect(16, 16, 48, 48) },
+    { name: 'Hi Robi. I\'m Dr. Rho.play_arrowR', rect: rect(11, 73, 353, 451) },
+    { name: 'landscapeMy island', rect: rect(125, 592, 125, 48) },
+    { name: 'historyPast conversationsexpand_', rect: rect(79, 648, 217, 48) },
+    { name: 'or just talk to me', rect: rect(140, 704, 96, 96) },
   ],
   'conversing@375': [
-    { name: 'way out', rect: rect(16, 16, 44, 44) },
-    { name: 'speech caption', rect: rect(68, 9, 266, 88) },
-    { name: 'lesson sheet at PEEK', rect: rect(16, 708, 343, 88) },
-    { name: 'mic orb', rect: rect(19, 560, 96, 96) },
-    { name: 'mic line', rect: rect(21, 664, 93, 32) },
-    { name: 'composer', rect: rect(127, 604, 229, 48) },
+    { name: 'way-out', rect: rect(16, 16, 48, 48) },
+    { name: 'menuMenuexpand_more', rect: rect(238, 16, 121, 48) },
+    { name: 'speech caption', rect: rect(53, 71, 267, 134) },
+    { name: 'The board', rect: rect(16, 708, 343, 88) },
+    { name: 'Hold to talk', rect: rect(19, 600, 96, 96) },
+    { name: 'send', rect: rect(127, 626, 229, 44) },
   ],
   'closing@375': [
-    { name: 'way out', rect: rect(16, 16, 44, 44) },
-    { name: 'see you soon', rect: rect(26, 558, 323, 118) },
-    { name: 'start another session', rect: rect(86, 692, 203, 48) },
-    { name: 'past conversations', rect: rect(119, 752, 137, 44) },
+    { name: 'way-out', rect: rect(16, 16, 48, 48) },
+    { name: 'See you soon!Saved. You can list', rect: rect(27, 644, 320, 92) },
+    { name: 'Start again', rect: rect(44, 744, 110, 48) },
+    { name: 'historyWhat we didexpand_more', rect: rect(162, 744, 169, 48) },
   ],
   'unavailable@375': [
-    { name: 'way out', rect: rect(16, 16, 44, 44) },
-    { name: 'mic orb', rect: rect(140, 632, 96, 96) },
-    { name: 'the one explanation', rect: rect(26, 736, 323, 64) },
+    { name: 'way-out', rect: rect(16, 16, 48, 48) },
+    { name: 'mic reason', rect: rect(40, 644, 295, 156) },
   ],
   'introducing@1280': [
-    { name: 'way out', rect: rect(24, 24, 155, 44) },
-    { name: 'offer: course topic', rect: rect(214, 479, 214, 45) },
-    { name: 'offer: practise', rect: rect(435, 475, 174, 53) },
-    { name: 'offer: what does saving mean', rect: rect(617, 479, 271, 45) },
-    { name: 'offer: ask me anything', rect: rect(896, 479, 170, 45) },
-    { name: 'change my island', rect: rect(478, 572, 154, 44) },
-    { name: 'past conversations', rect: rect(641, 572, 161, 44) },
-    { name: 'mic orb', rect: rect(584, 624, 112, 112) },
-    { name: 'mic line', rect: rect(548, 744, 184, 32) },
+    { name: 'way-out', rect: rect(24, 24, 164, 48) },
+    { name: 'Hi Robi. I\'m Dr. Rho.play_arrowR', rect: rect(176, 72, 928, 417) },
+    { name: 'landscapeMy island', rect: rect(465, 608, 125, 48) },
+    { name: 'historyPast conversationsexpand_', rect: rect(598, 608, 217, 48) },
+    { name: 'or just talk to me', rect: rect(584, 664, 112, 112) },
+  ],
+  'conversing@1280': [
+    { name: 'way-out', rect: rect(24, 24, 164, 48) },
+    { name: 'menuMenuexpand_more', rect: rect(1052, 24, 121, 48) },
+    { name: 'Finish', rect: rect(1181, 24, 75, 48) },
+    { name: 'speech caption', rect: rect(166, 80, 512, 114) },
+    { name: 'The board', rect: rect(846, 80, 410, 544) },
+    { name: 'Hold to talk', rect: rect(366, 612, 112, 112) },
+    { name: 'send', rect: rect(186, 732, 472, 44) },
   ],
   'closing@1280': [
-    { name: 'way out', rect: rect(24, 24, 155, 44) },
-    { name: 'see you soon', rect: rect(448, 594, 384, 118) },
-    { name: 'start another session', rect: rect(464, 728, 203, 48) },
-    { name: 'past conversations', rect: rect(679, 730, 137, 44) },
+    { name: 'way-out', rect: rect(24, 24, 164, 48) },
+    { name: 'See you soon!Saved. You can list', rect: rect(480, 614, 320, 98) },
+    { name: 'Start again', rect: rect(496, 720, 110, 48) },
+    { name: 'historyWhat we didexpand_more', rect: rect(614, 720, 169, 48) },
   ],
   'unavailable@1280': [
-    { name: 'way out', rect: rect(24, 24, 155, 44) },
-    { name: 'mic orb', rect: rect(584, 608, 112, 112) },
-    { name: 'the one explanation', rect: rect(451, 728, 379, 48) },
+    { name: 'way-out', rect: rect(24, 24, 164, 48) },
+    { name: 'mic reason', rect: rect(493, 604, 295, 172) },
   ],
-};
+}
 
 describe('the measured stage', () => {
   for (const [where, surfaces] of Object.entries(MEASURED)) {
@@ -272,32 +285,41 @@ describe('the measured stage', () => {
   }
 
   it('has no microphone at all in the goodbye', () => {
-    // The other five phases in the table carry one. This is the difference the
+    // The other phases in the table carry one. This is the difference the
     // owner's phone paid for: the orb was on the button they needed.
     const names = (MEASURED['closing@375'] ?? []).map((s) => s.name);
-    expect(names).not.toContain('mic orb');
-    expect(names).toContain('start another session');
+    expect(names.some((name) => /talk|mic/i.test(name))).toBe(false);
+    expect(names).toContain('Start again');
   });
 
   it('explains the unreachable API exactly once, at both widths', () => {
     for (const key of ['unavailable@375', 'unavailable@1280']) {
-      const explanations = (MEASURED[key] ?? []).filter((s) => s.name === 'the one explanation');
+      const explanations = (MEASURED[key] ?? []).filter((s) => s.name === 'mic reason');
       expect(explanations, key).toHaveLength(1);
     }
   });
 
+  /*
+   * Only `conversing`, where a caption exists at all: the arrival's greeting is
+   * printed inside the map sheet rather than over a crown, so `introducing` has
+   * no anchored caption to keep clear of anything.
+   *
+   * The two surfaces are found by their `data-hud-surface` names rather than by
+   * their text. That is not tidiness — this fixture is re-captured by
+   * `scripts/capture-hud-space.mjs`, and a surface named by whatever the tutor
+   * happened to be saying, in whatever locale, is a surface this assertion
+   * could not find twice running.
+   */
   it('keeps the caption clear of the way out at 375, where it used to sit under it', () => {
-    for (const key of ['introducing@375', 'conversing@375']) {
-      const surfaces = MEASURED[key] ?? [];
-      const wayOut = surfaces.find((s) => s.name === 'way out');
-      const caption = surfaces.find((s) => s.name.endsWith('caption'));
-      expect(wayOut, key).toBeDefined();
-      expect(caption, key).toBeDefined();
-      // And the way out is the SMALL one below `md:`. A 155 px labelled chip
-      // spans the caption's only horizontal escape route on a 375 px screen.
-      expect(wayOut?.rect.width, key).toBeLessThan(60);
-      expect(rectsOverlap(wayOut!.rect, caption!.rect), key).toBe(false);
-    }
+    const surfaces = MEASURED['conversing@375'] ?? [];
+    const wayOut = surfaces.find((s) => s.name === 'way-out');
+    const caption = surfaces.find((s) => s.name.endsWith('caption'));
+    expect(wayOut).toBeDefined();
+    expect(caption).toBeDefined();
+    // And the way out is the SMALL one below `md:`. A 155 px labelled chip
+    // spans the caption's only horizontal escape route on a 375 px screen.
+    expect(wayOut?.rect.width).toBeLessThan(60);
+    expect(rectsOverlap(wayOut!.rect, caption!.rect)).toBe(false);
   });
 });
 

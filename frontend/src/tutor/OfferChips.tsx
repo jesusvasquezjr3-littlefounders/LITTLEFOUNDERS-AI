@@ -625,7 +625,17 @@ export function OfferChips({
   const status = (
     <>
       {cannotServe && (
-        <HudPlate shape="plate" className="pointer-events-none flex flex-col items-center gap-2 self-center">
+        <HudPlate
+          shape="plate"
+          /*
+           * A stable name for the geometry tools — see `SpeechCaption`'s own.
+           * This plate's text is the refusal itself, which changes with the
+           * REASON as well as the locale, so a fixture that named it by content
+           * could not survive a different error.
+           */
+          data-hud-surface="tutor unavailable"
+          className="pointer-events-none flex flex-col items-center gap-2 self-center"
+        >
           <span className="lf-body" role="status">
             {sessionCapReached
               ? t('tutor.startError.SESSION_LIMIT', {

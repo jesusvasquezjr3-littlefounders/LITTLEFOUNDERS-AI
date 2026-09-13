@@ -129,7 +129,7 @@ const OVERLAPS =
   ' grab("caption", document.querySelector(".lf-speech"));' +
   ' grab("lesson-plate", document.querySelector("[data-plate-body]"));' +
   ' grab("dock", document.querySelector(\'[data-mic-dock]\'));' +
-  ' grab("way-out", document.querySelector(\'[data-hud-exit]\'));' +
+  ' grab("way-out", document.querySelector(\'[data-hud-surface="way-out"]\'));' +
   ' document.querySelectorAll(\'section[id^="hud-disclosure-"]\').forEach((el, i) => {' +
   '   if (!el.hidden) grab("panel:" + (el.id.split("-")[2] || i), el); });' +
   ' const out = [];' +
@@ -143,7 +143,7 @@ const OVERLAPS =
    * measured or the run must say it could not be.
    */
   ' if (!rects.some((r) => r.name === "way-out"))' +
-  '   out.push("way-out rect not found: [data-hud-exit] matched nothing, so this audit measured one surface fewer than it thinks");' +
+  '   out.push("way-out rect not found: the data-hud-surface hook matched nothing, so this audit measured one surface fewer than it thinks");' +
   ' for (let i = 0; i < rects.length; i += 1) for (let j = i + 1; j < rects.length; j += 1) {' +
   '   const a = rects[i], b = rects[j];' +
   '   const w = Math.min(a.r, b.r) - Math.max(a.l, b.l);' +

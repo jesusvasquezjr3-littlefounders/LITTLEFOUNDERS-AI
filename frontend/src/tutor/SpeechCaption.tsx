@@ -417,6 +417,17 @@ export function SpeechCaption({
       <HudPlate
         shape="plate"
         /*
+         * A stable name for the tools that measure geometry — the lab's surface
+         * survey and the `hudSpace` fixture captured from it. On the PLATE and
+         * not on the positioned wrapper above, because the survey walks
+         * `.lf-lumen` and the wrapper is not one. Without it, the single most
+         * important surface on the stage is named by whatever the tutor happens
+         * to be saying, in whatever locale — which makes a golden fixture
+         * impossible to re-capture without rewriting the assertions that read
+         * it by name.
+         */
+        data-hud-surface="speech caption"
+        /*
          * aria-live="polite" and the FULL text, not the typewriter slice: a
          * screen reader must announce the sentence once, when it is complete,
          * not stutter through it two characters at a time.

@@ -796,13 +796,14 @@ function StageShellInner({
            */
           aria-label={t('tutor.stage.leave')}
           /*
-           * A stable hook for the overlap audit. It is found by NAME everywhere
-           * else, which is right for a reachability sweep and useless for a
-           * geometry one: `verify:tutor-ui` needs this rect regardless of
-           * locale, and in production a speech card once covered all 152x48 px
-           * of it while every gate stayed green.
+           * A stable name for the two things that measure geometry: the overlap
+           * audit in `verify:tutor-ui`, and the lab's surface survey (and the
+           * `hudSpace` fixture captured from it). Both need this rect
+           * regardless of locale — in production a speech card once covered all
+           * 152x48 px of it while every gate stayed green — and a name derived
+           * from the visible label is a name that changes with the language.
            */
-          data-hud-exit=""
+          data-hud-surface="way-out"
           onClick={() => navigate(APP_HOME)}
           // It is a child of the header row now, so it neither positions itself nor
           // carries its own z-index — and it MUST opt back into pointer events,

@@ -692,6 +692,48 @@ export function AnchorProjector() {
           entry.scale += (scale - entry.scale) * follow;
         }
 
+        /*
+         * AND THE ESCAPE IS RE-APPLIED WHERE THE NODE ACTUALLY IS.
+         *
+         * The escape above runs on the TARGET, and the node is painted at the
+         * SMOOTHED position — so it guarantees the destination is clear and
+         * says nothing about the journey. While the camera moves, the follow
+         * carries the node through everything between where it was and where
+         * it is going, including the chrome the escape had already cleared.
+         *
+         * Caught by `capture-hud-space.mjs` at 375x812 in `conversing`: the
+         * projector's own box was (52, 84, 263, 152) and overlapped nothing,
+         * the escape correctly returned zero, and the painted box was
+         * (53, 50, 258, 130) — across the way-out chip by 11x14 and the session
+         * menu by 73x14. Two true statements about two different positions.
+         *
+         * It corrects the SMOOTHED position rather than the target, and only
+         * ever outward: a node already clear is untouched, so this costs one
+         * rect test per avoiding node per frame and changes nothing about the
+         * ease. The caption is the only node on the route that opts in.
+         *
+         * The scaled box, not the authored one. `halfWidth`/`halfHeight` are
+         * the unscaled layout measure and the node paints at `entry.scale` —
+         * at a close-up that is the difference between a 152 px box and the
+         * 130 px one a learner can actually see covering the way out.
+         */
+        if (entry.avoid && halfWidth > 0 && halfHeight > 0 && reserved.current.length > 0) {
+          const paintedHalfW = halfWidth * entry.scale;
+          const paintedHalfH = halfHeight * entry.scale;
+          const settle = escapeReserved(
+            {
+              left: entry.x - paintedHalfW,
+              top: entry.y - paintedHalfH,
+              width: paintedHalfW * 2,
+              height: paintedHalfH * 2,
+            },
+            reserved.current,
+            { width: view.current.width, height: view.current.height },
+          );
+          entry.x += settle.dx;
+          entry.y += settle.dy;
+        }
+
         if (entry.culled) {
           entry.culled = false;
           hide(entry.element, false);

@@ -209,8 +209,18 @@ function surveyHudSurfaces(): NamedRect[] {
      * in every fixture captured from it. Element text only, style and script
      * skipped.
      */
+    /*
+     * `data-hud-surface` FIRST, where a surface has bothered to name itself.
+     * The way out and the speech caption are the two the fixture's own tests
+     * refer to by name, and deriving those names from content made them a
+     * function of the tutor's current sentence and the locale — a fixture that
+     * cannot be re-captured without rewriting the assertions that read it.
+     */
     const name =
-      node.getAttribute('aria-label')?.trim() || visibleText(node).slice(0, 32) || 'unnamed surface';
+      node.getAttribute('data-hud-surface')?.trim() ||
+      node.getAttribute('aria-label')?.trim() ||
+      visibleText(node).slice(0, 32) ||
+      'unnamed surface';
     found.push({
       node,
       surface: { name, rect: { left: box.left, top: box.top, width: box.width, height: box.height } },
