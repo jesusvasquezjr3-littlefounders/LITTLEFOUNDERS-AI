@@ -81,10 +81,13 @@ jobs:
   browser-gates:
     needs: ci
     runs-on: ubuntu-latest
-    # ~20 min for lesson-engine, ~8 for tutor-ui, ~10 for a11y, measured on a
-    # developer machine; runners are slower and a timeout kill reads as a
-    # product failure rather than a slow one.
-    timeout-minutes: 60
+    # ~20 min for lesson-engine, ~8 for tutor-ui, ~10 for a11y on a developer
+    # machine — but the first run that ever reached this job measured
+    # lesson-engine alone at 27 min on the runner, which leaves the other two
+    # racing a 60-minute budget they were never measured against. A timeout
+    # kill reads as a product failure rather than a slow one, so the budget is
+    # generous on purpose: these gates are the backstop, not the bottleneck.
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: frontend

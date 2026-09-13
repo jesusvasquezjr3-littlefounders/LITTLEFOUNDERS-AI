@@ -210,3 +210,34 @@ export async function openPage(browserUrl, { width, height, dark }) {
 
   return page
 }
+
+/**
+ * Loads the root route and waits for the app to mount, BEFORE a gate navigates
+ * to one of the `/dev/*` labs.
+ *
+ * Navigating a cold Vite straight at a lazy route does not fail, it hangs: the
+ * app never mounts, `#root` stays empty, and the gate's own 60-second poll
+ * expires with ZERO console errors and ZERO failed requests to say why. It then
+ * reports something that sounds like a product defect — "timed out waiting for
+ * lab chrome" — when the truth is that the first page load was still paying for
+ * Vite's dependency optimisation.
+ *
+ * `verify-lesson-engine` hit this and solved it inline. Its two siblings did
+ * not, and the difference only showed up the first time they ran on a cold
+ * 2-vCPU runner: a developer machine has a warm `node_modules/.vite` from the
+ * last run, so the race is invisible there. This lives here so the next gate
+ * inherits the answer instead of rediscovering it.
+ *
+ * The root route is the right place to pay that cost: nothing on it is lazy, so
+ * there is no race to lose. This removes a start-up race rather than widening a
+ * timeout around it.
+ */
+export async function warmDevServer(page, baseUrl, { tries = 60 } = {}) {
+  const MOUNTED = '(document.getElementById("root") || {innerHTML: ""}).innerHTML.length > 0'
+  await page.send('Page.navigate', { url: `${baseUrl}/` })
+  for (let attempt = 0; attempt < tries; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    if (await page.evaluate(MOUNTED)) return true
+  }
+  return false
+}

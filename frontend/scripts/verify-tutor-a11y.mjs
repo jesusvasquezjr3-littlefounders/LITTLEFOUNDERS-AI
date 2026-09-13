@@ -109,7 +109,7 @@ import { spawn } from 'node:child_process'
 import { setTimeout as sleep } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 
-import { launchBrowser, openPage } from './lesson-engine/browser.mjs'
+import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 const VITE_BIN = join(HERE, '..', 'node_modules', 'vite', 'bin', 'vite.js')
@@ -220,13 +220,30 @@ async function pressSwitch(page, label) {
   await sleep(SETTLE_MS)
 }
 
+/* Reports the margin on success and the page's actual state on timeout — the
+ * same instrumentation as verify-tutor-ui, and for the same reason: a bare
+ * "timed out" cannot tell a broken Tutor from a dev server that was still
+ * starting, and on CI each guess costs a 25-minute round trip. */
 async function waitFor(page, expression, ms, what) {
-  const until = Date.now() + ms
+  const started = Date.now()
+  const until = started + ms
   while (Date.now() < until) {
-    if (await page.evaluate(expression)) return
+    if (await page.evaluate(expression)) {
+      const took = Date.now() - started
+      if (took > 2000) console.log(`  [wait] ${what}: ${(took / 1000).toFixed(1)}s of a ${ms / 1000}s budget`)
+      return
+    }
     await sleep(400)
   }
-  throw new Error(`timed out waiting for ${what}`)
+  const seen = await page.evaluate(
+    '(() => { const r = document.getElementById("root");' +
+      ' return JSON.stringify({ readyState: document.readyState,' +
+      ' rootHtml: r ? r.innerHTML.length : -1,' +
+      ' labChrome: document.querySelectorAll("[data-lab-chrome]").length,' +
+      ' text: (document.body.innerText || "").slice(0, 120) }) })()',
+  )
+  console.log(`  [timeout] ${what} — page was: ${seen}`)
+  throw new Error(`timed out waiting for ${what} after ${((Date.now() - started) / 1000).toFixed(1)}s`)
 }
 
 /**
@@ -336,6 +353,18 @@ const { child, browser } = await launchBrowser(join(tmpdir(), `lf-tutor-a11y-${D
 let failures = 0
 const contrastNotes = []
 
+/*
+ * Same cold-start race as its two siblings: a lazy lab route reached before
+ * Vite has finished optimising dependencies never mounts, and this gate's poll
+ * then blames "lab chrome". See warmDevServer's note.
+ */
+{
+  const warm = await openPage(browser, { width: 1280, height: 900, dark: false })
+  if (!(await warmDevServer(warm, server.url))) {
+    console.log('  [warm-up] the root route never mounted; continuing, the lab poll will report it')
+  }
+}
+
 try {
   for (const [tag, viewport, locale] of [
     ['desktop-en', { width: 1280, height: 900, dark: false }, 'en-US'],
@@ -344,7 +373,9 @@ try {
   ]) {
     const page = await openPage(browser, viewport)
     await page.send('Page.navigate', { url: `${server.url}/dev/tutor-lab` })
-    await waitFor(page, '!!document.querySelector("[data-lab-chrome]")', 60_000, 'lab chrome')
+    // 150s for the same reason as verify-tutor-ui: a dev-server cold-mount
+    // budget for a 2-vCPU runner serving unbundled ESM, not a product SLO.
+    await waitFor(page, '!!document.querySelector("[data-lab-chrome]")', 150_000, 'lab chrome')
     const open = await page.evaluate(switchCoords('conversing'))
     if (!open) await pressSwitch(page, 'lab')
     await waitFor(page, 'document.body.innerText.includes("stage ready")', 90_000, 'stage ready')
@@ -353,7 +384,15 @@ try {
     // ---- every stage phase, in the lab's own order, each in its resting state
     for (const [phaseName, ready] of PHASES) {
       await pressSwitch(page, phaseName)
-      await waitFor(page, ready, 20_000, `the ${phaseName} phase to mount`)
+      /*
+       * 120s, raised from 20s on evidence rather than on feel: on a 16-thread
+       * workstation with a cold cache and the CPU throttled 4x, `personalizing`
+       * took 29.1s to mount. The old budget would have failed HERE, so it was a
+       * latent failure waiting for any machine slower than a warm developer
+       * laptop — which is every CI runner. `waitFor` prints what each wait
+       * actually spends, so the next person tightens this from data.
+       */
+      await waitFor(page, ready, 120_000, `the ${phaseName} phase to mount`)
       if (!(await settle(page))) {
         // Not a failure by itself — the scan below still runs and still
         // gates. It is printed because it is the ONE condition under which a
@@ -382,7 +421,7 @@ try {
 
     // ---- conversing AGAIN, sort_buckets — the drag/drop grouping regression check
     await pressSwitch(page, 'conversing')
-    await waitFor(page, '!!document.querySelector("[data-character]")', 20_000, 'the conversing phase to mount')
+    await waitFor(page, '!!document.querySelector("[data-character]")', 60_000, 'the conversing phase to mount')
     const select = await page.evaluate(
       `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +
         ` if (!s) return false; s.value = 'sort_buckets'; s.dispatchEvent(new Event('change', { bubbles: true })); return true })()`,

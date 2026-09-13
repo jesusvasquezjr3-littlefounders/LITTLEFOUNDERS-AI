@@ -33,7 +33,7 @@ import { join } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 
-import { launchBrowser, openPage } from './lesson-engine/browser.mjs'
+import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 const VITE_BIN = join(HERE, '..', 'node_modules', 'vite', 'bin', 'vite.js')
@@ -210,13 +210,43 @@ async function setLabPanel(page, open) {
   }
 }
 
+/*
+ * Reports how long a wait actually took whenever it takes real time, because
+ * the interesting number is the MARGIN, not the pass. This gate timed out at
+ * 60 s on "lab chrome" on a 2-vCPU runner while passing in seconds on a
+ * workstation, and nothing in the output said how close the workstation had
+ * been to the edge — so there was no way to see it coming, and no way to tell
+ * a fix from a faster machine afterwards.
+ */
 async function waitFor(page, expression, ms, what) {
-  const until = Date.now() + ms
+  const started = Date.now()
+  const until = started + ms
   while (Date.now() < until) {
-    if (await page.evaluate(expression)) return
+    if (await page.evaluate(expression)) {
+      const took = Date.now() - started
+      if (took > 2000) console.log(`  [wait] ${what}: ${(took / 1000).toFixed(1)}s of a ${ms / 1000}s budget`)
+      return
+    }
     await sleep(400)
   }
-  throw new Error(`timed out waiting for ${what}`)
+
+  /*
+   * SAY WHAT WAS ON THE PAGE INSTEAD. A bare "timed out waiting for lab chrome"
+   * is indistinguishable between a broken Tutor, a dev server that never
+   * finished starting, and a lazy chunk still downloading — and on a CI runner
+   * each guess costs a 25-minute round trip. These four numbers separate them:
+   * an empty #root with readyState "interactive" is the dev server; a mounted
+   * root with no lab chrome is the route; console errors are the product.
+   */
+  const seen = await page.evaluate(
+    '(() => { const r = document.getElementById("root");' +
+      ' return JSON.stringify({ readyState: document.readyState,' +
+      ' rootHtml: r ? r.innerHTML.length : -1,' +
+      ' labChrome: document.querySelectorAll("[data-lab-chrome]").length,' +
+      ' text: (document.body.innerText || "").slice(0, 120) }) })()',
+  )
+  console.log(`  [timeout] ${what} — page was: ${seen}`)
+  throw new Error(`timed out waiting for ${what} after ${((Date.now() - started) / 1000).toFixed(1)}s`)
 }
 
 async function shoot(page, name) {
@@ -229,6 +259,19 @@ console.log(`verify:tutor-ui — dev server at ${server.url}, screenshots in ${O
 const { child, browser } = await launchBrowser(join(tmpdir(), `lf-tutor-ui-${Date.now()}`))
 let failures = 0
 
+/*
+ * Pay Vite's cold-start cost on the root route before touching the lazy lab.
+ * Without it this gate fails on a cold checkout with "timed out waiting for lab
+ * chrome" — which reads as a broken Tutor and is actually a dev server that had
+ * not finished optimising dependencies. See warmDevServer's note.
+ */
+{
+  const warm = await openPage(browser, { width: 1280, height: 900, dark: false })
+  if (!(await warmDevServer(warm, server.url))) {
+    console.log('  [warm-up] the root route never mounted; continuing, the lab poll will report it')
+  }
+}
+
 try {
   for (const [tag, viewport, locale] of [
     ['desktop-en', { width: 1280, height: 900, dark: false }, 'en-US'],
@@ -237,7 +280,17 @@ try {
   ]) {
     const page = await openPage(browser, viewport)
     await page.send('Page.navigate', { url: `${server.url}/dev/tutor-lab` })
-    await waitFor(page, '!!document.querySelector("[data-lab-chrome]")', 60_000, 'lab chrome')
+    /*
+     * 150s, not 60s. This is a DEV-SERVER budget, not a product SLO: Vite
+     * serves the tutor lab as unbundled ESM, so the first load is thousands of
+     * module requests for three.js + r3f + drei, and a 2-vCPU CI runner needed
+     * more than the 60s this used to allow. Measured on a 16-thread machine
+     * with a cold cache and the CPU throttled 4x it takes 2.8-6.5s, which is
+     * the point: the margin between the two is enormous and invisible until
+     * something prints it, so `waitFor` now reports what it actually spent.
+     * Production ships a built bundle and never pays this.
+     */
+    await waitFor(page, '!!document.querySelector("[data-lab-chrome]")', 150_000, 'lab chrome')
     await setLabPanel(page, true)
     await waitFor(page, 'document.body.innerText.includes("stage ready")', 90_000, 'stage ready')
     await pressSwitch(page, locale)
