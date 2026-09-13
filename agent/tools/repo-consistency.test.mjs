@@ -52,4 +52,19 @@ function packageDirs() {
   );
 }
 
-console.log('repo-consistency OK — setup coverage and README count match the repo');
+// CLAUDE.md and AGENTS.md are the same content published under two filenames,
+// one per agent tool. The rule was written down in both of them and enforced by
+// nothing, which is the shape of a rule that drifts: an edit to one is a normal,
+// reviewable change, and the copy that did not get it goes on instructing the
+// other tool with the old text. Nobody sees a diff, because there is none to see.
+{
+  const claude = readFileSync(path.join(root, 'CLAUDE.md'), 'utf8');
+  const agents = readFileSync(path.join(root, 'AGENTS.md'), 'utf8');
+  assert.equal(
+    claude,
+    agents,
+    'CLAUDE.md and AGENTS.md must be byte-identical — apply every edit to both in the same change',
+  );
+}
+
+console.log('repo-consistency OK — setup coverage, README count and CLAUDE/AGENTS parity match the repo');

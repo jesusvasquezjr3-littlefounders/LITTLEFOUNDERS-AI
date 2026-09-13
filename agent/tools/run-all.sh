@@ -4,11 +4,19 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 
 SCRIPT="${1:?usage: run-all.sh <npm-script>}"
-# Keep this list aligned with the TypeScript services in AGENTS.md §1.5. The
-# script intentionally skips services that do not define a requested npm
-# script, but it must still visit every service that can define one. Omitting
-# Prism/Depot/Data Intel made a green root gate weaker than their CI gates.
-SERVICES=(database backend frontend coursegen audiogen picturegen parent-id-check email-server filebase dataintel oracle)
+
+# Discovered from disk, not listed. Skipping a service that does not define the
+# requested script is intended; never visiting it at all is not — omitting
+# Prism/Depot/Data Intel once made a green root gate weaker than those services'
+# own CI, and a hand-kept list is exactly how that happens again the next time a
+# service is added. (The list this replaces was pinned to "AGENTS.md §1.5", a
+# section deleted in 77b55596, so it was pinned to nothing.)
+SERVICES=()
+for dir in */; do
+  name="${dir%/}"
+  [ "$name" = "node_modules" ] && continue
+  [ -f "$name/package.json" ] && SERVICES+=("$name")
+done
 
 FAILED=()
 for s in "${SERVICES[@]}"; do
