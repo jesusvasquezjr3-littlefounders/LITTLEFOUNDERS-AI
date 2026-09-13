@@ -1,4 +1,4 @@
-import { query, execute, exec, isReady } from './duckdb.js';
+import { query, execute, exec, isReady, withConnection } from './duckdb.js';
 import { getConfig } from '../env.js';
 
 type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions' | 'attempts' | 'anon_conversions';
@@ -258,10 +258,17 @@ function mapAnonConversionRow(row: Record<string, unknown>): Record<string, unkn
 
 // ── Batch insert ──
 
+/**
+ * `run` defaults to the shared-connection `execute`, but every caller inside a
+ * transaction passes that transaction's own connection instead. Inserting
+ * through the shared handle while the BEGIN lives on a private one would write
+ * the rows outside the transaction — committed even on a ROLLBACK.
+ */
 async function batchInsert(
   table: string,
   columns: readonly string[],
   rows: Record<string, unknown>[],
+  run: (sql: string, ...params: unknown[]) => Promise<void> = execute,
 ): Promise<void> {
   if (rows.length === 0) return;
 
@@ -274,7 +281,7 @@ async function batchInsert(
       return v === undefined ? null : v;
     });
 
-    await execute(
+    await run(
       `INSERT OR IGNORE INTO ${table} (${colList}) VALUES (${placeholders})`,
       ...values,
     );
@@ -369,14 +376,16 @@ async function syncEventsTable(): Promise<{ rows: number; elapsed: number }> {
 
     const mapped = raw.map(mapEventRow);
 
-    await exec('BEGIN TRANSACTION');
-    try {
-      await batchInsert('fact_events_raw', EVENT_COLUMNS, mapped);
-      await exec('COMMIT');
-    } catch (err) {
-      await exec('ROLLBACK');
-      throw err;
-    }
+    await withConnection(async (c) => {
+      await c.exec('BEGIN TRANSACTION');
+      try {
+        await batchInsert('fact_events_raw', EVENT_COLUMNS, mapped, c.execute);
+        await c.exec('COMMIT');
+      } catch (err) {
+        await c.exec('ROLLBACK');
+        throw err;
+      }
+    });
 
     const lastRow = mapped[mapped.length - 1];
     const newId = (lastRow?.event_id as number) ?? lastEventId;
@@ -499,14 +508,16 @@ async function syncDimTable(
 
     const mapped = raw.map(mapper);
 
-    await exec('BEGIN TRANSACTION');
-    try {
-      await batchInsert(targetTable, columns, mapped);
-      await exec('COMMIT');
-    } catch (err) {
-      await exec('ROLLBACK');
-      throw err;
-    }
+    await withConnection(async (c) => {
+      await c.exec('BEGIN TRANSACTION');
+      try {
+        await batchInsert(targetTable, columns, mapped, c.execute);
+        await c.exec('COMMIT');
+      } catch (err) {
+        await c.exec('ROLLBACK');
+        throw err;
+      }
+    });
 
     totalRows += mapped.length;
     offset += limit;

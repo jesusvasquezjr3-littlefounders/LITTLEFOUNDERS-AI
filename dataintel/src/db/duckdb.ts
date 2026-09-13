@@ -30,6 +30,44 @@ export function isReady(): boolean {
 }
 
 /**
+ * Clears the transaction a failed statement left open on the shared connection.
+ *
+ * DuckDB runs every statement inside a transaction, and on this driver a failed
+ * one does not always unwind its own. The connection is then poisoned for the
+ * whole process, and — this is the part that cost the time — it does not fail
+ * where the mistake was:
+ *
+ *   1. `SELECT ... FROM fact_events`  → Catalog Error (fact_events not synced
+ *      yet). Handled, logged, answered 502. Correct behaviour, and the last
+ *      honest error you get.
+ *   2. `CREATE TABLE IF NOT EXISTS segment_definitions` → "cannot start a
+ *      transaction within a transaction". Nothing to do with segments.
+ *   3. `SELECT ... FROM segment_definitions` → "Serialization Error: Failed to
+ *      parse JSON string: {"exception_type…" — DuckDB failing to deserialize
+ *      the error it is still holding.
+ *
+ * So one unavoidable Catalog Error takes out every subsequent write in the
+ * process. In `test:all` that read `POST /experiments` answering 502 instead of
+ * 201, intermittently, depending on which suites had run first — and it was
+ * never really about the experiments route at all. In production the same shape
+ * is worse: the warehouse legitimately has no `fact_events` until the first sync
+ * completes, so every console request in that window poisons the connection for
+ * the next one.
+ *
+ * ROLLBACK is best-effort by design: when no transaction is open it errors with
+ * "no transaction is active", which is the healthy case and is swallowed. It is
+ * safe on the shared connection specifically because the only explicit
+ * transactions in this service now run on their own connection (`withConnection`),
+ * so there is never committed-pending work here for it to discard.
+ */
+function recoverSharedConnection(): Promise<void> {
+  return new Promise((resolve) => {
+    getDb().exec('ROLLBACK', () => resolve());
+  });
+}
+
+
+/**
  * Physical tables that schema.sql now defines with a `_raw` suffix, because
  * their plain names became staff-free views.
  */
@@ -153,7 +191,7 @@ export function query<T = Record<string, unknown>>(
   const database = getDb();
   return new Promise((resolve, reject) => {
     database.all(sql, ...params, (err: Error | null, rows: unknown) => {
-      if (err) return reject(err);
+      if (err) return void recoverSharedConnection().then(() => reject(err));
       resolve(rows as T[]);
     });
   });
@@ -166,7 +204,7 @@ export function execute(
   const database = getDb();
   return new Promise((resolve, reject) => {
     database.run(sql, ...params, (err: Error | null) => {
-      if (err) return reject(err);
+      if (err) return void recoverSharedConnection().then(() => reject(err));
       resolve();
     });
   });
@@ -176,8 +214,63 @@ export function exec(sql: string): Promise<void> {
   const database = getDb();
   return new Promise((resolve, reject) => {
     database.exec(sql, (err: Error | null) => {
-      if (err) return reject(err);
+      if (err) return void recoverSharedConnection().then(() => reject(err));
       resolve();
     });
   });
+}
+
+/** The three helpers above, bound to one connection instead of the shared one. */
+export interface DuckConnection {
+  query<T = Record<string, unknown>>(sql: string, ...params: unknown[]): Promise<T[]>;
+  execute(sql: string, ...params: unknown[]): Promise<void>;
+  exec(sql: string): Promise<void>;
+}
+
+/**
+ * Runs `body` on a connection of its own, and closes it afterwards.
+ *
+ * A transaction is CONNECTION state, but `query`, `execute` and `exec` all run
+ * on the one implicit connection a `duckdb.Database` owns — so the two
+ * `BEGIN TRANSACTION` blocks in sync.ts were sharing a transaction context with
+ * every console request the service was serving at the same time. Nothing
+ * declared that; the API surface hid it.
+ *
+ * Two things follow, and the second is why this is not merely tidier:
+ *
+ *  - A read that errors mid-sync could be rolled back by the sync's own
+ *    ROLLBACK, or roll back the sync's batch itself. Neither has been observed
+ *    in the wild, and neither would announce itself if it happened — a silently
+ *    short warehouse table looks exactly like a slow day.
+ *  - `recoverSharedConnection` needs somewhere safe to send a ROLLBACK. It is
+ *    only safe because of this: with the explicit transactions moved off the
+ *    shared connection, a ROLLBACK there can never discard real work.
+ *
+ * Not a pool. One `connect()` per transactional block — two per sync.
+ */
+export async function withConnection<T>(body: (connection: DuckConnection) => Promise<T>): Promise<T> {
+  const connection = getDb().connect();
+  const bound: DuckConnection = {
+    query: <R = Record<string, unknown>>(sql: string, ...params: unknown[]) =>
+      new Promise<R[]>((resolve, reject) => {
+        connection.all(sql, ...params, (err: Error | null, rows: unknown) =>
+          err ? reject(err) : resolve(rows as R[]),
+        );
+      }),
+    execute: (sql: string, ...params: unknown[]) =>
+      new Promise<void>((resolve, reject) => {
+        connection.run(sql, ...params, (err: Error | null) => (err ? reject(err) : resolve()));
+      }),
+    exec: (sql: string) =>
+      new Promise<void>((resolve, reject) => {
+        connection.exec(sql, (err: Error | null) => (err ? reject(err) : resolve()));
+      }),
+  };
+  try {
+    return await body(bound);
+  } finally {
+    // Closed whatever happened: a connection leaked per failed sync is a file
+    // handle leaked per failed sync, and this runs on a schedule.
+    await new Promise<void>((resolve) => connection.close(() => resolve()));
+  }
 }
