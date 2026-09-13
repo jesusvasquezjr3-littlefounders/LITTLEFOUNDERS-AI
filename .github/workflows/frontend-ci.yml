@@ -39,6 +39,22 @@ jobs:
       # verify:rig proves no animation clip drags a character out of its own
       # stance; verify:placement proves every character stands on walkable
       # ground, inside the rim, facing the learner. Both were honour-system.
+      #
+      # BOTH read .glb files out of public/scenes/, which is gitignored — and
+      # clips-biped.glb is additionally a Blender build output (`assets:clips`),
+      # which a runner cannot produce at all. Wiring these gates here without
+      # this step left them in a state where they could only ever fail; the rig
+      # gate refused outright ("a skip must never read as a pass") rather than
+      # reporting a pass it had not earned, and took the frontend deploy with
+      # it. Depot already serves the published scene assets world-readable and
+      # content-addressed, so CI fetches them (5.7 MB) and checks each digest
+      # against the filename it was served under.
+      #
+      # It is also the more honest subject: these are the exact bytes a
+      # learner's browser downloads, rather than one workstation's local export.
+      # Blender's GLB output is not byte-reproducible — the local clips and the
+      # published clips differ in bytes while every measured stance is identical.
+      - run: npm run scenes:fetch
       - run: npm run verify:rig
       - run: npm run verify:placement
 
