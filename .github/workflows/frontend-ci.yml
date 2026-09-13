@@ -59,7 +59,7 @@ jobs:
   # every whiteboard instrument and affordance for reachability, and it was
   # equally honour-system.
   #
-  # Their own job because together they take ~30 minutes, and `needs: ci` so a
+  # Their own job because together they take ~38 minutes, and `needs: ci` so a
   # push that fails type-check does not also pay for them.
   browser-gates:
     needs: ci

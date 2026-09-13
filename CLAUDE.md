@@ -12,9 +12,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 These gates are not optional, not skippable under time pressure, and not satisfied by "it looked fine":
 
-1. **Before doing anything else, the project must be properly initialized locally.** Don't start editing code, running a single service's commands, or poking at the DB against an unprovisioned checkout. If `node_modules`, `.env` files, or the Docker/DB stack aren't already set up in this working copy, run `npm run setup` first (see Commands) and confirm it completed cleanly before proceeding with the actual task.
+1. **Don't work against an unprovisioned checkout — but provision only what the task actually needs.** Editing code, running a service's commands or querying the DB against a checkout that has no `node_modules`, no `.env` files or no container stack produces failures that look like product bugs. Check what's missing and fix that much.
 
-2. **Before starting any work, establish the local machine's actual capabilities.** This repo runs on different collaborator machines with different constraints (see README's "small dev machine" invariant — one collaborator's machine swaps under parallel subagents + headless Chrome + multiple Vite servers). Before assuming what you can run in parallel, or that a tool/CLI is available, check:
+   **`npm run setup` is from-zero provisioning and it is destructive:** `scripts/setup-dev.sh` calls `db:reset` unconditionally, which nukes every container volume before re-migrating. Never run it on a working checkout to "make sure" — it will delete a local database that was fine. On a checkout that only lacks dependencies, `npm install` in the packages you're touching is the whole fix, and plenty of work (docs, gates, a single service's unit tests) needs no database at all.
+
+
+
+2. **Before starting any work, establish the local machine's actual capabilities — measure them, don't inherit a limit from another machine.** Collaborator machines here differ by an order of magnitude (see README's "Dev machines here differ" invariant): one is an 8 GB Apple M2 that swaps under parallel subagents + headless Chrome + multiple Vite servers, another is a 32 GB / 16-thread Windows box that does not. Pace the work to the machine you are actually on. Before assuming what you can run in parallel, or that a tool/CLI is available, check:
    ```bash
    node -v            # must match .nvmrc (24.x)
    docker info         # Docker Desktop running? required for the DB container stack
@@ -31,7 +35,9 @@ These gates are not optional, not skippable under time pressure, and not satisfi
    npm run secrets:check
    npm run tools:test
    ```
-   Plus whichever conditional gate applies to the area touched (README's "Mandatory testing" table — i18n, SEO, provider parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations, etc.). A push to `main` fans out CI+CD across all 11 services — a red push wastes that entire fan-out and can ship a broken deploy through CD. Passing these locally is required before every commit; do not commit or push on the assumption that CI will catch it.
+   Plus whichever conditional gate applies to the area touched (README's "Mandatory testing" table — i18n, SEO, provider parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations, etc.). Note the table changes directory halfway down: the parity gates are root scripts, the `verify:*` gates only exist inside their service.
+
+   **What a push to `main` actually does.** Not a fan-out across all 11 services — every `*-ci.yml` is `paths:`-filtered, so CI runs for the services you touched plus the unfiltered `repo-gates.yml`. What makes a push consequential is that **CD is chained to CI**: each touched service whose CI goes green deploys itself, and `database-cd.yml` goes further — it auto-applies *additive* migrations to production (`gate-auto-apply.mjs` refuses anything that removes or narrows). So a push is a deploy, and a push touching `database/migrations/` is a production migration. Passing these gates locally is required before every commit; do not commit or push on the assumption that CI will catch it.
 
 4. **Commits are attributed to the developer only — never to Claude.** Do not append `Co-Authored-By: Claude …` or a `Claude-Session:` trailer (or any similar AI-attribution line) to commit messages or PR descriptions in this repo, even if a default instruction elsewhere says to. This overrides that default here.
 
@@ -39,7 +45,7 @@ These gates are not optional, not skippable under time pressure, and not satisfi
 
 ## What this is
 
-LittleFounders: a gamified financial-literacy and entrepreneurship platform for kids/families — gamified courses, an AI tutor, parent-assigned tasks with rewards, under verified parental control. TypeScript + Express (ESM, Node 24) on 11 independent npm packages (no workspaces) + a React 18 + Vite + Tailwind frontend, Supabase self-hosted for the DB, all deployed to Railway (backend services) and Vercel (frontend).
+LittleFounders: a gamified financial-literacy and entrepreneurship platform for kids/families — gamified courses, an AI tutor, parent-assigned tasks with rewards, under verified parental control. TypeScript + Express (ESM, Node 24) on 9 of the 11 independent npm packages (no workspaces). The other two run no server: `frontend/` is a React 18 + Vite + Tailwind SPA, and `database/` is migrations, seeds and generated types. Supabase self-hosted for the DB; deployed to Railway (backend services) and Vercel (frontend).
 
 ## Commands
 
@@ -56,7 +62,9 @@ npm run production:preflight            # read-only Railway check, operator-only
 
 `README.md`'s "Mandatory testing" table lists which conditional gate to run for the area you touched (i18n, SEO, provider parity, whiteboard/demonstrate-step parity, tutor context/pedagogy, lesson-engine, tutor UI, migrations). Run the gate for your area — CI enforces the repo-wide set but is the backstop, not the gate.
 
-Single-service work: `cd <service> && npm run typecheck && npm run lint && npm run test` — per-service `package.json` also carries service-specific scripts (e.g. `verify:tutor`, `verify:pedagogy`, `gym:pedagogy` in `oracle/`; `verify:lesson-engine`, `verify:tutor-ui`, `verify:rig`, `verify:placement` in `frontend/`).
+Single-service work: `cd <service> && npm run type-check && npm run lint && npm run test`. **The hyphen is load-bearing:** services name it `type-check`, and only the root aggregate drops the hyphen (`typecheck:all`), so `npm run typecheck` inside a service is `Missing script` every time. `database/` is the exception to the whole line — it defines `test` and the `db:*` scripts only, so `run-all.sh` skips it for type-check, lint and build; its CI is `npm test` plus the secrets scan.
+
+Per-service `package.json` also carries service-specific scripts: `verify:tutor`, `verify:pedagogy`, `gym:pedagogy` in `oracle/`; `verify:lesson-engine`, `verify:tutor-ui`, `verify:tutor-a11y`, `verify:rig`, `verify:placement` in `frontend/`; `seed:kc` and the tutor audit scripts in `backend/`.
 
 ## Architecture — what requires reading multiple files
 
@@ -65,6 +73,8 @@ Single-service work: `cd <service> && npm run typecheck && npm run lint && npm r
 - **Oracle (`oracle/`) is the AI Tutor runtime**: live sessions, voice (Inworld), moderation, pedagogy controller. Its context schema is `.strict()` and pinned to 14 fields by test (`oracle/src/__tests__/privacy-contract-docs.test.ts`) — widening what reaches the model about a child is a reviewed decision, not a refactor. Voice providers are reachable only through `oracle/src/voice/provider.ts`.
 - **Coursegen (Forge) and Oracle both call DeepSeek/Qwen** and must agree on base URLs/models (`provider:check`). The tutor model must stay non-reasoning (`deepseek-chat`).
 - **Deploy ordering matters when a wire shape changes**: e.g. adding a whiteboard kind needs Core deployed before Oracle, since Core's body union has no fallback member and 400s the whole turn on an unknown `kind`.
-- **CD is CI-triggered per service** (`.github/workflows/<service>-cd.yml` on that service's CI going green on `main`), not a GitHub App — pushing to `main` fans out CI across all 11 services, so batch commits and push once at the end.
+- **CD is CI-triggered per service** (`.github/workflows/<service>-cd.yml` on that service's CI going green on `main`), not a GitHub App. CI is `paths:`-filtered, so a push runs only the CI of the services it touched — and deploys each one that passes. Batch commits and push once at the end.
 
-See `README.md`'s "Non-obvious invariants & traps" section for the full list (cost/billing discipline, the small dev machine, synthetic-click hit-testing, `families` derived from `guardian_links`, Railway CLI exit codes, etc.) — those are load-bearing and each was learned the expensive way.
+See `README.md`'s "Non-obvious invariants & traps" section for the full list (cost/billing discipline, measuring the machine you are on, the Windows CRLF/WSL traps, synthetic-click hit-testing, DuckDB's single shared connection, `families` derived from `guardian_links`, Railway CLI exit codes, etc.) — those are load-bearing and each was learned the expensive way.
+
+Source files cite a rulebook (`/ORACLE.md §16`, `DESIGN.md`, `TUTOR_3D.md`, …) that was removed in commit `77b55596`; ~480 files still point at it. Read any of it with `git show 77b55596^:ORACLE.md`, and treat it as history, not authority — see the note opening README's invariants section.

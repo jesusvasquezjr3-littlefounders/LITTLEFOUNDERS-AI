@@ -21,9 +21,11 @@ Most are wired to root `package.json` scripts and run in CI via `.github/workflo
 | `generate-roleplay-voices.mjs` | `roleplay-voices:generate` | Regenerates the frontend's roleplay voice-URL lookup from oracle's manifest |
 | `check-dep-drift.sh` | `deps:check` | Dependency version drift across the 11 packages |
 | `check-clean-tree.sh` | `git:diff-check` | Working tree, index and untracked set match HEAD |
-| `run-all.sh` | `test:all` / `typecheck:all` / `lint:all` | Runs the given npm script in every package |
+| `run-all.sh` | `test:all` / `typecheck:all` / `lint:all` | Runs the given npm script in every package that defines it. Takes a **fourth** mode, `build`, which has no root alias — `release-readiness.sh` invokes `bash agent/tools/run-all.sh build` directly, and that is the only repo-wide build there is. |
 | `release-readiness.sh` | `release:readiness` | All local gates + zero-spend course/audio dry-runs |
 | `railway-preflight.sh` | `production:preflight` | Read-only Railway inventory/config check (operator-only, never CI) |
 | `new-service.sh` | — | Stamps a new Express+TS service skeleton (`new-service.sh <name> <port>`) |
 | `analytics-diagnose.mjs` | — | Ad-hoc analytics diagnosis against Pulse |
-| `*.test.mjs` | `tools:test` | Self-tests for the gates above (run in CI) |
+| `*.test.mjs` | `tools:test` | Self-tests for the gates above, plus `repo-consistency.test.mjs`, which is not a gate self-test: it pins the README's package count, `setup-dev.sh`'s service list and `CLAUDE.md == AGENTS.md` to what the repo actually contains. Runs in CI. |
+
+**Two notes on the table.** `run-all.sh` and `check-dep-drift.sh` discover services by scanning for top-level `package.json` files rather than carrying a list, so adding a service needs no edit here — `scripts/setup-dev.sh` is the one place that still keeps an explicit list, and `repo-consistency.test.mjs` fails if it falls behind. And `production:preflight:test` exists in the root `package.json` but is redundant: it runs `railway-preflight.test.mjs`, which `tools:test` already covers by glob.
