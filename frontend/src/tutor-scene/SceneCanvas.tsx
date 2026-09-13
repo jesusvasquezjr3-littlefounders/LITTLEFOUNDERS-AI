@@ -207,7 +207,26 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera, 
         // ceiling moves with the tier, so a struggling device renders fewer
         // pixels rather than losing scene content.
         dpr={[Math.min(1, settings.renderScale), settings.maxPixelRatio * settings.renderScale]}
-        shadows={settings.shadows}
+        /*
+         * `'percentage'` — PCFShadowMap — NOT `true`, which is PCFSoftShadowMap.
+         *
+         * This version of three has deprecated PCFSoftShadowMap and silently
+         * substitutes PCFShadowMap for it, so `shadows={true}` asked for a mode
+         * the renderer will not give and got the hard one anyway. Naming the
+         * mode we are actually rendering with is the honest half.
+         *
+         * The other half is the noise it was making. Traced from a live
+         * production session on 2026-09-12 by patching `console.warn` and
+         * keeping the stack: the deprecation is logged from inside
+         * `WebGLShadowMap.render`, in r3f's frame loop — not from React
+         * re-applying a prop, which is what it looked like from the outside —
+         * so every shadow pass wrote a line. About one a second during a
+         * session, none once it closed; roughly 10,000 messages in a long one,
+         * enough to overflow the console buffer and take every other warning
+         * with it. A console a person has stopped reading is the failure the
+         * message itself was trying to prevent.
+         */
+        shadows={settings.shadows ? 'percentage' : false}
         frameloop={active ? 'always' : 'never'}
         /*
          * `preserveDrawingBuffer` IN DEV ONLY, so the stage can be screenshotted.
