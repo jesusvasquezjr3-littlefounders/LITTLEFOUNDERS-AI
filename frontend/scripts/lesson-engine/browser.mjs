@@ -231,13 +231,26 @@ export async function openPage(browserUrl, { width, height, dark }) {
  * The root route is the right place to pay that cost: nothing on it is lazy, so
  * there is no race to lose. This removes a start-up race rather than widening a
  * timeout around it.
+ *
+ * SIZED FROM WHAT CI ACTUALLY DID, not from a guess. At 60 tries both tutor
+ * gates reported "never mounted" on the runner and then loaded the lab in
+ * 11.7s — so the warm-up WAS paying the optimisation cost, and simply gave up
+ * before finishing while claiming failure. The first full mount of this app on
+ * a 2-vCPU runner takes longer than a minute; on a workstation it is seconds,
+ * which is why nobody saw it. This returns the moment the app mounts, so the
+ * larger ceiling costs a fast machine nothing.
  */
-export async function warmDevServer(page, baseUrl, { tries = 60 } = {}) {
+export async function warmDevServer(page, baseUrl, { tries = 180 } = {}) {
   const MOUNTED = '(document.getElementById("root") || {innerHTML: ""}).innerHTML.length > 0'
+  const started = Date.now()
   await page.send('Page.navigate', { url: `${baseUrl}/` })
   for (let attempt = 0; attempt < tries; attempt += 1) {
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    if (await page.evaluate(MOUNTED)) return true
+    if (await page.evaluate(MOUNTED)) {
+      const took = Date.now() - started
+      if (took > 5000) console.log(`  [warm-up] app mounted after ${(took / 1000).toFixed(0)}s`)
+      return true
+    }
   }
   return false
 }
