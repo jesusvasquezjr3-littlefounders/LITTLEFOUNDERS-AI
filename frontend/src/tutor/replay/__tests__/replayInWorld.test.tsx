@@ -278,7 +278,7 @@ describe('ReplayInWorld', () => {
    * navigates by, and they are on screen at every detent.
    */
   function openThePlate() {
-    fireEvent.click(screen.getByRole('button', { name: /Resize this panel/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Move this up or down/ }));
   }
 
   it('makes every line of the conversation a way back into it', () => {

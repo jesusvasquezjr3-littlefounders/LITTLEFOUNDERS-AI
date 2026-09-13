@@ -107,29 +107,39 @@ const DRAG_SLOP_PX = 4;
  * the shorter cluster buys is spent on the scene at PEEK and HALF, where the
  * learner actually sits, rather than on 56 px more transcript.
  *
- * RAISED TO 348 ON 2026-09-12, because the worst dock got worse by exactly one
- * row. The session controls — the menu and Finish — used to ride the top-right
- * corner at every width. At 390 px that corner is the only band the ANCHORED
- * caption has, and putting controls in it pushed the caption 72 px down and
- * into the dock; moving them into the dock instead, where a thumb already is
- * and where the rect is already published, made the dock 48 px taller and the
- * caption met it from the other side. `verify:tutor-ui` measured every step of
- * that: 263x49, then 262x33 once the caption dropped its identity row on a
- * phone with a board up, then 262x19.
+ * RAISED TO 372 ON 2026-09-12, and the reason is not the one it first looked
+ * like.
  *
- * Shaving the caption further was the alternative and it is the wrong one: the
+ * It looked like the Tutor's session controls: they moved off the top-right
+ * corner, where at 390 px they pushed the ANCHORED caption down into the
+ * microphone dock, and into the dock itself, which made the dock 48 px taller.
+ * So the composition was fixed instead — one named door in the header row at
+ * phone width, Finish inside it — and the dock went back to the orb and the
+ * composer. That should have let this number go back to 300, and it did not.
+ *
+ * THE CONSTRAINT THAT ACTUALLY BINDS is older and was invisible until this
+ * branch. The caption is anchored and, until the release fix landed beside
+ * this, stale inline styles pinned it at (0, 0) — so it had never once been
+ * positioned where the design intends. With it correctly placed, the
+ * arithmetic at 375x812 with the sheet at FULL is: `RESERVE - (16 px sheet
+ * inset + 12 px dock gap) - 136 px dock` is where the dock's top sits, the
+ * header row ends at 64, and the tutor's sentence runs up to ~130 px. At 300
+ * that leaves the caption 72 px of room for 130 px of words, which no escape
+ * can solve — there is nowhere in the band for it to go. `372 - 164 = 208`
+ * against a caption bottom of 194 is the first value that clears it.
+ *
+ * Shaving the caption instead was the alternative and it is the wrong one: the
  * next thing to go would have been the 2D portrait, which is the only mouth
  * `liruf` and `dina` have and the one channel /ORACLE.md forbids taking from a
- * deaf learner. The dock grew, so the reserve grows. 48 px, the height of the
- * row that caused it, plus nothing.
+ * deaf learner.
  *
  * What it costs, stated rather than discovered later: at 375x812 the FULL
- * detent goes from 512 px to 464 px. An activity needs 363 px at 390x844
- * (measured, TUTOR_QA_2026-09-02 D2), so FULL still clears it by a hundred
- * pixels, and `ACTIVITY_FLOOR_PX` and `DETENT_STEP_PX` below keep the three
- * detents separated structurally at every viewport regardless.
+ * detent goes from 512 px to 440 px. An activity needs 363 px at 390x844
+ * (measured, TUTOR_QA_2026-09-02 D2), so FULL still clears it by 77, and
+ * `ACTIVITY_FLOOR_PX` and `DETENT_STEP_PX` below keep the three detents
+ * separated structurally at every viewport regardless.
  */
-const STAGE_RESERVE_PX = 348;
+const STAGE_RESERVE_PX = 372;
 
 /**
  * Found by adversarial review, round 88 (2026-08-31, HIGH). `STAGE_RESERVE_PX`

@@ -735,7 +735,7 @@ export function ConversationView({
    * Desktop still docks: there the panel is a genuinely unescapable full-height
    * column, the band beside it is wide, and the dock steps aside for it.
    */
-  const docked: 'panel' | 'sheet' | null = desktop && adaptation === null ? 'panel' : null;
+  const docked: 'panel' | null = desktop && adaptation === null ? 'panel' : null;
 
   /*
    * WHAT THE RESTING SHEET SAYS ABOUT ITSELF.
@@ -790,6 +790,14 @@ export function ConversationView({
           onKeyDown={(event) => event.key === 'Enter' && submitTyped()}
           maxLength={2000}
           disabled={ended}
+          /*
+           * A stable hook for `verify:tutor-ui`, which used to find this field
+           * by `placeholder.includes('Rephrase')` — an English substring, in a
+           * gate that also drives es-MX. A selector that silently matches
+           * nothing in two of three configurations is the same decay as
+           * `data-sheet-peek`, and the fix is the same: name the thing.
+           */
+          data-tutor-composer=""
           placeholder={t(editing ? 'tutor.conversation.editPlaceholder' : 'tutor.conversation.typePlaceholder')}
           aria-label={t(editing ? 'tutor.conversation.editPlaceholder' : 'tutor.conversation.typePlaceholder')}
           /*
@@ -986,6 +994,23 @@ export function ConversationView({
           editLabel={t('tutor.conversation.editMessage')}
         />
 
+        {/* The phone's home for Finish — see the header group below. */}
+        {!desktop && (
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={onExit}
+            disabled={awaitingReply}
+            className="pointer-events-auto w-full !max-w-none"
+            floorClassName="!justify-start !text-start"
+          >
+            <span className="flex items-center gap-2">
+              <Icon name="logout" className="!text-[18px]" />
+              <span className="lf-action">{t('tutor.conversation.finish')}</span>
+            </span>
+          </HudPlate>
+        )}
+
         {confirmingRestart ? (
           <div className="flex flex-wrap items-center gap-2">
             <span className="lf-action min-w-0 flex-1 text-content">
@@ -1044,29 +1069,48 @@ export function ConversationView({
          * the dock column, which is a first-class state of the primitive rather
          * than a fallback, and the same thing that happens with no shell at all.
          */
-        host={desktop ? (dock?.headerPanel ?? null) : null}
+        host={dock?.headerPanel ?? null}
         open={sessionOpen}
         onOpenChange={setSessionOpen}
       >
         {sessionPanel}
       </HudDisclosure>
 
-      <HudPlate
-        as="button"
-        shape="chip"
-        onClick={onExit}
-        /*
-         * DISABLED WHILE THE TUTOR IS STILL ANSWERING (adversarial review,
-         * round 90): `end_session` claims the same turn slot the reply is
-         * holding, and tearing the socket down without waiting records a
-         * deliberate "Finish" as `learner_left` instead of `completed`,
-         * skipping the farewell.
-         */
-        disabled={awaitingReply}
-        className="pointer-events-auto shrink-0"
-      >
-        <span className="lf-action">{t('tutor.conversation.finish')}</span>
-      </HudPlate>
+      {/*
+        FINISH IS OUTSIDE THE MENU ON DESKTOP AND INSIDE IT ON A PHONE, and
+        that is arithmetic rather than a change of mind.
+
+        It belongs outside: it is the only way to END a session, and a child who
+        wants to stop should not have to open something first. Desktop has the
+        room, so it keeps it.
+
+        A phone does not. There is space for the caption and ONE band of
+        controls, not two — measured every way round. Two chips in the top-right
+        corner pushed the ANCHORED caption 72 px down into the microphone dock;
+        moving both into the dock made the dock 48 px taller and the caption met
+        it from the other side, at 375 in en-US, by 121x32. The band a phone can
+        afford holds the way out and one named door. So on a phone the door
+        holds Finish, one tap further in, and the dock goes back to the height
+        the stage reserve was sized for.
+      */}
+      {desktop && (
+        <HudPlate
+          as="button"
+          shape="chip"
+          onClick={onExit}
+          /*
+           * DISABLED WHILE THE TUTOR IS STILL ANSWERING (adversarial review,
+           * round 90): `end_session` claims the same turn slot the reply is
+           * holding, and tearing the socket down without waiting records a
+           * deliberate "Finish" as `learner_left` instead of `completed`,
+           * skipping the farewell.
+           */
+          disabled={awaitingReply}
+          className="pointer-events-auto shrink-0"
+        >
+          <span className="lf-action">{t('tutor.conversation.finish')}</span>
+        </HudPlate>
+      )}
     </>
   );
 
@@ -1104,22 +1148,22 @@ export function ConversationView({
    * width.
    */
   /*
-   * DESKTOP PUTS THEM IN THE SKY; THE PHONE PUTS THEM UNDER THE THUMB.
+   * ONE HOME, THE SHELL'S HEADER ROW, AT BOTH WIDTHS — carrying two chips on
+   * desktop and one on a phone.
    *
-   * Both homes are the shell's, and which one is not a taste. At 1280 px the
-   * top-right corner is empty sky and the caption is CSS-docked at `top-20`,
-   * clear of it by construction. At 390 px that corner is the only band the
-   * ANCHORED caption has: measured by `verify:tutor-ui`, the session controls
-   * there pushed the caption 72 px down and straight into the microphone dock
-   * (263x49 px) — this file already records the identical failure once, when a
-   * two-line breadcrumb grew the caption into the dock by 308x43.
+   * Three arrangements were measured before this one. Two chips in the corner
+   * at 390 px pushed the ANCHORED caption 72 px down into the dock (263x49).
+   * Both chips moved into the dock instead made the dock 48 px taller and the
+   * caption met it from the other side — clean in es-MX at a raised stage
+   * reserve, still 121x32 in en-US, where the same sentence wraps differently.
+   * One locale's string length is not a layout budget.
    *
-   * So on a phone they ride the dock, with the orb and the composer. That is
-   * where a thumb already is, the dock publishes its own rect so the caption
-   * escapes it for free, and the top edge goes back to carrying one thing: the
-   * way out.
+   * What a phone can actually afford above the island is the way out and ONE
+   * named door. So the row carries the menu at both widths, Finish joins it on
+   * desktop only, and the dock goes back to the orb and the composer — the
+   * height `STAGE_RESERVE_PX` was sized for in the first place.
    */
-  const headerHome = desktop ? (dock?.header ?? null) : (dock?.above ?? null);
+  const headerHome = dock?.header ?? null;
   const headerGroup = headerHome
     ? createPortal(
         <div className="pointer-events-auto flex shrink-0 flex-wrap items-center justify-center gap-2">

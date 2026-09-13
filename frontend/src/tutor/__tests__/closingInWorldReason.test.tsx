@@ -49,43 +49,39 @@ describe('ClosingInWorld says something different for a safety stop', () => {
 });
 
 /*
- * Class V (migration 0069): the goodbye's second archive slot, mirroring
- * `OfferChips.tsx`'s own "Past conversations" / "My progress" pair and the
- * SAME mutual-exclusion wiring — unexercised here until now.
+ * ONE ARCHIVE, TWO SECTIONS (2026-09-12).
+ *
+ * This used to be two chips — "Past conversations" and "My progress" — sharing
+ * one sheet and clearing each other's boolean by hand, the same arrangement
+ * `OfferChips` had in a second place. What these tests asserted was that the
+ * hand-wiring worked.
+ *
+ * The invariant they were protecting is now STRUCTURAL rather than coordinated:
+ * there is one disclosure holding both lists as sections, so "only one archive
+ * surface is open" cannot be false. What is worth testing at this call site is
+ * what remains a decision — that the door exists, opens, and is not offered at
+ * all without a token.
  */
-describe('ClosingInWorld — the "My progress" chip added alongside "Past conversations"', () => {
-  it('opens the plan/notebook panel (not the history list) and closes the other toggle', () => {
+describe('ClosingInWorld — the archive', () => {
+  it('opens one panel holding both the conversations and the progress notebook', () => {
     render(<ClosingInWorld onStartAnother={NOOP} token="tok" onReplay={NOOP} closedReason="completed" />);
 
-    const history = screen.getByRole('button', { name: 'Past conversations' });
-    const planner = screen.getByRole('button', { name: 'My progress' });
-    expect(planner).toHaveAttribute('aria-expanded', 'false');
+    const archive = screen.getByRole('button', { name: 'What we did' });
+    expect(archive).toHaveAttribute('aria-expanded', 'false');
 
     act(() => {
-      history.click();
+      archive.click();
     });
-    expect(history).toHaveAttribute('aria-expanded', 'true');
 
-    act(() => {
-      planner.click();
-    });
-    expect(planner).toHaveAttribute('aria-expanded', 'true');
-    expect(history).toHaveAttribute('aria-expanded', 'false');
-    // The history sheet's own static heading is gone: the OTHER branch of
-    // the `historyOpen ? ... : <PlanNotebookPanel />` ternary rendered.
-    expect(screen.queryByText('Your past conversations')).toBeNull();
-
-    act(() => {
-      history.click();
-    });
-    expect(history).toHaveAttribute('aria-expanded', 'true');
-    expect(planner).toHaveAttribute('aria-expanded', 'false');
+    expect(archive).toHaveAttribute('aria-expanded', 'true');
+    // Both sections, at once, with nothing to choose between them.
+    expect(screen.getByRole('heading', { name: 'Your past conversations' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'My progress' })).toBeInTheDocument();
   });
 
   it('offers neither toggle when there is no token — the archive is not offered broken', () => {
     render(<ClosingInWorld onStartAnother={NOOP} token={null} onReplay={NOOP} closedReason="completed" />);
 
-    expect(screen.queryByRole('button', { name: 'Past conversations' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'My progress' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'What we did' })).toBeNull();
   });
 });

@@ -27,13 +27,26 @@ import { useScrollEdges } from './useScrollEdges';
  * deliberately no DISABLED trigger: a control a child can aim at and press that
  * does nothing is the worst of the available states.
  *
- * THE CHILDREN NEVER UNMOUNT. `{open && <Panel/>}` is prohibited here and it is
- * not a preference: a remount replays every hosted whiteboard's grow-in
- * animation and re-fires its live region, so closing and reopening a panel would
- * re-announce an activity a learner already read and re-run motion they already
- * watched. `PlanNotebookPanel.test.tsx` pins DOM identity across exactly this,
- * which makes that suite the test that proves this rule rather than a detail of
- * one panel.
+ * THE CHILDREN NEVER UNMOUNT — ONCE THEY HAVE BEEN SHOWN. `{open && <Panel/>}`
+ * is prohibited here and it is not a preference: a remount replays every hosted
+ * whiteboard's grow-in animation and re-fires its live region, so closing and
+ * reopening would re-announce an activity a learner already read and re-run
+ * motion they already watched. `PlanNotebookPanel.test.tsx` pins DOM identity
+ * across exactly this, which makes that suite the test that proves the rule
+ * rather than a detail of one panel.
+ *
+ * BUT THEY ARE NOT MOUNTED BEFORE THEY ARE ASKED FOR, and that distinction was
+ * paid for. The first version mounted children eagerly, which put BOTH of the
+ * goodbye's archives — `SessionHistory` and `PlanNotebookPanel`, each of which
+ * fetches on mount — into every closing screen, for content most learners never
+ * open. `verify:tutor-a11y` reported it as "timed out waiting for the closing
+ * phase to mount": two eager fetches with no API behind them in the lab, and the
+ * phase never came up at all.
+ *
+ * So the rule is "never unmount", not "always mounted". Nothing renders until
+ * the first open; after that the subtree is kept and hidden. A panel nobody
+ * opens costs nothing, and one that has been opened keeps its scroll position,
+ * its state and its DOM identity for the rest of the session.
  *
  * CLOSING IS THREE WRITES, NOT ONE. `hidden`, `inert`, and an inline
  * `display: none`. The first is the semantics, the second is what keeps a
@@ -127,6 +140,16 @@ export function HudDisclosure({
    */
   const openedOnce = useRef(false);
 
+  /*
+   * Whether the panel's children have ever been rendered. Once true it stays
+   * true for the life of the layer — that is the "never unmount" half — but it
+   * starts false so a disclosure nobody opens never pays for its contents. See
+   * the header for the closing screen that mounted two fetching archives at
+   * once because this was not here.
+   */
+  const [shown, setShown] = useState(open);
+  if (open && !shown) setShown(true);
+
   /* The three writes. An effect rather than JSX, because React 18.3 has no
    * `inert` prop and because `display` has to be released to the empty string
    * rather than to a value this component would be guessing at. */
@@ -215,8 +238,10 @@ export function HudDisclosure({
           className="lf-focus h-full overflow-y-auto overscroll-contain px-5 py-4"
         >
           {/* One element, so the hook's `firstElementChild` observer sees the
-              content grow rather than the scroller it is inside. */}
-          <div>{children}</div>
+              content grow rather than the scroller it is inside. It is always
+              present, even before the first open, so the scroller always has
+              the child that observer expects. */}
+          <div>{shown ? children : null}</div>
         </div>
       </div>
     </HudPlate>

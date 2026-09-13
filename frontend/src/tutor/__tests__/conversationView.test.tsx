@@ -141,7 +141,7 @@ function renderConversation(
 
 /** The sheet's settled height is the only visible trace of its detent. */
 function plateHeight(): string {
-  return screen.getByLabelText('Your tutor and your activity').style.height;
+  return screen.getByLabelText('The board').style.height;
 }
 
 /**
@@ -155,7 +155,7 @@ function plateHeight(): string {
  * give it something to hold first. The mechanics themselves are unchanged.
  */
 function plateExists(): boolean {
-  return screen.queryByLabelText('Your tutor and your activity') !== null;
+  return screen.queryByLabelText('The board') !== null;
 }
 
 /**
@@ -167,7 +167,7 @@ function plateExists(): boolean {
  * waiting and that pressing this opens it.
  */
 function resizeHandle(): HTMLElement {
-  return screen.getByRole('button', { name: /Resize this panel/ });
+  return screen.getByRole('button', { name: /Move this up or down/ });
 }
 
 /**
@@ -180,7 +180,7 @@ function resizeHandle(): HTMLElement {
  */
 function plateBody(): HTMLElement {
   const body = screen
-    .getByLabelText('Your tutor and your activity')
+    .getByLabelText('The board')
     .querySelector<HTMLElement>('[data-plate-body]');
   if (!body) throw new Error('the lesson plate has no body');
   return body;
@@ -585,8 +585,15 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
     expect(screen.getByRole('button', { name: 'Start over' })).toBeDisabled();
   });
 
+  /*
+   * Finish is outside the menu on desktop and inside it on a phone — a phone
+   * has room above the island for the caption and ONE band of controls, not
+   * two. jsdom reports no match for the desktop query, so this renders the
+   * phone arrangement and opens the door first.
+   */
   it('disables Finish', () => {
     render(conversationAwaitingReply(makeSocket()));
+    openMenu();
     expect(screen.getByRole('button', { name: 'Finish' })).toBeDisabled();
   });
 
@@ -645,7 +652,7 @@ describe('an in-progress rephrase is abandoned once an activity opens', () => {
     // that affordance is a section of the session menu now, not a card in the
     // sheet, so this is where a learner reaches it.
     fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Rephrase this message' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fix what I said' }));
     expect(screen.getByPlaceholderText('Rephrase your message…')).toHaveValue(LEARNER_LINE);
 
     // A segment arrives before the learner presses Send.
@@ -1112,7 +1119,7 @@ describe('the resting lesson sheet', () => {
     expect(handle.textContent).not.toContain('Conversation');
     // The chevron is the whole statement, and it is still there.
     expect(handle.textContent).toContain('keyboard_arrow_up');
-    expect(handle.getAttribute('aria-label')).toBe('Resize this panel');
+    expect(handle.getAttribute('aria-label')).toBe('Move this up or down');
     // No news, no announcement. A row that says something on every turn is a
     // row a learner learns to ignore on the turn that matters.
     expect(screen.queryByText('An activity is ready.')).toBeNull();
@@ -1124,7 +1131,7 @@ describe('the resting lesson sheet', () => {
     // Visible label first: leading with the resize sentence drops the words a
     // learner would say out loud out of the front of the name.
     expect(name.startsWith('Activity ready')).toBe(true);
-    expect(name).toContain('Resize this panel');
+    expect(name).toContain('Move this up or down');
   });
 
   it('opens on one press, and the activity is there when it does', () => {
@@ -1192,7 +1199,7 @@ describe('the arrival announcement reaches a screen reader on the docked desktop
     render(conversation(makeSocket({ segment: SEGMENT }), true));
     // The mobile-only resize handle (and with it the peek row's own
     // `peekStatus` span) does not exist on the desktop form at all.
-    expect(screen.queryByRole('button', { name: /Resize this panel/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Move this up or down/ })).toBeNull();
   });
 
   it('still announces the arrival, from `LiveSegmentPanel`s own live region', () => {
@@ -1273,12 +1280,15 @@ describe('the tutor says it once', () => {
     const { rerender } = render(
       conversation(makeSocket({ segment: SEGMENT, history: earlier }), true),
     );
-    const withActivity = screen.getByLabelText('Everything said so far');
+    // Opened once — a disclosure renders nothing before that, so a learner who
+    // never asks for the log never pays for it.
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const withActivity = screen.getByLabelText('What we said');
 
     rerender(conversation(makeSocket({ history: earlier }), true));
 
     // The same node, across a board arriving and leaving.
-    expect(screen.getByLabelText('Everything said so far')).toBe(withActivity);
+    expect(screen.getByLabelText('What we said')).toBe(withActivity);
   });
 
   /*
@@ -1300,7 +1310,10 @@ describe('the tutor says it once', () => {
       { speaker: 'tutor' as const, text: TUTOR_LINE, seq: 1 },
     ];
     renderConversation(makeSocket({ history: earlier }), { ready: true });
-    const log = screen.getByLabelText('Everything said so far');
+    // The transcript lives in the session menu now, and a disclosure renders
+    // nothing until it is first opened.
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const log = screen.getByLabelText('What we said');
     expect(log.getAttribute('role')).toBe('log');
     expect(log.tabIndex).toBe(0);
   });

@@ -124,22 +124,28 @@ describe('detentHeights, the mobile sheet arithmetic', () => {
 
   describe('the portrait phone and desktop-height viewports, byte for byte', () => {
     /*
-     * THESE NUMBERS MOVED ON 2026-09-12, deliberately and once.
+     * THESE NUMBERS MOVED ON 2026-09-12, and what moved them is not what it
+     * first looked like.
      *
-     * `STAGE_RESERVE_PX` went from 300 to 348 because the worst dock got worse
-     * by exactly one row: the session controls moved off the top-right corner,
-     * where at 390 px they pushed the ANCHORED caption down into the dock, and
-     * into the dock itself where a thumb already is. The dock grew 48 px, so
-     * the stage reserve grew 48 px — see that constant's own comment for the
-     * three `verify:tutor-ui` measurements that led there and for why shaving
-     * the caption instead was the wrong trade.
+     * It looked like the Tutor's session controls, which had grown the
+     * microphone dock by a row. That was fixed in the composition instead and
+     * the dock went back to its old height — and these numbers still did not
+     * go back, because the constraint that actually binds is older.
      *
-     * FULL therefore drops 48 (512 -> 464 at 812; 600 -> 552 at 900). HALF
-     * drops ONE pixel at 812 and none at 900, which is worth understanding
-     * rather than pattern-matching: HALF is the /DESIGN.md 45vh fraction
-     * CLAMPED to `ceiling - DETENT_STEP_PX`. At 812 the fraction is 365 and the
-     * new clamp is 364, so the clamp now binds by a pixel; at 900 the fraction
-     * (405) is still well under its clamp (452) and is untouched.
+     * The speech caption is anchored, and until the anchor-release fix landed
+     * in this same branch, stale inline styles pinned it at (0, 0): it had
+     * never once been positioned where the design intends. With it correctly
+     * placed, a 375x812 phone with the sheet at FULL leaves 72 px between the
+     * header row and the dock for a sentence that runs up to 130, which no
+     * escape can solve. `STAGE_RESERVE_PX` went 300 -> 372 to make the band
+     * real; see that constant's own comment for the arithmetic.
+     *
+     * FULL therefore drops 72 (512 -> 440 at 812; 600 -> 528 at 900). HALF
+     * drops to its clamp at 812 and is untouched at 900, which is worth
+     * knowing rather than pattern-matching: HALF is the 45vh fraction CLAMPED
+     * to `ceiling - DETENT_STEP_PX`. At 812 the fraction is 365 and the new
+     * clamp is 340, so the clamp now binds; at 900 the fraction (405) is still
+     * well under its clamp (428).
      *
      * Asserted exactly, byte for byte, so the next change to the reserve or to
      * the short-viewport branch cannot quietly nudge the portrait case without
@@ -147,14 +153,14 @@ describe('detentHeights, the mobile sheet arithmetic', () => {
      */
     it('reproduces the EXACT numbers at 375x812, the verify-tutor-ui mobile gate', () => {
       setViewportHeight(812);
-      expect(detentHeights()).toEqual({ peek: 88, half: 364, full: 464 });
+      expect(detentHeights()).toEqual({ peek: 88, half: 340, full: 440 });
     });
 
     it('reproduces the same numbers at 1280x900, the verify-tutor-ui desktop-height gate', () => {
       setViewportHeight(900);
       // HALF is untouched here: the 45vh fraction (405) is well under its
       // clamp (552 - 100), so only FULL moves with the reserve.
-      expect(detentHeights()).toEqual({ peek: 88, half: 405, full: 552 });
+      expect(detentHeights()).toEqual({ peek: 88, half: 405, full: 528 });
     });
   });
 

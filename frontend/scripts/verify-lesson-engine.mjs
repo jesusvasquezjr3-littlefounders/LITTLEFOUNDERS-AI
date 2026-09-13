@@ -299,8 +299,32 @@ async function main() {
       if (start) {
         const before = await page.evaluate(STATE)
         await click(page, start.x, start.y)
-        await sleep(2800)
-        row.starts = (await page.evaluate(STATE)).head !== before.head
+        /*
+         * WAIT FOR THE THING, DO NOT SLEEP AT IT.
+         *
+         * This was a flat `sleep(2800)` and then one reading, which makes the
+         * assertion "the lesson started within 2.8 seconds on whatever machine
+         * happens to be running this" — a statement about the host, not about
+         * the product. It produced two false reds in one session on a developer
+         * machine that was also hosting the app's own dev stack: `pattern_complete`
+         * on one run, then `match_pairs` AND `pattern_complete` on the next, a
+         * different set each time. Both fixtures pass 2/2 in isolation, every
+         * screen, to a verdict and a results page.
+         *
+         * Polling is strictly better in both directions: it returns the moment
+         * the head changes, so the common case gets FASTER than the old fixed
+         * wait, and a slow machine gets patience instead of a false accusation.
+         * The deadline is still finite — a lesson that genuinely never advances
+         * has to fail, which is the whole point of the check.
+         */
+        const deadline = Date.now() + 9000
+        while (Date.now() < deadline) {
+          if ((await page.evaluate(STATE)).head !== before.head) {
+            row.starts = true
+            break
+          }
+          await sleep(150)
+        }
       }
 
       for (let screen = 0; screen < 12; screen += 1) {

@@ -74,15 +74,20 @@ describe('HudDisclosure', () => {
     expect(trigger()).toHaveAttribute('aria-expanded', 'true');
   });
 
-  /* RULE 2. The content is in the document from the first render and survives a
-   * full close/open cycle as the SAME node. */
-  it('never unmounts its children', () => {
+  /*
+   * RULE 2, both halves. Nothing is rendered before the first open — the
+   * goodbye mounted two fetching archives at once when this was missing, and
+   * `verify:tutor-a11y` saw the phase fail to come up at all. After the first
+   * open the content survives every later close as the SAME node.
+   */
+  it('renders nothing until it is first opened, then never unmounts', () => {
     render(<Harness>{<p data-testid="body">the minutes</p>}</Harness>);
 
-    const first = screen.getByTestId('body');
-    expect(first).toBeInTheDocument();
+    expect(screen.queryByTestId('body')).toBeNull();
 
     fireEvent.click(trigger());
+    const first = screen.getByTestId('body');
+
     fireEvent.click(trigger());
     fireEvent.click(trigger());
 

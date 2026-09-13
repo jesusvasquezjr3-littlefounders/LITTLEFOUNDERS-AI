@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { HudDisclosure } from '@/tutor/hud/HudDisclosure';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { PlanNotebookPanel } from './PlanNotebookPanel';
 import { SessionHistory } from './SessionHistory';
@@ -67,17 +68,12 @@ export interface ClosingInWorldProps {
 export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }: ClosingInWorldProps) {
   const { t } = useTranslation();
   const dock = useStageDock();
-  const [historyOpen, setHistoryOpen] = useState(false);
   /*
-   * Class V (migration 0069), mirroring `OfferChips.tsx`'s own pair: two
-   * independent booleans sharing ONE sheet slot below rather than a second
-   * slot alongside it — the same reasoning that put the goodbye in the
-   * dock's `above` slot in the first place (see this file's own header).
-   * The goodbye is arguably the MORE natural home for a recap than the
-   * introduction is: it renders right after the session that recap
-   * summarizes just ended, so "here's what you just did" is never stale.
+   * ONE boolean, where there were two clearing each other by hand. Past
+   * conversations and the progress notebook are two SECTIONS of one archive —
+   * see the disclosure below.
    */
-  const [plannerOpen, setPlannerOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const isSafetyStop = closedReason === 'safety_stop';
 
   const goodbye = (
@@ -127,66 +123,43 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
           <span className="lf-action">{t('tutor.page.startAnother')}</span>
         </HudPlate>
 
-        {token && (
-          <HudPlate
-            as="button"
-            shape="chip"
-            aria-expanded={historyOpen}
-            onClick={() => {
-              setHistoryOpen((open) => !open);
-              setPlannerOpen(false);
-            }}
-            className="pointer-events-auto lf-settle-2"
-          >
-            <span className="lf-action">
-              {historyOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
-            </span>
-          </HudPlate>
-        )}
+        {/*
+          ONE DOOR, TWO ROOMS (2026-09-12).
 
+          This was two chips sharing one sheet, each clearing the other's
+          boolean by hand — the same arrangement `OfferChips` has, coordinated
+          the same way, in a second place. Two controls asking "which of these
+          two archives do you want" is the product making its own storage layout
+          the child's problem: they are both "what we did", and a learner who
+          opens one and wants the other should not have to close anything.
+
+          `HudDisclosure` owns the open/closed contract now, including the three
+          writes that actually hide a panel and the rule that its children never
+          unmount — which matters here because `PlanNotebookPanel` hosts real
+          whiteboards, and a remount replays every one of their grow-ins.
+        */}
         {token && (
-          <HudPlate
-            as="button"
-            shape="chip"
-            aria-expanded={plannerOpen}
-            onClick={() => {
-              setPlannerOpen((open) => !open);
-              setHistoryOpen(false);
-            }}
-            className="pointer-events-auto lf-settle-2"
+          <HudDisclosure
+            id="archive"
+            label={t('tutor.closing.whatWeDid')}
+            icon="history"
+            open={archiveOpen}
+            onOpenChange={setArchiveOpen}
+            className="lf-settle-2"
           >
-            <span className="lf-action">
-              {plannerOpen ? t('tutor.introduce.hidePlanner') : t('tutor.introduce.planner')}
-            </span>
-          </HudPlate>
+            <div className="flex w-full flex-col gap-5 text-left">
+              <section className="flex flex-col gap-3">
+                <h3 className="lf-action text-content">{t('tutor.history.title')}</h3>
+                <SessionHistory token={token} onReplay={onReplay} />
+              </section>
+              <section className="flex flex-col gap-3">
+                <h3 className="lf-action text-content">{t('tutor.introduce.planner')}</h3>
+                <PlanNotebookPanel token={token} />
+              </section>
+            </div>
+          </HudDisclosure>
         )}
       </div>
-
-      {/*
-        Opened deliberately, closed again, exactly as it is on the introduction.
-        A list of past conversations is a list, and a list over the island is the
-        silhouette this rebuild removes; it is acceptable only because a learner
-        asked for it by name. It becomes stones on the island's shore in
-        increment 4 (/ORACLE.md §12).
-
-        It scrolls inside itself: the dock grows UPWARD from the bottom edge, so
-        an archive with thirty conversations in it would otherwise push its own
-        first row off the top of the screen.
-      */}
-      {(historyOpen || plannerOpen) && token && (
-        <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
-          <div className="flex w-full flex-col gap-3 text-left">
-            {historyOpen ? (
-              <>
-                <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-                <SessionHistory token={token} onReplay={onReplay} />
-              </>
-            ) : (
-              <PlanNotebookPanel token={token} />
-            )}
-          </div>
-        </HudPlate>
-      )}
     </>
   );
 

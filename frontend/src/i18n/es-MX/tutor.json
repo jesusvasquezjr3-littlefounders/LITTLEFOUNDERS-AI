@@ -10,6 +10,9 @@
   "session": {
     "label": "Menú"
   },
+  "closing": {
+    "whatWeDid": "Lo que hicimos"
+  },
   "stage": {
     "leave": "Salir del tutor",
     "personalizeLayer": "Haz tuyo este lugar",
@@ -66,7 +69,7 @@
   "introduce": {
     "greeting": "Hola, {{name}}. Soy {{tutor}}.",
     "greetingNoName": "Hola. Soy {{tutor}}.",
-    "startTalking": "Empieza a platicar",
+    "startTalking": "o sólo háblame",
     "stillLearningYou": "Apenas nos estamos conociendo.",
     "cannotSeeProgress": "Ahorita no veo cómo van tus cursos.",
     "offersLabel": "Cosas que podemos hacer",
@@ -211,15 +214,15 @@
     "startOver": "Empezar de nuevo",
     "startOverConfirm": "¿Empezar de nuevo?",
     "explainDifferently": "¿Me lo explicas de otra forma?",
-    "editMessage": "Reformular este mensaje",
+    "editMessage": "Corregir lo que dije",
     "editPlaceholder": "Reformula tu mensaje…",
     "minutesLeft": "Quedan {{count}} min",
     "gettingToKnowYou": "Todavía te estoy conociendo",
     "yesPlease": "Sí, por favor",
     "noThanks": "No, gracias",
-    "plateLabel": "Tu tutor y tu actividad",
-    "transcriptLabel": "Todo lo que se ha dicho hasta ahora",
-    "resizePanel": "Cambiar el tamaño de este panel",
+    "plateLabel": "El pizarrón",
+    "transcriptLabel": "Lo que dijimos",
+    "resizePanel": "Súbelo o bájalo",
     "peekOpenActivity": "Actividad lista",
     "peekActivityWaiting": "Ya hay una actividad.",
     "lessonThread": "Lección · paso {{step}} de {{of}}",

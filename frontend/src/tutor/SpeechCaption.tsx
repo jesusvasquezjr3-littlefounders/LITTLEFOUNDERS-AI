@@ -108,11 +108,23 @@ export interface SpeechCaptionProps {
    *
    * The caller knows deterministically when those surfaces are up, so it
    * says so, and the caption DOCKS: `'panel'` centres it in the space left
-   * of the desktop panel; `'sheet'` pins it as a strip above the mobile
-   * sheet. No geometry listening, no z escalation — the caption moves to
-   * space nothing else claims.
+   * of the desktop panel. No geometry listening, no z escalation — the
+   * caption moves to space nothing else claims.
+   *
+   * THERE WAS A THIRD VALUE AND IT IS GONE (2026-09-12). A sheet variant
+   * pinned the caption as a strip above the mobile sheet, and it had never
+   * once run: `ScreenAnchor` left its inline `top: 0; left: 0` on the node
+   * when it released it, so the docked classes lost to stale declarations in
+   * BOTH docked modes and the caption simply sat in the corner. Fixing that
+   * release made the path live for the first time, and `verify:tutor-ui`
+   * measured what it did at mobile-es — the caption over the microphone dock
+   * by 323x67 px, the orb painted across the tutor's own last two lines,
+   * because the variant reasoned about the SHEET and nothing else in that
+   * band. The phone is anchored now, where the exit chip, the sheet, the
+   * header row and the dock all publish rects and `hudSpace` displaces the
+   * caption out of all four.
    */
-  docked?: 'panel' | 'sheet' | null;
+  docked?: 'panel' | null;
   className?: string;
   /** Skips the reveal animation. Respected from prefers-reduced-motion too. */
   instant?: boolean;
@@ -398,8 +410,6 @@ export function SpeechCaption({
          */
         docked === 'panel' &&
           'left-0 right-[min(27.5rem,34vw)] top-20 mx-auto w-max max-w-[min(60vw,32rem)]',
-        // Above the mobile sheet: a strip under the exit chip, full care width.
-        docked === 'sheet' && 'inset-x-0 top-16 mx-auto w-max max-w-[calc(100vw-2rem)]',
         className,
       )}
       style={docked === null ? undefined : { transform: 'none' }}

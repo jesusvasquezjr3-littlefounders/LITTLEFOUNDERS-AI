@@ -84,7 +84,7 @@ export interface TutorTranscriptProps {
 }
 
 /**
- * Everything said so far, oldest first, pinned to the bottom.
+ * What we said, oldest first, pinned to the bottom.
  *
  * Its own scroller rather than a run of text inside the plate's, because a log
  * that grows without bound would push the activity off the bottom of the plate

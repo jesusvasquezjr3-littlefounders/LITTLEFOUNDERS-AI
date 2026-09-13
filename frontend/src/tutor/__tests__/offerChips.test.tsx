@@ -527,27 +527,28 @@ describe('the arrival, once the island is on screen', () => {
   });
 
   /*
-   * Class V (migration 0069): a second sheet slot riding the SAME `archive`
-   * variable the regression above already covers for the history chip — the
-   * same "toggled with no stage dock present" combination, and the same risk
-   * the round-27 fix closed: a control that flips its own `aria-expanded`
-   * and label while the panel it names never mounts anywhere on screen.
-   * `PlanNotebookPanel` itself is async and has no static always-present
-   * heading (unlike `SessionHistory`'s), so what is checkable synchronously
-   * here is the WIRING — the toggle state, and that the history list's own
-   * always-present heading is absent, proving the OTHER branch of the
-   * `replaysOpen ? ... : <PlanNotebookPanel />` ternary is what rendered —
-   * not `PlanNotebookPanel`'s own content, which is covered directly in
-   * `PlanNotebookPanel.test.tsx`.
+   * ROUND 27'S DEFECT, NOW UNREACHABLE BY CONSTRUCTION (2026-09-12).
+   *
+   * The archive used to be a sheet rendered only inside the dock portal, with
+   * no fallback when there was no dock — so the toggle flipped its own
+   * `aria-expanded` and label on tap, every outward sign of working, while the
+   * panel it named mounted nowhere at all. This test was the fix's guard, and
+   * "with no stage dock present" is the combination it guards.
+   *
+   * `HudDisclosure` renders its panel beside its trigger when it has no host,
+   * as a first-class state with its own test, so the panel cannot go missing
+   * here. What this still checks is the thing that is specific to THIS call
+   * site: that with no dock at all, the arrival's archive really does open and
+   * really does contain both lists.
    */
-  it('still shows the plan/notebook panel (not the history list) when toggled, with no stage dock present', () => {
+  it('opens the archive in place when there is no stage dock present', () => {
     vi.useFakeTimers();
-    const { getByRole, queryByText } = renderChips({}, { ready: true });
+    const { getByRole } = renderChips({}, { ready: true });
     act(() => {
       vi.advanceTimersByTime(1000);
     });
 
-    const toggle = getByRole('button', { name: 'My progress' });
+    const toggle = getByRole('button', { name: 'Past conversations' });
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
     act(() => {
@@ -555,48 +556,47 @@ describe('the arrival, once the island is on screen', () => {
     });
 
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    expect(toggle).toHaveTextContent('Hide');
-    expect(queryByText('Your past conversations')).toBeNull();
+    // Both sections are in the document, and the panel is a real sibling of
+    // its trigger rather than a portal into a target that is not there.
+    expect(getByRole('heading', { name: 'Your past conversations' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'My progress' })).toBeInTheDocument();
   });
 
   /*
-   * `replaysOpen` and `plannerOpen` are two independent booleans sharing ONE
-   * sheet slot (`archive`'s own comment: "One archive, two phases, one
-   * arrangement" — one archive, two CONTENTS here). Nothing stops both from
-   * being true at once except each toggle's own handler explicitly clearing
-   * the other — unexercised until now, and exactly the kind of cross-wiring
-   * a future edit to either handler could silently drop.
+   * "ONLY ONE ARCHIVE SURFACE AT A TIME" IS NO LONGER COORDINATED, SO IT IS NO
+   * LONGER TESTABLE AS COORDINATION.
+   *
+   * It used to be two independent booleans sharing one sheet, with nothing
+   * stopping both from being true except each handler explicitly clearing the
+   * other — exactly the cross-wiring a future edit could silently drop, which
+   * is why it had a test. There is one disclosure now holding both lists as
+   * sections, so the property is structural: there is no second surface for the
+   * first one to fight with. What is left to assert is that closing it closes
+   * it.
    */
-  it('opening one of "Past conversations" / "My progress" closes the other', () => {
+  it('closes again on a second press', () => {
     vi.useFakeTimers();
-    const { getByRole } = renderChips({}, { ready: true });
+    const { getByRole, queryByRole } = renderChips({}, { ready: true });
     act(() => {
       vi.advanceTimersByTime(1000);
     });
 
-    // Captured once: React updates these same nodes' text/attributes in
-    // place rather than remounting them, so the references stay valid even
-    // after their accessible name changes from "Past conversations"/"My
-    // progress" to the shared "Hide" label.
-    const history = getByRole('button', { name: 'Past conversations' });
-    const planner = getByRole('button', { name: 'My progress' });
+    const toggle = getByRole('button', { name: 'Past conversations' });
 
     act(() => {
-      history.click();
+      toggle.click();
     });
-    expect(history).toHaveAttribute('aria-expanded', 'true');
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
     act(() => {
-      planner.click();
+      toggle.click();
     });
-    expect(planner).toHaveAttribute('aria-expanded', 'true');
-    expect(history).toHaveAttribute('aria-expanded', 'false');
-
-    act(() => {
-      planner.click();
-    });
-    expect(planner).toHaveAttribute('aria-expanded', 'false');
-    expect(history).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    // Hidden, not unmounted — a remount would replay every whiteboard the
+    // progress notebook hosts. `HudDisclosure.test.tsx` pins that directly;
+    // here it is visible as the heading still being in the document while the
+    // trigger reports closed.
+    expect(queryByRole('heading', { name: 'Your past conversations', hidden: true })).not.toBeNull();
   });
 
   /*

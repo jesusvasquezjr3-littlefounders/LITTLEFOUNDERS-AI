@@ -169,6 +169,18 @@ function useViewport(): { width: number; height: number; band: string } {
  * overlaps its frame by definition, and reporting that would bury the one
  * collision that matters under a dozen that never did.
  */
+/** A surface's text, with any injected `<style>`/`<script>` left out of it. */
+function visibleText(node: HTMLElement): string {
+  let text = '';
+  for (const child of node.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) text += child.textContent ?? '';
+    else if (child instanceof HTMLElement && child.tagName !== 'STYLE' && child.tagName !== 'SCRIPT') {
+      text += visibleText(child);
+    }
+  }
+  return text.trim();
+}
+
 function surveyHudSurfaces(): NamedRect[] {
   const stage = document.querySelector('[data-tutor-stage]');
   if (!stage) return [];
@@ -189,10 +201,16 @@ function surveyHudSurfaces(): NamedRect[] {
     // contents come round.
     if (found.some((entry) => entry.node.contains(node))) continue;
 
+    /*
+     * A NAME, NOT EVERY CHARACTER INSIDE THE BOX. `textContent` includes the
+     * text of any `<style>` a descendant injects, and `TutorFace` injects one
+     * — so the speech caption, the single most important surface on the stage,
+     * reported itself as ".rho-face-transition { transitio" in the readout and
+     * in every fixture captured from it. Element text only, style and script
+     * skipped.
+     */
     const name =
-      node.getAttribute('aria-label')?.trim() ||
-      node.textContent?.trim().slice(0, 32) ||
-      'unnamed surface';
+      node.getAttribute('aria-label')?.trim() || visibleText(node).slice(0, 32) || 'unnamed surface';
     found.push({
       node,
       surface: { name, rect: { left: box.left, top: box.top, width: box.width, height: box.height } },

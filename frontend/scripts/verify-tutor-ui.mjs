@@ -356,7 +356,7 @@ try {
       }
 
       const pencil = await page.evaluate(
-        centerOf(`document.querySelector('button[aria-label="Rephrase this message"]')`),
+        centerOf(`document.querySelector('button[aria-label="Fix what I said"]')`),
       )
       if (activityUp) {
         // Same design rule as explain-differently: no rewind mid-activity.
@@ -369,7 +369,12 @@ try {
         await realClick(page, pencil.x, pencil.y)
         await sleep(300)
         const filled = await page.evaluate(
-          `(() => { const i = [...document.querySelectorAll('input')].find((n) => n.placeholder && n.placeholder.includes('Rephrase')); return i ? i.value.length > 0 : false })()`,
+          /*
+           * By its own hook, not by an English substring of its placeholder.
+           * This ran in all three configurations and could only ever match in
+           * one of them; the two es-MX passes were asserting nothing.
+           */
+          `(() => { const i = document.querySelector('[data-tutor-composer]'); return i ? i.value.length > 0 : false })()`,
         )
         console.log(`  edit affordance fills the composer: ${filled}`)
         if (!filled) failures += 1

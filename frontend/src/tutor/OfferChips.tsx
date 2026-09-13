@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { playPlatformSound } from '@/lib/sound';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { HudDisclosure } from './hud/HudDisclosure';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { micBlockedReason } from './mic';
@@ -299,16 +300,12 @@ export function OfferChips({
   const clusterContentRef = useRef<HTMLDivElement | null>(null);
 
   const [chipsIn, setChipsIn] = useState(false);
-  const [replaysOpen, setReplaysOpen] = useState(false);
   /*
-   * Class V (migration 0069, /TUTOR_INSTRUMENTS.md §3.6): the learner's own
-   * plan, kept boards and last-session recap. A SECOND boolean rather than a
-   * shared "which panel" enum, so opening one closes the other (see the two
-   * chips' own onClick below) without this file's own delicate
-   * dock/z-index branches below — all keyed on `archive`'s bare truthiness —
-   * ever needing to learn about a third state.
+   * ONE boolean, where there were two clearing each other by hand. Past
+   * conversations and the progress notebook are two SECTIONS of one archive
+   * now — see the disclosure in `secondary` below.
    */
-  const [plannerOpen, setPlannerOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   useEffect(() => {
     /*
@@ -702,10 +699,6 @@ export function OfferChips({
   const mapScrollRef = useRef<HTMLDivElement>(null);
   useScrollEdges(mapScrollRef);
 
-  /** Past conversations / the plan notebook: an unbounded list in a 52vh plate. */
-  const archiveScrollRef = useRef<HTMLDivElement>(null);
-  useScrollEdges(archiveScrollRef);
-
   const mapPanel =
     map && map.nodes.length > 0 ? (
       /*
@@ -938,106 +931,59 @@ export function OfferChips({
         <span className="lf-action">{t('tutor.page.changeStage')}</span>
       </HudPlate>
 
-      <HudPlate
-        as="button"
-        shape="chip"
-        aria-expanded={replaysOpen}
-        onClick={() => {
-          setReplaysOpen((open) => !open);
-          setPlannerOpen(false);
-        }}
-        className="pointer-events-auto lf-settle-2"
-      >
-        <Icon name="history" />
-        <span className="lf-action">
-          {replaysOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
-        </span>
-      </HudPlate>
-
       {/*
-       * Class V (migration 0069): the learner's own plan, kept boards and
-       * last-session recap — the same "point at the thing you mean, from a
-       * chip" shape `SessionHistory`'s own chip already is, sharing its
-       * ONE sheet slot below rather than opening a second one alongside it.
-       */}
-      <HudPlate
-        as="button"
-        shape="chip"
-        aria-expanded={plannerOpen}
-        onClick={() => {
-          setPlannerOpen((open) => !open);
-          setReplaysOpen(false);
-        }}
-        className="pointer-events-auto lf-settle-2"
+        ONE DOOR, TWO ROOMS (2026-09-12), the same consolidation the goodbye
+        gets — it is one archive in two phases, and it was two chips clearing
+        each other's boolean by hand in both.
+
+        It retires a hand-rolled fix rather than just tidying one. Round 27
+        (2026-08-30) found this pair's toggle flipping its own `aria-expanded`
+        and label on tap while the list appeared NOWHERE, because the sheet was
+        rendered only inside the `dockAbove` portal and the no-dock branch had
+        no fallback for it. `HudDisclosure` renders its panel in place when it
+        has no host, as a first-class state with its own test, so that shape of
+        bug is unreachable here now instead of being remembered.
+      */}
+      <HudDisclosure
+        id="archive"
+        label={t('tutor.introduce.replays')}
+        icon="history"
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        className="lf-settle-2"
       >
-        <Icon name="savings" />
-        <span className="lf-action">
-          {plannerOpen ? t('tutor.introduce.hidePlanner') : t('tutor.introduce.planner')}
-        </span>
-      </HudPlate>
+        <div className="flex w-full flex-col gap-5 text-left">
+          <section className="flex flex-col gap-3">
+            <h3 className="lf-action text-content">{t('tutor.history.title')}</h3>
+            <SessionHistory token={token} onReplay={onReplay} />
+          </section>
+          <section className="flex flex-col gap-3">
+            <h3 className="lf-action text-content">{t('tutor.introduce.planner')}</h3>
+            <PlanNotebookPanel token={token} />
+          </section>
+        </div>
+      </HudDisclosure>
     </div>
   );
-
   /*
-   * SAVED CONVERSATIONS, AND THEY STAND IN THE DOCK LIKE EVERYTHING ELSE HERE.
+   * THE ARCHIVE SHEET IS GONE, and the reasoning it carried now lives in
+   * `HudDisclosure` (2026-09-12).
    *
-   * It used to be `absolute inset-x-0 bottom-0 z-40` inside the HUD layer, and
-   * that z-index could never have worked: `StageLayer`'s wrapper is
-   * `absolute inset-0 z-30`, which is a positioned element with a z-index and
-   * therefore a STACKING CONTEXT — so a z-40 child of it is confined to the
-   * layer's own 30, and the microphone dock, also at 30 and later in the DOM,
-   * paints over the top of it. Measured at 375x812 with the archive open: the
-   * "My island" and "Hide" chips sat across the list, and "Play it again" — the
-   * one control on the surface — was underneath them, half covered and still
-   * pressable, which is worse than being gone.
+   * It used to be `absolute inset-x-0 bottom-0 z-40` inside the HUD layer,
+   * which could never have worked: `StageLayer`'s wrapper is
+   * `absolute inset-0 z-30`, a positioned element with a z-index and therefore
+   * a STACKING CONTEXT, so a z-40 child of it is confined to the layer's own
+   * 30 and the microphone dock — also 30, and later in the DOM — paints over
+   * it. Measured at 375x812 with the archive open: the "My island" and "Hide"
+   * chips sat across the list and "Play it again" was underneath them, half
+   * covered and still pressable, which is worse than being gone.
    *
-   * The dock's own `above` slot has none of that problem, is measured into the
-   * safe area so the camera composes around it, and is exactly where the
-   * goodbye already puts the same list (`ClosingInWorld`). One archive, two
-   * phases, one arrangement. It scrolls inside itself because the dock grows
-   * UPWARD from the bottom edge, so a learner with thirty conversations would
-   * otherwise push the first row off the top of the screen.
+   * The disclosure's panel is a sibling of its trigger, so it lands wherever
+   * the trigger already legitimately lives — the dock's `above` slot, which is
+   * measured into the safe area so the camera composes around it — and it
+   * carries its own scroller with the `lf-scroll-edge` cue, which is what a
+   * learner with thirty saved conversations needs to know there are thirty.
    */
-  const archive =
-    replaysOpen || plannerOpen ? (
-      <HudPlate
-        shape="sheet"
-        className="pointer-events-auto flex max-h-[52vh] flex-col overflow-hidden"
-        /*
-         * The plate's own floor centres its content, which is right for a
-         * one-line chip and wrong for a list. `cn` is a plain join, so the
-         * override needs `!` or Tailwind's output order picks the winner.
-         */
-        floorClassName="!flex-col !items-stretch !justify-start min-h-0 flex-1 text-left"
-      >
-        {/*
-          `lf-scroll-edge` on the scroller's PARENT (see `useScrollEdges`).
-          The list is unbounded — the comment above already reckons with "a
-          learner with thirty conversations", and a real account had exactly
-          thirty on 2026-09-09, showing two at a time inside 276 px against
-          3,805 px of content. The page body does not scroll on this route, so
-          a wheel gesture anywhere off this plate does nothing at all, and an
-          overlay scrollbar does not appear until the learner is already
-          scrolling. Without the edge, "there are two conversations" and "there
-          are thirty" look identical.
-        */}
-        <div className="lf-scroll-edge flex min-h-0 flex-1 flex-col">
-          <div
-            ref={archiveScrollRef}
-            className="flex min-h-0 w-full flex-1 flex-col gap-3 overflow-y-auto overscroll-contain text-left"
-          >
-            {replaysOpen ? (
-              <>
-                <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-                <SessionHistory token={token} onReplay={onReplay} />
-              </>
-            ) : (
-              <PlanNotebookPanel token={token} />
-            )}
-          </div>
-        </div>
-      </HudPlate>
-    ) : null;
 
   /*
    * The dock is absent on the scene lab and in a unit test, and a control that
@@ -1172,46 +1118,24 @@ export function OfferChips({
                 collision between the two groups reads as "a different list"
                 and never as text laid directly over text with no seam.
               */}
-              {chipsIn && !dockAbove && (secondary || archive) && (
-                <div
-                  className="mt-2 flex w-full flex-col items-stretch gap-2 border-t border-outline/50 pt-2 md:items-center"
-                >
+              {/*
+                THE ARCHIVE NO LONGER NEEDS A BRANCH OF ITS OWN HERE.
+
+                It used to: the sheet was rendered only inside the `dockAbove`
+                portal below, with no fallback for `!dockAbove`, so in that
+                combination the "Past conversations" toggle still flipped its own
+                `aria-expanded` and label on tap — every outward sign of working
+                — while the list appeared nowhere at all (round 27, 2026-08-30).
+                The fix was a second copy here, and the copy needed the divider
+                above it so two chip rows never read as one.
+
+                `HudDisclosure` renders its panel beside its trigger, in place,
+                when it has no host. So the archive goes wherever `secondary`
+                goes, in both branches, with nothing to keep in sync.
+              */}
+              {chipsIn && !dockAbove && secondary && (
+                <div className="mt-2 flex w-full flex-col items-stretch gap-2 border-t border-outline/50 pt-2 md:items-center">
                   {secondary}
-                  {/*
-                    THE ARCHIVE IS DELIBERATELY NOT HERE WHILE THE DOCK EXISTS.
-                    This cluster is the anchored node `ScreenAnchor` rewrites the
-                    transform of on every frame; a 52vh scrolling sheet inside it
-                    would be a list flying around the island — it belongs in the
-                    portal below instead, beside `secondary`.
-                   *
-                   * But when there IS no dock, it needs a home here, matching
-                   * `secondary` immediately above. Found by adversarial review,
-                   * round 27 (2026-08-30, MEDIUM): this branch used to render
-                   * `archive` ONLY inside `{chipsIn && dockAbove ? createPortal(...)
-                   * : null}` below, with no fallback for `!dockAbove` — unlike
-                   * `secondary`, which already has one. In that combination the
-                   * "Past conversations" toggle still renders and still flips its
-                   * own `aria-expanded`/label on tap, so every outward sign says it
-                   * worked, but the archive list itself never appears anywhere:
-                   * exactly the §1.14 shape of "a surface that opts out of a
-                   * system must be told what the system decided" — this cluster
-                   * opts the archive OUT of its own layout without checking
-                   * whether the fallback layout (the guaranteed no-stage column
-                   * below) actually has it either. No live caller was PROVEN to
-                   * hit `ready && !dockAbove` when this was first written (the
-                   * dock's portal target mounts before `chipsIn`'s reveal delay
-                   * elapses); a later live test found a real collision in this
-                   * area but traced it to the cluster's own unbounded height
-                   * against the dock's real rect, NOT to `dockAbove` going false
-                   * (see `CLUSTER_DOCK_GAP_PX`'s comment above this component) —
-                   * `dockAbove` itself was never observed false outside a unit
-                   * test that sets it that way on purpose. The divider above is
-                   * still the right belt-and-braces for THIS branch, structural
-                   * rather than load-bearing for that other bug; see
-                   * StageShell.tsx's own dock-pointer-events fix for the sibling
-                   * defect the same original live test found close by.
-                   */}
-                  {archive}
                 </div>
               )}
             </div>
@@ -1223,15 +1147,7 @@ export function OfferChips({
             the chest cluster is the 44 px that decided whether the openings fit
             above the dock at 375 px.
           */}
-          {chipsIn && dockAbove
-            ? createPortal(
-                <>
-                  {archive}
-                  {secondary}
-                </>,
-                dockAbove,
-              )
-            : null}
+          {chipsIn && dockAbove ? createPortal(secondary, dockAbove) : null}
 
           {/*
             THE MAP'S OWN SURFACE (Tutor v3). Viewport-anchored and centered,
@@ -1395,7 +1311,6 @@ export function OfferChips({
             with no WebGL there is no render to put controls over.
           */}
           {secondary}
-          {archive}
         </div>
       )}
 

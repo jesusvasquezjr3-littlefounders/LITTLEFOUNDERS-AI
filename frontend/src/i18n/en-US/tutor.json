@@ -10,6 +10,9 @@
   "session": {
     "label": "Menu"
   },
+  "closing": {
+    "whatWeDid": "What we did"
+  },
   "stage": {
     "leave": "Leave the tutor",
     "personalizeLayer": "Make this place yours",
@@ -66,7 +69,7 @@
   "introduce": {
     "greeting": "Hi {{name}}. I'm {{tutor}}.",
     "greetingNoName": "Hi. I'm {{tutor}}.",
-    "startTalking": "Start talking",
+    "startTalking": "or just talk to me",
     "stillLearningYou": "We're still getting to know each other.",
     "cannotSeeProgress": "I can't see your progress right now.",
     "offersLabel": "Things we could do",
@@ -211,15 +214,15 @@
     "startOver": "Start over",
     "startOverConfirm": "Start over?",
     "explainDifferently": "Can you explain it another way?",
-    "editMessage": "Rephrase this message",
+    "editMessage": "Fix what I said",
     "editPlaceholder": "Rephrase your message…",
     "minutesLeft": "{{count}} min left",
     "gettingToKnowYou": "Still getting to know you",
     "yesPlease": "Yes please",
     "noThanks": "No thanks",
-    "plateLabel": "Your tutor and your activity",
-    "transcriptLabel": "Everything said so far",
-    "resizePanel": "Resize this panel",
+    "plateLabel": "The board",
+    "transcriptLabel": "What we said",
+    "resizePanel": "Move this up or down",
     "peekOpenActivity": "Activity ready",
     "peekActivityWaiting": "An activity is ready.",
     "lessonThread": "Lesson · step {{step}} of {{of}}",
