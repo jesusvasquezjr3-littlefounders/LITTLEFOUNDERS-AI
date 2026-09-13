@@ -26,6 +26,16 @@
  *   node scripts/fetch-scenes.mjs clips-biped.glb # just what a gate needs
  *
  * Present files are left alone; this never overwrites locally authored work.
+ *
+ * IT FETCHES 9 FILES AND A WORKSTATION HAS 13 — that gap is correct, not drift.
+ * `walkmask-diorama-{a,b}.png` are inputs to `assets:walkmask`, whose OUTPUT
+ * (`walkMasks.generated.json`) is committed, so nothing at runtime wants the
+ * PNGs. `mouth/{dina,liruf}.png` are leftovers: only zara and rho have a baked
+ * mouth card (`mouthCards.generated.json`), `hasMouthCard` is false for the
+ * other two, and `MouthCard` therefore never asks for their atlas. Publishing
+ * them would be publishing bytes no deployed build can reach — note that
+ * `sceneAssetUrl` THROWS on an unpublished logical path rather than 404ing
+ * quietly, so this is worth keeping straight.
  */
 
 import { createHash } from 'node:crypto';
