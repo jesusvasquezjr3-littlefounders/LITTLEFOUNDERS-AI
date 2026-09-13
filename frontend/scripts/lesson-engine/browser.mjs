@@ -182,5 +182,31 @@ export async function openPage(browserUrl, { width, height, dark }) {
   await page.send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-color-scheme', value: dark ? 'dark' : 'light' }],
   })
+
+  /*
+   * SLOW THE MACHINE DOWN ON PURPOSE: `LESSON_LAB_CPU_THROTTLE=4`.
+   *
+   * A developer machine is not the machine this product runs on, and it is not
+   * the machine CI runs on either — a GitHub runner is 2 vCPU with no GPU, and
+   * a child's laptop is worse. The 3D characters carry a 2D stand-in for
+   * exactly that, so "did a character fall back to flat?" is a question whose
+   * answer depends on how fast the machine is, and a gate tuned on a 16-thread
+   * workstation cannot see it.
+   *
+   * This makes that reproducible locally instead of only in CI, where each
+   * observation costs a 25-minute round trip. Off by default: a throttled run
+   * measures a different machine, so it belongs in an investigation, not in
+   * the number the gate reports by default.
+   *
+   * All three browser gates import this helper — verify:lesson-engine,
+   * verify:tutor-ui and verify:tutor-a11y — so the variable throttles any of
+   * them despite the lesson-lab prefix its neighbours here use.
+   */
+  const throttle = Number(process.env.LESSON_LAB_CPU_THROTTLE ?? 0)
+  if (throttle > 1) {
+    await page.send('Emulation.setCPUThrottlingRate', { rate: throttle })
+    console.log(`  [browser] CPU throttled ${throttle}x`)
+  }
+
   return page
 }

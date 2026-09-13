@@ -124,6 +124,14 @@ const STATE =
   ' head: (document.body.innerText || "").slice(0, 60),' +
   // A character the layer could not draw falls back to the 2D actor and says so.
   ' flat: [...document.querySelectorAll("[data-render]")].filter((n) => n.dataset.render !== "3d").length,' +
+  /*
+   * THE EMPTY BOX, which is the defect the 2D stand-in exists to prevent.
+   * A `3d` slot is empty ON PURPOSE — that character is painted on the shared
+   * WebGL canvas. A `2d` slot must contain the flat actor; if it does not, the
+   * child is looking at a hole where a character should be, which is exactly
+   * what shipped once before the fallback was fixed.
+   */
+  ' hollow: [...document.querySelectorAll("[data-render=\\"2d\\"]")].filter((n) => n.childElementCount === 0).length,' +
   ' webgl: [...document.querySelectorAll("canvas")].filter((c) => c.width > 200).length,' +
   ' verdict: Boolean(document.querySelector("[role=status]")),' +
   ' results: /Lesson complete|Good effort/i.test(document.body.innerText || ""),' +
@@ -168,6 +176,7 @@ async function main() {
   const rows = []
   const smallTargets = new Map()
   let flatTotal = 0
+  let hollowTotal = 0
   let maxWebgl = 0
 
   try {
@@ -238,6 +247,7 @@ async function main() {
         verdict: false,
         finishes: false,
         blocked: [],
+        flatScreens: [],
         errors: [],
         failedRequests: [],
       }
@@ -330,8 +340,10 @@ async function main() {
       for (let screen = 0; screen < 12; screen += 1) {
         const state = await page.evaluate(STATE)
         flatTotal += state.flat
+        hollowTotal += state.hollow
         maxWebgl = Math.max(maxWebgl, state.webgl)
-        if (state.flat > 0) row.blocked.push(`screen ${screen}: a character rendered in 2D`)
+        if (state.flat > 0) row.flatScreens.push(screen)
+        if (state.hollow > 0) row.blocked.push(`screen ${screen}: a character slot rendered NOTHING`)
         if (state.verdict) row.verdict = true
         if (state.results) {
           row.finishes = true
@@ -387,7 +399,8 @@ async function main() {
     console.log(`  "Start lesson" advances:   ${rows.filter((r) => r.starts).length}/${rows.length}`)
     console.log(`  answered to a verdict:     ${rows.filter((r) => r.verdict).length}/${rows.length}   (reported, not gated)`)
     console.log(`  reached the results screen:${rows.filter((r) => r.finishes).length}/${rows.length}   (reported, not gated)`)
-    console.log(`characters rendered in 2D:   ${flatTotal}`)
+    console.log(`characters rendered in 2D:   ${flatTotal}   (reported, not gated)`)
+    console.log(`character slots rendering nothing: ${hollowTotal}`)
     console.log(`most WebGL contexts at once: ${maxWebgl}`)
     console.log(`console errors:              ${rows.reduce((n, r) => n + r.errors.length, 0)}`)
     console.log(`failed requests:             ${rows.reduce((n, r) => n + r.failedRequests.length, 0)}`)
@@ -416,15 +429,65 @@ async function main() {
       console.log('   types are ungraded CONTENT segments that cannot produce a verdict.')
     }
 
-    const broken = failures.length + (flatTotal > 0 ? 1 : 0) + (STRICT ? unanswered.length : 0)
+    /*
+     * THE 2D COUNT IS REPORTED, NOT GATED, AND THAT IS A DELIBERATE CLIMBDOWN.
+     *
+     * It used to fail the gate on a single observation, under the banner "the
+     * Lesson Engine is 3D-only". Measured on three machines, that assertion
+     * turned out to be about the machine rather than about the product:
+     *
+     *   57 fixtures, 16-thread workstation with a GPU ....  0
+     *   57 fixtures, GitHub runner (2 vCPU, no GPU) .....  11
+     *   57 fixtures, same workstation, CPU throttled 4x .  17, then 6
+     *   whichever fixtures it hit, run ALONE throttled ..   0
+     *
+     * Two rows settle it. The fixtures it lands on CHANGE between runs
+     * (group_sets/read_chart once, price_compare the next), and in isolation
+     * they are clean — so it is neither the lesson nor the throttle by itself.
+     * What is left is the long single-page session: 57 lessons without a
+     * reload, which is also how a child moves through them, where frames
+     * occasionally stop for longer than the layer's STALE_MS (1s) and the 2D
+     * stand-in takes over. `handleDrew` puts 3D back the moment a frame lands,
+     * so it is transient by construction.
+     *
+     * The stand-in is the DESIGNED behaviour for a machine that cannot keep up,
+     * and it was fixed on purpose so a struggling character reads as a flat
+     * character instead of a hole. Failing the gate whenever it works asserts
+     * that the runner never stutters for one second, which no CI runner can
+     * promise and no child's laptop will.
+     *
+     * What stays gated is the hole itself — see `hollow`.
+     */
     if (flatTotal > 0) {
-      console.log(`\nFAIL — a character rendered in 2D ${flatTotal} time(s); the Lesson Engine is 3D-only`)
+      console.log(`\ncharacters that fell back to 2D (reported, not gated):`)
+      for (const row of rows.filter((r) => r.flatScreens.length)) {
+        console.log(`   ${row.label} — screen(s) ${row.flatScreens.join(', ')}`)
+      }
+    }
+
+    const broken = failures.length + (hollowTotal > 0 ? 1 : 0) + (STRICT ? unanswered.length : 0)
+    if (hollowTotal > 0) {
+      console.log(
+        `\nFAIL — a character slot rendered NOTHING ${hollowTotal} time(s): not 3D, and not the 2D stand-in either.`,
+      )
+      console.log('   That is the hole the fallback exists to prevent, and it has shipped once before.')
+      // Say where, for the same reason the 2D list does: `failures` is filtered
+      // on reachability/start/errors, so a fixture whose only problem is a
+      // hollow slot would otherwise report a count and no location.
+      for (const row of rows.filter((r) => r.blocked.some((b) => b.includes('rendered NOTHING')))) {
+        const screens = row.blocked
+          .filter((b) => b.includes('rendered NOTHING'))
+          .map((b) => b.replace(/^screen (\d+).*$/, '$1'))
+        console.log(`   ${row.label} — screen(s) ${screens.join(', ')}`)
+      }
     }
     if (broken) {
       console.log(`\nverify:lesson-engine FAILED — ${broken} problem(s)`)
       process.exitCode = 1
     } else {
-      console.log('\nverify:lesson-engine OK — every control reachable, every lesson starts, nothing 2D, no errors')
+      console.log(
+        '\nverify:lesson-engine OK — every control reachable, every lesson starts, no empty character slots, no errors',
+      )
     }
   } finally {
     child.kill()
