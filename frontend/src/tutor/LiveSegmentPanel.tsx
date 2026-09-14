@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
 import type { CharacterCue, SegmentBase, Verdict } from '@/lesson-engine/core/types';
+import { useCaptionLarge } from './captionSize';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
@@ -104,6 +105,7 @@ export function LiveSegmentPanel({
   className,
 }: LiveSegmentPanelProps) {
   const { t } = useTranslation();
+  const captionLarge = useCaptionLarge();
   const [draft, setDraft] = useState<unknown>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [attempt, setAttempt] = useState(1);
@@ -495,7 +497,10 @@ export function LiveSegmentPanel({
           Type) and this is the same character, in the same breath, as the
           caption over its crown.
         */}
-        <MarkdownLite text={segment.prompt_md} className="lf-speech text-content" />
+        <MarkdownLite
+          text={segment.prompt_md}
+          className={cn(captionLarge ? 'lf-speech-lg' : 'lf-speech', 'text-content')}
+        />
       </header>
       </div>
 

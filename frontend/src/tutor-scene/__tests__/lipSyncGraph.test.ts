@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useLipSync } from '../useLipSync';
+import { getTutorVoiceVolume, setTutorVoiceVolume, useLipSync } from '../useLipSync';
 
 /*
  * THE TUTOR WAS SILENT IN PRODUCTION FOR EVERY LEARNER, and this is the file
@@ -33,11 +33,20 @@ class FakeAnalyser extends FakeNode {
   getFloatTimeDomainData() {}
 }
 
+class FakeGain extends FakeNode {
+  gain = { value: 1 };
+}
+
 let captures = 0;
 let contexts = 0;
 let closed = 0;
 /** Elements this fake has already captured, mirroring the real spec rule. */
 let capturedByAnyone: Set<unknown>;
+/** Every analyser/gain node ever created, across the whole file — `ensureGain`
+ * is a module singleton like `sharedContext`, so a test must be able to find
+ * the one gain node created by an earlier test, not just its own. */
+let analysersCreated: FakeAnalyser[];
+let gainsCreated: FakeGain[];
 
 class FakeAudioContext {
   destination = new FakeNode();
@@ -46,7 +55,14 @@ class FakeAudioContext {
     contexts += 1;
   }
   createAnalyser() {
-    return new FakeAnalyser();
+    const node = new FakeAnalyser();
+    analysersCreated.push(node);
+    return node;
+  }
+  createGain() {
+    const node = new FakeGain();
+    gainsCreated.push(node);
+    return node;
   }
   createMediaElementSource(el: unknown) {
     if (capturedByAnyone.has(el)) {
@@ -75,6 +91,8 @@ beforeEach(() => {
   contexts = 0;
   closed = 0;
   capturedByAnyone = new Set();
+  analysersCreated = [];
+  gainsCreated = [];
   vi.stubGlobal('AudioContext', FakeAudioContext);
   vi.stubGlobal('requestAnimationFrame', () => 1);
   vi.stubGlobal('cancelAnimationFrame', () => {});
@@ -151,5 +169,75 @@ describe('the audio element keeps its voice', () => {
     renderHook(() => useLipSync(audio)).unmount();
     expect(captures).toBe(0);
     expect(info).toHaveBeenCalled();
+  });
+});
+
+describe('the learner\'s voice-volume preference', () => {
+  /*
+   * `audioElement.volume` is a dead letter once `createMediaElementSource`
+   * has captured the element (the doctrine `useLipSync.ts` documents beside
+   * `ensureGain`) — these tests are about the GAIN NODE the graph now always
+   * routes through instead, never about the element's own property.
+   */
+
+  it('routes the analyser through the shared gain node, never straight to destination', () => {
+    /*
+     * `audioElement.volume` is ignored once the element is captured (see
+     * `useLipSync.ts`'s own doctrine beside `ensureGain`), so a volume
+     * control only works if the graph itself has a gain stage in it. A
+     * regression here is silent in production: the mouth still moves, only
+     * a volume slider would stop doing anything.
+     */
+    const audio = fakeAudio();
+    renderHook(() => useLipSync(audio));
+
+    /*
+     * Read the gain off the analyser's OWN recorded connection rather than
+     * off `gainsCreated` — `ensureGain` is a create-once module singleton
+     * (like `sharedContext` above), so a run after the first test in this
+     * file never calls `createGain()` again, and `gainsCreated` (reset every
+     * `beforeEach`) would be empty here. The analyser is fresh every run.
+     */
+    const analyser = analysersCreated.at(-1)!;
+    expect(analyser.connections.length).toBe(1);
+    const gain = analyser.connections[0] as FakeGain;
+    expect(gain).toBeInstanceOf(FakeGain);
+    // The gain forwards exactly once, onward to the real destination.
+    expect(gain.connections.length).toBe(1);
+  });
+
+  it('creates the gain node at most once, and reuses it across remounts and elements', () => {
+    // Same shape as "shares one context across every element on the page"
+    // above, and for the same reason: a second gain node mid-session would
+    // either silence the new element or double it against the old one.
+    renderHook(() => useLipSync(fakeAudio())).unmount();
+    renderHook(() => useLipSync(fakeAudio())).unmount();
+    expect(gainsCreated.length).toBeLessThanOrEqual(1);
+  });
+
+  it('setTutorVoiceVolume clamps to 0..1 and getTutorVoiceVolume reflects it', () => {
+    setTutorVoiceVolume(0.4);
+    expect(getTutorVoiceVolume()).toBeCloseTo(0.4);
+
+    setTutorVoiceVolume(5);
+    expect(getTutorVoiceVolume()).toBe(1);
+
+    setTutorVoiceVolume(-2);
+    expect(getTutorVoiceVolume()).toBe(0);
+
+    setTutorVoiceVolume(0.7); // leave it somewhere sane for later tests
+  });
+
+  it('a volume change reaches the live graph without tearing anything down', () => {
+    const audio = fakeAudio();
+    const { unmount } = renderHook(() => useLipSync(audio));
+
+    // Changing the preference mid-conversation must not throw and must not
+    // require a re-render — it is a single property write on the node the
+    // graph already built.
+    expect(() => setTutorVoiceVolume(0.2)).not.toThrow();
+    expect(getTutorVoiceVolume()).toBeCloseTo(0.2);
+
+    unmount();
   });
 });

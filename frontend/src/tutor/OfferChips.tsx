@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { playPlatformSound } from '@/lib/sound';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { useCaptionLarge } from './captionSize';
 import { HudDisclosure } from './hud/HudDisclosure';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
@@ -257,6 +258,7 @@ export function OfferChips({
   map,
 }: OfferChipsProps) {
   const { t, i18n } = useTranslation();
+  const captionLarge = useCaptionLarge();
   const dock = useStageDock();
   /** Read-only: the dock's own published rect, never a registration of ours — see `CLUSTER_DOCK_GAP_PX` above. */
   const safeArea = useSafeArea();
@@ -753,7 +755,11 @@ export function OfferChips({
             at the establishing shot it landed across the map's own CONTINUE
             (measured overlap in the lab report). One sentence, one place.
           */}
-          <p className="lf-speech text-content" aria-live="polite" aria-atomic="true">
+          <p
+            className={cn(captionLarge ? 'lf-speech-lg' : 'lf-speech', 'text-content')}
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {greeting}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -1308,7 +1314,11 @@ export function OfferChips({
               {/* `lf-speech`, exactly as the caption it stands in for: this is
                   still the tutor talking, and a device with no WebGL does not
                   make its voice smaller. */}
-              <span className="lf-speech" aria-live="polite" aria-atomic="true">
+              <span
+                className={captionLarge ? 'lf-speech-lg' : 'lf-speech'}
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 {greeting}
               </span>
             </HudPlate>

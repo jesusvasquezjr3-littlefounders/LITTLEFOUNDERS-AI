@@ -5,6 +5,8 @@ import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { playPlatformSound } from '@/lib/sound';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { getTutorVoiceVolume, setTutorVoiceVolume } from '@/tutor-scene/useLipSync';
+import { setCaptionLarge, useCaptionLarge } from './captionSize';
 import { HudDisclosure } from './hud/HudDisclosure';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, useDesktopPlate, type LessonPlateDetent } from './hud/LessonPlate';
@@ -217,6 +219,18 @@ export function ConversationView({
    * is a surface, not a menu. `useOneOpen` is for the arrival, which has two.
    */
   const [sessionOpen, setSessionOpen] = useState(false);
+
+  /*
+   * Two device-level preferences, read the same way `lib/sound.ts`'s mute
+   * flag is: `captionLarge` is reactive (`useCaptionLarge` re-renders every
+   * subscriber the instant either one presses the switch — there is only
+   * ever one session panel open at a time, but the hook does not assume
+   * that). `volume` is local component state seeded from the same module,
+   * because a slider needs to redraw its own thumb position on every drag
+   * and nothing else on the page needs to know about a mid-drag value.
+   */
+  const captionLarge = useCaptionLarge();
+  const [voiceVolume, setVoiceVolumeState] = useState(getTutorVoiceVolume);
 
   /* One cue, the moment the pill above actually mounts — never on every
    * render `streakJustAdvanced` happens to stay true for. */
@@ -978,6 +992,71 @@ export function ConversationView({
         )}
       </div>
 
+      {/*
+        TWO DEVICE PREFERENCES, NEVER A CAPTIONS ON/OFF.
+        `SpeechCaption.tsx`'s own doctrine (/ORACLE.md §1 step 4): the caption
+        above the tutor's head is the whole lesson for a deaf or hard-of-
+        hearing learner and is never optional. What IS a legitimate control —
+        every real captioning system exposes it separately from on/off — is
+        SIZE, so this is that, not a smaller version of removing it.
+
+        The volume slider does not touch `audioElement.volume`: once Web
+        Audio has captured the element (`useLipSync.ts`), the browser is
+        required to ignore that property, so this calls the shared gain node
+        the same file now exposes instead — see its own doctrine there.
+      */}
+      <div className="flex flex-col gap-3 border-y border-content/10 py-3">
+        <HudPlate
+          as="button"
+          shape="chip"
+          role="switch"
+          aria-checked={captionLarge}
+          onClick={() => setCaptionLarge(!captionLarge)}
+          className="pointer-events-auto w-full !max-w-none"
+          floorClassName="!justify-between !text-start"
+        >
+          <span className="flex items-center gap-2">
+            <Icon name="format_size" className="!text-[18px]" />
+            <span className="lf-action">{t('tutor.preferences.captionSize')}</span>
+          </span>
+          <span
+            aria-hidden="true"
+            className={cn(
+              'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
+              captionLarge ? 'bg-accent' : 'bg-content/20',
+            )}
+          >
+            <span
+              className={cn(
+                'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                captionLarge ? 'translate-x-6' : 'translate-x-1',
+              )}
+            />
+          </span>
+        </HudPlate>
+
+        <label className="flex w-full flex-col gap-1.5">
+          <span className="flex items-center gap-2">
+            <Icon name="volume_up" className="!text-[18px] text-content" />
+            <span className="lf-action text-content">{t('tutor.preferences.voiceVolume')}</span>
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={voiceVolume}
+            onChange={(event) => {
+              const next = Number(event.target.value);
+              setVoiceVolumeState(next);
+              setTutorVoiceVolume(next);
+            }}
+            className="pointer-events-auto h-2 w-full cursor-pointer accent-primary"
+            aria-valuetext={`${Math.round(voiceVolume * 100)}%`}
+          />
+        </label>
+      </div>
+
       <div className="flex flex-col gap-2">
         {mapAvailable && (
           <HudPlate
@@ -1448,7 +1527,15 @@ export function ConversationView({
                 className="h-11 w-11 self-start border border-accent/30 bg-accent-soft sm:h-14 sm:w-14"
               />
               <span
-                className="lf-speech min-w-0 flex-1 text-start"
+                /*
+                 * The same size preference `SpeechCaption.tsx` honours on the
+                 * anchored path — see `captionSize.ts`'s own doctrine. This
+                 * branch hand-rolls the caption rather than reusing that
+                 * component (no scene to anchor against here), so the toggle
+                 * has to be applied on both, or a learner whose device falls
+                 * back to this 2D path never gets it at all.
+                 */
+                className={cn(captionLarge ? 'lf-speech-lg' : 'lf-speech', 'min-w-0 flex-1 text-start')}
                 aria-live="polite"
                 aria-atomic="true"
               >
@@ -1604,7 +1691,7 @@ export function ConversationView({
                 own voice rather than in a control's — the same `lf-speech` the
                 caption over its head is using at the same moment. */}
             <HudPlate shape="plate" className="pointer-events-none">
-              <span className="lf-speech" role="status">
+              <span className={captionLarge ? 'lf-speech-lg' : 'lf-speech'} role="status">
                 {adaptationQuestion}
               </span>
             </HudPlate>

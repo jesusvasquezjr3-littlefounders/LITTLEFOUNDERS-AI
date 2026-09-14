@@ -1700,3 +1700,65 @@ describe('the map row in the session menu', () => {
     expect(onOpenMap).toHaveBeenCalledTimes(1);
   });
 });
+
+/*
+ * TWO DEVICE PREFERENCES IN THE SESSION MENU: caption SIZE (never on/off —
+ * `SpeechCaption.tsx`'s own doctrine, /ORACLE.md §1 step 4) and voice
+ * volume (a gain node, not `audioElement.volume` — see `useLipSync.ts`).
+ * Both are plain modules, like `lib/sound.ts`'s mute flag, so these tests
+ * exercise them directly rather than through a mock.
+ */
+describe('the session menu\'s caption-size and voice-volume controls', () => {
+  beforeEach(async () => {
+    const { setCaptionLarge } = await import('../captionSize');
+    const { setTutorVoiceVolume } = await import('@/tutor-scene/useLipSync');
+    setCaptionLarge(false);
+    setTutorVoiceVolume(1);
+  });
+
+  afterEach(async () => {
+    const { setCaptionLarge } = await import('../captionSize');
+    const { setTutorVoiceVolume } = await import('@/tutor-scene/useLipSync');
+    setCaptionLarge(false);
+    setTutorVoiceVolume(1);
+  });
+
+  it('the caption-size switch reflects and toggles the shared preference', async () => {
+    const { isCaptionLarge } = await import('../captionSize');
+    renderConversation(makeSocket(), { ready: true });
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+
+    const toggle = screen.getByRole('switch', { name: 'Large captions' });
+    expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+    // Explicit `act`: the click notifies every `useCaptionLarge` subscriber
+    // on the page at once (this panel's own switch AND the live caption),
+    // which is more than one component re-rendering off a single event.
+    act(() => {
+      fireEvent.click(toggle);
+    });
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    expect(isCaptionLarge()).toBe(true);
+  });
+
+  it('exposes exactly one switch in the menu, and it is the size preference — never a captions on/off', () => {
+    renderConversation(makeSocket(), { ready: true });
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const switches = screen.getAllByRole('switch');
+    expect(switches).toHaveLength(1);
+    expect(switches[0]).toHaveAccessibleName('Large captions');
+  });
+
+  it('the voice-volume slider calls the shared gain node, not audioElement.volume', async () => {
+    const { getTutorVoiceVolume } = await import('@/tutor-scene/useLipSync');
+    renderConversation(makeSocket(), { ready: true });
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+
+    const slider = screen.getByRole('slider', { name: 'Voice volume' });
+    expect(slider).toHaveValue('1');
+
+    fireEvent.change(slider, { target: { value: '0.3' } });
+    expect(slider).toHaveValue('0.3');
+    expect(getTutorVoiceVolume()).toBeCloseTo(0.3);
+  });
+});

@@ -17,6 +17,10 @@
     "streakLabel_other": "{{count}} días de racha",
     "xpTotalLabel": "{{count}} XP en total"
   },
+  "preferences": {
+    "captionSize": "Subtítulos grandes",
+    "voiceVolume": "Volumen de voz"
+  },
   "closing": {
     "whatWeDid": "Lo que hicimos"
   },

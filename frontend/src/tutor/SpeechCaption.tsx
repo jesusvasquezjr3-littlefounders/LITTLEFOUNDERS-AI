@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { useCaptionLarge } from './captionSize';
 import { HudPlate } from './hud/HudPlate';
 import { TutorFace, type TutorFaceProps } from './TutorFace';
 import type { WordTiming } from './types';
@@ -200,6 +201,8 @@ const TICK_MS = 24;
  * the same tutor's question, one plate below it in the dock, was 19 px.
  */
 const MIN_SPEECH_PX = 15;
+/** Same floor, scaled by the same ~20% `.lf-speech-lg` adds over `.lf-speech` (23/19) — the "large captions" preference must survive the camera's shrink too, not just set a bigger starting point. */
+const MIN_SPEECH_PX_LARGE = 18;
 
 export function SpeechCaption({
   text,
@@ -216,6 +219,7 @@ export function SpeechCaption({
  }: SpeechCaptionProps) {
   const [shown, setShown] = useState('');
   const timerRef = useRef<number | null>(null);
+  const large = useCaptionLarge();
 
   const reducedMotion =
     instant || (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
@@ -264,7 +268,7 @@ export function SpeechCaption({
     place: 'above',
     avoid: true,
     keepInFrame: true,
-    minTextPx: MIN_SPEECH_PX,
+    minTextPx: large ? MIN_SPEECH_PX_LARGE : MIN_SPEECH_PX,
   });
 
   useEffect(() => {
@@ -401,7 +405,16 @@ export function SpeechCaption({
        * two should be in.
        */
       className={cn(
-        'lf-speech pointer-events-none fixed z-20 flex flex-col items-center',
+        /*
+         * `large ? 'lf-speech-lg' : 'lf-speech'` — a full sibling swap, never
+         * both classes together (see `.lf-speech-lg`'s own comment in
+         * index.css on why: `useAnchorSlot` reads this node's computed font
+         * size once, at registration, and `minTextPx` above already changes
+         * with `large` so that a toggle mid-sentence re-registers against
+         * the size actually on screen rather than a stale one).
+         */
+        large ? 'lf-speech-lg' : 'lf-speech',
+        'pointer-events-none fixed z-20 flex flex-col items-center',
         docked === null &&
           'left-0 top-0 w-max max-w-[min(88vw,32rem)] will-change-transform',
         /*

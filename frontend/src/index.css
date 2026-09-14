@@ -653,6 +653,27 @@
   }
 
   /*
+   * THE LEARNER'S "LARGE CAPTIONS" PREFERENCE (`tutor/captionSize.ts`). A
+   * complete sibling of `.lf-speech`, never combined with it on the same
+   * node: `useAnchorSlot` reads a node's computed font size ONCE, "at
+   * registration" (`tutor-scene/ScreenAnchor.tsx`), to work out how far the
+   * camera's depth scale may shrink it before the caption stops being
+   * readable — two classes fighting over `font-size` would make that read
+   * depend on stylesheet order rather than on which one is actually true.
+   * `SpeechCaption.tsx` forces a fresh registration on toggle (a `key`
+   * change) for exactly this reason: this is a difference in what the node
+   * fundamentally IS, not a modifier on top of it.
+   */
+  .lf-speech-lg {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 23px;
+    font-weight: 500;
+    line-height: 31px;
+    letter-spacing: -0.006em;
+    text-wrap: balance;
+  }
+
+  /*
    * A control in the world. Bigger and LIGHTER than `lf-label`, because
    * confidence over a picture comes from size and air, and 700 in a small box
    * reads as shouting.
@@ -1957,6 +1978,10 @@
     .lf-speech {
       font-size: 21px;
       line-height: 29px;
+    }
+    .lf-speech-lg {
+      font-size: 26px;
+      line-height: 34px;
     }
   }
 

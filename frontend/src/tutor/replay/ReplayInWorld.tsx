@@ -7,6 +7,7 @@ import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { HudPlate } from '../hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from '../hud/LessonPlate';
 import { useScrollEdges } from '../hud/useScrollEdges';
+import { useCaptionLarge } from '../captionSize';
 import { SpeechCaption } from '../SpeechCaption';
 import { TutorFace } from '../TutorFace';
 import { TutorWhiteboard } from '../TutorWhiteboard';
@@ -77,6 +78,7 @@ export type ReplayInWorldProps = ReplayLayerProps;
 export function ReplayInWorld({ director, loading, error, onDone, ready }: ReplayInWorldProps) {
   const { t, i18n } = useTranslation();
   const dock = useStageDock();
+  const captionLarge = useCaptionLarge();
 
   /*
    * PEEK, and the learner is the only one who may move it (/DESIGN.md → Screen
@@ -204,7 +206,7 @@ export function ReplayInWorld({ director, loading, error, onDone, ready }: Repla
             <HudPlate shape="plate" floorClassName="gap-3">
               <TutorFace {...face} className="h-11 w-11 self-start sm:h-14 sm:w-14" />
               <span
-                className="lf-speech min-w-0 flex-1 text-start"
+                className={cn(captionLarge ? 'lf-speech-lg' : 'lf-speech', 'min-w-0 flex-1 text-start')}
                 aria-live="polite"
                 aria-atomic="true"
               >

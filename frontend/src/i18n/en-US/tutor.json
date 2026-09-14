@@ -17,6 +17,10 @@
     "streakLabel_other": "{{count}}-day streak",
     "xpTotalLabel": "{{count}} XP total"
   },
+  "preferences": {
+    "captionSize": "Large captions",
+    "voiceVolume": "Voice volume"
+  },
   "closing": {
     "whatWeDid": "What we did"
   },

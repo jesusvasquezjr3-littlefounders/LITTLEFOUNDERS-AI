@@ -17,6 +17,10 @@
     "streakLabel_other": "{{count}} dias de sequência",
     "xpTotalLabel": "{{count}} XP no total"
   },
+  "preferences": {
+    "captionSize": "Legendas grandes",
+    "voiceVolume": "Volume da voz"
+  },
   "closing": {
     "whatWeDid": "O que fizemos"
   },

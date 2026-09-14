@@ -59,6 +59,72 @@ export interface LipSyncOptions {
 let sharedContext: AudioContext | null = null;
 const capturedElements = new WeakMap<HTMLMediaElement, MediaElementAudioSourceNode>();
 
+/*
+ * THE LEARNER'S VOICE-VOLUME PREFERENCE, AND WHY IT IS A GAIN NODE RATHER
+ * THAN `audioElement.volume`.
+ *
+ * Once `createMediaElementSource` has captured an element (above), the spec
+ * requires the browser to ignore that element's OWN `.volume`/`.muted` from
+ * then on — the sound the learner hears is whatever this graph does with it,
+ * nothing the element itself reports. A volume slider that wrote
+ * `audioElement.volume` would move a number nobody was reading.
+ *
+ * So the preference lives here, as the one persistent node this file's own
+ * doctrine already requires ("the element must always have a path to the
+ * speakers"): one shared `GainNode`, created once per context and reused for
+ * every element and every re-wire, sitting where `context.destination` used
+ * to sit directly. `.gain.value` is safe to change at any time — no
+ * reconnect needed — so a slider drag is a single property write per frame.
+ */
+const VOICE_VOLUME_KEY = 'lf.tutor.voiceVolume';
+const DEFAULT_VOICE_VOLUME = 1;
+
+function readVoiceVolume(): number {
+  if (typeof window === 'undefined') return DEFAULT_VOICE_VOLUME;
+  try {
+    const raw = window.localStorage.getItem(VOICE_VOLUME_KEY);
+    if (raw === null) return DEFAULT_VOICE_VOLUME;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : DEFAULT_VOICE_VOLUME;
+  } catch {
+    return DEFAULT_VOICE_VOLUME;
+  }
+}
+
+let voiceVolume = readVoiceVolume();
+let sharedGain: GainNode | null = null;
+
+function ensureGain(context: AudioContext): GainNode {
+  if (!sharedGain) {
+    sharedGain = context.createGain();
+    sharedGain.gain.value = voiceVolume;
+    sharedGain.connect(context.destination);
+  }
+  return sharedGain;
+}
+
+/** The tutor's own voice volume, 0..1 — read once for a slider's initial position. */
+export function getTutorVoiceVolume(): number {
+  return voiceVolume;
+}
+
+/**
+ * Sets the tutor's voice volume, 0..1, and remembers it for the next visit.
+ *
+ * Safe to call before any audio has ever played: the value is applied to the
+ * shared gain node the next time one exists, and stamped onto it immediately
+ * if a conversation is already live.
+ */
+export function setTutorVoiceVolume(next: number): void {
+  voiceVolume = Math.min(1, Math.max(0, next));
+  if (sharedGain) sharedGain.gain.value = voiceVolume;
+  try {
+    window.localStorage.setItem(VOICE_VOLUME_KEY, String(voiceVolume));
+  } catch {
+    // Private browsing, a blocked origin, a full quota — the session still honours it.
+  }
+}
+
 function audioContextCtor(): typeof AudioContext | null {
   if (typeof window === 'undefined') return null;
   return (
@@ -131,8 +197,10 @@ export function useLipSync(audio: HTMLAudioElement | null, options: LipSyncOptio
     // previous run, and a duplicated edge would double the signal.
     source.disconnect();
     source.connect(analyser);
-    // Keep the element audible: the analyser is a tap, not a sink.
-    analyser.connect(context.destination);
+    // Keep the element audible: the analyser is a tap, not a sink. Routed
+    // through the shared gain node, not `context.destination` directly — see
+    // its own comment above for why that is where volume has to live.
+    analyser.connect(ensureGain(context));
 
     let frame = 0;
     let previous = performance.now();
@@ -184,7 +252,7 @@ export function useLipSync(audio: HTMLAudioElement | null, options: LipSyncOptio
        * closing it is precisely what silenced the tutor in production.
        */
       source.disconnect();
-      source.connect(context.destination);
+      source.connect(ensureGain(context));
       setViseme(VISEME_CLOSED);
     };
   }, [audio, fftSize, gain]);
