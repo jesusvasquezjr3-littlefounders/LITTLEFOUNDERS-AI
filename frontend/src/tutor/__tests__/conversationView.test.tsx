@@ -113,6 +113,10 @@ function conversation(
       replyTimedOut={false}
       mapAvailable={overrides.mapAvailable ?? false}
       onOpenMap={overrides.onOpenMap ?? vi.fn()}
+      streakDays={0}
+      xpPoints={0}
+      streakJustAdvanced={false}
+      dismissStreakCelebration={vi.fn()}
       onRestart={vi.fn()}
       onExit={vi.fn()}
     />
@@ -413,6 +417,10 @@ describe('the composer refuses to submit while a reply is already pending', () =
         replyTimedOut={false}
         mapAvailable={false}
         onOpenMap={vi.fn()}
+        streakDays={0}
+        xpPoints={0}
+        streakJustAdvanced={false}
+        dismissStreakCelebration={vi.fn()}
         onRestart={vi.fn()}
         onExit={vi.fn()}
       />
@@ -558,6 +566,10 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
         replyTimedOut={false}
         mapAvailable={false}
         onOpenMap={vi.fn()}
+        streakDays={0}
+        xpPoints={0}
+        streakJustAdvanced={false}
+        dismissStreakCelebration={vi.fn()}
         onRestart={overrides.onRestart ?? vi.fn()}
         onExit={overrides.onExit ?? vi.fn()}
       />

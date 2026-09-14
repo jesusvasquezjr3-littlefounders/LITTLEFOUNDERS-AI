@@ -19,6 +19,7 @@ import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpen
 import { PersonalizeInWorld } from './PersonalizeInWorld';
 import { OfferChips } from './OfferChips';
 import { ConversationView } from './ConversationView';
+import { useTutorLearningStats } from './useTutorLearningStats';
 import { MapOverlay } from './MapOverlay';
 import { ClosingInWorld } from './ClosingInWorld';
 import { ReplayInWorld } from './replay/ReplayInWorld';
@@ -343,6 +344,16 @@ export function TutorExperience() {
   userIdRef.current = authSession?.user.id;
 
   const [token, setToken] = useState<string | null>(null);
+
+  /*
+   * The learner's real racha/XP (`/profile`, the same numbers
+   * ProfilePage.tsx shows) — resolved here, once, alongside `token` and
+   * `userIdRef` above, and handed down through `conversationLayer` rather
+   * than fetched again inside `ConversationView`. See the hook's own doc for
+   * why it takes these two rather than calling `useAuth()` itself.
+   */
+  const learningStats = useTutorLearningStats(token, authSession?.user.id);
+
   const [phase, setPhase] = useState<StagePhase>('arriving');
   /*
    * WHO A LIVE `story` FAMILY SEGMENT IS PORTRAYING, RIGHT NOW.
@@ -1380,6 +1391,10 @@ export function TutorExperience() {
           replyTimedOut,
           mapAvailable: (map?.nodes.length ?? 0) > 0,
           onOpenMap: () => setMapOpen(true),
+          streakDays: learningStats.streakDays,
+          xpPoints: learningStats.xpPoints,
+          streakJustAdvanced: learningStats.streakJustAdvanced,
+          dismissStreakCelebration: learningStats.dismissStreakCelebration,
           onRestart: () => {
             /*
              * Start over: the tutor still gets its goodbye turn server-side

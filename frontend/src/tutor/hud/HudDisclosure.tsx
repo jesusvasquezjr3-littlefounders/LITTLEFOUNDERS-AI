@@ -100,6 +100,13 @@ export interface HudDisclosureProps {
   label: string;
   /** Material Symbols ligature. Decoration — never the only name. */
   icon?: string;
+  /**
+   * A small mark riding the trigger, after the label and before the chevron
+   * — for a count the learner should see without opening the panel (the
+   * session menu's streak badge). Decoration, same as `icon`: the label
+   * alone must still say what the control does.
+   */
+  badge?: ReactNode;
   /** Portal target. `null`/omitted renders the panel in place. */
   host?: HTMLElement | null;
   open: boolean;
@@ -115,6 +122,7 @@ export function HudDisclosure({
   id,
   label,
   icon,
+  badge,
   host,
   open,
   onOpenChange,
@@ -261,6 +269,7 @@ export function HudDisclosure({
         <span className="flex items-center gap-1.5 whitespace-nowrap">
           {icon ? <Icon name={icon} className="!text-[18px]" aria-hidden /> : null}
           <span className="lf-action">{label}</span>
+          {badge}
           {/*
             The chevron says WHERE THE PANEL WILL GO, not where the trigger
             is. Closed it points the way the panel opens — down, from a header

@@ -10,6 +10,13 @@
   "session": {
     "label": "Menu"
   },
+  "gamification": {
+    "streakCelebration_one": "{{count}}-day streak!",
+    "streakCelebration_other": "{{count}}-day streak!",
+    "streakLabel_one": "{{count}}-day streak",
+    "streakLabel_other": "{{count}}-day streak",
+    "xpTotalLabel": "{{count}} XP total"
+  },
   "closing": {
     "whatWeDid": "What we did"
   },

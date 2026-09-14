@@ -10,6 +10,13 @@
   "session": {
     "label": "Menú"
   },
+  "gamification": {
+    "streakCelebration_one": "¡Racha de {{count}} día!",
+    "streakCelebration_other": "¡Racha de {{count}} días!",
+    "streakLabel_one": "{{count}} día de racha",
+    "streakLabel_other": "{{count}} días de racha",
+    "xpTotalLabel": "{{count}} XP en total"
+  },
   "closing": {
     "whatWeDid": "Lo que hicimos"
   },

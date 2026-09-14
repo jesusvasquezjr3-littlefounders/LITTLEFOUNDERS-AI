@@ -402,6 +402,10 @@ export default function TutorLabPage() {
   // Sprint 3 (/TUTOR_INSTRUMENTS.md): the map opened mid-conversation, mirroring
   // `TutorExperience.tsx`'s own `mapOpen` so the lab can actually show it.
   const [mapOpen, setMapOpen] = useState(false);
+  // Fixture racha/XP, and shown by default (not gated behind a lab toggle):
+  // `verify:tutor-ui` measures every mounted surface for overlap, and a
+  // celebration pill nobody ever renders here is a pill nobody ever checked.
+  const [streakDismissed, setStreakDismissed] = useState(false);
   const [stageReady, setStageReady] = useState(false);
   /** Also REAL, same reasoning as `stageReady` above — see `StageShellProps.onTimedOut`. */
   const [stageTimedOut, setStageTimedOut] = useState(false);
@@ -698,6 +702,11 @@ export default function TutorLabPage() {
     replyTimedOut: false,
     mapAvailable: labMap(locale).nodes.length > 0,
     onOpenMap: () => setMapOpen(true),
+    // Fixture numbers — there is no real /profile here, only `LAB_TOKEN`.
+    streakDays: 12,
+    xpPoints: 245,
+    streakJustAdvanced: !streakDismissed,
+    dismissStreakCelebration: () => setStreakDismissed(true),
     onRestart: () => setSurface('introducing'),
     onExit: () => {
       socket.endSession();

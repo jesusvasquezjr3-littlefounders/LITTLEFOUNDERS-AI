@@ -1448,6 +1448,20 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
   mapAvailable: boolean;
   /** Opens the map overlay (Sprint 3, /TUTOR_INSTRUMENTS.md) — see `TutorExperience.tsx`'s `mapOpen` for why it is a portal rather than dock-hosted content here. */
   onOpenMap: () => void;
+  /**
+   * The learner's real racha/XP total (`useTutorLearningStats`, the same
+   * `/profile` numbers `ProfilePage.tsx` shows) — computed upstream rather
+   * than fetched here, the same reasoning `awaitingReply` above already
+   * documents: this layer has never depended on `AuthContext` and is unit-
+   * tested with no provider tree at all (`conversationView.test.tsx`), and a
+   * value the shell and this layer would otherwise both resolve is a value
+   * they could disagree about.
+   */
+  streakDays: number;
+  xpPoints: number;
+  /** True once `useTutorLearningStats` sees the streak advance since the learner's last visit — see its own doc for why the streak alone drives this. */
+  streakJustAdvanced: boolean;
+  dismissStreakCelebration: () => void;
 }
 
 /**

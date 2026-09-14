@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { playPlatformSound } from '@/lib/sound';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudDisclosure } from './hud/HudDisclosure';
 import { HudPlate } from './hud/HudPlate';
@@ -13,6 +14,7 @@ import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { TutorWhiteboard } from './TutorWhiteboard';
 import { NotebookKeepButton } from './NotebookKeepButton';
+import { GamificationCelebration } from './hud/GamificationCelebration';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
@@ -124,6 +126,10 @@ export function ConversationView({
   onOpenMap,
   onDraftChange,
   onCharacterCue,
+  streakDays,
+  xpPoints,
+  streakJustAdvanced,
+  dismissStreakCelebration,
 }: ConversationViewProps) {
   const { t } = useTranslation();
   const safeArea = useSafeArea();
@@ -211,6 +217,12 @@ export function ConversationView({
    * is a surface, not a menu. `useOneOpen` is for the arrival, which has two.
    */
   const [sessionOpen, setSessionOpen] = useState(false);
+
+  /* One cue, the moment the pill above actually mounts — never on every
+   * render `streakJustAdvanced` happens to stay true for. */
+  useEffect(() => {
+    if (streakJustAdvanced) playPlatformSound('tutor_reveal');
+  }, [streakJustAdvanced]);
 
   useEffect(() => {
     if (confirmingRestart) restartYesRef.current?.focus();
@@ -940,6 +952,30 @@ export function ConversationView({
             </span>
           </span>
         )}
+
+        {/*
+          THE LEARNER'S REAL RACHA AND XP TOTAL — `useTutorLearningStats`,
+          the same `/profile` numbers ProfilePage.tsx shows, not a Tutor-only
+          invention. Muted rather than the accent-strong `sessionXp` gets: that
+          one is what just happened, this is ambient standing state, same
+          register as the budget clock beside it.
+        */}
+        {streakDays > 0 && (
+          <span className="flex items-center gap-1.5">
+            <Icon name="local_fire_department" className="!text-[16px] text-warning-strong" />
+            <span className="lf-caption text-content-muted">
+              {t('tutor.gamification.streakLabel', { count: streakDays })}
+            </span>
+          </span>
+        )}
+        {xpPoints > 0 && (
+          <span className="flex items-center gap-1.5">
+            <Icon name="toll" className="!text-[16px] text-warning-strong" />
+            <span className="lf-caption text-content-muted">
+              {t('tutor.gamification.xpTotalLabel', { count: xpPoints })}
+            </span>
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -1062,6 +1098,29 @@ export function ConversationView({
         id="session"
         label={t('tutor.session.label')}
         icon="menu"
+        /*
+         * A DISCRETE MARK, NOT A NEW CHIP. The corner already spent its one
+         * new-control budget getting down to two (see this file's own
+         * header). Riding the existing trigger costs nothing extra, and
+         * `aria-hidden` keeps the button's accessible name exactly "Menú" —
+         * the full sentence lives inside the panel, in `sessionPanel`'s row
+         * of numbers, where a screen-reader user actually lands.
+         *
+         * `lf-caption` + `text-warning-strong`, no background chip: the same
+         * pair `sessionXp`/`budgetRune` already use in the panel below, which
+         * is what keeps this passing `verify:tutor-a11y` in dark mode — a
+         * first attempt here at 11px on `bg-warning-soft` (both off the
+         * closed type scale and off the checked colour pair) failed
+         * color-contrast there.
+         */
+        badge={
+          streakDays > 0 ? (
+            <span aria-hidden="true" className="flex items-center gap-0.5">
+              <Icon name="local_fire_department" className="!text-[14px] text-warning-strong" />
+              <span className="lf-caption font-bold text-warning-strong">{streakDays}</span>
+            </span>
+          ) : null
+        }
         /*
          * The panel opens where its trigger is. On desktop that is the shell's
          * header-panel host, hanging just below the row. On a phone the trigger
@@ -1551,6 +1610,20 @@ export function ConversationView({
             </HudPlate>
             {adaptationAnswers}
           </div>
+        )}
+
+        {/*
+          THE STREAK WENT UP SINCE THE LAST TIME THIS LEARNER OPENED THE
+          TUTOR. See `useTutorLearningStats` for why the streak is the only
+          thing that triggers this and `GamificationCelebration` for why it
+          is a stage pill and not `StreakCelebration.tsx`'s full-screen
+          takeover. Second in the column, after the guaranteed adaptation
+          offer and before the error line — a good-news pill must never
+          push a required question off a short screen, but it outranks a
+          transient error that already has its own line.
+        */}
+        {streakJustAdvanced && (
+          <GamificationCelebration streakDays={streakDays} onDismiss={dismissStreakCelebration} />
         )}
 
         {errorLine && (
