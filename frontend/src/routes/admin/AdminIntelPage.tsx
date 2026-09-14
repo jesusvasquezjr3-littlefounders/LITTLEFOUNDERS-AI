@@ -106,6 +106,18 @@ interface IntelEngagementEntry {
   active_days_30d: number;
 }
 
+/** Mirrors the backend's FamilyEngagementRow (services/insights.ts) as-is — a
+ * DB-view read, not a proxied /admin/intel/* endpoint, so the fields stay
+ * snake_case rather than being camelCased like the other Intel* entries. */
+interface IntelFamilyEntry {
+  family_id: string;
+  family_created_at: string;
+  members: number;
+  tasks_created: number;
+  tasks_completed: number;
+  last_task_at: string | null;
+}
+
 interface IntelChurnEntry {
   user_id: string;
   active_days_7d: number;
@@ -304,6 +316,7 @@ interface IntelBundle {
   trends: IntelTrendPoint[] | null;
   funnel: IntelFunnelStep[] | null;
   cohorts: IntelCohortEntry[] | null;
+  families: IntelFamilyEntry[] | null;
   dropoff: IntelDropoffEntry[] | null;
   calibration: IntelCalibrationEntry[] | null;
   engagement: IntelEngagementEntry[] | null;
@@ -680,6 +693,19 @@ function FunnelsTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => stri
 /* ------------------------------------------------------------------ */
 
 function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => string; pf: Intl.NumberFormat }) {
+  const questTotals = useMemo(() => {
+    const families = data.families ?? [];
+    return families.reduce(
+      (acc, f) => ({ created: acc.created + f.tasks_created, completed: acc.completed + f.tasks_completed }),
+      { created: 0, completed: 0 },
+    );
+  }, [data.families]);
+  const questCompletionRate = questTotals.created > 0 ? questTotals.completed / questTotals.created : null;
+  const questFamilies = useMemo(
+    () => (data.families ? [...data.families].sort((a, b) => b.tasks_created - a.tasks_created).slice(0, 25) : []),
+    [data.families],
+  );
+
   const cohortLabels = useMemo(() => {
     if (!data.cohorts) return [];
     return [...new Set(data.cohorts.map((c) => c.cohortWeek))].sort().reverse();
@@ -776,6 +802,40 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
           </div>
         </ChartCard>
       ) : null}
+
+      {/* Task/quest completion — the one retention signal the backend
+          (services/insights.ts readFamilyEngagement, 0024) has computed all
+          along without a console to show it in. */}
+      <ChartCard icon="task_alt" tone="accent" title={t('admin.intel.retention.questTitle')} subtitle={t('admin.intel.retention.questSubtitle')}>
+        {questFamilies.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            <StatCard
+              dense
+              icon={<Icon name="task_alt" />}
+              tone="accent"
+              value={questCompletionRate === null ? '—' : pf.format(questCompletionRate)}
+              label={t('admin.intel.retention.kpiQuestCompletion')}
+              className="w-fit shadow-glass border border-outline/50"
+            />
+            <Table<IntelFamilyEntry>
+              rows={questFamilies}
+              rowKey={(r) => r.family_id}
+              columns={[
+                { key: 'members', header: t('admin.intel.retention.colMembers'), cell: (r) => r.members.toLocaleString(), numeric: true },
+                { key: 'assigned', header: t('admin.intel.retention.colTasksAssigned'), cell: (r) => r.tasks_created.toLocaleString(), numeric: true, primary: true },
+                { key: 'completed', header: t('admin.intel.retention.colTasksCompleted'), cell: (r) => r.tasks_completed.toLocaleString(), numeric: true },
+                {
+                  key: 'last',
+                  header: t('admin.intel.retention.colLastActivity'),
+                  cell: (r) => (r.last_task_at ? new Date(r.last_task_at).toLocaleDateString() : '—'),
+                },
+              ] satisfies TableColumn<IntelFamilyEntry>[]}
+            />
+          </div>
+        ) : (
+          <EmptyChartIcon name="task_alt" />
+        )}
+      </ChartCard>
     </div>
   );
 }
@@ -1302,7 +1362,7 @@ export function AdminIntelPage() {
       get<IntelSessionEntry[]>(`/admin/intel/sessions/depth?limit=200&${windowQuery}`),
       get<IntelExperiment[]>('/admin/intel/experiments'),
       get<IntelAlert[]>('/admin/intel/alerts'),
-      get<{ consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=1'),
+      get<{ families: IntelFamilyEntry[]; consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=100'),
       get<IntelQualityReport>(`/admin/intel/quality?${windowQuery}`),
       get<{ skills: IntelSkillHealth[] }>(`/admin/intel/learning/content-health?limit=50&${windowQuery}`),
       get<IntelLearningOverview>(`/admin/intel/learning/overview?limit=100&${windowQuery}`),
@@ -1320,12 +1380,13 @@ export function AdminIntelPage() {
     setState({
       status: 'ready',
       data: {
-        consent: unwrap<{ consent: { kidsTotal: number; kidsConsented: number } }>(consentR)?.consent ?? null,
+        consent: unwrap<{ families: IntelFamilyEntry[]; consent: { kidsTotal: number; kidsConsented: number } }>(consentR)?.consent ?? null,
         summary: summaryData,
         trends: unwrap<IntelTrendPoint[]>(trendsR),
         anomalies: unwrap<IntelAnomaly[]>(anomaliesR),
         funnel: unwrap<IntelFunnelStep[]>(funnelR),
         cohorts: unwrap<IntelCohortEntry[]>(cohortsR),
+        families: unwrap<{ families: IntelFamilyEntry[]; consent: { kidsTotal: number; kidsConsented: number } }>(consentR)?.families ?? null,
         dropoff: unwrap<IntelDropoffEntry[]>(dropoffR),
         calibration: unwrap<IntelCalibrationEntry[]>(calibrationR),
         engagement: unwrap<IntelEngagementEntry[]>(engagementR),

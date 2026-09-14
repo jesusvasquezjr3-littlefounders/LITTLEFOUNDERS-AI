@@ -82,6 +82,18 @@ export function MarketingLayout() {
               ariaLabel={t('language.label')}
             />
             <ThemeToggle className="hidden sm:inline-flex" />
+            {/* Below `md` the full-label pill doesn't fit next to the locale
+                picker and the hamburger, so it used to be `hidden md:block` —
+                which meant the sticky header carried NO acquisition affordance
+                at all on a phone once the visitor scrolled past the hero.
+                An icon-only pill keeps the same tap target and destination
+                without the width, so the header CTA is never gone, only
+                relabelled. */}
+            <Link to={ctaTo} aria-label={ctaLabel} className="md:hidden">
+              <Button>
+                <Icon name="arrow_forward" />
+              </Button>
+            </Link>
             <Link to={ctaTo} className="hidden md:block">
               <Button className="px-6 py-2">{ctaLabel}</Button>
             </Link>

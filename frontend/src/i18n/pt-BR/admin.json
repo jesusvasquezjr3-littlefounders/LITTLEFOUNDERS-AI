@@ -1100,7 +1100,15 @@
       "heatmapSubtitle": "As mesmas coortes em grade, células mais escuras seguraram mais gente.",
       "colCohort": "Coorte",
       "colSize": "Tamanho",
-      "colWeek": "Semana {{n}}"
+      "colWeek": "Semana {{n}}",
+      "questTitle": "Conclusão de Missões",
+      "questSubtitle": "Tarefas atribuídas por família e quantas foram realmente concluídas.",
+      "questEmpty": "Ainda não há dados de tarefas familiares.",
+      "kpiQuestCompletion": "Taxa de Conclusão de Missões",
+      "colMembers": "Membros",
+      "colTasksAssigned": "Atribuídas",
+      "colTasksCompleted": "Concluídas",
+      "colLastActivity": "Última Atividade"
     },
     "segments": {
       "title": "Segmentos",

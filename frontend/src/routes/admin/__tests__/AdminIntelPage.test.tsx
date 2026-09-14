@@ -87,6 +87,15 @@ function apiDefault(path: string) {
       trends: [], courses: [], lessons: [], learners: [],
     });
   }
+  if (path.startsWith('/admin/insights/families')) {
+    return apiOk({
+      families: [
+        { family_id: 'fam-1', family_created_at: '2026-06-01T00:00:00.000Z', members: 3, tasks_created: 10, tasks_completed: 6, last_task_at: '2026-08-01T00:00:00.000Z' },
+        { family_id: 'fam-2', family_created_at: '2026-06-15T00:00:00.000Z', members: 2, tasks_created: 4, tasks_completed: 4, last_task_at: null },
+      ],
+      consent: { kidsTotal: 5, kidsConsented: 3 },
+    });
+  }
   if (path.startsWith('/admin/users')) return apiOk({ users: [] });
   if (path.startsWith('/admin/intel/segments')) {
     return apiOk([]);
@@ -268,6 +277,15 @@ describe('AdminIntelPage — tab switching', () => {
     await flushPromises();
     fireEvent.click(screen.getByText('admin.intel.tabs.retention'));
     expect(screen.getByText('admin.intel.retention.cohortTitle')).toBeInTheDocument();
+  });
+
+  it('shows quest completion rate from family task data on the Retention tab', async () => {
+    renderPage();
+    await flushPromises();
+    fireEvent.click(screen.getByText('admin.intel.tabs.retention'));
+    expect(screen.getByText('admin.intel.retention.questTitle')).toBeInTheDocument();
+    // (6 + 4) completed / (10 + 4) created across the two mocked families = 71.4%.
+    expect(screen.getByText('71.4%')).toBeInTheDocument();
   });
 
   it('switches to the learning evidence tab on click', async () => {

@@ -1100,7 +1100,15 @@
       "heatmapSubtitle": "Las mismas cohortes en cuadrícula, las celdas más oscuras retuvieron a más gente.",
       "colCohort": "Cohorte",
       "colSize": "Tamaño",
-      "colWeek": "Semana {{n}}"
+      "colWeek": "Semana {{n}}",
+      "questTitle": "Cumplimiento de Misiones",
+      "questSubtitle": "Tareas asignadas por familia y cuántas se completaron realmente.",
+      "questEmpty": "Aún no hay datos de tareas familiares.",
+      "kpiQuestCompletion": "Tasa de Cumplimiento de Misiones",
+      "colMembers": "Miembros",
+      "colTasksAssigned": "Asignadas",
+      "colTasksCompleted": "Completadas",
+      "colLastActivity": "Última Actividad"
     },
     "segments": {
       "title": "Segmentos",

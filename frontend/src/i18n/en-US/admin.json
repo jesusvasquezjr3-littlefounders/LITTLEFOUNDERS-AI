@@ -1100,7 +1100,15 @@
       "heatmapSubtitle": "The same cohorts as a grid, darker cells held on to more users.",
       "colCohort": "Cohort",
       "colSize": "Size",
-      "colWeek": "Week {{n}}"
+      "colWeek": "Week {{n}}",
+      "questTitle": "Quest Completion",
+      "questSubtitle": "Assigned tasks per family and how many were actually finished.",
+      "questEmpty": "No family task data available yet.",
+      "kpiQuestCompletion": "Quest Completion Rate",
+      "colMembers": "Members",
+      "colTasksAssigned": "Assigned",
+      "colTasksCompleted": "Completed",
+      "colLastActivity": "Last Activity"
     },
     "segments": {
       "title": "Segments",
