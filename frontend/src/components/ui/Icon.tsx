@@ -98,7 +98,17 @@ export function Icon({ name, fill = false, className }: IconProps) {
     <span
       ref={ref}
       aria-hidden="true"
-      className={cn('lf-icon text-inherit', fill && 'lf-icon-fill', className)}
+      // `aria-hidden` only opts a node out of assistive tech — it does nothing
+      // against page-translation (Safari's built-in Translate, the Google
+      // Translate extension). Those rewrite this span's plain-text ligature
+      // name ("badge", "landscape", "smart_toy"...) into the reader's
+      // language, which has no cmap entry in Material Symbols, so the
+      // translated word paints as literal, oversized text that spills out of
+      // the 1-char icon tile — reported on iOS Safari 2026-09-12 as icons
+      // replaced by words like "insignia"/"paisaje" overlapping the UI.
+      // `translate="no"` is the actual opt-out both engines honor.
+      translate="no"
+      className={cn('lf-icon notranslate text-inherit', fill && 'lf-icon-fill', className)}
     >
       {broken ? FALLBACK_GLYPH : name}
     </span>

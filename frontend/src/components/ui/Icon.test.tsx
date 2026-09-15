@@ -70,4 +70,18 @@ describe('Icon keeps a real glyph whatever the caller does to the box', () => {
     render(<Icon name="savings" />);
     expect(screen.getByText('savings')).toBeTruthy();
   });
+
+  // Regression: page-translation (Safari's built-in Translate, the Google
+  // Translate extension) rewrites a span's plain text regardless of
+  // `aria-hidden`, turning "badge"/"landscape"/"smart_toy" into a translated
+  // word with no glyph in Material Symbols — reported on iOS 2026-09-12 as
+  // icons replaced by oversized, overlapping text. `translate="no"` (plus the
+  // `notranslate` class, which some translators key off instead of the
+  // attribute) is the actual opt-out.
+  it('opts the ligature text out of page translation', () => {
+    const { container } = render(<Icon name="badge" />);
+    const span = container.querySelector('span') as HTMLElement;
+    expect(span.getAttribute('translate')).toBe('no');
+    expect(span.classList.contains('notranslate')).toBe(true);
+  });
 });
