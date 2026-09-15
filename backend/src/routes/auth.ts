@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { authRateLimiter } from '../middleware/rateLimit.js';
+import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js';
 import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
@@ -159,7 +159,7 @@ function sessionPayload(s: Partial<gotrue.GotrueSession>) {
 export function authRouter(): Router {
   const router = Router();
 
-  router.post('/signup', authRateLimiter, async (req, res) => {
+  router.post('/signup', accountRateLimiter, async (req, res) => {
     const parsed = SignupBody.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
@@ -200,7 +200,7 @@ export function authRouter(): Router {
   // learning_stats, migration 0003/0006) and every RLS policy already work
   // unchanged. "Guest" here is product vocabulary for GoTrue's is_anonymous —
   // unrelated to the pre-signup lf_aid marketing visitor id used elsewhere.
-  router.post('/guest', authRateLimiter, async (_req, res) => {
+  router.post('/guest', accountRateLimiter, async (_req, res) => {
     const { data, error } = await gotrue.signInAnonymously();
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
     return ok(res, { session: sessionPayload(data) }, 201);

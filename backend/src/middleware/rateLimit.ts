@@ -76,7 +76,10 @@ export const evidenceUploadRateLimiter = rateLimit({
   store: getStore(),
 });
 
-// Strict auth rate limiter (e.g., 10 requests per 15 minutes per IP)
+// Strict auth rate limiter (e.g., 10 requests per 15 minutes per IP). Reserved
+// for routes that touch an EXISTING credential (login, recovery, password/
+// email change, guest→real upgrade) — the surface brute-force/enumeration
+// protection actually guards.
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -84,5 +87,31 @@ export const authRateLimiter = rateLimit({
   legacyHeaders: false,
   passOnStoreError: true,
   message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many authentication attempts, please try again later.' } },
+  store: getStore(),
+});
+
+/*
+ * Account-creation rate limiter (/signup, /guest) — deliberately separate
+ * from, and more generous than, authRateLimiter above.
+ *
+ * Both used to share the 10-req/15-min pool with every other auth route,
+ * including /login and /refresh. A shared-IP household/school/office network
+ * (observed 2026-09-12, a QA cluster testing from one network) can burn
+ * through 10 requests on OTHER people's logins and background session
+ * refreshes alone, so a first-time visitor's very first /signup attempt
+ * arrived pre-blocked with "too many attempts" — not because they did
+ * anything wrong, but because the budget was never theirs alone to spend.
+ * Creating an account is also lower-risk to rate-limit generously than
+ * guessing a password: a burst of signups is at worst spam accounts, not a
+ * credential-stuffing surface, and GoTrue has its own throttling underneath
+ * either way (see authRateLimiter's own note in this file's history).
+ */
+export const accountRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  passOnStoreError: true,
+  message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many account attempts, please try again later.' } },
   store: getStore(),
 });

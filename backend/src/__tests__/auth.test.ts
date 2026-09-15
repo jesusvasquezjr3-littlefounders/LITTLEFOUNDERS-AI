@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { yearsOld } from '../routes/auth.js';
-import { authRateLimiter } from '../middleware/rateLimit.js';
+import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 const SESSION = {
@@ -17,8 +17,13 @@ afterEach(() => vi.unstubAllGlobals());
 // This file alone drives more than authRateLimiter's max=10/15min through
 // every auth route sharing one process-lifetime MemoryStore — reset the
 // loopback key after every test so request count never leaks between tests.
+// accountRateLimiter (/signup, /guest) has its own separate store/key space
+// and needs the same reset.
 afterEach(() => {
-  for (const key of ['127.0.0.1', '::1', '::ffff:127.0.0.1']) void authRateLimiter.resetKey(key);
+  for (const key of ['127.0.0.1', '::1', '::ffff:127.0.0.1']) {
+    void authRateLimiter.resetKey(key);
+    void accountRateLimiter.resetKey(key);
+  }
 });
 
 function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
@@ -49,6 +54,23 @@ describe('POST /api/v1/auth/signup', () => {
     expect(res.body.data.confirmationRequired).toBe(true);
   });
 
+  /*
+   * Regression: /signup used to share authRateLimiter's 10-req/15-min budget
+   * with every other auth route on the same IP, including /login and
+   * /refresh — a shared-IP network (a school, an office, a QA cluster) could
+   * exhaust it on OTHER people's traffic before a first-time visitor's own
+   * signup attempt ever landed. It now has its own accountRateLimiter
+   * (max=30), so more than the old ceiling of 10 must still succeed here.
+   */
+  it('tolerates more than the old shared budget of 10 requests from one IP', async () => {
+    stubFetch(() => jsonResponse(200, SESSION));
+    for (let i = 0; i < 15; i += 1) {
+      const res = await request(createApp())
+        .post('/api/v1/auth/signup')
+        .send({ email: `ana${i}@example.com`, password: 'longenough1', displayName: 'Ana', birthDate: '1990-05-14' });
+      expect(res.status).toBe(201);
+    }
+  });
 
   /*
    * THE AGE SCREEN. The route used to assert in a comment that a fresh signup
