@@ -50,7 +50,9 @@
       "question": "Ganaste 10 monedas. ¿Qué haces?",
       "optionA": "Compro el dulce hoy",
       "optionB": "Guardo para la bici",
-      "consequence": "Elige, y la historia cambia. Eso es lo que se recuerda."
+      "prompt": "Toca una opción. Mira qué cambia.",
+      "consequenceA": "Dulce por cinco minutos, y luego se acaba. La bici sigue exactamente igual de lejos.",
+      "consequenceB": "Hoy no hay dulce — pero la bici está diez monedas más cerca, y se siente."
     },
     "mentors": {
       "heading": "Cuatro mentores que responden. No un video que se reproduce.",
@@ -67,6 +69,89 @@
       "title": "Hazlo tuyo.",
       "body": "Un paso. Ideas para toda la vida.",
       "imageAlt": "Un niño cuenta monedas junto a su frasco de ahorro"
+    }
+  },
+  "families": {
+    "hero": {
+      "title": "Aquí decides tú.",
+      "subtitle": "LittleFounders no es una app más para tu hija o hijo. Es una cuenta que tú abres, tú vinculas y tú supervisas — así es como funciona el lado del Tutor.",
+      "ctaCreate": "Crea tu cuenta Tutor",
+      "ctaGoFamily": "Ir a mi panel de familia"
+    },
+    "panel": {
+      "cardTitle": "Tu familia, en un panel",
+      "disclaimer": "Vista previa ilustrativa",
+      "sofiaName": "Sofía",
+      "sofiaUsername": "sofia_ahorra",
+      "mateoName": "Mateo",
+      "mateoUsername": "mateo_founder",
+      "coins": "{{count}} monedas ahorradas",
+      "streak": "{{count}} días de racha",
+      "pendingChip": "Necesita tu aprobación",
+      "pendingApproved": "Aprobado",
+      "pendingDetail": "Mateo quiere canjear 15 monedas por \"noche de película\".",
+      "approve": "Aprobar",
+      "notYet": "Todavía no",
+      "consentLabel": "Analítica de uso",
+      "consentOnHint": "Activada — los datos de uso de este hijo llegan a tus reportes.",
+      "consentOffHint": "Apagada — nada sale del dispositivo de este hijo."
+    },
+    "tutor": {
+      "cardTitle": "Cada conversación con el Tutor",
+      "heading": "Todo lo que tu hija le dice al Tutor. Tú puedes leerlo.",
+      "body": "Nada de resúmenes: la conversación completa, turno por turno. Y si el Tutor quiere recordar algo sobre tu hija para la próxima sesión, tú lo apruebas primero, la nota anterior junto a la nueva.",
+      "reveal": "Ver una conversación real",
+      "hide": "Ocultar la conversación",
+      "kidLabel": "Tu hija pregunta",
+      "tutorLabel": "El Tutor responde",
+      "kidLine": "\"¿Por qué la tienda quiere tanto mi dinero?\"",
+      "tutorLine": "\"Buena pregunta — las tiendas están hechas para que sientas que necesitas cosas. ¿Qué te hizo notarlo?\"",
+      "memoryPrompt": "El Tutor quiere recordar esto para la próxima vez:",
+      "memoryNote": "Tiene curiosidad por cómo la publicidad intenta persuadir a la gente.",
+      "approveMemory": "Aprobar",
+      "declineMemory": "Todavía no",
+      "memoryApproved": "Recordado, con tu aprobación",
+      "micNote": "Micrófono: apagado por defecto, solo se activa con tu consentimiento."
+    },
+    "tasks": {
+      "heading": "Tareas con una recompensa real.",
+      "body": "Tú asignas la tarea y cuántas LF Coins vale. Cuando está lista, tu hija decide cómo repartir lo que ganó — y tú lo apruebas antes de que llegue.",
+      "scenario": "Ganaste 10 LF Coins por terminar tu tarea. ¿Qué haces?",
+      "optionSave": "Ahorrarlas",
+      "optionSpend": "Gastarlas",
+      "optionShare": "Compartirlas",
+      "prompt": "Toca una opción. Mira qué cambia.",
+      "consequenceSave": "10 monedas se suman a tu meta. Estás un poco más cerca — y tu Tutor también ve el progreso.",
+      "consequenceSpend": "Pides algo del catálogo que armó tu Tutor. Queda esperando su aprobación antes de ser tuyo.",
+      "consequenceShare": "Envías algunas monedas a la meta de alguien más. Aquí la generosidad también cuenta."
+    },
+    "banking": {
+      "tag": "Simulación educativa",
+      "heading": "Practican banca, no abren una cuenta bancaria.",
+      "body": "Una mesada semanal, un bono de ahorro que tú decides pagar, límites de gasto que tú defines — todo en LF Coins, todo reversible, nada de eso es dinero real."
+    },
+    "territory": {
+      "heading": "Su propio mapa, a tu vista.",
+      "body": "El mismo mapa que explora tu hija — el mismo renderizador, nada redibujado para ti. XP, lecciones terminadas, racha, la última vez que entró. Nunca comparado con otro niño."
+    },
+    "privacy": {
+      "heading": "Diseñada privada, no parchada después.",
+      "body": "La analítica de uso está apagada para cada hija o hijo hasta que tú la activas, uno por uno. Lo único que llega a un modelo de IA externo es un rango de edad y un primer nombre. Todo lo demás se revisa antes de mostrarse o decirse en voz alta."
+    },
+    "steps": {
+      "heading": "Cómo crear tu cuenta Tutor y vincular a tu familia",
+      "step1Title": "Crea tu cuenta",
+      "step1Body": "Correo y contraseña, como cualquier cuenta. Un interruptor en el formulario dice \"quiero ser Tutor\" — activarlo te manda directo a verificación en vez del inicio normal.",
+      "step2Title": "Verifícate como Tutor",
+      "step2Body": "Tu nombre, fecha de nacimiento y una foto de tu identificación oficial. Se procesa para confirmar los datos y nunca se guarda — se dice antes de subirla, no después.",
+      "step3Title": "Agrega a tu hija o hijo",
+      "step3Body": "Un nombre, un usuario y una contraseña — elegidos por ti, sin necesidad de un correo que tu hija no necesita. Otro adulto de confianza también puede verificarse y vincularse al mismo hijo.",
+      "step4Title": "Queda vinculado",
+      "step4Body": "Tu cuenta y la de tu hija quedan unidas por un vínculo de tutela verificado. Nada de su cuenta funciona sin ese vínculo."
+    },
+    "closing": {
+      "title": "Abre la cuenta que de verdad es tuya.",
+      "body": "Gratis para empezar. La cuenta de tu hija llega justo después."
     }
   },
   "technology": {
@@ -258,14 +343,6 @@
     "imageAlt": "Insignia de logro de {{name}}: {{achievement}}"
   },
   "pages": {
-    "howItWorks": {
-      "title": "Cómo funciona",
-      "description": "Conoce las lecciones de LittleFounders."
-    },
-    "families": {
-      "title": "Familias",
-      "description": "Un espacio para acompañar ideas, metas y aprendizajes."
-    },
     "faq": {
       "title": "Preguntas frecuentes",
       "description": "Respuestas a las preguntas más comunes."

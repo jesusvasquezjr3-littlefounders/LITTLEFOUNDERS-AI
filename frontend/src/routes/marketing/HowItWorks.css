@@ -56,19 +56,6 @@
   }
 }
 
-/* Both options carry IDENTICAL weight. Styling one as chosen would say a right
-   answer exists, which is the opposite of what the block claims. */
-.lf-hiw-choice__option {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 3rem;
-  padding: 0.625rem 0.875rem;
-  text-align: center;
-  font-size: 0.9375rem;
-  line-height: 1.25;
-}
-
 /* ---------------------------------------------------------------- block 4 */
 
 .lf-hiw-mentors {

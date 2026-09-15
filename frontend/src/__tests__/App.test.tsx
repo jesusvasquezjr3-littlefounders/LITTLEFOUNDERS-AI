@@ -199,6 +199,90 @@ describe('Marketing site', () => {
     expect(screen.getByText('/learn/money-basics/lesson/some-slug')).toBeInTheDocument();
   });
 
+  /*
+   * The interactive decision block (DecisionExercise.tsx) replaced a static
+   * card that always showed the same "the story changes" line regardless of
+   * which option was tapped. This pins the actual behavior: each option
+   * reveals ITS OWN consequence, and picking the other one swaps it in place
+   * rather than requiring a reset.
+   */
+  it('the how-it-works decision card reveals a different consequence per option, in place', () => {
+    renderApp('/how-it-works');
+    expect(screen.getByText(i18n.t('marketing.howItWorks.decisions.prompt'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.howItWorks.decisions.optionA') }));
+    expect(screen.getByText(i18n.t('marketing.howItWorks.decisions.consequenceA'))).toBeInTheDocument();
+    expect(screen.queryByText(i18n.t('marketing.howItWorks.decisions.consequenceB'))).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.howItWorks.decisions.optionB') }));
+    expect(screen.getByText(i18n.t('marketing.howItWorks.decisions.consequenceB'))).toBeInTheDocument();
+    expect(screen.queryByText(i18n.t('marketing.howItWorks.decisions.consequenceA'))).not.toBeInTheDocument();
+  });
+
+  it('renders the families page with its real content, not the coming-soon placeholder', () => {
+    renderApp('/families');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      i18n.t('marketing.families.hero.title'),
+    );
+    for (const block of ['tutor', 'tasks', 'banking', 'territory', 'privacy'] as const) {
+      expect(screen.getByText(i18n.t(`marketing.families.${block}.heading`))).toBeInTheDocument();
+    }
+    expect(screen.getByText(i18n.t('marketing.families.steps.heading'))).toBeInTheDocument();
+    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
+    // A guest gets the account-creation CTA, never the guest-start button this
+    // page deliberately does not use (see FamiliesHeroCta in Families.tsx).
+    expect(
+      screen.getAllByRole('link', { name: i18n.t('marketing.families.hero.ctaCreate') }).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('the families family-panel preview lets a visitor approve a pending request and toggle insights consent', () => {
+    renderApp('/families');
+    const pendingChip = screen.getByRole('button', { name: i18n.t('marketing.families.panel.pendingChip') });
+    fireEvent.click(pendingChip);
+    expect(screen.getByText(i18n.t('marketing.families.panel.pendingDetail'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.families.panel.approve') }));
+    expect(screen.getByText(i18n.t('marketing.families.panel.pendingApproved'))).toBeInTheDocument();
+
+    const consentSwitch = screen.getAllByRole('switch', { name: i18n.t('marketing.families.panel.consentLabel') })[0]!;
+    expect(consentSwitch).toHaveAttribute('aria-checked', 'false');
+    fireEvent.click(consentSwitch);
+    expect(consentSwitch).toHaveAttribute('aria-checked', 'true');
+  });
+
+  it('the families Tutor-visibility demo reveals a sample exchange and a memory approval', () => {
+    renderApp('/families');
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.families.tutor.reveal') }));
+    expect(screen.getByText(i18n.t('marketing.families.tutor.kidLine'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.families.tutor.approveMemory') }));
+    expect(screen.getByText(i18n.t('marketing.families.tutor.memoryApproved'))).toBeInTheDocument();
+  });
+
+  it('the families earn/allocate exercise reveals a different consequence per option', () => {
+    renderApp('/families');
+    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.families.tasks.optionSave') }));
+    expect(screen.getByText(i18n.t('marketing.families.tasks.consequenceSave'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.families.tasks.optionShare') }));
+    expect(screen.getByText(i18n.t('marketing.families.tasks.consequenceShare'))).toBeInTheDocument();
+    expect(screen.queryByText(i18n.t('marketing.families.tasks.consequenceSave'))).not.toBeInTheDocument();
+  });
+
+  /*
+   * The /families CTA links to `/signup?intent=tutor` rather than skipping
+   * the switch outright — this pins that the query param actually reaches
+   * SignupPage's `parentIntent` initial state.
+   */
+  it('signup pre-flips the Tutor intent switch when arriving with ?intent=tutor', () => {
+    renderApp('/signup?intent=tutor');
+    // No `name` filter: the switch carries no `aria-label` of its own, only
+    // visible label + help text as its accessible name, and it is the only
+    // switch on this page.
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+  });
+
   it('language switcher is a custom dropdown (no native select) and switches locale', async () => {
     renderApp();
     expect(document.querySelector('select')).not.toBeInTheDocument();

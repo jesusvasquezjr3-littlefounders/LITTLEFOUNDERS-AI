@@ -210,15 +210,31 @@ export const PAGES = [
   },
   {
     path: '/families',
-    index: false, // Placeholder page — see the note above PAGES.
-    lastmod: '2026-08-26',
-    priority: '0.4',
+    index: true, // Flag flipped 2026-09-14: the page now carries real content (see the note above PAGES).
+    lastmod: '2026-09-14',
+    priority: '0.8',
     changefreq: 'monthly',
-    agentSummary: null,
+    agentSummary:
+      'What a Tutor (parent/guardian) account controls: full visibility into the AI Tutor, chores with real rewards, simulated banking, and how to create a Tutor account and link a child to it.',
     meta: {
-      'en-US': { title: 'Families | LittleFounders', description: 'A place to support ideas, goals, and learning.', h1: 'Families' },
-      'es-MX': { title: 'Familias | LittleFounders', description: 'Un lugar para apoyar ideas, metas y aprendizaje.', h1: 'Familias' },
-      'pt-BR': { title: 'Famílias | LittleFounders', description: 'Um lugar para apoiar ideias, metas e aprendizado.', h1: 'Famílias' },
+      'en-US': {
+        title: 'For families — the Tutor account | LittleFounders',
+        description:
+          'Full visibility into every Tutor conversation, chores with real rewards, and privacy off by default. How to create your Tutor account and link your family.',
+        h1: 'Here, you decide.',
+      },
+      'es-MX': {
+        title: 'Para familias — la cuenta Tutor | LittleFounders',
+        description:
+          'Visibilidad completa de cada conversación con el Tutor, tareas con recompensa real y privacidad apagada por defecto. Cómo crear tu cuenta Tutor y vincular tu familia.',
+        h1: 'Aquí decides tú.',
+      },
+      'pt-BR': {
+        title: 'Para famílias — a conta Tutor | LittleFounders',
+        description:
+          'Visibilidade total de cada conversa com o Tutor, tarefas com recompensa real e privacidade desativada por padrão. Como criar sua conta Tutor e vincular sua família.',
+        h1: 'Aqui, você decide.',
+      },
     },
   },
   {

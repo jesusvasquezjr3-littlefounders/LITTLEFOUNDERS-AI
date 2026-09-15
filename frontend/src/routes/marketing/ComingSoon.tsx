@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Badge, Card } from '@/components/ui';
 
-export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }) {
+export function ComingSoon({ page }: { page: 'faq' }) {
   const { t } = useTranslation();
 
   return (

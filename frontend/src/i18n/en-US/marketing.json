@@ -50,7 +50,9 @@
       "question": "You earned 10 coins. What do you do?",
       "optionA": "Buy the candy today",
       "optionB": "Save for the bike",
-      "consequence": "Choose, and the story changes. That is what sticks."
+      "prompt": "Tap one. Watch what changes.",
+      "consequenceA": "Sweet for five minutes, then gone. The bike is exactly as far away as it was.",
+      "consequenceB": "No candy today — but the bike is ten coins closer, and you can feel it."
     },
     "mentors": {
       "heading": "Four mentors who answer. Not a video that plays.",
@@ -67,6 +69,89 @@
       "title": "Make it yours.",
       "body": "One step. A lifetime of ideas.",
       "imageAlt": "A child counts coins beside a savings jar"
+    }
+  },
+  "families": {
+    "hero": {
+      "title": "Here, you decide.",
+      "subtitle": "LittleFounders isn't one more app for your kid. It's an account you open, you link, and you watch over — this is how the Tutor side works.",
+      "ctaCreate": "Create your Tutor account",
+      "ctaGoFamily": "Go to my family panel"
+    },
+    "panel": {
+      "cardTitle": "Your family, one panel",
+      "disclaimer": "Illustrative preview",
+      "sofiaName": "Sofía",
+      "sofiaUsername": "sofia_saves",
+      "mateoName": "Mateo",
+      "mateoUsername": "mateo_founder",
+      "coins": "{{count}} coins saved",
+      "streak": "{{count}}-day streak",
+      "pendingChip": "Needs your approval",
+      "pendingApproved": "Approved",
+      "pendingDetail": "Mateo wants to redeem 15 coins for \"movie night.\"",
+      "approve": "Approve",
+      "notYet": "Not yet",
+      "consentLabel": "Usage insights",
+      "consentOnHint": "On — this child's usage data reaches your reports.",
+      "consentOffHint": "Off — nothing leaves this child's device."
+    },
+    "tutor": {
+      "cardTitle": "Every conversation with the Tutor",
+      "heading": "Everything your child says to the Tutor. You can read it.",
+      "body": "Not a summary — the full exchange, turn by turn. And if the Tutor wants to remember something about your child for next time, you approve it first, the old note beside the new one.",
+      "reveal": "See a real exchange",
+      "hide": "Hide the exchange",
+      "kidLabel": "Your child asks",
+      "tutorLabel": "The Tutor answers",
+      "kidLine": "\"Why does the store want my money so bad?\"",
+      "tutorLine": "\"Great question — stores are built to make you feel like you need things. What made you notice that?\"",
+      "memoryPrompt": "The Tutor wants to remember this for next time:",
+      "memoryNote": "Curious about how ads try to persuade people.",
+      "approveMemory": "Approve",
+      "declineMemory": "Not now",
+      "memoryApproved": "Remembered, with your approval",
+      "micNote": "Microphone: off by default, on only with your consent."
+    },
+    "tasks": {
+      "heading": "Chores with a real reward.",
+      "body": "You assign the task and the LF Coins it's worth. Once it's done, your child decides how to split what they earned — and you approve it before it lands.",
+      "scenario": "You earned 10 LF Coins for finishing your chore. What do you do?",
+      "optionSave": "Save it",
+      "optionSpend": "Spend it",
+      "optionShare": "Share it",
+      "prompt": "Tap one. Watch what changes.",
+      "consequenceSave": "10 coins move into your goal. You're a little closer — and your Tutor can see the progress too.",
+      "consequenceSpend": "You ask for something from the catalog your Tutor built. It's waiting for their approval before it's yours.",
+      "consequenceShare": "You send a few coins toward someone else's goal. Generosity counts here too."
+    },
+    "banking": {
+      "tag": "Educational simulation",
+      "heading": "Practice banking, not a bank account.",
+      "body": "A weekly allowance, a savings bonus you decide to pay, spending limits you set — all of it in LF Coins, all of it reversible, none of it real money."
+    },
+    "territory": {
+      "heading": "Their own map, in your view.",
+      "body": "The same map your child explores — same renderer, nothing redrawn for you. XP, lessons finished, streak, the last time they showed up. Never compared to another child."
+    },
+    "privacy": {
+      "heading": "Built private, not patched private.",
+      "body": "Usage analytics stay off for each child until you turn them on, one child at a time. The only thing that ever reaches an outside AI model is an age band and a first name. Everything else is checked before it's shown or said out loud."
+    },
+    "steps": {
+      "heading": "How to create your Tutor account and link your family",
+      "step1Title": "Create your account",
+      "step1Body": "Email and password, like any account. A switch already on the form says \"I want to be a Tutor\" — turning it on sends you straight to verification instead of the usual start.",
+      "step2Title": "Verify you're a Tutor",
+      "step2Body": "Your name, date of birth, and a photo of your government ID. It's processed to confirm the details and never stored — said before you upload it, not after.",
+      "step3Title": "Add your child",
+      "step3Body": "A name, a username and a passphrase — chosen by you, not by an email your child doesn't need. Another trusted adult can verify and link to the same child too.",
+      "step4Title": "It's linked",
+      "step4Body": "Your account and your child's are joined by a verified guardian link. Nothing about theirs is usable without it."
+    },
+    "closing": {
+      "title": "Open the account that's actually yours.",
+      "body": "Free to start. Your child's account comes right after."
     }
   },
   "technology": {
@@ -258,14 +343,6 @@
     "imageAlt": "{{name}}'s achievement badge: {{achievement}}"
   },
   "pages": {
-    "howItWorks": {
-      "title": "How it works",
-      "description": "Explore LittleFounders lessons."
-    },
-    "families": {
-      "title": "Families",
-      "description": "A place to support ideas, goals, and learning."
-    },
     "faq": {
       "title": "Frequently asked questions",
       "description": "Answers to common questions."

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Card, LottieIcon, Reveal } from "@/components/ui";
+import { DecisionExercise, type DecisionOption } from "./DecisionExercise";
 import { PrimaryCta } from "./PrimaryCta";
 import { TechnologyGraph } from "./TechnologyGraph";
 import "./HowItWorks.css";
@@ -44,6 +45,22 @@ const KEEPS = [
 
 export function HowItWorks() {
   const { t } = useTranslation();
+
+  // Neither option carries a 'correct' state — DecisionExercise never marks
+  // one, but the copy itself has to hold the same line: this is two DIFFERENT
+  // consequences, not a right answer and a wrong one.
+  const decisionOptions: DecisionOption[] = [
+    {
+      id: "candy",
+      label: t("marketing.howItWorks.decisions.optionA"),
+      consequence: t("marketing.howItWorks.decisions.consequenceA"),
+    },
+    {
+      id: "bike",
+      label: t("marketing.howItWorks.decisions.optionB"),
+      consequence: t("marketing.howItWorks.decisions.consequenceB"),
+    },
+  ];
 
   return (
     <div>
@@ -97,19 +114,17 @@ export function HowItWorks() {
                 <p className="lf-body-lg font-semibold">
                   {t("marketing.howItWorks.decisions.question")}
                 </p>
-                <div className="lf-hiw-choice__options">
-                  <span className="lf-hiw-choice__option rounded-md border border-outline bg-base">
-                    {t("marketing.howItWorks.decisions.optionA")}
-                  </span>
-                  <span className="lf-hiw-choice__option rounded-md border border-outline bg-base">
-                    {t("marketing.howItWorks.decisions.optionB")}
-                  </span>
-                </div>
-                {/* Neither option is marked correct, deliberately: the claim is
-                    that the story changes, not that one answer wins. */}
-                <p className="lf-body mt-4 text-content-muted">
-                  {t("marketing.howItWorks.decisions.consequence")}
-                </p>
+                {/* Real interaction, not a mockup: this is the product's own
+                    `best_decision` answer control (/DecisionExercise.tsx),
+                    fed this scenario's copy. Tapping an option swaps the
+                    reveal below in place — trying the other one costs nothing
+                    and needs no reset button. */}
+                <DecisionExercise
+                  optionsClassName="lf-hiw-choice__options"
+                  ariaLabel={t("marketing.howItWorks.decisions.question")}
+                  prompt={t("marketing.howItWorks.decisions.prompt")}
+                  options={decisionOptions}
+                />
               </Card>
             </Reveal>
           </div>

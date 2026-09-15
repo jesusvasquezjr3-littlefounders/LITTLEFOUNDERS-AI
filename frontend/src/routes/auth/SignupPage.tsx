@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { playPlatformSound } from '@/lib/sound';
@@ -24,13 +24,17 @@ export function SignupPage() {
   const { t, i18n } = useTranslation();
   const { signup, getToken } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [birthDate, setBirthDate] = useState('');
-  const [parentIntent, setParentIntent] = useState(false);
+  // `?intent=tutor` (the /families CTA) pre-flips the switch below rather than
+  // skipping it: it is still one tap to change your mind, and the account
+  // itself still starts `universal` either way (see the file header).
+  const [parentIntent, setParentIntent] = useState(() => searchParams.get('intent') === 'tutor');
   const [submitting, setSubmitting] = useState(false);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [confirmationPending, setConfirmationPending] = useState(false);
