@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Badge, Card, Icon } from "@/components/ui";
+import { Badge, Card, CountUp, Icon, LottieIcon } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 /*
@@ -53,14 +53,21 @@ function KidRow({ kid }: { kid: DemoKid }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-outline/50 px-4 py-2.5">
-        <span className="lf-caption flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 font-bold text-success-strong">
-          <Icon name="savings" className="text-[15px]" aria-hidden />
-          {t("marketing.families.panel.coins", { count: kid.coins })}
+        {/* Coin/streak Lotties, decorative-only per the "Marketing /
+            decorative preview use" exception (streak, lesson, gold-coin
+            only) — same trio HowItWorks' account block already reuses.
+            `activated` because a preview kid's stats are never zero-state. */}
+        <span className="lf-caption flex items-center gap-1 rounded-full bg-success-soft py-1 pl-1 pr-2.5 font-bold text-success-strong">
+          <LottieIcon name="gold-coin" value={kid.coins} activated className="h-5 w-5" />
+          <CountUp value={kid.coins} from="zero" />
+          {" "}
+          {t("marketing.families.panel.coinsLabel")}
         </span>
         {kid.streakDays > 0 && (
-          <span className="lf-caption flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 font-bold text-warning-strong">
-            <Icon name="local_fire_department" fill className="text-[15px]" aria-hidden />
-            {t("marketing.families.panel.streak", { count: kid.streakDays })}
+          <span className="lf-caption flex items-center gap-1 rounded-full bg-warning-soft py-1 pl-1 pr-2.5 font-bold text-warning-strong">
+            <LottieIcon name="streak" value={kid.streakDays} activated className="h-5 w-5" />
+            <CountUp value={kid.streakDays} from="zero" />
+            {t("marketing.families.panel.streakLabel")}
           </span>
         )}
         {kid.hasPending && !pendingResolved && (

@@ -85,8 +85,8 @@
       "sofiaUsername": "sofia_saves",
       "mateoName": "Mateo",
       "mateoUsername": "mateo_founder",
-      "coins": "{{count}} coins saved",
-      "streak": "{{count}}-day streak",
+      "coinsLabel": "coins saved",
+      "streakLabel": "-day streak",
       "pendingChip": "Needs your approval",
       "pendingApproved": "Approved",
       "pendingDetail": "Mateo wants to redeem 15 coins for \"movie night.\"",
@@ -152,6 +152,137 @@
     "closing": {
       "title": "Open the account that's actually yours.",
       "body": "Free to start. Your child's account comes right after."
+    }
+  },
+  "faq": {
+    "hero": {
+      "title": "Frequently asked questions",
+      "subtitle": "The specific things people ask right before they decide — organized the way a parent actually asks them, not the way the product is built."
+    },
+    "filterAll": "All",
+    "categories": {
+      "start": "Getting started",
+      "family": "Tutor account & family",
+      "tutor": "The AI Tutor",
+      "money": "Money & rewards",
+      "privacy": "Privacy & safety",
+      "support": "Support"
+    },
+    "items": {
+      "whatIs": {
+        "question": "What is LittleFounders?",
+        "answer": "A guided financial-literacy platform where kids and teens learn about money through story-driven decisions and a conversational AI Tutor — not worksheets or lectures."
+      },
+      "isFree": {
+        "question": "Is LittleFounders free?",
+        "answer": "Yes. Free to start, free to stay — there's no paid tier today, and creating a Tutor account never asks for payment details."
+      },
+      "tryWithoutAccount": {
+        "question": "Can my child try it without an account?",
+        "answer": "Yes — tap \"Start free\" and they're straight into a guided lesson, no signup. Progress saves to that browser."
+      },
+      "languages": {
+        "question": "What languages does it support?",
+        "answer": "English, Spanish and Portuguese, switchable anytime from the language picker."
+      },
+      "ages": {
+        "question": "What ages is this for?",
+        "answer": "Roughly 6 to 17. Kids under 13 use a Child account their Tutor creates and supervises; teens 13 and up can also open their own account, though full parental visibility still comes through a linked Tutor."
+      },
+      "whatIsTutor": {
+        "question": "What is a \"Tutor\" account?",
+        "answer": "The adult account — you open it, verify your identity, and every Child account linked to it is yours to see and supervise."
+      },
+      "addChild": {
+        "question": "How do I add my child?",
+        "answer": "From your Tutor account: a name, a username and a passphrase you choose. No email needed — your child doesn't need one."
+      },
+      "twoParents": {
+        "question": "Can both parents supervise the same child?",
+        "answer": "Yes. A second verified Tutor — a co-parent, a grandparent — can link to the same Child account."
+      },
+      "howMany": {
+        "question": "How many children can I add?",
+        "answer": "Up to 10 per Tutor account."
+      },
+      "ownDevice": {
+        "question": "Does my child need their own device?",
+        "answer": "No — Child accounts work on any shared device; each login is separate from yours."
+      },
+      "talksToAI": {
+        "question": "Does my child talk to an AI?",
+        "answer": "They read and type with a Tutor character who answers in text. Voice is off for minors by default and only turns on with your explicit consent."
+      },
+      "privateFromYou": {
+        "question": "Is what my child says to the Tutor private?",
+        "answer": "From other users, yes. From you, no — every exchange is visible in your Tutor account, in full, not a summary."
+      },
+      "remember": {
+        "question": "Can the Tutor \"remember\" things about my child?",
+        "answer": "Only with your approval. It can propose a memory note between sessions; you see the old note beside the new one and approve or decline it."
+      },
+      "mentors": {
+        "question": "Who are the mentor characters?",
+        "answer": "Four guides — Zara, Rho, Liruf and Dina — each with a distinct personality, leading different lessons."
+      },
+      "canBeWrong": {
+        "question": "Can the Tutor be wrong?",
+        "answer": "It's an AI model, so yes — it can occasionally explain something imprecisely, the same way any explanation can be phrased better. Everything a Child account sees or hears passes moderation first, and nothing it says replaces your own judgment."
+      },
+      "realBank": {
+        "question": "Is this a real bank account?",
+        "answer": "No. It's practice, in LF Coins — an educational simulation, never real money."
+      },
+      "lfCoins": {
+        "question": "What are LF Coins?",
+        "answer": "The game's internal currency — earned by finishing tasks and lessons, spent practicing saving, spending and sharing. They have no value outside the platform."
+      },
+      "chores": {
+        "question": "How do chores and rewards work?",
+        "answer": "You assign a task and the LF Coins it's worth. Once it's done, your child chooses to save, spend or share what they earned — spending needs your approval first."
+      },
+      "realMoney": {
+        "question": "Can my child spend real money?",
+        "answer": "No, anywhere in the product. LittleFounders never asks a child for payment details or moves real money."
+      },
+      "dataCollected": {
+        "question": "What data do you collect about my child?",
+        "answer": "The minimum needed to run the product — for a Child account, that's a nickname and an age band. No full name, address or contact info."
+      },
+      "moderation": {
+        "question": "Is everything the Tutor says checked first?",
+        "answer": "Yes — AI output for a Child account passes moderation before it's shown or spoken."
+      },
+      "retention": {
+        "question": "How long do you keep AI Tutor conversations?",
+        "answer": "Up to 90 days, on a fixed automatic schedule."
+      },
+      "analyticsToggle": {
+        "question": "Can I turn off usage analytics for my child?",
+        "answer": "Yes, per child, from your Tutor account — off by default until you turn it on."
+      },
+      "coppa": {
+        "question": "Are you COPPA / children's-privacy compliant?",
+        "answer": "Our Privacy Notice is built around COPPA and LGPD data-minimization and parental-consent standards — the full legal detail lives there, not summarized here."
+      },
+      "contact": {
+        "question": "How do I contact support?",
+        "answer": "informame@littlefounders.ai, or the in-product report tool."
+      },
+      "deleteAccount": {
+        "question": "Can I delete our account?",
+        "answer": "Yes — contact us and we'll process the deletion under the Privacy Notice."
+      },
+      "cancelTutor": {
+        "question": "What happens to my child's account if I cancel mine?",
+        "answer": "It's suspended immediately — unusable until an active Tutor account supervises it again. If nothing reactivates it within 90 days, it's deleted."
+      }
+    },
+    "closing": {
+      "title": "Still have a question?",
+      "body": "Write to us — a real person reads every message.",
+      "emailCta": "Email us",
+      "signupCta": "Create your Tutor account"
     }
   },
   "technology": {
@@ -329,10 +460,6 @@
     "privacy": "Privacy Notice",
     "rights": "All rights reserved."
   },
-  "comingSoon": {
-    "badge": "Coming soon",
-    "body": "We are preparing this page. Check back soon."
-  },
   "badgeShare": {
     "loading": "Loading the achievement…",
     "notFoundTitle": "This badge link has expired",
@@ -341,12 +468,6 @@
     "body": "LittleFounders helps kids learn real money and business skills through stories, games and a friendly AI tutor.",
     "cta": "Start for free",
     "imageAlt": "{{name}}'s achievement badge: {{achievement}}"
-  },
-  "pages": {
-    "faq": {
-      "title": "Frequently asked questions",
-      "description": "Answers to common questions."
-    }
   },
   "languageSection": {
     "label": "Select your language"

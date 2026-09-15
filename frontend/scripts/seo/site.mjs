@@ -239,15 +239,31 @@ export const PAGES = [
   },
   {
     path: '/faq',
-    index: false, // Placeholder page — see the note above PAGES.
-    lastmod: '2026-08-26',
-    priority: '0.4',
+    index: true, // Flag flipped 2026-09-15: the page now carries real content (see the note above PAGES).
+    lastmod: '2026-09-15',
+    priority: '0.6',
     changefreq: 'monthly',
-    agentSummary: null,
+    agentSummary:
+      'Answers to the specific objections people have right before signing up: is it free, is it private, does a child talk to an AI, what LF Coins are, and how Tutor accounts and data privacy work.',
     meta: {
-      'en-US': { title: 'Frequently asked questions | LittleFounders', description: 'Answers to common questions.', h1: 'Frequently asked questions' },
-      'es-MX': { title: 'Preguntas frecuentes | LittleFounders', description: 'Respuestas a las preguntas más comunes.', h1: 'Preguntas frecuentes' },
-      'pt-BR': { title: 'Perguntas frequentes | LittleFounders', description: 'Respostas para as perguntas mais comuns.', h1: 'Perguntas frequentes' },
+      'en-US': {
+        title: 'Frequently asked questions | LittleFounders',
+        description:
+          'Is it free? Is it private? Does my child talk to an AI? Real answers about Tutor accounts, LF Coins and data privacy — no marketing spin.',
+        h1: 'Frequently asked questions',
+      },
+      'es-MX': {
+        title: 'Preguntas frecuentes | LittleFounders',
+        description:
+          '¿Es gratis? ¿Es privado? ¿Mi hijo habla con una IA? Respuestas reales sobre la cuenta Tutor, los LF Coins y la privacidad de tus datos.',
+        h1: 'Preguntas frecuentes',
+      },
+      'pt-BR': {
+        title: 'Perguntas frequentes | LittleFounders',
+        description:
+          'É grátis? É privado? Meu filho conversa com uma IA? Respostas reais sobre a conta Tutor, os LF Coins e a privacidade dos seus dados.',
+        h1: 'Perguntas frequentes',
+      },
     },
   },
   {

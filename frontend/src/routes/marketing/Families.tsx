@@ -4,7 +4,9 @@ import { useAuth } from "@/auth/AuthContext";
 import { Badge, Button, Card, Icon, Reveal } from "@/components/ui";
 import { DecisionExercise, type DecisionOption } from "./DecisionExercise";
 import { FamilyPanelPreview } from "./FamilyPanelPreview";
+import { MentorStrip } from "./MentorStrip";
 import { TutorVisibilityDemo } from "./TutorVisibilityDemo";
+import "./Families.css";
 
 /*
  * /families — the third question in the marketing site's order, after
@@ -24,7 +26,56 @@ import { TutorVisibilityDemo } from "./TutorVisibilityDemo";
  * anxiety a parent actually carries about "AI talking to my kid" is answered
  * before the anxiety about "toy money," because the first is the harder sell
  * and this product's realest answer to it.
+ *
+ * THE MENTORS ARE NOT DECORATION HERE EITHER, and getting this wrong twice
+ * is worth recording so it does not happen a third time. Draft 1 shipped five
+ * walls of centred text with no face on screen at all. Draft 2 bolted a
+ * mentor bust onto a card's absolute-positioned corner, which is exactly
+ * where the card's own header sits, so it covered the "Illustrative preview"
+ * badge. Draft 3 fixed the collision but by copy-pasting HowItWorks' block-2
+ * "one mentor beside a card" recipe twice — including reusing
+ * `zara-presents.webp`, the EXACT file HowItWorks already spends on that
+ * exact role. Two mentors in the same template is still one template.
+ *
+ * This is draft 4: each scene composes more than one mentor at different
+ * scale, depth and (for the flanking pair) mirroring
+ * (`.lf-fam-huddle*` / `.lf-fam-flank*` in Families.css), and no file is
+ * reused in a compositional role another page already gave it — the hero is
+ * Dina front and centre with Rho peeking in from behind her shoulder
+ * (dimmed, lower z-index, mostly behind her — a friend leaning into frame,
+ * not a copy of the mentor grid's flat row), and the tasks card is flanked by
+ * two mirrored renders standing in the gutter either side of it, never on
+ * top of it. Every figure lives in its own region: nothing overlaps a card's
+ * text at any viewport.
+ *   - Dina fronts the hero huddle because she is the one mentor with no
+ *     existing claim on an auth-flow page (Zara: HowItWorks' decision block;
+ *     Liruf: SignupPage.tsx's `MENTOR`; Rho: VerifyParentPage.tsx's
+ *     `MENTOR`) — she is free to be this page's own face.
+ *   - Zara and Dina flank the tasks card, mirrored and standing rather than
+ *     presenting, because Zara is already HowItWorks' decision mentor and
+ *     this is a decision too — without repeating her exact presenting pose.
+ *   - Liruf and Rho get a face on steps 1 and 2 because those are the
+ *     literal mentors SignupPage.tsx and VerifyParentPage.tsx already show at
+ *     that exact step — foreshadowing who the visitor is about to meet, not
+ *     a random assignment.
+ *   - MentorStrip (all four) opens the AI-visibility block, because "who is
+ *     my child talking to" is precisely what that block answers, and closes
+ *     the page as the full cast the Tutor signs up to trust.
+ * Names are read from `tutor.character.*`, same reason HowItWorks reads them
+ * rather than re-authoring blurbs that would drift the next time a
+ * personality is retuned.
  */
+
+/* Liruf fronts SignupPage.tsx (its `MENTOR` constant), Rho fronts
+   VerifyParentPage.tsx (same) — steps 1 and 2 show that exact mentor. Steps 3
+   and 4 (AddKidCard.tsx, guardian_links) have no dedicated mentor, so they
+   keep the plain numbered tile. */
+const STEPS = [
+  { key: "step1", face: "/marketing/mentor-liruf-bust.webp" },
+  { key: "step2", face: "/marketing/mentor-rho-bust.webp" },
+  { key: "step3", face: null },
+  { key: "step4", face: null },
+] as const;
 
 function FamiliesHeroCta() {
   const { t } = useTranslation();
@@ -54,7 +105,7 @@ function FamiliesHeroCta() {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+    <div className="flex flex-wrap items-center justify-center gap-4">
       <Link to="/signup?intent=tutor" data-cta="families-hero">
         <Button className="group">
           {t("marketing.families.hero.ctaCreate")}
@@ -94,24 +145,54 @@ export function Families() {
 
   return (
     <div>
-      {/* HERO — the adult, named directly, with the product's own family
-          panel (not a photo) as the thing to look at while reading. */}
-      <section className="bg-base py-16 sm:py-20">
-        <div className="mx-auto max-w-container px-5 md:px-8">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-            <Reveal className="text-center lg:text-left">
-              <h1 className="lf-display-xl">{t("marketing.families.hero.title")}</h1>
-              <p className="lf-body-lg mx-auto mt-4 max-w-xl text-content-muted lg:mx-0">
-                {t("marketing.families.hero.subtitle")}
-              </p>
-              <div className="mt-7">
-                <FamiliesHeroCta />
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
+      {/* HERO — the adult, named directly, then Dina and the product's own
+          family panel as the scene to look at (see the file header for why
+          she fronts this one). */}
+      <section className="relative isolate overflow-hidden bg-base py-16 sm:py-20">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-primary/15 blur-3xl"
+          aria-hidden="true"
+        />
+        <div className="relative mx-auto max-w-container px-5 md:px-8">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h1 className="lf-display-xl">{t("marketing.families.hero.title")}</h1>
+            <p className="lf-body-lg mx-auto mt-4 max-w-xl text-content-muted">
+              {t("marketing.families.hero.subtitle")}
+            </p>
+            <div className="mt-7 flex justify-center">
+              <FamiliesHeroCta />
+            </div>
+          </Reveal>
+
+          <Reveal delay={80} className="lf-fam-huddle mt-14">
+            {/* Dina front and centre, Rho peeking in from behind her left
+                shoulder — see the file header for why she fronts this one. */}
+            <div className="lf-fam-huddle__scene">
+              <img
+                src="/marketing/mentor-rho.webp"
+                alt=""
+                aria-hidden="true"
+                width={600}
+                height={600}
+                loading="lazy"
+                decoding="async"
+                className="lf-fam-huddle__figure lf-fam-huddle__figure--rho"
+              />
+              <img
+                src="/marketing/mentor-dina.webp"
+                alt=""
+                aria-hidden="true"
+                width={800}
+                height={800}
+                loading="lazy"
+                decoding="async"
+                className="lf-fam-huddle__figure lf-fam-huddle__figure--dina"
+              />
+            </div>
+            <div className="lf-fam-huddle__card">
               <FamilyPanelPreview />
-            </Reveal>
-          </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -119,6 +200,9 @@ export function Families() {
           for a parent is "AI talking to my kid," not "toy currency." */}
       <section className="bg-band py-20 text-content sm:py-28">
         <div className="mx-auto max-w-container px-5 md:px-8">
+          <Reveal>
+            <MentorStrip className="mb-10" />
+          </Reveal>
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <Reveal className="text-center lg:text-left">
               <h2 className="lf-display-lg">{t("marketing.families.tutor.heading")}</h2>
@@ -144,8 +228,33 @@ export function Families() {
               {t("marketing.families.tasks.body")}
             </p>
           </Reveal>
-          <Reveal delay={80}>
-            <Card hero className="mx-auto mt-10 max-w-xl p-6 sm:p-8">
+          <Reveal delay={80} className="lf-fam-flank mt-10">
+            {/* Zara and Dina again, mirrored and STANDING rather than
+                presenting — flanking the card from the gutter, never on top
+                of it, and never HowItWorks' own `zara-presents.webp` pose.
+                Desktop-only (see Families.css): a phone has no gutter for a
+                crowd to stand in, so it just gets the clean card. */}
+            <img
+              src="/marketing/mentor-zara.webp"
+              alt=""
+              aria-hidden="true"
+              width={600}
+              height={600}
+              loading="lazy"
+              decoding="async"
+              className="lf-fam-flank__figure lf-fam-flank__figure--left"
+            />
+            <img
+              src="/marketing/mentor-dina.webp"
+              alt=""
+              aria-hidden="true"
+              width={600}
+              height={600}
+              loading="lazy"
+              decoding="async"
+              className="lf-fam-flank__figure lf-fam-flank__figure--right"
+            />
+            <Card hero className="lf-fam-flank__card p-6 sm:p-8">
               <DecisionExercise
                 scenario={t("marketing.families.tasks.scenario")}
                 ariaLabel={t("marketing.families.tasks.scenario")}
@@ -207,14 +316,21 @@ export function Families() {
           </Reveal>
           <Reveal delay={80} className="mx-auto mt-12 max-w-2xl">
             <ol className="flex flex-col gap-3">
-              {(["step1", "step2", "step3", "step4"] as const).map((step, index) => (
-                <li key={step} className="lf-config-row flex items-start gap-3 p-3.5">
-                  <span className="lf-tile lf-label h-8 w-8 shrink-0 !rounded-full text-accent" aria-hidden>
-                    {index + 1}
-                  </span>
+              {STEPS.map(({ key, face }, index) => (
+                <li key={key} className="lf-config-row flex items-start gap-3 p-3.5">
+                  {/* The mentor the visitor is actually about to meet on that
+                      real screen (see the file header), not a generic
+                      number, wherever one applies. */}
+                  {face ? (
+                    <img src={face} alt="" aria-hidden="true" width={90} height={90} loading="lazy" decoding="async" className="lf-fam-step-face" />
+                  ) : (
+                    <span className="lf-tile lf-label h-9 w-9 shrink-0 !rounded-full text-accent" aria-hidden>
+                      {index + 1}
+                    </span>
+                  )}
                   <div>
-                    <p className="lf-label text-content">{t(`marketing.families.steps.${step}Title`)}</p>
-                    <p className="lf-caption mt-0.5 text-content-muted">{t(`marketing.families.steps.${step}Body`)}</p>
+                    <p className="lf-label text-content">{t(`marketing.families.steps.${key}Title`)}</p>
+                    <p className="lf-caption mt-0.5 text-content-muted">{t(`marketing.families.steps.${key}Body`)}</p>
                   </div>
                 </li>
               ))}
@@ -223,11 +339,13 @@ export function Families() {
         </div>
       </section>
 
-      {/* CLOSING — text only, deliberately (see file header for why no photo
-          joins this block): the same centred claim-and-expansion treatment
+      {/* CLOSING — the full cast, together, closing the loop the hero opened
+          with Dina alone: the whole team a Tutor is actually signing up to
+          trust. Otherwise the same centred claim-and-expansion treatment
           Landing's `marketing.family` section already uses. */}
       <Reveal as="section" className="bg-band py-20 text-content sm:py-28">
         <div className="mx-auto flex max-w-container flex-col items-center px-5 text-center md:px-8">
+          <MentorStrip className="mb-10" />
           <h2 className="lf-display-lg max-w-2xl">{t("marketing.families.closing.title")}</h2>
           <p className="lf-body-lg mt-4 max-w-xl text-content-muted">
             {t("marketing.families.closing.body")}

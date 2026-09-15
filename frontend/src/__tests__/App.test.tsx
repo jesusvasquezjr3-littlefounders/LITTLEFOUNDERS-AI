@@ -147,10 +147,37 @@ describe('Marketing site', () => {
     );
   });
 
-  it('renders coming-soon pages', () => {
+  it('renders the FAQ page with real content, not the coming-soon placeholder', () => {
     renderApp('/faq');
-    expect(screen.getByRole('heading', { name: 'Frequently asked questions' })).toBeInTheDocument();
-    expect(screen.getByText('Coming soon')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      i18n.t('marketing.faq.hero.title'),
+    );
+    // One item per category, spot-checked rather than all 27 — this pins the
+    // rendering path, not the full content list.
+    for (const item of ['whatIs', 'whatIsTutor', 'talksToAI', 'realBank', 'dataCollected', 'contact']) {
+      expect(screen.getByText(i18n.t(`marketing.faq.items.${item}.question`))).toBeInTheDocument();
+    }
+    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
+  });
+
+  it('the FAQ accordion opens one answer at a time, and the category filter narrows the list', () => {
+    renderApp('/faq');
+    const isFreeQuestion = i18n.t('marketing.faq.items.isFree.question');
+    const isFreeAnswer = i18n.t('marketing.faq.items.isFree.answer');
+    const whatIsTutorQuestion = i18n.t('marketing.faq.items.whatIsTutor.question');
+
+    expect(screen.queryByText(isFreeAnswer)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: isFreeQuestion }));
+    expect(screen.getByText(isFreeAnswer)).toBeInTheDocument();
+    // A second item opening closes the first — single-open, not an
+    // every-answer-stacked-open list.
+    fireEvent.click(screen.getByRole('button', { name: whatIsTutorQuestion }));
+    expect(screen.queryByText(isFreeAnswer)).not.toBeInTheDocument();
+
+    // Filtering to a category the open item isn't in removes it from the DOM.
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.categories.money') }));
+    expect(screen.queryByRole('button', { name: whatIsTutorQuestion })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: i18n.t('marketing.faq.items.realBank.question') })).toBeInTheDocument();
   });
 
   it('renders the privacy notice with cookie controls', () => {

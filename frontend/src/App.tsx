@@ -8,9 +8,9 @@ import { RequireOnboarded } from '@/auth/RequireOnboarded';
 import { RequireRole } from '@/auth/RequireRole';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
-import { ComingSoon } from '@/routes/marketing/ComingSoon';
 import { HowItWorks } from '@/routes/marketing/HowItWorks';
 import { Families } from '@/routes/marketing/Families';
+import { FAQ } from '@/routes/marketing/FAQ';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { BadgeLandingPage } from '@/routes/marketing/BadgeLandingPage';
 import { AuthLayout } from '@/routes/auth/AuthLayout';
@@ -271,7 +271,7 @@ export function App() {
             <Route index element={<Landing />} />
             <Route path="how-it-works" element={<HowItWorks />} />
             <Route path="families" element={<Families />} />
-            <Route path="faq" element={<ComingSoon page="faq" />} />
+            <Route path="faq" element={<FAQ />} />
             <Route path="legal/terms" element={<LegalPage doc="terms" />} />
             <Route path="legal/privacy" element={<LegalPage doc="privacy" />} />
             {/* OAuth landing — not guest-guarded: it completes the transition from guest to authed. */}

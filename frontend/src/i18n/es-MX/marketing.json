@@ -85,8 +85,8 @@
       "sofiaUsername": "sofia_ahorra",
       "mateoName": "Mateo",
       "mateoUsername": "mateo_founder",
-      "coins": "{{count}} monedas ahorradas",
-      "streak": "{{count}} días de racha",
+      "coinsLabel": "monedas ahorradas",
+      "streakLabel": " días de racha",
       "pendingChip": "Necesita tu aprobación",
       "pendingApproved": "Aprobado",
       "pendingDetail": "Mateo quiere canjear 15 monedas por \"noche de película\".",
@@ -152,6 +152,137 @@
     "closing": {
       "title": "Abre la cuenta que de verdad es tuya.",
       "body": "Gratis para empezar. La cuenta de tu hija llega justo después."
+    }
+  },
+  "faq": {
+    "hero": {
+      "title": "Preguntas frecuentes",
+      "subtitle": "Lo que la gente pregunta justo antes de decidir — organizado como pregunta un padre, no como se construyó el producto."
+    },
+    "filterAll": "Todas",
+    "categories": {
+      "start": "Para empezar",
+      "family": "Cuenta Tutor y familia",
+      "tutor": "El Tutor de IA",
+      "money": "Dinero y recompensas",
+      "privacy": "Privacidad y seguridad",
+      "support": "Soporte"
+    },
+    "items": {
+      "whatIs": {
+        "question": "¿Qué es LittleFounders?",
+        "answer": "Una plataforma de educación financiera donde niños y adolescentes aprenden sobre dinero tomando decisiones dentro de historias guiadas junto a un Tutor de IA — no con hojas de ejercicios."
+      },
+      "isFree": {
+        "question": "¿Es gratis?",
+        "answer": "Sí. Gratis para empezar, gratis para quedarte — hoy no existe un plan de pago, y crear una cuenta Tutor nunca pide datos de tarjeta."
+      },
+      "tryWithoutAccount": {
+        "question": "¿Puede mi hijo probarlo sin crear una cuenta?",
+        "answer": "Sí — toca \"Empieza gratis\" y entra directo a una lección guiada, sin registro. El progreso se guarda en ese navegador."
+      },
+      "languages": {
+        "question": "¿En qué idiomas está disponible?",
+        "answer": "Inglés, español y portugués — se cambia en cualquier momento desde el selector de idioma."
+      },
+      "ages": {
+        "question": "¿Para qué edades es esto?",
+        "answer": "Aproximadamente de 6 a 17 años. Los menores de 13 usan una cuenta de hijo que su Tutor crea y supervisa; los de 13 en adelante también pueden abrir su propia cuenta, aunque la visibilidad completa para un padre solo llega vinculando una cuenta Tutor."
+      },
+      "whatIsTutor": {
+        "question": "¿Qué es una cuenta \"Tutor\"?",
+        "answer": "La cuenta del adulto: la abres tú, verificas tu identidad, y cada cuenta de hijo vinculada a ella es tuya para ver y supervisar."
+      },
+      "addChild": {
+        "question": "¿Cómo agrego a mi hijo o hija?",
+        "answer": "Desde tu cuenta Tutor: un nombre, un usuario y una contraseña que tú eliges. No se pide correo — tu hijo no necesita uno."
+      },
+      "twoParents": {
+        "question": "¿Pueden dos adultos supervisar al mismo hijo?",
+        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo."
+      },
+      "howMany": {
+        "question": "¿Cuántos hijos puedo agregar?",
+        "answer": "Hasta 10 por cuenta Tutor."
+      },
+      "ownDevice": {
+        "question": "¿Necesita mi hijo su propio dispositivo?",
+        "answer": "No — las cuentas de hijo funcionan en cualquier dispositivo compartido; cada sesión es independiente de la tuya."
+      },
+      "talksToAI": {
+        "question": "¿Mi hijo habla con una inteligencia artificial?",
+        "answer": "Lee y escribe con un personaje Tutor que responde en texto. El micrófono está apagado por defecto para menores y solo se activa con tu consentimiento explícito."
+      },
+      "privateFromYou": {
+        "question": "¿Lo que mi hijo le dice al Tutor es privado?",
+        "answer": "De otros usuarios, sí. De ti, no — cada conversación es visible desde tu cuenta Tutor, completa, no un resumen."
+      },
+      "remember": {
+        "question": "¿Puede el Tutor \"recordar\" cosas sobre mi hijo?",
+        "answer": "Solo con tu aprobación. Puede proponer una nota de memoria entre sesiones; tú ves la nota anterior junto a la nueva y decides aprobarla o no."
+      },
+      "mentors": {
+        "question": "¿Quiénes son los mentores?",
+        "answer": "Cuatro guías con personalidad propia — Zara, Rho, Liruf y Dina — cada uno al frente de lecciones distintas."
+      },
+      "canBeWrong": {
+        "question": "¿Puede el Tutor equivocarse?",
+        "answer": "Es un modelo de IA, así que sí — puede explicar algo de forma imprecisa alguna vez, igual que cualquier explicación se puede decir mejor. Todo lo que ve o escucha una cuenta de hijo pasa moderación primero, y nada de lo que dice reemplaza tu propio juicio."
+      },
+      "realBank": {
+        "question": "¿Es esto una cuenta bancaria real?",
+        "answer": "No. Es práctica, en LF Coins — una simulación educativa, nunca dinero real."
+      },
+      "lfCoins": {
+        "question": "¿Qué son los LF Coins?",
+        "answer": "La moneda interna del juego: se ganan completando tareas y lecciones, y se usan para practicar ahorrar, gastar y compartir. No tienen valor fuera de la plataforma."
+      },
+      "chores": {
+        "question": "¿Cómo funcionan las tareas y recompensas?",
+        "answer": "Tú asignas una tarea y cuántos LF Coins vale. Al terminarla, tu hijo decide si ahorra, gasta o comparte lo que ganó — gastar necesita tu aprobación primero."
+      },
+      "realMoney": {
+        "question": "¿Puede mi hijo gastar dinero real?",
+        "answer": "No, en ningún punto del producto. LittleFounders nunca pide datos de pago a un menor ni mueve dinero real."
+      },
+      "dataCollected": {
+        "question": "¿Qué datos recogen de mi hijo?",
+        "answer": "Lo mínimo necesario para operar: para una cuenta de hijo, eso es un apodo y un rango de edad. Nada de nombre completo, dirección ni contacto."
+      },
+      "moderation": {
+        "question": "¿Todo lo que dice el Tutor está revisado antes de mostrarse?",
+        "answer": "Sí — la salida de IA para una cuenta de hijo pasa moderación antes de mostrarse o decirse en voz alta."
+      },
+      "retention": {
+        "question": "¿Cuánto tiempo guardan las conversaciones con el Tutor?",
+        "answer": "Hasta 90 días, en un ciclo automático fijo."
+      },
+      "analyticsToggle": {
+        "question": "¿Puedo apagar la analítica de uso de mi hijo?",
+        "answer": "Sí, hijo por hijo, desde tu cuenta Tutor — apagada por defecto hasta que tú la activas."
+      },
+      "coppa": {
+        "question": "¿Cumplen con COPPA o las leyes de privacidad infantil?",
+        "answer": "Nuestro Aviso de Privacidad está construido sobre los estándares de minimización de datos y consentimiento parental de COPPA y la LGPD — el detalle legal completo está ahí, no resumido aquí."
+      },
+      "contact": {
+        "question": "¿Cómo contacto a soporte?",
+        "answer": "Escribiendo a informame@littlefounders.ai, o desde la herramienta de reporte dentro de la plataforma."
+      },
+      "deleteAccount": {
+        "question": "¿Puedo borrar nuestra cuenta?",
+        "answer": "Sí — nos escribes y procesamos la eliminación conforme al Aviso de Privacidad."
+      },
+      "cancelTutor": {
+        "question": "¿Qué pasa con la cuenta de mi hijo si cancelo la mía?",
+        "answer": "Queda suspendida de inmediato — no usable hasta que haya una cuenta Tutor activa supervisándola de nuevo. Si nadie la reactiva en 90 días, se elimina."
+      }
+    },
+    "closing": {
+      "title": "¿Todavía tienes una pregunta?",
+      "body": "Escríbenos — una persona real lee cada mensaje.",
+      "emailCta": "Escríbenos",
+      "signupCta": "Crea tu cuenta Tutor"
     }
   },
   "technology": {
@@ -329,10 +460,6 @@
     "privacy": "Aviso de Privacidad",
     "rights": "Todos los derechos reservados."
   },
-  "comingSoon": {
-    "badge": "Próximamente",
-    "body": "Estamos preparando esta página. Vuelve pronto."
-  },
   "badgeShare": {
     "loading": "Cargando el logro…",
     "notFoundTitle": "Este enlace de insignia ha expirado",
@@ -341,12 +468,6 @@
     "body": "LittleFounders ayuda a los niños a aprender sobre dinero y negocios de verdad con historias, juegos y un tutor de IA amigable.",
     "cta": "Empieza gratis",
     "imageAlt": "Insignia de logro de {{name}}: {{achievement}}"
-  },
-  "pages": {
-    "faq": {
-      "title": "Preguntas frecuentes",
-      "description": "Respuestas a las preguntas más comunes."
-    }
   },
   "languageSection": {
     "label": "Selecciona tu idioma"
