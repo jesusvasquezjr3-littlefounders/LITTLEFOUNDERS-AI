@@ -188,70 +188,83 @@ export async function listEmailLogs(opts: { limit: number; offset: number; q?: s
 }
 
 /**
- * Aggregate counts. Deliberately aggregates in Postgres-shaped fetches rather
- * than pulling every row: `status` and `template_type` are low-cardinality, so
- * one HEAD-style count per distinct value stays cheap, and the table is
- * append-only and will grow without bound.
+ * Aggregate counts, computed from ONE bounded, sequentially-paginated fetch
+ * of the window rather than N HTTP requests.
+ *
+ * The previous version issued one exact-count request per UTC day for the
+ * trend (`Promise.all` over `days` — 365 concurrent requests for the
+ * dashboard's own default "1y" range) PLUS one per distinct status/template/
+ * locale value, all fired at once. Against a 10s proxy timeout on Core's side
+ * (`backend/src/routes/admin.ts`) that fan-out reliably lost the race, and
+ * the admin console showed "Courier no respondió" — a 2026-09 incident that
+ * had nothing to do with mail delivery (Haraka kept relaying the whole time)
+ * and everything to do with this being the SAME shape of bug the README
+ * already documents for `GET /learn/courses`: an unbounded `Promise.all`
+ * whose request count scales with data nobody reviews at deploy time.
+ *
+ * The fix is the same one applied there: one row in flight's worth of work
+ * per page, not one request per day/value. `WINDOW_ROW_CAP` bounds the worst
+ * case for a table that is append-only and grows without bound — generous
+ * for a transactional-mail volume, and a summary computed from a truncated
+ * tail is still a far better answer than a summary that never arrives.
  */
 export async function summarizeEmailLogs(days = 30): Promise<EmailLogSummary | null> {
-  const total = await countWhere('');
-  if (total === null) return null;
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  since.setUTCDate(since.getUTCDate() - (days - 1));
 
-  const [statuses, templates, locales] = await Promise.all([
-    countByColumn('status'),
-    countByColumn('template_type'),
-    countByColumn('locale'),
-  ]);
-  if (!statuses || !templates || !locales) return null;
+  const rows = await fetchWindow(since.toISOString());
+  if (rows === null) return null;
 
-  const trend = await summarizeDailyTrend(days);
-  return { total, statuses, templates, locales, ...(trend ? { trend } : {}) };
+  const statuses: Record<string, number> = {};
+  const templates: Record<string, number> = {};
+  const locales: Record<string, number> = {};
+  const trendByDay = new Map<string, number>();
+  for (let i = 0; i < days; i += 1) {
+    const day = new Date(since);
+    day.setUTCDate(day.getUTCDate() + i);
+    trendByDay.set(day.toISOString().slice(0, 10), 0);
+  }
+
+  for (const row of rows) {
+    statuses[row.status] = (statuses[row.status] ?? 0) + 1;
+    templates[row.template_type] = (templates[row.template_type] ?? 0) + 1;
+    if (row.locale) locales[row.locale] = (locales[row.locale] ?? 0) + 1;
+    const day = row.created_at.slice(0, 10);
+    if (trendByDay.has(day)) trendByDay.set(day, (trendByDay.get(day) ?? 0) + 1);
+  }
+
+  const trend = [...trendByDay.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([date, count]) => ({ date, count }));
+  return { total: rows.length, statuses, templates, locales, trend };
 }
 
-/** Exact 30-day totals, one count query per UTC day so high-volume mail is not sampled. */
-async function summarizeDailyTrend(days: number): Promise<NonNullable<EmailLogSummary['trend']> | null> {
-  const today = new Date();
-  const dates = Array.from({ length: days }, (_, index) => {
-    const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (days - 1 - index)));
-    return { date, key: date.toISOString().slice(0, 10) };
-  });
-  const counts = await Promise.all(dates.map(async ({ date, key }) => {
-    const next = new Date(date);
-    next.setUTCDate(next.getUTCDate() + 1);
-    const filter = `&created_at=gte.${encodeURIComponent(date.toISOString())}&created_at=lt.${encodeURIComponent(next.toISOString())}`;
-    return { date: key, count: await countWhere(filter) };
-  }));
-  if (counts.some(({ count }) => count === null)) return null;
-  return counts.map(({ date, count }) => ({ date, count: count as number }));
+interface WindowRow {
+  status: string;
+  template_type: string;
+  locale: string | null;
+  created_at: string;
 }
 
-/** Row count matching a PostgREST filter, via a 0-row request + count=exact. */
-async function countWhere(filter: string): Promise<number | null> {
-  const res = await rest<unknown[]>(`/email_logs?select=id&limit=1${filter}`, {
-    headers: { Prefer: 'count=exact' },
-  });
-  if (!res.ok) return null;
-  return parseTotal(res.contentRange) ?? 0;
-}
+const WINDOW_PAGE_SIZE = 1000;
+/** 20 pages: bounds the worst case to 20 SEQUENTIAL requests, never a fan-out. */
+const WINDOW_ROW_CAP = 20_000;
 
 /**
- * Distinct values of a low-cardinality column and their counts. PostgREST has
- * no GROUP BY, so we read the distinct set once (capped) and then issue one
- * exact count per value.
+ * Every row created_at >= since, ascending, one page in flight at a time —
+ * or null if any page failed, matching this file's existing "refuse partial
+ * history" posture (`getEmailLogs`/`getEmailSummary` in emailLog.ts) rather
+ * than presenting a truncated-by-error summary as complete.
  */
-async function countByColumn(column: 'status' | 'template_type' | 'locale'): Promise<Record<string, number> | null> {
-  const res = await rest<Record<string, string>[]>(`/email_logs?select=${column}&limit=5000`);
-  if (!res.ok || !res.body) return null;
-
-  const values = [...new Set(res.body.map((r) => r[column]).filter((v): v is string => typeof v === 'string'))];
-  const counts = await Promise.all(
-    values.map(async (v) => [v, await countWhere(`&${column}=eq.${encodeURIComponent(v)}`)] as const),
-  );
-
-  const out: Record<string, number> = {};
-  for (const [value, count] of counts) {
-    if (count === null) return null;
-    out[value] = count;
+async function fetchWindow(sinceIso: string): Promise<WindowRow[] | null> {
+  const rows: WindowRow[] = [];
+  let offset = 0;
+  for (;;) {
+    const res = await rest<WindowRow[]>(
+      `/email_logs?select=status,template_type,locale,created_at&created_at=gte.${encodeURIComponent(sinceIso)}&order=created_at.asc&limit=${WINDOW_PAGE_SIZE}&offset=${offset}`,
+    );
+    if (!res.ok || !res.body) return null;
+    rows.push(...res.body);
+    if (res.body.length < WINDOW_PAGE_SIZE || rows.length >= WINDOW_ROW_CAP) return rows;
+    offset += WINDOW_PAGE_SIZE;
   }
-  return out;
 }
