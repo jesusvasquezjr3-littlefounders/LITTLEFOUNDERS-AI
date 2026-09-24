@@ -1,6 +1,10 @@
 -- 0111_parent_verification_revocation.sql — A.5: a real revocation trigger
 -- path and a distinct staff-granted method value for parent verifications.
--- @phase: expand
+-- @phase: contract
+-- @after-release: none — the method CHECK is new (0004 declared none); every value
+-- Core has ever written ('local-ocr' by default) is allowed. The conservative
+-- classifier treats a CHECK add as contract, so this requires operator review
+-- rather than auto-apply; confirm no other method value exists before applying.
 --
 -- A.5 mandates: a "revoked" verification status must have a real trigger
 -- path (a staff action following a fraud report), not exist only as an

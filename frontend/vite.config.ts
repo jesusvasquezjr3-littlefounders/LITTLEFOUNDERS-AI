@@ -4,6 +4,9 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
+  // Parallel checkouts that share one node_modules (e.g. worktrees joined by a
+  // junction) must not share Vite's dependency cache; VITE_CACHE_DIR separates them.
+  cacheDir: process.env.VITE_CACHE_DIR ?? 'node_modules/.vite',
   plugins: [react()],
   resolve: {
     alias: {

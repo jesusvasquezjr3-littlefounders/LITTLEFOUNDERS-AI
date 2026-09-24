@@ -99,3 +99,6 @@ audiogen/src/samples/
 
 # Generated QA-audit PDF exports
 /output/
+
+# Per-worktree Vite/test caches for parallel lane checkouts
+.lane-cache/
