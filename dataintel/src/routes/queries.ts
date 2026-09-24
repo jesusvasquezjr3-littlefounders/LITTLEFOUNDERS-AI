@@ -91,11 +91,10 @@ const exportFiltersSchema = z.object({
   segment_id: z.union([z.string(), z.array(z.string())]).optional(),
 }).strict();
 
-const exportJobSchema = z.object({
-  filters: exportFiltersSchema,
-  format: z.enum(['csv', 'json', 'parquet']).default('json'),
-});
-
+// H.3: the async export-JOB endpoints were removed — jobs could be created
+// and listed but no processor ever advanced them, so staff could create an
+// artifact that could never complete. The direct /export/events endpoint
+// below is the real, working mechanism and remains the only export surface.
 const exportEventsSchema = z.object({
   filters: exportFiltersSchema.optional().default({}),
   limit: z.number().int().min(1).max(10000).default(1000),
@@ -114,12 +113,22 @@ const experimentSchema = z.object({
   variantB: z.string().min(1).max(100),
   surface: z.enum(['learn', 'tasks', 'profile', 'tutor']).default('learn'),
   target: z.string().regex(/^[a-z0-9._-]{1,64}$/).default('default'),
-});
+  // H.7: declared age eligibility. minAge/maxAge are integers 0-120; both
+  // absent = unbounded. A bounded experiment never assigns an unknown age.
+  minAge: z.number().int().min(0).max(120).nullable().optional(),
+  maxAge: z.number().int().min(0).max(120).nullable().optional(),
+}).refine(
+  (exp) => exp.minAge === undefined || exp.minAge === null || exp.maxAge === undefined || exp.maxAge === null || exp.minAge <= exp.maxAge,
+  'minAge must be <= maxAge',
+);
 
 const runtimeAssignmentSchema = z.object({
   userId: z.string().uuid(),
   surface: z.enum(['learn', 'tasks', 'profile', 'tutor']),
   target: z.string().regex(/^[a-z0-9._-]{1,64}$/),
+  // H.7: the caller's derived age, or null when the age evidence is
+  // unavailable — a bounded experiment will refuse it.
+  age: z.number().int().min(0).max(120).nullable().optional(),
 });
 
 const runtimeExposureSchema = runtimeAssignmentSchema.extend({ experimentId: z.string().uuid() });
@@ -380,42 +389,9 @@ export function intelRouter(): Router {
 
   // ═══ Exports ═══════════════════════════════════════════════════════
 
-  router.post('/export/jobs', async (req, res) => {
-    try {
-      const parsed = exportJobSchema.safeParse(req.body);
-      if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
-      const { filters, format } = parsed.data;
-      const result = await exports_.createExportJob(filters, format);
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Failed to create export job');
-      return ok(res, result, 201);
-    } catch (err) {
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  router.get('/export/jobs/:jobId', async (req, res) => {
-    try {
-      const jobId = z.string().uuid().parse(req.params.jobId);
-      const result = await exports_.getExportJob(jobId);
-      if (result === null) return fail(res, 404, 'NOT_FOUND', 'Export job not found');
-      return ok(res, result);
-    } catch (err) {
-      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  router.get('/export/jobs', async (req, res) => {
-    try {
-      const limit = z.coerce.number().int().min(1).max(100).default(10).parse(req.query.limit ?? '10');
-      const result = await exports_.listExportJobs(limit);
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Export jobs list unavailable');
-      return ok(res, result);
-    } catch (err) {
-      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
+  // H.3: job creation/list/status endpoints removed — no processor ever
+  // advanced them, so the ability to create a permanently-pending job was
+  // deleted rather than shipped as a promise without a consumer.
 
   router.post('/export/events', async (req, res) => {
     try {
@@ -651,8 +627,8 @@ export function intelRouter(): Router {
     try {
       const parsed = experimentSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
-      const { name, metric, variantA, variantB, surface, target } = parsed.data;
-      const result = await experiments.createExperiment(name, metric, variantA, variantB, surface, target);
+      const { name, metric, variantA, variantB, surface, target, minAge, maxAge } = parsed.data;
+      const result = await experiments.createExperiment(name, metric, variantA, variantB, surface, target, { minAge: minAge ?? null, maxAge: maxAge ?? null });
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Failed to create experiment');
       return ok(res, result, 201);
     } catch (err) {
@@ -712,7 +688,7 @@ export function intelRouter(): Router {
     try {
       const parsed = runtimeAssignmentSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
-      const result = await experiments.getRuntimeAssignments(parsed.data.userId, parsed.data.surface, parsed.data.target);
+      const result = await experiments.getRuntimeAssignments(parsed.data.userId, parsed.data.surface, parsed.data.target, parsed.data.age);
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Experiment assignment unavailable');
       return ok(res, { assignments: result });
     } catch (err) {
@@ -729,6 +705,7 @@ export function intelRouter(): Router {
         parsed.data.experimentId,
         parsed.data.surface,
         parsed.data.target,
+        parsed.data.age,
       );
       if (result === null) return fail(res, 404, 'NOT_FOUND', 'Running experiment assignment not found');
       return ok(res, { assignment: result });

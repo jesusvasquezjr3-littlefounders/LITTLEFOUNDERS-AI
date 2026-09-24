@@ -53,6 +53,8 @@ interface RolesData {
 }
 
 const GRANTABLE = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
+/** G.4: quarterly access-review window (90 days) — grants older than this are surfaced for re-justification. */
+const REVIEW_WINDOW_DAYS = 90;
 type Grantable = (typeof GRANTABLE)[number];
 const ADMIN_PERMISSIONS = ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] as const;
 type AdminPerm = (typeof ADMIN_PERMISSIONS)[number];
@@ -91,6 +93,12 @@ export function AdminRolesPage() {
   const roleOptions: DropdownOption<Grantable>[] = GRANTABLE.map((value) => ({ value, label: t(`roles.${value}`, value) }));
   const rolesData = data.state === 'ready' ? data.data : null;
   const holders = rolesData?.holders ?? [];
+  // G.4: the access-review window. Every elevated grant older than this is
+  // surfaced in the review-due card below.
+  const staleGrantCount = useMemo(() => {
+    const cutoff = Date.now() - REVIEW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    return holders.filter((holder) => holder.roleAssignments.some((assignment) => assignment.grantedAt && Date.parse(assignment.grantedAt) < cutoff)).length;
+  }, [holders]);
   const summary = rolesData?.summary;
   const filteredHolders = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -229,6 +237,17 @@ export function AdminRolesPage() {
               <p className="lf-label font-bold text-content">{formatDate(summary.lastChangedAt, i18n.resolvedLanguage, t('admin.roles.notAvailable'))}</p>
               <p className="mt-2 lf-caption text-content-muted">{t('admin.roles.auditHint')}</p>
             </div>
+          </Card>
+        )}
+
+        {/* G.4: the quarterly access-review cadence, surfaced in the console.
+            Every elevated grant older than the review window is listed, so
+            the periodic re-justification is a visible standing task rather
+            than a policy nobody can see. */}
+        {staleGrantCount > 0 && (
+          <Card className="flex flex-col gap-2 border border-warning/40 bg-warning/5 p-4 shadow-glass">
+            <p className="lf-label font-bold text-warning-strong">{t('admin.roles.reviewDueTitle')}</p>
+            <p className="lf-caption text-content-muted">{t('admin.roles.reviewDueBody', { count: staleGrantCount })}</p>
           </Card>
         )}
 

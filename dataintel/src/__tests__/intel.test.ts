@@ -460,82 +460,29 @@ describe('DELETE /api/v1/intel/segments/:id', () => {
 
 // ── Exports ───────────────────────────────────────────────────────────
 
-describe('POST /api/v1/intel/export/jobs', () => {
-  it('rejects empty body with 400', async () => {
-    const res = await auth(
-      request(createApp()).post('/api/v1/intel/export/jobs').send({}),
-    );
-    expect(res.status).toBe(400);
-  });
+// H.3: the async export-job endpoints were removed — jobs could be created
+// and listed but no processor ever advanced them, so the ability to create
+// a permanently-pending job was deleted. These assertions pin the removal
+// so the half-built mechanism cannot silently come back.
 
-  it('rejects invalid format with 400', async () => {
-    const res = await auth(
-      request(createApp())
-        .post('/api/v1/intel/export/jobs')
-        .send({ filters: {}, format: 'xml' }),
-    );
-    expect(res.status).toBe(400);
-  });
-
-  it('accepts valid body', async () => {
+describe('removed /api/v1/intel/export/jobs surface (H.3)', () => {
+  it('no longer accepts job creation', async () => {
     const res = await auth(
       request(createApp())
         .post('/api/v1/intel/export/jobs')
         .send({ filters: { role: 'parent' }, format: 'json' }),
     );
-    expect(res.body).toHaveProperty('error');
-    expect(res.body).toHaveProperty('data');
-  });
-});
-
-describe('GET /api/v1/intel/export/jobs', () => {
-  it('rejects limit=-1 with 400', async () => {
-    const res = await auth(
-      request(createApp()).get('/api/v1/intel/export/jobs?limit=-1'),
-    );
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(404);
   });
 
-  it('accepts valid limit', async () => {
+  it('no longer lists jobs', async () => {
     const res = await auth(
       request(createApp()).get('/api/v1/intel/export/jobs?limit=10'),
     );
-    expect(readOk(res.status)).toBe(true);
+    expect(res.status).toBe(404);
   });
 
-  it('lists a job created by the export endpoint', async () => {
-    const created = await auth(
-      request(createApp())
-        .post('/api/v1/intel/export/jobs')
-        .send({ filters: { event_type: 'lesson_complete' }, format: 'json' }),
-    );
-    expect(created.status).toBe(201);
-
-    const listed = await auth(
-      request(createApp()).get('/api/v1/intel/export/jobs?limit=10'),
-    );
-    expect(listed.status).toBe(200);
-    expect(listed.body.error).toBeNull();
-    const job = listed.body.data.find(
-      (entry: { jobId?: string }) => entry.jobId === created.body.data.jobId,
-    );
-    expect(job).toMatchObject({
-      jobId: created.body.data.jobId,
-      status: 'pending',
-    });
-    expect(job).not.toHaveProperty('rows');
-  });
-});
-
-describe('GET /api/v1/intel/export/jobs/:jobId', () => {
-  it('rejects non-uuid jobId with 400', async () => {
-    const res = await auth(
-      request(createApp()).get('/api/v1/intel/export/jobs/bad-id'),
-    );
-    expect(res.status).toBe(400);
-  });
-
-  it('returns 404 for non-existent job', async () => {
+  it('no longer serves job status', async () => {
     const res = await auth(
       request(createApp()).get(
         '/api/v1/intel/export/jobs/00000000-0000-0000-0000-000000000000',

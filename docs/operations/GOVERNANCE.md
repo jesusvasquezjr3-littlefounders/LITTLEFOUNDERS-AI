@@ -1,0 +1,121 @@
+# Staff, analytics and operations governance (S09)
+
+This document is the written record for Block G's and Block H's governance
+requirements. It is engineering-owned, reviewed with Product and the
+Safety/Trust role, and updated whenever a requirement or its implementation
+changes. Sprint evidence lives in `docs/rebuild/sprints/S09-STAFF-ANALYTICS-OPS.md`;
+this file holds the standing policies themselves.
+
+## 1. Standing constraints (G.6, H.6)
+
+The following are load-bearing design constraints. A future tool may only
+cross one through an explicitly-reviewed exception recorded in the owner
+decision log — never by default.
+
+1. **No staff read-access to full AI Mentor transcripts.** Staff see sampled
+   individual generated activities plus their answer keys (the `manage_content`
+   review queue), never the surrounding conversation. Full transcript access
+   remains ⛔ for Admin and Superadmin.
+2. **No staff read-access to banking/wallet data** beyond the child and their
+   verified guardians. Wallet reads are scoped to the kid and verified
+   guardian links; staff consoles do not surface balances.
+3. **No user-impersonation or "login as" capability.** None exists, and none
+   may be added without an explicit reviewed exception.
+4. **The kid-role analytics consent gate is the reference implementation for
+   every future consent-gated feature** (H.6): transmission is blocked at the
+   source (the beacon does not even transmit before the server confirms
+   active guardian consent), consent is granted only by a verified guardian,
+   and role-stamping precedence means "kid" always wins even when a person
+   holds other roles. New consent gates must match this bar, not fall below
+   it.
+
+## 2. Access governance (G.4)
+
+- **Quarterly access review.** Every calendar quarter, the staff/access owner
+  reviews Admin/Superadmin role holders and staff permission grants against
+  actual usage. The Roles & Access console surfaces the review state: grants
+  older than 90 days are listed in a "review due" card, so the re-justification
+  is a visible standing task.
+- **Grant discipline.** A parent-role staff grant requires a mandatory audited
+  justification (A.5). Verification revocation carries a mandatory audited
+  reason (A.5). Every staff moderation decision on live AI-Mentor activities
+  is recorded in the central audit log (G.3).
+- **Discoverability.** Every staff-facing screen is either in active,
+  documented use or removed (G.5). The Insights screen is in the staff
+  navigation under the `view_analytics` grant.
+
+## 3. Analytics retention policy (H.2)
+
+Two windows exist over overlapping activity data, and the difference is
+deliberate:
+
+- **Raw usage events — 400 days** in the operational store. This is the
+  investigative and reconciliation window: it must cover at least one full
+  annual cycle (seasonality, school years) plus incident look-back, while
+  remaining bounded enough to honor the platform's minimization commitments.
+- **Warehouse "sessions" dimension — rolling 90 days.** The warehouse exists
+  for fast product questions (funnels, experiments, health metrics). A rolling
+  90-day session window keeps the derived layer cheap and stale-proof; any
+  question older than that is answered from the raw store, not the derived
+  layer.
+
+The kid-role consent gate applies to BOTH stores: a kid's events only exist
+to retain because an active guardian consent admitted them at the source.
+
+## 4. Operational alerting (H.3, H.4)
+
+- **Warehouse alerts notify, not just record.** A triggered alert is written
+  to `alert_history` AND delivered through its configured channel (webhook
+  POST, or an internal email through the email-server). Delivery is
+  best-effort and loudly logged; the durable trigger row exists regardless.
+  Unconfigured channels warn loudly rather than pretending delivery.
+- **Half-built mechanisms may not ship.** The async export-job endpoints were
+  removed (no processor ever advanced them — creating a permanently-pending
+  job is now impossible; the direct synchronous export surface is the only
+  one). The `task_view` and `tutor_open` events, previously catalogued with
+  no emitter, now emit from the tasks boards and the Mentor experience.
+- **Watchdog coverage (H.4).** The AI Mentor retention sweep already has a
+  watchdog plus a staff-console status. The same pattern is REQUIRED for:
+  - the daily database backup job (silent failure = undiscovered loss of
+    every family's data), and
+  - the schema drift probe (silent failure = an unreviewed production schema
+    change goes unnoticed).
+  Both are Railway-scheduled jobs; each must gain a status endpoint
+  pollable by the same external check the retention sweep uses, before the
+  next release cycle. This is an open operations task owned by the ops owner.
+
+## 5. Incident response and backups (H.5)
+
+- **Backup encryption.** Database backups contain family and AI Mentor data
+  and MUST be encrypted at rest. **Status: to be confirmed by the ops owner**
+  against the backup provider's configuration before the next release cycle;
+  if any backup store is not encrypted at rest, enabling encryption is a
+  release-blocking task. This line stays in this document until confirmed.
+- **Incident response baseline.** On discovery of a security incident:
+  1. Contain: rotate the affected keys, revoke the affected sessions/grant.
+  2. Triage: severity decided by Engineering + the Safety/Trust role within
+     24 hours; a security incident involving a minor's data is always at
+     least "high".
+  3. Investigate: audit-log reconstruction; no blame logs, no speculation in
+     the record.
+  4. Notify families: affected guardians are informed in plain language,
+     naming what was affected and what they can do, as soon as the scope is
+     known — targeting within 72 hours of confirmation, with the exact
+     timeline stated in the notice.
+  5. Post-mortem: written within one week; the standing constraints above
+     are re-verified.
+- **Breach notification** follows the same timeline: affected families first,
+  then any regulator per applicable law, with the notice written by
+  Product + Legal.
+
+## 6. Experimentation eligibility (H.7)
+
+- Every experiment may declare integer age bounds (`min_age`/`max_age`).
+  Unbounded experiments accept unknown ages; a bounded experiment NEVER
+  assigns or exposes a learner whose age is unknown or outside the bounds —
+  eligibility cannot be guessed. Enforcement lives in dataintel at the
+  assignment/exposure boundary; Core passes the derived age (or null when the
+  evidence is unavailable). Kid-role exposures additionally require the
+  existing consent gate.
+- No live experiment currently reaches any user; this policy applies from the
+  first wired experiment onward.

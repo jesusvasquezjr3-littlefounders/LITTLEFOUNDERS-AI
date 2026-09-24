@@ -787,6 +787,12 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
     // silently overwrite a decision already made.
     expect(patch?.url).toContain('review_status=eq.pending');
     expect(patch?.body).toContain('"rejected"');
+    // G.3: the decision must ALSO land in the central audit log — the
+    // searchable staff-wide trail, not only the activity row.
+    const audit = calls.find((c) => c.url.includes('/rest/v1/audit_logs') && c.method === 'POST');
+    expect(audit).toBeTruthy();
+    expect(audit?.body).toContain('admin.tutor_activity.review');
+    expect(audit?.body).toContain(SEGMENT_ID);
   });
 
   it('refuses an invented status', async () => {

@@ -1,4 +1,5 @@
 import { query, execute } from '../db/duckdb.js';
+import { getConfig } from '../env.js';
 import crypto from 'crypto';
 
 export interface Alert {
@@ -275,6 +276,11 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
           alertObj.id,
         );
 
+        // H.3: a recorded trigger with no consumer is not alerting. Deliver
+        // through the alert's configured channel; a delivery failure is
+        // logged loudly, never silent — the trigger row is already durable.
+        await deliverAlert(alertObj, { value: currentValue, triggeredAt });
+
         triggered++;
       }
     }
@@ -283,6 +289,70 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
   }
 
   return { triggered };
+}
+
+/**
+ * H.3's notification channel. `webhook` alerts POST the trigger payload to
+ * the configured URL; `email` alerts POST a short internal email through the
+ * email-server's internal API. Both are best-effort, loudly logged, and
+ * bounded by a timeout so a hanging channel cannot stall the evaluation
+ * loop. The trigger row is written BEFORE delivery, so a failed delivery is
+ * a visible gap, not a lost alert.
+ */
+async function deliverAlert(
+  alert: Alert,
+  trigger: { value: number; triggeredAt: string },
+): Promise<void> {
+  const { ALERT_WEBHOOK_URL, ALERT_EMAIL_SERVER_URL, ALERT_EMAIL_INTERNAL_KEY, ALERT_EMAIL_TO } = getConfig();
+  const payload = JSON.stringify({
+    alertId: alert.id,
+    name: alert.name,
+    metric: alert.metric,
+    condition: alert.condition,
+    threshold: alert.threshold,
+    value: trigger.value,
+    triggeredAt: trigger.triggeredAt,
+  });
+  if (alert.channel === 'webhook') {
+    if (!ALERT_WEBHOOK_URL) {
+      console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but ALERT_WEBHOOK_URL is not configured — no human was notified`);
+      return;
+    }
+    try {
+      const res = await fetch(ALERT_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!res.ok) console.error(`[dataintel][alerts] webhook delivery failed for "${alert.name}": HTTP ${res.status}`);
+    } catch (err) {
+      console.error(`[dataintel][alerts] webhook delivery failed for "${alert.name}":`, err);
+    }
+    return;
+  }
+  if (!ALERT_EMAIL_SERVER_URL || !ALERT_EMAIL_INTERNAL_KEY || !ALERT_EMAIL_TO) {
+    console.warn(`[dataintel][alerts] alert "${alert.name}" triggered but the email channel is not configured — no human was notified`);
+    return;
+  }
+  try {
+    const res = await fetch(`${ALERT_EMAIL_SERVER_URL}/api/v1/send`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-api-key': ALERT_EMAIL_INTERNAL_KEY,
+      },
+      body: JSON.stringify({
+        to: ALERT_EMAIL_TO,
+        template: 'alert_notification',
+        data: JSON.parse(payload),
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) console.error(`[dataintel][alerts] email delivery failed for "${alert.name}": HTTP ${res.status}`);
+  } catch (err) {
+    console.error(`[dataintel][alerts] email delivery failed for "${alert.name}":`, err);
+  }
 }
 
 async function checkCooldown(

@@ -1219,8 +1219,14 @@ export function adminRouter(): Router {
     if (!segmentId.success || !status.success) {
       return fail(res, 400, 'VALIDATION_ERROR', 'segmentId must be a uuid and status approved|rejected');
     }
+    const actor = authedUser(res);
     const done = await setTutorReviewStatus(segmentId.data, status.data);
     if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+    // G.3: the moderation decision must ALSO land in the central audit log
+    // (the activity row keeps the status; the log keeps the searchable,
+    // staff-wide trail of WHO approved/rejected WHAT — the same treatment
+    // course/lesson status changes already receive).
+    await insertAuditLog(actor.id, 'admin.tutor_activity.review', segmentId.data, { status: status.data });
     ok(res, { id: segmentId.data, status: status.data });
   });
 

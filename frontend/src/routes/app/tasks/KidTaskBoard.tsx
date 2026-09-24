@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { trackInsight } from '@/lib/insights';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -37,6 +38,14 @@ type LoadState =
 export function KidTaskBoard() {
   const { t, i18n } = useTranslation();
   const { getToken } = useAuth();
+  // H.3: `task_view` was catalogued but emitted nowhere. Fired once per
+  // board mount, consent-gated by the beacon like every other event.
+  const taskViewEmitted = useRef(false);
+  useEffect(() => {
+    if (taskViewEmitted.current) return;
+    taskViewEmitted.current = true;
+    trackInsight('task_view', { routeClass: 'tasks' });
+  }, []);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
   const [allocatingTaskId, setAllocatingTaskId] = useState<string | null>(null);

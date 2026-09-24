@@ -11,6 +11,10 @@ export interface Experiment {
   surface: string;
   target: string;
   segmentFilter?: Record<string, unknown>;
+  /** H.7: age eligibility bounds. NULL = unbounded on that side; a learner
+   * with an unknown age (null) never qualifies for a bounded experiment. */
+  minAge?: number | null;
+  maxAge?: number | null;
   createdAt: string;
   startedAt?: string;
   concludedAt?: string;
@@ -38,6 +42,8 @@ type StoredExperiment = {
   surface: string;
   target: string;
   segment_filter: string | null;
+  min_age: number | null;
+  max_age: number | null;
   created_at: string;
   started_at: string | null;
   concluded_at: string | null;
@@ -110,6 +116,9 @@ async function ensureExperimentSchema(): Promise<void> {
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS target TEXT');
   await execute("UPDATE experiments SET surface = 'learn' WHERE surface IS NULL");
   await execute("UPDATE experiments SET target = 'default' WHERE target IS NULL");
+  // H.7: age eligibility bounds (NULL = unbounded on that side).
+  await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS min_age INTEGER');
+  await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS max_age INTEGER');
 }
 
 function rowToExperiment(r: StoredExperiment): Experiment {
@@ -125,6 +134,8 @@ function rowToExperiment(r: StoredExperiment): Experiment {
     segmentFilter: r.segment_filter
       ? (JSON.parse(r.segment_filter) as Record<string, unknown>)
       : undefined,
+    minAge: r.min_age,
+    maxAge: r.max_age,
     createdAt: r.created_at,
     startedAt: r.started_at ?? undefined,
     concludedAt: r.concluded_at ?? undefined,
@@ -146,6 +157,7 @@ export async function createExperiment(
   variantB: string,
   surface = 'learn',
   target = 'default',
+  ageBounds: { minAge?: number | null; maxAge?: number | null } = {},
 ): Promise<Experiment | null> {
   try {
     await ensureExperimentSchema();
@@ -154,8 +166,8 @@ export async function createExperiment(
     const createdAt = now();
 
     await execute(
-      `INSERT INTO experiments (id, name, status, metric, variant_a, variant_b, surface, target, created_at)
-       VALUES (?, ?, 'draft', ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO experiments (id, name, status, metric, variant_a, variant_b, surface, target, min_age, max_age, created_at)
+       VALUES (?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?)`,
       experimentId,
       name,
       metric,
@@ -163,6 +175,8 @@ export async function createExperiment(
       variantB,
       surface,
       target,
+      ageBounds.minAge ?? null,
+      ageBounds.maxAge ?? null,
       createdAt,
     );
 
@@ -175,6 +189,8 @@ export async function createExperiment(
       variantB,
       surface,
       target,
+      minAge: ageBounds.minAge ?? null,
+      maxAge: ageBounds.maxAge ?? null,
       createdAt,
     };
   } catch (err) {
@@ -298,6 +314,7 @@ export async function getRuntimeAssignments(
   userId: string,
   surface: string,
   target: string,
+  age?: number | null,
 ): Promise<RuntimeAssignment[] | null> {
   try {
     await ensureExperimentSchema();
@@ -310,6 +327,10 @@ export async function getRuntimeAssignments(
     );
     const assignments: RuntimeAssignment[] = [];
     for (const experiment of experiments) {
+      // H.7: age eligibility is evaluated before any assignment exists. An
+      // age-bounded experiment never assigns (and never exposes) a learner
+      // whose age is unknown or outside its bounds.
+      if (!ageWithinBounds(age, experiment.min_age, experiment.max_age)) continue;
       const existing = await query<AssignmentRow>(
         'SELECT experiment_id, user_id, variant, assigned_at FROM experiment_assignments WHERE experiment_id = ? AND user_id = ?',
         experiment.id,
@@ -340,6 +361,19 @@ export async function getRuntimeAssignments(
 }
 
 /**
+ * H.7: a learner qualifies for an experiment only when their age is known
+ * and inside every declared bound. An unbounded experiment accepts unknown
+ * ages (null); a bounded one never does — eligibility cannot be guessed.
+ */
+export function ageWithinBounds(age: number | null | undefined, minAge: number | null, maxAge: number | null): boolean {
+  if (minAge === null && maxAge === null) return true;
+  if (age === null || age === undefined || !Number.isFinite(age)) return false;
+  if (minAge !== null && age < minAge) return false;
+  if (maxAge !== null && age > maxAge) return false;
+  return true;
+}
+
+/**
  * Records exposure only after the product actually rendered the assigned
  * treatment. Assignment alone is not causal evidence and is never used as a
  * substitute for exposure in experiment results.
@@ -349,8 +383,9 @@ export async function recordRuntimeExposure(
   experimentId: string,
   surface: string,
   target: string,
+  age?: number | null,
 ): Promise<RuntimeAssignment | null> {
-  const assignments = await getRuntimeAssignments(userId, surface, target);
+  const assignments = await getRuntimeAssignments(userId, surface, target, age);
   if (assignments === null) return null;
   const assignment = assignments.find((item) => item.experimentId === experimentId);
   if (!assignment) return null;

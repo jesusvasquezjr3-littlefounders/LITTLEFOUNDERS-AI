@@ -13,6 +13,14 @@ const Env = z.object({
   DUCKDB_PATH: z.string().min(1).default('./duckdb/dataintel.db'),
 
   SYNC_INTERVAL_MS: z.coerce.number().int().positive().default(300_000),
+
+  // H.3: alert triggers must notify a human, not just record a row. Optional
+  // delivery channels; when absent the matching channel degrades to a logged
+  // warning (the trigger is still recorded) rather than pretending delivery.
+  ALERT_WEBHOOK_URL: z.string().url().optional(),
+  ALERT_EMAIL_SERVER_URL: z.string().url().optional(),
+  ALERT_EMAIL_INTERNAL_KEY: z.string().min(1).optional(),
+  ALERT_EMAIL_TO: z.string().email().optional(),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

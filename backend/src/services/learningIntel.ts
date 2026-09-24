@@ -63,6 +63,9 @@ export async function recordExperimentExposure(input: {
   experimentId: string;
   surface: 'learn' | 'tasks' | 'profile' | 'tutor';
   target: string;
+  /** H.7: the learner's derived age, or null when the evidence is
+   * unavailable — dataintel refuses bounded experiments for unknown ages. */
+  age?: number | null;
 }): Promise<{ experimentId: string; variant: 'A' | 'B' } | null> {
   const { DATAINTEL_URL, DATAINTEL_INTERNAL_KEY, DATAINTEL_TIMEOUT_MS } = getConfig();
   try {
@@ -72,7 +75,7 @@ export async function recordExperimentExposure(input: {
         'Content-Type': 'application/json',
         'x-internal-api-key': DATAINTEL_INTERNAL_KEY,
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...input, age: input.age ?? null }),
       signal: AbortSignal.timeout(DATAINTEL_TIMEOUT_MS),
     });
     const parsed = ExposureEnvelope.safeParse(await res.json());

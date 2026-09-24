@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { trackInsight } from '@/lib/insights';
 import { Button, Card, Checkbox, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail } from './EvidencePhoto';
@@ -36,6 +37,14 @@ const MAX_REWARD_COINS = 500;
 export function ParentTaskBoard() {
   const { t } = useTranslation();
   const { getToken } = useAuth();
+  // H.3: `task_view` was catalogued but emitted nowhere. Fired once per
+  // board mount, consent-gated by the beacon like every other event.
+  const taskViewEmitted = useRef(false);
+  useEffect(() => {
+    if (taskViewEmitted.current) return;
+    taskViewEmitted.current = true;
+    trackInsight('task_view', { routeClass: 'tasks' });
+  }, []);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
   const [busyTask, setBusyTask] = useState<string | null>(null);

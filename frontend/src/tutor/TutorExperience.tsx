@@ -7,6 +7,7 @@ import calibrationEn from '@/i18n/en-US/rebuild.json';
 import calibrationEs from '@/i18n/es-MX/rebuild.json';
 import calibrationPt from '@/i18n/pt-BR/rebuild.json';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
+import { trackInsight } from '@/lib/insights';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
 import {
@@ -393,6 +394,16 @@ export function TutorExperience() {
   const [preferences, setPreferences] = useState<TutorPreferences | null>(null);
   const [catalog, setCatalog] = useState<TutorCatalog | null>(null);
   const [offers, setOffers] = useState<TutorOffers | null>(null);
+  // H.3: `tutor_open` was catalogued but emitted nowhere — the event exists
+  // so the acquisition/funnel pipeline can see the Mentor actually opened.
+  // Fired once per mount (the route IS the session entry), consent-gated by
+  // the beacon like every other first-party event.
+  const tutorOpenEmitted = useRef(false);
+  useEffect(() => {
+    if (tutorOpenEmitted.current) return;
+    tutorOpenEmitted.current = true;
+    trackInsight('tutor_open', { routeClass: 'tutor' });
+  }, []);
   /** The learning map (Tutor v3). Null = the v2 openings — graceful. */
   const [map, setMap] = useState<TutorMapResponse | null>(null);
   /**
