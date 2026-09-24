@@ -420,6 +420,28 @@ describe('GET /api/v1/learn/courses/:slug/tree', () => {
     expect(res.body.data.nextLessonId).toBe(LESSON_1_ID);
     expect(res.body.data.adventures[0].state).toBe('available');
   });
+
+  it('B.2: refuses entry while a declared prerequisite course is not completed, naming the missing slug', async () => {
+    const course = db.courses?.[0];
+    (course as { requires?: string[] }).requires = ['financial-education'];
+    const res = await auth(request(createApp()).get(`/api/v1/learn/courses/${COURSE_SLUG}/tree`));
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('COURSE_PREREQUISITE_REQUIRED');
+    expect(res.body.error.missingPrerequisites).toEqual(['financial-education']);
+    // And the course does NOT open until the prerequisite is completed.
+    db.completed_course_badges = [{ user_id: userId, course_slug: 'financial-education' }];
+    const allowed = await auth(request(createApp()).get(`/api/v1/learn/courses/${COURSE_SLUG}/tree`));
+    expect(allowed.status).toBe(200);
+    delete (course as { requires?: string[] }).requires;
+  });
+
+  it('B.2: treats a non-array or empty requires declaration as no prerequisites', async () => {
+    const course = db.courses?.[0];
+    (course as { requires?: unknown }).requires = 'not-an-array';
+    const res = await auth(request(createApp()).get(`/api/v1/learn/courses/${COURSE_SLUG}/tree`));
+    expect(res.status).toBe(200);
+    delete (course as { requires?: unknown }).requires;
+  });
 });
 
 describe('GET /api/v1/learn/lessons/:id', () => {

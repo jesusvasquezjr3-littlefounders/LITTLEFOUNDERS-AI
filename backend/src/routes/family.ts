@@ -92,6 +92,23 @@ const MAX_KIDS_PER_PARENT = 10;
 const NOT_FOUND = 'NOT_FOUND';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
 
+/** F.4: the badge_shares age_band vocabulary (6-8 / 9-11 / 12-14) derived
+ * from the kid's stored birth date at share time — the field is now
+ * populated, never invented. Outside the teaching bands (or no date) it
+ * stays NULL rather than guessing. */
+export function shareAgeBand(birthDate: string | null, now: Date = new Date()): '6-8' | '9-11' | '12-14' | null {
+  if (birthDate === null || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return null;
+  const date = new Date(`${birthDate}T00:00:00.000Z`);
+  if (!Number.isFinite(date.getTime())) return null;
+  let age = now.getUTCFullYear() - date.getUTCFullYear();
+  if (now.getUTCMonth() < date.getUTCMonth() ||
+      (now.getUTCMonth() === date.getUTCMonth() && now.getUTCDate() < date.getUTCDate())) age--;
+  if (age >= 6 && age <= 8) return '6-8';
+  if (age >= 9 && age <= 11) return '9-11';
+  if (age >= 12 && age <= 14) return '12-14';
+  return null;
+}
+
 export function familyRouter(): Router {
   const router = Router();
 
@@ -659,7 +676,7 @@ export function familyRouter(): Router {
       achievement_kind: kind,
       achievement_label: label,
       first_name: firstName,
-      age_band: null,
+      age_band: shareAgeBand(profiles[0]?.birth_date ?? null),
       image_bucket: composed.bucket,
       image_hash: composed.hash,
       image_ext: composed.ext,

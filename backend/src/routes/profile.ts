@@ -15,7 +15,6 @@ import {
   getLearningStats,
   getLearningStatsByUserId,
   getOwnAvatar,
-  hasRole,
   hasOwnBlock,
   hasOwnOpenSocialRequest,
   insertFollow,
@@ -31,6 +30,7 @@ import {
   SOCIAL_REPORT_NOTE_MAX,
   unblockUser,
   upsertOwnAvatar,
+  tutorBadgeVisible,
   type FullProfileRow,
   type LearningStatsRow,
 } from '../services/supabaseRest.js';
@@ -251,7 +251,10 @@ export function publicProfilesRouter(): Router {
       getAvatarByUserId(profile.user_id),
       getFollowCounts(profile.user_id),
       isFollowing(user.id, profile.user_id),
-      hasRole(profile.user_id, 'parent'),
+      // E.5: the badge is a verified-adult signal shown only inside an
+      // established relationship (linked kid, mutual approved follow, self,
+      // staff) — never to an unconnected kid-role viewer.
+      tutorBadgeVisible(user.id, profile.user_id),
       getLearningStatsByUserId(profile.user_id),
       getCompletedCourseBadgesByUserId(profile.user_id),
     ]);

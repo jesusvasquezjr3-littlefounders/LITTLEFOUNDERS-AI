@@ -73,7 +73,8 @@
       "shared": "Compartilhado!",
       "copied": "Link copiado",
       "error": "Não foi possível criar o selo agora",
-      "shareGoal": "Compartilhar \"{{title}}\""
+      "shareGoal": "Compartilhar \"{{title}}\"",
+      "disclosure": "Isso cria um link que qualquer pessoa com ele pode abrir. Ele expira em 30 dias, você pode revogá-lo no seu painel de Família e ajuda o LittleFounders a crescer."
     },
     "insightsConsent": {
       "label": "Compartilhar dados de uso",

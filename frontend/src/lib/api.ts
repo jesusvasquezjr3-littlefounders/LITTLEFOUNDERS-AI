@@ -19,6 +19,12 @@ export interface ApiError {
    * every other error code; do not depend on it existing.
    */
   resetAt?: string;
+  /**
+   * B.2's COURSE_PREREQUISITE_REQUIRED refusal carries the slugs of the
+   * prerequisite courses that are not completed yet. Absent on every other
+   * error code.
+   */
+  missingPrerequisites?: string[];
 }
 
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiError };

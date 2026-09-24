@@ -27,6 +27,7 @@ interface StubOptions {
   insertFails?: boolean;
   guardianLinked?: boolean;
   goal?: Record<string, unknown> | null;
+  birthDate?: string | null;
 }
 
 function stub(opts: StubOptions = {}) {
@@ -47,7 +48,7 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(200, rows));
       }
       if (url.includes('/rest/v1/profiles?user_id=')) {
-        return Promise.resolve(jsonResponse(200, [{ user_id: KID_ID, display_name: 'Sofía García', username: 'sofia' }]));
+        return Promise.resolve(jsonResponse(200, [{ user_id: KID_ID, display_name: 'Sofía García', username: 'sofia', birth_date: opts.birthDate ?? null }]));
       }
       if (url.includes('/rpc/get_completed_course_badges')) {
         return Promise.resolve(jsonResponse(200, opts.courseBadges ?? []));
@@ -130,6 +131,34 @@ describe('POST /api/v1/family/kids/:kidId/badge', () => {
     const res = await post({ kind: 'streak', locale: 'en-US' });
     expect(res.status).toBe(201);
     expect(res.body.data.token).toBeTruthy();
+  });
+
+  it('populates the F.4 age_band from the stored birth date, and stays null outside the teaching bands', async () => {
+    const writes: { url: string; body: unknown }[] = [];
+    stub({ streakDays: 7, birthDate: '2018-05-01' });
+    const routeStub = globalThis.fetch;
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('/rest/v1/badge_shares') && (init?.method ?? 'GET') === 'POST') {
+        writes.push({ url, body: JSON.parse(String(init?.body)) as unknown });
+        return Promise.resolve(new Response(null, { status: 201 }));
+      }
+      return (routeStub as typeof fetch)(input, init);
+    }));
+    expect((await post({ kind: 'streak', locale: 'en-US' })).status).toBe(201);
+    expect((writes[0]!.body as { age_band?: unknown }).age_band).toBe('6-8');
+    stub({ streakDays: 7, birthDate: '2004-05-01' });
+    const routeStub2 = globalThis.fetch;
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('/rest/v1/badge_shares') && (init?.method ?? 'GET') === 'POST') {
+        writes.push({ url, body: JSON.parse(String(init?.body)) as unknown });
+        return Promise.resolve(new Response(null, { status: 201 }));
+      }
+      return (routeStub2 as typeof fetch)(input, init);
+    }));
+    expect((await post({ kind: 'streak', locale: 'en-US' })).status).toBe(201);
+    expect((writes[1]!.body as { age_band?: unknown }).age_band).toBeNull();
   });
 
   it('404s for a kid this caller is not a verified guardian of', async () => {

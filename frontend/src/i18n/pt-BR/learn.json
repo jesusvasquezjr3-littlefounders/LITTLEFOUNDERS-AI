@@ -11,6 +11,11 @@
   "lessonMeta": "{{minutes}} min · {{xp}} XP",
   "emptyTitle": "Ainda não há nada aqui",
   "emptyBody": "As primeiras missões deste curso estão a caminho.",
+  "prerequisite": {
+    "title": "Um passo antes deste",
+    "body": "Este curso abre depois que você terminar o curso anterior. Volte e complete primeiro: você está mais perto do que imagina.",
+    "back": "Voltar aos meus cursos"
+  },
   "state": {
     "locked": "bloqueado",
     "available": "disponível",

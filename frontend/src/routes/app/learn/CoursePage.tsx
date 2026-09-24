@@ -111,6 +111,20 @@ export function CoursePage() {
   }
 
   if (state.status === 'error') {
+    // B.2: an unmet prerequisite course is not a failure — it is guidance.
+    // The mentor voice names the step ahead instead of an error banner.
+    if (state.code === 'COURSE_PREREQUISITE_REQUIRED') {
+      return (
+        <Card hero className="flex flex-col items-center gap-4 text-center">
+          <CharacterActor3D character="dina" emotion="happy" action="idle" size="lg" />
+          <h2 className="lf-title text-content">{t('learn.prerequisite.title')}</h2>
+          <p className="lf-body max-w-md text-content-muted">{t('learn.prerequisite.body')}</p>
+          <Link to="/learn">
+            <span className="lf-press lf-label font-bold text-primary hover:underline">{t('learn.prerequisite.back')}</span>
+          </Link>
+        </Card>
+      );
+    }
     return <ErrorBanner code={state.code} />;
   }
 

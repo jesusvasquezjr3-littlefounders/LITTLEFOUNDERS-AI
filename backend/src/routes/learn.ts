@@ -36,6 +36,7 @@ import {
   getAdventureById,
   getAdventuresByCourseIds,
   getCoursePlacement,
+  getCompletedCourseBadgesByUserId,
   getCoursePlacementsForCourses,
   getFullOwnProfile,
   getCurrentV2LessonDocumentLocales,
@@ -455,6 +456,27 @@ export function learnRouter(): Router {
     const user = authedUser(res);
     const course = await getPublishedCourseBySlug(user.accessToken, req.params.slug as string);
     if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
+    /*
+     * B.2: course-level prerequisites are now ENFORCED, not dormant. A course
+     * whose declared `requires` slugs are not all completed refuses to open,
+     * naming the missing prerequisites so the learner knows exactly what to
+     * finish first. Enforcement is soft-err on the entry point only: the
+     * shelf keeps listing the course (it is a real, reachable course — with a
+     * visible first step), and nothing blocks re-entering a course the learner
+     * already started before an authoring change (progress already earned
+     * stays earned; only NEW entry is gated).
+     */
+    const requires = Array.isArray(course.requires) ? course.requires.filter((slug): slug is string => typeof slug === 'string' && slug.length > 0) : [];
+    if (requires.length > 0) {
+      const completed = await getCompletedCourseBadgesByUserId(user.id);
+      const completedSlugs = new Set(completed.map((badge) => badge.course_slug));
+      const missing = requires.filter((slug) => !completedSlugs.has(slug));
+      if (missing.length > 0) {
+        return fail(res, 409, 'COURSE_PREREQUISITE_REQUIRED', 'Finish the prerequisite course first', {
+          missingPrerequisites: missing,
+        });
+      }
+    }
     const tree = await loadCourseTree(user.accessToken, user.id, course);
     if (!tree) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     return ok(res, tree);

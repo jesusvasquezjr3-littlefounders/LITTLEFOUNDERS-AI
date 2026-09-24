@@ -605,9 +605,11 @@ export interface CourseHierarchyRow {
   badge_asset: string | null;
   /** 0048 — true while the course is live but still missing narration/illustrations. */
   in_progress: boolean;
+  /** 0008 course-level prerequisite edges: slugs of courses that must be completed first (B.2). */
+  requires?: string[];
 }
 
-const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position,badge_asset,in_progress';
+const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position,badge_asset,in_progress,requires';
 
 export function getPublishedCourseRows(accessToken: string): Promise<CourseHierarchyRow[] | null> {
   return rest<CourseHierarchyRow[]>(`/courses?status=eq.published&select=${COURSE_HIERARCHY_FIELDS}&order=position.asc`, accessToken);
@@ -1130,6 +1132,43 @@ export async function hasRole(userId: string, role: string): Promise<boolean> {
   return Array.isArray(rows) && rows.length > 0;
 }
 
+/**
+ * E.5: the Tutor badge is a verified-adult signal, not a platform-wide
+ * public badge. It is shown only when the subject is a currently ID-verified
+ * parent AND the viewer has an established relationship: the subject's own
+ * verified-linked kid, a mutual follow (the approved-connection gate), the
+ * subject themself, or staff. A kid-role account with no established
+ * relationship never sees it. An ambiguous read hides the badge (fail
+ * closed — an absence is safer than an unearned trust signal).
+ */
+export async function tutorBadgeVisible(viewerId: string, subjectId: string): Promise<boolean> {
+  if (viewerId === subjectId) return true;
+  const staffViewer = await hasRole(viewerId, 'admin') || await hasRole(viewerId, 'superadmin');
+  if (staffViewer) return true;
+  const [linked, subjectVerification, mutualFollow] = await Promise.all([
+    rest<{ id: string }[]>(
+      `/guardian_links?parent_user_id=eq.${eu(subjectId)}&kid_user_id=eq.${eu(viewerId)}&verification_status=eq.verified&select=id&limit=1`,
+      serviceToken(),
+    ),
+    rest<unknown[]>(
+      `/parent_verifications?user_id=eq.${eu(subjectId)}&select=status,method,birth_date&order=created_at.desc,id.desc&limit=1`,
+      serviceToken(),
+    ),
+    (async () => {
+      const [a, b] = await Promise.all([
+        rest<{ id: string }[]>(`/follows?follower_id=eq.${eu(viewerId)}&followed_id=eq.${eu(subjectId)}&select=id&limit=1`, serviceToken()),
+        rest<{ id: string }[]>(`/follows?follower_id=eq.${eu(subjectId)}&followed_id=eq.${eu(viewerId)}&select=id&limit=1`, serviceToken()),
+      ]);
+      return Array.isArray(a) && a.length > 0 && Array.isArray(b) && b.length > 0;
+    })(),
+  ]);
+  if (!Array.isArray(subjectVerification) || subjectVerification.length === 0) return false;
+  const latest = subjectVerification[0] as { status?: unknown; method?: unknown; birth_date?: unknown } | undefined;
+  if (!latest || latest.status !== 'verified' || latest.method !== 'local-ocr') return false;
+  if (!Array.isArray(linked)) return false;
+  return linked.length > 0 || mutualFollow;
+}
+
 export async function revokeAdminPermission(userId: string, permission: string): Promise<boolean> {
   const res = await restRaw(`/admin_permissions?user_id=eq.${eu(userId)}&permission=eq.${permission}`, serviceToken(), {
     method: 'DELETE',
@@ -1304,12 +1343,14 @@ export interface KidProfileRow {
   user_id: string;
   display_name: string | null;
   username: string | null;
+  /** Server-side only: feeds the F.4 share age_band computation, never a response field. */
+  birth_date: string | null;
 }
 
 /** WHITELISTED kid profile fields for the family dashboard — never the whole row (mirrors the /@username whitelist discipline). */
 export function getKidProfiles(kidIds: string[]): Promise<KidProfileRow[] | null> {
   if (kidIds.length === 0) return Promise.resolve([]);
-  return serviceRest<KidProfileRow[]>(`/profiles?user_id=${inFilter(kidIds)}&select=user_id,display_name,username`);
+  return serviceRest<KidProfileRow[]>(`/profiles?user_id=${inFilter(kidIds)}&select=user_id,display_name,username,birth_date`);
 }
 
 export interface KidLearningStatsRow {

@@ -11,6 +11,11 @@
   "lessonMeta": "{{minutes}} min · {{xp}} XP",
   "emptyTitle": "Nothing here yet",
   "emptyBody": "The first missions of this course are on their way.",
+  "prerequisite": {
+    "title": "One step before this one",
+    "body": "This course opens after you finish its earlier course. Go back and complete that first — you are closer than you think.",
+    "back": "Back to my courses"
+  },
   "state": {
     "locked": "locked",
     "available": "available",

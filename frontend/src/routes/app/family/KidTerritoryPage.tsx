@@ -226,43 +226,52 @@ export function KidTerritoryPage() {
       ) : null}
 
       {stats && stats.streakDays >= MIN_SHAREABLE_STREAK_DAYS ? (
-        <Button
-          onClick={() => void handleShare()}
-          disabled={shareStatus === 'busy'}
-          className="w-fit gap-2"
-          variant={shareStatus === 'shared' || shareStatus === 'copied' ? 'success' : shareStatus === 'error' ? 'secondary' : 'primary'}
-        >
-          <Icon name={shareStatus === 'shared' || shareStatus === 'copied' ? 'check' : 'ios_share'} />
-          {shareStatus === 'busy'
-            ? t('family.badge.sharing')
-            : shareStatus === 'shared'
-              ? t('family.badge.shared')
-              : shareStatus === 'copied'
-                ? t('family.badge.copied')
-                : shareStatus === 'error'
-                  ? t('family.badge.error')
-                  : t('family.badge.share')}
-        </Button>
+        <>
+          <Button
+            onClick={() => void handleShare()}
+            disabled={shareStatus === 'busy'}
+            className="w-fit gap-2"
+            variant={shareStatus === 'shared' || shareStatus === 'copied' ? 'success' : shareStatus === 'error' ? 'secondary' : 'primary'}
+          >
+            <Icon name={shareStatus === 'shared' || shareStatus === 'copied' ? 'check' : 'ios_share'} />
+            {shareStatus === 'busy'
+              ? t('family.badge.sharing')
+              : shareStatus === 'shared'
+                ? t('family.badge.shared')
+                : shareStatus === 'copied'
+                  ? t('family.badge.copied')
+                  : shareStatus === 'error'
+                    ? t('family.badge.error')
+                    : t('family.badge.share')}
+          </Button>
+          {/* F.3: the point-of-action disclosure — un-buried, beside the
+              button, in the mentor's own voice. It names the growth loop
+              and the real F.1/F.2 mechanics (30-day expiry + revoke). */}
+          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
+        </>
       ) : null}
 
       {reachedGoal ? (
-        <Button
-          onClick={() => void handleShareGoal()}
-          disabled={goalShareStatus === 'busy'}
-          className="w-fit gap-2"
-          variant={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'success' : goalShareStatus === 'error' ? 'secondary' : 'primary'}
-        >
-          <Icon name={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'check' : 'savings'} />
-          {goalShareStatus === 'busy'
-            ? t('family.badge.sharing')
-            : goalShareStatus === 'shared'
-              ? t('family.badge.shared')
-              : goalShareStatus === 'copied'
-                ? t('family.badge.copied')
-                : goalShareStatus === 'error'
-                  ? t('family.badge.error')
-                  : t('family.badge.shareGoal', { title: reachedGoal.title })}
-        </Button>
+        <>
+          <Button
+            onClick={() => void handleShareGoal()}
+            disabled={goalShareStatus === 'busy'}
+            className="w-fit gap-2"
+            variant={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'success' : goalShareStatus === 'error' ? 'secondary' : 'primary'}
+          >
+            <Icon name={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'check' : 'savings'} />
+            {goalShareStatus === 'busy'
+              ? t('family.badge.sharing')
+              : goalShareStatus === 'shared'
+                ? t('family.badge.shared')
+                : goalShareStatus === 'copied'
+                  ? t('family.badge.copied')
+                  : goalShareStatus === 'error'
+                    ? t('family.badge.error')
+                    : t('family.badge.shareGoal', { title: reachedGoal.title })}
+          </Button>
+          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
+        </>
       ) : null}
 
       <TerritoryView tree={tree} locale={locale} chipLinkTo="/family" />

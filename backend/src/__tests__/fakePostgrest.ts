@@ -76,6 +76,12 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       }
       return respond(204, null, true);
     }
+    // B.2's completed-course set, read through the badge RPC the same way
+    // routes/learn.ts does. Tests seed db.completed_course_badges.
+    if (table === 'rpc/get_completed_course_badges' && method === 'POST') {
+      const { p_user_id: userId } = JSON.parse(String(init?.body)) as { p_user_id: string };
+      return respond(200, (db.completed_course_badges ?? []).filter((row) => row.user_id === userId));
+    }
     if (table === 'rpc/commit_course_placement' && method === 'POST') {
       const { p_result: row, p_lesson_ids: ids } = JSON.parse(String(init?.body)) as { p_result: FakeRow; p_lesson_ids: string[] };
       const placements = db.course_placements ??= [];
