@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "¿Pueden dos adultos supervisar al mismo hijo?",
-        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo."
+        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo mediante una invitación de un solo uso creada desde tu panel de Tutor. La invitación funciona una vez y caduca en 7 días."
       },
       "howMany": {
         "question": "¿Cuántos hijos puedo agregar?",
@@ -267,7 +267,7 @@
       },
       "contact": {
         "question": "¿Cómo contacto a soporte?",
-        "answer": "Escribiendo a informame@littlefounders.ai, o desde la herramienta de reporte dentro de la plataforma."
+        "answer": "Escribiendo a informame@littlefounders.ai, o reportando un perfil desde la plataforma (Reportar está junto a Bloquear en cualquier perfil)."
       },
       "deleteAccount": {
         "question": "¿Puedo borrar nuestra cuenta?",

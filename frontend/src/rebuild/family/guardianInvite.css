@@ -1,0 +1,5 @@
+.lf-rebuild.lf-guardian-invite { min-block-size: 0; padding: 1rem; display: grid; gap: .75rem; border-radius: var(--rounded-lg); }
+.lf-guardian-invite p, .lf-guardian-invite h2 { margin: 0; }
+.lf-guardian-invite-link { display: grid; gap: .75rem; }
+.lf-guardian-invite-link-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.lf-guardian-invite-link-value { min-inline-size: 0; overflow-wrap: anywhere; font-size: .8rem; }

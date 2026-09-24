@@ -4,6 +4,7 @@ import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { composeBadgeImage, firstNameOnly, generateBadgeToken, badgeShareExpiresAt, purgeBadgeImageIfUnreferenced } from '../services/badges.js';
+import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
 import { assembleCourseTree } from '../services/courseTree.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
@@ -720,8 +721,50 @@ export function familyRouter(): Router {
     });
   });
 
-  router.delete('/kids/:kidId/badges/:token', async (req, res) => {
+  /*
+   * SECOND VERIFIED GUARDIAN (A.1). An existing verified parent mints a
+   * single-use, 7-day invite for one kid; any OTHER verified adult may
+   * preview it (kid display fields only) and accept it — migration 0110's
+   * transaction writes the verified link, marks the invite accepted and
+   * reactivates a suspended kid. The family router's verified-adulthood
+   * gate already admits only ID-verified parents to every route here.
+   */
+  router.post('/kids/:kidId/guardian-invite', async (req, res) => {
     const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const parent = authedUser(res);
+    const invite = await createGuardianInvite(kidId, parent.id);
+    if (!invite) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the invite');
+    await insertAuditLog(parent.id, 'family.second_guardian_invite_created', kidId, {});
+    return ok(res, { token: invite.token, expiresAt: invite.expiresAt }, 201);
+  });
+
+  const InviteToken = z.string().regex(/^[A-Za-z0-9_-]{16,64}$/);
+
+  router.get('/guardian-invite/:token', async (req, res) => {
+    const token = InviteToken.safeParse(req.params.token);
+    if (!token.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Check the invite link');
+    const preview = await getGuardianInvitePreview(token.data);
+    if (!preview) return fail(res, 404, 'NOT_FOUND', 'No such invite');
+    return ok(res, {
+      kidUserId: preview.kidUserId,
+      displayName: preview.displayName,
+      username: preview.username,
+      expiresAt: preview.expiresAt,
+    });
+  });
+
+  router.post('/guardian-invite/:token/accept', async (req, res) => {
+    const token = InviteToken.safeParse(req.params.token);
+    if (!token.success || Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Check the invite link');
+    const parent = authedUser(res);
+    const result = await acceptGuardianInvite(token.data, parent.id);
+    if (result === 'invalid') return fail(res, 404, 'NOT_FOUND', 'No such invite');
+    if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not accept the invite');
+    return ok(res, { linked: true, kidUserId: result.kidUserId });
+  });
+
+  router.delete('/kids/:kidId/badges/:token', async (req, res) => {    const kidId = await guardKid(req, res);
     if (!kidId) return res;
     const token = BadgeToken.safeParse(req.params.token);
     if (!token.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Check the badge link');

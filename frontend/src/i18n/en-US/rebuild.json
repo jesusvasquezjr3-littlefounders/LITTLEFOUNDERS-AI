@@ -142,6 +142,31 @@
     "body": "A report involved one of your kids.",
     "bodyNamed": "A report involved {name}."
   },
+  "kidSuspended": {
+    "title": "This account is paused",
+    "suspendedBody": "Your account is paused. It opens again when a verified Tutor links.",
+    "deletedBody": "This account was removed after 90 days paused.",
+    "help": "Ask a parent to email {email}.",
+    "supportEmail": "informame@littlefounders.ai"
+  },
+  "guardianInvite": {
+    "title": "Invite a second Tutor",
+    "close": "Close",
+    "invite": "Create invite link",
+    "inviting": "Creating…",
+    "linkReady": "Send the second Tutor this link. It works once for 7 days.",
+    "copy": "Copy link",
+    "copied": "Link copied.",
+    "failed": "Could not create the invite. Try again.",
+    "copyFailed": "Could not copy the link. Select it and copy it yourself.",
+    "acceptTitle": "Become a second Tutor",
+    "acceptBody": "You were invited to supervise {name}. Accept to link your verified account.",
+    "accept": "Accept",
+    "accepting": "Accepting…",
+    "accepted": "You are now linked as a second Tutor.",
+    "acceptFailed": "Could not accept the invite. Try again.",
+    "expired": "This invite is no longer valid."
+  },
   "memorySelfReview": {
     "title": "What your Mentor remembers",
     "help": "You decide what the Mentor remembers about you.",

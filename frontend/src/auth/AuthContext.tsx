@@ -79,6 +79,10 @@ interface AuthContextValue {
   isGuest: boolean;
   /** Whether this account has completed the onboarding wizard. Guest-only concept — a real account is always effectively "onboarded" via signup, never redirected to /onboarding regardless of this flag. */
   onboardingComplete: boolean;
+  /** A.1: Core answered /auth/me with ACCOUNT_SUSPENDED (last verified guardian link gone) — sessions were revoked; the shell shows the suspended screen. */
+  suspended: boolean;
+  /** A.1: Core answered /auth/me with ACCOUNT_DELETED (90-day suspension window ended). */
+  deleted: boolean;
   /** Start using the platform with zero signup friction (Duolingo-style guest). */
   startGuestSession(input?: { under13Origin: true }): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
   /** Attach a permanent email+password identity to the CURRENT guest session, in place — never /signup, which would mint a second, blank identity. */
@@ -145,6 +149,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [adminPermissions, setAdminPermissions] = useState<string[]>([]);
   const [avatarOptions, setAvatarOptions] = useState<Record<string, unknown>>({});
   const [meLoaded, setMeLoaded] = useState(false);
+  const [suspended, setSuspended] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   // Fail-closed default: the beacon stays silent until /me confirms it may run.
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
@@ -221,7 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setMeLoaded(true);
       return { newAccount: false, analyticsEnabled: false };
     }
-    const { data } = await api<{
+    const { data, error } = await api<{
       profile: Profile | null;
       roles: string[];
       adminPermissions?: string[];
@@ -231,9 +237,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       onboardingComplete?: boolean;
     }>('/auth/me', { token });
     if (stale()) return { newAccount: false, analyticsEnabled: false };
+    // A.1: Core already revoked the sessions for a suspended or purged kid —
+    // the shell must land on the dedicated screen, not a half-signed-in app.
+    if (error && (error.code === 'ACCOUNT_SUSPENDED' || error.code === 'ACCOUNT_DELETED')) {
+      persist(null);
+      setProfile(null);
+      setRoles([]);
+      setAdminPermissions([]);
+      setAnalyticsEnabled(false);
+      setMeLoaded(true);
+      if (error.code === 'ACCOUNT_SUSPENDED') setSuspended(true);
+      if (error.code === 'ACCOUNT_DELETED') setDeleted(true);
+      return { newAccount: false, analyticsEnabled: false };
+    }
     const resolvedAnalyticsEnabled = data?.analyticsEnabled === true;
     setAnalyticsEnabled(resolvedAnalyticsEnabled);
     if (data) {
+      setSuspended(false);
+      setDeleted(false);
       setProfile(data.profile);
       setRoles(data.roles);
       setAdminPermissions(data.adminPermissions ?? []);
@@ -451,6 +472,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       analyticsEnabled,
       isGuest,
       onboardingComplete,
+      suspended,
+      deleted,
       startGuestSession,
       upgradeAccount,
       login,
@@ -470,6 +493,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       analyticsEnabled,
       isGuest,
       onboardingComplete,
+      suspended,
+      deleted,
       startGuestSession,
       upgradeAccount,
       login,

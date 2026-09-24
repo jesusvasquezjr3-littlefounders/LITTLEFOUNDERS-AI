@@ -13,6 +13,7 @@ import { Families } from '@/routes/marketing/Families';
 import { FAQ } from '@/routes/marketing/FAQ';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { BadgeLandingPage } from '@/routes/marketing/BadgeLandingPage';
+import { KidSuspendedPage } from '@/routes/auth/KidSuspended';
 import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
@@ -332,6 +333,10 @@ export function App() {
               </RequireAuth>
             }
           />
+          {/* A.1 suspended/removed kid account — public by design: Core has
+              already revoked the sessions, so this page must render with no
+              session at all. The AuthContext flags pick the wording. */}
+          <Route path="account-suspended" element={<KidSuspendedPage />} />
           {/* Attach a permanent identity to the current guest session in
               place — never /signup, which would mint a second blank identity. */}
           <Route

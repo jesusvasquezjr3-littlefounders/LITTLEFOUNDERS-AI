@@ -10,6 +10,7 @@ import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
 import { markUnder13Origin } from '../services/ageOrigin.js';
 import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
+import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
@@ -456,12 +457,25 @@ export function authRouter(): Router {
       getOnboardingResponse(user.id),
     ]);
     if (!profiles || !roles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
+    const roleNames = roles.map((r) => r.role);
+    /*
+     * A.1 suspension enforcement at session admission: a kid whose last
+     * verified guardian link disappeared is suspended (migration 0110). The
+     * enforcement is session revocation — once this reads the marker, every
+     * live session dies, so the account is unusable rather than merely
+     * warned. The lazy 90-day purge runs at the same boundary. A failed
+     * marker read never revokes or deletes (§1.14).
+     */
+    if (roleNames.includes('kid')) {
+      const suspension = await enforceKidSuspensionAtAdmission(user.id);
+      if (suspension === 'deleted') return fail(res, 401, 'ACCOUNT_DELETED', 'This account was removed');
+      if (suspension === 'suspended') return fail(res, 403, 'ACCOUNT_SUSPENDED', 'This account is paused');
+    }
     // Display-only (routes the client to /onboarding, nothing is written from
     // it) — a transient Vault miss collapses to false rather than 502ing the
     // whole /me call over a non-critical field (backend/AGENTS.md READ-MODIFY-
     // WRITE rule applies to writers, not this kind of reader).
     const onboardingComplete = (onboarding?.length ?? 0) > 0;
-    const roleNames = roles.map((r) => r.role);
     const staffPermissions = roleNames.some((role) => role === 'admin' || role === 'superadmin')
       ? await getOwnAdminPermissions(user.accessToken, user.id)
       : [];

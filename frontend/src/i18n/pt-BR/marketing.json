@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "Dois responsáveis podem supervisionar o mesmo filho?",
-        "answer": "Sim. Um segundo Tutor verificado — seu parceiro, um avô — pode se vincular à mesma conta de filho."
+        "answer": "Sim. Um segundo Tutor verificado — seu parceiro, um avô — pode se vincular à mesma conta de filho por um convite de uso único criado no seu painel de Tutor. O convite funciona uma vez e expira em 7 dias."
       },
       "howMany": {
         "question": "Quantos filhos posso adicionar?",
@@ -267,7 +267,7 @@
       },
       "contact": {
         "question": "Como eu contato o suporte?",
-        "answer": "Pelo e-mail informame@littlefounders.ai, ou pela ferramenta de denúncia dentro da plataforma."
+        "answer": "Pelo e-mail informame@littlefounders.ai, ou denunciando um perfil na plataforma (Denunciar fica ao lado de Bloquear em qualquer perfil)."
       },
       "deleteAccount": {
         "question": "Posso excluir nossa conta?",

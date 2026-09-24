@@ -142,6 +142,31 @@
     "body": "Un reporte involucró a uno de tus hijos.",
     "bodyNamed": "Un reporte involucró a {name}."
   },
+  "kidSuspended": {
+    "title": "Esta cuenta está en pausa",
+    "suspendedBody": "Tu cuenta está en pausa. Se abre cuando un Tutor verificado se vincule.",
+    "deletedBody": "Esta cuenta se eliminó tras 90 días en pausa.",
+    "help": "Pide a un adulto que escriba a {email}.",
+    "supportEmail": "informame@littlefounders.ai"
+  },
+  "guardianInvite": {
+    "title": "Invitar a un segundo Tutor",
+    "close": "Cerrar",
+    "invite": "Crear enlace de invitación",
+    "inviting": "Creando…",
+    "linkReady": "Envía este enlace al segundo Tutor. Funciona una vez y caduca en 7 días.",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado.",
+    "failed": "No se pudo crear la invitación. Inténtalo de nuevo.",
+    "copyFailed": "No se pudo copiar el enlace. Selecciónalo y cópialo tú.",
+    "acceptTitle": "Ser un segundo Tutor",
+    "acceptBody": "Te invitaron a supervisar a {name}. Al aceptar, vinculas tu cuenta verificada.",
+    "accept": "Aceptar",
+    "accepting": "Aceptando…",
+    "accepted": "Ahora estás vinculado como segundo Tutor.",
+    "acceptFailed": "No se pudo aceptar la invitación. Inténtalo de nuevo.",
+    "expired": "Esta invitación ya no es válida."
+  },
   "memorySelfReview": {
     "title": "Lo que tu Mentor recuerda",
     "help": "Tú decides lo que el Mentor recuerda de ti.",

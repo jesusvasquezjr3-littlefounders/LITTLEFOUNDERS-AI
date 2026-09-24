@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
@@ -8,6 +8,7 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
+import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
 import { ManageKidPanel } from './ManageKidPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
 import { SocialHistoryPanel } from './SocialHistoryPanel';
@@ -42,6 +43,8 @@ type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { s
 export function FamilyPage() {
   const { t } = useTranslation();
   const { getToken } = useAuth();
+  const [searchParams] = useSearchParams();
+  const joinToken = searchParams.get('join');
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [busyKid, setBusyKid] = useState<string | null>(null);
   const [consentError, setConsentError] = useState<string | null>(null);
@@ -212,6 +215,7 @@ export function FamilyPage() {
               <SocialGraphPanel kidUserId={kid.userId} token={token} />
               <SocialHistoryPanel kidUserId={kid.userId} token={token} />
               <BadgeSharesPanel kidUserId={kid.userId} token={token} />
+              <GuardianInvitePanel kidUserId={kid.userId} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}
@@ -226,6 +230,7 @@ export function FamilyPage() {
       )}
 
       {state.kids.length > 0 && <SocialNoticesPanel token={token} />}
+      {joinToken !== null && <GuardianInviteJoin inviteToken={joinToken} />}
       {consentError && <ErrorBanner code={consentError} />}
       {state.kids.length > 0 && <AddKidCard onCreated={onKidCreated} />}
     </div>

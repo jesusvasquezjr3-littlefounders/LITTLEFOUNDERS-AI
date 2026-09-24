@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
@@ -134,10 +134,16 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
 
 export function AppLayout() {
   const { t, i18n } = useTranslation();
-  const { session, profile, roles, adminPermissions, avatarOptions, logout, getToken, refreshMe } = useAuth();
+  const { session, profile, roles, adminPermissions, avatarOptions, logout, getToken, refreshMe, suspended, deleted } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1');
+
+  // A.1: a suspended or purged kid never sees the app shell — Core revoked
+  // the sessions, so the dedicated public screen is the only surface left.
+  if (suspended || deleted) {
+    return <Navigate to="/account-suspended" replace />;
+  }
 
   const email = session?.user.email ?? '';
   const displayName = profile?.display_name || email.split('@')[0] || '';

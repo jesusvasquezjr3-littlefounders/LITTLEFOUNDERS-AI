@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "Can both parents supervise the same child?",
-        "answer": "Yes. A second verified Tutor — a co-parent, a grandparent — can link to the same Child account."
+        "answer": "Yes. A second verified Tutor — a co-parent, a grandparent — can link to the same Child account through a single-use invite created from your Tutor panel. The invite works once and expires in 7 days."
       },
       "howMany": {
         "question": "How many children can I add?",
@@ -267,7 +267,7 @@
       },
       "contact": {
         "question": "How do I contact support?",
-        "answer": "informame@littlefounders.ai, or the in-product report tool."
+        "answer": "informame@littlefounders.ai, or report a profile from inside the app (Report sits beside Block on any profile)."
       },
       "deleteAccount": {
         "question": "Can I delete our account?",

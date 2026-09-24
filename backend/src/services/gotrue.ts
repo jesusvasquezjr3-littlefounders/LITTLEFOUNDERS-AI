@@ -187,6 +187,25 @@ export function adminDeleteUser(userId: string): Promise<GotrueResult<Record<str
 }
 
 /**
+ * Revoke every live session for a user (GoTrue's admin endpoint). A.1's
+ * suspension enforcement: a kid whose last verified guardian link is gone
+ * must be unusable IMMEDIATELY — killing the sessions is the enforcement,
+ * not a UI flag, so no already-authenticated socket or API call survives.
+ * Idempotent: revoking a user with no live sessions succeeds.
+ */
+export function adminRevokeUserSessions(userId: string): Promise<GotrueResult<Record<string, never>>> {
+  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+  return gotrue(`/admin/users/${encodeURIComponent(userId)}/sessions`, {
+    method: 'DELETE',
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+/**
  * Guest session — GoTrue's native anonymous sign-in (`POST /signup` with no
  * email/password, gated server-side by `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED`).
  * Creates a real `auth.users` row (`is_anonymous=true`), so every existing
