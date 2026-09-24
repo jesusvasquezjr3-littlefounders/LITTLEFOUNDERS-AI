@@ -23,7 +23,7 @@ import { WorkedExampleBoard } from './WorkedExampleBoard';
 import { FunctionMachineBoard } from './FunctionMachineBoard';
 import { CpaFadingBoard } from './CpaFadingBoard';
 import type { Allocation } from './allocationModel';
-import { lessonVersionKey, loadLessonClientDocument, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
+import { lessonVersionKey, loadLessonClientDocument, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
 export type OnGrade = (answer: Allocation, segmentId: string, document: LessonClientDocument) => CheckResult | Promise<CheckResult>;
@@ -66,12 +66,12 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
 }
 
 /** The pilot renderer refuses any document it cannot display in full. */
-export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds = [], attemptedSegmentIds = [], withStage = false, theme = 'light', previewSequence = false }: {
+export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds = [], attemptedSegmentIds = [], mentorStage = null, theme = 'light', previewSequence = false }: {
   raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample;
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
   onComplete?: () => Promise<boolean>;
-  withStage?: boolean; theme?: 'light' | 'dark'; previewSequence?: boolean;
+  mentorStage?: LessonMentorStage | null; theme?: 'light' | 'dark'; previewSequence?: boolean;
 }) {
   const loaded = loadLessonClientDocument(raw);
   if (loaded.status !== 'ready') return unavailable(locale, onBack, loaded.status === 'upgrade-required' ? 'upgrade' : 'invalid');
@@ -81,18 +81,16 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   const schemaSequence = loaded.document.segments.length === 3 && loaded.document.segments[0]?.type === 'math.schema-diagram.structure.v2' && loaded.document.segments[1]?.type === 'math.schema-diagram.slots.v2' && loaded.document.segments[2]?.type === 'math.schema-diagram.answer.v2';
   const cpaSequence = loaded.document.segments.length === 3 && loaded.document.segments.every((segment) => segment.type === 'math.cpa-count.v2') && !!loaded.document.representation_progressions;
   if (!supported || loaded.document.segments.length > 1 && !previewSequence && !barSequence && !schemaSequence && !cpaSequence) return unavailable(locale, onBack, 'upgrade');
-  if (withStage && (loaded.document.adventure_scene_id !== 'diorama-a' || loaded.document.segments.length > 1
-    || loaded.document.segments[0]?.type !== 'money.allocation.v2')) return unavailable(locale, onBack, 'invalid');
   return <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
-    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} withStage={withStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} />;
+    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={mentorStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} />;
 }
 
-function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds, attemptedSegmentIds, withStage, theme, previewSequence }: {
+function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds, attemptedSegmentIds, mentorStage, theme, previewSequence }: {
   document: LessonClientDocument; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample;
   metSegmentIds: string[];
   attemptedSegmentIds: string[];
   onComplete?: () => Promise<boolean>;
-  withStage: boolean; theme: 'light' | 'dark'; previewSequence: boolean;
+  mentorStage: LessonMentorStage | null; theme: 'light' | 'dark'; previewSequence: boolean;
 }) {
   const [index, setIndex] = useState(() => {
     const restored = new Set(metSegmentIds);
@@ -121,43 +119,40 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   const key = `${lessonVersionKey(document)}:${segment.id}`;
   switch (segment.type) {
     case 'money.allocation.v2': return onGrade ? <AllocationBoard key={key} document={document} segment={segment}
-      onBack={onBack} onCheck={(answer, segmentId) => onGrade(answer, segmentId, document)} withStage={withStage} theme={theme} sequence={sequence} />
+      onBack={onBack} onCheck={(answer, segmentId) => onGrade(answer, segmentId, document)} mentorStage={mentorStage} theme={theme} sequence={sequence} />
       : unavailable(document.locale, onBack);
-    case 'visual.savings-line.v2': return withStage ? unavailable(document.locale, onBack)
-      : <GrowthBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'visual.goal-bullet.v2': return withStage ? unavailable(document.locale, onBack)
-      : <GoalBulletBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'visual.percent-grid.v2': return withStage ? unavailable(document.locale, onBack)
-      : <PercentGridBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'math.place-value.v2': return withStage || document.age_band !== '6-9' ? unavailable(document.locale, onBack)
+    case 'visual.savings-line.v2': return <GrowthBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+    case 'visual.goal-bullet.v2': return <GoalBulletBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+    case 'visual.percent-grid.v2': return <PercentGridBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
+    case 'math.place-value.v2': return document.age_band !== '6-9' ? unavailable(document.locale, onBack)
       : <PlaceValueBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'logic.savings-rule.v2': return withStage || document.age_band !== '10-12' ? unavailable(document.locale, onBack)
+    case 'logic.savings-rule.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
       : <SavingsRuleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'money.running-ledger.v2': return withStage || document.age_band !== '13-17' ? unavailable(document.locale, onBack)
+    case 'money.running-ledger.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
       : <RunningLedgerBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'visual.growth-comparison.v2': return withStage || document.age_band !== '13-17' ? unavailable(document.locale, onBack)
+    case 'visual.growth-comparison.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
       : <GrowthComparisonBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'math.ratio-table.v2': return withStage || document.age_band !== '10-12' ? unavailable(document.locale, onBack)
+    case 'math.ratio-table.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
       : <RatioTableBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} />;
-    case 'visual.tax-bracket.v2': return withStage || document.age_band !== '13-17' ? unavailable(document.locale, onBack)
+    case 'visual.tax-bracket.v2': return document.age_band !== '13-17' ? unavailable(document.locale, onBack)
       : <TaxBracketBoard key={key} document={document} segment={segment} onBack={onBack} />;
-    case 'math.worked-example.v2': return withStage || document.age_band !== '10-12' || !onGradeWorkedExample ? unavailable(document.locale, onBack)
+    case 'math.worked-example.v2': return document.age_band !== '10-12' || !onGradeWorkedExample ? unavailable(document.locale, onBack)
       : <WorkedExampleBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, id) => onGradeWorkedExample(answer, id, document)} />;
-    case 'math.function-machine.v2': return withStage || document.age_band !== '10-12' || !onGradeBarModel ? unavailable(document.locale, onBack)
+    case 'math.function-machine.v2': return document.age_band !== '10-12' || !onGradeBarModel ? unavailable(document.locale, onBack)
       : <FunctionMachineBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, id) => onGradeBarModel(answer, id, document)} />;
-    case 'math.cpa-count.v2': return withStage || !onGradeNumberLine || !sequence ? unavailable(document.locale, onBack)
+    case 'math.cpa-count.v2': return !onGradeNumberLine || !sequence ? unavailable(document.locale, onBack)
       : <CpaFadingBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, id) => onGradeNumberLine(answer, id, document)} />;
-    case 'math.number-line.whole.v2': return onGradeNumberLine && !withStage ? <NumberLineBoard key={key}
+    case 'math.number-line.whole.v2': return onGradeNumberLine ? <NumberLineBoard key={key}
       document={document} segment={segment} onBack={onBack} sequence={sequence}
       onGrade={(answer, segmentId) => onGradeNumberLine(answer, segmentId, document)} />
       : unavailable(document.locale, onBack);
-    case 'math.number-line.fraction.v2': return withStage || document.age_band !== '10-12' ? unavailable(document.locale, onBack)
+    case 'math.number-line.fraction.v2': return document.age_band !== '10-12' ? unavailable(document.locale, onBack)
       : onGradeNumberLine ? <FractionNumberLineBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, segmentId) => onGradeNumberLine(answer, segmentId, document)} /> : unavailable(document.locale, onBack);
-    case 'math.fraction-area.v2': return withStage || document.age_band !== '6-9' ? unavailable(document.locale, onBack)
+    case 'math.fraction-area.v2': return document.age_band !== '6-9' ? unavailable(document.locale, onBack)
       : onGradeFractionArea ? <FractionAreaBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, segmentId) => onGradeFractionArea(answer, segmentId, document)} /> : unavailable(document.locale, onBack);
     case 'math.bar-model.structure.v2':

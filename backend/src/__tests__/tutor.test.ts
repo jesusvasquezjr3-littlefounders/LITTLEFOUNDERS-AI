@@ -82,6 +82,12 @@ const MCQ_SEGMENT = {
 interface StubOpts {
   calibrationTier?: 1 | 2 | 3 | null;
   declaredAgeBand?: 'under_13' | '13_to_17' | 'adult';
+  /**
+   * Overrides the `account_age_declarations` rows outright — an EMPTY array
+   * is the world where the account never completed an age screen (the OD-18
+   * "missing age evidence" hold), which `declaredAgeBand` cannot express.
+   */
+  ageDeclarations?: unknown[];
   /** Catalog fixtures for the ladder. Absent means "no published content". */
   courses?: unknown[];
   topics?: unknown[];
@@ -257,7 +263,7 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, opts.roles ?? [{ role: 'kid' }]));
       if (url.includes('/rest/v1/parent_verifications')) return Promise.resolve(jsonResponse(200, opts.parentVerifications ?? []));
       if (url.includes('/rest/v1/account_safety_origins')) return Promise.resolve(jsonResponse(200, opts.safetyOrigins ?? []));
-      if (url.includes('/rest/v1/account_age_declarations')) return Promise.resolve(jsonResponse(200, [{ declared_age_band: opts.declaredAgeBand ?? 'under_13' }]));
+      if (url.includes('/rest/v1/account_age_declarations')) return Promise.resolve(jsonResponse(200, opts.ageDeclarations ?? [{ declared_age_band: opts.declaredAgeBand ?? 'under_13' }]));
       if (url.includes('/rest/v1/mentor_age_calibrations')) return Promise.resolve(jsonResponse(200, opts.calibrationTier === null ? [] : [{ tier: opts.calibrationTier ?? 2 }]));
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [opts.profile ?? KID_PROFILE]));
       if (url.includes('/rest/v1/tutor_voice_consent')) {
@@ -2479,7 +2485,7 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
     // An ADULT learner: the approval gate below parks a kid's learner store
     // instead of writing it, and this test is about the compare value that
     // reaches the RPC when a write actually happens.
-    const calls = stub({ roles: [{ role: 'universal' }] });
+    const calls = stub({ roles: [{ role: 'universal' }], declaredAgeBand: 'adult' });
     const response = await request(createApp())
       .put('/api/v1/tutor/internal/learner-memory')
       .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
@@ -2539,6 +2545,13 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
       'fetch',
       vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
+        // OD-18 (2026-09-24): the route resolves memory-review eligibility
+        // from roles, guardian links and the stored age declaration before it
+        // touches either store. This learner is a screened ADULT, so the
+        // ungated write path is the one under test here.
+        if (url.includes('/rest/v1/account_age_declarations')) {
+          return jsonResponse(200, [{ declared_age_band: 'adult' }]);
+        }
         if (url.includes('/rest/v1/learner_memory?')) {
           return jsonResponse(
             200,
@@ -2715,7 +2728,7 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
   });
 
   it('writes an ADULT learner’s note directly — there is no guardian to ask', async () => {
-    const calls = stub({ roles: [{ role: 'universal' }] });
+    const calls = stub({ roles: [{ role: 'universal' }], declaredAgeBand: 'adult' });
     const response = await request(createApp())
       .put('/api/v1/tutor/internal/learner-memory')
       .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
@@ -2963,6 +2976,340 @@ describe('the LEARNER store parks for guardian approval when the learner is a ki
 
       expect(response.status).toBe(400);
       expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+  });
+});
+
+/*
+ * OD-18 (24 September 2026, C.4): an independent screened teen — a stored
+ * 13_to_17 declaration, no protected origin, no `kid` role, no verified
+ * guardian link — is the reviewer of their OWN LEARNER-store notes. The
+ * existing proposal queue is reused with the owner in the reviewer seat:
+ * nothing is written without a note-level decision, that decision is
+ * subject-scoped, and every read failure refuses rather than approving.
+ *
+ * What these tests are actually protecting: the exact population C.4 named —
+ * a teen who self-registers and would otherwise carry a persistent,
+ * model-authored profile of themselves that no one ever reviewed.
+ */
+describe('the LEARNER store parks for SELF review when the learner is an independent teen (OD-18)', () => {
+  const TEEN = '77777777-7777-4777-8777-777777777777';
+  const TEEN_PROPOSAL = '88888888-8888-4888-8888-888888888888';
+
+  const teen = () => ({
+    roles: [{ role: 'universal' }],
+    guardianLinks: [],
+    declaredAgeBand: '13_to_17' as const,
+  });
+
+  const teenRow = {
+    id: TEEN_PROPOSAL,
+    user_id: TEEN,
+    proposed: 'Prefiere ejemplos con monedas.',
+    expected_before: null,
+    session_id: SESSION,
+    status: 'pending',
+    decided_by: null,
+    decided_at: null,
+    created_at: '2026-09-20T10:00:00Z',
+  };
+
+  it('parks a teen learner note instead of writing it — never silently auto-approved', async () => {
+    const calls = stub(teen());
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: TEEN,
+        sessionId: SESSION,
+        stores: { learner: 'Prefiere ejemplos con monedas.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.written).toEqual({});
+    expect(response.body.data.pending).toEqual(['learner']);
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+
+    const park = calls.find((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'));
+    expect(park).toBeDefined();
+    const parked = JSON.parse(String(park?.body ?? '{}'));
+    expect(parked.user_id).toBe(TEEN);
+    expect(parked.proposed).toBe('Prefiere ejemplos con monedas.');
+    expect(parked.after_hash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('does NOT gate the pedagogy store for a teen — the tutor keeps adapting', async () => {
+    const calls = stub(teen());
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: TEEN,
+        sessionId: SESSION,
+        stores: { learner: 'Nota sobre la teen.', pedagogy: 'Prefiere un ejemplo antes de la regla.' },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    const rpcBody = JSON.parse(
+      String(calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))?.body ?? '{}'),
+    );
+    expect(rpcBody.p_learner_new).toBeNull();
+    expect(rpcBody.p_pedagogy_new).toBe('Prefiere un ejemplo antes de la regla.');
+    expect(response.body.data.written).toEqual({ pedagogy: true });
+    expect(response.body.data.pending).toEqual(['learner']);
+  });
+
+  it('keeps a kid-role LINKED child on guardian review even with a teen-age declaration', async () => {
+    const calls = stub({
+      roles: [{ role: 'kid' }],
+      guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+      declaredAgeBand: '13_to_17',
+    });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nota sobre Ana.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.pending).toEqual(['learner']);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(true);
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+  });
+
+  it('refuses the whole write when the teen\'s guardian-link read is unavailable', async () => {
+    const calls = stub({ ...teen(), restFailures: ['guardian_links'] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: TEEN,
+        sessionId: SESSION,
+        stores: { learner: 'Nota que no debe aterrizar.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(false);
+  });
+
+  it('refuses the whole write when the age-screen read fails — a hiccup is not adult clearance', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], restFailures: ['account_age_declarations'] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: TEEN,
+        sessionId: SESSION,
+        stores: { learner: 'Nota que no debe aterrizar.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+  });
+
+  it('refuses the whole write when age evidence is missing (conservative hold)', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], ageDeclarations: [] });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: TEEN,
+        sessionId: SESSION,
+        stores: { learner: 'Nota sin pantalla de edad.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('MEMORY_REVIEW_INELIGIBLE');
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('learner_memory_proposals'))).toBe(false);
+  });
+
+  it('refuses the whole write for an under-13 account with no guardian link (conservative hold)', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], declaredAgeBand: 'under_13' });
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: TEEN,
+        sessionId: SESSION,
+        stores: { learner: 'Nota de una cuenta infantil sin tutor.', pedagogy: null },
+        expectedBefore: { learner: null, pedagogy: null },
+      });
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('MEMORY_REVIEW_INELIGIBLE');
+    expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+  });
+
+  // ── The teen's own portal ─────────────────────────────────────────────────
+
+  describe('GET /api/v1/tutor/memory-proposals (the teen\'s own queue)', () => {
+    it('hands an independent teen their own pending notes AND the current store', async () => {
+      stub({
+        ...teen(),
+        memoryProposals: [teenRow],
+        learnerMemory: [{ store: 'learner', content: null }],
+      });
+      const response = await request(createApp())
+        .get('/api/v1/tutor/memory-proposals')
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.proposals).toEqual([
+        {
+          id: TEEN_PROPOSAL,
+          proposed: 'Prefiere ejemplos con monedas.',
+          expectedBefore: null,
+          sessionId: SESSION,
+          createdAt: '2026-09-20T10:00:00Z',
+        },
+      ]);
+      expect(response.body.data.current).toBeNull();
+    });
+
+    it('refuses a kid-role learner — their queue belongs to their guardian', async () => {
+      stub({ guardianLinks: [] });
+      const response = await request(createApp())
+        .get('/api/v1/tutor/memory-proposals')
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('refuses a screened adult — adults have no parked notes by construction', async () => {
+      stub({ roles: [{ role: 'universal' }], declaredAgeBand: 'adult' });
+      const response = await request(createApp())
+        .get('/api/v1/tutor/memory-proposals')
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('answers 502 when eligibility cannot be read, and when the queue read fails', async () => {
+      stub({ ...teen(), restFailures: ['guardian_links'] });
+      const eligibility = await request(createApp())
+        .get('/api/v1/tutor/memory-proposals')
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`);
+      expect(eligibility.status).toBe(502);
+      expect(eligibility.body.error.code).toBe('DATA_UNAVAILABLE');
+
+      stub({ ...teen(), restFailures: ['learner_memory_proposals'] });
+      const queue = await request(createApp())
+        .get('/api/v1/tutor/memory-proposals')
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`);
+      expect(queue.status).toBe(502);
+      expect(queue.body.error.code).toBe('DATA_UNAVAILABLE');
+    });
+  });
+
+  // ── The teen as the reviewer of their own notes ───────────────────────────
+
+  describe('POST /api/v1/tutor/memory-proposals/:proposalId/decision (the teen decides their own notes)', () => {
+    it('applies a teen\'s own approval, stamped as a SELF-review decision', async () => {
+      const calls = stub({ ...teen(), memoryProposals: [teenRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${TEEN_PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ outcome: 'written', applied: true });
+
+      const rpc = calls.find((c) => c.url.includes('/rpc/decide_learner_memory_proposal'));
+      expect(rpc).toBeDefined();
+      const body = JSON.parse(String(rpc?.body ?? '{}'));
+      expect(body.p_proposal_id).toBe(TEEN_PROPOSAL);
+      expect(body.p_verdict).toBe('approved');
+      // WHO decided is the question this whole feature exists to answer.
+      expect(body.p_decided_by).toBe(TEEN);
+      // The ledger must be able to tell a self-approved write apart from a
+      // guardian-approved one and from an auto-write.
+      expect(body.p_actor).toBe('learner-self-approved-review');
+    });
+
+    it('records a teen\'s own rejection without touching the store', async () => {
+      const calls = stub({ ...teen(), memoryProposals: [teenRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${TEEN_PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`)
+        .send({ verdict: 'rejected' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ outcome: 'rejected', applied: false });
+      expect(calls.some((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    });
+
+    it('refuses another teen deciding the note — a self-review decision is subject-scoped', async () => {
+      const calls = stub({ ...teen(), memoryProposals: [teenRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${TEEN_PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+      expect(calls.some((c) => c.url.includes('/rpc/decide_learner_memory_proposal'))).toBe(false);
+    });
+
+    it('refuses the kid themselves on a guardian-reviewed note', async () => {
+      const kidRow = { ...teenRow, id: '99999999-9999-4999-8999-999999999999', user_id: KID };
+      const calls = stub({ guardianLinks: [], memoryProposals: [kidRow] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${kidRow.id}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+      expect(calls.some((c) => c.url.includes('/rpc/decide_learner_memory_proposal'))).toBe(false);
+    });
+
+    it('refuses a second decision on an already-decided note', async () => {
+      stub({ ...teen(), memoryProposals: [teenRow], decisionOutcome: 'not_pending' });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${TEEN_PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('ALREADY_DECIDED');
+    });
+
+    it('reports a STALE note as its own outcome, not as a success', async () => {
+      stub({ ...teen(), memoryProposals: [teenRow], decisionOutcome: 'conflict' });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${TEEN_PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('NOTE_OUT_OF_DATE');
+    });
+
+    it('answers 502 when the note owner\'s eligibility cannot be read — never an approval by default', async () => {
+      const calls = stub({ ...teen(), memoryProposals: [teenRow], restFailures: ['guardian_links'] });
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/memory-proposals/${TEEN_PROPOSAL}/decision`)
+        .set('Authorization', `Bearer ${mintToken({ sub: TEEN })}`)
+        .send({ verdict: 'approved' });
+
+      expect(response.status).toBe(502);
+      expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
+      expect(calls.some((c) => c.url.includes('/rpc/decide_learner_memory_proposal'))).toBe(false);
     });
   });
 });

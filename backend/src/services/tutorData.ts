@@ -785,6 +785,16 @@ export async function decideLearnerMemoryProposal(input: {
   proposalId: string;
   decidedBy: string;
   verdict: 'approved' | 'rejected';
+  /**
+   * The ledger's `actor` for an approved note. Deliberately different from
+   * `oracle-post-session-review`: reading the ledger back, a guardian-
+   * approved write and an auto-write must not look the same. OD-18 (C.4,
+   * 2026-09-24) adds a THIRD stamp — `learner-self-approved-review` — so a
+   * self-approved note can be told apart from a guardian-approved one too.
+   * Defaults to the guardian stamp: every caller today is either a guardian
+   * decision or the teen self-review path, and the route decides which.
+   */
+  actor?: string;
 }): Promise<LearnerMemoryDecisionOutcome | null> {
   const outcome = await serviceRest<string>('/rpc/decide_learner_memory_proposal', {
     method: 'POST',
@@ -792,10 +802,7 @@ export async function decideLearnerMemoryProposal(input: {
       p_proposal_id: input.proposalId,
       p_decided_by: input.decidedBy,
       p_verdict: input.verdict,
-      // The ledger's `actor` for an approved note. Deliberately different from
-      // `oracle-post-session-review`: reading the ledger back, a guardian-
-      // approved write and an auto-write must not look the same.
-      p_actor: 'guardian-approved-review',
+      p_actor: input.actor ?? 'guardian-approved-review',
     }),
   });
   // A word this layer does not recognise is a failure, not a success. The

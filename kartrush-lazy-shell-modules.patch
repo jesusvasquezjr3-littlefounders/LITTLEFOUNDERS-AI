@@ -1,0 +1,120 @@
+--- a/src/ui/menus/appController.ts
++++ b/src/ui/menus/appController.ts
+@@ -28,23 +28,53 @@ import {
+ } from "./appFlow";
+-import { mountTitleScreen } from "./titleScreen";
+ import { mountMainMenu } from "./mainMenu";
+ import { mountDriverTour } from "./driverTour";
+ import { showCircuitFiles } from "../narrative/circuitFiles";
+-import { mountCharacterSelect } from "./characterSelect";
+ import { mountCupTrackSelect } from "./cupTrackSelect";
+ import { mountOptionsMenu } from "./optionsMenu";
+ import { registerMenuSfx } from "./theme";
+ import { mountBootLoading } from "./bootLoading";
+-import { preloadCharacterAssets } from "../../render/characters/glbAssets";
+-import { preloadVegetationAssets } from "../../render/environment/vegetationAssets";
+ import { setLocale, t } from "../../i18n";
+ import { getCharacter } from "../../data/characters";
+ import { getKartBody } from "../../data/karts";
+ import type { CupId } from "../../save/schema";
+-import { runQualityBenchmark } from "../../render/postfx/benchmark";
+ 
+ type RaceRunnersModule = typeof import("../raceRunners");
++type TitleScreenModule = typeof import("./titleScreen");
++type CharacterSelectModule = typeof import("./characterSelect");
++type CharacterAssetsModule = typeof import("../../render/characters/glbAssets");
++type VegetationAssetsModule = typeof import("../../render/environment/vegetationAssets");
++type QualityBenchmarkModule = typeof import("../../render/postfx/benchmark");
+ 
+ let raceRunnersPromise: Promise<RaceRunnersModule> | null = null;
++let titleScreenPromise: Promise<TitleScreenModule> | null = null;
++let characterSelectPromise: Promise<CharacterSelectModule> | null = null;
++let characterAssetsPromise: Promise<CharacterAssetsModule> | null = null;
++let vegetationAssetsPromise: Promise<VegetationAssetsModule> | null = null;
++let qualityBenchmarkPromise: Promise<QualityBenchmarkModule> | null = null;
+ 
+ function loadRaceRunners(): Promise<RaceRunnersModule> {
+   return raceRunnersPromise ??= import("../raceRunners");
+ }
++function loadTitleScreen(): Promise<TitleScreenModule> {
++  return titleScreenPromise ??= import("./titleScreen");
++}
++function loadCharacterSelect(): Promise<CharacterSelectModule> {
++  return characterSelectPromise ??= import("./characterSelect");
++}
++function loadCharacterAssets(): Promise<CharacterAssetsModule> {
++  return characterAssetsPromise ??= import("../../render/characters/glbAssets");
++}
++function loadVegetationAssets(): Promise<VegetationAssetsModule> {
++  return vegetationAssetsPromise ??= import("../../render/environment/vegetationAssets");
++}
++function loadQualityBenchmark(): Promise<QualityBenchmarkModule> {
++  return qualityBenchmarkPromise ??= import("../../render/postfx/benchmark");
++}
+
++async function preloadTitleAssets(): Promise<void> {
++  const [{ preloadCharacterAssets }, { preloadVegetationAssets }] = await Promise.all([loadCharacterAssets(), loadVegetationAssets()]);
++  await Promise.all([preloadCharacterAssets(), preloadVegetationAssets()]);
++}
++
+ /** Boots the whole game: WebGL2 check, save load, title screen, and every screen transition
+  * after it. Does nothing further if WebGL2 isn't supported (the fatal-error panel is already
+  * shown by `createSharedRuntime`). */
+@@ -99,7 +129,9 @@ export function startApp(): void {
+   // detected tier for every race after that. See docs/DECISIONS.md.
+   if (saveStore.get().settings.detectedQualityPreset === null) {
+-    void runQualityBenchmark().then((result) => {
++    void loadQualityBenchmark().then(({ runQualityBenchmark }) => runQualityBenchmark()).then((result) => {
+       saveStore.update((d) => {
+         d.settings.detectedQualityPreset = result.tier;
+       });
+@@ -136,10 +168,7 @@ export function startApp(): void {
+     switch (s.kind) {
+       case "title": {
+-        const handle = mountTitleScreen(runtime.host, resolveTuningFromLocalStorage(), () => showScreen(pressAnyButtonAtTitle(s)));
+-        disposeCurrentScreen = () => handle.dispose();
++        void mountTitle(s);
+         return;
+       }
+@@ -159,11 +188,7 @@ export function startApp(): void {
+         return;
+       }
+       case "characterSelect": {
+-        const handle = mountCharacterSelect(runtime.host, saveStore.get(), resolveTuningFromLocalStorage(), s.mode, {
+-          onConfirm: (character, kartBody) => showScreen(confirmCharacter(s.mode, character, kartBody)),
+-          onBack: () => showScreen(backFrom(s)),
+-        });
+-        disposeCurrentScreen = () => handle.dispose();
++        void mountCharacterSelection(s);
+         return;
+       }
+@@ -232,12 +257,30 @@ export function startApp(): void {
+     });
+   }
+ 
++  async function mountTitle(s: Extract<MenuScreen, { kind: "title" }>): Promise<void> {
++    const { mountTitleScreen } = await loadTitleScreen();
++    const handle = mountTitleScreen(runtime.host, resolveTuningFromLocalStorage(), () => showScreen(pressAnyButtonAtTitle(s)));
++    disposeCurrentScreen = () => handle.dispose();
++  }
++
++  async function mountCharacterSelection(s: Extract<MenuScreen, { kind: "characterSelect" }>): Promise<void> {
++    const { mountCharacterSelect } = await loadCharacterSelect();
++    const handle = mountCharacterSelect(runtime.host, saveStore.get(), resolveTuningFromLocalStorage(), s.mode, {
++      onConfirm: (character, kartBody) => showScreen(confirmCharacter(s.mode, character, kartBody)),
++      onBack: () => showScreen(backFrom(s)),
++    });
++    disposeCurrentScreen = () => handle.dispose();
++  }
++
+   // The title screen builds a real 3D scene with drivers in it, so it is the first thing that
+   // needs the authored character models — which makes boot the natural (and only) place to fetch
+   // them. Gated rather than fired-and-forgotten, unlike the quality benchmark above: a benchmark
+@@ -248,7 +291,7 @@ export function startApp(): void {
+   // error path — the game always reaches the title screen.
+   const bootLoading = mountBootLoading(runtime.host, t("boot.warmingUp"));
+-  void Promise.all([preloadCharacterAssets(), preloadVegetationAssets()]).finally(() => {
++  void preloadTitleAssets().finally(() => {
+     bootLoading.dispose();
+     showScreen(TITLE_SCREEN);
+   });

@@ -28,10 +28,18 @@ import { workedExamplePilotDocument } from '../learning/WorkedExampleBoard';
 import { functionMachinePilotDocument } from '../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
+import type { LessonMentorStage } from '../learning/lessonDocument';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
 const initialLocale = params.get('locale');
+
+/*
+ * The preview's compact-stage fixture. OD-19: this stays fixed to Dina on
+ * diorama-a ONLY here — the authenticated lesson route consumes the real
+ * server-resolved projection instead.
+ */
+export const PREVIEW_MENTOR_STAGE: LessonMentorStage = { character: 'dina', scene: 'diorama-a' };
 
 export function Preview() {
   const [locale, setLocale] = useState<Locale>(initialLocale === 'es-MX' || initialLocale === 'pt-BR' ? initialLocale : 'en-US');
@@ -57,7 +65,7 @@ export function Preview() {
         : { ...allocationPilotDocument(locale, ageBand) as Record<string, unknown>, segments: [] }}
       locale={locale} ageBand={ageBand} onBack={() => go('home')} />
       : screen === 'lesson' ? <LessonDocumentView key={`${locale}:${ageBand}`} raw={allocationPilotDocument(locale, ageBand)} locale={locale} ageBand={ageBand}
-      theme={theme as 'light' | 'dark'} onBack={() => go('home')} withStage={params.get('stage') === '1'}
+      theme={theme as 'light' | 'dark'} onBack={() => go('home')} mentorStage={params.get('stage') === '1' ? PREVIEW_MENTOR_STAGE : null}
       onGrade={(allocation) => {
         const item = learningFixtures[ageBand].item;
         const result = scoreV2Visual('money.allocation.v2', { total: item.total, step: item.step }, allocation,

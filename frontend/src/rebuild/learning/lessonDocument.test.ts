@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lessonVersionKey, loadLessonClientDocument } from './lessonDocument';
+import { lessonVersionKey, loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
 import { numberLinePilotDocument } from './NumberLineBoard';
 import { goalBulletPilotDocument } from './GoalBulletBoard';
 import { percentGridPilotDocument } from './PercentGridBoard';
@@ -251,5 +251,32 @@ describe('answerless versioned lesson client document', () => {
     expect(spoken('en-US')).toBe('four plus three');
     expect(spoken('es-MX')).toBe('cuatro más tres');
     expect(spoken('pt-BR')).toBe('quatro mais três');
+  });
+});
+
+describe('mentor stage projection contract (OD-19 / S05.2bh)', () => {
+  it('accepts a strictly validated answerless mentor stage and keeps documents without one valid', () => {
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { character: 'rho', scene: 'diorama-a' } }).status).toBe('ready');
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { character: 'liruf', scene: 'diorama-b' } }).status).toBe('ready');
+    expect(loadLessonClientDocument(pilot).status).toBe('ready');
+  });
+
+  it('fails closed on unknown characters, unknown scenes, extra fields and malformed shapes', () => {
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { character: 'mickey', scene: 'diorama-a' } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { character: 'dina', scene: 'diorama-z' } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { character: 'dina', scene: 'diorama-a', backdrop: 'night' } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { character: 'dina' } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: { scene: 'diorama-a' } }).status).toBe('invalid');
+    expect(loadLessonClientDocument({ ...pilot, mentor_stage: 'dina' }).status).toBe('invalid');
+  });
+
+  it('parses the response projection fail-closed so a malformed stage simply means no stage', () => {
+    expect(loadMentorStageProjection({ character: 'zara', scene: 'diorama-b' })).toEqual({ character: 'zara', scene: 'diorama-b' });
+    expect(loadMentorStageProjection({ character: 'zara', scene: 'diorama-z' })).toBeNull();
+    expect(loadMentorStageProjection({ character: 'bob', scene: 'diorama-a' })).toBeNull();
+    expect(loadMentorStageProjection({ character: 'dina', scene: 'diorama-a', extra: true })).toBeNull();
+    expect(loadMentorStageProjection(null)).toBeNull();
+    expect(loadMentorStageProjection('zara')).toBeNull();
+    expect(loadMentorStageProjection(undefined)).toBeNull();
   });
 });

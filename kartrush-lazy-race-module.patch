@@ -1,0 +1,59 @@
+--- a/src/ui/menus/appController.ts
++++ b/src/ui/menus/appController.ts
+@@ -40,13 +40,18 @@ import { mountBootLoading } from "./bootLoading";
+ import { preloadCharacterAssets } from "../../render/characters/glbAssets";
+ import { preloadVegetationAssets } from "../../render/environment/vegetationAssets";
+ import { setLocale, t } from "../../i18n";
+-import { runGrandPrix, runSingleRace, runTimeTrial } from "../raceRunners";
+ import { getCharacter } from "../../data/characters";
+ import { getKartBody } from "../../data/karts";
+ import type { CupId } from "../../save/schema";
+ import { runQualityBenchmark } from "../../render/postfx/benchmark";
+ 
++type RaceRunnersModule = typeof import("../raceRunners");
++
++let raceRunnersPromise: Promise<RaceRunnersModule> | null = null;
++
++function loadRaceRunners(): Promise<RaceRunnersModule> {
++  return raceRunnersPromise ??= import("../raceRunners");
++}
++
+ /** Boots the whole game: WebGL2 check, save load, title screen, and every screen transition
+  * after it. Does nothing further if WebGL2 isn't supported (the fatal-error panel is already
+  * shown by `createSharedRuntime`). */
+@@ -171,11 +176,11 @@ export function startApp(): void {
+       case "race": {
+         // No DOM to dispose here — see this file's own top comment.
+         disposeCurrentScreen = null;
+-        startRace(s);
++        void startRace(s);
+         return;
+       }
+     }
+   }
+ 
+-  function startRace(s: Extract<MenuScreen, { kind: "race" }>): void {
++  async function startRace(s: Extract<MenuScreen, { kind: "race" }>): Promise<void> {
++    const loading = mountBootLoading(runtime.host, t("boot.warmingUp"));
++    const { runGrandPrix, runSingleRace, runTimeTrial } = await loadRaceRunners();
++    loading.dispose();
+     const playerCharacter = getCharacter(s.character);
+     const playerKartBody = getKartBody(s.kartBody);
+     const onExitToMenu = () => showScreen(quitToMenu());
+@@ -201,10 +206,12 @@ export function startApp(): void {
+     }
+   }
+ 
+-  function startPractice(): void {
++  async function startPractice(): Promise<void> {
+     disposeCurrentScreen?.();
+     disposeCurrentScreen = null;
+     runtime.menuMusic.stop();
+-    runSingleRace(runtime, {
++    const loading = mountBootLoading(runtime.host, t("boot.warmingUp"));
++    const { runSingleRace } = await loadRaceRunners();
++    loading.dispose();
++    runSingleRace(runtime, {
+       playerCharacter: getCharacter("rho"),
+       playerKartBody: getKartBody("brassCoupe"),
+       speedClass: "100cc",

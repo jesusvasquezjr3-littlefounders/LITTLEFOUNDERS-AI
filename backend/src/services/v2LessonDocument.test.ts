@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gradeV2Visual, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, validateV2LessonForGrading } from './v2LessonDocument.js';
+import { gradeV2Visual, projectV2MentorStage, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, validateV2LessonForGrading } from './v2LessonDocument.js';
 
 const allocationDocument = {
   schema_version: 2,
@@ -116,5 +116,49 @@ describe('v2 lesson document contract', () => {
     expect(validateV2LessonForGrading({ ...cpaDocument, segments: cpaDocument.segments.map(({ payload, ...segment }) => ({
       ...segment, payload: { left: payload.left, right: payload.right },
     })) }, cpaKeys, { lessonId: 'pilot-cpa', locale: 'en-US' })).toBeNull();
+  });
+});
+
+describe('v2 mentor stage contract (OD-19 / S05.2bh)', () => {
+  const withStage = { mentor_stage: { character: 'dina', scene: 'diorama-a' } };
+
+  it('accepts a strictly validated answerless mentor stage and keeps documents without one valid', () => {
+    const document = validateV2LessonForGrading({ ...allocationDocument, ...withStage }, allocationKeys, { lessonId: 'pilot-allocation', locale: 'es-MX' });
+    expect(document?.mentor_stage).toEqual({ character: 'dina', scene: 'diorama-a' });
+    expect(validateV2LessonForGrading(allocationDocument, allocationKeys, { lessonId: 'pilot-allocation', locale: 'es-MX' })).not.toBeNull();
+  });
+
+  it('fails closed on unknown characters, unknown scenes, extra fields and malformed shapes', () => {
+    const expectRefused = (stage: unknown) => expect(validateV2LessonForGrading({ ...allocationDocument, mentor_stage: stage }, allocationKeys, { lessonId: 'pilot-allocation', locale: 'es-MX' })).toBeNull();
+    expectRefused({ character: 'mickey', scene: 'diorama-a' });
+    expectRefused({ character: 'dina', scene: 'diorama-z' });
+    expectRefused({ character: 'dina', scene: 'diorama-a', backdrop: 'night' });
+    expectRefused({ character: 'dina' });
+    expectRefused({ scene: 'diorama-a' });
+    expectRefused('dina');
+    expectRefused(null);
+    expectRefused({ character: 4, scene: 'diorama-a' });
+  });
+
+  it('projects the learner character with the document scene and never the authored character', () => {
+    const document = validateV2LessonForGrading({ ...allocationDocument, ...withStage }, allocationKeys, { lessonId: 'pilot-allocation', locale: 'es-MX' });
+    expect(document).not.toBeNull();
+    if (!document) return;
+    expect(projectV2MentorStage(document, 'zara')).toEqual({ character: 'zara', scene: 'diorama-a' });
+    expect(projectV2MentorStage(document, undefined)).toBeNull();
+    expect(projectV2MentorStage(document, 'drifted')).toBeNull();
+    const withoutStage = validateV2LessonForGrading(allocationDocument, allocationKeys, { lessonId: 'pilot-allocation', locale: 'es-MX' });
+    expect(withoutStage).not.toBeNull();
+    if (!withoutStage) return;
+    expect(projectV2MentorStage(withoutStage, 'zara')).toBeNull();
+  });
+
+  it('strips the authored mentor stage from the delivered document and leaves other documents untouched', () => {
+    const stripped = stripV2MentorStage({ ...allocationDocument, ...withStage }) as Record<string, unknown>;
+    expect(stripped).not.toHaveProperty('mentor_stage');
+    expect(stripped.segments).toEqual(allocationDocument.segments);
+    expect(stripV2MentorStage(allocationDocument)).toEqual(allocationDocument);
+    expect(stripV2MentorStage(null)).toBeNull();
+    expect(stripV2MentorStage([1])).toEqual([1]);
   });
 });

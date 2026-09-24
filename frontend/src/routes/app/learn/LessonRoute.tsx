@@ -42,12 +42,13 @@ interface LessonResponse {
   locale: string;
   document: unknown;
   audio: AudioManifest;
+  mentor_stage?: unknown;
 }
 
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; v2Attempt: V2Attempt | null };
+  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; mentorStage: unknown; v2Attempt: V2Attempt | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -136,14 +137,14 @@ function LessonRouteSession() {
         // Never restore segment indices/verdicts into a revised or translated document.
         if (invalidSnapshot || (checkpoint.current.document && checkpoint.current.document !== signature)) checkpoint.current = newCheckpoint();
         checkpoint.current.document = signature;
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, v2Attempt: null });
+        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null });
         return;
       }
       const clientDocument = loadLessonClientDocument(data.document);
       // Ungraded visual lessons remain presentation-only until the separate
       // version-pinned completion design exists; there is no token to request.
       if (clientDocument.status !== 'ready' || !clientDocument.document.segments.some(segment => segment.grading === 'server')) {
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, v2Attempt: null });
+        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null });
         return;
       }
       const resumeRunId = checkpoint.current.document?.startsWith('v2:') ? checkpoint.current.runId : undefined;
@@ -155,7 +156,7 @@ function LessonRouteSession() {
         checkpoint.current.document = `v2:${attempt.versionId}`;
         if (storageKey) writeCheckpoint(storageKey, checkpoint.current);
       }
-      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, v2Attempt: attempt });
+      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: attempt });
     })();
     return () => {
       cancelled = true;
@@ -281,7 +282,7 @@ function LessonRouteSession() {
   }
 
   if (!isLegacyLessonDocument(state.document)) {
-    return <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} onBack={goBack}
+    return <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
       onGradeFractionArea={state.v2Attempt ? gradeV2FractionArea : undefined} onGradeBarModel={state.v2Attempt ? gradeV2BarModel : undefined}
       onGradeSchemaDiagram={state.v2Attempt ? gradeV2SchemaDiagram : undefined} onGradeWorkedExample={state.v2Attempt ? gradeV2WorkedExample : undefined}

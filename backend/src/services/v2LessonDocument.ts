@@ -12,6 +12,25 @@ import { scoreV2Visual, type V2VisualKind } from './v2VisualScorer.js';
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
 const ageBand = z.enum(['6-9', '10-12', '13-17', 'adult']);
+
+/*
+ * OD-19 (owner log, 24 September 2026) resolves S05.2bh: the compact lesson
+ * Mentor stage shows the learner's own chosen Mentor character on the scene
+ * the lesson document declares. `mentor_stage` is answerless public metadata
+ * — it carries no Tutor context, session state or pedagogy data. The
+ * character a document authors is only a catalog suggestion; the delivered
+ * projection always resolves the learner's own preference (see
+ * `projectV2MentorStage`). The scene is an approved catalog scene id, kept
+ * closed here and mirrored by the browser contract so a new scene can never
+ * drift onto one side alone.
+ */
+export const MENTOR_STAGE_CHARACTERS = ['rho', 'zara', 'liruf', 'dina'] as const;
+export const MENTOR_STAGE_SCENES = ['diorama-a', 'diorama-b'] as const;
+export const v2MentorStageSchema = z.object({
+  character: z.enum(MENTOR_STAGE_CHARACTERS),
+  scene: z.enum(MENTOR_STAGE_SCENES),
+}).strict();
+export type V2MentorStage = z.infer<typeof v2MentorStageSchema>;
 const eligibility = z.object({ minimum_age: z.number().int().min(0).max(119), maximum_age: z.number().int().min(0).max(119) }).strict()
   .refine((value) => value.minimum_age <= value.maximum_age, 'Invalid age eligibility');
 const positive = z.number().int().positive().safe();
@@ -198,6 +217,7 @@ export const v2PublicLessonSchema = z.object({
   eligibility, knowledge_component_ids: z.array(id).min(1), adventure_scene_id: id, title: z.string().trim().min(1).max(120),
   required_capabilities: z.array(id).min(1), segments: z.array(segment).min(1).max(80),
   representation_progressions: z.array(representationProgression).min(1).max(20).optional(),
+  mentor_stage: v2MentorStageSchema.optional(),
 }).strict().superRefine((document, ctx) => {
   const segmentIds = new Set<string>();
   const declared = new Set(document.required_capabilities);
@@ -410,4 +430,36 @@ export function v2CompletionRequiredSegmentIds(document: V2PublicLesson): string
   return document.segments
     .filter((segment) => segment.grading === 'server' && (!cpaStageIds.has(segment.id) || finalCpaStageIds.has(segment.id)))
     .map((segment) => segment.id);
+}
+
+/**
+ * The response-level Mentor stage projection (OD-19 / S05.2bh). The
+ * character is ALWAYS the learner's own stored preference — catalog default
+ * when never chosen — never the document's authored `mentor_stage.character`
+ * and never anything a client supplied. The scene is the document's
+ * declared, already-validated scene. The stored character is re-validated
+ * against the catalog here so a drifted preference row fails closed (no
+ * stage) instead of sending an unknown character to a renderer.
+ */
+export function projectV2MentorStage(document: V2PublicLesson, character: string | null | undefined): V2MentorStage | null {
+  const declared = document.mentor_stage;
+  if (!declared) return null;
+  const parsed = v2MentorStageSchema.shape.character.safeParse(character);
+  if (!parsed.success) return null;
+  return { character: parsed.data, scene: declared.scene };
+}
+
+/**
+ * The delivered document must not carry the authored `mentor_stage`: the
+ * per-learner character is resolved at the route and projected as the
+ * response's own `mentor_stage` field. Stripping it here — the same posture
+ * as answer material — keeps the delivered document answerless, learner-free
+ * authoring data with the projection explicit beside it.
+ */
+export function stripV2MentorStage(document: unknown): unknown {
+  if (typeof document !== 'object' || document === null || Array.isArray(document)
+    || !Object.hasOwn(document, 'mentor_stage')) return document;
+  const stripped = { ...(document as Record<string, unknown>) };
+  delete stripped.mentor_stage;
+  return stripped;
 }

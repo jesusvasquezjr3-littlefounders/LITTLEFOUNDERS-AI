@@ -4,7 +4,7 @@ import { Button, Copy, StatusMark } from '../design/controls';
 import { changeAllocation, inspectAllocation, reallocateBoundary, remaining, type Allocation, type Pocket } from './allocationModel';
 import { decodeAllocationCheckpoint, encodeAllocationCheckpoint } from './allocationCheckpoint';
 import { learningFixtures } from './allocationFixtures';
-import { ageEligibilityForBand, lessonVersionKey, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
+import { ageEligibilityForBand, lessonVersionKey, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { CompactMentorStage } from './CompactMentorStage';
@@ -121,10 +121,10 @@ export function donutPilotDocument(locale: Locale): unknown {
   };
 }
 
-export function AllocationBoard({ document, segment, onBack, onCheck, withStage = false, theme = 'light', sequence }: {
+export function AllocationBoard({ document, segment, onBack, onCheck, mentorStage = null, theme = 'light', sequence }: {
   document: LessonClientDocument; segment: AllocationSegment; onBack: () => void;
   onCheck: (answer: Allocation, segmentId: string, versionKey: string) => CheckResult | Promise<CheckResult>;
-  withStage?: boolean; theme?: 'light' | 'dark'; sequence?: LessonSequenceControl;
+  mentorStage?: LessonMentorStage | null; theme?: 'light' | 'dark'; sequence?: LessonSequenceControl;
 }) {
   const locale = document.locale;
   const ageBand = document.age_band;
@@ -176,7 +176,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, withStage 
     } catch { if (requestId.current === currentRequest) { setPending(false); setVerdict('unavailable'); } }
   };
 
-  return <main className={`lf-learning${withStage ? ' lf-learning--with-stage' : ''}${tableMode ? ' lf-learning--table' : ''}`}
+  return <main className={`lf-learning${mentorStage ? ' lf-learning--with-stage' : ''}${tableMode ? ' lf-learning--table' : ''}`}
     data-surface="app" data-screen="lesson">
     <div className="lf-learning-inner">
       <header className="lf-learning-top">
@@ -186,7 +186,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, withStage 
         </div>
         <span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.lesson}</span>
       </header>
-      {withStage ? <CompactMentorStage ageBand={ageBand} theme={theme} verdict={verdict === 'unavailable' ? null : verdict} /> : null}
+      {mentorStage ? <CompactMentorStage ageBand={ageBand} theme={theme} verdict={verdict === 'unavailable' ? null : verdict} character={mentorStage.character} scene={mentorStage.scene} /> : null}
       <div className="lf-learning-content">
         <div className="lf-learning-intro">
           <h1 data-copy-role="heading">{document.title}</h1>

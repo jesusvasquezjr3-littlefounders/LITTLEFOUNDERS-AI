@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from './AllocationBoard';
 import { growthPilotDocument } from './GrowthBoard';
 import { ratioTablePilotDocument } from './RatioTableBoard';
@@ -19,6 +19,13 @@ import { schemaDiagramPilotDocument } from './SchemaDiagramBoard';
 import { workedExamplePilotDocument } from './WorkedExampleBoard';
 import { functionMachinePilotDocument } from './FunctionMachineBoard';
 import { cpaFadingPilotDocument } from './CpaFadingBoard';
+import { PREVIEW_MENTOR_STAGE } from '../preview/Preview';
+
+vi.mock('../../tutor-scene/TutorStage', () => ({
+  TutorStage: (props: { scene?: string; character?: string }) => (
+    <div data-testid="tutor-stage" data-scene={props.scene} data-character={props.character} />
+  ),
+}));
 
 type Pilot = ReturnType<typeof allocationPilotDocument> & { title: string; segments: [{ prompt: string; payload: { total: number; step: number } }] };
 const pilot = () => structuredClone(allocationPilotDocument('en-US', '6-9')) as Pilot;
@@ -632,5 +639,43 @@ describe('versioned pilot document renderer', () => {
     fireEvent.change(screen.getByLabelText('How many coins are left?'), { target: { value: '15' } });
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(grade).toHaveBeenNthCalledWith(3, { value: '15' }, 'schema-answer-01', expect.anything()));
+  });
+});
+
+describe('compact Mentor stage projection', () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('renders the projected character on the projected scene, not any authored fixture', async () => {
+    render(<LessonDocumentView raw={pilot()} locale="en-US" ageBand="6-9" onBack={noop} onGrade={vi.fn()}
+      mentorStage={{ character: 'zara', scene: 'diorama-b' }} />);
+    const band = document.querySelector('.lf-mentor-band');
+    expect(band).toBeTruthy();
+    expect(band!.getAttribute('aria-label')).toBe('zara');
+    expect(band!.getAttribute('data-mentor-character')).toBe('zara');
+    expect(band!.getAttribute('data-mentor-scene')).toBe('diorama-b');
+    expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-character', 'zara');
+    expect(screen.getByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-b');
+    expect(screen.getByRole('heading', { name: 'Split your money' })).toBeTruthy();
+  });
+
+  it('renders the lesson without a stage when the projection is absent', () => {
+    render(<LessonDocumentView raw={pilot()} locale="en-US" ageBand="6-9" onBack={noop} onGrade={vi.fn()} />);
+    expect(document.querySelector('.lf-mentor-band')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Split your money' })).toBeTruthy();
+  });
+
+  it('drops the stage for a board that does not support one instead of refusing the lesson', () => {
+    render(<LessonDocumentView raw={growthPilotDocument('en-US', '6-9')} locale="en-US" ageBand="6-9" onBack={noop}
+      mentorStage={{ character: 'rho', scene: 'diorama-a' }} />);
+    expect(document.querySelector('.lf-mentor-band')).toBeNull();
+    expect(screen.getByRole('slider')).toBeTruthy();
+  });
+
+  it('keeps the controlled preview fixture fixed to Dina on diorama-a', () => {
+    expect(PREVIEW_MENTOR_STAGE).toEqual({ character: 'dina', scene: 'diorama-a' });
   });
 });

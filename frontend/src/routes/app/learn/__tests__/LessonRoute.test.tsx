@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import type { ComponentProps } from 'react';
@@ -44,6 +44,11 @@ vi.mock('@/lesson-engine/player/LessonPlayer', () => ({
     </div>
   ),
 }));
+vi.mock('@/tutor-scene/TutorStage', () => ({
+  TutorStage: (props: { scene?: string; character?: string }) => (
+    <div data-testid="tutor-stage" data-scene={props.scene} data-character={props.character} />
+  ),
+}));
 
 const mockedApi = vi.mocked(api);
 
@@ -71,6 +76,8 @@ beforeEach(async () => {
   mockNavigate.mockReset();
   await i18n.changeLanguage('en-US');
 });
+
+afterEach(() => vi.unstubAllGlobals());
 
 describe('LessonRoute', () => {
   it('retains the completion run and payload after a failed save and route remount', async () => {
@@ -154,6 +161,26 @@ describe('LessonRoute', () => {
     ));
     expect(await screen.findByText('Your plan meets the goal.')).toBeInTheDocument();
     expect(mockedApi.mock.calls[1]).toEqual(['/learn/lessons/lesson-1/v2-runs', { method: 'POST', token: 'token-123', body: {} }]);
+  });
+
+  it('projects the response mentor stage into the compact Mentor band of the rebuilt lesson', async () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const v2Document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: {
+        lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: v2Document, audio: {},
+        mentor_stage: { character: 'zara', scene: 'diorama-a' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: v2Document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'allocate-01': 'opaque-signed-token' },
+      }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    await screen.findByRole('button', { name: 'Add: Save' });
+    expect(document.querySelector('.lf-mentor-band')?.getAttribute('aria-label')).toBe('zara');
+    expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-a');
   });
 
   it('completes an authenticated M3 fraction number-line after its authoritative correct verdict', async () => {

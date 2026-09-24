@@ -111,6 +111,8 @@ import { verdictFrom } from '../lesson-contract/core/types.js';
 
 const NOT_FOUND = 'NOT_FOUND';
 const VALIDATION = 'VALIDATION_ERROR';
+/** C.4 / OD-18 (2026-09-24): no eligible reviewer exists for this account's memory notes. */
+const MEMORY_REVIEW_INELIGIBLE = 'MEMORY_REVIEW_INELIGIBLE';
 
 /**
  * A closed, human-written question set. Never a free-text box (§9.2).
@@ -330,6 +332,57 @@ async function isVerifiedGuardian(parentId: string, kidId: string): Promise<bool
   const links = await getVerifiedKidLinks(parentId);
   if (links === null) return null;
   return links.some((l) => l.kid_user_id === kidId);
+}
+
+/**
+ * C.4 / OD-18 (24 September 2026): WHO may review a persistent LEARNER-store
+ * memory note about this account. Resolved from server-held evidence — roles
+ * read with the service role, verified guardian links, the stored age-screen
+ * declaration — never from anything the caller says about itself.
+ *
+ *   'guardian-review'  a verified guardian link exists, or the account still
+ *                      carries the legacy `kid` role (the conservative hold
+ *                      for legacy kid records with no link): the existing
+ *                      guardian proposal flow reviews the note.
+ *   'self-review'      an independent screened teen (a stored 13_to_17
+ *                      declaration, no protected origin, no `kid` role, no
+ *                      verified guardian link): the teen is the reviewer of
+ *                      their own notes, through their own learner session.
+ *   'adult-direct'     a screened adult declaration: the existing ungated
+ *                      write behaviour is preserved (OD-18 changes nothing
+ *                      for adults).
+ *   'hold'             every other state — a missing age declaration, an
+ *                      under-13/origin-marked account with no guardian link
+ *                      to review it — refuses the write: fail closed. Never
+ *                      silently auto-approved.
+ *
+ * `null` means one of the reads itself failed. Callers refuse that as 502
+ * DATA_UNAVAILABLE rather than folding it into any of the four outcomes
+ * (§1.14 — a role read that failed must not silently reclassify a child as
+ * an adult).
+ */
+type MemoryReviewClass = 'guardian-review' | 'self-review' | 'adult-direct' | 'hold';
+
+async function classifyMemoryReview(userId: string): Promise<MemoryReviewClass | null> {
+  const [roles, guardians, age] = await Promise.all([
+    getRolesForGate(userId),
+    getVerifiedGuardiansOfKid(userId),
+    readAgeScreen(userId),
+  ]);
+  if (
+    roles === null ||
+    !Array.isArray(guardians) ||
+    !z.array(z.string().uuid()).safeParse(guardians).success ||
+    age === null
+  ) {
+    return null;
+  }
+  if (roles.includes('kid') || guardians.length > 0) return 'guardian-review';
+  // `readAgeScreen` forces the band to 'under_13' whenever the protected-origin
+  // marker is present, so the band alone decides the remaining populations.
+  if (age.ageBand === '13_to_17') return 'self-review';
+  if (age.ageBand === 'adult') return 'adult-direct';
+  return 'hold';
 }
 
 interface PreflightResult {
@@ -1209,18 +1262,23 @@ function internalRouter(): Router {
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
 
-    // C.4: a verified guardian relationship governs learner-note review,
-    // including dependants whose roles do not contain `kid`. Retain the
-    // conservative hold for legacy kid records with no link; never turn a
-    // missing relationship into permission to write that child's profile.
-    // The independent-teen policy remains an explicit open product decision.
-    const [roles, guardians] = await Promise.all([
-      getRolesForGate(userId), getVerifiedGuardiansOfKid(userId),
-    ]);
-    if (roles === null || !z.array(z.string().uuid()).safeParse(guardians).success) {
+    // C.4 / OD-18 (24 September 2026): the reviewer of a LEARNER-store note
+    // is resolved from server-held evidence, not from the request. A verified
+    // guardian link or a legacy `kid` role keeps the guardian-review flow
+    // (unchanged, S01.4e). An independent screened teen (13_to_17, no link,
+    // no protected origin) parks the note as a SELF-review item the teen
+    // decides on through their own learner session — never silently
+    // auto-approved. An account with unknown or under-13 age evidence and no
+    // guardian link is a conservative hold: the whole write is refused.
+    // A screened adult keeps the existing direct write.
+    const review = await classifyMemoryReview(userId);
+    if (review === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
     }
-    const requiresReview = guardians!.length > 0 || roles.includes('kid');
+    if (review === 'hold') {
+      return fail(res, 403, MEMORY_REVIEW_INELIGIBLE, 'No memory-note reviewer is eligible for this account');
+    }
+    const requiresReview = review !== 'adult-direct';
 
     const gatedStores = { learner: requiresReview ? null : stores.learner, pedagogy: stores.pedagogy };
     const pending: ('learner' | 'pedagogy')[] = [];
@@ -1234,7 +1292,7 @@ function internalRouter(): Router {
       // Refused, not degraded. A proposal that failed to park is a note that
       // vanished; reporting it as landed would mean nothing ever retries it.
       if (!parked) {
-        return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the memory note for guardian approval');
+        return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the memory note for review');
       }
       pending.push('learner');
     }
@@ -3509,6 +3567,12 @@ export function tutorRouter(): Router {
    * (migration 0068's SELECT policy), so a mistake here is caught by the
    * database rather than by this line being the only thing standing between a
    * stranger and a note about someone's child.
+   *
+   * OD-18 (24 September 2026, C.4) extended the queue without touching this
+   * pair: an independent screened teen's parked notes are decided by the teen
+   * themself through `GET /memory-proposals` and the SAME decision route
+   * below, whose authorization is resolved per note-owner (see
+   * `classifyMemoryReview`).
    */
 
   router.get('/kids/:kidUserId/memory-proposals', async (req, res) => {
@@ -3552,6 +3616,48 @@ export function tutorRouter(): Router {
     });
   });
 
+  /*
+   * OD-18 (24 September 2026, C.4): an independent screened teen is the
+   * reviewer of their OWN parked notes. This is that queue — the same rows,
+   * the same response shape as the guardian portal above, with the CALLER
+   * as the subject. Only an account classified as a self-reviewing teen
+   * gets past the gate: a kid's queue belongs to their guardian, an adult
+   * has no parked notes by construction, and an ineligible account is told
+   * so rather than shown an empty queue.
+   */
+  router.get('/memory-proposals', async (req, res) => {
+    const user = authedUser(res);
+
+    const review = await classifyMemoryReview(user.id);
+    if (review === null) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
+    }
+    if (review !== 'self-review') {
+      return fail(res, 403, 'FORBIDDEN', 'Your memory notes are not self-reviewed');
+    }
+
+    const [proposals, current] = await Promise.all([
+      listPendingLearnerMemoryProposals(user.id),
+      getLearnerMemory(user.id),
+    ]);
+    // A read failure is a 502, never an empty queue rendered as "nothing to
+    // review" — those are the same screen with opposite meanings (§1.14).
+    if (proposals === null || current === null) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
+    }
+
+    return ok(res, {
+      proposals: proposals.map((p) => ({
+        id: p.id,
+        proposed: p.proposed,
+        expectedBefore: p.expected_before,
+        sessionId: p.session_id,
+        createdAt: p.created_at,
+      })),
+      current: current.learner,
+    });
+  });
+
   const DecisionBody = z.object({ verdict: z.enum(['approved', 'rejected']) }).strict();
 
   router.post('/memory-proposals/:proposalId/decision', async (req, res) => {
@@ -3562,24 +3668,52 @@ export function tutorRouter(): Router {
     const user = authedUser(res);
 
     /*
-     * Read first, to learn WHOSE note this is — the guardian check needs a
-     * child to check against, and the proposal id alone does not name one.
-     * `undefined` (no such row) and `null` (the read failed) are kept apart
-     * on purpose: answering 404 to an outage tells a parent their child's
-     * note does not exist.
+     * Read first, to learn WHOSE note this is — the authorization check needs
+     * a subject to check against, and the proposal id alone does not name
+     * one. `undefined` (no such row) and `null` (the read failed) are kept
+     * apart on purpose: answering 404 to an outage tells a parent their
+     * child's note does not exist.
      */
     const proposal = await getLearnerMemoryProposal(proposalId.data);
     if (proposal === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the note');
     if (proposal === undefined) return fail(res, 404, NOT_FOUND, 'No such note');
 
-    const guardian = await isVerifiedGuardian(user.id, proposal.user_id);
-    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
-    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    /*
+     * OD-18 (24 September 2026, C.4): WHO may decide is re-resolved from the
+     * NOTE'S OWNER, not from the caller's claim about themselves. A
+     * guardian-reviewed note keeps the existing `isVerifiedGuardian` check
+     * (unchanged); a self-reviewed note admits exactly one caller — the
+     * owner themself; a hold or an adult (whose notes never park) has no
+     * eligible reviewer and is refused. A failed classification read is 502,
+     * never 403 — "we could not check" must not read as "you are not
+     * allowed" (§1.14).
+     */
+    const review = await classifyMemoryReview(proposal.user_id);
+    if (review === null) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
+    }
+
+    let actor: string;
+    if (review === 'guardian-review') {
+      const guardian = await isVerifiedGuardian(user.id, proposal.user_id);
+      if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+      if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+      actor = 'guardian-approved-review';
+    } else if (review === 'self-review') {
+      // Subject-scoped: a self-reviewing teen decides their OWN notes and
+      // nobody else's — not another teen's, not a sibling's, not a linked
+      // child's (those are guardian-reviewed above).
+      if (user.id !== proposal.user_id) return fail(res, 403, 'FORBIDDEN', 'This is not your note');
+      actor = 'learner-self-approved-review';
+    } else {
+      // 'hold' or 'adult-direct': no reviewer exists for a parked row here.
+      return fail(res, 403, 'FORBIDDEN', 'No reviewer is eligible for this note');
+    }
 
     /*
      * The claim and the apply are ONE transaction inside the function
      * (migration 0068), which is what makes "a verdict lands only on a
-     * still-pending row" true under two guardians deciding at once rather
+     * still-pending row" true under two reviewers deciding at once rather
      * than merely true in the common case — the same rule
      * `setTutorReviewStatus` already enforces with a `review_status=eq.pending`
      * filter, moved into the database because here a decision also triggers a
@@ -3591,6 +3725,7 @@ export function tutorRouter(): Router {
       proposalId: proposalId.data,
       decidedBy: user.id,
       verdict: parsed.data.verdict,
+      actor,
     });
     if (outcome === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the decision');
 

@@ -405,3 +405,13 @@ The project leader answered the two open product questions this sprint was waiti
 - **OD-19 � lesson Mentor stage:** the compact lesson stage shows the learner's own chosen Mentor character on the diorama/scene the lesson document declares. S05.2bh's paused integration boundary is now unblocked; the public, minimum, answerless projection contract is defined in the v2 lesson document path.
 
 Both are recorded in the binding owner log (OD-18/OD-19) with updated SPEC checksums; spec:check passes. C.4 and B.8 acceptance still require the implemented behavior, its verification and the human reviews.
+
+### S01.4f independent-teen memory self-review (OD-18, C.4)
+
+The project leader decided OD-18 on 24 September 2026: an independent teen (13-17, no linked guardian) approves or deletes every persistent Mentor memory note as their own reviewer, using the same per-note review pattern children get from their verified guardian. Implemented at the Core boundary:
+
+- classifyMemoryReview() (backend/src/routes/tutor.ts:366) classifies the learner from server-held evidence only: verified guardian link or legacy kid role -> guardian review (unchanged); screened 13-17 declaration with no protected origin, no kid role and no verified link -> self-review; missing/under-13/unknown evidence or any read failure -> conservative hold (403 MEMORY_REVIEW_INELIGIBLE, 502 on unreadable evidence); screened adult declaration -> existing direct-write adult behavior preserved.
+- PUT /learner-memory parks self-review notes in the existing proposal queue instead of writing them; GET /memory-proposals gives a self-reviewing teen their own pending queue; POST /memory-proposals/:id/decision re-resolves authorization from the note owner at decision time and stamps the actor distinctly (learner-self-approved-review vs guardian-approved-review). A teen can only decide their own notes; a teen who later gains a linked parent automatically returns to guardian review.
+- No migration was required: the proposal queue and the service-only decision RPC already accept a free actor field. No Oracle context or payload field was added.
+
+Verification on 24 September 2026: 17 new adversarial tests in the OD-18 describe block (backend/src/__tests__/tutor.test.ts:2995) plus three fixture corrections; the focused tutor suite passed 212/212; the combined full Core regression passed 63 files / 1,355 tests + 1 documented skip (audit-results/s01x-combined-backend.log); Core type-check and lint passed. Remaining: the teen self-review portal in the frontend, real-database/RLS verification of the proposal round-trip, Oracle's cosmetic info-log wording for parked teen notes, and full C.4 acceptance (the reviewed human sign-off). C.4 stays in progress; no release is claimed.

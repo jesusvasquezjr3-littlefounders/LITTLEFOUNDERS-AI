@@ -520,6 +520,82 @@ describe('GET /api/v1/learn/lessons/:id', () => {
     expect(unknownAge.status).toBe(403);
     expect(unknownAge.body.error.code).toBe('LESSON_AGE_ELIGIBILITY_REQUIRED');
   });
+
+  function activateMutableV2AllocationWithStage(stage: unknown): void {
+    db.lesson_documents[0]!.schema_version = 2;
+    db.lesson_documents[0]!.document = { ...v2AllocationDocument(), ...(stage === undefined ? {} : { mentor_stage: stage }) };
+    db.lesson_documents[0]!.answer_keys = v2AllocationKeys;
+    db.profiles[0]!.birth_date = '2018-09-22';
+  }
+
+  it('projects the learner\'s own stored character with the document scene and strips the authored stage from the document', async () => {
+    activateMutableV2AllocationWithStage({ character: 'dina', scene: 'diorama-a' });
+    db.tutor_preferences = [{ user_id: userId, character: 'zara', companion: 'liruf', diorama: 'diorama-a', backdrop: 'auto', nickname: null, adaptations: [], updated_at: '2026-09-24T00:00:00.000Z' }];
+
+    const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.mentor_stage).toEqual({ character: 'zara', scene: 'diorama-a' });
+    expect(res.body.data.document).not.toHaveProperty('mentor_stage');
+    expect(res.body.data.document.segments[0]).not.toHaveProperty('answer');
+  });
+
+  it('defaults to the catalog first character when the learner has never chosen one', async () => {
+    activateMutableV2AllocationWithStage({ character: 'liruf', scene: 'diorama-b' });
+
+    const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.mentor_stage).toEqual({ character: 'rho', scene: 'diorama-b' });
+  });
+
+  it('omits the projection when the document does not declare a mentor stage', async () => {
+    activateMutableV2AllocationWithStage(undefined);
+
+    const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).not.toHaveProperty('mentor_stage');
+  });
+
+  it('omits the projection rather than a wrong character when the preference read fails', async () => {
+    activateMutableV2AllocationWithStage({ character: 'dina', scene: 'diorama-a' });
+    const real = createFakeFetch(db);
+    vi.stubGlobal('fetch', (async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).includes('/rest/v1/tutor_preferences')) throw new Error('preferences down');
+      return real(input, init);
+    }) as typeof fetch);
+
+    const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).not.toHaveProperty('mentor_stage');
+    expect(res.body.data.document.schema_version).toBe(2);
+  });
+
+  it('refuses a mentor stage with an unknown character, an unknown scene or an extra field', async () => {
+    for (const stage of [
+      { character: 'mickey', scene: 'diorama-a' },
+      { character: 'dina', scene: 'diorama-z' },
+      { character: 'dina', scene: 'diorama-a', backdrop: 'night' },
+    ]) {
+      db = makeDb(userId);
+      vi.stubGlobal('fetch', createFakeFetch(db));
+      activateMutableV2AllocationWithStage(stage);
+
+      const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+      expect(res.status).toBe(422);
+      expect(res.body.error.code).toBe('UNSUPPORTED_LESSON');
+    }
+  });
+
+  it('refuses a client-supplied character field on the attempt boundary', async () => {
+    activateMutableV2AllocationWithStage({ character: 'dina', scene: 'diorama-a' });
+
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/v2-runs`)).send({ character: 'zara' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
 });
 
 describe('POST /api/v1/learn/lessons/:id/v2-runs', () => {

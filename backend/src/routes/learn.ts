@@ -17,7 +17,8 @@ import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTre
 import { completableSegmentIds, findGradingSegment, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
 import { isCalendarDate } from '../services/streak.js';
 import { lessonEligibilityForBirthDate } from '../services/lessonEligibility.js';
-import { gradeV2Visual, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { getTutorPreferences } from '../services/tutorData.js';
+import { gradeV2Visual, projectV2MentorStage, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import {
@@ -483,9 +484,24 @@ export function learnRouter(): Router {
     // the public document and its private rubric relationship before exposing a
     // v2 lesson. This prevents a malformed publication from reaching an older
     // renderer or from later becoming gradeable through a loose answer key.
-    if (picked.schema_version === 2 && !validateV2LessonForGrading(safeDocument, picked.answer_keys, { lessonId, locale: picked.locale })) {
+    const document = picked.schema_version === 2
+      ? validateV2LessonForGrading(safeDocument, picked.answer_keys, { lessonId, locale: picked.locale })
+      : null;
+    if (picked.schema_version === 2 && !document) {
       return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     }
+    /*
+     * OD-19 / S05.2bh: the compact Mentor stage projection. The learner's own
+     * stored character (catalog default when never chosen) rides with the
+     * document-declared scene as the response's `mentor_stage` field, while
+     * the authored mentor_stage is stripped from the delivered document so
+     * the answerless document and the per-learner projection never mix. A
+     * preference READ failure omits the stage rather than showing the wrong
+     * character (§1.14): the lesson must not depend on this cosmetic read.
+     */
+    const prefs = document?.mentor_stage ? await getTutorPreferences(user.id) : null;
+    const mentorStage = document ? projectV2MentorStage(document, prefs?.character) : null;
+    const deliveredDocument = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown };
 
     return ok(res, {
       lesson: {
@@ -495,14 +511,15 @@ export function learnRouter(): Router {
         difficulty: ctx.lessonRow.difficulty,
         xp_total: ctx.lessonRow.xp_total,
         estimated_minutes: ctx.lessonRow.estimated_minutes,
-        cast: safeDocument.meta?.cast ?? [],
-        scoring: safeDocument.scoring ?? null,
+        cast: deliveredDocument.meta?.cast ?? [],
+        scoring: deliveredDocument.scoring ?? null,
       },
       locale: picked.locale,
-      document: safeDocument,
+      document: deliveredDocument,
       // Echo's narration manifest (unit_id -> public MP3 url). Client-safe:
       // it references prompt/story/explanation audio only — never answers.
       audio: picked.audio ?? {},
+      ...(mentorStage ? { mentor_stage: mentorStage } : {}),
     });
   });
 

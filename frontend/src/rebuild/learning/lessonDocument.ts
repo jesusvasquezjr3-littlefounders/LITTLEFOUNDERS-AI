@@ -4,6 +4,24 @@ import { growthComparison } from './growthComparisonModel.generated';
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
 const ageBand = z.enum(['6-9', '10-12', '13-17', 'adult']);
+
+/*
+ * OD-19 / S05.2bh: the compact lesson Mentor stage projection contract,
+ * mirrored hand-for-hand with Core's v2LessonDocument.ts. `mentor_stage` is
+ * answerless public metadata on the document and the shape of the
+ * response-level projection the authenticated lesson route resolves. The
+ * character in the projection is the learner's own stored choice (catalog
+ * default when never chosen); the scene is the document's declared,
+ * approved scene. Closed enums on both sides mean a new character or scene
+ * can never drift onto one side alone.
+ */
+export const MENTOR_STAGE_CHARACTERS = ['rho', 'zara', 'liruf', 'dina'] as const;
+export const MENTOR_STAGE_SCENES = ['diorama-a', 'diorama-b'] as const;
+export const mentorStageSchema = z.object({
+  character: z.enum(MENTOR_STAGE_CHARACTERS),
+  scene: z.enum(MENTOR_STAGE_SCENES),
+}).strict();
+export type LessonMentorStage = z.infer<typeof mentorStageSchema>;
 const eligibility = z.object({ minimum_age: z.number().int().min(0).max(119), maximum_age: z.number().int().min(0).max(119) }).strict()
   .refine((value) => value.minimum_age <= value.maximum_age, 'Invalid age eligibility');
 const positiveInteger = z.number().int().positive().safe();
@@ -303,6 +321,7 @@ export const lessonClientDocumentSchema = z.object({
   required_capabilities: z.array(id).min(1),
   segments: z.array(segment).min(1).max(80),
   representation_progressions: z.array(representationProgression).min(1).max(20).optional(),
+  mentor_stage: mentorStageSchema.optional(),
 }).strict().superRefine((document, ctx) => {
   const ids = new Set<string>();
   for (const [index, value] of document.segments.entries()) {
@@ -462,4 +481,15 @@ export function loadLessonClientDocument(raw: unknown, capabilities: readonly st
 /** Active attempts pin this exact lesson version and locale through reloads. */
 export function lessonVersionKey(document: LessonClientDocument): string {
   return `${document.lesson_id}@${document.version_id}:${document.locale}`;
+}
+
+/**
+ * The response-level Mentor stage projection, parsed fail-closed: a missing
+ * or malformed projection simply means no stage — the lesson itself never
+ * depends on this cosmetic read. Mirrors Core's `projectV2MentorStage`
+ * output shape.
+ */
+export function loadMentorStageProjection(raw: unknown): LessonMentorStage | null {
+  const parsed = mentorStageSchema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
 }
