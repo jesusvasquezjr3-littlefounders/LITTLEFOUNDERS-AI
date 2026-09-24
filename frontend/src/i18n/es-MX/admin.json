@@ -21,6 +21,7 @@
     "analytics": "Analíticas y Salud",
     "generation": "Generación",
     "audit": "Auditoría",
+    "reports": "Reportes",
     "roles": "Roles y acceso",
     "insights": "Insights",
     "intel": "Inteligencia de aprendizaje"
@@ -56,7 +57,8 @@
     "navUsersDesc": "Directorio y roles",
     "navEmailsDesc": "Historial de envíos",
     "navGenDesc": "Generación de lecciones IA",
-    "navAnalyticsDesc": "Salud y telemetría"
+    "navAnalyticsDesc": "Salud y telemetría",
+    "navReportsDesc": "Cola de reportes de seguridad"
   },
   "content": {
     "title": "Contenido",
@@ -295,6 +297,25 @@
     "copied": "¡Copiado!",
     "viewDetail": "Ver detalle",
     "close": "Cerrar"
+  },
+  "reports": {
+    "title": "Reportes",
+    "subtitle": "Cola de revisión de seguridad: cada reporte social y cada caso abierto por el patrón automático.",
+    "colSubject": "Cuenta",
+    "colOrigin": "Origen",
+    "colCounts": "Abiertos/Total",
+    "colLastSeen": "Última actividad",
+    "colStatus": "Estado",
+    "colActions": "Acciones",
+    "open": "Abrir",
+    "empty": "No hay casos de reporte.",
+    "loading": "Cargando detalle…",
+    "detailTitle": "Caso de reporte",
+    "noReports": "Este caso no tiene reportes individuales.",
+    "resolve": "Resolver caso",
+    "resolveFailed": "No se pudo resolver el caso. Inténtalo de nuevo.",
+    "origin": { "report": "Reporte", "pattern": "Patrón automático" },
+    "status": { "open": "Abierto", "resolved": "Resuelto" }
   },
   "roles": {
     "title": "Roles y acceso",

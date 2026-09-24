@@ -105,6 +105,7 @@ const AdminInsightsPage = lazy(() => import('@/routes/admin/AdminInsightsPage').
 const AdminIntelPage = lazy(() => import('@/routes/admin/AdminIntelPage').then((m) => ({ default: m.AdminIntelPage })));
 const AdminUsersPage = lazy(() => import('@/routes/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })));
 const AdminAuditPage = lazy(() => import('@/routes/admin/AdminAuditPage').then((m) => ({ default: m.AdminAuditPage })));
+const AdminReportsPage = lazy(() => import('@/routes/admin/AdminReportsPage').then((m) => ({ default: m.AdminReportsPage })));
 const AdminRolesPage = lazy(() => import('@/routes/admin/AdminRolesPage').then((m) => ({ default: m.AdminRolesPage })));
 const AnalyticsHealthPage = lazy(() => import('@/routes/admin/AnalyticsHealthPage').then((m) => ({ default: m.AnalyticsHealthPage })));
 const AdminGenerationPage = lazy(() => import('@/routes/admin/AdminGenerationPage').then((m) => ({ default: m.AdminGenerationPage })));
@@ -432,6 +433,7 @@ export function App() {
             <Route path="admin/analytics" element={<RequireRole role={STAFF}><RequireStaffPermission permission="view_analytics"><LazyRoute><AnalyticsHealthPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
             <Route path="admin/generation" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_content"><LazyRoute><AdminGenerationPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
             <Route path="admin/audit" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_support"><LazyRoute><AdminAuditPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/reports" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_support"><LazyRoute><AdminReportsPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
             <Route path="admin/roles" element={<RequireRole role="superadmin"><LazyRoute><AdminRolesPage /></LazyRoute></RequireRole>} />
 
             {/* /@username — public profiles (static routes above always win) */}

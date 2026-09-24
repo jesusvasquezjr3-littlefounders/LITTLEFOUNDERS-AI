@@ -21,6 +21,7 @@
     "analytics": "Analytics & Health",
     "generation": "Generation",
     "audit": "Audit log",
+    "reports": "Reports",
     "roles": "Roles & Access",
     "insights": "Insights",
     "intel": "Learning intelligence"
@@ -56,7 +57,8 @@
     "navUsersDesc": "Directory & roles",
     "navEmailsDesc": "Delivery history",
     "navGenDesc": "AI lesson generation",
-    "navAnalyticsDesc": "Health & telemetry"
+    "navAnalyticsDesc": "Health & telemetry",
+    "navReportsDesc": "Safety report queue"
   },
   "content": {
     "title": "Content",
@@ -295,6 +297,25 @@
     "copied": "Copied!",
     "viewDetail": "View detail",
     "close": "Close"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "The safety review queue: every social report and every case the automatic pattern trigger opens.",
+    "colSubject": "Account",
+    "colOrigin": "Origin",
+    "colCounts": "Open/Total",
+    "colLastSeen": "Last activity",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "open": "Open",
+    "empty": "There are no report cases.",
+    "loading": "Loading detail…",
+    "detailTitle": "Report case",
+    "noReports": "This case has no individual reports.",
+    "resolve": "Resolve case",
+    "resolveFailed": "Could not resolve the case. Try again.",
+    "origin": { "report": "Report", "pattern": "Automatic pattern" },
+    "status": { "open": "Open", "resolved": "Resolved" }
   },
   "roles": {
     "title": "Roles & Access",

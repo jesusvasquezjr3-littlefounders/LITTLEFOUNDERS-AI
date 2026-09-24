@@ -119,6 +119,29 @@
     "approved": "Conexión aprobada.",
     "denied": "Solicitud rechazada."
   },
+  "badgeShares": {
+    "title": "Logros compartidos",
+    "close": "Cerrar enlaces",
+    "loading": "Cargando enlaces…",
+    "failed": "No se pudieron cargar. Inténtalo de nuevo.",
+    "empty": "Sin logros compartidos.",
+    "retry": "Intentar de nuevo",
+    "revoke": "Revocar enlace",
+    "revoking": "Revocando…",
+    "revoked": "Enlace revocado.",
+    "revokeFailed": "No se pudo revocar. Inténtalo de nuevo.",
+    "expires": "Caduca {date}"
+  },
+  "socialNotices": {
+    "title": "Avisos de seguridad",
+    "close": "Cerrar avisos",
+    "loading": "Cargando avisos…",
+    "failed": "No se pudieron cargar los avisos. Inténtalo de nuevo.",
+    "empty": "Sin avisos de seguridad.",
+    "retry": "Intentar de nuevo",
+    "body": "Un reporte involucró a uno de tus hijos.",
+    "bodyNamed": "Un reporte involucró a {name}."
+  },
   "memorySelfReview": {
     "title": "Lo que tu Mentor recuerda",
     "help": "Tú decides lo que el Mentor recuerda de ti.",

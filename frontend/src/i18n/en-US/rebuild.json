@@ -119,6 +119,29 @@
     "approved": "Connection approved.",
     "denied": "Request denied."
   },
+  "badgeShares": {
+    "title": "Shared achievements",
+    "close": "Close shares",
+    "loading": "Loading shares…",
+    "failed": "Shares could not load. Try again.",
+    "empty": "No shared achievements.",
+    "retry": "Try again",
+    "revoke": "Revoke link",
+    "revoking": "Revoking…",
+    "revoked": "Link revoked.",
+    "revokeFailed": "Could not revoke. Try again.",
+    "expires": "Expires {date}"
+  },
+  "socialNotices": {
+    "title": "Safety notices",
+    "close": "Close notices",
+    "loading": "Loading notices…",
+    "failed": "Notices could not load. Try again.",
+    "empty": "No safety notices.",
+    "retry": "Try again",
+    "body": "A report involved one of your kids.",
+    "bodyNamed": "A report involved {name}."
+  },
   "memorySelfReview": {
     "title": "What your Mentor remembers",
     "help": "You decide what the Mentor remembers about you.",

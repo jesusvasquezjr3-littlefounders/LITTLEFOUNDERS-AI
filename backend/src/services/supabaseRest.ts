@@ -517,6 +517,74 @@ export async function unblockUser(accessToken: string, blockerId: string, blocke
   return res.ok;
 }
 
+// ── Report escalation (0108, E.3) ──────────────────────────────
+
+export const SOCIAL_REPORT_CATEGORIES = ['unwanted_contact', 'harassment', 'inappropriate_content', 'impersonation', 'other'] as const;
+export type SocialReportCategory = (typeof SOCIAL_REPORT_CATEGORIES)[number];
+export const SOCIAL_REPORT_NOTE_MAX = 140;
+
+export function isSocialReportCategory(value: string): value is SocialReportCategory {
+  return (SOCIAL_REPORT_CATEGORIES as readonly string[]).includes(value);
+}
+
+/**
+ * Migration 0108's service-only transaction: inserts the report, its audit
+ * row, the guardian notices and the review-case/pattern evaluation in one
+ * committed step. A retry with the same open pair returns the existing
+ * report receipt (the function's own idempotency), so a duplicated request
+ * never double-counts the pattern.
+ */
+export async function submitSocialReport(reporterId: string, subjectId: string, category: SocialReportCategory, note: string | null): Promise<{ id: string } | 'invalid' | 'unavailable'> {
+  const raw = await restRaw('/rpc/submit_social_report', serviceToken(), {
+    method: 'POST',
+    body: JSON.stringify({
+      p_reporter_id: UUID.parse(reporterId),
+      p_subject_id: UUID.parse(subjectId),
+      p_category: category,
+      p_note: note,
+    }),
+  });
+  if (raw.ok) {
+    const parsed = UUID.safeParse(raw.body);
+    return parsed.success ? { id: parsed.data } : 'unavailable';
+  }
+  const error = z.object({ code: z.literal('P0001') }).safeParse(raw.body);
+  return error.success ? 'invalid' : 'unavailable';
+}
+
+const SocialSafetyNoticeRow = z.object({
+  id: UUID,
+  guardian_id: UUID,
+  kid_user_id: UUID,
+  kind: z.literal('social.report'),
+  subject_id: UUID,
+  report_id: UUID.nullable(),
+  created_at: z.string().datetime({ offset: true }),
+});
+
+/** Guardian-scoped safety notices, read through Core's verified-parent boundary (E.3). */
+export async function getGuardianSocialNotices(guardianId: string, offset: number) {
+  const raw = await rest<unknown[]>(
+    `/social_safety_notices?guardian_id=eq.${eu(guardianId)}&select=id,guardian_id,kid_user_id,kind,subject_id,report_id,created_at&order=created_at.desc,id.desc&offset=${offset}&limit=${LIST_LIMIT + 1}`,
+    serviceToken(),
+  );
+  if (raw === null) return null;
+  const parsed = z.array(SocialSafetyNoticeRow).safeParse(raw);
+  if (!parsed.success) return null;
+  const rows = parsed.data.filter((row) => row.guardian_id === guardianId).slice(0, LIST_LIMIT);
+  return {
+    notices: rows.map((row) => ({
+      noticeId: row.id,
+      kidUserId: row.kid_user_id,
+      kind: row.kind,
+      subjectId: row.subject_id,
+      reportId: row.report_id,
+      createdAt: row.created_at,
+    })),
+    nextOffset: raw.length > LIST_LIMIT ? offset + LIST_LIMIT : null,
+  };
+}
+
 // ── Course hierarchy (0007, COURSE_ENGINE.md §2) ─────────────
 // courses -> adventures -> sagas -> topics -> lessons -> lesson_documents.
 // All hierarchy reads use the USER's own token — RLS's "published + every
@@ -1103,6 +1171,11 @@ export function serviceRest<T>(path: string, init: RestInit = {}): Promise<T | n
   return rest<T>(path, serviceToken(), init);
 }
 
+/** Status-aware service-role variant for RPC receipts whose failure modes differ. */
+export function serviceRestRaw(path: string, init: RestInit = {}): Promise<{ ok: boolean; body: unknown }> {
+  return restRaw(path, serviceToken(), init).then(({ ok, body }) => ({ ok, body }));
+}
+
 /** B.3's operational counter is written only by Core after it isolates one bad course. */
 export async function recordCourseAssemblyIncident(courseId: string): Promise<boolean> {
   const result = await rest<unknown>('/rpc/record_course_assembly_incident', serviceToken(), {
@@ -1382,6 +1455,8 @@ export interface BadgeShareInsert {
   image_ext: string;
   /** The exact URL Depot returned — NOT reconstructed from bucket/hash/ext (see 0073's column comment). */
   image_url: string;
+  /** F.2 (0109): sent explicitly so a new share always gets the 30-day window, never a DB default drift. */
+  expires_at: string;
 }
 
 /** Service role only — badge_shares has no client INSERT policy (0073). */
@@ -1397,20 +1472,76 @@ export async function insertBadgeShare(row: BadgeShareInsert): Promise<boolean> 
 export interface BadgeShareRow extends BadgeShareInsert {
   id: string;
   created_at: string;
+  /** F.2 (0109): the window end. Enforced by Core on every public read. */
+  expires_at: string;
+  /** F.2 (0109): NULL = live; non-NULL = revoked and unreachable. */
+  revoked_at: string | null;
 }
 
 const BADGE_SHARE_FIELDS =
-  'token,kid_user_id,created_by,achievement_kind,achievement_label,first_name,age_band,image_bucket,image_hash,image_ext,image_url,id,created_at';
+  'token,kid_user_id,created_by,achievement_kind,achievement_label,first_name,age_band,image_bucket,image_hash,image_ext,image_url,id,created_at,expires_at,revoked_at';
 
 /**
  * Looked up by the PUBLIC badge landing page (routes/badgePublic.ts) — a
  * stranger's request, so this reads ONLY by the opaque token (never by kid
  * or user id) and the route layer whitelists the response down to the four
  * display fields (no kid_user_id/created_by leaves Core on that path).
+ * Deliberately does NOT filter on expires_at/revoked_at here: the public
+ * route must be able to tell "revoked/expired" apart from "never existed"
+ * so it can trigger the lazy image purge.
  */
 export async function getBadgeShareByToken(token: string): Promise<BadgeShareRow | null> {
   const rows = await serviceRest<BadgeShareRow[]>(`/badge_shares?token=eq.${es(token)}&select=${BADGE_SHARE_FIELDS}&limit=1`);
   return rows?.[0] ?? null;
+}
+
+/** The parent-facing share list (routes/family.ts) — live shares only, newest first. */
+export function listActiveBadgeSharesForKid(kidUserId: string): Promise<BadgeShareRow[] | null> {
+  return serviceRest<BadgeShareRow[]>(
+    `/badge_shares?kid_user_id=eq.${eu(kidUserId)}&revoked_at=is.null&expires_at=gt.${es(new Date().toISOString())}` +
+      `&select=${BADGE_SHARE_FIELDS}&order=created_at.desc`,
+  );
+}
+
+/**
+ * Compare-and-swap revoke (F.2): marks the row revoked ONLY IF it is still
+ * un-revoked, scoped to the token AND the kid so a guardian of kid A can
+ * never touch a row whose token happens to belong to kid B. Returns the
+ * updated row, or null on no-match (already revoked, or foreign row) —
+ * indistinguishable from a transport failure by design (§1.14); the route
+ * re-reads to give the idempotent "already revoked" answer.
+ */
+export async function revokeBadgeShare(token: string, kidUserId: string): Promise<BadgeShareRow | null> {
+  const rows = await serviceRest<BadgeShareRow[]>(
+    `/badge_shares?token=eq.${es(token)}&kid_user_id=eq.${eu(kidUserId)}&revoked_at=is.null`,
+    {
+      method: 'PATCH',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify({ revoked_at: new Date().toISOString() }),
+    },
+  );
+  return rows?.[0] ?? null;
+}
+
+/**
+ * True if some OTHER LIVE share still references this exact badge image.
+ * Depot is content-addressed, so two shares of the same achievement dedupe
+ * to one object — before purging a revoked/expired share's image the caller
+ * must confirm nothing live still needs it. Returns null on a transport
+ * failure: the caller must treat that as "still referenced" and skip the
+ * delete (§1.14 — never destroy on an ambiguous read).
+ */
+export async function badgeShareImageStillReferencedElsewhere(
+  excludeToken: string,
+  bucket: string,
+  hash: string,
+): Promise<boolean | null> {
+  const rows = await serviceRest<{ id: string }[]>(
+    `/badge_shares?token=neq.${es(excludeToken)}&image_bucket=eq.${es(bucket)}&image_hash=eq.${es(hash)}` +
+      `&revoked_at=is.null&expires_at=gt.${es(new Date().toISOString())}&select=id&limit=1`,
+  );
+  if (rows === null) return null;
+  return rows.length > 0;
 }
 
 // ── Family Hub: tasks, wallet, goals, redemption catalog ────────────────────

@@ -53,6 +53,8 @@ describe('GET /api/v1/badges/:token', () => {
         image_url: 'http://localhost:4006/files/badges/hash.png',
         id: 'row-id',
         created_at: '2026-09-01T00:00:00Z',
+        expires_at: '2026-10-01T00:00:00Z',
+        revoked_at: null,
       },
     ]);
     const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
@@ -65,5 +67,55 @@ describe('GET /api/v1/badges/:token', () => {
       imageUrl: 'http://localhost:4006/files/badges/hash.png',
     });
     expect(JSON.stringify(res.body)).not.toContain('should-never-leave-core');
+  });
+
+  it('404s a revoked share, even though the row still exists', async () => {
+    stub([
+      {
+        token: 'a'.repeat(32),
+        kid_user_id: 'kid',
+        created_by: 'parent',
+        achievement_kind: 'streak',
+        achievement_label: '7-day streak',
+        first_name: 'Sofía',
+        age_band: null,
+        image_bucket: 'badges',
+        image_hash: 'b'.repeat(64),
+        image_ext: 'png',
+        image_url: 'http://localhost:4006/files/badges/hash.png',
+        id: 'row-id',
+        created_at: '2026-09-01T00:00:00Z',
+        expires_at: '2026-10-01T00:00:00Z',
+        revoked_at: '2026-09-02T00:00:00Z',
+      },
+    ]);
+    const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
+    expect(res.status).toBe(404);
+    expect(res.headers['cache-control']).toBe('no-store');
+  });
+
+  it('404s an expired share at the window boundary', async () => {
+    stub([
+      {
+        token: 'a'.repeat(32),
+        kid_user_id: 'kid',
+        created_by: 'parent',
+        achievement_kind: 'streak',
+        achievement_label: '7-day streak',
+        first_name: 'Sofía',
+        age_band: null,
+        image_bucket: 'badges',
+        image_hash: 'b'.repeat(64),
+        image_ext: 'png',
+        image_url: 'http://localhost:4006/files/badges/hash.png',
+        id: 'row-id',
+        created_at: '2026-09-01T00:00:00Z',
+        expires_at: '2026-09-24T00:00:00Z',
+        revoked_at: null,
+      },
+    ]);
+    const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
+    expect(res.status).toBe(404);
+    expect(res.headers['cache-control']).toBe('no-store');
   });
 });

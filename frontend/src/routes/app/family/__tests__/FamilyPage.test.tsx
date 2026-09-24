@@ -41,9 +41,11 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('../AddKidCard', () => ({ AddKidCard: () => null }));
+vi.mock('../BadgeSharesPanel', () => ({ BadgeSharesPanel: () => null }));
 vi.mock('../ManageKidPanel', () => ({ ManageKidPanel: () => null }));
 vi.mock('../SocialGraphPanel', () => ({ SocialGraphPanel: () => null }));
 vi.mock('../SocialHistoryPanel', () => ({ SocialHistoryPanel: () => null }));
+vi.mock('../SocialNoticesPanel', () => ({ SocialNoticesPanel: () => null }));
 vi.mock('../SocialRequestsPanel', () => ({ SocialRequestsPanel: () => null }));
 vi.mock('@/tutor/VoiceConsentControl', () => ({ VoiceConsentControl: () => null }));
 

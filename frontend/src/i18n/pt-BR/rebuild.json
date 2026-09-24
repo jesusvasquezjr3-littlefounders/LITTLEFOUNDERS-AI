@@ -119,6 +119,29 @@
     "approved": "Conexão aprovada.",
     "denied": "Solicitação recusada."
   },
+  "badgeShares": {
+    "title": "Conquistas compartilhadas",
+    "close": "Fechar links",
+    "loading": "Carregando links…",
+    "failed": "Não foi possível carregar. Tente novamente.",
+    "empty": "Nenhuma conquista compartilhada.",
+    "retry": "Tentar novamente",
+    "revoke": "Revogar link",
+    "revoking": "Revogando…",
+    "revoked": "Link revogado.",
+    "revokeFailed": "Não foi possível revogar. Tente novamente.",
+    "expires": "Expira em {date}"
+  },
+  "socialNotices": {
+    "title": "Avisos de segurança",
+    "close": "Fechar avisos",
+    "loading": "Carregando avisos…",
+    "failed": "Não foi possível carregar os avisos. Tente novamente.",
+    "empty": "Nenhum aviso de segurança.",
+    "retry": "Tentar novamente",
+    "body": "Um relato envolveu um de seus filhos.",
+    "bodyNamed": "Um relato envolveu {name}."
+  },
   "memorySelfReview": {
     "title": "O que seu Mentor lembra",
     "help": "Você decide o que o Mentor lembra de você.",

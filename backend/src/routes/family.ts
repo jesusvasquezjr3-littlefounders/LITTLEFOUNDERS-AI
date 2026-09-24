@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
-import { composeBadgeImage, firstNameOnly, generateBadgeToken } from '../services/badges.js';
+import { composeBadgeImage, firstNameOnly, generateBadgeToken, badgeShareExpiresAt, purgeBadgeImageIfUnreferenced } from '../services/badges.js';
 import { assembleCourseTree } from '../services/courseTree.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
@@ -23,6 +23,7 @@ import {
   getGoalById,
   getGuardianSocialPage,
   getGuardianSocialAuditPage,
+  getGuardianSocialNotices,
   getSocialDisplayNames,
   getPendingSocialRequests,
   decideSocialConnectionForKid,
@@ -37,6 +38,9 @@ import {
   getTopicsBySagaIds,
   getVerifiedKidLinks,
   getWalletBalances,
+  getBadgeShareByToken,
+  listActiveBadgeSharesForKid,
+  revokeBadgeShare,
   grantRole,
   insertAuditLog,
   insertBadgeShare,
@@ -376,6 +380,26 @@ export function familyRouter(): Router {
     return ok(res, { users, nextOffset: page.nextOffset });
   });
 
+  /*
+   * E.3 safety notices for THIS verified guardian, across all their kids.
+   * Names resolve only through the current E.1 discovery admission — a
+   * reported account the guardian cannot otherwise see stays private rather
+   * than having its name leaked through the notice.
+   */
+  router.get('/social-notices', async (req, res) => {
+    const query = z.object({ offset: z.coerce.number().int().min(0).max(100000).default(0) }).strict().safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid notices page');
+    const guardian = authedUser(res);
+    const page = await getGuardianSocialNotices(guardian.id, query.data.offset);
+    if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load safety notices');
+    const ids = [...new Set(page.notices.map((notice) => notice.subjectId))];
+    const visible = await Promise.all(ids.map(async (id) => await mayDiscoverProfile(guardian.id, id) ? id : null));
+    const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
+    if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load notice participants');
+    const nameById = new Map(names.map((row) => [row.user_id, row.display_name]));
+    return ok(res, { ...page, notices: page.notices.map((notice) => ({ ...notice, subjectName: nameById.get(notice.subjectId) ?? null })) });
+  });
+
   const UpdateKid = z.object({
     displayName: z.string().trim().min(1).max(80).optional(),
     birthDate: z.string().refine(value => declaredBandForDate(value) !== null, 'Enter a valid birth date').nullable().optional(),
@@ -639,6 +663,7 @@ export function familyRouter(): Router {
       image_hash: composed.hash,
       image_ext: composed.ext,
       image_url: composed.url,
+      expires_at: badgeShareExpiresAt(),
     });
     if (!stored) return fail(res, 502, DATA_UNAVAILABLE, 'Badge image was rendered but could not be saved');
 
@@ -662,6 +687,72 @@ export function familyRouter(): Router {
     const shareUrl = new URL(`/badge/${token}`, FRONTEND_URL);
     shareUrl.searchParams.set('utm_campaign', 'badge-share');
     return ok(res, { token, imageUrl: composed.url, shareUrl: shareUrl.toString() }, 201);
+  });
+
+  /*
+   * BADGE SHARE LIST + PER-SHARE REVOKE (F.2). The list feeds the Family
+   * panel's "revoke this link" control; the revoke kills one link
+   * immediately, independent of the underlying achievement record (the
+   * badge_shares row is marked, never deleted — the achievement itself is
+   * untouched), and purges the badge image's own Depot object so the image
+   * URL itself stops resolving, not merely the /badge/{token} page. Both
+   * routes re-verify the guardian link (guardKid) so a parent can only see
+   * and revoke shares for THEIR kid.
+   */
+  const BadgeToken = z.string().regex(/^[A-Za-z0-9_-]{16,64}$/);
+
+  router.get('/kids/:kidId/badges', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const shares = await listActiveBadgeSharesForKid(kidId);
+    if (shares === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load badge links');
+    // Recheck after the service read, same posture as the social routes
+    // above: a revoked guardian link must not release a cached list.
+    if (!await guardKid(req, res)) return res;
+    return ok(res, {
+      shares: shares.map((s) => ({
+        token: s.token,
+        achievementKind: s.achievement_kind,
+        achievementLabel: s.achievement_label,
+        createdAt: s.created_at,
+        expiresAt: s.expires_at,
+      })),
+    });
+  });
+
+  router.delete('/kids/:kidId/badges/:token', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const token = BadgeToken.safeParse(req.params.token);
+    if (!token.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Check the badge link');
+
+    const share = await getBadgeShareByToken(token.data);
+    // A foreign kid's share is indistinguishable from a missing one (404),
+    // so the shape of this response never confirms a row exists.
+    if (!share || share.kid_user_id !== kidId) return fail(res, 404, NOT_FOUND, 'No such badge link');
+    // Idempotent: revoking an already-revoked link is a success, not an error.
+    if (share.revoked_at !== null) return ok(res, { revoked: true, token: token.data });
+
+    const revoked = await revokeBadgeShare(token.data, kidId);
+    if (!revoked) {
+      // CAS miss: either a concurrent revoke won, or transport failed. Only
+      // the re-read can tell them apart (§1.14) — and only "already revoked
+      // by someone with access to this kid" is an idempotent success.
+      const again = await getBadgeShareByToken(token.data);
+      if (again !== null && again.kid_user_id === kidId && again.revoked_at !== null) {
+        return ok(res, { revoked: true, token: token.data });
+      }
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not revoke the badge link');
+    }
+
+    // The token is dead NOW; the image purge must not gate the response.
+    // A transient Depot failure here is retried by the next revoke call
+    // (idempotent) or by the public route's lazy purge on an inactive share.
+    const imagePurged = await purgeBadgeImageIfUnreferenced(revoked);
+
+    void insertAuditLog(authedUser(res).id, 'family.badge_revoked', kidId, { token: token.data, imagePurged });
+
+    return ok(res, { revoked: true, token: token.data, imagePurged });
   });
 
   return router;

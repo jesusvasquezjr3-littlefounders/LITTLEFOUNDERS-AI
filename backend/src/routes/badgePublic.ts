@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
+import { isBadgeShareActive, purgeBadgeImageIfUnreferenced } from '../services/badges.js';
 import { getBadgeShareByToken } from '../services/supabaseRest.js';
 
 /*
@@ -29,7 +30,15 @@ export function badgePublicRouter(): Router {
     if (!parsedToken.success) return fail(res, 404, 'NOT_FOUND', 'No such badge');
 
     const share = await getBadgeShareByToken(parsedToken.data);
-    if (!share) return fail(res, 404, 'NOT_FOUND', 'No such badge');
+    if (!share || !isBadgeShareActive(share)) {
+      // F.2: a revoked or expired share is unreachable — page AND image. The
+      // revoke route purges synchronously; this lazy purge catches shares
+      // whose window ended without ever being revoked (and retries a failed
+      // revoke-time purge, since the delete is idempotent). Never awaited:
+      // the 404 must not wait on Depot.
+      if (share) void purgeBadgeImageIfUnreferenced(share);
+      return fail(res, 404, 'NOT_FOUND', 'No such badge');
+    }
 
     return ok(res, {
       firstName: share.first_name,

@@ -26,6 +26,9 @@ import {
   listFollowers,
   listFollowing,
   patchOwnProfile,
+  submitSocialReport,
+  SOCIAL_REPORT_CATEGORIES,
+  SOCIAL_REPORT_NOTE_MAX,
   unblockUser,
   upsertOwnAvatar,
   type FullProfileRow,
@@ -325,6 +328,28 @@ export function publicProfilesRouter(): Router {
     const done = await unblockUser(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unblock this account');
     return ok(res, { blocked: false });
+  });
+
+  // E.3: report a profile. Bounded, child-safe input: a predefined category
+  // and an optional short note. The target must be a profile the caller can
+  // currently see (the same non-discovery boundary as block), and the session
+  // user is always the reporter — the client cannot name a reporter.
+  const ReportBody = z.object({
+    category: z.enum(SOCIAL_REPORT_CATEGORIES),
+    note: z.string().trim().min(1).max(SOCIAL_REPORT_NOTE_MAX).optional(),
+  }).strict();
+
+  router.post('/:username/report', async (req, res) => {
+    const user = authedUser(res);
+    const parsed = ReportBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a report reason');
+    const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot report yourself');
+    const result = await submitSocialReport(user.id, profile.user_id, parsed.data.category, parsed.data.note ?? null);
+    if (result === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'This report cannot be recorded');
+    if (result === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the report');
+    return ok(res, { reported: true, reportId: result.id }, 201);
   });
 
   return router;

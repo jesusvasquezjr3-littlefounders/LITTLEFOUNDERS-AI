@@ -7,9 +7,11 @@ import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
+import { BadgeSharesPanel } from './BadgeSharesPanel';
 import { ManageKidPanel } from './ManageKidPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
 import { SocialHistoryPanel } from './SocialHistoryPanel';
+import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
 
 /*
@@ -209,6 +211,7 @@ export function FamilyPage() {
               <SocialRequestsPanel kidUserId={kid.userId} token={token} />
               <SocialGraphPanel kidUserId={kid.userId} token={token} />
               <SocialHistoryPanel kidUserId={kid.userId} token={token} />
+              <BadgeSharesPanel kidUserId={kid.userId} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}
@@ -222,6 +225,7 @@ export function FamilyPage() {
         </ul>
       )}
 
+      {state.kids.length > 0 && <SocialNoticesPanel token={token} />}
       {consentError && <ErrorBanner code={consentError} />}
       {state.kids.length > 0 && <AddKidCard onCreated={onKidCreated} />}
     </div>

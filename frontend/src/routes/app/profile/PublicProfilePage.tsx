@@ -8,6 +8,7 @@ import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from 
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ConnectionRequestControl } from './ConnectionRequestControl';
 import { ProfileHero } from './ProfileHero';
+import { ProfileReportControl } from './ProfileReportControl';
 import { CourseBadgeCollection } from './CourseBadgeCollection';
 import type { CourseBadge } from '@/lib/courseBadges';
 
@@ -204,6 +205,7 @@ export function PublicProfilePage() {
               <Icon name={confirmingBlock ? 'report' : 'block'} />
               <span className="hidden sm:inline">{confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}</span>
             </Button>
+            <ProfileReportControl username={data.username} />
           </div>
         )}
       </div>

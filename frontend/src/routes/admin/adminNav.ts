@@ -24,6 +24,7 @@ export const ADMIN_SECTIONS: AdminSection[] = [
   { key: 'intel', path: '/admin/intel', icon: 'bar_chart', permission: 'view_analytics' },
   { key: 'generation', path: '/admin/generation', icon: 'precision_manufacturing', permission: 'manage_content' },
   { key: 'audit', path: '/admin/audit', icon: 'history', permission: 'manage_support' },
+  { key: 'reports', path: '/admin/reports', icon: 'report', permission: 'manage_support' },
   { key: 'roles', path: '/admin/roles', icon: 'admin_panel_settings', superadminOnly: true },
 ];
 

@@ -9,6 +9,7 @@ import {
   revokeRole,
   revokeAdminPermission,
   serviceRest,
+  serviceRestRaw,
 } from './supabaseRest.js';
 
 /*
@@ -305,6 +306,144 @@ export async function listCourseAssemblyIncidents(): Promise<CourseAssemblyIncid
     firstSeenAt: row.first_seen_at,
     lastSeenAt: row.last_seen_at,
   }));
+}
+
+// ── Report escalation queue (0108, E.3 — manage_support) ──────────────────
+
+const SocialReportCaseRow = z.object({
+  subject_id: z.string().uuid(),
+  origin: z.enum(['report', 'pattern']),
+  status: z.enum(['open', 'resolved']),
+  first_seen_at: z.string().datetime({ offset: true }),
+  last_seen_at: z.string().datetime({ offset: true }),
+  resolved_at: z.string().datetime({ offset: true }).nullable(),
+  resolved_by: z.string().uuid().nullable(),
+});
+
+const SocialReportRow = z.object({
+  id: z.string().uuid(),
+  reporter_id: z.string().uuid(),
+  subject_id: z.string().uuid(),
+  category: z.enum(['unwanted_contact', 'harassment', 'inappropriate_content', 'impersonation', 'other']),
+  note: z.string().nullable(),
+  status: z.enum(['open', 'resolved']),
+  created_at: z.string().datetime({ offset: true }),
+  resolved_at: z.string().datetime({ offset: true }).nullable(),
+});
+
+export interface SocialReportCase {
+  subjectId: string;
+  origin: 'report' | 'pattern';
+  status: 'open' | 'resolved';
+  firstSeenAt: string;
+  lastSeenAt: string;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+  reportCount: number;
+  openReportCount: number;
+}
+
+/** The staff queue: one case per subject account, open cases first. */
+export async function listSocialReportCases(limit: number, offset: number): Promise<SocialReportCase[] | null> {
+  const raw = await serviceRest<unknown[]>(
+    `/social_review_cases?select=subject_id,origin,status,first_seen_at,last_seen_at,resolved_at,resolved_by&order=status.asc,last_seen_at.desc&limit=${limit}&offset=${offset}`,
+  );
+  if (raw === null) return null;
+  const parsed = z.array(SocialReportCaseRow).safeParse(raw);
+  if (!parsed.success) return null;
+  const cases = parsed.data;
+  const counts = await reportCountsForSubjects(cases.map((row) => row.subject_id));
+  if (counts === null) return null;
+  return cases.map((row) => {
+    const count = counts.get(row.subject_id) ?? { reportCount: 0, openReportCount: 0 };
+    return {
+      subjectId: row.subject_id,
+      origin: row.origin,
+      status: row.status,
+      firstSeenAt: row.first_seen_at,
+      lastSeenAt: row.last_seen_at,
+      resolvedAt: row.resolved_at,
+      resolvedBy: row.resolved_by,
+      reportCount: count.reportCount,
+      openReportCount: count.openReportCount,
+    };
+  });
+}
+
+async function reportCountsForSubjects(subjectIds: string[]): Promise<Map<string, { reportCount: number; openReportCount: number }> | null> {
+  if (subjectIds.length === 0) return new Map();
+  const filter = subjectIds.map((id) => `"${id}"`).join(',');
+  const raw = await serviceRest<unknown[]>(
+    `/social_reports?subject_id=in.(${filter})&select=subject_id,status`,
+  );
+  if (raw === null) return null;
+  const parsed = z.array(z.object({ subject_id: z.string().uuid(), status: z.enum(['open', 'resolved']) })).safeParse(raw);
+  if (!parsed.success) return null;
+  const counts = new Map<string, { reportCount: number; openReportCount: number }>();
+  for (const row of parsed.data) {
+    const entry = counts.get(row.subject_id) ?? { reportCount: 0, openReportCount: 0 };
+    entry.reportCount += 1;
+    if (row.status === 'open') entry.openReportCount += 1;
+    counts.set(row.subject_id, entry);
+  }
+  return counts;
+}
+
+export interface SocialReportCaseDetail extends SocialReportCase {
+  reports: {
+    id: string;
+    reporterId: string;
+    category: 'unwanted_contact' | 'harassment' | 'inappropriate_content' | 'impersonation' | 'other';
+    note: string | null;
+    status: 'open' | 'resolved';
+    createdAt: string;
+    resolvedAt: string | null;
+  }[];
+}
+
+/** One case plus its reports, for the staff detail view. */
+export async function getSocialReportCase(subjectId: string): Promise<SocialReportCaseDetail | null> {
+  const [caseRows, reportRows] = await Promise.all([
+    serviceRest<unknown[]>(`/social_review_cases?subject_id=eq.${subjectId}&select=subject_id,origin,status,first_seen_at,last_seen_at,resolved_at,resolved_by&limit=1`),
+    serviceRest<unknown[]>(`/social_reports?subject_id=eq.${subjectId}&select=id,reporter_id,subject_id,category,note,status,created_at,resolved_at&order=created_at.asc,id.asc`),
+  ]);
+  if (caseRows === null || reportRows === null) return null;
+  const parsedCase = z.array(SocialReportCaseRow).max(1).safeParse(caseRows);
+  const parsedReports = z.array(SocialReportRow).safeParse(reportRows);
+  if (!parsedCase.success || !parsedReports.success) return null;
+  if (parsedCase.data.length === 0) return null;
+  const row = parsedCase.data[0]!;
+  const reports = parsedReports.data.filter((r) => r.subject_id === subjectId);
+  return {
+    subjectId: row.subject_id,
+    origin: row.origin,
+    status: row.status,
+    firstSeenAt: row.first_seen_at,
+    lastSeenAt: row.last_seen_at,
+    resolvedAt: row.resolved_at,
+    resolvedBy: row.resolved_by,
+    reportCount: reports.length,
+    openReportCount: reports.filter((r) => r.status === 'open').length,
+    reports: reports.map((r) => ({
+      id: r.id,
+      reporterId: r.reporter_id,
+      category: r.category,
+      note: r.note,
+      status: r.status,
+      createdAt: r.created_at,
+      resolvedAt: r.resolved_at,
+    })),
+  };
+}
+
+/** Close a case (migration 0108's service-only transaction records the actor in the audit trail). */
+export async function resolveSocialReviewCase(subjectId: string, actorId: string): Promise<'resolved' | 'not-found' | 'unavailable'> {
+  const raw = await serviceRestRaw('/rpc/resolve_social_review_case', {
+    method: 'POST',
+    body: JSON.stringify({ p_subject: subjectId, p_resolved_by: actorId }),
+  });
+  if (raw.ok) return raw.body === true ? 'resolved' : 'not-found';
+  return 'unavailable';
 }
 
 export async function getAdminContentSummary(): Promise<AdminContentSummary | null> {

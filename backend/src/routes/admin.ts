@@ -96,6 +96,9 @@ import {
   listAudit,
   listReviewLessons,
   listRoleHolders,
+  listSocialReportCases,
+  getSocialReportCase,
+  resolveSocialReviewCase,
   revokeRoleChecked,
   grantAdminPermissionChecked,
   revokeAdminPermissionChecked,
@@ -386,6 +389,8 @@ export function adminRouter(): Router {
   router.use('/emails', requireAdminPermission('manage_support'));
   router.use('/audit', requireAdminPermission('manage_support'));
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
+  // E.3 report escalation queue: support-adjacent tooling per G.1's mapping.
+  router.use('/reports', requireAdminPermission('manage_support'));
   // IP exclusions and non-read intelligence operations change operational
   // state. A read-only analytics grant cannot authorize those changes.
   router.use('/analytics/exclusions', requireAdminPermission('manage_support'));
@@ -1220,6 +1225,47 @@ export function adminRouter(): Router {
     const page = await listAudit(q.data);
     if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the audit log');
     ok(res, page);
+  });
+
+  // ── Report escalation queue (E.3 — manage_support) ─────────────────────────
+  /*
+   * The platform-level review queue every social report routes to, plus the
+   * pattern-triggered cases opened automatically by migration 0108. Reports
+   * carry only the predefined category and the capped optional note; the
+   * case carries the subject account id. Resolution is a staff decision and
+   * records the deciding actor in the central audit trail (G.3).
+   */
+  const ReportsQuerySchema = z.object({
+    limit: z.coerce.number().int().min(1).max(200).default(50),
+    offset: z.coerce.number().int().min(0).default(0),
+  });
+
+  router.get('/reports', async (req, res) => {
+    const q = ReportsQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-200, offset >= 0');
+    const cases = await listSocialReportCases(q.data.limit, q.data.offset);
+    if (!cases) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load report cases');
+    ok(res, { cases, total: cases.length });
+  });
+
+  router.get('/reports/:subjectId', async (req, res) => {
+    const subjectId = z.string().uuid().safeParse(req.params.subjectId);
+    if (!subjectId.success) return fail(res, 400, 'VALIDATION_ERROR', 'subjectId must be a uuid');
+    const detail = await getSocialReportCase(subjectId.data);
+    if (!detail) return fail(res, 404, 'NOT_FOUND', 'No report case for that account');
+    ok(res, detail);
+  });
+
+  router.post('/reports/:subjectId/status', async (req, res) => {
+    const subjectId = z.string().uuid().safeParse(req.params.subjectId);
+    const body = z.object({ status: z.enum(['resolved']) }).strict().safeParse(req.body);
+    if (!subjectId.success || !body.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'subjectId must be a uuid and status must be resolved');
+    }
+    const result = await resolveSocialReviewCase(subjectId.data, authedUser(res).id);
+    if (result === 'not-found') return fail(res, 404, 'NOT_FOUND', 'No report case for that account');
+    if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not resolve the report case');
+    ok(res, { subjectId: subjectId.data, status: 'resolved' });
   });
 
   // ── Roles & Access (superadmin only — §1.4) ────────────────────────────────

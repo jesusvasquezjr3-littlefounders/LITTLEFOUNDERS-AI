@@ -117,6 +117,24 @@
     "block": "Bloquear",
     "blockConfirm": "Confirmar bloqueio?"
   },
+  "report": {
+    "action": "Denunciar",
+    "title": "Denunciar este perfil",
+    "categoryLabel": "O que está acontecendo?",
+    "noteLabel": "Conte mais (opcional)",
+    "submit": "Enviar denúncia",
+    "cancel": "Cancelar",
+    "sending": "Enviando…",
+    "sent": "Denúncia enviada. Obrigado por manter o LittleFounders seguro.",
+    "failed": "Não foi possível enviar a denúncia. Tente novamente.",
+    "category": {
+      "unwanted_contact": "Contato indesejado",
+      "harassment": "Assédio ou bullying",
+      "inappropriate_content": "Conteúdo inapropriado",
+      "impersonation": "Fingindo ser outra pessoa",
+      "other": "Outra coisa"
+    }
+  },
   "followers": {
     "title": "Seguidores",
     "unfollow": "Deixar de seguir",

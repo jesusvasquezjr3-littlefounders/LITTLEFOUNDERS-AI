@@ -87,6 +87,7 @@ export function AdminOverviewPage() {
     { key: 'content', path: '/admin/content', icon: 'menu_book', desc: t('admin.overview.navContentDesc') },
     { key: 'users', path: '/admin/users', icon: 'group', desc: t('admin.overview.navUsersDesc') },
     { key: 'emails', path: '/admin/emails', icon: 'mail', desc: t('admin.overview.navEmailsDesc') },
+    { key: 'reports', path: '/admin/reports', icon: 'report', desc: t('admin.overview.navReportsDesc') },
     { key: 'generation', path: '/admin/generation', icon: 'precision_manufacturing', desc: t('admin.overview.navGenDesc') },
     { key: 'analytics', path: '/admin/analytics', icon: 'monitoring', desc: t('admin.overview.navAnalyticsDesc') },
   ];
