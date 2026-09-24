@@ -396,3 +396,12 @@ C.4 explicitly requires guardian review eligibility to depend on the verified gu
 This is a bounded correction to the existing learner-store admission path. It does not choose the unanswered independent-teen policy, migrate historical notes, alter Oracle's model context, or establish atomic ordering against a concurrent guardian-link change. Existing pedagogy-store automatic writes remain and require a separate C.4 scope/content review; the old rulebook's rationale for that distinction is historical evidence, not SPEC authority. Likewise, no-role/unknown-age and independent-teen automatic-write behavior remain unresolved in this checkpoint and are not approved as the final policy.
 
 Verification: **194 tutor-route tests passed**, including three new role-independent linked-dependant cases and guardian-read outage rejection. Existing proposal parking, guardian access/decision, compare-and-swap and pedagogy compatibility tests passed. Lesson-contract parity, Core type checking and lint passed. The full Core regression passed **56 files / 1,139 tests** (`audit-results/s01-memory-links-backend.log`). SPEC/token integrity and whitespace checks also passed. No frontend changed; these API checks are not evidence of a rebuilt guardian review experience or actual RLS/persistence behavior. C.4 remains in progress and requires the pending product decision, both-store assessment, population transitions, database and frontend acceptance.
+
+### Owner decisions recorded (24 September 2026)
+
+The project leader answered the two open product questions this sprint was waiting on:
+
+- **OD-18 � C.4 independent-teen memory:** teens (13-17, no linked guardian) approve or delete every persistent memory note as their own reviewer, using the same per-note review pattern children get from their verified guardian. No note is written to persistent memory without that note-level decision. Implementation becomes the next S01 checkpoint.
+- **OD-19 � lesson Mentor stage:** the compact lesson stage shows the learner's own chosen Mentor character on the diorama/scene the lesson document declares. S05.2bh's paused integration boundary is now unblocked; the public, minimum, answerless projection contract is defined in the v2 lesson document path.
+
+Both are recorded in the binding owner log (OD-18/OD-19) with updated SPEC checksums; spec:check passes. C.4 and B.8 acceptance still require the implemented behavior, its verification and the human reviews.
