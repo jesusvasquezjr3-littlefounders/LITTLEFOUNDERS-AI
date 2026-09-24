@@ -1,0 +1,66 @@
+/* The teen memory gate card: surface fill + soft shadow on a neutral page
+   (Bible 02 §4.4 - separation by fill/shadow, never an outline). Dark mode
+   steps the surface instead of shadowing, per the dual-mode contract. */
+.lf-rebuild.lf-memory-self-review {
+  margin-block-start: 1.5rem;
+  padding: var(--spacing-6);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgb(17 19 42 / .08), 0 1px 2px rgb(17 19 42 / .06);
+  display: grid;
+  gap: var(--spacing-4);
+  min-inline-size: 0;
+}
+.lf-rebuild.lf-memory-self-review[data-theme='dark'] { box-shadow: none; }
+.lf-memory-current {
+  background: var(--sunken);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-4);
+  display: grid;
+  gap: var(--spacing-2);
+  min-inline-size: 0;
+}
+.lf-memory-queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-4);
+  min-inline-size: 0;
+}
+.lf-memory-note {
+  background: var(--sunken);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-4);
+  display: grid;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+}
+.lf-memory-note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-inline-size: 0;
+}
+.lf-memory-chip {
+  background: var(--warning-soft);
+  color: var(--warning-strong);
+  border-radius: var(--rounded-full);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-weight: 800;
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+.lf-memory-before {
+  display: grid;
+  gap: var(--spacing-1);
+  min-inline-size: 0;
+}
+.lf-memory-note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+}
+.lf-memory-note-actions > * { flex: 1 1 auto; }

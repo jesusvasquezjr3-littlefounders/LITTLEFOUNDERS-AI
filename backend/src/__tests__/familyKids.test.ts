@@ -28,6 +28,8 @@ interface StubOptions {
   /** Existing roles for the CALLER. */
   roles?: string[];
   usernameTaken?: boolean;
+  /** The username-existence read does not answer (upstream failure). */
+  usernameCheckUnavailable?: boolean;
   /** Kids this parent already has, for the per-family cap. */
   existingKids?: number;
   linkedKidId?: string;
@@ -72,6 +74,7 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(200, rows));
       }
       if (url.includes('/rest/v1/profiles?username=eq.')) {
+        if (opts.usernameCheckUnavailable) return Promise.resolve(jsonResponse(200, null));
         return Promise.resolve(jsonResponse(200, opts.usernameTaken ? [{ user_id: randomUUID() }] : []));
       }
       if (url.includes('/rpc/record_age_declaration')) {
@@ -185,6 +188,26 @@ describe('POST /api/v1/family/kids', () => {
     const res = await post();
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('USERNAME_IN_USE');
+    expect(calls.some((c) => c.includes('admin/users'))).toBe(false);
+  });
+
+  it('signals a taken username with no profile fields — existence only', async () => {
+    stub({ usernameTaken: true });
+    const res = await post();
+    expect(res.status).toBe(409);
+    // The conflict is the whole payload: no user_id, display name, role or
+    // profile projection rides along for the caller to harvest.
+    expect(res.body.data).toBeNull();
+    expect(Object.keys(res.body.error)).toContain('code');
+  });
+
+  it('fails closed when the username-existence read does not answer', async () => {
+    const calls = stub({ usernameCheckUnavailable: true });
+    const res = await post();
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+    // An unavailable check must never read as "available": no account is
+    // created under a name that might already belong to someone.
     expect(calls.some((c) => c.includes('admin/users'))).toBe(false);
   });
 

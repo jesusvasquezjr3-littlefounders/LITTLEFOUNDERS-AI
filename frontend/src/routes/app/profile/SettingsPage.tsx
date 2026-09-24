@@ -1,4 +1,5 @@
 import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
+import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -217,6 +218,7 @@ export function SettingsPage() {
       )}
 
       <TeenAnalyticsSetting />
+      <TeenMemoryReviewSetting />
 
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 grid gap-6 lg:grid-cols-2">
         {errorCode && <div className="lg:col-span-2"><ErrorBanner code={errorCode} /></div>}

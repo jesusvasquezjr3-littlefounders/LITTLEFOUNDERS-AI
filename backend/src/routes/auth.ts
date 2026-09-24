@@ -30,6 +30,9 @@ type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 
+/** `profiles.username` (migration 0005) — the only shape a non-email login identifier can be. */
+const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+
 /*
  * AGE SCREENING, AND WHY IT IS A CHECK AND NOT A FIELD WE KEEP.
  *
@@ -309,6 +312,17 @@ export function authRouter(): Router {
     // was created with - derived, never stored twice, which is also why a kid's
     // username is not editable (see family.ts kidEmail).
     const identifier = parsed.data.identifier;
+    /*
+     * E.1 probing boundary: an identifier without `@` is a kid handle, and the
+     * DB constraint on `profiles.username` is `^[a-z0-9_]{3,20}$` (migration
+     * 0005). Reject any other shape here instead of handing GoTrue an
+     * arbitrarily long synthetic address, so every well-formed handle probe
+     * gets the same uniform INVALID_CREDENTIALS response and malformed input
+     * is refused before any auth lookup.
+     */
+    if (!identifier.includes('@') && !USERNAME_RE.test(identifier.toLowerCase())) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'An email or username is required');
+    }
     const email = identifier.includes('@') ? identifier : kidEmail(identifier.toLowerCase());
     const { data, error } = await gotrue.signInWithPassword(email, parsed.data.password);
     if (error) {

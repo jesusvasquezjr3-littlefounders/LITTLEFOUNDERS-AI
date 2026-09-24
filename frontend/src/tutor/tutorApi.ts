@@ -301,6 +301,16 @@ export function getPendingMemoryNotes(
   return api<PendingMemoryNotes>(`/tutor/kids/${kidUserId}/memory-proposals`, { token });
 }
 
+/*
+ * OD-18 (24 September 2026, C.4): the CALLER'S OWN queue. A self-reviewing
+ * teen (13-17, no linked guardian) decides their own parked notes; Core
+ * answers 403 FORBIDDEN for anyone whose notes are not self-reviewed, so a
+ * kid or adult asking for this gets told rather than shown an empty queue.
+ */
+export function getOwnPendingMemoryNotes(token: string): Promise<ApiResult<PendingMemoryNotes>> {
+  return api<PendingMemoryNotes>('/tutor/memory-proposals', { token });
+}
+
 export function decideMemoryNote(
   token: string,
   proposalId: string,

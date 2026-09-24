@@ -118,5 +118,25 @@
     "conflict": "This request has changed.",
     "approved": "Connection approved.",
     "denied": "Request denied."
+  },
+  "memorySelfReview": {
+    "title": "What your Mentor remembers",
+    "help": "You decide what the Mentor remembers about you.",
+    "currentLabel": "The note right now",
+    "currentEmpty": "Your Mentor has no note yet.",
+    "empty": "Nothing is waiting.",
+    "loading": "Loading your notes…",
+    "loadFailed": "We could not load your notes. Try again.",
+    "retry": "Try again",
+    "proposedOn": "Suggested",
+    "replacesLabel": "It would replace",
+    "approve": "Approve",
+    "delete": "Delete",
+    "deciding": "Saving…",
+    "kept": "Note kept.",
+    "deleted": "Note deleted.",
+    "changed": "The note changed. We reloaded it.",
+    "outOfDate": "Out of date",
+    "decisionFailed": "We could not save that. Try again."
   }
 }

@@ -321,6 +321,44 @@ describe('POST /api/v1/auth/login', () => {
     expect(res.status).toBe(401);
     expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
   });
+
+  it('answers an unknown handle and a wrong passphrase with the same 401 INVALID_CREDENTIALS', async () => {
+    stubFetch((url, init) => {
+      expect(url).toBe('http://supabase.test/auth/v1/token?grant_type=password');
+      expect(JSON.parse(String(init?.body))).toEqual({ email: 'somekid@kids.littlefounders.invalid', password: 'guess' });
+      return jsonResponse(400, { error_description: 'Invalid login credentials' });
+    });
+    const probe = await request(createApp()).post('/api/v1/auth/login').send({ identifier: 'somekid', password: 'guess' });
+
+    stubFetch(() => jsonResponse(400, { error_description: 'Invalid login credentials' }));
+    const wrong = await request(createApp()).post('/api/v1/auth/login').send({ identifier: 'somekid', password: 'wrong' });
+
+    // A username probe and a password mistake are indistinguishable at the API
+    // boundary: same status, same code, same null data.
+    expect(probe.status).toBe(401);
+    expect(wrong.status).toBe(401);
+    expect(probe.body.error.code).toBe('INVALID_CREDENTIALS');
+    expect(wrong.body.error.code).toBe('INVALID_CREDENTIALS');
+    expect(probe.body.data).toBeNull();
+  });
+
+  it('normalises the case of a handle before deriving its synthetic address', async () => {
+    stubFetch((url, init) => {
+      expect(JSON.parse(String(init?.body))).toEqual({ email: 'anakid@kids.littlefounders.invalid', password: 'x'.repeat(8) });
+      return jsonResponse(200, SESSION);
+    });
+    const res = await request(createApp()).post('/api/v1/auth/login').send({ identifier: 'AnaKid', password: 'x'.repeat(8) });
+    expect(res.status).toBe(200);
+  });
+
+  it.each(['ab', 'a'.repeat(21), 'with space', 'a-b', 'a.b'])('refuses a non-email identifier that cannot be a handle (%j) before any auth lookup', async (identifier) => {
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp()).post('/api/v1/auth/login').send({ identifier, password: 'x'.repeat(8) });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
 
 describe('POST /api/v1/auth/refresh', () => {

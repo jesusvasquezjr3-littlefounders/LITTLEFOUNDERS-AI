@@ -118,5 +118,25 @@
     "conflict": "A solicitação mudou.",
     "approved": "Conexão aprovada.",
     "denied": "Solicitação recusada."
+  },
+  "memorySelfReview": {
+    "title": "O que seu Mentor lembra",
+    "help": "Você decide o que o Mentor lembra de você.",
+    "currentLabel": "A nota agora",
+    "currentEmpty": "Seu Mentor ainda não tem uma nota.",
+    "empty": "Nada pendente.",
+    "loading": "Carregando suas notas…",
+    "loadFailed": "Não conseguimos carregar suas notas. Tente novamente.",
+    "retry": "Tentar novamente",
+    "proposedOn": "Sugerida em",
+    "replacesLabel": "Ela substituiria",
+    "approve": "Aprovar",
+    "delete": "Excluir",
+    "deciding": "Salvando…",
+    "kept": "Nota mantida.",
+    "deleted": "Nota excluída.",
+    "changed": "A nota mudou. Nós recarregamos.",
+    "outOfDate": "Desatualizada",
+    "decisionFailed": "Não conseguimos salvar. Tente novamente."
   }
 }
