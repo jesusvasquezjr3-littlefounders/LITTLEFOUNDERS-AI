@@ -71,6 +71,7 @@ import {
 } from './prompt.js';
 import { instrumentGuidanceFor } from './instrumentSpecs.js';
 import { classifyStatedMisconception } from './statedMisconception.js';
+import { HintLadder, HintLadderSnapshotSchema, HINT_LEVEL_WORDING, isHintRequest, isTellRequest } from './hintLadder.js';
 import { selectSkill, SKILL_WORDING_RULE } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
@@ -329,6 +330,13 @@ export const OrchestratorSnapshotSchema = z
     servedSegmentSkills: z.array(z.tuple([z.string(), z.string()])),
     segmentServedAt: z.array(z.tuple([z.string(), z.number()])),
     minorPosture: z.boolean(),
+    /*
+     * C.13: the hint ladder rides the snapshot too — a learner must never
+     * lose their place in the escalation to a cross-replica resume.
+     * Defaulted like `modelDownCount`: a session parked by the previous
+     * build has no ladder and restores as a fresh one.
+     */
+    hintLadder: HintLadderSnapshotSchema.default({ levels: [], told: [] }),
   })
   .strict();
 
@@ -425,6 +433,8 @@ export class TutorOrchestrator {
    * already returned.
    */
   private readonly usedSkillNames = new Set<string>();
+  /** C.13: the hint ladder owns hint escalation per sub-step — policy, not per-turn LLM judgment. */
+  private readonly hintLadder = new HintLadder();
   /**
    * The V4 harness backlog's TRAJECTORY LOG (ROADMAP.md "Remaining harness
    * phases", /ORACLE.md §20): one entry per real `controller.decide()` call
@@ -567,6 +577,7 @@ export class TutorOrchestrator {
       servedSegmentSkills: [...this.servedSegmentSkills.entries()],
       segmentServedAt: [...this.segmentServedAt.entries()],
       minorPosture: this.minorPosture,
+      hintLadder: this.hintLadder.snapshot(),
     };
   }
 
@@ -632,6 +643,7 @@ export class TutorOrchestrator {
     this.segmentServedAt.clear();
     for (const [id, at] of snapshot.segmentServedAt) this.segmentServedAt.set(id, at);
     this.minorPosture = snapshot.minorPosture;
+    this.hintLadder.restore(snapshot.hintLadder);
   }
 
   refreshIsMinor(isMinor: boolean): void {
@@ -1673,7 +1685,15 @@ export class TutorOrchestrator {
           ? { kind: 'stated_misconception', misconceptionCode: stated }
           : { kind: 'conversation_turn' };
     const { text: maneuver, skillName } = this.strategyInstruction(pedagogyEvent, nowMs, null);
-    const maneuverNote = maneuver === null ? '' : `\n\n${maneuver}`;
+    /*
+     * C.13: the hint ladder advances on the learner's own words and its
+     * directive rides the same instruction the model receives — escalation
+     * and the "just tell me" escape are policy here, never a request the
+     * model may weigh against being "helpful".
+     */
+    const ladderKey = this.controller.activeEntry?.skillKey ?? 'conversation';
+    const ladderNote = this.ladderNoteFor(fenced.cleaned, ladderKey);
+    const maneuverNote = `${maneuver === null ? '' : `\n\n${maneuver}`}${ladderNote}`;
     const outcome = await this.produce(`${fenced.block}${verdictNote}${recallNote}${maneuverNote}${finalNote}`, nowMs, {
       nonce: fenced.nonce,
       signal,
@@ -1685,6 +1705,19 @@ export class TutorOrchestrator {
     // one does not — a question the tutor never answered was not an exchange.
     if (outcome !== null) noteConversationTurn(this.plan);
     return outcome;
+  }
+
+  /** C.13: maps the learner's utterance to the ladder and returns the directive (or ''). */
+  private ladderNoteFor(cleaned: string, stepKey: string): string {
+    if (isTellRequest(cleaned)) {
+      this.hintLadder.registerTellRequest(stepKey);
+      return '\n\nThe learner explicitly asked you to just tell them the answer. Honor it once, plainly, without scolding and without asking again.';
+    }
+    if (isHintRequest(cleaned)) {
+      const level = this.hintLadder.registerHintRequest(stepKey);
+      return `\n\nThe learner asked for help again. This is the next step of the hint ladder: ${HINT_LEVEL_WORDING[level]}. Never repeat a level you already gave.`;
+    }
+    return '';
   }
 
   /**
