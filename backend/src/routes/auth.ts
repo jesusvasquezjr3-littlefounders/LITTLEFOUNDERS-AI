@@ -412,6 +412,14 @@ export function authRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
     const user = authedUser(res);
+    // A.6: a child account has a synthetic, non-deliverable sign-in address
+    // BY DESIGN (data minimization — see family.ts kidEmail). Attaching a
+    // real email would quietly hand the child an independent recovery path
+    // outside the guardian's sight, so the capability is removed for the
+    // kid role rather than merely hidden.
+    const roles = await getRolesForGate(user.id);
+    if (roles === null) return fail(res, 502, 'INTERNAL', 'Could not verify account roles');
+    if (roles.includes('kid')) return fail(res, 403, 'KID_EMAIL_FORBIDDEN', 'A child account has no email to change');
     const { error: verifyError } = await gotrue.signInWithPassword(user.email, parsed.data.currentPassword);
     if (verifyError) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
     const { FRONTEND_URL } = getConfig();

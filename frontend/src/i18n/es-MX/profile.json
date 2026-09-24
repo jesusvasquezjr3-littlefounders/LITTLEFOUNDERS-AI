@@ -73,6 +73,8 @@
     "displayName": "Nombre",
     "username": "Usuario",
     "usernameHint": "3-20 caracteres: letras, números y guion bajo. Será littlefounders.ai/@tú",
+    "usernameKidLocked": "Tu usuario de acceso es fijo y no se puede cambiar.",
+    "emailKidNote": "Una cuenta de hijo no tiene correo — tu Tutor gestiona el acceso por ti.",
     "usernameInvalid": "Solo a-z, 0-9 y _ (3-20 caracteres)",
     "language": "Idioma",
     "languageHint": "Tu idioma de registro, las lecciones y la interfaz lo siguen.",

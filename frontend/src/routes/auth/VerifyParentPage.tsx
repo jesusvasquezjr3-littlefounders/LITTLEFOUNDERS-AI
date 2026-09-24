@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
-import { Badge, Button, DateField, Dropdown, Icon, SectionHeading, type DropdownOption } from '@/components/ui';
+import { Badge, Button, DateField, Icon, SectionHeading } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { FileField } from '@/components/ui/FileField';
 import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
@@ -16,7 +16,6 @@ import { ErrorBanner } from './ErrorBanner';
  * OCR verdict and is never stored anywhere; we say so, prominently.
  */
 
-type DocumentType = 'national-id' | 'passport' | 'driver-license';
 type Verdict = { verified: boolean; checks?: Record<string, boolean>; role?: string };
 
 const CHECK_KEYS = ['documentReadable', 'nameMatch', 'birthDateMatch', 'notExpired'] as const;
@@ -59,7 +58,6 @@ export function VerifyParentPage() {
   const [givenNames, setGivenNames] = useState('');
   const [surnames, setSurnames] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [documentType, setDocumentType] = useState<DocumentType>('national-id');
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -67,12 +65,6 @@ export function VerifyParentPage() {
 
   const birthDateInvalid = birthDate.length > 0 && !BIRTH_DATE_RE.test(birthDate);
   const birthDateReady = BIRTH_DATE_RE.test(birthDate);
-
-  const docTypeOptions: DropdownOption<DocumentType>[] = [
-    { value: 'national-id', label: t('auth.verify.docTypes.nationalId') },
-    { value: 'passport', label: t('auth.verify.docTypes.passport') },
-    { value: 'driver-license', label: t('auth.verify.docTypes.driverLicense') },
-  ];
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -86,7 +78,8 @@ export function VerifyParentPage() {
     form.set('givenNames', givenNames);
     form.set('surnames', surnames);
     form.set('birthDate', birthDate);
-    form.set('documentType', documentType);
+    // A.5: no document-type field — the declaration cannot be validated
+    // against the image, so the claim was removed rather than collected.
     form.set('document', file);
 
     const { data, error } = await api<Verdict>('/verification/parent', { formData: form, token });
@@ -286,15 +279,6 @@ export function VerifyParentPage() {
             {t('auth.section.document')}
           </SectionHeading>
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1.5">
-              <span className="lf-label text-content">{t('auth.verify.documentType')}</span>
-              <Dropdown
-                value={documentType}
-                options={docTypeOptions}
-                onChange={setDocumentType}
-                ariaLabel={t('auth.verify.documentType')}
-              />
-            </div>
             <FileField
               label={t('auth.verify.photo')}
               help={t('auth.verify.photoHelp')}

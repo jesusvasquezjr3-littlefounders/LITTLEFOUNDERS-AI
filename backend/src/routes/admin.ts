@@ -99,6 +99,7 @@ import {
   listSocialReportCases,
   getSocialReportCase,
   resolveSocialReviewCase,
+  revokeParentVerification,
   revokeRoleChecked,
   grantAdminPermissionChecked,
   revokeAdminPermissionChecked,
@@ -311,6 +312,10 @@ const GRANTABLE_ROLES = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] a
 const RoleMutationSchema = z.object({
   userId: z.string().uuid(),
   role: z.enum(GRANTABLE_ROLES),
+  // A.5: a staff grant of the parent role must carry an audited
+  // justification — the badge means "verified", and a staff grant is not
+  // an ID check, so the reason must be reconstructable afterwards.
+  justification: z.string().trim().min(10).max(200).optional(),
 });
 
 const AdminPermissionMutationSchema = z.object({
@@ -1100,6 +1105,29 @@ export function adminRouter(): Router {
     ok(res, { timeline });
   });
 
+  // A.5: the real revocation trigger path — a staff action following a
+  // fraud report. Writes a new revoked row (latest-row-wins resolver) and
+  // records the deciding actor and reason in the audit trail FIRST, so the
+  // reason exists even if the write itself fails.
+  const VerificationRevokeSchema = z.object({
+    reason: z.string().trim().min(10).max(300),
+  }).strict();
+
+  router.post('/users/:userId/verification/revoke', async (req, res) => {
+    const userId = z.string().uuid().safeParse(req.params.userId);
+    const parsed = VerificationRevokeSchema.safeParse(req.body);
+    if (!userId.success || !parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'userId must be a uuid and a reason (10-300 characters) is required');
+    }
+    const actor = authedUser(res);
+    await insertAuditLog(actor.id, 'admin.parent_verification.revoked', userId.data, {
+      reason: parsed.data.reason,
+    });
+    const revoked = await revokeParentVerification(userId.data);
+    if (!revoked) return fail(res, 502, DATA_UNAVAILABLE, 'Could not revoke the verification');
+    ok(res, { userId: userId.data, verification: 'revoked' });
+  });
+
   // ── Content (course publish gate) ──────────────────────────────────────────
   // Vault's release_course refusal codes → §1.6 envelope errors, one distinct
   // SCREAMING_SNAKE code per cause so the console (errors.api.<CODE>) can tell
@@ -1288,10 +1316,20 @@ export function adminRouter(): Router {
   router.post('/roles/grant', superadminOnly, async (req, res) => {
     const parsed = RoleMutationSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + role required');
+    if (parsed.data.role === 'parent' && !parsed.data.justification) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
+    }
     const result = await grantRoleChecked(parsed.data.userId, parsed.data.role, authedUser(res).id);
     // DB triggers (superadmin-domain, admin-granter, kid-guardian) are the real
     // guardrails — a rejection there means the mutation is not allowed.
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
+    if (parsed.data.role === 'parent' && parsed.data.justification) {
+      // A.5: the justification rides its own audit row (the grant trigger
+      // records the actor/timestamp; this row carries the reason).
+      await insertAuditLog(authedUser(res).id, 'admin.parent_role_justification', parsed.data.userId, {
+        justification: parsed.data.justification,
+      });
+    }
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, granted: true });
   });
 

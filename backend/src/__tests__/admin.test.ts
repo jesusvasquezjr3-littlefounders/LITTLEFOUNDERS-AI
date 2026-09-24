@@ -278,6 +278,9 @@ function stubData(
         if (url.includes('user_id=in.(')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
         return Promise.resolve(jsonResponse(200, overviewRoles));
       }
+      // A.5: the users directory now projects each account's latest
+      // verification row; the stub serves an empty verification history.
+      if (url.includes('/rest/v1/parent_verifications')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/rpc/release_course')) {
         return Promise.resolve(jsonResponse(200, [{
           ok: !options.releaseRefusal,

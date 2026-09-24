@@ -30,7 +30,10 @@ const Fields = z.object({
       const age = (Date.now() - Date.parse(d)) / (365.25 * 24 * 3600 * 1000);
       return age >= 18 && age < 120;
     }, 'Applicant must be an adult'),
-  documentType: z.enum(['national-id', 'passport', 'driver-license']).default('national-id'),
+  // A.5: the declared document type is NOT collected anymore — the image
+  // content cannot be validated against the declaration, and collecting an
+  // unvalidated claim was the exact pattern the requirement bans. The
+  // historical column keeps its DB default for pre-existing rows only.
 });
 
 const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -133,7 +136,6 @@ export function verificationRouter(): Router {
       given_names: parsed.data.givenNames,
       surnames: parsed.data.surnames,
       birth_date: parsed.data.birthDate,
-      document_type: parsed.data.documentType,
       checks: verdict.checks,
     });
     if (!stored) return fail(res, 502, 'INTERNAL', 'Could not record the verification');

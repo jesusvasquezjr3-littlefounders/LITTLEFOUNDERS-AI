@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, SectionHeading, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 import { UsersFunnelCard } from './UsersFunnelCard';
 import { SignupTimeline } from './SignupTimeline';
 
@@ -14,7 +14,15 @@ interface User {
   createdAt: string;
   birthDate: string | null;
   roles: string[];
+  /** A.5: 'id-verified' (latest row local-ocr verified), 'staff-granted' (verified via another method, or parent role with no verification row), 'revoked' (latest row revoked), null (no row, no parent role). */
+  verification: 'id-verified' | 'staff-granted' | 'revoked' | null;
 }
+
+const VERIFICATION_TONE: Record<string, string> = {
+  'id-verified': 'bg-success-soft text-success-strong',
+  'staff-granted': 'bg-warning-soft text-warning-strong',
+  revoked: 'bg-error-soft text-error-strong',
+};
 
 const ROLE_ORDER = ['superadmin', 'admin', 'bigfounder', 'parent', 'kid', 'universal'] as const;
 const LOCALE_ORDER = ['en-US', 'es-MX', 'pt-BR'] as const;
@@ -78,11 +86,16 @@ const ROLE_COLORS: Record<string, string> = {
 
 export function AdminUsersPage() {
   const { t, i18n } = useTranslation();
-  const { data } = useAdminData<{ users: User[] }>('/admin/users');
+  const { data, reload } = useAdminData<{ users: User[] }>('/admin/users');
+  const mutate = useAdminMutation();
   const [q, setQ] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [revokeReason, setRevokeReason] = useState('');
+  const [revoking, setRevoking] = useState(false);
+  const [revokeError, setRevokeError] = useState(false);
+  const [revoked, setRevoked] = useState(false);
 
   const df = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium', timeStyle: 'short' });
   const birthDf = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium' });
@@ -120,6 +133,26 @@ export function AdminUsersPage() {
     }
   }, []);
 
+  async function revokeVerification() {
+    if (!selectedUser || revoking || revokeReason.trim().length < 10) return;
+    setRevoking(true); setRevokeError(false);
+    const result = await mutate(`/admin/users/${selectedUser.userId}/verification/revoke`, { reason: revokeReason.trim() });
+    setRevoking(false);
+    if (result.error) {
+      setRevokeError(true);
+      return;
+    }
+    setRevoked(true);
+    await reload();
+  }
+
+  function openUser(user: User) {
+    setSelectedUser(user);
+    setRevokeReason('');
+    setRevokeError(false);
+    setRevoked(false);
+  }
+
   const columns: TableColumn<User>[] = [
     {
       key: 'name',
@@ -138,13 +171,18 @@ export function AdminUsersPage() {
       ),
     },
     { key: 'locale', header: t('admin.users.colLocale'), cell: (u) => <Badge className="bg-surface-sunken text-content-muted text-xs font-mono">{u.locale}</Badge> },
+    {
+      key: 'verification',
+      header: t('admin.users.colVerification'),
+      cell: (u) => u.verification ? <Badge className={VERIFICATION_TONE[u.verification]}>{t(`admin.users.verification.${u.verification}`)}</Badge> : null,
+    },
     { key: 'joined', header: t('admin.users.colJoined'), cell: (u) => <span className="lf-caption text-content-muted">{df.format(new Date(u.createdAt))}</span> },
     {
       key: 'actions',
       header: t('admin.users.colActions'),
       cell: (u) => (
         <div className="flex justify-end">
-          <AdminAction tone="neutral" icon="visibility" onClick={() => setSelectedUser(u)}>
+          <AdminAction tone="neutral" icon="visibility" onClick={() => openUser(u)}>
             {t('admin.users.viewDetail')}
           </AdminAction>
         </div>
@@ -330,7 +368,7 @@ export function AdminUsersPage() {
               columns={columns}
               rows={filteredRows}
               rowKey={(u) => u.userId}
-              onRowClick={(u) => setSelectedUser(u)}
+              onRowClick={(u) => openUser(u)}
             />
           )
         ) : (
@@ -357,6 +395,18 @@ export function AdminUsersPage() {
               <p className="lf-caption max-w-2xl text-content-muted">{t('admin.users.detailReadOnly')}</p>
 
               <div className="grid gap-3 rounded-md bg-surface-sunken/40 p-4 sm:grid-cols-2">
+                <div>
+                  <span className="lf-caption text-content-muted">{t('admin.users.colVerification')}</span>
+                  <div className="mt-1">
+                    {selectedUser.verification
+                      ? <Badge className={VERIFICATION_TONE[selectedUser.verification]}>{t(`admin.users.verification.${selectedUser.verification}`)}</Badge>
+                      : <span className="lf-caption text-content-muted">{t('admin.users.verification.none')}</span>}
+                  </div>
+                </div>
+                <div>
+                  <span className="lf-caption text-content-muted">{t('admin.users.colLocale')}</span>
+                  <Badge className="mt-1 bg-surface text-content-muted text-xs font-mono">{selectedUser.locale}</Badge>
+                </div>
                 <div className="min-w-0 sm:col-span-2">
                   <span className="lf-caption text-content-muted">{t('admin.users.colUserId')}</span>
                   <div className="mt-1 flex min-w-0 items-center justify-between gap-3">
@@ -375,10 +425,6 @@ export function AdminUsersPage() {
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {selectedUser.roles.length ? selectedUser.roles.map((r) => <RoleChip key={r} role={r} />) : <span className="lf-caption text-content-muted">{t('admin.users.notAvailable')}</span>}
                   </div>
-                </div>
-                <div>
-                  <span className="lf-caption text-content-muted">{t('admin.users.colLocale')}</span>
-                  <Badge className="mt-1 bg-surface text-content-muted text-xs font-mono">{selectedUser.locale}</Badge>
                 </div>
                 <div>
                   <span className="lf-caption text-content-muted">{t('admin.users.colAge')}</span>
@@ -400,6 +446,39 @@ export function AdminUsersPage() {
                 </div>
               </div>
             </div>
+
+            {/* A.5: the real revocation trigger path — a staff action with a
+                mandatory reason, recorded in the audit trail. */}
+            {selectedUser.verification && selectedUser.verification !== 'revoked' && (
+              <div className="flex flex-col gap-3 rounded-md border border-error/30 bg-error/5 p-4">
+                <span className="lf-caption font-bold text-error">{t('admin.users.revokeVerification')}</span>
+                {revoked ? (
+                  <p className="lf-caption text-success-strong" role="status">{t('admin.users.revokedOk')}</p>
+                ) : (
+                  <>
+                    <textarea
+                      className="lf-body min-h-20 rounded-md border border-outline bg-surface px-3 py-2 text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                      value={revokeReason}
+                      maxLength={300}
+                      onChange={(e) => setRevokeReason(e.target.value)}
+                      aria-label={t('admin.users.revokeReason')}
+                      placeholder={t('admin.users.revokeReasonHint')}
+                    />
+                    {revokeError && <p className="lf-caption text-error" role="alert">{t('admin.users.revokeFailed')}</p>}
+                    <div>
+                      <AdminAction
+                        tone="danger"
+                        icon="gpp_bad"
+                        disabled={revoking || revokeReason.trim().length < 10}
+                        onClick={() => void revokeVerification()}
+                      >
+                        {revoking ? t('admin.users.revoking') : t('admin.users.revokeConfirm')}
+                      </AdminAction>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
 
             <div className="flex justify-end pt-1">
               <AdminAction tone="neutral" onClick={() => setSelectedUser(null)}>

@@ -620,7 +620,10 @@ describe('POST /api/v1/auth/change-email', () => {
 
   it('rejects the wrong current password without touching /user', async () => {
     const token = mintToken({ email: 'ana@example.com' });
-    stubFetch(() => jsonResponse(400, { error_description: 'Invalid login credentials' }));
+    stubFetch((url) => {
+      if (url.includes('/rest/v1/user_roles')) return jsonResponse(200, [{ role: 'universal' }]);
+      return jsonResponse(400, { error_description: 'Invalid login credentials' });
+    });
     const res = await request(createApp())
       .post('/api/v1/auth/change-email')
       .set('Authorization', `Bearer ${token}`)
@@ -632,6 +635,7 @@ describe('POST /api/v1/auth/change-email', () => {
   it('re-verifies, then requests the email change with a settings redirect (pending, not applied)', async () => {
     const token = mintToken({ email: 'ana@example.com' });
     stubFetch((url, init) => {
+      if (url.includes('/rest/v1/user_roles')) return jsonResponse(200, [{ role: 'universal' }]);
       if (url.includes('grant_type=password')) return jsonResponse(200, SESSION);
       const u = new URL(url);
       expect(u.pathname).toBe('/auth/v1/user');
@@ -650,6 +654,7 @@ describe('POST /api/v1/auth/change-email', () => {
   it('maps an already-registered new email to EMAIL_IN_USE', async () => {
     const token = mintToken({ email: 'ana@example.com' });
     stubFetch((url) => {
+      if (url.includes('/rest/v1/user_roles')) return jsonResponse(200, [{ role: 'universal' }]);
       if (url.includes('grant_type=password')) return jsonResponse(200, SESSION);
       return jsonResponse(422, { msg: 'Email address already registered' });
     });

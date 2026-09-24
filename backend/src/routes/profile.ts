@@ -166,6 +166,15 @@ export function ownProfileRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
     const user = authedUser(res);
+    // A.6: the kid-role Settings screen must not silently edit the profile
+    // username — the sign-in identifier derives from it (kidEmail), so an
+    // unsupervised change strands the account behind its old handle. Kid
+    // accounts keep display name and locale; the username is fixed.
+    if (parsed.data.username !== undefined) {
+      const roles = await getRolesForGate(user.id);
+      if (roles === null) return fail(res, 502, 'INTERNAL', 'Could not verify account roles');
+      if (roles.includes('kid')) return fail(res, 403, 'KID_USERNAME_LOCKED', 'A child account cannot change its username');
+    }
     const patch: Record<string, string> = {};
     if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
     if (parsed.data.username !== undefined) patch.username = parsed.data.username;

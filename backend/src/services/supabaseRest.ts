@@ -1092,7 +1092,8 @@ export interface ParentVerificationInsert {
   given_names: string;
   surnames: string;
   birth_date: string;
-  document_type: string;
+  /** A.5: no longer collected or written — the DB default covers pre-existing rows; the form claim was removed because the image content cannot validate the declaration. */
+  document_type?: string;
   checks: Record<string, boolean>;
 }
 

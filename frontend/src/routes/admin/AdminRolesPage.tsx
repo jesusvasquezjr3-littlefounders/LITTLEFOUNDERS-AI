@@ -68,6 +68,10 @@ export function AdminRolesPage() {
   const mutate = useAdminMutation();
   const [userId, setUserId] = useState('');
   const [role, setRole] = useState<Grantable>('admin');
+  // A.5: a staff grant of the parent role must carry an audited
+  // justification — the badge means "verified", so the reason must be
+  // reconstructable afterwards.
+  const [justification, setJustification] = useState('');
   const [msg, setMsg] = useState<{ tone: 'ok' | 'err'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [search, setSearch] = useState('');
@@ -123,9 +127,14 @@ export function AdminRolesPage() {
 
   async function grant() {
     if (!userId.trim()) return;
+    if (role === 'parent' && justification.trim().length < 10) return;
     setBusy(true);
     setMsg(null);
-    const result = await mutate('/admin/roles/grant', { userId: userId.trim(), role });
+    const result = await mutate('/admin/roles/grant', {
+      userId: userId.trim(),
+      role,
+      ...(role === 'parent' ? { justification: justification.trim() } : {}),
+    });
     setBusy(false);
     if (result.error) {
       setMsg({ tone: 'err', text: t(`errors.api.${result.error.code}`, { defaultValue: t('admin.roles.grantFailed') }) });
@@ -133,6 +142,7 @@ export function AdminRolesPage() {
     }
     setMsg({ tone: 'ok', text: t('admin.roles.granted', { role: t(`roles.${role}`, role) }) });
     setUserId('');
+    setJustification('');
     await reload();
   }
 
@@ -232,7 +242,23 @@ export function AdminRolesPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <Field label={t('admin.roles.userId')} hint={t('admin.roles.userIdHint')} placeholder={t('admin.roles.userIdPlaceholder')} value={userId} onChange={(event) => setUserId(event.target.value)} className="flex-1" />
             <div className="flex w-full flex-col gap-1.5 sm:w-48"><span className="lf-label text-content-muted">{t('admin.roles.role')}</span><Dropdown value={role} options={roleOptions} onChange={setRole} ariaLabel={t('admin.roles.role')} align="left" /></div>
-            <Button onClick={() => void grant()} disabled={busy || !userId.trim()} className="h-[42px] px-6">{t('admin.roles.grant')}</Button>
+          </div>
+          {role === 'parent' && (
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="parent-grant-justification" className="lf-label text-content-muted">{t('admin.roles.justificationLabel')}</label>
+              <textarea
+                id="parent-grant-justification"
+                className="lf-body min-h-20 rounded-md border border-outline bg-surface px-3 py-2 text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                value={justification}
+                maxLength={200}
+                onChange={(event) => setJustification(event.target.value)}
+                placeholder={t('admin.roles.justificationHint')}
+              />
+              <p className="lf-caption text-content-faint">{t('admin.roles.justificationNote')}</p>
+            </div>
+          )}
+          <div className="flex items-center gap-3">
+            <Button onClick={() => void grant()} disabled={busy || !userId.trim() || (role === 'parent' && justification.trim().length < 10)} className="h-[42px] px-6">{t('admin.roles.grant')}</Button>
           </div>
           {msg && <p className={`lf-caption flex items-center gap-1.5 ${msg.tone === 'ok' ? 'text-success-strong' : 'text-error-strong'}`}><Icon name={msg.tone === 'ok' ? 'check_circle' : 'error'} className="!text-[16px]" /> {msg.text}</p>}
         </Card>

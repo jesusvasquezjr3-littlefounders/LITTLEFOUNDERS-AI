@@ -33,7 +33,12 @@ const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
-  const { session, getToken, refreshMe, isGuest } = useAuth();
+  const { session, getToken, refreshMe, isGuest, roles } = useAuth();
+  // A.6: the kid role gets its own Settings surface — no email change (a
+  // child account has a synthetic non-deliverable address by design) and a
+  // locked username (the sign-in identifier derives from it). The server
+  // enforces both; this branching makes the UI state the same truth.
+  const isKid = roles.includes('kid');
 
   /*
    * Every card on this page is a GROUP, so every card is named by its own
@@ -110,7 +115,7 @@ export function SettingsPage() {
     setSaved(false);
     const token = await getToken();
     const body: Record<string, string> = { displayName: displayName.trim(), locale };
-    if (username) body.username = username;
+    if (username && !isKid) body.username = username;
     const { error } = await api('/profile', { method: 'PATCH', body, token });
     // Personalisation depth — a strong early-retention correlate.
     if (!error) trackInsight('profile_edit', { routeClass: 'profile' });
@@ -244,8 +249,9 @@ export function SettingsPage() {
             value={username}
             placeholder="usuariox"
             maxLength={20}
+            readOnly={isKid}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
-            hint={t('profile.settings.usernameHint')}
+            hint={isKid ? t('profile.settings.usernameKidLocked') : t('profile.settings.usernameHint')}
             error={usernameInvalid ? t('profile.settings.usernameInvalid') : undefined}
             trailing={<span className="lf-label pr-2 text-content-muted">@</span>}
           />
@@ -270,6 +276,21 @@ export function SettingsPage() {
 
           {isGuest ? (
             <Field label={t('profile.settings.email')} value={t('profile.settings.guestBanner.title')} disabled readOnly />
+          ) : isKid ? (
+            // A.6: no change-email control for the kid role — a child account
+            // has a synthetic non-deliverable address on purpose, and there
+            // is nothing to change or recover outside the Tutor's account.
+            <div className="lf-config-row flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="lf-tile h-9 w-9 shrink-0 text-accent">
+                  <Icon name="mail" className="!text-[20px]" />
+                </span>
+                <div className="min-w-0">
+                  <span className="lf-label block text-content">{t('profile.settings.email')}</span>
+                  <span className="lf-caption block text-content-muted">{t('profile.settings.emailKidNote')}</span>
+                </div>
+              </div>
+            </div>
           ) : (
             <>
               {!editingEmail && (

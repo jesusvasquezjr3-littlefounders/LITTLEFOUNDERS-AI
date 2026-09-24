@@ -112,6 +112,8 @@ export interface AdminUser {
   createdAt: string;
   birthDate: string | null;
   roles: string[];
+  /** A.5: null = no verification row; 'id-verified' = latest row is local-ocr verified; 'staff-granted' = latest verified row via another method (or parent role with no verification row — distinguished where it matters); 'revoked' = latest row revoked. */
+  verification: 'id-verified' | 'staff-granted' | 'revoked' | null;
 }
 
 export async function listAdminUsers(): Promise<AdminUser[] | null> {
@@ -129,20 +131,45 @@ export async function listAdminUsers(): Promise<AdminUser[] | null> {
     '/user_roles?select=user_id,role&order=user_id.asc,role.asc',
   );
   if (!roleRows) return null;
+  // A.5: the latest verification row per user — read ALL rows ordered newest
+  // first and keep the first per user. Volume is bounded (one row per
+  // verified/revoked parent, never per session).
+  const verificationRows = await listAllServiceRows<{
+    user_id: string;
+    status: 'verified' | 'revoked';
+    method: string;
+  }>('/parent_verifications?select=user_id,status,method&order=created_at.desc,id.desc');
+  if (!verificationRows) return null;
+  const latestVerification = new Map<string, { status: 'verified' | 'revoked'; method: string }>();
+  for (const row of verificationRows) {
+    if (!latestVerification.has(row.user_id)) latestVerification.set(row.user_id, { status: row.status, method: row.method });
+  }
   const profileIds = new Set(profiles.map((profile) => profile.user_id));
   const byUser = new Map<string, string[]>();
   for (const r of roleRows) {
     if (profileIds.has(r.user_id)) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]);
   }
-  return profiles.map((p) => ({
-    userId: p.user_id,
-    displayName: p.display_name,
-    username: p.username,
-    locale: p.locale,
-    createdAt: p.created_at,
-    birthDate: p.birth_date,
-    roles: byUser.get(p.user_id) ?? [],
-  }));
+  return profiles.map((p) => {
+    const latest = latestVerification.get(p.user_id);
+    const roles = byUser.get(p.user_id) ?? [];
+    // A.5: a parent role with no verification row is a staff grant — the
+    // console must say so rather than showing an empty verification slot.
+    const verification = latest === undefined
+      ? roles.includes('parent') ? 'staff-granted' as const : null
+      : latest.status === 'revoked' ? 'revoked' as const
+      : latest.method === 'local-ocr' ? 'id-verified' as const
+      : 'staff-granted' as const;
+    return {
+      userId: p.user_id,
+      displayName: p.display_name,
+      username: p.username,
+      locale: p.locale,
+      createdAt: p.created_at,
+      birthDate: p.birth_date,
+      roles,
+      verification,
+    };
+  });
 }
 
 export async function getSignupTimeline(days = 90): Promise<{ date: string; count: number }[]> {
@@ -444,6 +471,25 @@ export async function resolveSocialReviewCase(subjectId: string, actorId: string
   });
   if (raw.ok) return raw.body === true ? 'resolved' : 'not-found';
   return 'unavailable';
+}
+
+/**
+ * A.5's real revocation trigger path: a staff action following a fraud
+ * report writes a NEW parent_verifications row with status 'revoked' and
+ * method 'staff-revoked' (0111 relaxes the applicant columns so no fake
+ * identity data is invented). The resolver reads the latest row, so the
+ * revocation supersedes any older approval and takes effect immediately at
+ * the next Mentor/family admission; the parent role grant itself stays for
+ * the audit trail's reconstruction. The caller must have already written
+ * the audit row carrying the reason.
+ */
+export async function revokeParentVerification(userId: string): Promise<boolean> {
+  const inserted = await serviceRest<unknown>('/parent_verifications', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ user_id: userId, status: 'revoked', method: 'staff-revoked', checks: {} }),
+  });
+  return inserted !== null;
 }
 
 export async function getAdminContentSummary(): Promise<AdminContentSummary | null> {

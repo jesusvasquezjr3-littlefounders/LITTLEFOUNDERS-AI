@@ -6,7 +6,7 @@ import { SettingsPage } from '../SettingsPage';
 
 const mocks = vi.hoisted(() => ({ api: vi.fn(), token: vi.fn().mockResolvedValue('synthetic'), refresh: vi.fn() }));
 vi.mock('@/lib/api', () => ({ api: mocks.api }));
-vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ session: { user: { id: 'synthetic' } }, isGuest: true, getToken: mocks.token, refreshMe: mocks.refresh }) }));
+vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ session: { user: { id: 'synthetic' } }, isGuest: true, roles: [], getToken: mocks.token, refreshMe: mocks.refresh }) }));
 beforeEach(async () => {
   vi.clearAllMocks();
   await i18n.changeLanguage('en-US');

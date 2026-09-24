@@ -73,6 +73,8 @@
     "displayName": "Name",
     "username": "Username",
     "usernameHint": "3-20 characters: letters, numbers, underscores. This becomes littlefounders.ai/@you",
+    "usernameKidLocked": "Your sign-in username is fixed and cannot be changed.",
+    "emailKidNote": "A child account has no email — your Tutor manages access for you.",
     "usernameInvalid": "Only a-z, 0-9 and _ (3-20 characters)",
     "language": "Language",
     "languageHint": "Your language of record, lessons and the interface follow it.",

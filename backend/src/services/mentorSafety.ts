@@ -5,7 +5,7 @@ import { readUnder13Origin } from './ageOrigin.js';
 const Verification = z.object({
   status: z.enum(['verified', 'revoked']),
   method: z.string(),
-  birth_date: z.string(),
+  birth_date: z.string().nullable(),
 }).strict();
 
 /** C.2/C.3 interim rule: unknown or unverified age receives minor safeguards.
@@ -17,7 +17,8 @@ export function hasVerifiedAdultEvidence(record: unknown, now = new Date()): boo
   const result = Verification.safeParse(record);
   if (!result.success || result.data.status !== 'verified' || result.data.method !== 'local-ocr') return false;
   const value = result.data.birth_date;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  // A revocation row (0111) carries no birth date: not evidence of anything.
+  if (value === null || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
   if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value || !Number.isFinite(now.getTime())) return false;
   let age = now.getUTCFullYear() - date.getUTCFullYear();
