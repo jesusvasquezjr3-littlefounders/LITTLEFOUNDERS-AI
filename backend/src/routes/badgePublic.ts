@@ -23,6 +23,8 @@ export function badgePublicRouter(): Router {
   const router = Router();
 
   router.get('/:token', async (req, res) => {
+    // Share status must be rechecked on every read, including after revocation.
+    res.setHeader('Cache-Control', 'no-store');
     const parsedToken = TokenParam.safeParse(req.params.token);
     if (!parsedToken.success) return fail(res, 404, 'NOT_FOUND', 'No such badge');
 

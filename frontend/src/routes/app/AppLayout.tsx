@@ -102,10 +102,10 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
       <button
         type="button"
         onClick={() => navigate('/verify-parent')}
-        className="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-content-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-content-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <Icon name="lock" />
-        <span className="lf-caption">{t(`dashboard.nav.${item.key}`)}</span>
+        <span className="lf-caption max-w-full text-center leading-tight">{t(`dashboard.nav.${item.key}`)}</span>
       </button>
     );
   }
@@ -116,7 +116,7 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
       onClick={() => playPlatformSound('nav_tap')}
       className={({ isActive }) =>
         cn(
-          'flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-md transition-colors duration-150',
+          'flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-md transition-colors duration-150',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
           isActive ? 'text-primary' : 'text-content-muted',
         )
@@ -125,7 +125,7 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
       {({ isActive }) => (
         <>
           <Icon name={item.icon} fill={isActive} />
-          <span className={cn('lf-caption', isActive && 'font-bold')}>{t(`dashboard.nav.${item.key}`)}</span>
+          <span className={cn('lf-caption max-w-full text-center leading-tight', isActive && 'font-bold')}>{t(`dashboard.nav.${item.key}`)}</span>
         </>
       )}
     </NavLink>
@@ -134,7 +134,7 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
 
 export function AppLayout() {
   const { t, i18n } = useTranslation();
-  const { session, profile, roles, avatarOptions, logout, getToken, refreshMe } = useAuth();
+  const { session, profile, roles, adminPermissions, avatarOptions, logout, getToken, refreshMe } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1');
@@ -145,7 +145,7 @@ export function AppLayout() {
   // Staff console entry — HIDDEN for non-staff, never locked (DESIGN.md
   // Screen Recipes → Console): admin is not an aspirational upgrade, so the
   // locked-chip grammar doesn't apply and the link simply doesn't exist.
-  const isStaff = roles.includes('admin') || roles.includes('superadmin');
+  const isStaff = visibleAdminSections(roles, adminPermissions).length > 0;
   const userId = session?.user.id ?? 'littlefounder';
 
   // The DB locale is the user's language of record — the UI follows it.
@@ -229,7 +229,7 @@ export function AppLayout() {
               ) : (
                 <p className="lf-caption px-4 pt-1 font-bold text-content-faint">{t('admin.sidebarGroup')}</p>
               )}
-              {visibleAdminSections(roles).map((s) => (
+              {visibleAdminSections(roles, adminPermissions).map((s) => (
                 <NavLink
                   key={s.key}
                   to={s.path}

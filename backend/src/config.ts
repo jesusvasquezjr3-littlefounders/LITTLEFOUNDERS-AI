@@ -67,6 +67,15 @@ const Env = z.object({
   // file already knows.
   TUTOR_SESSION_SECRET: z.string().min(32, 'TUTOR_SESSION_SECRET must be at least 32 chars'),
 
+  // v2 lesson attempts use a separate signing domain from both Oracle sessions
+  // and service-to-service credentials. It is optional at process boot only so
+  // an unconfigured, entirely inactive v2 catalog cannot take the established
+  // v1 product offline. The v2 run and grade routes fail closed with 503 until
+  // an operator supplies it; it never falls back to a checked-in placeholder.
+  LESSON_ATTEMPT_SECRET: z.string().min(32, 'LESSON_ATTEMPT_SECRET must be at least 32 chars')
+    .refine((value) => !value.startsWith('replace-me-'), 'LESSON_ATTEMPT_SECRET must be generated for this environment')
+    .optional(),
+
   // Fraction of live-generated tutor segments queued for post-hoc human
   // review (/ORACLE.md §7.3). Zero is a valid deployment choice and a bad one.
   TUTOR_LIVE_REVIEW_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.15),

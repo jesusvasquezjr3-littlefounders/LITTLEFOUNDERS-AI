@@ -26,11 +26,26 @@ afterEach(() => {
   }
 });
 
-function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
-  vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => Promise.resolve(handler(String(input), init))));
+function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>, confirmedAgeWrite = true) {
+  vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input).includes('/rpc/record_age_declaration')) {
+      const payload = JSON.parse(String(init?.body));
+      expect(Object.keys(payload).sort()).toEqual(['p_age_band', 'p_user_id']);
+      return Promise.resolve(jsonResponse(200, confirmedAgeWrite ? payload.p_age_band : null));
+    }
+    return Promise.resolve(handler(String(input), init));
+  }));
 }
 
 describe('POST /api/v1/auth/signup', () => {
+  it('withholds the new session if its age declaration cannot be stored', async () => {
+    stubFetch(() => jsonResponse(200, SESSION), false);
+    const res = await request(createApp()).post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', birthDate: '2000-01-01' });
+    expect(res.status).toBe(502);
+    expect(res.body.data).toBeNull();
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
   it('creates a session (autoconfirm on)', async () => {
     stubFetch((url) => {
       expect(url).toBe('http://supabase.test/auth/v1/signup');
@@ -204,6 +219,29 @@ describe('POST /api/v1/auth/signup', () => {
 });
 
 describe('POST /api/v1/auth/guest', () => {
+  it.each([true, false])('returns an age-refusal session only after confirmed provenance: %s', async (confirmed) => {
+    const calls: string[] = [];
+    stubFetch((url, init) => {
+      calls.push(url);
+      if (url.includes('/auth/v1/signup')) return jsonResponse(200, SESSION);
+      expect(url).toContain('/rpc/mark_under13_origin');
+      expect(JSON.parse(String(init?.body))).toEqual({ p_user_id: SESSION.user.id });
+      return jsonResponse(200, confirmed);
+    });
+    const res = await request(createApp()).post('/api/v1/auth/guest').send({ under13Origin: true });
+    expect(res.status).toBe(confirmed ? 201 : 502);
+    expect(calls).toHaveLength(2);
+    if (!confirmed) expect(res.body.data).toBeNull();
+  });
+
+  it('rejects attempts to attach a refused birth date or clear an origin flag', async () => {
+    const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
+    for (const body of [{ birthDate: '2018-01-01' }, { under13Origin: false }]) {
+      const res = await request(createApp()).post('/api/v1/auth/guest').send(body);
+      expect(res.status).toBe(400);
+    }
+    expect(fetch).not.toHaveBeenCalled();
+  });
   it('creates a guest session by relaying GoTrue anonymous sign-in', async () => {
     stubFetch((url, init) => {
       expect(url).toBe('http://supabase.test/auth/v1/signup');
@@ -321,6 +359,28 @@ describe('GET /api/v1/auth/me', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.profile.display_name).toBe('Ana');
     expect(res.body.data.roles).toEqual(['universal', 'parent']);
+    expect(res.body.data.adminPermissions).toEqual([]);
+  });
+
+  it('returns only the current staff member’s own grants for navigation', async () => {
+    const userId = '99999999-9999-4999-8999-999999999999';
+    const token = mintToken({ sub: userId, email: 'staff@example.com' });
+    let grantReads = 0;
+    stubFetch((url, init) => {
+      if (url.includes('/rest/v1/profiles')) return jsonResponse(200, []);
+      if (url.includes('/rest/v1/user_roles')) return jsonResponse(200, [{ role: 'admin' }]);
+      if (url.includes('/rest/v1/admin_permissions')) {
+        grantReads++;
+        expect(url).toContain(`user_id=eq.${userId}`);
+        expect((init?.headers as Record<string, string>).Authorization).toBe(`Bearer ${token}`);
+        return jsonResponse(200, [{ permission: 'manage_users' }]);
+      }
+      return jsonResponse(200, []);
+    });
+    const res = await request(createApp()).get('/api/v1/auth/me').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.adminPermissions).toEqual(['manage_users']);
+    expect(grantReads).toBe(1);
   });
 
   it('reports isGuest:true for a guest (anonymous) session', async () => {

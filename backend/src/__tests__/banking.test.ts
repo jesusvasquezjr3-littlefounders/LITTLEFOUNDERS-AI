@@ -24,6 +24,7 @@ interface StubOptions {
   kidsParents?: string[];
   account?: Record<string, unknown> | null;
   accountInsertConflict?: boolean;
+  accountPatchRejected?: boolean;
   allowanceRule?: Record<string, unknown> | null;
   savingsBonusRule?: Record<string, unknown> | null;
   spendLimit?: Record<string, unknown> | null;
@@ -79,6 +80,9 @@ function stub(opts: StubOptions = {}) {
           : Promise.resolve(jsonResponse(200, opts.scheduledCreditsResult));
       }
 
+      if (url.includes('/rest/v1/banking_accounts') && method === 'PATCH' && opts.accountPatchRejected) {
+        return Promise.resolve(jsonResponse(200, []));
+      }
       if (url.includes('/rest/v1/banking_accounts') && method === 'POST') {
         if (opts.accountInsertConflict) return Promise.resolve(new Response(null, { status: 409 }));
         return Promise.resolve(jsonResponse(201, [defaultAccount()]));
@@ -439,4 +443,49 @@ describe('GET /api/v1/banking/statement/:kidId and /statement (kid)', () => {
       entries: expect.any(Array),
     });
   });
+});
+
+
+describe('D.1 guardian freeze ownership', () => {
+  it.each([true, false])('refuses a child overwriting a guardian freeze with %s', async frozen => {
+    stub({ roles: ['kid'], account: { ...defaultAccount(), frozen: true, frozen_by: PARENT_ID } });
+    const response = await request(createApp()).post('/api/v1/banking/account/freeze')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({ frozen });
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('GUARDIAN_FREEZE');
+    expect(vi.mocked(fetch).mock.calls.some(([, init]) => init?.method === 'PATCH')).toBe(false);
+  });
+  it('allows the child to undo their own freeze with an atomic ownership filter', async () => {
+    stub({ roles: ['kid'], account: { ...defaultAccount(), frozen: true, frozen_by: KID_ID } });
+    const response = await request(createApp()).post('/api/v1/banking/account/freeze')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({ frozen: false });
+    expect(response.status).toBe(200);
+    const patch = vi.mocked(fetch).mock.calls.find(([, init]) => init?.method === 'PATCH');
+    expect(String(patch?.[0])).toContain(`or=(frozen.eq.false,frozen_by.eq.${KID_ID})`);
+  });
+});
+
+it('D.1 rejects a child update losing the atomic ownership race and writes no audit success', async () => {
+  stub({ roles: ['kid'], account: defaultAccount(), accountPatchRejected: true });
+  const response = await request(createApp()).post('/api/v1/banking/account/freeze')
+    .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({ frozen: false });
+  expect(response.status).toBe(409);
+  expect(response.body.error.code).toBe('FREEZE_CHANGED');
+  expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/audit_logs'))).toBe(false);
+});
+
+
+it('D.1 holds pending allowance allocation without calling its mutation', async () => {
+  stub({ roles: ['kid'], account: { ...defaultAccount(), frozen: true, frozen_by: PARENT_ID } });
+  const response = await postAsKid(`/api/v1/banking/wallet/pending-credits/${CREDIT_ID}/allocate`, { save: 10, spend: 0, share: 0 });
+  expect(response.status).toBe(409);
+  expect(response.body.error.code).toBe('ACCOUNT_FROZEN');
+  expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/rpc/allocate_pending_credit'))).toBe(false);
+});
+it('D.1 does not advance scheduled allowances while the account is frozen', async () => {
+  stub({ roles: ['kid'], account: { ...defaultAccount(), frozen: true, frozen_by: PARENT_ID } });
+  const response = await request(createApp()).get('/api/v1/banking/account')
+    .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+  expect(response.status).toBe(200);
+  expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/rpc/run_due_scheduled_credits'))).toBe(false);
 });

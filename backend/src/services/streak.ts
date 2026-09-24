@@ -20,7 +20,9 @@ function dayDiff(a: string, b: string): number {
 }
 
 export function isCalendarDate(value: string): boolean {
-  return DATE_RE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+  if (!DATE_RE.test(value)) return false;
+  const timestamp = Date.parse(`${value}T00:00:00Z`);
+  return Number.isFinite(timestamp) && new Date(timestamp).toISOString().slice(0, 10) === value;
 }
 
 /**

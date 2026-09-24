@@ -42,21 +42,14 @@ function lessonDocument(locale: string) {
           ],
         },
       },
-      {
-        // Keyless grader: memory_flip scores from the board (no answer key).
-        id: 'memory-1',
-        type: 'memory_flip',
-        prompt_md: 'Find the pairs',
-        difficulty: 1,
-        xp: 10,
-        payload: { pairs: [{ id: 'p1' }, { id: 'p2' }, { id: 'p3' }] },
-      },
     ],
   };
 }
 
 export function makeDb(userId: string): FakeDb {
   return {
+    account_age_declarations: [{ user_id: userId, declared_age_band: '13_to_17' }],
+    account_safety_origins: [],
     courses: [
       {
         id: COURSE_ID,

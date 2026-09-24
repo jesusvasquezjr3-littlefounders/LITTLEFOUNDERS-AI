@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { getConfig } from '../config.js';
 import { fail } from '../lib/http.js';
 import { verifyAccessToken } from '../lib/jwt.js';
-import { getOwnRoles } from '../services/supabaseRest.js';
+import { getOwnAdminPermissions, getOwnRoles } from '../services/supabaseRest.js';
 
 export interface AuthedUser {
   id: string;
@@ -63,10 +63,29 @@ export function requireRole(allowedRoles: string[]) {
         fail(res, 403, 'FORBIDDEN', 'You do not have permission to access this resource');
         return;
       }
-      
+      res.locals.verifiedRoles = dbRoles.map((r) => r.role);
       next();
     } catch {
       fail(res, 500, 'INTERNAL', 'Permission check failed');
+    }
+  };
+}
+
+export function requireAdminPermission(permission: 'manage_users' | 'manage_content' | 'view_analytics' | 'manage_support') {
+  return async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const roles = res.locals.verifiedRoles as string[] | undefined;
+    if (!roles) return void fail(res, 502, 'INTERNAL', 'Staff role verification unavailable');
+    if (roles.includes('superadmin')) return void next();
+    const user = authedUser(res);
+    try {
+      const grants = await getOwnAdminPermissions(user.accessToken, user.id);
+      if (!grants) return void fail(res, 502, 'INTERNAL', 'Staff permission verification unavailable');
+      if (!grants.some((row) => row.permission === permission)) {
+        return void fail(res, 403, 'FORBIDDEN', 'You do not have permission to access this resource');
+      }
+      next();
+    } catch {
+      fail(res, 502, 'INTERNAL', 'Staff permission verification unavailable');
     }
   };
 }

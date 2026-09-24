@@ -54,6 +54,7 @@ export function KidBankingHome() {
   const [allocatingCreditId, setAllocatingCreditId] = useState<string | null>(null);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [freezeBusy, setFreezeBusy] = useState(false);
+  const [freezeError, setFreezeError] = useState<string | null>(null);
   const [liveMessage, setLiveMessage] = useState('');
   const [statement, setStatement] = useState<WireStatement | null>(null);
   const [statementOpen, setStatementOpen] = useState(false);
@@ -139,8 +140,14 @@ export function KidBankingHome() {
   async function onToggleFreeze(next: boolean) {
     if (!token || freezeBusy) return;
     setFreezeBusy(true);
+    setFreezeError(null);
     const res = await api<{ account: WireBankingAccount }>('/banking/account/freeze', { method: 'POST', token, body: { frozen: next } });
     setFreezeBusy(false);
+    if (res.error) {
+      setFreezeError(res.error.code);
+      await refreshAccount();
+      return;
+    }
     if (res.data) {
       setState((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
       announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
@@ -259,10 +266,11 @@ export function KidBankingHome() {
         <StatCard icon={<Icon name="volunteer_activism" />} value={String(state.balances.share)} label={t('tasks.kid.share')} tone="delight" />
       </div>
 
+      {account.frozen && <p role="status" className="lf-body rounded-md bg-warning-soft p-4 text-content">{t('banking.kid.frozenHold')}</p>}
       {state.credits.length > 0 && (
         <div className="flex flex-col gap-3">
           {state.credits.map((credit) =>
-            allocatingCreditId === credit.id ? (
+            allocatingCreditId === credit.id && !account.frozen ? (
               <AllocateCreditCard
                 key={credit.id}
                 credit={credit}
@@ -282,7 +290,7 @@ export function KidBankingHome() {
                   <span className="lf-label block truncate text-content">{t('banking.kid.allowanceArrived')}</span>
                   <span className="lf-caption block text-content-faint">{t('tasks.kid.allocateTitle', { count: credit.amount })}</span>
                 </span>
-                <Button type="button" variant="primary" className="min-h-9 shrink-0 px-3 lf-caption" onClick={() => setAllocatingCreditId(credit.id)}>
+                <Button type="button" variant="primary" className="min-h-9 shrink-0 px-3 lf-caption" disabled={account.frozen} onClick={() => setAllocatingCreditId(credit.id)}>
                   {t('tasks.kid.allocateCta')}
                 </Button>
               </Card>
@@ -415,6 +423,7 @@ export function KidBankingHome() {
           isFrozenByMe={isFrozenByMe}
           onToggleFreeze={onToggleFreeze}
           freezeBusy={freezeBusy}
+          freezeError={freezeError}
           onClose={() => setCardDialogOpen(false)}
           onSaved={async () => {
             await refreshAccount();
@@ -431,6 +440,7 @@ function CardDialog({
   isFrozenByMe,
   onToggleFreeze,
   freezeBusy,
+  freezeError,
   onClose,
   onSaved,
 }: {
@@ -439,6 +449,7 @@ function CardDialog({
   isFrozenByMe: boolean;
   onToggleFreeze: (next: boolean) => void;
   freezeBusy: boolean;
+  freezeError: string | null;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -508,14 +519,16 @@ function CardDialog({
             <button
               type="button"
               role="switch"
+              aria-label={t('banking.kid.freezeToggle')}
               aria-checked={account.frozen}
-              disabled={freezeBusy}
+              disabled={freezeBusy || (account.frozen && !isFrozenByMe)}
               onClick={() => onToggleFreeze(!account.frozen)}
               className={cn('lf-switch', account.frozen && 'lf-switch-on')}
             >
               <span className="lf-switch-knob" />
             </button>
           </div>
+          {freezeError && <ErrorBanner code={freezeError} />}
           <Field label={t('banking.kid.nicknameLabel')} value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={40} />
           <div>
             <span className="lf-label mb-2 block text-content">{t('banking.kid.designLabel')}</span>

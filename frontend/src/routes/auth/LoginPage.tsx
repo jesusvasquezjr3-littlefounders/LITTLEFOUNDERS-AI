@@ -48,8 +48,8 @@ export function LoginPage() {
     // distinct from signup_complete which only ever fires once per account.
     trackInsight('login_complete', { routeClass: 'marketing' });
     void flushInsights();
-    const from = (location.state as { from?: string } | null)?.from;
-    navigate(from ?? APP_HOME, { replace: true });
+    const destination = location.state as { from?: string; returnState?: unknown } | null;
+    navigate(destination?.from ?? APP_HOME, { replace: true, state: destination?.returnState });
   }
 
   return (

@@ -1,4 +1,18 @@
 import { api, type ApiResult } from '@/lib/api';
+
+export interface AgeCalibration { required: boolean; tier: 1 | 2 | 3 | null }
+function validateCalibration(result: ApiResult<AgeCalibration>): ApiResult<AgeCalibration> {
+  if (result.error) return result;
+  const value = result.data;
+  if (typeof value.required === 'boolean' && (value.required ? value.tier === null : [1, 2, 3].includes(value.tier ?? 0))) return result;
+  return { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Invalid calibration response' } };
+}
+export async function getAgeCalibration(token: string) {
+  return validateCalibration(await api<AgeCalibration>('/tutor/age-calibration', { token }));
+}
+export async function saveAgeCalibration(token: string, tier: 1 | 2 | 3) {
+  return validateCalibration(await api<AgeCalibration>('/tutor/age-calibration', { token, body: { tier } }));
+}
 import type {
   Adaptation,
   SessionNarrative,

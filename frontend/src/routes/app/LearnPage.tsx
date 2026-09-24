@@ -2,7 +2,7 @@ import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, LoadingOverlay, Reveal, SectionHeading } from '@/components/ui';
+import { Card, Icon, LoadingOverlay, Reveal, SectionHeading } from '@/components/ui';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { CourseCarousel, type CarouselCourse } from '@/routes/app/learn/CourseCarousel';
@@ -58,7 +58,17 @@ const FILTER_LABEL_KEYS: Record<FilterCategory, string> = {
   saving: 'dashboard.learn.filterSaving',
 };
 
-type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; courses: Course[] };
+interface UnavailableFeaturedCourse {
+  slug: string;
+  title: Record<string, string>;
+}
+
+interface CourseShelf {
+  courses: Course[];
+  unavailableFeaturedCourse?: UnavailableFeaturedCourse;
+}
+
+type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; shelf: CourseShelf };
 
 export function LearnPage() {
   const { t, i18n } = useTranslation();
@@ -93,10 +103,10 @@ export function LearnPage() {
   useEffect(() => {
     let cancelled = false;
     const cached = readCoursesCache(userId);
-    if (cached) setState({ status: 'ready', courses: cached });
+    if (cached) setState({ status: 'ready', shelf: { courses: cached } });
     void (async () => {
       const token = await getToken();
-      const { data, error } = await api<{ courses: Course[] }>('/learn/courses', { token });
+      const { data, error } = await api<CourseShelf>('/learn/courses', { token });
       if (cancelled) return;
       if (error) {
         // A failed revalidation must not blank a shelf the learner is reading.
@@ -104,7 +114,7 @@ export function LearnPage() {
         return;
       }
       writeCoursesCache(userId, data.courses);
-      setState({ status: 'ready', courses: data.courses });
+      setState({ status: 'ready', shelf: data });
     })();
     return () => {
       cancelled = true;
@@ -114,7 +124,8 @@ export function LearnPage() {
   const locale = i18n.resolvedLanguage ?? 'en-US';
   const firstName = (profile?.display_name ?? '').split(/\s+/)[0] ?? '';
 
-  const courses = state.status === 'ready' ? state.courses : [];
+  const courses = state.status === 'ready' ? state.shelf.courses : [];
+  const unavailableFeaturedCourse = state.status === 'ready' ? state.shelf.unavailableFeaturedCourse ?? null : null;
 
   // The one course to resume: in progress first, then unstarted, then the first.
   const featuredCourse = courses.length > 0
@@ -223,6 +234,22 @@ export function LearnPage() {
       {state.status === 'loading' && <LoadingOverlay label={t('learn.loading')} />}
 
       {state.status === 'error' && <ErrorBanner code={state.code} />}
+
+      {unavailableFeaturedCourse && (
+        <Card role="status" aria-live="polite" className="flex items-start gap-3 border border-warning/40 bg-warning-soft/50 p-4">
+          <span className="lf-tile h-11 w-11 shrink-0 text-warning-strong" aria-hidden="true">
+            <Icon name="cloud_off" className="!text-[22px]" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="lf-label font-bold text-content" data-copy-role="heading">{t('learn.courseUnavailable.title')}</h2>
+            <p className="lf-caption mt-1 text-content-muted" data-copy-role="body">
+              {t('learn.courseUnavailable.body', {
+                title: unavailableFeaturedCourse.title[locale] ?? unavailableFeaturedCourse.title['en-US'] ?? unavailableFeaturedCourse.slug,
+              })}
+            </p>
+          </div>
+        </Card>
+      )}
 
       {state.status === 'ready' && orderedCourses.length === 0 && (
         <Card hero className="flex flex-col items-center gap-4 py-12 text-center">

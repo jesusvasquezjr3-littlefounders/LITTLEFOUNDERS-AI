@@ -4,6 +4,16 @@
 
 This README is the single operational document of the repo: everything essential to work between this machine and production.
 
+## Binding product and frontend authority
+
+**Non-negotiable: [`docs/littlefounders-spec/`](docs/littlefounders-spec/README.md) is the absolute source of truth for the product transformation and frontend rebuild.** Existing implementation, historical documentation and tests describe legacy behavior; they cannot override this specification. This README remains the operational reference for setup, testing and deployment.
+
+Follow the specification's precedence: owner decisions, product requirements and appendices, Frontend Bible, then the visual reference with its recorded deviations excluded. Reviews are historical only. The frontend is rebuilt from scratch; the backend and existing user data are migrated. Critical live defects remain a separate immediate workstream. Read the [implementation baseline](docs/rebuild/BASELINE.md) for source mappings, verified gaps and sequencing. The owner confirmed **web with a future mobile wrapper** on 21 September 2026 (OD-12).
+
+Track ongoing work in the [migration sprints](docs/rebuild/SPRINTS.md) and [requirement ledger](docs/rebuild/REQUIREMENTS.md). Each checkpoint records separate product and frontend verification against the SPEC. Implementation, local verification, acceptance and production release are distinct states; no requirement closes without its evidence and applicable reviews.
+
+**Staged social rollout dependency:** the rebuilt Core block and unfollow paths require migrations `0098_atomic_social_blocks.sql` and `0099_atomic_social_unfollow.sql` before deployment. Block insertion now relies on its database transaction for bidirectional follow cleanup and request revocation. Unfollow uses a session-owned RPC to revoke requests and remove the edge atomically; direct browser DELETE is withdrawn. Both migrations are classified as contract and require operator review; do not deploy the Core change against an older schema. The current approval-visibility adapter additionally requires `has_current_social_approval` from migration `0100_approved_social_visibility.sql`; it must not be deployed before that schema dependency. The social decision workflow remains unaccepted; see the S02 evidence and remaining lifecycle gates before activation.
+
 ## Service map
 
 | Service | Codename | Mission | Port | Deploy | Live domain |
@@ -72,8 +82,21 @@ Container lifecycle, from `database/` (each wraps the pinned upstream compose vi
 | `npm run db:status` | `docker compose ps` |
 | `bash scripts/local-stack.sh psql …` | psql inside the db container (no npm alias) |
 | `npm run db:types` | Regenerate `database/types/database.ts` from the live local schema — the shared-type hub, **never hand-edit** |
+| `bash database/scripts/disposable-stack.sh reset` | The from-zero gate on an **isolated** stack: a copied docker dir, distinct compose project (`lf-reset`) and remapped ports (`18000/18443/55432/56543/12500`). Use it when the dev stack holds local data you must keep; the dev stack is never touched. `teardown` removes the copy. `db-url` feeds `supabase gen types` (e.g. `npx supabase@2.117.0 gen types typescript --db-url "$(…db-url)" --schema public > types/database.ts`) |
 
-Migrations are sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), and **an applied migration is never edited — write a delta**. After any schema change: `db:reset` twice, then `db:types` and commit the regenerated types.
+Migrations are sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), and **an applied migration is never edited — write a delta**. After any schema change: `db:reset` twice, then `db:types` and commit the regenerated types. The double reset destroys the local stack's data; when that data matters, run the same gate through `database/scripts/disposable-stack.sh reset` twice instead, regenerate types against its pooler URL, and keep the dev stack untouched.
+
+Banking freeze enforcement requires migration **0093**. It serializes allocations and scheduled processing with the account freeze, guards redemptions, and restricts browser account updates to nickname/card design. Verify hold/resume, unchanged schedules and concurrent freeze ordering with `database/scripts/verify-freeze-postgres.py` on the owned isolated native audit cluster; full Supabase and UI acceptance remain separate gates.
+
+Placement requires migrations **0091** (method vocabulary) and **0092** (atomic commit) before the updated Core is deployed. The service-only RPC writes the placement and its credits together; identical retries succeed without duplicate credit. Migration 0091 preserves historical values but requires operator review under the conservative CHECK-replacement gate. `database/scripts/verify-placement-postgres.py` supplies isolated native PostgreSQL evidence; it does not replace full Supabase or browser acceptance.
+
+Lesson completion requires migration **0083** before the updated Core is deployed. Its service-only `complete_lesson` RPC commits progress, statistics and a run receipt together. Clients must reuse the same `run_id` when retrying a completion; a new play-through gets a new ID. Validate rollback, response-loss retries and execution permissions with `database/scripts/test-lesson-completion.sql` using `psql -v ON_ERROR_STOP=1 -f` against an **isolated, fully migrated test database with a synthetic seeded lesson**. The script rolls its fixtures back; it is not a production diagnostic or a replacement for the two reset/type-generation gates. Core's fake-PostgREST tests alone do not validate SQL transactions or concurrent locking.
+
+A supplemental native-PostgreSQL regression is available as `python database/scripts/verify-completion-postgres.py`. It deliberately accepts only the audit-owned cluster at `.codex/audit-db/data`, reached on `127.0.0.1:15483`, and refuses other data directories. It creates fresh databases, supplies minimal auth fixtures, applies all migrations, and checks real rollback, replay, privilege and concurrent-completion behavior. It requires PostgreSQL 17 Windows binaries under `.codex/audit-db/pgsql`. This is **not** a substitute for the complete Supabase reset gates or GoTrue/RLS integration coverage. The audit evidence records official `@supabase/postgres-meta@0.96.6` native type generation separately from the normal `db:types` command.
+
+Segment grading additionally requires migration **0084** before the updated Core. The service-only `record_lesson_grade` RPC allocates the authoritative attempt number, enforces the cap and stores a replayable verdict atomically. With a `run_id`, the client `attempt_number` identifies a retry; it never authorizes another attempt or controls the cap. Repeating that pair returns the original verdict, including its original reveal gating, even if the submitted answer changes. Legacy calls without a run retain lifetime counting and do not receive replay receipts. `python database/scripts/verify-grade-postgres.py` validates rollback, eight-way concurrency and browser-role denial on the explicitly owned disposable WSL Supabase stack; it refuses other Docker data roots.
+
+The production player keeps a learner/lesson-specific recovery checkpoint in `sessionStorage`. Reloading or returning within the same tab restores reached segments and reuses the pending completion's run, duration and local date. Finish removes a saved run; identity changes and logout clear all checkpoints. Revised or translated lesson documents invalidate incompatible checkpoints. Draft answers inside an unfinished activity are not serialized, and tab closure or unavailable browser storage is outside this recovery mechanism. Server grading and rewards remain authoritative.
 
 To upgrade Supabase: bump `database/SUPABASE_VERSION`, `db:sync`, prove locally (`db:reset` twice + tests + auth smoke), then update the Railway image tags to match in the same change.
 
@@ -98,12 +121,15 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 
 | If you touched… | Run (repo root) |
 |---|---|
+| Binding product specification or new frontend foundation | `npm run spec:check` — import integrity, agent parity, requirement inventory, new UI boundary and Bible token parity |
 | `frontend/` (anything user-facing) | `npm run i18n:check` — 3-locale key parity + hardcoded-string scan |
 | Public pages, titles, share copy, `site.mjs` | `npm run seo:check` + `npm run paths:check` |
 | DeepSeek/Qwen config in `coursegen/` or `oracle/` | `npm run provider:check` |
 | Tutor whiteboard / segment / demonstrate shapes | `npm run instruments:check`, `npm run preferred-types:check`, `npm run demo-step:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
+
+The rebuilt design foundation has an isolated development entry at `/rebuild.html` on the frontend dev server. It mounts no legacy UI, account session, analytics or paid-service client, and is not part of the production build. For its scoped browser checks, run `node scripts/verify-rebuild.mjs` from `frontend/` with `REBUILD_URL` set to the running local frontend origin (default `http://127.0.0.1:5190`). The report and mobile/desktop captures go to `audit-results/rebuild/`. This checks the foundation only; it does not replace the specification's full real-app text-fit, proportion and copy-budget gates before UI merge. Regenerate its color, spacing, radius and target CSS with `node scripts/build-rebuild-tokens.mjs` from `frontend/` after an authorized Bible change.
 
 | If you touched… | Run (**`cd` into the service first**) |
 |---|---|
@@ -139,6 +165,8 @@ npm run production:preflight            # read-only Railway inventory/config che
 ```
 
 `release:readiness` requires a clean tree and never deploys, migrates, publishes or calls a paid provider. `production:preflight` must pass before any migration/deploy handoff and before authorizing paid generation. For Tutor prompt/strategy changes, the paid conversation gate `gh workflow run tutor-deploy.yml -f step=converse` (~$0.03) is the only check that answers "was that a good lesson" — deliberately not in CI so a flaky provider can't block a deploy. After a frontend deploy that touches the public surface: `npm run seo:live` (prove the CDN served it) and `npm run seo:indexnow`.
+
+`database/`'s `db:publish-course -- <slug>` is local-dev only. It now calls Vault's `release_course` preflight and refuses missing locales, unreviewable lessons or a missing/stale Forge `verify:course` result. Production publishing uses the authenticated Core staff route and its audit trail. The local fixture-import hint requires Forge verification before this command; direct hierarchy status updates are not a release path.
 
 **Operator scripts — need live credentials, never in CI:**
 

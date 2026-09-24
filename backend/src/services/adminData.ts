@@ -12,10 +12,10 @@ import {
 } from './supabaseRest.js';
 
 /*
- * Staff-console data plane (routes/admin.ts). Every read here is service-role
- * and platform-wide (all users' rows) — the console's job — so it is gated by
- * requireRole(['admin','superadmin']) at the route, and role mutations gate
- * further on superadmin (§1.4). No minor PII leaves the platform; these are
+ * Staff-console data plane (routes/admin.ts). Reads here use the service role
+ * and may span platform rows, so the route checks staff role and the current
+ * named permission before invoking each category. Role/grant mutations require
+ * Superadmin. No minor PII leaves the platform; these are
  * internal reads for staff. Overview status totals use PostgREST exact counts;
  * identity/role rows are paged so the dashboard never silently stops at the
  * default 1,000-row response limit.
@@ -61,42 +61,44 @@ function primaryRole(roleRows: string[]): (typeof ROLE_ORDER)[number] {
 }
 
 export interface AdminOverview {
-  users: { total: number; byRole: Record<string, number>; staff: number };
-  content: { courses: Record<string, number>; lessons: Record<string, number>; reviewQueue: number };
-  audit: { total: number };
+  users?: { total: number; byRole: Record<string, number>; staff: number };
+  content?: { courses: Record<string, number>; lessons: Record<string, number>; reviewQueue: number };
+  audit?: { total: number };
 }
 
-export async function getAdminOverview(): Promise<AdminOverview | null> {
+export async function getAdminOverview(
+  allowed: { users: boolean; content: boolean; audit: boolean } = { users: true, content: true, audit: true },
+): Promise<AdminOverview | null> {
   const [profiles, roles, courses, lessons, auditTotal] = await Promise.all([
-    listAllServiceRows<{ user_id: string }>('/profiles?select=user_id&order=user_id.asc'),
-    listAllServiceRows<{ user_id: string; role: string }>('/user_roles?select=user_id,role&order=user_id.asc,role.asc'),
-    countStatuses('courses', COURSE_STATUS_ORDER),
-    countStatuses('lessons', LESSON_STATUS_ORDER),
-    countServiceRows('/audit_logs?select=id'),
+    allowed.users ? listAllServiceRows<{ user_id: string }>('/profiles?select=user_id&order=user_id.asc') : Promise.resolve([]),
+    allowed.users ? listAllServiceRows<{ user_id: string; role: string }>('/user_roles?select=user_id,role&order=user_id.asc,role.asc') : Promise.resolve([]),
+    allowed.content ? countStatuses('courses', COURSE_STATUS_ORDER) : Promise.resolve({}),
+    allowed.content ? countStatuses('lessons', LESSON_STATUS_ORDER) : Promise.resolve({}),
+    allowed.audit ? countServiceRows('/audit_logs?select=id') : Promise.resolve(0),
   ]);
   if (!profiles || !roles || !courses || !lessons || auditTotal === null) return null;
 
-  const profileIds = new Set(profiles.map((profile) => profile.user_id));
-  const rolesByUser = new Map<string, string[]>();
-  for (const row of roles) {
-    if (profileIds.has(row.user_id)) rolesByUser.set(row.user_id, [...(rolesByUser.get(row.user_id) ?? []), row.role]);
-  }
+  const overview: AdminOverview = {};
+  if (allowed.users) {
+    const profileIds = new Set(profiles.map((profile) => profile.user_id));
+    const rolesByUser = new Map<string, string[]>();
+    for (const row of roles) {
+      if (profileIds.has(row.user_id)) rolesByUser.set(row.user_id, [...(rolesByUser.get(row.user_id) ?? []), row.role]);
+    }
 
-  // A person can hold multiple role rows (universal is retained on upgrades).
-  // The overview is a people distribution, so each profile belongs to exactly
-  // one highest-privilege bucket, matching /admin/users.
-  const byRole: Record<string, number> = {};
-  for (const profile of profiles) {
-    const role = primaryRole(rolesByUser.get(profile.user_id) ?? []);
-    byRole[role] = (byRole[role] ?? 0) + 1;
+    // A person can hold multiple role rows (universal is retained on upgrades).
+    // The overview is a people distribution, so each profile belongs to exactly
+    // one highest-privilege bucket, matching /admin/users.
+    const byRole: Record<string, number> = {};
+    for (const profile of profiles) {
+      const role = primaryRole(rolesByUser.get(profile.user_id) ?? []);
+      byRole[role] = (byRole[role] ?? 0) + 1;
+    }
+    overview.users = { total: profiles.length, byRole, staff: (byRole.admin ?? 0) + (byRole.superadmin ?? 0) };
   }
-  const staff = (byRole.admin ?? 0) + (byRole.superadmin ?? 0);
-
-  return {
-    users: { total: profiles.length, byRole, staff },
-    content: { courses, lessons, reviewQueue: lessons.review ?? 0 },
-    audit: { total: auditTotal },
-  };
+  if (allowed.content) overview.content = { courses, lessons, reviewQueue: (lessons as Record<string, number>).review ?? 0 };
+  if (allowed.audit) overview.audit = { total: auditTotal };
+  return overview;
 }
 
 // ── Users / Support ───────────────────────────────────────────────────────────
@@ -279,6 +281,30 @@ export async function listAdminCourses(): Promise<AdminCourse[] | null> {
 export interface AdminContentSummary {
   courses: { total: number; published: number; draft: number; archived: number };
   lessons: { total: number; published: number; review: number; draft: number; archived: number };
+}
+
+export interface CourseAssemblyIncident {
+  courseId: string;
+  occurrenceCount: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+}
+
+/** Persistent B.3 signals, deliberately without a raw parsing error or learner data. */
+export async function listCourseAssemblyIncidents(): Promise<CourseAssemblyIncident[] | null> {
+  const rows = await serviceRest<{
+    course_id: string;
+    occurrence_count: number;
+    first_seen_at: string;
+    last_seen_at: string;
+  }[]>('/course_assembly_incidents?select=course_id,occurrence_count,first_seen_at,last_seen_at&order=last_seen_at.desc');
+  if (!rows) return null;
+  return rows.map((row) => ({
+    courseId: row.course_id,
+    occurrenceCount: row.occurrence_count,
+    firstSeenAt: row.first_seen_at,
+    lastSeenAt: row.last_seen_at,
+  }));
 }
 
 export async function getAdminContentSummary(): Promise<AdminContentSummary | null> {

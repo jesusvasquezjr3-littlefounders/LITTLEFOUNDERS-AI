@@ -4,48 +4,7 @@ import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 
-const USER_ID = '99999999-9999-4999-8999-999999999911';
-const COURSE_ID = 'c0000000-0000-4000-8000-000000000001';
-const ADVENTURE_ID = 'a0000000-0000-4000-8000-000000000001';
-const SAGA_ID = 'a0000000-0000-4000-8000-0000000000a1';
-const T1 = 'a0000000-0000-4000-8000-0000000000b1';
-const T2 = 'a0000000-0000-4000-8000-0000000000b2';
-const T3 = 'a0000000-0000-4000-8000-0000000000b3';
-const L1 = 'a0000000-0000-4000-8000-0000000000c1';
-const L2 = 'a0000000-0000-4000-8000-0000000000c2';
-const L3 = 'a0000000-0000-4000-8000-0000000000c3';
-const COURSE_SLUG = 'placement-course';
-
-const probeFor = (subject: string, correctIndex: number) => ({
-  'en-US': { prompt: `What is ${subject}?`, options: ['Wrong one', 'Right one'], correctIndex },
-  'es-MX': { prompt: `¿Qué es ${subject}?`, options: ['La incorrecta', 'La correcta'], correctIndex },
-});
-
-const PROBE_T1 = probeFor('money', 1);
-const PROBE_T2 = probeFor('saving', 1);
-const PROBE_T3 = probeFor('budgeting', 1);
-
-function makeDb(): FakeDb {
-  return {
-    courses: [{ id: COURSE_ID, slug: COURSE_SLUG, title: { 'en-US': 'Money' }, description: {}, subject: 'money', badge_asset: 'course-badges/x.png', status: 'published', position: 1 }],
-    adventures: [{ id: ADVENTURE_ID, course_id: COURSE_ID, position: 1, slug: 'adventure-1', title: { 'en-US': 'Trading' }, description: {}, theme: 'archipelago', status: 'published' }],
-    sagas: [{ id: SAGA_ID, adventure_id: ADVENTURE_ID, position: 1, slug: 'saga-1', title: {}, icon: 'auto_stories', status: 'published' }],
-    topics: [
-      { id: T1, saga_id: SAGA_ID, position: 1, slug: 'topic-1', title: {}, kind: 'teaching', review_of: [], prerequisites: [], placement_probe: PROBE_T1, status: 'published' },
-      { id: T2, saga_id: SAGA_ID, position: 2, slug: 'topic-2', title: {}, kind: 'teaching', review_of: [], prerequisites: [], placement_probe: PROBE_T2, status: 'published' },
-      { id: T3, saga_id: SAGA_ID, position: 3, slug: 'topic-3', title: {}, kind: 'teaching', review_of: [], prerequisites: [], placement_probe: PROBE_T3, status: 'published' },
-    ],
-    lessons: [
-      { id: L1, topic_id: T1, position: 1, slug: 'lesson-1', title: {}, difficulty: 1, xp_total: 10, estimated_minutes: 5, status: 'published' },
-      { id: L2, topic_id: T2, position: 1, slug: 'lesson-2', title: {}, difficulty: 1, xp_total: 10, estimated_minutes: 5, status: 'published' },
-      { id: L3, topic_id: T3, position: 1, slug: 'lesson-3', title: {}, difficulty: 1, xp_total: 10, estimated_minutes: 5, status: 'published' },
-    ],
-    lesson_progress: [],
-    course_placements: [],
-    placement_credits: [],
-    profiles: [{ user_id: USER_ID, display_name: 'Ana', username: null, locale: 'en-US', theme: 'light', cover: {}, birth_date: null, created_at: '2026-01-01T00:00:00.000Z' }],
-  };
-}
+import { USER_ID, COURSE_ID, T1, T2, T3, L1, L2, L3, COURSE_SLUG, makeDb } from './placementAuditFixtures.js';
 
 let db: FakeDb;
 let token: string;
@@ -53,6 +12,7 @@ let token: string;
 beforeEach(() => {
   token = mintToken({ sub: USER_ID });
   db = makeDb();
+  db.account_age_declarations = [{ user_id: USER_ID, declared_age_band: '13_to_17' }];
   vi.stubGlobal('fetch', createFakeFetch(db));
 });
 
@@ -399,12 +359,37 @@ describe('POST /api/v1/placement/:courseSlug/commit', () => {
     expect(res.body.data.startLessonId).toBe(L1);
   });
 
-  it('409s PLACEMENT_ALREADY_COMPLETE on a retry, without writing a second row', async () => {
+  it('confirms the same placement on retry without writing a second row', async () => {
     await commit({ signals: {}, answers: [], startFromBeginning: true });
     const res = await commit({ signals: {}, answers: [], startFromBeginning: true });
-    expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('PLACEMENT_ALREADY_COMPLETE');
+    expect(res.status).toBe(201);
     expect(db.course_placements).toHaveLength(1);
+  });
+
+  it('rejects a different result after a successful commit', async () => {
+    const { answers } = await playQuiz(new Set([T1, T2, T3]));
+    expect((await commit({ signals: {}, answers })).status).toBe(201);
+    const originalCredits = structuredClone(db.placement_credits);
+    const response = await commit({ signals: {}, answers: [], startFromBeginning: true });
+    expect(response.status).toBe(409);
+    expect(response.body.error.code).toBe('PLACEMENT_ALREADY_COMPLETE');
+    expect(db.placement_credits).toEqual(originalCredits);
+  });
+  it('recovers from a lost commit response without duplicating credits', async () => {
+    const { answers } = await playQuiz(new Set([T1, T2, T3]));
+    const fake = createFakeFetch(db); let loseResponse = true;
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const result = await fake(input, init);
+      if (String(input).includes('/rpc/commit_course_placement') && loseResponse) {
+        loseResponse = false;
+        return new Response('Unavailable', { status: 503 });
+      }
+      return result;
+    });
+    expect((await commit({ signals: {}, answers })).status).toBe(502);
+    expect(db.course_placements).toHaveLength(1);
+    expect((await commit({ signals: {}, answers })).status).toBe(201);
+    expect(db.placement_credits).toHaveLength(3);
   });
 
   it('saves birthDate only when the profile did not already have one', async () => {

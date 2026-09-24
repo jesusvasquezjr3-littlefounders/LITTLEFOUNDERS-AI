@@ -60,7 +60,7 @@ export function SectionHeading({
   const headingId = id ?? fallbackId;
   const Tag = as;
   return (
-    <div className={cn('mb-3 flex items-center justify-between gap-2', className)}>
+    <div className={cn('mb-3 flex flex-wrap items-center justify-between gap-2', className)}>
       <div className="flex min-w-0 items-center gap-2">
         <span className={cn('lf-tile h-7 w-7', TONE[tone])}>
           <Icon name={icon} aria-hidden className="!text-[16px]" />
@@ -70,7 +70,7 @@ export function SectionHeading({
         </Tag>
       </div>
       {meta !== undefined && (
-        <span className="lf-caption shrink-0 text-content-muted">{meta}</span>
+        <span className="lf-caption min-w-0 max-w-full text-content-muted">{meta}</span>
       )}
     </div>
   );

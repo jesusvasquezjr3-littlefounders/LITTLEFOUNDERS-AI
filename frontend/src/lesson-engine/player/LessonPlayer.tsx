@@ -1,8 +1,9 @@
+import { useCompletion } from './useCompletion'
 // The fullscreen Lesson Player — LESSON_ENGINE.md §7, §10 and DESIGN.md
 // §Screen Recipes → Lesson: focused ~720px column, sticky glass progress header,
 // one segment at a time, earned celebration, results screen.
 
-import { useCallback, useEffect, useId, useMemo, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
@@ -29,6 +30,8 @@ import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } 
 import { StreakCelebration } from './StreakCelebration'
 import { playSfx, playLessonBgm, stopLessonBgm } from './sfx'
 import { formatDuration, useCountUp, type ServerCompletion } from './completion'
+import type { LessonCheckpoint } from './checkpoint'
+import type { SessionState } from '../core/session'
 
 export interface LessonPlayerProps {
   /** Client-safe document (answers stripped in production; the grader knows them). */
@@ -47,6 +50,8 @@ export interface LessonPlayerProps {
   previewStartLabel?: string
   previewNextLabel?: string
   onExit: () => void
+  recovery?: Pick<LessonCheckpoint, 'state' | 'elapsedMs'>
+  onCheckpoint?: (state: SessionState, elapsedMs: number) => void
   /**
    * Fired once on reaching results. May resolve the server's completion
    * summary (POST /complete response) — the results screen then shows the
@@ -66,7 +71,7 @@ interface Reaction extends CharacterReaction {
   key: number
 }
 
-export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete }: LessonPlayerProps) {
+export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint }: LessonPlayerProps) {
   return (
     <NarrationProvider manifest={audio}>
       <LessonPlayerInner
@@ -78,26 +83,36 @@ export function LessonPlayer({ document: doc, lessonId, grader, audio, preview =
         previewNextLabel={previewNextLabel}
         onExit={onExit}
         onComplete={onComplete}
+        recovery={recovery}
+        onCheckpoint={onCheckpoint}
       />
     </NarrationProvider>
   )
 }
 
-function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete }: Omit<LessonPlayerProps, 'audio'>) {
+function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint }: Omit<LessonPlayerProps, 'audio'>) {
   const { t } = useTranslation()
   const reducer = useMemo(() => createSessionReducer(doc), [doc])
-  const [state, dispatch] = useReducer(reducer, doc, initialSession)
+  const [state, dispatch] = useReducer(reducer, doc, (document) => preview ? initialSession(document) : recovery?.state ?? initialSession(document))
   const [draft, setDraft] = useState<unknown>(undefined)
   const [reaction, setReaction] = useState<Reaction | null>(null)
   const [gradeError, setGradeError] = useState(false)
-  const [server, setServer] = useState<ServerCompletion | null>(null)
+  const { server, status: saveStatus, save, retry: retrySave } = useCompletion()
   const [celebrationDone, setCelebrationDone] = useState(false)
   const director = useMemo(() => createDirector(doc.meta.cast), [doc])
   const narration = useNarration()
   const segStartRef = useRef<number>(Date.now())
-  const lessonStartRef = useRef<number>(Date.now())
+  const lessonStartRef = useRef<number>(Date.now() - (recovery?.elapsedMs ?? 0))
   const secondsSpentRef = useRef(0)
   const completedRef = useRef(false)
+
+  useLayoutEffect(() => {
+    if (preview || !onCheckpoint) return
+    const persist = () => onCheckpoint(state, Math.max(0, Date.now() - lessonStartRef.current))
+    persist()
+    window.addEventListener('pagehide', persist)
+    return () => window.removeEventListener('pagehide', persist)
+  }, [state, preview, onCheckpoint])
 
   const segment = doc.segments[state.index]
   const segState = segment ? state.seg[segment.id] : undefined
@@ -167,19 +182,15 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
         lessonId,
         value: secondsSpentRef.current,
       })
-      const maybe = onComplete?.({
-        score: lessonScore(doc, state),
-        passed: state.outcome === 'passed',
-        xp: earnedXp(doc, state),
-        seconds_spent: secondsSpentRef.current,
-      })
-      if (maybe && typeof (maybe as Promise<ServerCompletion | null>).then === 'function') {
-        void (maybe as Promise<ServerCompletion | null>).then((data) => {
-          if (data) setServer(data)
-        })
+      if (onComplete) {
+        const result = {
+          score: lessonScore(doc, state), passed: state.outcome === 'passed',
+          xp: earnedXp(doc, state), seconds_spent: secondsSpentRef.current,
+        }
+        save(() => onComplete(result))
       }
     }
-  }, [state, doc, onComplete, narration])
+  }, [state, doc, onComplete, narration, save])
 
   const react = useCallback(
     (event: Parameters<typeof director.react>[0], preferred?: CharacterId) => {
@@ -260,7 +271,14 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
     }
     return (
       <Shell>
-        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} />
+        {saveStatus === 'saving' && <p role="status" className="px-5 pt-4 text-center text-content-secondary">{t('lesson.results.saving')}</p>}
+        {saveStatus === 'error' && (
+          <div role="alert" className="mx-auto flex max-w-lg flex-col items-center gap-3 px-5 pt-4 text-center">
+            <p>{t('lesson.results.saveError')}</p>
+            <Button onClick={() => void retrySave()}>{t('lesson.retry')}</Button>
+          </div>
+        )}
+        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} />
       </Shell>
     )
   }
@@ -271,8 +289,8 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
         <div className="mx-auto flex max-w-[720px] flex-1 flex-col items-center justify-center gap-4 px-5 text-center">
           <Icon name="extension_off" className="text-[48px] text-content-faint" />
           <p className="lf-body text-content-muted">{t('lesson.unsupported')}</p>
-          <Button variant="secondary" onClick={() => dispatch({ type: 'NEXT' })}>
-            {t('lesson.continue')}
+          <Button variant="secondary" onClick={onExit}>
+            {t('lesson.exit')}
           </Button>
         </div>
       </Shell>
@@ -1036,18 +1054,20 @@ function ResultsScreen({
   server,
   secondsSpent,
   onExit,
+  pendingSave,
 }: {
   doc: LessonDocument
   state: ReturnType<typeof initialSession>
   server: ServerCompletion | null
   secondsSpent: number
+  pendingSave: boolean
   onExit: () => void
 }) {
   const { t } = useTranslation()
   // Server truth wins once /complete responds; the client's own numbers are
   // the instant fallback so the screen never waits on the network (§7).
   const score = server?.score ?? lessonScore(doc, state)
-  const xp = server?.xp_delta ?? earnedXp(doc, state)
+  const xp = server?.xp_delta ?? (pendingSave ? 0 : earnedXp(doc, state))
   const passed = server?.passed ?? state.outcome === 'passed'
   const streakDays = server?.streak_days ?? 0
   const circumference = 2 * Math.PI * 52
@@ -1197,7 +1217,7 @@ function ResultsScreen({
         here there is exactly one thing to do, so it gets the full width on a
         phone and stops competing with nothing on a desktop.
       */}
-      <Button variant={passed ? 'success' : 'primary'} onClick={onExit} className="w-full sm:w-auto sm:self-center sm:px-10">
+      <Button variant={passed ? 'success' : 'primary'} onClick={onExit} disabled={pendingSave} className="w-full sm:w-auto sm:self-center sm:px-10">
         {t('lesson.results.done')}
       </Button>
     </div>

@@ -17,3 +17,14 @@ export function RequireRole({ role, children }: { role: string | string[]; child
   if (!allowed.some((r) => roles.includes(r))) return <Navigate to={APP_HOME} replace />;
   return <>{children}</>;
 }
+
+/** UI admission only. Core still reads the current grant for every request. */
+export function RequireStaffPermission({ permission, children }: { permission: string | string[]; children: ReactNode }) {
+  const { session, roles, adminPermissions, meLoaded } = useAuth();
+  if (session === undefined || (session && !meLoaded)) return null;
+  const accepted = Array.isArray(permission) ? permission : [permission];
+  if (!roles.includes('superadmin') && (!roles.includes('admin') || !accepted.some((grant) => adminPermissions?.includes(grant)))) {
+    return <Navigate to={APP_HOME} replace />;
+  }
+  return <>{children}</>;
+}

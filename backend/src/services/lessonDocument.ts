@@ -26,13 +26,33 @@ export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocal
  */
 export function stripAnswers(document: Json): Json {
   const segments = document.segments;
-  if (!Array.isArray(segments)) return document;
+  const rootAuthorityFields = ['answer_keys', 'answer_key', 'hidden_tests', 'rubric'];
+  const hasRootAuthority = rootAuthorityFields.some((field) => Object.hasOwn(document, field))
+    || (document.schema_version === 2 && Object.hasOwn(document, 'scoring'));
+  // Retain the long-standing no-allocation behavior for ordinary malformed or
+  // metadata-only v1 input. If such a row does carry authority, clone it and
+  // remove that material below before any response can observe it.
+  if (!Array.isArray(segments) && !hasRootAuthority) return document;
+  const stripped: Json = { ...document };
+  // Client documents must never carry a second copy of server authority.
+  // v2 fails closed in the browser as well, but delivery removes sensitive
+  // authoring mistakes before an untrusted client can observe them.
+  delete stripped.answer_keys;
+  delete stripped.answer_key;
+  delete stripped.hidden_tests;
+  delete stripped.rubric;
+  if (document.schema_version === 2) delete stripped.scoring;
+  if (!Array.isArray(segments)) return stripped;
   return {
-    ...document,
+    ...stripped,
     segments: segments.map((segment) => {
       if (segment && typeof segment === 'object' && !Array.isArray(segment)) {
         const rest: Record<string, unknown> = { ...(segment as Record<string, unknown>) };
         delete rest.answer;
+        delete rest.answer_key;
+        delete rest.answer_keys;
+        delete rest.hidden_tests;
+        delete rest.rubric;
         return rest;
       }
       return segment;
@@ -86,7 +106,27 @@ export function xpBySegmentId(document: Json): Map<string, number> {
   return out;
 }
 
-/** Every graded segment id — defined as the answer_keys entries (story/content segments never get one, LESSON_ENGINE.md §5.1). */
-export function gradedSegmentIds(answerKeys: Json): string[] {
-  return Object.keys(answerKeys);
+const CONTENT_TYPES = new Set(['story_dialogue', 'story_scene', 'key_ideas', 'concept_reveal', 'checkpoint', 'eavesdrop']);
+
+/** Distinguish a real story-only lesson from an unknown or ungradeable exercise before awarding a score. */
+export function completableSegmentIds(document: Json, answerKeys: Json, graderTypes: ReadonlySet<string>, keylessTypes: ReadonlySet<string>): string[] | null {
+  if (document.schema_version !== 1 || !Array.isArray(document.segments) || document.segments.length === 0) return null;
+  const ids = new Set<string>();
+  const graded: string[] = [];
+  for (const raw of document.segments) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const segment = raw as Json;
+    if (typeof segment.id !== 'string' || !segment.id || ids.has(segment.id) || typeof segment.type !== 'string'
+      || typeof segment.xp !== 'number' || !Number.isFinite(segment.xp) || segment.xp < 0) return null;
+    ids.add(segment.id);
+    if (CONTENT_TYPES.has(segment.type)) {
+      if (segment.xp !== 0 || Object.hasOwn(answerKeys, segment.id)) return null;
+      continue;
+    }
+    if (!graderTypes.has(segment.type) || segment.xp <= 0) return null;
+    if (!keylessTypes.has(segment.type) && (!Object.hasOwn(answerKeys, segment.id) || typeof answerKeys[segment.id] !== 'object' || answerKeys[segment.id] === null)) return null;
+    graded.push(segment.id);
+  }
+  if (Object.keys(answerKeys).some((key) => !ids.has(key))) return null;
+  return graded;
 }

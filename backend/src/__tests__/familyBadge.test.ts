@@ -34,6 +34,9 @@ function stub(opts: StubOptions = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes('/parent_verifications?')) {
+        return Promise.resolve(jsonResponse(200, [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }]));
+      }
       const method = init?.method ?? 'GET';
 
       if (url.includes('/rest/v1/user_roles?user_id=eq.')) {

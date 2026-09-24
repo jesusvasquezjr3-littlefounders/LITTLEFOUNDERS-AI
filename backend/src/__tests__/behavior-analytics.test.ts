@@ -32,6 +32,7 @@ function stubUmami(opts: { metrics?: unknown; series?: unknown; fail?: boolean; 
       const url = String(input);
       opts.captured?.push({ url });
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ permission: 'view_analytics' }]));
       if (url.includes('/api/auth/login')) return Promise.resolve(jsonResponse(200, { token: 'umami-token' }));
       if (opts.fail) return Promise.resolve(jsonResponse(500, {}));
       // /stats must precede /metrics: both are website sub-paths and the

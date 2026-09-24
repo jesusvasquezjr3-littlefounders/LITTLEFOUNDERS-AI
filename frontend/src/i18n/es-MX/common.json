@@ -325,7 +325,8 @@
       "done": "Listo",
       "reasonAllowance": "Mesada",
       "reasonSavingsBonus": "Bono que tu familia agregó",
-      "redeemLink": "Canjea tus LF Coins en Tareas"
+      "redeemLink": "Canjea tus LF Coins en Tareas",
+      "frozenHold": "Tus créditos siguen aquí mientras la tarjeta está congelada. Podrás repartirlos cuando se descongele."
     },
     "statement": {
       "title": "Estado de cuenta",

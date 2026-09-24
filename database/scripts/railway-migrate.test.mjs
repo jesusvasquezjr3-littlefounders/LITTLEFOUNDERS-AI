@@ -10,7 +10,7 @@
  * psql output alone — these scenarios pin that contract.
  */
 import { chmodSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, delimiter } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -139,11 +139,15 @@ function run(args, envOverrides = {}) {
   scenarioIndex += 1;
   const callsLog = join(fixtureRoot, `psql-calls-${scenarioIndex}.log`);
   const argsLog = join(fixtureRoot, `railway-args-${scenarioIndex}.log`);
+  // Windows may expose both Path and PATH. Keep one canonical key so the
+  // child cannot resolve WSL's bash instead of the intended Git Bash/fakes.
+  const inheritedPath = Object.entries(process.env).find(([key]) => key.toUpperCase() === 'PATH')?.[1] ?? '';
+  const inheritedEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => key.toUpperCase() !== 'PATH'));
   const result = spawnSync('bash', [runner, ...args], {
     cwd: dbDir,
     env: {
-      ...process.env,
-      PATH: `${binDir}:${process.env.PATH ?? ''}`,
+      ...inheritedEnv,
+      PATH: `${binDir}${delimiter}${inheritedPath}`,
       RAILWAY_TOKEN: 'test-railway-token',
       RAILWAY_SSH_KEY_PATH: keyPath,
       RAILWAY_SSH_ATTEMPTS: '1',

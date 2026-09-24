@@ -325,7 +325,8 @@
       "done": "Done",
       "reasonAllowance": "Allowance",
       "reasonSavingsBonus": "Bonus your family added",
-      "redeemLink": "Redeem LF Coins on Tasks"
+      "redeemLink": "Redeem LF Coins on Tasks",
+      "frozenHold": "Your credits stay here while the card is frozen. You can split them after it is unfrozen."
     },
     "statement": {
       "title": "Statement",

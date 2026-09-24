@@ -71,6 +71,7 @@ function stubRest(opts: {
       opts.calls?.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) : null });
 
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, ['view_analytics', 'manage_support'].map((permission) => ({ user_id: ADMIN_ID, permission }))));
       if (url.includes('/rest/v1/audit_logs')) return Promise.resolve(jsonResponse(201, {}));
       if (url.includes('/rest/v1/rpc/record_staff_ip_sighting')) return Promise.resolve(jsonResponse(200, {}));
       if (url.includes('/rest/v1/profiles')) {

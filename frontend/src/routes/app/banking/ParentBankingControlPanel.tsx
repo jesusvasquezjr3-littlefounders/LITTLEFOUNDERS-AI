@@ -53,6 +53,10 @@ export function ParentBankingControlPanel() {
   const [kidData, setKidData] = useState<KidDataState>({ status: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const [liveMessage, setLiveMessage] = useState('');
+  const [freezeBusy, setFreezeBusy] = useState(false);
+  const [freezeError, setFreezeError] = useState<string | null>(null);
+  const viewVersion = useRef(0);
+  const freezePending = useRef(false);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,6 +78,14 @@ export function ParentBankingControlPanel() {
       cancelled = true;
     };
   }, [getToken]);
+
+  useEffect(() => {
+    viewVersion.current += 1;
+    freezePending.current = false;
+    setFreezeBusy(false);
+    setFreezeError(null);
+    return () => { viewVersion.current += 1; };
+  }, [token, selectedKidId]);
 
   useEffect(() => {
     if (!token || !selectedKidId) return;
@@ -122,12 +134,22 @@ export function ParentBankingControlPanel() {
   }
 
   async function onToggleFreeze(next: boolean) {
-    if (!token || !selectedKidId) return;
-    const res = await api<{ account: WireBankingAccount }>(`/banking/accounts/${selectedKidId}/freeze`, { method: 'POST', token, body: { frozen: next } });
-    if (res.data) {
-      setKidData((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
-      announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
+    if (!token || !selectedKidId || freezePending.current) return;
+    const version = viewVersion.current;
+    const kidId = selectedKidId;
+    freezePending.current = true;
+    setFreezeBusy(true);
+    setFreezeError(null);
+    const res = await api<{ account: WireBankingAccount }>(`/banking/accounts/${kidId}/freeze`, { method: 'POST', token, body: { frozen: next } });
+    if (version !== viewVersion.current) return;
+    freezePending.current = false;
+    setFreezeBusy(false);
+    if (res.error) {
+      setFreezeError(res.error?.code ?? 'DATA_UNAVAILABLE');
+      return;
     }
+    setKidData((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
+    announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
   }
 
   async function onDecideRedemption(id: string, approve: boolean) {
@@ -185,6 +207,7 @@ export function ParentBankingControlPanel() {
         </div>
       )}
 
+      {freezeError && <ErrorBanner code={freezeError} />}
       {kidData.status === 'loading' && <p className="lf-body p-4 text-content-muted">{t('banking.loading')}</p>}
       {kidData.status === 'error' && <ErrorBanner code={kidData.code} onRetry={() => setReloadKey((k) => k + 1)} />}
 
@@ -206,6 +229,8 @@ export function ParentBankingControlPanel() {
             <button
               type="button"
               role="switch"
+              aria-label={t('banking.kid.freezeToggle')}
+              disabled={freezeBusy}
               aria-checked={kidData.account.frozen}
               onClick={() => onToggleFreeze(!(kidData.status === 'ready' && kidData.account?.frozen))}
               className={cn('lf-switch', kidData.account.frozen && 'lf-switch-on')}

@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { getConfig } from '../config.js';
-import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import { authedUser, requireAdminPermission, requireAuth, requireRole } from '../middleware/auth.js';
 import {
   readActivationFunnel,
   readCohortRetention,
@@ -70,7 +70,7 @@ import {
   recordStaffSighting,
   revokeExclusion,
 } from '../services/analyticsExclusions.js';
-import { insertAuditLog } from '../services/supabaseRest.js';
+import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -91,6 +91,7 @@ import {
   isCourseStatus,
   isLessonStatus,
   listAdminCourses,
+  listCourseAssemblyIncidents,
   listAdminUsers,
   listAudit,
   listReviewLessons,
@@ -103,14 +104,13 @@ import {
 } from '../services/adminData.js';
 
 /*
- * /api/v1/admin — the staff console's data plane (/AGENTS.md §1.4: admin AND
- * superadmin may read platform content/support surfaces; role-mutation
- * endpoints, when they land, gate on superadmin only). Analytics & health are
- * Core-brokered reads from Pulse (pulse/AGENTS.md #5): Plausible/Umami/Kuma
- * tokens never reach the browser, responses are cached (services/pulse.ts).
+ * /api/v1/admin — the staff console's data plane. Admins need a current named
+ * grant for each staff surface; Superadmins retain full access. Role and grant
+ * mutations require Superadmin. Analytics and health are Core-brokered Pulse
+ * reads: external monitoring tokens never reach the browser.
  *
- * Real authorization for anything beyond reads stays in RLS + DB triggers;
- * requireRole here is the app-layer gate (§1.3 "DB AND app layer").
+ * Route gates check the role and current grant before platform reads or writes.
+ * RLS and database triggers remain the second enforcement layer.
  */
 
 /*
@@ -370,6 +370,30 @@ export function adminRouter(): Router {
   const router = Router();
 
   router.use(requireAuth, requireRole(['admin', 'superadmin']));
+  router.use('/users', requireAdminPermission('manage_users'));
+  // The Content screen also loads lesson and Tutor review queues. Guard every
+  // endpoint it uses, including mutations and direct API requests.
+  router.use('/content', requireAdminPermission('manage_content'));
+  router.use('/generation', requireAdminPermission('manage_content'));
+  router.use('/moderation', requireAdminPermission('manage_content'));
+  router.use('/tutor/review-queue', requireAdminPermission('manage_content'));
+  router.use('/analytics', requireAdminPermission('view_analytics'));
+  router.use('/insights', requireAdminPermission('view_analytics'));
+  router.use('/intel', requireAdminPermission('view_analytics'));
+  router.use(/^\/intel-export\.(?:csv|xlsx)$/, requireAdminPermission('view_analytics'));
+  router.use('/health/services', requireAdminPermission('view_analytics'));
+  router.use('/learning/retention', requireAdminPermission('view_analytics'));
+  router.use('/emails', requireAdminPermission('manage_support'));
+  router.use('/audit', requireAdminPermission('manage_support'));
+  router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
+  // IP exclusions and non-read intelligence operations change operational
+  // state. A read-only analytics grant cannot authorize those changes.
+  router.use('/analytics/exclusions', requireAdminPermission('manage_support'));
+  const requireSupport = requireAdminPermission('manage_support');
+  router.use('/intel', (req, res, next) => {
+    if (req.method === 'GET' || req.method === 'HEAD') return next();
+    void requireSupport(req, res, next);
+  });
 
   /*
    * Automatic detection for the exclusion panel: remember which addresses the
@@ -907,7 +931,23 @@ export function adminRouter(): Router {
 
   // ── Overview (todo de un vistazo) ──────────────────────────────────────────
   router.get('/overview', async (_req, res) => {
-    const overview = await getAdminOverview();
+    const isSuperadmin = (res.locals.verifiedRoles as string[]).includes('superadmin');
+    const user = authedUser(res);
+    let grants: { permission: string }[] | null;
+    try {
+      grants = isSuperadmin ? ADMIN_PERMISSIONS.map((permission) => ({ permission }))
+        : await getOwnAdminPermissions(user.accessToken, user.id);
+    } catch {
+      return fail(res, 502, 'INTERNAL', 'Staff permission verification unavailable');
+    }
+    if (!grants) return fail(res, 502, 'INTERNAL', 'Staff permission verification unavailable');
+    const permissions = new Set(grants.map((row) => row.permission));
+    if (permissions.size === 0) return fail(res, 403, 'FORBIDDEN', 'You do not have permission to access this resource');
+    const overview = await getAdminOverview({
+      users: permissions.has('manage_users'),
+      content: permissions.has('manage_content'),
+      audit: permissions.has('manage_support'),
+    });
     if (!overview) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load platform overview');
     ok(res, overview);
   });
@@ -1070,9 +1110,17 @@ export function adminRouter(): Router {
   };
 
   router.get('/content', async (_req, res) => {
-    const [courses, summary] = await Promise.all([listAdminCourses(), getAdminContentSummary()]);
-    if (!courses || !summary) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load content');
-    ok(res, { courses, summary });
+    const [courses, summary, incidents] = await Promise.all([listAdminCourses(), getAdminContentSummary(), listCourseAssemblyIncidents()]);
+    if (!courses || !summary || !incidents) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load content');
+    const courseTitleById = new Map(courses.map((course) => [course.id, course.title]));
+    ok(res, {
+      courses,
+      summary,
+      courseAssemblyIncidents: incidents.map((incident) => ({
+        ...incident,
+        courseTitle: courseTitleById.get(incident.courseId) ?? incident.courseId,
+      })),
+    });
   });
 
   router.post('/content/:courseId/status', async (req, res) => {

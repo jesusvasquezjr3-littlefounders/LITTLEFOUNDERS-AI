@@ -12,22 +12,28 @@ export interface AdminSection {
   path: string;
   icon: string; // Material Symbols ligature
   superadminOnly?: boolean;
+  permission?: 'manage_users' | 'manage_content' | 'view_analytics' | 'manage_support';
 }
 
 export const ADMIN_SECTIONS: AdminSection[] = [
   { key: 'overview', path: '/admin', icon: 'space_dashboard' },
-  { key: 'content', path: '/admin/content', icon: 'menu_book' },
-  { key: 'users', path: '/admin/users', icon: 'group' },
-  { key: 'emails', path: '/admin/emails', icon: 'mail' },
-  { key: 'analytics', path: '/admin/analytics', icon: 'monitoring' },
-  { key: 'intel', path: '/admin/intel', icon: 'bar_chart' },
-  { key: 'generation', path: '/admin/generation', icon: 'precision_manufacturing' },
-  { key: 'audit', path: '/admin/audit', icon: 'history' },
+  { key: 'content', path: '/admin/content', icon: 'menu_book', permission: 'manage_content' },
+  { key: 'users', path: '/admin/users', icon: 'group', permission: 'manage_users' },
+  { key: 'emails', path: '/admin/emails', icon: 'mail', permission: 'manage_support' },
+  { key: 'analytics', path: '/admin/analytics', icon: 'monitoring', permission: 'view_analytics' },
+  { key: 'intel', path: '/admin/intel', icon: 'bar_chart', permission: 'view_analytics' },
+  { key: 'generation', path: '/admin/generation', icon: 'precision_manufacturing', permission: 'manage_content' },
+  { key: 'audit', path: '/admin/audit', icon: 'history', permission: 'manage_support' },
   { key: 'roles', path: '/admin/roles', icon: 'admin_panel_settings', superadminOnly: true },
 ];
 
 /** Sections visible to a user holding these roles. */
-export function visibleAdminSections(roles: string[]): AdminSection[] {
+export function visibleAdminSections(roles: string[], permissions: string[] = []): AdminSection[] {
   const isSuperadmin = roles.includes('superadmin');
-  return ADMIN_SECTIONS.filter((s) => !s.superadminOnly || isSuperadmin);
+  if (!isSuperadmin && !roles.includes('admin')) return [];
+  const hasAnyGrant = ['manage_users', 'manage_content', 'view_analytics', 'manage_support']
+    .some((permission) => permissions.includes(permission));
+  return ADMIN_SECTIONS.filter((s) => (!s.superadminOnly || isSuperadmin)
+    && (s.key !== 'overview' || isSuperadmin || hasAnyGrant)
+    && (!s.permission || isSuperadmin || permissions.includes(s.permission)));
 }

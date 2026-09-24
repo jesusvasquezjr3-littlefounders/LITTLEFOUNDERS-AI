@@ -1,10 +1,20 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ipKeyGenerator } from 'express-rate-limit';
+import { globalRateLimiter } from '../middleware/rateLimit.js';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
-import { startOfLocalDayIso, tierForBirthDate } from '../routes/tutor.js';
+import { startOfLocalDayIso } from '../routes/tutor.js';
+import { knownMentorAgeTier } from '../services/mentorAgeCalibration.js';
 import { getLearnerMemory } from '../services/tutorData.js';
 import { GRADERS } from '../lesson-contract/registry.js';
+
+// Each scenario is an independent learner journey; hundreds of tests must not
+// consume one shared loopback client's rate budget across unrelated scenarios.
+beforeEach(() => {
+  globalRateLimiter.resetKey(ipKeyGenerator('::ffff:127.0.0.1'));
+  globalRateLimiter.resetKey('127.0.0.1');
+});
 
 /*
  * The Tutor's Core surface (/ORACLE.md).
@@ -70,6 +80,8 @@ const MCQ_SEGMENT = {
 };
 
 interface StubOpts {
+  calibrationTier?: 1 | 2 | 3 | null;
+  declaredAgeBand?: 'under_13' | '13_to_17' | 'adult';
   /** Catalog fixtures for the ladder. Absent means "no published content". */
   courses?: unknown[];
   topics?: unknown[];
@@ -82,6 +94,8 @@ interface StubOpts {
   /** The human-published bank (tier 2). Absent by default, matching the catalog's own "no content" default. */
   packs?: unknown[];
   roles?: { role: string }[];
+  parentVerifications?: unknown[];
+  safetyOrigins?: unknown[];
   profile?: unknown;
   consent?: unknown[];
   sessions?: unknown[];
@@ -241,6 +255,10 @@ function stub(opts: StubOpts = {}) {
         );
       }
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, opts.roles ?? [{ role: 'kid' }]));
+      if (url.includes('/rest/v1/parent_verifications')) return Promise.resolve(jsonResponse(200, opts.parentVerifications ?? []));
+      if (url.includes('/rest/v1/account_safety_origins')) return Promise.resolve(jsonResponse(200, opts.safetyOrigins ?? []));
+      if (url.includes('/rest/v1/account_age_declarations')) return Promise.resolve(jsonResponse(200, [{ declared_age_band: opts.declaredAgeBand ?? 'under_13' }]));
+      if (url.includes('/rest/v1/mentor_age_calibrations')) return Promise.resolve(jsonResponse(200, opts.calibrationTier === null ? [] : [{ tier: opts.calibrationTier ?? 2 }]));
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [opts.profile ?? KID_PROFILE]));
       if (url.includes('/rest/v1/tutor_voice_consent')) {
         if (method === 'POST' || method === 'PATCH') return Promise.resolve(jsonResponse(200, opts.consent ?? []));
@@ -452,18 +470,58 @@ function stub(opts: StubOpts = {}) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('tierForBirthDate', () => {
+describe('confirmed Mentor teaching register', () => {
+  it('refuses session admission and map recommendations until unknown age is calibrated', async () => {
+    const calls = stub({ profile: { ...KID_PROFILE, birth_date: null }, calibrationTier: null });
+    const app = createApp();
+    const session = await request(app).post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ intent: 'course_topic', wantsVoice: false });
+    expect(session.status).toBe(403);
+    expect(session.body.error.code).toBe('MENTOR_AGE_CALIBRATION_REQUIRED');
+    const map = await request(app).get('/api/v1/tutor/map')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(map.status).toBe(403);
+    expect(calls.some(c => c.url.includes('/rpc/start_tutor_session_checked'))).toBe(false);
+  });
+  it('persists the calibrated youngest register without granting microphone access', async () => {
+    const calls = stub({ profile: { ...KID_PROFILE, birth_date: null }, calibrationTier: 1, consent: [] });
+    const response = await request(createApp()).post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ intent: 'course_topic', wantsVoice: true });
+    expect(response.status).toBe(201);
+    const insert = calls.find(c => c.url.includes('/rpc/start_tutor_session_checked'));
+    expect(JSON.parse(insert?.body ?? '{}').p_tier).toBe(1);
+    expect(JSON.parse(insert?.body ?? '{}').p_voice_used).toBe(false);
+  });
+  it('starts a session in the stored teen register while keeping minor voice safeguards', async () => {
+    const calls = stub({ declaredAgeBand: '13_to_17', profile: { ...KID_PROFILE, birth_date: null }, roles: [{ role: 'universal' }], consent: [] });
+    const response = await request(createApp()).post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ intent: 'course_topic', wantsVoice: true });
+    expect(response.status).toBe(201);
+    const insert = calls.find(c => c.url.includes('/rpc/start_tutor_session_checked'));
+    expect(JSON.parse(insert?.body ?? '{}').p_tier).toBe(3);
+    expect(JSON.parse(insert?.body ?? '{}').p_voice_used).toBe(false);
+  });
+  it.each(['13_to_17', 'adult'] as const)('uses stored %s evidence without a profile date', ageBand => {
+    expect(knownMentorAgeTier(null, { ageBand, required: false, protectedOrigin: false })).toBe(3);
+    expect(knownMentorAgeTier('2020-01-01', { ageBand, required: false, protectedOrigin: false })).toBe(3);
+  });
+  it('does not use a contradictory adult declaration to override protected origin', () => {
+    expect(knownMentorAgeTier(null, { ageBand: 'adult', required: false, protectedOrigin: true })).toBeNull();
+  });
   const now = new Date('2026-08-21T00:00:00Z');
   it.each([
     ['2020-01-01', 1],
     ['2018-01-01', 2],
     ['2010-01-01', 3],
   ])('maps %s to tier %i', (date, tier) => {
-    expect(tierForBirthDate(date, now)).toBe(tier);
+    expect(knownMentorAgeTier(date, { ageBand: date === '2010-01-01' ? '13_to_17' : 'under_13', required: false, protectedOrigin: false }, now)).toBe(tier);
   });
 
-  it('uses the middle band for an unknown birth date, never the adult band', () => {
-    expect(tierForBirthDate(null, now)).toBe(2);
+  it('keeps an unknown child register explicit', () => {
+    expect(knownMentorAgeTier(null, { ageBand: 'under_13', required: false, protectedOrigin: false }, now)).toBeNull();
   });
 });
 
@@ -557,7 +615,78 @@ describe('GET /api/v1/tutor/preferences — the server-side picker marker', () =
   });
 });
 
+describe('S01.1: C.2/C.3 across offers, session admission and Oracle context', () => {
+  const populations: { name: string; roles: { role: string }[]; birthDate: string | null; parentVerifications?: unknown[]; anonymous?: boolean; restFailures?: string[] }[] = [
+    { name: 'age-unknown guest', roles: [{ role: 'universal' }], birthDate: null, anonymous: true },
+    { name: 'self-registered teen', roles: [{ role: 'universal' }], birthDate: '2011-01-01' },
+    { name: 'self-declared adult without trusted evidence', roles: [{ role: 'universal' }], birthDate: '1990-01-01' },
+    { name: 'staff account without age evidence', roles: [{ role: 'admin' }], birthDate: null },
+    { name: 'staff-granted parent', roles: [{ role: 'parent' }], birthDate: '1990-01-01' },
+    { name: 'revoked ID verification', roles: [{ role: 'parent' }], birthDate: '1990-01-01', parentVerifications: [{ status: 'revoked', method: 'local-ocr', birth_date: '1990-01-01' }] },
+    { name: 'unavailable verification store', roles: [{ role: 'parent' }], birthDate: '1990-01-01', restFailures: ['/parent_verifications'] },
+  ];
+  it.each(populations)('protects $name regardless of editable profile date or requested voice', async (population) => {
+    const calls = stub({ roles: population.roles, profile: { ...KID_PROFILE, birth_date: population.birthDate },
+      parentVerifications: population.parentVerifications, restFailures: population.restFailures, consent: [] });
+    const token = mintToken({ sub: KID, is_anonymous: population.anonymous });
+    const offers = await request(createApp()).get('/api/v1/tutor/offers').set('Authorization', `Bearer ${token}`);
+    expect(offers.status).toBe(200);
+    expect(offers.body.data.microphoneBlockedBy).toBe('CONSENT_REQUIRED');
+    const started = await request(createApp()).post('/api/v1/tutor/sessions').set('Authorization', `Bearer ${token}`)
+      .send({ intent: 'open', wantsVoice: true });
+    expect(started.status).toBe(201);
+    expect(started.body.data.microphoneAvailable).toBe(false);
+    expect(started.body.data.microphoneBlockedBy).toBe('CONSENT_REQUIRED');
+    const insert = calls.find(c => c.url.includes('/rpc/start_tutor_session_checked'));
+    expect(JSON.parse(insert?.body ?? '{}').p_voice_used).toBe(false);
+    const preflights = calls.filter(c => c.url.includes('/api/v1/tutor/preflight'));
+    expect(preflights).toHaveLength(2);
+    expect(preflights.every(c => JSON.parse(c.body ?? '{}').isMinor === true)).toBe(true);
+    expect(JSON.parse(preflights[1]?.body ?? '{}').wantsVoice).toBe(false);
+    const context = await request(createApp()).get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect(context.status).toBe(200);
+    expect(context.body.data.isMinor).toBe(true);
+    expect(context.body.data.voiceConsent).toBe(false);
+    expect(context.body.data).not.toHaveProperty('birth_date');
+    expect(context.body.data).not.toHaveProperty('parentVerifications');
+  });
+
+  it('refreshes the posture after ID revocation instead of retaining an adult exemption', async () => {
+    const opts: StubOpts = { roles: [{ role: 'parent' }], parentVerifications: [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }] };
+    stub(opts);
+    const read = () => request(createApp()).get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect((await read()).body.data.isMinor).toBe(false);
+    opts.parentVerifications = [{ status: 'revoked', method: 'local-ocr', birth_date: '1990-01-01' }];
+    expect((await read()).body.data.isMinor).toBe(true);
+  });
+});
+
 describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
+  it.each([false, true])('keeps flagged origin protected after anonymous status becomes %s, even with consent', async (anonymous) => {
+    const calls = stub({ roles: [{ role: 'universal' }], safetyOrigins: [{ under13_origin: true }],
+      consent: [{ id: '55555555-5555-4555-8555-555555555555', user_id: KID, revoked_at: null }] });
+    const token = mintToken({ sub: KID, is_anonymous: anonymous });
+    const offers = await request(createApp()).get('/api/v1/tutor/offers').set('Authorization', `Bearer ${token}`);
+    expect(offers.body.data.microphoneBlockedBy).toBe('POLICY_BLOCKED');
+    const start = await request(createApp()).post('/api/v1/tutor/sessions').set('Authorization', `Bearer ${token}`)
+      .send({ intent: 'open', wantsVoice: true });
+    expect(start.status).toBe(201);
+    expect(start.body.data.microphoneAvailable).toBe(false);
+    expect(start.body.data.microphoneBlockedBy).toBe('POLICY_BLOCKED');
+    const context = await request(createApp()).get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect(context.body.data.isMinor).toBe(true);
+    expect(context.body.data.voiceConsent).toBe(false);
+    const consent = await request(createApp()).get(`/api/v1/tutor/internal/consent/${KID}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect(consent.body.data.active).toBe(false);
+    const preflights = calls.filter(c => c.url.includes('/api/v1/tutor/preflight'));
+    expect(preflights.every(c => JSON.parse(c.body ?? '{}').isMinor === true)).toBe(true);
+    expect(JSON.parse(preflights[1]?.body ?? '{}').wantsVoice).toBe(false);
+  });
+
   it('refuses the microphone for a kid with NO guardian consent', async () => {
     const calls = stub({
       roles: [{ role: 'kid' }],
@@ -608,8 +737,8 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
     expect(response.body.data.microphoneAvailable).toBe(true);
   });
 
-  it('does not require consent for an adult', async () => {
-    stub({ roles: [{ role: 'universal' }], consent: [] });
+  it('does not require consent for an ID-verified adult', async () => {
+    stub({ roles: [{ role: 'parent' }], parentVerifications: [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }], consent: [] });
 
     const response = await request(createApp())
       .post('/api/v1/tutor/sessions')
@@ -666,9 +795,10 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
     expect(response.body.data.microphoneBlockedBy).toBe('POLICY_BLOCKED');
   });
 
-  it('does not apply the minor policy to an adult', async () => {
+  it('does not apply the minor policy to an ID-verified adult', async () => {
     stub({
-      roles: [{ role: 'universal' }],
+      roles: [{ role: 'parent' }],
+      parentVerifications: [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }],
       preflight: {
         canStart: true,
         blockedBy: null,
@@ -683,8 +813,7 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
       .send({ intent: 'open', wantsVoice: true });
 
-    // The DPA gates a CHILD's voice reaching a third party. It says nothing
-    // about an adult's, and gating both would be a policy nobody chose.
+    // Verified adulthood is the explicit C.2/C.3 exception, never a role alone.
     expect(response.body.data.microphoneAvailable).toBe(true);
     expect(response.body.data.microphoneBlockedBy).toBeNull();
   });
@@ -1247,6 +1376,22 @@ describe('GET /offers → POST /sessions — the "continue" chip must resume som
 });
 
 describe('POST /api/v1/tutor/sessions/:id/resume', () => {
+  it.each([
+    [null, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED'],
+    [1, 409, 'SESSION_AGE_CHANGED'],
+  ] as const)('refuses an uncalibrated or stale legacy session at both socket admission boundaries (%s)', async (calibrationTier, status, code) => {
+    stub({ profile: { ...KID_PROFILE, birth_date: null }, calibrationTier });
+    const app = createApp();
+    const resume = await request(app).post(`/api/v1/tutor/sessions/${SESSION}/resume`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`).send({});
+    const context = await request(app).get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    for (const response of [resume, context]) {
+      expect(response.status).toBe(status);
+      expect(response.body.error.code).toBe(code);
+      expect(response.body.data).toBeNull();
+    }
+  });
   it('mints a FRESH single-use socket URL for the owner of a still-open session', async () => {
     stub();
 
@@ -2481,6 +2626,27 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
 describe('the LEARNER store parks for guardian approval when the learner is a kid', () => {
   const PROPOSAL = '55555555-5555-4555-8555-555555555555';
   const guardianOfKid = [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }];
+
+  it.each(['universal', 'parent', 'admin'])('requires review for a verified dependant with role %s', async role => {
+    const calls = stub({ roles: [{ role }], guardianLinks: guardianOfKid });
+    const response = await request(createApp()).put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, stores: { learner: 'Synthetic learner note.', pedagogy: null }, expectedBefore: { learner: null, pedagogy: null } });
+    expect(response.status).toBe(200);
+    expect(response.body.data.pending).toEqual(['learner']);
+    expect(calls.some(call => call.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    expect(calls.some(call => call.method === 'POST' && call.url.includes('learner_memory_proposals'))).toBe(true);
+    expect(calls.some(call => call.url.includes('/guardian_links?kid_user_id=eq.') && call.url.includes('verification_status=eq.verified'))).toBe(true);
+  });
+  it('refuses memory writes when guardian eligibility cannot be read', async () => {
+    const calls = stub({ roles: [{ role: 'universal' }], restFailures: ['guardian_links'] });
+    const response = await request(createApp()).put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, stores: { learner: 'Synthetic learner note.', pedagogy: 'Synthetic teaching note.' }, expectedBefore: { learner: null, pedagogy: null } });
+    expect(response.status).toBe(502);
+    expect(calls.some(call => call.url.includes('/rpc/write_learner_memory_pair_checked'))).toBe(false);
+    expect(calls.some(call => call.method === 'POST' && call.url.includes('learner_memory_proposals'))).toBe(false);
+  });
 
   it('parks the learner note instead of writing it, and says so as PENDING', async () => {
     // `roles` defaults to `[{ role: 'kid' }]` in this suite's stub.

@@ -29,20 +29,12 @@ import { characterFor, useGuidedVoice } from '@/guided-voice/useGuidedVoice';
  * where audio has not been unlocked yet.
  */
 
-const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DISCOVERY_CHANNELS = ['friend', 'social_media', 'search', 'app_store', 'school', 'ad', 'other'] as const;
 type DiscoveryChannel = (typeof DISCOVERY_CHANNELS)[number];
 
-const STEPS = ['welcome', 'name', 'age', 'discovery', 'account'] as const;
+// Mandatory age declaration happens in RequireAgeScreen before this flow.
+const STEPS = ['welcome', 'name', 'discovery', 'account'] as const;
 type StepName = (typeof STEPS)[number];
-
-/** Sanity floor/ceiling for a typed date, so a slip of the keyboard is caught before the server sees it. */
-function birthDateOutOfRange(value: string): boolean {
-  const time = Date.parse(value);
-  if (Number.isNaN(time)) return true;
-  const year = Number(value.slice(0, 4));
-  return time > Date.now() || year < 1900;
-}
 
 export function OnboardingPage() {
   const { t } = useTranslation();
@@ -53,7 +45,6 @@ export function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [displayName, setDisplayName] = useState('');
   const [discoveryChannel, setDiscoveryChannel] = useState<DiscoveryChannel | null>(null);
-  const [birthDate, setBirthDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   /** Flips on the first tap. Until then the browser will refuse to make noise anyway. */
@@ -86,7 +77,6 @@ export function OnboardingPage() {
   if (onboardingComplete && !submitting) return <Navigate to={APP_HOME} replace />;
 
   const trimmedName = displayName.trim();
-  const birthDateInvalid = birthDate.length > 0 && (!BIRTH_DATE_RE.test(birthDate) || birthDateOutOfRange(birthDate));
 
   function advance(delta: 1 | -1) {
     gestured.current = true;
@@ -103,7 +93,6 @@ export function OnboardingPage() {
       body: {
         displayName: trimmedName,
         discoveryChannel: discoveryChannel ?? undefined,
-        birthDate: birthDate || undefined,
         accountOfferChoice,
         localDate: new Date().toISOString().slice(0, 10),
       },
@@ -125,16 +114,14 @@ export function OnboardingPage() {
   }));
 
   /*
-   * The character reacts to what the learner has actually done — a filled name,
-   * a chosen date — with an on-screen aside. These are interpolated and so have
+   * The character reacts to the learner's filled name with an on-screen aside.
+   * These are interpolated and so have
    * no recorded audio by construction; the spoken line stays the fixed one.
    */
   const aside =
     current === 'name' && trimmedName
       ? t('onboarding.name.bubbleFilled', { name: trimmedName })
-      : current === 'age' && birthDate && !birthDateInvalid
-        ? t('onboarding.age.bubbleFilled')
-        : null;
+      : null;
 
   return (
     <GuidedStage
@@ -192,44 +179,6 @@ export function OnboardingPage() {
             {t('onboarding.continue')}
           </Button>
         </form>
-      )}
-
-      {current === 'age' && (
-        <div className="flex flex-col gap-6">
-          <div>
-            <h1 className="lf-display-lg text-content">{t('onboarding.age.title')}</h1>
-            <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.age.subtitle')}</p>
-          </div>
-          {/*
-           * A real date input, not a yyyy-mm-dd text field. The old one asked a
-           * six-year-old to type a format; this opens the platform's own date
-           * picker on every phone.
-           */}
-          <Field
-            label={t('onboarding.age.label')}
-            type="date"
-            max={new Date().toISOString().slice(0, 10)}
-            min="1900-01-01"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            error={birthDateInvalid ? t('onboarding.age.invalid') : undefined}
-          />
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => {
-                setBirthDate('');
-                advance(1);
-              }}
-            >
-              {t('onboarding.skip')}
-            </Button>
-            <Button className="flex-1" disabled={birthDateInvalid} onClick={() => advance(1)}>
-              {t('onboarding.continue')}
-            </Button>
-          </div>
-        </div>
       )}
 
       {current === 'discovery' && (

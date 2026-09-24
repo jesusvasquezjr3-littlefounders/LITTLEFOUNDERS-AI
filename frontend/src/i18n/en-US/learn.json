@@ -39,6 +39,10 @@
     "badge": "Still being built",
     "notice": "We're still building this course: some lessons don't have narration or illustrations yet. Thanks for your patience."
   },
+  "courseUnavailable": {
+    "title": "We couldn't load this right now",
+    "body": "{{title}} is unavailable for the moment. Please try again soon."
+  },
   "carousel": {
     "label": "Your courses",
     "slide": "Course {{n}} of {{total}}",

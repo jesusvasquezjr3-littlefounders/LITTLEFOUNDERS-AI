@@ -39,6 +39,10 @@
     "badge": "En construcción",
     "notice": "Seguimos construyendo este curso: por ahora algunas lecciones van sin voz ni ilustraciones. Gracias por la paciencia."
   },
+  "courseUnavailable": {
+    "title": "No pudimos cargar esto ahora",
+    "body": "{{title}} no está disponible por el momento. Inténtalo de nuevo pronto."
+  },
   "carousel": {
     "label": "Tus cursos",
     "slide": "Curso {{n}} de {{total}}",

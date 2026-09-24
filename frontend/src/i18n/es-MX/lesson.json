@@ -7,7 +7,7 @@
   "skip": "Saltar por ahora",
   "hint": "Pista",
   "exit": "Salir de la lección",
-  "unsupported": "Este ejercicio necesita una versión más nueva de la app. Saltarlo no afecta tu puntaje.",
+  "unsupported": "Actualiza la app para terminar esta lección.",
   "gradeError": "No pudimos revisar tu respuesta ahora mismo. ¡Inténtalo otra vez!",
   "answer": {
     "correct": "Respuesta correcta",
@@ -47,6 +47,8 @@
     }
   },
   "results": {
+    "saving": "Guardando tu progreso…",
+    "saveError": "No se ha confirmado el guardado de tu progreso. Mantén esta pantalla abierta e inténtalo de nuevo.",
     "passedTitle": "¡Lección completada!",
     "failedTitle": "¡Buen esfuerzo!",
     "score": "Puntaje: {{score}} de 100",

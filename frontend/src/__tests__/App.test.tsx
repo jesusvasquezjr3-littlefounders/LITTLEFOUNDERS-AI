@@ -19,6 +19,15 @@ beforeEach(async () => {
 });
 
 describe('Marketing site', () => {
+  it('gives the mobile header CTA one named link without nested interactive controls', () => {
+    renderApp('/faq');
+    const header = screen.getByRole('banner');
+    const mobileCta = header.querySelector('a.md\\:hidden[aria-label]');
+    expect(mobileCta).not.toBeNull();
+    expect(mobileCta).toHaveAccessibleName();
+    expect(mobileCta?.querySelector('button')).toBeNull();
+  });
+
   it('renders the landing page with its marketing narrative and CTA', () => {
     renderApp();
     /*

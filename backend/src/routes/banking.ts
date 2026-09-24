@@ -1,3 +1,4 @@
+import { requireUnfrozenBanking } from '../middleware/bankingFreeze.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
@@ -383,8 +384,14 @@ export function bankingRouter(): Router {
     const kid = authedUser(res);
     const parsed = SetFrozen.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'frozen must be a boolean');
+    const existing = await getBankingAccount(kid.id);
+    if (existing === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not verify freeze ownership');
+    if (!existing) return fail(res, 404, NOT_FOUND, 'No account to freeze yet');
+    if (existing.frozen && existing.frozen_by !== kid.id) {
+      return fail(res, 403, 'GUARDIAN_FREEZE', 'Only your guardian can change this freeze');
+    }
     const account = await setBankingAccountFrozen(kid.id, parsed.data.frozen, kid.id);
-    if (!account) return fail(res, 404, NOT_FOUND, 'No account to freeze yet');
+    if (!account) return fail(res, 409, 'FREEZE_CHANGED', 'The account changed; reload before trying again');
     await insertAuditLog(kid.id, parsed.data.frozen ? 'banking.frozen' : 'banking.unfrozen', kid.id, {});
     return ok(res, { account: toWireAccount(account) });
   });
@@ -433,6 +440,7 @@ export function bankingRouter(): Router {
     const credit = await getPendingCreditById(id.data);
     if (!credit || credit.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such credit');
 
+    if (!await requireUnfrozenBanking(kid.id, res)) return;
     const allocated = await allocatePendingCredit({ creditId: id.data, kidId: kid.id, save: parsed.data.save, spend: parsed.data.spend, share: parsed.data.share, createdBy: kid.id });
     if (allocated === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not allocate the credit');
     if (allocated === false) return fail(res, 409, CONFLICT, 'This credit is not ready to allocate, or the split is invalid');

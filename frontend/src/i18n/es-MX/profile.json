@@ -97,6 +97,7 @@
     "saving": "Guardando…",
     "saved": "¡Guardado!",
     "birthDate": "Fecha de nacimiento",
+    "birthDateLocked": "Tu fecha de nacimiento no se puede editar aquí.",
     "birthDateHint": "Formato: aaaa-mm-dd",
     "birthDateInvalid": "Usa el formato aaaa-mm-dd",
     "guestBanner": {

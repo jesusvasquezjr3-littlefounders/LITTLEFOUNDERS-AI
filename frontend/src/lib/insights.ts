@@ -154,6 +154,7 @@ export function setInsightsContext(ctx: { locale?: string }): void {
 
 let queue: QueuedEvent[] = [];
 let enabled = false;
+let configurationGeneration = 0;
 /**
  * Events fired BEFORE the beacon knows whether it may run.
  *
@@ -180,6 +181,7 @@ export function configureInsights(opts: {
   /** Anonymous acquisition mode: identity is the first-party cookie, not a session. */
   anonymous?: boolean;
 }): void {
+  configurationGeneration += 1;
   const nextMode: 'anon' | 'auth' = opts.anonymous === true ? 'anon' : 'auth';
   /*
    * ROTATE THE SESSION WHEN THE IDENTITY CHANGES.
@@ -234,6 +236,7 @@ export function configureInsights(opts: {
 
 /** Test/logout hygiene: forget everything, send nothing further. */
 export function resetInsights(): void {
+  configurationGeneration += 1;
   enabled = false;
   configured = false;
   anonMode = false;
@@ -329,9 +332,10 @@ export async function flushInsights(): Promise<void> {
   }
 
   if (!tokenProvider) return;
+  const generation = configurationGeneration;
   const batch = queue.splice(0, MAX_BATCH);
   const token = await tokenProvider();
-  if (!token) return;
+  if (!token || !enabled || generation !== configurationGeneration) return;
   lastKnownToken = token;
   /*
    * The consented first-party visitor id rides along on authenticated batches

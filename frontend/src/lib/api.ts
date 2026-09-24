@@ -46,9 +46,19 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<Ap
     return { data: null, error: { code: 'INTERNAL', message: 'Network error' } };
   }
 
-  const body = (await res.json().catch(() => null)) as ApiResult<T> | null;
-  if (!body || (body.data === null && body.error === null)) {
+  const body: unknown = await res.json().catch(() => null);
+  if (!body || typeof body !== 'object' || !('data' in body) || !('error' in body)) {
     return { data: null, error: { code: 'INTERNAL', message: 'Malformed response' } };
   }
-  return body;
+  if (body.error !== null) {
+    const error = body.error;
+    if (body.data === null && error && typeof error === 'object'
+      && 'code' in error && typeof error.code === 'string'
+      && 'message' in error && typeof error.message === 'string') {
+      return { data: null, error: error as ApiError };
+    }
+  } else if (res.ok && body.data !== null && body.data !== undefined) {
+    return { data: body.data as T, error: null };
+  }
+  return { data: null, error: { code: 'INTERNAL', message: 'Malformed response' } };
 }

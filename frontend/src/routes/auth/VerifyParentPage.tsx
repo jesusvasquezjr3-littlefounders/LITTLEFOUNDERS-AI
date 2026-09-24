@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
@@ -29,7 +29,22 @@ const SUPPORT_EMAIL = 'informame@littlefounders.ai';
 
 export function VerifyParentPage() {
   const { t } = useTranslation();
-  const { roles, getToken, refreshMe } = useAuth();
+  const { getToken, refreshMe } = useAuth();
+  const [verified, setVerified] = useState<boolean | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [statusAttempt, setStatusAttempt] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    setVerified(null); setStatusError(null);
+    void (async () => {
+      const token = await getToken();
+      const { data, error } = await api<{ verified: boolean }>('/verification/parent', { token });
+      if (cancelled) return;
+      if (error || typeof data?.verified !== 'boolean') setStatusError(error?.code ?? 'INTERNAL');
+      else setVerified(data.verified);
+    })();
+    return () => { cancelled = true; };
+  }, [getToken, statusAttempt]);
 
   /*
    * The form does not open first. It used to ask for a name, a date of birth,
@@ -52,7 +67,6 @@ export function VerifyParentPage() {
 
   const birthDateInvalid = birthDate.length > 0 && !BIRTH_DATE_RE.test(birthDate);
   const birthDateReady = BIRTH_DATE_RE.test(birthDate);
-  const isParent = roles.includes('parent');
 
   const docTypeOptions: DropdownOption<DocumentType>[] = [
     { value: 'national-id', label: t('auth.verify.docTypes.nationalId') },
@@ -85,7 +99,14 @@ export function VerifyParentPage() {
     if (data.verified) void refreshMe();
   }
 
-  if (isParent && !verdict?.verified) {
+  if (verified === null) return <AuthShell character={MENTOR} title={t('auth.verify.checking')}>
+    {statusError ? <>
+      <ErrorBanner code={statusError} onRetry={statusError === 'PARENT_VERIFICATION_REVOKED' ? undefined : () => setStatusAttempt(n => n + 1)} />
+      {statusError === 'PARENT_VERIFICATION_REVOKED' && <a href={`mailto:${SUPPORT_EMAIL}`} className={AUTH_LINK_CLASS}>{SUPPORT_EMAIL}</a>}
+    </> : <div role="status">{t('auth.verify.checking')}</div>}
+  </AuthShell>;
+
+  if (verified && !verdict?.verified) {
     return (
       <AuthShell character={MENTOR} title={t('auth.verify.alreadyTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">

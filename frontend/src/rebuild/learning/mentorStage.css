@@ -1,0 +1,11 @@
+.lf-mentor-band { position: relative; inline-size: 100%; block-size: 96px; overflow: hidden; background: var(--primary); }
+.lf-mentor-band--6-9 { block-size: 110px; }
+.lf-mentor-band--13-17, .lf-mentor-band--adult { block-size: 80px; }
+.lf-mentor-band-still { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: center 38%; }
+.lf-mentor-band-canvas { position: absolute !important; inset: 0; inline-size: 100%; block-size: 100%; overflow: hidden; }
+@container app (min-width: 640px) {
+  .lf-learning--with-stage .lf-learning-inner { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--spacing-6); align-items: start; }
+  .lf-learning--with-stage .lf-learning-top { grid-column: 1 / -1; }
+  .lf-learning--with-stage .lf-mentor-band { grid-column: 1 / 5; block-size: auto; aspect-ratio: 1; }
+  .lf-learning--with-stage .lf-learning-content { grid-column: 5 / -1; margin-block-start: 0; }
+}

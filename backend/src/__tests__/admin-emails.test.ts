@@ -36,6 +36,7 @@ describe('admin email proxy', () => {
       const url = String(input);
       calls.push(url);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(new Response(JSON.stringify([{ role: 'admin' }]), { status: 200 }));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(new Response(JSON.stringify([{ user_id: ADMIN_ID, permission: 'manage_support' }]), { status: 200 }));
       if (url.includes('/api/v1/logs')) return Promise.resolve(new Response(JSON.stringify({ data: emailResponse, error: null }), { status: 200 }));
       throw new Error(`unexpected fetch: ${url}`);
     }));
@@ -61,6 +62,7 @@ describe('admin email proxy', () => {
       const url = String(input);
       calls.push(url);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(new Response(JSON.stringify([{ role: 'admin' }]), { status: 200 }));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(new Response(JSON.stringify([{ user_id: ADMIN_ID, permission: 'manage_support' }]), { status: 200 }));
       if (url.startsWith('http://email-server.railway.internal:4005/')) return Promise.resolve(new Response(JSON.stringify({ data: emailResponse, error: null }), { status: 200 }));
       throw new Error(`unexpected fetch: ${url}`);
     }));
@@ -76,6 +78,7 @@ describe('admin email proxy', () => {
       const url = String(input);
       calls.push(url);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(new Response(JSON.stringify([{ role: 'admin' }]), { status: 200 }));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(new Response(JSON.stringify([{ user_id: ADMIN_ID, permission: 'manage_support' }]), { status: 200 }));
       if (url.includes('/api/v1/logs/summary')) return Promise.resolve(new Response(JSON.stringify({ data: { total: 0, statuses: {}, templates: {}, locales: {}, trend: [] }, error: null }), { status: 200 }));
       throw new Error(`unexpected fetch: ${url}`);
     }));

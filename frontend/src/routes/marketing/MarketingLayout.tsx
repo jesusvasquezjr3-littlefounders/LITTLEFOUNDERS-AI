@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Button, Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { buttonClasses } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 
@@ -89,13 +90,11 @@ export function MarketingLayout() {
                 An icon-only pill keeps the same tap target and destination
                 without the width, so the header CTA is never gone, only
                 relabelled. */}
-            <Link to={ctaTo} aria-label={ctaLabel} className="md:hidden">
-              <Button>
-                <Icon name="arrow_forward" />
-              </Button>
+            <Link to={ctaTo} aria-label={ctaLabel} className={buttonClasses('primary', 'md:hidden')}>
+              <Icon name="arrow_forward" />
             </Link>
-            <Link to={ctaTo} className="hidden md:block">
-              <Button className="px-6 py-2">{ctaLabel}</Button>
+            <Link to={ctaTo} className={buttonClasses('primary', 'hidden px-6 py-2 md:inline-flex')}>
+              {ctaLabel}
             </Link>
             <button
               type="button"
@@ -127,8 +126,8 @@ export function MarketingLayout() {
             <div className="mt-3 flex items-center justify-between sm:hidden">
               <ThemeToggle />
             </div>
-            <Link to={ctaTo} onClick={() => setMenuOpen(false)} className="mt-3 block md:hidden">
-              <Button className="w-full">{ctaLabel}</Button>
+            <Link to={ctaTo} onClick={() => setMenuOpen(false)} className={buttonClasses('primary', 'mt-3 w-full md:hidden')}>
+              {ctaLabel}
             </Link>
           </nav>
         )}

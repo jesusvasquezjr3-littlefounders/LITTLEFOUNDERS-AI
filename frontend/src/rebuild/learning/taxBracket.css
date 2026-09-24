@@ -1,0 +1,9 @@
+.lf-tax-chart { display: grid; gap: var(--spacing-3); }
+.lf-tax-stack { display: block; inline-size: 100%; block-size: 72px; border-radius: var(--rounded-md); overflow: hidden; background: var(--sunken); }
+.lf-tax-slice { transition: width var(--dur-component) var(--ease-standard); }
+.lf-tax-slice--0 { fill: var(--sky-strong); }.lf-tax-slice--1 { fill: var(--mint-strong); }.lf-tax-slice--2 { fill: var(--berry-strong); }
+.lf-tax-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-3); }
+.lf-tax-legend span { align-items: center; display: inline-flex; font-weight: 800; gap: var(--spacing-1); }
+.lf-tax-swatch { block-size: 0.75rem; border-radius: 999px; inline-size: 0.75rem; }.lf-tax-swatch--0 { background: var(--sky-strong); }.lf-tax-swatch--1 { background: var(--mint-strong); }.lf-tax-swatch--2 { background: var(--berry-strong); }
+.lf-tax-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); font-weight: 800; }
+.lf-tax-summary span { padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); overflow-wrap: anywhere; }

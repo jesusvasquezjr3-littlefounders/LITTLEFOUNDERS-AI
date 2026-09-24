@@ -97,6 +97,7 @@
     "saving": "Saving…",
     "saved": "Saved!",
     "birthDate": "Date of birth",
+    "birthDateLocked": "Your birth date cannot be edited here.",
     "birthDateHint": "Format: yyyy-mm-dd",
     "birthDateInvalid": "Use the format yyyy-mm-dd",
     "guestBanner": {

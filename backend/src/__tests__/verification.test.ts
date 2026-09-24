@@ -20,6 +20,8 @@ afterEach(() => vi.unstubAllGlobals());
 
 interface StubOptions {
   existingRoles?: string[];
+  currentVerified?: boolean;
+  verificationRows?: unknown;
   verdict?: { verified: boolean; checks: Record<string, boolean> };
   guardianStatus?: number;
   calls?: string[];
@@ -33,6 +35,7 @@ function stubBackends(opts: StubOptions = {}) {
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes('/parent_verifications?')) return Promise.resolve(jsonResponse(200, opts.verificationRows !== undefined ? opts.verificationRows : opts.currentVerified ? [{ status: 'verified', method: 'local-ocr', birth_date: '1988-02-14' }] : []));
       calls.push(`${init?.method ?? 'GET'} ${url}`);
       if (url.startsWith('http://guardian.test/')) {
         if (opts.guardianStatus && opts.guardianStatus >= 400) {
@@ -61,6 +64,22 @@ function post(token: string, fields: Record<string, string> = FIELDS, attachFile
 }
 
 describe('POST /api/v1/verification/parent', () => {
+  it.each([['parent'], ['universal']])('does not self-reactivate revoked evidence with roles %j', async role => {
+    const calls = stubBackends({ existingRoles: [role], verificationRows: [{ status: 'revoked', method: 'local-ocr', birth_date: '1988-02-14' }] });
+    const token = mintToken({ sub: randomUUID() });
+    const read = await request(createApp()).get('/api/v1/verification/parent').set('Authorization', `Bearer ${token}`);
+    expect(read.status).toBe(403);
+    expect(read.body.error.code).toBe('PARENT_VERIFICATION_REVOKED');
+    const submitted = await post(token);
+    expect(submitted.status).toBe(403);
+    expect(calls.some(c => c.startsWith('POST '))).toBe(false);
+  });
+  it('does not collect a new verification when stored evidence is unavailable', async () => {
+    const calls = stubBackends({ existingRoles: ['parent'], verificationRows: null });
+    const token = mintToken({ sub: randomUUID() });
+    expect((await post(token)).status).toBe(502);
+    expect(calls.some(c => c.startsWith('POST '))).toBe(false);
+  });
   it('401s without a session', async () => {
     const res = await request(createApp()).post('/api/v1/verification/parent');
     expect(res.status).toBe(401);
@@ -98,11 +117,26 @@ describe('POST /api/v1/verification/parent', () => {
     expect(calls.some((c) => c.startsWith('POST http://supabase.test/rest/v1/user_roles'))).toBe(false);
   });
 
-  it('409s when the account is already a parent', async () => {
-    stubBackends({ existingRoles: ['universal', 'parent'] });
+  it('409s when the account is currently ID verified', async () => {
+    stubBackends({ existingRoles: ['universal', 'parent'], currentVerified: true });
     const res = await post(mintToken({ sub: randomUUID() }));
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('ALREADY_VERIFIED');
+  });
+
+  it('allows a staff-granted parent to complete real identity verification', async () => {
+    stubBackends({ existingRoles: ['parent'] });
+    const res = await post(mintToken({ sub: randomUUID() }));
+    expect(res.status).toBe(200);
+    expect(res.body.data.verified).toBe(true);
+  });
+
+  it.each([false, true])('reports current verified evidence rather than the parent role: %s', async currentVerified => {
+    stubBackends({ existingRoles: ['parent'], currentVerified });
+    const res = await request(createApp()).get('/api/v1/verification/parent')
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ verified: currentVerified });
   });
 
   it('502s (never fails open) when Guardian is down', async () => {

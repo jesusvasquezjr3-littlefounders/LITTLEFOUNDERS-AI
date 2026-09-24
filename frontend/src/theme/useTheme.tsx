@@ -103,6 +103,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return <ThemeContext.Provider value={{ choice, setChoice, isDark }}>{children}</ThemeContext.Provider>;
 }
 
+/** Gives an isolated renderer the current visual theme without changing document or saved preferences. */
+export function StaticThemeProvider({ children, isDark }: { children: ReactNode; isDark: boolean }) {
+  return <ThemeContext.Provider value={{ choice: isDark ? 'dark' : 'light', setChoice: () => {}, isDark }}>{children}</ThemeContext.Provider>;
+}
+
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error('useTheme must be used within a ThemeProvider');

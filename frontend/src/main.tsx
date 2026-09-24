@@ -5,6 +5,11 @@ import { App } from '@/App';
 import '@/i18n';
 import '@/index.css';
 import { captureLandingContext } from '@/lib/visitor';
+import { setWasmUrl } from '@lottiefiles/dotlottie-react';
+import lottieWasmUrl from '@lottiefiles/dotlottie-web/dotlottie-player.wasm?url';
+
+// Serve the pinned player with the app so animations do not depend on a CDN.
+setWasmUrl(lottieWasmUrl);
 
 // Snapshot UTM + referrer BEFORE React mounts and the SPA can navigate —
 // they exist only on the landing URL (/INSIGHTS.md §7). Transmits nothing.

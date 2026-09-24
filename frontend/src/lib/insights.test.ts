@@ -33,6 +33,19 @@ beforeEach(() => {
  * waiting to leak out of a later re-configure.
  */
 describe('insights beacon', () => {
+  it.each([false, true])('discards a token-waiting batch after opt-out, including opt-out/opt-in (%s)', async reenable => {
+    let release!: (token: string) => void;
+    const delayed = () => new Promise<string>(resolve => { release = resolve; });
+    configureInsights({ enabled: true, getToken: delayed });
+    trackInsight('nav_view', { routeClass: 'learn' });
+    const pendingFlush = flushInsights();
+    configureInsights({ enabled: false, getToken });
+    if (reenable) configureInsights({ enabled: true, getToken });
+    release('stale-token');
+    await pendingFlush;
+    expect(apiMock).not.toHaveBeenCalled();
+  });
+
   it('disabled: track is a no-op and flush sends nothing', async () => {
     configureInsights({ enabled: false, getToken });
     trackInsight('session_start');

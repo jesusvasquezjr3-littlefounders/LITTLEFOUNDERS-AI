@@ -1,11 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { useTheme } from '@/theme/useTheme';
+import { MentorCalibration } from '@/rebuild/identity/MentorCalibration';
+import calibrationEn from '@/i18n/en-US/rebuild.json';
+import calibrationEs from '@/i18n/es-MX/rebuild.json';
+import calibrationPt from '@/i18n/pt-BR/rebuild.json';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
 import {
   getMap,
+  getAgeCalibration,
+  saveAgeCalibration,
+  type AgeCalibration,
   getOffers,
   getPreferences,
   getTranscript,
@@ -210,8 +218,8 @@ function clearActiveSession(userId: string | undefined): void {
  * against (round 34, 2026-08-30: a UTC-midnight or browser-local-midnight
  * boundary disagrees with it for the large majority of real users). There is
  * no shared package (§1.2), so this is duplicated rather than imported — the
- * same way `tierForBirthDate` is mirrored into `oracle/src/context/schema.ts`:
- * the ALGORITHM travels, the function itself does not. `SESSION_CAP_TIMEZONE`
+ * algorithms are mirrored across independent services: the algorithm travels,
+ * the function itself does not. `SESSION_CAP_TIMEZONE`
  * and the default fallback ('es-MX') are copied byte-for-byte from the same
  * source, including `normalizeLocale`'s own default, so a value this client
  * has never seen degrades exactly the way the server's own default does.
@@ -344,6 +352,12 @@ export function TutorExperience() {
   userIdRef.current = authSession?.user.id;
 
   const [token, setToken] = useState<string | null>(null);
+  const { isDark } = useTheme();
+  const [calibration, setCalibration] = useState<AgeCalibration | null>(null);
+  const [calibrationError, setCalibrationError] = useState(false);
+  const [calibrationSaving, setCalibrationSaving] = useState(false);
+  const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
+  const calibrationGeneration = useRef(0);
 
   /*
    * The learner's real racha/XP (`/profile`, the same numbers
@@ -496,6 +510,9 @@ export function TutorExperience() {
 
   useEffect(() => {
     let cancelled = false;
+    calibrationGeneration.current += 1;
+    setCalibration(null);
+    setPhase('arriving');
 
     void (async () => {
       const authToken = await getToken();
@@ -506,12 +523,13 @@ export function TutorExperience() {
       }
       setToken(authToken);
 
-      const [prefsResult, offersResult, mapResult] = await Promise.all([
+      const [prefsResult, offersResult, mapResult, calibrationResult] = await Promise.all([
         getPreferences(authToken),
         getOffers(authToken),
         // Best-effort: a failed map read falls back to the v2 openings and
         // never blocks the phase — the offers are the load-bearing read.
         getMap(authToken),
+        getAgeCalibration(authToken),
       ]);
       if (cancelled) return;
 
@@ -528,6 +546,13 @@ export function TutorExperience() {
       setCatalog(served);
       setOffers(offersResult.data);
       setMap(mapResult.data ?? null);
+      setCalibration(calibrationResult.data);
+      setCalibrationError(!!calibrationResult.error);
+      setCalibrationSaving(false);
+      if (!calibrationResult.data || calibrationResult.data.required) {
+        setPhase('introducing');
+        return;
+      }
       /*
        * THE OPTIMISTIC LOCAL ECHO OF A REFUSAL ALREADY GIVEN — found by
        * adversarial review, tutor-review-sweep-92 (MEDIUM). `startError`
@@ -606,8 +631,9 @@ export function TutorExperience() {
 
     return () => {
       cancelled = true;
+      calibrationGeneration.current += 1;
     };
-  }, [getToken]);
+  }, [getToken, bootstrapAttempt, authSession?.user.id]);
 
   /**
    * THE LATEST CALL'S OWN ID — not a boolean, because "is a save in flight"
@@ -698,7 +724,7 @@ export function TutorExperience() {
 
   const begin = useCallback(
     (input: StartSessionInput) => {
-      if (!token) return;
+      if (!token || !calibration || calibration.required) return;
       setStarting(true);
       setStartError(null);
       setStartErrorResetAt(null);
@@ -761,7 +787,7 @@ export function TutorExperience() {
     // `offers` only for its `.locale` (read at the moment of a SESSION_LIMIT
     // refusal, above) — a rare, harmless identity change for callers of this
     // memoized function, not a dependency that could ever loop back into it.
-    [token, offers],
+    [token, offers, calibration],
   );
 
   /*
@@ -1612,7 +1638,7 @@ export function TutorExperience() {
 
   return (
     <StageShell
-      mic={mic}
+      mic={{ ...mic, present: mic.present && !(phase === 'introducing' && (!calibration || calibration.required)) }}
       /*
        * THE DOCK IS NAMED FOR WHAT IT IS IN THIS PHASE.
        *
@@ -1727,7 +1753,29 @@ export function TutorExperience() {
         </StageLayer>
       )}
 
-      {phase === 'introducing' && offerLayer && (
+      {phase === 'introducing' && (!calibration || calibration.required) && <StageLayer label={t('tutor.stage.introduceLayer')} placement="world">
+        <MentorCalibration locale={i18n.resolvedLanguage ?? 'en-US'} dark={isDark}
+          copy={(i18n.resolvedLanguage === 'es-MX' ? calibrationEs : i18n.resolvedLanguage === 'pt-BR' ? calibrationPt : calibrationEn).mentorCalibration}
+          state={!calibration ? 'error' : calibrationSaving ? 'saving' : 'form'} error={calibrationError}
+          onRetry={() => setBootstrapAttempt(n => n + 1)}
+          onChoose={tier => {
+            const generation = calibrationGeneration.current;
+            const userId = userIdRef.current;
+            setCalibrationSaving(true); setCalibrationError(false);
+            void (async () => {
+              const currentToken = await getToken();
+              if (generation !== calibrationGeneration.current || userId !== userIdRef.current) return;
+              const result = currentToken ? await saveAgeCalibration(currentToken, tier) : null;
+              if (generation !== calibrationGeneration.current || userId !== userIdRef.current) return;
+              setCalibrationSaving(false);
+              if (!result?.data || result.data.required) { setCalibrationError(true); return; }
+              setCalibration(result.data);
+              setBootstrapAttempt(n => n + 1);
+            })();
+          }} />
+      </StageLayer>}
+
+      {phase === 'introducing' && calibration && !calibration.required && offerLayer && (
         /*
           `world`, like the picker, and for the same reason. The tutor greets in
           a caption over its own head and the openings hang in the air in front

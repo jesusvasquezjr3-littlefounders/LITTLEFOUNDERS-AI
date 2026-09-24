@@ -8,6 +8,9 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
 import { ManageKidPanel } from './ManageKidPanel';
+import { SocialGraphPanel } from './SocialGraphPanel';
+import { SocialHistoryPanel } from './SocialHistoryPanel';
+import { SocialRequestsPanel } from './SocialRequestsPanel';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -39,6 +42,7 @@ export function FamilyPage() {
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [busyKid, setBusyKid] = useState<string | null>(null);
+  const [consentError, setConsentError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,6 +62,7 @@ export function FamilyPage() {
 
   async function toggleConsent(kid: Kid) {
     if (state.status !== 'ready' || busyKid) return;
+    setConsentError(null);
     setBusyKid(kid.userId);
     const token = await getToken();
     const { data, error } = await api<{ kidId: string; analyticsConsent: boolean }>(
@@ -65,7 +70,10 @@ export function FamilyPage() {
       { method: kid.analyticsConsent ? 'DELETE' : 'POST', token },
     );
     setBusyKid(null);
-    if (error || !data) return; // the switch simply stays put — state is server truth
+    if (error || !data) {
+      setConsentError(error?.code ?? 'INTERNAL');
+      return; // Keep the server-confirmed consent state visible.
+    }
     setState((prev) =>
       prev.status === 'ready'
         ? { ...prev, kids: prev.kids.map((k) => (k.userId === data.kidId ? { ...k, analyticsConsent: data.analyticsConsent } : k)) }
@@ -97,7 +105,10 @@ export function FamilyPage() {
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('family.loading')} />;
-  if (state.status === 'error') return <ErrorBanner code={state.code} />;
+  if (state.status === 'error') return <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6">
+    <ErrorBanner code={state.code} />
+    {state.code === 'PARENT_VERIFICATION_REQUIRED' && <Link to="/verify-parent" className="lf-label text-primary underline">{t('auth.verify.checkIdentity')}</Link>}
+  </div>;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6 md:px-6">
@@ -195,6 +206,9 @@ export function FamilyPage() {
                 token={token}
                 kidName={kid.displayName ?? kid.username ?? ''}
               />
+              <SocialRequestsPanel kidUserId={kid.userId} token={token} />
+              <SocialGraphPanel kidUserId={kid.userId} token={token} />
+              <SocialHistoryPanel kidUserId={kid.userId} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}
@@ -208,6 +222,7 @@ export function FamilyPage() {
         </ul>
       )}
 
+      {consentError && <ErrorBanner code={consentError} />}
       {state.kids.length > 0 && <AddKidCard onCreated={onKidCreated} />}
     </div>
   );

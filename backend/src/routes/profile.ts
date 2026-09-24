@@ -1,3 +1,5 @@
+import { mayDiscoverProfile, visibleSocialUsers } from '../services/socialVisibility.js';
+import { getRolesForGate } from '../services/insights.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
@@ -14,7 +16,10 @@ import {
   getLearningStatsByUserId,
   getOwnAvatar,
   hasRole,
+  hasOwnBlock,
+  hasOwnOpenSocialRequest,
   insertFollow,
+  requestSocialConnection,
   isBlockedEitherWay,
   isFollowing,
   listBlocked,
@@ -60,11 +65,6 @@ export const COVER_PRESETS = [
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
-function isValidPastDate(d: string): boolean {
-  const t = Date.parse(d);
-  return !Number.isNaN(t) && t <= Date.now() && Number(d.slice(0, 4)) >= 1900;
-}
-
 const ProfilePatchBody = z
   .object({
     displayName: z.string().trim().min(1).max(80).optional(),
@@ -75,12 +75,8 @@ const ProfilePatchBody = z
       .regex(USERNAME_RE, 'Username must be 3-20 chars: a-z, 0-9, _')
       .optional(),
     locale: z.enum(LOCALES).optional(),
-    birthDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'birthDate must be yyyy-mm-dd')
-      .refine(isValidPastDate, 'Enter a valid birth date')
-      .optional(),
   })
+  .strict()
   .refine((b) => Object.keys(b).length > 0, 'Nothing to update');
 
 const CoverBody = z.object({ preset: z.enum(COVER_PRESETS) });
@@ -171,7 +167,6 @@ export function ownProfileRouter(): Router {
     if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
     if (parsed.data.username !== undefined) patch.username = parsed.data.username;
     if (parsed.data.locale !== undefined) patch.locale = parsed.data.locale;
-    if (parsed.data.birthDate !== undefined) patch.birth_date = parsed.data.birthDate;
 
     const outcome = await patchOwnProfile(user.accessToken, user.id, patch);
     if (outcome === 'conflict') return fail(res, 409, 'USERNAME_TAKEN', 'That @username is already in use');
@@ -201,17 +196,17 @@ export function ownProfileRouter(): Router {
 
   router.get('/followers', async (_req, res) => {
     const users = await listFollowers(authedUser(res).id);
-    return ok(res, { users });
+    return ok(res, { users: await visibleSocialUsers(authedUser(res).id, users) });
   });
 
   router.get('/following', async (_req, res) => {
     const users = await listFollowing(authedUser(res).id);
-    return ok(res, { users });
+    return ok(res, { users: await visibleSocialUsers(authedUser(res).id, users) });
   });
 
   router.get('/blocked', async (_req, res) => {
     const users = await listBlocked(authedUser(res).id);
-    return ok(res, { users });
+    return ok(res, { users: await visibleSocialUsers(authedUser(res).id, users) });
   });
 
   return router;
@@ -231,7 +226,7 @@ export function publicProfilesRouter(): Router {
   /** Visible profile lookup: NOT_FOUND for both "doesn't exist" and "blocked" — never leaks which. */
   async function resolveVisible(username: string, viewerId: string): Promise<FullProfileRow | null> {
     const profile = await resolve(username);
-    if (!profile) return null;
+    if (!profile || !await mayDiscoverProfile(viewerId, profile.user_id)) return null;
     if (profile.user_id !== viewerId && (await isBlockedEitherWay(viewerId, profile.user_id))) return null;
     return profile;
   }
@@ -253,6 +248,7 @@ export function publicProfilesRouter(): Router {
       followers: counts.followers,
       following: counts.following,
       isFollowing: following,
+      requiresGuardianApproval: (await getRolesForGate(profile.user_id))?.includes('kid') ?? true,
       isSelf: profile.user_id === user.id,
       isTutor: tutor,
       learningStats: statsShape(stats),
@@ -264,14 +260,27 @@ export function publicProfilesRouter(): Router {
     const user = authedUser(res);
     const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
     if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
-    return ok(res, { users: await listFollowers(profile.user_id) });
+    return ok(res, { users: await visibleSocialUsers(user.id, await listFollowers(profile.user_id)) });
   });
 
   router.get('/:username/following', async (req, res) => {
     const user = authedUser(res);
     const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
     if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
-    return ok(res, { users: await listFollowing(profile.user_id) });
+    return ok(res, { users: await visibleSocialUsers(user.id, await listFollowing(profile.user_id)) });
+  });
+
+  router.post('/:username/connection-request', async (req, res) => {
+    const user = authedUser(res);
+    if (!z.object({}).strict().safeParse(req.body ?? {}).success) return fail(res, 400, 'VALIDATION_ERROR', 'No request identity fields are accepted');
+    const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
+    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot request yourself');
+    const roles = await getRolesForGate(profile.user_id);
+    if (!roles?.includes('kid')) return fail(res, 400, 'VALIDATION_ERROR', 'This connection does not use guardian approval');
+    const requestId = await requestSocialConnection(user.id, profile.user_id);
+    if (!requestId) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the connection request');
+    return res.status(202).json({ data: { requestId, status: 'pending', following: false }, error: null });
   });
 
   router.post('/:username/follow', async (req, res) => {
@@ -279,6 +288,9 @@ export function publicProfilesRouter(): Router {
     const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
     if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot follow yourself');
+    const targetRoles = await getRolesForGate(profile.user_id);
+    if (!targetRoles?.length) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check connection eligibility');
+    if (targetRoles.includes('kid')) return fail(res, 403, 'GUARDIAN_APPROVAL_REQUIRED', 'A guardian must approve this connection');
     const done = await insertFollow(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not follow');
     return ok(res, { following: true });
@@ -287,19 +299,20 @@ export function publicProfilesRouter(): Router {
   router.delete('/:username/follow', async (req, res) => {
     const user = authedUser(res);
     const profile = await resolve(req.params.username.toLowerCase());
-    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    if (!profile || !(await isFollowing(user.id, profile.user_id) || await hasOwnOpenSocialRequest(user.id, profile.user_id))) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const done = await deleteFollow(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unfollow');
     return ok(res, { following: false });
   });
 
-  // Block/unblock intentionally use resolve() (not resolveVisible): you must
-  // be able to unblock someone whose profile a block is currently hiding.
+  // A block owner may manage their own existing block even when it hides a profile.
   router.post('/:username/block', async (req, res) => {
     const user = authedUser(res);
     const profile = await resolve(req.params.username.toLowerCase());
     if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot block yourself');
+    const ownsBlock = await hasOwnBlock(user.accessToken, user.id, profile.user_id);
+    if (!ownsBlock && !await resolveVisible(req.params.username.toLowerCase(), user.id)) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const done = await blockUser(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not block this account');
     return ok(res, { blocked: true });
@@ -308,7 +321,7 @@ export function publicProfilesRouter(): Router {
   router.delete('/:username/block', async (req, res) => {
     const user = authedUser(res);
     const profile = await resolve(req.params.username.toLowerCase());
-    if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
+    if (!profile || !await hasOwnBlock(user.accessToken, user.id, profile.user_id)) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const done = await unblockUser(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unblock this account');
     return ok(res, { blocked: false });

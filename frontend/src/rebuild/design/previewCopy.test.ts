@@ -1,0 +1,50 @@
+import { describe, expect, it } from 'vitest';
+import en from '../../i18n/en-US/rebuild.json';
+import es from '../../i18n/es-MX/rebuild.json';
+import pt from '../../i18n/pt-BR/rebuild.json';
+import { checkCopy, type CopyRole, type Locale } from './copyBudget';
+
+const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests'>, CopyRole> = {
+  preview: 'body', heading: 'heading', intro: 'body', practice: 'action', controls: 'action',
+  lessonDemo: 'action', lessonUnavailable: 'heading', lessonInvalid: 'heading', timelineDemo: 'action', numberLineDemo: 'action', age: 'body', adult: 'option',
+  question: 'prompt', save: 'option', spend: 'option', check: 'action', again: 'action',
+  correct: 'body', hint: 'body', back: 'action', name: 'body', nameHint: 'body',
+  confirm: 'action', confirmed: 'body', required: 'body', theme: 'body', light: 'option',
+  dark: 'option', language: 'body',
+};
+describe('new preview copy', () => {
+  for (const [locale, strings] of Object.entries({ 'en-US': en, 'es-MX': es, 'pt-BR': pt })) {
+    it(`fits the youngest copy budget in ${locale}`, () => {
+      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests').sort()).toEqual(Object.keys(roles).sort());
+      for (const key of Object.keys(roles) as (keyof typeof roles)[]) {
+        expect(checkCopy(strings[key], roles[key], { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.mentorCalibration)) {
+        const role = key === 'question' ? 'prompt' : ['youngest', 'middle', 'older', 'retry'].includes(key) ? 'action' : 'body';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), `mentorCalibration.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.analyticsChoice)) {
+        const role = key === 'title' ? 'heading' : key === 'label' ? 'option' : ['on', 'off', 'retry'].includes(key) ? 'action' : 'body';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `analyticsChoice.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.socialGraph)) {
+        const role = ['loading', 'empty', 'failed'].includes(key) ? 'body' : 'action';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `socialGraph.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.socialHistory)) {
+        const role = ['title', 'close', 'retry', 'more'].includes(key) ? 'action' : 'body';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `socialHistory.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.socialRequest)) {
+        expect(checkCopy(text, key === 'action' || key === 'saving' ? 'action' : 'body', { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `socialRequest.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.socialRequests)) {
+        expect(checkCopy(text, ['title', 'close', 'retry', 'more', 'approve', 'deny'].includes(key) ? 'action' : 'body', { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `socialRequests.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.ageScreen)) {
+        const role = key === 'title' ? 'heading' : ['continue', 'exit', 'retry'].includes(key) ? 'action' : 'body';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), `ageScreen.${key}`).toEqual([]);
+      }
+    });
+  }
+});

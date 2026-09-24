@@ -36,18 +36,22 @@ const VARIANTS: Record<Variant, string> = {
   danger: 'lf-tactile-danger bg-error text-on-error hover:bg-error-strong',
 };
 
-export function Button({ variant = 'primary', className, type, children, ...props }: ButtonProps) {
-  return (
-    <button
-      type={type ?? 'button'}
-      className={cn(
+export function buttonClasses(variant: Variant = 'primary', className?: string) {
+  return cn(
         'lf-label lf-tactile lf-sheen motion-safe-press inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full px-7 py-3.5',
         'transition-[transform,box-shadow,background-color,border-color,color]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base',
         'disabled:pointer-events-none disabled:opacity-50',
         VARIANTS[variant],
         className,
-      )}
+      );
+}
+
+export function Button({ variant = 'primary', className, type, children, ...props }: ButtonProps) {
+  return (
+    <button
+      type={type ?? 'button'}
+      className={buttonClasses(variant, className)}
       {...props}
     >
       {/* Above `.lf-sheen`'s ::before overlay, which sits at z-index -1. */}

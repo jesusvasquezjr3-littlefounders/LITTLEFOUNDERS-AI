@@ -5,11 +5,12 @@ import { useAuth } from '@/auth/AuthContext';
 import { Badge, Card, Icon, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { visibleAdminSections } from './adminNav';
 
 interface Overview {
-  users: { total: number; byRole: Record<string, number>; staff: number };
-  content: { courses: Record<string, number>; lessons: Record<string, number>; reviewQueue: number };
-  audit: { total: number };
+  users?: { total: number; byRole: Record<string, number>; staff: number };
+  content?: { courses: Record<string, number>; lessons: Record<string, number>; reviewQueue: number };
+  audit?: { total: number };
 }
 interface Health {
   summary: { total: number; down: number };
@@ -64,18 +65,23 @@ function StatusBar({ counts }: { counts: Record<string, number> }) {
 
 export function AdminOverviewPage() {
   const { t } = useTranslation();
-  const { roles } = useAuth();
+  const { roles, adminPermissions } = useAuth();
   const isSuperadmin = roles.includes('superadmin');
-  const { data } = useAdminData<Overview>('/admin/overview');
-  const { data: health } = useAdminData<Health>('/admin/health/services');
-  const { data: retention } = useAdminData<Retention>('/admin/learning/retention');
+  const canManageUsers = isSuperadmin || adminPermissions.includes('manage_users');
+  const canManageContent = isSuperadmin || adminPermissions.includes('manage_content');
+  const canManageSupport = isSuperadmin || adminPermissions.includes('manage_support');
+  const canViewAnalytics = isSuperadmin || adminPermissions.includes('view_analytics');
+  const { data } = useAdminData<Overview>('/admin/overview', true, adminPermissions.join('|'));
+  const { data: health } = useAdminData<Health>('/admin/health/services', canViewAnalytics);
+  const { data: retention } = useAdminData<Retention>('/admin/learning/retention', canViewAnalytics);
   const quickId = useId();
   const rolesId = useId();
   const healthId = useId();
 
   const nf = new Intl.NumberFormat();
   const o = data.state === 'ready' ? data.data : null;
-  const staffCount = o?.users.staff ?? 0;
+  const staffCount = o?.users?.staff ?? 0;
+  const visibleSectionKeys = new Set(visibleAdminSections(roles, adminPermissions).map((section) => section.key));
 
   const quickActions = [
     { key: 'content', path: '/admin/content', icon: 'menu_book', desc: t('admin.overview.navContentDesc') },
@@ -92,14 +98,14 @@ export function AdminOverviewPage() {
       ) : (
         <div className="flex flex-col gap-6">
           {/* KPI Header Grid */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            <StatCard dense icon={<Icon name="group" />} value={o ? nf.format(o.users.total) : '…'} label={t('admin.overview.kpiUsers')} className="shadow-glass border border-outline/50" />
-            <StatCard dense icon={<Icon name="shield_person" />} value={o ? nf.format(staffCount) : '…'} label={t('admin.overview.kpiStaff')} className="shadow-glass border border-outline/50" />
-            <StatCard dense icon={<Icon name="school" />} value={o ? nf.format(o.content.courses.published ?? 0) : '…'} label={t('admin.overview.kpiCoursesLive')} className="shadow-glass border border-outline/50" />
-            <StatCard dense tone="accent" icon={<Icon name="gpp_maybe" />} value={o ? nf.format(o.content.reviewQueue) : '…'} label={t('admin.overview.kpiReview')} className="shadow-glass border border-outline/50" />
-            <StatCard dense icon={<Icon name="menu_book" />} value={o ? nf.format(o.content.lessons.published ?? 0) : '…'} label={t('admin.overview.kpiLessonsLive')} className="shadow-glass border border-outline/50" />
-            <StatCard dense icon={<Icon name="history" />} value={o ? nf.format(o.audit.total) : '…'} label={t('admin.overview.kpiAudit')} className="shadow-glass border border-outline/50" />
-          </div>
+          {(canManageUsers || canManageContent || canManageSupport) && <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+            {canManageUsers && <StatCard dense icon={<Icon name="group" />} value={o?.users ? nf.format(o.users.total) : '…'} label={t('admin.overview.kpiUsers')} className="shadow-glass border border-outline/50" />}
+            {canManageUsers && <StatCard dense icon={<Icon name="shield_person" />} value={o?.users ? nf.format(staffCount) : '…'} label={t('admin.overview.kpiStaff')} className="shadow-glass border border-outline/50" />}
+            {canManageContent && <StatCard dense icon={<Icon name="school" />} value={o?.content ? nf.format(o.content.courses.published ?? 0) : '…'} label={t('admin.overview.kpiCoursesLive')} className="shadow-glass border border-outline/50" />}
+            {canManageContent && <StatCard dense tone="accent" icon={<Icon name="gpp_maybe" />} value={o?.content ? nf.format(o.content.reviewQueue) : '…'} label={t('admin.overview.kpiReview')} className="shadow-glass border border-outline/50" />}
+            {canManageContent && <StatCard dense icon={<Icon name="menu_book" />} value={o?.content ? nf.format(o.content.lessons.published ?? 0) : '…'} label={t('admin.overview.kpiLessonsLive')} className="shadow-glass border border-outline/50" />}
+            {canManageSupport && <StatCard dense icon={<Icon name="history" />} value={o?.audit ? nf.format(o.audit.total) : '…'} label={t('admin.overview.kpiAudit')} className="shadow-glass border border-outline/50" />}
+          </div>}
 
           {/* Quick Staff Action Shortcuts Hub */}
           <Card className="flex flex-col gap-3 p-5 shadow-glass border border-outline/50">
@@ -110,7 +116,7 @@ export function AdminOverviewPage() {
               <p className="lf-caption text-content-muted">{t('admin.overview.quickActionsSubtitle')}</p>
             </div>
             <div role="group" aria-labelledby={quickId} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 mt-1">
-              {quickActions.map((act) => (
+              {quickActions.filter((act) => visibleSectionKeys.has(act.key)).map((act) => (
                 <Link
                   key={act.key}
                   to={act.path}
@@ -137,6 +143,7 @@ export function AdminOverviewPage() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             {/* Content status */}
+            {canManageContent && (
             <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
               <div className="flex items-center justify-between gap-3">
                 <SectionHeading icon="menu_book" tone="accent" className="mb-0 min-w-0 flex-1">
@@ -151,13 +158,13 @@ export function AdminOverviewPage() {
               </div>
               <div>
                 <p className="lf-caption mb-1.5 text-content-muted">{t('admin.overview.courses')}</p>
-                <StatusBar counts={o?.content.courses ?? {}} />
+                <StatusBar counts={o?.content?.courses ?? {}} />
               </div>
               <div>
                 <p className="lf-caption mb-1.5 text-content-muted">{t('admin.overview.lessons')}</p>
-                <StatusBar counts={o?.content.lessons ?? {}} />
+                <StatusBar counts={o?.content?.lessons ?? {}} />
               </div>
-              {o && o.content.reviewQueue > 0 && (
+              {o?.content && o.content.reviewQueue > 0 && (
                 <Link
                   to="/admin/content"
                   className="lf-press motion-safe-press flex items-center justify-between rounded-md bg-warning-soft px-4 py-3 text-warning-strong transition-colors hover:bg-warning-soft/70"
@@ -169,8 +176,10 @@ export function AdminOverviewPage() {
                 </Link>
               )}
             </Card>
+            )}
 
             {/* Roles distribution */}
+            {canManageUsers && (
             <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
               <div className="flex items-center justify-between gap-3">
                 <SectionHeading icon="badge" tone="delight" id={rolesId} className="mb-0 min-w-0 flex-1">
@@ -186,20 +195,22 @@ export function AdminOverviewPage() {
                 )}
               </div>
               <ul aria-labelledby={rolesId} className="flex flex-col divide-y divide-outline/50">
-                {ROLE_ORDER.filter((r) => o?.users.byRole[r]).map((r) => (
+                {ROLE_ORDER.filter((r) => o?.users?.byRole[r]).map((r) => (
                   <li key={r} className="flex items-center justify-between py-2">
                     <RoleChip role={r} />
-                    <span className="lf-number lf-title text-content">{nf.format(o?.users.byRole[r] ?? 0)}</span>
+                    <span className="lf-number lf-title text-content">{nf.format(o?.users?.byRole[r] ?? 0)}</span>
                   </li>
                 ))}
-                {o && Object.keys(o.users.byRole).length === 0 && (
+                {o?.users && Object.keys(o.users.byRole).length === 0 && (
                   <li className="lf-caption py-2 text-content-faint">{t('admin.overview.noRoles')}</li>
                 )}
               </ul>
             </Card>
+            )}
           </div>
 
           {/* Learning retention module */}
+          {canViewAnalytics && (
           <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
             <div>
               <SectionHeading icon="psychology" tone="success" className="mb-1">
@@ -257,8 +268,10 @@ export function AdminOverviewPage() {
               </p>
             )}
           </Card>
+          )}
 
           {/* Health strip */}
+          {canViewAnalytics && (
           <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
             {/*
               THE TONE IS THE READING. A health panel whose lockup is always
@@ -312,6 +325,7 @@ export function AdminOverviewPage() {
               <p className="lf-caption text-content-faint">{t('admin.health.loading')}</p>
             )}
           </Card>
+          )}
         </div>
       )}
     </AdminPage>

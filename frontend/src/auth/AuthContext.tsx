@@ -1,3 +1,5 @@
+import { ANALYTICS_POLICY_SIGNAL } from '@/lib/analyticsPolicySignal';
+import { configureInsights } from '@/lib/insights';
 import {
   createContext,
   useCallback,
@@ -11,6 +13,7 @@ import {
 import { api, type ApiError } from '@/lib/api';
 import { getAnonId } from '@/lib/visitor';
 import { clearCoursesCache } from '@/routes/app/learn/coursesCache';
+import { clearLessonCheckpoints } from '@/lesson-engine/player/checkpoint';
 
 /*
  * Session state for the whole app. Tokens live in localStorage (SPA + Core
@@ -64,6 +67,8 @@ interface AuthContextValue {
   session: StoredSession | null | undefined;
   profile: Profile | null;
   roles: string[];
+  /** Current session's staff grants; Core rechecks every protected operation. */
+  adminPermissions: string[];
   /** DiceBear Avataaars option set (empty until the user customizes). */
   avatarOptions: Record<string, unknown>;
   /** true once profile+roles for the current session have been fetched (or there is no session) */
@@ -75,7 +80,7 @@ interface AuthContextValue {
   /** Whether this account has completed the onboarding wizard. Guest-only concept — a real account is always effectively "onboarded" via signup, never redirected to /onboarding regardless of this flag. */
   onboardingComplete: boolean;
   /** Start using the platform with zero signup friction (Duolingo-style guest). */
-  startGuestSession(): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
+  startGuestSession(input?: { under13Origin: true }): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
   /** Attach a permanent email+password identity to the CURRENT guest session, in place — never /signup, which would mint a second, blank identity. */
   upgradeAccount(input: { email: string; password: string }): Promise<{ error: ApiError | null }>;
   /** `identifier` is an email for an adult or a username for a child. */
@@ -137,14 +142,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<StoredSession | null | undefined>(undefined);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
+  const [adminPermissions, setAdminPermissions] = useState<string[]>([]);
   const [avatarOptions, setAvatarOptions] = useState<Record<string, unknown>>({});
   const [meLoaded, setMeLoaded] = useState(false);
   // Fail-closed default: the beacon stays silent until /me confirms it may run.
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const sessionRef = useRef<StoredSession | null>(null);
+  const identityVersion = useRef(0);
+  const meVersion = useRef(0);
+  const refreshInFlight = useRef<{ session: StoredSession; promise: Promise<StoredSession | null> } | null>(null);
 
   const persist = useCallback((next: StoredSession | null) => {
+    if (!next || next.user.id !== sessionRef.current?.user.id) {
+      identityVersion.current += 1;
+      meVersion.current += 1;
+      refreshInFlight.current = null;
+      clearCoursesCache();
+      clearLessonCheckpoints();
+      setProfile(null);
+      setRoles([]);
+      setAdminPermissions([]);
+      setAvatarOptions({});
+      setAnalyticsEnabled(false);
+      setOnboardingComplete(false);
+      setMeLoaded(!next);
+    }
     sessionRef.current = next;
     setSession(next);
     try {
@@ -158,12 +181,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshSession = useCallback(async (): Promise<StoredSession | null> => {
     const current = sessionRef.current;
     if (!current) return null;
-    const { data } = await api<{ session: SessionPayload | null }>('/auth/refresh', {
-      body: { refreshToken: current.refreshToken },
-    });
-    const next = data?.session ? toStored(data.session) : null;
-    persist(next);
-    return next;
+    if (refreshInFlight.current?.session === current) return refreshInFlight.current.promise;
+    const promise = (async () => {
+      const { data, error } = await api<{ session: SessionPayload | null }>('/auth/refresh', {
+        body: { refreshToken: current.refreshToken },
+      });
+      // A response from a previous session must never restore it after logout.
+      if (sessionRef.current !== current) return null;
+      // Let the caller surface a temporary API failure and retry; a missing
+      // token would leave token-gated screens waiting indefinitely.
+      if (error && error.code !== 'UNAUTHORIZED') return current;
+      const next = data?.session ? toStored(data.session) : null;
+      persist(next);
+      return next;
+    })();
+    refreshInFlight.current = { session: current, promise };
+    try {
+      return await promise;
+    } finally {
+      if (refreshInFlight.current?.promise === promise) refreshInFlight.current = null;
+    }
   }, [persist]);
 
   const getToken = useCallback(async (): Promise<string | null> => {
@@ -174,26 +211,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshSession]);
 
   const loadMe = useCallback(async (): Promise<{ newAccount: boolean; analyticsEnabled: boolean }> => {
+    const identity = identityVersion.current;
+    const request = ++meVersion.current;
+    const stale = () => identity !== identityVersion.current || request !== meVersion.current;
     const token = await getToken();
+    if (stale()) return { newAccount: false, analyticsEnabled: false };
     if (!token) {
+      setAnalyticsEnabled(false);
       setMeLoaded(true);
       return { newAccount: false, analyticsEnabled: false };
     }
     const { data } = await api<{
       profile: Profile | null;
       roles: string[];
+      adminPermissions?: string[];
       avatarOptions: Record<string, unknown>;
       analyticsEnabled?: boolean;
       newAccount?: boolean;
       onboardingComplete?: boolean;
     }>('/auth/me', { token });
-    const resolvedAnalyticsEnabled = data?.analyticsEnabled ?? false;
+    if (stale()) return { newAccount: false, analyticsEnabled: false };
+    const resolvedAnalyticsEnabled = data?.analyticsEnabled === true;
+    setAnalyticsEnabled(resolvedAnalyticsEnabled);
     if (data) {
       setProfile(data.profile);
       setRoles(data.roles);
+      setAdminPermissions(data.adminPermissions ?? []);
       setAvatarOptions(data.avatarOptions ?? {});
-      setAnalyticsEnabled(resolvedAnalyticsEnabled);
       setOnboardingComplete(data.onboardingComplete === true);
+    } else {
+      // A failed refresh must not leave an earlier staff grant visible.
+      setAdminPermissions([]);
     }
     setMeLoaded(true);
     // Core's verdict on "was this account created just now" — the OAuth
@@ -207,17 +255,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { newAccount: data?.newAccount === true, analyticsEnabled: resolvedAnalyticsEnabled };
   }, [getToken]);
 
+  // Revalidate remote choices; notifications never grant permission themselves.
+  useEffect(() => {
+    const suspend = () => {
+      setAnalyticsEnabled(false);
+      configureInsights({ enabled: false, getToken });
+    };
+    const revalidate = () => {
+      if (!sessionRef.current) return;
+      meVersion.current += 1;
+      suspend();
+      if (document.visibilityState !== 'hidden') void loadMe();
+    };
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === ANALYTICS_POLICY_SIGNAL) revalidate();
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        // Invalidate an outstanding /me response before suspending the tab.
+        meVersion.current += 1;
+        if (sessionRef.current) suspend();
+      } else revalidate();
+    };
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('focus', revalidate);
+    document.addEventListener('visibilitychange', onVisibility);
+    const timer = window.setInterval(revalidate, 30_000);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('focus', revalidate);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.clearInterval(timer);
+    };
+  }, [getToken, loadMe]);
+
   // Restore once on mount.
   useEffect(() => {
     const stored = readStorage();
+    if (!stored) clearLessonCheckpoints();
     sessionRef.current = stored;
     setSession(stored);
     if (stored) void loadMe();
     else setMeLoaded(true);
   }, [loadMe]);
 
-  const startGuestSession = useCallback(async (): Promise<{ error: ApiError | null; analyticsEnabled: boolean }> => {
-    const { data, error } = await api<{ session: SessionPayload | null }>('/auth/guest', { method: 'POST', body: {} });
+  const startGuestSession = useCallback(async (input?: { under13Origin: true }): Promise<{ error: ApiError | null; analyticsEnabled: boolean }> => {
+    const { data, error } = await api<{ session: SessionPayload | null }>('/auth/guest', { method: 'POST', body: input ?? {} });
     if (error) return { error, analyticsEnabled: false };
     const next = data.session ? toStored(data.session) : null;
     if (!next) return { error: { code: 'INTERNAL', message: 'No session returned' }, analyticsEnabled: false };
@@ -349,6 +432,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persist(null);
     setProfile(null);
     setRoles([]);
+    setAdminPermissions([]);
     setAnalyticsEnabled(false);
     setMeLoaded(true);
     if (token) await api('/auth/logout', { method: 'POST', body: {}, token });
@@ -361,6 +445,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       profile,
       roles,
+      adminPermissions,
       avatarOptions,
       meLoaded,
       analyticsEnabled,
@@ -379,6 +464,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       profile,
       roles,
+      adminPermissions,
       avatarOptions,
       meLoaded,
       analyticsEnabled,

@@ -31,6 +31,9 @@ jobs:
       - name: No credential patterns in tracked files
         run: bash agent/tools/check-secrets.sh
 
+      - name: Binding product specification and rebuild boundary
+        run: npm run spec:check
+
       # i18n parity is also enforced inside frontend CI, but only when
       # frontend/** changes. A locale file edited on its own still has to pass.
       - name: i18n 3-locale key parity + hardcoded-string scan

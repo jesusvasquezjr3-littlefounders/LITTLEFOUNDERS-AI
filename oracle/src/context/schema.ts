@@ -355,24 +355,3 @@ export function sealGenerationBrief(candidate: unknown): GenerationBrief {
   }
   return parsed.data;
 }
-
-/**
- * Derives the tier band from a birth date (/ORACLE.md §4.1).
- *
- * The birth date is read INSIDE our infrastructure and converted here; the
- * date itself never leaves this function's caller. An unknown birth date
- * yields tier 2, the middle band — not tier 3, which would hand a seven year
- * old adult vocabulary on the strength of a missing field.
- */
-export function tierForBirthDate(birthDate: string | null | undefined, now: Date): 1 | 2 | 3 {
-  if (!birthDate) return 2;
-  const born = new Date(birthDate);
-  if (Number.isNaN(born.getTime())) return 2;
-  let age = now.getUTCFullYear() - born.getUTCFullYear();
-  const monthDelta = now.getUTCMonth() - born.getUTCMonth();
-  if (monthDelta < 0 || (monthDelta === 0 && now.getUTCDate() < born.getUTCDate())) age -= 1;
-  if (age < 0) return 2;
-  if (age <= 7) return 1;
-  if (age <= 9) return 2;
-  return 3;
-}

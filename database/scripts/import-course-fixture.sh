@@ -6,8 +6,9 @@
 # on every insert) — safe to run after a fresh `db:reset`. The imported
 # course lands with whatever `status` it had at export time (Forge's
 # default: courses/adventures/sagas/topics at 'draft', lessons at 'review')
-# — run `db:publish-course -- <slug>` afterwards to make it visible in the
-# app, same as after a real generation run.
+# — run Forge `verify:course` and then `db:publish-course -- <slug>` to make
+# verified content visible in the local app. The publish command no longer
+# bypasses the release check.
 #
 # Usage: bash scripts/import-course-fixture.sh seeds/qa-course-fixture.sql
 
@@ -23,4 +24,4 @@ fi
 
 echo "==> importing $FILE"
 bash "$DB_DIR/scripts/local-stack.sh" psql -q < "$FILE"
-echo "OK: fixture imported. Remember: npm run db:publish-course -- <slug> to make it visible."
+echo "OK: fixture imported. Run Forge verify:course, then npm run db:publish-course -- <slug> to release verified content locally."

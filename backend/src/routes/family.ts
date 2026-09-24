@@ -6,6 +6,9 @@ import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { composeBadgeImage, firstNameOnly, generateBadgeToken } from '../services/badges.js';
 import { assembleCourseTree } from '../services/courseTree.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
+import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
+import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
+import { mayDiscoverProfile, visibleSocialUsers } from '../services/socialVisibility.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -18,6 +21,11 @@ import {
   getAdventuresByCourseIds,
   getCompletedCourseBadgesByUserId,
   getGoalById,
+  getGuardianSocialPage,
+  getGuardianSocialAuditPage,
+  getSocialDisplayNames,
+  getPendingSocialRequests,
+  decideSocialConnectionForKid,
   getKidLearningStats,
   getKidLessonProgress,
   getKidProfiles,
@@ -83,6 +91,14 @@ export function familyRouter(): Router {
   const router = Router();
 
   router.use(requireAuth, requireRole(['parent']));
+  router.use(async (_req, res, next) => {
+    const user = authedUser(res);
+    const roles = await getRolesForGate(user.id);
+    if (!roles || await requiresMinorMentorSafeguards(user.id, roles)) {
+      return fail(res, 403, 'PARENT_VERIFICATION_REQUIRED', 'Current adult identity verification is required');
+    }
+    return next();
+  });
 
   /** The caller's verified kids, with whitelisted display fields. */
   router.get('/kids', async (_req, res) => {
@@ -140,10 +156,9 @@ export function familyRouter(): Router {
 
 
   /*
-   * CREATE A KID ACCOUNT AND LINK IT. §1.4 puts "manage a family / kid
-   * accounts" on `parent` alone, and `parent` comes only from Guardian, so the
-   * router's `requireRole(['parent'])` is the whole authorization story: the
-   * adult standing behind this call has had an identity document matched.
+   * CREATE A KID ACCOUNT AND LINK IT. A parent role alone is insufficient:
+   * staff can grant it without ID verification. Creation independently checks
+   * the current service-owned adult verification before writing a child.
    *
    * WHAT IS DELIBERATELY NOT COLLECTED. No email, no surname, no address for
    * the child. A handle the parent chooses, a display name, a passphrase, and
@@ -176,7 +191,7 @@ export function familyRouter(): Router {
     // Longer than the adult minimum on purpose: this is chosen BY an adult FOR
     // a child, typed rarely, and never rotated by the child themselves.
     passphrase: z.string().min(8).max(72),
-    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+    birthDate: z.string().refine(value => declaredBandForDate(value) !== null, 'Enter a valid birth date').nullable().optional(),
     locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
   });
 
@@ -248,6 +263,15 @@ export function familyRouter(): Router {
       return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child profile');
     }
 
+    // A parent-provided date supplies the same minimal admission evidence as
+    // the standalone screen. Do not ask the child to repeat or override it.
+    if (birthDate && !await recordAgeScreen(kidId, declaredBandForDate(birthDate)!)) {
+      const undone = await adminDeleteUser(kidId);
+      await insertAuditLog(parent.id, 'family.kid_create.rolled_back', kidId, {
+        rollbackSucceeded: undone.error === null, stage: 'age_declaration',
+      });
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child age declaration');
+    }
     const granted = await grantRole(kidId, 'kid', parent.id);
     if (!granted) return fail(res, 502, DATA_UNAVAILABLE, 'Could not grant the child role');
 
@@ -286,9 +310,75 @@ export function familyRouter(): Router {
     return parsed.data;
   }
 
+  router.post('/kids/:kidId/social/requests/:requestId/decision', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const requestId = z.string().uuid().safeParse(req.params.requestId);
+    const body = z.object({ decision: z.enum(['approve', 'deny']) }).strict().safeParse(req.body);
+    if (!requestId.success || !body.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid connection decision');
+    const result = await decideSocialConnectionForKid(requestId.data, kidId, authedUser(res).id, body.data.decision === 'approve');
+    if (result === 'not-found') return fail(res, 404, NOT_FOUND, 'No such connection request');
+    if (result === 'forbidden') return fail(res, 403, 'GUARDIAN_DECISION_FORBIDDEN', 'Current guardian verification is required');
+    if (result === 'conflict') return fail(res, 409, 'SOCIAL_DECISION_CONFLICT', 'This request can no longer take that decision');
+    if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the connection decision');
+    return ok(res, { requestId: requestId.data, status: result });
+  });
+
+  router.get('/kids/:kidId/social/requests', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const query = z.object({ offset: z.coerce.number().int().min(0).max(100000).default(0) }).strict().safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid request page');
+    const page = await getPendingSocialRequests(kidId, query.data.offset);
+    if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load connection requests');
+    const ids = [...new Set(page.requests.map(item => item.requesterId))];
+    const visible = await Promise.all(ids.map(async id => await mayDiscoverProfile(authedUser(res).id, id) ? id : null));
+    const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
+    if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load request participants');
+    const nameById = new Map(names.map(row => [row.user_id, row.display_name]));
+    if (!await guardKid(req, res)) return res;
+    return ok(res, { ...page, requests: page.requests.map(item => ({ ...item, requesterName: nameById.get(item.requesterId) ?? null })) });
+  });
+
+  router.get('/kids/:kidId/social/audit', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const query = z.object({ offset: z.coerce.number().int().min(0).max(100000).default(0) }).strict().safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a valid audit page');
+    const page = await getGuardianSocialAuditPage(kidId, query.data.offset);
+    if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social history');
+    const ids = [...new Set(page.entries.flatMap(entry => [entry.sourceId, entry.targetId, ...(entry.actorId ? [entry.actorId] : [])]))];
+    const visible = await Promise.all(ids.map(async id => await mayDiscoverProfile(authedUser(res).id, id) ? id : null));
+    const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
+    if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social participants');
+    const nameById = new Map(names.map(row => [row.user_id, row.display_name]));
+    if (!await guardKid(req, res)) return res;
+    return ok(res, { ...page, entries: page.entries.map(entry => ({ ...entry,
+      sourceName: nameById.get(entry.sourceId) ?? null,
+      targetName: nameById.get(entry.targetId) ?? null,
+      actorName: entry.actorId ? nameById.get(entry.actorId) ?? null : null,
+    })) });
+  });
+
+  router.get('/kids/:kidId/social', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const query = z.object({
+      direction: z.enum(['followers', 'following']),
+      offset: z.coerce.number().int().min(0).max(100000).default(0),
+    }).strict().safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a social list and valid page');
+    const page = await getGuardianSocialPage(kidId, query.data.direction, query.data.offset);
+    if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load social connections');
+    const users = await visibleSocialUsers(authedUser(res).id, page.users);
+    // Recheck after service reads: revocation must not knowingly release a cached graph.
+    if (!await guardKid(req, res)) return res;
+    return ok(res, { users, nextOffset: page.nextOffset });
+  });
+
   const UpdateKid = z.object({
     displayName: z.string().trim().min(1).max(80).optional(),
-    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+    birthDate: z.string().refine(value => declaredBandForDate(value) !== null, 'Enter a valid birth date').nullable().optional(),
   });
 
   router.patch('/kids/:kidId', async (req, res) => {
@@ -433,7 +523,7 @@ export function familyRouter(): Router {
       const storedEvent = await insertLearningEvents([
         { user_id: user.id, role: stampRole(callerRoles), event: 'territory_view', route_class: 'family' },
       ]);
-      if (!storedEvent) console.warn('[backend] territory_view event dropped (Vault unavailable)');
+      if (storedEvent === null) console.warn('[backend] territory_view event dropped (Vault unavailable)');
     })();
 
     const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, progress);

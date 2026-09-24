@@ -106,6 +106,7 @@ function stubGeneration(callerRole: 'admin' | 'universal', opts: { vaultDown?: b
     vi.fn((input: RequestInfo | URL) => {
       const url = String(input);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: callerRole }]));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'manage_content' }]));
       if (opts.vaultDown) return Promise.resolve(new Response('upstream down', { status: 503 }));
       if (url.includes('/rest/v1/generation_tracks')) return Promise.resolve(jsonResponse(200, [TRACK_ROW]));
       if (url.includes('/rest/v1/generation_runs_live')) return Promise.resolve(jsonResponse(200, [LIVE_ROW]));

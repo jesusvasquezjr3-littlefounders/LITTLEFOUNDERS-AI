@@ -55,17 +55,26 @@ describe('POST /api/v1/onboarding/complete', () => {
     ]);
   });
 
-  it('saves the optional discovery channel and birth date when provided', async () => {
+  it('saves the optional discovery channel without collecting a birth date again', async () => {
     const res = await auth(request(createApp()).post('/api/v1/onboarding/complete')).send({
       displayName: 'Ana',
       discoveryChannel: 'friend',
-      birthDate: '2016-05-01',
       accountOfferChoice: 'created_now',
       localDate: '2026-08-10',
     });
     expect(res.status).toBe(201);
-    expect(db.profiles[0]).toMatchObject({ display_name: 'Ana', birth_date: '2016-05-01' });
+    expect(db.profiles[0]).toMatchObject({ display_name: 'Ana', birth_date: null });
     expect(db.onboarding_responses[0]).toMatchObject({ discovery_channel: 'friend', account_offer_choice: 'created_now' });
+  });
+
+  it('rejects legacy or forged DOB writes without changing the profile', async () => {
+    db.profiles[0]!.birth_date = '2016-05-01';
+    const res = await auth(request(createApp()).post('/api/v1/onboarding/complete')).send({
+      displayName: 'Ana', birthDate: '1990-01-01', accountOfferChoice: 'later',
+    });
+    expect(res.status).toBe(400);
+    expect(db.profiles[0]).toMatchObject({ display_name: '', birth_date: '2016-05-01' });
+    expect(db.onboarding_responses).toEqual([]);
   });
 
   it('409s ONBOARDING_ALREADY_COMPLETE on a retry, without double-writing stats', async () => {

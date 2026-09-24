@@ -161,6 +161,7 @@ describe('export routes', () => {
       vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
         if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'view_analytics' }]));
         if (url.includes('/rest/v1/rpc/record_staff_ip_sighting')) return Promise.resolve(jsonResponse(200, {}));
         if (url.includes('plausible.test/api/v2/query')) {
           const body = JSON.parse(String(init?.body ?? '{}')) as { dimensions?: string[] };

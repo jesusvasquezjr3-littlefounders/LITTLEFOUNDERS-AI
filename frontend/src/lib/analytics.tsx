@@ -424,7 +424,7 @@ export function trackMarketingGoal(
 }
 
 export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: number }) {
-  const { session, roles, meLoaded } = useAuth();
+  const { session, roles, meLoaded, analyticsEnabled } = useAuth();
   const { pathname } = useLocation();
   const decision = useTrackingDecision();
   const measurable = decision === 'allowed';
@@ -453,7 +453,7 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
       measurable &&
       !isKid &&
       !isAdminPath(pathname) &&
-      ((isGuest && meLoaded && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isParent));
+      ((isGuest && meLoaded && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isParent && analyticsEnabled));
 
     if (shouldMount) {
       /*
@@ -472,7 +472,7 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
     } else {
       ejectScript('lf-umami');
     }
-  }, [session, roles, meLoaded, pathname, measurable]);
+  }, [session, roles, meLoaded, analyticsEnabled, pathname, measurable]);
 
   /*
    * GA4 — public marketing pages only, never app/kid (module header §1.9 scope).

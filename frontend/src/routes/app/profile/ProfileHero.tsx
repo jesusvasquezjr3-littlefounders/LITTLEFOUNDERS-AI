@@ -27,8 +27,6 @@ export function ProfileHero({
       <div
         className="relative h-36 overflow-hidden rounded-md shadow-glass sm:h-48"
         style={{ backgroundImage: coverCss(cover) }}
-        role="img"
-        aria-hidden="true"
       >
         <div className="absolute inset-0 bg-gradient-to-t from-inverse/35 via-transparent to-white/5" aria-hidden="true" />
         {coverAction && <div className="absolute bottom-3 right-3">{coverAction}</div>}

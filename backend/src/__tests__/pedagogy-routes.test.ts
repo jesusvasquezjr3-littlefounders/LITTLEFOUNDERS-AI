@@ -149,6 +149,8 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/learner_misconception')) {
         return Promise.resolve(method === 'GET' ? jsonResponse(200, []) : new Response(null, { status: 204 }));
       }
+      if (url.includes('/rest/v1/account_age_declarations')) return Promise.resolve(jsonResponse(200, [{ declared_age_band: '13_to_17' }]));
+      if (url.includes('/rest/v1/account_safety_origins')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'kid' }]));
       if (url.includes('/rest/v1/tutor_segments')) {
         if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, [CHANGE_SEGMENT_ROW]));
@@ -412,7 +414,9 @@ describe('voice-check + grade must not double-record pedagogy evidence for one a
         if (url.includes('/rest/v1/learner_misconception')) {
           return Promise.resolve(method === 'GET' ? jsonResponse(200, []) : new Response(null, { status: 204 }));
         }
-        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'kid' }]));
+        if (url.includes('/rest/v1/account_age_declarations')) return Promise.resolve(jsonResponse(200, [{ declared_age_band: '13_to_17' }]));
+      if (url.includes('/rest/v1/account_safety_origins')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'kid' }]));
         if (url.includes('/rest/v1/tutor_segments')) {
           if (method === 'PATCH') {
             if (url.includes('voice_checked_at=is.null')) {

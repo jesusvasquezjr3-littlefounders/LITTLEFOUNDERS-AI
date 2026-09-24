@@ -595,9 +595,9 @@ export function Eavesdrop({ segment, disabled, onContentDone, onCharacterCue }: 
                         // the sentence's lines apart and undoing the one thing
                         // that makes a glossary term feel like part of the
                         // sentence. An invisible pseudo-element extends the hit
-                        // area instead: 27 + 2×10 = 47px for the thumb, zero
-                        // change to layout.
-                        'relative before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[""]',
+                        // area instead. Twelve pixels on each side keep the
+                        // measured target above 44px without changing layout.
+                        'relative before:absolute before:inset-x-0 before:-inset-y-3 before:content-[""]',
                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                       )}
                     >

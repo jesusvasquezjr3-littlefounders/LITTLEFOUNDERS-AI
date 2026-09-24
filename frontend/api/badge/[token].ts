@@ -14,10 +14,8 @@
  * never calls trackInsight or touches cookies, on purpose (see that
  * component's file header).
  *
- * UNVERIFIED AGAINST A LIVE DEPLOY: this repository had no prior Vercel
- * Function, so there is no local gate that exercises Edge Function
- * behaviour (tsc --noEmit type-checks this file via tsconfig.json's
- * `include`, but nothing here runs it). Verify with `vercel dev` or a
+ * UNVERIFIED AGAINST A LIVE DEPLOY: local handler tests do not prove Vercel
+ * routing or CDN behaviour. Verify with `vercel dev` or a
  * preview deploy, and set the `BACKEND_URL` env var in the Vercel project
  * (Core's public origin) before relying on this in production — it is a
  * deploy-config change, not something this session can make on your behalf.
@@ -33,6 +31,11 @@ interface BadgePayload {
 }
 
 const TOKEN_RE = /^[A-Za-z0-9_-]{16,64}$/;
+const PRIVATE_HTML_HEADERS = {
+  'content-type': 'text/html; charset=utf-8',
+  'cache-control': 'no-store',
+  'x-robots-tag': 'noindex, nofollow',
+};
 
 function esc(text: string): string {
   return text.replace(/[&<>"']/g, (ch) => {
@@ -93,31 +96,24 @@ export default async function handler(request: Request): Promise<Response> {
 
   if (!TOKEN_RE.test(token)) {
     const shell = await fetchShell(shellOrigin);
-    return new Response(shell, { headers: { 'content-type': 'text/html; charset=utf-8' } });
+    return new Response(shell, { status: 404, headers: PRIVATE_HTML_HEADERS });
   }
 
   const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:4000';
   const [shell, badgeRes] = await Promise.all([
     fetchShell(shellOrigin),
-    fetch(`${backendUrl}/api/v1/badges/${token}`).catch(() => null),
+    fetch(`${backendUrl}/api/v1/badges/${token}`, { cache: 'no-store' }).catch(() => null),
   ]);
 
   if (!badgeRes || !badgeRes.ok) {
-    return new Response(shell, { headers: { 'content-type': 'text/html; charset=utf-8' } });
+    return new Response(shell, { status: 404, headers: PRIVATE_HTML_HEADERS });
   }
   const body = (await badgeRes.json().catch(() => null)) as { data: BadgePayload | null } | null;
   if (!body?.data) {
-    return new Response(shell, { headers: { 'content-type': 'text/html; charset=utf-8' } });
+    return new Response(shell, { status: 404, headers: PRIVATE_HTML_HEADERS });
   }
 
   return new Response(withOgTags(shell, body.data), {
-    headers: {
-      'content-type': 'text/html; charset=utf-8',
-      // Immutable-ish: a badge_shares row never changes after creation
-      // (0073's own comment — a re-share issues a new token/row). Cached at
-      // the edge, revalidated hourly so a genuinely deleted/rotated badge
-      // does not serve stale OG tags forever.
-      'cache-control': 'public, max-age=3600, stale-while-revalidate=86400',
-    },
+    headers: PRIVATE_HTML_HEADERS,
   });
 }

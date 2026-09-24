@@ -1,4 +1,6 @@
+import { allowsSelfManagedAnalytics } from '../services/analyticsPreference.js';
 import express, { Router } from 'express';
+import { readAgeScreen } from '../services/ageScreen.js';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
@@ -225,14 +227,17 @@ export function eventsRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', 'events must be an array of 1-25 items');
     }
     const user = authedUser(res);
+    const screening = await readAgeScreen(user.id);
+    if (!screening || screening.required || screening.protectedOrigin) return ok(res, { accepted: 0 }, 202);
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
 
-    // Kid, OR unconfirmed (empty role set): through the consent gate.
-    if (roles.length === 0 || roles.includes('kid')) {
+    // Unconfirmed identities and guests remain off; kids retain the guardian gate.
+    if (roles.length === 0 || user.isGuest) return ok(res, { accepted: 0 }, 202);
+    if (roles.includes('kid')) {
       const consent = await hasActiveAnalyticsConsent(user.id);
       if (consent !== true) return ok(res, { accepted: 0 }, 202);
-    }
+    } else if (!await allowsSelfManagedAnalytics(user.id, screening)) return ok(res, { accepted: 0 }, 202);
 
     const role = roles.length === 0 ? 'kid' : stampRole(roles);
     const rows: LearningEventInsert[] = [];

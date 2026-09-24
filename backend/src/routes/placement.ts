@@ -1,3 +1,4 @@
+import { requireAgeScreen } from '../middleware/ageScreen.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
@@ -22,11 +23,9 @@ import {
 } from '../services/placementAlgorithm.js';
 import { ageBandForIntake, runPlacementIntake } from '../services/placementIntake.js';
 import {
-  getCoursePlacement,
   getFullOwnProfile,
   getPublishedCourseBySlug,
-  insertCoursePlacement,
-  insertPlacementCredits,
+  commitCoursePlacement,
   patchOwnProfile,
 } from '../services/supabaseRest.js';
 import { insertPlacementSafetyFlag } from '../services/tutorData.js';
@@ -146,7 +145,7 @@ function describeResult(done: DoneStep, topics: readonly PlacementTopic[]) {
 
 export function placementRouter(): Router {
   const router = Router();
-  router.use(requireAuth);
+  router.use(requireAuth, requireAgeScreen);
 
   /**
    * What the client needs to open the flow: whether we already know the age (so
@@ -335,10 +334,6 @@ export function placementRouter(): Router {
     const course = await getPublishedCourseBySlug(user.accessToken, req.params.courseSlug as string);
     if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
 
-    const existing = await getCoursePlacement(user.accessToken, user.id, course.id);
-    if (existing === null) return fail(res, 502, 'INTERNAL', 'Could not check placement status');
-    if (existing.length > 0) return fail(res, 409, 'PLACEMENT_ALREADY_COMPLETE', 'Placement was already completed for this course');
-
     const [tree, profiles] = await Promise.all([
       loadCourseTree(user.accessToken, user.id, course),
       getFullOwnProfile(user.accessToken, user.id),
@@ -368,7 +363,7 @@ export function placementRouter(): Router {
       if (clamped !== earned.frontier) placement = placeAtLearnerChoice(topics, clamped, 'learner_adjusted');
     }
 
-    const recorded = await insertCoursePlacement({
+    const recorded = await commitCoursePlacement({
       user_id: user.id,
       course_id: course.id,
       claimed_level: parsed.data.signals.claimedLevel ?? 'some',
@@ -377,23 +372,9 @@ export function placementRouter(): Router {
       start_topic_id: placement.startTopicId,
       start_lesson_id: placement.startLessonId,
       method: placement.method,
-    });
+    }, placement.creditedLessonIds);
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record placement');
-
-    if (placement.creditedLessonIds.length > 0) {
-      const topicIdByLesson = new Map<string, string>();
-      for (const topic of topics) {
-        for (const lessonId of topic.lessonIds) topicIdByLesson.set(lessonId, topic.id);
-      }
-      const creditRows = placement.creditedLessonIds
-        .map((lessonId) => {
-          const topicId = topicIdByLesson.get(lessonId);
-          return topicId ? { user_id: user.id, lesson_id: lessonId, topic_id: topicId, course_id: course.id } : null;
-        })
-        .filter((r): r is { user_id: string; lesson_id: string; topic_id: string; course_id: string } => r !== null);
-      const creditsWritten = await insertPlacementCredits(creditRows);
-      if (!creditsWritten) return fail(res, 502, 'INTERNAL', 'Placement recorded, but credited lessons could not be saved');
-    }
+    if (recorded === 'conflict') return fail(res, 409, 'PLACEMENT_ALREADY_COMPLETE', 'Placement was already completed for this course');
 
     // Same "only asked because it wasn't already known" posture as onboarding —
     // never overwrite an existing birth_date.

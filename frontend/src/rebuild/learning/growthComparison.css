@@ -1,0 +1,21 @@
+.lf-growth-compare-meta { font-size: .875rem; font-weight: 800; overflow-wrap: anywhere; }
+.lf-growth-compare-chart { position: relative; inline-size: 100%; block-size: 160px; }
+.lf-growth-compare-chart svg { display: block; inline-size: 100%; block-size: 100%; }
+.lf-growth-compare-scale-max { position: absolute; inset-block-start: 0; inset-inline-start: 0; font-size: .875rem; font-weight: 800; }
+.lf-growth-compare-axis { stroke: var(--edge); stroke-width: 2; }
+.lf-growth-compare-simple { fill: none; stroke: var(--sky-strong); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-growth-compare-compound { fill: none; stroke: var(--mint-strong); stroke-width: 3; stroke-dasharray: 7 5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-growth-compare-compound { animation: lf-growth-compare-reveal var(--dur-component) var(--ease-standard) both; }
+}
+@keyframes lf-growth-compare-reveal { from { opacity: 0; } to { opacity: 1; } }
+.lf-growth-compare-prediction { fill: var(--primary-strong); stroke: var(--surface); stroke-width: 3; vector-effect: non-scaling-stroke; }
+.lf-growth-compare-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); font-size: .875rem; font-weight: 800; }
+.lf-growth-compare-legend > span { display: inline-flex; align-items: center; gap: var(--spacing-1); }
+.lf-growth-compare-legend-simple::before, .lf-growth-compare-legend-compound::before { content: ''; display: block; inline-size: 12px; block-size: 12px; border-radius: var(--rounded-full); }
+.lf-growth-compare-legend-simple::before { background: var(--sky-strong); }
+.lf-growth-compare-legend-compound::before { background: repeating-linear-gradient(135deg, var(--mint-strong) 0 4px, var(--surface) 4px 7px); }
+.lf-growth-compare-legend-prediction::before { content: ''; display: block; inline-size: 12px; block-size: 12px; border-radius: var(--rounded-full); background: var(--primary-strong); }
+.lf-growth-compare-axis-labels { display: flex; justify-content: space-between; font-size: .875rem; font-weight: 800; }
+.lf-growth-compare-controls { display: grid; gap: var(--spacing-3); }
+.lf-growth-compare-outcome { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); font-weight: 800; }

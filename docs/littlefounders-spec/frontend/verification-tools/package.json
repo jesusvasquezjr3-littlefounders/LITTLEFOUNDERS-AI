@@ -1,0 +1,14 @@
+{
+  "name": "littlefounders-verification-tools",
+  "private": true,
+  "type": "module",
+  "description": "Reference audits for the LittleFounders Frontend Bible: text fit, proportion and copy budget.",
+  "scripts": {
+    "text-fit": "node text-fit-audit.reference.mjs ../mockup/littlefounders-mockup.html both",
+    "proportion": "node proportion-audit.reference.mjs ../mockup/littlefounders-mockup.html proportion-report.json",
+    "copy-budget": "node copy-budget-audit.reference.mjs ../mockup/littlefounders-mockup.html"
+  },
+  "dependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

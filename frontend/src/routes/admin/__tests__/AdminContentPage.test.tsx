@@ -86,7 +86,7 @@ function apiOk<T>(data: T) {
 
 function apiDefault(path: string) {
   if (path.startsWith('/admin/content') && !path.includes('/status')) {
-    return apiOk({ courses: [COURSE], summary: { courses: { total: 1, published: 0, draft: 1, archived: 0 }, lessons: { total: 1, published: 0, review: 1, draft: 0, archived: 0 } } });
+    return apiOk({ courses: [COURSE], summary: { courses: { total: 1, published: 0, draft: 1, archived: 0 }, lessons: { total: 1, published: 0, review: 1, draft: 0, archived: 0 } }, courseAssemblyIncidents: [] });
   }
   if (path.startsWith('/admin/moderation')) {
     return apiOk({ lessons: [], total: 0 });
@@ -219,6 +219,33 @@ describe('AdminContentPage — publish outcome', () => {
     clickPublish();
     await flushPromises();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+describe('AdminContentPage — course assembly signals', () => {
+  it('shows the persistent staff signal and its affected course', async () => {
+    mockApi.mockImplementation((path: string) => {
+      if (path.startsWith('/admin/content')) {
+        return apiOk({
+          courses: [COURSE],
+          summary: { courses: { total: 1, published: 0, draft: 1, archived: 0 }, lessons: { total: 1, published: 0, review: 1, draft: 0, archived: 0 } },
+          courseAssemblyIncidents: [{
+            courseId: COURSE.id,
+            courseTitle: COURSE.title,
+            occurrenceCount: 2,
+            firstSeenAt: '2026-09-22T12:00:00.000Z',
+            lastSeenAt: '2026-09-22T12:05:00.000Z',
+          }],
+        });
+      }
+      return apiDefault(path);
+    });
+    renderPage();
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('admin.content.courseAssemblyIncidents.title');
+    expect(alert).toHaveTextContent('Money Basics');
+    expect(alert).toHaveTextContent('admin.content.courseAssemblyIncidents.detail');
   });
 });
 

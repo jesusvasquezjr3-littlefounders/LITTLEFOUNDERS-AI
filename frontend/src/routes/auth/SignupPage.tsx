@@ -22,7 +22,7 @@ const MENTOR = '/marketing/mentor-liruf-bust.webp';
 
 export function SignupPage() {
   const { t, i18n } = useTranslation();
-  const { signup, getToken } = useAuth();
+  const { signup, getToken, startGuestSession } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -38,6 +38,7 @@ export function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [confirmationPending, setConfirmationPending] = useState(false);
+  const [guestError, setGuestError] = useState<string | null>(null);
 
   const detailsId = useId();
   const roleId = useId();
@@ -73,6 +74,13 @@ export function SignupPage() {
     });
     setSubmitting(false);
     if (error) {
+      if (error.code === 'AGE_RESTRICTED') {
+        configureInsights({ enabled: false, getToken });
+        setBirthDate('');
+        setEmail('');
+        setPassword('');
+        setDisplayName('');
+      }
       playPlatformSound('auth_error');
       setErrorCode(error.code);
       return;
@@ -111,9 +119,16 @@ export function SignupPage() {
             <Icon name="escalator_warning" aria-hidden className="!text-[26px]" />
           </span>
           <p className="lf-body text-content">{t('auth.signup.ageBlockedBody')}</p>
-          <Link to="/">
-            <Button>{t('auth.signup.ageBlockedCta')}</Button>
-          </Link>
+          <Button disabled={submitting} onClick={() => {
+            setSubmitting(true);
+            setGuestError(null);
+            void startGuestSession({ under13Origin: true }).then(({ error }) => {
+              setSubmitting(false);
+              if (error) setGuestError(error.code);
+              else navigate('/onboarding', { replace: true });
+            });
+          }}>{t('auth.signup.ageBlockedCta')}</Button>
+          {guestError && <ErrorBanner code={guestError} />}
         </div>
       </AuthShell>
     );

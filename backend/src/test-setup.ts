@@ -9,3 +9,4 @@ process.env.ORACLE_URL ??= 'http://oracle.test';
 process.env.ORACLE_PUBLIC_URL ??= 'http://oracle.test';
 process.env.ORACLE_INTERNAL_KEY ??= 'test-oracle-internal-key-0123';
 process.env.TUTOR_SESSION_SECRET ??= 'test-tutor-session-secret-0123456789abcd';
+process.env.LESSON_ATTEMPT_SECRET ??= 'test-lesson-attempt-secret-0123456789abcd';

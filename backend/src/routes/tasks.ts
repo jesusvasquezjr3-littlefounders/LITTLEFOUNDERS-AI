@@ -1,3 +1,4 @@
+import { requireUnfrozenBanking } from '../middleware/bankingFreeze.js';
 import { Router } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
@@ -559,6 +560,7 @@ export function tasksRouter(): Router {
     const task = await guardOwnTask(id.data, res, kid.id);
     if (!task) return;
 
+    if (!await requireUnfrozenBanking(kid.id, res)) return;
     const allocated = await allocateTaskReward({
       taskId: id.data,
       kidId: kid.id,
@@ -680,6 +682,7 @@ export function tasksRouter(): Router {
       }
     }
 
+    if (!await requireUnfrozenBanking(kid.id, res)) return;
     const redemption = await insertRedemption({ catalog_id: item.id, kid_user_id: kid.id });
     if (!redemption) return fail(res, 502, DATA_UNAVAILABLE, 'Could not request the redemption');
     return ok(res, { redemption: toWireRedemption(redemption) }, 201);

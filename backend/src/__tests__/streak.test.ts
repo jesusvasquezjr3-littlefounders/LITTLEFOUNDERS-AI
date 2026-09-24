@@ -49,6 +49,12 @@ describe('isFirstActivityToday', () => {
 });
 
 describe('isCalendarDate', () => {
+  it('rejects normalized impossible dates while accepting leap days', () => {
+    expect(isCalendarDate('2026-02-31')).toBe(false);
+    expect(isCalendarDate('2026-04-31')).toBe(false);
+    expect(isCalendarDate('2026-02-29')).toBe(false);
+    expect(isCalendarDate('2024-02-29')).toBe(true);
+  });
   it('accepts YYYY-MM-DD and rejects everything else', () => {
     expect(isCalendarDate('2026-07-12')).toBe(true);
     expect(isCalendarDate('2026-7-12')).toBe(false);

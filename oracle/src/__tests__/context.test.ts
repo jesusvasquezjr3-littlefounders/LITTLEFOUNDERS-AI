@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   NicknameSchema,
   sealContext,
-  tierForBirthDate,
   TutorContextSchema,
   type TutorContext,
 } from '../context/schema.js';
@@ -114,32 +113,5 @@ describe('the model context boundary', () => {
       userId: '33333333-3333-4333-8333-333333333333',
     };
     expect(() => sealContext(validContext({ skillStates: [leaky] as never }))).toThrow();
-  });
-});
-
-describe('tierForBirthDate', () => {
-  const now = new Date('2026-08-21T00:00:00.000Z');
-
-  it.each([
-    ['2020-01-01', 1],
-    ['2019-08-22', 1],
-    ['2018-01-01', 2],
-    ['2016-08-22', 2],
-    ['2016-08-20', 3],
-    ['2005-01-01', 3],
-  ])('maps %s to tier %i', (birthDate, expected) => {
-    expect(tierForBirthDate(birthDate, now)).toBe(expected);
-  });
-
-  it('falls back to the MIDDLE band when the birth date is unknown', () => {
-    // Not tier 3: an unknown date must never hand a seven-year-old adult
-    // vocabulary on the strength of a missing field.
-    expect(tierForBirthDate(null, now)).toBe(2);
-    expect(tierForBirthDate(undefined, now)).toBe(2);
-    expect(tierForBirthDate('not-a-date', now)).toBe(2);
-  });
-
-  it('does not go below tier 1 for a date in the future', () => {
-    expect(tierForBirthDate('2030-01-01', now)).toBe(2);
   });
 });

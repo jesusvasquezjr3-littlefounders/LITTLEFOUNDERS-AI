@@ -1,12 +1,17 @@
+import { requireAgeScreen } from '../middleware/ageScreen.js';
+import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
+import { knownMentorAgeTier, MentorAgeTier, readMentorAgeCalibration, recordMentorAgeCalibration, resolveInternalMentorAge } from '../services/mentorAgeCalibration.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireInternalKey } from '../middleware/auth.js';
 import { fail, ok } from '../lib/http.js';
 import { getRolesForGate } from '../services/insights.js';
+import { resolveMentorSafety } from '../services/mentorSafety.js';
 import {
   getFullOwnProfile,
   getVerifiedKidLinks,
+  getVerifiedGuardiansOfKid,
   insertAuditLog,
   serviceRest,
   type FullProfileRow,
@@ -278,24 +283,6 @@ const SessionLimitResetAt = z
   .datetime()
   .refine((iso) => new Date(iso).getTime() > Date.now(), 'resetAt must be in the future');
 
-/**
- * Tier band from a birth date. Mirrors `tierForBirthDate` in
- * `oracle/src/context/schema.ts`, and the mirroring is the point: the date is
- * read HERE and only the band travels, so Oracle never needs it.
- */
-export function tierForBirthDate(birthDate: string | null, now = new Date()): 1 | 2 | 3 {
-  if (!birthDate) return 2;
-  const born = new Date(birthDate);
-  if (Number.isNaN(born.getTime())) return 2;
-  let age = now.getUTCFullYear() - born.getUTCFullYear();
-  const monthDelta = now.getUTCMonth() - born.getUTCMonth();
-  if (monthDelta < 0 || (monthDelta === 0 && now.getUTCDate() < born.getUTCDate())) age -= 1;
-  if (age < 0) return 2;
-  if (age <= 7) return 1;
-  if (age <= 9) return 2;
-  return 3;
-}
-
 function normalizeLocale(raw: string | null | undefined): 'en-US' | 'es-MX' | 'pt-BR' {
   return raw === 'en-US' || raw === 'pt-BR' ? raw : 'es-MX';
 }
@@ -372,7 +359,9 @@ function microphoneBlockedBy(
   isMinor: boolean,
   hasConsent: boolean,
   runtime: PreflightResult,
+  originRestricted = false,
 ): string | null {
+  if (originRestricted) return 'POLICY_BLOCKED';
   if (isMinor && runtime.minorVoicePolicy === 'blocked') return 'POLICY_BLOCKED';
   if (isMinor && !hasConsent) return 'CONSENT_REQUIRED';
   if (!runtime.voiceAvailable) return 'VOICE_UNAVAILABLE';
@@ -425,15 +414,22 @@ function internalRouter(): Router {
     const session = await getTutorSession(sessionId.data);
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
     if (session.ended_at !== null) return fail(res, 409, 'SESSION_CLOSED', 'This session has already ended');
+    const screening = await readAgeScreen(session.user_id);
+    if (!screening) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve age screening');
+    if (screening.required) return fail(res, 403, 'AGE_SCREEN_REQUIRED', 'Complete age screening first');
+    const calibration = await resolveInternalMentorAge(session.user_id, screening);
+    if (!calibration) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve mentor age calibration');
+    if (calibration.tier === null) return fail(res, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED', 'Complete mentor age calibration first');
+    if (calibration.tier !== session.tier) return fail(res, 409, 'SESSION_AGE_CHANGED', 'Start a session with the confirmed teaching register');
 
     const prefs = await getTutorPreferences(session.user_id);
     if (prefs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read tutor preferences');
 
     const roles = await getRolesForGate(session.user_id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
-    const isMinor = roles.includes('kid');
+    const { isMinor, originRestricted } = await resolveMentorSafety(session.user_id, roles);
 
-    const consent = isMinor ? await getActiveVoiceConsent(session.user_id) : null;
+    const consent = isMinor && !originRestricted ? await getActiveVoiceConsent(session.user_id) : null;
 
     // A failed personalization read is NOT an empty one (/ORACLE.md §14). The
     // flag travels so the tutor can say it is still getting to know the
@@ -1213,35 +1209,22 @@ function internalRouter(): Router {
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
 
-    /*
-     * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068) — the one
-     * item that document marked BLOCKING before real families could use the
-     * Tutor. Auto-write was the owner-accepted interim while the platform's
-     * only active learner was the owner.
-     *
-     * ONLY the LEARNER store is gated. That store is a model-authored prose
-     * description of a MINOR — who they are, what motivates them — injected
-     * into every future session, and a parent has the right to see a belief
-     * like that before the system starts holding it. The PEDAGOGY store is
-     * the tutor's notes about its OWN teaching method ("prefers a worked
-     * example before the rule"); gating it would ask a guardian to approve a
-     * teaching technique, which is not a parental decision, and would stall
-     * the tutor's ability to adapt behind an inbox. It keeps auto-writing for
-     * a minor and an adult alike.
-     *
-     * A FAILED ROLE READ REFUSES THE WHOLE WRITE. Falling through to the
-     * ungated path would be the §1.14 failure-collapsed-into-a-default shape
-     * with the worst possible default: a child's note bypassing the gate
-     * because PostgREST hiccuped. Oracle already treats a non-2xx here as
-     * "did not land, the next review will try again", which is exactly right.
-     */
-    const roles = await getRolesForGate(userId);
-    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
-    const isMinor = roles.includes('kid');
+    // C.4: a verified guardian relationship governs learner-note review,
+    // including dependants whose roles do not contain `kid`. Retain the
+    // conservative hold for legacy kid records with no link; never turn a
+    // missing relationship into permission to write that child's profile.
+    // The independent-teen policy remains an explicit open product decision.
+    const [roles, guardians] = await Promise.all([
+      getRolesForGate(userId), getVerifiedGuardiansOfKid(userId),
+    ]);
+    if (roles === null || !z.array(z.string().uuid()).safeParse(guardians).success) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve memory review eligibility');
+    }
+    const requiresReview = guardians!.length > 0 || roles.includes('kid');
 
-    const gatedStores = { learner: isMinor ? null : stores.learner, pedagogy: stores.pedagogy };
+    const gatedStores = { learner: requiresReview ? null : stores.learner, pedagogy: stores.pedagogy };
     const pending: ('learner' | 'pedagogy')[] = [];
-    if (isMinor && stores.learner !== null) {
+    if (requiresReview && stores.learner !== null) {
       const parked = await parkLearnerMemoryProposal({
         userId,
         proposed: stores.learner,
@@ -1493,7 +1476,10 @@ function internalRouter(): Router {
   router.get('/consent/:userId', async (req, res) => {
     const userId = z.string().uuid().safeParse(req.params.userId);
     if (!userId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
-    const consent = await getActiveVoiceConsent(userId.data);
+    const roles = await getRolesForGate(userId.data);
+    if (roles === null) return ok(res, { active: false });
+    const { originRestricted } = await resolveMentorSafety(userId.data, roles);
+    const consent = originRestricted ? null : await getActiveVoiceConsent(userId.data);
     return ok(res, { active: consent !== null });
   });
 
@@ -2467,7 +2453,35 @@ export function tutorRouter(): Router {
   // FIRST, so no later `/:param` route can shadow it.
   router.use('/internal', internalRouter());
 
-  router.use(requireAuth);
+  router.use(requireAuth, requireAgeScreen);
+
+  async function calibrationState(res: Parameters<typeof fail>[0]) {
+    const user = authedUser(res);
+    const profile = await profileOf(user.accessToken, user.id);
+    if (!profile) return null;
+    const known = knownMentorAgeTier(profile.birth_date, res.locals.ageScreen as AgeScreenState);
+    if (known !== null) return { required: false, tier: known };
+    const stored = await readMentorAgeCalibration(user.id);
+    return stored ? { required: stored.tier === null, tier: stored.tier } : null;
+  }
+
+  router.get('/age-calibration', async (_req, res) => {
+    const state = await calibrationState(res);
+    return state ? ok(res, state) : fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read teaching calibration');
+  });
+
+  router.post('/age-calibration', async (req, res) => {
+    const parsed = z.object({ tier: MentorAgeTier }).strict().safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a teaching age band');
+    const current = await calibrationState(res);
+    if (!current) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read teaching calibration');
+    if (!current.required) return ok(res, current);
+    const stored = await recordMentorAgeCalibration(authedUser(res).id, parsed.data.tier);
+    if (stored === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save teaching calibration');
+    const confirmed = await calibrationState(res);
+    if (!confirmed || confirmed.required || confirmed.tier !== stored) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm teaching calibration');
+    return ok(res, confirmed);
+  });
 
   // ── Personalization ───────────────────────────────────────────────────────
 
@@ -2587,7 +2601,10 @@ export function tutorRouter(): Router {
     const profile = await profileOf(user.accessToken, user.id);
     if (!profile) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read profile');
 
-    const map = await buildTutorMap(user.id, tierForBirthDate(profile.birth_date), normalizeLocale(profile.locale));
+    const calibration = await calibrationState(res);
+    if (!calibration) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read teaching calibration');
+    if (calibration.tier === null) return fail(res, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED', 'Complete teaching age calibration first');
+    const map = await buildTutorMap(user.id, calibration.tier, normalizeLocale(profile.locale));
     if (map === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning map');
     return ok(res, map);
   });
@@ -2601,7 +2618,7 @@ export function tutorRouter(): Router {
 
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
-    const isMinor = roles.includes('kid');
+    const { isMinor, originRestricted } = await resolveMentorSafety(user.id, roles);
 
     /*
      * Voice availability is resolved HERE, before the session starts, because
@@ -2610,7 +2627,7 @@ export function tutorRouter(): Router {
      * learner ticked a box that did nothing, which is worse than a checkbox
      * that was honestly absent.
      */
-    const consent = isMinor ? await getActiveVoiceConsent(user.id) : null;
+    const consent = isMinor && !originRestricted ? await getActiveVoiceConsent(user.id) : null;
     const runtime = await preflight(isMinor, true);
 
     /*
@@ -2704,7 +2721,7 @@ export function tutorRouter(): Router {
       sessionCapResetAt,
       voiceAvailable: runtime.voiceAvailable,
       /** Distinct reasons deserve distinct copy: no consent vs no provider. */
-      microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime),
+      microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime, originRestricted),
       // The tutor offers, never diagnoses. The client renders these as
       // invitations, and declining is not recorded as a fact about anyone.
       weakSkills: weak.map((s, index) => ({
@@ -2808,7 +2825,7 @@ export function tutorRouter(): Router {
 
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
-    const isMinor = roles.includes('kid');
+    const { isMinor, originRestricted } = await resolveMentorSafety(user.id, roles);
 
     const profile = await profileOf(user.accessToken, user.id);
     if (!profile) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read profile');
@@ -2817,7 +2834,10 @@ export function tutorRouter(): Router {
     // THE MICROPHONE GATE. Blocking, not a flag (/ORACLE.md §4.3). A minor with
     // no active guardian consent gets a working, silent session — never a
     // session that quietly opens a microphone.
-    const consent = isMinor ? await getActiveVoiceConsent(user.id) : null;
+    const calibration = await calibrationState(res);
+    if (!calibration) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve mentor age calibration');
+    if (calibration.tier === null) return fail(res, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED', 'Complete mentor age calibration first');
+    const consent = isMinor && !originRestricted ? await getActiveVoiceConsent(user.id) : null;
     const wantsVoice = parsed.data.wantsVoice && (!isMinor || consent !== null);
 
     const runtime = await preflight(isMinor, wantsVoice);
@@ -2849,7 +2869,7 @@ export function tutorRouter(): Router {
       sinceIso: startOfLocalDayIso(locale),
       cap: isStaff ? STAFF_SESSION_CAP : MAX_SESSIONS_PER_DAY,
       locale,
-      tier: tierForBirthDate(profile.birth_date),
+      tier: calibration.tier,
       character: prefs.character,
       companion: prefs.companion,
       diorama: prefs.diorama,
@@ -2887,7 +2907,7 @@ export function tutorRouter(): Router {
         voiceAvailable: runtime.voiceAvailable,
         microphoneAvailable: wantsVoice && runtime.microphoneAvailable,
         // So the UI can explain a silent session rather than looking broken.
-        microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime),
+        microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime, originRestricted),
       },
       201,
     );
@@ -2929,6 +2949,10 @@ export function tutorRouter(): Router {
       return fail(res, 409, 'SESSION_CLOSED', 'This session has already ended');
     }
 
+    const calibration = await calibrationState(res);
+    if (!calibration) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve mentor age calibration');
+    if (calibration.tier === null) return fail(res, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED', 'Complete mentor age calibration first');
+    if (calibration.tier !== session.tier) return fail(res, 409, 'SESSION_AGE_CHANGED', 'Start a session with the confirmed teaching register');
     const { url, expiresAt } = tutorSocketUrl(session.id, user.id);
     return ok(res, { sessionId: session.id, socketUrl: url, socketExpiresAt: expiresAt });
   });

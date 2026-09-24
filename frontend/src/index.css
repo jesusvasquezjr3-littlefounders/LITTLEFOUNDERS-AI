@@ -109,8 +109,8 @@
     --lf-surface-sunken: 241 245 249; /* slate-100 */
     --lf-band: 238 242 255; /* indigo-50 tinted section band */
     --lf-content: 15 23 42; /* slate-900 — ink */
-    --lf-content-muted: 71 85 105; /* slate-600 */
-    --lf-content-faint: 148 163 184; /* slate-400 */
+    --lf-content-muted: 51 65 85; /* slate-700 */
+    --lf-content-faint: 85 99 115; /* Readable secondary text on tinted surfaces. */
     --lf-outline: 226 232 240; /* slate-200 */
 
     /* Inverse (slate band) — identical in light & dark, like the hero band */
@@ -120,7 +120,7 @@
     --lf-on-inverse-muted: 203 213 225; /* slate-300 */
 
     /* Brand indigo — links, focus, selection, info */
-    --lf-primary: 79 70 229; /* indigo-600 */
+    --lf-primary: 67 56 202; /* indigo-700 */
     --lf-primary-strong: 67 56 202; /* indigo-700 */
     --lf-primary-soft: 238 242 255; /* indigo-50 */
     --lf-on-primary: 255 255 255;
@@ -142,12 +142,12 @@
     --lf-on-delight: 255 255 255;
 
     --lf-success: 5 150 105; /* emerald-600 */
-    --lf-success-strong: 4 120 87; /* emerald-700 */
+    --lf-success-strong: 6 95 70; /* emerald-800 */
     --lf-success-soft: 236 253 245; /* emerald-50 */
     --lf-on-success: 255 255 255;
 
     --lf-warning: 217 119 6; /* amber-600 */
-    --lf-warning-strong: 180 83 9; /* amber-700 */
+    --lf-warning-strong: 146 64 14; /* amber-800 */
     --lf-warning-soft: 255 251 235; /* amber-50 */
     --lf-on-warning: 255 255 255;
 
@@ -418,10 +418,10 @@
 
     --lf-inverse-surface: 30 41 59; /* slate-800 */
 
-    --lf-primary: 129 140 248; /* indigo-400 */
-    --lf-primary-strong: 99 102 241; /* indigo-500 */
+    --lf-primary: 165 180 252; /* indigo-300 */
+    --lf-primary-strong: 199 210 254; /* indigo-200 */
     --lf-primary-soft: 49 46 129; /* indigo-900 */
-    --lf-on-primary: 255 255 255;
+    --lf-on-primary: 15 23 42; /* slate-900 on the light dark-mode fill */
 
     --lf-secondary: 248 250 252; /* slate-50 */
     --lf-secondary-soft: 15 23 42; /* slate-900 */
@@ -3026,6 +3026,20 @@
 }
 
 @layer utilities {
+  /* Soft wells need light text in dark mode; solid action fills stay unchanged. */
+  .dark .text-accent,
+  .dark .text-accent-strong {
+    color: rgb(165 180 252);
+  }
+  .dark .text-success-strong {
+    color: rgb(110 231 183);
+  }
+  .dark .text-warning-strong {
+    color: rgb(252 211 77);
+  }
+  .dark .text-error-strong {
+    color: rgb(252 165 165);
+  }
   @media (prefers-reduced-motion: reduce) {
     .motion-safe-lift,
     .motion-safe-press {

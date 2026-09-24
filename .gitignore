@@ -46,6 +46,11 @@ database/supabase/
 *.sqlite
 !database/migrations/*.sql
 
+# ── Local verification evidence. The sprint records (tracked) cite these
+#    artifact paths, but the directory also holds per-run Chrome profiles
+#    that reach tens of GB — keep it local. ──
+audit-results/
+
 # ── tesseract.js language-data cache (downloaded at runtime) ──
 *.traineddata
 
@@ -91,3 +96,6 @@ audiogen/src/samples/
 # (scratchpad/oracle.html) on demand; committing a 1 MB binary that is
 # regenerated on every edit buys nothing and bloats the history forever.
 /LittleFounders-*.pdf
+
+# Generated QA-audit PDF exports
+/output/

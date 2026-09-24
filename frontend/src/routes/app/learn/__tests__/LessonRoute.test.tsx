@@ -7,16 +7,26 @@ import { api } from '@/lib/api';
 import type { LessonDocument } from '@/lesson-engine/core/types';
 import type LessonPlayerType from '@/lesson-engine/player/LessonPlayer';
 import { LessonRoute } from '../LessonRoute';
+import { goalBulletPilotDocument } from '@/rebuild/learning/GoalBulletBoard';
+import { allocationPilotDocument } from '@/rebuild/learning/AllocationBoard';
+import { fractionNumberLinePilotDocument } from '@/rebuild/learning/FractionNumberLineBoard';
+import { fractionAreaPilotDocument } from '@/rebuild/learning/FractionAreaBoard';
+import { numberLinePilotDocument } from '@/rebuild/learning/NumberLineBoard';
+import { workedExamplePilotDocument } from '@/rebuild/learning/WorkedExampleBoard';
+import { functionMachinePilotDocument } from '@/rebuild/learning/FunctionMachineBoard';
+import { barModelPilotDocument } from '@/rebuild/learning/BarModelBoard';
+import { schemaDiagramPilotDocument } from '@/rebuild/learning/SchemaDiagramBoard';
+import { cpaFadingPilotDocument } from '@/rebuild/learning/CpaFadingBoard';
 
 const mockNavigate = vi.fn();
+const { mockGetToken } = vi.hoisted(() => ({ mockGetToken: vi.fn<() => Promise<string | null>>() }));
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 // getToken must be a STABLE reference — the route's fetch effect depends on it
 // (in the real app it's a memoized useCallback from AuthContext). A fresh
 // function per render would re-fire the effect forever.
 vi.mock('@/auth/AuthContext', () => {
-  const getToken = async () => 'token-123';
-  return { useAuth: () => ({ getToken }) };
+  return { useAuth: () => ({ getToken: mockGetToken, session: { user: { id: 'audit-learner' } } }) };
 });
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -55,18 +65,562 @@ function renderLessonRoute(initialEntries: Parameters<typeof MemoryRouter>[0]['i
 }
 
 beforeEach(async () => {
+  sessionStorage.clear();
   mockedApi.mockReset();
+  mockGetToken.mockReset().mockResolvedValue('token-123');
   mockNavigate.mockReset();
   await i18n.changeLanguage('en-US');
 });
 
 describe('LessonRoute', () => {
+  it('retains the completion run and payload after a failed save and route remount', async () => {
+    const lesson = { data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null };
+    mockedApi.mockResolvedValueOnce(lesson).mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } });
+    const first = renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByText('mock-complete'));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledTimes(2));
+    const initialBody = mockedApi.mock.calls[1]?.[1]?.body;
+    first.unmount();
+    mockedApi.mockResolvedValueOnce(lesson).mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByText('mock-complete'));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledTimes(4));
+    expect(mockedApi.mock.calls[3]?.[1]?.body).toEqual(initialBody);
+  });
   it('fetches the lesson document and renders the player', async () => {
     mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
     renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
 
     expect(await screen.findByText('mock-complete')).toBeInTheDocument();
     expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1', { token: 'token-123' });
+  });
+
+  it('shows the rebuilt offline state and retries the lesson request', async () => {
+    mockedApi
+      .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } })
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'Connection lost' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
+    expect(mockedApi).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses the rebuilt load-error state for a non-network lesson failure', async () => {
+    mockedApi
+      .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'unexpected response' } })
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'Lesson unavailable' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
+  });
+
+  it('routes a delivered v2 document into the rebuilt lesson renderer without passing age evidence', async () => {
+    mockedApi.mockResolvedValueOnce({ data: {
+      lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: goalBulletPilotDocument('en-US', '6-9'), audio: {},
+    }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'Reach a savings goal' })).toBeInTheDocument();
+    expect(screen.queryByText('mock-complete')).toBeNull();
+  });
+
+  it('starts a version-pinned v2 attempt and sends its opaque segment token only when the learner checks a valid allocation', async () => {
+    const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'allocate-01': 'opaque-signed-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    const addSave = await screen.findByRole('button', { name: 'Add: Save' });
+    for (let count = 0; count < 4; count++) fireEvent.click(addSave);
+    const addSpend = screen.getByRole('button', { name: 'Add: Spend' });
+    for (let count = 0; count < 8; count++) fireEvent.click(addSpend);
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith(
+      '/learn/lessons/lesson-1/grade',
+      expect.objectContaining({ method: 'POST', token: 'token-123', body: {
+        segment_id: 'allocate-01', run_id: '99999999-9999-4999-8999-999999999999',
+        attempt_token: 'opaque-signed-token', answer: { save: 4, spend: 8, share: 0 },
+      } }),
+    ));
+    expect(await screen.findByText('Your plan meets the goal.')).toBeInTheDocument();
+    expect(mockedApi.mock.calls[1]).toEqual(['/learn/lessons/lesson-1/v2-runs', { method: 'POST', token: 'token-123', body: {} }]);
+  });
+
+  it('completes an authenticated M3 fraction number-line after its authoritative correct verdict', async () => {
+    const document = fractionNumberLinePilotDocument('en-US') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'fraction-01': 'fraction-attempt-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.change(await screen.findByRole('slider', { name: 'Place the fraction' }), { target: { value: '3' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: {
+        segment_id: 'fraction-01', run_id: '99999999-9999-4999-8999-999999999999',
+        attempt_token: 'fraction-attempt-token', answer: { value: '3/4' },
+      },
+    })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes an authenticated M6 equal-area fraction after its authoritative correct verdict', async () => {
+    const document = fractionAreaPilotDocument('en-US') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'fraction-area-01': 'area-attempt-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByRole('button', { name: 'Shaded parts: More' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: {
+        segment_id: 'fraction-area-01', run_id: '99999999-9999-4999-8999-999999999999',
+        attempt_token: 'area-attempt-token', answer: { n: 1, d: 2 },
+      },
+    })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes an authenticated M2 whole-number line after its authoritative correct verdict', async () => {
+    const document = numberLinePilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'place-01': 'line-attempt-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.change(await screen.findByRole('slider', { name: 'Place the point' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: {
+        segment_id: 'place-01', run_id: '99999999-9999-4999-8999-999999999999',
+        attempt_token: 'line-attempt-token', answer: { value: '7' },
+      },
+    })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes authenticated M9/M10 after the learner reveals and solves the faded worked example', async () => {
+    const document = workedExamplePilotDocument('en-US', 1) as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'worked-example-01': 'worked-example-attempt-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Predict the next result' }), { target: { value: '40' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Show next step' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Write the result: Sale price' }), { target: { value: '40' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Show next step' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: {
+        segment_id: 'worked-example-01', run_id: '99999999-9999-4999-8999-999999999999',
+        attempt_token: 'worked-example-attempt-token', answer: { values: { 'discount-subtract': '40', 'sale-price': '40' } },
+      },
+    })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes authenticated M13 after the learner tries an input and states the function rule', async () => {
+    const document = functionMachinePilotDocument('en-US') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'function-machine-01': 'function-machine-attempt-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByRole('button', { name: '2' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Run' }));
+    fireEvent.change(screen.getByLabelText('Multiply by'), { target: { value: '5' } });
+    fireEvent.change(screen.getByLabelText('Then add'), { target: { value: '10' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check rule' }));
+
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: {
+        segment_id: 'function-machine-01', run_id: '99999999-9999-4999-8999-999999999999',
+        attempt_token: 'function-machine-attempt-token', answer: { multiplier: '5', offset: '10' },
+      },
+    })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes authenticated M7 only after Core accepts its structure and independent answer receipts', async () => {
+    const document = barModelPilotDocument('en-US') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'bar-structure-01': 'structure-token', 'bar-answer-01': 'answer-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'bar-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'structure-token', answer: { model: 'comparison' },
+    } })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    fireEvent.change(await screen.findByLabelText('How many coins does the smaller bar show?'), { target: { value: '19' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'bar-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '19' },
+    } })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes authenticated M8 only after Core accepts each schema, slot, and answer receipt', async () => {
+    const document = schemaDiagramPilotDocument('en-US') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'schema-structure-01': 'schema-token', 'schema-slots-01': 'slots-token', 'schema-answer-01': 'answer-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'schema-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'schema-token', answer: { schema: 'change' },
+    } })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    fireEvent.change(await screen.findByLabelText('Earned'), { target: { value: '24' } });
+    fireEvent.change(screen.getByLabelText('Spent'), { target: { value: '9' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'schema-slots-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'slots-token', answer: { income: '24', spending: '9' },
+    } })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    fireEvent.change(await screen.findByLabelText('How many coins are left?'), { target: { value: '15' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'schema-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '15' },
+    } })));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('completes authenticated M1 only after its concrete, pictorial, then abstract receipts', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: false, score: 0 }, replayed: false, retry_attempt_token: 'concrete-retry-token' }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Your answer' }), { target: { value: '6' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'cpa-concrete-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'concrete-token', answer: { value: '6' },
+    } })));
+    expect(await screen.findByRole('heading', { name: 'See it' })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'cpa-pictorial-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'pictorial-token', answer: { value: '7' },
+    } })));
+    expect(await screen.findByRole('heading', { name: 'Write it' })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
+      segment_id: 'cpa-abstract-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'abstract-token', answer: { value: '7' },
+    } })));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Finish lesson' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
+      method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
+    })));
+  });
+
+  it('resumes M7 at its first pending independent answer without reopening the met structure', async () => {
+    const document = barModelPilotDocument('en-US') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: true, met_segment_ids: ['bar-structure-01'], attempt_tokens: { 'bar-structure-01': 'structure-token', 'bar-answer-01': 'answer-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByRole('heading', { name: 'Solve the model' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Build the model' })).toBeNull();
+    fireEvent.change(screen.getByLabelText('How many coins does the smaller bar show?'), { target: { value: '19' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: expect.objectContaining({
+      segment_id: 'bar-answer-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'answer-token', answer: { value: '19' },
+    }) })));
+  });
+
+  it('resumes M1 at the abstract response after its earlier representation receipts are met', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: true, met_segment_ids: [], attempted_segment_ids: ['cpa-concrete-01', 'cpa-pictorial-01'], attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByRole('heading', { name: 'Write it' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Build it' })).toBeNull();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: expect.objectContaining({
+      segment_id: 'cpa-abstract-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'abstract-token', answer: { value: '7' },
+    }) })));
+  });
+
+  it('reopens the final M1 symbol after a review instead of exposing Finish', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: true, met_segment_ids: [],
+        attempted_segment_ids: ['cpa-concrete-01', 'cpa-pictorial-01', 'cpa-abstract-01'],
+        attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'Write it' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Finish lesson' })).toBeNull();
+  });
+
+  it('keeps the final M1 symbol actionable after review and renews only its token', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [],
+        attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: false, score: 0 }, replayed: false, retry_attempt_token: 'abstract-retry-token' }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    const answer = await screen.findByRole('textbox', { name: 'Your answer' });
+    fireEvent.change(answer, { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByRole('heading', { name: 'See it' })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByRole('heading', { name: 'Write it' })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '6' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByText('Try counting again.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Finish lesson' })).toBeNull();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: expect.objectContaining({
+      segment_id: 'cpa-abstract-01', attempt_token: 'abstract-retry-token', answer: { value: '7' },
+    }) })));
+    expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeInTheDocument();
+  });
+
+  it('keeps M1 actionable after a grading transport failure without calling it a learning review', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [],
+        attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Your answer' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByText('We could not check that. Try again.')).toBeInTheDocument();
+    expect(screen.queryByText('Try counting again.')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi).toHaveBeenLastCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: expect.objectContaining({
+      segment_id: 'cpa-concrete-01', attempt_token: 'concrete-token', answer: { value: '7' },
+    }) })));
+    expect(await screen.findByRole('heading', { name: 'See it' })).toBeInTheDocument();
+  });
+
+  it('restores a v2 run ID after reload but never writes its opaque token to session storage', async () => {
+    const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    const run = { run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+      expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'allocate-01': 'opaque-signed-token' } };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: run, error: null });
+    const first = renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByRole('button', { name: 'Add: Save' });
+    first.unmount();
+
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: { ...run, resumed: true }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByRole('button', { name: 'Add: Save' });
+
+    expect(mockedApi.mock.calls[3]).toEqual(['/learn/lessons/lesson-1/v2-runs', {
+      method: 'POST', token: 'token-123', body: { run_id: run.run_id },
+    }]);
+    expect(sessionStorage.getItem('lf.lesson.checkpoint.v1:audit-learner:lesson-1')).not.toContain('opaque-signed-token');
+  });
+
+  it('uses the replacement token after review so the learner can correct an answer', async () => {
+    const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: { run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id, expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'allocate-01': 'first-token' } }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: false, score: 0 }, replayed: false, retry_attempt_token: 'second-token' }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    const addSave = await screen.findByRole('button', { name: 'Add: Save' });
+    for (let count = 0; count < 3; count++) fireEvent.click(addSave);
+    const addSpend = screen.getByRole('button', { name: 'Add: Spend' });
+    for (let count = 0; count < 9; count++) fireEvent.click(addSpend);
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await screen.findByRole('status');
+    fireEvent.click(screen.getByRole('button', { name: 'Remove: Spend' }));
+    fireEvent.click(addSave);
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(mockedApi.mock.calls[3]?.[1]).toMatchObject({ body: expect.objectContaining({ attempt_token: 'second-token' }) }));
+    expect(await screen.findByText('Your plan meets the goal.')).toBeInTheDocument();
+  });
+
+  it('fails closed when the v2 run response names a different public version', async () => {
+    const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: 'another-public-version',
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'allocate-01': 'opaque-signed-token' },
+      }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'This lesson needs an update.' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
+    expect(mockedApi).toHaveBeenCalledTimes(2);
+  });
+
+  it('fails closed when recovery returns a malformed attempted representation list', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: true, met_segment_ids: [],
+        attempted_segment_ids: { segment: 'cpa-concrete-01' },
+        attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'This lesson needs an update.' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
+    expect(mockedApi).toHaveBeenCalledTimes(2);
+  });
+
+  it('fails closed when recovery skips an earlier CPA representation', async () => {
+    const document = cpaFadingPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: true, met_segment_ids: [],
+        attempted_segment_ids: ['cpa-pictorial-01'],
+        attempt_tokens: { 'cpa-concrete-01': 'concrete-token', 'cpa-pictorial-01': 'pictorial-token', 'cpa-abstract-01': 'abstract-token' },
+      }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'This lesson needs an update.' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
   });
 
   it('posts the measured seconds_spent on complete WITHOUT navigating away (the Results screen must stay up until the kid exits)', async () => {
@@ -91,6 +645,19 @@ describe('LessonRoute', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
+  it('does not send a pending completion after the learner leaves the route', async () => {
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
+    const view = renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByText('mock-complete');
+    let resolveToken!: (token: string) => void;
+    mockGetToken.mockImplementationOnce(() => new Promise(resolve => { resolveToken = resolve }));
+    fireEvent.click(screen.getByText('mock-complete'));
+    view.unmount();
+    resolveToken('another-learner-token');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(mockedApi).toHaveBeenCalledTimes(1);
+  });
+
   it('navigates back to the course page on exit, using the courseSlug passed via location state', async () => {
     mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
     renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
@@ -111,12 +678,22 @@ describe('LessonRoute', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/learn');
   });
 
-  it('shows an error banner with a way back when the lesson fetch fails', async () => {
+  it('shows the rebuilt load-error state with a way back when the lesson fetch fails', async () => {
     mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'LESSON_LOCKED', message: 'Locked' } });
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/isn't unlocked yet/);
-    fireEvent.click(screen.getByRole('button', { name: /Back to course/ }));
+    expect(await screen.findByRole('heading', { name: 'Lesson unavailable' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Go back' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/learn');
+  });
+
+  it('uses the rebuilt task-scoped screen for a lesson-age refusal', async () => {
+    mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'LESSON_AGE_ELIGIBILITY_REQUIRED', message: 'Age eligibility is required' } });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'We need your age details' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Go back' }));
     expect(mockNavigate).toHaveBeenCalledWith('/learn');
   });
 
@@ -146,7 +723,7 @@ describe('LessonRoute', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
-  it('keeps the banner when the course is unknown, rather than guessing a quiz URL', async () => {
+  it('keeps an honest rebuilt placement state when the course is unknown', async () => {
     // A bare deep link carries no router state, so there is no courseSlug to
     // build the placement URL from. Being visibly stuck beats a wrong redirect.
     mockedApi.mockResolvedValueOnce({
@@ -155,6 +732,6 @@ describe('LessonRoute', () => {
     });
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/placement quiz first/i);
+    expect(await screen.findByRole('heading', { name: 'Placement comes first' })).toBeInTheDocument();
   });
 });

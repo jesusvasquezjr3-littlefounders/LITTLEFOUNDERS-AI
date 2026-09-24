@@ -107,4 +107,24 @@ describe('LearnPage', () => {
     expect(screen.queryByText('Financial Literacy')).not.toBeInTheDocument();
     expect(screen.queryByText('Open Course Map')).not.toBeInTheDocument();
   });
+
+  it('explains when the featured course could not load instead of silently omitting it', async () => {
+    mockedApi.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tree')) return { data: null, error: { code: 'NOT_FOUND', message: 'no tree in this fixture' } };
+      return {
+        data: {
+          courses: courses(1),
+          unavailableFeaturedCourse: {
+            slug: 'money-basics',
+            title: { 'en-US': 'Money Basics' },
+          },
+        },
+        error: null,
+      };
+    });
+    render(<MemoryRouter><LearnPage /></MemoryRouter>);
+
+    expect(await screen.findByRole('status')).toHaveTextContent("We couldn't load this right now");
+    expect(screen.getByRole('status')).toHaveTextContent('Money Basics is unavailable for the moment.');
+  });
 });

@@ -1,0 +1,135 @@
+# 13 — Owner Decision Log
+
+**Status:** Binding. Records the owner's decisions of 20 September 2026 (OD-1 to OD-12), taken after the Product × Frontend import-readiness review (`12-PRODUCT-FRONTEND-IMPORT-READINESS-REVIEW.md`). Where this log conflicts with any earlier document in the Product package (`10-*`, `11-*`, `12-*`) or the Frontend package (`frontend/`), **this log wins**, and the affected documents have been amended to match (see the "Applied in" column). OD-13 to OD-17 were added on 21 September 2026 during the migration review.
+
+---
+
+## 1. Decisions
+
+| # | Topic | Decision | Consequences written into the documents | Applied in |
+|---|---|---|---|---|
+| OD-1 | **Lives / hearts** | No lives mechanic. Mistakes cost nothing. (Owner framing: "unlimited lives"; implemented as *no life counter at all*, since a counter, even one showing ∞, still presents an error as a resource being spent.) | After several consecutive misses on the same skill, the child's Mentor character offers a guided review instead of any penalty. Lives can never exist, and can therefore never be sold behind a future paywall. The `berry` hue loses its "lives" meaning. Rationale: the product targets a 70–85% practice success band (B.19); with 3 lives and 10-question lessons, 18% (85% success) to 62% (70% success) of lessons would exhaust the lives by design. | `10` B.26 and Block B summary table; Frontend `02` §4.2, §9.2, D9, rule 18 |
+| OD-2 | **Scope of the rebuild** | The frontend is rebuilt from scratch. The backend is **migrated** to the new product, not rewritten. The mockup is a visual reference for how the product should look, not the scope of v1. | Every requirement's "Current State" describes the legacy platform; for the new build it becomes an acceptance criterion ("the new build must not reproduce this"). Scope = the product's full screen inventory (`01`) + the 112 requirements, designed in the one visual language. | `10` "Status and use during the migration" section; Frontend README |
+| OD-3 | **Who can use the platform** | Individual users can use the platform on their own (Duolingo-style). Advanced features (Family, Digital Banking/Wallet, Tasks) unlock only when requirements are met; a self-registered teen gets a personal wallet without a parent (Option B, section 7). Only families: no teachers, schools or classrooms, for now. | Access model (section 2 below). Self-registered minors remain a supported population, so the "kid role ≠ real minor" requirements (A.2–A.4, C.2–C.4, D.3, E.8, H.1) keep their full weight: every minor safeguard follows **age**, not role. | `10` "Status and use during the migration" section (summary; the full table is section 2 of this log); A.6 and E.4 scope notes; Frontend `02` §1.1 |
+| OD-4 | **One design system, age registers by content** | One design system for **everything**: marketing, learner app, parent experience, staff console, emails, the public badge page and the teaching visuals. Tokens, components and shapes are identical for every user. What varies by age band is copy tone, character presence, reward framing and social mechanics (B.23, reduced form). | B.23 amended; Frontend D8 amended. A new, dedicated chapter on teaching visuals (charts, diagrams, mathematical operations, boolean logic, money manipulables) starts now. | `10` B.23, B.7; `10-APPENDIX-P`; Frontend `02` D8, new `05-TEACHING-VISUALS.md` |
+| OD-5 | **Pricing** | Out of scope. The platform is free at launch; a paywall may come later and has not been designed. The current priority is user acquisition. | Pricing route parked (not in v1). Marketing may say "free to start", never "always free" or "forever free". Brand team to revise Authority point 6 ("It is free") in `COSMIC_NARRATIVE.md` before any paywall work. Standing constraints for any future paywall: never on safety features or parental controls; never charged to a child; never sells streaks, rest days or error forgiveness; upgrade flows pass the B.25 manipulative-design audit. | `10` "Status and use during the migration" section (standing-constraints bullet); Frontend `02` §1.1, known-deviations list |
+| OD-6 | **Naming** | "Tutor" means only the verified parent (brand: "Become your child's Tutor"). The AI is the **Mentor**: one of the four existing 3D characters (Dr. Rho, Zara, Liruf, Dina), chosen by the learner. | Generic noun "Mentor" (identical in EN, ES and PT). The learner's own navigation shows the chosen character's name and avatar; parent views, staff views and documents say "Mentor". "AI Tutor" renamed to "AI Mentor" across the Product package. Legacy system identifiers (e.g. the `Tutor Session` data entity) keep their names until the backend migration renames them. | `10`–`12` (global rename); Frontend `02` |
+| OD-7 | **Celebration budget** | "High" gamification means high *feel* (press feedback, state transitions, the scene's own elements moving). Celebration (confetti, XP floaters, spring overshoot) is reserved for a closed list of milestones. | Closed list: lesson complete; course complete; savings goal reached; badge earned; streak milestones at 7, 30 and 100 days. A correct answer gets a bump, a check mark and an informational banner, never confetti or a floating reward. Confirming a coin split gets a confirmation, never confetti. | `10` B.20; Frontend `02` D6, D7, §9.2; `04` |
+| OD-8 | **Live platform during the migration** | Critical safety defects are fixed on the **current** platform now, without waiting for the rebuild. | Hotfix list (section 3 below). | `10` "Status and use during the migration" section |
+| OD-9 | **Existing user data** | Migrated. | Migration requirements (section 4 below). | `10` "Status and use during the migration" section |
+| OD-10 | **Legal** | Legal will update the Terms and Conditions once this work is finished. | Build to the conservative option each requirement already defines (private by default, gated discoverability, revocable and expiring shares, consent-gated analytics). Legal validates **before launch**, not after. | `10` "Status and use during the migration" section (standing-constraints bullet) |
+| OD-11 | **Translation** | Done by AI. | AI translation works from a controlled glossary (section 5). Recommendation, not yet confirmed by the owner: native human review of the registration, consent and money screens before launch. | Frontend `02` |
+| OD-12 | **Platforms** | Web first; a mobile wrapper sharing that frontend follows. | The owner closed the export-technology choice on 21 September 2026; see section 9. Tokens stay platform-neutral (`DESIGN.md` YAML), while web layout, accessibility and motion primitives remain the implementation target. Wrapper vendor and store-policy validation are still open. | Frontend `02`, `04`, `08`; Product Appendix P |
+| OD-13 | **Copy budget** (21 September 2026) | Too much text on several screens. Every string must be clear, precise and as short as possible while still understood at first read. Brevity has **numeric limits**, not just a style wish. | Frontend `06-COPY-BUDGET.md`: budgets per role (app: actions 3 words, headings 6, body 12 and 2 sentences, prompts 20, Mentor turns 20, first view 40; ages 6–9 lower; ES/PT ×1.25), layering for detail, a checking tool, and the gate before merge. Lesson prompts, options and Mentor turns get the same limits as a Forge content gate next to B.17 and B.18. The v2.1 mockup's strings are over budget (K40) and are not copied. | Frontend `02` D11 and rules 19; `06`; `verification-tools/copy-budget-audit.reference.mjs`; mockup `COPY-BUDGET-FINDINGS.md` |
+| OD-14 | **Iconography and visual assets are ours** (21 September 2026) | Iconography, images and visual resources are **non-negotiable, at the same level as shapes and colours**. The final product uses as few generic icons as possible. Everything that carries meaning or identity is an asset of our own, generated by the frontend agent (Codex) in the LittleFounders style: images (PNG/WebP), custom SVG and Lottie motion, for both Marketing and the App. The four Mentor characters are rendered from the **real 3D models**, in the poses of the **pose catalogue** that exists in the project folder. | Frontend `07-ICONOGRAPHY-AND-VISUAL-ASSETS.md`: at most 24 system glyphs from one source; the house style (token colours only, flat except the characters and the Diorama, shapes keep their meaning, no text inside assets, both modes); formats and size budgets; the character rules (real models only, catalogue poses, new poses added to the catalogue first); an asset manifest the build checks; an automated and human review gate. The mockup's icons, letter avatars and placeholder art are slots, not designs (K41). | Frontend `02` D12, rules 20–21, §9.7; `07` |
+| OD-15 | **The Mentor is 3D on its Diorama; the legacy UI is destroyed** (21 September 2026) | The AI Mentor is the chosen 3D character standing on the **Diorama**, not a generic chatbot. The Mentor UI of the current application is **deleted and rebuilt**, not restyled. The same applies to the legacy **buttons** and controls: they are replaced everywhere by the new design system. | Frontend `08-MENTOR-STAGE.md`: the stage (the character on the Diorama as the dominant area), a speech plate holding one turn, a board on demand, reply chips and input, a transcript only as a secondary sheet, character states mapped to catalogue poses, layout by width, performance fallbacks, age bands and an acceptance checklist. No legacy component is imported (`02` rule 23). B.8's "reuse the existing character/animation system" means the **3D models, Diorama and gesture/emotion vocabulary**, never the legacy screens or components. The mockup's chat-style Mentor screen is not the design (K42). | Frontend `02` D13, rules 22–23; `08`; Product `10` B.8 amendment and the Status section |
+| OD-16 | **One thematic course with age-appropriate learning pathways** (21 September 2026) | Each subject is one course containing chapters and lessons for different developmental stages, including adults. A learner enters at an age-appropriate, placement- and mastery-informed frontier; an adult need not complete childhood chapters, and a minor's completion must not depend on adult chapters. The same knowledge-component model supports all pathways, while examples, depth, scaffolding and register are authored for their audience. Age eligibility is a safeguard, not a proxy for mastery. | Rebuild the course map, placement, unlocks, eligible progress and badge rules around the shared graph (B.6), preserving evidence as a learner moves between stages. This supersedes the legacy single flat course sequence and Forge's separate adult-course output as the target information architecture. No existing lesson or user record is deleted as a shortcut; OD-9 governs migration. Exact pathway eligibility, cross-stage credit and badge policy require explicit design before implementation. | Product `10` B.6 and Appendix C; `docs/rebuild/sprints/S05-LESSON-ENGINE-DESIGN.md` |
+| OD-17 | **Learner experience first, Lesson Engine before catalog regeneration** (21 September 2026) | The first deliverable is the real, optimized new lesson interface: layout, rendering, charts and interactive Pizarrón, responsive and accessible across the required states, using controlled fixtures while its minimum data contract is defined. Complete the new document contract, authoritative grading, recovery and compact Mentor stage around that experience before adapting Forge or regenerating the age-pathway catalog. Approximately 400 lessons is an illustrative planning size, not a content quota or acceptance threshold. | Frontend quality is an exit gate, not polish deferred until after content generation. A passing visual prototype alone does not approve a new engine: interaction, scoring, accessibility and recovery must pass. Authoring and generation later target this verified contract and use Appendix C's human and automated release pipeline. DeepSeek/Qwen configuration remains unchanged during engine design; provider roles, cost and quality are reassessed when Forge work begins. No paid bulk generation or production content deletion follows from this decision. | Product `10` B.7–B.8 and Appendix C; Frontend `02`, `03`, `05`–`08`; `docs/rebuild/sprints/S05-LESSON-ENGINE-DESIGN.md` |
+
+---
+
+## 2. Access model (OD-3)
+
+| Population | How they get in | Learning and Mentor | Family, Wallet/Banking, Tasks | Profile and social | Safeguards |
+|---|---|---|---|---|---|
+| Adults (18+) | Self-registration (email or Google); age captured on every path | Yes | As a **parent** only: after ID verification (A.5) and a guardian link, the adult manages and sees their children's wallets, tasks and goals. There is no personal adult wallet. | Public profile under Block E rules; the Tutor badge is visible only as E.5 allows | Standard |
+| Teens (13–17), self-registered | Self-registration; age captured on every path; date of birth locked after the first declaration (E.4) | Yes | A **personal wallet** without a parent (self-logged income, Save/Spend/Share, savings goals; simulated coins; no approval step), per OD-3 Option B. Tasks and parent approvals only if a parent links later | Private by default; **mutual-consent connections the teen manages without a guardian** (E.8's lighter tier); no public badge links (F.6 keeps sharing guardian-initiated) | All minor safeguards **by age**: Mentor moderation fail-closed (C.3), minors' voice policy (C.2), memory-note policy for teens without a guardian (C.4), consent-gated analytics with a self-managed opt-out (H.1), no variable-ratio rewards (B.22) |
+| Children (under 13), parent-created | A parent creates the account (username + passphrase) | Yes | Inside the family, under the parent's approvals and the independence tiers of D.17 | Non-discoverable; connections only with guardian approval (E.1, E.8's strictest tier) | Full minor safeguards |
+| Children (under 13) who arrive alone | Guest mode reached from the age screen (A.2) | Yes, with every minor safeguard (the A.2 marker forces Mentor moderation fail-closed and turns the microphone off) | No | None | Full minor safeguards; the guest origin marker persists until a guardian link exists |
+| Parents ("Tutors") | Adult account + ID verification (A.5) | Yes | Yes (the guardian experience) | As adults | Two internal trust levels kept distinct (A.5) |
+
+"Advanced features" (Family, Wallet/Banking, Tasks) require a verified parent and a guardian link. They are never unlocked by a self-declared role. The one exception is the self-registered teen's personal wallet (Option B, section 7): Tasks and anything a parent approves stay guardian-only.
+
+---
+
+## 3. Hotfix list for the live platform (OD-8)
+
+The Critical child-safety and trust defects that exist **today in production**, plus two items added for their exposure or impact: F.2 (High; ships with F.1, since `noindex` without revocation leaves permanent pages) and B.1 (Critical but functional: it silently breaks placement, progress and badges for every learner). These are fixed on the current platform in parallel with the rebuild; each is also carried into the new build as an acceptance criterion.
+
+| Item | Defect in production | Minimum hotfix |
+|---|---|---|
+| A.2 | Guest accounts (the under-13 refusal path) get no minor safeguards | Origin marker on age-refusal guests; Mentor moderation fail-closed, microphone off, analytics suppressed |
+| A.3 | Google Sign-In has no age screen | Mandatory post-callback age screen; under-13 → same marker as A.2 |
+| D.1 | Card freeze is cosmetic | Server-side rejection of redemptions on a frozen account, proven by an adversarial test |
+| G.1 | Staff permissions are labels, not enforcement | Enforce each permission at its endpoints, or collapse to one audited staff tier |
+| E.1 | Any signed-in user can find and follow a child | Kid-role and under-13 accounts: non-discoverable, connections only with guardian approval. Self-registered 13–17: private by default and mutual-consent connections the teen manages (E.8's lighter tier), since no guardian exists to approve |
+| E.2 | Parents cannot see their child's social graph, and follow/unfollow/block leave no audit trail | Guardian view of the child's connections; audit-log entries for follow, unfollow and block |
+| C.2 | Minor voice/microphone safeguards follow the kid role, not the real minor (self-registered teens and guests are unprotected) | Apply the minors' voice policy by age (and to A.2 guests) |
+| C.3 | Mentor content moderation fails open for the same population | Fail-closed moderation for every account not positively confirmed as adult |
+| F.1 / F.2 | Public, permanent, indexable badge pages naming a child | `noindex`, per-share revoke that also invalidates the image, default expiry |
+| B.1 | Placement commit fails for every real placement outcome (release-blocking) | Align the stored placement values with the four business states |
+
+Also recommended as early hotfixes because they are small or close a live exposure: E.3 (a report action for unwanted contact), C.4 (guardian review of Mentor memory notes by age, not role), A.6 (child email change without guardian approval), G.2 (the direct-publish bypass restricted to logged Superadmin use).
+
+---
+
+## 4. Data migration requirements (OD-9)
+
+1. **Nothing is lost that a family was promised:** progress, placement credits, XP, coins, badges, streaks (current and best), savings goals, chore history, Mentor plans and notebooks.
+2. **Parental consent carries over only for the practices it covered.** Any new data practice introduced by the rebuild (a new analytics event class, a new Mentor memory type, a new sharing surface) needs fresh, specific parental consent for children's accounts before it applies to migrated children.
+3. **Legacy defects are not migrated forward.** Records created by defective flows are flagged and corrected during migration: staff-granted parent roles without justification (A.5), guest accounts created from the age-refusal path (A.2), Google accounts with no date of birth (A.3/A.4), public badge shares with no expiry (F.2, which are given the default expiry at migration).
+4. **Identifiers:** child usernames and the parent-child guardian links migrate unchanged, so children keep signing in the same way.
+5. **Verification:** row counts and per-family spot checks on balances, streaks and badges before and after, signed off before the legacy platform is switched off.
+
+---
+
+## 5. Controlled glossary (OD-6, OD-11)
+
+| Concept | EN | es-MX | pt-BR | Never use |
+|---|---|---|---|---|
+| Verified parent | Tutor | Tutor | Tutor | (never for the AI) |
+| The AI character | Mentor (or the character's name) | Mentor | Mentor | Tutor, bot, assistant |
+| In-app currency | coins | monedas | moedas | money, pesos, reais (it is a simulation) |
+| Chore | task / chore | tarea | tarefa | job |
+| Parent's approval | approve | aprobar | aprovar | accept |
+| Savings / spending / sharing | save / spend / share | ahorrar / gastar / compartir | poupar / gastar / compartilhar | invest (for the save pocket) |
+| Rest day | rest day | día de descanso | dia de descanso | streak freeze (implies a purchase) |
+| Allowance (regional) | allowance | domingo / mesada (confirm regionally) | mesada | |
+| The Mentor's 3D scene | Diorama | Diorama | Diorama | |
+| The Mentor screen | Mentor (the character's name in the learner's UI) | Mentor | Mentor | chatbot, bot, assistant |
+
+---
+
+## 6. Still open
+
+| Item | Owner of the answer |
+|---|---|
+| ~~Mobile export technology~~ | Closed by the owner on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. See section 9. |
+| Native human review of registration, consent and money screens | Owner (recommended, not yet confirmed) |
+| Revision of `COSMIC_NARRATIVE.md` Authority point 6 ("It is free") | Brand team, before any paywall work |
+| The 12 open product decision points inside `10` (register in section 8) and the counsel-review items | Product and Legal, each before its block enters development |
+
+---
+
+## 7. Conflict OD-3 vs. D.3 — resolved: Option B (owner, 20 September 2026)
+
+The first version of the access model unlocked Wallet/Banking and Tasks only with a verified parent and a guardian link. That contradicted requirement D.3 (Critical), which mandates an independent mode for self-registered teens, grounded in Appendix G §4.3 and in the brand's own 16-year-old success story. The conflict was missed when the access model was proposed and approved, and was recorded here rather than resolved silently.
+
+**The owner chose Option B:** "advanced features" split in two. A self-registered teen (13–17) without a parent gets a **personal wallet**: self-logged income, Save/Spend/Share allocation and savings goals, in simulated coins, with no approval step. **Tasks, chore approval and anything a parent approves stay guardian-only.** If the teen later invites a parent, the family mechanics layer on top of the same wallet (D.3). D.3 stands as written; H.1's reference to D.3 and Appendix H's Phase 3 and "Teen Independent-Mode Adoption" metric stand. Section 2 above reflects this.
+
+---
+
+## 8. Register of open product decision points inside `10`
+
+An earlier count of "15 decision points" (in `12` and in the first version of this log) also counted the "Owner decision needed" column headers of the summary tables. The real list is 12 (one of them, D.3, is now closed):
+
+| Item | Decision | Owner | Deadline or trigger |
+|---|---|---|---|
+| A.1 | For each FAQ promise: build the flow or remove the claim | Product + Engineering | Before the first public release of the new build |
+| B.1 | Placement states: in the rebuild, the new schema stores the four real business states (the legacy choice between widening and normalizing applies only to the hotfix) | Engineering | Hotfix now; schema at Block B Phase 0 |
+| B.2 | Course prerequisites: enforce (block or soft warning) or remove the field | Product + Engineering | Before Block B's course-path work |
+| C.4 | Memory-note policy for teens with no linked guardian (e.g. self-review and deletion) | Product | Before Block C's memory work |
+| D.3 | ~~Parent-free teen wallet~~ — decided: Option B (section 7) | Owner | Closed 2026-09-20 |
+| D.5 | For each declared-but-unused Family Hub state: build or remove | Product + Engineering | Before further Block D work ships |
+| D.13 | Save/Spend/Share split: recommended default with override, unless a documented rationale chooses compulsory | Product | Block D design |
+| D.19 | Scope the older-teen "graduation" initiative | Product | Within two quarters of approval |
+| D.22 | Scope the long-horizon research instrumentation plan | Product | Within two quarters of approval |
+| F.1 | Downloadable image vs. guarded page for shared achievements | Product + Safety/Trust Lead | Block F Phase 0 |
+| G.1 | Enforce each staff permission, or collapse to one audited staff tier | Engineering | Hotfix now |
+| H.7 | Which ages may be included in experiments | Product + Legal | Before any experiment runs in the new build |
+
+Calibration values proposed in `10` (B.4 30%, B.17 concept ceilings, B.26 three misses, C.10 two observations, D.11 bonus ratio, E.3 three reports in 30 days, F.2 30–90-day expiry, G.2 30-day retroactive window, G.4 quarterly reviews) are not open decisions: they apply as written and are recalibrated through each block's threshold log.
+
+## 9. OD-12 implementation decision (21 September 2026)
+
+The owner explicitly selected **web with a future mobile wrapper sharing the same frontend** during implementation kickoff. React Native is not the target for this rebuild. Component work may proceed using web layout, accessibility and motion primitives. Tokens remain platform-neutral, and the Mentor stage retains the isolated input/output contract from Frontend Bible `08` section 7. Wrapper vendor selection and store-policy validation remain implementation and launch tasks; this decision does not approve an unreviewed third-party SDK. Earlier references in the package to the export technology being open are superseded by this entry.

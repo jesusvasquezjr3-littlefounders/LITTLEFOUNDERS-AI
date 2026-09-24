@@ -37,6 +37,14 @@ interface ContentSummary {
   lessons: { total: number; published: number; review: number; draft: number; archived: number };
 }
 
+interface CourseAssemblyIncident {
+  courseId: string;
+  courseTitle: string;
+  occurrenceCount: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+}
+
 interface ReviewLesson {
   id: string;
   slug: string;
@@ -553,7 +561,7 @@ function LessonReviewDialog({
 
 export function AdminContentPage() {
   const { t, i18n } = useTranslation();
-  const contentData = useAdminData<{ courses: Course[]; summary: ContentSummary }>('/admin/content');
+  const contentData = useAdminData<{ courses: Course[]; summary: ContentSummary; courseAssemblyIncidents?: CourseAssemblyIncident[] }>('/admin/content');
   const moderationData = useAdminData<{ lessons: ReviewLesson[]; total: number }>('/admin/moderation');
   const tutorReviewData = useAdminData<{ segments: TutorReviewSegment[]; total: number }>('/admin/tutor/review-queue');
   const mutate = useAdminMutation();
@@ -569,6 +577,7 @@ export function AdminContentPage() {
   const content = contentData.data.state === 'ready' ? contentData.data.data : null;
   const courses = content?.courses ?? [];
   const summary = content?.summary;
+  const courseAssemblyIncidents = content?.courseAssemblyIncidents ?? [];
   const reviewLessons = moderationData.data.state === 'ready' ? moderationData.data.data.lessons : [];
   const reviewTotal = moderationData.data.state === 'ready' ? moderationData.data.data.total : null;
   const tutorSegments = tutorReviewData.data.state === 'ready' ? tutorReviewData.data.data.segments : [];
@@ -671,6 +680,31 @@ export function AdminContentPage() {
             <StatCard icon={<Icon name="gpp_maybe" />} value={nf.format(summary.lessons.review)} label={t('admin.content.pendingModeration')} tone={summary.lessons.review > 0 ? 'accent' : 'primary'} />
             <StatCard icon={<Icon name="edit_note" />} value={nf.format(summary.lessons.draft)} label={t('admin.content.draftLessons')} tone="accent" />
           </div>
+        )}
+
+        {contentData.data.state === 'ready' && courseAssemblyIncidents.length > 0 && (
+          <Card role="alert" className="border border-warning/40 bg-warning-soft/50 p-4">
+            <div className="flex items-start gap-3">
+              <span className="lf-tile h-11 w-11 shrink-0 text-warning-strong"><Icon name="warning" className="!text-[22px]" /></span>
+              <div className="min-w-0">
+                <h2 className="lf-label font-bold text-content" data-copy-role="heading">{t('admin.content.courseAssemblyIncidents.title')}</h2>
+                <p className="lf-caption mt-1 text-content-muted" data-copy-role="body">{t('admin.content.courseAssemblyIncidents.body')}</p>
+                <ul className="mt-3 flex flex-col gap-1.5">
+                  {courseAssemblyIncidents.map((incident) => (
+                    <li key={incident.courseId} className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 rounded-sm bg-surface/70 px-3 py-2">
+                      <span className="lf-caption font-bold text-content" data-copy-role="data">{incident.courseTitle}</span>
+                      <span className="lf-caption text-content-muted" data-copy-role="data">
+                        {t('admin.content.courseAssemblyIncidents.detail', {
+                          count: incident.occurrenceCount,
+                          date: new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(incident.lastSeenAt)),
+                        })}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Card>
         )}
 
         <nav className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-md border border-outline/40 bg-surface-sunken p-1 shadow-sm" role="tablist" aria-label={t('admin.content.tabs.aria')}>

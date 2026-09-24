@@ -1,3 +1,4 @@
+import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +29,6 @@ interface OwnProfileFields {
 }
 
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
-const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -94,7 +94,6 @@ export function SettingsPage() {
   }, [getToken]);
 
   const usernameInvalid = username.length > 0 && !USERNAME_RE.test(username);
-  const birthDateInvalid = birthDate.length > 0 && !BIRTH_DATE_RE.test(birthDate);
 
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
     value: l,
@@ -104,14 +103,13 @@ export function SettingsPage() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (usernameInvalid || birthDateInvalid || !displayName.trim()) return;
+    if (usernameInvalid || !displayName.trim()) return;
     setSaving(true);
     setErrorCode(null);
     setSaved(false);
     const token = await getToken();
     const body: Record<string, string> = { displayName: displayName.trim(), locale };
     if (username) body.username = username;
-    if (birthDate) body.birthDate = birthDate;
     const { error } = await api('/profile', { method: 'PATCH', body, token });
     // Personalisation depth — a strong early-retention correlate.
     if (!error) trackInsight('profile_edit', { routeClass: 'profile' });
@@ -218,6 +216,8 @@ export function SettingsPage() {
         </Card>
       )}
 
+      <TeenAnalyticsSetting />
+
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 grid gap-6 lg:grid-cols-2">
         {errorCode && <div className="lg:col-span-2"><ErrorBanner code={errorCode} /></div>}
 
@@ -250,11 +250,9 @@ export function SettingsPage() {
           <Field
             label={t('profile.settings.birthDate')}
             inputMode="numeric"
-            placeholder="1988-02-14"
+            readOnly
             value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            hint={t('profile.settings.birthDateHint')}
-            error={birthDateInvalid ? t('profile.settings.birthDateInvalid') : undefined}
+            hint={t('profile.settings.birthDateLocked')}
           />
           <div className="flex flex-col gap-1.5">
             <span className="lf-label text-content">{t('profile.settings.language')}</span>
@@ -487,7 +485,7 @@ export function SettingsPage() {
 
         <Button
           type="submit"
-          disabled={saving || !loaded || !displayName.trim() || usernameInvalid || birthDateInvalid}
+          disabled={saving || !loaded || !displayName.trim() || usernameInvalid}
           variant={saved ? 'success' : 'primary'}
           className="gap-2 lg:col-span-2 lg:justify-self-start"
         >

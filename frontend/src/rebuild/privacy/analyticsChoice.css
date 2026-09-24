@@ -1,0 +1,9 @@
+.lf-rebuild.lf-analytics-choice {
+  min-block-size: 0;
+  margin-block-start: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--rounded-lg);
+  display: grid;
+  gap: .75rem;
+}
+.lf-analytics-choice-toggle { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }

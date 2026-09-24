@@ -1,7 +1,9 @@
+import { allowsSelfManagedAnalytics } from './analyticsPreference.js';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { serviceRest } from './supabaseRest.js';
+import { readAgeScreen } from './ageScreen.js';
 
 /*
  * First-party usage telemetry + the insight reads (0023, spec: /INSIGHTS.md).
@@ -104,7 +106,26 @@ export interface LearningEventInsert {
  */
 export async function insertLearningEvents(rows: LearningEventInsert[]): Promise<number | null> {
   if (rows.length === 0) return 0;
-  const stampedRows = rows.map((row) => ({
+  // Apply the same optional-collection policy to server-produced events.
+  // The database trigger remains the atomic backstop against concurrent revocation.
+  const decisions = new Map<string, Promise<boolean>>();
+  const allowed = (userId: string) => {
+    let decision = decisions.get(userId);
+    if (!decision) {
+      decision = (async () => {
+        const [age, roles] = await Promise.all([readAgeScreen(userId), getRolesForGate(userId)]);
+        if (!age || age.required || age.protectedOrigin || !roles?.length) return false;
+        if (roles.includes('kid')) return await hasActiveAnalyticsConsent(userId) === true;
+        return allowsSelfManagedAnalytics(userId, age);
+      })();
+      decisions.set(userId, decision);
+    }
+    return decision;
+  };
+  const admission = await Promise.all(rows.map(row => row.user_id ? allowed(row.user_id) : true));
+  const admitted = rows.filter((_row, index) => admission[index]);
+  if (admitted.length === 0) return 0;
+  const stampedRows = admitted.map((row) => ({
     ...row,
     client_event_id: row.client_event_id ?? serverEventId(),
     event_version: row.event_version ?? 1,
@@ -428,7 +449,9 @@ export async function upsertAnonVisitor(v: AnonVisitorUpsert): Promise<boolean> 
  * it on every login without thinking about it.
  */
 export async function attributeSignup(anonId: string, userId: string, roles: string[]): Promise<boolean> {
-  if (roles.includes('kid')) return false;
+  const screening = await readAgeScreen(userId);
+  if (!screening || screening.required || screening.protectedOrigin) return false;
+  if (roles.length === 0 || roles.includes('kid') || !await allowsSelfManagedAnalytics(userId, screening)) return false;
   const res = await serviceRest<unknown>(`/anon_visitors?anon_id=eq.${encodeURIComponent(anonId)}&converted_at=is.null`, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },

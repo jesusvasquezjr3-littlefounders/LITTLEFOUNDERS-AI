@@ -1,0 +1,15 @@
+.lf-rule-plot { display: grid; align-content: center; gap: var(--spacing-4); min-block-size: 152px; }
+.lf-rule-conditions { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--spacing-2); }
+.lf-rule-node { display: flex; flex-wrap: wrap; align-content: center; justify-content: space-between; gap: var(--spacing-1); min-block-size: var(--target-base); padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); font-size: .875rem; font-weight: 800; }
+.lf-rule-node strong { font-size: 1rem; }
+.lf-rule-link { min-inline-size: 28px; text-align: center; font-weight: 900; }
+.lf-rule-outcome { justify-self: center; min-block-size: 44px; display: flex; align-items: center; padding-inline: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); font-weight: 800; }
+.lf-rule-controls { display: grid; gap: var(--spacing-2); }
+.lf-rule-links, .lf-rule-cases { display: flex; align-items: center; justify-content: center; gap: var(--spacing-2); }
+.lf-rule-links .lf-button { flex: 1; background: var(--primary-soft); color: var(--primary-strong); transition: transform var(--dur-micro) var(--ease-standard); }
+.lf-rule-links .lf-button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.lf-rule-cases .lf-button { flex: 1; min-inline-size: 0; background: var(--primary-soft); color: var(--primary-strong); }
+.lf-rule-cases .lf-button:disabled { background: var(--sunken); color: var(--content-disabled); }
+.lf-rule-cases span { flex: none; font-weight: 800; text-align: center; }
+.lf-rule-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-4); }
+.lf-rule-foot p { font-size: 1.125rem; font-weight: 800; }

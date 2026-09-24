@@ -102,6 +102,11 @@
     "liveLessons": "Live lessons",
     "draftLessons": "Draft lessons",
     "pendingModeration": "Pending moderation",
+    "courseAssemblyIncidents": {
+      "title": "Course loading needs attention",
+      "body": "Inspect the published course structure.",
+      "detail": "{{count}} occurrence(s) · last seen {{date}}"
+    },
     "searchPlaceholder": "Search course title, slug, or subject...",
     "allStatuses": "All statuses",
     "tabs": {

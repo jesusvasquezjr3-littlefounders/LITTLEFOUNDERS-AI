@@ -7,7 +7,7 @@
   "skip": "Pular por agora",
   "hint": "Dica",
   "exit": "Sair da lição",
-  "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
+  "unsupported": "Atualize o app para terminar esta lição.",
   "gradeError": "Não conseguimos verificar sua resposta agora. Tente de novo!",
   "answer": {
     "correct": "Resposta certa",
@@ -47,6 +47,8 @@
     }
   },
   "results": {
+    "saving": "Salvando seu progresso…",
+    "saveError": "O salvamento do seu progresso não foi confirmado. Mantenha esta tela aberta e tente novamente.",
     "passedTitle": "Lição concluída!",
     "failedTitle": "Bom esforço!",
     "score": "Pontuação: {{score}} de 100",

@@ -42,6 +42,9 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('../AddKidCard', () => ({ AddKidCard: () => null }));
 vi.mock('../ManageKidPanel', () => ({ ManageKidPanel: () => null }));
+vi.mock('../SocialGraphPanel', () => ({ SocialGraphPanel: () => null }));
+vi.mock('../SocialHistoryPanel', () => ({ SocialHistoryPanel: () => null }));
+vi.mock('../SocialRequestsPanel', () => ({ SocialRequestsPanel: () => null }));
 vi.mock('@/tutor/VoiceConsentControl', () => ({ VoiceConsentControl: () => null }));
 
 const KIDS = [
@@ -73,6 +76,13 @@ async function findSwitches(): Promise<[HTMLElement, HTMLElement]> {
 }
 
 describe('FamilyPage — usage-insights toggle', () => {
+  it('provides the verification route when current adult verification is required', async () => {
+    mockApi.mockResolvedValueOnce({ data: null, error: { code: 'PARENT_VERIFICATION_REQUIRED', message: 'Verification required' } });
+    render(<MemoryRouter><FamilyPage /></MemoryRouter>);
+    const link = await screen.findByRole('link', { name: 'auth.verify.checkIdentity' });
+    expect(link).toHaveAttribute('href', '/verify-parent');
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument();
+  });
   it('renders each switch with the aria-checked state the server sent', async () => {
     renderPage();
     const switches = await findSwitches();
@@ -149,6 +159,7 @@ describe('FamilyPage — usage-insights toggle', () => {
     // click, not a flip that got reverted back to the same value.
     await waitFor(() => expect(kid1Switch).not.toBeDisabled());
     expect(kid1Switch).toHaveAttribute('aria-checked', 'false');
+    expect(await screen.findByRole('alert')).toHaveTextContent('errors.api.FORBIDDEN');
   });
 
   it('disables only the kid whose toggle is in flight, and leaves a sibling kid untouched', async () => {

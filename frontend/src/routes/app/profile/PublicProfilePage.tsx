@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { ConnectionRequestControl } from './ConnectionRequestControl';
 import { ProfileHero } from './ProfileHero';
 import { CourseBadgeCollection } from './CourseBadgeCollection';
 import type { CourseBadge } from '@/lib/courseBadges';
@@ -39,6 +40,7 @@ interface PublicProfile {
   followers: number;
   following: number;
   isFollowing: boolean;
+  requiresGuardianApproval: boolean;
   isSelf: boolean;
   isTutor: boolean;
   learningStats: LearningStats;
@@ -96,7 +98,7 @@ export function PublicProfilePage() {
     );
   }
   if (errorCode) return <ErrorBanner code={errorCode} />;
-  if (!data) {
+  if (!data || data.username !== username) {
     return (
       <div aria-busy="true">
         <div className="h-36 animate-pulse rounded-md bg-surface-sunken sm:h-48" />
@@ -116,6 +118,10 @@ export function PublicProfilePage() {
     setBusy(false);
     if (res.error) {
       setErrorCode(res.error.code);
+      return;
+    }
+    if (data.requiresGuardianApproval && !res.data.following) {
+      navigate(APP_HOME, { replace: true });
       return;
     }
     setData((d) =>
@@ -177,8 +183,8 @@ export function PublicProfilePage() {
             </Button>
           </Link>
         ) : (
-          <div className="flex items-center gap-2">
-            <Button
+          <div className="flex flex-wrap items-center gap-2">
+            {(data.isFollowing || data.requiresGuardianApproval === false) && <Button
               onClick={() => void toggleFollow()}
               disabled={busy}
               variant={data.isFollowing ? 'secondary' : 'primary'}
@@ -186,7 +192,7 @@ export function PublicProfilePage() {
             >
               <Icon name={data.isFollowing ? 'check' : 'person_add'} />
               {data.isFollowing ? t('profile.public.following') : t('profile.public.follow')}
-            </Button>
+            </Button>}
             <Button
               onClick={onBlockClick}
               disabled={busy}
@@ -201,6 +207,8 @@ export function PublicProfilePage() {
           </div>
         )}
       </div>
+
+      {!data.isSelf && !data.isFollowing && data.requiresGuardianApproval !== false && <ConnectionRequestControl username={data.username} />}
 
       {/* Gamified stats — same lockup as the owner's view, so one profile
           reads identically wherever it appears (/DESIGN.md §The study's

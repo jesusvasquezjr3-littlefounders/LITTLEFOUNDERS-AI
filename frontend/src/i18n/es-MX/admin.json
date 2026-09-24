@@ -102,6 +102,11 @@
     "liveLessons": "Lecciones activas",
     "draftLessons": "Lecciones en borrador",
     "pendingModeration": "Pendientes de moderación",
+    "courseAssemblyIncidents": {
+      "title": "La carga de cursos necesita atención",
+      "body": "Revisa la estructura publicada del curso.",
+      "detail": "{{count}} incidencia(s) · última vez {{date}}"
+    },
     "searchPlaceholder": "Buscar título, slug o materia del curso...",
     "allStatuses": "Todos los estados",
     "tabs": {

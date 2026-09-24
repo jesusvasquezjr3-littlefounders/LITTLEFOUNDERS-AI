@@ -33,6 +33,8 @@ interface StubOptions {
   linkedKidId?: string;
   linkFails?: boolean;
   profilePatchFails?: boolean;
+  ageWriteFails?: boolean;
+  verification?: 'verified' | 'revoked' | 'missing';
   createStatus?: number;
   calls?: string[];
   writes?: { url: string; method: string; body: unknown }[];
@@ -55,6 +57,11 @@ function stub(opts: StubOptions = {}) {
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
       }
+      if (url.includes('/rest/v1/parent_verifications?')) {
+        return Promise.resolve(jsonResponse(200, opts.verification === 'missing' ? [] : [{
+          status: opts.verification ?? 'verified', method: 'local-ocr', birth_date: '1990-01-01',
+        }]));
+      }
       if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
         const n = opts.existingKids ?? 0;
         const rows = Array.from({ length: n }, (_, i) => ({
@@ -66,6 +73,10 @@ function stub(opts: StubOptions = {}) {
       }
       if (url.includes('/rest/v1/profiles?username=eq.')) {
         return Promise.resolve(jsonResponse(200, opts.usernameTaken ? [{ user_id: randomUUID() }] : []));
+      }
+      if (url.includes('/rpc/record_age_declaration')) {
+        const body = JSON.parse(String(init?.body));
+        return Promise.resolve(jsonResponse(200, opts.ageWriteFails ? null : body.p_age_band));
       }
       if (url.includes('/auth/v1/admin/users') && method === 'POST') {
         if (opts.createStatus && opts.createStatus >= 400) {
@@ -97,6 +108,31 @@ function post(body: unknown = KID, sub = randomUUID()) {
 }
 
 describe('POST /api/v1/family/kids', () => {
+  it.each(['missing', 'revoked'] as const)('rejects parent-role grants with %s adult verification before creating a child', async verification => {
+    const calls = stub({ verification });
+    expect((await post()).status).toBe(403);
+    expect(calls.some(c => c.startsWith('POST ') && c.includes('/admin/users'))).toBe(false);
+  });
+  it('records only the derived band before granting the child role', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ writes });
+    expect((await post()).status).toBe(201);
+    const age = writes.findIndex(w => w.url.includes('/rpc/record_age_declaration'));
+    const role = writes.findIndex(w => w.url.includes('user_roles?on_conflict'));
+    expect(writes[age]?.body).toEqual({ p_user_id: KID_ID, p_age_band: 'under_13' });
+    expect(role).toBeGreaterThan(age);
+  });
+  it('rolls back a newly created identity if its age declaration is not acknowledged', async () => {
+    const calls = stub({ ageWriteFails: true });
+    expect((await post()).status).toBe(502);
+    expect(calls.some(c => c.startsWith('DELETE ') && c.includes(`/admin/users/${KID_ID}`))).toBe(true);
+    expect(calls.some(c => c.startsWith('POST ') && c.includes('user_roles?on_conflict'))).toBe(false);
+  });
+  it.each(['2016-02-30', '2999-01-01', 'not-a-date'])('rejects invalid parent-provided date %s before creating an identity', async birthDate => {
+    const calls = stub();
+    expect((await post({ ...KID, birthDate })).status).toBe(400);
+    expect(calls.some(c => c.startsWith('POST ') && c.includes('/admin/users'))).toBe(false);
+  });
   it('401s without a session', async () => {
     stub();
     const res = await request(createApp()).post('/api/v1/family/kids').send(KID);

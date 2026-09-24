@@ -26,6 +26,7 @@ describe('GET /api/v1/badges/:token', () => {
   it('rejects a malformed token without touching Vault', async () => {
     const res = await request(createApp()).get('/api/v1/badges/short');
     expect(res.status).toBe(404);
+    expect(res.headers['cache-control']).toBe('no-store');
     expect(res.body.error.code).toBe('NOT_FOUND');
   });
 
@@ -33,6 +34,7 @@ describe('GET /api/v1/badges/:token', () => {
     stub([]);
     const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
     expect(res.status).toBe(404);
+    expect(res.headers['cache-control']).toBe('no-store');
   });
 
   it('returns only whitelisted display fields, never kid_user_id/created_by', async () => {
@@ -55,6 +57,7 @@ describe('GET /api/v1/badges/:token', () => {
     ]);
     const res = await request(createApp()).get(`/api/v1/badges/${'a'.repeat(32)}`);
     expect(res.status).toBe(200);
+    expect(res.headers['cache-control']).toBe('no-store');
     expect(res.body.data).toEqual({
       firstName: 'Sofía',
       achievementKind: 'streak',

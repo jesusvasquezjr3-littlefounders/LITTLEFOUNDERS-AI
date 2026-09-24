@@ -60,6 +60,7 @@ function stubFetch(opts: { roles?: string[]; plausibleStatus?: number; umamiStat
       const url = String(input);
       opts.capture?.push(url);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, roles));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'view_analytics' }]));
       if (url.includes('/rest/v1/rpc/admin_retention_at_distance')) {
         if (opts.retentionStatus) return Promise.resolve(jsonResponse(opts.retentionStatus, {}));
         return Promise.resolve(jsonResponse(200, [{ bucket: '7-13', n: 4, avg_first_attempt_score: 82.5 }]));
@@ -243,7 +244,7 @@ type OverviewStub = {
 function stubData(
   callerRole: 'admin' | 'superadmin' | 'universal',
   capture?: { calls: { url: string; method: string; body?: string }[] },
-  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub } = {},
+  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub; permissions?: string[]; permissionStatus?: number; courseAssemblyIncidents?: { course_id: string; occurrence_count: number; first_seen_at: string; last_seen_at: string }[] } = {},
 ) {
   const overviewProfiles = options.overview?.profiles ?? [PROFILE];
   const overviewRoles = options.overview?.roles ?? [{ user_id: ADMIN_ID, role: 'admin' }, { user_id: ADMIN_ID, role: 'universal' }];
@@ -288,6 +289,9 @@ function stubData(
           lessons_published: 1,
         }]));
       }
+      if (url.includes('/rest/v1/course_assembly_incidents')) {
+        return Promise.resolve(jsonResponse(200, options.courseAssemblyIncidents ?? []));
+      }
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, overviewProfiles));
       if (url.includes('/rest/v1/courses')) {
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
@@ -312,7 +316,8 @@ function stubData(
       }
       if (url.includes('/rest/v1/admin_permissions')) {
         if (method === 'POST' || method === 'DELETE') return Promise.resolve(new Response(null, { status: 204 }));
-        return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'manage_users' }]));
+        if (options.permissionStatus) return Promise.resolve(jsonResponse(options.permissionStatus, { message: 'unavailable' }));
+        return Promise.resolve(jsonResponse(200, (options.permissions ?? ['manage_users', 'manage_content', 'view_analytics', 'manage_support']).map((permission) => ({ user_id: ADMIN_ID, permission }))));
       }
       throw new Error(`admin.test data: unexpected fetch ${url}`);
     }),
@@ -323,6 +328,41 @@ const staffAuth = (role: 'admin' | 'superadmin' | 'universal') =>
   `Bearer ${mintToken({ sub: ADMIN_ID, email: role === 'superadmin' ? 'boss@littlefounders.ai' : 'staff@littlefounders.ai' })}`;
 
 describe('GET /api/v1/admin/overview', () => {
+  it('projects only a support grant and never reads Users or Content totals', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['manage_support'] });
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(Object.keys(res.body.data)).toEqual(['audit']);
+    expect(capture.calls.some(({ url }) => url.includes('/profiles') || url.includes('/courses') || url.includes('/lessons'))).toBe(false);
+  });
+
+  it('projects only a Content grant and skips Users and Audit totals', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['manage_content'] });
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(Object.keys(res.body.data)).toEqual(['content']);
+    expect(capture.calls.some(({ url }) => url.includes('/profiles') || url.includes('/audit_logs'))).toBe(false);
+  });
+
+  it('returns no cross-family totals to an Analytics-only Admin', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['view_analytics'] });
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({});
+    expect(capture.calls.filter(({ url }) => !url.includes('/user_roles') && !url.includes('/admin_permissions'))).toEqual([]);
+  });
+
+  it('rejects an Admin with no grants before a platform read', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: [] });
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(403);
+    expect(capture.calls.filter(({ url }) => !url.includes('/user_roles') && !url.includes('/admin_permissions'))).toEqual([]);
+  });
+
   it('returns platform counts', async () => {
     stubData('admin');
     const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
@@ -363,6 +403,40 @@ describe('GET /api/v1/admin/overview', () => {
 });
 
 describe('GET /api/v1/admin/users', () => {
+  it('denies an admin without manage_users before reading the directory or its timeline', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['manage_content'] });
+    for (const path of ['/api/v1/admin/users', '/api/v1/admin/users/timeline']) {
+      const res = await request(createApp()).get(path).set('Authorization', staffAuth('admin'));
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe('FORBIDDEN');
+    }
+    expect(capture.calls.some(({ url }) => url.includes('/profiles'))).toBe(false);
+    expect(capture.calls.some(({ url }) => url.includes('/admin_permissions?user_id=eq.'))).toBe(true);
+  });
+
+  it('fails closed when the current permission grant cannot be verified', async () => {
+    stubData('admin', undefined, { permissionStatus: 503 });
+    const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(502);
+  });
+
+  it('honors a grant revocation on the next request', async () => {
+    const options = { permissions: ['manage_users'] };
+    stubData('admin', undefined, options);
+    const first = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(first.status).toBe(200);
+    options.permissions = [];
+    const second = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(second.status).toBe(403);
+  });
+
+  it('lets a superadmin access Users without a granular grant', async () => {
+    stubData('superadmin', undefined, { permissions: [] });
+    const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('superadmin'));
+    expect(res.status).toBe(200);
+  });
+
   it('lists users with their roles', async () => {
     stubData('admin');
     const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
@@ -380,7 +454,132 @@ describe('GET /api/v1/admin/users', () => {
   });
 });
 
+describe('view_analytics staff boundary', () => {
+  it('denies Analytics, Insights, Intelligence, exports and shared metrics without the grant', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['manage_users', 'manage_content', 'manage_support'] });
+    const paths = [
+      '/analytics/overview', '/analytics/behavior', '/analytics/report.pdf',
+      '/analytics/behavior/export', '/analytics/exclusions',
+      '/insights/activity', '/insights/export', '/intel/metrics/summary',
+      '/intel-export.csv', '/intel-export.xlsx', '/health/services', '/learning/retention',
+    ];
+    for (const path of paths) {
+      const res = await request(createApp()).get(`/api/v1/admin${path}`).set('Authorization', staffAuth('admin'));
+      expect(res.status, path).toBe(403);
+      expect(res.body.error.code).toBe('FORBIDDEN');
+    }
+    expect(capture.calls.filter(({ url }) => !url.includes('/user_roles') && !url.includes('/admin_permissions'))).toEqual([]);
+  });
+
+  it('keeps analytics exclusion changes and Intelligence writes outside a view-only grant', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['view_analytics'] });
+    const app = createApp();
+    const attempts = [
+      request(app).get('/api/v1/admin/analytics/exclusions'),
+      request(app).post('/api/v1/admin/analytics/exclusions').send({ network: '192.0.2.1' }),
+      request(app).post('/api/v1/admin/analytics/exclusions/self').send({}),
+      request(app).delete('/api/v1/admin/analytics/exclusions/11111111-1111-4111-8111-111111111111'),
+      request(app).post('/api/v1/admin/intel/alerts').send({}),
+    ];
+    for (const attempt of attempts) {
+      const res = await attempt.set('Authorization', staffAuth('admin'));
+      expect(res.status).toBe(403);
+    }
+    expect(capture.calls.filter(({ url }) => !url.includes('/user_roles') && !url.includes('/admin_permissions'))).toEqual([]);
+  });
+});
+
+describe('manage_support staff boundary', () => {
+  it('denies Emails, Audit and Tutor retention status before upstream reads without manage_support', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['manage_users', 'manage_content', 'view_analytics'] });
+    for (const path of ['/emails/logs', '/emails/summary', '/audit', '/tutor/retention-status']) {
+      const res = await request(createApp()).get(`/api/v1/admin${path}`).set('Authorization', staffAuth('admin'));
+      expect(res.status, path).toBe(403);
+      expect(res.body.error.code).toBe('FORBIDDEN');
+    }
+    expect(capture.calls.filter(({ url }) => !url.includes('/user_roles') && !url.includes('/admin_permissions'))).toEqual([]);
+  });
+
+  it('honors revocation on the next support request without granting other families', async () => {
+    const options = { permissions: ['manage_support'] };
+    stubData('admin', undefined, options);
+    expect((await request(createApp()).get('/api/v1/admin/audit').set('Authorization', staffAuth('admin'))).status).toBe(200);
+    for (const path of ['/users', '/content', '/analytics/overview']) {
+      expect((await request(createApp()).get(`/api/v1/admin${path}`).set('Authorization', staffAuth('admin'))).status, path).toBe(403);
+    }
+    options.permissions = [];
+    expect((await request(createApp()).get('/api/v1/admin/audit').set('Authorization', staffAuth('admin'))).status).toBe(403);
+  });
+
+  it('preserves Superadmin Audit access', async () => {
+    stubData('superadmin', undefined, { permissions: [] });
+    expect((await request(createApp()).get('/api/v1/admin/audit').set('Authorization', staffAuth('superadmin'))).status).toBe(200);
+  });
+});
+
+describe('independent staff grant matrix', () => {
+  it('makes each of the four grants admit only its own named API family', async () => {
+    const cases = [
+      { grant: 'manage_users', path: '/users', admittedStatus: 200 },
+      { grant: 'manage_content', path: '/content', admittedStatus: 200 },
+      { grant: 'view_analytics', path: '/analytics/overview', admittedStatus: 503 },
+      { grant: 'manage_support', path: '/audit', admittedStatus: 200 },
+    ] as const;
+    for (const granted of cases) {
+      stubData('admin', undefined, { permissions: [granted.grant] });
+      for (const target of cases) {
+        const res = await request(createApp()).get(`/api/v1/admin${target.path}`).set('Authorization', staffAuth('admin'));
+        if (granted.grant === target.grant) {
+          expect(res.status, `${granted.grant} -> ${target.path}`).toBe(target.admittedStatus);
+          if (target.grant === 'view_analytics') expect(res.body.error.code).toBe('PULSE_UNCONFIGURED');
+        } else {
+          expect(res.status, `${granted.grant} -> ${target.path}`).toBe(403);
+          expect(res.body.error.code).toBe('FORBIDDEN');
+        }
+      }
+    }
+  });
+});
+
 describe('GET + POST /api/v1/admin/content', () => {
+  it('rejects direct Content, Generation and review requests without manage_content before data access', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { permissions: ['manage_users', 'view_analytics', 'manage_support'] });
+    const paths = [
+      '/content', '/content/11111111-1111-4111-8111-111111111111/status',
+      '/generation', '/generation/live', '/generation/runs/fixture',
+      '/moderation', '/moderation/11111111-1111-4111-8111-111111111111',
+      '/moderation/11111111-1111-4111-8111-111111111111/status',
+      '/tutor/review-queue', '/tutor/review-queue/11111111-1111-4111-8111-111111111111/status',
+    ];
+    for (const path of paths) {
+      const req = path.endsWith('/status') ? request(createApp()).post(`/api/v1/admin${path}`).send({ status: 'review' })
+        : request(createApp()).get(`/api/v1/admin${path}`);
+      const res = await req.set('Authorization', staffAuth('admin'));
+      expect(res.status, path).toBe(403);
+      expect(res.body.error.code).toBe('FORBIDDEN');
+    }
+    expect(capture.calls.filter(({ url }) => !url.includes('/user_roles') && !url.includes('/admin_permissions'))).toEqual([]);
+  });
+
+  it('honors a Content grant revocation on the next request and fails closed if it cannot be read', async () => {
+    const options: { permissions: string[]; permissionStatus?: number } = { permissions: ['manage_content'] };
+    stubData('admin', undefined, options);
+    expect((await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'))).status).toBe(200);
+    options.permissions = [];
+    expect((await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'))).status).toBe(403);
+    options.permissionStatus = 503;
+    expect((await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'))).status).toBe(502);
+  });
+
+  it('preserves Superadmin Content access without a granular grant', async () => {
+    stubData('superadmin', undefined, { permissions: [] });
+    expect((await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('superadmin'))).status).toBe(200);
+  });
+
   it('lists courses with status and picks a display title', async () => {
     stubData('admin');
     const res = await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'));
@@ -388,6 +587,26 @@ describe('GET + POST /api/v1/admin/content', () => {
     expect(res.body.data.courses[0]).toMatchObject({ slug: 'money-basics', title: 'Money Basics', status: 'draft' });
     expect(res.body.data.courses[0]).toMatchObject({ lessonCount: 1, topicCount: 1 });
     expect(res.body.data.summary.lessons.total).toBe(1);
+  });
+
+  it('includes a persistent course-assembly signal for the Content console', async () => {
+    stubData('admin', undefined, {
+      courseAssemblyIncidents: [{
+        course_id: COURSE.id,
+        occurrence_count: 3,
+        first_seen_at: '2026-09-22T12:00:00.000Z',
+        last_seen_at: '2026-09-22T12:05:00.000Z',
+      }],
+    });
+    const res = await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.courseAssemblyIncidents).toEqual([{
+      courseId: COURSE.id,
+      courseTitle: 'Money Basics',
+      occurrenceCount: 3,
+      firstSeenAt: '2026-09-22T12:00:00.000Z',
+      lastSeenAt: '2026-09-22T12:05:00.000Z',
+    }]);
   });
 
   it('fails closed when an exact content total is unavailable', async () => {
@@ -534,6 +753,7 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
         const url = String(input);
         capture.push({ url, method: init?.method ?? 'GET', body: init?.body as string | undefined });
         if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'manage_content' }]));
         if (url.includes('/rest/v1/tutor_segments')) {
           if (init?.method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
           return Promise.resolve(jsonResponse(200, [PENDING_ROW]));
@@ -583,6 +803,7 @@ describe('GET /api/v1/admin/tutor/retention-status (/ORACLE.md §15.2 item 4)', 
       vi.fn((input: RequestInfo | URL) => {
         const url = String(input);
         if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'manage_support' }]));
         if (url.includes('/rest/v1/audit_logs')) {
           if (row === 'db-down') return Promise.resolve(new Response(null, { status: 500 }));
           return Promise.resolve(jsonResponse(200, row ? [row] : []));
@@ -766,6 +987,7 @@ describe('GET /api/v1/admin/intel/* (dataintel proxy)', () => {
       vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
         if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'view_analytics' }]));
         intelCalls.push({ url, method: (init?.method ?? 'GET').toUpperCase() });
         return Promise.resolve(jsonResponse(200, { data: { segments: [] }, error: null }));
       }),

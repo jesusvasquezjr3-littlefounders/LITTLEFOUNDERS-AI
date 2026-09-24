@@ -1,46 +1,62 @@
+import { requireAgeScreen } from '../middleware/ageScreen.js';
 import {
   getRolesForGate,
   hasActiveAnalyticsConsent,
   insertLearningEvents,
   stampRole,
 } from '../services/insights.js';
-import { Router } from 'express';
+import { Router, type Response } from 'express';
+import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
+import { getConfig } from '../config.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
-import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
-import { isCalendarDate, isFirstActivityToday, nextStreak } from '../services/streak.js';
+import { completableSegmentIds, findGradingSegment, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
+import { isCalendarDate } from '../services/streak.js';
+import { lessonEligibilityForBirthDate } from '../services/lessonEligibility.js';
+import { gradeV2Visual, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import {
-  countSegmentAttempts,
+  completeLesson,
+  completeV2Lesson,
+  createV2LessonAttemptNonces,
+  createV2LessonRun,
+  getV2LessonAttemptNoncesForRecovery,
+  getV2LessonRunForRecovery,
+  getV2MetSegmentReceiptsForRecovery,
+  recordLessonGrade,
+  recordV2CpaGrade,
+  recordV2LessonGrade,
+  recordV2FirstUnaidedStage,
   getAdventureById,
   getAdventuresByCourseIds,
   getCoursePlacement,
   getCoursePlacementsForCourses,
   getFullOwnProfile,
-  getLearningStatsForUpdate,
+  getCurrentV2LessonDocumentLocales,
+  getV2LessonDocumentVersion,
   getLessonById,
   getLessonDocumentLocales,
   getLessonProgressForLessons,
-  getLessonProgressRow,
   getLessonsByTopicIds,
   getPlacementCreditsForCourse,
   getPlacementCreditsForCourses,
   getPublishedCourseById,
   getPublishedCourseBySlug,
   getPublishedCourseRows,
+  recordCourseAssemblyIncident,
   getSagaById,
   getSagasByAdventureIds,
   getSegmentAttempts,
   getTopicById,
   getTopicsBySagaIds,
-  insertSegmentAttempt,
-  patchLearningStats,
-  upsertLessonProgress,
   type CourseHierarchyRow,
+  type LessonHierarchyRow,
+  type LessonDocumentRow,
 } from '../services/supabaseRest.js';
 
 /*
@@ -52,6 +68,29 @@ import {
  */
 
 const NOT_FOUND = 'NOT_FOUND';
+
+/** Applies an exact v2 age policy before delivery or any progress mutation. */
+function hasV2LessonEligibility(res: Response, schemaVersion: number, document: unknown, birthDate: string | null | undefined): boolean {
+  if (schemaVersion !== 2) return true;
+  const eligibility = lessonEligibilityForBirthDate(document, birthDate);
+  if (eligibility === 'eligible') return true;
+  if (eligibility === 'invalid-policy') fail(res, 409, 'LESSON_ELIGIBILITY_MISSING', 'This lesson cannot open yet');
+  else if (eligibility === 'unknown-age') fail(res, 403, 'LESSON_AGE_ELIGIBILITY_REQUIRED', 'Age eligibility is required for this lesson');
+  else fail(res, 403, 'LESSON_AGE_RESTRICTED', 'This lesson is not available for this age');
+  return false;
+}
+
+/** v2 is off until a deployment explicitly provisions its independent signer. */
+function lessonAttemptSecret(): string | null {
+  return getConfig().LESSON_ATTEMPT_SECRET ?? null;
+}
+
+/** One selection rule for delivery and every mutation: an activated v2 version wins; otherwise use v1. */
+async function getEffectiveLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
+  const v2Docs = await getCurrentV2LessonDocumentLocales(lessonId);
+  if (v2Docs === null || v2Docs.length > 0) return v2Docs;
+  return getLessonDocumentLocales(lessonId);
+}
 
 /** Fetch the full published hierarchy for one course + this user's progress, and assemble the per-user tree. Returns null on a downstream fetch failure. */
 export async function loadCourseTree(accessToken: string, userId: string, course: CourseHierarchyRow): Promise<CourseTree | null> {
@@ -111,15 +150,43 @@ export async function loadCourseTree(accessToken: string, userId: string, course
  * summarise and drop each one; peak memory stays at the raw rows plus a single
  * tree rather than every tree at once, and Railway bills Core on memory.
  *
- * Returns a Map keyed by course id. A course missing from it could not be
- * assembled — the caller decides what that means.
+ * Returns assembled trees and isolated per-course failures. The caller owns
+ * the learner response and the staff signal, so neither can be forgotten.
  */
+export interface CourseAssemblyFailure {
+  course: CourseHierarchyRow;
+  /** True only for the course the shelf would have selected before this failure. */
+  featured: boolean;
+}
+
+export interface CourseTreeLoad {
+  trees: Map<string, CourseTree>;
+  failures: CourseAssemblyFailure[];
+}
+
+function featuredCourseId(
+  courses: readonly CourseHierarchyRow[],
+  lessonsByCourse: ReadonlyMap<string, readonly { id: string }[]>,
+  progress: readonly { lesson_id: string; passed: boolean }[],
+): string | null {
+  const passedLessonIds = new Set(progress.filter((row) => row.passed).map((row) => row.lesson_id));
+  const summaries = courses.map((course) => {
+    const lessonIds = lessonsByCourse.get(course.id)?.map((lesson) => lesson.id) ?? [];
+    const passed = lessonIds.filter((id) => passedLessonIds.has(id)).length;
+    return { course, passed, total: lessonIds.length };
+  });
+  return summaries.find(({ passed, total }) => passed > 0 && passed < total)?.course.id
+    ?? summaries.find(({ passed, total }) => passed < total)?.course.id
+    ?? summaries[0]?.course.id
+    ?? null;
+}
+
 export async function loadCourseTrees(
   accessToken: string,
   userId: string,
   courses: readonly CourseHierarchyRow[],
-): Promise<Map<string, CourseTree> | null> {
-  if (courses.length === 0) return new Map();
+): Promise<CourseTreeLoad | null> {
+  if (courses.length === 0) return { trees: new Map(), failures: [] };
 
   const courseIds = courses.map((c) => c.id);
   const adventures = await getAdventuresByCourseIds(accessToken, courseIds);
@@ -148,12 +215,22 @@ export async function loadCourseTrees(
   const placedCourseIds = new Set(placements.map((p) => p.course_id));
   const creditsByCourse = groupBy(credits, (c) => c.course_id);
 
-  const trees = new Map<string, CourseTree>();
+  const lessonsByCourse = new Map<string, LessonHierarchyRow[]>();
   for (const course of courses) {
     const courseAdventures = adventuresByCourse.get(course.id) ?? [];
     const courseSagas = courseAdventures.flatMap((a) => sagasByAdventure.get(a.id) ?? []);
     const courseTopics = courseSagas.flatMap((sg) => topicsBySaga.get(sg.id) ?? []);
-    const courseLessons = courseTopics.flatMap((t) => lessonsByTopic.get(t.id) ?? []);
+    lessonsByCourse.set(course.id, courseTopics.flatMap((topic) => lessonsByTopic.get(topic.id) ?? []));
+  }
+  const featuredId = featuredCourseId(courses, lessonsByCourse, progress);
+
+  const trees = new Map<string, CourseTree>();
+  const failures: CourseAssemblyFailure[] = [];
+  for (const course of courses) {
+    const courseAdventures = adventuresByCourse.get(course.id) ?? [];
+    const courseSagas = courseAdventures.flatMap((a) => sagasByAdventure.get(a.id) ?? []);
+    const courseTopics = courseSagas.flatMap((sg) => topicsBySaga.get(sg.id) ?? []);
+    const courseLessons = lessonsByCourse.get(course.id) ?? [];
     const courseLessonIds = new Set(courseLessons.map((l) => l.id));
     /*
      * Assembly is the only PER-COURSE failure left. Every read above is one
@@ -179,9 +256,10 @@ export async function loadCourseTrees(
       );
     } catch (error) {
       console.warn(`[backend] course tree assembly failed for "${course.slug}":`, error);
+      failures.push({ course, featured: course.id === featuredId });
     }
   }
-  return trees;
+  return { trees, failures };
 }
 
 function groupBy<T, K>(rows: readonly T[], key: (row: T) => K): Map<K, T[]> {
@@ -222,7 +300,7 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
 
 export function learnRouter(): Router {
   const router = Router();
-  router.use(requireAuth);
+  router.use(requireAuth, requireAgeScreen);
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
   // state, never raw events, answers, or another learner's data.
@@ -307,12 +385,28 @@ export function learnRouter(): Router {
      * migration, and `progress` counts real passes UNION placement credits.
      * Getting that union wrong misreports every learner silently.
      */
-    const trees = await loadCourseTrees(user.accessToken, user.id, courseRows);
-    if (!trees) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    const loaded = await loadCourseTrees(user.accessToken, user.id, courseRows);
+    if (!loaded) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+
+    /*
+     * B.3 requires every dropped course to become a staff-visible operational
+     * signal. This counter is deliberately independent from the learner's
+     * response: an incident-write outage must not take the healthy shelf down.
+     */
+    if (loaded.failures.length > 0) {
+      const signals = await Promise.allSettled(
+        loaded.failures.map(({ course }) => recordCourseAssemblyIncident(course.id)),
+      );
+      for (const [index, signal] of signals.entries()) {
+        if (signal.status === 'rejected' || signal.value !== true) {
+          console.error(`[backend] could not record course assembly incident for "${loaded.failures[index]!.course.slug}"`);
+        }
+      }
+    }
 
     const courses = [];
     for (const course of courseRows) {
-      const tree = trees.get(course.id);
+      const tree = loaded.trees.get(course.id);
       if (!tree) {
         console.warn(`[backend] /learn/courses: dropped "${course.slug}" — tree unavailable`);
         continue;
@@ -343,7 +437,16 @@ export function learnRouter(): Router {
       return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     }
 
-    return ok(res, { courses });
+    const unavailableFeaturedCourse = loaded.failures.find(({ featured }) => featured)?.course;
+    return ok(res, {
+      courses,
+      ...(unavailableFeaturedCourse ? {
+        unavailableFeaturedCourse: {
+          slug: unavailableFeaturedCourse.slug,
+          title: unavailableFeaturedCourse.title,
+        },
+      } : {}),
+    });
   });
 
   // 2. GET /courses/:slug/tree — full tree with per-node unlock state.
@@ -367,7 +470,7 @@ export function learnRouter(): Router {
     if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
     if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
 
-    const docs = await getLessonDocumentLocales(lessonId);
+    const docs = await getEffectiveLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
@@ -375,6 +478,14 @@ export function learnRouter(): Router {
     if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
 
     const safeDocument = stripAnswers(picked.document) as { meta?: { cast?: unknown }; scoring?: unknown };
+    if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
+    // A valid client parser is necessary but not sufficient: Core also verifies
+    // the public document and its private rubric relationship before exposing a
+    // v2 lesson. This prevents a malformed publication from reaching an older
+    // renderer or from later becoming gradeable through a loose answer key.
+    if (picked.schema_version === 2 && !validateV2LessonForGrading(safeDocument, picked.answer_keys, { lessonId, locale: picked.locale })) {
+      return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+    }
 
     return ok(res, {
       lesson: {
@@ -395,11 +506,121 @@ export function learnRouter(): Router {
     });
   });
 
-  // 4. POST /lessons/:id/grade — server-authoritative single-segment grading.
-  const GradeBody = z.object({
+  // 4. POST /lessons/:id/v2-runs — pins one browser play-through to the
+  // selected immutable document and returns one-use tokens only for its
+  // currently server-gradeable visual segments. Presentation data remains on
+  // the GET route, which never contains an answer key.
+  const StartV2RunBody = z.object({ run_id: z.string().uuid().optional() }).strict().optional();
+  router.post('/lessons/:id/v2-runs', async (req, res) => {
+    const parsed = StartV2RunBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid input');
+    const secret = lessonAttemptSecret();
+    if (!secret) return fail(res, 503, 'LESSON_ATTEMPT_UNAVAILABLE', 'This lesson attempt is not ready');
+
+    const user = authedUser(res);
+    const lessonId = req.params.id as string;
+    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId);
+    if (ctx === 'unreachable') return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
+    const node = findLessonNode(ctx.tree, lessonId);
+    if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
+    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
+
+    const docs = await getEffectiveLessonDocumentLocales(lessonId);
+    if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    const profiles = await getFullOwnProfile(user.accessToken, user.id);
+    const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
+    if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
+    if (picked.schema_version !== 2 || !picked.document_version_id) {
+      return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson does not support v2 attempts');
+    }
+    if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
+
+    const document = validateV2LessonForGrading(stripAnswers(picked.document), picked.answer_keys, { lessonId, locale: picked.locale });
+    if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+
+    const serverSegmentIds = document.segments.filter((segment) => segment.grading === 'server').map((segment) => segment.id);
+    // A reload supplies only a non-secret run ID. Core re-reads the immutable
+    // row and re-signs its stored nonce JTI; the browser never persists a token.
+    if (parsed.data?.run_id) {
+      const prior = await getV2LessonRunForRecovery(user.id, lessonId, parsed.data.run_id);
+      if (prior === undefined) return fail(res, 502, 'INTERNAL', 'Could not recover this lesson attempt');
+      const priorExpiresAt = prior ? Date.parse(prior.expires_at) : Number.NaN;
+      if (prior && (prior.completed_at === null || prior.completed_at === undefined) && prior.document_version_id === picked.document_version_id
+        && prior.locale === document.locale && Number.isFinite(priorExpiresAt) && priorExpiresAt > Date.now()) {
+        const nonces = await getV2LessonAttemptNoncesForRecovery(user.id, prior.id, prior.document_version_id);
+        const receipts = await getV2MetSegmentReceiptsForRecovery(user.id, prior.id, prior.document_version_id);
+        if (nonces === null || receipts === null) return fail(res, 502, 'INTERNAL', 'Could not recover this lesson attempt');
+        const nonceBySegment = new Map(nonces.map((nonce) => [nonce.segment_id, nonce]));
+        for (const nonce of nonces) if (nonce.consumed_at === null || nonce.consumed_at === undefined) nonceBySegment.set(nonce.segment_id, nonce);
+        const exactNonceSet = serverSegmentIds.every((id) => nonceBySegment.has(id));
+        const reissued = exactNonceSet ? serverSegmentIds.map((segmentId) => {
+          const nonce = nonceBySegment.get(segmentId)!;
+          const expiresAt = Date.parse(nonce.expires_at);
+          if (!Number.isFinite(expiresAt)) return null;
+          return reissueLessonAttemptToken({
+            uid: user.id, vid: prior.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: prior.id,
+            exp: Math.floor(expiresAt / 1000), jti: nonce.jti,
+          }, secret);
+        }) : [];
+        if (reissued.length === serverSegmentIds.length && reissued.every((value) => value !== null)) {
+          const metSegmentIds = receipts
+            .filter((receipt) => serverSegmentIds.includes(receipt.segment_id) && receipt.verdict?.correct === true && receipt.verdict?.score === 100)
+            .map((receipt) => receipt.segment_id);
+          // A CPA review is an experienced representation, not mastery. It is
+          // safe to restore its public segment ID so the learner resumes the
+          // next representation, while `met_segment_ids` remains the sole
+          // authority for completion and non-CPA prerequisites.
+          const attemptedSegmentIds = [...new Set(receipts
+            .filter((receipt) => serverSegmentIds.includes(receipt.segment_id))
+            .map((receipt) => receipt.segment_id))];
+          return ok(res, {
+            run_id: prior.id, version_id: document.version_id, expires_at: prior.expires_at, resumed: true, met_segment_ids: metSegmentIds,
+            attempted_segment_ids: attemptedSegmentIds,
+            attempt_tokens: Object.fromEntries(serverSegmentIds.map((segmentId, index) => [segmentId, reissued[index]!.token])),
+          });
+        }
+      }
+    }
+
+    const runId = randomUUID();
+    const issuedAt = Date.now();
+    const issued = document.segments
+      .filter((segment) => segment.grading === 'server')
+      .map((segment) => ({ segmentId: segment.id, ...mintLessonAttemptToken({
+        uid: user.id, vid: picked.document_version_id!, lid: lessonId, loc: document.locale, sid: segment.id, rid: runId,
+      }, secret, issuedAt) }));
+    // The strict document contract guarantees at least the selected segments;
+    // an empty list would create a run that can never be completed, so refuse.
+    if (issued.length === 0) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson has no gradeable segments');
+    const expiresAt = issued[0]!.expiresAt;
+    const createdRun = await createV2LessonRun({
+      id: runId, user_id: user.id, lesson_id: lessonId, locale: document.locale,
+      document_version_id: picked.document_version_id, expires_at: expiresAt,
+    });
+    if (!createdRun) return fail(res, 502, 'INTERNAL', 'Could not start this lesson attempt');
+    const createdNonces = await createV2LessonAttemptNonces(issued.map((item) => ({
+      jti: item.payload.jti, user_id: user.id, run_id: runId, document_version_id: picked.document_version_id!,
+      segment_id: item.segmentId, expires_at: item.expiresAt,
+    })));
+    if (!createdNonces) return fail(res, 502, 'INTERNAL', 'Could not start this lesson attempt');
+
+    return ok(res, {
+      run_id: runId,
+      version_id: document.version_id,
+      expires_at: expiresAt,
+      resumed: false,
+      met_segment_ids: [],
+      attempted_segment_ids: [],
+      attempt_tokens: Object.fromEntries(issued.map((item) => [item.segmentId, item.token])),
+    });
+  });
+
+  // 5. POST /lessons/:id/grade — server-authoritative single-segment grading.
+  const LegacyGradeBody = z.object({
     segment_id: z.string().min(1),
     answer: z.unknown(),
-    attempt_number: z.number().int().min(1),
+    attempt_number: z.number().int().min(1).max(2147483647),
     // Per-lesson-entry id: the attempt cap counts only rows from this run so
     // replays start fresh (0012). Optional for legacy clients (lifetime count).
     run_id: z.string().uuid().optional(),
@@ -409,6 +630,13 @@ export function learnRouter(): Router {
     hints_used: z.number().int().min(0).max(10).optional(),
     time_spent_seconds: z.number().int().min(0).max(7200).optional(),
   });
+  const V2GradeBody = z.object({
+    segment_id: z.string().min(1),
+    answer: z.unknown(),
+    run_id: z.string().uuid(),
+    attempt_token: z.string().min(1).max(4_096),
+  }).strict();
+  const GradeBody = z.union([LegacyGradeBody, V2GradeBody]);
 
   router.post('/lessons/:id/grade', async (req, res) => {
     const parsed = GradeBody.safeParse(req.body);
@@ -423,13 +651,82 @@ export function learnRouter(): Router {
     if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
     if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
 
-    const docs = await getLessonDocumentLocales(lessonId);
+    const { segment_id: segmentId, answer } = parsed.data;
+    if ('attempt_token' in parsed.data) {
+      const secret = lessonAttemptSecret();
+      if (!secret) return fail(res, 503, 'LESSON_ATTEMPT_UNAVAILABLE', 'This lesson attempt is not ready');
+      // Authenticate the immutable version ID first, without consulting the
+      // mutable current pointer. A later activation must not invalidate an
+      // already-issued run or make it grade against a different document.
+      const preliminary = verifyLessonAttemptToken(parsed.data.attempt_token, secret, {
+        uid: user.id, lid: lessonId, sid: segmentId, rid: parsed.data.run_id,
+      });
+      if (preliminary.status !== 'valid') return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
+      const picked = await getV2LessonDocumentVersion(preliminary.payload.vid);
+      if (picked === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+      if (!picked || picked.lesson_id !== lessonId || !picked.document_version_id) {
+        return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
+      }
+      const profiles = await getFullOwnProfile(user.accessToken, user.id);
+      if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
+      const document = validateV2LessonForGrading(stripAnswers(picked.document), picked.answer_keys, { lessonId, locale: picked.locale });
+      if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+      const verified = verifyLessonAttemptToken(parsed.data.attempt_token, secret, {
+        uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
+      });
+      if (verified.status !== 'valid') return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
+      const graded = gradeV2Visual(document, picked.answer_keys as Record<string, unknown>, segmentId, answer);
+      if (!graded) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid answer for this lesson segment');
+      const next = mintLessonAttemptToken({
+        uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
+      }, secret);
+      const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId);
+      const receipt = cpaPrerequisite === undefined
+        ? await recordV2LessonGrade({
+          p_user_id: user.id, p_run_id: parsed.data.run_id, p_document_version_id: picked.document_version_id,
+          p_segment_id: segmentId, p_jti: verified.payload.jti,
+          p_required_met_segment_id: v2GradePrerequisiteSegmentId(document, segmentId),
+          p_verdict: { correct: graded.correct, score: graded.score },
+          p_next_jti: next.payload.jti,
+          p_next_expires_at: next.expiresAt,
+        })
+        : await recordV2CpaGrade({
+          p_user_id: user.id, p_run_id: parsed.data.run_id, p_document_version_id: picked.document_version_id,
+          p_segment_id: segmentId, p_jti: verified.payload.jti,
+          p_required_attempted_segment_id: cpaPrerequisite,
+          p_verdict: { correct: graded.correct, score: graded.score },
+          p_next_jti: next.payload.jti,
+          p_next_expires_at: next.expiresAt,
+        });
+      if (!receipt) return fail(res, 502, 'INTERNAL', 'Could not record the lesson attempt');
+      if ('blocked' in receipt) return fail(res, 409, 'LESSON_PREREQUISITE_REQUIRED', 'Complete the previous learning step first');
+      const firstUnaided = receipt.verdict.correct ? v2FirstUnaidedStage(document, segmentId) : null;
+      if (firstUnaided) {
+        // The route, not the browser, supplies the group and stage. This write is
+        // idempotent and may be recovered on a replayed met receipt.
+        await recordV2FirstUnaidedStage({ p_user_id: user.id, p_document_version_id: picked.document_version_id,
+          p_fading_group_id: firstUnaided.fadingGroupId, p_stage: firstUnaided.stage, p_receipt_jti: verified.payload.jti });
+      }
+      const retryAttemptToken = !receipt.replayed && !receipt.verdict.correct && receipt.retry_jti === next.payload.jti ? next.token : undefined;
+      return ok(res, { verdict: receipt.verdict, replayed: receipt.replayed, ...(retryAttemptToken ? { retry_attempt_token: retryAttemptToken } : {}) });
+    }
+
+    const docs = await getEffectiveLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
     if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
+    if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
+    if (picked.schema_version === 2) {
+      if (!picked.document_version_id) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson must use an immutable version');
+      return fail(res, 400, 'VALIDATION_ERROR', 'A v2 attempt token is required');
+    }
 
-    const { segment_id: segmentId, answer } = parsed.data;
+    // A v2-shaped body must never fall through to the legacy grade writer,
+    // even if content changes between the initial selection and this request.
+    if (!('attempt_number' in parsed.data)) return fail(res, 400, 'VALIDATION_ERROR', 'A legacy attempt number is required');
+    const legacyAttempt = parsed.data;
+
     const segment = findGradingSegment(picked.document, picked.answer_keys, segmentId);
     if (!segment) return fail(res, 404, NOT_FOUND, 'No such segment');
 
@@ -444,18 +741,8 @@ export function learnRouter(): Router {
     const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
     const maxAttempts = typeof scoring.max_attempts === 'number' ? scoring.max_attempts : 2;
     const hintPenaltyPct = typeof scoring.hint_penalty_pct === 'number' ? scoring.hint_penalty_pct : 0;
-    const runId = parsed.data.run_id;
-    const hintsUsed = parsed.data.hints_used ?? 0;
-
-    // SERVER-AUTHORITATIVE: the client-declared `attempt_number` is validated
-    // shape-wise but never trusted for the cap decision or the recorded row —
-    // the DB's own attempt count is the only source of truth. Scoped to the
-    // current run (0012) so a replay starts fresh.
-    const existingAttempts = await countSegmentAttempts(user.accessToken, user.id, lessonId, segmentId, runId);
-    if (existingAttempts >= maxAttempts) {
-      return fail(res, 409, 'ATTEMPTS_EXHAUSTED', 'No attempts remain for this segment');
-    }
-    const serverAttemptNumber = existingAttempts + 1;
+    const runId = legacyAttempt.run_id;
+    const hintsUsed = legacyAttempt.hints_used ?? 0;
 
     const outcome = grader(segment, answer);
     // Apply the hint penalty server-side (0012): each revealed hint compounds a
@@ -466,40 +753,22 @@ export function learnRouter(): Router {
     const penaltyFactor = Math.pow(1 - hintPenaltyPct / 100, hintsUsed);
     const penalizedScore = Math.max(0, Math.min(100, Math.round(outcome.score * penaltyFactor)));
     const verdict = verdictFrom(penalizedScore, passThreshold, outcome.feedback_md);
-    const isFinalAttempt = serverAttemptNumber >= maxAttempts;
-    verdict.allowRetry = verdict.score < 100 && !isFinalAttempt;
-    // Reveal gating (LESSON_ENGINE.md §6): only on a perfect score or the last permitted try.
-    if (verdict.score === 100 || isFinalAttempt) {
-      verdict.reveal = outcome.reveal;
-    }
-
-    const diagnosticCode = hintsUsed > 0
-      ? 'hint_assisted'
-      : serverAttemptNumber > 1 && verdict.correct
-        ? 'retry_recovery'
-        : verdict.correct
-          ? undefined
-          : 'initial_incorrect';
-    const recorded = await insertSegmentAttempt(
-      user.id,
-      lessonId,
-      segmentId,
-      serverAttemptNumber,
-      verdict.score,
-      runId,
-      hintsUsed,
-      {
-        timeSpentSeconds: parsed.data.time_spent_seconds,
-        courseId: ctx.course.id,
-        topicId: ctx.topic.id,
+    verdict.reveal = outcome.reveal;
+    const recorded = await recordLessonGrade({
+      p_user_id: user.id, p_lesson_id: lessonId, p_run_id: runId ?? null,
+      p_segment_id: segmentId, p_client_attempt: legacyAttempt.attempt_number,
+      p_max_attempts: maxAttempts, p_hints_used: hintsUsed, p_verdict: verdict,
+      p_context: {
+        timeSpentSeconds: legacyAttempt.time_spent_seconds,
+        courseId: ctx.course.id, topicId: ctx.topic.id,
         skillKey: `${ctx.course.slug}/${ctx.topic.slug}`.toLowerCase(),
         documentUpdatedAt: picked.updated_at,
-        diagnosticCode,
       },
-    );
+    });
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
+    if (recorded.exhausted) return fail(res, 409, 'ATTEMPTS_EXHAUSTED', 'No attempts remain for this segment');
 
-    return ok(res, { verdict });
+    return ok(res, { verdict: recorded.verdict });
   });
 
   // 5. POST /lessons/:id/complete — server recomputes the lesson score from
@@ -540,16 +809,40 @@ export function learnRouter(): Router {
     if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
     if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
 
-    const docs = await getLessonDocumentLocales(lessonId);
+    const docs = await getEffectiveLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     const profiles = await getFullOwnProfile(user.accessToken, user.id);
     const picked = pickLessonLocale(docs, profiles?.[0]?.locale ?? null);
     if (!picked) return fail(res, 404, NOT_FOUND, 'No such lesson');
+    if (!hasV2LessonEligibility(res, picked.schema_version, picked.document, profiles?.[0]?.birth_date)) return;
+    if (picked.schema_version === 2) {
+      if (!parsed.data.run_id) return fail(res, 400, 'VALIDATION_ERROR', 'A v2 run is required');
+      const run = await getV2LessonRunForRecovery(user.id, lessonId, parsed.data.run_id);
+      if (run === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+      if (!run) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson run is not available');
+      const version = await getV2LessonDocumentVersion(run.document_version_id);
+      if (version === undefined) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+      if (!version || version.lesson_id !== lessonId || version.locale !== run.locale) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+      if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
+      const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
+      if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
+      const requiredSegmentIds = v2CompletionRequiredSegmentIds(document);
+      if (requiredSegmentIds.length === 0) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson has no gradeable segments');
+      const completion = await completeV2Lesson({
+        p_user_id: user.id, p_lesson_id: lessonId, p_run_id: run.id, p_document_version_id: run.document_version_id,
+        p_required_segment_ids: requiredSegmentIds, p_xp: ctx.lessonRow.xp_total,
+        p_minutes: parsed.data.seconds_spent !== undefined ? Math.max(1, Math.round(parsed.data.seconds_spent / 60)) : Math.max(1, Math.round(parsed.data.minutes_spent ?? 0)),
+        p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
+      });
+      if (!completion) return fail(res, 409, 'UNSUPPORTED_LESSON', 'Complete every learning step first');
+      return ok(res, completion);
+    }
 
     const scoring = (picked.document as { scoring?: { pass_threshold?: number } }).scoring ?? {};
     const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
 
-    const gradedIds = gradedSegmentIds(picked.answer_keys);
+    const gradedIds = completableSegmentIds(picked.document, picked.answer_keys, new Set(Object.keys(GRADERS)), KEYLESS_GRADERS);
+    if (!gradedIds) return fail(res, 409, 'UNSUPPORTED_LESSON', 'This lesson format needs an update before it can be completed');
     const xpMap = xpBySegmentId(picked.document);
 
     // Score THIS run (0012): scoped to the run_id so a replay reflects the
@@ -558,9 +851,7 @@ export function learnRouter(): Router {
     const attempts = await getSegmentAttempts(user.accessToken, user.id, lessonId, parsed.data.run_id);
     if (!attempts) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
-    // Per-segment BEST raw score across every recorded attempt. Hint penalties
-    // are client-side UX only (LESSON_ENGINE.md §7) — the server score here is
-    // the raw grader score that was recorded at grade time.
+    // Recorded scores already include server-side hint penalties.
     const bestBySegment = new Map<string, number>();
     for (const a of attempts) {
       if (a.score > (bestBySegment.get(a.segment_id) ?? 0)) bestBySegment.set(a.segment_id, a.score);
@@ -583,59 +874,19 @@ export function learnRouter(): Router {
     const xpEarnedThisRun = Math.round(weightedSum);
     const passedNow = lessonScore >= passThreshold;
 
-    const previous = await getLessonProgressRow(user.accessToken, user.id, lessonId);
-    const previousPassed = previous?.passed ?? false;
-    const previousXpEarned = previous?.xp_earned ?? 0;
-
-    const newBestScore = Math.max(previous?.best_score ?? 0, lessonScore);
-    const newPassed = previousPassed || passedNow;
-    const newAttempts = (previous?.attempts ?? 0) + 1;
-    const newXpEarned = Math.max(previousXpEarned, xpEarnedThisRun);
-    const xpDelta = Math.max(0, newXpEarned - previousXpEarned);
-    const newlyPassed = newPassed && !previousPassed;
-
-    const upserted = await upsertLessonProgress(user.id, lessonId, {
-      best_score: newBestScore,
-      passed: newPassed,
-      attempts: newAttempts,
-      xp_earned: newXpEarned,
-      completed_at: new Date().toISOString(),
-    });
-    if (!upserted) return fail(res, 502, 'INTERNAL', 'Could not save progress');
-
-    // null means Vault did not answer — NOT "this learner has zero progress".
-    // Abort rather than compute the update from assumed zeros: the PATCH below
-    // is a blind overwrite and would erase the learner's accumulated totals.
-    // The lesson_progress row above is already saved, so nothing is lost by
-    // stopping here; the client can retry the completion.
-    const stats = await getLearningStatsForUpdate(user.id);
-    if (!stats) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
-    // Streak semantics (v1 parity / Duolingo model): ANY lesson passed today
-    // sustains or extends the day streak — anchored to last_active_date
-    // (the learner's LOCAL calendar day, 0009), pure date math only.
-    const todayLocal = parsed.data.local_date ?? new Date().toISOString().slice(0, 10);
-    const firstToday = passedNow && isFirstActivityToday(stats.last_active_date, todayLocal);
-    const newStreak = passedNow ? nextStreak(stats.last_active_date, stats.streak_days, todayLocal) : stats.streak_days;
-    const streakExtended = newStreak > stats.streak_days;
-    // All-time high-water mark of the day streak (0013) — the results "Mejor
-    // racha" card reads this, so it's always >= the current streak (no more
-    // "Mejor racha 0" next to "Racha 1").
-    const newLongestStreak = Math.max(stats.longest_streak ?? 0, newStreak);
-
-    const minutesDelta =
-      parsed.data.seconds_spent !== undefined
+    const completion = await completeLesson({
+      p_user_id: user.id,
+      p_lesson_id: lessonId,
+      p_run_id: parsed.data.run_id ?? null,
+      p_score: lessonScore,
+      p_passed: passedNow,
+      p_xp: xpEarnedThisRun,
+      p_minutes: parsed.data.seconds_spent !== undefined
         ? Math.max(1, Math.round(parsed.data.seconds_spent / 60))
-        : (parsed.data.minutes_spent ?? 0);
-
-    const statsUpdated = await patchLearningStats(user.id, {
-      xp_points: stats.xp_points + xpDelta,
-      minutes_learned: stats.minutes_learned + minutesDelta,
-      lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
-      streak_days: newStreak,
-      longest_streak: newLongestStreak,
-      ...(passedNow ? { last_active_date: todayLocal } : {}),
+        : Math.round(parsed.data.minutes_spent ?? 0),
+      p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
     });
-    if (!statsUpdated) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
+    if (!completion) return fail(res, 502, 'INTERNAL', 'Could not save lesson completion; retry this run');
 
     /*
      * Retention signal, recorded SERVER-side because only the server knows
@@ -651,7 +902,7 @@ export function learnRouter(): Router {
     // silently under-count. Same semantics as the client: fires on EVERY
     // passing run, not just the first (passedNow, not newlyPassed) — a
     // repeat pass is still a completion the funnel should count.
-    if (passedNow) {
+    if (completion.passed && !completion.replayed) {
       void (async () => {
         const roles = await getRolesForGate(user.id);
         if (!roles || roles.length === 0) return;
@@ -666,7 +917,7 @@ export function learnRouter(): Router {
     // Activation milestone: the FIRST lesson this learner ever passed. Only
     // the server can assert it (it sees lessons_completed before the update),
     // and it is the single most predictive early-retention event there is.
-    if (newlyPassed && stats.lessons_completed === 0) {
+    if (completion.first_completion && !completion.replayed) {
       void (async () => {
         const roles = await getRolesForGate(user.id);
         if (!roles || roles.length === 0) return;
@@ -678,14 +929,14 @@ export function learnRouter(): Router {
       })();
     }
 
-    if (streakExtended) {
+    if (completion.streak_extended && !completion.replayed) {
       void (async () => {
         const roles = await getRolesForGate(user.id);
         if (!roles || roles.length === 0) return;
         if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
         await insertLearningEvents([{
           user_id: user.id, role: stampRole(roles), event: 'streak_extend',
-          route_class: 'learn', value: newStreak,
+          route_class: 'learn', value: completion.streak_days,
         }]);
       })();
     }
@@ -694,23 +945,17 @@ export function learnRouter(): Router {
     const refreshedTree = await loadCourseTree(user.accessToken, user.id, ctx.course);
 
     return ok(res, {
-      // THIS run's outcome (0012) — the results ring/title reflect the
-      // play-through the kid just did, never a historical best presented as
-      // the current result. `best_score` carries the persisted all-time best
-      // for a "Hoy vs Tu mejor" display.
-      score: lessonScore,
-      passed: passedNow,
-      best_score: newBestScore,
-      xp_earned: newXpEarned,
-      xp_delta: xpDelta,
-      // Day-streak facts for the results/celebration screen (v1 parity —
-      // completeLesson returned new_streak/streak_extended/was_first_today).
-      streak_days: newStreak,
-      longest_streak: newLongestStreak,
-      streak_extended: streakExtended,
-      first_today: firstToday,
-      minutes_learned: stats.minutes_learned + minutesDelta,
-      lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
+      score: completion.score,
+      passed: completion.passed,
+      best_score: completion.best_score,
+      xp_earned: completion.xp_earned,
+      xp_delta: completion.xp_delta,
+      streak_days: completion.streak_days,
+      longest_streak: completion.longest_streak,
+      streak_extended: completion.streak_extended,
+      first_today: completion.first_today,
+      minutes_learned: completion.minutes_learned,
+      lessons_completed: completion.lessons_completed,
       progress: refreshedTree?.course.progress ?? ctx.tree.course.progress,
       next_lesson_id: refreshedTree?.nextLessonId ?? ctx.tree.nextLessonId,
     });

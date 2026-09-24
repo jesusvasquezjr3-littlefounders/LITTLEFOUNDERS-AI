@@ -43,6 +43,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
   delete process.env.SUPABASE_URL;
   delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 });
@@ -77,6 +78,8 @@ describe('summarizeEmailLogs', () => {
   });
 
   it('buckets rows into their UTC day in the trend, not just their existence', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-11T12:00:00.000Z'));
     const fetchSpy = vi.fn(async () =>
       restResponse(
         [row({ created_at: '2026-09-10T23:59:59.000Z' }), row({ created_at: '2026-09-10T00:00:01.000Z' }), row({ created_at: '2026-09-11T08:00:00.000Z' })],

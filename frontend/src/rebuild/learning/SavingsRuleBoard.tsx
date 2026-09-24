@@ -1,0 +1,105 @@
+import { useState } from 'react';
+import type { Locale } from '../design/copyBudget';
+import { Button } from '../design/controls';
+import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
+import { savingsRuleCases, savingsRuleOutcome, type RuleCase, type RuleLink } from './savingsRuleModel';
+import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
+import { TeachingChartBoard } from './TeachingChartBoard';
+import './learning.css';
+import './savingsRule.css';
+
+type SavingsRuleSegment = Extract<LessonClientSegment, { type: 'logic.savings-rule.v2' }>;
+type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string;
+  case: string; result: string; goalMet: string; goalDay: string; yes: string; no: string; and: string; or: string;
+  choose: string; ready: string; wait: string; previous: string; next: string; link: string; coin: string; coins: string;
+  continue: string; title: string; prompt: string };
+const copy: Record<Locale, Labels> = {
+  'en-US': { back: 'Back', explore: 'Explore', progress: 'Lesson progress', board: 'Savings rule', showTable: 'Show as table',
+    showChart: 'Show rule', case: 'Case', result: 'Result', goalMet: 'Goal met?', goalDay: 'Goal day?', yes: 'Yes', no: 'No',
+    and: 'AND', or: 'OR', choose: 'Choose a link', ready: 'Rule says ready', wait: 'Rule says wait', previous: 'Previous',
+    next: 'Next', link: 'Link the conditions', coin: 'coin', coins: 'coins', continue: 'Continue',
+    title: 'Build a savings rule', prompt: 'Choose AND or OR. When is the goal ready?' },
+  'es-MX': { back: 'Volver', explore: 'Explorar', progress: 'Progreso de lección', board: 'Regla de ahorro',
+    showTable: 'Ver tabla', showChart: 'Ver regla', case: 'Caso', result: 'Resultado', goalMet: '¿Meta cumplida?',
+    goalDay: '¿Llegó el día?', yes: 'Sí', no: 'No', and: 'Y', or: 'O', choose: 'Elige un nexo', ready: 'La regla dice: lista',
+    wait: 'La regla dice: espera', previous: 'Anterior', next: 'Siguiente', link: 'Une las condiciones',
+    coin: 'moneda', coins: 'monedas', continue: 'Continuar', title: 'Crea una regla de ahorro',
+    prompt: 'Elige Y u O. ¿Cuándo está lista la meta?' },
+  'pt-BR': { back: 'Voltar', explore: 'Explorar', progress: 'Progresso da lição', board: 'Regra de poupança',
+    showTable: 'Ver tabela', showChart: 'Ver regra', case: 'Caso', result: 'Resultado', goalMet: 'Meta atingida?',
+    goalDay: 'Chegou o dia?', yes: 'Sim', no: 'Não', and: 'E', or: 'OU', choose: 'Escolha uma ligação',
+    ready: 'Regra diz: pronta', wait: 'Regra diz: aguarde', previous: 'Anterior', next: 'Próximo', link: 'Ligue as condições',
+    coin: 'moeda', coins: 'moedas', continue: 'Continuar', title: 'Crie uma regra de poupança',
+    prompt: 'Escolha E ou OU. Quando a meta está pronta?' },
+};
+
+/** Answerless L2 rule-building candidate with four visible truth cases. */
+export function savingsRulePilotDocument(locale: Locale): unknown {
+  const t = copy[locale];
+  return {
+    schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-10-12', chapter_id: 'saving-rules',
+    lesson_id: 'pilot-savings-rule', version_id: 'rev-1', locale, age_band: '10-12', eligibility: ageEligibilityForBand('10-12'),
+    knowledge_component_ids: ['kc-conditional-decision'], adventure_scene_id: 'diorama-a', title: t.title,
+    required_capabilities: ['visual.rule-diagram.v1', 'operation.choose-connective.v1', 'operation.case-step.v1'],
+    segments: [{ id: 'rule-01', type: 'logic.savings-rule.v2', prompt: t.prompt, grading: 'none',
+      visual: { type: 'rule-diagram' }, payload: { goal: 10, shortfall: 2 } }],
+  };
+}
+
+export function SavingsRuleBoard({ document, segment, onBack, sequence }: {
+  document: LessonClientDocument; segment: SavingsRuleSegment; onBack: () => void; sequence?: LessonSequenceControl;
+}) {
+  const t = copy[document.locale];
+  const cases = savingsRuleCases(segment.payload.goal, segment.payload.shortfall);
+  const [link, setLink] = useState<RuleLink | null>(null);
+  const [caseIndex, setCaseIndex] = useState(0);
+  const selected = cases?.[caseIndex];
+  if (!cases || !selected) return null;
+  const met = selected.saved >= selected.goal;
+  const result = link ? savingsRuleOutcome(selected, link) : null;
+  const resultLabel = result === null ? t.choose : result ? t.ready : t.wait;
+  const amount = (value: number) => `${new Intl.NumberFormat(document.locale).format(value)} ${value === 1 ? t.coin : t.coins}`;
+  const caseText = (value: RuleCase) => `${amount(value.saved)}; ${t.goalDay} ${value.goalDay ? t.yes : t.no}`;
+  const progress = sequenceProgress(sequence, link !== null && caseIndex === cases.length - 1);
+
+  return <main className="lf-learning" data-surface="app" data-screen="savings-rule">
+    <div className="lf-learning-inner">
+      <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
+        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress}
+          aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} data-copy-role="data">
+          <span style={{ inlineSize: `${progress}%` }} /></div> : null}
+        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
+      <div className="lf-learning-content">
+        <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
+          <p data-copy-role="prompt">{segment.prompt}</p></div>
+        <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
+          columns={[t.case, t.result]} rows={cases.map((value, index) => ({ id: index,
+            label: caseText(value), value: link ? savingsRuleOutcome(value, link) ? t.ready : t.wait : '?' }))}
+          chart={<div className="lf-rule-plot" role="img"
+            aria-label={`${t.case} ${caseIndex + 1}: ${t.goalMet} ${met ? t.yes : t.no}. ${t.goalDay} ${selected.goalDay ? t.yes : t.no}. ${resultLabel}.`}>
+            <div className="lf-rule-conditions">
+              <div className="lf-rule-node"><span data-copy-role="data">{t.goalMet}</span><strong data-copy-role="data">{met ? t.yes : t.no}</strong></div>
+              <span className="lf-rule-link" data-copy-role="data">{link ? t[link] : '?'}</span>
+              <div className="lf-rule-node"><span data-copy-role="data">{t.goalDay}</span><strong data-copy-role="data">{selected.goalDay ? t.yes : t.no}</strong></div>
+            </div>
+            <div className="lf-rule-outcome" data-copy-role="data">{resultLabel}</div>
+          </div>}>
+          {() => <div className="lf-rule-controls">
+            <div className="lf-rule-links" role="group" aria-label={t.link}>
+              {(['and', 'or'] as const).map((value) => <Button key={value} aria-pressed={link === value}
+                onClick={() => setLink(value)}>{t[value]}</Button>)}
+            </div>
+            <div className="lf-rule-cases">
+              <Button disabled={caseIndex === 0} onClick={() => setCaseIndex((value) => value - 1)}>{t.previous}</Button>
+              <span data-copy-role="data">{t.case} {caseIndex + 1}/{cases.length}</span>
+              <Button disabled={caseIndex === cases.length - 1} onClick={() => setCaseIndex((value) => value + 1)}>{t.next}</Button>
+            </div>
+          </div>}
+        </TeachingChartBoard>
+        <footer className="lf-rule-foot"><p role="status" aria-live="polite" data-copy-role="body">{resultLabel}</p>
+          {sequence ? <Button variant="accent" disabled={!link || caseIndex !== cases.length - 1}
+            onClick={sequence.onAdvance}>{t.continue}</Button> : null}</footer>
+      </div>
+    </div>
+  </main>;
+}

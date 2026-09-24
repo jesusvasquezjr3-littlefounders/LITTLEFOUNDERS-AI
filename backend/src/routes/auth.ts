@@ -1,3 +1,5 @@
+import { allowsSelfManagedAnalytics, readAnalyticsPreference, setAnalyticsPreference } from '../services/analyticsPreference.js';
+import { getRolesForGate } from '../services/insights.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -6,8 +8,10 @@ import { authedUser, requireAuth } from '../middleware/auth.js';
 import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js';
 import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
+import { markUnder13Origin } from '../services/ageOrigin.js';
+import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
-import { getOnboardingResponse, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
 /** Social providers Core is willing to broker (GoTrue must also have each enabled). */
 const OAUTH_PROVIDERS = ['google'] as const;
@@ -45,7 +49,7 @@ const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
  * path collects nothing at all, and a parent can create them a proper account
  * from /family. They are turned away from GIVING US AN EMAIL.
  */
-const MIN_SIGNUP_AGE_YEARS = 13;
+// A.4 retains the minimum age band in service-owned storage, not the date.
 
 /*
  * COMPLETED CALENDAR YEARS, in UTC — not elapsed milliseconds over an average
@@ -91,7 +95,7 @@ const SignupBody = z.object({
   displayName: z.string().trim().min(1).max(80),
   locale: z.enum(LOCALES).default('en-US'),
   parentIntent: z.boolean().default(false),
-  /** Screened against MIN_SIGNUP_AGE_YEARS and then discarded — never persisted. */
+  /** The date is discarded; its age band is persisted after account creation. */
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'A date of birth is required'),
   /** First-party visitor id (lf_aid) — links the signup to its acquisition source. */
   anonId: z.string().uuid().optional(),
@@ -159,32 +163,78 @@ function sessionPayload(s: Partial<gotrue.GotrueSession>) {
 export function authRouter(): Router {
   const router = Router();
 
+  async function analyticsManagement(res: Parameters<typeof fail>[0]) {
+    const user = authedUser(res);
+    const [age, roles] = await Promise.all([readAgeScreen(user.id), getRolesForGate(user.id)]);
+    if (!age || !roles || roles.length === 0) return null;
+    return !user.isGuest && !age.required && !age.protectedOrigin && age.ageBand === '13_to_17' && !roles.includes('kid');
+  }
+  router.get('/analytics-preference', requireAuth, async (_req, res) => {
+    const eligible = await analyticsManagement(res);
+    if (eligible === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
+    if (!eligible) return ok(res, { canManage: false, enabled: false, disclosed: false });
+    const preference = await readAnalyticsPreference(authedUser(res).id);
+    return preference ? ok(res, { canManage: true, ...preference }) : fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read analytics preference');
+  });
+  router.put('/analytics-preference', requireAuth, async (req, res) => {
+    const body = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose whether to share optional analytics');
+    const eligible = await analyticsManagement(res);
+    if (eligible === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve analytics eligibility');
+    if (!eligible) return fail(res, 403, 'FORBIDDEN', 'This account cannot manage teen analytics');
+    const user = authedUser(res);
+    if (await setAnalyticsPreference(user.id, body.data.enabled) !== body.data.enabled) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save analytics preference');
+    const confirmed = await readAnalyticsPreference(user.id);
+    if (!confirmed?.disclosed || confirmed.enabled !== body.data.enabled) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm analytics preference');
+    return ok(res, { canManage: true, ...confirmed });
+  });
+
+  router.get('/age-screen', requireAuth, async (_req, res) => {
+    const state = await readAgeScreen(authedUser(res).id);
+    if (!state) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve age screening');
+    return ok(res, state);
+  });
+
+  router.post('/age-screen', requireAuth, authRateLimiter, async (req, res) => {
+    const parsed = z.object({ birthDate: z.string() }).strict().safeParse(req.body);
+    const band = parsed.success ? declaredBandForDate(parsed.data.birthDate) : null;
+    if (!band) return fail(res, 400, 'VALIDATION_ERROR', 'Enter a valid birth date');
+    const id = authedUser(res).id;
+    if (!await recordAgeScreen(id, band)) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
+    const state = await readAgeScreen(id);
+    if (!state || state.required) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not confirm age screening');
+    return ok(res, state);
+  });
+
   router.post('/signup', accountRateLimiter, async (req, res) => {
     const parsed = SignupBody.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
-    const age = yearsOld(parsed.data.birthDate, Date.now());
-    if (!Number.isFinite(age) || age >= 120) {
+    const declaredBand = declaredBandForDate(parsed.data.birthDate);
+    if (!declaredBand) {
       return fail(res, 400, 'VALIDATION_ERROR', 'That date of birth is not valid');
     }
-    if (age < MIN_SIGNUP_AGE_YEARS) {
+    if (declaredBand === 'under_13') {
       // A distinct code, because the frontend must explain the way OUT of this
       // (a parent creates the account) rather than show a generic rejection.
       return fail(res, 403, 'AGE_RESTRICTED', 'An adult has to create this account');
     }
 
     // `birthDate` is deliberately NOT forwarded: signUp takes what it needs and
-    // the date has already done its only job.
+    // Core derives and stores only its minimum age band below.
     const { data, error } = await gotrue.signUp(parsed.data);
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+    const newUserId = data.user?.id ?? data.id;
+    if (!newUserId || !await recordAgeScreen(newUserId, declaredBand)) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
+    }
 
     // Attribution: which channel produced this signup (/INSIGHTS.md §7).
     // Every fresh signup is `universal` by DB trigger AND has now passed the
     // age screen above — the previous version of this comment claimed the
     // account was adult "by construction", which was an assumption about the
     // role name rather than a check on the person.
-    const newUserId = data.user?.id;
     if (parsed.data.anonId && newUserId) {
       void attributeSignup(parsed.data.anonId, newUserId, ['universal']);
     }
@@ -200,9 +250,14 @@ export function authRouter(): Router {
   // learning_stats, migration 0003/0006) and every RLS policy already work
   // unchanged. "Guest" here is product vocabulary for GoTrue's is_anonymous —
   // unrelated to the pre-signup lf_aid marketing visitor id used elsewhere.
-  router.post('/guest', accountRateLimiter, async (_req, res) => {
+  router.post('/guest', accountRateLimiter, async (req, res) => {
+    const origin = z.object({ under13Origin: z.literal(true).optional() }).strict().safeParse(req.body ?? {});
+    if (!origin.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid guest origin');
     const { data, error } = await gotrue.signInAnonymously();
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+    if (origin.data.under13Origin && (!data.user?.id || !await markUnder13Origin(data.user.id))) {
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not protect the guest session');
+    }
     return ok(res, { session: sessionPayload(data) }, 201);
   });
 
@@ -393,18 +448,23 @@ export function authRouter(): Router {
     // WRITE rule applies to writers, not this kind of reader).
     const onboardingComplete = (onboarding?.length ?? 0) > 0;
     const roleNames = roles.map((r) => r.role);
+    const staffPermissions = roleNames.some((role) => role === 'admin' || role === 'superadmin')
+      ? await getOwnAdminPermissions(user.accessToken, user.id)
+      : [];
     // Whether the usage beacon may transmit for this account (/INSIGHTS.md).
     // Kids: only while guardian consent is active — fail-closed, so a Vault
     // hiccup silences the beacon rather than defaulting it on. Adults are
-    // covered by the platform terms. The ingest route re-checks regardless;
+    // covered by the platform terms; independent teens require their stored
+    // optional-analytics choice. The ingest route re-checks regardless;
     // this flag exists so a kid's browser does not even TRANSMIT unconsented.
     // Empty role set = unconfirmed (a lost RLS policy reads as [] here, not
     // as an error) — the beacon stays OFF rather than defaulting to adult.
-    const analyticsEnabled = roleNames.length === 0
+    const screening = await readAgeScreen(user.id);
+    const analyticsEnabled = !screening || screening.required || screening.protectedOrigin || roleNames.length === 0 || user.isGuest
       ? false
       : roleNames.includes('kid')
         ? (await hasActiveAnalyticsConsent(user.id)) === true
-        : true;
+        : await allowsSelfManagedAnalytics(user.id, screening);
     /*
      * Was this account created just now?
      *
@@ -426,6 +486,7 @@ export function authRouter(): Router {
       user: { id: user.id, email: user.email },
       profile: profiles[0] ?? null,
       roles: roleNames,
+      adminPermissions: staffPermissions?.map((row) => row.permission) ?? [],
       avatarOptions: avatars?.[0]?.options ?? {},
       analyticsEnabled,
       newAccount,

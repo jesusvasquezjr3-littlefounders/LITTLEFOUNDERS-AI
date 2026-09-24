@@ -110,6 +110,7 @@ const NOT_CLASSES = new Set([
   'lf-theme',
   'lf-aid',
   'lf-boot',
+  'lf-allocation', // local checkpoint contract identifier, not a CSS class
 ]);
 
 describe('design classes', () => {

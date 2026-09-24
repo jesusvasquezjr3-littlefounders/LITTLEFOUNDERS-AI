@@ -325,7 +325,8 @@
       "done": "Pronto",
       "reasonAllowance": "Mesada",
       "reasonSavingsBonus": "Bônus que sua família adicionou",
-      "redeemLink": "Resgate suas LF Coins em Tarefas"
+      "redeemLink": "Resgate suas LF Coins em Tarefas",
+      "frozenHold": "Seus créditos ficam aqui enquanto o cartão está congelado. Você poderá dividi-los quando ele for descongelado."
     },
     "statement": {
       "title": "Extrato",

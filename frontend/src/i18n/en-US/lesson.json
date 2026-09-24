@@ -7,7 +7,7 @@
   "skip": "Skip for now",
   "hint": "Hint",
   "exit": "Exit lesson",
-  "unsupported": "This exercise needs a newer version of the app. Skipping it won't affect your score.",
+  "unsupported": "Update the app to finish this lesson.",
   "gradeError": "We couldn't check your answer right now. Give it another try!",
   "answer": {
     "correct": "Correct answer",
@@ -47,6 +47,8 @@
     }
   },
   "results": {
+    "saving": "Saving your progress…",
+    "saveError": "Your progress has not been confirmed as saved. Keep this screen open and try again.",
     "passedTitle": "Lesson complete!",
     "failedTitle": "Good effort!",
     "score": "Score: {{score}} out of 100",

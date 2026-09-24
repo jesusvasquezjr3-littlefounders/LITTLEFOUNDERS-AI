@@ -72,6 +72,18 @@ export function getOwnRoles(accessToken: string, userId: string): Promise<RoleRo
   return rest<RoleRow[]>(`/user_roles?user_id=eq.${eu(userId)}&select=role`, accessToken);
 }
 
+export interface AdminPermissionRow {
+  permission: string;
+}
+
+/** Session-scoped RLS read: a staff member can inspect only their own grants. */
+export function getOwnAdminPermissions(accessToken: string, userId: string): Promise<AdminPermissionRow[] | null> {
+  return rest<AdminPermissionRow[]>(
+    `/admin_permissions?user_id=eq.${eu(userId)}&select=permission`,
+    accessToken,
+  );
+}
+
 interface RawResult {
   ok: boolean;
   status: number;
@@ -236,11 +248,11 @@ export async function insertFollow(accessToken: string, followerId: string, foll
 }
 
 export async function deleteFollow(accessToken: string, followerId: string, followedId: string): Promise<boolean> {
-  const res = await restRaw(`/follows?follower_id=eq.${eu(followerId)}&followed_id=eq.${eu(followedId)}`, accessToken, {
-    method: 'DELETE',
-    headers: { Prefer: 'return=minimal' },
+  const result = await rest<boolean>('/rpc/withdraw_social_connection', accessToken, {
+    method: 'POST',
+    body: JSON.stringify({ p_follower_id: UUID.parse(followerId), p_followed_id: UUID.parse(followedId) }),
   });
-  return res.ok;
+  return result === true;
 }
 
 // ── Learning stats (0006) ────────────────────────────────────
@@ -316,7 +328,7 @@ export interface ListedUser {
 }
 
 /** Batch-hydrate raw user ids into whitelisted public cards, service role (mirrors the public-profile window). */
-async function hydrateUsers(ids: string[]): Promise<ListedUser[]> {
+async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
   if (ids.length === 0) return [];
   const idList = ids.join(',');
   const [profiles, avatars, tutorRoles] = await Promise.all([
@@ -327,7 +339,8 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[]> {
     rest<(AvatarRow & { user_id: string })[]>(`/avatars?user_id=in.(${idList})&select=user_id,options`, serviceToken()),
     rest<{ user_id: string }[]>(`/user_roles?user_id=in.(${idList})&role=eq.parent&select=user_id`, serviceToken()),
   ]);
-  const profileById = new Map((profiles ?? []).map((p) => [p.user_id, p]));
+  if (profiles === null || avatars === null || tutorRoles === null) return null;
+  const profileById = new Map(profiles.map((p) => [p.user_id, p]));
   const avatarById = new Map((avatars ?? []).map((a) => [a.user_id, a.options]));
   const tutorIds = new Set((tutorRoles ?? []).map((r) => r.user_id));
 
@@ -353,7 +366,7 @@ export async function listFollowers(userId: string): Promise<ListedUser[]> {
     `/follows?followed_id=eq.${eu(userId)}&select=follower_id&order=created_at.desc&limit=${LIST_LIMIT}`,
     serviceToken(),
   );
-  return hydrateUsers((rows ?? []).map((r) => r.follower_id));
+  return (await hydrateUsers((rows ?? []).map((r) => r.follower_id))) ?? [];
 }
 
 export async function listFollowing(userId: string): Promise<ListedUser[]> {
@@ -361,7 +374,7 @@ export async function listFollowing(userId: string): Promise<ListedUser[]> {
     `/follows?follower_id=eq.${eu(userId)}&select=followed_id&order=created_at.desc&limit=${LIST_LIMIT}`,
     serviceToken(),
   );
-  return hydrateUsers((rows ?? []).map((r) => r.followed_id));
+  return (await hydrateUsers((rows ?? []).map((r) => r.followed_id))) ?? [];
 }
 
 export async function listBlocked(userId: string): Promise<ListedUser[]> {
@@ -369,7 +382,98 @@ export async function listBlocked(userId: string): Promise<ListedUser[]> {
     `/blocks?blocker_id=eq.${eu(userId)}&select=blocked_id&order=created_at.desc&limit=${LIST_LIMIT}`,
     serviceToken(),
   );
-  return hydrateUsers((rows ?? []).map((r) => r.blocked_id));
+  return (await hydrateUsers((rows ?? []).map((r) => r.blocked_id))) ?? [];
+}
+
+export async function requestSocialConnection(requesterId: string, kidId: string): Promise<string | null> {
+  const result = await rest<unknown>('/rpc/request_social_connection', serviceToken(), {
+    method: 'POST', body: JSON.stringify({ p_requester_id: UUID.parse(requesterId), p_kid_user_id: UUID.parse(kidId) }),
+  });
+  const parsed = UUID.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
+
+export async function decideSocialConnectionForKid(requestId: string, kidId: string, guardianId: string, approve: boolean): Promise<'approved' | 'denied' | 'not-found' | 'forbidden' | 'conflict' | 'unavailable'> {
+  // Request participants are immutable to application roles; only decision fields can change through the RPC.
+  const raw = await rest<unknown>(`/social_connection_requests?id=eq.${eu(requestId)}&kid_user_id=eq.${eu(kidId)}&select=id,kid_user_id&limit=1`, serviceToken());
+  const rows = z.array(z.object({ id: UUID, kid_user_id: UUID })).max(1).safeParse(raw);
+  if (!rows.success) return 'unavailable';
+  if (rows.data.length === 0) return 'not-found';
+  if (rows.data[0]!.id !== requestId || rows.data[0]!.kid_user_id !== kidId) return 'unavailable';
+  const result = await restRaw('/rpc/decide_social_connection', serviceToken(), {
+    method: 'POST', body: JSON.stringify({ p_request_id: requestId, p_guardian_id: UUID.parse(guardianId), p_approve: approve }),
+  });
+  const expected = approve ? 'approved' : 'denied';
+  if (result.ok) return result.body === expected ? expected : 'unavailable';
+  const error = z.object({ code: z.literal('P0001'), message: z.string() }).safeParse(result.body);
+  if (!error.success) return 'unavailable';
+  if (error.data.message === 'GUARDIAN_DECISION_FORBIDDEN') return 'forbidden';
+  if (error.data.message === 'SOCIAL_REQUEST_NOT_FOUND') return 'not-found';
+  if (['SOCIAL_DECISION_CONFLICT', 'SOCIAL_CONNECTION_BLOCKED', 'SOCIAL_REQUEST_UNAVAILABLE'].includes(error.data.message)) return 'conflict';
+  return 'unavailable';
+}
+
+export async function getPendingSocialRequests(kidId: string, offset: number) {
+  const raw = await rest<unknown>(`/social_connection_requests?kid_user_id=eq.${eu(kidId)}&status=eq.pending&select=id,requester_id,kid_user_id,status,requested_at&order=requested_at.asc,id.asc&offset=${offset}&limit=${LIST_LIMIT + 1}`, serviceToken());
+  const parsed = z.array(z.object({ id: UUID, requester_id: UUID, kid_user_id: UUID, status: z.literal('pending'), requested_at: z.string().datetime({ offset: true }) })).safeParse(raw);
+  if (!parsed.success) return null;
+  const rows = parsed.data;
+  return { requests: rows.slice(0, LIST_LIMIT).filter(row => row.kid_user_id === kidId).map(row => ({ requestId: row.id, requesterId: row.requester_id, requestedAt: row.requested_at, status: row.status })), nextOffset: rows.length > LIST_LIMIT ? offset + LIST_LIMIT : null };
+}
+
+/** Bounded display-name lookup for already-authorized social-history participants. */
+export async function getSocialDisplayNames(ids: string[]) {
+  if (ids.length === 0) return [];
+  const unique = [...new Set(ids)];
+  const rows = await rest<unknown>(`/profiles?user_id=in.(${unique.map(eu).join(',')})&select=user_id,display_name`, serviceToken());
+  const parsed = z.array(z.object({ user_id: UUID, display_name: z.string().nullable() })).safeParse(rows);
+  return parsed.success ? parsed.data.filter(row => unique.includes(row.user_id)) : null;
+}
+
+const SocialAuditRow = z.object({
+  id: z.number().int().nonnegative().refine(Number.isSafeInteger),
+  actor_id: UUID.nullable(),
+  action: z.enum(['social.follow', 'social.unfollow', 'social.block', 'social.unblock']),
+  detail: z.object({ origin: z.literal('database-trigger'), follower_id: UUID.optional(), followed_id: UUID.optional(), blocker_id: UUID.optional(), blocked_id: UUID.optional() }),
+  created_at: z.string().datetime({ offset: true }),
+});
+
+/** Only fixed social participant fields reach Family; arbitrary audit detail never does. */
+export async function getGuardianSocialAuditPage(kidId: string, offset: number) {
+  const id = eu(kidId);
+  const raw = await rest<unknown[]>(
+    `/audit_logs?select=id,actor_id,action,detail,created_at&action=in.(social.follow,social.unfollow,social.block,social.unblock)&detail->>origin=eq.database-trigger&or=(detail->>follower_id.eq.${id},detail->>followed_id.eq.${id},detail->>blocker_id.eq.${id},detail->>blocked_id.eq.${id})&order=id.desc&offset=${offset}&limit=${LIST_LIMIT + 1}`,
+    serviceToken(),
+  );
+  if (raw === null) return null;
+  const entries = [];
+  for (const value of raw.slice(0, LIST_LIMIT)) {
+    const parsed = SocialAuditRow.safeParse(value);
+    if (!parsed.success) return null;
+    const row = parsed.data;
+    const follow = row.action === 'social.follow' || row.action === 'social.unfollow';
+    const sourceId = follow ? row.detail.follower_id : row.detail.blocker_id;
+    const targetId = follow ? row.detail.followed_id : row.detail.blocked_id;
+    if (!sourceId || !targetId) return null;
+    // Defense in depth: a transport/filter defect must not expose another family's log.
+    if (sourceId !== kidId && targetId !== kidId) continue;
+    entries.push({ id: row.id, actorId: row.actor_id, action: row.action, sourceId, targetId, createdAt: row.created_at });
+  }
+  return { entries, nextOffset: raw.length > LIST_LIMIT ? offset + LIST_LIMIT : null };
+}
+
+/** Guardian graph reads must distinguish an unavailable source from an empty graph. */
+export async function getGuardianSocialPage(userId: string, direction: 'followers' | 'following', offset: number): Promise<{ users: ListedUser[]; nextOffset: number | null } | null> {
+  const subject = direction === 'followers' ? 'followed_id' : 'follower_id';
+  const member = direction === 'followers' ? 'follower_id' : 'followed_id';
+  const rows = await rest<Record<string, string>[]>(
+    `/follows?${subject}=eq.${eu(userId)}&select=${member}&order=created_at.desc,${member}.asc&offset=${offset}&limit=${LIST_LIMIT + 1}`,
+    serviceToken(),
+  );
+  if (rows === null) return null;
+  const users = await hydrateUsers(rows.slice(0, LIST_LIMIT).map(row => row[member]!));
+  if (users === null) return null;
+  return { users, nextOffset: rows.length > LIST_LIMIT ? offset + LIST_LIMIT : null };
 }
 
 /** Either direction — mirrors the DB's is_blocked(), read via the service role. */
@@ -381,29 +485,28 @@ export async function isBlockedEitherWay(a: string, b: string): Promise<boolean>
   return Array.isArray(rows) && rows.length > 0;
 }
 
-/**
- * Block: the blocker's own row is a user-token write (RLS-owned); cleaning
- * up any EXISTING follow in either direction needs the service role, since
- * the reverse edge (them following the blocker) isn't the actor's own row.
- */
+/** A prior user-owned block is enough to manage that block without profile discovery. */
+export async function hasOwnBlock(accessToken: string, blockerId: string, blockedId: string): Promise<boolean> {
+  const rows = await rest<unknown>(`/blocks?blocker_id=eq.${eu(blockerId)}&blocked_id=eq.${eu(blockedId)}&select=blocker_id,blocked_id&limit=1`, accessToken);
+  const parsed = z.array(z.object({ blocker_id: UUID, blocked_id: UUID })).max(1).safeParse(rows);
+  return parsed.success && parsed.data.some(row => row.blocker_id === blockerId && row.blocked_id === blockedId);
+}
+
+/** Pending requests can be withdrawn without an already-visible follow edge. */
+export async function hasOwnOpenSocialRequest(requesterId: string, kidId: string): Promise<boolean> {
+  const rows = await rest<unknown>(`/social_connection_requests?requester_id=eq.${eu(requesterId)}&kid_user_id=eq.${eu(kidId)}&status=in.(pending,approved)&select=requester_id,kid_user_id&limit=1`, serviceToken());
+  const parsed = z.array(z.object({ requester_id: UUID, kid_user_id: UUID })).max(1).safeParse(rows);
+  return parsed.success && parsed.data.some(row => row.requester_id === requesterId && row.kid_user_id === kidId);
+}
+
+/** Migration 0098 commits block, bidirectional cleanup and request revocation together. */
 export async function blockUser(accessToken: string, blockerId: string, blockedId: string): Promise<boolean> {
   const inserted = await restRaw('/blocks', accessToken, {
     method: 'POST',
     headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
-    body: JSON.stringify({ blocker_id: blockerId, blocked_id: blockedId }),
+    body: JSON.stringify({ blocker_id: UUID.parse(blockerId), blocked_id: UUID.parse(blockedId) }),
   });
-  if (!inserted.ok) return false;
-  await Promise.all([
-    restRaw(`/follows?follower_id=eq.${eu(blockerId)}&followed_id=eq.${eu(blockedId)}`, serviceToken(), {
-      method: 'DELETE',
-      headers: { Prefer: 'return=minimal' },
-    }),
-    restRaw(`/follows?follower_id=eq.${eu(blockedId)}&followed_id=eq.${eu(blockerId)}`, serviceToken(), {
-      method: 'DELETE',
-      headers: { Prefer: 'return=minimal' },
-    }),
-  ]);
-  return true;
+  return inserted.ok;
 }
 
 export async function unblockUser(accessToken: string, blockerId: string, blockedId: string): Promise<boolean> {
@@ -632,6 +735,8 @@ export async function getLessonProgressRow(accessToken: string, userId: string, 
 // ── Lesson documents (0007) — SERVICE ROLE ONLY, no SELECT policy exists ───
 
 export interface LessonDocumentRow {
+  /** Present only for an activated immutable v2 document; never exposed to the browser. */
+  document_version_id?: string;
   lesson_id: string;
   locale: string;
   schema_version: number;
@@ -650,12 +755,222 @@ export function getLessonDocumentLocales(lessonId: string): Promise<LessonDocume
   );
 }
 
+interface V2CurrentLessonDocumentPointer {
+  lesson_id: string;
+  locale: string;
+  document_version_id: string;
+}
+
+interface V2LessonDocumentVersionRow {
+  id: string;
+  lesson_id: string;
+  locale: string;
+  schema_version: number;
+  document: Json;
+  answer_keys: Json;
+  audio: Json;
+  created_at: string;
+}
+
+/**
+ * Reads only explicitly activated immutable v2 versions. An empty result is
+ * an ordinary legacy fallback; null is an unavailable content service.
+ */
+export async function getCurrentV2LessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
+  const pointers = await rest<V2CurrentLessonDocumentPointer[]>(
+    `/lesson_document_version_current?lesson_id=eq.${eu(lessonId)}&select=lesson_id,locale,document_version_id`,
+    serviceToken(),
+  );
+  if (pointers === null) return null;
+  if (pointers.length === 0) return [];
+  const ids = [...new Set(pointers.map((pointer) => pointer.document_version_id))];
+  const versions = await restBatchedByIds(ids, (batch) => rest<V2LessonDocumentVersionRow[]>(
+    `/lesson_document_versions?id=${inFilter(batch)}&select=id,lesson_id,locale,schema_version,document,answer_keys,audio,created_at`,
+    serviceToken(),
+  ));
+  if (versions === null) return null;
+  const byId = new Map(versions.map((version) => [version.id, version]));
+  const rows: LessonDocumentRow[] = [];
+  for (const pointer of pointers) {
+    const version = byId.get(pointer.document_version_id);
+    if (!version || version.lesson_id !== pointer.lesson_id || version.locale !== pointer.locale) return null;
+    rows.push({
+      document_version_id: version.id, lesson_id: version.lesson_id, locale: version.locale, schema_version: version.schema_version,
+      document: version.document, answer_keys: version.answer_keys, audio: version.audio, updated_at: version.created_at,
+    });
+  }
+  return rows;
+}
+
+/**
+ * Resolves the immutable document named by an already-authenticated v2 run.
+ * `undefined` is an unavailable content service; `null` is a missing or
+ * malformed version and must not be mistaken for a legacy fallback.
+ */
+export async function getV2LessonDocumentVersion(documentVersionId: string): Promise<LessonDocumentRow | null | undefined> {
+  const versions = await rest<V2LessonDocumentVersionRow[]>(
+    `/lesson_document_versions?id=eq.${eu(documentVersionId)}&select=id,lesson_id,locale,schema_version,document,answer_keys,audio,created_at`,
+    serviceToken(),
+  );
+  if (versions === null) return undefined;
+  const version = versions[0];
+  if (!version || version.id !== documentVersionId || version.schema_version !== 2) return null;
+  return {
+    document_version_id: version.id, lesson_id: version.lesson_id, locale: version.locale, schema_version: version.schema_version,
+    document: version.document, answer_keys: version.answer_keys, audio: version.audio, updated_at: version.created_at,
+  };
+}
+
+export interface V2LessonRunInsert {
+  id: string;
+  user_id: string;
+  lesson_id: string;
+  locale: string;
+  document_version_id: string;
+  expires_at: string;
+}
+
+/** A v2 run is only created by Core after it selected an activated immutable version. */
+export async function createV2LessonRun(row: V2LessonRunInsert): Promise<boolean> {
+  const result = await restRaw('/lesson_v2_runs', serviceToken(), {
+    method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(row),
+  });
+  return result.ok;
+}
+
+export interface V2LessonAttemptNonceInsert {
+  jti: string;
+  user_id: string;
+  run_id: string;
+  document_version_id: string;
+  segment_id: string;
+  expires_at: string;
+}
+
+/** Nonces are persisted before their signed browser tokens are returned. */
+export async function createV2LessonAttemptNonces(rows: V2LessonAttemptNonceInsert[]): Promise<boolean> {
+  if (rows.length === 0) return true;
+  const result = await restRaw('/lesson_v2_attempt_nonces', serviceToken(), {
+    method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(rows),
+  });
+  return result.ok;
+}
+
+export interface V2LessonRunRecoveryRow {
+  id: string;
+  user_id: string;
+  lesson_id: string;
+  locale: string;
+  document_version_id: string;
+  expires_at: string;
+  completed_at: string | null;
+}
+
+/** Service-only lookup for a checkpointed run; it never exposes the row to the browser. */
+export async function getV2LessonRunForRecovery(userId: string, lessonId: string, runId: string): Promise<V2LessonRunRecoveryRow | null | undefined> {
+  const rows = await rest<V2LessonRunRecoveryRow[]>(
+    `/lesson_v2_runs?id=eq.${eu(runId)}&user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=id,user_id,lesson_id,locale,document_version_id,expires_at,completed_at`,
+    serviceToken(),
+  );
+  if (rows === null) return undefined;
+  const row = rows[0];
+  return row && row.id === runId && row.user_id === userId && row.lesson_id === lessonId ? row : null;
+}
+
+export interface V2AttemptNonceRecoveryRow {
+  jti: string;
+  segment_id: string;
+  expires_at: string;
+  consumed_at: string | null;
+}
+
+/** The JTI remains server-owned until this point; it is re-signed, never stored in the browser. */
+export function getV2LessonAttemptNoncesForRecovery(userId: string, runId: string, documentVersionId: string): Promise<V2AttemptNonceRecoveryRow[] | null> {
+  return rest<V2AttemptNonceRecoveryRow[]>(
+    `/lesson_v2_attempt_nonces?user_id=eq.${eu(userId)}&run_id=eq.${eu(runId)}&document_version_id=eq.${eu(documentVersionId)}&select=jti,segment_id,expires_at,consumed_at`,
+    serviceToken(),
+  );
+}
+
+export interface V2GradeReceiptRecoveryRow {
+  segment_id: string;
+  verdict: { correct?: unknown; score?: unknown };
+}
+
+/** Client-safe resume projection: only completed segment IDs whose server receipt is met. */
+export function getV2MetSegmentReceiptsForRecovery(userId: string, runId: string, documentVersionId: string): Promise<V2GradeReceiptRecoveryRow[] | null> {
+  return rest<V2GradeReceiptRecoveryRow[]>(
+    `/lesson_v2_grade_receipts?user_id=eq.${eu(userId)}&run_id=eq.${eu(runId)}&document_version_id=eq.${eu(documentVersionId)}&select=segment_id,verdict`,
+    serviceToken(),
+  );
+}
+
+const V2GradeReceipt = z.union([
+  z.object({ replayed: z.boolean(), verdict: z.object({ correct: z.boolean(), score: z.number().int().min(0).max(100) }), retry_jti: z.string().optional() }),
+  z.object({ blocked: z.literal(true) }),
+]);
+
+/** The SQL transaction atomically burns the nonce and persists its immutable verdict. */
+export async function recordV2LessonGrade(payload: {
+  p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
+  p_required_met_segment_id: string | null;
+  p_verdict: { correct: boolean; score: number };
+  p_next_jti: string;
+  p_next_expires_at: string;
+}): Promise<z.infer<typeof V2GradeReceipt> | null> {
+  const result = await rest<unknown>('/rpc/record_v2_lesson_grade_retry', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  const parsed = V2GradeReceipt.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
+
+/** M1 requires an earlier representation to have been attempted, not mastered. */
+export async function recordV2CpaGrade(payload: {
+  p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
+  p_required_attempted_segment_id: string | null;
+  p_verdict: { correct: boolean; score: number };
+  p_next_jti: string;
+  p_next_expires_at: string;
+}): Promise<z.infer<typeof V2GradeReceipt> | null> {
+  const result = await rest<unknown>('/rpc/record_v2_cpa_grade_retry', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  const parsed = V2GradeReceipt.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
+
+/** M1 is diagnostic-only: an unavailable diagnostic writer must never discard a valid lesson receipt. */
+export async function recordV2FirstUnaidedStage(payload: {
+  p_user_id: string; p_document_version_id: string; p_fading_group_id: string;
+  p_stage: 'concrete' | 'pictorial' | 'abstract'; p_receipt_jti: string;
+}): Promise<boolean> {
+  const result = await rest<unknown>('/rpc/record_v2_first_unaided_stage', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  return result !== null;
+}
+
 // ── Lesson segment attempts (0007) — SERVICE ROLE writes, self-read RLS ────
 
 export interface SegmentAttemptRow {
   segment_id: string;
   attempt_number: number;
   score: number;
+}
+
+const GradeReceipt = z.discriminatedUnion('exhausted', [
+  z.object({ exhausted: z.literal(true) }),
+  z.object({ exhausted: z.literal(false), verdict: z.object({
+    correct: z.boolean(), score: z.number().min(0).max(100),
+    tier: z.enum(['perfect', 'great', 'almost', 'tryAgain']),
+    feedback_md: z.string().optional(), reveal: z.unknown().optional(), allowRetry: z.boolean(),
+  }) }),
+]);
+
+/** Only the database transaction may allocate an attempt number or reveal the final answer. */
+export async function recordLessonGrade(payload: {
+  p_user_id: string; p_lesson_id: string; p_run_id: string | null; p_segment_id: string;
+  p_client_attempt: number; p_max_attempts: number; p_hints_used: number;
+  p_verdict: unknown; p_context: Record<string, unknown>;
+}): Promise<z.infer<typeof GradeReceipt> | null> {
+  const result = await rest<unknown>('/rpc/record_lesson_grade', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
+  const parsed = GradeReceipt.safeParse(result);
+  return parsed.success ? parsed.data : null;
 }
 
 /**
@@ -669,69 +984,6 @@ export function getSegmentAttempts(accessToken: string, userId: string, lessonId
     `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}${runFilter}&select=segment_id,attempt_number,score`,
     accessToken,
   );
-}
-
-/**
- * Count prior attempts for a segment. When `runId` is given (the client's
- * per-lesson-entry id, 0012) only rows from THAT run count, so replaying a
- * completed lesson starts each segment fresh instead of hitting the lifetime
- * cap. Omitting it keeps the legacy lifetime count.
- */
-export async function countSegmentAttempts(
-  accessToken: string,
-  userId: string,
-  lessonId: string,
-  segmentId: string,
-  runId?: string,
-): Promise<number> {
-  const runFilter = runId ? `&run_id=eq.${eu(runId)}` : '';
-  const rows = await rest<unknown[]>(
-    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&segment_id=eq.${es(segmentId)}${runFilter}&select=segment_id`,
-    accessToken,
-  );
-  return rows?.length ?? 0;
-}
-
-/** No client INSERT policy (0007) — Core (service role) records every graded attempt. `score` is the hint-penalized, server-authoritative score (0012). */
-export async function insertSegmentAttempt(
-  userId: string,
-  lessonId: string,
-  segmentId: string,
-  attemptNumber: number,
-  score: number,
-  runId?: string,
-  hintsUsed = 0,
-  context?: {
-    timeSpentSeconds?: number;
-    courseId: string;
-    topicId: string;
-    skillKey: string;
-    documentUpdatedAt: string;
-    diagnosticCode?: 'initial_incorrect' | 'hint_assisted' | 'retry_recovery';
-  },
-): Promise<boolean> {
-  const res = await rest<unknown>('/lesson_segment_attempts', serviceToken(), {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({
-      user_id: userId,
-      lesson_id: lessonId,
-      segment_id: segmentId,
-      attempt_number: attemptNumber,
-      score,
-      ...(runId ? { run_id: runId } : {}),
-      hints_used: hintsUsed,
-      ...(context?.timeSpentSeconds !== undefined ? { time_spent_seconds: context.timeSpentSeconds } : {}),
-      ...(context ? {
-        course_id: context.courseId,
-        topic_id: context.topicId,
-        skill_key: context.skillKey,
-        document_updated_at: context.documentUpdatedAt,
-        ...(context.diagnosticCode ? { diagnostic_code: context.diagnosticCode } : {}),
-      } : {}),
-    }),
-  });
-  return res !== null;
 }
 
 /** No client INSERT/UPDATE policy (0007) — Core (service role) is the only writer. Upsert by (user_id, lesson_id). */
@@ -851,6 +1103,15 @@ export function serviceRest<T>(path: string, init: RestInit = {}): Promise<T | n
   return rest<T>(path, serviceToken(), init);
 }
 
+/** B.3's operational counter is written only by Core after it isolates one bad course. */
+export async function recordCourseAssemblyIncident(courseId: string): Promise<boolean> {
+  const result = await rest<unknown>('/rpc/record_course_assembly_incident', serviceToken(), {
+    method: 'POST',
+    body: JSON.stringify({ p_course_id: UUID.parse(courseId) }),
+  });
+  return result !== null;
+}
+
 /** Revoke a role (DELETE). The DB's audit_role_change trigger records it; the
  * BEFORE DELETE guards (parent-cascade / last-guardian) still apply. */
 export async function revokeRole(userId: string, role: string): Promise<boolean> {
@@ -874,6 +1135,14 @@ export function getVerifiedKidLinks(parentUserId: string): Promise<GuardianLinkR
   return serviceRest<GuardianLinkRow[]>(
     `/guardian_links?parent_user_id=eq.${eu(parentUserId)}&verification_status=eq.verified&select=parent_user_id,kid_user_id,verification_status`,
   );
+}
+
+export async function hasCurrentSocialApproval(viewerId: string, subjectId: string): Promise<boolean> {
+  const result = await rest<boolean>('/rpc/has_current_social_approval', serviceToken(), {
+    method: 'POST',
+    body: JSON.stringify({ p_viewer: UUID.parse(viewerId), p_subject: UUID.parse(subjectId) }),
+  });
+  return result === true;
 }
 
 /** The mirror image of getVerifiedKidLinks, read from the KID's own side — a kid's own verified guardians (routes/tasks.ts, resolving "my guardians' redemption catalog"). */
@@ -1082,7 +1351,7 @@ export function getPlacementCreditsForCourse(accessToken: string, userId: string
 }
 
 /** Server-computed, service role — same posture as upsertLessonProgress/patchLearningStats: the client never writes its own placement result. */
-export async function insertCoursePlacement(row: {
+export async function commitCoursePlacement(row: {
   user_id: string;
   course_id: string;
   claimed_level: string;
@@ -1091,25 +1360,11 @@ export async function insertCoursePlacement(row: {
   start_topic_id: string | null;
   start_lesson_id: string | null;
   method: string;
-}): Promise<boolean> {
-  const res = await serviceRest<unknown>('/course_placements', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(row),
+}, lessonIds: readonly string[]): Promise<'created' | 'replayed' | 'conflict' | null> {
+  const result = await serviceRest<unknown>('/rpc/commit_course_placement', {
+    method: 'POST', body: JSON.stringify({ p_result: row, p_lesson_ids: lessonIds }),
   });
-  return res !== null;
-}
-
-export async function insertPlacementCredits(
-  rows: Array<{ user_id: string; lesson_id: string; topic_id: string; course_id: string }>,
-): Promise<boolean> {
-  if (rows.length === 0) return true;
-  const res = await serviceRest<unknown>('/placement_credits', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(rows),
-  });
-  return res !== null;
+  return result === 'created' || result === 'replayed' || result === 'conflict' ? result : null;
 }
 
 // ── Shareable achievement badges (0073) ─────────────────────
@@ -1628,7 +1883,10 @@ export async function updateBankingAccount(kidId: string, patch: { nickname?: st
 }
 
 export async function setBankingAccountFrozen(kidId: string, frozen: boolean, frozenBy: string): Promise<BankingAccountRow | null> {
-  const rows = await serviceRest<BankingAccountRow[]>(`/banking_accounts?kid_user_id=eq.${eu(kidId)}`, {
+  // A child cannot overwrite the attribution and then clear a guardian freeze.
+  // The filter is checked by PostgreSQL in the same statement as the update.
+  const ownership = frozenBy === kidId ? `&or=(frozen.eq.false,frozen_by.eq.${eu(kidId)})` : '';
+  const rows = await serviceRest<BankingAccountRow[]>(`/banking_accounts?kid_user_id=eq.${eu(kidId)}${ownership}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=representation' },
     body: JSON.stringify({ frozen, frozen_by: frozenBy, frozen_at: frozen ? new Date().toISOString() : null }),
@@ -1812,6 +2070,10 @@ export async function allocatePendingCredit(input: {
  * every OTHER function in this section.
  */
 export async function runDueScheduledCredits(kidId: string): Promise<number | null> {
+  const account = await getBankingAccount(kidId);
+  if (account === undefined) return null;
+  // Leave schedules and pending allocations untouched until the freeze lifts.
+  if (account?.frozen) return 0;
   const res = await serviceRest<number>('/rpc/run_due_scheduled_credits', {
     method: 'POST',
     body: JSON.stringify({ p_kid_user_id: kidId }),
@@ -1824,4 +2086,36 @@ export function getWalletLedgerInRange(kidId: string, fromISO: string, toISO: st
   return serviceRest<WalletLedgerRow[]>(
     `/wallet_ledger?kid_user_id=eq.${eu(kidId)}&created_at=gte.${es(fromISO)}&created_at=lt.${es(toISO)}&select=${WALLET_LEDGER_FIELDS}&order=created_at.asc`,
   );
+}
+
+const LessonCompletionResult = z.object({
+  score: z.number(), passed: z.boolean(), best_score: z.number(),
+  xp_earned: z.number(), xp_delta: z.number(), streak_days: z.number(),
+  longest_streak: z.number(), streak_extended: z.boolean(), first_today: z.boolean(),
+  minutes_learned: z.number(), lessons_completed: z.number(),
+  first_completion: z.boolean(), replayed: z.boolean(),
+});
+
+/** Server-graded values only; the service-only RPC commits all rewards atomically. */
+export async function completeLesson(input: {
+  p_user_id: string; p_lesson_id: string; p_run_id: string | null;
+  p_score: number; p_passed: boolean; p_xp: number; p_minutes: number; p_local_date: string;
+}): Promise<z.infer<typeof LessonCompletionResult> | null> {
+  const result = await rest<unknown>('/rpc/complete_lesson', serviceToken(), {
+    method: 'POST', body: JSON.stringify(input),
+  });
+  const parsed = LessonCompletionResult.safeParse(result);
+  return parsed.success ? parsed.data : null;
+}
+
+/** Version-pinned v2 completion derives its score from immutable receipts in one database transaction. */
+export async function completeV2Lesson(input: {
+  p_user_id: string; p_lesson_id: string; p_run_id: string; p_document_version_id: string;
+  p_required_segment_ids: string[]; p_xp: number; p_minutes: number; p_local_date: string;
+}): Promise<z.infer<typeof LessonCompletionResult> | null> {
+  const result = await rest<unknown>('/rpc/complete_v2_lesson', serviceToken(), {
+    method: 'POST', body: JSON.stringify(input),
+  });
+  const parsed = LessonCompletionResult.safeParse(result);
+  return parsed.success ? parsed.data : null;
 }

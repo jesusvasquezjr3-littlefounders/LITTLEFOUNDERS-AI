@@ -4,6 +4,7 @@ import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { makeDb } from './learnFixtures.js';
+import { attributeSignup } from '../services/insights.js';
 
 /*
  * Requests in these tests carry a real browser agent because production ones
@@ -35,7 +36,14 @@ beforeEach(() => {
     { user_id: KID_ID, role: 'kid' },
     { user_id: ADULT_ID, role: 'universal' },
   ];
+  db.admin_permissions = [{ user_id: ADULT_ID, permission: 'view_analytics' }];
   db.guardian_links = [{ parent_user_id: PARENT_ID, kid_user_id: KID_ID, verification_status: 'verified' }];
+  db.parent_verifications = [{ user_id: PARENT_ID, status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }];
+  db.account_age_declarations = [
+    { user_id: PARENT_ID, declared_age_band: 'adult' },
+    { user_id: KID_ID, declared_age_band: 'under_13' },
+    { user_id: ADULT_ID, declared_age_band: 'adult' },
+  ];
   db.analytics_consents = [];
   db.learning_events = [];
   db.anon_visitors = [];
@@ -50,6 +58,29 @@ const postEvents = (app: ReturnType<typeof createApp>, userId: string, events: u
       .set('User-Agent', BROWSER_UA)).send({ events });
 
 describe('POST /api/v1/events', () => {
+  it('drops direct events and conversion attribution when age has never been declared', async () => {
+    db.account_age_declarations = [];
+    const res = await postEvents(createApp(), ADULT_ID, [{ event: 'signup_complete' }]);
+    expect(res.status).toBe(202);
+    expect(res.body.data.accepted).toBe(0);
+    expect(db.learning_events).toHaveLength(0);
+    expect(await attributeSignup(PARENT_ID, ADULT_ID, ['universal'])).toBe(false);
+    expect(db.anon_visitors).toHaveLength(0);
+  });
+  it.each([true, null])('suppresses marked or unavailable origin before event writes: %s', async (origin) => {
+    const base = createFakeFetch(db);
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).includes('/account_safety_origins')) return Promise.resolve(new Response(
+        JSON.stringify(origin === true ? [{ under13_origin: true }] : null), { status: 200 }));
+      return base(input, init);
+    }));
+    const res = await postEvents(createApp(), ADULT_ID, [{ event: 'session_start' }]);
+    expect(res.status).toBe(202);
+    expect(res.body.data.accepted).toBe(0);
+    expect(db.learning_events).toHaveLength(0);
+    expect(await attributeSignup(PARENT_ID, ADULT_ID, ['universal'])).toBe(false);
+    expect(db.anon_visitors).toHaveLength(0);
+  });
   it('401s without a session', async () => {
     const res = await request(createApp()).post('/api/v1/events')
       .set('User-Agent', BROWSER_UA).send({ events: [{ event: 'session_start' }] });

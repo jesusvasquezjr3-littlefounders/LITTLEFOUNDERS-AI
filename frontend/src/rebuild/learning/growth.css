@@ -1,0 +1,12 @@
+.lf-growth-chart { position: relative; inline-size: 100%; block-size: 160px; }
+.lf-growth-scale-max { color: var(--content-muted); font-size: .875rem; font-weight: 800; }
+.lf-growth-chart svg { display: block; inline-size: 100%; block-size: 100%; }
+.lf-growth-axis { stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-growth-line { fill: none; stroke: var(--sky-strong); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-growth-point { position: absolute; inline-size: 12px; block-size: 12px; border-radius: 50%; background: var(--sky-strong); transform: translate(-50%, -50%); }
+.lf-growth-axis-labels { display: flex; justify-content: space-between; color: var(--content-muted); font-size: .875rem; font-weight: 800; }
+.lf-growth-control { gap: var(--spacing-1); }
+.lf-growth-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-4); }
+.lf-growth-outcome { display: grid; gap: var(--spacing-1); }
+.lf-growth-outcome > strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; line-height: 1.2; }
+.lf-growth-foot .lf-button { flex: none; }

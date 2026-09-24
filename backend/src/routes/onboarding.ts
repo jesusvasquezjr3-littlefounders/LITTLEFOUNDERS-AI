@@ -13,8 +13,7 @@ import {
 
 /*
  * POST /onboarding/complete — the one-time, guest-first flow: name
- * (required), an optional discovery-channel survey, optional age (reuses
- * profiles.birth_date, 0006 — never a second copy, /AGENTS.md §1.9), and the
+ * (required), an optional discovery-channel survey, and the
  * create-account-now-or-later offer. On completion, day-1 streak activates
  * (Duolingo-style: the platform gives an early win before the first lesson).
  *
@@ -28,26 +27,16 @@ import {
 
 const DISCOVERY_CHANNELS = ['friend', 'social_media', 'search', 'app_store', 'school', 'ad', 'other'] as const;
 
-function isValidPastDate(d: string): boolean {
-  const t = Date.parse(d);
-  return !Number.isNaN(t) && t <= Date.now() && Number(d.slice(0, 4)) >= 1900;
-}
-
 const OnboardingCompleteBody = z.object({
   displayName: z.string().trim().min(1).max(80),
   discoveryChannel: z.enum(DISCOVERY_CHANNELS).optional(),
-  birthDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, 'birthDate must be yyyy-mm-dd')
-    .refine(isValidPastDate, 'Enter a valid birth date')
-    .optional(),
   accountOfferChoice: z.enum(['created_now', 'later']),
   /** Learner's local calendar date (YYYY-MM-DD) — same convention as POST /learn/lessons/:id/complete. */
   localDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
-});
+}).strict();
 
 export function onboardingRouter(): Router {
   const router = Router();
@@ -65,7 +54,6 @@ export function onboardingRouter(): Router {
     if (existing.length > 0) return fail(res, 409, 'ONBOARDING_ALREADY_COMPLETE', 'Onboarding was already completed');
 
     const profilePatch: Record<string, string> = { display_name: parsed.data.displayName };
-    if (parsed.data.birthDate !== undefined) profilePatch.birth_date = parsed.data.birthDate;
     const profileOutcome = await patchOwnProfile(user.accessToken, user.id, profilePatch);
     if (profileOutcome !== 'ok') return fail(res, 502, 'INTERNAL', 'Could not save your profile');
 

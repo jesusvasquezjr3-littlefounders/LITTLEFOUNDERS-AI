@@ -17,10 +17,11 @@ import { visibleAdminSections } from './adminNav';
 
 export type Loadable<T> = { state: 'loading' } | { state: 'error'; code: string } | { state: 'ready'; data: T };
 
-export function useAdminData<T>(path: string): { data: Loadable<T>; reload: () => Promise<void> } {
+export function useAdminData<T>(path: string, enabled = true, refreshKey = ''): { data: Loadable<T>; reload: () => Promise<void> } {
   const { getToken } = useAuth();
   const [data, setData] = useState<Loadable<T>>({ state: 'loading' });
   const load = useCallback(async () => {
+    if (!enabled) return;
     setData({ state: 'loading' });
     /*
      * api() is contracted to RETURN an envelope rather than throw, and this
@@ -39,10 +40,10 @@ export function useAdminData<T>(path: string): { data: Loadable<T>; reload: () =
     } catch {
       setData({ state: 'error', code: 'INTERNAL' });
     }
-  }, [getToken, path]);
+  }, [enabled, getToken, path, refreshKey]);
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (enabled) void load();
+  }, [enabled, load]);
   return { data, reload: load };
 }
 
@@ -232,10 +233,10 @@ export function AdminEmpty({ icon, message }: { icon: string; message: string })
  * already carries the Staff group, so this is `lg:hidden`). */
 function AdminSubnav() {
   const { t } = useTranslation();
-  const { roles } = useAuth();
+  const { roles, adminPermissions } = useAuth();
   return (
     <nav className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 lg:hidden" aria-label={t('admin.title')}>
-      {visibleAdminSections(roles).map((s) => (
+      {visibleAdminSections(roles, adminPermissions).map((s) => (
         <NavLink
           key={s.key}
           to={s.path}

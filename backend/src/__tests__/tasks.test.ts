@@ -31,6 +31,7 @@ const REAL_JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00]);
 afterEach(() => vi.unstubAllGlobals());
 
 interface StubOptions {
+  bankingFrozen?: boolean | null;
   roles?: string[];
   /** kid ids this parent has a VERIFIED guardian_links row for. */
   parentsKids?: string[];
@@ -71,6 +72,9 @@ function stub(opts: StubOptions = {}) {
         opts.writes.push({ url, method, body: JSON.parse(String(init.body)) as unknown });
       }
 
+      if (url.includes('/rest/v1/banking_accounts?') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, opts.bankingFrozen === null ? null : opts.bankingFrozen === undefined ? [] : [{ frozen: opts.bankingFrozen }]));
+      }
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
       }
@@ -827,5 +831,20 @@ describe('GET /api/v1/tasks/:id/evidence', () => {
       .get(`/api/v1/tasks/${TASK_ID}/evidence`)
       .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
     expect(res.status).toBe(502);
+  });
+});
+
+describe('D.1 frozen movement admission', () => {
+  it.each([true, null])('refuses redemption requests when freeze state is %s', async bankingFrozen => {
+    stub({ roles: ['kid'], bankingFrozen });
+    const response = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    expect(response.status).toBe(bankingFrozen === null ? 502 : 409);
+    expect(vi.mocked(fetch).mock.calls.some(([url, init]) => String(url).includes('/rest/v1/redemptions') && init?.method === 'POST')).toBe(false);
+  });
+  it.each([true, null])('holds task allocations when freeze state is %s', async bankingFrozen => {
+    stub({ roles: ['kid'], bankingFrozen });
+    const response = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 10, spend: 0, share: 0 });
+    expect(response.status).toBe(bankingFrozen === null ? 502 : 409);
+    expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/rpc/allocate_task_reward'))).toBe(false);
   });
 });

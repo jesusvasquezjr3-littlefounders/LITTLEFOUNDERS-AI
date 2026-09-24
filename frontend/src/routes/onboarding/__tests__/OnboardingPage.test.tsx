@@ -61,7 +61,7 @@ async function startAndName(name = 'Ana') {
 }
 
 describe('OnboardingPage', () => {
-  it('walks welcome -> name -> age (skip) -> discovery (skip) -> later, submitting once with the expected payload', async () => {
+  it('walks welcome -> name -> discovery (skip) -> later without collecting DOB again, submitting once with the expected payload', async () => {
     mockedApi.mockResolvedValueOnce({ data: { streakDays: 1 }, error: null });
     renderPage();
 
@@ -70,8 +70,7 @@ describe('OnboardingPage', () => {
     expect(screen.getByText('Welcome to LittleFounders')).toBeInTheDocument();
     await startAndName();
 
-    await screen.findByText('When were you born?');
-    clickButton('Skip');
+    expect(screen.queryByLabelText('Date of birth')).not.toBeInTheDocument();
 
     await screen.findByText('Where did you hear about us?');
     clickButton('Skip');
@@ -84,7 +83,6 @@ describe('OnboardingPage', () => {
       body: {
         displayName: 'Ana',
         discoveryChannel: undefined,
-        birthDate: undefined,
         accountOfferChoice: 'later',
         localDate: expect.any(String),
       },
@@ -93,13 +91,10 @@ describe('OnboardingPage', () => {
     await screen.findByText('landed on learn');
   });
 
-  it('carries a chosen discovery channel and birth date into the single submit', async () => {
+  it('carries a chosen discovery channel into the single submit', async () => {
     mockedApi.mockResolvedValueOnce({ data: { streakDays: 1 }, error: null });
     renderPage();
     await startAndName('Beto');
-
-    fireEvent.change(screen.getByLabelText('Date of birth'), { target: { value: '2016-05-01' } });
-    clickButton('Continue');
 
     await screen.findByText('Where did you hear about us?');
     // The discovery step auto-advances on choice — one tap, not tap-then-continue.
@@ -112,7 +107,6 @@ describe('OnboardingPage', () => {
     expect(mockedApi.mock.calls[0]![1]!.body).toMatchObject({
       displayName: 'Beto',
       discoveryChannel: 'school',
-      birthDate: '2016-05-01',
     });
   });
 
@@ -120,7 +114,6 @@ describe('OnboardingPage', () => {
     mockedApi.mockResolvedValueOnce({ data: { streakDays: 1 }, error: null });
     renderPage();
     await startAndName();
-    clickButton('Skip');
     await screen.findByText('Where did you hear about us?');
     clickButton('Skip');
     await screen.findByText('Shall we save your progress?');
@@ -143,7 +136,6 @@ describe('OnboardingPage', () => {
     mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'nope' } });
     renderPage();
     await startAndName();
-    clickButton('Skip');
     await screen.findByText('Where did you hear about us?');
     clickButton('Skip');
     await screen.findByText('Shall we save your progress?');
@@ -170,7 +162,7 @@ describe('OnboardingPage — going back', () => {
   it('preserves what was already entered when the learner steps back', async () => {
     renderPage();
     await startAndName('Carla');
-    await screen.findByText('When were you born?');
+    await screen.findByText('Where did you hear about us?');
 
     clickButton('Back');
     expect((await screen.findByLabelText('Name')).getAttribute('value')).toBe('Carla');

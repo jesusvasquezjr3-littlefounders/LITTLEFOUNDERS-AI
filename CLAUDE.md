@@ -78,3 +78,39 @@ Per-service `package.json` also carries service-specific scripts: `verify:tutor`
 See `README.md`'s "Non-obvious invariants & traps" section for the full list (cost/billing discipline, measuring the machine you are on, the Windows CRLF/WSL traps, synthetic-click hit-testing, DuckDB's single shared connection, `families` derived from `guardian_links`, Railway CLI exit codes, etc.) — those are load-bearing and each was learned the expensive way.
 
 Source files cite a rulebook (`/ORACLE.md §16`, `DESIGN.md`, `TUTOR_3D.md`, …) that was removed in commit `77b55596`; ~480 files still point at it. Read any of it with `git show 77b55596^:ORACLE.md`, and treat it as history, not authority — see the note opening README's invariants section.
+
+## LittleFounders specification (binding)
+
+The product and frontend specification lives in `docs/littlefounders-spec/`. It is the absolute, non-negotiable source of truth for the product transformation and frontend rebuild. Legacy code, tests and historical documents do not override it. Precedence when documents disagree:
+
+1. `product/13-OWNER-DECISION-LOG.md`
+2. `product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md` and its appendices
+3. `frontend/frontend-bible/02-FOUNDATIONS.md`, then `01`, `03`–`08` (a chapter written for one subject, such as `08` for the Mentor, refines `02` on that subject)
+4. `frontend/mockup/littlefounders-mockup.html`: a visual reference only, minus `frontend/mockup/KNOWN-DEVIATIONS.md`
+5. `product/reviews/`: history, never implement from it
+
+External sources, cited by name:
+
+- Product audit `00`–`09`: `docs/product-audit/`
+- `COSMIC_NARRATIVE.md`: `docs/product-audit/COSMIC_NARRATIVE.md`
+- 3D Mentor characters: `glb/{Rho,Zara,Liruf,Dina}.glb`; optimized delivery: `frontend/public/scenes/{rho,zara,liruf,dina}.glb`
+- Diorama: `frontend/public/scenes/diorama-{a,b}.glb`; scene and placement: `frontend/src/tutor-scene/Diorama.tsx`
+- Pose catalogue: `frontend/src/tutor-scene/poseLibrary.ts`; authored clips: `frontend/public/scenes/clips-biped.glb`
+- Forge (content pipeline): `coursegen/`
+
+Before building any screen:
+
+- Read `02-FOUNDATIONS.md` §1–2 (decisions D1–D13 and rules 1–23), then the chapter for the surface you are building.
+- Every string meets the Copy Budget (`06`). Every component declares `data-copy-role`.
+- Use at most 24 system glyphs. Every other visual is our own asset, in the house style, registered in the asset manifest (`07`). Never use stock icon or illustration packs for meaningful visuals.
+- Mentor characters are only renders of the real 3D models in catalogue poses. Never generate a look-alike. Never use a letter avatar.
+- The Mentor screen is the stage: the character on the Diorama (`08`). Never a chat window.
+- Never import a component from the legacy frontend (buttons, inputs, chat, cards). Build from the Bible (`02` rule 23).
+- No lives. No celebration outside the milestone list. "Tutor" is only the verified parent; the AI is the Mentor.
+- Every minor safeguard follows age, not role. Option B: a teen may have a personal wallet without a parent. Tasks and approvals are guardian-only.
+
+Before merging UI changes, run the text-fit, proportion and copy-budget audits (`frontend/verification-tools`, adapted to the real app's driver). All three must pass.
+
+The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated. See `docs/rebuild/BASELINE.md` for implementation evidence; it is a tracking document, never a competing specification.
+
+Track this migration point by point in `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md`. Every checkpoint records product and frontend verification against the SPEC, evidence and remaining limitations. Implementation, local verification, acceptance and release are separate statuses; never close a requirement on implementation alone. Update the sprint record and affected requirement rows together.

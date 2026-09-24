@@ -6,10 +6,11 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import {
   grantRole,
-  hasRole,
   insertAuditLog,
   insertParentVerification,
 } from '../services/supabaseRest.js';
+import { getRolesForGate } from '../services/insights.js';
+import { readAdultVerificationStatus } from '../services/mentorSafety.js';
 
 /*
  * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
@@ -59,6 +60,16 @@ export interface VerificationVerdict {
 
 export function verificationRouter(): Router {
   const router = Router();
+  router.get('/parent', requireAuth, async (_req, res) => {
+    const user = authedUser(res);
+    const roles = await getRolesForGate(user.id);
+    if (!roles) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
+    const status = await readAdultVerificationStatus(user.id, roles);
+    if (!status) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
+    if (status === 'revoked') return fail(res, 403, 'PARENT_VERIFICATION_REVOKED', 'Revoked verification requires staff review');
+    if (status === 'ineligible') return fail(res, 403, 'FORBIDDEN', 'A child account cannot verify as an adult');
+    return ok(res, { verified: status === 'verified' });
+  });
 
   router.post('/parent', requireAuth, upload.single('document'), async (req, res) => {
     const user = authedUser(res);
@@ -69,8 +80,14 @@ export function verificationRouter(): Router {
     if (!req.file || !ALLOWED_MIME.has(req.file.mimetype)) {
       return fail(res, 400, 'VALIDATION_ERROR', 'A jpeg/png/webp "document" image is required');
     }
-    if (await hasRole(user.id, 'parent')) {
-      return fail(res, 409, 'ALREADY_VERIFIED', 'This account already has the Tutor role');
+    const roles = await getRolesForGate(user.id);
+    if (!roles) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
+    if (roles.includes('kid')) return fail(res, 403, 'FORBIDDEN', 'A child account cannot verify as an adult');
+    const status = await readAdultVerificationStatus(user.id, roles);
+    if (!status) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify identity status');
+    if (status === 'revoked') return fail(res, 403, 'PARENT_VERIFICATION_REVOKED', 'Revoked verification requires staff review');
+    if (status === 'verified') {
+      return fail(res, 409, 'ALREADY_VERIFIED', 'Current adult identity verification already exists');
     }
     if (rateLimited(user.id)) {
       return fail(res, 429, 'RATE_LIMITED', 'Too many verification attempts — try again later');

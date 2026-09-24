@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, SectionHeading, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/auth/AuthContext';
 import { AdminAction, AdminPage, useAdminData } from './adminShared';
 import {
   BEHAVIOR_CARDS,
@@ -48,6 +49,8 @@ function UnavailableCard({ title, body }: { title: string; body: string }) {
 
 export function AnalyticsHealthPage() {
   const { t, i18n } = useTranslation();
+  const { roles, adminPermissions } = useAuth();
+  const canManageExclusions = roles.includes('superadmin') || adminPermissions.includes('manage_support');
 
   const [selection, setSelection] = useState<PeriodSelection>({ period: '30d' });
   const [filters, setFilters] = useState<AnalyticsFilter[]>([]);
@@ -337,7 +340,7 @@ export function AnalyticsHealthPage() {
               </p>
             )}
             {/* How far the internal-traffic exclusion actually reaches. */}
-            <ExclusionCoverageNote windowStart={overview.state === 'ready' ? overview.data.from : null} />
+            {canManageExclusions && <ExclusionCoverageNote windowStart={overview.state === 'ready' ? overview.data.from : null} />}
             {/*
               Bounce rate and visit duration are measured on natively tracked
               visits only — imported history carries no session metrics at any
@@ -507,7 +510,7 @@ export function AnalyticsHealthPage() {
         </SectionHeading>
         <div className="grid gap-4 xl:grid-cols-2 xl:items-start">
           <ReportExportCard periodQuery={periodQuery} filterQuery={filterQuery} />
-          <ExclusionsCard />
+          {canManageExclusions && <ExclusionsCard />}
         </div>
       </section>
 

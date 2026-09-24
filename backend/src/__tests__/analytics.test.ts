@@ -62,6 +62,7 @@ function stubFetch(opts: { plausibleStatus?: number; capture?: CapturedQuery[] }
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+      if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, ['view_analytics', 'manage_support'].map((permission) => ({ user_id: ADMIN_ID, permission }))));
       if (url.includes('plausible.test/api/v2/query')) {
         if (opts.plausibleStatus) return Promise.resolve(jsonResponse(opts.plausibleStatus, {}));
         const body = JSON.parse(String(init?.body ?? '{}')) as CapturedQuery;
@@ -200,6 +201,7 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
       vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
         if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/admin_permissions')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'view_analytics' }]));
         if (url.includes('plausible.test/api/v2/query')) {
           const body = JSON.parse(String(init?.body ?? '{}')) as CapturedQuery;
           bodies.push(body);

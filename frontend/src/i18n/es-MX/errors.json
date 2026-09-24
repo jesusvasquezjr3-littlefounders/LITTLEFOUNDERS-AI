@@ -1,5 +1,7 @@
 {
   "api": {
+    "PARENT_VERIFICATION_REVOKED": "Tu verificación de identidad fue revocada. Contacta a soporte para una revisión.",
+    "PARENT_VERIFICATION_REQUIRED": "Necesitas una verificación de identidad adulta vigente para administrar tu familia.",
     "VALIDATION_ERROR": "Algo en la solicitud no estuvo bien.",
     "UNAUTHORIZED": "Necesitas iniciar sesión para eso.",
     "FORBIDDEN": "No tienes permiso para eso.",
@@ -35,6 +37,13 @@
     "PLACEMENT_ALREADY_COMPLETE": "El quiz de ubicación ya se había completado para este curso.",
     "USERNAME_IN_USE": "Ese usuario ya está ocupado. Prueba con otro.",
     "AGE_RESTRICTED": "Esta cuenta la tiene que crear un adulto.",
-    "KID_LIMIT_REACHED": "Esta cuenta ya tiene el máximo de hijos."
+    "LESSON_AGE_RESTRICTED": "Esta lección no está disponible para tu grupo de edad.",
+    "LESSON_AGE_ELIGIBILITY_REQUIRED": "Necesitamos tu información de edad antes de abrir esta lección.",
+    "LESSON_ELIGIBILITY_MISSING": "Esta lección todavía no está lista para abrirse.",
+    "KID_LIMIT_REACHED": "Esta cuenta ya tiene el máximo de hijos.",
+    "ACCOUNT_FROZEN": "Esta cuenta está congelada. Tus créditos se conservan hasta que se descongele.",
+    "GUARDIAN_FREEZE": "Tu tutor congeló esta tarjeta. Pídele que la descongele.",
+    "FREEZE_CHANGED": "La congelación cambió. Revisa la tarjeta actualizada antes de volver a intentar.",
+    "GUARDIAN_APPROVAL_REQUIRED": "Un tutor debe aprobar la conexión antes de que puedas seguir este perfil."
   }
 }

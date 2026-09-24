@@ -5,7 +5,7 @@ import { AnalyticsScripts } from '@/lib/analytics';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireGuest } from '@/auth/RequireGuest';
 import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { RequireRole } from '@/auth/RequireRole';
+import { RequireRole, RequireStaffPermission } from '@/auth/RequireRole';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
 import { HowItWorks } from '@/routes/marketing/HowItWorks';
@@ -418,21 +418,20 @@ export function App() {
             <Route path="profile/followers" element={<FollowersPage />} />
             <Route path="profile/following" element={<FollowingPage />} />
 
-            {/* Staff console — INTEGRATED into the app shell (DESIGN.md Screen
-                Recipes → Staff sections). HIDDEN for non-staff (no nav item +
-                RequireRole redirect). Both admin & superadmin see the sections;
-                Roles & Access is superadmin-only (§1.4). Static paths above the
-                :handle catch-all, and static routes always outrank it. */}
-            <Route path="admin" element={<RequireRole role={STAFF}><LazyRoute><AdminOverviewPage /></LazyRoute></RequireRole>} />
-            <Route path="admin/content" element={<RequireRole role={STAFF}><LazyRoute><AdminContentPage /></LazyRoute></RequireRole>} />
+            {/* Staff routes use both role and named-permission guards. The
+                server checks the same grants before platform reads or writes.
+                Roles & Access remains Superadmin-only. Static paths precede
+                the :handle catch-all. */}
+            <Route path="admin" element={<RequireRole role={STAFF}><RequireStaffPermission permission={['manage_users', 'manage_content', 'view_analytics', 'manage_support']}><LazyRoute><AdminOverviewPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/content" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_content"><LazyRoute><AdminContentPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
 
-            <Route path="admin/users" element={<RequireRole role={STAFF}><LazyRoute><AdminUsersPage /></LazyRoute></RequireRole>} />
-            <Route path="admin/emails" element={<RequireRole role={STAFF}><LazyRoute><AdminEmailDashboard /></LazyRoute></RequireRole>} />
-            <Route path="admin/insights" element={<RequireRole role={STAFF}><LazyRoute><AdminInsightsPage /></LazyRoute></RequireRole>} />
-            <Route path="admin/intel" element={<RequireRole role={STAFF}><LazyRoute><AdminIntelPage /></LazyRoute></RequireRole>} />
-            <Route path="admin/analytics" element={<RequireRole role={STAFF}><LazyRoute><AnalyticsHealthPage /></LazyRoute></RequireRole>} />
-            <Route path="admin/generation" element={<RequireRole role={STAFF}><LazyRoute><AdminGenerationPage /></LazyRoute></RequireRole>} />
-            <Route path="admin/audit" element={<RequireRole role={STAFF}><LazyRoute><AdminAuditPage /></LazyRoute></RequireRole>} />
+            <Route path="admin/users" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_users"><LazyRoute><AdminUsersPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/emails" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_support"><LazyRoute><AdminEmailDashboard /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/insights" element={<RequireRole role={STAFF}><RequireStaffPermission permission="view_analytics"><LazyRoute><AdminInsightsPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/intel" element={<RequireRole role={STAFF}><RequireStaffPermission permission="view_analytics"><LazyRoute><AdminIntelPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/analytics" element={<RequireRole role={STAFF}><RequireStaffPermission permission="view_analytics"><LazyRoute><AnalyticsHealthPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/generation" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_content"><LazyRoute><AdminGenerationPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
+            <Route path="admin/audit" element={<RequireRole role={STAFF}><RequireStaffPermission permission="manage_support"><LazyRoute><AdminAuditPage /></LazyRoute></RequireStaffPermission></RequireRole>} />
             <Route path="admin/roles" element={<RequireRole role="superadmin"><LazyRoute><AdminRolesPage /></LazyRoute></RequireRole>} />
 
             {/* /@username — public profiles (static routes above always win) */}
