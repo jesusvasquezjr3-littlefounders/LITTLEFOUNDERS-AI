@@ -6,6 +6,7 @@ import { accountDeletionSweepRouter, accountRouter } from './routes/account.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { badgeLinkSweepRouter, badgePublicRouter } from './routes/badgePublic.js';
+import { socialRetentionSweepRouter } from './routes/socialRetention.js';
 import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
@@ -70,6 +71,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/badges', badgePublicRouter());
   app.use('/api/v1/internal/badge-links', badgeLinkSweepRouter());
   app.use('/api/v1/internal/account-deletions', accountDeletionSweepRouter());
+  app.use('/api/v1/internal/social-retention', socialRetentionSweepRouter());
   app.use('/api/v1/auth', authRouter());
   app.use('/api/v1/account', accountRouter());
   app.use('/api/v1/verification', verificationRouter());

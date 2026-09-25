@@ -257,6 +257,14 @@
         "question": "Por quanto tempo vocês guardam as conversas com o Tutor?",
         "answer": "Até 90 dias, num ciclo automático fixo."
       },
+      "noMessaging": {
+        "question": "Meu filho pode mandar mensagens para outras pessoas?",
+        "answer": "Não. Não há chat, mensagens nem comentários entre pessoas, e algo assim ficaria desligado para crianças, a menos que o Tutor delas ative."
+      },
+      "socialRetention": {
+        "question": "Por quanto tempo vocês guardam quem segue quem?",
+        "answer": "Seguidores e bloqueios duram até alguém removê-los ou excluir a conta. Pedidos sem resposta expiram em 30 dias, e os encerrados são excluídos 30 dias depois."
+      },
       "analyticsToggle": {
         "question": "Posso desativar a análise de uso do meu filho?",
         "answer": "Sim, filho por filho, pela sua conta Tutor — desativada por padrão até você ativá-la."

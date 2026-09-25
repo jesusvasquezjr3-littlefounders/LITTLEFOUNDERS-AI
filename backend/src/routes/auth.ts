@@ -14,6 +14,7 @@ import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.j
 import { readOpenDeletion } from '../services/accountDeletion.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { projectAvatarOptions, projectCover } from '../services/profileShape.js';
 
 /** Social providers Core is willing to broker (GoTrue must also have each enabled). */
 const OAUTH_PROVIDERS = ['google'] as const;
@@ -533,10 +534,11 @@ export function authRouter(): Router {
 
     return ok(res, {
       user: { id: user.id, email: user.email },
-      profile: profiles[0] ?? null,
+      // E.12: a legacy cover that is not a preset is never served, not even to its owner.
+      profile: profiles[0] ? { ...profiles[0], cover: projectCover(profiles[0].cover) } : null,
       roles: roleNames,
       adminPermissions: staffPermissions?.map((row) => row.permission) ?? [],
-      avatarOptions: avatars?.[0]?.options ?? {},
+      avatarOptions: projectAvatarOptions(avatars?.[0]?.options),
       analyticsEnabled,
       newAccount,
       isGuest: user.isGuest,

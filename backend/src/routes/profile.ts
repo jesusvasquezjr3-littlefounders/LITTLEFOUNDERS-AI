@@ -1,6 +1,7 @@
 import { isSocialFamily, profileAccess, visibleSocialUsers, type ProfileAccess } from '../services/socialVisibility.js';
 import { getRolesForGate } from '../services/insights.js';
 import { reviewProfileFields, profileFieldFlags } from '../services/profileFieldSafety.js';
+import { AvatarOptions, COVER_PRESETS, projectAvatarOptions, projectCover } from '../services/profileShape.js';
 import {
   MINOR_SOCIAL_TIERS,
   decideTeenConnection,
@@ -64,18 +65,9 @@ import {
  * (mutual 404 — never leaks WHO blocked whom).
  */
 
-export const COVER_PRESETS = [
-  'aurora',
-  'sunset',
-  'ocean',
-  'forest',
-  'candy',
-  'ember',
-  'midnight',
-  'mint',
-  'grape',
-  'dawn',
-] as const;
+// E.12: the cover preset list and the avatar option set live in
+// services/profileShape.ts, next to the read-side projection.
+export { COVER_PRESETS } from '../services/profileShape.js';
 
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
@@ -94,40 +86,22 @@ const ProfilePatchBody = z
   .strict()
   .refine((b) => Object.keys(b).length > 0, 'Nothing to update');
 
-const CoverBody = z.object({ preset: z.enum(COVER_PRESETS) });
+const CoverRequest = z.object({ preset: z.enum(COVER_PRESETS) });
 
 /*
- * Avatar options: a bounded DiceBear Avataaars option set. Closed key set,
- * small string-array/number values — anything else is rejected at the edge.
+ * Avatar options: a bounded DiceBear Avataaars option set (profileShape.ts).
+ * Closed key set, small string-array/number values: anything else is
+ * rejected at the edge, and the database refuses it from every other writer.
  */
-const OPTION_VALUE = z.array(z.string().regex(/^[A-Za-z0-9]{1,40}$/)).max(3);
-const AvatarBody = z.object({
-  options: z
-    .object({
-      seed: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/).optional(),
-      top: OPTION_VALUE.optional(),
-      hairColor: OPTION_VALUE.optional(),
-      skinColor: OPTION_VALUE.optional(),
-      eyes: OPTION_VALUE.optional(),
-      eyebrows: OPTION_VALUE.optional(),
-      mouth: OPTION_VALUE.optional(),
-      facialHair: OPTION_VALUE.optional(),
-      facialHairProbability: z.number().int().min(0).max(100).optional(),
-      clothing: OPTION_VALUE.optional(),
-      clothesColor: OPTION_VALUE.optional(),
-      accessories: OPTION_VALUE.optional(),
-      accessoriesProbability: z.number().int().min(0).max(100).optional(),
-    })
-    .strict(),
-});
+const AvatarBody = z.object({ options: AvatarOptions });
 
 
-function publicShape(profile: FullProfileRow, avatarOptions: Record<string, unknown>) {
+function publicShape(profile: FullProfileRow, avatarOptions: unknown) {
   return {
     displayName: profile.display_name,
     username: profile.username,
-    cover: profile.cover,
-    avatarOptions,
+    cover: projectCover(profile.cover),
+    avatarOptions: projectAvatarOptions(avatarOptions),
     memberSince: profile.created_at,
   };
 }
@@ -256,7 +230,7 @@ export function ownProfileRouter(): Router {
   });
 
   router.put('/cover', async (req, res) => {
-    const parsed = CoverBody.safeParse(req.body);
+    const parsed = CoverRequest.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Unknown cover preset');
     const user = authedUser(res);
     const outcome = await patchOwnProfile(user.accessToken, user.id, { cover: { preset: parsed.data.preset } });
@@ -399,8 +373,8 @@ export function publicProfilesRouter(): Router {
       return ok(res, {
         visibility: 'private',
         username: profile.username,
-        cover: profile.cover,
-        avatarOptions,
+        cover: projectCover(profile.cover),
+        avatarOptions: projectAvatarOptions(avatarOptions),
         isSelf: false,
         isFollowing: false,
         requiresGuardianApproval: false,

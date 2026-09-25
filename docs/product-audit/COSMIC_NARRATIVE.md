@@ -229,6 +229,28 @@ The parent must always be able to see what their child is learning, what the gui
 
 ---
 
+## 6. People You Already Know — Why We Do Not Build a Social Network for Children
+
+*(Brand position required by Product 10 E.12, written for the social layer shipped in S08. Operational detail and enforcement: `docs/rebuild/policies/SOCIAL-GOVERNANCE.md` and `docs/rebuild/policies/SOCIAL-TIERS.md`.)*
+
+**What it is.** A small, safe way to say hello to people you already know. A child can see their brother's progress and their grandmother can follow along, because a parent said yes to each of those people. A teen chooses, one by one, who may see them. That is the whole social layer, and it is small on purpose.
+
+**What it deliberately is not.**
+- **Not the Feed.** The Feed is the villain of this story: strangers, rankings, likes and an audience that is always watching. It teaches children to perform for people they have never met. We refuse to build a public social graph for children, because the day we build one we become the thing we promised to protect them from.
+- **Not a place to be found.** A child's profile cannot be searched for or followed by a stranger. Nobody new reaches a child unless a parent approves that one person, and a parent can see everyone who is connected.
+- **Not a place to talk to strangers.** There are no messages, chats or comments between people, and there never will be for a child without the parent turning them on. The only one who talks with a child here is their Mentor, and the parent can read every word.
+- **Not a contest.** There is no follower count and no popularity number anywhere. Children measure themselves against who they were last week, never against each other.
+- **Not a photo album.** Every face on LittleFounders is a cartoon the child builds. Nobody can upload a picture of themselves.
+
+**The promises that come with it.**
+- Every connection a child has is one their parent chose, and the parent sees the whole list and its history.
+- A request nobody answers expires. A connection nobody approved is removed. We keep the history only as long as our written policy says, and we never share who follows whom with anyone.
+- These lines are written down so that no future feature can quietly cross them. Changing any of them means a full child-safety review first.
+
+**Why this is the brand, not a compliance footnote.** Law 5 says nothing about a child happens out of the parent's sight, and an open network is the one place where that promise would break the moment it shipped. Law 3 says no one is shamed, and a public count invites exactly that. The market sells children an audience; we give them a small circle of people who already love them, and a parent who knows who is in it.
+
+---
+
 ### Appendix — Sources
 
 - [Pew Research — Views of children's financial future (Jan 2025)](https://www.pewresearch.org/global/2025/01/09/views-of-childrens-financial-future/)

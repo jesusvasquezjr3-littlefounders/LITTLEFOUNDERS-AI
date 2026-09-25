@@ -109,6 +109,7 @@ import {
   setCourseStatus,
   setLessonStatus,
 } from '../services/adminData.js';
+import { readSocialGovernanceMetrics, windowsMatchPolicy } from '../services/socialGovernance.js';
 
 /*
  * /api/v1/admin — the staff console's data plane. Admins need a current named
@@ -453,6 +454,29 @@ export function adminRouter(): Router {
       ...metrics,
       reviewCoverage: inScope === 0 ? null : reviewed / inScope,
       guardianTierReviewCoverage: guardianTierInScope === 0 ? null : guardianTierReviewed / guardianTierInScope,
+    });
+  });
+
+  /*
+   * Appendix J metrics for E.10, E.11 and E.12 (policy: SOCIAL-GOVERNANCE.md):
+   * Social-Data Retention-Policy Compliance (rows past each written window,
+   * edges that expose a child without a current guardian's decision, the last
+   * sweep), the live-catalog messaging scan (unreviewed schema objects, target
+   * none) and Avatar/No-Upload Constraint Integrity (off-schema avatars and
+   * covers). `windowsMatchPolicy` says whether the deployed database applies
+   * the written windows. Counts and schema names only; a malformed answer
+   * fails the read.
+   */
+  router.get('/analytics/social-governance', async (req, res) => {
+    if (Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No query fields are accepted');
+    const metrics = await readSocialGovernanceMetrics();
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load social-governance metrics');
+    const overdueTotal = Object.values(metrics.overdue).reduce((sum, n) => sum + n, 0);
+    return ok(res, {
+      ...metrics,
+      windowsMatchPolicy: windowsMatchPolicy(metrics.windows),
+      retentionCompliant: overdueTotal === 0 && metrics.unconsentedChildEdges === 0,
+      messagingSurfaceFree: metrics.messagingSurfaces.length === 0,
     });
   });
 

@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { projectAvatarOptions } from './profileShape.js';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { BADGE_LINK_CUTOVER, badgeLinksRetired } from './badgeLinkWindow.js';
@@ -353,7 +354,8 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
         userId: id,
         displayName: p.display_name,
         username: p.username,
-        avatarOptions: avatarById.get(id) ?? {},
+        // E.12: a legacy off-schema avatar is served as the default cartoon.
+        avatarOptions: projectAvatarOptions(avatarById.get(id)),
         isTutor: tutorIds.has(id),
       };
     })
