@@ -14,6 +14,8 @@ import { runVocabularyGate, NON_VISIBLE_KEYS, type GateProblem, type GateContext
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
 import { runLessonContentGates } from '../contentGates/lessonGates.js';
 import { audienceForTier } from '../contentGates/budgets.js';
+import { runLessonPolicyGates } from '../contentGates/policyGates.js';
+import { adaptationBrief, loadMarketInventory } from '../contentGates/regional.js';
 
 type PathSegment = string | number;
 
@@ -230,7 +232,7 @@ function splitTranslationBatches(indexMap: Record<string, string>): Array<Record
  * output would still be valid JSON, just wrong about pesos or 40% longer than
  * the button it has to fit in.
  */
-export function translationSystemPrompt(targetLocale: 'en-US' | 'pt-BR', toneDirectiveEs?: string): string {
+export function translationSystemPrompt(targetLocale: 'en-US' | 'pt-BR', toneDirectiveEs?: string, adaptation?: string): string {
   const localeName = targetLocale === 'en-US' ? 'English (US)' : 'Brazilian Portuguese (pt-BR)';
   const audienceLine = toneDirectiveEs
     ? `This content targets ADULT learners, not children — preserve that register when translating. Source-language (es-MX) tone directive: ${toneDirectiveEs}`
@@ -249,6 +251,8 @@ export function translationSystemPrompt(targetLocale: 'en-US' | 'pt-BR', toneDir
     'Preserve any EMOJI exactly as-is (same emoji, same position in the sentence) — never drop, add, or swap them. ' +
     'LENGTH: on-screen instructions are hard-capped — a translation must NEVER be meaningfully LONGER than its source string; when your language runs long, compress (drop filler words, use the shorter synonym) rather than exceed the source length. ' +
     `${currencyLine} ${colloquialLine} ` +
+    // B.16 (S05.4b): a lesson with per-market scenarios is ADAPTED, not translated.
+    (adaptation ? `${adaptation} ` : '') +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.'
   );
 }
@@ -258,8 +262,9 @@ function buildTranslateMessages(
   targetLocale: 'en-US' | 'pt-BR',
   issues: string | undefined,
   toneDirectiveEs?: string,
+  adaptation?: string,
 ) {
-  const system = translationSystemPrompt(targetLocale, toneDirectiveEs);
+  const system = translationSystemPrompt(targetLocale, toneDirectiveEs, adaptation);
   const user = [
     'Translate every value in this JSON object. Return an object with EXACTLY the same keys.',
     JSON.stringify(indexMap),
@@ -291,6 +296,7 @@ function buildShortenMessages(
   feedback: ReadonlyMap<number, string>,
   targetLocale: LessonLocale,
   toneDirectiveEs?: string,
+  adaptation?: string,
 ) {
   const localeName = targetLocale === 'en-US' ? 'English (US)' : 'Brazilian Portuguese (pt-BR)';
   const audienceLine = toneDirectiveEs
@@ -299,6 +305,7 @@ function buildShortenMessages(
   const feedbackLines = Object.keys(sourceMap).map((key) => `key "${key}": previous translation ${feedback.get(Number(key)) ?? 'failed validation'}`);
   const system = [
     `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine}`,
+    ...(adaptation ? [adaptation] : []),
     `Your PREVIOUS translation of these ${Object.keys(sourceMap).length} string(s) failed validation:`,
     feedbackLines.join('\n'),
     'Translate them again, SHORTER this time — drop filler words, use the most compact natural phrasing — while preserving the meaning and every {{n}} gap marker. Every output value MUST fit the stated limit.',
@@ -332,6 +339,8 @@ export async function localizeLesson(
 ): Promise<LocalizeResult> {
   const translate = deps.translate ?? completeDeepSeek;
 
+  const markets = gateCtx.markets ?? loadMarketInventory();
+  const adaptation = adaptationBrief(gateCtx.lessonPolicy?.regional, targetLocale, markets);
   const index = indexVisibleStrings(sourceDocument);
   const { target: cloned, extracted, indexMap } = index;
 
@@ -340,7 +349,7 @@ export async function localizeLesson(
     const { data } = await withCorrectiveRetry<Record<string, string>>({
       maxAttempts: MAX_TRANSLATE_ATTEMPTS,
       callModel: async (issues) => {
-        const messages = buildTranslateMessages(batch, targetLocale, issues, deps.registerToneEs);
+        const messages = buildTranslateMessages(batch, targetLocale, issues, deps.registerToneEs, adaptation);
         const result = await translate(
           { messages, temperature: 0.3, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
           { operation: 'localize', ledger: deps.ledger },
@@ -391,7 +400,7 @@ export async function localizeLesson(
 
     const sourceMap: Record<string, string> = {};
     for (const stringIndex of feedback.keys()) sourceMap[String(stringIndex)] = extracted[stringIndex]!.value;
-    const messages = buildShortenMessages(sourceMap, feedback, targetLocale, deps.registerToneEs);
+    const messages = buildShortenMessages(sourceMap, feedback, targetLocale, deps.registerToneEs, adaptation);
     const result = await translate(
       { messages, temperature: 0.3, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
       { operation: 'localize', ledger: deps.ledger },
@@ -446,10 +455,13 @@ export async function localizeLesson(
    * its budget is never truncated; the es-MX source is rewritten shorter, so
    * the slot fails with the itemized problems instead of shipping over budget.
    */
-  const contentProblems = runLessonContentGates(
-    parsed.data,
-    audienceForTier(gateCtx.taxonomy, gateCtx.tier, gateCtx.register ?? 'kid'),
-  ).problems;
+  const contentProblems = [
+    ...runLessonContentGates(parsed.data, audienceForTier(gateCtx.taxonomy, gateCtx.tier, gateCtx.register ?? 'kid')).problems,
+    // Gates 14-16 (S05.4b) on the TARGET market: a localized lesson that still
+    // carries the source market's context, or skips its own scenario, is a
+    // translation, not a localization (B.16).
+    ...runLessonPolicyGates(parsed.data, gateCtx.lessonPolicy, markets).problems,
+  ];
   if (contentProblems.length > 0) {
     throw new LocalizeContentGateError(targetLocale, contentProblems);
   }

@@ -1,0 +1,43 @@
+{
+  "tier": "tier1",
+  "policy": {
+    "lesson": "red-team-b17",
+    "path": "adv-1/saga-1/topic-1/red-team-b17",
+    "tier": "tier1",
+    "concepts": {
+      "band": "6-9",
+      "target": 2,
+      "ceiling": 3,
+      "declared": ["precio", "costo", "ganancia"],
+      "declaredLabels": ["precio", "costo", "ganancia"],
+      "future": [
+        { "id": "ahorro", "lesson": "adv-1/saga-1/topic-2/guardo-monedas", "terms": { "es-MX": ["ahorrar", "ahorro"] } },
+        { "id": "inventario", "lesson": "adv-1/saga-2/topic-1/cuento-limones", "terms": { "es-MX": ["inventario"] } }
+      ]
+    },
+    "regional": { "required": false, "reasons": [] }
+  },
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "red-team-b17", "title": "Precio, costo y más", "locale": "es-MX", "subject": "money", "estimated_minutes": 3, "objectives": ["Distinguir precio, costo y ganancia."], "cast": ["liruf", "dina"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-historia", "type": "story_dialogue", "prompt_md": "Escucha a Liruf.", "difficulty": 1, "xp": 0,
+        "payload": { "lines": [
+          { "character": "liruf", "text_md": "Hoy reviso mi inventario de limones." },
+          { "character": "dina", "text_md": "Y lo que sobre, vamos a ahorrar." }
+        ] }
+      },
+      {
+        "id": "s2-precio", "type": "quiz_mcq", "prompt_md": "¿Cuál es el precio del vaso?", "difficulty": 1, "xp": 10,
+        "payload": { "options": [
+          { "id": "o3", "text_md": "3 monedas", "rationale_md": "Eso cuestan los limones." },
+          { "id": "o5", "text_md": "5 monedas" }
+        ] },
+        "answer": { "correct_option_id": "o5" },
+        "explanation_md": "El vaso se vende a 5 monedas."
+      }
+    ]
+  }
+}

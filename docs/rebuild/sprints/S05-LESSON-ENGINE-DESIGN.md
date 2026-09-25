@@ -5,7 +5,7 @@
 The [S05 visual coverage ledger](S05-VISUAL-COVERAGE.md) tracks every required first-release family and reusable operation against Appendix A/P without changing their scope.
 The [owner visual review register](S05-VISUAL-REVIEW.md) lists each preview screen and state; all approvals remain pending.
 The [future lesson-format runbook](S05-NEW-LESSON-FORMATS.md) records the contract a new format must meet after the engine is accepted; it does not authorize Forge or catalog regeneration now.
-The [Forge content-gates record](S05-FORGE-CONTENT-GATES.md) (S05.4a) tracks the deterministic B.14 tone, B.18 redundancy and OD-13 Copy Budget gates; they verify content and do not authorize regeneration.
+The [Forge content-gates record](S05-FORGE-CONTENT-GATES.md) tracks the deterministic B.14 tone, B.18 redundancy and OD-13 Copy Budget gates (S05.4a) and the B.17 concept-cap, B.11 mentor-misjudgment and B.16 Regional Adaptation gates (S05.4b); they verify content and do not authorize regeneration.
 
 **S05 goal and exit gate:** Deliver a complete, working, age-pathway-aware lesson engine and new learner UI, including every first-release Appendix A/P visual and interaction, versioned answerless content, server-authoritative grading, recovery, and the compact real Mentor stage. Product and frontend gates must pass on the integrated app, and the owner must visually accept every lesson screen and state. Only then is the engine ready for the separate Forge/catalog regeneration phase. Local fixture verification, a code commit, or an internal demo cannot satisfy this exit gate.
 

@@ -58,3 +58,21 @@ export function excerpt(text: string, max = 90): string {
   const flat = text.replace(/\s+/g, ' ').trim();
   return flat.length <= max ? flat : `${flat.slice(0, max - 1)}…`;
 }
+
+/**
+ * A matcher for one folded term (a word, a phrase or a symbol such as "R$")
+ * against folded text. Word boundaries apply only on a side that ends in a
+ * letter or digit, so "R$" matches "R$ 5" and "pix" never matches "pixel".
+ */
+export function termRegex(term: string, flags = 'u'): RegExp {
+  const folded = foldText(term).trim();
+  const escaped = folded.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+  const head = /^[\p{L}\p{N}]/u.test(folded) ? '(?<![\\p{L}\\p{N}])' : '';
+  const tail = /[\p{L}\p{N}]$/u.test(folded) ? '(?![\\p{L}\\p{N}])' : '';
+  return new RegExp(`${head}${escaped}${tail}`, flags);
+}
+
+/** True when the folded text contains the term (see termRegex). */
+export function hasTerm(foldedText: string, term: string): boolean {
+  return termRegex(term).test(foldedText);
+}

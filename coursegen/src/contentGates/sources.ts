@@ -18,6 +18,7 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import type { ContentLocale, CopyRole } from './budgets.js';
 import type { LessonDocumentLike } from './lessonModel.js';
+import type { LessonPolicy } from './policyGates.js';
 
 export const CONTENT_LOCALES: readonly ContentLocale[] = ['en-US', 'es-MX', 'pt-BR'];
 
@@ -34,7 +35,11 @@ export interface CatalogString {
   tier?: string;
 }
 
-const BRIEF_KEYS = new Set(['concept', 'learning_objective', 'micro_objective', 'narrative_beat', 'narrative_arc', 'prior_knowledge', 'key_vocabulary', 'reason']);
+const BRIEF_KEYS = new Set([
+  'concept', 'learning_objective', 'micro_objective', 'narrative_beat', 'narrative_arc', 'prior_knowledge', 'key_vocabulary', 'reason',
+  // S05.4b authoring contracts: B.11 episode briefs and B.16 market scenarios (generation inputs, never rendered).
+  'misjudgment', 'recovery', 'scenario', 'universal',
+]);
 
 function catalogRole(key: string): CopyRole | 'brief' | undefined {
   if (key === 'title' || key === 'title_es') return 'heading';
@@ -94,6 +99,8 @@ export interface SourcedDocument {
   document: LessonDocumentLike;
   /** Narration unit ids actually recorded for this document (seed audio manifests), when known. */
   recordedUnits?: string[];
+  /** The lesson's catalog policy (gates 14-16): attached from the course catalog, or a fixture's own `policy`. */
+  policy?: LessonPolicy;
 }
 
 /** Parses the INSERT statements of an export-course-fixture.sh file into rows of SQL string literals. */
@@ -256,6 +263,7 @@ export function loadJsonDocuments(target: string): SourcedDocument[] {
       lesson: document.meta?.slug ?? path.basename(file, '.json'),
       locale: document.meta?.locale ?? 'es-MX',
       ...(typeof raw.tier === 'string' ? { tier: raw.tier } : {}),
+      ...(raw.policy && typeof raw.policy === 'object' ? { policy: raw.policy as unknown as LessonPolicy } : {}),
       document,
     };
   });

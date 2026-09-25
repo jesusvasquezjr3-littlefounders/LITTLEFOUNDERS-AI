@@ -13,14 +13,18 @@ import { narrationUnits } from './lessonModel.js';
 import { checkCopyBudget, type CopyBudgetFinding } from './copyBudget.js';
 import { scanTone, toneAdvice, type ToneFinding } from './tone.js';
 import { CONTENT_LOCALES, type CatalogString, type SourcedDocument, type UiString } from './sources.js';
+import { runLessonPolicyGates, type CoursePolicy, type PolicyFinding } from './policyGates.js';
+import type { GateProblem } from '../pipeline/gates.js';
 
 export interface DocumentResult {
   source: string;
   lesson: string;
   locale: string;
   audience: string;
-  passed: { redundancy: boolean; tone: boolean; copyBudget: boolean };
+  passed: { redundancy: boolean; tone: boolean; copyBudget: boolean; conceptCap: boolean; misjudgment: boolean; regional: boolean };
   report: Omit<LessonContentReport, 'problems'>;
+  /** Gates 14-16 over the document (S05.4b). */
+  policy: { conceptCap: GateProblem[]; misjudgment: GateProblem[]; regional: GateProblem[]; hasCatalogPolicy: boolean };
   /** Units recorded in the seed audio manifest that this model does not produce, and vice versa. */
   narrationDrift?: { missing: string[]; extra: string[] };
 }
@@ -33,8 +37,10 @@ export interface StringFinding {
 
 export interface ContentGatesReport {
   generatedAt: string;
-  spec: { redundancy: 'B.18'; tone: 'B.14'; copyBudget: 'OD-13' };
+  spec: { redundancy: 'B.18'; tone: 'B.14'; copyBudget: 'OD-13'; conceptCap: 'B.17'; misjudgment: 'B.11'; regional: 'B.16' };
   documents: DocumentResult[];
+  /** Catalog-level lesson-policy findings (gates 14-16) and coverage metrics; absent without a course catalog. */
+  coursePolicy?: { findings: PolicyFinding[]; metrics: CoursePolicy['metrics'] };
   catalog: {
     strings: number;
     copyBudget: Array<CopyBudgetFinding & { file: string }>;
@@ -48,9 +54,13 @@ export interface ContentGatesReport {
   };
   summary: {
     documents: number;
-    passRate: { redundancy: string; tone: string; copyBudget: string };
-    blocking: { redundancy: number; tone: number; copyBudget: number; catalogCopyBudget: number; catalogTone: number; uiTone: number };
-    review: { lessonTone: number; catalogTone: number; uiTone: number };
+    passRate: { redundancy: string; tone: string; copyBudget: string; conceptCap: string; misjudgment: string; regional: string };
+    blocking: {
+      redundancy: number; tone: number; copyBudget: number; catalogCopyBudget: number; catalogTone: number; uiTone: number;
+      conceptCap: number; misjudgment: number; regional: number;
+      catalogConceptCap: number; catalogMisjudgment: number; catalogRegional: number;
+    };
+    review: { lessonTone: number; catalogTone: number; uiTone: number; conceptCap: number; misjudgment: number; regional: number };
     firstViewAdvisories: number;
     unclassifiedFields: number;
     narrationDriftDocuments: number;
@@ -66,6 +76,8 @@ export interface RunnerInput {
   ui: readonly UiString[];
   /** Rebuild source literals, locale unknown: scanned with every locale's lexicon. */
   uiLiterals: ReadonlyArray<Omit<UiString, 'locale'>>;
+  /** The course's lesson policy (gates 14-16); each document's own `policy` wins. */
+  coursePolicy?: CoursePolicy;
   now?: Date;
 }
 
@@ -87,6 +99,14 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
     const audience = audienceOf(input, doc.tier, tiers);
     const { problems, ...report } = runLessonContentGates(doc.document, audience);
     void problems;
+    const lessonPolicy = doc.policy ?? input.coursePolicy?.lessons.get(doc.lesson);
+    const policyProblems = runLessonPolicyGates(doc.document, lessonPolicy).problems;
+    const policy = {
+      conceptCap: policyProblems.filter((p) => p.gate === 14),
+      misjudgment: policyProblems.filter((p) => p.gate === 15),
+      regional: policyProblems.filter((p) => p.gate === 16),
+      hasCatalogPolicy: !!lessonPolicy,
+    };
     let narrationDrift: DocumentResult['narrationDrift'];
     if (doc.recordedUnits && doc.recordedUnits.length > 0) {
       const modelled = new Set(narrationUnits(doc.document).map((u) => u.unitId));
@@ -100,8 +120,16 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
       lesson: doc.lesson,
       locale: doc.locale ?? documentLocale(doc.document),
       audience: audience.label,
-      passed: { redundancy: report.redundancy.length === 0, tone: report.tone.length === 0, copyBudget: report.copyBudget.length === 0 },
+      passed: {
+        redundancy: report.redundancy.length === 0,
+        tone: report.tone.length === 0,
+        copyBudget: report.copyBudget.length === 0,
+        conceptCap: policy.conceptCap.length === 0,
+        misjudgment: policy.misjudgment.length === 0,
+        regional: policy.regional.length === 0,
+      },
       report,
+      policy,
       ...(narrationDrift ? { narrationDrift } : {}),
     };
   });
@@ -129,6 +157,7 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
   }
 
   const count = (key: keyof DocumentResult['passed']) => documents.filter((d) => d.passed[key]).length;
+  const policyFindings = input.coursePolicy?.findings ?? [];
   const blocking = {
     redundancy: documents.reduce((n, d) => n + d.report.redundancy.length, 0),
     tone: documents.reduce((n, d) => n + d.report.tone.length, 0),
@@ -136,12 +165,19 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
     catalogCopyBudget: catalogCopy.length,
     catalogTone: catalogTone.filter((f) => f.severity === 'block').length,
     uiTone: uiTone.filter((f) => f.severity === 'block').length,
+    conceptCap: documents.reduce((n, d) => n + d.policy.conceptCap.length, 0),
+    misjudgment: documents.reduce((n, d) => n + d.policy.misjudgment.length, 0),
+    regional: documents.reduce((n, d) => n + d.policy.regional.length, 0),
+    catalogConceptCap: policyFindings.filter((f) => f.gate === 14 && f.severity === 'block').length,
+    catalogMisjudgment: policyFindings.filter((f) => f.gate === 15 && f.severity === 'block').length,
+    catalogRegional: policyFindings.filter((f) => f.gate === 16 && f.severity === 'block').length,
   };
 
   return {
     generatedAt: (input.now ?? new Date()).toISOString(),
-    spec: { redundancy: 'B.18', tone: 'B.14', copyBudget: 'OD-13' },
+    spec: { redundancy: 'B.18', tone: 'B.14', copyBudget: 'OD-13', conceptCap: 'B.17', misjudgment: 'B.11', regional: 'B.16' },
     documents,
+    ...(input.coursePolicy ? { coursePolicy: { findings: input.coursePolicy.findings, metrics: input.coursePolicy.metrics } } : {}),
     catalog: {
       strings: input.catalog.length,
       copyBudget: catalogCopy,
@@ -155,12 +191,22 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
     },
     summary: {
       documents: documents.length,
-      passRate: { redundancy: rate(count('redundancy'), documents.length), tone: rate(count('tone'), documents.length), copyBudget: rate(count('copyBudget'), documents.length) },
+      passRate: {
+        redundancy: rate(count('redundancy'), documents.length),
+        tone: rate(count('tone'), documents.length),
+        copyBudget: rate(count('copyBudget'), documents.length),
+        conceptCap: rate(count('conceptCap'), documents.length),
+        misjudgment: rate(count('misjudgment'), documents.length),
+        regional: rate(count('regional'), documents.length),
+      },
       blocking,
       review: {
         lessonTone: documents.reduce((n, d) => n + d.report.toneReview.length, 0),
         catalogTone: catalogTone.filter((f) => f.severity === 'review').length,
         uiTone: uiTone.filter((f) => f.severity === 'review').length,
+        conceptCap: policyFindings.filter((f) => f.gate === 14 && f.severity === 'review').length,
+        misjudgment: policyFindings.filter((f) => f.gate === 15 && f.severity === 'review').length,
+        regional: policyFindings.filter((f) => f.gate === 16 && f.severity === 'review').length,
       },
       firstViewAdvisories: documents.reduce((n, d) => n + d.report.firstView.length, 0),
       unclassifiedFields: documents.reduce((n, d) => n + d.report.unclassified.length, 0),
@@ -174,14 +220,26 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
 export function formatReport(report: ContentGatesReport, maxPerSection = 15): string {
   const lines: string[] = [];
   const s = report.summary;
-  lines.push('== Forge content gates (B.18 redundancy · B.14 Law 2 tone · OD-13 Copy Budget) ==');
+  lines.push('== Forge content gates (B.18 redundancy · B.14 Law 2 tone · OD-13 Copy Budget · B.17 concept cap · B.11 mentor misjudgment · B.16 regional adaptation) ==');
   lines.push(`documents: ${s.documents}   catalog strings: ${report.catalog.strings}   UI strings: ${report.ui.strings}`);
   lines.push(`Forge Gate Pass Rate — redundancy ${s.passRate.redundancy} · tone ${s.passRate.tone} · copy budget ${s.passRate.copyBudget}`);
   lines.push(
     `blocking — redundancy ${s.blocking.redundancy} · lesson tone ${s.blocking.tone} · lesson copy budget ${s.blocking.copyBudget} · ` +
       `catalog copy budget ${s.blocking.catalogCopyBudget} · catalog tone ${s.blocking.catalogTone} · UI tone ${s.blocking.uiTone}`,
   );
-  lines.push(`human review (Stage 3) — lesson tone ${s.review.lessonTone} · catalog tone ${s.review.catalogTone} · UI tone ${s.review.uiTone}`);
+  lines.push(`Forge Gate Pass Rate — concept cap ${s.passRate.conceptCap} · mentor misjudgment ${s.passRate.misjudgment} · regional adaptation ${s.passRate.regional}`);
+  lines.push(
+    `blocking — document concept cap ${s.blocking.conceptCap} · document misjudgment ${s.blocking.misjudgment} · document regional ${s.blocking.regional} · ` +
+      `catalog concept cap ${s.blocking.catalogConceptCap} · catalog misjudgment ${s.blocking.catalogMisjudgment} · catalog regional ${s.blocking.catalogRegional}`,
+  );
+  const m = report.coursePolicy?.metrics;
+  if (m) {
+    lines.push(
+      `catalog metrics — density declared ${m.densityDeclared}/${m.lessons} lessons · Mentor-Misjudgment Content Coverage ${m.misjudgmentEpisodes} episode(s) (minimum ${m.misjudgmentMinimum}) · ` +
+        `market scenarios ${m.regionalDeclared}/${m.regionalRequired} lessons that need them`,
+    );
+  }
+  lines.push(`human review (Stage 3) — lesson tone ${s.review.lessonTone} · catalog tone ${s.review.catalogTone} · UI tone ${s.review.uiTone} · concept cap ${s.review.conceptCap} · misjudgment episodes ${s.review.misjudgment} · regional ${s.review.regional}`);
   lines.push(`advisory — segments over the first-view word budget: ${s.firstViewAdvisories}; unclassified fields: ${s.unclassifiedFields}; narration-model drift: ${s.narrationDriftDocuments} document(s)`);
 
   const section = (title: string, items: string[]) => {
@@ -201,6 +259,13 @@ export function formatReport(report: ContentGatesReport, maxPerSection = 15): st
   section('OD-13 copy budget in the catalog', report.catalog.copyBudget.map((f) => `${f.file} ${f.message}`));
   section('B.14 tone in the catalog', report.catalog.tone.map((f) => `${f.where} [${f.locale}] "${f.phrase}" — ${toneAdvice(f.category)}`));
   section('B.14 tone in system/UI copy', report.ui.tone.map((f) => `${f.where} [${f.locale}] "${f.phrase}" — ${toneAdvice(f.category)}. Text: "${f.excerpt}"`));
+  const policySection = (title: string, gate: 14 | 15 | 16, key: 'conceptCap' | 'misjudgment' | 'regional') => {
+    section(`${title} in the catalog`, (report.coursePolicy?.findings ?? []).filter((f) => f.gate === gate && f.severity === 'block').map((f) => f.message));
+    section(`${title} in lessons`, report.documents.flatMap((d) => d.policy[key].map((p) => `${d.lesson} [${d.locale}] ${p.message}`)));
+  };
+  policySection('B.17 concept cap (gate 14)', 14, 'conceptCap');
+  policySection('B.11 mentor misjudgment (gate 15)', 15, 'misjudgment');
+  policySection('B.16 regional adaptation (gate 16)', 16, 'regional');
   section(
     'unclassified lesson fields (extend classifyPath in lessonModel.ts)',
     report.documents.flatMap((d) => d.report.unclassified.map((u) => `${d.lesson} [${d.locale}] ${u.segmentId} ${u.path}`)),

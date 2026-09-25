@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// content:gates — the Forge content gates over everything in the repository,
+// content:gates — the Forge content gates over everything in the repository
+// (gates 11-13: B.18, B.14, OD-13; gates 14-16: B.17, B.11, B.16),
 // with zero spend (no network, no model call; OD-23).
 //
 //   npm run content:gates -- --course financial-education
@@ -35,6 +36,8 @@ import {
   type SourcedDocument,
 } from './sources.js';
 import { formatReport, runContentGates } from './runner.js';
+import { loadCourseCatalog } from '../catalog/loader.js';
+import { buildCoursePolicy, type CoursePolicy } from './policyGates.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, '../..');
@@ -107,7 +110,15 @@ function main(): void {
   const documents: SourcedDocument[] = [];
   const catalog: CatalogString[] = [];
   let taxonomy: TaxonomyFile | undefined;
+  let coursePolicy: CoursePolicy | undefined;
   const sources: string[] = [];
+  // Gates 14-16 need the whole catalog (course order, declarations, scenarios).
+  const policyFor = (slug: string): CoursePolicy | undefined => {
+    const courseDir = path.join(PACKAGE_ROOT, 'curriculum', slug);
+    if (!existsSync(courseDir)) return undefined;
+    const loaded = loadCourseCatalog(courseDir);
+    return loaded.course.catalog ? buildCoursePolicy(loaded.course, { register: options.register }) : undefined;
+  };
 
   try {
     if (options.course) {
@@ -115,6 +126,7 @@ function main(): void {
       if (!existsSync(courseDir)) throw new Error(`no catalog at curriculum/${options.course}`);
       taxonomy = loadTaxonomy(courseDir);
       catalog.push(...loadCatalogStrings(courseDir).strings);
+      coursePolicy = policyFor(options.course);
       sources.push(`curriculum/${options.course}`);
       const seed = path.join(REPO_ROOT, 'database', 'seeds', `${options.course}-fixture.sql`);
       if (existsSync(seed)) options.documents.unshift(seed);
@@ -125,6 +137,7 @@ function main(): void {
       catalog.push(...loaded.strings);
       sources.push(path.relative(REPO_ROOT, path.resolve(target)).replace(/\\/g, '/'));
       if (!taxonomy && loaded.courseSlug) taxonomy = loadTaxonomy(path.join(PACKAGE_ROOT, 'curriculum', loaded.courseSlug));
+      if (!coursePolicy && loaded.courseSlug) coursePolicy = policyFor(loaded.courseSlug);
     }
   } catch (error) {
     console.error(`content:gates: ${(error as Error).message}`);
@@ -135,7 +148,7 @@ function main(): void {
   const uiLiterals = options.ui ? loadUiSourceLiterals(path.join(REPO_ROOT, 'frontend', 'src', 'rebuild')) : [];
   if (options.ui) sources.push('frontend/src/i18n', 'frontend/src/rebuild');
 
-  const report = runContentGates({ taxonomy, register: options.register, documents, catalog, ui, uiLiterals });
+  const report = runContentGates({ taxonomy, register: options.register, documents, catalog, ui, uiLiterals, ...(coursePolicy ? { coursePolicy } : {}) });
 
   const label = options.course ?? 'content';
   const jsonPath = options.json

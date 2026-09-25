@@ -105,19 +105,28 @@ describe('system/UI copy source', () => {
 });
 
 describe('red-team samples through the content:gates runner', () => {
-  it('every red-team lesson fails exactly its own gate and the compliant one passes', () => {
+  it('every red-team lesson fails exactly its own gate and the compliant ones pass', () => {
     const documents = loadJsonDocuments(RED_TEAM);
-    expect(documents.map((d) => d.lesson).sort()).toEqual(['compliant-sample', 'red-team-b14', 'red-team-b18', 'red-team-od13']);
+    expect(documents.map((d) => d.lesson).sort()).toEqual([
+      'compliant-localized', 'compliant-sample', 'red-team-b11', 'red-team-b14', 'red-team-b16', 'red-team-b17', 'red-team-b18', 'red-team-od13',
+    ]);
     const report = runContentGates({ taxonomy: buildTaxonomy(), documents, catalog: [], ui: [], uiLiterals: [] });
+    const all = { redundancy: true, tone: true, copyBudget: true, conceptCap: true, misjudgment: true, regional: true };
     const verdict = Object.fromEntries(report.documents.map((d) => [d.lesson, d.passed]));
     expect(verdict).toEqual({
-      'compliant-sample': { redundancy: true, tone: true, copyBudget: true },
-      'red-team-b18': { redundancy: false, tone: true, copyBudget: true },
-      'red-team-b14': { redundancy: true, tone: false, copyBudget: true },
-      'red-team-od13': { redundancy: true, tone: true, copyBudget: false },
+      'compliant-sample': all,
+      'compliant-localized': all,
+      'red-team-b18': { ...all, redundancy: false },
+      'red-team-b14': { ...all, tone: false },
+      'red-team-od13': { ...all, copyBudget: false },
+      'red-team-b17': { ...all, conceptCap: false },
+      'red-team-b11': { ...all, misjudgment: false },
+      'red-team-b16': { ...all, regional: false },
     });
-    expect(report.summary.passRate.redundancy).toBe('3/4 (75%)');
+    expect(report.summary.passRate.redundancy).toBe('7/8 (88%)');
+    expect(report.summary.passRate.regional).toBe('7/8 (88%)');
     expect(report.summary.ok).toBe(false);
+    expect(formatReport(report)).toContain('B.16 regional adaptation (gate 16) in lessons');
   });
 });
 

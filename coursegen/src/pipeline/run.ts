@@ -39,6 +39,7 @@ import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
 import { generateRecapLines, appendRecapSegment } from './recapDialogue.js';
 import { resolveRegister, type Register } from './register.js';
+import { blockingLessonFindings, buildCoursePolicy, type CoursePolicy } from '../contentGates/policyGates.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
 
@@ -317,10 +318,27 @@ async function processSlot(
   competencyGraph: CompetencyGraph,
   rubricLog?: RubricLog,
   live?: LiveTelemetry,
+  coursePolicy?: CoursePolicy,
 ): Promise<ProcessSlotOutcome> {
   if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'already-published' };
   if (!course.taxonomy || !course.facts || !course.catalog) {
     return { slotId: slot.slotId, state: 'skipped', error: 'course taxonomy/facts/catalog failed to load' };
+  }
+  /*
+   * Lesson-policy gates 14-16 (S05.4b) decided from the CATALOG, before any paid
+   * stage and also under --dry-run: a lesson whose density is undeclared or over
+   * its working-memory ceiling (B.17), or that needs market scenarios it does
+   * not declare (B.16), cannot ship as authored. A paid corrective retry cannot
+   * fix a catalog declaration, so the slot is skipped with the itemized reason
+   * instead of generated and rejected later.
+   */
+  const lessonBlocks = coursePolicy ? blockingLessonFindings(coursePolicy, slot.lesson.slug) : [];
+  if (lessonBlocks.length > 0) {
+    return {
+      slotId: slot.slotId,
+      state: 'skipped',
+      error: `catalog content gates: ${lessonBlocks.map((f) => `[gate ${f.gate} ${f.spec}] ${f.message}`).join('; ')}`,
+    };
   }
   /*
    * --dry-run stops HERE, before any paid stage. It used to only skip the final
@@ -362,6 +380,7 @@ async function processSlot(
     topicTitle: slot.topic.title_es,
     skipVocabularyGate: !register.vocabularyGates,
     register: register.register,
+    ...(coursePolicy?.lessons.get(slot.lesson.slug) ? { lessonPolicy: coursePolicy.lessons.get(slot.lesson.slug) } : {}),
   };
   const locales = options.locales ?? DEFAULT_LOCALES;
 
@@ -892,6 +911,11 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     throw new Error(`generate: catalog failed to load — ${errors.map((e) => e.message).join('; ')}`);
   }
   const competencyGraph = buildCompetencyGraph(loadResult.course);
+  // Lesson-policy gates 14-16 (S05.4b): derived once from the catalog, applied per slot.
+  const coursePolicy = buildCoursePolicy(loadResult.course, { register: options.register ?? 'kid' });
+  for (const finding of coursePolicy.findings.filter((f) => !f.lesson && f.severity === 'block')) {
+    console.warn(`[forge] course release blocker [gate ${finding.gate} ${finding.spec}]: ${finding.message}`);
+  }
   // `loadCourseCatalog` already runs the graph validator. Keep generation tied
   // to the same derived graph object so prompts cannot silently diverge from
   // the preflight graph check.
@@ -1022,7 +1046,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       // run (rethrown by processSlot), so retries never blow past the
       // kill-switches.
       const slotStartedAt = Date.now();
-      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live);
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live, coursePolicy);
       let attempt = 1;
       while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
         attempt++;
@@ -1037,7 +1061,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
             `${prep === 'resumed' ? 'resuming from checkpoint stage' : 'regenerating from scratch'}: ${outcome.error?.slice(0, 160)}`,
         );
         await store.save(checkpoint);
-        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live, coursePolicy);
       }
       outcome.durationMs = Date.now() - slotStartedAt;
       slotOutcomes.push(outcome);

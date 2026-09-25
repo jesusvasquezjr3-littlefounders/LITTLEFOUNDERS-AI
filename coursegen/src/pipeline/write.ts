@@ -28,7 +28,7 @@ import type { LessonLocale } from '../contract/core/types.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { ICON_PALETTE } from './generationQuality.js';
 import { CONTENT_PLAYBOOK, tierReasoningGuidance } from './contentPlaybook.js';
-import { contentGateGuidance } from '../contentGates/guidance.js';
+import { contentGateGuidance, lessonPolicyGuidance } from '../contentGates/guidance.js';
 import { audienceForTier } from '../contentGates/budgets.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues, CorrectiveRetryExhaustedError } from './correctiveRetry.js';
 
@@ -294,6 +294,8 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     '',
     // Gates 11-13 stated up front (S05.4a): same numbers the gates enforce, per tier.
     contentGateGuidance(audienceForTier(input.gateCtx?.taxonomy, input.ctx.tier, input.gateCtx?.register ?? 'kid')),
+    // Gates 14-16 for THIS lesson (S05.4b): declared concepts, misjudgment episode.
+    ...(input.gateCtx?.lessonPolicy ? [lessonPolicyGuidance(input.gateCtx.lessonPolicy)] : []),
     '',
     'HARD RULES (mechanical constraints — the playbook above is the quality bar; these are the non-negotiable format rules):',
     renderBaseHardRules(),

@@ -965,6 +965,11 @@ sagas:
       suggested_families:
       - story
       - analyze
+      # B.11: flagged mentor-misjudgment episode, pending content-team validation (Appendix C Stage 3).
+      mentor_misjudgment:
+        character: liruf
+        misjudgment: Liruf gastó todas sus monedas en el primer puesto del mercado sin comparar precios.
+        recovery: Liruf cuenta sin culpa qué pasó y muestra cómo ahora compara dos precios antes de comprar.
     - position: 3
       slug: el-error-como-maestro
       micro_objective: Explicar con una razón propia por qué un error puede enseñar algo útil, en vez de ser solo un fracaso.

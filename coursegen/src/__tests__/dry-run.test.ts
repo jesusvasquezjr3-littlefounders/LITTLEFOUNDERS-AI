@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { stringify } from 'yaml';
+import { parse as parseYaml, stringify } from 'yaml';
 import { resetConfigCache } from '../env.js';
 import { runGeneration } from '../pipeline/run.js';
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
@@ -82,8 +82,8 @@ function writeCourse(courseDir: string): void {
               prior_knowledge: 'x',
               fact_refs: [],
               lessons: [
-                { position: 1, slug: 'lesson-1', micro_objective: 'x', narrative_beat: 'x', difficulty: 1, suggested_families: ['story'] },
-                { position: 2, slug: 'lesson-2', micro_objective: 'y', narrative_beat: 'y', difficulty: 1, suggested_families: ['story'] },
+                { position: 1, slug: 'lesson-1', micro_objective: 'x', narrative_beat: 'x', difficulty: 1, suggested_families: ['story'], new_concepts: ['moneda'] },
+                { position: 2, slug: 'lesson-2', micro_objective: 'y', narrative_beat: 'y', difficulty: 1, suggested_families: ['story'], new_concepts: [] },
               ],
             },
           ],
@@ -264,5 +264,44 @@ describe('Prism style-version handshake at run preflight', () => {
 
     expect(summary.dryRun).toHaveLength(2);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('lesson-policy gates decided before any paid stage (S05.4b)', () => {
+  function rewriteLessons(mutate: (lessons: Array<Record<string, unknown>>) => void): void {
+    const file = path.join(curriculumRoot, 'dry-course', 'adventures/01-a.yaml');
+    const data = parseYaml(readFileSync(file, 'utf8')) as { sagas: Array<{ topics: Array<{ lessons: Array<Record<string, unknown>> }> }> };
+    mutate(data.sagas[0]!.topics[0]!.lessons);
+    writeFileSync(file, stringify(data));
+  }
+
+  it('skips a slot whose density is undeclared (B.17) with the itemized reason, and generates the declared one', async () => {
+    rewriteLessons((lessons) => {
+      delete lessons[1]!.new_concepts;
+    });
+    const summary = await runGeneration({ course: 'dry-course', dryRun: true, runId: 'policy-b17', curriculumRoot, runsRoot });
+    expect(summary.dryRun).toEqual(['adv-1/saga-1/topic-1/lesson-1']);
+    expect(summary.skipped).toHaveLength(1);
+    expect(summary.skipped[0]!.slotId).toBe('adv-1/saga-1/topic-1/lesson-2');
+    expect(summary.skipped[0]!.reason).toMatch(/gate 14 B\.17.*new_concepts is not declared/);
+    expect(summary.tokensUsed).toBe(0);
+  });
+
+  it('skips a slot that carries Mexico-specific amounts but no market scenarios (B.16)', async () => {
+    rewriteLessons((lessons) => {
+      lessons[0]!.narrative_beat = 'Liruf cobra 20 pesos por cada vaso de limonada.';
+    });
+    const summary = await runGeneration({ course: 'dry-course', dryRun: true, runId: 'policy-b16', curriculumRoot, runsRoot });
+    expect(summary.dryRun).toEqual(['adv-1/saga-1/topic-1/lesson-2']);
+    expect(summary.skipped[0]!.reason).toMatch(/gate 16 B\.16.*needs a scenario per market.*20 pesos/);
+  });
+
+  it('skips a lesson over its working-memory ceiling (B.17: split, never ship as authored)', async () => {
+    rewriteLessons((lessons) => {
+      lessons[0]!.new_concepts = ['moneda', 'precio', 'costo', 'ganancia'];
+    });
+    const summary = await runGeneration({ course: 'dry-course', dryRun: true, runId: 'policy-ceiling', curriculumRoot, runsRoot });
+    expect(summary.skipped.map((s) => s.slotId)).toEqual(['adv-1/saga-1/topic-1/lesson-1']);
+    expect(summary.skipped[0]!.reason).toMatch(/4 new concepts exceed the 6-9 working-memory ceiling of 3/);
   });
 });

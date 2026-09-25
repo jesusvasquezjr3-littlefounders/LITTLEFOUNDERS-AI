@@ -1,0 +1,41 @@
+{
+  "tier": "tier2",
+  "policy": {
+    "lesson": "red-team-b16",
+    "path": "adv-1/saga-1/topic-1/red-team-b16",
+    "tier": "tier2",
+    "concepts": { "band": "6-9", "target": 2, "ceiling": 3, "declared": [], "declaredLabels": [], "future": [] },
+    "regional": {
+      "required": true,
+      "reasons": ["cites the MXN fact mxn.reference_costs.limonada_vaso"],
+      "scenarios": {
+        "es-MX": { "scenario": "Liruf vende limonada en el tianguis del domingo y cobra en pesos.", "problem_refs": ["mx-cash-and-informal-commerce"], "anchors": ["tianguis"] },
+        "en-US": { "scenario": "Liruf sells lemonade at a neighbourhood yard sale on Saturday morning.", "problem_refs": ["us-parent-silence"], "anchors": ["yard sale"] },
+        "pt-BR": { "scenario": "Liruf vende suco na feira livre do bairro e recebe em reais.", "problem_refs": ["br-baseline-literacy-gap"], "anchors": ["feira livre"] }
+      }
+    }
+  },
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "red-team-b16", "title": "A limonada do Liruf", "locale": "pt-BR", "subject": "money", "estimated_minutes": 3, "objectives": ["Escolher um preço justo."], "cast": ["liruf", "dina"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-historia", "type": "story_dialogue", "prompt_md": "Escute o Liruf.", "difficulty": 1, "xp": 0,
+        "payload": { "lines": [
+          { "character": "liruf", "text_md": "Hoje vou vender limonada no tianguis." },
+          { "character": "dina", "text_md": "Cada copo vai custar 5 pesos?" }
+        ] }
+      },
+      {
+        "id": "s2-preco", "type": "quiz_mcq", "prompt_md": "Qual preço é justo?", "difficulty": 1, "xp": 10,
+        "payload": { "options": [
+          { "id": "o1", "text_md": "1 moeda", "rationale_md": "Não paga os limões." },
+          { "id": "o5", "text_md": "5 moedas" }
+        ] },
+        "answer": { "correct_option_id": "o5" },
+        "explanation_md": "5 moedas pagam os limões."
+      }
+    ]
+  }
+}

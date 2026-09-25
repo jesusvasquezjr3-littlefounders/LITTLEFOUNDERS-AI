@@ -12,6 +12,7 @@ import { loadCourseCatalog } from './catalog/loader.js';
 import { checkProgression } from './catalog/progression.js';
 import { collectSceneImages, inspectIllustrationCoverage } from './pipeline/images.js';
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from './pipeline/illustrationStyle.js';
+import { buildCoursePolicy } from './contentGates/policyGates.js';
 
 const COURSE = process.argv[2] ?? 'first-lemonade-stand';
 const S = process.env.SUPABASE_URL!, K = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -170,6 +171,23 @@ interface Check {
     }
   }
 
+  /*
+   * ---- lesson-policy gates 14-16 over the catalog (S05.4b) --------------------
+   * B.17 declared density within the working-memory ceiling, B.11 at least one
+   * mentor-misjudgment episode per course, B.16 market scenarios wherever a
+   * lesson carries market context. Decided from the catalog; the per-document
+   * half runs inside runAllGates below with each lesson's policy.
+   */
+  const coursePolicy = buildCoursePolicy(load.course);
+  const policyBlocks = coursePolicy.findings.filter((f) => f.severity === 'block');
+  const policyBlocksBySpec = (spec: string) => policyBlocks.filter((f) => f.spec === spec).length;
+  add(
+    'catalog passes the lesson-policy gates (B.17 concept cap, B.11 mentor misjudgment, B.16 regional adaptation)',
+    policyBlocks.length === 0,
+    `B.17 ${policyBlocksBySpec('B.17')}, B.11 ${policyBlocksBySpec('B.11')}, B.16 ${policyBlocksBySpec('B.16')} blocking; density declared ${coursePolicy.metrics.densityDeclared}/${coursePolicy.metrics.lessons}; ` +
+      `misjudgment episodes ${coursePolicy.metrics.misjudgmentEpisodes}/${coursePolicy.metrics.misjudgmentMinimum}; market scenarios ${coursePolicy.metrics.regionalDeclared}/${coursePolicy.metrics.regionalRequired}`,
+  );
+
   // ---- gates over every release-ready document --------------------------------
   const gateFailures = new Map<string, string[]>();
   const excepted = new Set<string>();
@@ -190,6 +208,7 @@ interface Check {
         taxonomy: load.course.taxonomy,
         facts: load.course.facts,
         tier,
+        ...(coursePolicy.lessons.get(slug) ? { lessonPolicy: coursePolicy.lessons.get(slug) } : {}),
       });
       problems.push(...report.problems.map((p) => `gate ${p.gate}: ${p.message}`));
     }

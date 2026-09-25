@@ -31,6 +31,7 @@ import { enumerateSlots, type Slot } from '../pipeline/run.js';
 import { resolveRegister } from '../pipeline/register.js';
 import { runAllGates, type GateContext, type GateProblem } from '../pipeline/gates.js';
 import { stripNullValues, repairDocument } from '../pipeline/write.js';
+import { blockingLessonFindings, buildCoursePolicy } from '../contentGates/policyGates.js';
 
 interface ManifestEntry {
   slotId: string;
@@ -79,6 +80,8 @@ function main(): void {
 
   const register = resolveRegister(taxonomy, 'kid');
   const slotsById = new Map<string, Slot>(enumerateSlots(load.course.adventures).map((s) => [s.slotId, s]));
+  // Lesson-policy gates 14-16 (S05.4b): catalog declarations plus the per-lesson document checks.
+  const coursePolicy = buildCoursePolicy(load.course, { register: register.register });
 
   const manifest = JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')) as { slots: ManifestEntry[] };
   const reports: SlotReport[] = [];
@@ -118,8 +121,12 @@ function main(): void {
       facts,
       topicTitle: slot.topic.title_es,
       skipVocabularyGate: !register.vocabularyGates,
+      register: register.register,
+      ...(coursePolicy.lessons.get(slot.lesson.slug) ? { lessonPolicy: coursePolicy.lessons.get(slot.lesson.slug) } : {}),
     };
     const report = runAllGates(sanitized, gateCtx);
+    report.problems.push(...blockingLessonFindings(coursePolicy, slot.lesson.slug).map((f) => ({ gate: f.gate, message: `catalog (${f.spec}): ${f.message}` })));
+    if (report.problems.length > 0) report.ok = false;
 
     const identity: SlotReport['problems'] = [];
     if (report.document) {

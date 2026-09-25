@@ -1,12 +1,13 @@
 # S05: Forge content-pipeline gates
 
-Status: in progress. Started 24 September 2026. Owner: Engineering for implementation; the Pedagogical Lead (Appendix C Stage 3 reviewer), Product and the brand owner for the threshold and lexicon reviews named below. Nothing here is accepted or released.
+Status: in progress. Started 24 September 2026. Checkpoints S05.4a (B.14, B.18, OD-13) and S05.4b (B.17, B.11, B.16). Owner: Engineering for implementation; the Pedagogical Lead (Appendix C Stage 3 reviewer), Product and the brand owner for the threshold and lexicon reviews named below. Nothing here is accepted or released.
 
 Parent record: [S05 Lesson Engine design](S05-LESSON-ENGINE-DESIGN.md). OD-17 still governs sequencing: these gates verify content, they do not authorize catalog regeneration or any paid generation (OD-23).
 
 ## Binding acceptance sources
 
 - Product B.14 (Law 2 tone gate for authored lesson content **and** system/UI copy), B.18 (redundancy of on-screen text versus narration), and the Block B Pedagogical Design Standard.
+- S05.4b: Product B.17 (deterministic concept-cap gate, ceilings 2–3 / 3–4 / 4–6 by age band, "split, not shipped as authored"), B.11 (at least one mentor misjudgment-and-recovery episode per course, flagged for content-team validation, same no-shame framing as learner mistakes), B.16 (a named Regional Adaptation Gate with a per-market checklist, owned by the content/learning-design team, adapting examples, amounts and context per market). Appendix B §1.2 (working-memory capacity by age). Appendix C Part 1 metrics (Forge Gate Pass Rate per gate, Mentor-Misjudgment Content Coverage, Threshold Recalibration Log), Part 3 Stage 2 gates 1 (concept cap) and 6 (regional adaptation) and Stage 3 ("does mentor content in this lesson show real fallibility where required (B.11)?"). Owner log §8 (the B.17 ceilings apply as written). `docs/product-audit/COSMIC_NARRATIVE.md` §1.1 (the market research B.16 cites).
 - Owner decision OD-13 (Copy Budget: "Lesson prompts, options and Mentor turns get the same limits as a Forge content gate next to B.17 and B.18"), OD-11 glossary, OD-23 (zero spend).
 - Appendix C Part 3 Stage 2 (gate order: concept cap, redundancy, tone, …; "a lesson failing any gate returns to Stage 1 with an itemized, specific failure report"), Part 2.1 Definition of Done ("Gated": the gate demonstrably blocks a deliberately non-compliant red-team lesson), Part 1.3 metrics (Forge Gate Pass Rate per gate; Threshold Recalibration Log).
 - Appendix B §1.5 (Mayer's redundancy principle). `docs/product-audit/COSMIC_NARRATIVE.md` Law 2.
@@ -17,8 +18,9 @@ Parent record: [S05 Lesson Engine design](S05-LESSON-ENGINE-DESIGN.md). OD-17 st
 | ID | Scope | Product acceptance | Frontend acceptance | State |
 |---|---|---|---|---|
 | S05.4a | B.14 tone gate, B.18 redundancy gate, OD-13 Copy Budget content gate | Deterministic gates 11–13 inside Forge's `runAllGates` (write corrective retry, judge revision, localization re-gate, `verify:course` release attestation) and a zero-spend `content:gates` command over catalog YAML, the committed course corpus, run checkpoints, JSON documents and family-facing UI copy; wired into `release:readiness`; red-team sample per gate blocks; B.18 channel choice (`narration.mode`) added to the v1 contract and honoured by Echo | No new surface. Six family-facing UI strings that failed the tone gate were rewritten in EN/es-MX/pt-BR within the Copy Budget | In progress: implemented and locally verified; Stage 3 reviewer sign-off on lexicon/thresholds, content rewrite of the failing catalogs/corpus, live-pipeline metric data and acceptance pending |
+| S05.4b | B.17 concept cap (working-memory limits per lesson), B.11 mentor misjudgment episodes, B.16 cultural localization (Regional Adaptation Gate) | Lesson-policy gates 14–16 decided from the catalog (Forge run preflight skips a blocked slot with zero spend, `content:gates`, `verify:course`) and checked on every document inside `runAllGates` (write retry, judge revision, localization re-gate, release attestation). Authoring contract fields `new_concepts`, `mentor_misjudgment`, `regional_scenarios` and an optional `concepts.yaml` registry; market problem inventory `coursegen/regional/markets.yaml`; written policy and per-market checklist `docs/content/REGIONAL-ADAPTATION-GATE.md`; localization adapts to the market scenario instead of translating; one red-team sample per gate blocks and a compliant localized episode passes | No new surface; no UI copy changed | In progress: implemented and locally verified; content-team declarations (density for 2,462 lessons, market scenarios for 439 lessons), validation of the 3 flagged episodes and 4 inventory hypotheses, the per-market write stage for amounts, live metric data and acceptance pending |
 
-## Verified current state (before this checkpoint)
+## S05.4a — verified current state (before that checkpoint)
 
 The SPEC's "Current State" was checked against the code on 24 September 2026:
 
@@ -26,7 +28,7 @@ The SPEC's "Current State" was checked against the code on 24 September 2026:
 - **B.18 — confirmed and structural.** Echo (`audiogen/src/narrate/extractNarratables.ts`) narrates the raw on-screen string of `prompt_md`, story bodies, choice roll-ups, hints and `explanation_md`. Every narrated block in a v1 document is therefore duplicated verbatim on screen by construction, and nothing measured its length. The v1 contract had no way to declare a different spoken script or a text-only segment.
 - **OD-13 — not implemented in Forge.** The only text limit was gate 8's `prompt_md` ≤ 140 characters and ≤ 2 sentences (plus the 4,000-character contract maximum). No per-role word budgets, no 6–9 reduction, no ES/PT factor, no limit on options, story turns, feedback or titles, and nothing over the catalog.
 
-## Implementation and rationale
+## S05.4a — implementation and rationale
 
 All code lives in `coursegen/src/contentGates/` unless named otherwise.
 
@@ -96,6 +98,99 @@ The JSON report is the Appendix C Part 1.3 **Forge Gate Pass Rate (per gate)** d
 
 All six are within the Copy Budget (action ≤ 3 words, heading ≤ 6, body ≤ 12; ×1.25 ES/PT). Keys are unchanged, so i18n parity holds.
 
+## S05.4b — verified current state (before this checkpoint)
+
+The SPEC's "Current State" was checked against the code and the catalogs on 24 September 2026:
+
+- **B.17 — confirmed.** No lesson blueprint, topic or document field records how many concepts a lesson introduces, and no gate counts them. Topics carry `key_vocabulary`, but it mixes concepts with ordinary words ("tener", "me gusta", "después"), so it cannot be used as a concept count. Of 2,462 lesson blueprints across the four catalogs, 0 declare their density.
+- **B.11 — confirmed.** Nothing in the catalog schema, the write prompt or the gates asks a mentor to be wrong. The catalogs do already contain a few beats where a mentor misjudges and recovers: Liruf spends everything without comparing prices (financial-education, adventure 8), Liruf forgets a packaging cost when pricing (entrepreneurship, adventure 4), and Rho makes a costly choice in the simulator (investing, adventure 8). None was marked, counted or checked, and the lemonade corpus has none.
+- **B.16 — confirmed, and worse than stated.** `localize.ts` translates a frozen string map and remaps the currency word and code; "20 pesos becomes 20 reais", and places, customs and situations stay Mexican. The gate also found **translation residue in the committed corpus**: 8 English and Portuguese lemonade-stand documents still say "N pesos" (for example "8 pesos" in `en-US` and `pt-BR`).
+
+## S05.4b — implementation and rationale
+
+All three requirements are **lesson-policy gates**. Unlike gates 11–13, they cannot judge a document alone: they need the catalog (the lesson's declared density and its place in course order, whether it is a flagged episode, its market scenarios). So each has two halves.
+
+- **Catalog half.** `buildCoursePolicy` in `coursegen/src/contentGates/policyGates.ts` derives one `LessonPolicy` per lesson plus itemized findings. A blocking finding is decided **before generation**. The Forge run (`run.ts` `processSlot`) skips such a slot with the reason and zero spend, also under `--dry-run`, because a paid corrective retry cannot fix a catalog declaration. It is decided again at release (`content:gates`, `verify:course` check "catalog passes the lesson-policy gates"), and `author:validate` reports it.
+- **Document half.** `runLessonPolicyGates` runs inside `runAllGates` as gates 14, 15 and 16, with the lesson's policy passed in `GateContext.lessonPolicy`. The write stage's corrective retry, the judge's revision, `author:validate`, the localization re-gate and `verify:course` therefore all enforce it.
+
+The write prompt states the lesson's own policy (`lessonPolicyGuidance`): its declared concepts and ceiling, the concepts to avoid, the misjudgment episode to stage, and the Mexican scenario with its anchors.
+
+### B.17 concept cap (gate 14, `conceptCap.ts`)
+
+- **Authoring contract.** Every lesson blueprint declares `new_concepts`: the genuinely new concept ids it introduces, or `[]` for practice. An optional course registry, `curriculum/<slug>/concepts.yaml`, gives each id a localized label and the surface terms per locale that show a lesson is using it. It can also mark a concept `from_course` (introduced by a prerequisite course). Once the registry exists, an unregistered id is a catalog load error.
+- **Genuinely new.** The course is walked in order (adventure, saga, topic, lesson positions). A concept counts as new only the first time it is declared. A later declaration is refused ("reinforcement, not new"), and so is a `from_course` concept. A review lesson (review saga or review-kind topic) must declare `[]`.
+- **Ceilings.** The band is taken from the youngest age a tier serves, which is the conservative reading also used by the Copy Budget:
+
+  | Tier ages | Band |
+  |---|---|
+  | 6–7, 8–10 | 6–9 |
+  | 12–18 | 10–12 |
+  | 13 and over, or the adult register | 13+ |
+
+  The SPEC ranges become two numbers per band. The upper end is the **blocking ceiling** (6–9: 3, 10–12: 4, 13+: 6): "split the lesson, never ship as authored". A count above the lower end (2, 3, 4) goes to Stage 3 review, where the reviewer checks the concepts are chunked onto prior knowledge (Appendix B §1.2 "Nuance"). An undeclared lesson blocks: density that is not tracked cannot be shown to fit.
+- **Document check.** With a registry, a generated lesson that uses the terms of a concept introduced **later** in the course has introduced an undeclared new concept. That blocks, and the real count (declared + early) is checked against the ceiling again. Without a registry, the document half has nothing to compare against, and the catalog half still applies.
+
+### B.11 mentor misjudgment (gate 15, `misjudgment.ts`)
+
+- **Authoring contract.** A lesson blueprint is flagged with `mentor_misjudgment`, which records:
+  - `character`: one of the four canon mentors;
+  - `misjudgment`: a real money decision gone wrong, 20–400 characters;
+  - `recovery`: how the mentor recovers, 20–400 characters.
+- **Coverage.** A course needs at least one flagged episode. This is the SPEC's proposed minimum, `MIN_MISJUDGMENT_EPISODES_PER_COURSE = 1`; below it, the course fails the release check. The metric is Appendix C "Mentor-Misjudgment Content Coverage", reported per course. Every flagged episode is a Stage 3 review item ("pending content-team validation"); a flag is never accepted silently.
+- **Document check.** A flagged lesson's document must:
+  - have the mentor in `meta.cast`;
+  - have the mentor speak in at least two moments (the misjudgment and the recovery), counted across narration, dialogue lines, scenes and storyplay nodes;
+  - carry no self-global shame language. A per-locale lexicon covers phrases such as "I'm so stupid", "soy un desastre" and "sou burro", 23–30 phrases per locale. Decision language ("I forgot to count the bag", "a costly mistake") is not flagged.
+
+  Whether the fallibility is real and the recovery honest is left to the Stage 3 reviewer, as Appendix C assigns it.
+- **Flags added.** Three existing lessons whose beats already show a mentor misjudging and recovering were flagged, with no learner-visible change:
+  - financial-education `que-paso-despues-del-error` (Liruf);
+  - entrepreneurship `que-le-falto-a-esta-lista` (Liruf);
+  - investing `rho-comete-un-error-barato` (Rho).
+
+  They await content-team validation. first-lemonade-stand has no such beat, so it still fails the coverage minimum. Writing a new episode is authoring work, not something to invent in this checkpoint.
+
+### B.16 Regional Adaptation Gate (gate 16, `regional.ts`)
+
+- **Market problem inventory** (`coursegen/regional/markets.yaml`, owned by the content/learning-design team). It covers Mexico, Brazil and the United States. Each market has its currency (code, words, symbols), a research profile and problems. Each problem has an id, a statement, its evidence (`cited` with sources, or `hypothesis`) and its lesson implications. The file also lists unambiguous market anchors.
+
+  Cited evidence restates only what the brand research records (Cosmic Narrative §1.1):
+  - Mexico: about 80% formal access, but education does not become wellbeing (ENIF 2024).
+  - Brazil: 45% of 15-year-olds are below the PISA baseline, against an OECD average of 18%.
+  - United States: access is solved but judgment is not; the finfluencer confidence gap; parents' silence about money.
+
+  Everything else (Mexican street markets and tandas, Brazilian Pix and instalment culture) is a labelled hypothesis. The schema refuses a cited problem without a source.
+- **Written policy and checklist** in `docs/content/REGIONAL-ADAPTATION-GATE.md`: why the gate exists, who owns what, when a lesson needs scenarios, the authoring contract, what blocks, a per-market Stage 3 checklist and the known limitation.
+- **Requirement (deterministic).** A lesson needs scenarios when its topic cites a money fact (currency unit or `mxn.`/`brl.`/`usd.` namespace) or its briefs carry Mexico-specific context (a currency amount such as "20 pesos" or "$5", or an inventory anchor such as "tianguis").
+- **Market-scenario authoring contract** (`regional_scenarios` on the lesson blueprint). It is either one scenario per market (es-MX, en-US, pt-BR), each with the fields below, or `{ universal: "<why>" }`, which is refused when the lesson needs scenarios and reviewed otherwise.
+
+  | Field | Rule |
+  |---|---|
+  | `scenario` | The author brief for that market |
+  | `problem_refs` | Ids from that market's inventory |
+  | `anchors` | Words that must appear in that market's document, and must not mark another market |
+  | `fact_refs` | Optional; each fact must be in that market's currency |
+
+  A non-authoring scenario that repeats the Spanish brief is refused (token Jaccard of at least 0.8).
+- **Document check (the "merely translated" gate).**
+  - **Every document:** it is rejected if it carries another market's anchors, its currency next to a number ("5 pesos" in pt-BR), its currency code, or its symbol ("$5" in pt-BR, where "R$" is the Brazilian mark). The US dollar is marked international, so a Mexican or Brazilian teen lesson may mention it.
+  - **A lesson that needs scenarios:** a non-authoring document with no declared scenario is rejected ("it would ship as a translation"). So is a document that shows none of its own market's anchors, or carries another market's scenario anchors.
+
+  The currency word check requires an adjacent number, because Portuguese "peso" means weight.
+- **Adaptation layer in localization.** When a lesson has scenarios, `localizeLesson` passes the translator an adaptation brief: the market scenario, research focus, required anchors, anchors to drop, and currency. It does the same in the shorten-retry prompt. The result is re-gated, and a literal translation fails with an itemized `LocalizeContentGateError`.
+- **Amounts.** Localization freezes numbers and answer keys by design, so amounts stay the source numbers and checklist question 3 is judged by the reviewer. Adapting amounts needs a per-market write stage that derives the answer key again. That stage is paid generation (OD-23) and is not built; see the open items.
+
+### Red-team samples (Appendix C DoD "Gated")
+
+`coursegen/src/contentGates/fixtures/red-team/` now holds:
+
+- `b17-concept-cap.json`: three declared concepts plus two later concepts used early, so five against a ceiling of 3;
+- `b11-misjudgment.json`: the flagged mentor speaks once and says "¡Soy un desastre!";
+- `b16-regional.json`: a Brazilian document that keeps "tianguis" and "5 pesos" and never reaches the "feira livre" scenario;
+- `compliant-localized.json`: a Brazilian misjudgment episode that passes gates 11–16.
+
+A JSON sample carries its own `policy`. Through `runAllGates` and through `content:gates`, each red-team lesson fails exactly its own gate among gates 11–16.
+
 ## Threshold Recalibration Log (Appendix C Part 1.3)
 
 Every number below is a starting point, reviewed at least quarterly in the first year and whenever a review-queue sample shows a systematic false block or false pass. A change is recorded here with its date and evidence; the lexicon is part of this log.
@@ -110,12 +205,18 @@ Every number below is a starting point, reviewed at least quarterly in the first
 | Differentiated-script repeat threshold | ≥ 80% of the script repeats the cue | Engineering starting point | 24 Sep 2026 (initial) |
 | Tone negation window / warning-cue window | 4 words / 6 words | Calibrated on the four catalogs and the corpus (0 false blocks, see below) | 24 Sep 2026 (initial) |
 | Tone lexicon | `TONE_LEXICON` in `tone.ts` (EN 51, es-MX 45, pt-BR 45 phrases) | Law 2 wording + B.14 example; single common words excluded by design | 24 Sep 2026 (initial) |
+| Concept ceilings (B.17) | 6–9: target 2, ceiling 3 · 10–12: target 3, ceiling 4 · 13+: target 4, ceiling 6 (above the target → Stage 3 review; above the ceiling → blocks) | Product B.17 and Appendix B §1.2 ranges; owner log §8 applies them as written | 24 Sep 2026 (initial) |
+| Working-memory band rule | The youngest age a tier serves decides; the adult register is 13+; unknown ages → 6–9 | Engineering, conservative (same reading as the Copy Budget audience) | 24 Sep 2026 (initial) |
+| Mentor-misjudgment minimum (B.11) | 1 flagged episode per course; the mentor voices at least 2 moments | Product B.11 proposed starting point | 24 Sep 2026 (initial) |
+| Shame lexicon (B.11 episodes) | `SHAME_LEXICON` in `misjudgment.ts` (EN 30, es-MX 30, pt-BR 23 self- or person-directed labels) | Appendix B §1.8/§2.8 (feedback scoped to the action, never the person) | 24 Sep 2026 (initial) |
+| Scenario copy threshold (B.16) | A non-authoring scenario brief with a token Jaccard of at least 0.8 against the es-MX brief is a copy | Engineering starting point | 24 Sep 2026 (initial) |
+| Market anchors (B.16) | `coursegen/regional/markets.yaml` (Mexico 5, Brazil 6, United States 2); currency words count only next to a number | Content team; screened for words that are ordinary in another content language | 24 Sep 2026 (initial) |
 
 Lexicon calibration on 24 September 2026: the first draft blocked 58 catalog strings, all of them teaching or narrative uses (the fraud-radar adventure naming "ganancia garantizada" as a warning sign, quotes in straight single quotes, "tiempo limitado" as an ordinary constraint, "FOMO" as a taught concept). After adding straight-quote detection, the warning-cue rule, the everyday-urgency review tier and removing concept names, the same inputs produce 0 blocks and 57 review items, while every real UI violation and every red-team phrase still blocks.
 
 ## Baseline measurement (24 September 2026)
 
-`npm run content:gates -- --course <slug>` (UI copy included) after this checkpoint:
+`npm run content:gates -- --course <slug>` (UI copy included) after S05.4a:
 
 | Course | Inputs | Blocking | Human review | Pass rate per gate (documents) |
 |---|---|---|---|---|
@@ -127,9 +228,34 @@ Lexicon calibration on 24 September 2026: the first draft blocked 58 catalog str
 
 Reading: the legacy content was never written to these budgets, and v1 narration duplicates every narrated block by construction, so the release check now fails for every course until the content is rewritten. That is the intended effect of the gate, not a defect to silence. Rewriting the catalogs is authoring work (human, or AI-assisted under OD-23's owner-run rule); regenerating the corpus is the later Forge phase (OD-17).
 
+### S05.4b baseline: lesson-policy gates 14–16 (24 September 2026)
+
+Command: `npm run content:gates -- --course <slug>`, run after S05.4b.
+
+| Course | Lessons | B.17 density declared | B.17 blocking | B.11 episodes (minimum 1) | B.16 lessons needing scenarios (declared) | Gates 14–16 on corpus documents |
+|---|---|---|---|---|---|---|
+| financial-education | 1,312 | 0 | 1,312 (undeclared) | 1 flagged, pending validation | 266 (0) | no documents in the repository |
+| entrepreneurship | 544 | 0 | 544 (undeclared) | 1 flagged, pending validation | 67 (0) | no documents in the repository |
+| investing | 544 | 0 | 544 (undeclared) | 1 flagged, pending validation | 44 (0) | no documents in the repository |
+| first-lemonade-stand | 62 | 0 | 62 (undeclared) | 0: course blocks | 62 (0) | concept cap 186/186 · misjudgment 186/186 · regional 62/186 (the 62 es-MX sources pass) |
+
+Why lessons need market scenarios:
+
+- **Cited money facts.** Most lessons need scenarios because they cite money facts: MXN denominations and reference costs (364 reasons in financial-education, 118 in the lemonade course).
+- **Amounts in the briefs.** The rest carry amounts in their briefs ("80 pesos", "$9"), and 3 financial-education briefs name the Mexican "tiendita".
+
+Regional findings in the corpus documents (132):
+
+- **124 are translations.** These are the English and Portuguese documents of lessons that need scenarios but declare none.
+- **8 are real translation residue.** "4 pesos", "8 pesos", "10 pesos" and "15 pesos" survive in en-US and pt-BR lemonade-stand documents; these are defects in the committed content.
+
+UI copy is unchanged: 6,396 strings, tone 0 blocking.
+
+Reading: gates 14 and 16 are red for every course until the content team declares density and market scenarios, and gate 15 is red for the lemonade course until it has an episode. That is the intended effect of the gates: the catalogs never tracked these properties, and B.17 and B.16 require them to be decided before generation.
+
 ## Verification log
 
-Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/spec-s05f`) with `VITEST_MAX_THREADS=3`. Local results only; no CI, database, network or model call.
+S05.4a — executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/spec-s05f`) with `VITEST_MAX_THREADS=3`. Local results only; no CI, database, network or model call.
 
 | Boundary | Command / evidence | Result |
 |---|---|---|
@@ -144,7 +270,24 @@ Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/
 | i18n | Root (Git Bash): `bash agent/tools/check-i18n.sh` | All three phases OK |
 | Repository gates | Root: `npm run spec:check`, `npm run secrets:check`, `npm run tools:test` | spec:check OK (113 headings, parity, tokens, assets); secrets OK; tools:test 61 passed, 0 failed |
 
+### S05.4b verification log
+
+Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/spec-s05f`) with `VITEST_MAX_THREADS=3`. Local results only: no CI, database, network or model call, and zero spend.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Lesson-policy gates, focused | `coursegen/`: `npx vitest run src/__tests__/lessonPolicyGates.test.ts` | 26 tests passed. They cover: bands and ceilings; catalog blocks (undeclared, re-declared, review lesson, over ceiling); review above the target; `from_course`; the later-concept list; orphan registry entries; voiced-moment counting; the shame lexicon in 3 locales; the inventory schema and cited sources; the requirement rules; the scenario contract (wrong market problem, wrong currency fact, shared anchor, copied brief, false market-neutral claim); the residue check (foreign currency and anchors blocked; own currency, Portuguese "peso", the US dollar and the authoring source not blocked); each red team failing only its own gate through `runAllGates`; the compliant localized episode passing gates 11–16; coverage and guidance on a written course; registry and contract load errors; the es-MX author told the Mexican scenario and its anchors; the adaptation brief in the translator prompt; a literal localization refused and an adapted one accepted; and the three flagged episodes in the real catalogs |
+| Forge run preflight | `coursegen/`: `npx vitest run src/__tests__/dry-run.test.ts` | 9 tests passed, 3 new: an undeclared lesson, a lesson with Mexican amounts and no scenarios, and a lesson over the ceiling are each skipped with the itemized gate 14/16 reason and 0 tokens, while the compliant slot proceeds |
+| Red team through `content:gates` | `coursegen/`: `npx tsx src/contentGates/cli.ts --documents src/contentGates/fixtures/red-team --no-ui`; test `contentGatesSources.test.ts` | Exit 1 as expected. The pass rate is 7/8 for each of the six gates: each red-team lesson fails only its own gate, and both compliant samples pass all six |
+| Content gates, real inputs | `coursegen/`: `npm run content:gates -- --course <slug>` for all four courses (the lemonade course also with UI copy) | Exit 1 as expected for all four; numbers in the S05.4b baseline table |
+| Catalog validity | `coursegen/`: `npx tsx src/catalog/check.ts` | 4 courses, 2,462 blueprints, 0 errors (597 warnings, unchanged) with the three `mentor_misjudgment` flags added |
+| Forge regression | `coursegen/`: `npm test` | 48 files, 728 tests passed (before this checkpoint: 47 files, 699 tests; 3 existing dry-run tests needed their fixture lessons to declare `new_concepts`, and the red-team runner test gained the new samples) |
+| Forge static checks | `coursegen/`: `npm run type-check`, `npm run lint`, `npm run contract:check` | Passed; contract copies identical (10 files); the v1 lesson contract is unchanged |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` | Both OK |
+
 ## Remaining limitations and open items
+
+### S05.4a open items
 
 - **Content is not yet compliant.** The four catalogs and the committed corpus fail (baseline table). Rewriting them is authoring work; nothing was regenerated or rewritten by this checkpoint, and no paid call was made.
 - **Live-pipeline behaviour is unobserved.** Gates 11–13 now run inside the write corrective-retry loop and the localization re-gate; their effect on retry count and cost per lesson is unmeasured until an owner-run generation (OD-23). The write prompt states the budgets up front to keep retries rare.
@@ -154,8 +297,40 @@ Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/
 - **Legacy UI copy change** is verified by i18n parity and the frontend suite, not by a browser screenshot of the kid banking screen and the error toast (both are legacy surfaces the rebuild replaces).
 - **Physical environments.** No real database, Echo run or CI run was involved; the Core release preflight's reliance on `verify:course` is unchanged code, verified by reading, not by a live release attempt.
 
+### S05.4b open items
+
+- **Declarations are content-team work and none exist yet.** The following are authoring decisions for Stage 0/1, owned by the content/learning-design team:
+  - density (`new_concepts`) for 2,462 lessons;
+  - market scenarios for 439 lessons;
+  - an optional `concepts.yaml` with terms per course.
+
+  This checkpoint did not invent them. Until they exist, gates 14 and 16 keep every course's release check red, and a Forge run skips those slots at zero spend.
+- **The three flagged misjudgment episodes are unvalidated.** financial-education, entrepreneurship and investing each have one flagged episode. first-lemonade-stand has none, so it fails the B.11 minimum until one is authored.
+- **Market inventory hypotheses.** 4 hypotheses (`mx-cash-and-informal-commerce`, `mx-informal-group-saving`, `br-instant-payments`, `br-installment-culture`) need learning-design validation or deletion. Every scenario that cites one is listed for Stage 3 review.
+- **Amounts are not adapted per market.** Localization keeps the source numbers, because it freezes numbers and answer keys on purpose. Adapting amounts needs a per-market write stage that derives the answer key again and re-runs the arithmetic gate. That stage is paid generation (OD-23, owner-run) and is not built. Until then, the Stage 3 checklist judges plausibility.
+- **The document half of B.17 needs a registry.** Without `concepts.yaml` terms, a generated lesson that front-loads a later concept is not detected; only the declared count is enforced.
+- **The corpus translation residue is not fixed.** 8 en-US and pt-BR lemonade documents still say "N pesos". They are the committed legacy corpus, due to be regenerated (OD-17), so this checkpoint does not hand-edit them.
+- **Live pipeline and metrics are not observed.** No generation ran (OD-23). The following are therefore unmeasured:
+  - the effect of gates 14–16 on the write retry and the localization retry;
+  - the adaptation prompt's success rate;
+  - live Forge Gate Pass Rate data;
+  - Mentor-Misjudgment Content Coverage in production.
+
+  `verify:course` gained the policy check, but it is verified by tests and reading, not by a run against a real database.
+- **The v2 lesson documents have no adapter.** Gates 14–16 read v1 documents, which Forge produces today. The same policies apply to v2 through a v2 text adapter when Forge targets the v2 contract.
+
 ## Owner questions and recorded proposals
+
+**S05.4a**
 
 1. **Roles beyond OD-13's list.** OD-13 names prompts, options and Mentor turns. This checkpoint also gates feedback (`explanation_md`, rationale, recap: body, 12/15 words), titles (heading, 6/8) and hints (layered sheet, 60/75), applying Bible 06 §3.1 and §4 to every string a lesson renders, and measures catalog descriptions and `parent_check` tips as body copy. Proposal: keep them blocking. Question: confirm, or restrict the blocking set to OD-13's three roles and report the rest as advisory.
 2. **Tier2 (8–10) takes the 6–9 limits.** Proposal: keep the stricter reading until pathways (OD-16) split 8–9 from 10.
 3. **Banking vocabulary in lessons is review, not block.** Proposal: keep; money lessons for teens teach what a bank message says.
+
+**S05.4b**
+
+4. **How to apply the B.17 ranges.** Proposal (implemented): the upper end of each range blocks (3, 4, 6) and a count above the lower end (2, 3, 4) goes to Stage 3 review. Question: confirm, or block at the lower end.
+5. **Tier4 (12–18) takes the 10–12 band (ceiling 4).** Proposal (implemented): keep the youngest-age reading until the age pathways (OD-16) separate 12-year-olds from teens.
+6. **B.11 episodes.** Proposal (implemented): at least 1 per course, with three existing lessons flagged as candidates. Question: confirm the three candidates, and decide who authors the first-lemonade-stand episode.
+7. **B.16 amounts.** Should Forge gain a per-market write stage that re-derives the answer key (paid generation, owner-run), or does same-number play money reviewed at Stage 3 remain acceptable? Proposal: build the stage when Forge moves to the v2 contract; until then, Stage 3 judges amounts.
+8. **No bypass for undeclared lessons.** Proposal (implemented): a Forge run skips undeclared slots even in the QA smoke course (first-lemonade-stand), because B.17 requires density to be decided before generation.

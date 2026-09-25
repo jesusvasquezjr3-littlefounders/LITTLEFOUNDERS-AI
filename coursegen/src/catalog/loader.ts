@@ -18,6 +18,8 @@ import {
   factsFileSchema,
   catalogFileSchema,
   adventureFileSchema,
+  conceptsFileSchema,
+  type ConceptsFile,
   type TaxonomyFile,
   type FactsFile,
   type CatalogFile,
@@ -43,6 +45,8 @@ export interface CourseCatalog {
   taxonomy?: TaxonomyFile;
   facts?: FactsFile;
   catalog?: CatalogFile;
+  /** Optional concepts.yaml (B.17 concept registry). */
+  concepts?: ConceptsFile;
   adventures: LoadedAdventure[];
 }
 
@@ -122,6 +126,19 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
     const parsed = factsFileSchema.safeParse(factsRaw.data);
     if (parsed.success) course.facts = parsed.data;
     else issues.push(...zodIssuesToLoadIssues(factsPath, parsed.error.issues));
+  }
+
+  // ---- concepts.yaml (optional, B.17 concept registry) ----
+  const conceptsPath = path.join(courseDir, 'concepts.yaml');
+  if (existsSync(conceptsPath)) {
+    const conceptsRaw = readYaml(conceptsPath);
+    if (conceptsRaw.error) {
+      issues.push({ level: 'error', file: conceptsPath, message: conceptsRaw.error });
+    } else {
+      const parsed = conceptsFileSchema.safeParse(conceptsRaw.data);
+      if (parsed.success) course.concepts = parsed.data;
+      else issues.push(...zodIssuesToLoadIssues(conceptsPath, parsed.error.issues));
+    }
   }
 
   // ---- catalog.yaml ----
@@ -523,6 +540,28 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
               file,
               message: `topic "${topic.slug}" prerequisites path "${ref}" is not earlier material — prerequisites may only cite earlier adventures/sagas/topics`,
             });
+          }
+        }
+      }
+    }
+  }
+
+  // ---- B.17: once a concept registry exists, every declared concept id must be in it ----
+  if (course.concepts) {
+    const registry = course.concepts.concepts;
+    for (const adventure of course.adventures) {
+      for (const saga of adventure.data.sagas) {
+        for (const topic of saga.topics) {
+          for (const lesson of topic.lessons) {
+            for (const id of lesson.new_concepts ?? []) {
+              if (!(id in registry)) {
+                issues.push({
+                  level: 'error',
+                  file: adventure.file,
+                  message: `lesson "${lesson.slug}" new_concepts "${id}" is not in concepts.yaml`,
+                });
+              }
+            }
           }
         }
       }
