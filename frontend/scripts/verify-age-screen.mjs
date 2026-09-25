@@ -119,7 +119,7 @@ try {
     await page.evaluate('document.fonts.ready');
     assert.equal(await page.evaluate("document.querySelector('.lf-rebuild').dataset.theme"), theme);
     for (const [index, text] of ['01', '02', '2018'].entries()) {
-      await click(`.lf-age-date .lf-field:nth-child(${index + 1}) input`);
+      await click(`.lf-age-date .lf-input-field:nth-child(${index + 1}) input`);
       await page.send('Input.insertText', { text });
     }
     await click('.lf-age-form button[type=submit]');
@@ -200,7 +200,7 @@ try {
     await waitForReadAfter(reads);
     await wait("document.querySelectorAll('.lf-age-date input').length===3");
     for (const [index, text] of ['01', '02', '2018'].entries()) {
-      await click(`.lf-age-date .lf-field:nth-child(${index + 1}) input`);
+      await click(`.lf-age-date .lf-input-field:nth-child(${index + 1}) input`);
       await page.send('Input.insertText', { text });
     }
     await click('.lf-age-form button[type=submit]');

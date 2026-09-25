@@ -262,7 +262,12 @@
     "retryAction": "Intentar de nuevo",
     "retrying": "Intentando…",
     "mentor": "Tu Mentor",
-    "mentorName": "Dina"
+    "mentorName": "Dina",
+    "motion": "Movimiento",
+    "armLabel": "Revisé mi plan",
+    "badgeEarned": "Insignia ganada",
+    "replay": "Ver otra vez",
+    "xpEarned": "XP ganados"
   },
   "designGallery": {
     "title": "Galería de componentes",

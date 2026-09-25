@@ -49,7 +49,7 @@ try {
         if(main.querySelectorAll('.lf-rule-node').length!==2) issues.push('rule-nodes');
         const rgb=value=>(value.match(/[\\d.]+/g)||[]).slice(0,3).map(Number);
         const luminance=value=>{const c=rgb(value).map(n=>{const x=n/255;return x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
-        for(const selector of ['.lf-rule-node','.lf-rule-links .lf-button','.lf-rule-cases .lf-button:not(:disabled)']) {
+        for(const selector of ['.lf-rule-node','.lf-rule-controls .lf-segmented-options','.lf-rule-cases .lf-button:not(:disabled)']) {
           const e=main.querySelector(selector);if(!e){issues.push('contrast-target-missing:'+selector);continue;}
           const s=getComputedStyle(e),a=luminance(s.color),b=luminance(s.backgroundColor),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
           if(ratio<4.5) issues.push('text-contrast:'+selector+':'+ratio.toFixed(2));
@@ -67,7 +67,7 @@ try {
         }
         if(innerWidth===375&&${scale}===1&&!${spacing}&&fold>Math.ceil(40*factor)) issues.push('first-view:'+fold);
         for(const e of main.querySelectorAll('button')) {const r=e.getBoundingClientRect();if(r.width<48||r.height<48) issues.push('touch-target');}
-        if(innerWidth===375&&${scale}===1&&!${spacing}&&main.querySelector('.lf-rule-links')?.getBoundingClientRect().bottom>740) issues.push('operator-below-first-view');
+        if(innerWidth===375&&${scale}===1&&!${spacing}&&main.querySelector('.lf-rule-controls .lf-segmented')?.getBoundingClientRect().bottom>740) issues.push('operator-below-first-view');
         return issues;
       })()`);
       configurations++;
@@ -78,13 +78,15 @@ try {
       }
     }
   await navigate('es-MX', 'light', '10-12', 375, 1, false);
-  await click('.lf-rule-links button:first-child');
+  await click('.lf-rule-controls .lf-segmented-option:first-child');
   await click('.lf-rule-cases button:last-child');
   if (!await page.evaluate("document.querySelector('.lf-rule-foot')?.textContent?.includes('La regla dice: espera')")) findings.push({ interaction: 'and-case-2' });
-  await click('.lf-rule-links button:last-child');
-  if (!await page.evaluate("document.querySelector('.lf-rule-foot')?.textContent?.includes('La regla dice: lista') && document.querySelector('.lf-rule-links button:last-child')?.getAttribute('aria-pressed')==='true'")) findings.push({ interaction: 'or-case-2' });
+  await click('.lf-rule-controls .lf-segmented-option:last-child');
+  if (!await page.evaluate("document.querySelector('.lf-rule-foot')?.textContent?.includes('La regla dice: lista') && document.querySelector('.lf-rule-controls .lf-segmented-option:last-child input')?.checked===true")) findings.push({ interaction: 'or-case-2' });
+  // The selected segment's fill changes over --dur-micro; measure the settled colours.
+  await new Promise((done) => setTimeout(done, 400));
   const selectedContrast = await page.evaluate(`(() => {
-    const s=getComputedStyle(document.querySelector('.lf-rule-links button[aria-pressed="true"]'));
+    const s=getComputedStyle(document.querySelector('.lf-rule-controls .lf-segmented-option:has(input:checked)'));
     const rgb=v=>(v.match(/[\\d.]+/g)||[]).slice(0,3).map(Number);
     const lum=v=>{const c=rgb(v).map(n=>{const x=n/255;return x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
     const a=lum(s.color),b=lum(s.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
@@ -102,7 +104,7 @@ try {
   if (!await page.evaluate("document.querySelector('.lf-rule-cases span')?.textContent?.includes('3/4')")) findings.push({ interaction: 'keyboard-next' });
   for (const age of ['6-9', '13-17', 'adult']) {
     await navigate('es-MX', 'light', age, 375, 1, false);
-    if (!await page.evaluate("!!document.querySelector('[data-screen=lesson-unavailable]') && !document.querySelector('.lf-rule-links')")) findings.push({ age, issue: 'age-gate' });
+    if (!await page.evaluate("!!document.querySelector('[data-screen=lesson-unavailable]') && !document.querySelector('.lf-rule-controls')")) findings.push({ age, issue: 'age-gate' });
   }
   if (page.errors.length || page.failedRequests.length) findings.push({ runtimeErrors: page.errors, failedRequests: page.failedRequests });
   writeFileSync(join(output, 'report.json'), JSON.stringify({ configurations, findings, scope: 'Controlled L2 rule pilot; no server grading or progress.' }, null, 2));

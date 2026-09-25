@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, Slider, ProgressBar } from '../design/controls';
 import { growthTimeline, type GrowthItem } from './growthModel';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
-import { ParameterSlider } from './ParameterSlider';
 import './learning.css';
 import './growth.css';
 
@@ -87,10 +86,7 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
   return <main className="lf-learning" data-surface="app" data-screen="timeline">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100}
-          aria-valuenow={sequenceProgress(sequence, contribution !== fixture.item.initial)} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, contribution !== fixture.item.initial)}%` }} />
-        </div> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header>
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, contribution !== fixture.item.initial)} max={100} valueText={`${sequenceProgress(sequence, contribution !== fixture.item.initial)}%`} /> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
@@ -108,8 +104,8 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
             </div>
             <div className="lf-growth-axis-labels"><span data-copy-role="data">0</span><span data-copy-role="data">{fixture.item.periods} {unit(fixture.item.periods)}</span></div>
           </>}>
-          {() => <ParameterSlider className="lf-growth-control" label={fixture.unit === 'week' ? t.weekly : t.monthly}
-            valueText={amount(contribution)} minimum={fixture.item.minimum} maximum={fixture.item.maximum} step={fixture.item.step}
+          {() => <Slider className="lf-growth-control" label={fixture.unit === 'week' ? t.weekly : t.monthly}
+            valueText={amount(contribution)} min={fixture.item.minimum} max={fixture.item.maximum} step={fixture.item.step}
             value={contribution} onValueChange={setContribution} />}
         </TeachingChartBoard>
         <footer className="lf-growth-foot">

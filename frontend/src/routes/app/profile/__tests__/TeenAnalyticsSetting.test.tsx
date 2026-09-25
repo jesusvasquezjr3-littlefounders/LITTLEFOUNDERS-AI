@@ -60,7 +60,7 @@ it('waits for an in-flight write before reconciling a cross-tab change', async (
   await waitFor(() => expect(mocks.api).toHaveBeenCalledTimes(2));
   fireEvent(window, new StorageEvent('storage', { key: ANALYTICS_POLICY_SIGNAL, newValue: 'opaque' }));
   expect(mocks.api).toHaveBeenCalledTimes(2);
-  expect(screen.getByRole('switch')).toBeDisabled();
+  expect(screen.getByRole('switch')).toHaveAttribute('aria-disabled', 'true');
   await act(async () => resolve(state(true)));
   await waitFor(() => expect(mocks.api).toHaveBeenCalledTimes(3));
   expect(await screen.findByRole('switch')).toHaveAttribute('aria-checked', 'false');

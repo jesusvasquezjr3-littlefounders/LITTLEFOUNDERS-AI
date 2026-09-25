@@ -89,7 +89,7 @@ try {
   await click('.lf-learning-view-toggle');
   if (!await page.evaluate("document.querySelectorAll('.lf-learning-table tbody tr').length===4 && document.querySelector('.lf-learning-table tbody tr:last-child td')?.textContent==='75 monedas'")) findings.push({ interaction: 'table-parity' });
   await click('.lf-learning-view-toggle');
-  await click('button[aria-label="Más"]');
+  await click('button[aria-label="Cambia el porcentaje: Más"]');
   if (!await page.evaluate("document.querySelector('input[type=range]').value==='30' && document.querySelectorAll('.lf-percent-cell--filled').length===30")) findings.push({ interaction: 'stepper-recompute' });
   await click('.lf-learning-control-bar .lf-button');
   if (!await page.evaluate("document.querySelector('input[type=range]').value==='20' && document.querySelectorAll('.lf-percent-cell--filled').length===20")) findings.push({ interaction: 'reset-failed' });

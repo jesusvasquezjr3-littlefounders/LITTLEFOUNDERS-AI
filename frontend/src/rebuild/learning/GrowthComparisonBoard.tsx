@@ -1,10 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, SegmentedControl, Slider, ProgressBar } from '../design/controls';
 import { growthComparison } from './growthComparisonModel.generated';
 import { TeachingChartBoard } from './TeachingChartBoard';
-import { ParameterSlider } from './ParameterSlider';
-import { ScaleToggle } from './ScaleToggle';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
@@ -72,6 +70,7 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
 }) {
   const locale = document.locale;
   const t = copy[locale];
+  const scaleName = useId();
   const p = segment.payload;
   const initialPrediction = p.principalMinor;
   const [rate, setRate] = useState(p.initialRateBps);
@@ -110,10 +109,7 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
   return <main className="lf-learning lf-learning--sticky-foot" data-surface="app" data-screen="growth-comparison">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.explore} aria-valuemin={0} aria-valuemax={100}
-          aria-valuenow={sequenceProgress(sequence, committed !== null)} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, committed !== null)}%` }} />
-        </div> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span>
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.explore} value={sequenceProgress(sequence, committed !== null)} max={100} valueText={`${sequenceProgress(sequence, committed !== null)}%`} /> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span>
       </header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
@@ -143,15 +139,16 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence }: {
             <div className="lf-growth-compare-axis-labels" data-copy-role="data"><span>0</span><span>{years} {t.years.toLowerCase()}</span></div>
           </>}>
           {() => <div className="lf-growth-compare-controls">
-            <ScaleToggle label={t.scale} value={years} onValueChange={changeYears} options={[
-              { value: p.minimumYears, label: t.nearScale }, { value: p.maximumYears, label: t.longScale },
-            ]} />
-            <ParameterSlider label={t.prediction} valueText={money(prediction)} minimum={p.principalMinor}
-              maximum={p.predictionMaximumMinor} step={p.predictionStepMinor} value={prediction} onValueChange={changePrediction} />
-            <ParameterSlider label={t.rate} valueText={`${percent.format(rate / 100)}%`} minimum={p.minimumRateBps}
-              maximum={p.maximumRateBps} step={p.rateStepBps} value={rate} onValueChange={changeRate} />
-            <ParameterSlider label={t.years} valueText={percent.format(years)} minimum={p.minimumYears}
-              maximum={p.maximumYears} step={p.yearStep} value={years} onValueChange={changeYears} />
+            <SegmentedControl legend={t.scale} legendHidden name={`${scaleName}-scale`} value={String(years)}
+              onValueChange={(value) => changeYears(Number(value))} options={[
+                { value: String(p.minimumYears), label: t.nearScale }, { value: String(p.maximumYears), label: t.longScale },
+              ]} />
+            <Slider label={t.prediction} valueText={money(prediction)} min={p.principalMinor}
+              max={p.predictionMaximumMinor} step={p.predictionStepMinor} value={prediction} onValueChange={changePrediction} />
+            <Slider label={t.rate} valueText={`${percent.format(rate / 100)}%`} min={p.minimumRateBps}
+              max={p.maximumRateBps} step={p.rateStepBps} value={rate} onValueChange={changeRate} />
+            <Slider label={t.years} valueText={percent.format(years)} min={p.minimumYears}
+              max={p.maximumYears} step={p.yearStep} value={years} onValueChange={changeYears} />
           </div>}
         </TeachingChartBoard>
         {committed !== null && final ? <div className="lf-growth-compare-outcome" role="status" aria-live="polite">

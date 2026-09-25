@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import en from '../../i18n/en-US/rebuild.json';
 import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
-import { AnswerChoice, Button, Copy, Field, StatusMark } from '../design/controls';
+import { AnswerChoice, Banner, Button, Copy, InlineNotice, TextField } from '../design/controls';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from '../learning/AllocationBoard';
 import { growthPilotDocument } from '../learning/GrowthBoard';
@@ -189,10 +189,11 @@ export function Preview() {
         <h1 data-copy-role="prompt">{t.question}</h1>
         <div className="lf-choices" role="group" aria-label={t.question}>
           {(['save', 'spend'] as const).map((choice) => <AnswerChoice key={choice} label={t[choice]}
-            selected={answer === choice} disabled={checked} onSelect={() => setAnswer(choice)} />)}
+            selected={answer === choice} disabled={checked} onSelect={() => setAnswer(choice)}
+            verdict={checked && answer === choice ? (choice === 'save' ? 'correct' : 'retry') : null} />)}
         </div>
-        <div role="status" className={checked ? `lf-feedback ${answer === 'save' ? 'lf-feedback--correct' : 'lf-feedback--retry'}` : undefined}>
-          {checked ? <><StatusMark correct={answer === 'save'} /><Copy role="body">{answer === 'save' ? t.correct : t.hint}</Copy></> : null}
+        <div role="status" className="lf-feedback">
+          {checked ? <Banner tone={answer === 'save' ? 'success' : 'retry'} live={false}>{answer === 'save' ? t.correct : t.hint}</Banner> : null}
         </div>
         <Button variant="accent" disabled={!answer} onClick={() => checked ? (setChecked(false), setAnswer(null)) : setChecked(true)}>
           {checked ? t.again : t.check}
@@ -201,10 +202,10 @@ export function Preview() {
         <Button onClick={() => go('home')}>{t.back}</Button>
         <h1 data-copy-role="heading">{t.controls}</h1>
         <form className="lf-form" onSubmit={(event) => { event.preventDefault(); setFormState(goal.trim() ? 'saved' : 'error'); }}>
-          <Field label={t.name} value={goal} onChange={(event) => { setGoal(event.target.value); setFormState('idle'); }}
-            aria-invalid={formState === 'error'} hint={formState === 'error' ? t.required : t.nameHint} />
+          <TextField label={t.name} value={goal} onChange={(event) => { setGoal(event.target.value); setFormState('idle'); }}
+            help={t.nameHint} error={formState === 'error' ? t.required : undefined} />
           <Button variant="accent" type="submit">{t.confirm}</Button>
-          <div role="status">{formState === 'saved' ? <Copy role="body">{t.confirmed}</Copy> : null}</div>
+          <div role="status">{formState === 'saved' ? <InlineNotice tone="success">{t.confirmed}</InlineNotice> : null}</div>
         </form>
       </>}
       </div>

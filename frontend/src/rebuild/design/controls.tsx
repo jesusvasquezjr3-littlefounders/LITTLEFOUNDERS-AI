@@ -1,6 +1,7 @@
-import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
+import type { AnimationEvent, ReactNode } from 'react';
 import type { CopyRole } from './copyBudget';
 import { Glyph } from './glyphs';
+import { useOneShot } from './motion';
 import './controls.css';
 
 /*
@@ -17,28 +18,17 @@ export { AuthShell, BrandMark, CONSOLE_TAB_LIMIT, ConsoleShell, DashboardLayout,
   STAFF_PERMISSIONS, StaffShell, TutorShell, useDocumentMeta, useRouteFocus,
   type ConsoleShellProps, type LearnerShellProps, type ShellCommonProps, type ShellLinkAction, type ShellNavItem, type SingleStateHue, type SiteShellProps,
   type StaffGrants, type StaffNavItem, type StaffPermission, type TableColumn } from './shells';
-export { Checkbox, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextField, type ChoiceOption, type SelectOption, type TextFieldProps } from './fields';
+export { Checkbox, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextField, type ChoiceOption, type SelectOption, type StepLabels, type TextFieldProps } from './fields';
 export { Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Skeleton,
   type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';
 export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
+export { activeIdleMotion, Celebration, celebrationPart, CountUp, IDLE_MOTION_KINDS, useIdleMotion, useOneShot,
+  type CelebrationPart, type CelebrationState, type IdleMotionKind } from './motion';
+export { isMilestone, type Milestone } from './milestones';
+export { RebuildRoot } from './root';
 
 export function Copy({ role, children, as: Tag = 'p' }: { role: CopyRole; children: ReactNode; as?: 'p' | 'span' | 'h1' | 'h2' }) {
   return <Tag data-copy-role={role}>{children}</Tag>;
-}
-
-/**
- * The first-generation text field used by the age screen and the preview form.
- * New surfaces use `TextField`, which adds the Bible's error glyph and message
- * placement; this one stays until those surfaces are recomposed (S03 wave 2),
- * because changing it now would not be a pure refactor.
- */
-export function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
-  const id = useId();
-  return <div className="lf-field">
-    <label htmlFor={id} data-copy-role="body">{label}</label>
-    <input {...props} id={id} aria-describedby={hint ? `${id}-hint` : undefined} />
-    {hint ? <p id={`${id}-hint`} data-copy-role="body">{hint}</p> : null}
-  </div>;
 }
 
 /** In-house system glyphs, class A. No identity or character pictograms. */
@@ -48,12 +38,25 @@ export function StatusMark({ correct }: { correct: boolean }) {
 
 /**
  * Answer option on the full-bleed lesson screen (02 `answer-idle` /
- * `answer-selected`): a rounded rectangle that chooses one of several.
+ * `answer-selected`): a rounded rectangle that chooses one of several. It
+ * follows the feedback grammar of 02 §9.2: selecting bumps, a correct answer
+ * bumps again, "not yet" wobbles. Never a celebration.
  */
-export function AnswerChoice({ label, selected, disabled, onSelect }: { label: ReactNode; selected: boolean; disabled?: boolean; onSelect: () => void }) {
+export function AnswerChoice({ label, selected, disabled, onSelect, verdict = null }: {
+  label: ReactNode; selected: boolean; disabled?: boolean; onSelect: () => void; verdict?: 'correct' | 'retry' | null;
+}) {
+  const [bump, settleBump] = useOneShot(selected ? (verdict === 'correct' ? 'correct' : 'selected') : null);
+  const [wobble, settleWobble] = useOneShot(selected && verdict === 'retry' ? 'retry' : null);
+  const motion = wobble ? ' lf-choice--wobble' : bump ? ' lf-choice--bump' : '';
+  // Bump and wobble are the row's only animations and never overlap.
+  const settle = (event: AnimationEvent<HTMLButtonElement>) => {
+    if (event.target !== event.currentTarget) return;
+    settleBump();
+    settleWobble();
+  };
   return <button type="button"
-    className="lf-choice" data-copy-role="option" aria-pressed={selected}
-    disabled={disabled} onClick={onSelect}>
+    className={`lf-choice${motion}`} data-copy-role="option" aria-pressed={selected}
+    disabled={disabled} onClick={onSelect} onAnimationEnd={settle}>
     <span className="lf-choice-marker" aria-hidden="true">{selected ? '●' : '○'}</span>
     {label}
   </button>;

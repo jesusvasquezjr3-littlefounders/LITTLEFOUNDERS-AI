@@ -56,6 +56,11 @@ export function proportionFindings(res, state, width) {
   if (res.accent > 3 && !state.catalogue) add('accent-buttons>3', String(res.accent));
   for (let i = 1, run = 1; i < res.rhythm.length; i++) { run = res.rhythm[i] === res.rhythm[i - 1] ? run + 1 : 1; if (run >= 3) { add('identical-section-rhythm x3', res.rhythm[i]); break; } }
   if (res.gaps) add('tap-gap<8px', [`${res.gaps} pairs`, ...res.pairs]);
+  // 02 §9.4 idle-motion budget and D7 celebration budget (S03.7); these apply to specimen sheets as well.
+  if (res.idle > 3) add('idle-motion>3', String(res.idle));
+  if (res.unbudgeted?.length) add('unbudgeted-idle-loop', res.unbudgeted);
+  if (res.breathing > 1) add('breathing-cta>1', String(res.breathing));
+  if (res.offList?.length) add('celebration-off-milestone-list', res.offList);
   return findings;
 }
 

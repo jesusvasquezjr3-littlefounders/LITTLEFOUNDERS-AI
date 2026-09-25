@@ -227,11 +227,35 @@ export function installAudit() {
       ratio, center, split, sizes: out.sizes.size, radii: out.radii.size, accent, rhythm, gaps: out.gaps, pairs: out.pairs };
   }
 
+  /* ------------------------------------------------------- motion budget */
+  // Read with motion allowed (the driver switches prefers-reduced-motion to no-preference first; every other
+  // measurement runs with reduced motion so nothing moves under it).
+  function motion() {
+    // Idle motion (02 §9.4): at most three looping things per screen, each one a claimed slot (`data-idle-motion`),
+    // and one breathing call to action. CSS loops are read from the running animations; the Mentor's WebGL idle
+    // loop is not a CSS animation, so its claimed element counts instead.
+    const loops = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity);
+    const loopTargets = new Set(loops.map((a) => a.effect?.target).filter(Boolean));
+    const claimed = [...document.querySelectorAll('[data-idle-motion]')];
+    const idleThings = new Set([...claimed, ...[...loopTargets].map((t) => t.closest('[data-idle-motion]') ?? t)]);
+    const unbudgeted = [...loopTargets].filter((t) => !t.closest('[data-idle-motion]')).map((t) => label(t));
+    const breathing = claimed.filter((e) => e.dataset.idleMotion === 'breathing-cta').length;
+    // Celebration only for the closed OD-7 list (D7): no celebration root off the list that is not refused, and no
+    // celebration keyframes or spring running outside a celebration root on the list.
+    const milestones = ['lesson-complete', 'course-complete', 'savings-goal-reached', 'badge-earned', 'streak-7', 'streak-30', 'streak-100'];
+    const onList = (e) => milestones.includes(e?.closest('.lf-celebration')?.dataset.milestone ?? '');
+    const offList = [...document.querySelectorAll('.lf-celebration')].filter((e) => e.dataset.celebration !== 'refused' && !onList(e)).map((e) => label(e))
+      .concat(document.getAnimations().filter((a) => /^lf-celebration/.test(a.animationName ?? '') && !onList(a.effect?.target)).map((a) => label(a.effect.target)));
+    return { idle: idleThings.size, unbudgeted, breathing, offList };
+  }
+
   /* ------------------------------------------------------- copy budget */
   function copyBudget(fold) {
     fresh();
     const blocks = [], seen = new Set();
     const isBlock = (el) => { const d = getComputedStyle(el).display; return !d.startsWith('inline') || el.matches('button,a,label'); };
+    // A `display: contents` wrapper (the milestone celebration) draws no box of its own: look through it to its children.
+    const hasBlockChild = (el) => [...el.children].some((c) => getComputedStyle(c).display === 'contents' ? hasBlockChild(c) : isBlock(c) && visible(c) && (c.innerText ?? '').trim());
     for (const el of all()) {
       if (seen.has(el) || el.closest('svg') || !visible(el) || el.closest('[aria-hidden="true"]')) continue;
       if (['SCRIPT', 'STYLE', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].includes(el.tagName)) continue;
@@ -251,7 +275,7 @@ export function installAudit() {
       const act = pressable && !raw.includes('\n');
       if (pressable && !act) continue;
       if (!act && !isBlock(el)) continue;
-      if (!act && [...el.children].some((c) => isBlock(c) && visible(c) && (c.innerText ?? '').trim())) continue;
+      if (!act && hasBlockChild(el)) continue;
       if (el.closest('td,th,table') || el.querySelector('select')) continue;
       const text = (el.innerText || '').replace(/\s+/g, ' ').trim(); if (!text || !words(text)) continue;
       if (act) el.querySelectorAll('*').forEach((c) => seen.add(c));
@@ -268,7 +292,7 @@ export function installAudit() {
   }
 
   window.__lfAudit = {
-    textFit, proportion, copyBudget, stress, spacing, signature,
+    textFit, proportion, motion, copyBudget, stress, spacing, signature,
     roots: () => ROOTS().length,
   };
 }

@@ -6,4 +6,3 @@
   display: grid;
   gap: .75rem;
 }
-.lf-analytics-choice-toggle { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }

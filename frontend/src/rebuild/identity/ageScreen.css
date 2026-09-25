@@ -8,5 +8,4 @@
 }
 .lf-age-form { display: grid; gap: var(--spacing-6); }
 .lf-age-date { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: var(--spacing-3); }
-.lf-age-screen [role='alert'] { color: var(--error-strong); }
 @media (max-width: 340px) { .lf-age-date { grid-template-columns: 1fr; } }

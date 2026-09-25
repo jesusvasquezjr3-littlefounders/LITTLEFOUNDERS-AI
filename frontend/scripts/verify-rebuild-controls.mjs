@@ -55,6 +55,8 @@ async function navigate(locale, theme) {
   await page.evaluate('document.fonts.ready');
   if (!await page.evaluate("document.fonts.check('600 16px Fredoka') && document.fonts.check('500 16px Nunito')")) throw Error('Fonts did not load');
   await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
+  // The catalogue's milestone demonstration celebrates on each visit; measure its settled frame (it settles within 1.2 s by contract).
+  for (let n = 0; n < 60 && await page.evaluate("!!document.querySelector('[data-celebration=\"playing\"]')"); n++) await new Promise((done) => setTimeout(done, 50));
 }
 
 const measure = (locale) => `(() => {
@@ -152,11 +154,13 @@ try {
     // Interactions through the real pointer and keyboard.
     const checks = [];
     const expectTrue = async (name, expression) => { if (!await page.evaluate(expression)) checks.push(name); };
-    await click('.lf-system-form .lf-button--accent');
+    // Animation events are dispatched on the frame after an animation starts, so motion checks poll for up to a second.
+    const expectSoon = async (name, expression) => { for (let n = 0; n < 20; n++) { if (await page.evaluate(expression)) return; await new Promise((done) => setTimeout(done, 50)); } checks.push(name); };
+    await click('.lf-system-form button[type=submit]');
     await expectTrue('empty-goal-error', `(() => { const i = document.querySelector('.lf-system-form input'); const d = i.getAttribute('aria-describedby') || ''; return i.getAttribute('aria-invalid') === 'true' && !!document.querySelector('.lf-system-form .lf-input-error svg') && d.split(' ').some(id => document.getElementById(id)?.classList.contains('lf-input-error')); })()`);
     await click('.lf-system-form input');
     await page.send('Input.insertText', { text: 'Bicycle' });
-    await click('.lf-system-form .lf-button--accent');
+    await click('.lf-system-form button[type=submit]');
     await expectTrue('goal-error-clears', `!document.querySelector('.lf-system-form .lf-input-error')`);
     await click('.lf-input-reveal');
     await expectTrue('password-reveal', `document.querySelector('.lf-input-box:has(.lf-input-reveal) input').type === 'text'`);
@@ -184,8 +188,20 @@ try {
     await expectTrue('avatar-real-render', `[...document.querySelectorAll('[data-slot=mentor-avatar] img')].every(i => i.naturalWidth > 0 && i.dataset.character === 'dina' && i.dataset.pose === 'ambient.idle' && i.getAttribute('src') === '/rebuild/mentor-avatars/dina-${theme}.png') && document.querySelectorAll('[data-slot=mentor-avatar] img').length > 0 && !document.querySelector('[data-refused]')`);
     await expectTrue('scroll-kept-on-rerender', `scrollY > 0`);
     await expectTrue('motion-on', `getComputedStyle(document.querySelector('.lf-toggle-thumb')).transitionDuration !== '0s'`);
+    // S03.7 motion patterns (02 §9.1, §9.4; D7; 07 §5).
+    const loops = `document.getAnimations().filter(a => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity)`;
+    await expectTrue('breathing-one-cta', `document.querySelectorAll('[data-idle-motion="breathing-cta"]').length === 1 && ${loops}.length === 1 && ${loops}[0].effect.target.dataset.idleMotion === 'breathing-cta'`);
+    await page.evaluate(`window.__lfMotion = []; document.addEventListener('animationstart', (event) => window.__lfMotion.push(event.animationName), true)`);
+    await click('section[aria-labelledby="system-motion"] .lf-check-label');
+    await expectSoon('armed-bump-once', `window.__lfMotion.filter(n => n === 'lf-armed-bump').length === 1 && !document.querySelector('section[aria-labelledby="system-motion"] .lf-button--success').disabled`);
+    await click('.lf-celebration[data-milestone=\"badge-earned\"] .lf-button');
+    await expectSoon('milestone-celebrates', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.milestone === 'badge-earned' && window.__lfMotion.includes('lf-celebration-pop') && window.__lfMotion.includes('lf-celebration-rise')`);
+    await new Promise((done) => setTimeout(done, 1400));
+    await expectTrue('celebration-settles', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.celebration === 'settled' && document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"] .lf-count-up').textContent === '+40'`);
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }, { name: 'prefers-color-scheme', value: theme }] });
     await expectTrue('reduced-motion', `['.lf-toggle-thumb', '.lf-icon-button', '.lf-stepper-button', '.lf-progress-fill', '.lf-button'].every(s => getComputedStyle(document.querySelector(s)).transitionDuration.split(',').every(d => d.trim() === '0s'))`);
+    await click('.lf-celebration[data-milestone=\"badge-earned\"] .lf-button');
+    await expectTrue('reduced-motion-static-frame', `document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"]').dataset.celebration === 'static' && document.querySelector('.lf-celebration[data-milestone=\"badge-earned\"] .lf-count-up').textContent === '+40' && document.getAnimations().length === 0 && !!document.querySelector('.lf-button--breathing')`);
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }] });
     if (checks.length) findings.push({ locale, theme, check: 'interactions', issues: checks });
 

@@ -8,9 +8,9 @@
  *
  * Selectors carry `.lf-rebuild` so they outrank the root's element resets in
  * system.css regardless of stylesheet order; the first-generation `.lf-button`
- * base, accent, success, disabled and `.lf-field` rules stay in system.css
- * unchanged, and the new colour roles apply only while enabled so the shared
- * disabled treatment always wins.
+ * base, accent, success and disabled rules stay in system.css unchanged (the
+ * first-generation field was retired in S03.6), and the new colour roles apply
+ * only while enabled so the shared disabled treatment always wins.
  */
 
 /* ---- Buttons: the remaining colour roles, sizes and the pending state ---- */
@@ -168,6 +168,8 @@
   font: var(--type-label);
   cursor: pointer;
 }
+/* Never narrower than a target, even for a one-character option such as "2" (02 §8): the words keep a floor inside the padding. */
+.lf-rebuild .lf-segmented-option > span { min-inline-size: calc(var(--target-min) - var(--spacing-4) * 2); text-align: center; }
 .lf-rebuild .lf-segmented-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:checked) { background: var(--primary); color: var(--on-primary); }
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:disabled) { color: var(--content-disabled); cursor: default; }
@@ -226,6 +228,8 @@
 .lf-rebuild .lf-slider-value { font: var(--type-numeral); font-variant-numeric: tabular-nums; }
 .lf-rebuild .lf-slider-input { inline-size: 100%; block-size: var(--target-lg); margin: 0; accent-color: var(--primary-strong); cursor: pointer; }
 .lf-rebuild .lf-slider-input:disabled { cursor: default; }
+/* The discrete −/+ alternative keeps the 8 px tap gap from the range above it (03 §3): the grid gives 4 px, this adds 4. */
+.lf-rebuild .lf-slider-steps { display: flex; justify-content: space-between; gap: var(--spacing-2); margin-block-start: var(--spacing-1); }
 
 .lf-rebuild .lf-stepper { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-inline-size: 0; }
 .lf-rebuild .lf-stepper-controls { display: flex; align-items: center; gap: var(--spacing-2); }
@@ -243,6 +247,26 @@
 }
 .lf-rebuild .lf-stepper-button:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
 .lf-rebuild .lf-stepper-value { min-inline-size: var(--target-base); font: var(--type-numeral); font-variant-numeric: tabular-nums; text-align: center; }
+/* The buttons keep their 48 px floor; a long value or label wraps instead of squeezing them. */
+.lf-rebuild .lf-stepper-controls { flex-wrap: wrap; }
+.lf-rebuild .lf-stepper-button { flex: none; }
+/* Value under the label, both buttons at the end: one compact row; stacked when the stepper's own box is narrow. */
+.lf-rebuild .lf-stepper--labelled { display: block; container: lf-stepper / inline-size; }
+.lf-rebuild .lf-stepper-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: 'label controls' 'value controls';
+  align-items: center;
+  column-gap: var(--spacing-3);
+  row-gap: var(--spacing-1);
+}
+.lf-rebuild .lf-stepper-layout > .lf-input-label { grid-area: label; }
+.lf-rebuild .lf-stepper-layout > .lf-stepper-value { grid-area: value; min-inline-size: 0; text-align: start; }
+.lf-rebuild .lf-stepper-layout > .lf-stepper-controls { grid-area: controls; }
+@container lf-stepper (max-width: 239px) {
+  .lf-rebuild .lf-stepper-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'label' 'value' 'controls'; }
+  .lf-rebuild .lf-stepper-layout > .lf-stepper-controls { justify-content: space-between; }
+}
 
 /* ---- Chips and pills ---- */
 .lf-rebuild .lf-chip-group { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
@@ -339,6 +363,8 @@
 .lf-rebuild .lf-progress-fill { display: block; block-size: 100%; border-radius: inherit; background: var(--primary); }
 .lf-rebuild .lf-progress--mint .lf-progress-fill { background: var(--mint); }
 .lf-rebuild .lf-progress--reward .lf-progress-fill { background: var(--reward); }
+/* A bare capsule has no head row: the screen writes its value beside it (the lesson top bar's "2/4"). */
+.lf-rebuild .lf-progress--bare { gap: 0; align-content: center; }
 
 .lf-rebuild .lf-skeleton { display: grid; gap: var(--spacing-2); }
 .lf-rebuild .lf-skeleton-line { display: block; block-size: var(--spacing-4); border-radius: var(--rounded-full); background: var(--sunken); }

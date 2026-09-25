@@ -88,11 +88,11 @@ try {
     await navigate(new URLSearchParams({ locale, theme, screen: 'practice' }).toString());
     await click('.lf-choice:nth-child(2)');
     await click('.lf-preview-content > .lf-button--accent');
-    if (!await page.evaluate("!!document.querySelector('.lf-feedback--retry')")) throw Error('Miss feedback missing');
+    if (!await page.evaluate("!!document.querySelector('.lf-feedback .lf-banner--retry')")) throw Error('Miss feedback missing');
     await click('.lf-preview-content > .lf-button--accent');
     await click('.lf-choice:first-child');
     await click('.lf-preview-content > .lf-button--accent');
-    if (!await page.evaluate("!!document.querySelector('.lf-feedback--correct')")) throw Error('Correct feedback missing');
+    if (!await page.evaluate("!!document.querySelector('.lf-feedback .lf-banner--success')")) throw Error('Correct feedback missing');
     await navigate(new URLSearchParams({ locale, theme, screen: 'controls' }).toString());
     await click('form button');
     if (!await page.evaluate("document.querySelector('input').getAttribute('aria-invalid')==='true'")) throw Error('Field error missing');

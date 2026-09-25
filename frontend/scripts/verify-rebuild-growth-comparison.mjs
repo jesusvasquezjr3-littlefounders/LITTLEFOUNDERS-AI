@@ -52,11 +52,13 @@ try {
         if(!main) return ['wrong-screen'];
         if(document.documentElement.scrollWidth>innerWidth+1) issues.push('horizontal-scroll');
         if(main.querySelectorAll('h1').length!==1) issues.push('heading-count');
-        const scale=main.querySelector('[role="group"][aria-label=${JSON.stringify(locale === 'es-MX' ? 'Escala de tiempo' : locale === 'pt-BR' ? 'Escala de tempo' : 'Time scale')}]');
-        if(!scale||scale.querySelectorAll('button').length!==2) issues.push('scale-toggle-missing');
-        if(scale?.querySelectorAll('button[aria-pressed="true"]').length!==1) issues.push('scale-toggle-state');
+        const scale=[...main.querySelectorAll('.lf-growth-compare-controls fieldset.lf-segmented')].find((group)=>group.getAttribute('aria-label')===${JSON.stringify(locale === 'es-MX' ? 'Escala de tiempo' : locale === 'pt-BR' ? 'Escala de tempo' : 'Time scale')});
+        if(!scale||scale.querySelectorAll('input[type="radio"]').length!==2) issues.push('scale-toggle-missing');
+        // A scale segment is checked exactly when the years value is that scale's end (10 years, the fixture's start, is neither).
+        const yearsValue=main.querySelectorAll('.lf-growth-compare-controls input[type="range"]')[2]?.value;
+        if(scale?.querySelectorAll('input:checked').length!==[...(scale?.querySelectorAll('input[type="radio"]')??[])].filter((input)=>input.value===yearsValue).length) issues.push('scale-toggle-state');
         if(main.querySelectorAll('.lf-growth-compare-controls input[type="range"]').length!==3) issues.push('three-controls');
-        if(!main.querySelector('.lf-growth-compare-controls .lf-parameter-slider:nth-child(2) label')?.textContent?.includes(${JSON.stringify(locale === 'es-MX' ? 'Tu predicción' : locale === 'pt-BR' ? 'Sua previsão' : 'Your prediction')})) issues.push('prediction-not-first');
+        if(!main.querySelector('.lf-growth-compare-controls .lf-slider:nth-child(2) label')?.textContent?.includes(${JSON.stringify(locale === 'es-MX' ? 'Tu predicción' : locale === 'pt-BR' ? 'Sua previsão' : 'Your prediction')})) issues.push('prediction-not-first');
         if(!main.querySelector('.lf-learning-actions button')?.disabled) issues.push('reveal-without-prediction');
         if(main.querySelector('.lf-growth-compare-compound')) issues.push('answer-shown-before-prediction');
         if(!main.querySelector('[role="img"]')?.getAttribute('aria-label')?.includes(${JSON.stringify(locale === 'es-MX' ? 'revela' : locale === 'pt-BR' ? 'oculta' : 'hidden')})) issues.push('hidden-chart-description');
@@ -151,7 +153,7 @@ try {
   const beyondScale = await page.send('Page.captureScreenshot', { format: 'png' });
   writeFileSync(join(output, 'growth-compare-out-of-scale-375-light.png'), Buffer.from(beyondScale.data, 'base64'));
   await navigate('es-MX', 'light', '13-17', 375, 1, false);
-  await pointer('.lf-growth-compare-controls .lf-parameter-slider:nth-child(3) input', .7);
+  await pointer('.lf-growth-compare-controls .lf-slider:nth-child(3) input', .7);
   const rateBeforeReveal = await page.evaluate("document.querySelectorAll('.lf-growth-compare-controls input[type=range]')[1]?.value");
   if (rateBeforeReveal === '800') findings.push({ interaction: 'pointer-rate-did-not-change' });
   await pointer('.lf-growth-compare-controls input[type="range"]', .25);
@@ -175,14 +177,16 @@ try {
   if (!await page.evaluate("!document.querySelector('.lf-growth-compare-outcome') && document.querySelector('.lf-learning-table tbody tr:last-child td:last-child')?.textContent==='Oculto'"))
     findings.push({ interaction: 'keyboard-change-did-not-reset-reveal' });
   await navigate('es-MX', 'light', '13-17', 375, 1, false);
-  await pointer('[role="group"][aria-label="Escala de tiempo"] button:last-child');
+  await pointer('.lf-growth-compare-controls .lf-segmented-option:last-child');
   const scaleToggle = await page.evaluate(`(() => ({
-    longPressed: document.querySelector('[role="group"][aria-label="Escala de tiempo"] button:last-child')?.getAttribute('aria-pressed'),
-    nearPressed: document.querySelector('[role="group"][aria-label="Escala de tiempo"] button:first-child')?.getAttribute('aria-pressed'),
+    longPressed: String(!!document.querySelector('.lf-growth-compare-controls .lf-segmented-option:last-child input')?.checked),
+    nearPressed: String(!!document.querySelector('.lf-growth-compare-controls .lf-segmented-option:first-child input')?.checked),
     years: document.querySelectorAll('.lf-growth-compare-controls input[type=range]')[2]?.value,
     axis: document.querySelector('[role=img]')?.getAttribute('aria-label'),
     rows: document.querySelectorAll('.lf-learning-table tbody tr').length,
   }))()`);
+  // The table alternative must follow the new scale too: this fresh document starts on the chart, so open the table to count its rows.
+  if (!scaleToggle.rows) { await pointer('.lf-learning-view-toggle'); scaleToggle.rows = await page.evaluate("document.querySelectorAll('.lf-learning-table tbody tr').length"); }
   if (scaleToggle.longPressed !== 'true' || scaleToggle.nearPressed !== 'false' || scaleToggle.years !== '30'
     || !scaleToggle.axis?.includes('0–30') || scaleToggle.rows !== 31) findings.push({ interaction: 'scale-toggle-not-synchronized', scaleToggle });
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });

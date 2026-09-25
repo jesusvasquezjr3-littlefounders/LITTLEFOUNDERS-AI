@@ -1,0 +1,53 @@
+/*
+ * Motion patterns (Frontend Bible 02 §9.1, §9.2, §9.4; 04 §2–§3; 07 §5; S03.7).
+ * Every animation sits inside the no-preference query: with reduced motion the
+ * classes still toggle and every state change still happens, only the travel
+ * is gone (04 §3). The spring curve and the celebration duration appear only
+ * under `.lf-celebration--play` (D7, OD-7).
+ */
+/* The celebration wrapper adds no box of its own: the surface's layout is unchanged. */
+.lf-rebuild .lf-celebration { display: contents; }
+.lf-rebuild .lf-count-up { display: inline-block; font-variant-numeric: tabular-nums; }
+/* The halo takes the button's own fill; a surface that repaints the button sets the same property. */
+.lf-rebuild .lf-button--breathing { --lf-breath: var(--accent); }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Armed: a button that becomes usable bumps once (02 §9.1). */
+  .lf-rebuild .lf-button--armed { animation: lf-armed-bump var(--dur-component) var(--ease-standard); }
+
+  /*
+   * The one breathing call to action per screen: a soft halo in its own colour,
+   * not a moving highlight. Deliberate exception to the duration tokens (04 §2):
+   * an idle "the scene is alive" loop, 2.6 s, counted in the idle budget.
+   */
+  .lf-rebuild .lf-button--breathing { animation: lf-breathe 2.6s var(--ease-standard) infinite; }
+  .lf-rebuild .lf-button--breathing.lf-button--armed { animation: lf-armed-bump var(--dur-component) var(--ease-standard), lf-breathe 2.6s var(--ease-standard) var(--dur-component) infinite; }
+
+  /* Feedback grammar on the answer row (02 §9.2): select bumps, correct bumps, not yet wobbles. */
+  .lf-rebuild .lf-choice--bump { animation: lf-select-bump var(--dur-component) var(--ease-standard); }
+  .lf-rebuild .lf-choice--wobble { animation: lf-wobble var(--dur-transition) var(--ease-standard); }
+
+  /* Milestone celebration: medal pops on the spring, tiles rise in sequence, bars fill. */
+  .lf-rebuild .lf-celebration--play .lf-celebration-pop { animation: lf-celebration-pop var(--dur-celebration) var(--ease-spring) both; }
+  .lf-rebuild .lf-celebration--play .lf-celebration-rise {
+    animation: lf-celebration-rise var(--dur-transition) var(--ease-enter) both;
+    animation-delay: calc(var(--dur-instant) * (2 + var(--lf-celebration-order, 0)));
+  }
+  .lf-rebuild .lf-celebration--play .lf-celebration-fill { transform-origin: 0 50%; animation: lf-celebration-fill var(--dur-celebration) var(--ease-standard) both; }
+  .lf-rebuild[dir='rtl'] .lf-celebration--play .lf-celebration-fill, .lf-rebuild [dir='rtl'] .lf-celebration--play .lf-celebration-fill { transform-origin: 100% 50%; }
+
+  @keyframes lf-armed-bump { 0% { transform: scale(var(--press-scale)); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  @keyframes lf-breathe {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--lf-breath) 45%, transparent); }
+    50% { box-shadow: 0 0 0 var(--spacing-2) color-mix(in srgb, var(--lf-breath) 0%, transparent); }
+  }
+  @keyframes lf-select-bump { 0% { transform: scale(.96); } 60% { transform: scale(1.035); } 100% { transform: scale(1); } }
+  @keyframes lf-wobble {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(calc(var(--spacing-1) * -1)); }
+    40%, 80% { transform: translateX(var(--spacing-1)); }
+  }
+  @keyframes lf-celebration-pop { 0% { opacity: 0; transform: scale(.6); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes lf-celebration-rise { 0% { opacity: 0; transform: translateY(var(--spacing-4)); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes lf-celebration-fill { 0% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
+}

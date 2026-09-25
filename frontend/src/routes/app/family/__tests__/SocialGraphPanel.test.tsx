@@ -34,7 +34,7 @@ describe('guardian social panel', () => {
     let finish!: (value: ReturnType<typeof response>) => void;
     mockApi.mockReturnValueOnce(new Promise(resolve => { finish = resolve; })).mockResolvedValueOnce(response('Following'));
     render(<SocialGraphPanel kidUserId="kid" token="session" />); open();
-    fireEvent.click(screen.getByRole('button', { name: 'Following' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Following' }));
     await waitFor(() => expect(mockApi).toHaveBeenCalledTimes(2));
     await act(async () => finish(response('Stale')));
     expect(screen.queryByText('Stale')).toBeNull();

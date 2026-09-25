@@ -9,7 +9,8 @@
 .lf-result-stats { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-result-stat { flex: 1 1 0; min-inline-size: min-content; display: grid; justify-items: center; align-content: center; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-2); border-radius: var(--rounded-lg); background: color-mix(in srgb, var(--on-accent) 9%, transparent); text-align: center; }
 .lf-result-stat strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
-.lf-result-stat span { font-size: .875rem; font-weight: 800; }
+/* The label is the stat's own span; the counted number inside <strong> keeps the numeral size. */
+.lf-result-stat > span { font-size: .875rem; font-weight: 800; }
 .lf-result-compare { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: color-mix(in srgb, var(--on-accent) 9%, transparent); }
 .lf-result-compare-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-result-compare h2 { font-family: Fredoka, sans-serif; font-size: 1.5rem; }
@@ -20,6 +21,8 @@
 .lf-result-bar { block-size: 12px; border-radius: var(--rounded-full); background: color-mix(in srgb, var(--on-accent) 15%, transparent); overflow: hidden; }
 .lf-result-bar > span { display: block; block-size: 100%; border-radius: inherit; background: var(--on-accent); }
 .lf-result-sheet > .lf-button { inline-size: 100%; background: var(--on-accent); color: var(--accent); }
+/* The continue action is the screen's one breathing call to action; its halo is its own white fill. */
+.lf-result .lf-result-sheet > .lf-button--breathing { --lf-breath: var(--on-accent); }
 @container app (min-width: 640px) {
   .lf-result { padding: var(--spacing-8); }
   .lf-result-inner { min-block-size: calc(100dvh - var(--spacing-16)); gap: var(--spacing-6); }

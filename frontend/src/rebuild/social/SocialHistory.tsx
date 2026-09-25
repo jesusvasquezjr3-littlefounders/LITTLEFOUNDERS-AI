@@ -1,4 +1,4 @@
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialGraph.css';
@@ -13,7 +13,7 @@ export function SocialHistory({ copy, locale, dark, open, entries, loading, fail
     <Button aria-expanded={open} onClick={onToggle}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
-      {failed ? <><div role="alert"><Copy role="body">{copy.failed}</Copy></div><Button onClick={onRetry}>{copy.retry}</Button></> : <>
+      {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
         <ul>{entries.map(entry => <li key={entry.id}>
           <Copy role="option">{entry.sourceName || copy.hidden}</Copy>
           <Copy role="body">{copy[entry.action.slice(7) as 'follow' | 'unfollow' | 'block' | 'unblock']}</Copy>
@@ -21,7 +21,7 @@ export function SocialHistory({ copy, locale, dark, open, entries, loading, fail
           <time dateTime={entry.createdAt}>{date.format(new Date(entry.createdAt))}</time>
         </li>)}</ul>
         {!loading && entries.length === 0 && <Copy role="body">{copy.empty}</Copy>}
-        {loading && <div role="status"><Copy role="body">{copy.loading}</Copy></div>}
+        {loading && <LoadingState label={copy.loading} lines={2} />}
         {hasMore && <Button disabled={loading} onClick={onMore}>{copy.more}</Button>}
       </>}
     </>}

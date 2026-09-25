@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, SegmentedControl, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { savingsRuleCases, savingsRuleOutcome, type RuleCase, type RuleLink } from './savingsRuleModel';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
@@ -52,6 +52,7 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence }: {
   const t = copy[document.locale];
   const cases = savingsRuleCases(segment.payload.goal, segment.payload.shortfall);
   const [link, setLink] = useState<RuleLink | null>(null);
+  const linkName = useId();
   const [caseIndex, setCaseIndex] = useState(0);
   const selected = cases?.[caseIndex];
   if (!cases || !selected) return null;
@@ -65,9 +66,7 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence }: {
   return <main className="lf-learning" data-surface="app" data-screen="savings-rule">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress}
-          aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} data-copy-role="data">
-          <span style={{ inlineSize: `${progress}%` }} /></div> : null}
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={progress} max={100} valueText={`${progress}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>
@@ -85,10 +84,8 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence }: {
             <div className="lf-rule-outcome" data-copy-role="data">{resultLabel}</div>
           </div>}>
           {() => <div className="lf-rule-controls">
-            <div className="lf-rule-links" role="group" aria-label={t.link}>
-              {(['and', 'or'] as const).map((value) => <Button key={value} aria-pressed={link === value}
-                onClick={() => setLink(value)}>{t[value]}</Button>)}
-            </div>
+            <SegmentedControl legend={t.link} legendHidden name={`${linkName}-link`} value={link}
+              onValueChange={setLink} options={(['and', 'or'] as const).map((value) => ({ value, label: t[value] }))} />
             <div className="lf-rule-cases">
               <Button disabled={caseIndex === 0} onClick={() => setCaseIndex((value) => value - 1)}>{t.previous}</Button>
               <span data-copy-role="data">{t.case} {caseIndex + 1}/{cases.length}</span>

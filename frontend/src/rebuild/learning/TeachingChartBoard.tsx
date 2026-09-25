@@ -1,4 +1,5 @@
 import { useId, useState, type ReactNode } from 'react';
+import { Button } from '../design/controls';
 
 export interface ChartTableRow { id: string | number; label: string | number; value: string }
 
@@ -40,10 +41,10 @@ export function TeachingChartBoard(props: TeachingChartBoardProps) {
     <div className="lf-learning-control-strip">
       <div className="lf-learning-control-bar">
         {controlLeading}
-        <button className="lf-learning-view-toggle" type="button" aria-pressed={showTable}
-          onClick={() => { const next = !showTable; setShowTable(next); onViewChange?.(next); }} data-copy-role="action">
+        <Button variant="sky" size="sm" className="lf-learning-view-toggle"
+          onClick={() => { const next = !showTable; setShowTable(next); onViewChange?.(next); }}>
           {showTable ? showChartLabel : showTableLabel}
-        </button>
+        </Button>
       </div>
       {children?.(showTable)}
     </div>

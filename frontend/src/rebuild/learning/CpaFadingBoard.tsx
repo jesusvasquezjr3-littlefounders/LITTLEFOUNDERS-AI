@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, TextField } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import './learning.css';
 
@@ -79,8 +80,8 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
         {stage.stage === 'abstract' ? <div className="lf-cpa-equation" aria-label={segment.payload.spokenText}><strong data-copy-role="data">{segment.payload.left}</strong><span aria-hidden="true">+</span><strong data-copy-role="data">{segment.payload.right}</strong><span aria-hidden="true">=</span><strong aria-hidden="true">?</strong></div> : null}
         {steps > 0 ? <ol className="lf-cpa-steps" aria-label={t.count}>{t.worked(segment.payload.left, segment.payload.right).slice(0, steps).map((item, index) => <li key={index} data-copy-role="body">{item}</li>)}</ol> : null}
       </section>
-      <div className="lf-learning-control-strip lf-cpa-answer"><label data-copy-role="label">{t.answer}<input aria-label={t.answer} inputMode="numeric" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></label></div>
-      <footer className="lf-learning-foot"><div className={`lf-learning-feedback${verdict ? ` lf-learning-feedback--${verdict}` : ''}`} role="status" data-copy-role="feedback">{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</div><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
+      <div className="lf-learning-control-strip lf-cpa-answer"><TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></div>
+      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
     </div>
   </div></main>;
 }

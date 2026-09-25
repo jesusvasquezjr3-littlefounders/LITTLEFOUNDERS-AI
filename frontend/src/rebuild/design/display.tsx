@@ -87,8 +87,12 @@ const noticeGlyph: Record<NoticeTone, GlyphName> = { success: 'check', retry: 'c
  * what happened. `retry` is the wrong-answer tone: warning gold and a cross,
  * never red and never a penalty. `error` is for system errors only.
  */
-export function Banner({ tone, children, action }: { tone: NoticeTone; children: ReactNode; action?: ReactNode }) {
-  return <div className={`lf-banner lf-banner--${tone}`} role={tone === 'error' ? 'alert' : 'status'}>
+export function Banner({ tone, children, action, live = true }: {
+  tone: NoticeTone; children: ReactNode; action?: ReactNode;
+  /** False when the caller keeps a persistent live region around the banner, so the message is announced once, not twice. */
+  live?: boolean;
+}) {
+  return <div className={`lf-banner lf-banner--${tone}`} role={live ? (tone === 'error' ? 'alert' : 'status') : undefined}>
     <Glyph name={noticeGlyph[tone]} />
     <span className="lf-banner-text" data-copy-role="body">{children}</span>
     {action ? <span className="lf-banner-action">{action}</span> : null}
@@ -102,18 +106,24 @@ export function InlineNotice({ tone, children, live = false }: { tone: NoticeTon
   </p>;
 }
 
-/** The capsule is progress (02 §9.5). The value is written as text as well as drawn. */
-export function ProgressBar({ label, value, max, valueText, tone = 'primary' }: {
-  label: string; value: number; max: number; valueText: string; tone?: 'primary' | 'mint' | 'reward';
+/**
+ * The capsule is progress (02 §9.5). The value is written as text as well as
+ * drawn. `labelHidden` is for a bar whose value the screen already writes next
+ * to it (the lesson top bar's "2/4"): the label then names the bar for
+ * assistive technology only, and no head row is drawn.
+ */
+export function ProgressBar({ label, value, max, valueText, tone = 'primary', labelHidden = false, className }: {
+  label: string; value: number; max: number; valueText: string; tone?: 'primary' | 'mint' | 'reward'; labelHidden?: boolean; className?: string;
 }) {
   const id = useId();
   const percent = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
-  return <div className={`lf-progress lf-progress--${tone}`}>
-    <div className="lf-progress-head">
+  const naming = labelHidden ? { 'aria-label': label } : { 'aria-labelledby': id };
+  return <div className={`lf-progress lf-progress--${tone}${labelHidden ? ' lf-progress--bare' : ''}${className ? ` ${className}` : ''}`}>
+    {labelHidden ? null : <div className="lf-progress-head">
       <span id={id} className="lf-input-label" data-copy-role="body">{label}</span>
       <span className="lf-progress-value" data-copy-role="data">{valueText}</span>
-    </div>
-    <div className="lf-progress-track" role="progressbar" aria-labelledby={id} aria-valuemin={0} aria-valuemax={max} aria-valuenow={value} aria-valuetext={valueText}>
+    </div>}
+    <div className="lf-progress-track" role="progressbar" {...naming} aria-valuemin={0} aria-valuemax={max} aria-valuenow={value} aria-valuetext={valueText}>
       <span className="lf-progress-fill" style={{ inlineSize: `${percent}%` }} />
     </div>
   </div>;

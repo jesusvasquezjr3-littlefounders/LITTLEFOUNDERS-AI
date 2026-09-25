@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button, Copy, StatusMark } from '../design/controls';
+import { Button, Slider, Stepper, ProgressBar } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import { changeAllocation, inspectAllocation, reallocateBoundary, remaining, type Allocation, type Pocket } from './allocationModel';
 import { decodeAllocationCheckpoint, encodeAllocationCheckpoint } from './allocationCheckpoint';
 import { learningFixtures } from './allocationFixtures';
@@ -181,9 +182,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
     <div className="lf-learning-inner">
       <header className="lf-learning-top">
         <Button onClick={onBack}>{t.back}</Button>
-        <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={sequenceProgress(sequence, verdict === 'met')} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, verdict === 'met')}%` }} />
-        </div>
+        <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, verdict === 'met')} max={100} valueText={`${sequenceProgress(sequence, verdict === 'met')}%`} />
         <span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.lesson}</span>
       </header>
       {mentorStage ? <CompactMentorStage ageBand={ageBand} theme={theme} verdict={verdict === 'unavailable' ? null : verdict} character={mentorStage.character} scene={mentorStage.scene} /> : null}
@@ -265,29 +264,21 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           <div className={showTable ? 'lf-learning-left lf-learning-left--visually-hidden' : 'lf-learning-left'} aria-live="polite" aria-atomic="true"><span data-copy-role="body">{t.left}</span> <strong data-copy-role="data">{amount(left)}</strong></div>
           <div className="lf-learning-controls" role="group" aria-label={t.balance}>
             {pockets.map((pocket) => <div className="lf-learning-control" key={pocket}>
-              <div className="lf-learning-control-label"><span data-copy-role="body">{t[pocket]}</span><strong data-copy-role="data">{amount(allocation[pocket])}</strong></div>
-              <div className="lf-learning-stepper">
-                <button type="button" aria-label={`${t.remove}: ${t[pocket]}`} disabled={allocation[pocket] === 0} onClick={() => change(pocket, -1)}>−</button>
-                <button type="button" aria-label={`${t.add}: ${t[pocket]}`} disabled={left < item.step} onClick={() => change(pocket, 1)}>+</button>
-              </div>
+              <Stepper valuePlacement="label" label={t[pocket]} value={allocation[pocket]} valueText={amount(allocation[pocket])}
+                min={0} max={allocation[pocket] + left} step={item.step} labels={{ decrease: t.remove, increase: t.add }}
+                onValueChange={(next) => change(pocket, next > allocation[pocket] ? 1 : -1)} />
             </div>)}
           </div>
           {left === 0 && !showTable ? <div className="lf-learning-sliders" role="group" aria-label={t.balance}>
-            <label data-copy-role="body">{t.moveSaveSpend}
-              <input type="range" min={0} max={allocation.save + allocation.spend} step={item.step} value={allocation.save}
-                disabled={allocation.save + allocation.spend === 0} aria-valuetext={amount(allocation.save)} onChange={(event) => reallocate('save-spend', Number(event.target.value))} />
-            </label>
-            <label data-copy-role="body">{t.moveSpendShare}
-              <input type="range" min={allocation.save} max={item.total} step={item.step} value={allocation.save + allocation.spend}
-                disabled={allocation.spend + allocation.share === 0} aria-valuetext={amount(allocation.spend)} onChange={(event) => reallocate('spend-share', Number(event.target.value))} />
-            </label>
+            <Slider label={t.moveSaveSpend} valueText={amount(allocation.save)} min={0} max={allocation.save + allocation.spend} step={item.step}
+              value={allocation.save} disabled={allocation.save + allocation.spend === 0} onValueChange={(next) => reallocate('save-spend', next)} />
+            <Slider label={t.moveSpendShare} valueText={amount(allocation.spend)} min={allocation.save} max={item.total} step={item.step}
+              value={allocation.save + allocation.spend} disabled={allocation.spend + allocation.share === 0} onValueChange={(next) => reallocate('spend-share', next)} />
           </div> : null}
           </>}
         </TeachingChartBoard>
         <footer className="lf-learning-foot">
-          <div role="status" className={verdict ? `lf-learning-feedback lf-learning-feedback--${verdict}` : 'lf-learning-feedback'}>
-            {verdict ? <><StatusMark correct={verdict === 'met'} /><Copy role="body">{t[verdict]}</Copy></> : null}
-          </div>
+          <LessonFeedback verdict={verdict}>{verdict ? t[verdict] : null}</LessonFeedback>
           <div className="lf-learning-actions">
             <Button variant="accent" disabled={pending} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button>
           </div>

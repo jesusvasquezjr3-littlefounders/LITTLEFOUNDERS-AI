@@ -262,7 +262,12 @@
     "retryAction": "Try again",
     "retrying": "Trying again…",
     "mentor": "Your Mentor",
-    "mentorName": "Dina"
+    "mentorName": "Dina",
+    "motion": "Motion",
+    "armLabel": "I checked my plan",
+    "badgeEarned": "Badge earned",
+    "replay": "Play again",
+    "xpEarned": "XP earned"
   },
   "designGallery": {
     "title": "Component gallery",

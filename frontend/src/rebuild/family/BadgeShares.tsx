@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './badgeShares.css';
@@ -63,9 +63,9 @@ export function BadgeShares({ copy, locale, dark, open, shares, loading, failed,
     <Button aria-expanded={open} onClick={onToggle}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
-      {notice && <div role={revokeFailed ? 'alert' : 'status'}><Copy role="body">{notice}</Copy></div>}
-      {revokingToken && <div role="status"><Copy role="body">{copy.revoking}</Copy></div>}
-      {failed ? <><div role="alert"><Copy role="body">{copy.failed}</Copy></div><Button onClick={onRetry}>{copy.retry}</Button></> : <>
+      {notice && <InlineNotice tone={revokeFailed ? 'error' : 'info'} live>{notice}</InlineNotice>}
+      {revokingToken && <InlineNotice tone="info" live>{copy.revoking}</InlineNotice>}
+      {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
         <ul>{shares.map(share => <li key={share.token}>
           <Copy role="option">{share.achievementLabel}</Copy>
           <Copy role="body">{copy.expires.replace('{date}', date.format(new Date(share.expiresAt)))}</Copy>
@@ -74,7 +74,7 @@ export function BadgeShares({ copy, locale, dark, open, shares, loading, failed,
           </div>
         </li>)}</ul>
         {!loading && shares.length === 0 && <Copy role="body">{copy.empty}</Copy>}
-        {loading && <div role="status"><Copy role="body">{copy.loading}</Copy></div>}
+        {loading && <LoadingState label={copy.loading} lines={2} />}
       </>}
     </>}
   </section>;

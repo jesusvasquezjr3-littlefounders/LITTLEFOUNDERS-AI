@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button, Copy, StatusMark } from '../design/controls';
+import { Button, Stepper, ProgressBar } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
@@ -72,9 +73,7 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
   return <main className="lf-learning" data-surface="app" data-screen="numberline">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={sequenceProgress(sequence, verdict === 'met')} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, verdict === 'met')}%` }} />
-        </div><span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header>
+        <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, verdict === 'met')} max={100} valueText={`${sequenceProgress(sequence, verdict === 'met')}%`} /><span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
         <div className="lf-learning-workspace">
@@ -96,16 +95,12 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
           <div className="lf-learning-control-strip">
             <div className="lf-learning-control-bar"><Button onClick={reset} disabled={value === initial}>{t.reset}</Button>
               <span className="lf-number-line-hint" data-copy-role="body">{t.hint}</span></div>
-            <div className="lf-number-line-stepper">
-              <button type="button" aria-label={t.left} disabled={value <= minimum} onClick={() => setPoint(value - step)}>−</button>
-              <button type="button" aria-label={t.right} disabled={value >= maximum} onClick={() => setPoint(value + step)}>+</button>
-            </div>
+            <Stepper className="lf-number-line-stepper" label={t.place} labelHidden showValue={false} value={value} min={minimum} max={maximum} step={step}
+              onValueChange={setPoint} labels={{ decrease: t.left, increase: t.right }} />
           </div>
         </div>
         <footer className="lf-learning-foot">
-          <div role="status" className={verdict ? `lf-learning-feedback lf-learning-feedback--${verdict}` : 'lf-learning-feedback'}>
-            {verdict ? <><StatusMark correct={verdict === 'met'} /><Copy role="body">{t[verdict]} {t.marker}: {value}.</Copy></> : null}
-          </div>
+          <LessonFeedback verdict={verdict}>{verdict ? `${t[verdict]} ${t.marker}: ${value}.` : null}</LessonFeedback>
           <div className="lf-learning-actions"><Button variant="accent" disabled={pending} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button></div>
         </footer>
       </div>

@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import type en from '../../i18n/en-US/rebuild.json';
 import {
-  Banner, Button, ButtonGroup, Card, Checkbox, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, IconButton, InlineNotice,
-  List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip, SegmentedControl, SelectField, Slider,
-  Stepper, Switch, TextField,
+  Banner, Button, ButtonGroup, Card, Celebration, celebrationPart, Checkbox, Chip, ChipGroup, ChoiceChip, CountUp, EmptyState, ErrorState,
+  IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip, SegmentedControl,
+  SelectField, Slider, Stepper, Switch, TextField,
 } from '../design/controls';
 import './systemGallery.css';
 
@@ -30,6 +30,10 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
   const [share, setShare] = useState(2);
   const [chips, setChips] = useState<Record<'save' | 'spend' | 'share', boolean>>({ save: true, spend: false, share: false });
   const [retrying, setRetrying] = useState(false);
+  const [planChecked, setPlanChecked] = useState(false);
+  const [moment, setMoment] = useState(1);
+  // A moment celebrates once per session (sessionStorage); each visit to the catalogue is a new demonstration moment.
+  const [visit] = useState(() => Date.now().toString(36));
   const coinsText = (n: number) => t.coinsValue.replace('{n}', String(n));
   const submit = (event: FormEvent) => { event.preventDefault(); setGoalError(!goal.trim()); };
   const pockets = [{ value: 'save', label: t.pocketSave }, { value: 'spend', label: t.pocketSpend }, { value: 'share', label: t.pocketShare }] as const;
@@ -78,7 +82,7 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
         <form className="lf-system-form" noValidate onSubmit={submit}>
           <TextField label={t.goal} help={t.goalHelp} error={goalError ? t.goalError : undefined} value={goal}
             onChange={(event) => { setGoal(event.target.value); setGoalError(false); }} />
-          <Button variant="accent" type="submit">{t.continue}</Button>
+          <Button variant="brand" type="submit">{t.continue}</Button>
         </form>
         <TextField type="number" label={t.coins} inputMode="numeric" min={0} value={coins} onChange={(event) => setCoins(event.target.value)} />
         <TextField type="password" label={t.passphrase} revealLabels={{ show: t.show, hide: t.hide }} autoComplete="off"
@@ -155,6 +159,28 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
         <EmptyState heading={t.empty} body={t.emptyBody} action={<Button variant="brand">{t.open}</Button>} />
         <ErrorState heading={t.failed} body={t.failedBody} retryLabel={t.retryAction} retryingLabel={t.retrying} retrying={retrying}
           onRetry={() => setRetrying(true)} />
+      </section>
+
+      <section className="lf-system-section" aria-labelledby="system-motion">
+        <h2 id="system-motion" data-copy-role="heading">{t.motion}</h2>
+        {/* Armed: the call to action bumps once when the checkbox makes it usable (02 §9.1). */}
+        <Checkbox label={t.armLabel} checked={planChecked} onChange={(event) => setPlanChecked(event.target.checked)} />
+        <ButtonGroup>
+          <Button variant="success" disabled={!planChecked}>{t.approve}</Button>
+          {/* The one breathing call to action of this screen (02 §9.4). */}
+          <Button variant="accent" breathing>{t.continue}</Button>
+        </ButtonGroup>
+        {/* A milestone on the OD-7 list celebrates once per moment; reduced motion shows this settled frame. */}
+        <Celebration key={moment} milestone="badge-earned" momentId={`gallery-${visit}-${moment}`}>
+          <Card heading={t.badgeEarned} headingLevel={3}>
+            <div className="lf-system-row">
+              <img src="/rebuild/art/lesson-medal.svg" alt="" className={`lf-system-medal ${celebrationPart('pop').className}`} />
+              <p className={celebrationPart('rise', 1).className} style={celebrationPart('rise', 1).style} data-copy-role="data">
+                <CountUp value={40} format={(value) => `+${value}`} /> {t.xpEarned}</p>
+            </div>
+            <Button onClick={() => setMoment((value) => value + 1)}>{t.replay}</Button>
+          </Card>
+        </Celebration>
       </section>
 
       <section className="lf-system-section" aria-labelledby="system-mentor">

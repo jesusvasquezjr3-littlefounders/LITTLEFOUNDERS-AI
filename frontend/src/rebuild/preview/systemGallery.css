@@ -6,3 +6,4 @@
 .lf-rebuild .lf-system-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
 .lf-rebuild .lf-system-form { display: grid; gap: var(--spacing-3); }
 .lf-rebuild .lf-system-form > .lf-button { justify-self: start; }
+.lf-rebuild .lf-system-medal { inline-size: var(--spacing-16); block-size: auto; }

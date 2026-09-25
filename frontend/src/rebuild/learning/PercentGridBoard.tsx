@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, Slider, ProgressBar } from '../design/controls';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import { percentOutcome } from './percentModel';
-import { ParameterSlider } from './ParameterSlider';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import './learning.css';
@@ -70,9 +69,7 @@ export function PercentGridBoard({ document, segment, onBack, sequence }: {
   return <main className="lf-learning" data-surface="app" data-screen="percent">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100}
-          aria-valuenow={sequenceProgress(sequence, percent !== initialPercent)} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, percent !== initialPercent)}%` }} /></div> : null}
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, percent !== initialPercent)} max={100} valueText={`${sequenceProgress(sequence, percent !== initialPercent)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
@@ -92,9 +89,9 @@ export function PercentGridBoard({ document, segment, onBack, sequence }: {
                 <rect x="0" y="8" width={120 * percent / 100} height="16" rx="8" className="lf-percent-bar-fill" />
               </svg><span data-copy-role="data">{percent} {t.ofHundred}</span></div>
           </div>}>
-          {() => <ParameterSlider label={t.change} valueText={`${percent}%`}
-            minimum={0} maximum={100} step={step} value={percent} onValueChange={setRate}
-            stepper={{ decrease: t.less, increase: t.more }} />}
+          {() => <Slider label={t.change} valueText={`${percent}%`}
+            min={0} max={100} step={step} value={percent} onValueChange={setRate}
+            stepLabels={{ decrease: t.less, increase: t.more }} />}
         </TeachingChartBoard>
         <footer className="lf-percent-foot"><div className="lf-percent-outcome" role="status" aria-live="polite">
           <span data-copy-role="body">{t.final}</span><strong data-copy-role="data">{amount(outcome?.final ?? 0)}</strong></div>

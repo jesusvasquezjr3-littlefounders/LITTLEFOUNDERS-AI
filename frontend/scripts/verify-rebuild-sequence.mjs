@@ -95,7 +95,7 @@ try {
   await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 });
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 });
   await click('.lf-growth-foot .lf-button--accent');
-  for (let i = 0; i < 12; i++) await click('button[aria-label="Añadir: Guardar"]');
+  for (let i = 0; i < 12; i++) await click('button[aria-label="Guardar: Añadir"]');
   await click('.lf-learning-actions .lf-button--accent');
   await page.evaluate('new Promise(r=>setTimeout(r,100))');
   if (!await page.evaluate("document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow')==='100'")) findings.push({ interaction: 'scored-segment-progress' });

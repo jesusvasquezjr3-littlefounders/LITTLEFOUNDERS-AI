@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../design/controls';
+import { Button, Slider } from '../design/controls';
 
 export interface StepReplayLabels {
   previous: string;
@@ -40,10 +40,6 @@ export function StepReplay({ steps, index, onChange, labels }: {
         {playing ? labels.pause : labels.play}</Button>
       <Button disabled={index === steps} onClick={() => move(index + 1)}>{labels.next}</Button>
     </div>
-    <label className="lf-step-replay-scrub" data-copy-role="data">{labels.step}: {index}/{steps}
-      <input type="range" min={0} max={steps} step={1} value={index}
-        aria-label={labels.step} aria-valuetext={`${labels.step}: ${index}/${steps}`}
-        onChange={(event) => move(Number(event.target.value))} />
-    </label>
+    <Slider className="lf-step-replay-scrub" label={labels.step} valueText={`${index}/${steps}`} min={0} max={steps} value={index} onValueChange={move} />
   </div>;
 }

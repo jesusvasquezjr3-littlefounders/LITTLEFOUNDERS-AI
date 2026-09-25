@@ -1,4 +1,5 @@
-import { Button, Copy } from '../design/controls';
+import { useId } from 'react';
+import { Button, Copy, InlineNotice, LoadingState, SegmentedControl } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialGraph.css';
@@ -14,20 +15,20 @@ export function SocialGraph({ copy, locale, dark, open, direction, users, loadin
   onOpen: () => void; onClose: () => void; onDirection: (direction: 'followers' | 'following') => void;
   onMore: () => void; onRetry: () => void;
 }) {
+  const name = useId();
   return <section className="lf-rebuild lf-social-graph" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.title}>
     <Button aria-expanded={open} onClick={open ? onClose : onOpen}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
-      <div className="lf-social-actions">
-        {(['followers', 'following'] as const).map(value => <Button key={value} variant={direction === value ? 'accent' : 'secondary'} aria-pressed={direction === value} onClick={() => onDirection(value)}>{copy[value]}</Button>)}
-      </div>
-      {failed ? <><div role="alert"><Copy role="body">{copy.failed}</Copy></div><Button onClick={onRetry}>{copy.retry}</Button></> : <>
+      <SegmentedControl legend={copy.title} legendHidden name={`${name}-direction`} value={direction}
+        onValueChange={onDirection} options={(['followers', 'following'] as const).map(value => ({ value, label: copy[value] }))} />
+      {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
         <ul aria-label={copy[direction]}>{users.map(user => <li key={user.userId}>
           <Copy role="option">{user.displayName || user.username}</Copy>
           {user.username && <Copy role="body">@{user.username}</Copy>}
         </li>)}</ul>
         {!loading && users.length === 0 && <Copy role="body">{copy.empty}</Copy>}
-        {loading && <div role="status"><Copy role="body">{copy.loading}</Copy></div>}
+        {loading && <LoadingState label={copy.loading} lines={2} />}
         {hasMore && <Button disabled={loading} onClick={onMore}>{copy.more}</Button>}
       </>}
     </>}

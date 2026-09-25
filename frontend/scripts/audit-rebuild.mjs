@@ -89,6 +89,8 @@ async function load(page, state, locale, theme, width) {
   }
   await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
   await page.evaluate(`(${installAudit})()`);
+  // A milestone celebration measures on its settled frame (it settles within 1.2 s by contract; 07 §5).
+  for (let n = 0; n < 60 && await page.evaluate("!!document.querySelector('[data-celebration=\"playing\"]')"); n++) await wait(50);
   await settle(page);
 }
 
@@ -117,6 +119,11 @@ async function measure(page, state, locale, theme, width, first, sink) {
   await settle(page);
   if (active.has('proportion')) {
     const res = await page.evaluate('window.__lfAudit.proportion()');
+    // 02 §9.4 / D7 motion budget: read with motion allowed, then back to reduced motion for everything else.
+    await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'no-preference' }] });
+    await page.evaluate('new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))');
+    Object.assign(res, await page.evaluate('window.__lfAudit.motion()'));
+    await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
     sink.configurations.proportion++;
     for (const [type, detail] of proportionFindings(res, state, width)) sink.rows.proportion.push({ type, detail, ...where });
   }

@@ -200,7 +200,43 @@ describe('numeric controls', () => {
     expect(slider).toHaveAttribute('aria-valuetext', '15 coins');
     fireEvent.change(slider, { target: { value: '20' } });
     expect(onValueChange).toHaveBeenCalledWith(20);
-    expect(screen.getByText('15 coins').tagName).toBe('OUTPUT');
+    // Written for the eye; the range itself speaks the value, so the copy is not a second live region.
+    expect(screen.getByText('15 coins')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.queryByRole('status')).toBeNull();
+  });
+
+  it('offers the discrete step alternative on a slider and disables it at each bound', () => {
+    const onValueChange = vi.fn();
+    const { rerender } = render(<Slider label="Save" valueText="0 coins" min={0} max={10} step={5} value={0} onValueChange={onValueChange} stepLabels={{ decrease: 'Less', increase: 'More' }} />);
+    expect(screen.getByRole('button', { name: 'Save: Less' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Save: More' }));
+    expect(onValueChange).toHaveBeenCalledWith(5);
+    rerender(<Slider label="Save" valueText="10 coins" min={0} max={10} step={5} value={10} onValueChange={onValueChange} stepLabels={{ decrease: 'Less', increase: 'More' }} />);
+    expect(screen.getByRole('button', { name: 'Save: More' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Save: Less' })).toBeEnabled();
+  });
+
+  it('keeps an estimation stepper silent about its value and names it without a visible label', () => {
+    render(<Stepper label="Place the point" labelHidden showValue={false} value={3} min={0} max={10} onValueChange={vi.fn()} labels={{ decrease: 'Move left', increase: 'Move right' }} />);
+    expect(screen.getByRole('group', { name: 'Place the point' })).toBeTruthy();
+    expect(screen.queryByText('Place the point')).toBeNull();
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.queryByText('3')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Place the point: Move left' })).toBeEnabled();
+  });
+
+  it('names a segmented choice by a hidden legend when a heading already says it', () => {
+    render(<SegmentedControl legend="Choose the schema" legendHidden name="schema" value={null} onValueChange={vi.fn()}
+      options={[{ value: 'change', label: 'Change' }, { value: 'compare', label: 'Compare' }]} />);
+    expect(screen.getByRole('group', { name: 'Choose the schema' })).toBeTruthy();
+    expect(screen.queryByText('Choose the schema')).toBeNull();
+    expect(screen.getAllByRole('radio').every((radio) => !(radio as HTMLInputElement).checked)).toBe(true);
+  });
+
+  it('lets a caller that owns a persistent live region render a silent banner', () => {
+    render(<Banner tone="retry" live={false}>{'Try again'}</Banner>);
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(document.querySelector('.lf-banner--retry')).not.toBeNull();
   });
 
   it('steps within bounds and disables the button at each bound', () => {
@@ -267,6 +303,16 @@ describe('display components', () => {
     const bar = screen.getByRole('progressbar', { name: 'Lesson progress' });
     expect(bar).toHaveAttribute('aria-valuetext', '7 of 5');
     expect((container.querySelector('.lf-progress-fill') as HTMLElement).style.inlineSize).toBe('100%');
+  });
+
+  it('names a bare progress capsule for assistive technology when the screen writes its value beside it', () => {
+    const { container } = render(<ProgressBar label="Lesson progress" labelHidden value={50} max={100} valueText="50%" className="lf-top-progress" />);
+    const bar = screen.getByRole('progressbar', { name: 'Lesson progress' });
+    expect(bar).toHaveAttribute('aria-valuenow', '50');
+    expect(bar).toHaveAttribute('aria-valuetext', '50%');
+    expect(screen.queryByText('Lesson progress')).toBeNull();
+    expect(container.querySelector('.lf-progress-head')).toBeNull();
+    expect(container.firstElementChild).toHaveClass('lf-progress', 'lf-progress--bare', 'lf-top-progress');
   });
 
   it('shows loading as a status with words and static skeleton lines', () => {

@@ -40,7 +40,7 @@ try {
       page.failedRequests.length = 0;
       await page.send('Emulation.setDeviceMetricsOverride', { width: scenario.width, height: scenario.height, deviceScaleFactor: 1, mobile: scenario.width < 768 });
       await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scenario.dark ? 'dark' : 'light' }, { name: 'prefers-reduced-motion', value: scenario.reduced ? 'reduce' : 'no-preference' }] });
-      await page.send('Page.navigate', { url: `http://127.0.0.1:5190/rebuild.html?locale=es-MX&theme=${scenario.dark ? 'dark' : 'light'}&screen=lesson&age=${scenario.age}&stage=1${scenario.lowPower ? '&lowPower=1' : ''}` });
+      await page.send('Page.navigate', { url: `${process.env.REBUILD_URL ?? 'http://127.0.0.1:5190'}/rebuild.html?locale=es-MX&theme=${scenario.dark ? 'dark' : 'light'}&screen=lesson&age=${scenario.age}&stage=1${scenario.lowPower ? '&lowPower=1' : ''}` });
       for (let n = 0; n < 200; n++) {
         if (page.errors.length) break;
         if (await page.evaluate(scenario.reduced || scenario.lowPower ? "document.querySelector('.lf-mentor-band')?.dataset.renderMode === 'still' && !!document.querySelector('.lf-mentor-band-still')?.complete" : "!!document.querySelector('.lf-mentor-band canvas') && !document.querySelector('.lf-mentor-band-still')")) break;
@@ -49,7 +49,7 @@ try {
       await new Promise((done) => setTimeout(done, 800));
       const state = await page.evaluate(`(() => {
         const rect = (selector) => { const node = document.querySelector(selector); if (!node) return null; const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, bottom: r.bottom }; };
-        const clippedLabels = [...document.querySelectorAll('.lf-learning-control-label > *')].filter((node) => node.scrollWidth > node.clientWidth + 1).map((node) => node.textContent);
+        const clippedLabels = [...document.querySelectorAll('.lf-learning-control .lf-stepper > *, .lf-learning-control .lf-stepper-value')].filter((node) => node.scrollWidth > node.clientWidth + 1).map((node) => node.textContent);
         return { main: !!document.querySelector('.lf-learning'), canvas: !!document.querySelector('.lf-mentor-band canvas'), renderMode: document.querySelector('.lf-mentor-band')?.dataset.renderMode, stillLoaded: !!document.querySelector('.lf-mentor-band-still')?.naturalWidth, ready: !document.querySelector('.lf-mentor-band-still'), band: rect('.lf-mentor-band'), question: rect('.lf-learning-intro'), firstAnswer: rect('.lf-learning-control'), horizontalOverflow: document.documentElement.scrollWidth > innerWidth, clippedLabels, errors: window.__stageErrors ?? [] };
       })()`);
       const shot = await page.send('Page.captureScreenshot', { format: 'png' });
@@ -65,12 +65,12 @@ try {
       if (!ok) failures++;
       console.log(`${ok ? 'PASS' : 'FAIL'} ${scenario.name} ${JSON.stringify({ state, consoleErrors: page.errors, failedRequests: page.failedRequests })}`);
       if (scenario.name === 'young-phone') {
-        for (let i = 0; i < 4; i++) await click('button[aria-label="Añadir: Guardar"]');
-        for (let i = 0; i < 8; i++) await click('button[aria-label="Añadir: Gastar"]');
+        for (let i = 0; i < 4; i++) await click('button[aria-label="Guardar: Añadir"]');
+        for (let i = 0; i < 8; i++) await click('button[aria-label="Gastar: Añadir"]');
         await click('.lf-learning-actions .lf-button--accent');
         if (!await page.evaluate("document.querySelector('.lf-mentor-band')?.dataset.mentorState === 'happy'")) failures++;
         await click('.lf-learning-actions .lf-button--accent');
-        for (let i = 0; i < 12; i++) await click('button[aria-label="Añadir: Gastar"]');
+        for (let i = 0; i < 12; i++) await click('button[aria-label="Gastar: Añadir"]');
         await click('.lf-learning-actions .lf-button--accent');
         if (!await page.evaluate("document.querySelector('.lf-mentor-band')?.dataset.mentorState === 'encouraging'")) failures++;
       }

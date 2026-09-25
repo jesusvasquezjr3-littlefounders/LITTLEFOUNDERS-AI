@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, InlineNotice } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialGraph.css';
@@ -11,7 +11,7 @@ export function ConnectionRequest({ copy, locale, dark, status, onRequest }: { c
   }, [status]);
   return <section ref={root} aria-label={copy.action} className="lf-rebuild lf-social-graph" data-social-audit="connection-request" lang={locale} data-theme={dark ? 'dark' : 'light'}>
     <Button variant="accent" disabled={status === 'saving' || status === 'pending'} onClick={onRequest}>{status === 'saving' ? copy.saving : copy.action}</Button>
-    {status === 'pending' && <div role="status"><Copy role="body">{copy.pending}</Copy></div>}
-    {status === 'failed' && <div role="alert"><Copy role="body">{copy.failed}</Copy></div>}
+    {status === 'pending' && <InlineNotice tone="info" live>{copy.pending}</InlineNotice>}
+    {status === 'failed' && <InlineNotice tone="error" live>{copy.failed}</InlineNotice>}
   </section>;
 }

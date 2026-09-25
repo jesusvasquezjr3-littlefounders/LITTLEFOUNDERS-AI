@@ -14,6 +14,7 @@ const read = (path: string) => readFileSync(local(path), 'utf8');
 const controls = read('./controls.css');
 const overlays = read('./overlays.css');
 const shells = read('./shells.css');
+const motion = read('./motion.css');
 const gallery = read('../preview/systemGallery.css');
 const shellGallery = read('../preview/gallery.css');
 /** Every shared stylesheet of the rebuilt design system (S03.1 controls, S03.2 overlays and shells). */
@@ -46,7 +47,7 @@ function rules(css: string) {
 }
 
 describe('shared control stylesheet contract', () => {
-  for (const [name, css] of [['controls.css', controls], ['overlays.css', overlays], ['shells.css', shells], ['systemGallery.css', gallery], ['gallery.css', shellGallery]] as const) {
+  for (const [name, css] of [['controls.css', controls], ['overlays.css', overlays], ['shells.css', shells], ['systemGallery.css', gallery], ['gallery.css', shellGallery], ['motion.css', motion]] as const) {
     const source = withoutComments(css);
     it(`${name} uses tokens only: no colour literals, no off-token sizes`, () => {
       // Container-query conditions carry the Bible's own breakpoints (640, 840, 1120 px; 03 §3.2, 02 §7 rule 9, §9.8).
@@ -66,13 +67,18 @@ describe('shared control stylesheet contract', () => {
     it(`${name} never truncates or hides text and never fakes depth or glass`, () => {
       expect(source).not.toMatch(/text-overflow|line-clamp|backdrop-filter|background-clip:\s*text|clamp\(|linear-gradient|radial-gradient/);
     });
-    it(`${name} moves only inside a no-preference motion query and never springs`, () => {
+    it(`${name} moves only inside a no-preference motion query and springs only for a milestone`, () => {
       expect(outsideMotionQueries(source)).not.toMatch(/(?:^|[\s;{])(?:transition|animation)(?:-[a-z-]+)?\s*:/m);
-      expect(source).not.toMatch(/--ease-spring|--dur-celebration/);
+      // The celebration curve and duration exist only in the motion sheet, under the playing celebration (D7, OD-7).
+      for (const rule of rules(css).filter((entry) => /--ease-spring|--dur-celebration/.test(entry.body))) {
+        expect(name, rule.selector).toBe('motion.css');
+        expect(rule.selector, rule.selector).toMatch(/\.lf-celebration--play/);
+      }
     });
     it(`${name} references only defined tokens`, () => {
-      const defined = new Set([...(tokens + system).matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
-      const used = [...source.matchAll(/var\((--[\w-]+)/g)].map((match) => match[1]);
+      const defined = new Set([...(tokens + system + motion).matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
+      // A property read with a fallback (`var(--lf-celebration-order, 0)`) is set per element by the component, not a token.
+      const used = [...source.matchAll(/var\((--[\w-]+)\s*\)/g)].map((match) => match[1]);
       expect(used.filter((token) => !defined.has(token))).toEqual([]);
     });
   }
@@ -189,6 +195,34 @@ describe('generated tokens', () => {
     // Captions and chips are the smallest type: never below the 14 px floor (02 rule 11).
     expect(tokens).toMatch(/--type-caption: 700 0\.875rem/);
     expect(tokens).toMatch(/@container app \(min-width: 640px\)[\s\S]*--type-display-lg: 700 32px/);
+  });
+});
+
+describe('motion budget across every rebuilt stylesheet (02 §9.4, D7, 04 §3; S03.7)', () => {
+  const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => (entry.isDirectory() ? walk(join(dir, entry.name)) : entry.name.endsWith('.css') ? [join(dir, entry.name)] : []));
+  const sheets = walk(local('..')).map((file) => ({ file: file.slice(file.lastIndexOf('rebuild')).replace(/\\/g, '/'), css: withoutComments(readFileSync(file, 'utf8')) }));
+
+  it('loops only the one breathing call to action; every other idle loop is a component that claims a slot', () => {
+    const loops = sheets.flatMap(({ file, css }) => rules(css).filter((rule) => /\binfinite\b/.test(rule.body)).map((rule) => `${file}: ${rule.selector}`));
+    expect(loops.length).toBeGreaterThan(0);
+    expect(loops.filter((loop) => !/^rebuild\/design\/motion\.css: .*\.lf-button--breathing/.test(loop))).toEqual([]);
+  });
+
+  it('keeps the spring curve and the celebration duration inside the motion sheet', () => {
+    expect(sheets.filter(({ file, css }) => file !== 'rebuild/design/motion.css' && /var\(--(?:ease-spring|dur-celebration)\)/.test(css)).map(({ file }) => file)).toEqual([]);
+  });
+
+  it('animates only inside a no-preference motion query, so reduced motion keeps every state and drops the travel', () => {
+    const offences = sheets.filter(({ css }) => /(?:^|[\s;{])animation(?:-name)?\s*:/m.test(outsideMotionQueries(css))).map(({ file }) => file);
+    expect(offences).toEqual([]);
+  });
+
+  it('references only defined tokens in every rebuilt stylesheet (the undefined --content-secondary is gone)', () => {
+    const defined = new Set(sheets.flatMap(({ css }) => [...css.matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1])));
+    const offences = sheets.flatMap(({ file, css }) => [...css.matchAll(/var\((--[\w-]+)\s*\)/g)].map((match) => match[1]!)
+      .filter((token) => !defined.has(token)).map((token) => `${file}: ${token}`));
+    expect(offences).toEqual([]);
   });
 });
 

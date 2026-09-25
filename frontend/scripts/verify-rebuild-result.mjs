@@ -40,6 +40,9 @@ try {
         const medal=main.querySelector('.lf-result-medal');
         if(!medal||!medal.complete||medal.naturalWidth===0) issues.push('medal-missing');
         if(main.querySelectorAll('.lf-result-stat').length!==3) issues.push('stats-missing');
+        // S03.7: counted numbers keep the numeral size of the stat they sit in (a count-up never changes the type step).
+        const numerals=[...main.querySelectorAll('.lf-result-stat strong')].map(e=>getComputedStyle(e.querySelector('.lf-count-up')??e).fontSize);
+        if(new Set(numerals).size!==1) issues.push('stat-numeral-size:'+numerals.join('/'));
         const bars=[...main.querySelectorAll('[role="progressbar"]')];
         const expected=${JSON.stringify(mode === 'replay' ? ['50','90'] : ['75','75'])};
         if(bars.length!==2||bars.some((b,i)=>b.getAttribute('aria-valuenow')!==expected[i])) issues.push('comparison-invalid');

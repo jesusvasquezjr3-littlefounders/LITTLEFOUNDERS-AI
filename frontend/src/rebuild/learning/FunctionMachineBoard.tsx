@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, SegmentedControl, TextField } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { useSingleActiveGrade } from './useSingleActiveGrade';
@@ -9,7 +10,8 @@ import './learning.css';
 type Segment = Extract<LessonClientSegment, { type: 'math.function-machine.v2' }>;
 type Verdict = 'invalid' | 'met' | 'review';
 
-const copy: Record<Locale, Record<string, string>> = {
+type Copy = Record<'back' | 'board' | 'try' | 'run' | 'input' | 'output' | 'rule' | 'multiplier' | 'offset' | 'check' | 'continue' | 'correct' | 'retry' | 'unavailable', string>;
+const copy: Record<Locale, Copy> = {
   'en-US': { back: 'Back', board: 'Function machine', try: 'Try an input', run: 'Run', input: 'Input', output: 'Output', rule: 'What is the rule?', multiplier: 'Multiply by', offset: 'Then add', check: 'Check rule', continue: 'Continue', correct: 'Correct', retry: 'Try another rule.', unavailable: 'We could not check that. Try again.' },
   'es-MX': { back: 'Volver', board: 'Máquina de funciones', try: 'Prueba una entrada', run: 'Ejecutar', input: 'Entrada', output: 'Salida', rule: '¿Cuál es la regla?', multiplier: 'Multiplica por', offset: 'Luego suma', check: 'Comprobar regla', continue: 'Continuar', correct: 'Correcto', retry: 'Prueba otra regla.', unavailable: 'No pudimos comprobarlo. Intenta otra vez.' },
   'pt-BR': { back: 'Voltar', board: 'Máquina de funções', try: 'Teste uma entrada', run: 'Executar', input: 'Entrada', output: 'Saída', rule: 'Qual é a regra?', multiplier: 'Multiplique por', offset: 'Depois some', check: 'Conferir regra', continue: 'Continuar', correct: 'Correto', retry: 'Tente outra regra.', unavailable: 'Não foi possível conferir. Tente de novo.' },
@@ -17,6 +19,7 @@ const copy: Record<Locale, Record<string, string>> = {
 
 export function FunctionMachineBoard({ document, segment, onBack, onGrade, sequence }: { document: LessonClientDocument; segment: Segment; onBack: () => void; onGrade: (answer: { multiplier: string; offset: string }, segmentId: string) => Verdict | Promise<Verdict>; sequence?: LessonSequenceControl }) {
   const t = copy[document.locale];
+  const tryName = useId();
   const [selected, setSelected] = useState(segment.payload.examples[0]?.input ?? 0);
   const [ran, setRan] = useState(false);
   const [multiplier, setMultiplier] = useState('');
@@ -37,10 +40,12 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
         </div>
         <table className="lf-learning-table lf-function-machine-table" aria-label={t.board}><thead><tr><th scope="col" data-copy-role="label">{t.input}</th><th scope="col" data-copy-role="label">{t.output}</th></tr></thead><tbody>{segment.payload.examples.map((item) => <tr key={item.input}><th scope="row" data-copy-role="data" data-label={t.input}>{item.input}</th><td data-copy-role="data" data-label={t.output}>{ran && selected === item.input ? item.output : '—'}</td></tr>)}</tbody></table>
       </section>
-      <div className="lf-learning-control-strip"><div className="lf-function-machine-try" role="group" aria-label={t.try}>{segment.payload.examples.map((item) => <button type="button" key={item.input} disabled={pending} aria-pressed={selected === item.input} onClick={() => { setSelected(item.input); setRan(false); }}>{item.input}</button>)}<Button variant="accent" disabled={pending} onClick={() => setRan(true)}>{t.run}</Button></div>
-        <div className="lf-function-machine-rule"><h2 data-copy-role="heading">{t.rule}</h2><label data-copy-role="label">{t.multiplier}<input inputMode="numeric" disabled={pending} value={multiplier} onChange={(event) => { setMultiplier(event.target.value); setVerdict(null); }} /></label><label data-copy-role="label">{t.offset}<input inputMode="numeric" disabled={pending} value={offset} onChange={(event) => { setOffset(event.target.value); setVerdict(null); }} /></label></div>
+      <div className="lf-learning-control-strip"><div className="lf-function-machine-try"><SegmentedControl legend={t.try} legendHidden name={`${tryName}-input`} disabled={pending} value={String(selected)}
+          onValueChange={(value) => { setSelected(Number(value)); setRan(false); }} options={segment.payload.examples.map((item) => ({ value: String(item.input), label: String(item.input) }))} />
+          <Button variant="accent" disabled={pending} onClick={() => setRan(true)}>{t.run}</Button></div>
+        <div className="lf-function-machine-rule"><h2 data-copy-role="heading">{t.rule}</h2><TextField label={t.multiplier} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={multiplier} onChange={(event) => { setMultiplier(event.target.value); setVerdict(null); }} /><TextField label={t.offset} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={offset} onChange={(event) => { setOffset(event.target.value); setVerdict(null); }} /></div>
       </div>
-      <footer className="lf-learning-foot"><div role="status" className={verdict ? `lf-learning-feedback lf-learning-feedback--${verdict}` : 'lf-learning-feedback'} data-copy-role="feedback">{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</div><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !valid} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer>
+      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={pending || !valid} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button></div></footer>
     </div>
   </div></main>;
 }

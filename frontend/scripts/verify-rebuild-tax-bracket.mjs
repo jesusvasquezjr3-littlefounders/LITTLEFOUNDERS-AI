@@ -69,14 +69,14 @@ try {
 
   await navigate('es-MX', 'light', '13-17', 375, 1, false);
   const before = await page.evaluate(`({ chart:document.querySelector('[role=img]')?.getAttribute('aria-label'),tax:document.querySelector('.lf-tax-summary')?.textContent,rects:[...document.querySelectorAll('.lf-tax-stack rect')].map(r=>r.getAttribute('width')) })`);
-  await pointer('.lf-parameter-slider input', .8);
+  await pointer('.lf-slider input', .8);
   const after = await page.evaluate(`({ chart:document.querySelector('[role=img]')?.getAttribute('aria-label'),tax:document.querySelector('.lf-tax-summary')?.textContent,rects:[...document.querySelectorAll('.lf-tax-stack rect')].map(r=>r.getAttribute('width')) })`);
   if (before.chart === after.chart || before.tax === after.tax || before.rects.join(',') === after.rects.join(',')) findings.push({ interaction: 'income-not-synchronized' });
-  await page.evaluate('document.querySelector(".lf-parameter-slider input")?.focus()');
-  const keyboardBefore = await page.evaluate('document.querySelector(".lf-parameter-slider input")?.value');
+  await page.evaluate('document.querySelector(".lf-slider input")?.focus()');
+  const keyboardBefore = await page.evaluate('document.querySelector(".lf-slider input")?.value');
   await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowLeft', code: 'ArrowLeft', windowsVirtualKeyCode: 37 });
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowLeft', code: 'ArrowLeft', windowsVirtualKeyCode: 37 });
-  if (keyboardBefore === await page.evaluate('document.querySelector(".lf-parameter-slider input")?.value')) findings.push({ interaction: 'keyboard-income-not-changed' });
+  if (keyboardBefore === await page.evaluate('document.querySelector(".lf-slider input")?.value')) findings.push({ interaction: 'keyboard-income-not-changed' });
   await pointer('.lf-learning-view-toggle');
   const rowAmounts = await page.evaluate(`[...document.querySelectorAll('.lf-learning-table tbody tr')].map(row=>row.textContent)`);
   if (rowAmounts.length !== 3 || rowAmounts.every((value) => !value?.includes('30'))) findings.push({ interaction: 'table-not-synchronized', rowAmounts });

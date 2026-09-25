@@ -5,10 +5,4 @@
 .lf-transport-state-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); inline-size: min(100%, 480px); }
 .lf-transport-state-actions .lf-button { min-inline-size: min(100%, 200px); }
 .lf-transport-state-progress { inline-size: min(100%, 280px); block-size: 12px; overflow: hidden; border-radius: var(--rounded-full); background: var(--primary-soft); }
-.lf-transport-state-progress span { display: block; inline-size: 36%; block-size: 100%; border-radius: inherit; background: var(--accent); }
-/* The single loop communicates an ongoing load; reduced-motion keeps the same state without travel. */
-@media (prefers-reduced-motion: no-preference) {
-  .lf-transport-state-progress span { animation: lf-transport-progress 1.6s var(--ease-standard) infinite alternate; }
-}
-@keyframes lf-transport-progress { from { transform: translateX(0); } to { transform: translateX(175%); } }
 @media (max-width: 480px) { .lf-transport-state-actions { display: grid; } .lf-transport-state-actions .lf-button { inline-size: 100%; } }
