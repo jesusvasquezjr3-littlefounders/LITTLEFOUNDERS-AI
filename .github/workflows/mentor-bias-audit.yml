@@ -1,0 +1,47 @@
+name: Mentor bias audit cadence
+
+# PRODUCT C.20: THE RECURRING RE-AUDIT, AS A RUN SOMEBODY SEES.
+#
+# Every lexical component that feeds the Behavioral Telemetry Layer (C.9), the
+# check-in and stop-offer replies, or content moderation is audited against
+# dialect, code-switch, child-spelling and ASR-artifact variants of the same
+# meaning (`oracle/src/safety/biasAudit/`, policy:
+# docs/rebuild/mentor/BIAS-AUDIT-POLICY.md). Two triggers make a re-audit due:
+#
+#   MATERIAL CHANGE  a component's sources changed since the last recorded
+#                    audit. Enforced on every Oracle CI run: `npm test` fails
+#                    (`biasAudit.test.ts`) until the audit is rerun and recorded.
+#   CADENCE          the last recorded audit is older than the semi-annual
+#                    cadence (Appendix F "Bias-Audit Coverage", proposed,
+#                    pending calibration). No push happens on a calendar, so
+#                    this scheduled run is what notices it: it fails, visibly,
+#                    when the audit is overdue.
+#
+# Fixture-based and free: no network, no model, no secrets. The paid live
+# judge audit (`--judge-live`) is owner-run and never runs here (OD-23).
+
+on:
+  schedule:
+    - cron: '0 9 1 * *' # 09:00 UTC on the 1st of every month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: oracle
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: oracle/package-lock.json
+      - run: npm ci
+      - name: Bias audit, material-change and cadence check
+        run: npm run bias-audit -- --check

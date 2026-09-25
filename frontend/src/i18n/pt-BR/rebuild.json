@@ -210,5 +210,10 @@
     "nextLabel": "Na próxima vez:",
     "backToPath": "Voltar à trilha",
     "previewTopic": "Poupar para uma meta"
+  },
+  "mentorCheckIn": {
+    "choiceLabel": "Sua resposta",
+    "aligned": "Sim, tudo bem",
+    "misaligned": "Não muito"
   }
 }

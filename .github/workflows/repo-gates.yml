@@ -100,6 +100,14 @@ jobs:
       - name: Session-end record agrees across every copy
         run: node agent/tools/check-session-end-parity.mjs
 
+      # Product C.9 + C.19: the Behavioral Telemetry Layer's channels, firing
+      # record, check-in outcomes, context fields and socket frames are
+      # hand-mirrored across Oracle, Core, the migration and the client. A drift
+      # makes Core refuse the close (400), files a strength under the wrong
+      # channel, or sends a context field an Oracle cannot parse.
+      - name: Behavioral telemetry record agrees across every copy
+        run: node agent/tools/check-behavioral-telemetry-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

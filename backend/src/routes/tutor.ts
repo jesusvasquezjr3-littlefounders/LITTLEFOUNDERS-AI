@@ -25,6 +25,12 @@ import {
   SESSION_OPENINGS,
   SessionEndReportBody,
 } from '../services/pedagogy/sessionEnd.js';
+import {
+  BehavioralTelemetryReportBody,
+  CONTEXT_OPTIONAL_FIELDS,
+  getTelemetryKillSwitch,
+  recordTelemetryFirings,
+} from '../services/pedagogy/behavioralTelemetry.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
 import {
   ADAPTATIONS,
@@ -587,6 +593,28 @@ function internalRouter(): Router {
             skill_key: session.skill_key,
           });
 
+    /*
+     * The optional context fields the CALLING Oracle can parse (it names them
+     * in `x-oracle-context-fields`). Oracle's context schema is `.strict()`,
+     * so a field an older Oracle does not know would make it refuse every
+     * session: an optional field is sent only when it was announced, which
+     * makes the Core/Oracle deploy order irrelevant. Kept identical to
+     * Oracle's CONTEXT_OPTIONAL_FIELDS by `npm run telemetry:check`.
+     */
+    const accepts = new Set(
+      String(req.get('x-oracle-context-fields') ?? '')
+        .split(',')
+        .map((f) => f.trim())
+        .filter((f) => (CONTEXT_OPTIONAL_FIELDS as readonly string[]).includes(f)),
+    );
+    /*
+     * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: while the Behavioral
+     * Telemetry Layer's kill-switch condition holds (or a trip is unresolved),
+     * Oracle runs it in shadow — measuring, never acting. Evaluated only for
+     * an Oracle that can receive it.
+     */
+    const killSwitch = accepts.has('behavioralTelemetryMode') ? await getTelemetryKillSwitch() : null;
+
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
       skillKeys: row.summary.skillKeys.slice(0, 5),
@@ -646,7 +674,8 @@ function internalRouter(): Router {
       intelDegraded,
       sessionPlan: pedagogyPlan?.plan ?? null,
       kcStates: pedagogyPlan?.kcStates ?? null,
-      opening,
+      ...(accepts.has('opening') ? { opening } : {}),
+      ...(killSwitch !== null ? { behavioralTelemetryMode: killSwitch.mode } : {}),
     });
   });
 
@@ -1550,6 +1579,12 @@ function internalRouter(): Router {
     closingScript: z.enum(CLOSING_SCRIPTS).optional(),
     opening: z.enum(SESSION_OPENINGS).optional(),
     endSignal: SessionEndReportBody.optional(),
+    /*
+     * C.9/C.19 (Appendix F §1.2): the Behavioral Telemetry Layer's counts and
+     * firings. OPTIONAL (an older Oracle, or the layer switched off); strict
+     * inside, so an emotion label or an unknown outcome refuses the close.
+     */
+    behavioralTelemetry: BehavioralTelemetryReportBody.optional(),
   });
 
   router.post('/sessions/:id/close', async (req, res) => {
@@ -1585,6 +1620,24 @@ function internalRouter(): Router {
           events: parsed.data.endSignal.events,
         });
         if (!written) console.warn(`[tutor] session-end signal NOT recorded for session ${owner.id}`);
+      }
+    }
+
+    /*
+     * C.9/C.19: the telemetry firings, written only by the close that
+     * actually landed. Best-effort: a failed write costs Repair Initiation
+     * data points, never the close.
+     */
+    const telemetry = parsed.data.behavioralTelemetry;
+    if (outcome === 'closed' && telemetry && telemetry.events.length > 0) {
+      const owner = await getTutorSession(parsed.data.sessionId);
+      if (owner) {
+        const written = await recordTelemetryFirings({
+          sessionId: owner.id,
+          character: owner.character,
+          events: telemetry.events,
+        });
+        if (!written) console.warn(`[tutor] behavioral-telemetry firings NOT recorded for session ${owner.id}`);
       }
     }
 

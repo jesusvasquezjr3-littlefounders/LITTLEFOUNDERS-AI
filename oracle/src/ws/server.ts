@@ -32,7 +32,12 @@ import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
-import { OrchestratorSnapshotSchema, TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
+import {
+  OrchestratorSnapshotSchema,
+  TutorOrchestrator,
+  type LearnerInputMeta,
+  type TurnOutcome,
+} from '../tutor/orchestrator.js';
 import {
   CLOSE_CODES,
   ClientMessageSchema,
@@ -158,7 +163,8 @@ interface Live {
     * below. Decoding on arrival makes the concatenation a byte operation, which
     * is the only kind that is correct.
     */
-  assembly: { mimeType: string; parts: Buffer[]; bytes: number; chars: number } | null;
+  /** `beganAtMs`: when the learner pressed the microphone (C.9 reply latency). */
+  assembly: { mimeType: string; parts: Buffer[]; bytes: number; chars: number; beganAtMs: number } | null;
   microphone: boolean;
   closing: boolean;
   /**
@@ -2155,6 +2161,39 @@ async function onMessage(live: Live, raw: string): Promise<void> {
       return;
     }
 
+    case 'check_in_response': {
+      /*
+       * C.19: the learner's answer to the system's check-in ("are we on the
+       * same page?") on the two reply chips. Refused unless a check-in is
+       * actually open — a replayed or hand-crafted frame steers nothing —
+       * and checked BEFORE the claim, like `session_end_response`. "Yes"
+       * continues the plan; "not really" is the repair (a model turn that
+       * offers an adaptation).
+       */
+      if (!live.orchestrator.checkInOpen) {
+        send(live.socket, {
+          type: 'error',
+          code: 'NO_CHECK_IN',
+          message: 'There is no open question to answer.',
+        });
+        return;
+      }
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.respondToCheckIn(message.data.aligned, Date.now(), live.abort.signal),
+        );
+      } finally {
+        live.abort = null;
+        releaseTurn(live);
+      }
+      return;
+    }
+
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
       //
@@ -2235,13 +2274,16 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'learner_text':
     case 'learner_edit': {
-      const claim = claimTurn(live, Date.now());
+      // C.9: a typed reply's onset is when it arrived.
+      const arrivedAtMs = Date.now();
+      const claim = claimTurn(live, arrivedAtMs);
       if (claim !== 'ok') return refuseTurn(live, claim);
       live.abort = new AbortController();
       send(live.socket, { type: 'thinking' });
       try {
         await handleLearnerTurn(live, message.data.text, live.abort.signal, {
           edit: message.data.type === 'learner_edit',
+          input: { source: 'typed', onsetAtMs: arrivedAtMs },
         });
       } finally {
         live.abort = null;
@@ -2270,7 +2312,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
-      live.assembly = { mimeType: message.data.mimeType, parts: [], bytes: 0, chars: 0 };
+      live.assembly = { mimeType: message.data.mimeType, parts: [], bytes: 0, chars: 0, beganAtMs: Date.now() };
       return;
 
     case 'learner_audio_chunk': {
@@ -2332,7 +2374,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         * browser, since streaming was introduced. Concatenating the decoded
         * buffers is the whole fix.
         */
-      await handleAudioClip(live, assembleClip(assembly.parts), assembly.mimeType);
+      await handleAudioClip(live, assembleClip(assembly.parts), assembly.mimeType, assembly.beganAtMs);
       return;
     }
   }
@@ -2397,7 +2439,12 @@ async function refreshMicConsent(live: Live): Promise<boolean> {
   return true;
 }
 
-async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Promise<void> {
+/**
+ * `onsetAtMs`: when the learner started speaking (the microphone press of a
+ * streamed clip), for the C.9 reply latency; null for a single-frame clip,
+ * whose start is not known.
+ */
+async function handleAudioClip(live: Live, audio: Buffer, mimeType: string, onsetAtMs: number | null = null): Promise<void> {
   if (!live.microphone) {
     send(live.socket, {
       type: 'error',
@@ -2445,6 +2492,7 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Pro
     await handleLearnerTurn(live, text, live.abort.signal, {
       viaMicrophone: true,
       micConsentAlreadyChecked: true,
+      input: { source: 'spoken', onsetAtMs },
     });
   } finally {
     live.abort = null;
@@ -2456,8 +2504,15 @@ async function handleLearnerTurn(
   live: Live,
   text: string,
   signal?: AbortSignal,
-  opts: { viaMicrophone?: boolean; edit?: boolean; micConsentAlreadyChecked?: boolean } = {},
+  opts: {
+    viaMicrophone?: boolean;
+    edit?: boolean;
+    micConsentAlreadyChecked?: boolean;
+    /** C.9: how the words arrived and when the learner started answering. */
+    input?: LearnerInputMeta;
+  } = {},
 ): Promise<void> {
+  const input: LearnerInputMeta = opts.input ?? { source: opts.viaMicrophone ? 'spoken' : 'typed', onsetAtMs: null };
   // The floor and the single-flight slot are the CALLER's, claimed before any
   // paid work — including the transcription that precedes an audio turn. This
   // function must not re-check the floor: `claimTurn` has already stamped
@@ -2593,6 +2648,7 @@ async function handleLearnerTurn(
           text,
           Date.now(),
           signal,
+          input,
         ),
         learnerTurnSeq,
       );
@@ -2606,8 +2662,8 @@ async function handleLearnerTurn(
   await deliver(
     live,
     opts.edit
-      ? await live.orchestrator.handleLearnerEdit(text, Date.now(), signal)
-      : await live.orchestrator.handleLearnerText(text, Date.now(), signal),
+      ? await live.orchestrator.handleLearnerEdit(text, Date.now(), signal, input)
+      : await live.orchestrator.handleLearnerText(text, Date.now(), signal, input),
     learnerTurnSeq,
   );
 }
@@ -2832,6 +2888,11 @@ async function deliver(
   // equal choices (Frontend Bible 08 §4). Never a default-accepted path: the
   // choice arrives as `session_end_response` or in the learner's own words.
   if (emission.sessionEndOffer === true) send(live.socket, { type: 'session_end_offer' });
+
+  // C.19: this turn is the system's check-in — the stage shows the two reply
+  // chips (Frontend Bible 08 §4: "a turn with chips, not a modal"). The
+  // answer arrives as `check_in_response` or in the learner's own words.
+  if (emission.checkIn === true) send(live.socket, { type: 'check_in' });
 
   if (emission.turn.next === 'segment' && emission.turn.segmentRequest) {
     if (segmentAttempt > MAX_SEGMENT_RETRIES) {

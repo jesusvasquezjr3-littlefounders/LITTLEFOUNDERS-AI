@@ -8,6 +8,7 @@ import { startOfLocalDayIso } from '../routes/tutor.js';
 import { knownMentorAgeTier } from '../services/mentorAgeCalibration.js';
 import { getLearnerMemory } from '../services/tutorData.js';
 import { GRADERS } from '../lesson-contract/registry.js';
+import { resetKillSwitchCache } from '../services/pedagogy/behavioralTelemetry.js';
 
 // Each scenario is an independent learner journey; hundreds of tests must not
 // consume one shared loopback client's rate budget across unrelated scenarios.
@@ -5091,10 +5092,12 @@ describe('C.16 / C.8 / C.12 — the session-close record and the queued re-engag
     expect(response.status).toBe(403);
   });
 
+  // The Oracle that reads `opening` announces it (the context field negotiation).
   const context = () =>
     request(createApp())
       .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
-      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', 'opening');
   const previous = (row: Record<string, unknown>) => ({
     close_reason: 'learner_left',
     ended_at: new Date(Date.now() - 86_400_000).toISOString(),
@@ -5136,5 +5139,282 @@ describe('C.16 / C.8 / C.12 — the session-close record and the queued re-engag
   it('opens with the plain greeting for a first session', async () => {
     stub({ session: [SESSION_ROW], sessions: [] });
     expect((await context()).body.data.opening).toBe('greeting');
+  });
+
+  it('never sends `opening` to an Oracle that did not announce it (its strict schema would refuse the session)', async () => {
+    stub({ session: [{ ...SESSION_ROW, skill_key: 'money.saving' }], sessions: [previous({})] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect(response.status).toBe(200);
+    expect(response.body.data).not.toHaveProperty('opening');
+    expect(response.body.data).not.toHaveProperty('behavioralTelemetryMode');
+  });
+});
+
+describe('C.9 / C.19 — the Behavioral Telemetry Layer close record and the Stage 7 automatic rollback', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const FIRING = {
+    observation: 9,
+    latencyShift: 1,
+    rapidResponse: 0,
+    verbosityDrop: 1,
+    repeatedAnswer: 0.5,
+    hedging: 0,
+    offTopic: 1,
+    hintAbuse: 0,
+    fastKnownMiss: 0,
+    channels: 3,
+    mode: 'act',
+    outcome: 'misaligned',
+    repairOffered: true,
+  };
+  const REPORT = { mode: 'act', evaluatedTurns: 14, actionTurns: 1, events: [FIRING] };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 18,
+    segmentCount: 2,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const close = (body: Record<string, unknown>) =>
+    request(createApp()).post(CLOSE_URL).set('x-internal-api-key', process.env.INTERNAL_API_KEY as string).send(body);
+  const patchOf = (calls: { url: string; method: string; body?: string }[]) =>
+    JSON.parse(
+      calls.find((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions') && c.url.includes('ended_at=is.null'))
+        ?.body ?? '{}',
+    ) as Record<string, unknown>;
+  const firingRows = (calls: { url: string; method: string; body?: string }[]) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_telemetry_firing'))
+      .flatMap((c) => JSON.parse(String(c.body)) as Record<string, unknown>[]);
+
+  beforeEach(() => resetKillSwitchCache());
+
+  it('records the counts beside the close and each firing as channel strengths only', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.status).toBe(200);
+    expect(patchOf(calls)).toMatchObject({
+      close_reason: 'completed',
+      telemetry_mode: 'act',
+      telemetry_evaluated_turns: 14,
+      telemetry_action_turns: 1,
+    });
+    // The persona, the numbers and the outcome — no user id, no text, no label.
+    expect(firingRows(calls)).toEqual([
+      {
+        session_id: SESSION,
+        character: 'rho',
+        observation: 9,
+        latency_shift: 1,
+        rapid_response: 0,
+        verbosity_drop: 1,
+        repeated_answer: 0.5,
+        hedging: 0,
+        off_topic: 1,
+        hint_abuse: 0,
+        fast_known_miss: 0,
+        channels: 3,
+        mode: 'act',
+        outcome: 'misaligned',
+        repair_offered: true,
+      },
+    ]);
+  });
+
+  it('an Oracle without the layer (older build, or switched off) names none of the telemetry columns', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody())).status).toBe(200);
+    const patch = patchOf(calls);
+    expect(patch).not.toHaveProperty('telemetry_mode');
+    expect(patch).not.toHaveProperty('telemetry_evaluated_turns');
+    expect(firingRows(calls)).toEqual([]);
+  });
+
+  it.each([
+    ['an emotion label smuggled into a firing', { ...REPORT, events: [{ ...FIRING, emotion: 'frustrated' }] }],
+    ['a label beside the counts', { ...REPORT, learnerState: 'bored' }],
+    ['the internal pending outcome', { ...REPORT, events: [{ ...FIRING, outcome: 'pending' }] }],
+    ['an open (unreported) check-in', { ...REPORT, events: [{ ...FIRING, outcome: 'open' }] }],
+    ['a strength above 1', { ...REPORT, events: [{ ...FIRING, hedging: 1.2 }] }],
+    ['more action turns than evaluated turns', { ...REPORT, evaluatedTurns: 1, actionTurns: 2 }],
+    ['a shadow layer that claims it acted', { ...REPORT, mode: 'shadow', actionTurns: 1 }],
+    ['an unknown mode', { ...REPORT, mode: 'loud' }],
+    ['more than ten firings', { ...REPORT, events: Array.from({ length: 11 }, (_, i) => ({ ...FIRING, observation: i + 1 })) }],
+  ])('refuses %s with a 400 and closes nothing', async (_label, behavioralTelemetry) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody({ behavioralTelemetry }))).status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+    expect(firingRows(calls)).toEqual([]);
+  });
+
+  it('writes no firings when another close already landed (first close wins)', async () => {
+    const calls = stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:00:05Z', close_reason: 'learner_left' }] });
+    const response = await close(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: true });
+    expect(firingRows(calls)).toEqual([]);
+  });
+
+  it('a failed firing write never fails the close', async () => {
+    const calls = stub({ session: [SESSION_ROW], restFailures: ['/rest/v1/tutor_telemetry_firing'] });
+    const response = await close(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: false });
+    expect(patchOf(calls).telemetry_mode).toBe('act');
+  });
+
+  it('is not reachable with a learner session, even the session owner', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.status).toBe(403);
+  });
+
+  /** The context read, with the audit-log and firing reads answered by the test. */
+  async function contextWith(opts: {
+    sessions?: Record<string, unknown>[];
+    audit?: Record<string, unknown>[];
+    firings?: Record<string, unknown>[];
+    failing?: string[];
+    fields?: string | null;
+  }) {
+    const calls = stub({ session: [SESSION_ROW], sessions: opts.sessions ?? [], restFailures: opts.failing ?? [] });
+    const inner = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        const failing = (opts.failing ?? []).some((f) => url.includes(f));
+        if (!failing && method === 'GET' && url.includes('/rest/v1/audit_logs')) {
+          calls.push({ url, method });
+          return Promise.resolve(jsonResponse(200, opts.audit ?? []));
+        }
+        if (!failing && method === 'GET' && url.includes('/rest/v1/tutor_telemetry_firing')) {
+          calls.push({ url, method });
+          return Promise.resolve(jsonResponse(200, opts.firings ?? []));
+        }
+        return inner(input, init);
+      }),
+    );
+    let req = request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    if (opts.fields !== null) req = req.set('x-oracle-context-fields', opts.fields ?? 'opening,behavioralTelemetryMode');
+    const response = await req;
+    const audits = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'));
+    return { response, calls, audits };
+  }
+  const actSession = (evaluated: number, action: number) => ({
+    id: '99999999-9999-4999-8999-999999999999',
+    character: 'rho',
+    close_reason: 'completed',
+    ended_at: new Date(Date.now() - 3_600_000).toISOString(),
+    intent: 'weak_skill',
+    course_id: null,
+    topic_id: null,
+    skill_key: null,
+    telemetry_mode: 'act',
+    telemetry_evaluated_turns: evaluated,
+    telemetry_action_turns: action,
+  });
+  const firing = (outcome: string) => ({
+    session_id: null,
+    character: 'rho',
+    mode: 'act',
+    outcome,
+    repair_offered: null,
+    latency_shift: 1,
+    rapid_response: 0,
+    verbosity_drop: 1,
+    repeated_answer: 0,
+    hedging: 0,
+    off_topic: 0,
+    hint_abuse: 0,
+    fast_known_miss: 0,
+  });
+
+  it('acts on a healthy window: high default-to-inaction and every firing carried', async () => {
+    const { response, audits } = await contextWith({ sessions: [actSession(400, 20)], firings: [firing('aligned')] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    expect(audits).toEqual([]);
+  });
+
+  it('rolls back to shadow when default-to-inaction drops below 85%, and logs the trip', async () => {
+    const { response, audits } = await contextWith({ sessions: [actSession(400, 100)] });
+    expect(response.body.data.behavioralTelemetryMode).toBe('shadow');
+    expect(audits).toHaveLength(1);
+    const row = JSON.parse(String(audits[0]!.body));
+    expect(row).toMatchObject({ actor_id: null, action: 'mentor.kill_switch.behavioral_telemetry.triggered' });
+    expect(row.detail.causes).toEqual(['default_to_inaction_below_floor']);
+    expect(JSON.stringify(row.detail)).not.toMatch(/user|nickname|text/i);
+  });
+
+  it('rolls back on ONE fired signal that never produced its check-in (repair initiation below 100%)', async () => {
+    const { response, audits } = await contextWith({
+      sessions: [actSession(400, 10)],
+      firings: [firing('aligned'), firing('undelivered')],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('shadow');
+    expect(JSON.parse(String(audits[0]!.body)).detail.causes).toEqual(['repair_initiation_below_target']);
+  });
+
+  it('a thin sample never trips the floor; superseded and session-ended firings are not misses', async () => {
+    const { response } = await contextWith({
+      sessions: [actSession(40, 20)],
+      firings: [firing('superseded'), firing('session_ended'), firing('misaligned')],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+  });
+
+  it('a trip holds until an operator resolves it, whatever the window now says', async () => {
+    const { response, calls } = await contextWith({
+      sessions: [],
+      audit: [
+        {
+          action: 'mentor.kill_switch.behavioral_telemetry.triggered',
+          created_at: new Date(Date.now() - 30 * 86_400_000).toISOString(),
+          detail: { causes: ['default_to_inaction_below_floor'] },
+        },
+      ],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('shadow');
+    // Held from the log alone: the window is not even read.
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_telemetry_firing'))).toBe(false);
+  });
+
+  it('after a resolution, only data since the resolution counts', async () => {
+    const resolvedAt = new Date(Date.now() - 86_400_000).toISOString();
+    const { response, calls } = await contextWith({
+      sessions: [actSession(400, 10)],
+      audit: [{ action: 'mentor.kill_switch.behavioral_telemetry.resolved', created_at: resolvedAt, detail: {} }],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    const read = calls.find((c) => c.url.includes('/rest/v1/tutor_telemetry_firing'))!;
+    expect(decodeURIComponent(read.url)).toContain(`created_at=gte.${resolvedAt}`);
+  });
+
+  it('a failed read is not evidence: the layer keeps acting and nothing is logged (§1.14)', async () => {
+    const { response, audits } = await contextWith({ failing: ['/rest/v1/audit_logs'] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    expect(audits).toEqual([]);
+  });
+
+  it('an Oracle that did not announce the field gets neither the mode nor the kill-switch reads', async () => {
+    const { response, calls } = await contextWith({ sessions: [actSession(400, 100)], fields: null });
+    expect(response.body.data).not.toHaveProperty('behavioralTelemetryMode');
+    expect(calls.some((c) => c.url.includes('/rest/v1/audit_logs'))).toBe(false);
+  });
+
+  it('ignores field names it does not know in the announcement', async () => {
+    const { response } = await contextWith({ fields: 'opening, somethingElse ,behavioralTelemetryMode' });
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    expect(response.body.data).not.toHaveProperty('somethingElse');
   });
 });

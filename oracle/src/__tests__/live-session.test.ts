@@ -142,6 +142,10 @@ let slowTurnDelayMs = 1_500;
  * field, the shape an older Core sends (the greeting).
  */
 let servedOpening: string | null = null;
+/** C.9: what the last context read announced it can parse (`x-oracle-context-fields`). */
+let announcedContextFields: string | null = null;
+/** C.9: the Stage 7 rollback verdict the fake Core serves; `null` omits the field (an older Core). */
+let servedTelemetryMode: 'act' | 'shadow' | null = null;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -179,6 +183,7 @@ function startFakeCore(): Promise<Server> {
         return json(res, { closed: true, alreadyClosed });
       }
       if (url.includes(`/tutor/internal/sessions/${SESSION_ID}`)) {
+        announcedContextFields = String(req.headers['x-oracle-context-fields'] ?? '');
         return json(res, {
           sessionId: SESSION_ID,
           userId: USER_ID,
@@ -197,6 +202,7 @@ function startFakeCore(): Promise<Server> {
           intelDegraded: false,
           ...(servedSessionPlan ? { sessionPlan: servedSessionPlan } : {}),
           ...(servedOpening ? { opening: servedOpening } : {}),
+          ...(servedTelemetryMode ? { behavioralTelemetryMode: servedTelemetryMode } : {}),
         });
       }
       if (url.includes('/tutor/internal/turns')) {
@@ -740,6 +746,41 @@ describe('a real live session over a real websocket', () => {
     expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
 
     socket.close();
+  });
+
+  it('C.19: refuses a forged check-in answer when no check-in is open, without a model call', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'check_in_response', aligned: false }));
+    expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'NO_CHECK_IN' });
+    expect(modelJournal.bodies).toHaveLength(0);
+    expect(journal.closes).toHaveLength(0);
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    const invalid = collect(socket, (m) => m.filter((x) => x.type === 'error').length >= 1);
+    socket.send(JSON.stringify({ type: 'check_in_response', aligned: 'not really' }));
+    expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+    socket.close();
+  });
+
+  it("C.9: announces the optional context fields it parses, and accepts Core's rollback verdict", async () => {
+    freshJournal();
+    servedTelemetryMode = 'shadow';
+    try {
+      const { socket } = open(await socketUrl());
+      await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      expect(announcedContextFields).toBe('opening,behavioralTelemetryMode');
+      const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+      socket.send(JSON.stringify({ type: 'end_session' }));
+      await ending;
+      // The session ran (the context parsed) and the layer reported in shadow.
+      expect(journal.closes.at(-1)).toMatchObject({ behavioralTelemetry: { mode: 'shadow', actionTurns: 0 } });
+    } finally {
+      servedTelemetryMode = null;
+    }
   });
 
   /*

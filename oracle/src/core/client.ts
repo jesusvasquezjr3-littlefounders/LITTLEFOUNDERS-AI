@@ -14,6 +14,7 @@ import type { WireDemoStep, WireWhiteboard } from '../ws/protocol.js';
 import type { TurnHonesty } from '../tutor/feedbackHonesty.js';
 import { SESSION_OPENINGS, type ClosingScript, type SessionOpening } from '../tutor/sessionClosing.js';
 import type { SessionEndSignalReport } from '../tutor/sessionEndSignal.js';
+import type { BehavioralTelemetryReport } from '../tutor/behavioralTelemetry.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -179,8 +180,30 @@ export const SessionContextSchema = z
      * model context — it selects a scripted line, nothing more.
      */
     opening: z.enum(SESSION_OPENINGS).optional(),
+    /**
+     * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * Behavioral Telemetry Layer's kill-switch condition over its trailing
+     * window (Default-to-Inaction Rate below the floor, or a check-in that a
+     * fired signal never produced). `shadow` means the layer keeps measuring
+     * but must not act; the orchestrator applies the STRICTER of this and
+     * TUTOR_BEHAVIORAL_TELEMETRY. OPTIONAL: a Core that predates it means
+     * `act`, i.e. the env switch alone decides.
+     */
+    behavioralTelemetryMode: z.enum(['act', 'shadow']).optional(),
   })
   .strict();
+
+/*
+ * The optional context fields THIS Oracle can parse, announced to Core on
+ * every context read. The schema above is `.strict()`, so a Core that sent a
+ * field an older Oracle does not know would make that Oracle refuse every
+ * session. Core therefore sends an optional field only when it is named here,
+ * which makes the deploy order of the two services irrelevant (found while
+ * building C.9, 2026-09-25: C.16's `opening` had been sent unconditionally,
+ * so deploying Core before Oracle would have refused every session in the
+ * gap). Kept identical to Core's list by `npm run telemetry:check`.
+ */
+export const CONTEXT_OPTIONAL_FIELDS = ['opening', 'behavioralTelemetryMode'] as const;
 
 export type SessionContext = z.infer<typeof SessionContextSchema>;
 
@@ -219,7 +242,9 @@ async function coreFetch(path: string, init: RequestInit = {}): Promise<unknown>
  */
 export async function fetchSessionContext(sessionId: string): Promise<SessionContext | null> {
   try {
-    const body = await coreFetch(`/tutor/internal/sessions/${encodeURIComponent(sessionId)}`);
+    const body = await coreFetch(`/tutor/internal/sessions/${encodeURIComponent(sessionId)}`, {
+      headers: { 'x-oracle-context-fields': CONTEXT_OPTIONAL_FIELDS.join(',') },
+    });
     const parsed = Envelope(SessionContextSchema).safeParse(body);
     if (!parsed.success || parsed.data.error || !parsed.data.data) return null;
     return parsed.data.data;
@@ -358,6 +383,14 @@ export interface CloseSessionInput {
    * emotional label, and nothing the learner wrote.
    */
   endSignal: SessionEndSignalReport;
+  /**
+   * C.9/C.19: the Behavioral Telemetry Layer's record — turns evaluated,
+   * turns acted on (Default-to-Inaction Rate) and every firing with its
+   * channel strengths and the check-in's outcome (Disengagement-Repair
+   * Initiation Rate). Signal strength only, never an emotional label, and
+   * nothing the learner wrote. Absent while the layer is switched off.
+   */
+  behavioralTelemetry?: BehavioralTelemetryReport;
 }
 
 /**

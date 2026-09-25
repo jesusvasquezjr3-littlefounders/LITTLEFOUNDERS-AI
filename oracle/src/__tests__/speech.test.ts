@@ -135,15 +135,18 @@ describe('the scripted set is closed, which is what makes it buyable once', () =
      * the four end-reason scripts — the recap question, six completed closes
      * (one per observed act), the interrupted close and the safety close —
      * plus the four queued re-engagement openings. 14 − 2 + 13 = 25.
+     *
+     * 26, not 25 (C.19, 2026-09-25): the disengagement check-in the system
+     * asks when the Behavioral Telemetry Layer fires.
      */
-    expect(catalogue).toHaveLength(25 * CHARACTER_IDS.length * LOCALES.length);
+    expect(catalogue).toHaveLength(26 * CHARACTER_IDS.length * LOCALES.length);
 
     for (const character of CHARACTER_IDS) {
       for (const locale of LOCALES) {
         const slot = catalogue.filter((l) => l.character === character && l.locale === locale);
-        expect(slot).toHaveLength(25);
+        expect(slot).toHaveLength(26);
         // Keys stay unique — the three model-down variants are `model_down.0..2`.
-        expect(new Set(slot.map((l) => l.key)).size).toBe(25);
+        expect(new Set(slot.map((l) => l.key)).size).toBe(26);
         for (const line of slot) expect(line.text.trim().length).toBeGreaterThan(0);
       }
     }

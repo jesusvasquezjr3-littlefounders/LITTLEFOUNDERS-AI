@@ -30,6 +30,7 @@ import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import type { LessonMentorStage } from '../learning/lessonDocument';
 import { SessionClosing, SessionEndChoice, type ClosingScript, type EffortAct } from '../mentor/SessionEnd';
+import { CheckInChoice } from '../mentor/CheckIn';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -161,6 +162,11 @@ export function Preview() {
             ? params.get('script') : 'completed') as ClosingScript}
           effort={(params.get('effort') ?? 'recovered') as EffortAct}
           topic={params.get('topic') === 'none' ? null : t.mentorSessionEnd.previewTopic} onBack={() => go('home')} />
+      </div></main>
+      : screen === 'mentor-check-in' ? <main className="lf-preview lf-preview--mentor-check-in" data-surface="app"
+        data-screen="mentor-check-in"><div className="lf-preview-content">
+        {/* C.19 fixture: the two reply chips the stage shows under the Mentor's check-in turn. */}
+        <CheckInChoice copy={t.mentorCheckIn} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
       </div></main>
       : <main className={`lf-preview lf-preview--${screen}`} data-surface="app" data-screen={screen}>
       <div className="lf-preview-content">

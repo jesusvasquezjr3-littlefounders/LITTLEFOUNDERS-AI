@@ -16,6 +16,7 @@
 import process from 'node:process';
 import { runPedagogyGym } from '../src/tutor/pedagogyGym.js';
 import { runSessionEndGym } from '../src/tutor/sessionEndGym.js';
+import { runTelemetryGym } from '../src/tutor/telemetryGym.js';
 
 function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void {
   console.log('== The simulated-student gym: reactive students against the real controller ==');
@@ -42,10 +43,30 @@ function main(): void {
    * Part 3 Stage 2's simulated learners (`src/tutor/sessionEndGym.ts`).
    */
   const sessionEnd = runSessionEndGym();
-  const ok = controller.ok && sessionEnd.ok;
+  /*
+   * C.9/C.19: the Behavioral Telemetry Layer and its check-in against the
+   * same Stage 2 learners (`src/tutor/telemetryGym.ts`), with the suite-wide
+   * Default-to-Inaction floor and the no-emotion-label check.
+   */
+  const telemetry = runTelemetryGym();
+  const ok = controller.ok && sessionEnd.ok && telemetry.ok;
 
   if (process.argv.includes('--json')) {
-    console.log(JSON.stringify({ ok, reports, sessionEnd: sessionEnd.reports }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          ok,
+          reports,
+          sessionEnd: sessionEnd.reports,
+          telemetry: {
+            defaultToInaction: telemetry.defaultToInaction,
+            reports: telemetry.reports.map(({ readings: _readings, ...rest }) => rest),
+          },
+        },
+        null,
+        2,
+      ),
+    );
   } else {
     printHuman(reports);
     console.log('');
@@ -57,15 +78,25 @@ function main(): void {
       for (const problem of report.problems) console.log(`        ↳ ${problem}`);
     }
     console.log('');
+    console.log('== The Behavioral Telemetry Layer and its check-in (C.9/C.19) against the simulated learners ==');
+    console.log('');
+    for (const report of telemetry.reports) {
+      const checkIns = report.checkIns.map((turn) => `turn ${turn}`).join(', ') || 'no check-in';
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${checkIns}`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log(`  default-to-inaction across the suite: ${(telemetry.defaultToInaction * 100).toFixed(1)}% (floor 85%)`);
+    console.log('');
     const totalProblems =
       reports.reduce((sum, report) => sum + report.problems.length, 0) +
-      sessionEnd.reports.reduce((sum, report) => sum + report.problems.length, 0);
+      sessionEnd.reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      telemetry.reports.reduce((sum, report) => sum + report.problems.length, 0);
     if (!ok) {
       console.log(`gym:pedagogy FAILED — ${totalProblems} problem(s) across ${reports.length} scenario(s).`);
       console.log('Each of these archetypes is a reactive student; a violation here is a sequence a real session could produce.');
     } else {
       console.log(
-        `gym:pedagogy OK — ${reports.length} reactive student archetype(s) and ${sessionEnd.reports.length} session-end persona(s), no guardrail violations.`,
+        `gym:pedagogy OK — ${reports.length} reactive student archetype(s), ${sessionEnd.reports.length} session-end persona(s) and ${telemetry.reports.length} telemetry persona(s), no guardrail violations.`,
       );
     }
   }

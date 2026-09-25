@@ -170,6 +170,12 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
    * (`session_end_offer`). Honoured only while an offer is open.
    */
   z.object({ type: z.literal('session_end_response'), accepted: z.boolean() }).strict(),
+  /**
+   * C.19: the learner's answer to the system's check-in (`check_in`) on the
+   * two reply chips: `aligned` = "yes, we're good", false = "not really".
+   * Honoured only while a check-in is open.
+   */
+  z.object({ type: z.literal('check_in_response'), aligned: z.boolean() }).strict(),
   z.object({ type: z.literal('ping') }).strict(),
 ]);
 
@@ -426,6 +432,12 @@ export type ServerMessage =
    * choices; the answer is `session_end_response`.
    */
   | { type: 'session_end_offer' }
+  /**
+   * C.19: the turn just delivered is the system's check-in ("are we on the
+   * same page?"). The stage shows two equal reply chips; the answer is
+   * `check_in_response` or the learner's own words.
+   */
+  | { type: 'check_in' }
   /**
    * C.16: sent once, just before `closed` on a graceful close. `script` is
    * the closing script this ending used; `effort` the specific act a

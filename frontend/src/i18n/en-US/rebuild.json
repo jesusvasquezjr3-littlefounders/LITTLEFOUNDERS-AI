@@ -210,5 +210,10 @@
     "nextLabel": "Next time:",
     "backToPath": "Back to path",
     "previewTopic": "Saving for a goal"
+  },
+  "mentorCheckIn": {
+    "choiceLabel": "Your answer",
+    "aligned": "We're good",
+    "misaligned": "Not really"
   }
 }

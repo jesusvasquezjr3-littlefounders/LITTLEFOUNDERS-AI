@@ -4,7 +4,7 @@ import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
 import { checkCopy, type CopyRole, type Locale } from './copyBudget';
 
-const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite' | 'mentorSessionEnd'>, CopyRole> = {
+const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite' | 'mentorSessionEnd' | 'mentorCheckIn'>, CopyRole> = {
   preview: 'body', heading: 'heading', intro: 'body', practice: 'action', controls: 'action',
   lessonDemo: 'action', lessonUnavailable: 'heading', lessonInvalid: 'heading', timelineDemo: 'action', numberLineDemo: 'action', age: 'body', adult: 'option',
   question: 'prompt', save: 'option', spend: 'option', check: 'action', again: 'action',
@@ -15,7 +15,7 @@ const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' |
 describe('new preview copy', () => {
   for (const [locale, strings] of Object.entries({ 'en-US': en, 'es-MX': es, 'pt-BR': pt })) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite' && key !== 'mentorSessionEnd').sort()).toEqual(Object.keys(roles).sort());
+      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite' && key !== 'mentorSessionEnd' && key !== 'mentorCheckIn').sort()).toEqual(Object.keys(roles).sort());
       for (const key of Object.keys(roles) as (keyof typeof roles)[]) {
         expect(checkCopy(strings[key], roles[key], { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
       }
@@ -70,6 +70,11 @@ describe('new preview copy', () => {
             : ['stop', 'more', 'backToPath'].includes(path) ? 'action' : path === 'previewTopic' ? 'data' : 'body';
           expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), `mentorSessionEnd.${path}`).toEqual([]);
         }
+      }
+      // C.19: the check-in reply chips are option controls (Bible 08 §2: 5 words for ages 6–9).
+      for (const [key, text] of Object.entries(strings.mentorCheckIn)) {
+        const role = key === 'choiceLabel' ? 'body' : 'option';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), `mentorCheckIn.${key}`).toEqual([]);
       }
       for (const [key, text] of Object.entries(strings.ageScreen)) {
         const role = key === 'title' ? 'heading' : ['continue', 'exit', 'retry'].includes(key) ? 'action' : 'body';

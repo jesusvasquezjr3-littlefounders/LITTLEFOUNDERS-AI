@@ -116,3 +116,30 @@ describe('useTutorSocket — the C.16 closing summary', () => {
     expect(latest!.closedReason).toBe('hard_budget');
   });
 });
+
+describe('useTutorSocket — the C.19 check-in', () => {
+  it('opens on check_in after the check-in turn; a new turn or the closing clears it', async () => {
+    const { socket } = await openSession();
+    act(() => socket.emit({ ...TURN_BASE, type: 'turn', seq: 3, next: 'ask' }));
+    act(() => socket.emit({ type: 'check_in' }));
+    expect(latest!.checkInOpen).toBe(true);
+    act(() => socket.emit({ ...TURN_BASE, type: 'turn', seq: 4, next: 'ask' }));
+    expect(latest!.checkInOpen).toBe(false);
+
+    act(() => socket.emit({ type: 'check_in' }));
+    act(() => socket.emit({ type: 'session_closing', script: 'safety_stop', effort: null, topic: null }));
+    expect(latest!.checkInOpen).toBe(false);
+  });
+
+  it('answering sends exactly one check_in_response and clears the chips at once', async () => {
+    const { socket } = await openSession();
+    act(() => socket.emit({ ...TURN_BASE, type: 'turn', seq: 3, next: 'ask' }));
+    act(() => socket.emit({ type: 'check_in' }));
+    act(() => latest!.answerCheckIn(false));
+    expect(latest!.checkInOpen).toBe(false);
+    const answers = socket.sent
+      .map((m) => JSON.parse(m) as { type: string })
+      .filter((m) => m.type === 'check_in_response');
+    expect(answers).toEqual([{ type: 'check_in_response', aligned: false }]);
+  });
+});

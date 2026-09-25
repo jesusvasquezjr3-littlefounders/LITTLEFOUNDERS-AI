@@ -1,0 +1,37 @@
+/* C.19 check-in reply chips (Frontend Bible 08 §2 response area, §4 repair).
+   A panel on the page with a surface fill and a soft shadow, never an outline
+   (Bible 02 §4.4); dark mode steps the surface instead of shadowing. No
+   animation of its own, so reduced motion needs no override: nothing moves. */
+.lf-rebuild.lf-check-in {
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: 0 1px 3px rgb(17 19 42 / .08), 0 1px 2px rgb(17 19 42 / .06);
+  display: grid;
+  min-inline-size: 0;
+  max-inline-size: 40rem;
+  /* .lf-rebuild is a page root (min-block-size: 100dvh); this is a panel. */
+  min-block-size: 0;
+  align-content: start;
+}
+.lf-rebuild.lf-check-in[data-theme='dark'] { box-shadow: none; }
+
+/* Two EQUAL chips: one column each, the same size and the same control, side
+   by side where they fit and stacked where they do not. */
+.lf-check-in-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--spacing-3);
+}
+/* Sunken fill in both themes: on the surface panel the chips need their own
+   boundary, and in dark mode the control shadow is off (Bible 02 §4.4). */
+.lf-check-in-chip {
+  inline-size: 100%;
+  min-block-size: var(--target-base);
+  background: var(--sunken);
+  overflow-wrap: anywhere;
+}
+
+/* The isolated preview fixture: the chips panel alone, at the content width. */
+.lf-preview--mentor-check-in .lf-preview-content { gap: var(--spacing-6); }

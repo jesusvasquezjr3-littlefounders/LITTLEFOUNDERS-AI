@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
 import { countServiceRows, serviceRest } from './supabaseRest.js';
+import { telemetryColumns, type BehavioralTelemetryReport } from './pedagogy/behavioralTelemetry.js';
 
 /*
  * The Tutor's data plane (migration 0047, /ORACLE.md).
@@ -413,6 +414,8 @@ export async function closeTutorSession(input: {
   opening?: string;
   /** C.8/C.12: whether the session-end signal was evaluated at all. */
   endSignal?: { evaluated: boolean };
+  /** C.9/C.19: how the Behavioral Telemetry Layer ran (absent while it was off). */
+  behavioralTelemetry?: BehavioralTelemetryReport;
 }): Promise<CloseTutorSessionOutcome> {
   const rows = await serviceRest<{ id: string }[]>(`/tutor_sessions?id=eq.${eu(input.sessionId)}&ended_at=is.null`, {
     method: 'PATCH',
@@ -428,6 +431,7 @@ export async function closeTutorSession(input: {
       ...(input.closingScript !== undefined ? { closing_script: input.closingScript } : {}),
       ...(input.opening !== undefined ? { opening: input.opening } : {}),
       ...(input.endSignal !== undefined ? { end_signal_evaluated: input.endSignal.evaluated } : {}),
+      ...telemetryColumns(input.behavioralTelemetry),
     }),
   });
   if (rows === null) return 'failed';

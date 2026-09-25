@@ -85,6 +85,7 @@ import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
 import { whiteboardComputesOk } from './whiteboard.js';
 import {
+  checkInResponse,
   completedCloseResponse,
   consentRevokedResponse,
   interruptedCloseResponse,
@@ -114,6 +115,17 @@ import {
   type SessionOpening,
 } from './sessionClosing.js';
 import { claimsLearnerAffect } from './affectClaims.js';
+import {
+  BehavioralTelemetry,
+  BehavioralTelemetrySnapshotSchema,
+  EMPTY_BEHAVIORAL_TELEMETRY,
+  estimateSpeechMs,
+  strictestTelemetryMode,
+  type BehavioralTelemetryReport,
+  type TelemetryInput,
+} from './behavioralTelemetry.js';
+import { CHECK_IN_ALIGNED_INSTRUCTION, CHECK_IN_LEAD_INSTRUCTION, repairInstruction } from './checkIn.js';
+import { classifyCheckInReply } from './telemetryLexicon.js';
 import { predictedCorrectFrom } from './controller.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { CloseReason, SessionContext, TrajectoryStepInput } from '../core/client.js';
@@ -282,7 +294,25 @@ export interface TurnEmission {
    * choices (Frontend Bible 08 §4).
    */
   sessionEndOffer?: boolean;
+  /**
+   * C.19: this turn IS the system's check-in ("are we on the same page?").
+   * The server sends `check_in` after it so the stage can show the two reply
+   * chips (Frontend Bible 08 §4: "a turn with chips, not a modal").
+   */
+  checkIn?: boolean;
 }
+
+/**
+ * How a learner's words reached the server (C.9 reply latency): typed, or
+ * spoken — with the moment they started answering (the message's arrival,
+ * or the microphone press), or null when that moment is unknown.
+ */
+export interface LearnerInputMeta {
+  source: 'typed' | 'spoken';
+  onsetAtMs: number | null;
+}
+
+const TYPED_INPUT: LearnerInputMeta = { source: 'typed', onsetAtMs: null };
 
 export interface SafetyEvent {
   category: SafetyCategory;
@@ -410,6 +440,13 @@ export const OrchestratorSnapshotSchema = z
      */
     sessionEndSignal: SessionEndSignalSnapshotSchema.default(EMPTY_SESSION_END_SIGNAL),
     sessionClosing: SessionClosingSnapshotSchema.default(EMPTY_SESSION_CLOSING),
+    /*
+     * C.9/C.19: the Behavioral Telemetry Layer (the learner's own baselines,
+     * the rolling window and the check-in lifecycle) rides the snapshot — a
+     * resume must neither restart the baseline nor forget an open check-in.
+     * Defaulted for records parked by the previous build.
+     */
+    behavioralTelemetry: BehavioralTelemetrySnapshotSchema.default(EMPTY_BEHAVIORAL_TELEMETRY),
   })
   .strict();
 
@@ -434,6 +471,10 @@ interface ProduceOptions {
   closing?: 'completed_final';
   /** C.8/C.12: this turn is meant to carry the stop-or-continue offer. */
   sessionEndOffer?: boolean;
+  /** C.19: the system's check-in follows this turn (the telemetry layer fired). */
+  checkIn?: boolean;
+  /** C.19: this turn is the repair after the learner said the help is not working. */
+  repair?: boolean;
 }
 
 export class TutorOrchestrator {
@@ -533,6 +574,8 @@ export class TutorOrchestrator {
   private readonly sessionEndSignal: SessionEndSignal;
   /** C.16: the closing sequence and the observed facts a completed close names. */
   private readonly sessionClosing = new SessionCloser();
+  /** C.9/C.19: the Behavioral Telemetry Layer and the check-in lifecycle (`behavioralTelemetry.ts`). */
+  private readonly behavioralTelemetry: BehavioralTelemetry;
   /**
    * The V4 harness backlog's TRAJECTORY LOG (ROADMAP.md "Remaining harness
    * phases", /ORACLE.md §20): one entry per real `controller.decide()` call
@@ -600,6 +643,15 @@ export class TutorOrchestrator {
     this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
     const config = getConfig();
     this.sessionEndSignal = new SessionEndSignal(config.TUTOR_SESSION_END_SIGNAL);
+    /*
+     * The stricter of the operator's switch and Core's Stage 7 automatic
+     * rollback verdict (off > shadow > act): Core can only ever make the
+     * layer quieter, never louder than the operator set it.
+     */
+    this.behavioralTelemetry = new BehavioralTelemetry(
+      strictestTelemetryMode(config.TUTOR_BEHAVIORAL_TELEMETRY, session.behavioralTelemetryMode ?? 'act'),
+      session.locale,
+    );
     this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? [], {
       corroborationMinObservations: config.TUTOR_CORROBORATION_MIN_OBSERVATIONS,
       corroborationRollbackKcKeys: config.TUTOR_CORROBORATION_ROLLBACK_KC_KEYS,
@@ -683,6 +735,7 @@ export class TutorOrchestrator {
       hintLadder: this.hintLadder.snapshot(),
       sessionEndSignal: this.sessionEndSignal.snapshot(),
       sessionClosing: this.sessionClosing.snapshot(),
+      behavioralTelemetry: this.behavioralTelemetry.snapshot(),
     };
   }
 
@@ -751,6 +804,7 @@ export class TutorOrchestrator {
     this.hintLadder.restore(snapshot.hintLadder);
     this.sessionEndSignal.restore(snapshot.sessionEndSignal);
     this.sessionClosing.restore(snapshot.sessionClosing);
+    this.behavioralTelemetry.restore(snapshot.behavioralTelemetry);
   }
 
   refreshIsMinor(isMinor: boolean): void {
@@ -1209,12 +1263,18 @@ export class TutorOrchestrator {
       nowMs,
       correct ? null : () => stuckInstruction(this.plan, skillKey),
     );
-    const offering = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, pCorrect }, nowMs);
-    // The stop-or-continue offer SUPERSEDES this turn's maneuver: an offer
-    // must stand alone, and a remediation question beside it could never be
-    // answered. The controller's decision is still logged (trajectory).
-    const extra = offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
-    const skillName = offering ? null : strategySkill;
+    const signalled = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, pCorrect }, nowMs);
+    // C.9/C.19: the telemetry reading of this answer; a fired disengagement
+    // signal makes the system check in, and the check-in wins over the offer.
+    const { checkIn, offering } = this.telemetryTurn(
+      { source: 'activity', text: null, latencyMs, graded: { correct, pCorrect, answer: null } },
+      signalled,
+    );
+    // The check-in or the stop-or-continue offer SUPERSEDES this turn's
+    // maneuver: each must stand alone, and a remediation question beside it
+    // could never be answered. The controller's decision is still logged.
+    const extra = checkIn ? CHECK_IN_LEAD_INSTRUCTION : offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
+    const skillName = checkIn || offering ? null : strategySkill;
 
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
@@ -1340,6 +1400,7 @@ export class TutorOrchestrator {
         nonce: fencedActivity?.nonce,
         verdict: correct ? 'after_correct' : 'after_incorrect',
         sessionEndOffer: offering,
+        checkIn,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1405,6 +1466,7 @@ export class TutorOrchestrator {
     utterance: string,
     nowMs: number,
     signal?: AbortSignal,
+    input: LearnerInputMeta = TYPED_INPUT,
   ): Promise<TurnOutcome | null> {
     /*
      * ── classify BEFORE the model, exactly as handleLearnerText does ──────
@@ -1465,12 +1527,23 @@ export class TutorOrchestrator {
     // A spoken answer carries no reliable latency (speech timing is not
     // answer timing), so it feeds the surprising-miss half of the signal only.
     this.sessionClosing.noteLearnerTurn();
-    const offering = this.observeGraded(
+    const signalled = this.observeGraded(
       { skill: skillKey, correct: result.correct, hintAssisted, latencyMs: null, pCorrect },
       nowMs,
     );
-    const extra = offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
-    const skillName = offering ? null : strategySkill;
+    // C.9: a spoken (or short typed) answer carries its REPLY latency — from
+    // when the Mentor finished to when the learner started answering.
+    const { checkIn, offering } = this.telemetryTurn(
+      {
+        source: input.source,
+        text: fenced.cleaned === '' ? null : fenced.cleaned,
+        latencyMs: this.behavioralTelemetry.replyLatency(input.onsetAtMs),
+        graded: { correct: result.correct, pCorrect, answer: fenced.cleaned },
+      },
+      signalled,
+    );
+    const extra = checkIn ? CHECK_IN_LEAD_INSTRUCTION : offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
+    const skillName = checkIn || offering ? null : strategySkill;
 
     const summary = result.correct
       ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
@@ -1484,6 +1557,7 @@ export class TutorOrchestrator {
         finalTurn: graceTurn,
         verdict: result.correct ? 'after_correct' : 'after_incorrect',
         sessionEndOffer: offering,
+        checkIn,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1664,7 +1738,12 @@ export class TutorOrchestrator {
    * interrupted): nothing is emitted, nothing is spoken, and the learner's own
    * line stays in the history — they said it, and the next turn answers both.
    */
-  async handleLearnerText(raw: string, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+  async handleLearnerText(
+    raw: string,
+    nowMs: number,
+    signal?: AbortSignal,
+    input: LearnerInputMeta = TYPED_INPUT,
+  ): Promise<TurnOutcome | null> {
     const config = getConfig();
     const budget = this.currentBudget(nowMs);
 
@@ -1742,6 +1821,12 @@ export class TutorOrchestrator {
      * Only an explicit stop accepts; anything else continues the lesson —
      * the offer is never a default-accepted path.
      */
+    /*
+     * A reply that only answers one of the system's own questions ("keep
+     * going", "yes, we're good") is not a learner observation for the C.9
+     * layer: it is short by nature and says nothing about the lesson.
+     */
+    let metaReply = false;
     if (this.sessionEndSignal.offerOpen && fenced.cleaned !== '') {
       const reply = classifyStopReply(fenced.cleaned);
       if (reply === 'accept') {
@@ -1750,6 +1835,22 @@ export class TutorOrchestrator {
         return this.beginCompletedClose(nowMs);
       }
       this.sessionEndSignal.recordResponse(reply === 'decline' ? 'declined' : 'unanswered');
+      metaReply = reply === 'decline';
+    }
+
+    /*
+     * C.19: the learner answered the open check-in in words. "Not really"
+     * starts the repair; "yes" continues the plan; anything else is answered
+     * as an ordinary turn (they may simply have answered the lesson).
+     */
+    let checkInReply: 'aligned' | 'misaligned' | null = null;
+    if (this.behavioralTelemetry.checkInOpen && fenced.cleaned !== '') {
+      const reply = classifyCheckInReply(fenced.cleaned);
+      this.behavioralTelemetry.recordCheckInReply(reply === 'unclear' ? 'unanswered' : reply);
+      if (reply !== 'unclear') {
+        checkInReply = reply;
+        metaReply = true;
+      }
     }
 
     if (fenced.cleaned === '') {
@@ -1891,7 +1992,7 @@ export class TutorOrchestrator {
     const { text: strategyManeuver, skillName: strategySkill } = this.strategyInstruction(pedagogyEvent, nowMs, null);
     // A verified conversational answer is a graded observation for C.8/C.12
     // too (no latency: typing speed is not answer speed).
-    const offering =
+    const signalled =
       verdict !== null && pedagogyEvent.kind === 'voice_result'
         ? this.observeGraded(
             {
@@ -1904,15 +2005,50 @@ export class TutorOrchestrator {
             nowMs,
           )
         : false;
-    const maneuver = offering ? SESSION_END_OFFER_INSTRUCTION : strategyManeuver;
-    const skillName = offering ? null : strategySkill;
+    /*
+     * C.9: every learner turn that is not a reply to one of the system's own
+     * questions is a telemetry observation — its words, its reply latency,
+     * and the verified answer when there was one.
+     */
+    const { checkIn, offering } = metaReply
+      ? { checkIn: false, offering: signalled }
+      : this.telemetryTurn(
+          {
+            source: input.source,
+            text: fenced.cleaned,
+            latencyMs: this.behavioralTelemetry.replyLatency(input.onsetAtMs),
+            graded:
+              verdict !== null
+                ? { correct: verdict.correct, pCorrect: verdictPCorrect, answer: String(verdict.given) }
+                : null,
+          },
+          signalled,
+        );
+    const repair = checkInReply === 'misaligned';
+    /*
+     * One directive per turn, in this order: the C.19 repair after "not
+     * really" (the plan does not continue as if nothing happened), the
+     * system's check-in, the stop-or-continue offer, then the controller's
+     * maneuver — with a note that the learner confirmed, after "yes".
+     */
+    const maneuver = repair
+      ? repairInstruction(this.plan.declinedAdaptations)
+      : checkIn
+        ? CHECK_IN_LEAD_INSTRUCTION
+        : offering
+          ? SESSION_END_OFFER_INSTRUCTION
+          : checkInReply === 'aligned'
+            ? [strategyManeuver, CHECK_IN_ALIGNED_INSTRUCTION].filter((part) => part !== null).join('\n\n')
+            : strategyManeuver;
+    const skillName = repair || checkIn || offering ? null : strategySkill;
     /*
      * C.13: the hint ladder advances on the learner's own words and its
      * directive rides the same instruction the model receives — escalation
      * and the "just tell me" escape are policy here, never a request the
-     * model may weigh against being "helpful".
+     * model may weigh against being "helpful". A reply to one of the
+     * system's own questions is not a hint request: the repair owns that turn.
      */
-    const ladderNote = this.ladderNoteFor(fenced.cleaned, this.ladderStepKey());
+    const ladderNote = metaReply ? '' : this.ladderNoteFor(fenced.cleaned, this.ladderStepKey());
     const maneuverNote = `${maneuver === null ? '' : `\n\n${maneuver}`}${ladderNote}`;
     /*
      * C.18: a stated wrong idea — very often a money decision ("me lo gasto
@@ -1940,6 +2076,8 @@ export class TutorOrchestrator {
               ? 'after_unsound_claim'
               : undefined,
         sessionEndOffer: offering,
+        checkIn,
+        repair,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1991,10 +2129,15 @@ export class TutorOrchestrator {
    * itself; the persisted transcript keeps everything, append-only, as a
    * guardian-readable record must. Then it is an ordinary turn.
    */
-  async handleLearnerEdit(raw: string, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+  async handleLearnerEdit(
+    raw: string,
+    nowMs: number,
+    signal?: AbortSignal,
+    input: LearnerInputMeta = TYPED_INPUT,
+  ): Promise<TurnOutcome | null> {
     if (this.history.at(-1)?.speaker === 'tutor') this.history.pop();
     if (this.history.at(-1)?.speaker === 'learner') this.history.pop();
-    return this.handleLearnerText(raw, nowMs, signal);
+    return this.handleLearnerText(raw, nowMs, signal, input);
   }
 
   /**
@@ -2068,6 +2211,61 @@ export class TutorOrchestrator {
   /** Whether a stop-or-continue offer is waiting for the learner's choice. */
   get sessionEndOfferOpen(): boolean {
     return this.sessionEndSignal.offerOpen;
+  }
+
+  /**
+   * C.19: the learner answered the check-in with the stage's two equal chips
+   * (`check_in_response`). Refused (null) unless a check-in is actually open
+   * — a replayed or forged frame steers nothing. "Yes" continues the plan;
+   * "not really" is the repair, routed through the adaptation offer.
+   */
+  async respondToCheckIn(aligned: boolean, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+    if (!this.behavioralTelemetry.checkInOpen || this.stopped) return null;
+    this.behavioralTelemetry.recordCheckInReply(aligned ? 'aligned' : 'misaligned');
+    if (aligned) {
+      return this.produce(CHECK_IN_ALIGNED_INSTRUCTION, nowMs, { isSystemPrompted: true, signal });
+    }
+    return this.produce(repairInstruction(this.plan.declinedAdaptations), nowMs, {
+      isSystemPrompted: true,
+      signal,
+      repair: true,
+    });
+  }
+
+  /** C.19: whether the system's check-in is waiting for the learner's answer. */
+  get checkInOpen(): boolean {
+    return this.behavioralTelemetry.checkInOpen;
+  }
+
+  /**
+   * C.9/C.19: feeds one learner turn to the Behavioral Telemetry Layer and
+   * says whether the reacting turn must carry the check-in (a firing on this
+   * turn, or one still pending from a turn that could not carry it). The
+   * check-in wins over the stop-or-continue offer, which then re-arms. An
+   * open check-in the learner moved past (an activity, a spoken answer) is
+   * recorded as unanswered.
+   */
+  private telemetryTurn(
+    input: Omit<TelemetryInput, 'topicText'>,
+    offering: boolean,
+  ): { checkIn: boolean; offering: boolean } {
+    if (this.behavioralTelemetry.checkInOpen) this.behavioralTelemetry.recordCheckInReply('unanswered');
+    this.behavioralTelemetry.observe({ ...input, topicText: this.topicText() });
+    const checkIn = this.behavioralTelemetry.checkInDue && !this.stopped && this.sessionClosing.phase === 'none';
+    if (checkIn && offering) {
+      this.sessionEndSignal.markOfferNotDelivered();
+      return { checkIn, offering: false };
+    }
+    return { checkIn, offering };
+  }
+
+  /** The lesson's own words right now, for C.9 off-topic drift: recent Mentor lines, topic, activity. */
+  private topicText(): string {
+    const tutorLines = this.history
+      .filter((h) => h.speaker === 'tutor')
+      .slice(-2)
+      .map((h) => h.text);
+    return [...tutorLines, this.lessonThread?.topic ?? '', this.openActivity?.prompt ?? ''].join('\n');
   }
 
   /**
@@ -2154,12 +2352,20 @@ export class TutorOrchestrator {
     closingScript: ClosingScript;
     opening: SessionOpening;
     endSignal: SessionEndSignalReport;
+    behavioralTelemetry?: BehavioralTelemetryReport;
   } {
     return {
       closingScript: closingScriptFor(reason),
       opening: this.session.opening ?? 'greeting',
       endSignal: this.sessionEndSignal.report(),
+      // C.9/C.19: nothing is reported while the layer is switched off.
+      ...(this.behavioralTelemetry.mode === 'off' ? {} : { behavioralTelemetry: this.behavioralTelemetry.report() }),
     };
+  }
+
+  /** C.9/C.19: the layer's record for Core (Default-to-Inaction and Repair Initiation Rates). */
+  get telemetryReport(): BehavioralTelemetryReport {
+    return this.behavioralTelemetry.report();
   }
 
   /** C.16: what the client's closing state shows (Frontend Bible 08 §3–4). */
@@ -2339,11 +2545,29 @@ export class TutorOrchestrator {
    * pending and silently lost.
    */
   private async produce(userContent: string, nowMs: number, opts: ProduceOptions = {}): Promise<TurnOutcome | null> {
+    let outcome: TurnOutcome | null = null;
     try {
-      return await this.produceTurn(userContent, nowMs, opts);
+      outcome = await this.produceTurn(userContent, nowMs, opts);
+      return outcome;
     } finally {
       if (opts.sessionEndOffer === true && !this.sessionEndSignal.offerOpen) {
         this.sessionEndSignal.markOfferNotDelivered();
+      }
+      /*
+       * C.19: a check-in this turn could not carry. A safety stop or a
+       * closing sequence wins over it (superseded, never asked on the way
+       * out); otherwise it stays pending for the next learner turn, and the
+       * delivered-but-missed turn is counted so an unanswered end of session
+       * reads as a real miss in the Disengagement-Repair Initiation Rate. An
+       * interrupted production (null) is not a missed turn.
+       */
+      if (opts.checkIn === true && this.behavioralTelemetry.checkInDue) {
+        const closing =
+          this.stopped ||
+          this.sessionClosing.phase !== 'none' ||
+          (outcome !== null && (outcome.closeReason !== null || (outcome.after?.closeReason ?? null) !== null));
+        if (closing) this.behavioralTelemetry.supersedeCheckIn();
+        else if (outcome !== null) this.behavioralTelemetry.noteTurnWithoutCheckIn();
       }
     }
   }
@@ -3693,9 +3917,10 @@ export class TutorOrchestrator {
       }
       closingPlan = null;
     }
-    if (closingPlan !== null || opts.sessionEndOffer === true) {
-      // An offer stands alone (Frontend Bible 08 §4: two equal choices), and
-      // a closing turn introduces nothing new (Appendix D §3.5).
+    if (closingPlan !== null || opts.sessionEndOffer === true || opts.checkIn === true) {
+      // An offer stands alone (Frontend Bible 08 §4: two equal choices), a
+      // closing turn introduces nothing new (Appendix D §3.5), and the turn
+      // before the system's check-in only reacts (C.19).
       turn = { ...turn, next: 'ask', segmentRequest: null, offerAdaptation: null };
     }
 
@@ -3838,6 +4063,15 @@ export class TutorOrchestrator {
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.lastTurn = { turn, seq: this.seq };
     /*
+     * THIS turn's seq, captured before a scripted line that follows it (the
+     * C.16 closing line, the C.19 check-in) reserves the next one. The
+     * emission used to read `this.seq` after that line was built, so the
+     * model turn and its follower went out under the same seq.
+     */
+    const turnSeq = this.seq;
+    // C.9: when this turn will have finished playing, for the next reply latency.
+    this.behavioralTelemetry.noteTutorTurn(Date.now(), estimateSpeechMs(turn.say));
+    /*
      * THE ONE ADAPTATION THIS TURN ACTUALLY OFFERED, and nothing else counts
      * as accepted. Found by adversarial review, 2026-08-30 (MEDIUM):
      * `ws/server.ts`'s `adaptation_response` handler applied WHATEVER
@@ -3898,6 +4132,32 @@ export class TutorOrchestrator {
       }
     }
 
+    /*
+     * C.19: THE SYSTEM'S CHECK-IN follows this model turn — a written line,
+     * so the repair-initiation move happens on every firing and never
+     * depends on the model choosing to ask. Only after a delivered model
+     * turn: a scripted replacement leaves it pending for the next turn
+     * (`produce()`), and a closing sequence or a safety stop supersedes it.
+     */
+    if (
+      opts.checkIn === true &&
+      after === undefined &&
+      this.behavioralTelemetry.checkInDue &&
+      source === 'model' &&
+      safety === null &&
+      closingPlan === null &&
+      !this.stopped &&
+      afterBudget.state !== 'ended'
+    ) {
+      after = await this.scriptedOutcome(checkInResponse(this.session.locale), afterBudget, null, null);
+      after.emission.checkIn = true;
+      this.behavioralTelemetry.markCheckInDelivered();
+    }
+    // C.19: whether the repair after "not really" reached the adaptation offer.
+    if (opts.repair === true && source === 'model' && safety === null) {
+      this.behavioralTelemetry.markRepairOffered(turn.offerAdaptation != null);
+    }
+
     const closeReason =
       /*
        * Checked BEFORE the generic `turn.next === 'close'` case, not after —
@@ -3923,7 +4183,7 @@ export class TutorOrchestrator {
     return {
       emission: {
         turn,
-        seq: this.seq,
+        seq: turnSeq,
         source,
         audio,
         moderation: moderationRecord,
@@ -4015,6 +4275,10 @@ export class TutorOrchestrator {
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.seq += 1;
     this.lastTurn = { turn, seq: this.seq };
+    // C.9: when this line will have finished playing, for the next reply latency.
+    this.behavioralTelemetry.noteTutorTurn(Date.now(), estimateSpeechMs(turn.say));
+    // C.19: a session that closes on this line is never asked a pending check-in.
+    if (closeReason !== null) this.behavioralTelemetry.supersedeCheckIn();
     // A scripted line never offers an adaptation — clears whatever the
     // previous MODEL turn offered, so accepting a stale offer after the
     // tutor moved on (or ended the session) is refused. See `produce()`'s

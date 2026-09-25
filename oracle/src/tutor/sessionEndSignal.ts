@@ -393,14 +393,14 @@ const wordsOf = (alternation: string): RegExp =>
   new RegExp(`(?<![\\p{L}\\p{N}])(?:${alternation})(?![\\p{L}\\p{N}])`, 'iu');
 
 const DECLINE_PATTERNS: RegExp[] = [
-  wordsOf("one more|another one|keep going|continue|don'?t stop|do not stop|not yet|more please"),
+  wordsOf("one more|another one|keep (?:on )?go(?:ing|in'?)|continue|don'?t stop|do not stop|not yet|more please"),
   wordsOf('otr[oa] m[aá]s|una m[aá]s|otr[oa]|seguir|sigamos|seguimos|continuar|continuemos|no (?:quiero )?parar|todav[ií]a no|a[uú]n no'),
   wordsOf('mais uma|mais um|outr[ao]|continuar|vamos continuar|n[aã]o (?:quero )?parar|ainda n[aã]o'),
 ];
 const ACCEPT_PATTERNS: RegExp[] = [
   wordsOf("stop|let'?s stop|stop here|i'?m done|i am done|done for today|that'?s enough|enough for today|finish|bye"),
   wordsOf('parar|paremos|paramos|para aqu[ií]|terminar|terminemos|terminamos|ya termin[eé]|hasta aqu[ií]|basta por hoy|ya estuvo|adi[oó]s'),
-  wordsOf('parar|paramos|vamos parar|terminar|terminamos|chega por hoje|por hoje [ée] s[oó]|tchau'),
+  wordsOf('parar|paramos|vamos parar|(?:vamos |bora )?para por hoje|terminar|terminamos|chega por hoje|por hoje [ée] s[oó]|tchau'),
 ];
 
 export function classifyStopReply(text: string): 'accept' | 'decline' | 'unclear' {

@@ -207,6 +207,12 @@ export type ServerMessage =
    * (mirrors oracle/src/ws/protocol.ts).
    */
   | { type: 'session_end_offer' }
+  /**
+   * C.19: the turn just delivered is the system's check-in ("are we on the
+   * same page?"). Two equal reply chips; the answer is `check_in_response`
+   * or the learner's own words (mirrors oracle/src/ws/protocol.ts).
+   */
+  | { type: 'check_in' }
   /** C.16: how the session ended, sent once just before `closed` on a graceful close. */
   | { type: 'session_closing'; script: ClosingScript; effort: EffortAct | null; topic: string | null }
   | { type: 'state'; budget: BudgetState; remainingMs: number; turnCount: number }
@@ -657,6 +663,8 @@ export type ClientMessage =
   | { type: 'adaptation_response'; adaptation: Adaptation; accepted: boolean }
   /** C.8/C.12: the learner's choice on the stop-or-continue offer. */
   | { type: 'session_end_response'; accepted: boolean }
+  /** C.19: the learner's answer to the check-in: `aligned` = "we're good", false = "not really". */
+  | { type: 'check_in_response'; aligned: boolean }
   | { type: 'end_session' }
   | { type: 'ping' };
 

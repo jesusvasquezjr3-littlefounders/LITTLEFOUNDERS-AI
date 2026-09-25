@@ -235,6 +235,18 @@ const Env = z.object({
   TUTOR_SESSION_END_SIGNAL: z.enum(['offer', 'shadow', 'off']).catch('offer').default('offer'),
 
   /**
+   * C.9/C.19 Stage 7 kill switch for the Behavioral Telemetry Layer
+   * (`tutor/behavioralTelemetry.ts`). `act` (default): a fired disengagement
+   * signal makes the Mentor check in ("are we on the same page?") and routes
+   * the answer through the adaptation offer. `shadow`: computed and recorded,
+   * never acted on. `off`: not computed. `shadow` and `off` are the Appendix F
+   * Stage 7 rollback (Default-to-Inaction Rate below 85% or Disengagement-
+   * Repair Initiation Rate below 100%); session management reverts to the
+   * time/turn caps. An unknown value falls back to `act`, never a silent off.
+   */
+  TUTOR_BEHAVIORAL_TELEMETRY: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
    * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
    * item is a separate, larger, architecturally-undecided piece of work).
    *

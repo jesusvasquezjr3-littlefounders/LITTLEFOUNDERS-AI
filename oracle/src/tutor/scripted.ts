@@ -26,7 +26,7 @@ import type { EffortAct, SessionOpening } from './sessionClosing.js';
  * ── THIS SET IS CLOSED, AND THAT IS WHAT MAKES IT FREE ──────────────────────
  *
  * Every text in this file is enumerated by `scriptedLineCatalogue()` below.
- * Across 4 characters and 3 locales the whole set is 300 pieces of audio that
+ * Across 4 characters and 3 locales the whole set is 312 pieces of audio that
  * never change, so `npm run speech:pregenerate` synthesises them ONCE and the
  * runtime serves the stored URLs forever after (/ORACLE.md §15).
  *
@@ -241,6 +241,18 @@ const REENGAGEMENT: Record<Exclude<SessionOpening, 'greeting'>, Trilingual> = {
   },
 };
 
+/**
+ * C.19: the humble check-in the SYSTEM asks when the Behavioral Telemetry
+ * Layer fires its disengagement signal. It asks whether the Mentor is
+ * helping — never how the learner feels — and it is a written line so the
+ * repair move happens on every firing, not only when a model chooses to ask.
+ */
+const CHECK_IN: Trilingual = {
+  'en-US': "Let me check I'm really helping. Are we on the same page?",
+  'es-MX': 'Quiero asegurarme de que sí te estoy ayudando. ¿Vamos bien?',
+  'pt-BR': 'Quero ter certeza de que estou ajudando. Estamos indo bem?',
+};
+
 const CONSENT_REVOKED: Trilingual = {
   'en-US': 'We are switching off the microphone. You can keep going by tapping your answers.',
   'es-MX': 'Vamos a apagar el micrófono. Puedes seguir tocando tus respuestas.',
@@ -384,6 +396,17 @@ export function safetyStopCloseResponse(locale: Locale): TutorTurn {
   return closingTurn(SAFETY_STOP_CLOSE[locale], 'neutral', 'idle');
 }
 
+/** C.19: the check-in line; the session continues for the learner's answer. */
+export function checkInText(locale: Locale): string {
+  return CHECK_IN[locale];
+}
+
+export function checkInResponse(locale: Locale): TutorTurn {
+  // Warm and attentive, never a "sad" face (B.26): the Mentor is checking
+  // on its own help, not on the learner.
+  return turn(CHECK_IN[locale], 'encouraging', 'nod');
+}
+
 /** The opening line: the character's own greeting, or a queued re-engagement message. */
 export function openingResponse(character: CharacterId, locale: Locale, opening: SessionOpening): TutorTurn {
   if (opening === 'greeting') return greetingResponse(character, locale);
@@ -401,7 +424,7 @@ export function openingResponse(character: CharacterId, locale: Locale, opening:
  * own cloned voice per locale (/ORACLE.md §3.3), so "Time is up for
  * today" is four different recordings, not one.
  *
- * 25 texts × 4 characters × 3 locales = 300 clips, and that number is the
+ * 26 texts × 4 characters × 3 locales = 312 clips, and that number is the
  * whole point: it is finite, it does not grow with usage, and once it exists
  * nobody is ever billed for any of it again.
  */
@@ -436,6 +459,8 @@ export function scriptedLineCatalogue(): ScriptedLine[] {
       for (const [opening, trilingual] of Object.entries(REENGAGEMENT)) {
         lines.push({ key: `opening.${opening}`, character, locale, text: trilingual[locale] });
       }
+      // C.19: the disengagement check-in.
+      lines.push({ key: 'check_in', character, locale, text: CHECK_IN[locale] });
     }
   }
   return lines;

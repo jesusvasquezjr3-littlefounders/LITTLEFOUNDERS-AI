@@ -2293,6 +2293,8 @@ export function useLabSocket(
     // closing summary arrives, exactly the state of a live session between them.
     sessionEndOffer: false,
     closingSummary: null,
+    // C.19 has no lab scene yet either: no check-in is open.
+    checkInOpen: false,
     closedReason,
     error: null,
     sendText: (text: string) => {
@@ -2323,6 +2325,7 @@ export function useLabSocket(
     reportGrade: () => setSegment(null),
     answerAdaptation: () => setAdaptationOffer(null),
     answerSessionEnd: () => {},
+    answerCheckIn: () => {},
     endSession: () => setClosedReason('learner_ended'),
   };
 }
