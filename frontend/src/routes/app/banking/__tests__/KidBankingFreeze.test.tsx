@@ -6,6 +6,8 @@ import { KidBankingHome } from '../KidBankingHome';
 const mocks = vi.hoisted(() => ({ api: vi.fn(), getToken: vi.fn().mockResolvedValue('synthetic') }));
 vi.mock('@/lib/api', () => ({ api: mocks.api }));
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: mocks.getToken, session: { user: { id: 'kid' } } }) }));
+// S07.3's rebuilt bonus explainer has its own tests (rebuild/family/FamilyMoney.test.tsx).
+vi.mock('../SavingsBonusPanel', () => ({ SavingsBonusPanel: () => null }));
 beforeEach(async () => { mocks.api.mockReset(); await i18n.changeLanguage('en-US'); });
 function fixture(owner = 'parent', failure = false) {
   let frozen = true;

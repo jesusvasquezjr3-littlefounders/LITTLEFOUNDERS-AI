@@ -6,6 +6,8 @@ import { ParentBankingControlPanel } from '../ParentBankingControlPanel';
 const mocks = vi.hoisted(() => ({ api: vi.fn(), getToken: vi.fn().mockResolvedValue('synthetic') }));
 vi.mock('@/lib/api', () => ({ api: mocks.api }));
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: mocks.getToken }) }));
+// S07.3's rebuilt bonus settings have their own tests (rebuild/family/FamilyMoney.test.tsx).
+vi.mock('../SavingsBonusSettingsPanel', () => ({ SavingsBonusSettingsPanel: () => null }));
 const account = (kidId: string, frozen = false): WireBankingAccount => ({ nickname: `Account ${kidId}`, cardDesign: 'indigo', displayNumber: 'LF-0000-0000', frozen, frozenBy: frozen ? 'parent' : null, frozenAt: null, openedAt: '2026-01-01T00:00:00Z' });
 beforeEach(async () => { mocks.api.mockReset(); await i18n.changeLanguage('en-US'); });
 function fixture(write: () => Promise<unknown>) {

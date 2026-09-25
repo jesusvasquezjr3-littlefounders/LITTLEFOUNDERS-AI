@@ -16,6 +16,7 @@ import { SocialHistoryPanel } from './SocialHistoryPanel';
 import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
 import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
+import { StreakPausesPanel } from './StreakPausesPanel';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -222,6 +223,7 @@ export function FamilyPage() {
                   links, and the guardian-only money corrections. */}
               <CoGuardiansPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} onAccessLost={() => onKidRemoved(kid.userId)} />
               <WalletCorrectionsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
+              <StreakPausesPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}

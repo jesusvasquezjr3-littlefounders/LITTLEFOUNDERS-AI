@@ -30,10 +30,23 @@ const TEEN_FLOWS = SQL('_independent_teen_wallet_flows');
 
 export const REGISTRY = {
   'tasks.status': {
-    open: { producer: [E(TASKS, "router.post('/', requireRole(['parent'])")], consumer: [E(TASKS, "transitionTaskStatus(id.data, 'open', 'done')")] },
-    done: { producer: [E(TASKS, "transitionTaskStatus(id.data, 'open', 'done')")], consumer: [E(TASKS, "transitionTaskStatus(id.data, 'done', 'approved'")] },
+    open: { producer: [E(TASKS, "router.post('/', requireRole(['parent'])")], consumer: [E(TASKS, "transitionTaskStatus(id.data, 'open', 'done', { completed_on: todayLocal })")] },
+    done: { producer: [E(TASKS, "transitionTaskStatus(id.data, 'open', 'done', { completed_on: todayLocal })")], consumer: [E(TASKS, "transitionTaskStatus(id.data, 'done', 'approved'")] },
     approved: { producer: [E(TASKS, "transitionTaskStatus(id.data, 'done', 'approved'")], consumer: [E(SQL('_family_hub_transition_guards'), "v_task.status <> 'approved'"), E('database/migrations/*_enforce_banking_freeze.sql', "v_task.status <> 'approved'")] },
     cancelled: { producer: [E(TASKS, "'cancelled', {")], consumer: [E('frontend/src/routes/app/tasks/ParentTaskBoard.tsx', "task.status === 'cancelled'")] },
+  },
+  // S07.3 (D.10): each chore is an expected family contribution or a paid
+  // bonus task. Both kinds must stay producible by the Tutor's composer and
+  // shown to the child and the Tutor, and the database keeps their coin rules.
+  'tasks.kind': {
+    contribution: {
+      producer: [E(TASKS, "kind: z.enum(['contribution', 'bonus']).default('bonus')"), E('frontend/src/rebuild/family/ChoreComposer.tsx', "(['contribution', 'bonus'] as const)")],
+      consumer: [E('frontend/src/routes/app/family/familyMoneyCopy.ts', "kind === 'contribution' ? copy.contribution"), E(SQL('_family_task_contribution_kind'), "NEW.kind = 'contribution' AND NEW.reward_coins NOT BETWEEN 0 AND 2")],
+    },
+    bonus: {
+      producer: [E(TASKS, "kind: z.enum(['contribution', 'bonus']).default('bonus')"), E('frontend/src/rebuild/family/ChoreComposer.tsx', "(['contribution', 'bonus'] as const)")],
+      consumer: [E('frontend/src/routes/app/family/familyMoneyCopy.ts', ': copy.bonus}'), E(SQL('_family_task_contribution_kind'), "NEW.kind = 'bonus' AND NEW.reward_coins NOT BETWEEN 1 AND 500")],
+    },
   },
   'savings_goals.status': {
     active: { producer: [E(TASKS, 'insertGoal({')], consumer: [E(TASKS, "goal.status === 'active'")] },

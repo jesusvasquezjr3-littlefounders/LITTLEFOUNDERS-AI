@@ -8,7 +8,9 @@ import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
 import { requireWalletAccess } from '../middleware/walletAccess.js';
 import { getSelfActionDetails } from '../services/teenWallet.js';
 import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
-import { isCalendarDate, nextStreak } from '../services/streak.js';
+import { isCalendarDate } from '../services/streak.js';
+import { dayDifference, evaluateStreak, milestoneReached, REST_DAYS_PER_WEEK, resolveLocalToday, utcDayOffset, type StreakState } from '../services/choreStreak.js';
+import { endChoreStreakPause, getPauseKid, livePauses, pauseChoreStreak, readStreakFacts, streakFromFacts, type PauseRecord } from '../services/choreStreakData.js';
 import {
   allocateTaskReward,
   archiveGoal,
@@ -28,13 +30,11 @@ import {
   getTaskById,
   getTasksForKid,
   getTasksForKids,
-  getTaskStreak,
   getVerifiedGuardiansOfKid,
   getVerifiedKidLinks,
   getWalletBalances,
   getWalletLedger,
   getOwnRoles,
-  upsertTaskStreak,
   insertAuditLog,
   insertCatalogItem,
   insertGoal,
@@ -89,7 +89,31 @@ function toWireTask(t: TaskRow) {
     hasEvidence: t.evidence_bucket !== null && t.evidence_hash !== null && t.evidence_ext !== null,
     requiresEvidence: t.requires_evidence,
     cancelReason: t.cancel_reason,
+    // S07.3 (D.10): an expected family contribution or a paid bonus task.
+    kind: t.kind,
+    // S07.3 (D.2): the child's local day of the completion.
+    completedOn: t.completed_on,
   };
+}
+
+/** S07.3 (D.2): the lapse-tolerant chore streak as the child and the Tutor see it. */
+function toWireStreak(state: StreakState, pauses: PauseRecord[], today: string) {
+  const covering = pauses.find((p) => p.cancelled_at === null && p.starts_on <= today && p.ends_on >= today);
+  return {
+    status: state.status,
+    current: state.current,
+    best: state.best,
+    totalDays: state.totalDays,
+    restDaysLeftThisWeek: state.restDaysLeftThisWeek,
+    restDaysPerWeek: REST_DAYS_PER_WEEK,
+    pausedUntil: covering ? covering.ends_on : null,
+    today,
+  };
+}
+
+function toWirePause(p: PauseRecord, today: string) {
+  const state = p.cancelled_at !== null ? 'cancelled' : p.ends_on < today ? 'over' : p.starts_on > today ? 'upcoming' : 'running';
+  return { id: p.id, startsOn: p.starts_on, endsOn: p.ends_on, state };
 }
 
 function hasEvidence(t: Pick<TaskRow, 'evidence_bucket' | 'evidence_hash' | 'evidence_ext'>): boolean {
@@ -223,6 +247,14 @@ const CONFLICT = 'CONFLICT';
 // MAX_KIDS_PER_PARENT: not a product opinion about what a chore is worth,
 // but a bound on what a single mistyped or automated request can mint.
 const MAX_REWARD_COINS = 500;
+// S07.3 (D.10): an expected family contribution is unpaid or nominal. The
+// database enforces the same bound (family_task_contribution_kind).
+export const MAX_CONTRIBUTION_COINS = 2;
+// S07.3 (D.2): the chore streak's holiday pause bounds, the same as the
+// database's guard (chore_streak_rest_days); pinned by the threshold log.
+export const PAUSE_MAX_DAYS = 21;
+export const PAUSE_MAX_BACKDATE_DAYS = 7;
+export const PAUSE_MAX_LEAD_DAYS = 120;
 
 const GOAL_ICONS = ['star', 'game', 'toy', 'book', 'bike', 'trip', 'gift'] as const;
 
@@ -267,35 +299,45 @@ export function tasksRouter(): Router {
 
   // ── PARENT: tasks ──────────────────────────────────────────────────────
 
+  // S07.3 (D.10): the Tutor tags each chore. `kind` defaults to 'bonus' only
+  // so an older client (which always sent a paid chore) keeps its meaning;
+  // the rebuilt composer always sends an explicit choice.
+  const KIND_RANGE = 'A bonus task pays 1 to 500 coins; a family contribution pays 0 to 2';
   const CreateTask = z
     .object({
       assignedTo: z.string().uuid(),
       title: z.string().trim().min(1).max(120),
-      rewardCoins: z.number().int().min(1).max(MAX_REWARD_COINS),
+      kind: z.enum(['contribution', 'bonus']).default('bonus'),
+      rewardCoins: z.number().int().min(0).max(MAX_REWARD_COINS),
       recurrence: z.enum(['once', 'weekly']).default('once'),
       dueAt: z.string().datetime().nullable().optional(),
       requiresEvidence: z.boolean().default(false),
     })
-    .strict();
+    .strict()
+    .refine((v) => (v.kind === 'bonus' ? v.rewardCoins >= 1 : v.rewardCoins <= MAX_CONTRIBUTION_COINS), { message: KIND_RANGE });
 
   router.post('/', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const parsed = CreateTask.safeParse(req.body);
-    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the task details');
-    const { assignedTo, title, rewardCoins, recurrence, dueAt, requiresEvidence } = parsed.data;
+    if (!parsed.success) {
+      const kindIssue = parsed.error.issues.some((i) => i.message === KIND_RANGE);
+      return fail(res, 400, 'VALIDATION_ERROR', kindIssue ? KIND_RANGE : 'Check the task details');
+    }
+    const { assignedTo, title, kind, rewardCoins, recurrence, dueAt, requiresEvidence } = parsed.data;
     if (!(await guardParentOf(assignedTo, res, parent.id))) return;
 
     const task = await insertTask({
       assigned_by: parent.id,
       assigned_to: assignedTo,
       title,
+      kind,
       reward_coins: rewardCoins,
       recurrence,
       due_at: dueAt ?? null,
       requires_evidence: requiresEvidence,
     });
     if (!task) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the task');
-    await insertAuditLog(parent.id, 'tasks.created', task.id, { assignedTo, rewardCoins });
+    await insertAuditLog(parent.id, 'tasks.created', task.id, { assignedTo, kind, rewardCoins });
     return ok(res, { task: toWireTask(task) }, 201);
   });
 
@@ -623,34 +665,106 @@ export function tasksRouter(): Router {
     const task = await guardOwnTask(id.data, res, kid.id);
     if (!task) return;
 
-    const updated = await transitionTaskStatus(id.data, 'open', 'done');
+    // S07.3 (D.2): the child's local day, bounded to the server's UTC day
+    // plus or minus one. The database enforces the same bound on
+    // completed_on and records the practised day from the task itself, so
+    // Core never writes a streak. The read before the transition only tells
+    // whether this is the day's first chore (a milestone celebrates once,
+    // OD-7); its failure never blocks marking the chore done (§1.14).
+    const todayLocal = resolveLocalToday(parsedBody.data.localDate);
+    const before = await readStreakFacts([kid.id]);
+    const updated = await transitionTaskStatus(id.data, 'open', 'done', { completed_on: todayLocal });
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not open');
 
-    // Awaited (unlike a fire-and-forget side effect) so a write failure is at
-    // least observable here — but its own failure must never turn an
-    // already-landed "mark done" into a reported failure (§1.14): the
-    // response is always the completed task, streak write or not.
-    const todayLocal = parsedBody.data.localDate ?? new Date().toISOString().slice(0, 10);
-    const streak = await getTaskStreak(kid.id);
-    const newStreak = nextStreak(streak?.last_completed_date ?? null, streak?.current_streak_days ?? 0, todayLocal);
-    const newLongest = Math.max(streak?.longest_streak_days ?? 0, newStreak);
-    const wrote = await upsertTaskStreak(kid.id, {
-      current_streak_days: newStreak,
-      longest_streak_days: newLongest,
-      last_completed_date: todayLocal,
-    });
-    if (!wrote) console.warn(`[tasks] streak write failed for kid ${kid.id} — today's completion will not be reflected`);
-
-    return ok(res, { task: toWireTask(updated) });
+    const facts = before?.get(kid.id);
+    if (!facts) return ok(res, { task: toWireTask(updated), streak: null, milestone: null });
+    const day = updated.completed_on ?? todayLocal;
+    const beforeState = evaluateStreak({ practisedDays: facts.practisedDays, pauses: livePauses(facts.pauses), today: todayLocal, legacyBest: facts.legacyBest }).state;
+    const afterState = streakFromFacts({ ...facts, practisedDays: [...facts.practisedDays, day] }, todayLocal);
+    const milestone = milestoneReached(beforeState, afterState, !facts.practisedDays.includes(day));
+    return ok(res, { task: toWireTask(updated), streak: toWireStreak(afterState, facts.pauses, todayLocal), milestone });
   });
+
+  const StreakQuery = z.object({ today: z.string().optional() }).strict();
 
   router.get('/streak', familyChild, async (req, res) => {
     const kid = authedUser(res);
-    const streak = await getTaskStreak(kid.id);
-    return ok(res, {
-      currentStreak: streak?.current_streak_days ?? 0,
-      longestStreak: streak?.longest_streak_days ?? 0,
-    });
+    const q = StreakQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'Only today may be given');
+    const today = resolveLocalToday(q.data.today);
+    const facts = await readStreakFacts([kid.id]);
+    const own = facts?.get(kid.id);
+    if (!own) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the streak');
+    return ok(res, { streak: toWireStreak(streakFromFacts(own, today), own.pauses, today) });
+  });
+
+  // ── PARENT: the chore streak and holiday pauses (D.2) ───────────────────
+
+  router.get('/:kidId/streak', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    const q = StreakQuery.safeParse(req.query);
+    if (!kidId.success || !q.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const today = resolveLocalToday(q.data.today);
+    const facts = await readStreakFacts([kidId.data]);
+    const own = facts?.get(kidId.data);
+    if (!own) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the streak');
+    const pauses = own.pauses.map((p) => toWirePause(p, today)).filter((p) => p.state === 'running' || p.state === 'upcoming');
+    return ok(res, { streak: toWireStreak(streakFromFacts(own, today), own.pauses, today), pauses });
+  });
+
+  const PauseDay = z.string().refine(isCalendarDate, 'must be YYYY-MM-DD');
+  const PauseStreak = z.object({ startsOn: PauseDay, endsOn: PauseDay }).strict();
+  const PAUSE_REFUSALS: Record<string, { status: number; message: string }> = {
+    NOT_A_GUARDIAN: { status: 404, message: 'No such child for this account' },
+    STREAK_PAUSE_INVALID: { status: 400, message: 'A pause lasts 1 to 21 days and starts no more than 7 days ago' },
+    STREAK_PAUSE_OVERLAP: { status: 409, message: 'These days are already paused' },
+    STREAK_PAUSE_LIMIT: { status: 409, message: 'Three pauses are already planned' },
+    STREAK_PAUSE_OVER: { status: 409, message: 'This pause is already over' },
+    STREAK_PAUSE_NOT_FOUND: { status: 404, message: 'No such pause' },
+  };
+
+  router.post('/:kidId/streak/pauses', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const parsed = PauseStreak.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'startsOn and endsOn must be YYYY-MM-DD');
+    const { startsOn, endsOn } = parsed.data;
+    const length = dayDifference(startsOn, endsOn) + 1;
+    if (length < 1 || length > PAUSE_MAX_DAYS || startsOn < utcDayOffset(-PAUSE_MAX_BACKDATE_DAYS) || startsOn > utcDayOffset(PAUSE_MAX_LEAD_DAYS)) {
+      return fail(res, 400, 'STREAK_PAUSE_INVALID', PAUSE_REFUSALS.STREAK_PAUSE_INVALID!.message);
+    }
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const result = await pauseChoreStreak({ kidId: kidId.data, actorId: parent.id, startsOn, endsOn });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the pause');
+    if (isRefusal(result)) {
+      const mapped = PAUSE_REFUSALS[result.refused];
+      return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, CONFLICT, 'The pause was refused');
+    }
+    await insertAuditLog(parent.id, 'tasks.streak_paused', kidId.data, { pauseId: result, startsOn, endsOn });
+    return ok(res, { pauseId: result }, 201);
+  });
+
+  router.post('/:kidId/streak/pauses/:pauseId/end', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    const pauseId = z.string().uuid().safeParse(req.params.pauseId);
+    if (!kidId.success || !pauseId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId and pauseId must be uuids');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const owner = await getPauseKid(pauseId.data);
+    if (owner === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the pause');
+    if (owner !== kidId.data) return fail(res, 404, NOT_FOUND, 'No such pause');
+    const result = await endChoreStreakPause(pauseId.data, parent.id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not end the pause');
+    if (isRefusal(result)) {
+      const mapped = PAUSE_REFUSALS[result.refused];
+      return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, CONFLICT, 'The change was refused');
+    }
+    await insertAuditLog(parent.id, 'tasks.streak_pause_ended', kidId.data, { pauseId: pauseId.data, outcome: result });
+    return ok(res, { outcome: result });
   });
 
   /*

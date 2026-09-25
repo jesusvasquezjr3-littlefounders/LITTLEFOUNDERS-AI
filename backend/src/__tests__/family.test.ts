@@ -97,6 +97,11 @@ describe('GET /api/v1/family/kids', () => {
       { id: 1, kid_user_id: KID_ID, bucket: 'save', amount: 10, reason: 'task_approved', task_id: null, goal_id: null, redemption_id: null, created_by: PARENT_ID, created_at: '2026-09-01T00:00:00Z' },
       { id: 2, kid_user_id: KID_ID, bucket: 'spend', amount: 3, reason: 'task_approved', task_id: null, goal_id: null, redemption_id: null, created_by: PARENT_ID, created_at: '2026-09-01T00:00:00Z' },
     ];
+    // S07.3 (D.2): the card's streak is computed by the lapse-tolerant model
+    // from recorded practised days; one missed day (a rest day) keeps it.
+    const day = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
+    db.chore_streak_days = [4, 3, 1, 0].map((n) => ({ kid_user_id: KID_ID, local_date: day(n), completions: 1, legacy: false }));
+    db.chore_streak_pauses = [];
     db.kid_task_streaks = [{ kid_user_id: KID_ID, current_streak_days: 4, longest_streak_days: 6, last_completed_date: '2026-09-08' }];
 
     const res = await auth(request(createApp()).get('/api/v1/family/kids'));

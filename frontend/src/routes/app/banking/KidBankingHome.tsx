@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireGoal, type WireLedgerEntry } from '../tasks/types';
 import { CARD_DESIGNS, type CardDesign, type WireBankingAccount, type WirePendingCredit, type WireSpendLimitStatus, type WireStatement } from './types';
+import { SavingsBonusPanel } from './SavingsBonusPanel';
 
 /*
  * The kid's half of BANKING.md §7.1: the account/card, the wallet
@@ -308,6 +309,9 @@ export function KidBankingHome() {
           <ProgressBar value={(state.spendLimit.used / state.spendLimit.cap) * 100} label={t('banking.kid.spendLimit.weekly')} tone="accent" />
         </Card>
       )}
+
+      {/* S07.3 (D.11): the child's own bonus, in the framing their age calls for. */}
+      <SavingsBonusPanel token={token} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <section aria-labelledby="banking-goals-heading">

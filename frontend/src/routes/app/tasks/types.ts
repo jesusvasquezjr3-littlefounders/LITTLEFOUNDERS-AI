@@ -22,6 +22,10 @@ export interface WireTask {
   hasEvidence: boolean;
   requiresEvidence: boolean;
   cancelReason: string | null;
+  /** S07.3 (D.10): an expected family contribution (0-2 coins) or a paid bonus task. */
+  kind: 'contribution' | 'bonus';
+  /** S07.3 (D.2): the child's local day of the completion. */
+  completedOn: string | null;
 }
 
 export interface WireGoal {

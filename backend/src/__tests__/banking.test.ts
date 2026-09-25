@@ -106,6 +106,10 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(201, [{ id: randomUUID(), created_at: new Date().toISOString(), ...body }]));
       }
 
+      // S07.3 (D.11): the database's age framing; these legacy cases are a 13-17 child.
+      if (url.includes('/rest/v1/rpc/savings_bonus_framing') && method === 'POST') {
+        return Promise.resolve(jsonResponse(200, 'percent'));
+      }
       if (url.includes('/rest/v1/savings_bonus_rules?kid_user_id=eq.') && method === 'GET') {
         const rows = opts.savingsBonusRule === null ? [] : [opts.savingsBonusRule ?? null].filter(Boolean);
         return Promise.resolve(jsonResponse(200, rows));

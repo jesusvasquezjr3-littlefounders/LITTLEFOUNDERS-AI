@@ -81,7 +81,7 @@ page.ws.addEventListener('message', async ({ data }) => {
       else if (p === '/tasks/mine') body.data = { tasks: [] };
       else if (p === '/tasks/wallet') body.data = { balances: { save: 2, spend: 11, share: 1 } };
       else if (p === '/tasks/goals') body.data = { goals: [] };
-      else if (p === '/tasks/streak') body.data = { currentStreak: 0, longestStreak: 0 };
+      else if (p === '/tasks/streak') body.data = { streak: { status: 'none', current: 0, best: 0, totalDays: 0, restDaysLeftThisWeek: 2, restDaysPerWeek: 2, pausedUntil: null, today: '2026-09-20' } };
       else if (p === '/tasks/catalog/available') body.data = { items: [{ id: catalogId, parentUserId: parentId, title: 'Movie night', cost: 5, active: true, createdAt: T }] };
       else if (p === '/tasks/redemptions/mine') body.data = { redemptions: [{ id: redemptionId, catalogId, kidUserId: kidId, status: 'fulfilled', createdAt: T, decidedAt: T, decidedBy: parentId, fulfilledAt: T }] };
       else if (p === '/tasks/wallet/ledger') body.data = { entries: [

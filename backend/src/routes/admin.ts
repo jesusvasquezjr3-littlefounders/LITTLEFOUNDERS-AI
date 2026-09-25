@@ -73,6 +73,9 @@ import {
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
 import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
 import { getTeenWalletAdoption } from '../services/teenWallet.js';
+import { readBonusComprehension, readChoreTagAdoption } from '../services/savingsBonus.js';
+import { choreStreakRestDayUtilization } from '../services/choreStreakData.js';
+import { utcDayOffset } from '../services/choreStreak.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -1145,6 +1148,67 @@ export function adminRouter(): Router {
       linkedAdopters: row.linked_adopters,
       newAdopters: row.new_adopters,
       adoptionRate: row.eligible_teens > 0 ? row.adopters / row.eligible_teens : null,
+    });
+  });
+
+  /*
+   * S07.3 (Appendix H, all Diagnostic, no target; counts only, never an
+   * identity):
+   * - D.10 Chore-Tag Adoption Rate: chores created per kind, and the Tutors
+   *   who tagged at least one chore as an expected contribution.
+   * - D.2 Chore Streak rest-day utilization: missed days a rest day covered
+   *   versus missed days that ended a run (the Appendix's "Chore
+   *   Streak-Freeze Utilization Rate"; the product never says "freeze",
+   *   owner log §5).
+   * - D.11 Age-Tier Bonus Comprehension Proxy: 13-17 children shown the
+   *   percentage worked example, and how many completed it.
+   */
+  router.get('/family/chore-tag-adoption', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readChoreTagAdoption(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the chore-tag metric');
+    const total = row.contribution_tasks + row.bonus_tasks;
+    return ok(res, {
+      since: since.toISOString(),
+      contributionTasks: row.contribution_tasks,
+      bonusTasks: row.bonus_tasks,
+      contributionShare: total > 0 ? row.contribution_tasks / total : null,
+      tutors: row.tutors,
+      tutorsUsingContribution: row.tutors_using_contribution,
+    });
+  });
+
+  router.get('/family/chore-streak-rest-days', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const today = new Date().toISOString().slice(0, 10);
+    const sinceDay = utcDayOffset(-q.data.days);
+    const row = await choreStreakRestDayUtilization(sinceDay, today);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the rest-day metric');
+    const lapses = row.restDayCovered + row.runsEnded;
+    return ok(res, {
+      since: sinceDay,
+      children: row.children,
+      restDayCovered: row.restDayCovered,
+      runsEnded: row.runsEnded,
+      coveredShare: lapses > 0 ? row.restDayCovered / lapses : null,
+    });
+  });
+
+  router.get('/family/savings-bonus-comprehension', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readBonusComprehension(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the comprehension metric');
+    return ok(res, {
+      since: since.toISOString(),
+      eligible: row.eligible,
+      shown: row.shown,
+      completed: row.completed,
+      completionRate: row.shown > 0 ? row.completed / row.shown : null,
     });
   });
 

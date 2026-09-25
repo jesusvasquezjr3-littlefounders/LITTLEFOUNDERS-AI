@@ -45,6 +45,13 @@ jobs:
       - name: Family Hub lifecycle states each have a producer and a consumer
         run: node database/scripts/check-family-lifecycle.mjs
 
+      # Appendix H (Block D threshold log): every threshold in
+      # docs/operations/BLOCK-D-THRESHOLD-LOG.md equals the Core constant and
+      # the migration that enforce it. The three live in different packages,
+      # so a doc-only or migration-only change is checked here, unfiltered.
+      - name: Block D thresholds agree across the log, Core and the migrations
+        run: node agent/tools/check-block-d-thresholds.mjs
+
       # The acquisition surface is declared in frontend/ AND backend/ (no
       # workspaces, so no shared import). Either file can change alone, which
       # is why this belongs in the unfiltered job rather than either CI.

@@ -1608,10 +1608,14 @@ export interface TaskRow {
   evidence_uploaded_at: string | null;
   cancel_reason: string | null;
   requires_evidence: boolean;
+  /** S07.3 (D.10): an expected family contribution (0-2 coins) or a paid bonus task. */
+  kind: 'contribution' | 'bonus';
+  /** S07.3 (D.2): the child's local day of the completion, stamped once at open -> done. */
+  completed_on: string | null;
 }
 
 const TASK_FIELDS =
-  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at,cancel_reason,requires_evidence';
+  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at,cancel_reason,requires_evidence,kind,completed_on';
 
 export async function insertTask(row: {
   assigned_by: string;
@@ -1621,6 +1625,7 @@ export async function insertTask(row: {
   recurrence: string;
   due_at: string | null;
   requires_evidence: boolean;
+  kind: 'contribution' | 'bonus';
 }): Promise<TaskRow | null> {
   const rows = await serviceRest<TaskRow[]>('/tasks', {
     method: 'POST',
@@ -1774,36 +1779,11 @@ export async function getWalletBalances(kidId: string): Promise<WalletBalances |
   return balances;
 }
 
-// ── Task streak (0080) — a chore-completion day-streak, deliberately its
-// own table and never converted to/from learning_stats' lesson streak
-// (FAMILY_HUB.md §8's non-conversion boundary). ─────────────────────────
-
-export interface TaskStreakRow {
-  kid_user_id: string;
-  current_streak_days: number;
-  longest_streak_days: number;
-  last_completed_date: string | null;
-}
-
-const TASK_STREAK_FIELDS = 'kid_user_id,current_streak_days,longest_streak_days,last_completed_date';
-
-export async function getTaskStreak(kidId: string): Promise<TaskStreakRow | null> {
-  const rows = await serviceRest<TaskStreakRow[]>(`/kid_task_streaks?kid_user_id=eq.${eu(kidId)}&select=${TASK_STREAK_FIELDS}&limit=1`);
-  return rows?.[0] ?? null;
-}
-
-/** Upserts the kid's row — a single-row, last-write-wins update (no advisory lock: a lost update costs at most one day of streak credit, not a duplicated coin, unlike the wallet). */
-export async function upsertTaskStreak(
-  kidId: string,
-  values: { current_streak_days: number; longest_streak_days: number; last_completed_date: string },
-): Promise<boolean> {
-  const res = await serviceRest<unknown>('/kid_task_streaks?on_conflict=kid_user_id', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
-    body: JSON.stringify({ kid_user_id: kidId, ...values, updated_at: new Date().toISOString() }),
-  });
-  return res !== null;
-}
+// ── Task streak (0080) was a single counter maintained with the learning
+// streak's all-or-nothing arithmetic. S07.3 (D.2) replaced it with recorded
+// practised days and the lapse-tolerant model: services/choreStreak.ts and
+// services/choreStreakData.ts. kid_task_streaks is now read only as the
+// legacy floor for the best streak. ─────────────────────────────────────────
 
 /**
  * The only path that credits a task's reward. The TOTAL is never
@@ -2118,29 +2098,16 @@ export interface SavingsBonusRuleRow {
   active: boolean;
   next_run_at: string;
   created_at: string;
+  /** S07.3 (D.11): the rate a rule had before it moved to its child's age framing; cleared on the Tutor's next save. */
+  reframed_from_rate_bp: number | null;
 }
 
-const SAVINGS_BONUS_RULE_FIELDS = 'kid_user_id,parent_user_id,rate_bp,active,next_run_at,created_at';
+const SAVINGS_BONUS_RULE_FIELDS = 'kid_user_id,parent_user_id,rate_bp,active,next_run_at,created_at,reframed_from_rate_bp';
 
 export async function getSavingsBonusRule(kidId: string): Promise<SavingsBonusRuleRow | null | undefined> {
   const rows = await serviceRest<SavingsBonusRuleRow[]>(`/savings_bonus_rules?kid_user_id=eq.${eu(kidId)}&select=${SAVINGS_BONUS_RULE_FIELDS}&limit=1`);
   if (rows === null) return undefined;
   return rows[0] ?? null;
-}
-
-export async function upsertSavingsBonusRule(row: {
-  kid_user_id: string;
-  parent_user_id: string;
-  rate_bp: number;
-  active: boolean;
-  next_run_at: string;
-}): Promise<SavingsBonusRuleRow | null> {
-  const rows = await serviceRest<SavingsBonusRuleRow[]>('/savings_bonus_rules?on_conflict=kid_user_id', {
-    method: 'POST',
-    headers: { Prefer: 'return=representation,resolution=merge-duplicates' },
-    body: JSON.stringify(row),
-  });
-  return rows?.[0] ?? null;
 }
 
 export interface SpendLimitRow {

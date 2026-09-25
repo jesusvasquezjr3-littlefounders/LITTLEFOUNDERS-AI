@@ -6,7 +6,8 @@ import { Button, Card, Dropdown, Field, Icon, ProgressBar, SectionHeading } from
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import type { WireRedemption } from '../tasks/types';
-import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBankingAccount, type WireSavingsBonusRule, type WireSpendLimitStatus } from './types';
+import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBankingAccount, type WireSpendLimitStatus } from './types';
+import { SavingsBonusSettingsPanel } from './SavingsBonusSettingsPanel';
 
 /*
  * The parent's half of BANKING.md §7.2: open the account, then
@@ -39,7 +40,6 @@ type KidDataState =
       account: WireBankingAccount | null;
       allowance: WireAllowanceRule | null;
       spendLimit: WireSpendLimitStatus;
-      savingsBonus: WireSavingsBonusRule | null;
       redemptions: WireRedemption[];
     };
 
@@ -92,16 +92,15 @@ export function ParentBankingControlPanel() {
     let cancelled = false;
     setKidData({ status: 'loading' });
     void (async () => {
-      const [accountRes, allowanceRes, spendLimitRes, bonusRes, redemptionsRes] = await Promise.all([
+      const [accountRes, allowanceRes, spendLimitRes, redemptionsRes] = await Promise.all([
         api<{ account: WireBankingAccount | null }>(`/banking/accounts/${selectedKidId}`, { token }),
         api<{ rule: WireAllowanceRule | null }>(`/banking/allowance/${selectedKidId}`, { token }),
         api<{ status: WireSpendLimitStatus }>(`/banking/spend-limit/${selectedKidId}`, { token }),
-        api<{ rule: WireSavingsBonusRule | null }>(`/banking/savings-bonus/${selectedKidId}`, { token }),
         api<{ redemptions: WireRedemption[] }>(`/tasks/redemptions?kidId=${selectedKidId}`, { token }),
       ]);
       if (cancelled) return;
-      if (accountRes.error || allowanceRes.error || spendLimitRes.error || bonusRes.error || redemptionsRes.error) {
-        const code = (accountRes.error ?? allowanceRes.error ?? spendLimitRes.error ?? bonusRes.error ?? redemptionsRes.error)?.code ?? 'INTERNAL';
+      if (accountRes.error || allowanceRes.error || spendLimitRes.error || redemptionsRes.error) {
+        const code = (accountRes.error ?? allowanceRes.error ?? spendLimitRes.error ?? redemptionsRes.error)?.code ?? 'INTERNAL';
         setKidData({ status: 'error', code });
         return;
       }
@@ -110,7 +109,6 @@ export function ParentBankingControlPanel() {
         account: accountRes.data.account,
         allowance: allowanceRes.data.rule,
         spendLimit: spendLimitRes.data.status,
-        savingsBonus: bonusRes.data.rule,
         redemptions: redemptionsRes.data.redemptions.filter((r) => r.status === 'requested'),
       });
     })();
@@ -251,7 +249,8 @@ export function ParentBankingControlPanel() {
               status={kidData.spendLimit}
               onSaved={(status) => setKidData((prev) => (prev.status === 'ready' ? { ...prev, spendLimit: status } : prev))}
             />
-            <SavingsBonusSection token={token} kidId={selectedKidId as string} rule={kidData.savingsBonus} onSaved={(rule) => setKidData((prev) => (prev.status === 'ready' ? { ...prev, savingsBonus: rule } : prev))} />
+            {/* S07.3 (D.11): the bonus in the framing the child's age calls for. */}
+            <SavingsBonusSettingsPanel kidUserId={selectedKidId as string} kidName={kids?.find((k) => k.userId === selectedKidId)?.displayName ?? kids?.find((k) => k.userId === selectedKidId)?.username ?? ''} token={token} />
           </div>
 
           <div className="flex flex-col gap-6">
@@ -465,49 +464,6 @@ function SpendLimitSection({ token, kidId, status, onSaved }: { token: string | 
             <ProgressBar value={(status.used / status.cap) * 100} label={t('banking.parent.spendLimitHeading')} tone="accent" />
           </div>
         )}
-        {errorCode && <ErrorBanner code={errorCode} />}
-        <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
-          {saving ? t('banking.parent.saving') : t('banking.parent.save')}
-        </Button>
-      </Card>
-    </section>
-  );
-}
-
-function SavingsBonusSection({ token, kidId, rule, onSaved }: { token: string | null; kidId: string; rule: WireSavingsBonusRule | null; onSaved: (rule: WireSavingsBonusRule) => void }) {
-  const { t } = useTranslation();
-  const [active, setActive] = useState(rule?.active ?? false);
-  const [ratePercent, setRatePercent] = useState(rule ? rule.rateBp / 100 : 5);
-  const [saving, setSaving] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-
-  async function onSave() {
-    if (!token || saving) return;
-    setSaving(true);
-    setErrorCode(null);
-    const res = await api<{ rule: WireSavingsBonusRule }>(`/banking/savings-bonus/${kidId}`, { method: 'PUT', token, body: { rateBp: Math.round(ratePercent * 100), active } });
-    setSaving(false);
-    if (res.error) {
-      setErrorCode(res.error.code);
-      return;
-    }
-    onSaved(res.data.rule);
-  }
-
-  return (
-    <section aria-labelledby="banking-bonus-heading">
-      <SectionHeading id="banking-bonus-heading" icon="savings" tone="success">
-        {t('banking.parent.bonusHeading')}
-      </SectionHeading>
-      <Card className="flex flex-col gap-4 p-5">
-        <div className="lf-config-row flex items-center justify-between gap-3 p-3.5">
-          <span className="lf-label text-content">{t('banking.parent.bonusActive')}</span>
-          <button type="button" role="switch" aria-checked={active} onClick={() => setActive(!active)} className={cn('lf-switch', active && 'lf-switch-on')}>
-            <span className="lf-switch-knob" />
-          </button>
-        </div>
-        {active && <Field label={t('banking.parent.bonusRate')} type="number" min={0} max={20} value={ratePercent} onChange={(e) => setRatePercent(Number(e.target.value))} />}
-        <p className="lf-caption text-content-muted">{t('banking.parent.bonusHint')}</p>
         {errorCode && <ErrorBanner code={errorCode} />}
         <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
           {saving ? t('banking.parent.saving') : t('banking.parent.save')}

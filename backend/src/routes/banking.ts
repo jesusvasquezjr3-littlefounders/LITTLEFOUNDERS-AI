@@ -14,6 +14,7 @@ import {
   getSpendLimit,
   getSpendUsedThisPeriod,
   getVerifiedKidLinks,
+  getWalletBalances,
   getWalletLedgerInRange,
   insertAuditLog,
   insertBankingAccount,
@@ -21,7 +22,6 @@ import {
   setBankingAccountFrozen,
   updateBankingAccount,
   upsertAllowanceRule,
-  upsertSavingsBonusRule,
   upsertSpendLimit,
   type AllowanceRuleRow,
   type BankingAccountRow,
@@ -30,7 +30,19 @@ import {
   type SpendLimitRow,
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
-import { getGuardianActionsByIds, type GuardianActionRow } from '../services/familyLifecycle.js';
+import { getGuardianActionsByIds, isRefusal, UNAVAILABLE, type GuardianActionRow } from '../services/familyLifecycle.js';
+import {
+  BONUS_PER_TEN_COINS,
+  BONUS_PER_TEN_RATE_BP,
+  BONUS_PER_TEN_UNIT,
+  MAX_BONUS_RATE_BP,
+  nextBonus,
+  readBonusFraming,
+  readExampleProgress,
+  recordExample,
+  saveBonusRule,
+  type BonusFraming,
+} from '../services/savingsBonus.js';
 
 /*
  * /api/v1/banking — BANKING.md's presentation-and-mechanics layer over
@@ -53,7 +65,6 @@ const CONFLICT = 'CONFLICT';
 
 const CARD_DESIGNS = ['indigo', 'emerald', 'violet', 'amber', 'sunrise', 'ocean'] as const;
 const MAX_ALLOWANCE_AMOUNT = 1000;
-const MAX_BONUS_RATE_BP = 2000; // 20%
 
 /**
  * The next occurrence of `anchorDay` at/after `from` (UTC calendar days —
@@ -97,7 +108,16 @@ function toWireAllowanceRule(r: AllowanceRuleRow) {
 }
 
 function toWireSavingsBonusRule(r: SavingsBonusRuleRow) {
-  return { rateBp: r.rate_bp, active: r.active, nextRunAt: r.next_run_at };
+  // reframedFromRateBp (S07.3, D.11): the rate this rule had before it moved to
+  // its child's age framing, until the Tutor's next save. The Tutor is told.
+  return { rateBp: r.rate_bp, active: r.active, nextRunAt: r.next_run_at, reframedFromRateBp: r.reframed_from_rate_bp ?? null };
+}
+
+/** S07.3 (D.11): the framing and its fixed numbers, so a surface never re-derives the ratio. */
+function toWireFraming(framing: BonusFraming) {
+  return framing === 'per_ten'
+    ? { framing, perTen: { unit: BONUS_PER_TEN_UNIT, coins: BONUS_PER_TEN_COINS }, maxRateBp: null }
+    : { framing, perTen: null, maxRateBp: MAX_BONUS_RATE_BP };
 }
 
 function toWirePendingCredit(c: PendingCreditRow) {
@@ -330,16 +350,31 @@ export function bankingRouter(): Router {
     return ok(res, { status: status ?? { configured: true, period: limit.period, cap: limit.cap, used: 0, remaining: limit.cap } });
   });
 
-  const SetSavingsBonus = z.object({ rateBp: z.number().int().min(0).max(MAX_BONUS_RATE_BP), active: z.boolean().default(true) }).strict();
+  /*
+   * S07.3 (D.11): the bonus is framed by the child's age, never role. Under 13
+   * (or no known birth date) it is "1 coin for every 10 saved, each week" and
+   * the Tutor only switches it on or off; 13-17 it is the Tutor's 0-20% rate.
+   * The database decides the framing, refuses a percentage for a younger
+   * child on every write and credits by the framing at credit time.
+   */
+  const SetSavingsBonus = z
+    .object({ rateBp: z.number().int().min(0).max(MAX_BONUS_RATE_BP).optional(), active: z.boolean().default(true) })
+    .strict();
+  const BONUS_REFUSALS: Record<string, { status: number; message: string }> = {
+    SAVINGS_BONUS_FIXED_FOR_AGE: { status: 409, message: 'Under 13 the bonus is 1 coin for every 10 coins saved' },
+    NOT_A_GUARDIAN: { status: 404, message: 'No such child for this account' },
+    WALLET_HOLDER_REQUIRED: { status: 409, message: 'This account has no wallet' },
+  };
 
   router.get('/savings-bonus/:kidId', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const kidId = z.string().uuid().safeParse(req.params.kidId);
     if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
-    const rule = await getSavingsBonusRule(kidId.data);
-    if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
-    return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null });
+    const [rule, framing] = await Promise.all([getSavingsBonusRule(kidId.data), readBonusFraming(kidId.data)]);
+    if (rule === undefined || framing === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
+    if (framing === null) return fail(res, 409, 'WALLET_HOLDER_REQUIRED', 'This account has no wallet');
+    return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null, ...toWireFraming(framing) });
   });
 
   router.put('/savings-bonus/:kidId', requireRole(['parent']), async (req, res) => {
@@ -349,16 +384,33 @@ export function bankingRouter(): Router {
     const parsed = SetSavingsBonus.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the savings bonus rate');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const framing = await readBonusFraming(kidId.data);
+    if (framing === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the child\'s bonus framing');
+    if (framing === null) return fail(res, 409, 'WALLET_HOLDER_REQUIRED', 'This account has no wallet');
+    let rateBp: number;
+    if (framing === 'per_ten') {
+      if (parsed.data.rateBp !== undefined && parsed.data.rateBp !== BONUS_PER_TEN_RATE_BP) {
+        return fail(res, 409, 'SAVINGS_BONUS_FIXED_FOR_AGE', BONUS_REFUSALS.SAVINGS_BONUS_FIXED_FOR_AGE!.message);
+      }
+      rateBp = BONUS_PER_TEN_RATE_BP;
+    } else {
+      if (parsed.data.rateBp === undefined) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a weekly rate from 0% to 20%');
+      rateBp = parsed.data.rateBp;
+    }
     const account = await getBankingAccount(kidId.data);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the account');
     if (account === null) return fail(res, 409, CONFLICT, 'Open the account before setting a savings bonus');
 
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const rule = await upsertSavingsBonusRule({ kid_user_id: kidId.data, parent_user_id: parent.id, rate_bp: parsed.data.rateBp, active: parsed.data.active, next_run_at: nextWeek.toISOString() });
-    if (!rule) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the savings bonus rule');
-    await insertAuditLog(parent.id, 'banking.savings_bonus_set', kidId.data, { rateBp: parsed.data.rateBp });
-    return ok(res, { rule: toWireSavingsBonusRule(rule) });
+    const rule = await saveBonusRule({ kid_user_id: kidId.data, parent_user_id: parent.id, rate_bp: rateBp, active: parsed.data.active, next_run_at: nextWeek.toISOString() });
+    if (rule === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the savings bonus rule');
+    if (isRefusal(rule)) {
+      const mapped = BONUS_REFUSALS[rule.refused];
+      return mapped ? fail(res, mapped.status, rule.refused, mapped.message) : fail(res, 409, CONFLICT, 'The savings bonus was refused');
+    }
+    await insertAuditLog(parent.id, 'banking.savings_bonus_set', kidId.data, { framing, rateBp, active: parsed.data.active });
+    return ok(res, { rule: toWireSavingsBonusRule(rule), ...toWireFraming(framing) });
   });
 
   router.get('/statement/:kidId', requireRole(['parent']), async (req, res) => {
@@ -431,11 +483,50 @@ export function bankingRouter(): Router {
     return ok(res, { status });
   });
 
+  /*
+   * S07.3 (D.11): the child's own bonus in their framing, with their own
+   * numbers: what they have in Save now and what next week's bonus would add
+   * (the same arithmetic the database's weekly credit uses). A 13-17 child
+   * with a percentage bonus also gets the worked-example progress.
+   */
   router.get('/savings-bonus', familyChild, async (req, res) => {
     const kid = authedUser(res);
-    const rule = await getSavingsBonusRule(kid.id);
-    if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
-    return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null });
+    const [rule, framing, balances] = await Promise.all([getSavingsBonusRule(kid.id), readBonusFraming(kid.id), getWalletBalances(kid.id)]);
+    if (rule === undefined || framing === UNAVAILABLE || balances === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
+    if (framing === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    const active = rule !== null && rule.active && (framing === 'per_ten' || rule.rate_bp > 0);
+    let example = null;
+    if (framing === 'percent' && active) {
+      example = await readExampleProgress(kid.id);
+      if (example === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
+    }
+    return ok(res, {
+      rule: rule ? { rateBp: rule.rate_bp, active: rule.active, nextRunAt: rule.next_run_at } : null,
+      ...toWireFraming(framing),
+      saved: balances.save,
+      nextBonus: active && rule ? nextBonus(framing, balances.save, rule.rate_bp) : 0,
+      example,
+    });
+  });
+
+  const ExampleStep = z.discriminatedUnion('step', [
+    z.object({ step: z.literal('shown') }).strict(),
+    z.object({ step: z.literal('answered'), exampleSaved: z.number().int().min(10).max(10000), answer: z.number().int().min(0).max(10000) }).strict(),
+  ]);
+
+  /** S07.3 (D.11): the 13-17 worked example. The answer is checked by the database at the child's current rate. */
+  router.post('/savings-bonus/example', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = ExampleStep.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Send shown, or an answer for 10 to 10000 saved coins');
+    const result = await recordExample(kid.id, parsed.data);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the example');
+    if (isRefusal(result)) {
+      return result.refused === 'EXAMPLE_NOT_APPLICABLE'
+        ? fail(res, 409, 'EXAMPLE_NOT_APPLICABLE', 'The worked example goes with a percentage bonus')
+        : fail(res, 400, 'VALIDATION_ERROR', 'Send shown, or an answer for 10 to 10000 saved coins');
+    }
+    return ok(res, parsed.data.step === 'answered' ? { correct: result } : { shown: true });
   });
 
   router.get('/wallet/pending-credits', familyChild, async (req, res) => {

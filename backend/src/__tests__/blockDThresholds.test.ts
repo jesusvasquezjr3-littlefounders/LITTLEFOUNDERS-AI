@@ -1,0 +1,101 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+import { REST_DAYS_PER_WEEK, STREAK_MILESTONES } from '../services/choreStreak.js';
+import { BONUS_PER_TEN_COINS, BONUS_PER_TEN_RATE_BP, BONUS_PER_TEN_UNIT, MAX_BONUS_RATE_BP, PERCENT_FRAMING_MIN_AGE } from '../services/savingsBonus.js';
+import { MAX_CONTRIBUTION_COINS, PAUSE_MAX_BACKDATE_DAYS, PAUSE_MAX_DAYS, PAUSE_MAX_LEAD_DAYS } from '../routes/tasks.js';
+
+/*
+ * Appendix H's Block D Threshold Recalibration Log is enforced, not only
+ * written: every value in docs/operations/BLOCK-D-THRESHOLD-LOG.md must equal
+ * the constant Core uses AND the number the database migration enforces. A
+ * recalibration that changes one without the others fails here.
+ */
+
+const root = fileURLToPath(new URL('../../../', import.meta.url));
+const log = readFileSync(join(root, 'docs/operations/BLOCK-D-THRESHOLD-LOG.md'), 'utf8');
+const migrations = readdirSync(join(root, 'database/migrations')).filter((f) => f.endsWith('.sql'));
+const migration = (suffix: string) => {
+  const name = migrations.find((f) => f.endsWith(`${suffix}.sql`));
+  if (!name) throw new Error(`no migration ending ${suffix}`);
+  return readFileSync(join(root, 'database/migrations', name), 'utf8');
+};
+
+const values = new Map([...log.matchAll(/^\| `([a-z_.]+)` \| ([^|]+) \|/gm)].map((m) => [m[1]!, m[2]!.trim()]));
+const num = (key: string) => {
+  const raw = values.get(key);
+  if (raw === undefined) throw new Error(`threshold ${key} is missing from the log`);
+  return Number(raw);
+};
+
+describe('Block D threshold log (Appendix H Part 1.4)', () => {
+  const streak = migration('_chore_streak_rest_days');
+  const kinds = migration('_family_task_contribution_kind');
+  const bonus = migration('_savings_bonus_age_framing');
+
+  it('lists every threshold exactly once', () => {
+    expect([...values.keys()].sort()).toEqual([
+      'chore.contribution_max_coins',
+      'chore_streak.completion_day_tolerance_days',
+      'chore_streak.milestones',
+      'chore_streak.pause_live_limit',
+      'chore_streak.pause_max_backdate_days',
+      'chore_streak.pause_max_days',
+      'chore_streak.pause_max_lead_days',
+      'chore_streak.rest_days_per_week',
+      'savings_bonus.max_rate_bp',
+      'savings_bonus.per_ten_coins',
+      'savings_bonus.per_ten_unit',
+      'savings_bonus.percent_min_age',
+    ]);
+  });
+
+  it('matches the chore streak model and the OD-7 milestones', () => {
+    expect(num('chore_streak.rest_days_per_week')).toBe(REST_DAYS_PER_WEEK);
+    expect(values.get('chore_streak.milestones')).toBe(STREAK_MILESTONES.join(', '));
+  });
+
+  it('matches the holiday pause bounds in Core and in the database', () => {
+    const days = num('chore_streak.pause_max_days');
+    expect(days).toBe(PAUSE_MAX_DAYS);
+    expect(streak).toContain(`ends_on - starts_on < ${days}`);
+    expect(streak).toContain(`NEW.ends_on - NEW.starts_on >= ${days}`);
+    const back = num('chore_streak.pause_max_backdate_days');
+    expect(back).toBe(PAUSE_MAX_BACKDATE_DAYS);
+    expect(streak).toContain(`NEW.starts_on < v_today - ${back}`);
+    const lead = num('chore_streak.pause_max_lead_days');
+    expect(lead).toBe(PAUSE_MAX_LEAD_DAYS);
+    expect(streak).toContain(`NEW.starts_on > v_today + ${lead}`);
+    expect(streak).toMatch(new RegExp(`>= ${num('chore_streak.pause_live_limit')} THEN\\s+RAISE EXCEPTION 'STREAK_PAUSE_LIMIT'`));
+    const tolerance = num('chore_streak.completion_day_tolerance_days');
+    expect(streak).toContain(`NOT BETWEEN v_today - ${tolerance} AND v_today + ${tolerance}`);
+  });
+
+  it('matches the contribution cap in Core and in the database', () => {
+    const cap = num('chore.contribution_max_coins');
+    expect(cap).toBe(MAX_CONTRIBUTION_COINS);
+    expect(kinds).toContain(`kind = 'contribution' AND reward_coins BETWEEN 0 AND ${cap}`);
+    expect(kinds).toContain(`NEW.reward_coins NOT BETWEEN 0 AND ${cap}`);
+  });
+
+  it('matches the savings bonus framing in Core and in the database', () => {
+    const coins = num('savings_bonus.per_ten_coins');
+    const unit = num('savings_bonus.per_ten_unit');
+    expect(coins).toBe(BONUS_PER_TEN_COINS);
+    expect(unit).toBe(BONUS_PER_TEN_UNIT);
+    expect(BONUS_PER_TEN_RATE_BP).toBe((coins / unit) * 10000);
+    expect(bonus).toContain(`WHEN 'per_ten' THEN greatest(v_save_balance, 0) / ${unit / coins}`);
+    expect(bonus).toContain(`NEW.rate_bp <> ${BONUS_PER_TEN_RATE_BP}`);
+    const age = num('savings_bonus.percent_min_age');
+    expect(age).toBe(PERCENT_FRAMING_MIN_AGE);
+    expect(bonus).toContain(`::int < ${age} THEN`);
+    const max = num('savings_bonus.max_rate_bp');
+    expect(max).toBe(MAX_BONUS_RATE_BP);
+    expect(migration('_banca_digital')).toContain(`rate_bp between 0 and ${max}`);
+  });
+
+  it('keeps a review history with a dated first entry', () => {
+    expect(log).toMatch(/## Review history[\s\S]*\| 2026-09-24 \|/);
+  });
+});

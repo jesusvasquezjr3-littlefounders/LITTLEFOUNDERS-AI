@@ -20,6 +20,8 @@ import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../se
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
 import { getChildRoleHolders, selfIssuedInviteIds } from '../services/teenWallet.js';
+import { resolveLocalToday } from '../services/choreStreak.js';
+import { readStreakStates } from '../services/choreStreakData.js';
 import { mayDiscoverProfile, visibleSocialUsers } from '../services/socialVisibility.js';
 import {
   getConsentsForKids,
@@ -45,7 +47,6 @@ import {
   getLessonsByTopicIds,
   getPublishedCourseBySlug,
   getSagasByAdventureIds,
-  getTaskStreak,
   getTasksForKids,
   getTopicsBySagaIds,
   getVerifiedKidLinks,
@@ -134,7 +135,7 @@ export function familyRouter(): Router {
   });
 
   /** The caller's verified kids, with whitelisted display fields. */
-  router.get('/kids', async (_req, res) => {
+  router.get('/kids', async (req, res) => {
     const user = authedUser(res);
     const links = await getVerifiedKidLinks(user.id);
     if (!links) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
@@ -162,17 +163,14 @@ export function familyRouter(): Router {
     for (const t of tasksByKid) {
       if (t.status === 'done') pendingByKid.set(t.assigned_to, (pendingByKid.get(t.assigned_to) ?? 0) + 1);
     }
-    const walletAndStreak = await Promise.all(
-      kidIds.map(async (id) => {
-        const [balances, streak] = await Promise.all([getWalletBalances(id), getTaskStreak(id)]);
-        return { id, balances, streak };
-      }),
-    );
+    const walletAndStreak = await Promise.all(kidIds.map(async (id) => ({ id, balances: await getWalletBalances(id) })));
+    // S07.3 (D.2): the chore streak is computed by the lapse-tolerant model
+    // from recorded practised days, as of the parent's local today.
+    const streaks = await readStreakStates(kidIds, resolveLocalToday(req.query.today));
     // S07.2: which linked accounts are self-registered teens (a display hint
     // only; every account-holder control re-checks the role itself).
     const childRoleHolders = await getChildRoleHolders(kidIds);
     const walletByKid = new Map(walletAndStreak.map((w) => [w.id, w.balances]));
-    const streakByKid = new Map(walletAndStreak.map((w) => [w.id, w.streak]));
 
     return ok(res, {
       kids: links.map((l) => {
@@ -184,7 +182,7 @@ export function familyRouter(): Router {
           analyticsConsent: consents.get(l.kid_user_id) ?? false,
           pendingApprovalCount: pendingByKid.get(l.kid_user_id) ?? 0,
           walletTotal: balances ? balances.save + balances.spend + balances.share : null,
-          taskStreakDays: streakByKid.get(l.kid_user_id)?.current_streak_days ?? 0,
+          taskStreakDays: streaks?.get(l.kid_user_id)?.current ?? 0,
           accountType: childRoleHolders === null ? null : childRoleHolders.has(l.kid_user_id) ? 'child' : 'teen',
         };
       }),

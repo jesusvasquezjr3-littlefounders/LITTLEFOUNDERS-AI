@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-import { Button, Card, Checkbox, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, ConfirmButton, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
+import { ChoreComposerPanel } from './ChoreComposerPanel';
+import { choreKindLine } from '../family/familyMoneyCopy';
 
 /*
  * The parent's half of FAMILY_HUB.md's loop: assign a task, approve it once
@@ -168,8 +170,10 @@ export function ParentTaskBoard() {
           <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
           <p className="lf-body text-content-muted">{t('tasks.parent.subtitle')}</p>
         </div>
-        {state.kids.length > 0 && <CreateTaskButton kids={state.kids} token={token} onCreated={(task) => setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: [task, ...prev.tasks] } : prev))} />}
       </header>
+
+      {/* S07.3 (D.10): every chore is tagged as a family contribution or a bonus task. */}
+      {state.kids.length > 0 && <ChoreComposerPanel kids={state.kids} token={token} onCreated={() => setReloadKey((k) => k + 1)} />}
 
       {state.kids.length === 0 && (
         <Card className="flex flex-col items-center gap-2 p-8 text-center">
@@ -324,7 +328,7 @@ function TaskRow({
   onApprove?: () => void;
   onCancel?: (reason: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [cancelling, setCancelling] = useState(false);
   const [reason, setReason] = useState('');
   const statusKey = { open: 'statusOpen', done: 'statusDone', approved: 'statusApproved', cancelled: 'statusCancelled' }[task.status];
@@ -348,7 +352,7 @@ function TaskRow({
           )}
         </span>
         <span className="lf-caption block text-content-faint">
-          {t(`tasks.parent.${statusKey}`)} · {t('tasks.parent.rewardLabel', { count: task.rewardCoins })}
+          {t(`tasks.parent.${statusKey}`)} · {choreKindLine(i18n.resolvedLanguage, task.kind, task.rewardCoins)}
         </span>
         {task.status === 'cancelled' && task.cancelReason && <span className="lf-caption block italic text-content-faint">“{task.cancelReason}”</span>}
         {errorCode && <span className="lf-caption block text-error-strong">{t(`errors.api.${errorCode}`, { defaultValue: t('errors.api.INTERNAL') })}</span>}
@@ -397,92 +401,6 @@ function TaskRow({
         </div>
       )}
     </li>
-  );
-}
-
-function CreateTaskButton({ kids, token, onCreated }: { kids: Kid[]; token: string | null; onCreated: (task: WireTask) => void }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const [assignedTo, setAssignedTo] = useState(kids[0]?.userId ?? '');
-  const [title, setTitle] = useState('');
-  const [rewardCoins, setRewardCoins] = useState(5);
-  const [recurrence, setRecurrence] = useState<'once' | 'weekly'>('once');
-  const [requiresEvidence, setRequiresEvidence] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-
-  const ready = assignedTo.length > 0 && title.trim().length > 0 && rewardCoins >= 1 && rewardCoins <= MAX_REWARD_COINS;
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!ready || submitting || !token) return;
-    setSubmitting(true);
-    setErrorCode(null);
-    const res = await api<{ task: WireTask }>('/tasks', { method: 'POST', token, body: { assignedTo, title: title.trim(), rewardCoins, recurrence, requiresEvidence } });
-    setSubmitting(false);
-    if (res.error) {
-      setErrorCode(res.error.code);
-      return;
-    }
-    onCreated(res.data.task);
-    setTitle('');
-    setRewardCoins(5);
-    setRequiresEvidence(false);
-    setOpen(false);
-  }
-
-  if (!open) {
-    return (
-      <Button type="button" variant="primary" onClick={() => setOpen(true)}>
-        <Icon name="add_task" className="mr-1.5 text-[18px]" aria-hidden />
-        {t('tasks.parent.createCta')}
-      </Button>
-    );
-  }
-
-  return (
-    <Card className="flex w-full flex-col gap-4 p-5">
-      <h2 className="lf-title text-content">{t('tasks.parent.createTitle')}</h2>
-      <form onSubmit={(e) => void onSubmit(e)} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <span className="lf-label text-content">{t('tasks.parent.assignTo')}</span>
-          <Dropdown value={assignedTo} options={kids.map((k) => ({ value: k.userId, label: k.displayName ?? k.username ?? '?' }))} onChange={setAssignedTo} ariaLabel={t('tasks.parent.assignTo')} />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <span className="lf-label text-content">{t('tasks.parent.recurrence')}</span>
-          <Dropdown
-            value={recurrence}
-            options={[
-              { value: 'once', label: t('tasks.parent.recurrenceOnce') },
-              { value: 'weekly', label: t('tasks.parent.recurrenceWeekly') },
-            ]}
-            onChange={(v) => setRecurrence(v as 'once' | 'weekly')}
-            ariaLabel={t('tasks.parent.recurrence')}
-          />
-        </div>
-        <Field className="sm:col-span-2" label={t('tasks.parent.taskTitle')} hint={t('tasks.parent.taskTitleHint')} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
-        <Field label={t('tasks.parent.reward')} type="number" min={1} max={MAX_REWARD_COINS} value={rewardCoins} onChange={(e) => setRewardCoins(Number(e.target.value))} />
-        <Checkbox
-          className="sm:col-span-2"
-          label={t('tasks.parent.requiresEvidenceToggle')}
-          checked={requiresEvidence}
-          onChange={(e) => setRequiresEvidence(e.target.checked)}
-        />
-        {errorCode && (
-          <div className="sm:col-span-2">
-            <ErrorBanner code={errorCode} />
-          </div>
-        )}
-        <div className="flex gap-2 sm:col-span-2">
-          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-            {t('tasks.parent.cancel')}
-          </Button>
-          <Button type="submit" variant="primary" disabled={!ready || submitting}>
-            {submitting ? t('tasks.parent.submitting') : t('tasks.parent.submit')}
-          </Button>
-        </div>
-      </form>
-    </Card>
   );
 }
 

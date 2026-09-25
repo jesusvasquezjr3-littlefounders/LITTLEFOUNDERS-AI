@@ -9,6 +9,9 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireLedgerEntry, type WireRedemption, type WireTask } from './types';
 import { WalletActivityPanel } from './WalletActivityPanel';
+import { ChoreStreakPanel } from './ChoreStreakPanel';
+import { choreKindLine } from '../family/familyMoneyCopy';
+import { isStreakMilestone, type StreakMilestone } from '@/rebuild/family/familyMoneyApi';
 
 /*
  * The kid's half of FAMILY_HUB.md's loop: complete a task (with an optional
@@ -55,7 +58,10 @@ export function KidTaskBoard() {
   const [evidenceVersion, setEvidenceVersion] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const [liveMessage, setLiveMessage] = useState('');
-  const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0 });
+  // S07.3 (D.2): the lapse-tolerant streak lives in ChoreStreakPanel; a
+  // completion bumps it and passes Core's milestone (7/30/100 only).
+  const [streakVersion, setStreakVersion] = useState(0);
+  const [milestone, setMilestone] = useState<StreakMilestone | null>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,16 +102,6 @@ export function KidTaskBoard() {
     };
   }, [getToken, reloadKey]);
 
-  async function refreshStreak() {
-    if (!token) return;
-    const res = await api<{ currentStreak: number; longestStreak: number }>('/tasks/streak', { token });
-    if (res.data) setStreak(res.data);
-  }
-
-  useEffect(() => {
-    void refreshStreak();
-  }, [token]);
-
   function announce(message: string) {
     setLiveMessage(message);
     // Focus moves to the live region itself — the control that triggered the
@@ -132,12 +128,13 @@ export function KidTaskBoard() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     })();
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/complete`, { method: 'POST', token, body: { localDate } });
+    const res = await api<{ task: WireTask; milestone?: unknown }>(`/tasks/${taskId}/complete`, { method: 'POST', token, body: { localDate } });
     setBusyTask(null);
     if (res.data) {
       setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
       announce(t('tasks.kid.completedAnnounce', { title }));
-      void refreshStreak();
+      setMilestone(isStreakMilestone(res.data.milestone) ? res.data.milestone : null);
+      setStreakVersion((v) => v + 1);
     }
   }
 
@@ -186,7 +183,8 @@ export function KidTaskBoard() {
   const activeGoals = state.goals.filter((g) => g.status !== 'archived');
   const openTasks = state.tasks.filter((tt) => tt.status === 'open');
   const doneTasks = state.tasks.filter((tt) => tt.status === 'done');
-  const toAllocate = state.tasks.filter((tt) => tt.status === 'approved' && !tt.allocated);
+  // S07.3 (D.10): a zero-coin family contribution has nothing to split.
+  const toAllocate = state.tasks.filter((tt) => tt.status === 'approved' && !tt.allocated && tt.rewardCoins > 0);
   const todo = [...openTasks, ...doneTasks];
 
   // A receipt list needs names, not ids — resolved from state already
@@ -226,13 +224,10 @@ export function KidTaskBoard() {
           <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
           <p className="lf-body text-content-muted">{t('tasks.kid.subtitle')}</p>
         </div>
-        {streak.currentStreak > 0 && (
-          <span className="lf-caption flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1.5 font-bold text-warning-strong">
-            <Icon name="local_fire_department" fill className="text-[16px]" aria-hidden />
-            {t('tasks.kid.streakLabel', { count: streak.currentStreak })}
-          </span>
-        )}
       </header>
+
+      {/* S07.3 (D.2): the lapse-tolerant chore streak (two free rest days a week). */}
+      <ChoreStreakPanel token={token} refreshKey={streakVersion} milestone={milestone} />
 
       {/* S07.1 (D.5 / OD-21): the child's own history, with every Tutor reason. */}
       <WalletActivityPanel token={token} />
@@ -294,7 +289,7 @@ export function KidTaskBoard() {
                       )}
                     </span>
                     <span className="lf-caption block text-content-faint">
-                      {t(`tasks.kid.${task.status === 'done' ? 'statusDone' : 'statusOpen'}`)} · {t('tasks.parent.rewardLabel', { count: task.rewardCoins })}
+                      {t(`tasks.kid.${task.status === 'done' ? 'statusDone' : 'statusOpen'}`)} · {choreKindLine(i18n.resolvedLanguage, task.kind, task.rewardCoins)}
                       {task.requiresEvidence && !task.hasEvidence ? ` · ${t('tasks.kid.requiresEvidenceHint')}` : ''}
                     </span>
                   </span>

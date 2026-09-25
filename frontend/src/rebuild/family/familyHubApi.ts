@@ -9,7 +9,7 @@
  */
 
 export type TransportResult = { data: unknown; error: null } | { data: null; error: { code: string } };
-export type Transport = (path: string, options: { token: string; method?: 'GET' | 'POST' | 'PATCH'; body?: unknown }) => Promise<TransportResult>;
+export type Transport = (path: string, options: { token: string; method?: 'GET' | 'POST' | 'PATCH' | 'PUT'; body?: unknown }) => Promise<TransportResult>;
 export interface Session { token: string | null; transport: Transport }
 
 export type Outcome<T> = { ok: true; data: T } | { ok: false; code: string };

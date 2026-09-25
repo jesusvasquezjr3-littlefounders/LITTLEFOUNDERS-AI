@@ -54,8 +54,12 @@ interface StubOptions {
   evidenceStillReferenced?: boolean;
   /** captures every DELETE sent to filebase's /api/v1/files/:bucket/:file, so a test can assert cleanup happened (or didn't). */
   deleteCalls?: string[];
-  /** the kid's kid_task_streaks row — omit for "no row yet" (a fresh kid). */
-  taskStreak?: Record<string, unknown> | null;
+  /** S07.3 (D.2): the kid's recorded practised days (chore_streak_days) — omit for none. */
+  streakDays?: string[];
+  /** the legacy best streak (kid_task_streaks.longest_streak_days) — omit for none. */
+  legacyBest?: number;
+  /** false simulates an unreadable streak history. */
+  streakReadable?: boolean;
   /** the kid's spend_limits row (BANKING.md §5.5) — omit for "no limit configured". */
   spendLimit?: Record<string, unknown> | null;
   /** wallet_ledger rows spend_limit checking sums over — omit for "nothing spent yet". */
@@ -99,12 +103,20 @@ function stub(opts: StubOptions = {}) {
       if (url.includes('/rest/v1/tasks?id=neq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, opts.evidenceStillReferenced ? [{ id: OTHER_KID_ID }] : []));
       }
-      if (url.includes('/rest/v1/kid_task_streaks?kid_user_id=eq.') && method === 'GET') {
-        const rows = opts.taskStreak === undefined ? [] : opts.taskStreak === null ? [] : [opts.taskStreak];
+      if (url.includes('/rest/v1/chore_streak_days?') && method === 'GET') {
+        if (opts.streakReadable === false) return Promise.resolve(new Response(null, { status: 500 }));
+        const rows = url.includes('offset=0') ? (opts.streakDays ?? []).map((local_date) => ({ kid_user_id: KID_ID, local_date, completions: 1, legacy: false })) : [];
         return Promise.resolve(jsonResponse(200, rows));
       }
-      if (url.includes('/rest/v1/kid_task_streaks') && method === 'POST') {
-        return Promise.resolve(new Response(null, { status: 201 }));
+      if (url.includes('/rest/v1/chore_streak_pauses?') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, []));
+      }
+      if (url.includes('/rest/v1/kid_task_streaks?') && method === 'GET') {
+        const rows = opts.legacyBest === undefined || !url.includes('offset=0') ? [] : [{ kid_user_id: KID_ID, longest_streak_days: opts.legacyBest }];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/kid_task_streaks')) {
+        throw new Error('S07.3: Core must never write kid_task_streaks again');
       }
 
       if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
@@ -242,6 +254,8 @@ function defaultTask(): Record<string, unknown> {
     evidence_uploaded_at: null,
     cancel_reason: null,
     requires_evidence: false,
+    kind: 'bonus',
+    completed_on: null,
   };
 }
 function defaultGoal(): Record<string, unknown> {
@@ -329,75 +343,82 @@ describe('POST /api/v1/tasks/:id/complete (kid)', () => {
     expect(res.status).toBe(400);
   });
 
-  it('starts a streak at 1 on a first-ever completion', async () => {
+  // S07.3 (D.2): Core never writes a streak. It sends the child's local day
+  // (bounded to the server day +/- 1) as completed_on; the database records
+  // the practised day from the task. The response carries the lapse-tolerant
+  // streak and, only on the day's first chore that reaches 7/30/100, the milestone.
+  const today = () => new Date().toISOString().slice(0, 10);
+  const shift = (day: string, n: number) => new Date(Date.parse(`${day}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+
+  it('sends the local day as completed_on and never writes kid_task_streaks', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({ task: defaultTask(), roles: ['kid'], writes, taskStreak: null });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    stub({ task: defaultTask(), roles: ['kid'], writes });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: today() });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect(write).toBeDefined();
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(1);
-    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(1);
+    const patch = writes.find((w) => w.url.includes('/rest/v1/tasks?id=eq.') && w.method === 'PATCH');
+    expect(patch?.body).toEqual({ status: 'done', completed_on: today() });
+    expect(writes.some((w) => w.url.includes('kid_task_streaks'))).toBe(false);
+    expect(res.body.data.streak).toMatchObject({ status: 'practised_today', current: 1, best: 1, totalDays: 1, restDaysPerWeek: 2 });
+    expect(res.body.data.milestone).toBeNull();
   });
 
-  it('does not double-count a second completion on the same day', async () => {
+  it('replaces a local day more than one day from the server day with the server day', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({
-      task: defaultTask(),
-      roles: ['kid'],
-      writes,
-      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 5, last_completed_date: '2026-09-08' },
-    });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    stub({ task: defaultTask(), roles: ['kid'], writes });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: shift(today(), -3) });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(3);
+    const patch = writes.find((w) => w.url.includes('/rest/v1/tasks?id=eq.') && w.method === 'PATCH');
+    expect((patch?.body as { completed_on: string }).completed_on).toBe(today());
   });
 
-  it('extends the streak on the very next calendar day', async () => {
-    const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({
-      task: defaultTask(),
-      roles: ['kid'],
-      writes,
-      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 5, last_completed_date: '2026-09-07' },
-    });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+  it('keeps the streak through one missed day (the D.2 defect no longer reproduces)', async () => {
+    const t = today();
+    stub({ task: defaultTask(), roles: ['kid'], streakDays: [shift(t, -4), shift(t, -3), shift(t, -2)] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: t });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(4);
-    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(5);
+    expect(res.body.data.streak.current).toBe(4);
   });
 
-  it('restarts the streak at 1 after a gap day, but keeps the longest-ever mark', async () => {
-    const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({
-      task: defaultTask(),
-      roles: ['kid'],
-      writes,
-      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 7, last_completed_date: '2026-09-05' },
-    });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+  it('celebrates the day\'s first chore that reaches 7, and never a second chore that day', async () => {
+    const t = today();
+    const six = [1, 2, 3, 4, 5, 6].map((n) => shift(t, -n));
+    stub({ task: defaultTask(), roles: ['kid'], streakDays: six });
+    const first = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: t });
+    expect(first.body.data).toMatchObject({ milestone: 'streak-7', streak: { current: 7 } });
+    stub({ task: defaultTask(), roles: ['kid'], streakDays: [...six, t] });
+    const second = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: t });
+    expect(second.body.data).toMatchObject({ milestone: null, streak: { current: 7 } });
+  });
+
+  it('still reports the completed chore when the streak history cannot be read', async () => {
+    stub({ task: defaultTask(), roles: ['kid'], streakReadable: false });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: today() });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(1);
-    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(7);
+    expect(res.body.data).toMatchObject({ task: { status: 'done' }, streak: null, milestone: null });
   });
 });
 
 describe('GET /api/v1/tasks/streak (kid)', () => {
-  it('reports zero for a kid with no streak row yet', async () => {
-    stub({ roles: ['kid'], taskStreak: null });
+  it('reports none for a kid with no practised day yet', async () => {
+    stub({ roles: ['kid'] });
     const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ currentStreak: 0, longestStreak: 0 });
+    expect(res.body.data.streak).toMatchObject({ status: 'none', current: 0, best: 0, totalDays: 0, pausedUntil: null });
   });
 
-  it("reports the kid's own current and longest streak", async () => {
-    stub({ roles: ['kid'], taskStreak: { kid_user_id: KID_ID, current_streak_days: 4, longest_streak_days: 9, last_completed_date: '2026-09-08' } });
-    const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+  it('shows a resting streak with the best still visible, and a legacy best as the floor', async () => {
+    const t = new Date().toISOString().slice(0, 10);
+    const back = (n: number) => new Date(Date.parse(`${t}T00:00:00Z`) - n * 86_400_000).toISOString().slice(0, 10);
+    stub({ roles: ['kid'], streakDays: [back(12), back(11), back(10)], legacyBest: 9 });
+    const res = await request(createApp()).get(`/api/v1/tasks/streak?today=${t}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ currentStreak: 4, longestStreak: 9 });
+    expect(res.body.data.streak).toMatchObject({ status: 'resting', current: 0, best: 9, totalDays: 3 });
+  });
+
+  it('502s an unreadable history instead of showing no streak', async () => {
+    stub({ roles: ['kid'], streakReadable: false });
+    const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(502);
   });
 });
 

@@ -24,12 +24,14 @@ export const UNAVAILABLE = 'UNAVAILABLE' as const;
 
 const RpcError = z.object({ code: z.literal('P0001'), message: z.string().regex(/^[A-Z][A-Z_]{2,63}$/) });
 
-function refusal(body: unknown): Refusal | typeof UNAVAILABLE {
+/** A PostgREST error body carrying a named database refusal, or UNAVAILABLE. */
+export function refusal(body: unknown): Refusal | typeof UNAVAILABLE {
   const parsed = RpcError.safeParse(body);
   return parsed.success ? { refused: parsed.data.message } : UNAVAILABLE;
 }
 
-async function rpc<T>(name: string, args: Record<string, unknown>, shape: z.ZodType<T>): Promise<T | Refusal | typeof UNAVAILABLE> {
+/** One service-role RPC: the parsed result, a named database refusal, or UNAVAILABLE (never read as a decision). */
+export async function rpc<T>(name: string, args: Record<string, unknown>, shape: z.ZodType<T>): Promise<T | Refusal | typeof UNAVAILABLE> {
   const raw = await serviceRestRaw(`/rpc/${name}`, { method: 'POST', body: JSON.stringify(args) });
   if (!raw.ok) return refusal(raw.body);
   const parsed = shape.safeParse(raw.body);

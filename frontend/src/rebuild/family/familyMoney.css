@@ -1,0 +1,72 @@
+/* S07.3 Family Hub money surfaces (D.2, D.10, D.11). Tokens only; separation by fill, never outline. */
+.lf-family-money-kinds { display: grid; gap: var(--spacing-3); }
+@container app (min-width: 640px) { .lf-family-money-kinds { grid-template-columns: 1fr 1fr; } }
+.lf-family-money-kind {
+  display: grid;
+  gap: var(--spacing-1);
+  justify-items: start;
+  min-block-size: var(--target-lg);
+  padding: var(--spacing-4);
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  text-align: start;
+  cursor: pointer;
+}
+.lf-family-money-kind[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); }
+.lf-family-money-kind strong { font: 600 1.125rem/1.3 Fredoka, sans-serif; display: inline-flex; gap: var(--spacing-2); align-items: center; }
+.lf-family-money-kind:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+.lf-family-money-row { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: flex-end; }
+.lf-family-money-row .lf-field { flex: 1 1 12rem; }
+.lf-family-money-number { font: 700 2.5rem/1 Fredoka, sans-serif; }
+.lf-family-money-streak { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-3); }
+.lf-family-hub .lf-family-money-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-family-hub .lf-family-money-facts li {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  font-weight: 700;
+}
+.lf-family-money-milestone {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--reward-soft);
+  color: var(--content);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lf-family-money-milestone { animation: lf-family-money-arrive var(--dur-celebration) var(--ease-spring) 1; }
+}
+@keyframes lf-family-money-arrive { from { transform: scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+.lf-family-hub .lf-family-money-groups { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-family-hub .lf-family-money-groups li {
+  display: grid;
+  justify-items: center;
+  min-inline-size: 3.5rem;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--mint-soft);
+  color: var(--content);
+  font-weight: 800;
+}
+.lf-family-hub .lf-family-money-groups li[data-group='rest'] { background: var(--sunken); }
+.lf-family-money-groups small { font-size: .875rem; color: var(--mint-strong); }
+.lf-rebuild[data-theme='dark'] .lf-family-money-groups small { color: var(--content); }
+.lf-family-money-hub input[type='date'], .lf-family-money-hub input[type='number'], .lf-family-money-hub input[type='text'], .lf-family-money-hub select {
+  min-block-size: var(--target-base);
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  font: inherit;
+}
+.lf-family-money-hub :is(input, select):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+.lf-family-money-hub :is(input, select)[aria-invalid='true'] { box-shadow: inset 0 0 0 3px var(--error-strong); }
+.lf-family-money-hub .lf-field { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-family-money-hub .lf-field label { font-weight: 700; }

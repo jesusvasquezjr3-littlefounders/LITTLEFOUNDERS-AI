@@ -1,6 +1,6 @@
 # S07: Family Hub and independent teen wallet
 
-Status: in progress. Started 24 September 2026; S07.2 recorded 25 September 2026. Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S07.2 and S07.3 recorded 25 September 2026. Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
@@ -18,6 +18,7 @@ Risk classification: **structural/safety (money-adjacent state and family trust)
 | S07.1a | D.4 data-layer writes cannot bypass the state machine | Browser roles hold no write path to tasks, goals, redemptions, catalog, ledger, guardian links or freeze fields; triggers enforce legal transitions for every writer including the service role (photo before approval, debit before a redemption is approved, reached only when savings cover the target, a child never lifts a guardian freeze); every accepted transition is recorded with its request role; Appendix H's Unauthorized State-Transition Rate is served to analytics staff | No surface change (enforcement boundary) | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, Core adversarial tests); full Supabase stack run, production metric and human review pending |
 | S07.1b | D.5 / OD-21 lifecycle states | Redemption `fulfilled`, ledger `manual_adjustment` and `goal_withdrawal` (guardian-only, audited, required reason) and guardian-link `pending`, `rejected`, `revoked` each have a producing and a consuming flow; a gate refuses any Block D state without both | Rebuilt Tutors, coin-correction and child-history surfaces in three locales, light/dark, 375/1280 px | In progress: implementation and local verification recorded (PostgreSQL, Core, component and 12 real-Chrome journeys); full-stack run, copy/human review and Product acceptance pending |
 | S07.2 | D.3 per OD-3 Option B (owner log §7): the self-registered teen's personal wallet | An eligible teen (13–17 by the stored age declaration, never role) logs income and splits it across Save/Spend/Share in one step with no approval, keeps savings goals, defines and marks their own rewards, and moves coins out of their own goal; Tasks, chore approval, reward requests and every parent-set rule stay guardian-only; adults, guests, under-13 arrivals, parent-created children (family wallet instead), staff and aged-out accounts hold no personal wallet, enforced by the database for every writer and by Core admission; a teen-initiated parent link layers the family mechanics onto the same ledger, goals and rewards without migration; Appendix H's Teen Independent-Mode Adoption is served to analytics staff | Rebuilt `/wallet` surface (`frontend/src/rebuild/wallet/`) in three locales, light/dark, 375/1280 px; learner shell shows Wallet, Tasks locked until a parent links, no Family entry for a teen | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 73 adversarial Core tests, 42 component/route tests, 12 real-Chrome journeys); full Supabase stack run, types regeneration, copy/native review, production metric and Product acceptance pending |
+| S07.3 | D.2 forgiving chore streak, D.10 expected contribution versus paid bonus task, D.11 savings bonus framed by age | The chore streak is computed by a lapse-tolerant model (two free rest days a week, permanent best and total, a Tutor's holiday pause) from practised days that only the task itself can record; a Tutor tags every chore as a family contribution (0–2 coins) or a bonus task (1–500) with no preselected kind; under 13 (or with no known birth date) the savings bonus is the fixed 1 coin per 10 saved and no percentage reaches the child, whoever writes the rule; 13–17 keep the Tutor's 0–20% with a worked example checked by the database; every threshold sits in the Block D threshold log and a gate keeps log, Core and migrations equal; three Appendix H diagnostics served to analytics staff | Rebuilt chore composer, chore streak, holiday pause, bonus settings and bonus explainer (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Family and Banking routes | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 77 new Core tests, 37 new component/copy tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, B.21 adoption of the model, copy/native review, production baselines and Product acceptance pending |
 
 ## Current state found (verified against the code, 24 September 2026)
 
@@ -233,3 +234,171 @@ Every configuration had zero axe violations, no overflow, 48 px targets, a copy 
 - The owner questions above.
 
 D.3 is not accepted.
+
+## S07.3: current state found (verified against the code, 25 September 2026)
+
+The SPEC's "Current State" for D.2, D.10 and D.11 was accurate, with one addition:
+
+- **D.2 confirmed.** `POST /tasks/:id/complete` updated `kid_task_streaks` (0080) with `nextStreak()` from `services/streak.ts`, the learning streak's arithmetic: any gap restarted the count at 1. The update was last-write-wins from Core, so it was also not tied to a real chore.
+- **D.10 confirmed.** `tasks.reward_coins` was `CHECK (> 0)`, Core required 1–500 and the legacy composer offered only a coin amount: every chore was paid, and there was no way to say otherwise.
+- **D.11 confirmed.** One 0–20% rate for every age, credited weekly on the Save balance. The honest label ("not a bank interest rate") existed only on the Tutor's form.
+- **Not in the SPEC:** the child never saw the rule. The only trace was a ledger line, "Bonus your family added", which is the "free money" reading D.11 warns about.
+- **B.21 (S05 lane) is not in this worktree.** The learning streak still uses `nextStreak()` in `routes/onboarding.ts`. S07.3 therefore built the model as a pure, documented module and names the merge point below.
+
+## S07.3 implementation and rationale (D.2, D.10, D.11)
+
+This work was started by an earlier session of this lane that was interrupted by a usage limit before committing. The resumed session reviewed every uncommitted change against the SPEC and kept it: nothing was discarded. It also compared the redefined functions with the migrations they replace; each one keeps the earlier rules word for word and only adds to them. It restored one test file's CRLF ending, which the earlier session had converted to LF. It then re-ran every verification first-hand before committing. The earlier session's last browser matrix had stopped after 6 of 12 configurations, and its last `database` test run had failed on a Windows process-spawn error. Both were re-run; see the verification log.
+
+Migrations (descriptive names; the orchestrator assigns the final numbers at merge), applied in this order after the S07.2 migrations:
+- `chore_streak_rest_days` (expand);
+- `family_task_contribution_kind` (contract);
+- `savings_bonus_age_framing` (contract).
+
+The two contract migrations narrow what any writer may store: a chore's coin rule, and a percentage for a child under 13. They also redefine the S07.1 task guard and the 0093 weekly credit. Every other rule in those two is kept word for word; the diff of each function against its previous definition shows only the additions. They ship with, never ahead of, the Core release carrying the S07.3 routes. `database/types/database.ts` was not hand-edited.
+
+### D.2: the chore streak stops resetting on one missed day
+
+1. **One model, written once (`backend/src/services/choreStreak.ts`).** It follows Frontend Bible 02 §9.6, which binds every streak in the product, and meets B.21's "lapse-tolerant" requirement:
+   - two rest days a week (Monday to Sunday) are free and automatic;
+   - a missed day while the streak is alive uses one of them;
+   - a third missed day in a week rests the streak;
+   - the best streak and the total days practised are permanent;
+   - a Tutor's holiday pause makes days neutral.
+
+   The streak number counts **practised** days only. A rest day or a paused day bridges the run but never adds to it, so neither can pad the number toward a 7/30/100 milestone. This is the same honesty rule D.16 applies to goal progress. Today is never a miss. A milestone fires only on the completion that first makes a day practised and lands the run exactly on 7, 30 or 100 (OD-7's closed list). A second chore on the same day never celebrates again.
+2. **The facts cannot be forged.** Only a trigger on the task itself writes `chore_streak_days`. An `open→done` transition adds the day, and a Tutor who cancels a done chore takes it back. Any direct insert or update is refused, even by the service role. `tasks.completed_on` is stamped once, bounded to the server's UTC day ±1 (every real time zone), and immutable. Core never writes a streak.
+3. **Holiday pauses (Bible 02 §9.6 rule 3).** `chore_streak_pauses` holds each pause, and the guard enforces its rules for every writer:
+   - a verified guardian of the child sets it;
+   - it lasts 1–21 days;
+   - it starts at most 7 days back and at most 120 days ahead;
+   - it never overlaps another pause, and at most 3 live pauses exist at a time;
+   - it is cancelled before it starts, or ended early while it runs (it ends yesterday);
+   - it is never deleted.
+
+   Core calls it through `guardian_pause_chore_streak` / `guardian_end_chore_streak_pause` (`POST /api/v1/tasks/:kidId/streak/pauses`, `POST …/pauses/:pauseId/end`).
+4. **No family loses a streak.** The migration backfills each legacy counter as its run of consecutive days ending on `last_completed_date`, marked `legacy`. `kid_task_streaks.longest_streak_days` stays as the permanent floor for the best streak (owner log §4: streaks, current and best, are never lost). The counter is no longer written.
+5. **Reads.** `GET /api/v1/tasks/streak` (a child in a family) and `GET /api/v1/tasks/:kidId/streak` (the Tutor, with running and upcoming pauses). `GET /family/kids` now reports the model's current run. An unreadable history is a 502, never "no streak".
+6. **Merge point (B.21).** The learning streak must call `evaluateStreak` with its own practised days and never keep a second copy. The module says so in its header, and the owner log's "rest day" glossary rule applies to both. Until the S05 lane adopts it, the learning streak keeps the all-or-nothing arithmetic, which is B.21's scope, not D.2's.
+
+### D.10: expected family contribution versus paid bonus task
+
+- `tasks.kind` is `contribution` (0–2 coins: unpaid, or a token amount) or `bonus` (1–500, paid at the Tutor's rate). The CHECK and the task guard enforce the pair for every writer, and the kind and the reward are immutable.
+- A zero-coin contribution is approved like any chore and never allocated: the guard refuses the allocation flag, and the child's board does not offer a split. It still counts toward the chore streak.
+- **The choice is deliberate and never preselected.** The rebuilt composer (`ChoreComposer`) makes the Tutor pick a kind. One line says no mix is right for every family, because the evidence does not compel an answer (Appendix G §1.2; the SPEC asks for "a deliberate design option… not a scientifically mandated ratio"). The API's `kind` default of `bonus` exists only so that an older client, which always sent a paid chore, keeps its meaning.
+- Both task lists show the kind with the coins ("Family chore · no coins").
+- The OD-21 lifecycle gate now registers both kinds with a producer and a consumer (28 states across 7 columns).
+
+### D.11: a savings bonus the child can understand
+
+- **The framing follows age, never role** (`savings_bonus_framing`):
+  - `per_ten` applies under 13, or when there is no known birth date (the conservative default). The child reads "Keep 10 coins in Save, get 1 more each week" (the SPEC's proposed starting ratio). The Tutor only switches it on or off.
+  - `percent` applies from 13 to 17: a self-registered teen, or a parent-created child whose birth date says 13 or older. The Tutor keeps the 0–20% rate.
+- **The database is the boundary.** The rule guard refuses any rate but the fixed ratio for a `per_ten` child, a non-guardian and a non-holder. The weekly credit applies the framing the child is in **at credit time**, so a stored percentage can never reach a child under 13, whoever wrote it or when.
+- **Existing rules for children under 13:**
+  - a rate of 10% or more moves to the fixed ratio, which is never more than the Tutor agreed to;
+  - a rate below 10% is switched off, so no coins are minted above what the Tutor agreed. The Tutor is told why, and the rule restarts only with their yes.
+
+  The previous rate is kept (`reframed_from_rate_bp`) so the Tutor's screen can say what changed, until the Tutor next saves.
+- **The child sees the rule with their own numbers.** `GET /api/v1/banking/savings-bonus` returns the child's saved coins and next week's bonus, using the credit's own arithmetic.
+  - Under 13: the rebuilt explainer draws the coins as groups of ten, each earning one. No percentage appears.
+  - 13–17: the explainer shows the rate, why the bonus grows ("bonus coins land in Save, so next week counts them too") and the honest "not a bank interest rate" line. It then offers a worked example. The teen's answer is checked by the database against the current rate (`record_savings_bonus_explanation`), and the example never uses the teen's own balance, whose answer is already on screen.
+- A right answer gets an informational confirmation, never a celebration (OD-7).
+
+### Measured and governed
+
+Appendix H diagnostics (no target; counts only, never an identity), each behind `view_analytics`:
+- **Chore-Tag Adoption Rate:** `GET /api/v1/admin/family/chore-tag-adoption?days=N`.
+- **Chore streak rest-day utilization:** `GET /api/v1/admin/family/chore-streak-rest-days?days=N`. This is the Appendix's "Streak-Freeze Utilization Rate", renamed because the product never says "freeze" (owner log §5). It counts missed days covered by a rest day against missed days that rested a run, computed by the same model. A scan above 200,000 rows reports "unavailable", never a partial.
+- **Age-Tier Bonus Comprehension Proxy:** `GET /api/v1/admin/family/savings-bonus-comprehension?days=N`.
+
+Appendix H's Threshold Recalibration Log exists as `docs/operations/BLOCK-D-THRESHOLD-LOG.md`, with 12 thresholds, their sources, owners and a quarterly cadence. Two checks enforce it:
+- `agent/tools/check-block-d-thresholds.mjs` runs in the unfiltered repo gates, with tests in `npm run tools:test`. It fails when the log, the Core constant and the migration disagree.
+- `backend/src/__tests__/blockDThresholds.test.ts` pins the same values to the live constants.
+
+### Rebuilt surfaces
+
+The surfaces live in `frontend/src/rebuild/family/`, import nothing legacy and use the S07.1 injected transport:
+- `ChoreComposer`, `ChoreStreak`, `StreakPauses`, `SavingsBonusSettings` and `SavingsBonusExplainer`;
+- the API layer `familyMoneyApi.ts`, which shape-checks every response.
+
+They are mounted through route wrappers:
+- `ChoreComposerPanel` replaces the legacy paid-only form on the Tutor's Tasks screen;
+- `ChoreStreakPanel` replaces the legacy flame chip on the child's Tasks screen;
+- `StreakPausesPanel` sits on each child's card on the Family screen;
+- `SavingsBonusSettingsPanel` replaces the legacy percentage-only section on the Tutor's Banking screen;
+- `SavingsBonusPanel` is added to the child's Banking screen.
+
+The copy lives in `i18n/<locale>/familyMoney.json`. It is checked for key parity, the Copy Budget, the controlled glossary, the honest "not interest" line and no percentage in the under-13 copy, and the child's first views are checked against the 6–9 first-view budget. A resting streak reads "Streak resting" with the best still shown, never a loss.
+
+## S07.3 decisions taken on the SPEC's conservative default (proposals for owner review)
+
+1. **Rest days.** The rest-day count (2 a week) and the milestones come from Bible 02 §9.6 and OD-7. The rest-day week runs Monday to Sunday on the child's local calendar.
+2. **Pause bounds.** A pause lasts 1–21 days, starts at most 7 days back and at most 120 days ahead, and at most 3 live pauses exist at a time. These are Engineering proposals, recorded in the threshold log for Product review.
+3. **Contribution coins.** A "nominal" contribution is capped at 2 coins; the SPEC mandates the choice, not a number.
+4. **The fixed ratio is platform-wide.** A Tutor of a child under 13 cannot pick a different ratio. The SPEC calls 1 per 10 a starting ratio to be recalibrated through the threshold log, not a per-family setting.
+5. **No known birth date.** A child with no known birth date gets the younger framing.
+6. **Legacy rules for children under 13.** A rule below 10% is switched off pending the Tutor's yes, rather than raised to the fixed ratio. Raising it would mint more coins than the Tutor agreed to.
+7. **Who sees the worked example.** Only a 13–17 child with an active percentage bonus, and therefore a linked Tutor, gets the worked example. An unlinked teen has no family bonus.
+8. **A Tutor who steps away.** The weekly bonus job keeps crediting a rule whose Tutor is no longer a guardian, as it did before S07.3 (the job is bookkeeping, not a new decision). Any configuration change then needs a current Tutor. Whether a departing Tutor's bonus should stop is an owner question.
+9. **Metric name.** The Appendix H metric name says "freeze"; the product and the admin API say "rest day" (owner log §5).
+
+## S07.3 verification log
+
+Executed 25 September 2026 in the S07 worktree by the resumed session, first-hand, on the committed tree. Commands are relative to the named directory. Local results only, not CI or production observations.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Physical PostgreSQL, S07.3 | Lane cluster (PostgreSQL 17.6, `.lane-cache/pg`, port 15507); root: `python database/scripts/verify-chore-streak-bonus-postgres.py` with `LF_PG_BIN/PORT/USER/DATA`; the cluster was stopped with `pg_ctl stop -m fast` afterwards | Passed, 11 check groups. Report: `audit-results/s07-chore-streak-bonus-postgres.json`. Details below this table |
+| Physical PostgreSQL, S07.1 regression over the whole chain | Root: `LF_PG_FULL_CHAIN=1 LF_PG_REPORT=audit-results/s07-family-state-postgres-full-chain.json python database/scripts/verify-family-state-machine-postgres.py` | Passed all S07.1 check groups with `applied_through` the last S07.3 migration, so the redefined task guard and weekly credit keep every S07.1 rule |
+| Physical PostgreSQL, S07.2 | Root: `python database/scripts/verify-teen-wallet-postgres.py` | Passed, 17 check groups. This verifier applies the chain through its own parts. S07.3's effect on teens (framing, a linked teen's bonus and chores, an unlinked teen refused) is covered by the S07.3 verifier |
+| Core adversarial | `backend/`: `npx vitest run src/services/choreStreak.test.ts src/__tests__/choreStreakBonus.test.ts src/__tests__/blockDThresholds.test.ts` plus the tasks, banking and family files | 77 new tests (28 model, 43 route, 6 threshold) pass; 260 across the six files |
+| Core regression | `backend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 75 files (+1 skipped), 1,689 tests + 1 documented skip |
+| Frontend regression | `frontend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 220 files, 2,309 tests (37 new: 20 surface, 17 copy) |
+| Real Chrome matrix | `frontend/`: `FAMILY_MONEY_URL=http://localhost:5340 node scripts/verify-family-money.mjs` | 12 of 12 configurations (EN/es-MX/pt-BR × light/dark × 375/1280). 72 captures and `report.json` in `audit-results/family-money/`. Journey steps below this table |
+| Static migration gates | `database/`: `npm test` | Passed: 124 files numbering/RLS/phase (93 expand, 31 contract, 20 contract pending), lifecycle gate 28 states across 7 columns, 28 of 28 node tests, railway transport 12 scenarios (about 58 minutes under five lanes' concurrent load) |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` (after staging, so the new files are scanned), `bash agent/tools/check-i18n.sh` (Git Bash), `npm run tools:test`, `node agent/tools/check-block-d-thresholds.mjs` | Passed: spec authority, tokens and assets OK; no credential patterns; i18n file and key parity, no hardcoded strings, every static key present; 62 of 62 tool tests; 12 thresholds agree |
+
+**PostgreSQL S07.3 check groups (11):**
+- **Gaps reproduced** on the chain before the first S07.3 migration: no practised-day record existed, a zero-coin chore was refused, and a 20% weekly percentage reached a 9-year-old (57 saved → 11 coins).
+- **Upgrade in place:** a legacy 4-day streak became 4 consecutive legacy days, and legacy bonus rules moved as designed (9-year-old 20% → fixed ratio, on; undated 5% → off; 0% → off; the 14-year-old's 15% unchanged).
+- **Completion day:** stamped once, bounded to ±1 day and immutable. Two chores on the same day count 2; a Tutor's cancellation takes one back.
+- **Forgery:** no writer can insert, raise or mark a practised day; no browser role can write days or pauses; an unrelated parent reads nothing.
+- **Pauses:** every bound, overlap, the live-pause limit, cancellation versus early ending, and a stranger refused.
+- **Concurrency:** 8 simultaneous overlapping pauses → exactly 1; 8 simultaneous completions → the day counts 8.
+- **Kinds:** both kinds and their coin bounds; the kind and the reward are immutable; a zero-coin contribution is approved and never allocated; Chore-Tag Adoption = 2/12/1/1.
+- **Bonus:** framing for 10 populations; every forbidden rule refused; credits 69 → 6 and 57 → 5 under 13, 57 at 15% → 8 and a linked teen's 50 at 8% → 4. A stored 15% never reached a child whose birth date now says 12 (65 → 6).
+- **Bookkeeping:** the weekly job for a departed Tutor's rule still advances, and configuration changes are refused.
+- **Worked example:** refused to the under-13, undated, adult and unlinked-teen populations; answers are checked against the current rate; completion is never undone; Comprehension Proxy = 2/2/1.
+- **Replay** of the three migrations preserved all data and refusals.
+
+**Browser matrix journey (each configuration):**
+1. Tutor, Tasks: nothing preselected, a submit without a kind refused locally with no request, then an unpaid contribution created with the exact body.
+2. Tutor, Family: an out-of-range pause refused locally, a valid one saved and re-read as running, then ended.
+3. Tutor, Banking, a child under 13: the fixed rule with no percent field; the "what changed" notice shown, then cleared on save; the PUT carries no rate.
+4. Child, Tasks: rest days shown; the family chore named with no coins; marking it done reaches 7 days and the 7-day milestone shows once.
+5. Child, Banking, under 13: coins in groups of ten, never a percent.
+6. Teen, 14: the percent, why it grows, "not interest", then the worked example (a wrong answer, then the right one).
+
+Every configuration had zero axe violations, no panel overflow or page scroll, 48 px targets, a copy role on every text node and zero browser errors. Three captures were inspected in this session: es-MX dark 375 Tutor composer, pt-BR light 1280 teen worked example, en-US light 375 child streak at the 7-day milestone.
+
+**Failures and their resolution in the resumed session:**
+- **Line ending.** `KidBankingFreeze.test.tsx` is CRLF in the index; the earlier session's edit had rewritten it as LF (a whole-file diff). It was restored to CRLF, leaving a two-line diff.
+- **Incomplete matrix.** The earlier session's last matrix run had stopped after 6 of 12 configurations. It was re-run from a clean capture directory: 12 of 12.
+- **`database` test run failed.** The earlier session's last run failed in `railway-migrate.test.mjs` with Windows status `0xC0000142` (a child process failed to initialize under five lanes' load, before any migration was read). It was re-run and passed.
+- **Leftover processes.** The earlier session had left the lane's Vite server and PostgreSQL cluster running. Both were reused for this session's runs and then stopped.
+
+**Cross-lane findings (not changed here):**
+- **B.21 (S05).** The learning streak (`routes/onboarding.ts`) still resets on one missed day. It should adopt `evaluateStreak` rather than a second model.
+- **Unused legacy strings.** The legacy `banking.parent.bonus*` strings in `common.json` are no longer rendered. They were left in place to avoid colliding with other lanes' edits; the wave-2 Banking rebuild removes them.
+- **Two names for one kind.** The kind line says "Family chore", while the composer says "Family contribution" for the same kind. This is deliberate: the shorter word suits the list, and the composer explains the choice. It should go to native copy review.
+
+**Remaining limitations:**
+- No full Supabase (PostgREST/GoTrue) stack run of the new routes, triggers and RLS.
+- `database.ts` has not been regenerated.
+- The three diagnostics have no production baseline yet (one release cycle).
+- The browser matrix uses a synthetic Core.
+- The first quarterly threshold review.
+- Human Product/Safety review of the proposals above, and native review of the copy.
+- B.21's adoption of the model.
+
+D.2, D.10 and D.11 are not accepted.
