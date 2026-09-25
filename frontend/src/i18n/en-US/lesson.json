@@ -90,6 +90,7 @@
     "runTitle": "Your run",
     "progressTitle": "What you took away",
     "yourBest": "Your best",
+    "savedBestStill": "Your saved best is still {{best}}. This was practice.",
     "newBest": "New best!",
     "today": "Today"
   },

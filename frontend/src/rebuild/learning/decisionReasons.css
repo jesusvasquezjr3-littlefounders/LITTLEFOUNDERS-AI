@@ -1,0 +1,14 @@
+/* B.12 (S05.3d): decide, then say why. Tokens only; 48 px targets. */
+.lf-learning--reasoning { overflow-x: clip; }
+.lf-reasoning-board { gap: var(--spacing-3); }
+.lf-reasoning-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--spacing-2); }
+.lf-reasoning-option {
+  min-block-size: var(--target-base); padding: var(--spacing-2) var(--spacing-3); border: 2px solid var(--outline); border-radius: var(--rounded-md);
+  background: var(--surface); color: var(--content); font: inherit; font-weight: 700; text-align: start; overflow-wrap: anywhere; cursor: pointer;
+}
+.lf-reasoning-option[aria-pressed="true"] { border-color: var(--primary-strong); background: var(--primary-soft); color: var(--primary-strong); box-shadow: inset 0 0 0 1px var(--primary-strong); }
+.lf-reasoning-option:disabled { cursor: default; }
+.lf-reasoning-option:disabled:not([aria-pressed="true"]) { color: var(--content-muted); }
+.lf-reasoning-feedback { align-items: flex-start; padding-block: var(--spacing-2); }
+.lf-reasoning-feedback .lf-system-glyph { flex: none; inline-size: 24px; block-size: 24px; margin-block-start: 2px; }
+.lf-reasoning-feedback-lines { display: grid; gap: var(--spacing-1); min-inline-size: 0; }

@@ -19,6 +19,7 @@ import { isCalendarDate } from '../services/streak.js';
 import { lessonEligibilityForBirthDate } from '../services/lessonEligibility.js';
 import { getTutorPreferences } from '../services/tutorData.js';
 import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
+import { allowsSelfManagedAnalytics } from '../services/analyticsPreference.js';
 import { applyCoursePathway, lessonChapterAccess, pathwayBadgeAward, type PathwayCourseTree, type PathwayView } from '../services/pathway/coursePathway.js';
 import { projectCoursePath } from '../services/pathway/coursePathProjection.js';
 import {
@@ -36,6 +37,7 @@ import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptT
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { offerBridgeAfterCompletion, recordGradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
+import { buildV2CompletionReceipt, replayNoticeRequired } from '../services/lessonCompletionReceipt.js';
 import {
   completeLesson,
   completeV2Lesson,
@@ -483,6 +485,29 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
   return { lessonRow: lesson, topic, course, tree };
 }
 
+
+/**
+ * A server-authored learning event, fire-and-forget, behind exactly the gate
+ * the client ingest (routes/events.ts) applies: no guest, no unresolved or
+ * protected age screen, a kid only with active guardian consent, anyone else
+ * only with self-managed analytics allowed (H.1). The replay-notice rate
+ * divides a client event by this one, so both must be dropped for the same
+ * learners or the rate would lie.
+ */
+function recordServerLearnEvent(user: AuthedUser, event: 'replay_below_best', lessonId: string): void {
+  if (user.isGuest) return;
+  void (async () => {
+    const screening = await readAgeScreen(user.id);
+    if (!screening || screening.required || screening.protectedOrigin) return;
+    const roles = await getRolesForGate(user.id);
+    if (!roles || roles.length === 0) return;
+    if (roles.includes('kid')) {
+      if ((await hasActiveAnalyticsConsent(user.id)) !== true) return;
+    } else if (!await allowsSelfManagedAnalytics(user.id, screening)) return;
+    await insertLearningEvents([{ user_id: user.id, role: stampRole(roles), event, route_class: 'learn', lesson_id: lessonId }]);
+  })();
+}
+
 export function learnRouter(): Router {
   const router = Router();
   router.use(requireAuth, requireAgeScreen);
@@ -912,13 +937,16 @@ export function learnRouter(): Router {
       const next = mintLessonAttemptToken({
         uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
       }, secret);
+      // B.12: a reasoning answer carries its judgment quality inside the same
+      // one-use receipt as the score (the database CHECK pins its shape).
+      const v2Verdict = { correct: graded.correct, score: graded.score, ...(graded.judgment ? { judgment: { quality: graded.judgment } } : {}) };
       const cpaPrerequisite = v2CpaAttemptPrerequisiteSegmentId(document, segmentId);
       const receipt = cpaPrerequisite === undefined
         ? await recordV2LessonGrade({
           p_user_id: user.id, p_run_id: parsed.data.run_id, p_document_version_id: picked.document_version_id,
           p_segment_id: segmentId, p_jti: verified.payload.jti,
           p_required_met_segment_id: v2GradePrerequisiteSegmentId(document, segmentId),
-          p_verdict: { correct: graded.correct, score: graded.score },
+          p_verdict: v2Verdict,
           p_next_jti: next.payload.jti,
           p_next_expires_at: next.expiresAt,
         })
@@ -926,7 +954,7 @@ export function learnRouter(): Router {
           p_user_id: user.id, p_run_id: parsed.data.run_id, p_document_version_id: picked.document_version_id,
           p_segment_id: segmentId, p_jti: verified.payload.jti,
           p_required_attempted_segment_id: cpaPrerequisite,
-          p_verdict: { correct: graded.correct, score: graded.score },
+          p_verdict: v2Verdict,
           p_next_jti: next.payload.jti,
           p_next_expires_at: next.expiresAt,
         });
@@ -1073,6 +1101,12 @@ export function learnRouter(): Router {
         p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
       });
       if (!completion) return fail(res, 409, 'UNSUPPORTED_LESSON', 'Complete every learning step first');
+      // B.5: the denominator of the replay-notice display rate, server-side and consent-gated.
+      if (replayNoticeRequired(completion) && !completion.replayed) recordServerLearnEvent(user, 'replay_below_best', lessonId);
+      const receipt = buildV2CompletionReceipt({
+        completion, runId: run.id, document,
+        secondsSpent: parsed.data.seconds_spent ?? Math.round((parsed.data.minutes_spent ?? 0) * 60),
+      });
       const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
       if (refreshed && courseEngine() === 'pathway') await settleCourseBadges(user.id, ctx.course, refreshed);
       // B.13 (S05.3c): a completion that finishes a bridge topic offers a family prompt.
@@ -1080,7 +1114,7 @@ export function learnRouter(): Router {
         user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
         before: ctx.tree, after: refreshed?.tree ?? null,
       });
-      return ok(res, { ...completion, ...(selfBridge ? { self_bridge: selfBridge } : {}) });
+      return ok(res, { ...completion, ...(receipt ? { receipt } : {}), ...(selfBridge ? { self_bridge: selfBridge } : {}) });
     }
 
     const scoring = (picked.document as { scoring?: { pass_threshold?: number } }).scoring ?? {};
@@ -1174,6 +1208,9 @@ export function learnRouter(): Router {
       })();
     }
 
+    // B.5: the denominator of the replay-notice display rate (see 0120's function).
+    if (replayNoticeRequired(completion) && !completion.replayed) recordServerLearnEvent(user, 'replay_below_best', lessonId);
+
     if (completion.streak_extended && !completion.replayed) {
       void (async () => {
         const roles = await getRolesForGate(user.id);
@@ -1211,6 +1248,8 @@ export function learnRouter(): Router {
       lessons_completed: completion.lessons_completed,
       progress: refreshedTree?.course.progress ?? ctx.tree.course.progress,
       next_lesson_id: refreshedTree?.nextLessonId ?? ctx.tree.nextLessonId,
+      // B.5: server-authored replay facts; the result screen states the kept best from these.
+      ...(completion.replay ? { replay: completion.replay } : {}),
       ...(selfBridge ? { self_bridge: selfBridge } : {}),
     });
   });

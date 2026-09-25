@@ -267,7 +267,26 @@ const cpaCountSegment = z.object({
     .refine((value) => value.left + value.right <= 30, 'Invalid CPA count'),
 }).strict();
 
-const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment]);
+/**
+ * B.12 (Law 4): decide, then say why. Mirrors Core's `decideJustify`. The
+ * labels are public; which choice is acceptable and how each reason is judged
+ * stay in Core's private answer key, so the browser can never grade either.
+ */
+const reasoningOption = z.object({ id, label: z.string().trim().min(1).max(80) }).strict();
+const decideJustifySegment = z.object({
+  ...segmentBase,
+  type: z.literal('reasoning.decide-justify.v2'),
+  grading: z.literal('server'),
+  visual: z.object({ type: z.literal('decision-reasons') }).strict(),
+  payload: z.object({
+    choices: z.array(reasoningOption).min(2).max(4),
+    reasonPrompt: z.string().trim().min(1).max(200),
+    reasons: z.array(reasoningOption).min(3).max(5),
+  }).strict().refine((value) => new Set([...value.choices, ...value.reasons].map((option) => option.id)).size
+    === value.choices.length + value.reasons.length, 'Invalid decision reasons'),
+}).strict();
+
+const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment]);
 type SegmentType = z.infer<typeof segment>['type'];
 export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
@@ -292,6 +311,7 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'math.worked-example.v2': ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1'],
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
+  'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
   'visual.waffle.v1', 'visual.donut.v1'])];

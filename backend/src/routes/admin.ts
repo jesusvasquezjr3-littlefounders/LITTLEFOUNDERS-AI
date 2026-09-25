@@ -72,6 +72,14 @@ import {
 } from '../services/analyticsExclusions.js';
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
 import {
+  REVIEW_WINDOW_DAYS,
+  bandWithinGuardRails,
+  loadLearningQualityReport,
+  resolvePracticeReview,
+  setPracticeBand,
+  syncPracticeReviews,
+} from '../services/learningQuality.js';
+import {
   getAdminOverview,
   getAdminContentSummary,
   getReviewLessonDetail,
@@ -1169,6 +1177,68 @@ export function adminRouter(): Router {
     }
     if (result.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the course');
     ok(res, { id: courseId.data, status: status.data });
+  });
+
+  // ── Learning quality (S05.3d: B.19 difficulty band, B.12 judgment, B.5 replay notice) ──
+  // Behind '/content' → manage_content. The SQL functions re-check the actor on every write.
+  const LearningQualityQuery = z.object({ days: z.coerce.number().int().min(7).max(180).default(REVIEW_WINDOW_DAYS) });
+  const band = z.number().int().min(0).max(100);
+  const BandBody = z.object({
+    lessonId: z.string().uuid().nullable(),
+    lowerPct: band, upperPct: band,
+    minSample: z.number().int().min(10).max(100_000).optional(),
+    rationale: z.string().trim().min(10).max(600),
+  }).strict();
+  const ResolveBody = z.object({
+    decision: z.enum(['make_harder', 'make_easier', 'adjust_band', 'no_change']),
+    note: z.string().trim().min(10).max(600),
+    lowerPct: band.optional(), upperPct: band.optional(),
+    minSample: z.number().int().min(10).max(100_000).optional(),
+  }).strict().refine((body) => body.decision === 'adjust_band'
+    ? body.lowerPct !== undefined && body.upperPct !== undefined
+    : body.lowerPct === undefined && body.upperPct === undefined && body.minSample === undefined, 'A band is required only to adjust the band');
+
+  router.get('/content/learning-quality', async (req, res) => {
+    const query = LearningQualityQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be 7-180');
+    const report = await loadLearningQualityReport(query.data.days);
+    if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load learning quality');
+    ok(res, report);
+  });
+
+  // No scheduler exists in this stack: the panel catches reviews up when it opens.
+  router.post('/content/learning-quality/reviews/sync', async (_req, res) => {
+    const opened = await syncPracticeReviews();
+    if (opened === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check practice reviews');
+    ok(res, { opened });
+  });
+
+  router.post('/content/learning-quality/reviews/:reviewId/resolve', async (req, res) => {
+    const reviewId = z.string().uuid().safeParse(req.params.reviewId);
+    const body = ResolveBody.safeParse(req.body);
+    if (!reviewId.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid review decision');
+    if (body.data.decision === 'adjust_band' && !bandWithinGuardRails(body.data.lowerPct!, body.data.upperPct!)) {
+      return fail(res, 400, 'BAND_OUT_OF_RANGE', 'A band must stay within 50-95% and be at least 5 points wide');
+    }
+    const outcome = await resolvePracticeReview({ reviewId: reviewId.data, actorId: authedUser(res).id, ...body.data });
+    if (outcome === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such review');
+    if (outcome === 'already_resolved') return fail(res, 409, 'REVIEW_RESOLVED', 'This review is already resolved');
+    if (outcome === 'wrong_direction') return fail(res, 409, 'WRONG_DIRECTION', 'That decision moves the lesson away from its band');
+    if (outcome === 'rejected') return fail(res, 403, 'FORBIDDEN', 'The database refused this decision');
+    if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
+    ok(res, { id: reviewId.data, status: 'resolved' });
+  });
+
+  router.post('/content/learning-quality/bands', async (req, res) => {
+    const body = BandBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid band');
+    if (!bandWithinGuardRails(body.data.lowerPct, body.data.upperPct)) {
+      return fail(res, 400, 'BAND_OUT_OF_RANGE', 'A band must stay within 50-95% and be at least 5 points wide');
+    }
+    const outcome = await setPracticeBand({ ...body.data, actorId: authedUser(res).id });
+    if (outcome === 'rejected') return fail(res, 403, 'FORBIDDEN', 'The database refused this band');
+    if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the band');
+    ok(res, { lessonId: body.data.lessonId, status: 'set' });
   });
 
   // ── Moderation (lesson review gate, §1.9) ──────────────────────────────────

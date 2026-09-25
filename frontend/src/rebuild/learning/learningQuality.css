@@ -1,0 +1,31 @@
+/* S05.3d staff learning-quality panel. Tokens only; 48 px targets; no colour-only status. */
+.lf-quality { display: grid; align-content: start; min-block-size: 0; gap: var(--spacing-5); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--base); color: var(--content); container-type: inline-size; }
+.lf-quality > *, .lf-quality-block > * { min-inline-size: 0; }
+.lf-quality h2 { font-size: 1.5rem; }
+.lf-quality h3 { font: 600 1.25rem/1.25 Fredoka, sans-serif; margin: 0; }
+.lf-quality-head { display: grid; gap: var(--spacing-2); }
+.lf-quality-block { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); }
+.lf-quality-block-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
+.lf-quality-list { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-quality-row { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); border-inline-start: 4px solid var(--edge); }
+.lf-quality-row[data-status="above_band"], .lf-quality-row[data-status="below_band"], .lf-quality-row[data-status="tracks_correctness"] { border-inline-start-color: var(--accent-strong); }
+.lf-quality-row[data-status="in_band"], .lf-quality-row[data-status="distinct"] { border-inline-start-color: var(--success-strong); }
+.lf-quality-name { font-weight: 800; overflow-wrap: anywhere; }
+.lf-quality-chip { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--surface); color: var(--content); font-size: .875rem; font-weight: 800; }
+.lf-quality-flag { padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--accent-soft); color: var(--content); font-weight: 700; }
+.lf-quality-review { padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-quality-form { display: grid; gap: var(--spacing-3); }
+.lf-quality-decisions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-quality-decision { min-block-size: var(--target-base); padding-inline: var(--spacing-3); border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--content); font-weight: 800; cursor: pointer; }
+.lf-quality-decision[aria-pressed="true"] { border-color: var(--primary-strong); background: var(--primary-soft); color: var(--primary-strong); }
+.lf-quality-band { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-quality-band label, .lf-quality-note { display: grid; gap: var(--spacing-1); font-weight: 700; }
+.lf-quality-band input { inline-size: 7rem; }
+.lf-quality input, .lf-quality textarea { min-block-size: var(--target-base); padding: var(--spacing-2) var(--spacing-3); border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--content); font: inherit; }
+.lf-quality textarea { min-block-size: 96px; resize: vertical; }
+.lf-quality :is(textarea):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+@container (min-width: 720px) {
+  .lf-quality-row { grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1.4fr) auto; align-items: center; column-gap: var(--spacing-3); }
+  .lf-quality-row:has(> :nth-child(3):last-child) { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto; }
+}
+.lf-rebuild.lf-quality { min-block-size: 0; }

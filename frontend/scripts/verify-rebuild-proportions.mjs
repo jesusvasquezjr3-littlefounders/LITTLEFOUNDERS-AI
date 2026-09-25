@@ -87,11 +87,20 @@ const narrativeSurfaces = [
   { screen: 'learnershortcut', ages: ['13-17'], query: { bridges: '1' }, want: 'learner-shortcut-host' },
 ];
 
+// B.12 / B.5 / B.15 / B.19 (S05.3d): the reasoning board, the kept-best result, the placement outcome and the staff panel.
+const learningQualitySurfaces = [
+  { screen: 'reasoning', ages: ['6-9', '13-17'], query: {}, want: 'decision-reasons' },
+  { screen: 'resultkept', ages: ['6-9'], query: {}, want: 'result-preview' },
+  { screen: 'placementoutcome', ages: ['6-9'], query: { start: 'further_in' }, want: 'placement-outcome-preview' },
+  { screen: 'learningquality', ages: ['adult'], query: {}, want: 'learning-quality-host' },
+];
+
 const scope = process.env.REBUILD_PROPORTIONS_SCOPE;
 const surfaces = scope === 'appendix-current' ? appendixCurrentSurfaces
   : scope === 'course-path' ? coursePathSurfaces
     : scope === 'narrative' ? narrativeSurfaces
-      : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces, ...narrativeSurfaces];
+      : scope === 'learning-quality' ? learningQualitySurfaces
+        : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces, ...narrativeSurfaces, ...learningQualitySurfaces];
 
 try {
   for (const { screen, ages, path, query: extra, want: wantScreen } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {

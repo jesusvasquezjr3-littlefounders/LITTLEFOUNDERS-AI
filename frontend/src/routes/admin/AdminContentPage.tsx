@@ -5,6 +5,7 @@ import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
 import type { Grader, LessonDocument } from '@/lesson-engine/core/types';
 import type { AudioManifest } from '@/lesson-engine/player/narration';
 import { cn } from '@/lib/utils';
+import { LearningQualityTab } from './LearningQualityTab';
 import {
   AdminAction,
   AdminDialog,
@@ -70,6 +71,8 @@ const TABS = [
   { key: 'courses', icon: 'menu_book' },
   { key: 'lessons', icon: 'shield' },
   { key: 'tutor', icon: 'smart_toy' },
+  // S05.3d (B.19, B.12, B.5): the tracked learning-quality metrics and calibration reviews.
+  { key: 'quality', icon: 'tune' },
 ] as const;
 type Tab = (typeof TABS)[number]['key'];
 
@@ -758,6 +761,7 @@ export function AdminContentPage() {
             {moderationData.data.state === 'error' ? <Unavailable code={moderationData.data.code} /> : moderationData.data.state === 'ready' ? reviewLessons.length === 0 ? <AdminEmpty icon="task_alt" message={t('admin.moderation.empty')} /> : <ul className="flex flex-col gap-3">{reviewLessons.map((lesson) => <li key={lesson.id}><Card className="flex flex-col gap-3 p-4 sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate lf-label font-bold text-content">{lesson.title}</p><StatusBadge status={lesson.status} /></div><p className="lf-caption mt-1 text-content-muted">{lesson.courseTitle} / {lesson.topicTitle}</p></div><AdminAction tone="neutral" icon="visibility" onClick={() => { setLessonLocale('es-MX'); setLessonDetailId(lesson.id); }}>{t('admin.moderation.preview')}</AdminAction></div><div className="flex flex-wrap gap-2"><Badge className="bg-surface-sunken text-content-muted">{lesson.subject}</Badge><Badge className="bg-surface-sunken text-content-muted">{t('admin.content.locales')}: {lesson.locales.length}</Badge></div></Card></li>)}</ul> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
           </section>
         )}
+        {tab === 'quality' && <LearningQualityTab />}
         {tab === 'tutor' && (
           <section className="flex flex-col gap-4">
             <div>

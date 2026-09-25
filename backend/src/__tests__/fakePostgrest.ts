@@ -50,6 +50,50 @@ function respond(status: number, body: unknown, minimal = false): Response {
   return new Response(minimal ? null : text, { status, headers: { 'Content-Type': 'application/json' } });
 }
 
+/** Mirrors complete_lesson (0083 + the S05.3d replay receipt) closely enough for route contracts. */
+interface FakeCompletionInput {
+  p_user_id: unknown; p_lesson_id: unknown; p_run_id: unknown;
+  p_score: number; p_passed: boolean; p_xp: number; p_minutes: number; p_local_date: string;
+}
+function fakeCompleteLesson(db: FakeDb, p: FakeCompletionInput): FakeRow | null {
+  const stats = db.learning_stats?.find(r => r.user_id === p.p_user_id);
+  if (!stats) return null;
+  const receipts = db.lesson_completion_receipts ??= [];
+  const receipt = receipts.find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id && r.run_id === p.p_run_id);
+  if (receipt) return { ...(receipt.result as FakeRow), replayed: true };
+  const progress = db.lesson_progress ??= [];
+  let previous = progress.find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id);
+  const xpDelta = Math.max(0, p.p_xp - Number(previous?.xp_earned ?? 0));
+  const newlyPassed = p.p_passed && !previous?.passed;
+  const streak = p.p_passed ? nextStreak(stats.last_active_date as string | null, Number(stats.streak_days), p.p_local_date) : Number(stats.streak_days);
+  const kind = !previous || (Number(previous.attempts ?? 0) === 0 && !previous.passed) ? 'first' : previous.passed ? 'replay' : 'retry';
+  const priorBest = kind === 'first' ? null : Number(previous?.best_score ?? 0);
+  const result = {
+    score: p.p_score, passed: p.p_passed,
+    best_score: Math.max(Number(previous?.best_score ?? 0), p.p_score),
+    xp_earned: Math.max(Number(previous?.xp_earned ?? 0), p.p_xp),
+    xp_delta: xpDelta, streak_days: streak,
+    longest_streak: Math.max(Number(stats.longest_streak ?? 0), streak),
+    streak_extended: streak > Number(stats.streak_days),
+    first_today: p.p_passed && stats.last_active_date !== p.p_local_date,
+    minutes_learned: Number(stats.minutes_learned) + p.p_minutes,
+    lessons_completed: Number(stats.lessons_completed) + Number(newlyPassed),
+    first_completion: newlyPassed && stats.lessons_completed === 0, replayed: false,
+    replay: { kind, previous_best_score: priorBest, best_score_kept: priorBest !== null && p.p_score < priorBest,
+      notice: priorBest !== null && p.p_score < priorBest ? 'best_kept' : priorBest !== null && p.p_score > priorBest ? 'new_best' : 'none',
+      xp_policy: 'improvement_only' },
+  };
+  if (!previous) { previous = { user_id: p.p_user_id, lesson_id: p.p_lesson_id }; progress.push(previous); }
+  Object.assign(previous, { best_score: result.best_score, passed: Boolean(previous.passed || p.p_passed),
+    xp_earned: result.xp_earned, attempts: Number(previous.attempts ?? 0) + 1, completed_at: new Date().toISOString() });
+  Object.assign(stats, { xp_points: Number(stats.xp_points) + xpDelta,
+    minutes_learned: result.minutes_learned, lessons_completed: result.lessons_completed,
+    streak_days: streak, longest_streak: result.longest_streak,
+    ...(p.p_passed ? { last_active_date: p.p_local_date } : {}) });
+  if (p.p_run_id) receipts.push({ user_id: p.p_user_id, lesson_id: p.p_lesson_id, run_id: p.p_run_id, result });
+  return result;
+}
+
 /** Builds a `global.fetch` replacement backed by `db` (mutated in place by writes). */
 export function createFakeFetch(db: FakeDb): typeof fetch {
   return (async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -212,60 +256,45 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
     // Contract double only: SQL rollback/concurrency is verified separately.
     if (table === 'rpc/complete_lesson' && method === 'POST') {
       const p = JSON.parse(String(init?.body));
-      const stats = db.learning_stats?.find(r => r.user_id === p.p_user_id);
-      if (!stats) return respond(500, { message: 'Missing learning stats' });
-      const receipts = db.lesson_completion_receipts ??= [];
-      const receipt = receipts.find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id && r.run_id === p.p_run_id);
-      if (receipt) return respond(200, { ...(receipt.result as FakeRow), replayed: true });
-      const progress = db.lesson_progress ??= [];
-      let previous = progress.find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id);
-      const xpDelta = Math.max(0, p.p_xp - Number(previous?.xp_earned ?? 0));
-      const newlyPassed = p.p_passed && !previous?.passed;
-      const streak = p.p_passed ? nextStreak(stats.last_active_date as string | null, Number(stats.streak_days), p.p_local_date) : Number(stats.streak_days);
-      const result = {
-        score: p.p_score, passed: p.p_passed,
-        best_score: Math.max(Number(previous?.best_score ?? 0), p.p_score),
-        xp_earned: Math.max(Number(previous?.xp_earned ?? 0), p.p_xp),
-        xp_delta: xpDelta, streak_days: streak,
-        longest_streak: Math.max(Number(stats.longest_streak ?? 0), streak),
-        streak_extended: streak > Number(stats.streak_days),
-        first_today: p.p_passed && stats.last_active_date !== p.p_local_date,
-        minutes_learned: Number(stats.minutes_learned) + p.p_minutes,
-        lessons_completed: Number(stats.lessons_completed) + Number(newlyPassed),
-        first_completion: newlyPassed && stats.lessons_completed === 0, replayed: false,
-      };
-      if (!previous) { previous = { user_id: p.p_user_id, lesson_id: p.p_lesson_id }; progress.push(previous); }
-      Object.assign(previous, { best_score: result.best_score, passed: Boolean(previous.passed || p.p_passed),
-        xp_earned: result.xp_earned, attempts: Number(previous.attempts ?? 0) + 1, completed_at: new Date().toISOString() });
-      Object.assign(stats, { xp_points: Number(stats.xp_points) + xpDelta,
-        minutes_learned: result.minutes_learned, lessons_completed: result.lessons_completed,
-        streak_days: streak, longest_streak: result.longest_streak,
-        ...(p.p_passed ? { last_active_date: p.p_local_date } : {}) });
-      if (p.p_run_id) receipts.push({ user_id: p.p_user_id, lesson_id: p.p_lesson_id, run_id: p.p_run_id, result });
-      return respond(200, result);
+      const outcome = fakeCompleteLesson(db, p);
+      return outcome === null ? respond(500, { message: 'Missing learning stats' }) : respond(200, outcome);
     }
     if (table === 'rpc/complete_v2_lesson' && method === 'POST') {
       const p = JSON.parse(String(init?.body)) as FakeRow;
-      const completionReceipts = db.lesson_completion_receipts ??= [];
-      const previous = completionReceipts.find(row => row.user_id === p.p_user_id && row.lesson_id === p.p_lesson_id && row.run_id === p.p_run_id);
-      if (previous) return respond(200, { ...(previous.result as FakeRow), replayed: true });
       const run = (db.lesson_v2_runs ?? []).find(row => row.id === p.p_run_id && row.user_id === p.p_user_id
         && row.lesson_id === p.p_lesson_id && row.document_version_id === p.p_document_version_id);
       const required = p.p_required_segment_ids as string[];
-      const receipts = db.lesson_v2_grade_receipts ?? [];
-      const met = required.every(segmentId => receipts.some(row => row.user_id === p.p_user_id && row.run_id === p.p_run_id
-        && row.document_version_id === p.p_document_version_id && row.segment_id === segmentId
+      const receipts = (db.lesson_v2_grade_receipts ?? []).filter(row => row.user_id === p.p_user_id && row.run_id === p.p_run_id
+        && row.document_version_id === p.p_document_version_id);
+      const met = required.every(segmentId => receipts.some(row => row.segment_id === segmentId
         && (row.verdict as FakeRow).correct === true && (row.verdict as FakeRow).score === 100));
       if (!run || !met) return respond(400, { message: 'Pending learning steps' });
+      // First receipt per required segment (receipts are appended in grading order).
+      const firsts = required.map(segmentId => receipts.find(row => row.segment_id === segmentId)!.verdict as FakeRow);
+      const firstCorrect = firsts.filter(verdict => verdict.correct === true).length;
+      const quality = (name: string) => firsts.filter(verdict => (verdict.judgment as FakeRow | undefined)?.quality === name).length;
+      const score = Math.round(100 * firstCorrect / required.length);
+      const result = fakeCompleteLesson(db, { p_user_id: p.p_user_id, p_lesson_id: p.p_lesson_id, p_run_id: p.p_run_id,
+        p_score: score, p_passed: true, p_xp: Number(p.p_xp), p_minutes: Number(p.p_minutes), p_local_date: String(p.p_local_date) });
+      if (result === null) return respond(500, { message: 'Missing learning stats' });
       run.completed_at ??= new Date().toISOString();
-      const stats = db.learning_stats?.find(row => row.user_id === p.p_user_id);
-      if (!stats) return respond(500, { message: 'Missing learning stats' });
-      const result = { score: 100, passed: true, best_score: 100, xp_earned: p.p_xp, xp_delta: p.p_xp,
-        streak_days: 1, longest_streak: 1, streak_extended: true, first_today: true,
-        minutes_learned: Number(stats.minutes_learned) + Number(p.p_minutes), lessons_completed: Number(stats.lessons_completed) + 1,
-        first_completion: Number(stats.lessons_completed) === 0, replayed: false };
-      completionReceipts.push({ user_id: p.p_user_id, lesson_id: p.p_lesson_id, run_id: p.p_run_id, result });
-      return respond(200, result);
+      if (result.replayed === true) return respond(200, result);
+      const extras = { first_try_correct: firstCorrect, graded_count: required.length,
+        judgment: { assessed: quality('sound') + quality('partial') + quality('unsupported'),
+          sound: quality('sound'), partial: quality('partial'), unsupported: quality('unsupported') } };
+      const stored = (db.lesson_completion_receipts ?? []).find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id && r.run_id === p.p_run_id);
+      if (stored) stored.result = { ...(stored.result as FakeRow), ...extras };
+      return respond(200, { ...result, ...extras });
+    }
+    if (table.startsWith('rpc/') && db.__rpc) {
+      // Scripted service RPC results for staff reads (learning quality): the
+      // SQL itself is exercised by database/scripts/test-learning-quality.sql.
+      const name = table.slice(4);
+      const scripted = db.__rpc.find(row => row.name === name);
+      if (scripted) {
+        (db.__rpc_calls ??= []).push({ name, body: init?.body ? JSON.parse(String(init.body)) : null });
+        return respond(Number(scripted.status ?? 200), scripted.body);
+      }
     }
     db[table] ??= [];
     const rows = db[table];

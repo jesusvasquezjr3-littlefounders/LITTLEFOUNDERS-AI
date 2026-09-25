@@ -29,3 +29,6 @@
   .lf-result-stat { min-block-size: 120px; }
   .lf-result-sheet > .lf-button { justify-self: center; max-inline-size: 360px; }
 }
+/* B.12 (S05.3d): the judgment signal, beside the score and never inside it. */
+.lf-rebuild .lf-result-judgment { display: flex; align-items: center; gap: var(--spacing-3); max-inline-size: none; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-lg); background: color-mix(in srgb, var(--on-accent) 9%, transparent); font-weight: 800; }
+.lf-result-judgment strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; }

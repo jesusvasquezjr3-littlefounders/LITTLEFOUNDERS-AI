@@ -1,0 +1,64 @@
+import { z } from 'zod';
+
+/*
+ * S05.3d: the client side of Core's staff learning-quality report
+ * (GET /admin/content/learning-quality). B.19 practice success band per lesson,
+ * the calibration reviews it opens and the recalibration log; B.12's judgment
+ * signal differentiation; B.5's replay-notice display rate. Every status and
+ * threshold is computed by Core; this module only validates the shape.
+ */
+
+const count = z.number().int().nonnegative();
+const pct = z.number().min(0).max(100);
+const localized = z.record(z.string(), z.unknown()).nullable();
+
+export const learningQualityReportSchema = z.object({
+  window: z.object({ since: z.string(), until: z.string(), days: z.number().int().positive() }),
+  defaultBand: z.object({
+    lower_pct: z.number().int(), upper_pct: z.number().int(), min_sample: z.number().int(),
+    rationale: z.string(), set_at: z.string(), reviewDue: z.boolean(),
+  }).nullable(),
+  lessons: z.array(z.object({
+    lesson_id: z.string().uuid(), lesson_slug: z.string(), lesson_title: localized,
+    first_attempts: count, successes: count, assisted: count, success_pct: pct,
+    lower_pct: z.number().int(), upper_pct: z.number().int(), min_sample: z.number().int(),
+    band_scope: z.enum(['default', 'lesson']),
+    status: z.enum(['insufficient_sample', 'below_band', 'in_band', 'above_band']),
+    families: z.array(z.object({ family: z.string(), first_attempts: count, successes: count })).nullable(),
+  })),
+  reviews: z.array(z.object({
+    id: z.string().uuid(), lesson_id: z.string().uuid(), direction: z.enum(['below_band', 'above_band']),
+    window_days: z.number().int(), evidence: z.record(z.string(), z.unknown()),
+    status: z.enum(['open', 'resolved']),
+    decision: z.enum(['make_harder', 'make_easier', 'adjust_band', 'no_change']).nullable(),
+    decision_note: z.string().nullable(), opened_at: z.string(), resolved_at: z.string().nullable(),
+  })),
+  bandLog: z.array(z.object({
+    lesson_id: z.string().uuid().nullable(), previous: z.record(z.string(), z.unknown()).nullable(),
+    next: z.record(z.string(), z.unknown()), rationale: z.string(), review_id: z.string().uuid().nullable(), changed_at: z.string(),
+  })),
+  judgment: z.array(z.object({
+    lesson_id: z.string().uuid(), attempts: count, correct_sound: count, correct_not_sound: count,
+    incorrect_sound: count, incorrect_not_sound: count, divergent_share: z.number().min(0).max(1),
+    correlation: z.number().min(-1).max(1).nullable(), status: z.enum(['insufficient_sample', 'distinct', 'tracks_correctness']),
+  })),
+  replayNotice: z.object({
+    below_best: count, shown: count, display_rate: z.number().min(0).max(1).nullable(), target: z.number(), belowTarget: z.boolean(),
+  }),
+  thresholds: z.object({
+    judgmentDivergenceFloor: z.number(), judgmentMinAttempts: z.number().int(), replayNoticeTarget: z.number(), bandReviewCadenceDays: z.number().int(),
+  }),
+});
+export type LearningQualityReport = z.infer<typeof learningQualityReportSchema>;
+export type ReviewDecision = 'make_harder' | 'make_easier' | 'adjust_band' | 'no_change';
+export type ReviewDecisionBody = { decision: ReviewDecision; note: string; lowerPct?: number; upperPct?: number };
+
+/** The same guard rails the database CHECK enforces; the form refuses early, Core and SQL refuse for real. */
+export function bandInsideGuardRails(lower: number, upper: number): boolean {
+  return Number.isInteger(lower) && Number.isInteger(upper) && lower >= 50 && upper <= 95 && upper - lower >= 5;
+}
+
+/** Decisions that move a lesson toward its band; the database refuses the others. */
+export function decisionsFor(direction: 'below_band' | 'above_band'): ReviewDecision[] {
+  return [direction === 'above_band' ? 'make_harder' : 'make_easier', 'adjust_band', 'no_change'];
+}

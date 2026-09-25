@@ -12,6 +12,7 @@ import {
   LOCALES,
   RECORDABLE_EVENTS,
   REFERRER_CLASSES,
+  SERVER_ONLY_EVENTS,
   ROUTE_CLASSES,
   attributeSignup,
   getRolesForGate,
@@ -245,6 +246,7 @@ export function eventsRouter(): Router {
       const e = EventBody.safeParse(raw);
       if (!e.success) continue; // drop the bad apple, keep the batch
       if (!hasPlausibleOccurrenceTime(e.data)) continue;
+      if (SERVER_ONLY_EVENTS.has(e.data.event)) continue; // Core writes these itself
       rows.push({ ...toRow(e.data), user_id: user.id, anon_id: null, role });
     }
 

@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
+import { PLACEMENT_RESULT_KEYS } from '../services/placementFraming.js';
 
 import { USER_ID, COURSE_ID, T1, T2, T3, L1, L2, L3, COURSE_SLUG, makeDb } from './placementAuditFixtures.js';
 
@@ -335,6 +336,9 @@ describe('POST /api/v1/placement/:courseSlug/commit', () => {
     expect(res.status).toBe(201);
     expect(res.body.data.startLessonId).toBe(L1);
     expect(db.course_placements[0]).toMatchObject({ method: 'learner_chose_start', start_lesson_id: L1 });
+    // B.15 (S05.3d): a closed accompaniment frame, and nothing that could rank the learner.
+    expect(res.body.data.framing).toEqual({ path: 'learner_chose_start', start: 'beginning', basis: 'prior_exposure', learner_chosen: true });
+    expect(Object.keys(res.body.data).sort()).toEqual([...PLACEMENT_RESULT_KEYS].sort());
   });
 
   it('lets a learner move themselves EARLIER than the quiz placed them', async () => {
@@ -344,6 +348,8 @@ describe('POST /api/v1/placement/:courseSlug/commit', () => {
     expect(res.body.data.creditedLessonCount).toBe(1);
     expect(res.body.data.startLessonId).toBe(L2);
     expect(db.course_placements[0]).toMatchObject({ method: 'learner_adjusted' });
+    expect(res.body.data.framing).toEqual({ path: 'learner_adjusted', start: 'further_in', basis: 'prior_exposure', learner_chosen: true });
+    expect(Object.keys(res.body.data).sort()).toEqual([...PLACEMENT_RESULT_KEYS].sort());
   });
 
   /*

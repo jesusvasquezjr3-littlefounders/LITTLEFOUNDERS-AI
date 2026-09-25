@@ -20,7 +20,7 @@ import { readAgeScreen } from './ageScreen.js';
  *    third-party API.
  */
 
-/** Mirrors the 0028/0072 CHECK exactly. Closed by design (§1.9 rule 2). */
+/** Mirrors the 0028/0072/S05.3d (learning_quality_events) CHECK exactly. Closed by design (§1.9 rule 2). */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -51,7 +51,16 @@ export const RECORDABLE_EVENTS = [
   // ANON_EVENTS in routes/events.ts — because it fires on the public badge
   // landing page, before any account exists.
   'parent_report_viewed', 'badge_generated', 'badge_shared', 'badge_link_click',
+  // B.5 replay-notice display rate (S05.3d). replay_below_best is written by
+  // Core only (SERVER_ONLY_EVENTS); replay_notice_view by the result screen.
+  'replay_below_best', 'replay_notice_view',
 ] as const;
+
+/**
+ * Events only Core may write. The client ingest drops them: a forged
+ * denominator would move a metric that must stay trustworthy.
+ */
+export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set(['replay_below_best']);
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 export const DEVICES = ['mobile', 'tablet', 'desktop'] as const;

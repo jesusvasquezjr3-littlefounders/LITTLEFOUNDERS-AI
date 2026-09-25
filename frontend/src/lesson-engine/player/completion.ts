@@ -21,6 +21,18 @@ export interface ServerCompletion {
   minutes_learned: number
   lessons_completed: number
   next_lesson_id: string | null
+  /**
+   * B.5 (S05.3d): Core's replay facts for this run. `notice: 'best_kept'`
+   * means this run scored below the kept best, which is unchanged, and the
+   * results screen must say so. XP is paid only above the XP already kept.
+   */
+  replay?: {
+    kind: 'first' | 'retry' | 'replay'
+    previous_best_score: number | null
+    best_score_kept: boolean
+    notice: 'best_kept' | 'new_best' | 'none'
+    xp_policy: 'improvement_only'
+  }
 }
 
 /**

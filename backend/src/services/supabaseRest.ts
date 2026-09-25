@@ -976,7 +976,9 @@ export function getV2MetSegmentReceiptsForRecovery(userId: string, runId: string
 }
 
 const V2GradeReceipt = z.union([
-  z.object({ replayed: z.boolean(), verdict: z.object({ correct: z.boolean(), score: z.number().int().min(0).max(100) }), retry_jti: z.string().optional() }),
+  z.object({ replayed: z.boolean(), verdict: z.object({ correct: z.boolean(), score: z.number().int().min(0).max(100),
+    // B.12: present only on a reasoning answer; the database CHECK pins the shape.
+    judgment: z.object({ quality: z.enum(['sound', 'partial', 'unsupported']) }).strict().optional() }), retry_jti: z.string().optional() }),
   z.object({ blocked: z.literal(true) }),
 ]);
 
@@ -984,7 +986,7 @@ const V2GradeReceipt = z.union([
 export async function recordV2LessonGrade(payload: {
   p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
   p_required_met_segment_id: string | null;
-  p_verdict: { correct: boolean; score: number };
+  p_verdict: { correct: boolean; score: number; judgment?: { quality: 'sound' | 'partial' | 'unsupported' } };
   p_next_jti: string;
   p_next_expires_at: string;
 }): Promise<z.infer<typeof V2GradeReceipt> | null> {
@@ -997,7 +999,7 @@ export async function recordV2LessonGrade(payload: {
 export async function recordV2CpaGrade(payload: {
   p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
   p_required_attempted_segment_id: string | null;
-  p_verdict: { correct: boolean; score: number };
+  p_verdict: { correct: boolean; score: number; judgment?: { quality: 'sound' | 'partial' | 'unsupported' } };
   p_next_jti: string;
   p_next_expires_at: string;
 }): Promise<z.infer<typeof V2GradeReceipt> | null> {
@@ -2261,13 +2263,36 @@ export function getWalletLedgerInRange(kidId: string, fromISO: string, toISO: st
   );
 }
 
+/**
+ * B.5 (S05.3d): the server-authored replay facts complete_lesson stores on the
+ * receipt. Optional only because a receipt written before that migration is
+ * replayed as it was stored.
+ */
+export const ReplayReceipt = z.object({
+  kind: z.enum(['first', 'retry', 'replay']),
+  previous_best_score: z.number().int().min(0).max(100).nullable(),
+  best_score_kept: z.boolean(),
+  notice: z.enum(['best_kept', 'new_best', 'none']),
+  xp_policy: z.literal('improvement_only'),
+}).strict();
+export type ReplayReceipt = z.infer<typeof ReplayReceipt>;
+
 const LessonCompletionResult = z.object({
   score: z.number(), passed: z.boolean(), best_score: z.number(),
   xp_earned: z.number(), xp_delta: z.number(), streak_days: z.number(),
   longest_streak: z.number(), streak_extended: z.boolean(), first_today: z.boolean(),
   minutes_learned: z.number(), lessons_completed: z.number(),
   first_completion: z.boolean(), replayed: z.boolean(),
+  replay: ReplayReceipt.optional(),
+  // v2 only (complete_v2_lesson): first-try accuracy and the B.12 judgment summary.
+  first_try_correct: z.number().int().nonnegative().optional(),
+  graded_count: z.number().int().positive().optional(),
+  judgment: z.object({
+    assessed: z.number().int().nonnegative(), sound: z.number().int().nonnegative(),
+    partial: z.number().int().nonnegative(), unsupported: z.number().int().nonnegative(),
+  }).strict().optional(),
 });
+export type LessonCompletionResult = z.infer<typeof LessonCompletionResult>;
 
 /** Server-graded values only; the service-only RPC commits all rewards atomically. */
 export async function completeLesson(input: {

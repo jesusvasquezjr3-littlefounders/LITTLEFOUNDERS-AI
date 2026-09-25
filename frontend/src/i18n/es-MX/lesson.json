@@ -90,6 +90,7 @@
     "runTitle": "Tu partida",
     "progressTitle": "Lo que te llevas",
     "yourBest": "Tu mejor",
+    "savedBestStill": "Tu mejor marca sigue en {{best}}. Fue práctica.",
     "newBest": "¡Nuevo récord!",
     "today": "Hoy"
   },

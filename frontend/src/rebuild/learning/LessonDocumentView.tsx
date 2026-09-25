@@ -22,6 +22,7 @@ import { SchemaDiagramBoard } from './SchemaDiagramBoard';
 import { WorkedExampleBoard } from './WorkedExampleBoard';
 import { FunctionMachineBoard } from './FunctionMachineBoard';
 import { CpaFadingBoard } from './CpaFadingBoard';
+import { DecisionReasonsBoard, type ReasoningGrade } from './DecisionReasonsBoard';
 import type { Allocation } from './allocationModel';
 import { lessonVersionKey, loadLessonClientDocument, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
 
@@ -32,9 +33,11 @@ export type OnGradeFractionArea = (answer: { n: number; d: number }, segmentId: 
 export type OnGradeBarModel = (answer: Record<string, unknown>, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeSchemaDiagram = (answer: Record<string, unknown>, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeWorkedExample = (answer: { values: Record<string, string> }, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
+/** B.12: a reasoning answer returns the decision verdict and, separately, the judgment quality of the reason. */
+export type OnGradeReasoning = (answer: { choice: string; reason: string }, segmentId: string, document: LessonClientDocument) => ReasoningGrade | Promise<ReasoningGrade>;
 const copy = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 
-function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample): boolean {
+function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning): boolean {
   switch (segment.type) {
     case 'money.allocation.v2': return !!onGrade;
     case 'math.number-line.whole.v2': return !!onGradeNumberLine;
@@ -57,6 +60,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
     case 'math.ratio-table.v2': return true;
     case 'visual.tax-bracket.v2': return true;
     case 'math.worked-example.v2': return !!onGradeWorkedExample;
+    case 'reasoning.decide-justify.v2': return !!onGradeReasoning;
     default: {
       const exhaustive: never = segment;
       void exhaustive;
@@ -66,8 +70,8 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
 }
 
 /** The pilot renderer refuses any document it cannot display in full. */
-export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds = [], attemptedSegmentIds = [], mentorStage = null, theme = 'light', previewSequence = false }: {
-  raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample;
+export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds = [], attemptedSegmentIds = [], mentorStage = null, theme = 'light', previewSequence = false }: {
+  raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
   onComplete?: () => Promise<boolean>;
@@ -75,18 +79,18 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
 }) {
   const loaded = loadLessonClientDocument(raw);
   if (loaded.status !== 'ready') return unavailable(locale, onBack, loaded.status === 'upgrade-required' ? 'upgrade' : 'invalid');
-  const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample));
+  const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning));
   if (loaded.document.locale !== locale || loaded.document.age_band !== ageBand) return unavailable(locale, onBack, 'invalid');
   const barSequence = loaded.document.segments.length === 2 && loaded.document.segments[0]?.type === 'math.bar-model.structure.v2' && loaded.document.segments[1]?.type === 'math.bar-model.answer.v2';
   const schemaSequence = loaded.document.segments.length === 3 && loaded.document.segments[0]?.type === 'math.schema-diagram.structure.v2' && loaded.document.segments[1]?.type === 'math.schema-diagram.slots.v2' && loaded.document.segments[2]?.type === 'math.schema-diagram.answer.v2';
   const cpaSequence = loaded.document.segments.length === 3 && loaded.document.segments.every((segment) => segment.type === 'math.cpa-count.v2') && !!loaded.document.representation_progressions;
   if (!supported || loaded.document.segments.length > 1 && !previewSequence && !barSequence && !schemaSequence && !cpaSequence) return unavailable(locale, onBack, 'upgrade');
   return <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
-    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={mentorStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} />;
+    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={mentorStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} />;
 }
 
-function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds, attemptedSegmentIds, mentorStage, theme, previewSequence }: {
-  document: LessonClientDocument; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample;
+function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds, attemptedSegmentIds, mentorStage, theme, previewSequence }: {
+  document: LessonClientDocument; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
   metSegmentIds: string[];
   attemptedSegmentIds: string[];
   onComplete?: () => Promise<boolean>;
@@ -110,7 +114,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   useLayoutEffect(() => { try { window.scrollTo(0, 0); } catch { /* jsdom has no scroll implementation */ } }, [index]);
   const segment = document.segments[index];
   const terminalScoredSequence = document.segments.length === 1 && !!onComplete
-    && ['money.allocation.v2', 'math.number-line.whole.v2', 'math.number-line.fraction.v2', 'math.fraction-area.v2', 'math.worked-example.v2', 'math.function-machine.v2'].includes(document.segments[0]?.type ?? '');
+    && ['money.allocation.v2', 'math.number-line.whole.v2', 'math.number-line.fraction.v2', 'math.fraction-area.v2', 'math.worked-example.v2', 'math.function-machine.v2', 'reasoning.decide-justify.v2'].includes(document.segments[0]?.type ?? '');
   const sequence = (document.segments.length > 1 && previewSequence || terminalScoredSequence)
     ? { index, total: document.segments.length, onAdvance: () => {
       setIndex((current) => Math.min(current + 1, document.segments.length));
@@ -155,6 +159,8 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
     case 'math.fraction-area.v2': return document.age_band !== '6-9' ? unavailable(document.locale, onBack)
       : onGradeFractionArea ? <FractionAreaBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence}
         onGrade={(answer, segmentId) => onGradeFractionArea(answer, segmentId, document)} /> : unavailable(document.locale, onBack);
+    case 'reasoning.decide-justify.v2': return onGradeReasoning ? <DecisionReasonsBoard key={key} document={document} segment={segment} onBack={onBack}
+      sequence={sequence} onGrade={(answer, id) => onGradeReasoning(answer, id, document)} /> : unavailable(document.locale, onBack, 'upgrade');
     case 'math.bar-model.structure.v2':
     case 'math.bar-model.answer.v2': return onGradeBarModel ? <BarModelBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={(answer, id) => onGradeBarModel(answer, id, document)} /> : unavailable(document.locale, onBack, 'upgrade');
     case 'math.schema-diagram.structure.v2':

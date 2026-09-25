@@ -27,6 +27,11 @@ import { schemaDiagramPilotDocument } from '../learning/SchemaDiagramBoard';
 import { workedExamplePilotDocument } from '../learning/WorkedExampleBoard';
 import { functionMachinePilotDocument } from '../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
+import { DECIDE_JUSTIFY_PILOT_RUBRIC, decideJustifyPilotDocument } from '../learning/DecisionReasonsBoard';
+import { scoreV2Judgment } from '../learning/v2VisualScorer.generated';
+import { PlacementOutcomeView } from '../learning/PlacementOutcomeView';
+import { LearningQualityPanel } from '../learning/LearningQualityPanel';
+import { learningQualityFixture } from '../learning/learningQualityFixtures';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import { CoursePathView } from '../learning/CoursePathView';
 import { coursePathPreviewStates } from '../learning/coursePathFixtures';
@@ -133,6 +138,33 @@ export function Preview() {
         <LearningNarrative key={`narrative:${locale}`} fixture locale={locale} dark={theme === 'dark'} open={params.get('open') !== '0'}
           state={narrativePreviewStates(locale)[params.get('narrative') ?? 'ready'] ?? narrativePreviewStates(locale).ready!}
           onToggle={() => {}} onRetry={() => {}} onMore={() => {}} />
+      </main>
+      : screen === 'reasoning' ? <LessonDocumentView key={`reasoning:${locale}:${ageBand}`} raw={decideJustifyPilotDocument(locale, ageBand)}
+        locale={locale} ageBand={ageBand} onBack={() => go('home')} onGradeReasoning={(answer) => {
+          // Preview only: the private rubric stays in Core for real lessons.
+          const payload = { choiceIds: ['save-first', 'spend-all'], reasonIds: ['reason-goal', 'reason-feel', 'reason-lucky'] };
+          const verdict = scoreV2Visual('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
+          const judgment = scoreV2Judgment('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
+          return { verdict: verdict === 'met' || verdict === 'review' ? verdict : 'invalid', ...(judgment === 'invalid' ? {} : { judgment }) };
+        }} />
+      : screen === 'resultkept' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
+        schema_version: 2, completion_id: 'sample-completion-2', lesson_id: 'pilot-decide-justify', version_id: 'rev-001', locale,
+        first_try_correct: 1, graded_count: 2, awarded_xp: 0, duration_seconds: 95, previous_best_percent: 100,
+        replay: { kind: 'replay', notice: 'best_kept', best_score_kept: true, xp_policy: 'improvement_only' },
+        judgment: { assessed: 2, sound: 1, partial: 1, unsupported: 0 },
+      }} />
+      : screen === 'placementoutcome' ? <PlacementOutcomeView key={`placement:${locale}:${params.get('start')}:${params.get('path')}`} fixture locale={locale}
+        dark={theme === 'dark'} onStart={() => go('home')} onEarlier={() => go('home')} rawFrame={{
+          path: params.get('path') ?? 'adaptive_quiz', start: params.get('start') === 'further_in' ? 'further_in' : 'beginning', basis: 'prior_exposure',
+          learner_chosen: params.get('path') === 'learner_chose_start' || params.get('path') === 'learner_adjusted',
+        }} />
+      : screen === 'learningquality' ? <main className="lf-family-preview" data-surface="app" data-screen="learning-quality-host">
+        <LearningQualityPanel key={`quality:${locale}:${params.get('quality')}`} fixture locale={locale} dark={theme === 'dark'}
+          state={params.get('quality') === 'error' ? { status: 'error' } : params.get('quality') === 'loading' ? { status: 'loading' }
+            : params.get('quality') === 'empty' ? { status: 'ready', report: { ...learningQualityFixture(), lessons: [], reviews: [], judgment: [],
+              replayNotice: { below_best: 0, shown: 0, display_rate: null, target: 1, belowTarget: false } } }
+            : { status: 'ready', report: learningQualityFixture() }}
+          onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />
       </main>
       : screen === 'result' || screen === 'replay' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-1', lesson_id: 'pilot-savings-sequence', version_id: 'rev-1', locale,

@@ -278,7 +278,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             <Button onClick={() => void retrySave()}>{t('lesson.retry')}</Button>
           </div>
         )}
-        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} />
+        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} lessonId={preview ? undefined : lessonId} />
       </Shell>
     )
   }
@@ -1048,13 +1048,15 @@ function FeedbackBanner({
   )
 }
 
-function ResultsScreen({
+/** Exported for tests only (B.5 replay notice). */
+export function ResultsScreen({
   doc,
   state,
   server,
   secondsSpent,
   onExit,
   pendingSave,
+  lessonId,
 }: {
   doc: LessonDocument
   state: ReturnType<typeof initialSession>
@@ -1062,6 +1064,8 @@ function ResultsScreen({
   secondsSpent: number
   pendingSave: boolean
   onExit: () => void
+  /** Undefined in preview: a preview never reports the replay notice. */
+  lessonId?: string
 }) {
   const { t } = useTranslation()
   // Server truth wins once /complete responds; the client's own numbers are
@@ -1090,6 +1094,19 @@ function ResultsScreen({
    */
   const best = server?.best_score ?? null
   const beatBest = best !== null && score > best
+  /*
+   * B.5 (S05.3d): Core says, in the completion receipt, when this run scored
+   * below the kept best. The screen then states that the saved best is
+   * unaffected and reports that it did (the numerator of Appendix C's
+   * replay-notice display rate; Core records the denominator itself).
+   */
+  const keptBest = server?.replay?.notice === 'best_kept'
+  const noticeReported = useRef(false)
+  useEffect(() => {
+    if (!keptBest || !lessonId || noticeReported.current) return
+    noticeReported.current = true
+    trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })
+  }, [keptBest, lessonId])
 
   /*
    * `justify-center` is not decoration: this column is `flex-1` inside a
@@ -1169,7 +1186,9 @@ function ResultsScreen({
               />
               {beatBest
                 ? t('lesson.results.newBest')
-                : `${t('lesson.results.yourBest')} ${best}`}
+                : keptBest
+                  ? t('lesson.results.savedBestStill', { best: server?.replay?.previous_best_score ?? best })
+                  : `${t('lesson.results.yourBest')} ${best}`}
             </span>
           )}
         </div>

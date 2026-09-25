@@ -1,5 +1,5 @@
 import type { Locale } from '../design/copyBudget';
-import { LessonDocumentView, type OnGrade, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeWorkedExample } from './LessonDocumentView';
+import { LessonDocumentView, type OnGrade, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeReasoning, type OnGradeWorkedExample } from './LessonDocumentView';
 import { loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
 
 const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
@@ -12,7 +12,7 @@ const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
  * resolved server-side); a missing or malformed projection renders the lesson
  * without the stage — it is cosmetic and never blocks learning.
  */
-export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds, attemptedSegmentIds }: {
+export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds, attemptedSegmentIds }: {
   raw: unknown;
   responseLocale: string;
   mentorStage?: unknown;
@@ -23,6 +23,7 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   onGradeBarModel?: OnGradeBarModel;
   onGradeSchemaDiagram?: OnGradeSchemaDiagram;
   onGradeWorkedExample?: OnGradeWorkedExample;
+  onGradeReasoning?: OnGradeReasoning;
   onComplete?: () => Promise<boolean>;
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
@@ -33,5 +34,5 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
     : supportedLocales.has(responseLocale as Locale) ? responseLocale as Locale : 'en-US';
   const ageBand = loaded.status === 'ready' ? loaded.document.age_band : '6-9';
   return <LessonDocumentView raw={raw} locale={locale} ageBand={ageBand} onBack={onBack} onGrade={onGrade}
-    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={stage} />;
+    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={stage} />;
 }

@@ -17,11 +17,14 @@ import { functionMachinePilotDocument } from '@/rebuild/learning/FunctionMachine
 import { barModelPilotDocument } from '@/rebuild/learning/BarModelBoard';
 import { schemaDiagramPilotDocument } from '@/rebuild/learning/SchemaDiagramBoard';
 import { cpaFadingPilotDocument } from '@/rebuild/learning/CpaFadingBoard';
+import { decideJustifyPilotDocument } from '@/rebuild/learning/DecisionReasonsBoard';
+import { trackInsight } from '@/lib/insights';
 
 const mockNavigate = vi.fn();
 const { mockGetToken } = vi.hoisted(() => ({ mockGetToken: vi.fn<() => Promise<string | null>>() }));
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+vi.mock('@/lib/insights', async () => ({ ...(await vi.importActual<typeof import('@/lib/insights')>('@/lib/insights')), trackInsight: vi.fn() }));
 // getToken must be a STABLE reference — the route's fetch effect depends on it
 // (in the real app it's a memoized useCallback from AuthContext). A fresh
 // function per render would re-fire the effect forever.
@@ -319,6 +322,49 @@ describe('LessonRoute', () => {
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/complete', expect.objectContaining({
       method: 'POST', token: 'token-123', body: expect.objectContaining({ run_id: '99999999-9999-4999-8999-999999999999' }),
     })));
+  });
+
+  it('B.12/B.5: grades a reasoning answer through its signed token and renders the Core replay receipt', async () => {
+    const document = decideJustifyPilotDocument('en-US', '10-12') as { version_id: string };
+    const runId = '99999999-9999-4999-8999-999999999999';
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: runId, version_id: document.version_id, expires_at: '2026-09-24T12:00:00.000Z', resumed: false, met_segment_ids: [],
+        attempt_tokens: { 'decide-01': 'decide-attempt-token' },
+      }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: false, score: 0, judgment: { quality: 'sound' } }, replayed: false, retry_attempt_token: 'decide-retry-token' }, error: null })
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100, judgment: { quality: 'unsupported' } }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 0, passed: true, receipt: {
+        schema_version: 2, completion_id: runId, lesson_id: 'pilot-decide-justify', version_id: document.version_id, locale: 'en-US',
+        first_try_correct: 0, graded_count: 1, awarded_xp: 0, duration_seconds: 42, previous_best_percent: 100,
+        replay: { kind: 'replay', notice: 'best_kept', best_score_kept: true, xp_policy: 'improvement_only' },
+        judgment: { assessed: 1, sound: 1, partial: 0, unsupported: 0 },
+      } }, error: null });
+
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    fireEvent.click(await screen.findByRole('button', { name: 'Spend all now' }));
+    fireEvent.click(screen.getByRole('button', { name: 'It gets me closer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByText('Your reason explains it well.')).toBeInTheDocument();
+    expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      body: { segment_id: 'decide-01', run_id: runId, attempt_token: 'decide-attempt-token', answer: { choice: 'spend-all', reason: 'reason-goal' } },
+    }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save 4 coins' }));
+    fireEvent.click(screen.getByRole('button', { name: 'I just picked one' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(await screen.findByText('That choice works.')).toBeInTheDocument();
+    // The retry used the renewed one-use token, never the consumed one.
+    expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({
+      body: expect.objectContaining({ attempt_token: 'decide-retry-token', answer: { choice: 'save-first', reason: 'reason-lucky' } }),
+    }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Finish lesson' }));
+    expect(await screen.findByText('Your saved best is still 100%. This was practice.')).toBeInTheDocument();
+    expect(screen.getByText('Well-explained choices')).toBeInTheDocument();
+    expect(vi.mocked(trackInsight)).toHaveBeenCalledWith('replay_notice_view', { lessonId: 'lesson-1', routeClass: 'learn' });
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/learn');
   });
 
   it('completes authenticated M13 after the learner tries an input and states the function rule', async () => {

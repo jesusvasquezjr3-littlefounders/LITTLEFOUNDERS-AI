@@ -115,7 +115,8 @@
       "aria": "Content views",
       "courses": "Courses",
       "lessons": "Lesson Review Queue",
-      "tutor": "Tutor Live Review"
+      "tutor": "Tutor Live Review",
+      "quality": "Learning Quality"
     }
   },
   "users": {

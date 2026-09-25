@@ -1205,7 +1205,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
     });
     expect(complete.status).toBe(200);
-    expect(complete.body.data).toMatchObject({ score: 100, passed: true, xp_earned: 20 });
+    expect(complete.body.data).toMatchObject({ score: 0, passed: true, xp_earned: 20, first_try_correct: 0, graded_count: 1 });
   });
 
   it('delivers, grades, and completes M6 through its immutable equal-area fraction version', async () => {
@@ -1232,7 +1232,7 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
     });
     expect(complete.status).toBe(200);
-    expect(complete.body.data).toMatchObject({ score: 100, passed: true, xp_earned: 20 });
+    expect(complete.body.data).toMatchObject({ score: 0, passed: true, xp_earned: 20, first_try_correct: 0, graded_count: 1 });
   });
 
   it('delivers, grades, and completes M9/M10 through its immutable worked-example version', async () => {
@@ -1343,7 +1343,14 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       run_id: started.body.data.run_id, seconds_spent: 60, local_date: '2026-09-22',
     });
     expect(complete.status).toBe(200);
-    expect(complete.body.data).toMatchObject({ score: 100, passed: true, xp_earned: 20 });
+    expect(complete.body.data).toMatchObject({ score: 0, passed: true, xp_earned: 20, first_try_correct: 0, graded_count: 1 });
+    // B.5 (S05.3d): the kept score is first-try accuracy; a review retry is not a penalty but not a first try.
+    expect(complete.body.data.receipt).toEqual({
+      schema_version: 2, completion_id: started.body.data.run_id, lesson_id: LESSON_1_ID, version_id: 'number-line-rev-001',
+      locale: 'en-US', first_try_correct: 0, graded_count: 1, awarded_xp: 20, duration_seconds: 60, previous_best_percent: 0,
+      replay: { kind: 'first', notice: 'none', best_score_kept: false, xp_policy: 'improvement_only' },
+      judgment: { assessed: 0, sound: 0, partial: 0, unsupported: 0 },
+    });
   });
 
   it('completes M1 from the final symbolic receipt after earlier representations were attempted', async () => {

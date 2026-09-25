@@ -24,6 +24,7 @@ import {
   type PlacementTopic,
 } from '../services/placementAlgorithm.js';
 import { ageBandForIntake, runPlacementIntake } from '../services/placementIntake.js';
+import { placementFrame } from '../services/placementFraming.js';
 import {
   getFullOwnProfile,
   getPublishedCourseBySlug,
@@ -150,6 +151,8 @@ function describeResult(done: DoneStep, topics: readonly PlacementTopic[]) {
     totalTopicCount: topics.length,
     method: done.method,
     cappedByPrerequisite: done.cappedByPrerequisite,
+    // B.15: a closed frame the client turns into growth-oriented, non-comparative copy.
+    framing: placementFrame(done),
   };
 }
 

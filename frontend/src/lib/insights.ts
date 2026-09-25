@@ -42,7 +42,10 @@ export type InsightEvent =
   // is emitted from the public, unauthenticated badge landing page (see
   // ANON_EVENTS on Core) — every other new value here requires a signed-in
   // caller and rides the normal consent-gated authenticated batch.
-  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared' | 'badge_link_click';
+  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared' | 'badge_link_click'
+  // B.5 (S05.3d): the result screen showed "your saved best is still X". Its
+  // denominator, replay_below_best, is written by Core only and is not listed.
+  | 'replay_notice_view';
 
 export type InsightRouteClass =
   | 'learn'
