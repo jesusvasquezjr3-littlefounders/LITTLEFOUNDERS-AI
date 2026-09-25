@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import {
-  AuthShell, Button, ButtonGroup, Card, DashboardLayout, DataTable, IconButton, LearnerShell, List, ListRow, SingleStateScreen, SiteShell, StaffShell, TextField,
+  AuthShell, Button, ButtonGroup, Card, DashboardLayout, DataTable, IconButton, LearnerShell, List, ListRow, MENTOR_NAMES, SingleStateScreen, SiteShell, StaffShell, TextField,
   TutorShell, type ShellNavItem, type SingleStateHue, type StaffGrants, type StaffNavItem,
 } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
@@ -43,10 +43,10 @@ export function ShellGallery({ kind, t, s, locale, onGallery }: {
     const items = kind === 'learner'
       ? [item('learn', t.learn), item('tasks', t.tasks), item('wallet', t.wallet), item('profile', t.profile)]
       : [item('learn', t.learn), item('wallet', t.wallet), item('profile', t.profile)];
-    const mentor = kind === 'learner' ? { name: 'Dina', character: 'dina' as const } : { name: 'Zara', character: 'zara' as const };
-    const title = page === 'mentor' ? mentor.name : items.find((entry) => entry.id === page)?.label ?? t.learn;
+    const character = kind === 'learner' ? 'dina' as const : 'zara' as const;
+    const title = page === 'mentor' ? MENTOR_NAMES[character] : items.find((entry) => entry.id === page)?.label ?? t.learn;
     return <LearnerShell {...common} pageTitle={title} labels={labels} items={items} current={page}
-      mentor={{ href: href('mentor'), ...mentor }}>
+      mentor={{ href: href('mentor'), name: t.mentorWord, character }}>
       <Page title={title} titleRole={page === 'mentor' ? 'data' : 'heading'} t={t} action={back} />
     </LearnerShell>;
   }

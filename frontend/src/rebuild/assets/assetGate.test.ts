@@ -116,4 +116,17 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     expect(unreferenced.output).toContain('Registered asset is referenced nowhere: badge.spare');
     for (const result of [unregistered, colour, text, unreferenced]) expect(result.status).toBe(1);
   });
+
+  it('keeps reserved hues out of art and at most 3 hues per asset (07 §3, 02 §4.2)', () => {
+    const svg = (dir: string) => join(dir, 'public/rebuild/art/pocket-share.svg');
+    const recolour = (from: string, to: string) => mutate((dir) => writeFileSync(svg(dir), readFileSync(svg(dir), 'utf8').replace(from, to)));
+    const error = recolour('#CC2E72', '#DB1B2B');
+    expect(error.output).toContain('Error red never appears in our own art');
+    const accent = recolour('#CC2E72', '#EB7301');
+    expect(accent.output).toContain('The accent is the call to action only');
+    const four = mutate((dir) => writeFileSync(svg(dir), readFileSync(svg(dir), 'utf8').replace('</svg>',
+      '<circle cx="8" cy="8" r="4" fill="#4B94FF"/><circle cx="20" cy="8" r="4" fill="#05A893"/><circle cx="32" cy="8" r="4" fill="#5C55FD"/></svg>')));
+    expect(four.output).toContain('More than 3 hues in one asset');
+    for (const result of [error, accent, four]) expect(result.status).toBe(1);
+  });
 });

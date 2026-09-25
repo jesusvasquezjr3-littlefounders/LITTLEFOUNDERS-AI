@@ -1,0 +1,49 @@
+{
+  "common": {
+    "fallback": "Button not working? Open this link:",
+    "tagline": "Where kids and families learn money and entrepreneurship, the fun way.",
+    "rights": "© 2026 LittleFounders. All rights reserved."
+  },
+  "confirmation": {
+    "title": "Confirm your email",
+    "preheader": "Confirm your email to start with LittleFounders.",
+    "heading": "Confirm your email",
+    "body": "Welcome to LittleFounders! Confirm this address to activate your account.",
+    "action": "Confirm email",
+    "safety": "Didn't sign up? Ignore this email; no account will open."
+  },
+  "emailChange": {
+    "title": "Confirm your new email",
+    "preheader": "Confirm your new email for LittleFounders.",
+    "heading": "Confirm your new email",
+    "body": "We got a request to move your LittleFounders account to this email.",
+    "action": "Confirm new email",
+    "safety": "Didn't ask for this? Ignore this email and change your password."
+  },
+  "invite": {
+    "title": "You're invited",
+    "preheader": "You're invited to LittleFounders.",
+    "heading": "You're invited",
+    "body": "Join LittleFounders, where families learn money skills together.",
+    "action": "Join LittleFounders",
+    "safety": "Not expecting this? You can ignore this email safely."
+  },
+  "magicLink": {
+    "title": "Your sign-in link",
+    "preheader": "Your LittleFounders sign-in link.",
+    "heading": "Sign in to LittleFounders",
+    "body": "Tap the button to sign in. No password needed.",
+    "note": "The link works once and expires soon.",
+    "action": "Sign in",
+    "safety": "Didn't try to sign in? You can ignore this email."
+  },
+  "recovery": {
+    "title": "Reset your password",
+    "preheader": "Reset your LittleFounders password.",
+    "heading": "Reset your password",
+    "body": "Tap the button to choose a new password.",
+    "note": "The link works once and expires soon.",
+    "action": "Reset password",
+    "safety": "Didn't ask for this? Ignore this email; your password stays the same."
+  }
+}

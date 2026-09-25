@@ -13,4 +13,4 @@
 }
 .lf-mentor-calibration-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
 .lf-mentor-calibration h2, .lf-mentor-calibration p { margin: 0; }
-@media (max-width: 360px) { .lf-mentor-calibration-options { grid-template-columns: 1fr; } }
+@container app (max-width: 359px) { .lf-mentor-calibration-options { grid-template-columns: 1fr; } }

@@ -19,13 +19,14 @@ export { AuthShell, BrandMark, CONSOLE_TAB_LIMIT, ConsoleShell, DashboardLayout,
   type ConsoleShellProps, type LearnerShellProps, type ShellCommonProps, type ShellLinkAction, type ShellNavItem, type SingleStateHue, type SiteShellProps,
   type StaffGrants, type StaffNavItem, type StaffPermission, type TableColumn } from './shells';
 export { Checkbox, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextField, type ChoiceOption, type SelectOption, type StepLabels, type TextFieldProps } from './fields';
-export { Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Skeleton,
+export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Skeleton,
   type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';
 export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
 export { activeIdleMotion, Celebration, celebrationPart, CountUp, IDLE_MOTION_KINDS, useIdleMotion, useOneShot,
   type CelebrationPart, type CelebrationState, type IdleMotionKind } from './motion';
 export { isMilestone, type Milestone } from './milestones';
 export { RebuildRoot } from './root';
+export { MENTOR_CHARACTERS, MENTOR_NAMES, type MentorCharacter } from './assets';
 
 export function Copy({ role, children, as: Tag = 'p' }: { role: CopyRole; children: ReactNode; as?: 'p' | 'span' | 'h1' | 'h2' }) {
   return <Tag data-copy-role={role}>{children}</Tag>;

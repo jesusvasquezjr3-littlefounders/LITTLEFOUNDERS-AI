@@ -42,10 +42,10 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 function Learner({ page, character = 'dina', theme = 'light', onNavigate }: {
-  page: string; character?: 'dina' | 'zara' | null; theme?: 'light' | 'dark'; onNavigate?: (href: string) => void;
+  page: string; character?: 'dina' | 'zara' | 'rho' | null; theme?: 'light' | 'dark'; onNavigate?: (href: string) => void;
 }) {
   return wrap(<LearnerShell appName="LittleFounders" pageTitle={page === 'mentor' ? 'Dina' : 'Aprender'} routeKey={page} locale="pt-BR" labels={labels}
-    items={items} current={page} mentor={{ href: '?page=mentor', name: character ? character[0]!.toUpperCase() + character.slice(1) : 'Mentor', character }}
+    items={items} current={page} mentor={{ href: '?page=mentor', name: 'Mentor', character }}
     onNavigate={onNavigate}>
     <h1 data-copy-role="heading">{page}</h1>
     <button type="button" data-copy-role="action">Dentro</button>
@@ -131,6 +131,18 @@ describe('learner shell', () => {
     const mentor = [...document.querySelectorAll('.lf-tabbar a')].find((link) => link.textContent === 'Mentor')!;
     expect(mentor.querySelector('img, svg, [data-slot]')).toBeNull();
     expect(mentor.querySelector('[data-copy-role="action"]')).not.toBeNull();
+  });
+
+  it('names the tab from the chosen character itself, so the name can never disagree with the picture (OD-6)', () => {
+    render(<Learner page="learn" character="rho" />);
+    const rho = [...document.querySelectorAll('.lf-tabbar a')].find((link) => link.textContent === 'Dr. Rho')!;
+    expect(rho.querySelector('[data-slot="mentor-avatar"] img')).toHaveAttribute('data-character', 'rho');
+    cleanup();
+    render(wrap(<LearnerShell appName="LittleFounders" pageTitle="Aprender" routeKey="learn" locale="pt-BR" labels={labels} current="learn"
+      items={items} mentor={{ href: '?page=mentor', name: 'Tutor IA', character: 'zara' }}><h1>Aprender</h1></LearnerShell>));
+    const labelsShown = [...document.querySelectorAll('.lf-tabbar a')].map((link) => link.textContent);
+    expect(labelsShown).toContain('Zara');
+    expect(labelsShown).not.toContain('Tutor IA');
   });
 
   it('age changes content, never components: a teen without a parent simply has no Tasks item (OD-3, D8)', () => {

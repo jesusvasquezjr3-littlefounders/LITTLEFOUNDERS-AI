@@ -109,7 +109,7 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
             return <li key={note.id} className="lf-memory-note">
               <div className="lf-memory-note-meta">
                 <Copy role="body">{copy.proposedOn}</Copy>
-                <time dateTime={note.createdAt}>{date.format(new Date(note.createdAt))}</time>
+                <time dateTime={note.createdAt} data-copy-role="data">{date.format(new Date(note.createdAt))}</time>
                 {outOfDate && !verdict && <span className="lf-memory-chip"><Copy role="body" as="span">{copy.outOfDate}</Copy></span>}
               </div>
               <Copy role="data">{note.proposed}</Copy>

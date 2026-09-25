@@ -149,6 +149,14 @@ describe('milestone-only celebration (D7, OD-7, 07 §5)', () => {
     expect(counter.style.minInlineSize).toBe('3ch');
   });
 
+  it('never counts outside a playing milestone celebration (a counting reward is a celebration effect)', () => {
+    const alone = render(<CountUp value={40} format={(value) => `+${value}`} />);
+    expect(alone.container.querySelector('.lf-count-up')!.textContent).toBe('+40');
+    alone.unmount();
+    const refused = render(<Celebration milestone={'correct-answer' as Milestone} momentId="y"><CountUp value={40} format={(value) => `+${value}`} /></Celebration>);
+    expect(refused.container.querySelector('.lf-count-up')!.textContent).toBe('+40');
+  });
+
   it('celebrates lesson complete on the result screen, and its continue action is the one breathing call to action', () => {
     const receipt = { schema_version: 2, completion_id: 'completion-3', lesson_id: 'lesson-1', version_id: 'rev-1', locale: 'en-US', first_try_correct: 3,
       graded_count: 4, awarded_xp: 30, duration_seconds: 95, previous_best_percent: 50 };

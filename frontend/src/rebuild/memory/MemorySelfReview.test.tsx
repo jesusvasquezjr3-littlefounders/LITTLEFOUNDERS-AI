@@ -51,6 +51,8 @@ describe('MemorySelfReview', () => {
     expect(screen.getByText(copy.currentLabel)).toBeInTheDocument();
     expect(view.container.querySelector('.lf-memory-current [data-copy-role="data"]')).toHaveTextContent('Older note.');
     expect(screen.getByText(NOTE.proposed)).toHaveAttribute('data-copy-role', 'data');
+    // 02 rule 19: the proposal date is text too (found undeclared by the S03.5 authenticated-route audit).
+    expect(view.container.querySelector('.lf-memory-note time')).toHaveAttribute('data-copy-role', 'data');
     expect(screen.getByText(copy.replacesLabel)).toBeInTheDocument();
     expect(screen.getAllByText('Older note.')).toHaveLength(2);
     expect(screen.queryByText(copy.currentEmpty)).toBeNull();

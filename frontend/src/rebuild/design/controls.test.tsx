@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  AnswerChoice, Banner, Button, ButtonGroup, Card, Checkbox, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, Glyph, GLYPH_BUDGET,
+  AnswerChoice, Art, Banner, Button, ButtonGroup, Card, Checkbox, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, Glyph, GLYPH_BUDGET,
   GLYPH_FAMILIES, IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip,
   SegmentedControl, SelectField, Slider, StatusMark, Stepper, Switch, SYSTEM_GLYPHS, TextField,
 } from './controls';
@@ -338,6 +338,32 @@ describe('display components', () => {
   it('ignores an empty-state art id that is not a registered class B asset', () => {
     const { container } = render(<EmptyState heading="Nothing" artAssetId="https://example.com/stock.png" />);
     expect(container.querySelector('img')).toBeNull();
+  });
+});
+
+describe('own art (07 §3, §6, §8)', () => {
+  it('shows a registered class B asset by manifest id, decorative unless it is given a translated name', () => {
+    const { container } = render(<><Art assetId="pocket.save.icon" /><Art assetId="course.money-basics.icon" size="lg" label="Bases del dinero" /></>);
+    const [save, course] = [...container.querySelectorAll('img')];
+    expect(save).toHaveAttribute('src', '/rebuild/art/pocket-save.svg');
+    expect(save).toHaveAttribute('alt', '');
+    expect(save).toHaveAttribute('aria-hidden', 'true');
+    expect(save).toHaveAttribute('data-slot', 'pocket.icon');
+    expect(course).toHaveAttribute('alt', 'Bases del dinero');
+    expect(course).not.toHaveAttribute('aria-hidden');
+    expect(course).toHaveClass('lf-art--lg');
+  });
+
+  it('refuses an unregistered id and a Mentor render: an empty slot, no fallback picture', () => {
+    const { container } = render(<><Art assetId="pocket.invest.icon" /><Art assetId="mentor.dina.avatar.light" /></>);
+    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-refused="true"]')).toHaveLength(2);
+  });
+
+  it('puts the empty-state art in the empty state, decoratively', () => {
+    const { container } = render(<EmptyState heading="Aún no hay tareas" artAssetId="empty.fresh-start.art" />);
+    expect(container.querySelector('img')).toHaveAttribute('src', '/rebuild/art/empty-fresh-start.svg');
+    expect(container.querySelector('img')).toHaveAttribute('aria-hidden', 'true');
   });
 });
 

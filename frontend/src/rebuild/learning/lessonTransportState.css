@@ -5,4 +5,4 @@
 .lf-transport-state-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); inline-size: min(100%, 480px); }
 .lf-transport-state-actions .lf-button { min-inline-size: min(100%, 200px); }
 .lf-transport-state-progress { inline-size: min(100%, 280px); block-size: 12px; overflow: hidden; border-radius: var(--rounded-full); background: var(--primary-soft); }
-@media (max-width: 480px) { .lf-transport-state-actions { display: grid; } .lf-transport-state-actions .lf-button { inline-size: 100%; } }
+@container app (max-width: 479px) { .lf-transport-state-actions { display: grid; } .lf-transport-state-actions .lf-button { inline-size: 100%; } }

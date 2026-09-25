@@ -252,4 +252,15 @@ describe('Text Fit Contract across every rebuilt stylesheet (02 §7 rules 1-4)',
     const offences = sheets.filter(({ css }) => /text-overflow\s*:\s*ellipsis|line-clamp\s*:/.test(css)).map(({ file }) => file);
     expect(offences).toEqual([]);
   });
+
+  it('sizes in fixed steps by the container, never fluid clamp() or by the viewport width (02 §6, §7 rule 9; 03 §3.2)', () => {
+    // Found by the S03.5 authenticated-route audit: the age screen padded by clamp(…, 10vh, …) (74 px, off the 4 px grid)
+    // and four surfaces changed layout with viewport media queries. `100vw` stays legal for a fixed overlay's viewport cap.
+    const offences = sheets.flatMap(({ file, css }) => [
+      ...[...css.matchAll(/\bclamp\(/g)].map(() => `${file}: clamp()`),
+      ...[...css.matchAll(/@media[^{]*\b(?:min|max)-(?:width|height)\b[^{]*/g)].map(([query]) => `${file}: ${query.trim()}`),
+      ...[...css.matchAll(/(?<![\w.-])(\d+(?:\.\d+)?)(vw|vh|vmin|vmax|svh|lvh)\b/g)].filter(([whole]) => whole !== '100vw').map(([whole]) => `${file}: ${whole}`),
+    ]);
+    expect(offences).toEqual([]);
+  });
 });

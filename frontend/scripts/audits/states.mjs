@@ -13,8 +13,13 @@
  *     teaching boards, results, transport states), at the ages it serves.
  *   - Rebuilt routes of the real application that render without a session
  *     (`/account-suspended`), inside the legacy app shell and its global CSS.
+ *   - Rebuilt surfaces on authenticated real routes (the lesson route in
+ *     every state it can show, the guest age screen, the teen analytics
+ *     setting), signed in with a synthetic session and answered by the
+ *     synthetic Core (`scenario`, audits/synthetic-core.mjs); `readyAll` are
+ *     the selectors that prove the route reached that state, not an earlier one.
  *   - Any further route given in AUDIT_ROUTES (comma-separated paths of the
- *     real app, e.g. an authenticated route on a dev server with a session).
+ *     real app, signed out).
  *
  * Fields: `budget` (app | site, 06 §3), `firstView` (whether the 06 §3.1
  * first-view total applies: only product screens, never a specimen sheet),
@@ -69,9 +74,37 @@ export const STATES = [
   ...lessonSurfaces.flatMap(([screen, ages]) => ages.map((age) => preview(`${screen}@${age}`, { screen, age }))),
   // Rebuilt routes of the real application (no session needed).
   { id: 'app:/account-suspended', entry: 'app', path: '/account-suspended', budget: 'app', firstView: true, catalogue: false },
+  // Rebuilt surfaces on AUTHENTICATED real routes (S03.5), signed in with a synthetic session and answered by the
+  // synthetic Core in audits/synthetic-core.mjs: the real route, its guards, the legacy providers and global CSS.
+  ...sessionRoutes(),
 ];
 
-/** Extra real-app routes from AUDIT_ROUTES. */
+function sessionRoutes() {
+  const app = (id, path, scenario, ready, { readyAlso, ...extra } = {}) => ({ id: `app:${id}`, entry: 'app', path, scenario,
+    readyAll: readyAlso ? [ready, readyAlso] : [ready], budget: 'app', firstView: true, catalogue: false, ...extra });
+  return [
+    // The lesson route mounts the rebuilt lesson inside the design-system root (S03.6): every screen it can show.
+    app('/learn/lesson@goal-6-9', '/learn/lesson/audit-goal', 'lesson-goal', '[data-screen="goal"]'),
+    app('/learn/lesson@allocation-adult', '/learn/lesson/audit-allocation', 'lesson-allocation', '[data-screen="lesson"]'),
+    app('/learn/lesson@function-machine-10-12', '/learn/lesson/audit-machine', 'lesson-function-machine', '[data-screen="function-machine"]'),
+    app('/learn/lesson@opening', '/learn/lesson/audit-opening', 'lesson-opening', '[data-screen="lesson-opening"]'),
+    app('/learn/lesson@offline', '/learn/lesson/audit-offline', 'lesson-offline', '[data-screen="lesson-offline"]'),
+    app('/learn/lesson@load-error', '/learn/lesson/audit-error', 'lesson-load-error', '[data-screen="lesson-load-error"]'),
+    app('/learn/lesson@placement', '/learn/lesson/audit-placement', 'lesson-placement', '[data-screen="lesson-placement"]'),
+    app('/learn/lesson@eligibility-required', '/learn/lesson/audit-required', 'lesson-eligibility-required', '[data-screen="lesson-eligibility-required"]'),
+    app('/learn/lesson@eligibility-restricted', '/learn/lesson/audit-restricted', 'lesson-eligibility-restricted', '[data-screen="lesson-eligibility-restricted"]'),
+    app('/learn/lesson@eligibility-unavailable', '/learn/lesson/audit-unavailable', 'lesson-eligibility-unavailable', '[data-screen="lesson-eligibility-unavailable"]'),
+    // The guest's age screen, before any product route opens (A.3).
+    app('/onboarding@age-screen', '/onboarding', 'age-screen', '.lf-age-date'),
+    // A panel embedded in a legacy page: per-string budgets, text fit and tap gaps apply; the one-screen
+    // rules (one h1, heading ratio, type-size count, first-view total) belong to the page around it.
+    // Every rebuilt root on the page is measured: the analytics choice (S01) and the Mentor-memory self-review (OD-18).
+    app('/profile/settings@teen', '/profile/settings', 'settings-teen', '.lf-analytics-choice [role="switch"]', {
+      firstView: false, catalogue: true, embedded: true, readyAlso: '.lf-memory-self-review .lf-memory-note' }),
+  ];
+}
+
+/** Extra real-app routes from AUDIT_ROUTES (signed out, no synthetic Core). */
 export function extraRoutes(value = process.env.AUDIT_ROUTES) {
   return (value ?? '').split(',').map((path) => path.trim()).filter(Boolean)
     .map((path) => ({ id: `app:${path}`, entry: 'app', path, budget: 'app', firstView: true, catalogue: false }));

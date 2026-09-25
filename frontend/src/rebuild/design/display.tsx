@@ -146,6 +146,22 @@ export function LoadingState({ label, lines = 3 }: { label: string; lines?: numb
   </div>;
 }
 
+/**
+ * One of our own class B assets (07 §3, §6), by manifest id only: never a free
+ * URL, and never a Mentor render (those go through `MentorAvatar`, which checks
+ * the real model and pose). Decorative by default, because the word beside it
+ * carries the meaning (07 §8: an asset never replaces a label the person needs);
+ * an informative use passes its translated name. An unregistered, retired or
+ * render id leaves the slot empty and marked `data-refused`: there is no
+ * fallback picture and no stock icon.
+ */
+export function Art({ assetId, label = null, size = 'md' }: { assetId: string; label?: string | null; size?: 'md' | 'lg' }) {
+  const asset = resolveManifestAsset(assetId);
+  if (!asset || asset.type === 'render') return <span className={`lf-art lf-art--${size}`} data-refused="true" aria-hidden="true" />;
+  return <img className={`lf-art lf-art--${size}`} src={asset.path} alt={label ?? ''} aria-hidden={label ? undefined : true}
+    data-asset-id={asset.id} data-slot={asset.slot} />;
+}
+
 function StateArt({ assetId }: { assetId?: string }) {
   const asset = assetId ? resolveManifestAsset(assetId) : null;
   return asset ? <img className="lf-state-art" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} /> : null;

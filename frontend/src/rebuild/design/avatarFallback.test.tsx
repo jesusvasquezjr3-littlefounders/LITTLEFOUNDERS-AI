@@ -22,10 +22,10 @@ describe('Mentor tab without a live render', () => {
     const { findMentorAvatar } = await import('./assets');
     expect(findMentorAvatar('zara', 'light')).toBeNull();
     expect(findMentorAvatar('rho', 'light')).toBeNull();
-    for (const [name, character] of [['Zara', 'zara'], ['Rho', 'rho']] as const) {
+    for (const [name, character] of [['Zara', 'zara'], ['Dr. Rho', 'rho']] as const) {
       const { container, unmount } = render(<RebuildProvider environment={{ theme: 'light', locale: 'en-US' }} labels={{ dismiss: 'Dismiss' }}>
         <LearnerShell appName="LittleFounders" pageTitle="Learn" routeKey="learn" locale="en-US" labels={{ skip: 'Skip to content', navigation: 'Main' }}
-          items={[{ id: 'learn', label: 'Learn', href: '?page=learn' }]} current="learn" mentor={{ href: '?page=mentor', name, character }}>
+          items={[{ id: 'learn', label: 'Learn', href: '?page=learn' }]} current="learn" mentor={{ href: '?page=mentor', name: 'Mentor', character }}>
           <h1 data-copy-role="heading">Learn</h1>
         </LearnerShell>
       </RebuildProvider>);

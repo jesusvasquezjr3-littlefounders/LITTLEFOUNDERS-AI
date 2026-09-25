@@ -284,7 +284,17 @@ export function installAudit() {
       push(el.matches('[role=option]') ? 'option' : act ? 'action' : heading ? (text.includes('?') ? 'prompt' : 'heading') : 'body', text);
     }
     const modal = !!document.querySelector('[aria-modal="true"]');
-    return { blocks: blocks.map((b) => ({ ...b, fold: b.top < fold })), modal };
+    // 02 rule 16: an em dash anywhere in visible UI copy, whatever its role (data, legal and brand included).
+    const dashes = [];
+    for (const root of ROOTS()) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const host = node.parentElement;
+        if (!node.nodeValue.includes('—') || !host || !visible(host) || host.closest('[aria-hidden="true"],script,style')) continue;
+        dashes.push(node.nodeValue.replace(/\s+/g, ' ').trim().slice(0, 120));
+      }
+    }
+    return { blocks: blocks.map((b) => ({ ...b, fold: b.top < fold })), modal, dashes };
   }
 
   function signature() {

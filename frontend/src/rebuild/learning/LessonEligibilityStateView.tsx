@@ -7,7 +7,7 @@ export type LessonEligibilityState = 'required' | 'restricted' | 'unavailable';
 const copy: Record<Locale, Record<LessonEligibilityState, { heading: string; body: string; back: string }>> = {
   'en-US': {
     required: { heading: 'We need your age details', body: 'Review your account, then try this lesson again.', back: 'Go back' },
-    restricted: { heading: 'This lesson is not ready for you', body: 'Choose another lesson for now.', back: 'Go back' },
+    restricted: { heading: 'This lesson is for later', body: 'Choose another lesson for now.', back: 'Go back' },
     unavailable: { heading: 'This lesson is not ready', body: 'Choose another lesson for now.', back: 'Go back' },
   },
   'es-MX': {

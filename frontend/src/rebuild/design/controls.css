@@ -250,22 +250,18 @@
 /* The buttons keep their 48 px floor; a long value or label wraps instead of squeezing them. */
 .lf-rebuild .lf-stepper-controls { flex-wrap: wrap; }
 .lf-rebuild .lf-stepper-button { flex: none; }
-/* Value under the label, both buttons at the end: one compact row; stacked when the stepper's own box is narrow. */
+/*
+ * Value under the label, both buttons at the end: one compact row. The words never get less than their longest
+ * word (02 §7 rule 4): when the row cannot hold the words and the buttons, the buttons wrap under them
+ * (found by the S03.5 route audit: "Compartilhar" beside the Mentor stage at 768 px with WCAG 1.4.12 spacing).
+ */
 .lf-rebuild .lf-stepper--labelled { display: block; container: lf-stepper / inline-size; }
-.lf-rebuild .lf-stepper-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: 'label controls' 'value controls';
-  align-items: center;
-  column-gap: var(--spacing-3);
-  row-gap: var(--spacing-1);
-}
-.lf-rebuild .lf-stepper-layout > .lf-input-label { grid-area: label; }
-.lf-rebuild .lf-stepper-layout > .lf-stepper-value { grid-area: value; min-inline-size: 0; text-align: start; }
-.lf-rebuild .lf-stepper-layout > .lf-stepper-controls { grid-area: controls; }
+.lf-rebuild .lf-stepper-layout { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: var(--spacing-3); row-gap: var(--spacing-2); }
+.lf-rebuild .lf-stepper-text { display: grid; row-gap: var(--spacing-1); flex: 1 1 min-content; min-inline-size: min-content; }
+.lf-rebuild .lf-stepper-text > .lf-stepper-value { min-inline-size: 0; text-align: start; }
+.lf-rebuild .lf-stepper-layout > .lf-stepper-controls { flex: none; }
 @container lf-stepper (max-width: 239px) {
-  .lf-rebuild .lf-stepper-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'label' 'value' 'controls'; }
-  .lf-rebuild .lf-stepper-layout > .lf-stepper-controls { justify-content: space-between; }
+  .lf-rebuild .lf-stepper-layout > .lf-stepper-controls { inline-size: 100%; justify-content: space-between; }
 }
 
 /* ---- Chips and pills ---- */
@@ -379,6 +375,9 @@
 .lf-rebuild .lf-state-action { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-rebuild .lf-state--error .lf-state-glyph { display: grid; place-items: center; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--error-soft); color: var(--error-strong); }
 .lf-rebuild .lf-state--empty .lf-state-art { inline-size: var(--spacing-24); block-size: auto; }
+/* Own class B art (07 §3): a 48 px icon reads at the size its form language is drawn for; `lg` for a card's lead. */
+.lf-rebuild .lf-art { display: block; flex: none; inline-size: var(--target-min); block-size: var(--target-min); }
+.lf-rebuild .lf-art--lg { inline-size: var(--spacing-16); block-size: var(--spacing-16); }
 
 /* ---- Mentor avatar slot: square, transparent, real-model renders only ---- */
 .lf-rebuild .lf-avatar { display: inline-grid; place-items: center; flex: none; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--primary-soft); overflow: hidden; }

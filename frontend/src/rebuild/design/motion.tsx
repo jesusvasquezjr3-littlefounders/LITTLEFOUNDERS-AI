@@ -157,12 +157,13 @@ export function celebrationPart(part: CelebrationPart, order = 0): { className: 
 /**
  * Counts a number up during a celebration with fixed-width digits, so nothing
  * reflows (02 §9.2). The final value is what reduced motion, tests and a
- * revisit get; the count runs only while the surrounding celebration plays
- * (inside `Celebration`, `play` follows it).
+ * revisit get. The count runs only while the surrounding milestone
+ * `Celebration` plays; there is deliberately no way to start it anywhere
+ * else, because a counting reward is a celebration effect (D7, OD-7): outside
+ * a playing celebration it always shows the final value.
  */
-export function CountUp({ value, format, play }: { value: number; format: (value: number) => string; play?: boolean }) {
-  const celebration = useContext(CelebrationContext);
-  play = play ?? celebration === 'playing';
+export function CountUp({ value, format }: { value: number; format: (value: number) => string }) {
+  const play = useContext(CelebrationContext) === 'playing';
   const final = format(value);
   const [shown, setShown] = useState(final);
   useLayoutEffect(() => {

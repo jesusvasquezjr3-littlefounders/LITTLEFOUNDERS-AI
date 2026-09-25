@@ -165,7 +165,19 @@ const AVATAR_SLOT = 'mentor.avatar';
 const poseCatalogue = new Set([...readFileSync(resolve(root, 'src/tutor-scene/poseLibrary.ts'), 'utf8')
   .matchAll(/\{\s*id:\s*'([^']+)',\s*category:/g)].map((match) => match[1]));
 if (poseCatalogue.size < 10) fail('Pose catalogue could not be read');
-const tokenColours = new Set([...readFileSync(resolve(root, 'src/rebuild/design/tokens.css'), 'utf8').matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toLowerCase()));
+const tokenSheet = readFileSync(resolve(root, 'src/rebuild/design/tokens.css'), 'utf8');
+const tokenColours = new Set([...tokenSheet.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toLowerCase()));
+// 07 §3: "only the token hues", "at most 3 hues plus ink per icon", reserved hues keep their meaning (02 §4.2):
+// the accent is the call to action only and error red never appears in art. Each token colour maps to its hue
+// family (`mint-ridge` -> mint, `warning` is an alias of reward); neutrals (base, surface, content, ink, `on-*`) are not hues.
+const HUES = ['primary', 'accent', 'reward', 'success', 'error', 'sky', 'mint', 'berry'];
+const hueOf = new Map();
+for (const [, name, hex] of tokenSheet.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})\b/gi)) {
+  const family = name.replace(/^on-.*/, '').replace(/-(?:ridge|strong|soft)$/, '').replace(/^warning$/, 'reward');
+  const value = hex.toLowerCase();
+  if (!HUES.includes(family)) hueOf.set(value, null); // a neutral wins over a hue that shares its value (white)
+  else if (!hueOf.has(value)) hueOf.set(value, family);
+}
 const locales = ['en-US', 'es-MX', 'pt-BR'];
 const copy = Object.fromEntries(locales.map((locale) => [locale, JSON.parse(readFileSync(resolve(root, `src/i18n/${locale}/rebuild.json`), 'utf8'))]));
 const lookup = (object, key) => key.split('.').reduce((node, part) => (node && typeof node === 'object' ? node[part] : undefined), object);
@@ -272,6 +284,10 @@ for (const asset of classB) {
       fail(`SVG must be plain in-house shapes: no script, image, text, gradient or filter (07 §3): ${asset.path}`);
     }
     for (const m of svg.matchAll(/#[0-9a-f]{3,8}\b/gi)) if (!tokenColours.has(m[0].toLowerCase())) fail(`SVG colour ${m[0]} is not a token colour (07 §3, §7): ${asset.path}`);
+    const hues = new Set([...svg.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => hueOf.get(m[0].toLowerCase())).filter(Boolean));
+    if (hues.has('error')) fail(`Error red never appears in our own art; it means system errors only (07 §3, 02 §4.2): ${asset.path}`);
+    if (hues.has('accent')) fail(`The accent is the call to action only, never art (02 §4.2): ${asset.path}`);
+    if (hues.size > 3) fail(`More than 3 hues in one asset (07 §3): ${[...hues].join(', ')} in ${asset.path}`);
     if (/\brgba?\(|\bhsla?\(/i.test(svg)) fail(`SVG colour outside the token palette: ${asset.path}`);
   }
   // Referenced somewhere, by path or id (an avatar is found by its slot).

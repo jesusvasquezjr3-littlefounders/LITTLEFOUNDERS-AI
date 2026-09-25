@@ -40,6 +40,8 @@
     "audit:copy-budget": "node scripts/audit-rebuild.mjs copy-budget",
     "audit:rebuild": "node scripts/audit-rebuild.mjs all",
     "assets:check": "node scripts/check-rebuild-assets.mjs",
+    "emails:build": "node scripts/build-rebuild-emails.mjs",
+    "emails:check": "node scripts/build-rebuild-emails.mjs --check",
     "assets:render-avatars": "node scripts/render-mentor-avatars.mjs",
     "verify:tutor-ui": "node scripts/verify-tutor-ui.mjs",
     "verify:tutor-a11y": "node scripts/verify-tutor-a11y.mjs",

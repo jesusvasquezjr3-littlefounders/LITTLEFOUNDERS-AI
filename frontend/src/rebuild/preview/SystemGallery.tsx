@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type en from '../../i18n/en-US/rebuild.json';
 import {
-  Banner, Button, ButtonGroup, Card, Celebration, celebrationPart, Checkbox, Chip, ChipGroup, ChoiceChip, CountUp, EmptyState, ErrorState,
+  Art, Banner, Button, ButtonGroup, Card, Celebration, celebrationPart, Checkbox, Chip, ChipGroup, ChoiceChip, CountUp, EmptyState, ErrorState,
   IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip, SegmentedControl,
   SelectField, Slider, Stepper, Switch, TextField,
 } from '../design/controls';
@@ -136,7 +136,13 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
           <p data-copy-role="body">{t.cardBody}</p>
           <ProgressBar label={t.progress} value={3} max={5} valueText={t.progressValue} />
         </Card>
-        <Card tone="mint" heading={t.courseTitle} headingLevel={3}><p data-copy-role="body">{t.courseBody}</p></Card>
+        {/* First assets of the course-icon, pocket and empty-state families, awaiting the owner's style review (07 §7, OD-14). */}
+        <Card tone="mint" heading={t.courseTitle} headingLevel={3}><Art assetId="course.money-basics.icon" size="lg" /><p data-copy-role="body">{t.courseBody}</p></Card>
+        <List label={t.pocket}>
+          <ListRow title={t.pocketSave} leading={<Art assetId="pocket.save.icon" />} />
+          <ListRow title={t.pocketSpend} leading={<Art assetId="pocket.spend.icon" />} />
+          <ListRow title={t.pocketShare} leading={<Art assetId="pocket.share.icon" />} />
+        </List>
         <List label={t.cards}>
           <ListRow title={t.rowLesson} supporting={t.rowLessonInfo} onPress={() => undefined} />
           <ListRow title={t.rowTask} supporting={t.rowTaskInfo} trailing={<Chip tone="warning" glyph="info">{t.waiting}</Chip>} />
@@ -156,7 +162,7 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
         <InlineNotice tone="retry">{t.retry}</InlineNotice>
         <ProgressBar label={t.progress} value={3} max={5} valueText={t.progressValue} tone="mint" />
         <LoadingState label={t.loading} />
-        <EmptyState heading={t.empty} body={t.emptyBody} action={<Button variant="brand">{t.open}</Button>} />
+        <EmptyState heading={t.empty} body={t.emptyBody} artAssetId="empty.fresh-start.art" action={<Button variant="brand">{t.open}</Button>} />
         <ErrorState heading={t.failed} body={t.failedBody} retryLabel={t.retryAction} retryingLabel={t.retrying} retrying={retrying}
           onRetry={() => setRetrying(true)} />
       </section>

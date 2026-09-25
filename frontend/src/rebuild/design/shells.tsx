@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { ButtonLink, IconButton } from './buttons';
 import type { Locale } from './copyBudget';
-import { findMentorAvatar, resolveManifestAsset, type MentorCharacter } from './assets';
+import { findMentorAvatar, MENTOR_NAMES, resolveManifestAsset, type MentorCharacter } from './assets';
 import { MentorAvatar, Pill } from './display';
 import { useRebuildEnvironment } from './layers';
 import { Sheet } from './overlays';
@@ -140,9 +140,10 @@ export interface LearnerShellProps extends ShellCommonProps {
   /** Learn, Tasks, Wallet, Profile… as this learner is entitled to them (a teen without a parent has no Tasks, OD-3). */
   items: readonly ShellNavItem[];
   /**
-   * The Mentor tab (02 §1.1, §9.7): the chosen character's name and a render of
-   * the real model. Before a character is chosen, `character` is null and
-   * `name` is the word "Mentor"; there is no stand-in picture.
+   * The Mentor tab (02 §1.1, §9.7, OD-6): the chosen character's own name
+   * (from `MENTOR_NAMES`, so the name can never disagree with the picture) and
+   * a render of the real model. `name` is the translated generic word
+   * "Mentor", shown only before a character is chosen, with no stand-in picture.
    */
   mentor: { href: string; name: string; character: MentorCharacter | null };
   /** Where the Mentor tab sits among the items (the mockup's order puts it second). */
@@ -162,7 +163,7 @@ export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, 
   const { theme } = useRebuildEnvironment();
   const avatarId = mentor.character ? findMentorAvatar(mentor.character, theme) : null;
   const mentorEntry: NavEntry = {
-    id: 'mentor', label: mentor.name, href: mentor.href, labelRole: mentor.character ? 'data' : 'action',
+    id: 'mentor', label: mentor.character ? MENTOR_NAMES[mentor.character] : mentor.name, href: mentor.href, labelRole: mentor.character ? 'data' : 'action',
     icon: avatarId ? <MentorAvatar renderId={avatarId} label={null} size="xs" /> : undefined,
   };
   const entries = withIcons(items);

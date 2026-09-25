@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  Button, ConfirmDialog, DestructiveAction, Dialog, Menu, Popover, RebuildProvider, Sheet, Tooltip, useAnnounce, useToast,
+  Button, ConfirmDialog, DestructiveAction, Dialog, Menu, Popover, RebuildProvider, RebuildRoot, Sheet, Tooltip, useAnnounce, useToast,
 } from './controls';
 import { layerStackSnapshot } from './layers';
 
@@ -57,6 +57,24 @@ describe('dialog', () => {
     expect(host.dataset.ageBand).toBe('6-9');
     expect(host.dataset.layer).toBe('scrim');
     expect(dialog.closest('.lf-layer')?.classList.contains('lf-layer--scrim')).toBe(true);
+  });
+
+  it('inside the RebuildRoot of a real route, the host takes that surface\'s mode, language and age band', () => {
+    function RouteSurface() {
+      const [open, setOpen] = useState(false);
+      return <RebuildRoot theme="dark" locale="pt-BR" ageBand="10-12">
+        <Button onClick={() => setOpen(true)}>Abrir</Button>
+        <Dialog open={open} onClose={() => setOpen(false)} heading="Meta" description="Sua meta continua salva."
+          actions={<Button onClick={() => setOpen(false)}>Fechar</Button>} />
+      </RebuildRoot>;
+    }
+    render(<RouteSurface />);
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const host = screen.getByRole('dialog').closest('.lf-layer-root') as HTMLElement;
+    expect(host.dataset.theme).toBe('dark');
+    expect(host.lang).toBe('pt-BR');
+    expect(host.dataset.ageBand).toBe('10-12');
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
   });
 
   it('names itself, states the consequence in words, traps focus and gives it back', () => {

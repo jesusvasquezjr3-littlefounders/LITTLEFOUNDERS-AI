@@ -57,7 +57,7 @@
 .lf-learning-waffle-cell--share { background-color: var(--berry-strong); background-image: radial-gradient(circle, var(--surface) 0 2px, transparent 2.5px); }
 .lf-learning-waffle-cell--left { background: var(--sunken); }
 .lf-learning-waffle-key { font-size: .875rem; font-weight: 800; }
-@media (max-width: 400px) { .lf-learning-waffle-grid { inline-size: min(100%, 200px); } }
+@container app (max-width: 399px) { .lf-learning-waffle-grid { inline-size: min(100%, 200px); } }
 .lf-learning-pattern-spend-base { fill: var(--sky); }
 .lf-learning-pattern-spend-line { fill: none; stroke: var(--sky-strong); stroke-width: 1.5; }
 .lf-learning-pattern-share-base { fill: var(--berry); }
@@ -141,7 +141,7 @@
 .lf-cpa-pictorial > div { display: grid; place-items: center; min-block-size: 112px; padding: var(--spacing-3); border: 2px dashed var(--outline); border-radius: var(--rounded-lg); }
 .lf-cpa-pictorial .lf-cpa-dots { min-block-size: 0; padding: 0; background: transparent; }
 .lf-cpa-equation { display: flex; align-items: center; justify-content: center; gap: var(--spacing-3); min-block-size: 148px; padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--sunken); color: var(--content); }
-.lf-cpa-equation strong { display: grid; place-items: center; min-inline-size: 56px; min-block-size: 56px; border-radius: var(--rounded-md); background: var(--surface); font-family: Fredoka, sans-serif; font-size: clamp(1.5rem, 7vw, 2.5rem); }
+.lf-cpa-equation strong { display: grid; place-items: center; min-inline-size: 56px; min-block-size: 56px; border-radius: var(--rounded-md); background: var(--surface); font: var(--type-display-lg); letter-spacing: var(--type-display-lg-tracking); }
 .lf-cpa-steps { display: grid; gap: var(--spacing-1); padding: 0; margin: 0; list-style: none; color: var(--content); font-weight: 800; }
 .lf-cpa-steps li { min-block-size: var(--target-min); padding: var(--spacing-2); border-inline-start: 3px solid var(--primary-strong); background: var(--primary-soft); }
 .lf-cpa-answer { display: grid; }
@@ -173,7 +173,8 @@
   .lf-learning { padding: var(--spacing-8); }
   .lf-learning-content { gap: var(--spacing-5); margin-block-start: var(--spacing-6); }
   .lf-learning-board, .lf-learning-control-strip { padding: var(--spacing-6); }
-  .lf-learning-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-4); }
+  /* As many pocket columns as fit at 160 px each: beside the Mentor stage a board is too narrow for three (S03.8, found by looking). */
+  .lf-learning-controls { grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: var(--spacing-4); }
   .lf-learning-control { align-items: stretch; flex-direction: column; border-block-start: 0; padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
   .lf-learning-actions { justify-self: end; inline-size: min(100%, 360px); }
 }

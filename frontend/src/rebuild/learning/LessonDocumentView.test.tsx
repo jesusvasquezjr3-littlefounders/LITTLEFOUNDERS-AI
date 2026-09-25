@@ -195,15 +195,15 @@ describe('versioned pilot document renderer', () => {
     const grade = vi.fn(() => 'met' as const);
     const { rerender } = render(<LessonDocumentView raw={functionMachinePilotDocument('en-US')} locale="en-US" ageBand="10-12"
       onBack={noop} onGradeBarModel={grade} onComplete={async () => true} />);
-    expect(screen.getByRole('img', { name: /Input: 1\. Output: —/ })).toBeTruthy();
-    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1—2—3—');
+    expect(screen.getByRole('img', { name: /Input: 1\. Output: \?/ })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1?2?3?');
     fireEvent.change(screen.getByLabelText('Multiply by'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Then add'), { target: { value: '10' } });
     expect(screen.getByRole('button', { name: 'Check rule' })).toBeDisabled();
     fireEvent.click(screen.getByRole('radio', { name: '2' }));
     fireEvent.click(screen.getByRole('button', { name: 'Run' }));
     expect(screen.getByRole('img', { name: /Input: 2\. Output: 20/ })).toBeTruthy();
-    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1—2203—');
+    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1?2203?');
     fireEvent.click(screen.getByRole('button', { name: 'Check rule' }));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ multiplier: '5', offset: '10' }, 'function-machine-01', expect.anything()));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));

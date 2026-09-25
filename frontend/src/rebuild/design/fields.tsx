@@ -215,7 +215,7 @@ export function Stepper({ label, labelHidden = false, showValue = true, valuePla
   const name = labelHidden ? null : <span id={`${id}-label`} className="lf-input-label" data-copy-role="body">{label}</span>;
   const naming = labelHidden ? { 'aria-label': label } : { 'aria-labelledby': `${id}-label` };
   if (labelled) return <div className={`lf-stepper lf-stepper--labelled${className ? ` ${className}` : ''}`} role="group" {...naming}>
-    <div className="lf-stepper-layout">{name}{written}<div className="lf-stepper-controls">{decrease}{increase}</div></div>
+    <div className="lf-stepper-layout"><div className="lf-stepper-text">{name}{written}</div><div className="lf-stepper-controls">{decrease}{increase}</div></div>
   </div>;
   return <div className={`lf-stepper${className ? ` ${className}` : ''}`} role="group" {...naming}>
     {name}

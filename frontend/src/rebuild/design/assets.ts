@@ -12,6 +12,13 @@ export const MENTOR_AVATAR_SLOT = 'mentor.avatar';
 export const MENTOR_CHARACTERS = ['rho', 'zara', 'liruf', 'dina'] as const;
 export type MentorCharacter = typeof MENTOR_CHARACTERS[number];
 
+/**
+ * Each Mentor's own name (OD-6: the learner's navigation shows the chosen
+ * character's name). Proper nouns, identical in EN, es-MX and pt-BR, so they
+ * are not translated; a surface never passes its own spelling.
+ */
+export const MENTOR_NAMES: Readonly<Record<MentorCharacter, string>> = { rho: 'Dr. Rho', zara: 'Zara', liruf: 'Liruf', dina: 'Dina' };
+
 const assets = (manifest as readonly { class: string }[]).filter((row) => row.class === 'B') as unknown as readonly ManifestAsset[];
 
 /** A manifest-registered class B asset that is not retired, or null. Never a free-form URL. */

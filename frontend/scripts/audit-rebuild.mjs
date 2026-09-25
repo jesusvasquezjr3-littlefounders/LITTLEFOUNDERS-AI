@@ -4,6 +4,7 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
 import { installAudit } from './audits/in-page.mjs';
 import { aggregate, copyFindings, FOLD, proportionFindings } from './audits/rules.mjs';
 import { extraRoutes, LOCALES, STATES, stateUrl, THEMES, WIDTHS } from './audits/states.mjs';
+import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScript, signedOutStorageScript } from './audits/synthetic-core.mjs';
 
 /*
  * The three Frontend Bible audits on the REAL rebuilt app (02 §7 item 10,
@@ -16,6 +17,10 @@ import { extraRoutes, LOCALES, STATES, stateUrl, THEMES, WIDTHS } from './audits
  *   npm run audit:proportion    03 §3 proportion and composition
  *   npm run audit:copy-budget   06 §3 copy budget
  *   npm run audit:rebuild       all three in one pass (the pre-merge gate for UI changes)
+ *
+ * Authenticated routes (S03.5) are measured on the real app, signed in with a
+ * synthetic session; every request to Core is answered locally by
+ * audits/synthetic-core.mjs (no real Core, database or provider is contacted).
  *
  * Matrix: every state in audits/states.mjs x en-US/es-MX/pt-BR x light/dark x
  * 320/375/768/1280 px. Text fit runs each width with normal and +40% text,
@@ -51,18 +56,34 @@ const rows = { 'text-fit': [], proportion: [], 'copy-budget': [] };
 const configurations = { 'text-fit': 0, proportion: 0, 'copy-budget': 0 };
 const jsErrors = [];
 const signatures = new Map();
+const unknownRequests = new Set();
+let fixtures = null;
 let exitCode = 0;
 const profile = mkdtempSync(join(output, 'chrome-'));
 const browser = await launchBrowser(profile);
+
+async function onOrigin(page) {
+  if (await page.evaluate('location.origin').catch(() => '') === origin) return;
+  await page.send('Page.navigate', { url: `${origin}/favicon.ico` });
+  for (let n = 0; n < 200 && await page.evaluate('location.origin').catch(() => '') !== origin; n++) await wait(50);
+}
 
 async function load(page, state, locale, theme, width) {
   await page.send('Emulation.setDeviceMetricsOverride', { width, height: FOLD, deviceScaleFactor: 1, mobile: width < 768 });
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
   const url = stateUrl(origin, state, locale, theme);
+  if (state.entry === 'app') {
+    // The real app reads its session, language and mode from storage: a synthetic session for an
+    // authenticated state, none for a session-less route. Core is answered by the synthetic Core.
+    await onOrigin(page);
+    const spec = state.scenario ? SCENARIOS[state.scenario] : null;
+    await page.evaluate(spec ? sessionStorageScript({ guest: spec.guest, locale, theme }) : signedOutStorageScript({ locale, theme }));
+    page.core = spec ? { scenario: state.scenario, locale, theme, fixtures } : null;
+  } else page.core = null;
   await page.send('Page.navigate', { url });
   const ready = state.entry === 'app'
-    ? `document.readyState === 'complete' && !!document.querySelector('.lf-rebuild') && document.documentElement.lang === ${JSON.stringify(locale)}`
-    : `location.href === ${JSON.stringify(url)} && !!document.querySelector('.lf-rebuild main, main.lf-rebuild')`;
+    ? `document.readyState === 'complete' && !!document.querySelector('.lf-rebuild') && document.documentElement.lang === ${JSON.stringify(locale)}${(state.readyAll ?? []).map((selector) => ` && !!document.querySelector(${JSON.stringify(selector)})`).join('')}`
+    :`location.href === ${JSON.stringify(url)} && !!document.querySelector('.lf-rebuild main, main.lf-rebuild')`;
   let ok = false;
   for (let n = 0; n < 300 && !ok; n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
   if (!ok) throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}`);
@@ -104,7 +125,8 @@ async function measure(page, state, locale, theme, width, first, sink) {
   await settle(page);
   const where = { state: state.id, locale, theme, width };
   if (first) {
-    const signature = await page.evaluate('window.__lfAudit.signature()');
+    // Per entry: the same surface on the preview entry and on its real route may legitimately match.
+    const signature = `${state.entry}:${await page.evaluate('window.__lfAudit.signature()')}`;
     if (signatures.has(signature) && signatures.get(signature) !== state.id) throw new Error(`States ${signatures.get(signature)} and ${state.id} render identical markup: the driver is not reaching them`);
     signatures.set(signature, state.id);
   }
@@ -141,10 +163,14 @@ try {
   const workers = Math.max(1, Math.min(Number(process.env.AUDIT_WORKERS ?? 3), jobs.length));
   const warm = await openPage(browser.browser, { width: 375, height: FOLD, dark: false });
   if (!await warmDevServer(warm, origin)) throw new Error(`The dev server at ${origin} never mounted the app`);
+  if (states.some((state) => state.scenario)) fixtures = await loadLessonFixtures(warm, locales);
   await warm.send('Page.close').catch(() => {});
   let next = 0;
   await Promise.all(Array.from({ length: workers }, async () => {
-    const page = await openPage(browser.browser, { width: 375, height: FOLD, dark: false, newWindow: true });
+    // Each worker has its own window (a hidden page gets no frames) and its own storage (it signs in as someone else).
+    const page = await openPage(browser.browser, { width: 375, height: FOLD, dark: false, newWindow: true, isolated: true });
+    page.core = null;
+    await installSyntheticCore(page, origin, { unknownRequests });
     while (next < jobs.length) {
       const { state, locale, theme } = jobs[next++];
       const stateWidths = widths.filter((w) => !state.widths || state.widths.includes(w));
@@ -180,6 +206,8 @@ try {
     writeFileSync(join(output, `${audit}.json`), JSON.stringify({
       audit, origin, date: new Date().toISOString(), states: states.map((s) => s.id), locales, themes, widths,
       configurations: configurations[audit], findings: rows[audit].length, groups, jsErrors,
+      authenticated: states.filter((s) => s.scenario).map((s) => ({ state: s.id, population: SCENARIOS[s.scenario].population })),
+      unansweredCoreRequests: [...unknownRequests].sort(),
     }, null, 1));
     const matrix = audit === 'text-fit' ? 'x normal/+40% text x normal/WCAG 1.4.12 spacing' : 'x normal text';
     console.log(`\n${audit.toUpperCase()}: ${configurations[audit]} configurations (${states.length} states x ${locales.length} locales x ${themes.length} themes x up to ${widths.length} widths ${matrix})`);
@@ -192,6 +220,7 @@ try {
   }
   console.log(`\nJS errors: ${jsErrors.length ? JSON.stringify(jsErrors.slice(0, 5)) : 'none'}`);
   if (jsErrors.length) exitCode = 1;
+  if (unknownRequests.size) console.log(`Synthetic Core answered with an empty envelope: ${[...unknownRequests].sort().join('; ')}`);
   console.log(`Reports: ${output}`);
 } catch (error) {
   console.error(`\nSetup error: ${error.message}`);

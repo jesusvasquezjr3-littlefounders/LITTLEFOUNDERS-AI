@@ -27,6 +27,8 @@ export function copyFindings(result, state, locale, { firstView }) {
     const max = SENTENCES[block.role];
     if (max && block.sentences > max) findings.push([`${block.role}-sentences`, `${block.sentences}/${max} "${block.text.slice(0, 120)}"`]);
   }
+  // 02 rule 16: no em dash anywhere in UI copy, whatever its role (measured over every visible text node).
+  for (const text of result.dashes ?? []) findings.push(['em-dash', `"${text}"`]);
   // First view: product screens only, at 375 x 740, never with a modal over the page.
   if (firstView && state.firstView && !result.modal) {
     const counted = result.blocks.filter((block) => block.fold);
