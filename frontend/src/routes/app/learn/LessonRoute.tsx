@@ -17,6 +17,9 @@ import { AuthenticatedLessonDocument } from '@/rebuild/learning/AuthenticatedLes
 import type { OnGrade, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeSchemaDiagram, OnGradeWorkedExample } from '@/rebuild/learning/LessonDocumentView';
 import { LessonEligibilityStateView, type LessonEligibilityState } from '@/rebuild/learning/LessonEligibilityStateView';
 import { LessonTransportStateView } from '@/rebuild/learning/LessonTransportStateView';
+import { NarrativeRecallView } from '@/rebuild/learning/NarrativeRecallView';
+import { parseNarrativeRecall, type NarrativeRecall } from '@/rebuild/learning/narrative';
+import { useTheme } from '@/theme/useTheme';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
 
@@ -43,12 +46,14 @@ interface LessonResponse {
   document: unknown;
   audio: AudioManifest;
   mentor_stage?: unknown;
+  /** B.9 (S05.3c): an earlier, relevant story decision Core resurfaced for this lesson. */
+  narrative_recall?: unknown;
 }
 
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; mentorStage: unknown; v2Attempt: V2Attempt | null };
+  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; mentorStage: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -92,6 +97,9 @@ function LessonRouteSession() {
   const saved = useRef(false);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [loadRevision, setLoadRevision] = useState(0);
+  // B.9: the recall shows once, before the lesson, and never over a lesson resumed mid-way.
+  const [recallDone, setRecallDone] = useState(() => (initialCheckpoint.state?.index ?? 0) > 0);
+  const { isDark } = useTheme();
   const active = useRef(true);
   useEffect(() => {
     active.current = true;
@@ -137,14 +145,14 @@ function LessonRouteSession() {
         // Never restore segment indices/verdicts into a revised or translated document.
         if (invalidSnapshot || (checkpoint.current.document && checkpoint.current.document !== signature)) checkpoint.current = newCheckpoint();
         checkpoint.current.document = signature;
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null });
+        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null, recall: parseNarrativeRecall(data.narrative_recall) });
         return;
       }
       const clientDocument = loadLessonClientDocument(data.document);
       // Ungraded visual lessons remain presentation-only until the separate
       // version-pinned completion design exists; there is no token to request.
       if (clientDocument.status !== 'ready' || !clientDocument.document.segments.some(segment => segment.grading === 'server')) {
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null });
+        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null, recall: parseNarrativeRecall(data.narrative_recall) });
         return;
       }
       const resumeRunId = checkpoint.current.document?.startsWith('v2:') ? checkpoint.current.runId : undefined;
@@ -156,7 +164,7 @@ function LessonRouteSession() {
         checkpoint.current.document = `v2:${attempt.versionId}`;
         if (storageKey) writeCheckpoint(storageKey, checkpoint.current);
       }
-      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: attempt });
+      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: attempt, recall: parseNarrativeRecall(data.narrative_recall) });
     })();
     return () => {
       cancelled = true;
@@ -279,6 +287,10 @@ function LessonRouteSession() {
       onRetry={() => setLoadRevision((revision) => revision + 1)} />;
     return <LessonTransportStateView state="load-error" locale={localeFromI18n(i18n.language)} onBack={goBack}
       onRetry={() => setLoadRevision((revision) => revision + 1)} />;
+  }
+
+  if (state.recall && !recallDone) {
+    return <NarrativeRecallView recall={state.recall} locale={localeFromI18n(i18n.language)} dark={isDark} onContinue={() => setRecallDone(true)} />;
   }
 
   if (!isLegacyLessonDocument(state.document)) {

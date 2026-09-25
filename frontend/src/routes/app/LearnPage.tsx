@@ -7,6 +7,7 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { CourseCarousel, type CarouselCourse } from '@/routes/app/learn/CourseCarousel';
 import { ChapterLessons } from '@/routes/app/learn/ChapterLessons';
+import { LearnerNarrativePanel } from '@/routes/app/learn/LearnerNarrativePanel';
 import { readCoursesCache, writeCoursesCache } from '@/routes/app/learn/coursesCache';
 import { findCurrentChapter, type CourseTree, type CurrentChapter } from '@/routes/app/learn/types';
 
@@ -284,6 +285,9 @@ export function LearnPage() {
           />
         </Reveal>
       )}
+
+      {/* S05.3c (B.9, B.13): the learner's decision journal, and an independent teen's "try it for real" prompts. */}
+      {state.status === 'ready' && <LearnerNarrativePanel />}
     </div>
   );
 }

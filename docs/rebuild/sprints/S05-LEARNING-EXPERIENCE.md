@@ -9,6 +9,7 @@ This is the sprint record for the S05 learning-engine and learner-experience lan
 - Product `10` B.6, including the OD-16 amendment, with B.1, B.2 and B.9 where they meet the pathway model.
 - Owner log: OD-9 (migrated evidence is never lost), OD-16 (one thematic course with age pathways), OD-22 (B.6: engineering drafts and builds; the owner reviews before release) and OD-23 (zero paid spend).
 - Appendix C: the pedagogical review stage is where the topic-to-component map is reviewed.
+- Product `10` B.9 (decision journal), B.10 (parent-facing course narrative) and B.13 (lesson-to-Family-Hub bridge), with Appendix C's "Real-World Bridge Conversion Rate" and "Decision Journal Coverage & Resurfacing Rate" diagnostics, Bible 06 (the `narrative` role) and the owner log's OD-3 Option B (a teen's own variant; tasks stay guardian-only).
 
 Risk classification: **learning integrity and minor safeguards.** The pathway rules decide what a child can open and how learning evidence counts. The learner routes adopted them in S05.3b behind the release switch `COURSE_PATHWAY_ENGINE`, which stays `linear` until the owner accepts the policy and the migrations are applied.
 
@@ -18,6 +19,7 @@ Risk classification: **learning integrity and minor safeguards.** The pathway ru
 |---|---|---|---|---|
 | S05.3a | B.6 policy and data layer | The pathway policy is written as an owner-review proposal, covering eligibility, frontier, placement entry, cross-stage credit, badges and progress, legacy equivalence and migration mapping. It is implemented as pure Core rules. Every one of the 882 curriculum topics is mapped to shared knowledge components (26 of the original 28 components taught, 2 declared content gaps). Additive schema: the topic link table, chapter eligibility columns, stage-entry placements and frozen badges. The strand widening is declared contract. Adversarial tests cover each population, and a no-deadlock simulation runs on the whole real catalog. | None in this checkpoint. The rebuilt pathway screens are wave-2 work on the finished design system. | In progress: implemented and locally verified. Owner policy review, pedagogical review of the map, real-PostgreSQL evidence and route adoption (S05.3b) pending. |
 | S05.3b | B.6 route adoption and rebuilt course path | Core computes each learner's frontier from the Mentor's own graph, mastery and review cards, and serves it through the shelf, the course tree and a new course-path endpoint. The four lesson endpoints, placement, completion and the Family Hub kid view use the same pathway tree. Placement writes a per-stage entry through an extended B.1 transaction that refuses credit outside the stage. Progress and badges come from pathway completion; badges are stored and never revoked. Age filters chapters as a safeguard only. B.2 uses cross-stage rule P7. Everything sits behind `COURSE_PATHWAY_ENGINE` (default `linear`). Adversarial route tests cover every population named in the checkpoint. | A self-contained rebuilt course path in `rebuild/learning` with a validated client, three-locale copy within the youngest Copy Budget, light and dark themes, and every state the server can return. Real-Chrome matrix 540/540 and proportion audit 120/120 with no findings. Wave-2 composition on the finished design system is pending. | In progress: implemented and locally verified. Owner policy review (OD-22), real-PostgreSQL evidence, course-lesson evidence into the Mentor's BKT, human visual review and wave-2 composition pending. |
+| S05.3c | B.9 decision journal, B.10 guardian course narrative, B.13 lesson-to-Family-Hub bridge | Core records each meaningful story decision (a story branch with two or more choices, a dialogue reply, a would-you-rather pick) from the answer it has just graded, never from a client claim, in a per-learner journal that only the learner can read or clear. It brings one earlier, relevant decision back when a later lesson of the same story arc or the same shared skill opens, at most three times per decision. The verified parent (Tutor) gets a deterministic narrative for each completed lesson: skills, how it went, story choices counted but never shown, and a conversation starter. It passes the same verified-adult gate as the Family Hub plus a verified link on every request. Finishing a topic that teaches a bridge skill offers one optional prompt. For a child with a verified guardian, it is a Family Hub prompt that creates a real savings goal or task in one transaction that re-checks the link. An independent teen gets a self-directed prompt that creates nothing. The database makes tasks guardian-only, rate-limits the prompts, lets them expire and purges them. Appendix C diagnostics are a read-only function. Adversarial route tests cover every population. | Self-contained rebuilt surfaces: the "Remember this?" recall before the lesson, the decision journal at `/learn/journal`, a learner shortcut on the learning home (journal link and the teen's prompts), and the two Family Hub sections. Copy is in three locales within the Copy Budget and glossary, with light and dark themes and every server state. Real-Chrome matrix 900/900 and proportion audit 120/120 (full 984/984), with no findings. | In progress: implemented and locally verified. Real-PostgreSQL evidence for the new migration, product review of the bridge catalog and the owner proposals, the parent time-to-value instrumentation, human visual review and wave-2 composition pending. |
 
 ## S05.3a: B.6 pathway policy and data layer
 
@@ -172,3 +174,134 @@ Executed 24 September 2026 in the lane worktree with thread limits of 3 per test
 - **Content.** There are no tween or adult chapters. Adults and 10–12-year-olds take younger-bridge pathways, reported as content gaps.
 - **UI.** The course path is a self-contained surface reached only by its URL. Wave 2 composes it on the finished design system and links it from the shelf and the course page. Owner visual review, assistive-technology review and real-device checks are open. The legacy course page still renders the tree's lock state, which follows the pathway engine when the switch is on.
 - **B.1 row.** The stage-entry placement extends B.1's transaction. The B.1 requirement row (owned by S02) is not changed here; its release evidence still applies to the linear commit.
+
+## S05.3c: narrative continuity (B.9), the guardian's course narrative (B.10) and the family bridge (B.13)
+
+### Implementation and rationale
+
+**Current state checked first.** The SPEC's "Current State" still held for all three requirements:
+
+- Nothing persisted a story choice. `lesson_segment_attempts` keeps the score, not the option picked.
+- The Family Hub showed the kid tree, the wallet and streaks. Only the Mentor had a deterministic guardian narrative (`services/pedagogy/sessionNarrative.ts`).
+- No table or route linked a lesson to a task, a goal or the wallet.
+
+Three facts from the code shaped the design:
+
+- Story decisions exist only in v1 documents (`story_branch`, `dialogue_choice`, `would_you_rather`). No v2 segment type is a story decision.
+- Savings goals were created only by the kid's own role.
+- The self-registered teen's personal wallet (OD-3 Option B, D.3) does not exist yet; it is S07 work.
+
+This checkpoint was resumed from uncommitted work left by an interrupted run. That work was reviewed against the SPEC, completed and verified here. Nothing in it was discarded.
+
+**B.9: the decision journal (`services/narrative/decisionJournal.ts`, `learnerNarrative.ts`).**
+
+- *What counts as a decision.* A point where the learner picked between two or more real alternatives inside a story:
+  - a `story_branch` node with at least two choices (a one-choice "Continue" is not a decision, exactly as the grader treats it);
+  - every `dialogue_choice` turn;
+  - the `would_you_rather` pick.
+
+  `STORY_DECISION_TYPES` classifies every grader in the registry, and a test fails when a new grader is not classified. So a new story type cannot silently skip the journal.
+- *Where it comes from.* After the v1 grade route stores a graded answer, Core extracts the decisions from that answer. It checks them against the served document (a choice id the document does not offer records nothing) and writes them through `record_learner_decisions`. That function refuses a lesson that is not in the named topic and course.
+- *What is stored.* Short plain-text snapshots, in the lesson locale: the situation (the story's own question when it has one), the choice and, for a branch, the outcome the story showed next. They are bounded to two sentences and 24 words so they fit Bible 06's `narrative` role in every locale. The first choice is kept for good and the latest one moves, so "you changed your mind" is part of the story. Nothing numeric is stored: the quality an author gave a choice never enters the journal.
+- *Resurfacing.* When a lesson opens, Core picks at most one earlier entry from the same course. The entry must share a knowledge component with this topic (the shared B.6 graph) or sit in the same saga (story arc). The entry's lesson must still be in the learner's served tree. Candidates rank by relevance, then fewest resurfacings, then most recent; no entry appears in more than three lessons, and a reload shows the same entry again. A resurfacing is recorded before it is shown ("not counted means not shown"), so the Appendix C resurfacing rate stays truthful. The lesson response carries it as `narrative_recall`. The client shows "Remember this?" once, before the lesson, and never over a lesson resumed mid-way. A malformed recall is ignored.
+- *Privacy.* The journal is the learner's own record. RLS allows the owner only, and the routes (`GET`/`DELETE /learn/journal`) have no id to point elsewhere. Clearing it leaves progress, scores and coins untouched. The guardian's B.10 narrative counts decisions and never shows them: the parent asks, the child tells.
+- *Failure posture.* Recording and resurfacing are best-effort. A failure is logged and the grade or lesson proceeds. The code therefore deploys safely before its migration; a test proves grading, opening and completing still work when every narrative table answers 404.
+
+**B.10: the guardian's course narrative (`services/narrative/courseNarrative.ts`, `routes/familyLearning.ts`).**
+
+- It uses the same pattern as the Mentor's session narrative: deterministic, no model, structured facts in and one short sentence per fact rendered by the Family Hub, and nothing said that the data cannot back.
+- Each completed lesson reports:
+  - the skills practised (the topic's knowledge components, else the topic title);
+  - how it went, from the graded attempts: right away, tricky then got it, or still practising;
+  - whether a hint was used;
+  - how many story decisions were made;
+  - whether the topic is now finished;
+  - one conversation starter: "Ask what they chose, and why" after story decisions, otherwise "Ask them to explain it in their own words" (the Plan, step 2).
+- The first view carries the last seven days in two numbers. Titles resolve in the **guardian's** locale.
+- `/api/v1/family/learning` is mounted before `/family` and has the same gate: a parent role and current adult-identity verification (`PARENT_VERIFICATION_REQUIRED` otherwise). A verified link to that exact child is also re-checked on every request. It answers 404 for someone else's child, so the answer reveals nothing about whether the child exists. The kid's rows are read with the service role only after that check.
+
+**B.13: the bridge from a lesson to a real family action (`services/narrative/familyBridge.ts`, the offer, act and dismiss functions of `*_learning_family_bridge.sql`).**
+
+- *The milestone.* A completion that newly finishes a topic (every lesson passed or placement-credited, and not before) whose knowledge components include a bridge skill. The bridge catalog is a proposal for product review. It maps seven existing components to the two Family Hub flows that already produce real records:
+  - savings goal: `biz.saving-goal`, `life.saving-for-later`, `life.goal-planning`, `money.savings-plan-math`;
+  - earning task: `biz.value-of-work`, `life.effort-and-work`, `life.track-earnings`.
+
+  Because the milestone reads the shared B.6 graph, it covers every course and age pathway without naming a topic. It runs on both engines.
+- *The audience comes from verified relationships and age, never a self-declared role.*
+  - **Guardian:** the learner has a verified guardian link. The prompt appears in that guardian's Family Hub and is never announced to the child.
+  - **Self:** an independent teen (13–17, screened, not a guest, not a protected under-13 origin, no kid role, no guardian).
+  - **None:** everyone else (an adult learning alone, a verified-parent Tutor learning alone, a guest, an unscreened account). Nothing is stored for them.
+
+  `offer_learning_bridge_prompt` re-checks the guardian links in the database.
+- *Acting.* `act_on_learning_bridge_prompt` re-checks the verified link and, in one transaction, creates the real savings goal (in the child's wallet) or the real task (assigned by that guardian). The limits match the existing task and goal forms. It closes the prompt with the new id; a replay returns the stored result and never creates a second row. Core writes the same `tasks.created` audit entry as the task route, plus `learning_bridge.acted`.
+- *The teen variant (Option B).* "I will try" records the teen's own commitment and creates nothing. **Tasks stay guardian-only as a database fact:** CHECK constraints allow a task or a goal only on an acted guardian prompt of the matching action. The function also refuses any details on a self prompt, whatever Core sends. Until D.3's personal wallet exists, the self prompt creates no wallet record.
+- *Not a nag (B.25).* Controls:
+  - one prompt per learner per component, and one open prompt per action;
+  - a 30-day cooldown per action, serialized per learner with an advisory lock;
+  - a quiet 14-day expiry;
+  - "Not now" is final for that component;
+  - no counter, badge or reminder.
+- *Reach.* Guardian prompts are read on mount in the Family Hub (`LearningBridgesPanel`). The teen sees their prompts where they already are: a rebuilt learner shortcut on the learning home. It also gives every learner a link to the journal. The completion response also carries `self_bridge` for the wave-2 result screen.
+- *Retention and metrics.* `purge_closed_learning_bridge_prompts(400)` runs in the nightly `insights-maintenance.yml`, with the same 400-day window as the learning-event stream; open prompts only expire. `learning_narrative_metrics(since, until)` returns the Appendix C diagnostics:
+  - journal entries recorded and resurfaced;
+  - prompts offered, converted within 7 days (a real goal or task), dismissed and expired;
+  - self commitments, reported apart and never counted as conversions, because nothing was created.
+
+**Database (two expand migrations, applied in this order).**
+
+- `*_learning_decision_journal.sql`: `learner_decision_journal` and `learner_decision_resurfacings`, both readable only by the learner, and `record_learner_decisions`.
+- `*_learning_family_bridge.sql`: `learning_bridge_prompts`, readable by its audience only; offer, act and dismiss; `learning_narrative_metrics`; and `purge_closed_learning_bridge_prompts`. It requires the journal migration and the B.6 data layer (`kc.status`, `topic_knowledge_components`).
+- All six functions are `SECURITY DEFINER` and executable by `service_role` only. No client policy writes any of the three tables.
+- It started as one file. The Railway runner test failed on it: `/usr/bin/env: 'node': Argument list too long`. At 25.6 KB it was the largest migration in the repo, and the runner sends each file base64-encoded inside one command-line argument, which Windows caps at 32,767 characters. Splitting it by requirement (7.9 KB and 18.2 KB) keeps both under the largest file that already passed (22.8 KB). The runner's per-argument payload is an existing limit, recorded for the orchestrator; it was not changed in this lane.
+- `database/types/database.ts` was not edited; Core uses narrow local zod shapes. Regenerate the types at integration.
+
+**Frontend (rebuilt, self-contained, Bible 02 rule 23).**
+
+- `rebuild/learning/narrative.ts` and `rebuild/family/familyLearning.ts` are validated clients with injected transport. Every refusal maps to its own state, and a malformed payload is an error, never a partial screen.
+- Views:
+  - `NarrativeRecallView`: a single-state moment in one hue; the choice first, and "what happened" and a changed mind one tap away.
+  - `DecisionJournalView`, with `SelfBridgeList`.
+  - `LearnerNarrativeShortcut`.
+  - `LearningNarrative` and `LearningBridges`: the guardian's sections, in the adult register.
+- The thin hosts are `routes/app/learn/DecisionJournalRoute.tsx`, `LearnerNarrativePanel.tsx` (on `LearnPage`) and `routes/app/family/LearningPanels.tsx` (on `FamilyPage`). The legacy pages only mount them; nothing legacy was restyled.
+- Preview: `rebuild.html?screen=recall|journal|learnershortcut|familylearning`, with the fixture parameters listed in the matrix script.
+- Element ids use `useId()`. The design-class gate reads fixed `lf-` ids as undefined classes, and a fixed id would collide if a section rendered twice.
+
+**Proposals recorded for product and owner review** (implemented as the conservative default; see the owner questions in the checkpoint summary):
+
+1. The bridge catalog: seven components and two actions.
+2. A verified guardian may create a savings goal in the child's wallet through a bridge prompt ("create a real one together", the SPEC's own example). Until now only the child's own role created goals.
+3. The journal is private to the learner; the guardian sees decision counts only.
+4. The prompt timing: one per component, one open per action, a 30-day cooldown, a 14-day expiry, and "Not now" is final.
+5. The teen's self prompt records a commitment only, until D.3's personal wallet lets it create the teen's own real goal.
+
+### Verification log
+
+Executed 24–25 September 2026 in the lane worktree, with thread limits of 3 per test runner. These are local results, not CI or production observations. No database was used, the shared Docker stack was not touched, and no provider was called (OD-23).
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Narrative rules and route boundary, per population | `backend/`: `npx vitest run src/services/narrative src/__tests__/learnNarrative.test.ts` | 4 files, 49 tests passed. Pure rules (27):<br>- the grader classification is exhaustive;<br>- snapshots fit the narrative budget;<br>- a one-choice node and an unoffered choice record nothing;<br>- the recall picks by shared skill or arc, is stable on reload and is capped at three;<br>- struggle derives from attempts;<br>- the audience comes from age and links.<br><br>Direct API requests (22) against the RPC double:<br>- The graded choice is filed with its question and outcome. The first choice survives a changed replay. The decision resurfaces in a later lesson of the same arc, never in another course, and at most three times.<br>- A learner reads and clears only their own journal, and progress is untouched.<br>- With the migration missing, grading, opening and completing still work.<br>- **Parent-created child:** the guardian gets the prompt; the child sees none and gets 404 acting on it.<br>- **Verified Tutor:** creates one real savings goal; a replay creates nothing; a stranger parent gets 404. A task prompt creates a real task for the child; a dismissed prompt never returns.<br>- **Independent teen:** a self prompt that creates no task or wallet record. The database double refuses a task from a self prompt even if Core sends one.<br>- **Adult, verified-parent Tutor learning alone, refusal-path guest:** no prompt stored.<br>- The pathway engine offers the same prompt, and a replayed finished topic never prompts again.<br>- **B.10:** skills and struggle in the guardian's locale; decisions counted, the choice never revealed; paging and malformed pages refused; the child itself and an independent teen (403), a verified parent with no link to this child (404) and a parent who never verified (403) cannot read it. |
+| Core regression | `backend/`: `npm test` | `contract:check` passed. 79 files passed and 1 skipped; 1,630 tests passed and 1 documented skip (the opt-in PostgreSQL placement audit). The S05.3b real-catalog frontier simulations (`coursePathway.test.ts`) now have a 60 s timeout. They take 0.7–1.0 s each when run alone (measured 25 September). The interrupted run added the timeout after they passed the 5 s default under five-lane load, which was not reproduced here. The assertions are unchanged. |
+| Core static checks | `backend/`: `npm run type-check`, `npm run lint` | Passed |
+| Rebuilt views and clients | `frontend/`: `npx vitest run src/rebuild/learning/NarrativeViews.test.tsx src/rebuild/family/FamilyLearning.test.tsx src/routes/app/learn/__tests__/LessonRoute.test.tsx` | 19 + 13 + 34 tests passed. Covered: the Copy Budget for every string in 3 locales (youngest band for learner copy, adult for guardian copy) with the glossary check; schema acceptance and rejection; every refusal state; layering; a copy role on every text node; no score on the recall; the recall shown once before the lesson and a malformed recall ignored; the shortcut shows the link alone without a prompt and lets a teen answer in place; the guardian form keeps the task and goal limits. |
+| Frontend regression | `frontend/`: `npm test` | First run: 1 failure in `designClasses.test.ts`. Six fixed `lf-` element ids read as undefined classes. Resolved by switching them to `useId()` (the matrix's disclosure check now follows `aria-controls`). Rerun: 214 files, 2,234 tests passed. |
+| Frontend static checks | `frontend/`: `npm run type-check`, `npm run lint` | The resumed work had one type error (a test missing `onContinue`), fixed. Both now pass. |
+| Real Chrome | `frontend/`: `REBUILD_URL=http://localhost:5320 REPORT_DIR=../.lane-cache/rebuild-narrative node scripts/verify-rebuild-narrative.mjs` | 900/900 configurations, 0 findings: 15 states × 3 locales × 2 themes × 320/375/768/1280 px × 100%/140% text, plus WCAG 1.4.12 spacing at 375 px. Checked: Copy Budget per role and band, first-view word limit, clipping, 14 px minimum, 48 px targets, copy roles, glossary, no celebration, horizontal scroll, keyboard reach with a visible focus ring (recall disclosure and Continue, the teen's "I will try", the guardian's goal form), and no motion under reduced motion.<br><br>**Found by eye, not by the audit:** the first shortcut capture (es-MX, 375 px, dark) showed the grid rows stretched by a tall host, with the heading far from its card and "Mis decisiones" as a 260 px pill. Fixed with `align-content: start`. The matrix gained a "stretched-control" check (a button far taller than its own content). Negative control with the old CSS: 120 findings; with the fix: 0.<br><br>Captures inspected by eye after the fix: the shortcut, the es-MX 375 px Family Hub sections (light) and the en-US 1280 px recall (dark), with no clipping or overlap. |
+| Proportions | `frontend/`: `REBUILD_PROPORTIONS_SCOPE=narrative node scripts/verify-rebuild-proportions.mjs`, then the unscoped run | First narrative run: 24 "heading-body-ratio" findings on the shortcut; its section heading was 1.25 rem. Set to 1.5 rem like the Family Hub sections. Rerun: 120/120, 0 findings. Full audit: 984/984, 0 findings. |
+| i18n | Root: `bash agent/tools/check-i18n.sh` (Git Bash) | All three phases passed. The rebuilt copy lives in component catalogs; no `t()` key was added. |
+| Migration gates | `database/`: `npm test` | First run failed in the Railway runner test: `confirm-apply: runner should exit 0`, with stderr `/usr/bin/env: 'node': Argument list too long` on the then single 25.6 KB migration. That is a real Windows command-line limit of the runner's base64 transport, not load. Resolved by splitting it into `*_learning_decision_journal.sql` and `*_learning_family_bridge.sql` (see Database above). Rerun: migrations OK, 116 files (sequential numbering, RLS coverage, append-only audit); phase gate 95 expand and 21 contract, both new files expand; 21 Node checks passed; Railway runner 12 transport scenarios plus the static cross-checks passed. |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` (rerun on the staged tree), `npm run tools:test` | Specification OK (checksums, agent parity, headings, UI boundary, v2 parity, tokens, assets); secrets OK; tools self-tests 0 failures. |
+
+### Remaining limitations
+
+- **Physical PostgreSQL.** Neither migration has been applied to a database. The CHECK constraints, the advisory lock, the `ON CONFLICT` upsert, the cooldown and expiry paths, the RLS policies and the purge need disposable-database evidence. The RPC double reproduces their refusals, not PostgreSQL itself. `database/types` must be regenerated at integration.
+- **Product and owner review.** The five proposals above, especially the bridge catalog and a guardian creating a goal in the child's wallet.
+- **Appendix C instrumentation.**
+  - Recording and resurfacing are measured.
+  - The *coverage* denominator (all meaningful choices made) is not: attempts do not store the segment type. A failed journal write is logged as `[narrative] decision journal write failed`, which is the gap signal until a counter exists.
+  - Parent time-to-value (B.10) needs client timing behind H.1's consent-gated analytics, plus usability testing. Not built.
+- **Retention trade-off.** The 400-day purge also removes the "one prompt per component" row. A component could therefore prompt again more than a year after its prompt closed. This is recorded as intended (a year later is a new moment), and product review can change it.
+- **Teen wallet.** A self prompt cannot create the teen's own goal until D.3's personal wallet exists (S07).
+- **Content.** Only v1 story segments feed the journal. A course with no story decisions has no recall. B.13 prompts only for topics mapped to the seven bridge components; the map stays draft until the owner accepts the B.6 policy. Draft components still count for the bridge, because a component's review status does not change what a topic teaches.
+- **UI.** The surfaces are self-contained and mounted on the legacy Learn and Family pages without restyling them. Wave 2 composes them on the finished design system and shows `self_bridge` on the result screen. Owner visual review, assistive-technology review and real-device checks are open.

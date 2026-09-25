@@ -123,3 +123,5 @@ jobs:
           run_sql 'CALL prune_learning_events(400);' 'prune'
           run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'
+          # S05.3c (B.13): closed family-bridge prompts leave after the same 400-day window.
+          run_sql 'SELECT public.purge_closed_learning_bridge_prompts(400);' 'bridge_prompts_purged'

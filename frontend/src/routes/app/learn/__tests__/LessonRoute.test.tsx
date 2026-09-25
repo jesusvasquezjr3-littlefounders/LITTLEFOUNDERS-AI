@@ -44,6 +44,7 @@ vi.mock('@/lesson-engine/player/LessonPlayer', () => ({
     </div>
   ),
 }));
+vi.mock('@/theme/useTheme', async () => ({ ...(await vi.importActual<typeof import('@/theme/useTheme')>('@/theme/useTheme')), useTheme: () => ({ isDark: false }) }));
 vi.mock('@/tutor-scene/TutorStage', () => ({
   TutorStage: (props: { scene?: string; character?: string }) => (
     <div data-testid="tutor-stage" data-scene={props.scene} data-character={props.character} />
@@ -100,6 +101,27 @@ describe('LessonRoute', () => {
 
     expect(await screen.findByText('mock-complete')).toBeInTheDocument();
     expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1', { token: 'token-123' });
+  });
+
+  it('B.9: shows the resurfaced decision once, before the lesson, and ignores a malformed recall', async () => {
+    const recall = {
+      entry_id: 'entry-1', lesson_title: { 'en-US': 'The lemonade stand' }, situation: 'What price brings me closer to the guitar?',
+      choice: '10 coins, double the price', first_choice: '5 coins, the usual', outcome: 'Two neighbors buy.', relevance: 'same-arc', recorded_at: '2026-09-20T10:00:00.000Z',
+    };
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument, narrative_recall: recall }, error: null });
+    const first = renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByRole('heading', { name: 'Remember this?' })).toBeInTheDocument();
+    expect(screen.getByText('10 coins, double the price')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'What happened' }));
+    expect(screen.getByText('5 coins, the usual')).toBeInTheDocument();
+    expect(screen.queryByText('mock-complete')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
+    first.unmount();
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument, narrative_recall: { ...recall, situation: '' } }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByText('mock-complete')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Remember this?' })).toBeNull();
   });
 
   it('shows the rebuilt offline state and retries the lesson request', async () => {

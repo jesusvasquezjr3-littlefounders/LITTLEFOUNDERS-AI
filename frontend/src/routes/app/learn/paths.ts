@@ -44,6 +44,8 @@ export const PLACEMENT_ROUTE_PATH = 'learn/:courseSlug/placement' as const;
 export const TERRITORY_ROUTE_PATH = 'learn/:courseSlug/territory' as const;
 /** B.6 (S05.3b): the rebuilt course path on the pathway engine. */
 export const COURSE_PATH_ROUTE_PATH = 'learn/:courseSlug/path' as const;
+/** B.9 (S05.3c): the learner's decision journal. A static segment, so it ranks above learn/:courseSlug. */
+export const DECISION_JOURNAL_ROUTE_PATH = 'learn/journal' as const;
 
 export function coursePath(courseSlug: string): string {
   return `/${COURSE_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
@@ -65,4 +67,8 @@ export function territoryPath(courseSlug: string): string {
 
 export function coursePathPath(courseSlug: string): string {
   return `/${COURSE_PATH_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
+}
+
+export function decisionJournalPath(): string {
+  return `/${DECISION_JOURNAL_ROUTE_PATH}`;
 }

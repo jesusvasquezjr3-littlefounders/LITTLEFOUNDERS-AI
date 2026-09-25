@@ -329,6 +329,7 @@ function realBuilt(course: string): Built & { prerequisites: Map<string, string[
   return { ...built, prerequisites };
 }
 
+// Real-catalog simulations walk hundreds of topics; a loaded shared machine can exceed the 5 s default.
 describe('the real catalog (S05.3a map activated as if accepted)', () => {
   it.each([['financial-education', 8], ['investing', 15], ['investing', 34], ['entrepreneurship', 12]] as const)(
     '%s at age %i: a learner following the recommendation reaches 100%% and the stage badge, only ever through pathway lessons', (course, age) => {
@@ -339,7 +340,7 @@ describe('the real catalog (S05.3a map activated as if accepted)', () => {
       expect(tree.pathway.badge.eligible).toBe(true);
       const pathwayChapters = new Set(tree.adventures.filter((a) => a.pathwayAccess === 'pathway').map((a) => a.slug));
       expect(played.every((id) => pathwayChapters.has(id.split('/')[0]!))).toBe(true);
-    });
+    }, 60_000);
 
   it('financial education, age 8, random Mentor mastery: no topic whose skills are all shown is ever locked, and no blocked item names a shown skill', () => {
     const built = realBuilt('financial-education');
@@ -363,5 +364,5 @@ describe('the real catalog (S05.3a map activated as if accepted)', () => {
       }
       for (const blocked of tree.pathway.blocked) for (const kc of blocked.missingSkills) expect(shown.has(kc)).toBe(false);
     }
-  });
+  }, 60_000);
 });

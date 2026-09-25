@@ -30,6 +30,13 @@ import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import { CoursePathView } from '../learning/CoursePathView';
 import { coursePathPreviewStates } from '../learning/coursePathFixtures';
+import { NarrativeRecallView } from '../learning/NarrativeRecallView';
+import { DecisionJournalView } from '../learning/DecisionJournalView';
+import { LearnerNarrativeShortcut } from '../learning/LearnerNarrativeShortcut';
+import { journalPreviewStates, recallFixture, selfBridgesFixture } from '../learning/narrativeFixtures';
+import { LearningNarrative } from '../family/LearningNarrative';
+import { LearningBridges } from '../family/LearningBridges';
+import { bridgesFixture, narrativePreviewStates } from '../family/familyLearningFixtures';
 import type { LessonMentorStage } from '../learning/lessonDocument';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
@@ -108,6 +115,25 @@ export function Preview() {
       : screen === 'coursepath' ? <CoursePathView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'}
         state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
         missingTitles={['Entrepreneurship']} onOpenLesson={() => go('lesson')} onPlacement={() => go('home')} onBack={() => go('home')} onRetry={() => go('coursepath')} />
+      : screen === 'recall' ? <NarrativeRecallView key={`recall:${locale}`} fixture locale={locale} dark={theme === 'dark'}
+        recall={recallFixture(locale, params.get('changed') !== '0')} onContinue={() => go('home')} />
+      : screen === 'journal' ? <DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'}
+        state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
+        onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
+        onClear={async () => true} onBridge={async () => 'done'} />
+      : screen === 'learnershortcut' ? <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
+        <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
+          bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}
+          onOpenJournal={() => go('journal')} onBridge={async () => 'done'} />
+      </main>
+      : screen === 'familylearning' ? <main className="lf-family-preview" data-surface="app" data-screen="family-learning-preview">
+        <LearningBridges key={`bridges:${locale}`} fixture locale={locale} dark={theme === 'dark'}
+          state={params.get('bridges') === '0' ? { status: 'ready', prompts: [] } : bridgesFixture(locale)}
+          onAct={async () => 'created'} onDismiss={async () => 'dismissed'} onRetry={() => {}} />
+        <LearningNarrative key={`narrative:${locale}`} fixture locale={locale} dark={theme === 'dark'} open={params.get('open') !== '0'}
+          state={narrativePreviewStates(locale)[params.get('narrative') ?? 'ready'] ?? narrativePreviewStates(locale).ready!}
+          onToggle={() => {}} onRetry={() => {}} onMore={() => {}} />
+      </main>
       : screen === 'result' || screen === 'replay' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-1', lesson_id: 'pilot-savings-sequence', version_id: 'rev-1', locale,
         first_try_correct: screen === 'replay' ? 2 : 3, graded_count: 4, awarded_xp: 40, duration_seconds: 200,

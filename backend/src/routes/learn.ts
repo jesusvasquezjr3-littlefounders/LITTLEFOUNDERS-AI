@@ -34,6 +34,8 @@ import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../se
 import { gradeV2Visual, projectV2MentorStage, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
+import { offerBridgeAfterCompletion, recordGradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
+import { learnNarrativeRouter } from './learnNarrative.js';
 import {
   completeLesson,
   completeV2Lesson,
@@ -484,6 +486,8 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
 export function learnRouter(): Router {
   const router = Router();
   router.use(requireAuth, requireAgeScreen);
+  // B.9 / B.13 (S05.3c): the learner's decision journal and self-directed bridge prompts.
+  router.use(learnNarrativeRouter());
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
   // state, never raw events, answers, or another learner's data.
@@ -711,6 +715,9 @@ export function learnRouter(): Router {
     const prefs = document?.mentor_stage ? await getTutorPreferences(user.id) : null;
     const mentorStage = document ? projectV2MentorStage(document, prefs?.character) : null;
     const deliveredDocument = (document ? stripV2MentorStage(safeDocument) : safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown };
+    // B.9 (S05.3c): one earlier, relevant story decision from this course,
+    // resurfaced as the lesson opens. Best-effort: never blocks the lesson.
+    const narrativeRecall = await resurfaceForLesson({ userId: user.id, tree: ctx.tree, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId });
 
     return ok(res, {
       lesson: {
@@ -729,6 +736,7 @@ export function learnRouter(): Router {
       // it references prompt/story/explanation audio only — never answers.
       audio: picked.audio ?? {},
       ...(mentorStage ? { mentor_stage: mentorStage } : {}),
+      ...(narrativeRecall ? { narrative_recall: narrativeRecall } : {}),
     });
   });
 
@@ -992,6 +1000,13 @@ export function learnRouter(): Router {
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
     if (recorded.exhausted) return fail(res, 409, 'ATTEMPTS_EXHAUSTED', 'No attempts remain for this segment');
 
+    // B.9 (S05.3c): the story decisions inside the answer Core just graded go
+    // to the learner's decision journal. Best-effort, after the grade is stored.
+    await recordGradedDecisions({
+      userId: user.id, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId, locale: picked.locale,
+      segment, answer, document: picked.document as Record<string, unknown>,
+    });
+
     return ok(res, { verdict: recorded.verdict });
   });
 
@@ -1058,11 +1073,14 @@ export function learnRouter(): Router {
         p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
       });
       if (!completion) return fail(res, 409, 'UNSUPPORTED_LESSON', 'Complete every learning step first');
-      if (courseEngine() === 'pathway') {
-        const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
-        if (refreshed) await settleCourseBadges(user.id, ctx.course, refreshed);
-      }
-      return ok(res, completion);
+      const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
+      if (refreshed && courseEngine() === 'pathway') await settleCourseBadges(user.id, ctx.course, refreshed);
+      // B.13 (S05.3c): a completion that finishes a bridge topic offers a family prompt.
+      const selfBridge = completion.replayed ? null : await offerBridgeAfterCompletion({
+        user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
+        before: ctx.tree, after: refreshed?.tree ?? null,
+      });
+      return ok(res, { ...completion, ...(selfBridge ? { self_bridge: selfBridge } : {}) });
     }
 
     const scoring = (picked.document as { scoring?: { pass_threshold?: number } }).scoring ?? {};
@@ -1173,6 +1191,11 @@ export function learnRouter(): Router {
     const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
     if (refreshed) await settleCourseBadges(user.id, ctx.course, refreshed);
     const refreshedTree = refreshed?.tree ?? null;
+    // B.13 (S05.3c): a passing completion that finishes a bridge topic offers a family prompt.
+    const selfBridge = completion.passed && !completion.replayed ? await offerBridgeAfterCompletion({
+      user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
+      before: ctx.tree, after: refreshedTree,
+    }) : null;
 
     return ok(res, {
       score: completion.score,
@@ -1188,6 +1211,7 @@ export function learnRouter(): Router {
       lessons_completed: completion.lessons_completed,
       progress: refreshedTree?.course.progress ?? ctx.tree.course.progress,
       next_lesson_id: refreshedTree?.nextLessonId ?? ctx.tree.nextLessonId,
+      ...(selfBridge ? { self_bridge: selfBridge } : {}),
     });
   });
 

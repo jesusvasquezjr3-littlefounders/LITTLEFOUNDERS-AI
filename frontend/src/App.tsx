@@ -29,12 +29,14 @@ import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
 import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
 import { CoursePathRoute } from '@/routes/app/learn/CoursePathRoute';
+import { DecisionJournalRoute } from '@/routes/app/learn/DecisionJournalRoute';
 import { PlacementPage } from '@/routes/app/learn/PlacementPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import {
   COURSE_PATH_ROUTE_PATH,
+  DECISION_JOURNAL_ROUTE_PATH,
   COURSE_ROUTE_PATH,
   LESSON_ROUTE_PATH,
   PLACEMENT_ROUTE_PATH,
@@ -378,6 +380,7 @@ export function App() {
             <Route path={COURSE_ROUTE_PATH} element={<CoursePage />} />
             <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryPage />} />
             <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRoute />} />
+            <Route path={DECISION_JOURNAL_ROUTE_PATH} element={<DecisionJournalRoute />} />
             <Route
               path="tasks"
               element={

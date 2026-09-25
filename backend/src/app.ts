@@ -7,6 +7,7 @@ import { analyticsRouter } from './routes/analytics.js';
 import { badgePublicRouter } from './routes/badgePublic.js';
 import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
+import { familyLearningRouter } from './routes/familyLearning.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
@@ -73,6 +74,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/onboarding', onboardingRouter());
   app.use('/api/v1/placement', placementRouter());
   app.use('/api/v1/tutor', tutorRouter());
+  // S05.3c (B.10, B.13): mounted before /family so its own gate answers its paths.
+  app.use('/api/v1/family/learning', familyLearningRouter());
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/tasks', tasksRouter());
   app.use('/api/v1/banking', bankingRouter());
