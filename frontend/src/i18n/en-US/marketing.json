@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "Can both parents supervise the same child?",
-        "answer": "Yes. A second verified Tutor — a co-parent, a grandparent — can link to the same Child account through a single-use invite created from your Tutor panel. The invite works once and expires in 7 days."
+        "answer": "Yes. A second verified Tutor — a co-parent, a grandparent — can link to the same Child account through a single-use invite created from your Tutor panel. The invite works once and expires in 7 days, and you confirm the new Tutor before they can see anything."
       },
       "howMany": {
         "question": "How many children can I add?",

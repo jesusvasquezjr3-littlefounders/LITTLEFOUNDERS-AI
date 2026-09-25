@@ -415,6 +415,14 @@ describe('POST /api/v1/tasks/:id/approve (parent)', () => {
     expect(res.body.data.task.status).toBe('approved');
   });
 
+  it('records the deciding guardian on the approval write so the database can re-check it (D.4)', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [KID_ID], writes });
+    await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const patch = writes.find((w) => w.url.includes(`/tasks?id=eq.${TASK_ID}&status=eq.done`));
+    expect(patch?.body).toMatchObject({ status: 'approved', decided_by: PARENT_ID, decided_at: expect.any(String) });
+  });
+
   it('409s approving a task that requires a photo but has none attached yet', async () => {
     stub({ task: { ...defaultTask(), status: 'done', requires_evidence: true }, parentsKids: [KID_ID] });
     const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
@@ -460,6 +468,7 @@ describe('POST /api/v1/tasks/:id/cancel (parent)', () => {
     expect(res.body.data.task.cancelReason).toBe('The bed still needs the pillows');
     const patch = writes.find((w) => w.url.includes(`/tasks?id=eq.${TASK_ID}&status=eq.open`));
     expect((patch?.body as Record<string, unknown>).cancel_reason).toBe('The bed still needs the pillows');
+    expect(patch?.body).toMatchObject({ decided_by: PARENT_ID, decided_at: expect.any(String) });
   });
 
   it('rejects a reason over 240 characters', async () => {

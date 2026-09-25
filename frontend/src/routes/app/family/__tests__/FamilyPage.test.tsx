@@ -42,6 +42,8 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('../AddKidCard', () => ({ AddKidCard: () => null }));
 vi.mock('../BadgeSharesPanel', () => ({ BadgeSharesPanel: () => null }));
+vi.mock('../CoGuardiansPanel', () => ({ CoGuardiansPanel: () => null, GuardianRequestsPanel: () => null }));
+vi.mock('../WalletCorrectionsPanel', () => ({ WalletCorrectionsPanel: () => null }));
 vi.mock('../GuardianInvitePanel', () => ({ GuardianInvitePanel: () => null, GuardianInviteJoin: () => null }));
 vi.mock('../ManageKidPanel', () => ({ ManageKidPanel: () => null }));
 vi.mock('../SocialGraphPanel', () => ({ SocialGraphPanel: () => null }));

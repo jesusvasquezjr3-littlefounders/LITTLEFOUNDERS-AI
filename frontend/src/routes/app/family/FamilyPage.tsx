@@ -8,12 +8,14 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
+import { CoGuardiansPanel, GuardianRequestsPanel } from './CoGuardiansPanel';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
 import { ManageKidPanel } from './ManageKidPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
 import { SocialHistoryPanel } from './SocialHistoryPanel';
 import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
+import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -216,6 +218,10 @@ export function FamilyPage() {
               <SocialHistoryPanel kidUserId={kid.userId} token={token} />
               <BadgeSharesPanel kidUserId={kid.userId} token={token} />
               <GuardianInvitePanel kidUserId={kid.userId} token={token} />
+              {/* S07.1 (D.5 / OD-21): pending, rejected and revoked Tutor
+                  links, and the guardian-only money corrections. */}
+              <CoGuardiansPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} onAccessLost={() => onKidRemoved(kid.userId)} />
+              <WalletCorrectionsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}
@@ -231,6 +237,7 @@ export function FamilyPage() {
 
       {state.kids.length > 0 && <SocialNoticesPanel token={token} />}
       {joinToken !== null && <GuardianInviteJoin inviteToken={joinToken} />}
+      <GuardianRequestsPanel token={token} />
       {consentError && <ErrorBanner code={consentError} />}
       {state.kids.length > 0 && <AddKidCard onCreated={onKidCreated} />}
     </div>

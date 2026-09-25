@@ -71,6 +71,7 @@ import {
   revokeExclusion,
 } from '../services/analyticsExclusions.js';
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
+import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -396,6 +397,8 @@ export function adminRouter(): Router {
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
   // E.3 report escalation queue: support-adjacent tooling per G.1's mapping.
   router.use('/reports', requireAdminPermission('manage_support'));
+  // D.4's Appendix H metric: a read-only integrity count, analytics-grade.
+  router.use('/family', requireAdminPermission('view_analytics'));
   // IP exclusions and non-read intelligence operations change operational
   // state. A read-only analytics grant cannot authorize those changes.
   router.use('/analytics/exclusions', requireAdminPermission('manage_support'));
@@ -1096,6 +1099,29 @@ export function adminRouter(): Router {
     const users = await listAdminUsers();
     if (!users) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load users');
     ok(res, { users });
+  });
+
+  /*
+   * D.4 (Appendix H, "Unauthorized State-Transition Rate"): every accepted
+   * chore/goal/redemption/guardian-link/freeze transition is recorded by the
+   * database with the request role that caused it. outsideService counts the
+   * ones that did not come through Core's service role; the target is zero.
+   */
+  const FamilyIntegrityQuery = z.object({ days: z.coerce.number().int().min(1).max(365).default(30) }).strict();
+
+  router.get('/family/state-integrity', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await getFamilyStateIntegrity(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the integrity metric');
+    const tables = rows.map((r) => ({ table: r.table_name, transitions: r.transitions, outsideService: r.outside_service }));
+    return ok(res, {
+      since: since.toISOString(),
+      tables,
+      transitions: tables.reduce((sum, t) => sum + t.transitions, 0),
+      outsideService: tables.reduce((sum, t) => sum + t.outsideService, 0),
+    });
   });
 
   router.get('/users/timeline', async (req, res) => {

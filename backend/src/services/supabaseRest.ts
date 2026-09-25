@@ -1731,10 +1731,12 @@ export interface WalletLedgerRow {
   task_id: string | null;
   goal_id: string | null;
   redemption_id: string | null;
+  /** S07.1: set on manual_adjustment / goal_withdrawal rows — the wallet_guardian_actions row holding the reason. */
+  guardian_action_id: string | null;
   created_at: string;
 }
 
-const WALLET_LEDGER_FIELDS = 'id,kid_user_id,bucket,amount,reason,task_id,goal_id,redemption_id,created_at';
+const WALLET_LEDGER_FIELDS = 'id,kid_user_id,bucket,amount,reason,task_id,goal_id,redemption_id,guardian_action_id,created_at';
 
 export function getWalletLedger(kidId: string, limit: number): Promise<WalletLedgerRow[] | null> {
   return serviceRest<WalletLedgerRow[]>(
@@ -1946,9 +1948,11 @@ export interface RedemptionRow {
   created_at: string;
   decided_at: string | null;
   decided_by: string | null;
+  /** S07.1 (OD-21): set when a verified guardian marks the approved reward delivered. */
+  fulfilled_at: string | null;
 }
 
-const REDEMPTION_FIELDS = 'id,catalog_id,kid_user_id,status,created_at,decided_at,decided_by';
+const REDEMPTION_FIELDS = 'id,catalog_id,kid_user_id,status,created_at,decided_at,decided_by,fulfilled_at';
 
 export async function insertRedemption(row: { catalog_id: string; kid_user_id: string }): Promise<RedemptionRow | null> {
   const rows = await serviceRest<RedemptionRow[]>('/redemptions', {

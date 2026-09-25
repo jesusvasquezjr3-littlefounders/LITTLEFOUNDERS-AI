@@ -39,6 +39,12 @@ jobs:
       - name: i18n 3-locale key parity + hardcoded-string scan
         run: bash agent/tools/check-i18n.sh
 
+      # OD-21 / D.5: every declared Family Hub lifecycle state keeps a
+      # producing and a consuming flow. Its evidence spans backend, frontend
+      # and migrations, so it runs here, unfiltered, not only in database CI.
+      - name: Family Hub lifecycle states each have a producer and a consumer
+        run: node database/scripts/check-family-lifecycle.mjs
+
       # The acquisition surface is declared in frontend/ AND backend/ (no
       # workspaces, so no shared import). Either file can change alone, which
       # is why this belongs in the unfiltered job rather than either CI.

@@ -165,6 +165,7 @@
     "accepting": "Accepting…",
     "accepted": "You are now linked as a second Tutor.",
     "acceptFailed": "Could not accept the invite. Try again.",
+    "pending": "Accepted. The child's Tutor will confirm you next.",
     "expired": "This invite is no longer valid."
   },
   "memorySelfReview": {

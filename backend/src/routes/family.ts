@@ -5,6 +5,16 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { composeBadgeImage, firstNameOnly, generateBadgeToken, badgeShareExpiresAt, purgeBadgeImageIfUnreferenced } from '../services/badges.js';
 import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
+import {
+  decideGuardianLink,
+  getDisplayNames,
+  getLinkStatus,
+  isRefusal,
+  listLinksForKid,
+  listOwnUnverifiedLinks,
+  revokeOwnGuardianLink,
+  UNAVAILABLE,
+} from '../services/familyLifecycle.js';
 import { assembleCourseTree } from '../services/courseTree.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
@@ -778,7 +788,98 @@ export function familyRouter(): Router {
     const result = await acceptGuardianInvite(token.data, parent.id);
     if (result === 'invalid') return fail(res, 404, 'NOT_FOUND', 'No such invite');
     if (result === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not accept the invite');
-    return ok(res, { linked: true, kidUserId: result.kidUserId });
+    // S07.1 (OD-21): while the child has a verified guardian, an accepted
+    // invite produces a PENDING link that guardian must confirm. The answer
+    // reports what the database actually holds, never an assumed "linked".
+    const status = await getLinkStatus(parent.id, result.kidUserId);
+    if (status === UNAVAILABLE || status === null || (status !== 'pending' && status !== 'verified')) {
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the invite state');
+    }
+    return ok(res, { linked: status === 'verified', status, kidUserId: result.kidUserId });
+  });
+
+  /*
+   * GUARDIAN-LINK LIFECYCLE (D.5 / OD-21). Every verified guardian of a child
+   * sees the child's Tutors in every state, confirms or rejects a pending
+   * second Tutor, and may step away while another verified Tutor remains.
+   * The database functions re-check each actor; these routes only add the
+   * family guard. Adults are shown by display name only.
+   */
+  router.get('/kids/:kidId/guardians', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const me = authedUser(res).id;
+    const links = await listLinksForKid(kidId);
+    if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Tutors');
+    const names = await getDisplayNames(links.map((l) => l.parent_user_id));
+    if (names === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Tutors');
+    return ok(res, {
+      guardians: links.map((l) => ({
+        linkId: l.id,
+        displayName: names.get(l.parent_user_id) ?? null,
+        status: l.verification_status,
+        isMe: l.parent_user_id === me,
+        since: l.verified_at ?? l.created_at,
+        decidedAt: l.decided_at,
+        revokedAt: l.revoked_at,
+      })),
+    });
+  });
+
+  const LinkDecision = z.object({ decision: z.enum(['confirm', 'reject']) }).strict();
+  const LINK_REFUSALS: Record<string, { status: number; message: string }> = {
+    NOT_A_GUARDIAN: { status: 404, message: 'No such pending Tutor' },
+    GUARDIAN_LINK_NOT_FOUND: { status: 404, message: 'No such pending Tutor' },
+    GUARDIAN_LINK_NOT_PENDING: { status: 409, message: 'This Tutor was already decided' },
+    LAST_GUARDIAN: { status: 409, message: 'A child always keeps at least one verified Tutor' },
+  };
+
+  router.post('/kids/:kidId/guardians/:linkId/decision', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const linkId = z.string().uuid().safeParse(req.params.linkId);
+    const parsed = LinkDecision.safeParse(req.body);
+    if (!linkId.success || !parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'decision must be confirm or reject');
+    const links = await listLinksForKid(kidId);
+    if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Tutors');
+    if (!links.some((l) => l.id === linkId.data)) return fail(res, 404, NOT_FOUND, 'No such pending Tutor');
+    const result = await decideGuardianLink(linkId.data, authedUser(res).id, parsed.data.decision === 'confirm');
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
+    if (isRefusal(result)) {
+      const mapped = LINK_REFUSALS[result.refused];
+      return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, 'CONFLICT', 'The decision was refused');
+    }
+    return ok(res, { linkId: linkId.data, status: result });
+  });
+
+  router.post('/kids/:kidId/guardians/leave', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const result = await revokeOwnGuardianLink(kidId, authedUser(res).id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not step away');
+    if (isRefusal(result)) {
+      const mapped = LINK_REFUSALS[result.refused];
+      return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, 'CONFLICT', 'Stepping away was refused');
+    }
+    return ok(res, { status: 'revoked' });
+  });
+
+  /** The caller's own pending/rejected/revoked links — what an invited or departed adult sees. */
+  router.get('/guardian-links/mine', async (req, res) => {
+    if (Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No filters are accepted');
+    const links = await listOwnUnverifiedLinks(authedUser(res).id);
+    if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your Tutor requests');
+    const names = await getDisplayNames(links.map((l) => l.kid_user_id));
+    if (names === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your Tutor requests');
+    return ok(res, {
+      links: links.map((l) => ({
+        linkId: l.id,
+        kidDisplayName: names.get(l.kid_user_id) ?? null,
+        status: l.verification_status,
+        updatedAt: l.revoked_at ?? l.decided_at ?? l.created_at,
+      })),
+    });
   });
 
   router.delete('/kids/:kidId/badges/:token', async (req, res) => {    const kidId = await guardKid(req, res);

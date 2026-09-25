@@ -165,6 +165,7 @@
     "accepting": "Aceptando…",
     "accepted": "Ahora estás vinculado como segundo Tutor.",
     "acceptFailed": "No se pudo aceptar la invitación. Inténtalo de nuevo.",
+    "pending": "Aceptada. El Tutor actual te confirmará.",
     "expired": "Esta invitación ya no es válida."
   },
   "memorySelfReview": {

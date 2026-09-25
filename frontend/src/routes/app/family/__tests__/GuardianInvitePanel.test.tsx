@@ -44,12 +44,31 @@ describe('GuardianInvitePanel', () => {
 describe('GuardianInviteJoin', () => {
   it('previews the kid name and accepts through the one-shot exchange', async () => {
     mockApi.mockResolvedValueOnce({ data: { displayName: 'Ana' }, error: null })
-      .mockResolvedValueOnce({ data: { linked: true }, error: null });
+      .mockResolvedValueOnce({ data: { linked: true, status: 'verified' }, error: null });
     render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
     expect(await screen.findByText(/You were invited to supervise Ana/)).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
     expect(await screen.findByText('You are now linked as a second Tutor.')).toBeVisible();
     expect(mockApi).toHaveBeenLastCalledWith(`/family/guardian-invite/${'a'.repeat(32)}/accept`, { method: 'POST', token: 'session' });
+  });
+
+  it('reports an accepted invite as waiting for the current Tutor, never as linked (S07.1)', async () => {
+    mockApi.mockResolvedValueOnce({ data: { displayName: 'Ana' }, error: null })
+      .mockResolvedValueOnce({ data: { linked: false, status: 'pending' }, error: null });
+    render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
+    await screen.findByText(/You were invited to supervise Ana/);
+    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
+    expect(await screen.findByText("Accepted. The child's Tutor will confirm you next.")).toBeVisible();
+    expect(screen.queryByText('You are now linked as a second Tutor.')).toBeNull();
+  });
+
+  it('refuses a contradictory receipt instead of guessing', async () => {
+    mockApi.mockResolvedValueOnce({ data: { displayName: 'Ana' }, error: null })
+      .mockResolvedValueOnce({ data: { linked: true, status: 'pending' }, error: null });
+    render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
+    await screen.findByText(/You were invited to supervise Ana/);
+    fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
+    expect(await screen.findByText('Could not accept the invite. Try again.')).toBeVisible();
   });
 
   it('treats an unknown or consumed invite as one expired state', async () => {
@@ -68,7 +87,7 @@ describe('GuardianInviteJoin', () => {
   it('keeps the accept card on a failed accept and lets the parent retry', async () => {
     mockApi.mockResolvedValueOnce({ data: { displayName: 'Ana' }, error: null })
       .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL' } })
-      .mockResolvedValueOnce({ data: { linked: true }, error: null });
+      .mockResolvedValueOnce({ data: { linked: true, status: 'verified' }, error: null });
     render(<GuardianInviteJoin inviteToken={'a'.repeat(32)} />);
     await screen.findByText(/You were invited to supervise Ana/);
     fireEvent.click(screen.getByRole('button', { name: 'Accept' }));

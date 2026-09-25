@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "¿Pueden dos adultos supervisar al mismo hijo?",
-        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo mediante una invitación de un solo uso creada desde tu panel de Tutor. La invitación funciona una vez y caduca en 7 días."
+        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo mediante una invitación de un solo uso creada desde tu panel de Tutor. La invitación funciona una vez y caduca en 7 días, y tú confirmas al nuevo Tutor antes de que pueda ver algo."
       },
       "howMany": {
         "question": "¿Cuántos hijos puedo agregar?",

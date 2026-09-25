@@ -29,6 +29,7 @@ import {
   type SpendLimitRow,
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
+import { getGuardianActionsByIds, type GuardianActionRow } from '../services/familyLifecycle.js';
 
 /*
  * /api/v1/banking — BANKING.md's presentation-and-mechanics layer over
@@ -102,8 +103,9 @@ function toWirePendingCredit(c: PendingCreditRow) {
   return { id: c.id, amount: c.amount, source: c.source, createdAt: c.created_at };
 }
 
-function toWireLedgerEntry(e: WalletLedgerRow) {
-  return { id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, taskId: e.task_id, goalId: e.goal_id, createdAt: e.created_at };
+function toWireLedgerEntry(e: WalletLedgerRow, actions: Map<string, GuardianActionRow>) {
+  const note = e.guardian_action_id ? actions.get(e.guardian_action_id)?.reason ?? null : null;
+  return { id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, taskId: e.task_id, goalId: e.goal_id, note, createdAt: e.created_at };
 }
 
 async function spendLimitStatus(kidId: string, limit: SpendLimitRow | null) {
@@ -135,14 +137,22 @@ async function buildStatement(kidId: string, month?: string) {
   const { fromISO, toISO, label } = monthRange(month);
   const entries = await getWalletLedgerInRange(kidId, fromISO, toISO);
   if (entries === null) return null;
+  const actions = await getGuardianActionsByIds(entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : [])));
+  if (actions === null) return null;
+  // S07.1: a goal withdrawal is a transfer between the child's own buckets,
+  // never income or spending; a guardian correction is reported on its own
+  // line ("adjusted") so it can never pass for coins the child earned or spent.
   let earned = 0;
   let spent = 0;
+  let adjusted = 0;
   for (const e of entries) {
-    if (e.amount >= 0) earned += e.amount;
+    if (e.reason === 'goal_withdrawal') continue;
+    if (e.reason === 'manual_adjustment') adjusted += e.amount;
+    else if (e.amount >= 0) earned += e.amount;
     else spent += -e.amount;
   }
   const saved = entries.filter((e) => e.bucket === 'save').reduce((sum, e) => sum + e.amount, 0);
-  return { month: label, earned, spent, saved, entries: entries.map(toWireLedgerEntry) };
+  return { month: label, earned, spent, adjusted, saved, entries: entries.map((e) => toWireLedgerEntry(e, actions)) };
 }
 
 export function bankingRouter(): Router {

@@ -47,6 +47,17 @@ import {
   type TaskRow,
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
+import {
+  adjustWalletAsGuardian,
+  fulfillRedemptionAsGuardian,
+  getGuardianActionsByIds,
+  isRefusal,
+  listGuardianActions,
+  withdrawGoalAsGuardian,
+  UNAVAILABLE,
+  WALLET_BUCKETS,
+  type GuardianActionRow,
+} from '../services/familyLifecycle.js';
 
 /*
  * Wire shapes: every OTHER route in this codebase (routes/family.ts above
@@ -116,10 +127,18 @@ function toWireRedemption(r: RedemptionRow) {
     createdAt: r.created_at,
     decidedAt: r.decided_at,
     decidedBy: r.decided_by,
+    fulfilledAt: r.fulfilled_at ?? null,
   };
 }
 
-function toWireLedgerEntry(e: WalletLedgerRow) {
+/**
+ * `note` is the guardian's own reason for a manual adjustment or a goal
+ * withdrawal (OD-21: required, audited). The child sees it on their history:
+ * a coin that moved without an explanation is exactly the broken promise
+ * D.5 exists to prevent.
+ */
+function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianActionRow>) {
+  const action = e.guardian_action_id ? actions?.get(e.guardian_action_id) : undefined;
   return {
     id: e.id,
     bucket: e.bucket,
@@ -128,9 +147,43 @@ function toWireLedgerEntry(e: WalletLedgerRow) {
     taskId: e.task_id,
     goalId: e.goal_id,
     redemptionId: e.redemption_id,
+    note: action?.reason ?? null,
     createdAt: e.created_at,
   };
 }
+
+/** Resolves the guardian reasons behind one page of ledger rows. null = unreadable; the caller refuses rather than showing an unexplained movement. */
+async function ledgerWithNotes(entries: WalletLedgerRow[]) {
+  const ids = entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : []));
+  const actions = await getGuardianActionsByIds(ids);
+  if (actions === null) return null;
+  return entries.map((e) => toWireLedgerEntry(e, actions));
+}
+
+function toWireGuardianAction(a: GuardianActionRow, callerId: string) {
+  return {
+    id: a.id,
+    kind: a.kind,
+    bucket: a.bucket,
+    goalId: a.goal_id,
+    amount: a.amount,
+    reason: a.reason,
+    // Which guardian acted is shared as "you or another Tutor" only.
+    byMe: a.actor_user_id === callerId,
+    createdAt: a.created_at,
+  };
+}
+
+/** Database refusals from the S07.1 RPCs, mapped to the API's error envelope. */
+const GUARDIAN_ACTION_REFUSALS: Record<string, { status: number; message: string }> = {
+  NOT_A_GUARDIAN: { status: 404, message: 'No such child for this account' },
+  GOAL_NOT_FOUND: { status: 404, message: 'No such goal' },
+  INSUFFICIENT_BALANCE: { status: 409, message: 'That would take the bucket below zero' },
+  GOAL_BALANCE_INSUFFICIENT: { status: 409, message: 'The goal does not hold that many coins' },
+  GOAL_SAVINGS_PROTECTED: { status: 409, message: 'Those coins are saved toward a goal; withdraw them from the goal first' },
+  WALLET_ADJUSTMENT_INVALID: { status: 400, message: 'Check the amount and the reason' },
+  GOAL_WITHDRAWAL_INVALID: { status: 400, message: 'Check the amount, destination and reason' },
+};
 
 /*
  * /api/v1/tasks — the earn (chores) -> allocate (Save/Spend/Share) -> goal
@@ -267,7 +320,12 @@ export function tasksRouter(): Router {
       return fail(res, 409, CONFLICT, 'This task requires a photo before it can be approved');
     }
 
-    const updated = await transitionTaskStatus(id.data, 'done', 'approved');
+    // decided_by/decided_at: the database re-checks that this actor is a
+    // verified guardian of the assignee (family_hub_transition_guards).
+    const updated = await transitionTaskStatus(id.data, 'done', 'approved', {
+      decided_by: parent.id,
+      decided_at: new Date().toISOString(),
+    });
     if (!updated) return fail(res, 409, CONFLICT, 'This task is not awaiting approval');
     await insertAuditLog(parent.id, 'tasks.approved', id.data, {});
     return ok(res, { task: toWireTask(updated) });
@@ -290,6 +348,8 @@ export function tasksRouter(): Router {
 
     const updated = await transitionTaskStatus(id.data, task.status, 'cancelled', {
       cancel_reason: parsedBody.data.reason ?? null,
+      decided_by: parent.id,
+      decided_at: new Date().toISOString(),
     });
     if (!updated) return fail(res, 409, CONFLICT, 'This task changed state — refresh and try again');
     await insertAuditLog(parent.id, 'tasks.cancelled', id.data, { reason: parsedBody.data.reason ?? null });
@@ -317,6 +377,85 @@ export function tasksRouter(): Router {
     if (goals === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals');
     const withProgress = await Promise.all(goals.map(async (g) => toWireGoal(g, (await getGoalProgress(g.id)) ?? 0)));
     return ok(res, { goals: withProgress });
+  });
+
+  router.get('/:kidId/wallet/ledger', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const entries = await getWalletLedger(kidId.data, 100);
+    if (entries === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the ledger');
+    const wire = await ledgerWithNotes(entries);
+    if (wire === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the ledger');
+    return ok(res, { entries: wire });
+  });
+
+  // ── PARENT: guardian money actions (D.5 / OD-21) ────────────────────────
+  // Guardian-only, audited, with a required reason — enforced by the
+  // database functions; these routes add the 404-not-403 family guard.
+
+  router.get('/:kidId/wallet/guardian-actions', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const actions = await listGuardianActions(kidId.data, 50);
+    if (actions === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the corrections');
+    return ok(res, { actions: actions.map((a) => toWireGuardianAction(a, parent.id)) });
+  });
+
+  const Reason = z.string().trim().min(1).max(240);
+  const WalletAdjustment = z
+    .object({
+      bucket: z.enum(WALLET_BUCKETS),
+      amount: z.number().int().min(-1000).max(1000).refine((v) => v !== 0, 'amount cannot be zero'),
+      reason: Reason,
+    })
+    .strict();
+
+  router.post('/:kidId/wallet/adjustments', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const parsed = WalletAdjustment.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'A bucket, a non-zero amount up to 1000 and a reason are required');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const result = await adjustWalletAsGuardian({ kidId: kidId.data, actorId: parent.id, ...parsed.data });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the correction');
+    if (isRefusal(result)) {
+      const mapped = GUARDIAN_ACTION_REFUSALS[result.refused];
+      return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, CONFLICT, 'The correction was refused');
+    }
+    return ok(res, { actionId: result }, 201);
+  });
+
+  const GoalWithdrawal = z
+    .object({
+      amount: z.number().int().min(1).max(1000),
+      destination: z.enum(['spend', 'save']),
+      reason: Reason,
+    })
+    .strict();
+
+  router.post('/:kidId/goals/:goalId/withdrawals', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    const goalId = z.string().uuid().safeParse(req.params.goalId);
+    if (!kidId.success || !goalId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId and goalId must be uuids');
+    const parsed = GoalWithdrawal.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'An amount, a destination (spend or save) and a reason are required');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const goal = await getGoalById(goalId.data);
+    if (!goal || goal.kid_user_id !== kidId.data) return fail(res, 404, NOT_FOUND, 'No such goal');
+    const result = await withdrawGoalAsGuardian({ goalId: goalId.data, actorId: parent.id, ...parsed.data });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the withdrawal');
+    if (isRefusal(result)) {
+      const mapped = GUARDIAN_ACTION_REFUSALS[result.refused];
+      return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, CONFLICT, 'The withdrawal was refused');
+    }
+    const progress = await getGoalProgress(goalId.data);
+    return ok(res, { actionId: result, goal: toWireGoal(goal, progress ?? 0) }, 201);
   });
 
   // ── PARENT: redemption catalog + decisions ──────────────────────────────
@@ -399,6 +538,30 @@ export function tasksRouter(): Router {
     }
     await insertAuditLog(parent.id, parsed.data.approve ? 'tasks.redemption_approved' : 'tasks.redemption_denied', id.data, {});
     return ok(res, { decided: true });
+  });
+
+  /*
+   * OD-21: the 'fulfilled' redemption state. A verified guardian marks an
+   * approved reward as delivered; the child's history then shows it as
+   * received instead of leaving "approved" as the last word forever.
+   */
+  router.post('/redemptions/:id/fulfill', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const redemption = await getRedemptionById(id.data);
+    if (!redemption) return fail(res, 404, NOT_FOUND, 'No such redemption');
+    if (!(await guardParentOf(redemption.kid_user_id, res, parent.id))) return;
+    const result = await fulfillRedemptionAsGuardian(id.data, parent.id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the delivery');
+    if (isRefusal(result)) {
+      return result.refused === 'NOT_A_GUARDIAN'
+        ? fail(res, 404, NOT_FOUND, 'No such redemption')
+        : fail(res, 409, CONFLICT, 'The delivery was refused');
+    }
+    if (result === false) return fail(res, 409, CONFLICT, 'Only an approved reward can be marked delivered');
+    return ok(res, { fulfilled: true });
   });
 
   // ── KID: own tasks ───────────────────────────────────────────────────────
@@ -601,7 +764,9 @@ export function tasksRouter(): Router {
     const kid = authedUser(res);
     const entries = await getWalletLedger(kid.id, 100);
     if (entries === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the ledger');
-    return ok(res, { entries: entries.map(toWireLedgerEntry) });
+    const wire = await ledgerWithNotes(entries);
+    if (wire === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the ledger');
+    return ok(res, { entries: wire });
   });
 
   // ── KID: goals ───────────────────────────────────────────────────────────

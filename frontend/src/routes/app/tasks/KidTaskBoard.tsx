@@ -8,6 +8,7 @@ import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, Pro
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
 import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireLedgerEntry, type WireRedemption, type WireTask } from './types';
+import { WalletActivityPanel } from './WalletActivityPanel';
 
 /*
  * The kid's half of FAMILY_HUB.md's loop: complete a task (with an optional
@@ -232,6 +233,9 @@ export function KidTaskBoard() {
           </span>
         )}
       </header>
+
+      {/* S07.1 (D.5 / OD-21): the child's own history, with every Tutor reason. */}
+      <WalletActivityPanel token={token} />
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         <StatCard icon={<Icon name="savings" />} value={String(state.balances.save)} label={t('tasks.kid.save')} tone="success" />

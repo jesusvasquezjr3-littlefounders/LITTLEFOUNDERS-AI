@@ -83,6 +83,7 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
   const [expired, setExpired] = useState(false);
   const [accepting, setAccepting] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
   const validToken = TOKEN_RE.test(inviteToken);
 
@@ -105,12 +106,16 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
     if (accepting || kidName === null) return;
     setAccepting(true); setFailed(false);
     const token = await getToken();
-    const result = await api<{ linked: boolean }>(`/family/guardian-invite/${inviteToken}/accept`, { method: 'POST', token });
+    const result = await api<{ linked: boolean; status: string }>(`/family/guardian-invite/${inviteToken}/accept`, { method: 'POST', token });
     setAccepting(false);
-    if (result.error || result.data?.linked !== true) { setFailed(true); return; }
+    // S07.1: 'pending' until the child's current Tutor confirms; only a
+    // confirmed shape is shown, never an assumed link.
+    const status = result.data?.status;
+    if (result.error || !((status === 'verified' && result.data?.linked === true) || (status === 'pending' && result.data?.linked === false))) { setFailed(true); return; }
+    setPending(status === 'pending');
     setAccepted(true);
   }
 
   return <GuardianInviteAccept copy={copy} locale={locale} dark={isDark} kidName={kidName} accepting={accepting}
-    accepted={accepted} failed={failed} expired={expired} onAccept={() => void accept()} />;
+    accepted={accepted} pending={pending} failed={failed} expired={expired} onAccept={() => void accept()} />;
 }
