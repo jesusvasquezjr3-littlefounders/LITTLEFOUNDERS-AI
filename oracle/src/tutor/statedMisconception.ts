@@ -82,6 +82,13 @@ const NEVER_A_CLAIM = [
   // `no s[ée]` must not swallow "no SE puede", which is a claim, not a hedge.
   /\b(no s[ée]\b(?!\s+(?:puede|puedo|pueden))|no estoy segur[oa]|creo que no|verdad\s*\?|es correcto|est[áa] bien(?:\s|$))/i,
   /\b(me equivoqu[ée]|estaba mal|ya entend[íi])\b/i,
+  /*
+   * C.18: the same hedges in English and Portuguese — the unsound-decision
+   * patterns below now read all three product locales, and a hedge in any of
+   * them is an invitation, not a belief.
+   */
+  /\b(i don'?t know|not sure|i think not|maybe not|i was wrong|i get it now)\b/i,
+  /\b(n[ãa]o sei|n[ãa]o tenho certeza|acho que n[ãa]o|eu errei|agora entendi)\b/i,
 ];
 
 const PATTERNS: StatedPattern[] = [
@@ -158,6 +165,70 @@ const PATTERNS: StatedPattern[] = [
     code: 'ignores-downside',
     all: [/\b(segur[oa]|de fijo|obvio)\b/i, /\b(me lo compran|gano|se vende|voy a vender|funciona)\b/i],
   },
+  /*
+   * C.18 — THE UNSOUND MONEY DECISIONS, IN ENGLISH AND PORTUGUESE.
+   *
+   * The anti-sycophancy constraint's hard rule ("never affirm a financially
+   * unsound in-scenario decision") is only enforceable where the decision is
+   * DETECTED, and every pattern above is Spanish: an en-US or pt-BR learner
+   * could announce "I'll charge 100 dollars, that way I get rich" and the
+   * orchestrator's check never ran. Same codes (so the KC-registry gate still
+   * holds), same precision-first shapes: a claim, never a topic mention.
+   */
+  {
+    // "for sure they'll buy it" / "com certeza vão comprar"
+    code: 'ignores-downside',
+    all: [
+      /\b(for sure|definitely|obviously)\b/i,
+      /\b(they(?:'ll| will) buy (?:it|them|everything)|i(?:'ll| will) (?:win|sell (?:it|them|everything|a lot))|it(?:'ll| will) sell|it always works)\b/i,
+    ],
+  },
+  {
+    code: 'ignores-downside',
+    all: [
+      /\b(com certeza|certeza que|[óo]bvio que|claro que)\b/i,
+      /\b(v[ãa]o comprar|vou ganhar|vou vender (?:tudo|muito)|vai vender|vai dar certo)\b/i,
+    ],
+  },
+  {
+    // "I'll charge 100 for the lemonade, that way I get rich"
+    code: 'highest-price-wins',
+    all: [
+      /\b(i(?:'ll| will) (?:charge|put|set)|i charge|price it at)\b/i,
+      /\b(get rich|make more money|earn more|so i win)\b/i,
+    ],
+  },
+  {
+    code: 'highest-price-wins',
+    all: [
+      /\b(vou cobrar|vou colocar|eu cobro|pre[çc]o de)\b/i,
+      /\b(fico ric[oa]|ganho mais|mais dinheiro|assim eu ganho)\b/i,
+    ],
+  },
+  {
+    // "I can afford the ball, and also the notebook, and also the paints"
+    code: 'budget-is-per-item',
+    all: [
+      /\b(i can afford|i have enough for|i can buy)\b/i,
+      /\b(and also|and the)\b.*\b(and also|and the)\b/i,
+    ],
+  },
+  {
+    code: 'budget-is-per-item',
+    all: [
+      /\b(d[áa] pra comprar|consigo comprar|tenho o suficiente para)\b/i,
+      /\b(e tamb[ée]m)\b.*\b(e tamb[ée]m)\b/i,
+    ],
+  },
+  {
+    // "if it costs 7 and I pay with 20, they give me back the 20"
+    code: 'returns-payment',
+    all: [/\b(pay|paid|with)\b.*\b(\d+)\b/i, /\b(give me back|have to give me back|i get back)\b.*\b(the|all)\b/i],
+  },
+  {
+    code: 'returns-payment',
+    all: [/\b(pago|paguei|pagar|com)\b.*\b(\d+)\b/i, /\b(me devolvem|tem que me devolver|devolvem)\b.*\b(os|o|tudo)\b/i],
+  },
 ];
 
 /**
@@ -184,4 +255,4 @@ export function classifyStatedMisconception(utterance: string): string | null {
 }
 
 /** Every code this classifier can produce — used by the KC-registry gate. */
-export const CLASSIFIABLE_MISCONCEPTIONS: readonly string[] = PATTERNS.map((p) => p.code);
+export const CLASSIFIABLE_MISCONCEPTIONS: readonly string[] = [...new Set(PATTERNS.map((p) => p.code))];

@@ -72,6 +72,14 @@ import {
 import { instrumentGuidanceFor } from './instrumentSpecs.js';
 import { classifyStatedMisconception } from './statedMisconception.js';
 import { HintLadder, HintLadderSnapshotSchema, HINT_LEVEL_WORDING, isHintRequest, isTellRequest } from './hintLadder.js';
+import {
+  classifyPraise,
+  isSycophantic,
+  statesTheAnswer,
+  type SequenceKind,
+  type TurnHonesty,
+  type VerdictContext,
+} from './feedbackHonesty.js';
 import { selectSkill, SKILL_WORDING_RULE } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
@@ -237,6 +245,14 @@ export interface TurnEmission {
    */
   audio: Promise<SpokenAudio>;
   moderation: Record<string, unknown>;
+  /**
+   * C.18: the per-turn honesty facts (feedbackHonesty.ts), persisted with the
+   * transcript row so Core can score the answer-reveal rate against the real
+   * key. Set on every turn `produce()` settles (model, or the scripted line
+   * that replaced a rejected draft); absent on a purely scripted outcome
+   * (safety line, farewell, budget close), which never came from the model.
+   */
+  honesty?: TurnHonesty | null;
 }
 
 export interface SafetyEvent {
@@ -286,6 +302,16 @@ const TrajectoryStepSchema = z
     misconceptionCode: z.string().nullable(),
     kcId: z.string().nullable(),
     kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
+    /*
+     * C.10 evidence (see `DecisionEvidence`). Defaulted so a step logged by
+     * the previous build restores as "no evidence recorded" — which the
+     * compliance report counts AGAINST compliance for a consequential move,
+     * the honest reading of a missing record.
+     */
+    evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().default(null),
+    evidenceObservations: z.number().int().min(0).nullable().default(null),
+    evidenceRequired: z.number().int().min(1).nullable().default(null),
+    masteryRevoked: z.boolean().default(false),
   })
   .strict();
 
@@ -500,7 +526,11 @@ export class TutorOrchestrator {
     this.adaptations = [...session.adaptations] as TutorContext['adaptations'];
     this.plan = buildPlan(session.intent, session.courseContext, session.skillKey ?? null);
     this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
-    this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? []);
+    const config = getConfig();
+    this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? [], {
+      corroborationMinObservations: config.TUTOR_CORROBORATION_MIN_OBSERVATIONS,
+      corroborationRollbackKcKeys: config.TUTOR_CORROBORATION_ROLLBACK_KC_KEYS,
+    });
     this.minorPosture = session.isMinor;
   }
 
@@ -1079,6 +1109,7 @@ export class TutorOrchestrator {
      * hint, RESCUE, PROBE into a prerequisite — replaces the generic
      * change-the-style line. Inactive controller = exactly the v2 path.
      */
+    const hintAssisted = this.consumeLadderStep(correct);
     const { text: extra, skillName } = this.strategyInstruction(
       {
         kind: 'activity_result',
@@ -1086,6 +1117,7 @@ export class TutorOrchestrator {
         misconceptionCode: pedagogy?.misconceptionCode ?? null,
         attemptNumber: pedagogy?.attemptNumber ?? 1,
         latencyMs,
+        hintAssisted,
       },
       nowMs,
       correct ? null : () => stuckInstruction(this.plan, skillKey),
@@ -1208,7 +1240,13 @@ export class TutorOrchestrator {
        */
       `${summary}${activityFact} React as their tutor, grounded ONLY in what you actually know: the activity's type and prompt (restated above) and whether they got it right. Do NOT invent the specific items, numbers, choices or order they picked — you were never told those, so anything you say about their exact answer is a guess dressed as an observation. Refer to the activity itself by what it actually asked (the sorting, the counting, the ordering — whichever this one was) instead of either a made-up detail about their submission or a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}${finalNote}`,
       nowMs,
-      { isSystemPrompted: true, signal, finalTurn: graceTurn, nonce: fencedActivity?.nonce },
+      {
+        isSystemPrompted: true,
+        signal,
+        finalTurn: graceTurn,
+        nonce: fencedActivity?.nonce,
+        verdict: correct ? 'after_correct' : 'after_incorrect',
+      },
     );
     this.commitSkillUse(skillName, outcome);
     this.commitGraceTurn(graceTurn, outcome);
@@ -1322,8 +1360,9 @@ export class TutorOrchestrator {
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
     if (this.openUngradedSegmentId === segmentId) this.openUngradedSegmentId = null;
 
+    const hintAssisted = this.consumeLadderStep(result.correct);
     const { text: extra, skillName } = this.strategyInstruction(
-      { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode },
+      { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode, hintAssisted },
       nowMs,
       result.correct ? null : () => stuckInstruction(this.plan, skillKey),
     );
@@ -1334,7 +1373,12 @@ export class TutorOrchestrator {
     const outcome = await this.produce(
       `${summary} React as their tutor — acknowledge the spoken answer naturally, never mention any verification.${extra ? `\n\n${extra}` : ''}${finalNote}`,
       nowMs,
-      { isSystemPrompted: true, signal, finalTurn: graceTurn },
+      {
+        isSystemPrompted: true,
+        signal,
+        finalTurn: graceTurn,
+        verdict: result.correct ? 'after_correct' : 'after_incorrect',
+      },
     );
     this.commitSkillUse(skillName, outcome);
     this.commitGraceTurn(graceTurn, outcome);
@@ -1453,8 +1497,20 @@ export class TutorOrchestrator {
       difficulty: decision.difficulty,
       pKnown: decision.pKnown,
       misconceptionCode: decision.misconceptionCode,
-      kcId: this.controller.activeKcId,
+      /*
+       * The KC the decision was ABOUT. `activeKcId` read after `decide()`
+       * names the NEXT knowledge component whenever the decision advanced
+       * the plan (CELEBRATE/TRANSFER), which filed every mastery declaration
+       * under the wrong KC — fatal for the C.10 Mastery Declaration Reversal
+       * Rate, which joins declarations to later contradictions by KC.
+       */
+      kcId: decision.kcId,
       kcMode: this.controller.state()?.mode ?? null,
+      evidenceRule: decision.evidence?.rule ?? null,
+      // Clamped to Core's wire bound (0..100): one oversized count must never cost the session its whole trajectory batch.
+      evidenceObservations: decision.evidence ? Math.min(decision.evidence.observations, 100) : null,
+      evidenceRequired: decision.evidence?.required ?? null,
+      masteryRevoked: decision.masteryRevoked,
     });
   }
 
@@ -1680,7 +1736,12 @@ export class TutorOrchestrator {
     const stated = verdict === null ? classifyStatedMisconception(fenced.cleaned) : null;
     const pedagogyEvent: PedagogyEvent =
       verdict !== null
-        ? { kind: 'voice_result', correct: verdict.correct, misconceptionCode: null }
+        ? {
+            kind: 'voice_result',
+            correct: verdict.correct,
+            misconceptionCode: null,
+            hintAssisted: this.consumeLadderStep(verdict.correct),
+          }
         : stated !== null
           ? { kind: 'stated_misconception', misconceptionCode: stated }
           : { kind: 'conversation_turn' };
@@ -1691,20 +1752,62 @@ export class TutorOrchestrator {
      * and the "just tell me" escape are policy here, never a request the
      * model may weigh against being "helpful".
      */
-    const ladderKey = this.controller.activeEntry?.skillKey ?? 'conversation';
-    const ladderNote = this.ladderNoteFor(fenced.cleaned, ladderKey);
+    const ladderNote = this.ladderNoteFor(fenced.cleaned, this.ladderStepKey());
     const maneuverNote = `${maneuver === null ? '' : `\n\n${maneuver}`}${ladderNote}`;
-    const outcome = await this.produce(`${fenced.block}${verdictNote}${recallNote}${maneuverNote}${finalNote}`, nowMs, {
-      nonce: fenced.nonce,
-      signal,
-      finalTurn: graceTurn,
-    });
+    /*
+     * C.18: a stated wrong idea — very often a money decision ("me lo gasto
+     * todo en dulces y ya") — is exactly the moment a sycophantic model
+     * agrees because the child sounds pleased. Said to the model as a fact
+     * the SYSTEM detected, and checked on the way out (`isSycophantic`).
+     */
+    const unsoundNote =
+      stated !== null
+        ? '\n\nDETECTED BY THE SYSTEM, not by you: what the learner just said states a wrong idea or an unsound money decision. Do NOT agree with it or praise it, however pleased they sound. Name one sensible thing in their reasoning, then show kindly, with one concrete consequence, where the idea breaks.'
+        : '';
+    const outcome = await this.produce(
+      `${fenced.block}${verdictNote}${unsoundNote}${recallNote}${maneuverNote}${finalNote}`,
+      nowMs,
+      {
+        nonce: fenced.nonce,
+        signal,
+        finalTurn: graceTurn,
+        verdict:
+          verdict !== null
+            ? verdict.correct
+              ? 'after_correct'
+              : 'after_incorrect'
+            : stated !== null
+              ? 'after_unsound_claim'
+              : undefined,
+      },
+    );
     this.commitSkillUse(skillName, outcome);
     this.commitGraceTurn(graceTurn, outcome);
     // A completed exchange moves the plan's talk-only steps along; an aborted
     // one does not — a question the tutor never answered was not an exchange.
     if (outcome !== null) noteConversationTurn(this.plan);
     return outcome;
+  }
+
+  /** C.13: the ladder sub-step the learner is on — the active KC's skill, else the conversation. */
+  private ladderStepKey(): string {
+    return this.controller.activeEntry?.skillKey ?? 'conversation';
+  }
+
+  /**
+   * C.10 × C.13: reads whether the answer being graded was HINT-ASSISTED on
+   * its sub-step (the corroboration signal the controller weighs), and — on
+   * a correct answer — closes that sub-step so the next item starts at the
+   * top of the ladder. A wrong answer keeps the sub-step open: the learner is
+   * still on it, and the never-repeat rule must still hold for it.
+   *
+   * Read BEFORE the decision, because the decision is what it informs.
+   */
+  private consumeLadderStep(correct: boolean): boolean {
+    const stepKey = this.ladderStepKey();
+    const assisted = this.hintLadder.assisted(stepKey);
+    if (correct) this.hintLadder.resetStep(stepKey);
+    return assisted;
   }
 
   /** C.13: maps the learner's utterance to the ladder and returns the directive (or ''). */
@@ -1906,7 +2009,18 @@ export class TutorOrchestrator {
   private async produce(
     userContent: string,
     nowMs: number,
-    opts: { nonce?: string; isSystemPrompted?: boolean; signal?: AbortSignal; finalTurn?: boolean } = {},
+    opts: {
+      nonce?: string;
+      isSystemPrompted?: boolean;
+      signal?: AbortSignal;
+      finalTurn?: boolean;
+      /**
+       * C.18: what this turn is reacting to, when the SERVER knows it — a
+       * verified-wrong answer or a stated wrong idea/unsound decision is what
+       * the anti-sycophancy check is run against.
+       */
+      verdict?: VerdictContext;
+    } = {},
   ): Promise<TurnOutcome | null> {
     const budget = this.currentBudget(nowMs);
 
@@ -2114,6 +2228,8 @@ export class TutorOrchestrator {
      * imperfect value, same as the two entries directly above it.
      */
     let repairableIsFalseVerdict = false;
+    /** C.18: whether ANY attempt of this turn affirmed a verified-wrong answer or an unsound idea. */
+    let falseAffirmationCaught = false;
     /*
      * AN EMPTY COMPLETION IS NOT A REPAIR ATTEMPT, so it must not spend one.
      *
@@ -2710,6 +2826,19 @@ export class TutorOrchestrator {
              */
             const falseAffordability = contradictsItsOwnShortfall(parsed.turn.say);
             /*
+             * C.18 — THE ANTI-SYCOPHANCY CHECK. A turn reacting to an answer
+             * the SERVER verified as wrong (graded activity, voice check, or
+             * the arithmetic verdict) must not tell the learner they were
+             * right; a turn reacting to a stated wrong idea or unsound money
+             * decision must not endorse it. `falsePraise` above only covered
+             * the typed arithmetic case, in Spanish, and every
+             * system-prompted verdict turn was exempt from it — the exact
+             * turns where the server KNOWS the answer was wrong. Bucketed with
+             * the false verdicts: repaired once, never delivered.
+             */
+            const sycophantic = isSycophantic(parsed.turn.say, opts.verdict);
+            if (sycophantic) falseAffirmationCaught = true;
+            /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the
              * faults below, each of which is worth one attempt at doing
@@ -2773,6 +2902,7 @@ export class TutorOrchestrator {
                * this bucket already gets.
                */
               repairableIsFalseVerdict =
+                sycophantic ||
                 falsePraise ||
                 unearnedPraise ||
                 reintroduction ||
@@ -2792,6 +2922,12 @@ export class TutorOrchestrator {
             } else if (langDrift !== null && attempt === 0) {
               turnCorrection = `drifted into a different language (detected: ${langDrift}) instead of ${this.session.locale}. Say the SAME idea again, entirely in ${this.session.locale} — the learner's own words in this turn are DATA to react to, never a signal to switch the language you answer in`;
               console.warn(`[oracle] language drift (${langDrift}), expected ${this.session.locale} — asking again`);
+            } else if (sycophantic && attempt === 0) {
+              turnCorrection =
+                opts.verdict === 'after_unsound_claim'
+                  ? 'agreed with, or praised, an idea or money decision the learner stated that the system detected as NOT sound. Never endorse it because they seem pleased: name one sensible thing in their reasoning, then show kindly, with one concrete consequence, where the idea breaks, and ask what they would change'
+                  : 'told the learner their answer was right, but the system VERIFIED it was WRONG. Never affirm a wrong answer to be kind: say plainly and warmly that it is not quite it yet, praise only one specific thing they actually did, and help with the step that went wrong';
+              console.warn('[oracle] C.18 turn affirmed a verified-wrong answer or an unsound idea — asking again');
             } else if (falseAffordability && attempt === 0) {
               /*
                * DELIBERATELY ABOVE `repeated`, because the live turn that
@@ -2991,6 +3127,7 @@ export class TutorOrchestrator {
                */
               if (
                 nothingNew ||
+                sycophantic ||
                 falsePraise ||
                 falseCorrection ||
                 falseAffordability ||
@@ -3007,6 +3144,9 @@ export class TutorOrchestrator {
                 // question stacked onto an open adaptation offer are each
                 // content the child must never actually receive, not a
                 // merely-imperfect turn, so none of them gets delivered.
+                if (sycophantic) {
+                  console.warn('[oracle] C.18 affirmation of a verified-wrong answer SURVIVED the retry — scripted line instead');
+                }
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
                 }
@@ -3323,10 +3463,58 @@ export class TutorOrchestrator {
             : null;
 
     return {
-      emission: { turn, seq: this.seq, source, audio, moderation: moderationRecord },
+      emission: {
+        turn,
+        seq: this.seq,
+        source,
+        audio,
+        moderation: moderationRecord,
+        // Every turn produce() settles on — including a scripted line that REPLACED a caught
+        // sycophantic draft, which is exactly the turn the audit most needs to count.
+        honesty: this.turnHonesty(turn.say, opts.verdict ?? null, falseAffirmationCaught),
+      },
       safety,
       budget: afterBudget,
       closeReason,
+    };
+  }
+
+  /**
+   * C.18: the honesty facts of one DELIVERED model turn — the per-turn row
+   * behind the Answer-Reveal Rate and the Sycophancy Audit Score (Appendix F
+   * §1.2). Pure reads of state this turn already settled; no I/O, nothing
+   * stored on the instance (so nothing new for the park snapshot).
+   *
+   * The SEQUENCE a reveal is judged inside, most specific first: the learner
+   * has had ladder help on this sub-step (`hint_ladder`); the controller is
+   * repairing (REMEDIATE/RESCUE/PROBE) or the turn reacts to a verified-wrong
+   * answer (`repair`); an ungraded activity is on screen (`open_activity`).
+   * A reveal is SANCTIONED once the ladder reached "tell" — the learner asked,
+   * or exhausted the ladder (C.13) — and is then not a defect.
+   */
+  private turnHonesty(say: string, verdict: VerdictContext | null, caught: boolean): TurnHonesty {
+    const stepKey = this.ladderStepKey();
+    const assisted = this.hintLadder.assisted(stepKey);
+    const strategy = this.controller.active ? this.controller.currentStrategy : null;
+    const sequenceKind: SequenceKind = assisted
+      ? 'hint_ladder'
+      : strategy === 'REMEDIATE' || strategy === 'RESCUE' || strategy === 'PROBE' || verdict === 'after_incorrect'
+        ? 'repair'
+        : this.openUngradedSegmentId !== null
+          ? 'open_activity'
+          : 'none';
+    const learnerText = [...this.history].reverse().find((h) => h.speaker === 'learner')?.text ?? '';
+    return {
+      sequenceKind,
+      hintLevel: assisted ? this.hintLadder.levelFor(stepKey) : null,
+      revealSanctioned: this.hintLadder.reachedTell(stepKey),
+      revealSelfAnswered: answersItsOwnQuestion(say),
+      revealPhrase: statesTheAnswer(say),
+      openSegmentId: this.openUngradedSegmentId,
+      verdictContext: verdict,
+      falseAffirmationCaught: caught,
+      falseAffirmationDelivered: isSycophantic(say, verdict),
+      praise: classifyPraise(say, learnerText),
     };
   }
 

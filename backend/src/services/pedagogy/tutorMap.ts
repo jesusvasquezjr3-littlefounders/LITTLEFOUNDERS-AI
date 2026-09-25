@@ -8,10 +8,11 @@
  * Node states are derived server-side, deterministically, and unit-tested.
  */
 
-import { MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD } from './bkt.js';
+import { MASTERY_CORROBORATION_MIN, MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD } from './bkt.js';
 import { rankPlanKcs } from './sessionPlan.js';
 import {
   getActiveKcs,
+  getCorrectStreaks,
   getKcEdges,
   getLearnerMastery,
   getMemoryCards,
@@ -29,6 +30,13 @@ export interface TutorMapNode {
   /** Rounded posterior for display, null before any evidence. */
   mastery: number | null;
   attempts: number;
+  /**
+   * C.10: the consecutive correct answers the learner's latest attempts on
+   * this KC end in — the EVIDENCE behind "mastered", exposed so a parent-
+   * facing explanation can say "2 correct in a row" rather than "the AI
+   * decided" (Appendix D §2.6).
+   */
+  consecutiveCorrect: number;
   skillKey: string | null;
 }
 
@@ -48,9 +56,24 @@ export function deriveNodeState(input: {
   attempts: number;
   reviewDue: boolean;
   prereqsMet: boolean;
+  /** C.10: trailing consecutive correct answers on this KC. */
+  consecutiveCorrect: number;
 }): MapNodeState {
   if (input.reviewDue) return 'needs_review';
-  if (input.pKnown >= MASTERY_DISPLAY_THRESHOLD && input.attempts >= 3) return 'mastered';
+  /*
+   * C.10: "mastered" needs the posterior, enough evidence overall AND the
+   * latest evidence corroborating it — a KC whose last answer was wrong, or
+   * that crossed the bar on one lucky answer, is still in progress. Derived
+   * on every read, so it is provisional by construction: a later miss
+   * demotes it at once (the Appendix D §2.3 demotion rule).
+   */
+  if (
+    input.pKnown >= MASTERY_DISPLAY_THRESHOLD &&
+    input.attempts >= 3 &&
+    input.consecutiveCorrect >= MASTERY_CORROBORATION_MIN
+  ) {
+    return 'mastered';
+  }
   if (!input.prereqsMet) return 'locked';
   if (input.attempts > 0) return 'in_progress';
   return 'available';
@@ -66,13 +89,14 @@ export async function buildTutorMap(
   locale: string,
   now = new Date(),
 ): Promise<TutorMapResponse | null> {
-  const [kcs, edges, mastery, cards] = await Promise.all([
+  const [kcs, edges, mastery, cards, streaks] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
     getMemoryCards(userId),
+    getCorrectStreaks(userId),
   ]);
-  if (kcs === null || edges === null || mastery === null || cards === null) return null;
+  if (kcs === null || edges === null || mastery === null || cards === null || streaks === null) return null;
 
   const eligible = kcs.filter((k) => k.tier_min <= tier);
   const eligibleIds = new Set(eligible.map((k) => k.id));
@@ -109,9 +133,11 @@ export async function buildTutorMap(
         attempts,
         reviewDue: dueByKc.has(kc.id),
         prereqsMet,
+        consecutiveCorrect: streaks.get(kc.id) ?? 0,
       }),
       mastery: attempts > 0 ? Math.round((row?.p_known ?? 0) * 100) / 100 : null,
       attempts,
+      consecutiveCorrect: streaks.get(kc.id) ?? 0,
       skillKey: kc.skill_key,
     };
   });
@@ -131,7 +157,7 @@ export async function buildTutorMap(
    * itself failed"). Cannot fail here — the four reads it needs already
    * succeeded, or this function would have returned null above.
    */
-  const first = rankPlanKcs(kcs, edges, mastery, cards, tier)[0] ?? null;
+  const first = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks)[0] ?? null;
   const firstNode = first ? nodes.find((n) => n.kcId === first.kc.id) : null;
 
   return {

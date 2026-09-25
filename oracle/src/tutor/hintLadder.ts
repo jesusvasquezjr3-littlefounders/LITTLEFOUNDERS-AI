@@ -93,6 +93,14 @@ export class HintLadder {
     return 'tell';
   }
 
+  /**
+   * C.10: whether this sub-step has had ANY ladder help since it last reset —
+   * a success after help is scaffolded, not independent evidence of mastery.
+   */
+  assisted(stepKey: string): boolean {
+    return this.levels.has(stepKey) || this.told.has(stepKey);
+  }
+
   /** Resets one sub-step (a new sub-step or a new attempt begins). */
   resetStep(stepKey: string): void {
     this.levels.delete(stepKey);

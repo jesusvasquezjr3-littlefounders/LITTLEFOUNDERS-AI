@@ -31,6 +31,15 @@ describe('reads a committed wrong idea out of what a child said', () => {
     ['tengo 5 monedas entonces tengo 5 pesos', 'counts-coins-not-value'],
     ['de 3 no puedo quitar 7, no se puede restar asi', 'subtracts-smaller-from-larger-digitwise'],
     ['seguro me lo compran todos, voy a vender un monton', 'ignores-downside'],
+    // C.18: the unsound-decision codes in English and Portuguese.
+    ["for sure they'll buy it, I will sell everything", 'ignores-downside'],
+    ['com certeza vão comprar, vou vender tudo', 'ignores-downside'],
+    ["I'll charge 100 for the lemonade, that way I get rich", 'highest-price-wins'],
+    ['vou cobrar 100 pela limonada, assim eu ganho mais', 'highest-price-wins'],
+    ['I can afford the ball, and also the notebook, and also the paints', 'budget-is-per-item'],
+    ['dá pra comprar a bola, e também o caderno, e também as tintas', 'budget-is-per-item'],
+    ['if it costs 7 and I pay with 20, they have to give me back the 20', 'returns-payment'],
+    ['se custa 7 e eu pago com 20, me devolvem os 20', 'returns-payment'],
   ];
 
   for (const [utterance, code] of cases) {
@@ -58,6 +67,15 @@ describe('stays silent on everything that is not a committed claim', () => {
     'no entiendo, me lo explicas otra vez?',
     'vendi limonada y me fue bien',
     'gracias, ya entendi',
+    // C.18: English and Portuguese questions, hedges and ordinary talk.
+    'will they buy it for sure?',
+    "I don't know if I will sell everything for sure",
+    'I want to save for a skateboard',
+    'can I afford the ball and the book?',
+    'será que vão comprar com certeza?',
+    'não sei se vou vender tudo com certeza',
+    'quero economizar para um skate',
+    'obrigado, agora entendi',
     // Too short to carry a claim, and long enough to be a story.
     'y ya',
     'no sobra',

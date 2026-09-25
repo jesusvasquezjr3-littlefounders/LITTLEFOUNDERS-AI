@@ -3563,6 +3563,111 @@ describe('POST /api/v1/tutor/internal/turns — savePlan persists the drawn boar
   });
 });
 
+/*
+ * C.18 — every Mentor turn's honesty facts land in tutor_turn_honesty, with
+ * CORE's key-based reveal check: only Core holds the answer key, so only
+ * Core can say whether the turn stated the open activity's answer.
+ */
+describe('POST /api/v1/tutor/internal/turns — C.18 honesty row with the key-based reveal check', () => {
+  /** "Cuesta 7 y pagas con 20" — the change is 13, which the learner was never shown. */
+  const OPEN_SEGMENT = {
+    id: SEGMENT,
+    session_id: SESSION,
+    seq: 0,
+    origin: 'catalog',
+    lesson_id: null,
+    segment_type: 'number_input',
+    payload: {
+      id: 'seg-change',
+      type: 'number_input',
+      prompt_md: 'Cuesta 7 y pagas con 20. ¿Cuánto cambio te dan?',
+      difficulty: 2,
+      xp: 20,
+      payload: { price: 7, paid: 20 },
+    },
+    answer: { value: 13, tolerance: 0 },
+    key_verified: true,
+    score: null,
+    xp_awarded: 0,
+    attempts: 0,
+    provenance: {},
+    review_status: null,
+    created_at: '2026-09-24T10:00:00Z',
+    voice_checked_at: null,
+  };
+  const honesty = {
+    sequenceKind: 'hint_ladder',
+    hintLevel: 'indirect',
+    revealSanctioned: false,
+    revealSelfAnswered: false,
+    revealPhrase: false,
+    openSegmentId: SEGMENT,
+    verdictContext: null,
+    falseAffirmationCaught: false,
+    falseAffirmationDelivered: false,
+    praise: null,
+  };
+  const post = (body: Record<string, unknown>) =>
+    request(createApp())
+      .post('/api/v1/tutor/internal/turns')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ sessionId: SESSION, seq: 5, speaker: 'tutor', source: 'model', ...body });
+  const honestyRows = (calls: { url: string; method: string; body?: string }[]) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_turn_honesty'))
+      .map((c) => JSON.parse(String(c.body)) as Record<string, unknown>);
+
+  it('records a turn that STATES the key while the learner is still working as a key-matched reveal', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT] });
+    const response = await post({ text: 'Te dan 13 pesos de cambio.', honesty });
+    expect(response.status).toBe(200);
+    const [row] = honestyRows(calls);
+    expect(row).toMatchObject({
+      session_id: SESSION,
+      character: 'rho',
+      turn_seq: 5,
+      sequence_kind: 'hint_ladder',
+      hint_level: 'indirect',
+      reveal_sanctioned: false,
+      reveal_key_match: true,
+    });
+    // No child identifier and no text is stored with the metric.
+    expect(row).not.toHaveProperty('user_id');
+    expect(row).not.toHaveProperty('text');
+  });
+
+  it('scores a scaffolding turn (only the givens) as NOT a reveal', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT] });
+    await post({ text: 'Empieza en 7 y cuenta hasta llegar a 20. ¿Cuántos saltos das?', honesty });
+    expect(honestyRows(calls)[0]).toMatchObject({ reveal_key_match: false });
+  });
+
+  it('never scores against another session’s activity', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [{ ...OPEN_SEGMENT, session_id: '99999999-9999-4999-8999-999999999999' }] });
+    await post({ text: 'Te dan 13 pesos de cambio.', honesty });
+    expect(honestyRows(calls)[0]).toMatchObject({ reveal_key_match: null });
+  });
+
+  it('writes nothing for a learner turn, even if a caller attaches honesty to it', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT] });
+    await post({ speaker: 'learner', source: 'stt', text: '13', honesty });
+    expect(honestyRows(calls)).toHaveLength(0);
+  });
+
+  it('refuses an honesty object with an unknown field (closed vocabulary)', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await post({ text: 'hola', honesty: { ...honesty, mood: 'happy' } });
+    expect(response.status).toBe(400);
+  });
+
+  it('a failed honesty write never turns a landed turn into a reported failure', async () => {
+    stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT], restFailures: ['/rest/v1/tutor_turn_honesty'] });
+    const response = await post({ text: 'Te dan 13 pesos.', honesty });
+    expect(response.status).toBe(200);
+    expect(response.body.data.recorded).toBe(true);
+  });
+});
+
 describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (trajectory emission)', () => {
   const oneStep = {
     turnSeq: 1,
@@ -3650,8 +3755,63 @@ describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (traject
       misconception_code: null,
       kc_id: '55555555-5555-4555-8555-555555555555',
       kc_mode: 'new',
+      // C.10 evidence columns, defaulted for a batch from an Oracle build that predates them.
+      evidence_rule: null,
+      evidence_observations: null,
+      evidence_required: null,
+      mastery_revoked: false,
     });
     expect(rows[1]).toMatchObject({ turn_seq: 2, strategy_before: 'DIRECT', strategy: 'CELEBRATE', kc_mode: null });
+  });
+
+  it('C.10: persists a consequential decision WITH its corroborating evidence', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        steps: [
+          {
+            ...oneStep,
+            strategy: 'CELEBRATE',
+            evidenceRule: 'mastery',
+            evidenceObservations: 2,
+            evidenceRequired: 2,
+            masteryRevoked: false,
+          },
+        ],
+      });
+    expect(response.status).toBe(200);
+    const write = calls.find((c) => c.url.includes('/rest/v1/tutor_trajectory_step'))!;
+    expect(JSON.parse(String(write.body))[0]).toMatchObject({
+      strategy: 'CELEBRATE',
+      evidence_rule: 'mastery',
+      evidence_observations: 2,
+      evidence_required: 2,
+      mastery_revoked: false,
+    });
+  });
+
+  it('C.10: refuses evidence that does not travel as a unit', async () => {
+    stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [{ ...oneStep, evidenceRule: 'mastery', evidenceObservations: null, evidenceRequired: 2 }] });
+    expect(response.status).toBe(400);
+  });
+
+  it('accepts a stated_misconception step — Oracle always emitted it, and the whole batch used to be refused', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [{ ...oneStep, eventKind: 'stated_misconception' }] });
+    expect(response.status).toBe(200);
+    const write = calls.find((c) => c.url.includes('/rest/v1/tutor_trajectory_step'))!;
+    expect(JSON.parse(String(write.body))[0]).toMatchObject({ event_kind: 'stated_misconception' });
   });
 
   it('a write failure is reported, never thrown — this is best-effort backstage tooling, not a live-turn dependency', async () => {

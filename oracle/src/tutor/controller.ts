@@ -41,11 +41,85 @@ const ControllerSnapshotSchema = z
     probingKcId: z.string().nullable(),
     celebratedKcIds: z.array(z.string()),
     masteryRevokedKcIds: z.array(z.string()),
+    /*
+     * C.10: the corroborating-evidence chains. Defaulted rather than
+     * required, like the orchestrator's `hintLadder`: a session parked by
+     * the previous build has no chains and restores with empty ones, which
+     * is the conservative direction — a fresh chain can only DELAY a
+     * mastery or remediation decision by one observation, never fire one.
+     */
+    masteryEvidence: z.array(z.tuple([z.string(), z.number().int().min(0)])).default([]),
+    remediationEvidence: z
+      .array(z.tuple([z.string(), z.string().nullable(), z.number().int().min(0)]))
+      .default([]),
   })
   .strict();
 
 export { ControllerSnapshotSchema };
 export type ControllerSnapshot = z.infer<typeof ControllerSnapshotSchema>;
+
+/**
+ * C.10 — HOW MANY CONSECUTIVE QUALIFYING OBSERVATIONS the controller needs
+ * before it executes either of its two most consequential moves: declaring
+ * a knowledge component mastered (CELEBRATE/TRANSFER), or triggering
+ * remediation/rescue (REMEDIATE/RESCUE).
+ *
+ * Two is the SPEC's number ("a minimum of two consecutive observations",
+ * Product C.10) and is marked there as PROPOSED, PENDING DATA-DRIVEN
+ * VALIDATION: it is recorded in the Block C Threshold Recalibration Log
+ * (`docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md`) and must be
+ * recalibrated together with the compliance metric that watches it, never
+ * separately. The operator can raise it, or roll individual knowledge
+ * components back to the pre-C.10 single-observation baseline (Appendix F
+ * Part 3 Stage 7, the Extended Mastery Engine kill switch), through
+ * `ControllerOptions` — never lower the default in code.
+ *
+ * WHY THE RULE EXISTS (Appendix D §2.6): with the mirror's slip at 0.10 a
+ * fully-mastered skill still misses one answer in ten, and with guess at
+ * 0.20 a learner who does not know it hits one in five. A single response
+ * is not evidence the controller may act on consequentially.
+ */
+export const CORROBORATION_MIN_OBSERVATIONS = 2;
+
+/**
+ * Below this pre-evidence belief a CORRECT answer is "surprising" — the
+ * lucky-guess shape Appendix D §2.6 names. A surprising correct that also
+ * arrived too fast to have been read (the same self-calibrated latency test
+ * `answeredWithoutReading` uses) is not trusted as mastery evidence: it
+ * neither extends nor breaks the chain (Wise 2017: a rapid guess is
+ * non-effortful, not informative). Deliberately only the SURPRISING case: a
+ * learner the controller already believes knows the skill is allowed to be
+ * fast, or fluency itself would become a cage.
+ */
+const SURPRISING_CORRECT_BELOW = 0.5;
+
+/** Operator configuration for the C.10 rule — see `CORROBORATION_MIN_OBSERVATIONS`. */
+export interface ControllerOptions {
+  /** Integer in [1, 5]; out-of-range or non-integer values fall back to the default. */
+  corroborationMinObservations?: number;
+  /**
+   * `kcKey`s rolled back to the pre-C.10 single-observation baseline by the
+   * Appendix F Stage 7 kill switch, until root-caused. Empty by default.
+   */
+  corroborationRollbackKcKeys?: readonly string[];
+}
+
+/**
+ * The evidence behind a consequential decision, carried on the decision and
+ * into the trajectory log so the Corroborating-Evidence Compliance Rate
+ * (Appendix F §1.1) and the parent-facing explanation can read WHAT the
+ * controller saw rather than only what it concluded (Appendix D §2.6:
+ * "moved on after 2 correct responses" is auditable, "the AI decided" is
+ * not). Null on every non-consequential decision, and on a turn where a
+ * guardrail HELD the previous strategy instead of executing the proposal.
+ */
+export interface DecisionEvidence {
+  rule: 'mastery' | 'remediation' | 'rescue';
+  /** Consecutive qualifying observations the trigger rested on. */
+  observations: number;
+  /** The corroboration requirement in force for this KC at decision time. */
+  required: number;
+}
 
 /*
  * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
@@ -111,6 +185,12 @@ export interface ControllerDecision {
    * is over — the blueprint's §6.2 turn policy, per strategy.
    */
   listenSilenceMs: number;
+  /** The knowledge component this decision was ABOUT (null when none was active). */
+  kcId: string | null;
+  /** C.10: what a consequential trigger rested on — see `DecisionEvidence`. */
+  evidence: DecisionEvidence | null;
+  /** C.10: this decision's evidence withdrew a mastery declared earlier this session. */
+  masteryRevoked: boolean;
 }
 
 export type PedagogyEvent =
@@ -127,8 +207,14 @@ export type PedagogyEvent =
        * or to hold.
        */
       latencyMs?: number | null;
+      /**
+       * C.10: the learner asked for (and received) hint-ladder help on this
+       * item before answering. A scaffolded success is not independent
+       * evidence of mastery (Appendix D §2.6's hint-request corroboration).
+       */
+      hintAssisted?: boolean;
     }
-  | { kind: 'voice_result'; correct: boolean; misconceptionCode: string | null }
+  | { kind: 'voice_result'; correct: boolean; misconceptionCode: string | null; hintAssisted?: boolean }
   | { kind: 'conversation_turn' }
   /**
    * The learner SAID a wrong idea, in words, outside any graded exercise
@@ -389,6 +475,36 @@ export class PedagogicalController {
    */
   private readonly masteryRevokedKcIds = new Set<string>();
 
+  /**
+   * C.10 — the MASTERY chain: consecutive qualifying correct observations
+   * per KC, this session. A qualifying correct is unassisted by the hint
+   * ladder, not fragile (hesitant, before a revocation), and not a
+   * surprising-and-rapid possible guess (neutral). Any graded miss or a
+   * stated wrong idea breaks it; a hint-assisted or fragile correct resets
+   * it. Mastery (rule 5) needs the chain at or above the requirement, on top
+   * of every pre-existing bar (posterior, opportunity count, fluency).
+   *
+   * Session-scoped on purpose, unlike `opportunities`: "consecutive" is
+   * about the evidence the controller is acting on NOW. Core's persisted
+   * map applies the same rule across sessions from `kc_attempt`.
+   */
+  private readonly masteryEvidence = new Map<string, number>();
+
+  /**
+   * C.10 — the REMEDIATION chain: consecutive qualifying incorrect
+   * observations per KC that AGREE on the diagnosis (the same catalogued
+   * misconception code, or both undiagnosed). A graded miss that looked like
+   * a guess is neutral — a guess is not a diagnosis; a stated wrong idea
+   * counts as an observation of that idea; any graded correct clears it.
+   * REMEDIATE — and the catalogued repair hint with it — is only reachable
+   * once the chain meets the requirement, so no single response can open
+   * the repair catalogue.
+   */
+  private readonly remediationEvidence = new Map<string, { code: string | null; count: number }>();
+
+  /** Operator configuration (constructor-derived, never session state). */
+  private readonly corroboration: { min: number; rollbackKcKeys: ReadonlySet<string> };
+
   constructor(
     private readonly plan: SessionPlanEntry[],
     /**
@@ -402,7 +518,16 @@ export class PedagogicalController {
      * which is a guess wearing the costume of one.
      */
     private readonly kcStates: readonly KcState[] = [],
+    options: ControllerOptions = {},
   ) {
+    const requested = options.corroborationMinObservations;
+    this.corroboration = {
+      min:
+        typeof requested === 'number' && Number.isInteger(requested) && requested >= 1 && requested <= 5
+          ? requested
+          : CORROBORATION_MIN_OBSERVATIONS,
+      rollbackKcKeys: new Set(options.corroborationRollbackKcKeys ?? []),
+    };
     for (const entry of plan) this.pKnown.set(entry.kcId, entry.pKnown);
     this.strategy = this.plan.length > 0 ? this.baseStrategy(this.plan[0]!) : 'DIRECT';
     this.lastDifficulty = band(this.plan[0]?.targetDifficulty ?? 2);
@@ -435,6 +560,12 @@ export class PedagogicalController {
       probingKcId: this.probingKcId,
       celebratedKcIds: [...this.celebratedKcIds],
       masteryRevokedKcIds: [...this.masteryRevokedKcIds],
+      masteryEvidence: [...this.masteryEvidence.entries()],
+      remediationEvidence: [...this.remediationEvidence.entries()].map(([kcId, chain]) => [
+        kcId,
+        chain.code,
+        chain.count,
+      ]),
     };
   }
 
@@ -472,6 +603,35 @@ export class PedagogicalController {
     for (const kcId of snapshot.celebratedKcIds) this.celebratedKcIds.add(kcId);
     this.masteryRevokedKcIds.clear();
     for (const kcId of snapshot.masteryRevokedKcIds) this.masteryRevokedKcIds.add(kcId);
+    this.masteryEvidence.clear();
+    for (const [kcId, n] of snapshot.masteryEvidence) this.masteryEvidence.set(kcId, n);
+    this.remediationEvidence.clear();
+    for (const [kcId, code, count] of snapshot.remediationEvidence) {
+      this.remediationEvidence.set(kcId, { code, count });
+    }
+  }
+
+  /**
+   * The C.10 requirement in force for one KC: the configured minimum, or the
+   * pre-C.10 single-observation baseline for a KC the Stage 7 kill switch
+   * rolled back.
+   */
+  private requiredObservationsFor(entry: SessionPlanEntry): number {
+    return this.corroboration.rollbackKcKeys.has(entry.kcKey) ? 1 : this.corroboration.min;
+  }
+
+  /** The corroborated diagnosis for a KC, or null while it is still one observation. */
+  private remediationChain(kcId: string): { code: string | null; count: number } {
+    return this.remediationEvidence.get(kcId) ?? { code: null, count: 0 };
+  }
+
+  /** Extends (same diagnosis) or restarts (different diagnosis) a KC's remediation chain. */
+  private observeWrongIdea(kcId: string, code: string | null): void {
+    const prior = this.remediationEvidence.get(kcId);
+    this.remediationEvidence.set(
+      kcId,
+      prior !== undefined && prior.code === code ? { code, count: prior.count + 1 } : { code, count: 1 },
+    );
   }
 
   /** Whether the controller has anything to control. False = v2 behaviour. */
@@ -678,9 +838,14 @@ export class PedagogicalController {
         misconceptionCode: null,
         idleNudgeMs: IDLE_NUDGE_MS.CELEBRATE,
         listenSilenceMs: LISTEN_SILENCE_MS.CELEBRATE,
+        kcId: null,
+        evidence: null,
+        masteryRevoked: false,
       };
     }
 
+    const required = this.requiredObservationsFor(entry);
+    let masteryRevoked = false;
     let failedNow = false;
     /** Whether this turn produced a correct answer — the definition of progress. */
     const assessedCorrect =
@@ -691,6 +856,10 @@ export class PedagogicalController {
     const pBefore = this.pKnown.get(entry.kcId) ?? entry.pKnown;
     if (event.kind === 'activity_result' || event.kind === 'voice_result') {
       const kcId = entry.kcId;
+      // Read BEFORE this event can revoke anything below: the fragile-answer
+      // test in the C.10 chain must judge this answer by the state it was
+      // given in, or the revocation it causes would excuse it.
+      const revokedBefore = this.masteryRevokedKcIds.has(kcId);
       this.opportunities.set(kcId, (this.opportunities.get(kcId) ?? 0) + 1);
       if (event.correct && event.kind === 'activity_result') {
         const latency = event.latencyMs;
@@ -759,6 +928,7 @@ export class PedagogicalController {
            * in the opportunity count below; the HISTORY stays where it was.
            */
           this.masteryRevokedKcIds.add(kcId);
+          masteryRevoked = true;
           /*
            * Dropped just below the floor, never to zero: the earlier
            * opportunities genuinely happened and this learner is not made to
@@ -782,7 +952,41 @@ export class PedagogicalController {
        * thought. Dropping it lets the turn be about re-engaging them instead.
        */
       this.guessedLastTurn = this.answeredWithoutReading(kcId, event);
-      this.misconceptionCode = this.guessedLastTurn ? null : event.misconceptionCode;
+
+      /*
+       * C.10 — THE CORROBORATING-EVIDENCE CHAINS (see `masteryEvidence` and
+       * `remediationEvidence` for the full qualifying rules). Updated here,
+       * in the evidence handler, for the same reason revocation is: this is
+       * what the session BELIEVES, independent of which strategy wins.
+       */
+      if (event.correct) {
+        const assisted = event.hintAssisted === true;
+        const fragile = this.answeredHesitantly(kcId, event) && !revokedBefore;
+        const possibleGuess = pBefore < SURPRISING_CORRECT_BELOW && this.answeredTooFastToRead(kcId, event);
+        if (assisted || fragile) this.masteryEvidence.set(kcId, 0);
+        else if (!possibleGuess) this.masteryEvidence.set(kcId, (this.masteryEvidence.get(kcId) ?? 0) + 1);
+        this.remediationEvidence.delete(kcId);
+      } else {
+        this.masteryEvidence.set(kcId, 0);
+        if (!this.guessedLastTurn) this.observeWrongIdea(kcId, event.misconceptionCode);
+      }
+
+      /*
+       * A DIAGNOSIS IS ACTED ON ONLY ONCE IT IS CORROBORATED (C.10). Before,
+       * the code of a single wrong answer went straight into
+       * `misconceptionCode` — REMEDIATE, the catalogued hint in the model's
+       * context and the whole repair catalogue — off one response that a
+       * slip produces one time in ten. The code is now held in the chain
+       * and surfaces only when two consecutive observations agree on it.
+       * A guess still clears it outright, exactly as before.
+       */
+      const chain = this.remediationChain(kcId);
+      this.misconceptionCode =
+        this.guessedLastTurn || event.correct || event.misconceptionCode === null
+          ? null
+          : chain.code === event.misconceptionCode && chain.count >= required
+            ? event.misconceptionCode
+            : null;
       if (event.correct) {
         this.consecutiveFailures = 0;
       } else {
@@ -801,9 +1005,20 @@ export class PedagogicalController {
      */
     let statedRemediation = false;
     if (event.kind === 'stated_misconception') {
-      this.misconceptionCode = event.misconceptionCode;
+      /*
+       * C.10: a stated belief is an OBSERVATION of that belief — it breaks
+       * the mastery chain and extends the remediation chain — but it opens
+       * REMEDIATE only once corroborated: the same idea stated twice, or a
+       * graded miss carrying the same code next to it. One sentence is one
+       * observation, however committed it sounds.
+       */
+      this.masteryEvidence.set(entry.kcId, 0);
+      this.observeWrongIdea(entry.kcId, event.misconceptionCode);
       this.guessedLastTurn = false;
-      statedRemediation = true;
+      if (this.remediationChain(entry.kcId).count >= required) {
+        this.misconceptionCode = event.misconceptionCode;
+        statedRemediation = true;
+      }
     }
 
     /*
@@ -836,9 +1051,23 @@ export class PedagogicalController {
       this.questioningWithoutProgress += 1;
     }
 
-    const proposed = this.propose(event, entry, failedNow, pBefore, statedRemediation);
-    const strategy = this.enforceGuardrails(proposed, nowMs);
+    const proposal = this.propose(event, entry, failedNow, pBefore, statedRemediation, required);
+    const strategy = this.enforceGuardrails(proposal.strategy, nowMs);
+    // A guardrail that HELD the previous strategy did not execute the
+    // proposal, so the proposal's evidence describes nothing that happened.
+    const executed = strategy === proposal.strategy;
     this.applyStrategy(strategy, nowMs);
+    /*
+     * C.10: a correct probe whose original KC has NOT yet corroborated a
+     * remediation returns to that KC's ordinary teaching (rule 4) rather
+     * than remediating it on the one miss that opened the probe. The probe
+     * has answered its question either way, so it closes here — the same
+     * close `applyStrategy` performs on the REMEDIATE path.
+     */
+    if (executed && proposal.closeProbe && this.probingKcId !== null) {
+      this.probingKcId = null;
+      this.probeReturnIndex = null;
+    }
 
     const p = this.pKnown.get(entry.kcId) ?? entry.pKnown;
     /*
@@ -875,7 +1104,21 @@ export class PedagogicalController {
      * one.
      */
     let difficulty = this.lastDifficultyFromContent ? band(entry.targetDifficulty) : this.lastDifficulty;
-    if (failedNow || strategy === 'RESCUE' || strategy === 'REMEDIATE' || strategy === 'PROBE') {
+    /*
+     * A probe closed by C.10's rule 4 (back to ordinary teaching instead of
+     * REMEDIATE) holds difficulty exactly as the REMEDIATE it replaces did:
+     * the learner's last answer on the ORIGINAL KC was a miss, and "never
+     * raise difficulty after a failure" does not lapse because the next turn
+     * happened to be about a prerequisite.
+     */
+    const probeClosedWithoutRemediation = executed && proposal.closeProbe;
+    if (
+      failedNow ||
+      probeClosedWithoutRemediation ||
+      strategy === 'RESCUE' ||
+      strategy === 'REMEDIATE' ||
+      strategy === 'PROBE'
+    ) {
       // Never raise difficulty after a failure — only hold or lower.
       difficulty = band(Math.min(difficulty, Math.max(1, this.lastDifficulty - (failedNow ? 1 : 0))));
     } else if (p >= 0.85 && strategy !== 'CELEBRATE') {
@@ -899,17 +1142,49 @@ export class PedagogicalController {
       // `listenSilenceMsFor`. The CELEBRATE/no-entry fallback above stays on
       // the raw table: with no active KC there is nothing to be "new" to.
       listenSilenceMs: listenSilenceMsFor(strategy, this.opportunities.get(entry.kcId) ?? 0),
+      kcId: entry.kcId,
+      evidence: executed ? proposal.evidence : null,
+      masteryRevoked,
     };
   }
 
+  /**
+   * The strategy proposal, with the C.10 evidence a consequential proposal
+   * rests on. Every consequential return below goes through a rule that
+   * checks its chain against `required` first — there is no other path to
+   * CELEBRATE, TRANSFER, REMEDIATE or RESCUE.
+   */
   private propose(
     event: PedagogyEvent,
     entry: SessionPlanEntry,
     failedNow: boolean,
     pBefore: number,
-    /** A wrong idea the learner SAID, which reaches REMEDIATE without a graded failure. */
-    statedRemediation = false,
-  ): Strategy {
+    /** A corroborated wrong idea the learner SAID, which reaches REMEDIATE without a graded failure. */
+    statedRemediation: boolean,
+    required: number,
+  ): { strategy: Strategy; evidence: DecisionEvidence | null; closeProbe: boolean } {
+    const plain = (strategy: Strategy): { strategy: Strategy; evidence: null; closeProbe: false } => ({
+      strategy,
+      evidence: null,
+      closeProbe: false,
+    });
+    const backed = (
+      strategy: Strategy,
+      rule: DecisionEvidence['rule'],
+      observations: number,
+    ): { strategy: Strategy; evidence: DecisionEvidence; closeProbe: false } => ({
+      strategy,
+      evidence: { rule, observations, required },
+      closeProbe: false,
+    });
+    /*
+     * RESCUE's two rules were already multi-observation (two consecutive
+     * graded failures; three turns without progress). They keep their own
+     * floors — the pre-C.10 baseline — and rise with the requirement if the
+     * operator ever raises it above them, never fall below them.
+     */
+    const rescueFailures = Math.max(2, required);
+    const rescueNoProgress = Math.max(3, required);
     const p = this.pKnown.get(entry.kcId) ?? entry.pKnown;
 
     /*
@@ -934,7 +1209,9 @@ export class PedagogicalController {
      * teaching — rule 2's remediation, rule 3's prerequisite probe, or direct
      * instruction — not to rescue again with a different label.
      */
-    if (this.consecutiveFailures >= 2 && !this.rescuedSinceProgress) return 'RESCUE';
+    if (this.consecutiveFailures >= rescueFailures && !this.rescuedSinceProgress) {
+      return backed('RESCUE', 'rescue', this.consecutiveFailures);
+    }
 
     /*
      * 1b) No progress across ordinary teaching turns, in a band with no lower
@@ -953,18 +1230,25 @@ export class PedagogicalController {
      * trusting it to notice on its own that nothing is landing.
      */
     if (
-      this.questioningWithoutProgress >= 3 &&
+      this.questioningWithoutProgress >= rescueNoProgress &&
       !this.rescuedSinceProgress &&
       (this.strategy === 'DIRECT' ||
         this.strategy === 'WORKED' ||
         this.strategy === 'FADED' ||
         this.strategy === 'SPACED')
     ) {
-      return 'RESCUE';
+      return backed('RESCUE', 'rescue', this.questioningWithoutProgress);
     }
 
-    // 2) A diagnosed wrong idea outranks everything except rescue.
-    if ((failedNow || statedRemediation) && this.misconceptionCode !== null) return 'REMEDIATE';
+    /*
+     * 2) A diagnosed wrong idea outranks everything except rescue — once it
+     * is CORROBORATED (C.10). `misconceptionCode` is only ever set from a
+     * chain that met the requirement (see the evidence handler), so a
+     * non-null code here already carries its evidence.
+     */
+    if ((failedNow || statedRemediation) && this.misconceptionCode !== null) {
+      return backed('REMEDIATE', 'remediation', this.remediationChain(entry.kcId).count);
+    }
 
     // 3) Unexpected failure with prerequisites → walk the graph backwards.
     //    Judged on the PRE-update belief: "we thought they had this".
@@ -974,13 +1258,37 @@ export class PedagogicalController {
       entry.prereqKcIds.length > 0 &&
       (pBefore >= 0.55 || this.consecutiveFailures >= 2)
     ) {
-      return 'PROBE';
+      return plain('PROBE');
     }
 
-    // 4) While probing: a correct probe closes the probe and remediates the
-    //    original KC; a wrong one keeps probing at floor difficulty.
+    /*
+     * 4) While probing: a correct probe means the prerequisite holds and the
+     * gap is in the original KC. Pre-C.10 that remediated the original KC
+     * outright — on the ONE miss that opened the probe. It now remediates
+     * only when the original KC's own chain is corroborated; otherwise the
+     * probe closes and the original KC is taught normally until a second
+     * observation arrives. A wrong probe keeps probing at floor difficulty.
+     */
     if (this.probingKcId !== null && (event.kind === 'activity_result' || event.kind === 'voice_result')) {
-      return event.correct ? 'REMEDIATE' : 'DIRECT';
+      if (!event.correct) return plain('DIRECT');
+      const interrupted = this.plan[this.probeReturnIndex ?? this.entryIndex];
+      const chain = interrupted ? this.remediationChain(interrupted.kcId) : { code: null, count: 0 };
+      const interruptedRequired = interrupted ? this.requiredObservationsFor(interrupted) : required;
+      if (interrupted && chain.count >= interruptedRequired) {
+        // The evidence is the ORIGINAL KC's, so is the requirement it is
+        // judged against: a Stage 7 rollback on either KC alone must not
+        // make a compliant decision read as a violation (or the reverse).
+        return {
+          strategy: 'REMEDIATE',
+          evidence: { rule: 'remediation', observations: chain.count, required: interruptedRequired },
+          closeProbe: false,
+        };
+      }
+      return {
+        strategy: interrupted ? this.baseStrategy(interrupted) : 'DIRECT',
+        evidence: null,
+        closeProbe: true,
+      };
     }
 
     /*
@@ -1032,9 +1340,21 @@ export class PedagogicalController {
        * holding them to a speed they may simply not have. A learner who is
        * carefully, reliably right is not a learner who has failed to learn.
        */
-      (!this.answeredHesitantly(entry.kcId, event) || this.masteryRevokedKcIds.has(entry.kcId))
+      (!this.answeredHesitantly(entry.kcId, event) || this.masteryRevokedKcIds.has(entry.kcId)) &&
+      /*
+       * C.10: AND a chain of consecutive qualifying correct answers at or
+       * above the requirement. The opportunity count above is LIFETIME
+       * (seeded from persisted history), so before this a returning learner
+       * with old attempts could be declared master of a KC on one lucky
+       * answer today. The chain is this session's, and unassisted.
+       */
+      (this.masteryEvidence.get(entry.kcId) ?? 0) >= required
     ) {
-      return this.celebratedKcIds.has(entry.kcId) ? 'TRANSFER' : 'CELEBRATE';
+      return backed(
+        this.celebratedKcIds.has(entry.kcId) ? 'TRANSFER' : 'CELEBRATE',
+        'mastery',
+        this.masteryEvidence.get(entry.kcId) ?? 0,
+      );
     }
 
     // 6) A hard-won correct answer earns a self-explanation beat.
@@ -1042,11 +1362,11 @@ export class PedagogicalController {
       (event.kind === 'activity_result' && event.correct && event.attemptNumber > 1) ||
       (this.strategy === 'REMEDIATE' && !failedNow && event.kind !== 'conversation_turn')
     ) {
-      return 'ELABORATE';
+      return plain('ELABORATE');
     }
 
     // 7) Otherwise: the mastery band decides.
-    return this.baseStrategy(entry);
+    return plain(this.baseStrategy(entry));
   }
 
   private enforceGuardrails(proposed: Strategy, nowMs: number): Strategy {
@@ -1193,6 +1513,17 @@ export class PedagogicalController {
    */
   private answeredWithoutReading(kcId: string, event: PedagogyEvent): boolean {
     if (event.kind !== 'activity_result' || event.correct) return false;
+    return this.answeredTooFastToRead(kcId, event);
+  }
+
+  /**
+   * The latency half of `answeredWithoutReading`, regardless of correctness —
+   * C.10 reuses it for the SURPRISING correct (a possible lucky guess). Same
+   * self-calibrated threshold and the same refusal to judge without two
+   * prior measurements.
+   */
+  private answeredTooFastToRead(kcId: string, event: PedagogyEvent): boolean {
+    if (event.kind !== 'activity_result') return false;
     const latency = event.latencyMs;
     if (latency === null || latency === undefined) return false;
 

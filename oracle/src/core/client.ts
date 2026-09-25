@@ -11,6 +11,7 @@ import {
   type Locale,
 } from '../context/schema.js';
 import type { WireDemoStep, WireWhiteboard } from '../ws/protocol.js';
+import type { TurnHonesty } from '../tutor/feedbackHonesty.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -226,6 +227,13 @@ export interface PersistTurnInput {
   audioPath?: string | null;
   source: 'model' | 'scripted' | 'stt';
   moderation?: Record<string, unknown>;
+  /**
+   * C.18: the turn's honesty facts (`tutor/feedbackHonesty.ts`), stored by
+   * Core in `tutor_turn_honesty` together with its own key-based reveal check
+   * against `openSegmentId`'s answer key. Tutor turns only; optional so a
+   * Core that predates it simply ignores it (its TurnBody is not strict).
+   */
+  honesty?: TurnHonesty | null;
   /**
    * V4's live sequence board, when this tutor turn drew one — the SAME
    * object sent over the wire (see `WireWhiteboard`'s own comment), never
@@ -694,6 +702,14 @@ export interface TrajectoryStepInput {
   misconceptionCode: string | null;
   kcId: string | null;
   kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
+  /** C.10: the rule a consequential decision's evidence satisfied, or null. */
+  evidenceRule: 'mastery' | 'remediation' | 'rescue' | null;
+  /** C.10: consecutive qualifying observations behind it, or null. */
+  evidenceObservations: number | null;
+  /** C.10: the corroboration requirement in force for that KC, or null. */
+  evidenceRequired: number | null;
+  /** C.10: this decision withdrew a mastery declared earlier in the session. */
+  masteryRevoked: boolean;
 }
 
 /**

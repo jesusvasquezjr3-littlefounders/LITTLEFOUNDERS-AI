@@ -2916,7 +2916,7 @@ export async function listPlacementSafetyFlags(
 
 export interface TrajectoryStepInput {
   turnSeq: number;
-  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'entry_opened';
+  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'stated_misconception' | 'entry_opened';
   strategyBefore: string;
   strategy: string;
   skillName: string | null;
@@ -2926,6 +2926,11 @@ export interface TrajectoryStepInput {
   misconceptionCode: string | null;
   kcId: string | null;
   kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
+  /** C.10 evidence (absent from an Oracle build that predates it). */
+  evidenceRule?: 'mastery' | 'remediation' | 'rescue' | null;
+  evidenceObservations?: number | null;
+  evidenceRequired?: number | null;
+  masteryRevoked?: boolean;
 }
 
 /**
@@ -2971,6 +2976,10 @@ export async function insertTutorTrajectory(
         misconception_code: step.misconceptionCode,
         kc_id: step.kcId,
         kc_mode: step.kcMode,
+        evidence_rule: step.evidenceRule ?? null,
+        evidence_observations: step.evidenceObservations ?? null,
+        evidence_required: step.evidenceRequired ?? null,
+        mastery_revoked: step.masteryRevoked ?? false,
       })),
     ),
   });

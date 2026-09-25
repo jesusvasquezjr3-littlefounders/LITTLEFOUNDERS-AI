@@ -1,3 +1,4 @@
+import { ANSWER_HONESTY_RULE } from './feedbackHonesty.js';
 import type { TutorContext, Locale } from '../context/schema.js';
 import {
   EMOTIONS,
@@ -2404,6 +2405,9 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'trying, by name ("contaste todas sin saltarte ninguna"), and then work on',
   'what went wrong. And never state the number yourself and then praise it as',
   'though it came from them.',
+  '',
+  // C.18 — the anti-sycophancy constraint (feedbackHonesty.ts), a Tier 1 rule.
+  ANSWER_HONESTY_RULE,
   '',
   '## Length',
   '',

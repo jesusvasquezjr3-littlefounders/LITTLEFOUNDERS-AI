@@ -201,6 +201,31 @@ const Env = z.object({
   TURN_MAX_INPUT_CHARS: z.coerce.number().int().positive().default(600),
 
   /**
+   * Product C.10 — the corroborating-evidence requirement: how many
+   * consecutive qualifying observations the pedagogy controller needs before
+   * it declares mastery or triggers remediation/rescue. The SPEC's value is
+   * 2, "proposed, pending data-driven validation" (Threshold Recalibration
+   * Log, docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). Changing it is
+   * a Tier 1 governance change (C.22), never a tuning knob.
+   */
+  TUTOR_CORROBORATION_MIN_OBSERVATIONS: z.coerce.number().int().min(1).max(5).default(2),
+  /**
+   * Appendix F Part 3 Stage 7 — the Extended Mastery Engine kill switch:
+   * comma-separated `kc.key`s reverted to the pre-C.10 single-observation
+   * baseline until root-caused. Empty (the default) rolls nothing back.
+   * Every use is logged in the Kill-Switch Trigger Log.
+   */
+  TUTOR_CORROBORATION_ROLLBACK_KC_KEYS: z
+    .string()
+    .default('')
+    .transform((raw) =>
+      raw
+        .split(',')
+        .map((key) => key.trim())
+        .filter((key) => key.length > 0),
+    ),
+
+  /**
    * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
    * item is a separate, larger, architecturally-undecided piece of work).
    *

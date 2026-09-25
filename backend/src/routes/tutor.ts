@@ -88,6 +88,7 @@ import {
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
+import { recordTurnHonesty } from '../services/pedagogy/turnHonesty.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
 import { buildSessionNarrative, type SessionNarrative } from '../services/pedagogy/sessionNarrative.js';
 import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
@@ -1146,6 +1147,29 @@ function internalRouter(): Router {
     .min(1)
     .max(8);
 
+  /*
+   * C.18 — the Mentor turn's honesty facts (answer-reveal and anti-
+   * sycophancy instrumentation). HAND-MIRRORED from Oracle's `TurnHonesty`
+   * (oracle/src/tutor/feedbackHonesty.ts) and the `tutor_turn_honesty`
+   * CHECK lists; `npm run honesty:check` (root) keeps the three identical.
+   * Strict inside, optional outside: an Oracle build that predates it sends
+   * none and nothing changes.
+   */
+  const TurnHonestyBody = z
+    .object({
+      sequenceKind: z.enum(['hint_ladder', 'repair', 'open_activity', 'none']),
+      hintLevel: z.enum(['reask', 'indirect', 'misconception', 'fill_blank', 'tell']).nullable(),
+      revealSanctioned: z.boolean(),
+      revealSelfAnswered: z.boolean(),
+      revealPhrase: z.boolean(),
+      openSegmentId: z.string().min(1).max(64).nullable(),
+      verdictContext: z.enum(['after_incorrect', 'after_correct', 'after_unsound_claim']).nullable(),
+      falseAffirmationCaught: z.boolean(),
+      falseAffirmationDelivered: z.boolean(),
+      praise: z.enum(['specific', 'generic']).nullable(),
+    })
+    .strict();
+
   const TurnBody = z.object({
     sessionId: z.string().uuid(),
     seq: z.number().int().nonnegative(),
@@ -1175,12 +1199,32 @@ function internalRouter(): Router {
     roleplayScene: z.string().min(1).max(64).nullish(),
     /** Class III `point_at` (2026-09-04): the array index `action: "point"` reached for, if any. */
     pointAt: z.number().int().min(0).nullish(),
+    /** C.18: see `TurnHonestyBody`. Only meaningful on a tutor turn. */
+    honesty: TurnHonestyBody.nullish(),
   });
 
   router.post('/turns', async (req, res) => {
     const parsed = TurnBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid turn');
     const recorded = await insertTutorTurn(parsed.data);
+
+    /*
+     * C.18: the Mentor-integrity row (tutor_turn_honesty), with Core's own
+     * key-based reveal check. Best-effort and independent of the turn write,
+     * like the plan save below: a lost honesty row costs the dashboard one
+     * data point, never the learner a reported failure.
+     */
+    if (recorded && parsed.data.speaker === 'tutor' && parsed.data.honesty) {
+      const honestyRecorded = await recordTurnHonesty({
+        sessionId: parsed.data.sessionId,
+        turnSeq: parsed.data.seq,
+        text: parsed.data.text,
+        honesty: parsed.data.honesty,
+      }).catch(() => false);
+      if (!honestyRecorded) {
+        console.warn(`[tutor] honesty row did not land for session ${parsed.data.sessionId} turn ${parsed.data.seq}`);
+      }
+    }
 
     /*
      * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): a turn that drew
@@ -1392,7 +1436,16 @@ function internalRouter(): Router {
   const TrajectoryStepBody = z
     .object({
       turnSeq: z.number().int().min(1),
-      eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'entry_opened']),
+      /*
+       * `stated_misconception` was always in Oracle's own vocabulary
+       * (`oracle/src/session/trajectory.ts` records it for every learner
+       * turn that states a wrong idea) and never in this one, so every
+       * session containing one had its WHOLE batch refused with a 400 — the
+       * steps most relevant to C.10's remediation evidence were exactly the
+       * ones that never landed. Accepted now; the DB CHECK is widened by the
+       * matching contract migration (`*_trajectory_stated_misconception_kind.sql`).
+       */
+      eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'stated_misconception', 'entry_opened']),
       // Never null in practice — the controller always seeds a real strategy
       // before `decide()` can be called at all — but the wire shape is not
       // where that invariant should be enforced twice; Zod validates the
@@ -1406,8 +1459,25 @@ function internalRouter(): Router {
       misconceptionCode: z.string().min(1).max(64).nullable(),
       kcId: z.uuid().nullable(),
       kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
+      /*
+       * C.10 — the evidence behind a consequential decision (Extended
+       * Mastery Engine event log). Optional so a batch from an Oracle build
+       * that predates them still lands; when present they are validated as
+       * a unit (all three set, or all three null) by the refine below.
+       */
+      evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().optional(),
+      evidenceObservations: z.number().int().min(0).max(100).nullable().optional(),
+      evidenceRequired: z.number().int().min(1).max(5).nullable().optional(),
+      masteryRevoked: z.boolean().optional(),
     })
-    .strict();
+    .strict()
+    .refine(
+      (step) =>
+        (step.evidenceRule ?? null) === null
+          ? (step.evidenceObservations ?? null) === null && (step.evidenceRequired ?? null) === null
+          : step.evidenceObservations != null && step.evidenceRequired != null,
+      { message: 'evidenceRule, evidenceObservations and evidenceRequired travel together' },
+    );
 
   // Capped generously above anything a real 25-minute session budget could
   // ever produce (idle-nudge/listen-silence floors alone put real sessions

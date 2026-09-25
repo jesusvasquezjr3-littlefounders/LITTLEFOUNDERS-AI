@@ -13,9 +13,15 @@
  * clock), never inside a voice turn.
  */
 
-import { predictCorrect, MASTERY_PREREQ_THRESHOLD, MASTERY_DISPLAY_THRESHOLD } from './bkt.js';
+import {
+  predictCorrect,
+  MASTERY_CORROBORATION_MIN,
+  MASTERY_PREREQ_THRESHOLD,
+  MASTERY_DISPLAY_THRESHOLD,
+} from './bkt.js';
 import {
   getActiveKcs,
+  getCorrectStreaks,
   getKcEdges,
   getLearnerMastery,
   getMemoryCards,
@@ -152,6 +158,13 @@ export function rankPlanKcs(
   mastery: Array<{ kc_id: string; p_known: number; attempts: number; params_override: unknown }>,
   cards: Array<{ kc_id: string; due_at: string; reps: number }>,
   tier: number,
+  /**
+   * C.10: trailing consecutive-correct streak per KC (`getCorrectStreaks`).
+   * When given, a KC above the mastery bar on an UNCORROBORATED streak stays
+   * on the frontier — the planner does not move on from a KC on one answer.
+   * Omitted = the pre-C.10 posterior-only rule (callers without the read).
+   */
+  streaks?: ReadonlyMap<string, number>,
 ): Array<{ kc: KcRow; reason: 'review_due' | 'frontier' }> {
   if (kcs.length === 0) return [];
 
@@ -180,7 +193,11 @@ export function rankPlanKcs(
 
   const frontier = graph.kcs
     .filter((kc) => !reviewIds.has(kc.id))
-    .filter((kc) => (graph.pKnown.get(kc.id) ?? 0) < MASTERY_DISPLAY_THRESHOLD)
+    .filter(
+      (kc) =>
+        (graph.pKnown.get(kc.id) ?? 0) < MASTERY_DISPLAY_THRESHOLD ||
+        (streaks !== undefined && (streaks.get(kc.id) ?? 0) < MASTERY_CORROBORATION_MIN),
+    )
     .filter((kc) => prereqsMet(graph, kc.id))
     .sort((a, b) => frontierScore(graph, b, unlocks) - frontierScore(graph, a, unlocks))
     .slice(0, MAX_FRONTIER);
@@ -204,18 +221,19 @@ export async function buildSessionPlan(
   tier: number,
   locale: string,
 ): Promise<SessionPlanResult | null> {
-  const [kcs, edges, mastery, cards] = await Promise.all([
+  const [kcs, edges, mastery, cards, streaks] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
     getMemoryCards(userId),
+    getCorrectStreaks(userId),
   ]);
-  if (kcs === null || edges === null || mastery === null || cards === null) return null;
+  if (kcs === null || edges === null || mastery === null || cards === null || streaks === null) return null;
   if (kcs.length === 0) return { plan: [], kcStates: [] };
 
   const eligible = kcs.filter((k) => k.tier_min <= tier);
   const graph = assemble(eligible, edges, mastery);
-  const planKcs = rankPlanKcs(kcs, edges, mastery, cards, tier);
+  const planKcs = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks);
 
   const misconceptions = await getMisconceptionsForKcs(planKcs.map((p) => p.kc.id));
   if (misconceptions === null) return null;

@@ -5,6 +5,7 @@ import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 import { buildSessionPlan, difficultyFor } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap, deriveNodeState } from '../services/pedagogy/tutorMap.js';
+import { trailingCorrectStreaks } from '../services/pedagogy/kcData.js';
 
 /*
  * The v3 brain's Core wiring: the session plan on the internal context, the
@@ -116,6 +117,10 @@ const CHANGE_SEGMENT_ROW = {
 interface StubOpts {
   mastery?: unknown[];
   cards?: unknown[];
+  /** `kc_attempt` rows, NEWEST FIRST (the order the C.10 streak read asks for). */
+  attempts?: unknown[];
+  /** Fail the C.10 streak read outright. */
+  attemptsFail?: boolean;
   writes?: { url: string; method: string; body?: string }[];
 }
 
@@ -129,7 +134,10 @@ function stub(opts: StubOpts = {}) {
       if (method !== 'GET') writes.push({ url, method, body: init?.body as string | undefined });
 
       if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, EDGE_ROWS));
-      if (url.includes('/rest/v1/kc_attempt')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/kc_attempt')) {
+        if (method === 'GET' && opts.attemptsFail) return Promise.resolve(new Response(null, { status: 500 }));
+        return Promise.resolve(jsonResponse(200, method === 'GET' ? (opts.attempts ?? []) : []));
+      }
       if (url.includes('/rest/v1/kc?')) {
         if (url.includes('id=eq.')) {
           const row = KC_ROWS.find((k) => url.includes(k.id));
@@ -292,11 +300,33 @@ describe('buildSessionPlan', () => {
 
 describe('the learning map', () => {
   it('deriveNodeState covers the five states, review outranking mastery', () => {
-    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: true, prereqsMet: true })).toBe('needs_review');
-    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true })).toBe('mastered');
-    expect(deriveNodeState({ pKnown: 0.9, attempts: 1, reviewDue: false, prereqsMet: true })).toBe('in_progress');
-    expect(deriveNodeState({ pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: false })).toBe('locked');
-    expect(deriveNodeState({ pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: true })).toBe('available');
+    const base = { consecutiveCorrect: 2 };
+    expect(deriveNodeState({ ...base, pKnown: 0.9, attempts: 5, reviewDue: true, prereqsMet: true })).toBe('needs_review');
+    expect(deriveNodeState({ ...base, pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true })).toBe('mastered');
+    expect(deriveNodeState({ ...base, pKnown: 0.9, attempts: 1, reviewDue: false, prereqsMet: true })).toBe('in_progress');
+    expect(deriveNodeState({ ...base, pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: false })).toBe('locked');
+    expect(deriveNodeState({ ...base, pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: true })).toBe('available');
+  });
+
+  it('C.10: never "mastered" on a single observation — the latest answers must corroborate it', () => {
+    // A high posterior and plenty of history, but the latest answer is the
+    // only correct one (or the latest answer is wrong): still in progress.
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true, consecutiveCorrect: 1 })).toBe('in_progress');
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true, consecutiveCorrect: 0 })).toBe('in_progress');
+  });
+
+  it('C.10: trailingCorrectStreaks counts only the unbroken run at the NEWEST end', () => {
+    const streaks = trailingCorrectStreaks([
+      { kc_id: 'a', correct: true },
+      { kc_id: 'b', correct: false },
+      { kc_id: 'a', correct: true },
+      { kc_id: 'b', correct: true },
+      { kc_id: 'a', correct: false },
+      { kc_id: 'a', correct: true },
+    ]);
+    expect(streaks.get('a')).toBe(2);
+    expect(streaks.get('b')).toBe(0);
+    expect(streaks.get('c')).toBeUndefined();
   });
 
   it('locks the dependent while its prerequisite is unmastered, and CONTINUE follows the planner', async () => {
@@ -313,10 +343,56 @@ describe('the learning map', () => {
   });
 
   it('a mastered prerequisite opens the dependent on the map too', async () => {
-    stub({ mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }] });
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }],
+      attempts: [
+        { kc_id: KC_COUNT, correct: true },
+        { kc_id: KC_COUNT, correct: true },
+      ],
+    });
     const map = await buildTutorMap(KID, 2, 'es-MX');
-    expect(map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins')?.state).toBe('mastered');
+    const count = map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins');
+    expect(count?.state).toBe('mastered');
+    // The evidence behind the claim travels with it (Appendix D §2.6).
+    expect(count?.consecutiveCorrect).toBe(2);
     expect(map!.nodes.find((n) => n.kcKey === 'money.make-change-counting-up')?.state).toBe('available');
+  });
+
+  it('C.10: one lucky answer after a miss does not show as mastered, and the planner keeps teaching it', async () => {
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 4, params_override: null }],
+      attempts: [
+        { kc_id: KC_COUNT, correct: true },
+        { kc_id: KC_COUNT, correct: false },
+      ],
+    });
+    const map = await buildTutorMap(KID, 2, 'es-MX');
+    const count = map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins');
+    expect(count?.state).toBe('in_progress');
+    expect(count?.consecutiveCorrect).toBe(1);
+    const plan = await buildSessionPlan(KID, 2, 'es-MX');
+    expect(plan!.plan.map((p) => p.kcKey)).toContain('money.count-mixed-coins');
+  });
+
+  it('C.10: a corroborated mastery leaves the frontier', async () => {
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }],
+      attempts: [
+        { kc_id: KC_COUNT, correct: true },
+        { kc_id: KC_COUNT, correct: true },
+      ],
+    });
+    const plan = await buildSessionPlan(KID, 2, 'es-MX');
+    expect(plan!.plan.map((p) => p.kcKey)).not.toContain('money.count-mixed-coins');
+  });
+
+  it('C.10: a failed streak read is a failed map and plan, never a silent demotion', async () => {
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }],
+      attemptsFail: true,
+    });
+    expect(await buildTutorMap(KID, 2, 'es-MX')).toBeNull();
+    expect(await buildSessionPlan(KID, 2, 'es-MX')).toBeNull();
   });
 });
 

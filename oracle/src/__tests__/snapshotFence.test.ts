@@ -77,6 +77,8 @@ const ORCHESTRATOR_EXCLUDED: Record<string, string> = {
 const CONTROLLER_EXCLUDED: Record<string, string> = {
   plan: 'a constructor argument, rebuilt on the far side from the park record’s own SessionContext',
   kcStates: 'a constructor argument, rebuilt on the far side from the park record’s own SessionContext',
+  corroboration:
+    'C.10 operator configuration derived from env at construction (TUTOR_CORROBORATION_*), rebuilt identically on the far side — config, not session state',
 };
 
 describe('the park snapshot covers every field either class actually has', () => {
@@ -181,6 +183,10 @@ describe('a snapshot survives a round trip byte for byte', () => {
       misconceptionCode: 'mc-unit-confusion',
       kcId: 'kc-saving-1',
       kcMode: 'remediation',
+      evidenceRule: 'rescue',
+      evidenceObservations: 2,
+      evidenceRequired: 2,
+      masteryRevoked: true,
     });
     (o.skillStates as unknown[]).push({
       skillKey: 'saving-basics',
@@ -231,6 +237,8 @@ describe('a snapshot survives a round trip byte for byte', () => {
       probingKcId: 'kc-prereq-9',
       celebratedKcIds: ['kc-saving-1'],
       masteryRevokedKcIds: ['kc-saving-1'],
+      masteryEvidence: [['kc-saving-1', 1]],
+      remediationEvidence: [['kc-saving-1', 'mc-unit-confusion', 2]],
     });
   }
 
@@ -300,6 +308,8 @@ describe('a snapshot survives a round trip byte for byte', () => {
       probingKcId: 'kc-b',
       celebratedKcIds: ['kc-a'],
       masteryRevokedKcIds: ['kc-a'],
+      masteryEvidence: [['kc-a', 3]] as [string, number][],
+      remediationEvidence: [['kc-b', null, 1]] as [string, string | null, number][],
     };
     controller.restore(populated);
     expect(controller.snapshot()).toEqual(populated);

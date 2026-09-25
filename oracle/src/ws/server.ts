@@ -2715,6 +2715,9 @@ async function deliver(
       savePlan: emission.turn.savePlan,
       roleplayScene: emission.turn.roleplayScene ?? null,
       pointAt: emission.turn.pointAt ?? null,
+      // C.18: the honesty facts ride the transcript row — Core scores the
+      // reveal against the real key it alone holds (tutor_turn_honesty).
+      honesty: emission.honesty ?? null,
     }).then((recorded) => notePersist(live, recorded));
   });
 

@@ -126,6 +126,7 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | Public pages, titles, share copy, `site.mjs` | `npm run seo:check` + `npm run paths:check` |
 | DeepSeek/Qwen config in `coursegen/` or `oracle/` | `npm run provider:check` |
 | Tutor whiteboard / segment / demonstrate shapes | `npm run instruments:check`, `npm run preferred-types:check`, `npm run demo-step:check` |
+| Mentor honesty record (C.18: Oracle `TurnHonesty`, Core `TurnHonestyBody`/`turnHonesty.ts`, `tutor_turn_honesty`) | `npm run honesty:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
@@ -142,7 +143,7 @@ The rebuilt design foundation has an isolated development entry at `/rebuild.htm
 | Migrations | `database/` → `npm run db:reset` twice (both green) + regenerate types (`npm run db:types`) |
 | The KC graph / tutor content bridge | `backend/` → `npm run seed:kc`, then `npm run audit:content-bridge` — **`seed:kc` is a required rollout step, not an optional seed.** No migration inserts KC rows (`0052_kc_graph.sql` only creates the schema), so without it every activity falls through to paid live generation. |
 
-`.github/workflows/repo-gates.yml` re-runs the repo-wide set (secrets, i18n, marketing paths, provider/instrument/preferred-types/demo-step parity, tools self-tests) on every PR and push, without a `paths:` filter — but CI is the backstop, not the gate. Commit locally as you go and **push once, at the end, when everything is green together.**
+`.github/workflows/repo-gates.yml` re-runs the repo-wide set (secrets, i18n, marketing paths, provider/instrument/preferred-types/demo-step/Mentor-honesty parity, tools self-tests) on every PR and push, without a `paths:` filter — but CI is the backstop, not the gate. Commit locally as you go and **push once, at the end, when everything is green together.**
 
 The reason to batch is not what it used to say here. All twelve `*-ci.yml` workflows carry `paths:` filters, so a push does *not* fan CI out across all 11 services — it runs `repo-gates.yml` plus CI for the services whose files actually changed. Batching matters for a different reason: **CD is chained to CI** (`workflow_run` on that service's CI going green on `main`), so every push of a touched service is a *deploy* of it. Ten pushes are ten deploys, and any one of them can land a half-finished change in production between commits.
 
@@ -179,6 +180,11 @@ npm --prefix backend run audit:content-bridge  # does every mapped kc.skill_key 
 npm --prefix backend run placement:verify      # the real placement search over the real catalog — NOT frontend's verify:placement,
                                                # which is 3D island placement and unrelated despite the name
 npm --prefix backend run curate:tutor-skills   # propose-only report: KCs with no skill file, misconceptions with no remediation
+npm --prefix backend run tutor:integrity-report -- [--since=YYYY-MM-DD] [--json]
+                                               # C.10/C.18 Mentor-integrity monitor (read-only, no model call): corroborating-evidence
+                                               # compliance (hard 100%), mastery reversal rate, answer-reveal rate per persona/session
+                                               # with drift, delivered false affirmations (zero tolerance). Exit 1 on any defect.
+                                               # Thresholds: docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md
 ```
 
 ## Deploying

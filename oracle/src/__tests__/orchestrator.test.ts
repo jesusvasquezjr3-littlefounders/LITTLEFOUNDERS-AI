@@ -3484,9 +3484,30 @@ describe('a once-per-session skill is committed on DELIVERY, not on selection', 
   };
 
   it('is not spent by an interrupted turn — the model never actually said it', async () => {
-    // A completion that hangs until the signal aborts it, exactly like a real
-    // learner interrupt (same technique as "emits NOTHING when the learner
-    // interrupts mid-completion" above).
+    const orchestrator = new TutorOrchestrator(REMEDIATE_SESSION, Date.now(), silent);
+    const aborted = (): AbortSignal => {
+      const controller = new AbortController();
+      controller.abort();
+      return controller.signal;
+    };
+    const wrong = { misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 };
+
+    /*
+     * C.10: REMEDIATE opens only on a CORROBORATED diagnosis. With graded
+     * answers alone that takes the rescue guardrail's turn first: miss one
+     * is held (one observation), miss two is two consecutive failures —
+     * RESCUE ("safety rules always win") — and miss three remediates. The
+     * first two are interrupted before the model is called; state updates
+     * happen synchronously before the network call, so they still count.
+     */
+    for (const segmentId of ['seg-1', 'seg-2']) {
+      orchestrator.noteSegmentServed(segmentId, 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
+      fetchMock.mockRejectedValueOnce(new DOMException('The operation was aborted.', 'AbortError'));
+      expect(await orchestrator.handleSegmentResult(segmentId, 40, false, Date.now(), aborted(), wrong)).toBeNull();
+    }
+
+    // The FIRST remediation, interrupted mid-completion — exactly like a real
+    // learner interrupt. Its once-per-session skill must NOT be spent.
     fetchMock.mockImplementationOnce(
       (_url: string, init: { signal?: AbortSignal }) =>
         new Promise((_, reject) => {
@@ -3495,42 +3516,19 @@ describe('a once-per-session skill is committed on DELIVERY, not on selection', 
           );
         }),
     );
-
-    const orchestrator = new TutorOrchestrator(REMEDIATE_SESSION, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-3', 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
     const abortController = new AbortController();
-    const inFlight = orchestrator.handleSegmentResult('seg-1', 40, false, Date.now(), abortController.signal, {
-      misconceptionCode: 'adds-instead-of-counts-up',
-      attemptNumber: 1,
-    });
+    const inFlight = orchestrator.handleSegmentResult('seg-3', 40, false, Date.now(), abortController.signal, wrong);
     abortController.abort();
     expect(await inFlight).toBeNull();
+    expect(orchestrator.activeStrategy).toBe('REMEDIATE');
 
-    /*
-     * A CORRECT answer next, interrupted too — its only purpose is resetting
-     * the controller's consecutiveFailures streak (controller.ts: a correct
-     * answer zeroes it) so the THIRD call's wrong answer reads as the first
-     * failure again, not the second — which would otherwise trip RESCUE's
-     * own two-consecutive-failures rule ("safety rules always win", ranking
-     * above REMEDIATE unconditionally) for reasons unrelated to what this
-     * test checks. State updates happen synchronously before the network
-     * call, so an interrupted turn still resets the streak.
-     */
-    orchestrator.noteSegmentServed('seg-2', 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
-    const alreadyAborted = new AbortController();
-    alreadyAborted.abort();
-    fetchMock.mockRejectedValueOnce(new DOMException('The operation was aborted.', 'AbortError'));
-    const resetInFlight = orchestrator.handleSegmentResult('seg-2', 100, true, Date.now(), alreadyAborted.signal);
-    expect(await resetInFlight).toBeNull();
-
-    // The THIRD activity, freshly diagnosed with the SAME misconception —
-    // REMEDIATE fires again and offers the SAME once-per-session skill,
-    // proving the FIRST (interrupted) attempt never actually spent it.
-    orchestrator.noteSegmentServed('seg-3', 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
+    // The next activity, the SAME misconception again — REMEDIATE fires again
+    // and offers the SAME once-per-session skill, proving the interrupted
+    // attempt never actually spent it.
+    orchestrator.noteSegmentServed('seg-4', 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
     fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
-    const delivered = await orchestrator.handleSegmentResult('seg-3', 40, false, Date.now(), undefined, {
-      misconceptionCode: 'adds-instead-of-counts-up',
-      attemptNumber: 1,
-    });
+    const delivered = await orchestrator.handleSegmentResult('seg-4', 40, false, Date.now(), undefined, wrong);
     expect(delivered).not.toBeNull();
     // The skill's own procedure text reached the model — proof it was
     // actually selected and used on this delivered attempt, not skipped as
@@ -3740,9 +3738,22 @@ describe('lessonThread counts by the controller\'s own plan while it steers (V4)
       .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'You nailed it — want to see what is next?' }))
       .mockResolvedValueOnce(judgeSays(true));
     // Seeded (pKnown 0.9, 3 prior attempts) to cross both the mastery bar and
-    // MASTERY_MIN_OPPORTUNITIES on this FIRST graded result — mirrors the
-    // live incident's own forced repro exactly (see AGENTS.md item 81).
+    // MASTERY_MIN_OPPORTUNITIES from the start — mirrors the live incident's
+    // own forced repro (see AGENTS.md item 81). C.10: the declaration still
+    // needs two consecutive correct answers TODAY, so the first holds…
     await orchestrator.handleSegmentResult('seg-1', 100, true, Date.now(), undefined, {
+      misconceptionCode: null,
+      attemptNumber: 1,
+    });
+    expect(orchestrator.activeKcId).toBe(KC_A);
+    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 1, of: 2 });
+
+    // …and the second, corroborating, is the mastery event.
+    orchestrator.noteSegmentServed('seg-2', 'demo-skill-a', 'number_input', 'What is 3 + 3?', 3);
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Two in a row — want to see what is next?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-2', 100, true, Date.now(), undefined, {
       misconceptionCode: null,
       attemptNumber: 1,
     });
@@ -3769,19 +3780,22 @@ describe('lessonThread counts by the controller\'s own plan while it steers (V4)
       kcStates: [TWO_KCS.kcStates![0]!],
     };
     const orchestrator = new TutorOrchestrator(ONE_KC, Date.now(), silent);
-    orchestrator.noteSegmentServed('seg-1', 'demo-skill-a', 'number_input', 'What is 2 + 2?', 3);
-    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
-    await orchestrator.handleSegmentResult('seg-1', 100, true, Date.now(), undefined, {
-      misconceptionCode: null,
-      attemptNumber: 1,
-    });
+    // C.10: two consecutive correct answers declare the mastery.
+    for (const segmentId of ['seg-1', 'seg-2']) {
+      orchestrator.noteSegmentServed(segmentId, 'demo-skill-a', 'number_input', 'What is 2 + 2?', 3);
+      fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+      await orchestrator.handleSegmentResult(segmentId, 100, true, Date.now(), undefined, {
+        misconceptionCode: null,
+        attemptNumber: 1,
+      });
+    }
 
     expect(orchestrator.pedagogyActive).toBe(false); // the only entry — CELEBRATE ended the plan
     expect(orchestrator.activeKcId).toBeNull();
     // `course_topic`'s own macro arc (inherited from KID): explain, practice,
-    // check, practice, stretch — a graded correct result advances it by one,
-    // from step 1 to step 2, same as any v2 grade.
-    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 2, of: 5 });
+    // check, practice, stretch — each graded correct result advances it by
+    // one, from step 1 to step 3, same as any v2 grade.
+    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 3, of: 5 });
   });
 });
 
@@ -4241,5 +4255,226 @@ describe('a repeat that survives its retry never reaches the learner', () => {
     const second = (await orchestrator.handleLearnerText('sigo sin poder', Date.now()))!;
     expect(second.emission.turn.say).not.toBe(line);
     expect(second.emission.source).toBe('scripted');
+  });
+});
+
+/*
+ * C.10 THROUGH THE REAL ORCHESTRATOR: the hint ladder's state is the
+ * hint-request corroboration signal, and the trajectory log is the
+ * Extended Mastery Engine event log the Corroborating-Evidence Compliance
+ * Rate and the Mastery Declaration Reversal Rate are computed from.
+ */
+describe('C.10 corroborating evidence, wired end to end', () => {
+  const KC_ID = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee07';
+  const SKILL = 'financial-education/cobrar-y-dar-cambio';
+  const RETURNING: SessionContext = {
+    ...KID,
+    sessionPlan: [
+      {
+        kcId: KC_ID,
+        kcKey: 'money.make-change-counting-up',
+        skillKey: SKILL,
+        reason: 'frontier',
+        pKnown: 0.8,
+        targetDifficulty: 2,
+        objective: 'Dar el cambio contando hacia arriba.',
+        prereqKcIds: [],
+        misconceptions: [],
+      } satisfies SessionPlanEntry,
+    ],
+    kcStates: [
+      { kcId: KC_ID, kcKey: 'money.make-change-counting-up', pKnown: 0.8, attempts: 6 } satisfies KcState,
+    ],
+  };
+  const graded = async (orchestrator: TutorOrchestrator, segmentId: string, correct: boolean) => {
+    orchestrator.noteSegmentServed(segmentId, SKILL, 'number_input', 'What is 7 + 3?', 2);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult(segmentId, correct ? 100 : 20, correct, Date.now(), undefined, {
+      misconceptionCode: null,
+      attemptNumber: 1,
+    });
+  };
+
+  it('a correct answer after the learner asked for a hint does not count toward mastery', async () => {
+    const orchestrator = new TutorOrchestrator(RETURNING, Date.now(), silent);
+    await graded(orchestrator, 'seg-1', true);
+    // The learner asks for help on the next item — the ladder advances.
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('no entiendo, ¿me ayudas?', Date.now());
+    await graded(orchestrator, 'seg-2', true);
+    // Two correct answers in a row, but the second was scaffolded: no mastery.
+    expect(orchestrator.pedagogyActive).toBe(true);
+    expect(orchestrator.trajectorySteps.map((s) => s.strategy)).not.toContain('CELEBRATE');
+    // The correct answer CLOSED that ladder sub-step, so the next item starts
+    // fresh and an unassisted pair now declares it.
+    await graded(orchestrator, 'seg-3', true);
+    await graded(orchestrator, 'seg-4', true);
+    const celebrate = orchestrator.trajectorySteps.find((s) => s.strategy === 'CELEBRATE');
+    expect(celebrate).toMatchObject({
+      kcId: KC_ID,
+      evidenceRule: 'mastery',
+      evidenceObservations: 2,
+      evidenceRequired: 2,
+      masteryRevoked: false,
+    });
+    expect(orchestrator.pedagogyActive).toBe(false);
+  });
+
+  it('logs every consequential move WITH its evidence, and nothing else with any', async () => {
+    const orchestrator = new TutorOrchestrator(
+      { ...RETURNING, kcStates: [{ ...RETURNING.kcStates![0]!, attempts: 0 }] },
+      Date.now(),
+      silent,
+    );
+    await graded(orchestrator, 'seg-1', false);
+    await graded(orchestrator, 'seg-2', false);
+    const steps = orchestrator.trajectorySteps;
+    expect(steps[0]).toMatchObject({ evidenceRule: null, evidenceObservations: null, evidenceRequired: null });
+    expect(steps[1]).toMatchObject({
+      strategy: 'RESCUE',
+      evidenceRule: 'rescue',
+      evidenceObservations: 2,
+      evidenceRequired: 2,
+    });
+  });
+});
+
+/*
+ * C.18 — THE ANTI-SYCOPHANCY CONSTRAINT, ENFORCED ON THE TURNS WHERE THE
+ * SERVER KNOWS THE ANSWER WAS WRONG. Before this, every system-prompted
+ * verdict turn (a graded activity, a voice check) was exempt from the praise
+ * checks — exactly the turns where the server had VERIFIED the answer wrong.
+ */
+describe('C.18: the Mentor never affirms a verified-wrong answer or an unsound idea', () => {
+  const affirming = { ...GOOD_TURN, say: '¡Correcto! Lo hiciste muy bien.' };
+  const honest = { ...GOOD_TURN, say: 'Casi. Contaste todas las monedas; ahora empieza desde el precio.' };
+
+  it('repairs an affirmation of a GRADED wrong answer and records the catch', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies(affirming))
+      .mockResolvedValueOnce(modelReplies(honest))
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed(
+      '44444444-4444-4444-8444-444444444444',
+      'financial-education/cobrar-y-dar-cambio',
+      'number_input',
+      '¿Cuánto cambio te dan?',
+      2,
+    );
+    const outcome = (await orchestrator.handleSegmentResult(
+      '44444444-4444-4444-8444-444444444444',
+      20,
+      false,
+      Date.now(),
+    ))!;
+
+    expect(outcome.emission.turn.say).toContain('Casi');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('VERIFIED it was WRONG');
+    expect(outcome.emission.honesty).toMatchObject({
+      verdictContext: 'after_incorrect',
+      sequenceKind: 'repair',
+      falseAffirmationCaught: true,
+      falseAffirmationDelivered: false,
+    });
+  });
+
+  it('never DELIVERS it: an affirmation that survives the repair becomes the scripted line', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies(affirming))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Exacto! Eres un genio del dinero.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleSegmentResult('seg-x', 20, false, Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toMatch(/correcto|exacto/i);
+    expect(outcome.emission.honesty).toMatchObject({ falseAffirmationCaught: true, falseAffirmationDelivered: false });
+  });
+
+  it('leaves the same words alone when the answer was actually RIGHT', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(affirming)).mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleSegmentResult('seg-y', 100, true, Date.now()))!;
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(outcome.emission.turn.say).toBe(affirming.say);
+    expect(outcome.emission.honesty).toMatchObject({
+      verdictContext: 'after_correct',
+      falseAffirmationCaught: false,
+      praise: 'generic',
+    });
+  });
+
+  it('repairs an endorsement of a STATED unsound money decision', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Buena idea! Seguro te va increíble.' }))
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Pensaste en vender mucho. ¿Y si un día no te compran?' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText(
+      'seguro me lo compran todos, voy a vender un monton',
+      Date.now(),
+    ))!;
+
+    // The model was TOLD the claim is unsound before it answered…
+    const first = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(first).toContain('unsound money decision');
+    // …and the endorsing draft was repaired, never delivered.
+    expect(outcome.emission.turn.say).toContain('¿Y si un día no te compran?');
+    expect(outcome.emission.honesty).toMatchObject({
+      verdictContext: 'after_unsound_claim',
+      falseAffirmationCaught: true,
+      falseAffirmationDelivered: false,
+    });
+  });
+
+  it('marks a reveal as SANCTIONED once the learner explicitly asked to be told', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'La respuesta es 13. ¿Vemos por qué?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('solo dime la respuesta', Date.now()))!;
+
+    expect(outcome.emission.honesty).toMatchObject({
+      sequenceKind: 'hint_ladder',
+      hintLevel: 'tell',
+      revealSanctioned: true,
+      revealPhrase: true,
+    });
+  });
+
+  it('marks an UNSANCTIONED reveal inside a hint sequence', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'La respuesta es 13. ¿Seguimos?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no entiendo, ¿me ayudas?', Date.now()))!;
+
+    expect(outcome.emission.honesty).toMatchObject({
+      sequenceKind: 'hint_ladder',
+      revealSanctioned: false,
+      revealPhrase: true,
+    });
+  });
+
+  it('carries the ungraded activity on screen so Core can check the real key', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed(
+      '55555555-5555-4555-8555-555555555555',
+      'financial-education/cobrar-y-dar-cambio',
+      'number_input',
+      '¿Cuánto cambio te dan?',
+      2,
+    );
+    const outcome = (await orchestrator.handleLearnerText('mmm estoy pensando', Date.now()))!;
+    expect(outcome.emission.honesty).toMatchObject({
+      sequenceKind: 'open_activity',
+      openSegmentId: '55555555-5555-4555-8555-555555555555',
+    });
   });
 });

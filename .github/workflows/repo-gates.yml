@@ -85,6 +85,14 @@ jobs:
       - name: Demonstrate steps agree across every copy
         run: node agent/tools/check-demo-step-parity.mjs
 
+      # Product C.18: the per-turn Mentor-honesty record (answer-reveal and
+      # anti-sycophancy instrumentation) is hand-mirrored in Oracle, Core's
+      # strict body validator, Core's writer and the migration's CHECK lists.
+      # A drift makes Core refuse the honesty object and the reveal rate is
+      # silently computed over fewer turns — this fails first.
+      - name: Mentor honesty record agrees across every copy
+        run: node agent/tools/check-mentor-honesty-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

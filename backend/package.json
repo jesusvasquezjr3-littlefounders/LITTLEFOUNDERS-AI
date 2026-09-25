@@ -21,7 +21,8 @@
     "seed:kc": "tsx --env-file-if-exists=.env src/scripts/seed-kc-graph.ts",
     "audit:content-bridge": "tsx --env-file-if-exists=.env src/scripts/audit-content-bridge.ts",
     "curate:tutor-skills": "tsx --env-file-if-exists=.env src/scripts/curate-tutor-skills.ts",
-    "audit:bkt-calibration": "tsx --env-file-if-exists=.env src/scripts/audit-bkt-calibration.ts"
+    "audit:bkt-calibration": "tsx --env-file-if-exists=.env src/scripts/audit-bkt-calibration.ts",
+    "tutor:integrity-report": "tsx --env-file-if-exists=.env src/scripts/mentor-integrity-report.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",
