@@ -23,7 +23,19 @@ import { trackInsight } from '@/lib/insights';
 const mockNavigate = vi.fn();
 const { mockGetToken } = vi.hoisted(() => ({ mockGetToken: vi.fn<() => Promise<string | null>>() }));
 
-vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+/*
+ * The route reads the learner's register once per lesson (B.23, S05.3g). That
+ * read is answered here, apart from the queued responses each test sets up for
+ * the lesson and completion calls, so those sequences stay exactly as written.
+ * `registerReply.current` is Core's answer (default: unavailable, which reads
+ * as the youngest register).
+ */
+const { registerReply } = vi.hoisted(() => ({ registerReply: { current: { data: null as unknown, error: { code: 'UNAVAILABLE' } as { code: string } | null } } }));
+vi.mock('@/lib/api', () => {
+  const apiMock = vi.fn();
+  const routed = (path: string, init?: unknown) => (path === '/learn/register' ? Promise.resolve(registerReply.current) : apiMock(path, init));
+  return { api: Object.assign(routed, { __mock: apiMock }) };
+});
 vi.mock('@/lib/insights', async () => ({ ...(await vi.importActual<typeof import('@/lib/insights')>('@/lib/insights')), trackInsight: vi.fn() }));
 // getToken must be a STABLE reference — the route's fetch effect depends on it
 // (in the real app it's a memoized useCallback from AuthContext). A fresh
@@ -36,8 +48,8 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 vi.mock('@/lesson-engine/player/LessonPlayer', () => ({
-  default: ({ onComplete, onExit }: ComponentProps<typeof LessonPlayerType>) => (
-    <div>
+  default: ({ onComplete, onExit, register }: ComponentProps<typeof LessonPlayerType>) => (
+    <div data-testid="live-player" data-register={register}>
       <button type="button" onClick={() => onComplete?.({ score: 100, passed: true, xp: 10, seconds_spent: 42 })}>
         mock-complete
       </button>
@@ -54,7 +66,7 @@ vi.mock('@/tutor-scene/TutorStage', () => ({
   ),
 }));
 
-const mockedApi = vi.mocked(api);
+const mockedApi = vi.mocked((api as unknown as { __mock: typeof api }).__mock);
 
 const fixtureDocument: LessonDocument = {
   schema_version: 1,
@@ -78,6 +90,7 @@ beforeEach(async () => {
   mockedApi.mockReset();
   mockGetToken.mockReset().mockResolvedValue('token-123');
   mockNavigate.mockReset();
+  registerReply.current = { data: null, error: { code: 'UNAVAILABLE' } };
   await i18n.changeLanguage('en-US');
 });
 
@@ -828,5 +841,29 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
     expect(await screen.findByRole('heading', { name: 'Placement comes first' })).toBeInTheDocument();
+  });
+});
+
+describe("LessonRoute: the live player reads the learner's register (B.23, S05.3g)", () => {
+  const lesson = () => ({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
+
+  it("hands the live player the register Core resolved, so a teen's cast is calm and a teen result carries no milestone motion", async () => {
+    registerReply.current = { data: { register: 'teen', copy_band: '13-17', policy_version: '2026-09-24.1', graduation: null }, error: null };
+    mockedApi.mockResolvedValueOnce(lesson());
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    await waitFor(() => expect(screen.getByTestId('live-player').getAttribute('data-register')).toBe('teen'));
+  });
+
+  it('reads as the youngest register while Core is unavailable, never guessing upward', async () => {
+    mockedApi.mockResolvedValueOnce(lesson());
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    await waitFor(() => expect(screen.getByTestId('live-player').getAttribute('data-register')).toBe('young'));
+  });
+
+  it('refuses a register payload whose band disagrees with the register (a malformed answer is the youngest register)', async () => {
+    registerReply.current = { data: { register: 'adult', copy_band: '6-9', policy_version: '2026-09-24.1', graduation: null }, error: null };
+    mockedApi.mockResolvedValueOnce(lesson());
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    await waitFor(() => expect(screen.getByTestId('live-player').getAttribute('data-register')).toBe('young'));
   });
 });

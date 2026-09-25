@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { SeedSchema } from '../../scripts/seed-kc-graph.js';
+import { MASTERY_PREREQ_THRESHOLD } from '../pedagogy/bkt.js';
+import { deriveNodeState } from '../pedagogy/tutorMap.js';
 import {
   assembleCourseTree,
   flattenTopicsForPlacement,
@@ -363,6 +365,58 @@ describe('the real catalog (S05.3a map activated as if accepted)', () => {
         }
       }
       for (const blocked of tree.pathway.blocked) for (const kc of blocked.missingSkills) expect(shown.has(kc)).toBe(false);
+    }
+  }, 60_000);
+});
+
+/*
+ * Appendix C, Part 2.2, B.6 done-criterion (c): "a cross-surface consistency
+ * test confirms the AI Mentor and the course engine never disagree about a
+ * given learner's mastery state for the same knowledge component" (S05.3g
+ * lane review: the tests above pinned the course side only, at mastery values
+ * already above the bar). Here both surfaces read the SAME random evidence
+ * across the full 0..1 range: the Mentor's learning map through its own node
+ * rule (tutorMap.deriveNodeState) and the course through the pathway engine.
+ */
+describe('cross-surface consistency: the Mentor map and the course path never disagree about mastery (B.6 DoD c)', () => {
+  it.each([['financial-education', 8], ['investing', 15], ['entrepreneurship', 12]] as const)('%s at age %i, 25 random learners', (course, age) => {
+    const built = realBuilt(course);
+    const kcs = [...new Set([...built.topicKcs.values()].flatMap((k) => [...k.teaches, ...k.reviews]))].sort();
+    let seed = 20260925 + age;
+    const random = (): number => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    for (let trial = 0; trial < 25; trial++) {
+      const rows = new Map<string, { p: number; attempts: number }>();
+      for (const kc of kcs) if (random() < 0.6) rows.set(kc, { p: random(), attempts: Math.floor(random() * 6) });
+      const pOf = (kc: string): number => rows.get(kc)?.p ?? 0;
+      const mentorState = new Map(kcs.map((kc) => [kc, deriveNodeState({
+        pKnown: pOf(kc),
+        attempts: rows.get(kc)?.attempts ?? 0,
+        reviewDue: false,
+        prereqsMet: (built.prerequisites.get(kc) ?? []).every((pre) => pOf(pre) >= MASTERY_PREREQ_THRESHOLD),
+      })]));
+      const mentorPKnown = new Map([...rows].map(([kc, row]) => [kc, row.p]));
+      const tree = applyCoursePathway(linearTree(built), inputs(built, ageOf(age), { kcPrerequisites: built.prerequisites, mentorPKnown }));
+      const courseShown = new Map(tree.pathway.skills.map((s) => [s.key, s.shown]));
+
+      for (const [kc, shown] of courseShown) {
+        // Mastered on the Mentor's map is never "not shown" on the course path.
+        if (mentorState.get(kc) === 'mastered') expect(shown, `${kc} mastered with the Mentor`).not.toBe('none');
+        // The course never claims Mentor evidence the Mentor's own prerequisite bar denies.
+        if (shown === 'mentor') expect(pOf(kc), `${kc} shown by the Mentor`).toBeGreaterThanOrEqual(MASTERY_PREREQ_THRESHOLD);
+        // With no course evidence, the course's view is exactly the Mentor's bar.
+        if (shown !== 'course') expect(shown === 'mentor', kc).toBe(pOf(kc) >= MASTERY_PREREQ_THRESHOLD);
+      }
+      // A topic whose every taught skill is mastered on the Mentor's map is never locked on an open chapter.
+      for (const adventure of tree.adventures) {
+        if (adventure.pathwayAccess === 'closed') continue;
+        for (const saga of adventure.sagas) for (const topic of saga.topics) {
+          const teaches = built.topicKcs.get(topic.id)?.teaches ?? [];
+          const firstOpen = topic.lessons.find((l) => l.state !== 'passed');
+          if (firstOpen && teaches.length > 0 && teaches.every((k) => mentorState.get(k) === 'mastered')) expect(firstOpen.state, topic.id).not.toBe('locked');
+        }
+      }
+      // Nothing is ever blocked on a skill the Mentor's map calls mastered.
+      for (const blocked of tree.pathway.blocked) for (const kc of blocked.missingSkills) expect(mentorState.get(kc), kc).not.toBe('mastered');
     }
   }, 60_000);
 });

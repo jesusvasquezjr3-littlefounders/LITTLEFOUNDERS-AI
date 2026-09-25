@@ -30,6 +30,8 @@ import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } 
 import { StreakCelebration } from './StreakCelebration'
 import { playSfx, playLessonBgm, stopLessonBgm } from './sfx'
 import { formatDuration, streakCelebrationFor, useCountUp, type ServerCompletion } from './completion'
+import { mayCelebrate } from '@/rebuild/design/milestones'
+import { REGISTERS, type LearnerRegister } from '@/rebuild/design/learnerRegisterPolicy.generated'
 import type { LessonCheckpoint } from './checkpoint'
 import type { SessionState } from '../core/session'
 
@@ -50,6 +52,13 @@ export interface LessonPlayerProps {
   previewStartLabel?: string
   previewNextLabel?: string
   onExit: () => void
+  /**
+   * B.23 (S05.3g): the learner's register as Core resolved it. It sets the
+   * cast's presence (calm for teens and adults) and whether the completed
+   * lesson's milestone plays its motion. Absent (preview, lab, or before Core
+   * answers) reads as the youngest register, the most protective one.
+   */
+  register?: LearnerRegister
   recovery?: Pick<LessonCheckpoint, 'state' | 'elapsedMs'>
   onCheckpoint?: (state: SessionState, elapsedMs: number) => void
   /**
@@ -71,7 +80,7 @@ interface Reaction extends CharacterReaction {
   key: number
 }
 
-export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint }: LessonPlayerProps) {
+export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint, register }: LessonPlayerProps) {
   return (
     <NarrationProvider manifest={audio}>
       <LessonPlayerInner
@@ -85,12 +94,13 @@ export function LessonPlayer({ document: doc, lessonId, grader, audio, preview =
         onComplete={onComplete}
         recovery={recovery}
         onCheckpoint={onCheckpoint}
+        register={register}
       />
     </NarrationProvider>
   )
 }
 
-function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint }: Omit<LessonPlayerProps, 'audio'>) {
+function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint, register = 'young' }: Omit<LessonPlayerProps, 'audio'>) {
   const { t } = useTranslation()
   const reducer = useMemo(() => createSessionReducer(doc), [doc])
   const [state, dispatch] = useReducer(reducer, doc, (document) => preview ? initialSession(document) : recovery?.state ?? initialSession(document))
@@ -99,7 +109,8 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
   const [gradeError, setGradeError] = useState(false)
   const { server, status: saveStatus, save, retry: retrySave } = useCompletion()
   const [celebrationDone, setCelebrationDone] = useState(false)
-  const director = useMemo(() => createDirector(doc.meta.cast), [doc])
+  const calm = REGISTERS[register].mentor.animation === 'calm'
+  const director = useMemo(() => createDirector(doc.meta.cast, { calm }), [doc, calm])
   const narration = useNarration()
   const segStartRef = useRef<number>(Date.now())
   const lessonStartRef = useRef<number>(Date.now() - (recovery?.elapsedMs ?? 0))
@@ -278,7 +289,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             <Button onClick={() => void retrySave()}>{t('lesson.retry')}</Button>
           </div>
         )}
-        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} lessonId={preview ? undefined : lessonId} />
+        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} lessonId={preview ? undefined : lessonId} register={register} />
       </Shell>
     )
   }
@@ -865,8 +876,9 @@ function FeedbackBanner({
     almost: 'bg-warning-soft',
     tryAgain: 'bg-warning-soft',
   }[verdict.tier]
+  // A check mark, never a party glyph: a right answer is information (B.20, OD-7).
   const tierIcon = {
-    perfect: 'celebration',
+    perfect: 'task_alt',
     great: 'check_circle',
     almost: 'trending_up',
     tryAgain: 'psychology_alt',
@@ -1042,6 +1054,7 @@ export function ResultsScreen({
   onExit,
   pendingSave,
   lessonId,
+  register = 'young',
 }: {
   doc: LessonDocument
   state: ReturnType<typeof initialSession>
@@ -1051,6 +1064,7 @@ export function ResultsScreen({
   onExit: () => void
   /** Undefined in preview: a preview never reports the replay notice. */
   lessonId?: string
+  register?: LearnerRegister
 }) {
   const { t } = useTranslation()
   // Server truth wins once /complete responds; the client's own numbers are
@@ -1064,12 +1078,21 @@ export function ResultsScreen({
   const streakShown = useCountUp(streakDays, 800)
   const runId = useId()
 
-  // One celebratory fanfare as the summary reveals (after the streak overlay,
-  // which plays its own 'streak' sound). Passing only — a failed run exits quiet.
+  /*
+   * B.20 / OD-7 and B.23 (S05.3g): the completed lesson is a milestone, so it
+   * may play its fanfare and the cast's celebrate action, but only when Core
+   * named it in `celebrations` (a preview, a failed run or an older Core
+   * celebrate nothing: fail closed) and only in a register whose result shows
+   * the medal (the teen and adult registers present the result as data). It
+   * used to fire on the client's own `passed`, before Core had answered.
+   */
+  const lessonCelebrates = mayCelebrate(server?.celebrations, 'lesson-complete') && REGISTERS[register].reward.medal
+  const fanfarePlayed = useRef(false)
   useEffect(() => {
-    if (passed) playSfx('celebration')
-    // mount-once by design: the fanfare fires as the summary first reveals
-  }, [])
+    if (!lessonCelebrates || fanfarePlayed.current) return
+    fanfarePlayed.current = true
+    playSfx('celebration')
+  }, [lessonCelebrates])
 
   /*
    * "Today vs your best" — a fact the payload has ALWAYS carried and the
@@ -1109,8 +1132,8 @@ export function ResultsScreen({
             key={c}
             character={c}
             emotion={passed ? 'proud' : 'encouraging'}
-            action={passed ? 'celebrate' : 'wave'}
-            loop={passed}
+            action={lessonCelebrates ? 'celebrate' : passed ? 'nod' : 'wave'}
+            loop={lessonCelebrates}
             presence="cast"
           />
         ))}

@@ -32,6 +32,10 @@ Rewards are information about a specific decision or skill, not payment for outp
 | Lesson complete, XP | Live results screen | Skill line added; the streak takeover now needs a Core milestone | Pass |
 | XP during a lesson | Live lesson header | Per-answer XP counter removed | Pass |
 | A run of correct answers | Live lesson feedback | "N in a row" stays as words; the burst ring removed | Pass |
+| A correct answer, the cast's reaction | Live lesson player (director) | Found in the S05.3g lane review: correct, perfect and in-run answers drew celebration poses (a dance, a jump, and the `celebrate` action, which also plays the celebration sound). Now a nod or a lean-in only; celebration poses are reserved for the completed lesson | Pass (S05.3g) |
+| A correct answer, the verdict banner | Live lesson feedback | The "perfect" tier used a party glyph; now a check mark | Pass (S05.3g) |
+| Lesson complete, the fanfare and the cast | Live results screen | Found in S05.3g: fired on the client's own pass, before Core answered and in previews. Now only for Core's `lesson-complete`, and only in a register whose result shows the medal | Pass (S05.3g) |
+| The Mentor's `celebrate` action in a live conversation | Live Mentor (Oracle turn schema, S06 domain) | The model may name `celebrate` on any turn, which animates and plays the sound | Open: S06 |
 | Streak shown in the Mentor | Live Mentor stage pill | Only when a 7-, 30- or 100-day mark was crossed since the last visit | Pass |
 | Course badge | Course path and result | `badge-earned` from Core, once | Pass |
 | Chore reward coins and the coin split | Family Hub tasks (S07 domain) | Plain confirmation, no celebration found in the code | Not audited for copy: S07 |
@@ -39,7 +43,8 @@ Rewards are information about a specific decision or skill, not payment for outp
 
 ### 1.4 Enforcement
 
-- **The automated check B.20 asks for:** `frontend/src/rebuild/design/celebrationBudget.test.ts` scans the whole frontend for every celebration effect (confetti, floaters, the burst ring, spring overshoot tokens and literals, the streak takeover and pill) and fails when one appears in a file that is not a registered consumer deciding through the gate, when a registered consumer loses its gate, or when an effect component is mounted anywhere else. The definition list (token and keyframe definitions, and the four legacy 2D characters' tap reaction, retired with the legacy UI) is closed.
+- **The automated check B.20 asks for:** `frontend/src/rebuild/design/celebrationBudget.test.ts` scans the whole frontend for every celebration effect (confetti, floaters, the burst ring, spring overshoot tokens and literals, the streak takeover and pill, and since S05.3g the celebration sound and a character's `celebrate` action) and fails when one appears in a file that is not a registered consumer deciding through the gate, when a registered consumer loses its gate, or when an effect component is mounted anywhere else. The definition list (token and keyframe definitions, and the four legacy 2D characters' tap reaction, retired with the legacy UI) is closed.
+- The character layer (S05.3g): `frontend/src/lesson-engine/core/director.test.ts` fails if any per-answer event, in either register, can name a celebration pose or a celebrating action, and if any event other than the completed lesson can celebrate. `celebrationResults.test.tsx` pins the live results screen to Core's list and the register.
 - Core tests (`backend/src/__tests__/motivationS053e.test.ts`) pin which completions reach which milestones, per population.
 - The real-Chrome matrix (`frontend/scripts/verify-rebuild-motivation.mjs`) fails on any `data-celebrate` outside the milestone result and on a milestone result that does not celebrate exactly `lesson-complete` and `streak-7`, and checks that reduced motion removes the motion.
 

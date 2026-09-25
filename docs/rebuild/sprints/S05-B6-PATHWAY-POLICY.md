@@ -193,8 +193,9 @@ Before the legacy platform is switched off, OD-9 §4.5 still requires row counts
 | `backend` `services/pathway/pathwayData.ts` (S05.3b) | Reads the Mentor's own rows (active KCs, active-to-active edges, `learner_kc_mastery`, `memory_card`) and the B.6 tables. Any failed read is a 502, never "nothing known". |
 | `backend` routes (S05.3b) | The shelf, course tree, course path, the four lesson endpoints, placement (start, step, commit), completion and the Family Hub kid tree all use the same pathway tree. Lessons in an age-closed chapter answer `LESSON_AGE_RESTRICTED`; a course with no open chapter answers `COURSE_AGE_RESTRICTED`; B.2 uses P7. |
 | `backend` `__tests__/learnPathway.test.ts` (S05.3b) | Direct API requests per population (7-year-old created by a parent, independent teen, 12-year-old, adult, verified-parent Tutor, a guardian reading a kid) prove the four checkpoint claims at the route boundary. |
+| `backend` `services/pathway/coursePathway.test.ts`, cross-surface block (S05.3g) | Appendix C's B.6 done-criterion (c). On the real catalog (financial education at 8, investing at 15, entrepreneurship at 12; 25 random learners each, mastery drawn over the whole 0–1 range with 0–5 attempts), the Mentor's map state from its own rule (`tutorMap.deriveNodeState`) and the course's view from the pathway engine never disagree: a component the Mentor calls mastered is never "not shown" on the course, never blocks anything, and never leaves a topic it fully covers locked on an open chapter; the course never credits Mentor evidence below the Mentor's own 0.80 bar, and without course evidence the course's view equals that bar exactly. Negative control: raising the course's bar to 0.90 fails the block. |
 
-## 9. What is still not done (after S05.3b)
+## 9. What is still not done (after S05.3b, reviewed in S05.3g)
 
 These are listed so the checkpoints are not read as more complete than they are. S05.3b closed the first item of the S05.3a list: the learner course tree, lesson admission, placement, badges and the B.2 check now run on the pathway model when the release switch is on.
 
@@ -202,6 +203,7 @@ These are listed so the checkpoints are not read as more complete than they are.
 - The migrations have not been applied to a real PostgreSQL database. This lane has no disposable database, and the shared Docker stack is off-limits.
 - The rebuilt course path (`/learn/:courseSlug/path`) is a self-contained S05.3b surface. Its composition on the finished design system, and links to it from the shelf and the course page, are wave-2 work. Until the switch is on, the route sends the learner to the existing course page.
 - There is no authored content for tweens (10–12) or adults. OD-16 requires both to be written before release; that is Forge-phase work.
+- Appendix C's B.6 done-criterion (a) asks for 28 of 28 original components mapped to a course lesson. The map reaches 26: `money.fraction-of-amount` and `biz.goods-vs-services` are declared content gaps (no published topic teaches either; S05.3a searched the curriculum). They need new topics (Forge, zero-spend authoring after pedagogical review), so (a) is not met yet. Criterion (b) is met behind the release switch, (c) is now pinned by the cross-surface test above, and (d) depends on B.1's acceptance, owned by S02.
 
 ## 10. Owner decisions requested
 

@@ -50,6 +50,9 @@ const EFFECTS: Array<{ name: string; pattern: RegExp }> = [
   { name: 'XP or coin floater', pattern: /\b(?:xp|coin)-?float(?:er|ing)?\b|\b(?:xp|coin)Float(?:er|ing)?\b/i },
   { name: 'spring overshoot (rebuild tokens)', pattern: /var\(--ease-spring\)|var\(--dur-celebration\)/ },
   { name: 'spring overshoot (literal)', pattern: /cubic-bezier\(\s*0?\.34\s*,\s*1\.5\d*/ },
+  // S05.3g lane review: the fanfare and the cast's celebrate action were not scanned.
+  { name: 'celebration sound', pattern: /playSfx\(\s*['"]celebration['"]/ },
+  { name: 'character celebrate action', pattern: /action=\{[^}\n]*['"]celebrate['"]/ },
 ];
 
 /*
@@ -58,7 +61,14 @@ const EFFECTS: Array<{ name: string; pattern: RegExp }> = [
  * own component to the listed files.
  */
 const CONSUMERS: Record<string, { gate: RegExp; reason: string }> = {
-  'lesson-engine/player/LessonPlayer.tsx': { gate: /streakCelebrationFor\(server\)/, reason: 'the streak takeover, only for a streak milestone Core named' },
+  'lesson-engine/player/LessonPlayer.tsx': {
+    gate: /streakCelebrationFor\(server\)[\s\S]*mayCelebrate\(server\?\.celebrations, 'lesson-complete'\)/,
+    reason: 'the streak takeover for a streak milestone Core named; the fanfare and the cast\'s celebrate action for the lesson-complete milestone Core named (S05.3g)',
+  },
+  'tutor-scene/Character3D.tsx': {
+    gate: /if \(action === 'celebrate'\) playSfx\('celebration'\)/,
+    reason: 'the sound of the celebrate action, played only when a caller names it: the lesson director never does per answer (director.test.ts) and the live results cast only for Core\'s lesson-complete. The live Mentor\'s turn schema is an open S06 item.',
+  },
   'lesson-engine/player/StreakCelebration.tsx': { gate: /export function StreakCelebration/, reason: 'the takeover itself; mounted only by LessonPlayer' },
   'tutor/hud/GamificationCelebration.tsx': { gate: /export function GamificationCelebration/, reason: 'the Mentor pill itself; mounted only by ConversationView' },
   'tutor/ConversationView.tsx': { gate: /streakJustAdvanced|GamificationCelebration streakDays/, reason: 'mounts the pill on useTutorLearningStats\' milestone flag' },
@@ -113,6 +123,13 @@ describe('B.20 celebration budget: static scan of every celebration effect', () 
       const mounts = files.filter(({ text }) => new RegExp(`<${component}\\b`).test(code(text))).map(({ file }) => file);
       expect(mounts, component).toEqual(allowed);
     }
+  });
+
+  it('the live results screen celebrates only Core\'s lesson-complete, never the client\'s own pass (S05.3g)', () => {
+    const player = code(files.find(({ file }) => file === 'lesson-engine/player/LessonPlayer.tsx')!.text);
+    expect(player).not.toMatch(/if \(passed\) playSfx\('celebration'\)/);
+    expect(player).not.toMatch(/action=\{passed \? 'celebrate'/);
+    expect(player).toMatch(/action=\{lessonCelebrates \? 'celebrate'/);
   });
 
   it('the Mentor pill\'s flag comes from the streak-milestone crossing, and the lesson burst is gone', () => {

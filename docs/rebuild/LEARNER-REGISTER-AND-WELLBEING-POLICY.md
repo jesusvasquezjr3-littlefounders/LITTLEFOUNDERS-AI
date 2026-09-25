@@ -31,15 +31,17 @@ The rules live in one file Core owns: `backend/src/services/learnerRegisterPolic
 | Exclamations per string | 1 | 1 | 0 | 0 |
 | Extra forbidden lexicon | none | none | childish framing | childish framing |
 | Mentor presence | high, 110 px lesson band, chips first, lively | reduced, 96 px, chips and field equal, moderate | minimal, 80 px, field first, calm | minimal, 80 px, field first, calm |
-| Mentor on a miss | encouraging, nods | encouraging, nods | encouraging, still | encouraging, still |
+| Mentor on a miss | encouraging: nods, or points to the hint | encouraging: nods, or points to the hint | encouraging, still | encouraging, still |
 | Mentor on a met answer | happy | happy | nods | nods |
 | Reward framing | concrete: "You worked out: {skill}." | mastery: "You showed: {skill}." | identity: "Skill built: {skill}." | utility: "Skill: {skill}." |
 | Result screen | medal, XP tally first | medal, XP tally first | no medal, accuracy first, XP as data | no medal, accuracy first, XP as data |
 | Comparison | own history only | own history only | own history only | own history only |
 | Leaderboards, peer-visible progress | none | none | none | none |
-| Autonomy lever it leads with (B.24) | topic | approach | path and pace | full |
+| Autonomy lever it leads with (B.24) | topic | approach (proposed; see below) | path and pace | full |
 
 The Mentor presence values follow Bible 08 §9 and §11 (30, 25 and 15 percent of the phone height, as fixed band heights).
+
+**Autonomy by register (what exists today).** Every register has the three levers of the reward and motivation policy §4: path (the B.6 frontier), Mentor and pace. The table's "approach" for 10–12 (Block B: "choice of approach or strategy, not just topic order") is the target, not yet a mechanism: a choice between two equally valid strategies needs lessons authored with both, which is Forge work (zero-spend authoring after pedagogical review, OD-23). Until then the transition register leads with path choice, and no design review may count "approach" as delivered.
 
 **Social mechanics.** No register has a leaderboard, a rank or peer-visible progress. Appendix B §2.2 and §2.9 treat peer-visible performance as a risk for 13–17, and Hanus and Fox found visible leaderboards lowered motivation in a classroom; the conservative reading applies to every band. Comparison is only ever with the learner's own history (the B.5 "your best" row). Profile follower counts belong to Block E (S08) and are outside this lane.
 
@@ -58,6 +60,7 @@ A register is not a safeguard. Every minor safeguard keeps following age through
 
 - Core: `GET /learn/register`, `POST /learn/register/graduation` (only the graduation into the register the learner is in now).
 - UI: the compact Mentor stage, the rebuilt result screen, the guided-review offer and the graduation card read the policy. Every register-aware surface declares `data-age-band` so the Copy Budget audit measures it in the right band.
+- The live lesson player (S05.3g): the lesson route reads Core's register once per lesson and hands it to the player. The cast's reactions follow `mentor.animation`: lively for 0–12, calm for teens and adults (a met answer is a nod, a miss is the character holding still). The completed lesson's fanfare and celebrate action play only in a register whose result shows the medal. Until Core answers, or if it fails, the youngest register applies. Pinned by `director.test.ts`, `celebrationResults.test.tsx` and `LessonRoute.test.tsx`.
 - Forge gate 19: a lesson's tier ages map to the registers they span (a tier such as "8-10" spans two) and the strictest rule applies. Childish framing in a lesson a teen or an adult will read blocks; praise with nothing named in a feedback field blocks from age 10; exclamations beyond the strictest register go to the Stage 3 reviewer.
 - Stage 3 and the audit: the reviewer judges whether a register is genuinely appropriate, not only compliant (Block B check 5), and the quarterly Age-Band Register Differentiation Audit is checklist item MN-03.
 

@@ -134,20 +134,21 @@ function LessonRouteSession() {
   // B.26 / OD-1 (S05.3f): a miss costs nothing; consecutive misses on one
   // skill bring the learner's Mentor's offer to review it (never a lock).
   const [guidedReview, setGuidedReview] = useState<GuidedReviewOfferValue | null>(null);
-  // B.23: the offer is worded in the learner's register, which Core resolves.
-  // Read only once an offer exists (most lessons never need it); until then,
-  // and if it fails, the youngest register is the reading.
+  // B.23: the learner's register, which Core resolves from its own age
+  // evidence. It words the guided-review offer and (S05.3g) sets the live
+  // player's cast presence and milestone motion. Read once per lesson; until it
+  // answers, and if it fails, the youngest register is the reading.
   const [register, setRegister] = useState<RegisterState>({ status: 'loading' });
   const registerRequested = useRef(false);
   useEffect(() => {
-    if (!guidedReview || registerRequested.current) return;
+    if (registerRequested.current) return;
     registerRequested.current = true;
     void fetchLearnerRegister(async (path, init) => {
       const token = await getToken();
       if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
       return api<unknown>(path, { token, method: init?.method, body: init?.body });
     }).then((next) => { if (active.current) setRegister(next); });
-  }, [guidedReview, getToken]);
+  }, [getToken]);
   const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId, { onGuidedReview: setGuidedReview }), [lessonId, getToken, runId]);
   const withOffer = (node: JSX.Element) => guidedReview ? <>{node}<GuidedReviewOffer offer={guidedReview} register={registerOf(register)}
     locale={localeFromI18n(i18n.language)} dark={isDark} onDecline={() => setGuidedReview(null)}
@@ -361,6 +362,7 @@ function LessonRouteSession() {
       onCheckpoint={saveCheckpoint}
       onExit={goBack}
       onComplete={(result) => persistCompletion(result.seconds_spent)}
+      register={registerOf(register)}
     />
   );
 }

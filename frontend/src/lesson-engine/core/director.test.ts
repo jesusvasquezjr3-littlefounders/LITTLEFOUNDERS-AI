@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CHARACTER_IDS } from '@/components/characters/control/types'
 import { poseById, resolvePose } from '@/tutor-scene/poseLibrary'
-import { DIRECTOR_POSE_IDS, createDirector, type DirectorEvent } from './director'
+import { DIRECTOR_POOLS, DIRECTOR_POSE_IDS, PER_ANSWER_EVENTS, createDirector, type DirectorEvent } from './director'
 
 /*
  * The director names POSES now, instead of restating emotion/action pairs
@@ -83,5 +83,60 @@ describe('director poses', () => {
     const director = createDirector([])
     const reaction = director.react('correct')
     expect(CHARACTER_IDS).toContain(reaction.character)
+  })
+})
+
+/*
+ * B.20 / OD-7, B.23 and B.26 (S05.3g). The lane review found the live player's
+ * per-answer reactions drawing celebration poses (a dance, a jump, the
+ * `celebrate` action that also plays the celebration sound) on correct
+ * answers, a head-shake on a miss, and the same lively presence for a
+ * 15-year-old as for a 7-year-old. These pin the fix to the catalog.
+ */
+describe('director: celebration budget and registers', () => {
+  const ANSWER_ACTIONS = new Set(['nod', 'idle', 'peek', 'think', 'point'])
+
+  it('no per-answer event, in either register, can name a celebration pose or a celebrating action', () => {
+    for (const [register, pools] of Object.entries(DIRECTOR_POOLS)) {
+      for (const event of PER_ANSWER_EVENTS) {
+        for (const id of pools[event]) {
+          const pose = poseById(id)
+          expect(pose?.category, `${register}.${event}: ${id}`).not.toBe('celebration')
+          expect(ANSWER_ACTIONS.has(pose?.action ?? ''), `${register}.${event}: ${id} is a ${pose?.action}`).toBe(true)
+        }
+      }
+    }
+  })
+
+  it('only the results screen of a completed lesson may celebrate', () => {
+    for (const pools of Object.values(DIRECTOR_POOLS)) {
+      const celebrating = (Object.keys(pools) as DirectorEvent[]).filter((event) => pools[event].some((id) => poseById(id)?.category === 'celebration'))
+      expect(celebrating).toEqual(['results_pass'])
+    }
+  })
+
+  it('a miss is never a head-shake and never sad, in either register', () => {
+    for (const pools of Object.values(DIRECTOR_POOLS)) {
+      for (const id of [...pools.wrong, ...pools.results_fail]) {
+        const pose = poseById(id)
+        expect(pose?.action, id).not.toBe('shake')
+        expect(['encouraging', 'thinking', 'neutral'], id).toContain(pose?.emotion)
+      }
+    }
+  })
+
+  it('the calm register (teen, adult) nods at a met answer and holds still on a miss', () => {
+    const director = createDirector(['zara'], { calm: true })
+    for (let i = 0; i < 6; i += 1) {
+      expect(director.react('correct').action).toBe('nod')
+      expect(director.react('perfect').action).toBe('nod')
+      expect(director.react('wrong').action).toBe('idle')
+    }
+  })
+
+  it('every calm pose resolves for every character too', () => {
+    for (const id of Object.values(DIRECTOR_POOLS.calm).flat()) {
+      for (const character of CHARACTER_IDS) expect(resolvePose(id, character), `${id} for ${character}`).not.toBeNull()
+    }
   })
 })
