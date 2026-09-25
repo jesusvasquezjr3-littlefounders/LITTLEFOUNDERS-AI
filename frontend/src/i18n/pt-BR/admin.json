@@ -1148,12 +1148,12 @@
       "colSize": "Tamanho",
       "colWeek": "Semana {{n}}",
       "questTitle": "Conclusão de Missões",
-      "questSubtitle": "Tarefas atribuídas por família e quantas foram realmente concluídas.",
+      "questSubtitle": "Tarefas por criança com Tutor e quantas foram aprovadas. Só aparecem crianças com consentimento de análise.",
       "questEmpty": "Ainda não há dados de tarefas familiares.",
       "kpiQuestCompletion": "Taxa de Conclusão de Missões",
-      "colMembers": "Membros",
+      "colMembers": "Tutores",
       "colTasksAssigned": "Atribuídas",
-      "colTasksCompleted": "Concluídas",
+      "colTasksCompleted": "Aprovadas",
       "colLastActivity": "Última Atividade"
     },
     "segments": {

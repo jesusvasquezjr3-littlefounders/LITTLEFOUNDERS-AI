@@ -31,7 +31,7 @@ export interface BonusTeenCopy {
 const fill = (text: string, values: Record<string, string | number>) => text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 const MAX_GROUPS_DRAWN = 10;
 
-function YoungBonus({ copy, bonus }: { copy: BonusYoungCopy; bonus: OwnBonus }) {
+function YoungBonus({ copy, bonus, scaffold }: { copy: BonusYoungCopy; bonus: OwnBonus; scaffold: string | null }) {
   const groups = Math.floor(bonus.saved / 10);
   const rest = bonus.saved % 10;
   return <>
@@ -43,6 +43,7 @@ function YoungBonus({ copy, bonus }: { copy: BonusYoungCopy; bonus: OwnBonus }) 
       {rest > 0 && <li data-group="rest" data-copy-role="data">{rest}</li>}
     </ul>}
     <Copy role="body">{fill(copy.next, { bonus: bonus.nextBonus })}</Copy>
+    {scaffold && <Copy role="body">{scaffold}</Copy>}
   </>;
 }
 
@@ -100,7 +101,7 @@ function TeenBonus({ copy, bonus, onExampleShown, onAnswer }: {
   </>;
 }
 
-export function SavingsBonusExplainer({ young, teen, locale, dark, bonus, loading, failed, onRetry, onExampleShown, onAnswer }: {
+export function SavingsBonusExplainer({ young, teen, locale, dark, bonus, loading, failed, onRetry, onExampleShown, onAnswer, scaffold = null }: {
   young: BonusYoungCopy;
   teen: BonusTeenCopy;
   locale: string;
@@ -111,6 +112,12 @@ export function SavingsBonusExplainer({ young, teen, locale, dark, bonus, loadin
   onRetry: () => void;
   onExampleShown: () => void;
   onAnswer: (input: { exampleSaved: number; answer: number }) => Promise<boolean | null>;
+  /**
+   * S07.6 (D.12): the transition register's bridge from "1 for every 10" toward a
+   * rate ("that is like 10 out of every 100"); Appendix G §1.5 places a
+   * percentage of a balance within reach at 10-12 with concrete scaffolding.
+   */
+  scaffold?: string | null;
 }) {
   const copy = bonus?.framing === 'percent' ? teen : young;
   const active = bonus?.rule?.active === true && (bonus.framing === 'per_ten' || (bonus.rule?.rateBp ?? 0) > 0);
@@ -123,7 +130,7 @@ export function SavingsBonusExplainer({ young, teen, locale, dark, bonus, loadin
       <Button onClick={onRetry}>{copy.retry}</Button>
     </> : loading || !bonus ? <div role="status"><Copy role="body">{copy.loading}</Copy></div>
       : !active ? <Copy role="body">{copy.off}</Copy>
-        : bonus.framing === 'per_ten' ? <YoungBonus copy={young} bonus={bonus} />
+        : bonus.framing === 'per_ten' ? <YoungBonus copy={young} bonus={bonus} scaffold={scaffold} />
           : <TeenBonus copy={teen} bonus={bonus} onExampleShown={onExampleShown} onAnswer={onAnswer} />}
   </section>;
 }

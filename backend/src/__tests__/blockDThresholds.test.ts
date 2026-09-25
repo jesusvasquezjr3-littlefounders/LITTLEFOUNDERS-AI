@@ -6,6 +6,8 @@ import { REST_DAYS_PER_WEEK, STREAK_MILESTONES } from '../services/choreStreak.j
 import { BONUS_PER_TEN_COINS, BONUS_PER_TEN_RATE_BP, BONUS_PER_TEN_UNIT, MAX_BONUS_RATE_BP, PERCENT_FRAMING_MIN_AGE } from '../services/savingsBonus.js';
 import { MAX_CONTRIBUTION_COINS, PAUSE_MAX_BACKDATE_DAYS, PAUSE_MAX_DAYS, PAUSE_MAX_LEAD_DAYS } from '../routes/tasks.js';
 import * as autonomy from '../services/familyAutonomy.js';
+import { REGISTER_TEEN_MIN_AGE, REGISTER_TRANSITION_MIN_AGE, TEEN_STATEMENT_LINES } from '../services/moneyPresentation.js';
+import { ENGAGEMENT_ACTIVE_DAYS } from '../services/insights.js';
 import { RECOMMENDED_SAVE_PCT, RECOMMENDED_SHARE_PCT, RECOMMENDED_SPEND_PCT, RECOMMENDED_SPLIT, SHARE_COMPLETION_WINDOW_DAYS, SHARE_GIFT_MAX_COINS } from '../services/moneyHabits.js';
 
 /*
@@ -64,6 +66,7 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'decisions.reason_min_chars',
       'decisions.reason_min_words',
       'decisions.revisit_max_days',
+      'engagement.active_days',
       'money_events.retention_days',
       'next_goal.prompt_window_days',
       'post_goal.after_days',
@@ -71,6 +74,9 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'redemption_timing.first_bin_hours',
       'redemption_timing.second_bin_hours',
       'redemption_timing.third_bin_hours',
+      'register.teen_min_age',
+      'register.teen_statement_lines',
+      'register.transition_min_age',
       'savings_bonus.max_rate_bp',
       'savings_bonus.per_ten_coins',
       'savings_bonus.per_ten_unit',
@@ -81,6 +87,7 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'split.recommended_save_pct',
       'split.recommended_share_pct',
       'split.recommended_spend_pct',
+      'staff_insight.retention_days',
       'talk.nudge_denials',
       'talk.nudge_window_days',
     ]);
@@ -178,6 +185,18 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
     }
     // The client mirrors the caps it shows.
     expect(autonomy.PREAPPROVED_CAP).toEqual({ 1: 0, 2: num('autonomy.level2_preapproved_cap'), 3: num('autonomy.level3_preapproved_cap') });
+  });
+
+  it('matches the S07.6 registers and staff insight windows in Core and in the database', () => {
+    expect(num('register.transition_min_age')).toBe(REGISTER_TRANSITION_MIN_AGE);
+    expect(migration('_family_money_register')).toContain(`v_age >= ${REGISTER_TRANSITION_MIN_AGE} THEN`);
+    // One design with D.11: the teen register starts exactly where the percentage framing does.
+    expect(num('register.teen_min_age')).toBe(REGISTER_TEEN_MIN_AGE);
+    expect(REGISTER_TEEN_MIN_AGE).toBe(PERCENT_FRAMING_MIN_AGE);
+    expect(num('register.teen_statement_lines')).toBe(TEEN_STATEMENT_LINES);
+    expect(num('engagement.active_days')).toBe(ENGAGEMENT_ACTIVE_DAYS);
+    expect(migration('_family_engagement_insight')).toContain(`p_active_days int DEFAULT ${ENGAGEMENT_ACTIVE_DAYS}`);
+    expect(migration('_family_engagement_insight')).toContain(`p_retain_days int DEFAULT ${num('staff_insight.retention_days')}`);
   });
 
   it('keeps a review history with a dated first entry', () => {

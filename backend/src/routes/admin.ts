@@ -10,7 +10,9 @@ import {
   readDailyActivity,
   readDailyUsers,
   readEventExport,
-  readFamilyEngagement,
+  readFamilyEngagementInsight,
+  readStaffInsightUptime,
+  recordStaffInsightCheck,
   readFeatureAdoption,
   readLearningVelocity,
   readLessonDropoff,
@@ -30,6 +32,7 @@ import {
   readSignupFunnelIntegrity,
   readAnonAcquisition,
 } from '../services/audience.js';
+import { readRegisterDistribution } from '../services/moneyPresentation.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
 import {
@@ -1258,6 +1261,37 @@ export function adminRouter(): Router {
    *   themselves (bookkeeping, not behaviour), plus holders with Share coins
    *   and no destination at all.
    */
+  /*
+   * S07.6 (D.6) Appendix H: Staff Family-Engagement Insight Uptime (target
+   * 100% once D.6 ships). Per source (the nightly probe and staff requests),
+   * the checks in the window and how many returned real data. An empty window
+   * is reported as no checks, never as 100%.
+   */
+  router.get('/family/engagement-uptime', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readStaffInsightUptime(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the uptime metric');
+    const bySource = (source: 'probe' | 'request') => {
+      const r = rows.find((row) => row.source === source)!;
+      return { checks: r.checks, ok: r.ok, uptime: r.checks > 0 ? r.ok / r.checks : null, lastOutcome: r.last_outcome, lastCheckedAt: r.last_checked_at };
+    };
+    return ok(res, { since: since.toISOString(), target: 1, probe: bySource('probe'), requests: bySource('request') });
+  });
+
+  /*
+   * S07.6 (D.12) Appendix H (Threshold Recalibration Log): wallet holders per
+   * age register, counts only. The first review of the 10- and 13-year
+   * cutoffs reads this next to the D.11 comprehension proxy.
+   */
+  router.get('/family/register-distribution', async (_req, res) => {
+    const rows = await readRegisterDistribution();
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the register distribution');
+    const total = rows.reduce((sum, r) => sum + r.holders, 0);
+    return ok(res, { total, registers: rows.map((r) => ({ register: r.register, holders: r.holders, share: total > 0 ? r.holders / total : null })) });
+  });
+
   router.get('/family/redemption-timing', async (req, res) => {
     const q = FamilyIntegrityQuery.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
@@ -1965,9 +1999,13 @@ export function adminRouter(): Router {
   router.get('/insights/families', async (req, res) => {
     const q = InsightsFamiliesQuerySchema.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
-    const [families, consent] = await Promise.all([readFamilyEngagement(q.data.limit), readConsentCoverage()]);
-    if (families === null || consent === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Family views unreachable');
-    ok(res, { families, consent });
+    // S07.6 (D.6): the per-child shape. Every outcome is recorded for the
+    // Staff Family-Engagement Insight Uptime metric; the consent coverage is a
+    // separate count and does not decide whether the insight was served.
+    const [insight, consent] = await Promise.all([readFamilyEngagementInsight(q.data.limit), readConsentCoverage()]);
+    await recordStaffInsightCheck(insight.ok ? 'ok' : insight.outcome);
+    if (!insight.ok || consent === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Family views unreachable');
+    ok(res, { summary: insight.data.summary, children: insight.data.children, consent });
   });
 
 

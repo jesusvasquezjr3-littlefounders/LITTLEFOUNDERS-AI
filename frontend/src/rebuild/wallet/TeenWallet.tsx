@@ -400,7 +400,7 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
             value={goalId} onChange={setGoalId} disabled={busy} />}
           <div className="lf-actions"><Button type="submit" variant="success" disabled={busy}>{busy ? copy.income.saving : copy.income.submit}</Button></div>
         </form>
-        <UsualSplit key={usualVersion} copy={{ ...habits.usualSplit, save: copy.page.save, spend: copy.page.spend, share: copy.page.share, more: habits.split.more, less: habits.split.less }}
+        <UsualSplit key={usualVersion} register="teen" copy={{ ...habits.usualSplit, save: copy.page.save, spend: copy.page.spend, share: copy.page.share, more: habits.split.more, less: habits.split.less }}
           locale={locale} dark={dark} open={usualOpen} loading={false} failed={false} value={usual} busy={busy} notice={usualNotice}
           onToggle={() => { setUsualOpen((o) => !o); setUsualNotice(null); }} onRetry={() => void load()} onSave={(next) => void saveUsual(next)} />
       </Section>}

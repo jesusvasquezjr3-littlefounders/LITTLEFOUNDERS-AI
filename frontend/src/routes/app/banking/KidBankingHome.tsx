@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Field, Icon, IconChip, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, Field, Icon, IconChip, LoadingOverlay, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { type WalletBalances, type WireLedgerEntry } from '../tasks/types';
-import { CARD_DESIGNS, type CardDesign, type WireBankingAccount, type WirePendingCredit, type WireSpendLimitStatus, type WireStatement } from './types';
+import { CARD_DESIGNS, type CardDesign, type WireBankingAccount, type WirePendingCredit } from './types';
 import { SavingsBonusPanel } from './SavingsBonusPanel';
 import { AllocationPanel } from '../tasks/AllocationPanel';
 import { SavingsGoalsPanel } from '../tasks/SavingsGoalsPanel';
 import { UsualSplitPanel } from '../tasks/UsualSplitPanel';
+import { CoinAccountPanel } from './CoinAccountPanel';
 
 /*
  * The kid's half of BANKING.md §7.1: the account/card, the wallet
@@ -45,12 +46,11 @@ type LoadState =
       balances: WalletBalances;
       ledger: WireLedgerEntry[];
       credits: WirePendingCredit[];
-      spendLimit: WireSpendLimitStatus;
     };
 
 export function KidBankingHome() {
   const { t, i18n } = useTranslation();
-  const { getToken, session } = useAuth();
+  const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -58,13 +58,6 @@ export function KidBankingHome() {
   // payout bumps them so a goal it reached celebrates at once.
   const [moneyVersion, setMoneyVersion] = useState(0);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
-  const [freezeBusy, setFreezeBusy] = useState(false);
-  const [freezeError, setFreezeError] = useState<string | null>(null);
-  const [liveMessage, setLiveMessage] = useState('');
-  const [statement, setStatement] = useState<WireStatement | null>(null);
-  const [statementOpen, setStatementOpen] = useState(false);
-  const [statementMonth, setStatementMonth] = useState(() => new Date().toISOString().slice(0, 7));
-  const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,15 +76,14 @@ export function KidBankingHome() {
         setState({ status: 'no-account' });
         return;
       }
-      const [balancesRes, ledgerRes, creditsRes, spendLimitRes] = await Promise.all([
+      const [balancesRes, ledgerRes, creditsRes] = await Promise.all([
         api<{ balances: WalletBalances }>('/tasks/wallet', { token: tok }),
         api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token: tok }),
         api<{ credits: WirePendingCredit[] }>('/banking/wallet/pending-credits', { token: tok }),
-        api<{ status: WireSpendLimitStatus }>('/banking/spend-limit', { token: tok }),
       ]);
       if (cancelled) return;
-      if (balancesRes.error || ledgerRes.error || creditsRes.error || spendLimitRes.error) {
-        const code = (balancesRes.error ?? ledgerRes.error ?? creditsRes.error ?? spendLimitRes.error)?.code ?? 'INTERNAL';
+      if (balancesRes.error || ledgerRes.error || creditsRes.error) {
+        const code = (balancesRes.error ?? ledgerRes.error ?? creditsRes.error)?.code ?? 'INTERNAL';
         setState({ status: 'error', code });
         return;
       }
@@ -101,18 +93,12 @@ export function KidBankingHome() {
         balances: balancesRes.data.balances,
         ledger: ledgerRes.data.entries,
         credits: creditsRes.data.credits,
-        spendLimit: spendLimitRes.data.status,
       });
     })();
     return () => {
       cancelled = true;
     };
   }, [getToken, reloadKey]);
-
-  function announce(message: string) {
-    setLiveMessage(message);
-    liveRegionRef.current?.focus();
-  }
 
   async function refreshAccount() {
     if (!token) return;
@@ -138,39 +124,6 @@ export function KidBankingHome() {
     });
   }
 
-  async function onToggleFreeze(next: boolean) {
-    if (!token || freezeBusy) return;
-    setFreezeBusy(true);
-    setFreezeError(null);
-    const res = await api<{ account: WireBankingAccount }>('/banking/account/freeze', { method: 'POST', token, body: { frozen: next } });
-    setFreezeBusy(false);
-    if (res.error) {
-      setFreezeError(res.error.code);
-      await refreshAccount();
-      return;
-    }
-    if (res.data) {
-      setState((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
-      announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
-    }
-  }
-
-  async function loadStatement(month: string) {
-    if (!token) return;
-    const res = await api<{ statement: WireStatement }>(`/banking/statement?month=${month}`, { token });
-    if (res.data) setStatement(res.data.statement);
-  }
-
-  function stepMonth(delta: number) {
-    const parts = statementMonth.split('-');
-    const y = Number(parts[0]);
-    const m = Number(parts[1]);
-    const d = new Date(Date.UTC(y, m - 1 + delta, 1));
-    const next = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
-    setStatementMonth(next);
-    void loadStatement(next);
-  }
-
   if (state.status === 'loading') return <LoadingOverlay label={t('banking.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} onRetry={() => setReloadKey((k) => k + 1)} />;
 
@@ -194,8 +147,6 @@ export function KidBankingHome() {
   const { account } = state;
   const recentLedger = state.ledger.slice(0, 8);
   const dateFormatter = new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'short', day: 'numeric' });
-  const monthFormatter = new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'long', year: 'numeric', timeZone: 'UTC' });
-  const isFrozenByMe = account.frozen && account.frozenBy === session?.user.id;
   const BUCKET_DOT: Record<WireLedgerEntry['bucket'], string> = { save: 'bg-success', spend: 'bg-primary', share: 'bg-delight' };
 
   function ledgerReasonLabel(reason: string): string {
@@ -211,9 +162,6 @@ export function KidBankingHome() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      <div ref={liveRegionRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
-        {liveMessage}
-      </div>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="lf-display-lg text-content">{t('banking.title')}</h1>
@@ -221,42 +169,19 @@ export function KidBankingHome() {
         </div>
       </header>
 
-      {/* The one surface allowed to look like a literal card (BANKING.md §7.1). */}
-      <Card className={cn('overflow-hidden p-0')}>
-        <div className={cn('flex min-h-[150px] flex-col justify-between gap-4 bg-gradient-to-br p-6 text-on-accent', CARD_GRADIENT[account.cardDesign])}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="lf-eyebrow text-on-accent/75">{t('banking.kid.accountLabel')}</p>
-              <p className="lf-headline">{account.nickname}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setCardDialogOpen(true)}
-              className="lf-press flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 lf-caption font-bold text-on-accent"
-            >
-              <Icon name="tune" className="text-[16px]" aria-hidden />
-              {t('banking.kid.cardDetails')}
-            </button>
-          </div>
-          <div className="flex items-end justify-between">
-            <span className="lf-number font-mono text-sm tracking-widest text-on-accent/90">{account.displayNumber}</span>
-            {account.frozen && (
-              <span className="lf-caption flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 font-bold text-on-accent">
-                <Icon name="lock" className="text-[14px]" aria-hidden />
-                {t('banking.kid.frozenBadge')}
-              </span>
-            )}
-          </div>
-        </div>
-      </Card>
+      {/*
+        S07.6 (D.7, D.12): the rebuilt coin account replaces the legacy card
+        (a card number laid out like a real card's), the freeze switch, the
+        frozen banner, the pocket tiles, the spending-limit meter and the
+        statement summary. It says what a freeze really holds, is shaped by
+        the child's age register at Core, and re-reads after every change.
+      */}
+      <CoinAccountPanel token={token} refreshKey={moneyVersion} onChanged={() => { void refreshAccount(); void refreshWalletAndCredits(); }} />
+      <button type="button" onClick={() => setCardDialogOpen(true)} className="lf-press flex items-center gap-1.5 self-start rounded-full px-3 py-1.5 lf-caption font-bold text-primary">
+        <Icon name="tune" className="text-[16px]" aria-hidden />
+        {t('banking.kid.cardDetails')}
+      </button>
 
-      <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        <StatCard icon={<Icon name="savings" />} value={String(state.balances.save)} label={t('tasks.kid.save')} tone="success" />
-        <StatCard icon={<Icon name="shopping_bag" />} value={String(state.balances.spend)} label={t('tasks.kid.spend')} tone="primary" />
-        <StatCard icon={<Icon name="volunteer_activism" />} value={String(state.balances.share)} label={t('tasks.kid.share')} tone="delight" />
-      </div>
-
-      {account.frozen && <p role="status" className="lf-body rounded-md bg-warning-soft p-4 text-content">{t('banking.kid.frozenHold')}</p>}
       {/* S07.4 (D.13): an allowance arrives pre-split by the child's own usual split; keeping it is one tap. */}
       {state.credits.length > 0 && (
         <div className="flex flex-col gap-3">
@@ -268,16 +193,6 @@ export function KidBankingHome() {
       )}
       <UsualSplitPanel token={token} />
 
-      {state.spendLimit.configured && (
-        <Card className="flex flex-col gap-2 p-4">
-          <div className="flex items-center justify-between">
-            <span className="lf-label text-content">{t(`banking.kid.spendLimit.${state.spendLimit.period}`)}</span>
-            <span className="lf-caption text-content-muted">{t('banking.kid.spendLimitUsed', { used: state.spendLimit.used, cap: state.spendLimit.cap })}</span>
-          </div>
-          <ProgressBar value={(state.spendLimit.used / state.spendLimit.cap) * 100} label={t('banking.kid.spendLimit.weekly')} tone="accent" />
-        </Card>
-      )}
-
       {/* S07.3 (D.11): the child's own bonus, in the framing their age calls for. */}
       <SavingsBonusPanel token={token} />
 
@@ -286,47 +201,6 @@ export function KidBankingHome() {
         <SavingsGoalsPanel token={token} refreshKey={moneyVersion} />
 
         <div className="flex flex-col gap-6">
-          <section aria-labelledby="banking-statement-heading">
-            <SectionHeading id="banking-statement-heading" icon="receipt_long" tone="muted">
-              {t('banking.statement.title')}
-            </SectionHeading>
-            <Card className="flex flex-col gap-3 p-4">
-              {!statementOpen ? (
-                <button type="button" className="lf-press text-left" onClick={() => { setStatementOpen(true); void loadStatement(statementMonth); }}>
-                  <span className="lf-caption text-primary">{t('banking.statement.viewCta')}</span>
-                </button>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between">
-                    <button type="button" aria-label={t('banking.statement.prevMonth')} onClick={() => stepMonth(-1)} className="lf-press p-1">
-                      <Icon name="chevron_left" aria-hidden />
-                    </button>
-                    <span className="lf-label capitalize text-content">{monthFormatter.format(new Date(`${statementMonth}-01T00:00:00Z`))}</span>
-                    <button type="button" aria-label={t('banking.statement.nextMonth')} onClick={() => stepMonth(1)} className="lf-press p-1">
-                      <Icon name="chevron_right" aria-hidden />
-                    </button>
-                  </div>
-                  {statement && (
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div>
-                        <p className="lf-number text-success">+{statement.earned}</p>
-                        <p className="lf-caption text-content-muted">{t('banking.statement.earned')}</p>
-                      </div>
-                      <div>
-                        <p className="lf-number text-content">-{statement.spent}</p>
-                        <p className="lf-caption text-content-muted">{t('banking.statement.spent')}</p>
-                      </div>
-                      <div>
-                        <p className="lf-number text-success">{statement.saved}</p>
-                        <p className="lf-caption text-content-muted">{t('banking.statement.saved')}</p>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </Card>
-          </section>
-
           <section aria-labelledby="banking-activity-heading">
             <SectionHeading id="banking-activity-heading" icon="history" tone="muted">
               {t('tasks.kid.activityTitle')}
@@ -361,10 +235,6 @@ export function KidBankingHome() {
         <CardDialog
           account={account}
           token={token}
-          isFrozenByMe={isFrozenByMe}
-          onToggleFreeze={onToggleFreeze}
-          freezeBusy={freezeBusy}
-          freezeError={freezeError}
           onClose={() => setCardDialogOpen(false)}
           onSaved={async () => {
             await refreshAccount();
@@ -378,19 +248,11 @@ export function KidBankingHome() {
 function CardDialog({
   account,
   token,
-  isFrozenByMe,
-  onToggleFreeze,
-  freezeBusy,
-  freezeError,
   onClose,
   onSaved,
 }: {
   account: WireBankingAccount;
   token: string | null;
-  isFrozenByMe: boolean;
-  onToggleFreeze: (next: boolean) => void;
-  freezeBusy: boolean;
-  freezeError: string | null;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -447,29 +309,6 @@ function CardDialog({
           </button>
         </div>
         <div className="flex flex-col gap-4 overflow-y-auto p-5 sm:p-6">
-          <div className="lf-config-row flex items-center justify-between gap-3 p-3.5">
-            <span className="flex items-center gap-3">
-              <span className="lf-tile h-9 w-9 text-warning">
-                <Icon name="lock" aria-hidden />
-              </span>
-              <span>
-                <span className="lf-label block text-content">{t('banking.kid.freezeToggle')}</span>
-                <span className="lf-caption block text-content-muted">{account.frozen ? (isFrozenByMe ? t('banking.kid.frozenByYou') : t('banking.kid.frozenByGuardian')) : t('banking.kid.freezeHint')}</span>
-              </span>
-            </span>
-            <button
-              type="button"
-              role="switch"
-              aria-label={t('banking.kid.freezeToggle')}
-              aria-checked={account.frozen}
-              disabled={freezeBusy || (account.frozen && !isFrozenByMe)}
-              onClick={() => onToggleFreeze(!account.frozen)}
-              className={cn('lf-switch', account.frozen && 'lf-switch-on')}
-            >
-              <span className="lf-switch-knob" />
-            </button>
-          </div>
-          {freezeError && <ErrorBanner code={freezeError} />}
           <Field label={t('banking.kid.nicknameLabel')} value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={40} />
           <div>
             <span className="lf-label mb-2 block text-content">{t('banking.kid.designLabel')}</span>

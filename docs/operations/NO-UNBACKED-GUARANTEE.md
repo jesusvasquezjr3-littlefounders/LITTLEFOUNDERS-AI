@@ -1,0 +1,74 @@
+# No unbacked guarantee (Digital Banking and Family Hub)
+
+Requirement D.7 (Block D, `docs/littlefounders-spec/product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md`) makes this a standing design principle for the whole surface: **no visual element or copy in Digital Banking may imply a guarantee the underlying system does not enforce.** Each control must be re-verified against this principle as it changes, never assumed satisfied once the backend is fixed. Appendix H measures it with the **No-Unbacked-Guarantee Audit** (recurring, human-judged, target zero violations) and runs every family-facing copy change through Stage 4 of its pipeline, which checks for phrasing that implies an unenforced guarantee.
+
+This file is the written principle and its audit procedure. The mechanisms that enforce it are listed at the end. It is not a specification: the SPEC and the owner decision log win when they disagree with it.
+
+## What the principle forbids
+
+A family must never read or see something that promises more than the system does. In practice:
+
+1. **The simulation is always declared.** The account is a *practice card*, and the page says that coins stay in the app. There is never a card number, a chip, a card-network mark, a bank logo, a padlock "secure" badge or anything else drawn to look like a real card or a real bank. Core's rebuilt account contract carries `simulated: true` and no number, and the client refuses an answer that says otherwise.
+2. **A control shows only what it enforces.** The freeze card lists the four things the database holds while an account is frozen, and nothing else. The list comes from Core (`FREEZE_HOLDS`), and each entry is pinned to its enforcing SQL. The page says a freeze loses nothing and moves no coins, because both are true.
+3. **Nobody is offered an action the system will refuse.** A child is shown "Unfreeze" only for a freeze they set themselves. A Tutor is never shown a bare "Deny": since S07.5 a reward cannot be refused without an actionable reason (D.18), so the Banking page uses the reason-carrying decision queue.
+4. **A limit says how and when it is checked.** The spending limit is checked by the database when a reward is asked for, over the last 7 or 30 days. The copy says that. It never says "this week" or "resets", because the window is rolling.
+5. **No promise of safety.** No "safe", "secure", "protected", "insured", "guaranteed", "risk-free" or "real money" in any locale. The tone gate enforces the words; this audit judges the meaning.
+6. **Age presentation never changes a control.** The age register (D.12) changes tone, numbers and detail. It never hides a hold, softens a limit or changes who may lift a freeze.
+
+## How a new or changed control is admitted
+
+Before a control a family can see ships, it needs an entry in `docs/operations/block-d-controls.json` with:
+- a written claim (what the product may say it does);
+- at least one enforcement: a file and text, or the name of an SQL function whose **latest** definition must still contain its guard;
+- at least one adversarial proof: a test or verifier that attacks it;
+- the copy keys that describe it.
+
+A surface marks the element with `data-control="<id>"`. `node agent/tools/check-no-unbacked-guarantee.mjs` (run by `repo-gates.yml` on every push, unfiltered) fails when:
+- an enforcement or proof disappears;
+- a later migration redefines an enforcing function without its guard;
+- Core's or the client's freeze holds differ from the registry;
+- a surface declares an unregistered control;
+- a copy key is missing in a locale;
+- any package depends on a payment, card-issuing or bank-linking SDK.
+
+## The quarterly audit (human)
+
+Owner: the Pedagogical Lead with the Engineering Lead (Appendix H, Stage 0 pairing), plus one reviewer who did not build the change. Cadence: quarterly, and before any release that adds or changes a control in this domain.
+
+Checklist, on the running product in all three locales, light and dark, at 375 and 1280 px:
+1. Open the child's Banking page in each age register (young, transition, teen) and the Tutor's Banking page.
+2. For every visible control, find its registry entry and read its claim. Then do what the page implies in a real test family: freeze and try to request a reward, split coins, give Share coins, and wait for an allowance; exceed the spending limit; as a child, try to lift a Tutor's freeze. Record whether each claim held.
+3. Read every sentence on the pages. Mark any that promises more than step 2 showed.
+4. Look for any visual that suggests a real card or bank: a number, a chip, a network mark, or a lock used as a security promise.
+5. Record the result below. A violation is fixed before the next release, or the control is removed.
+
+## Audit log
+
+| Date | Scope | By | Result |
+|---|---|---|---|
+| 2026-09-24 | Engineering pre-audit at S07.6 of the legacy and rebuilt Banking pages. This is **not** the human audit Appendix H asks for; that is still open. | Engineering (S07 lane) | 8 findings. All fixed in S07.6 except the unrendered legacy `display_number` column (below) |
+
+Findings of the 2026-09-24 pre-audit:
+
+1. **The card looked real.** The legacy card showed `LF-####-####` in a monospace, card-number layout on a gradient card, and the Tutor's panel repeated it. *Fixed:* the rebuilt practice card has no number and says the coins stay in the app. Neither page renders the number any more.
+   *Open:* the `display_number` column and the legacy wire field `displayNumber` still exist. Dropping them is a contract migration for the wave-2 Banking cleanup.
+2. **The freeze was explained wrongly.** It lived as a switch inside a "Card details" dialog, and its hint said it "Blocks new redemption requests". In fact it holds four things: reward requests and approvals, splits, the scheduled allowance and bonus, and Share gifts. *Fixed:* the rebuilt freeze card lists exactly the holds the database enforces, and the dialog no longer carries the switch.
+3. **"A parent/guardian froze this card".** The glossary says the verified parent is the Tutor. *Fixed* in the rebuilt copy and in `errors.json` (`GUARDIAN_FREEZE`) in three locales.
+4. **"Your credits stay safe until it is unfrozen"** (`ACCOUNT_FROZEN`). "Safe" is a promise, and "credits" is bank register. *Fixed:* "Your coins wait here until it is unfrozen."
+5. **The spending limit implied a calendar reset.** The child read "Weekly spending limit", and the Tutor's form said "Resets: Every week". The database counts a rolling 7 or 30 days, checked when a reward is asked for. *Fixed:*
+   - the child reads what is left and "It is checked when you ask for a reward", with "the last 7 days" wherever a number is shown;
+   - the Tutor's form says "Counts the last: 7 days / 30 days" and when the limit is checked.
+6. **A dead "Deny".** Since S07.5 a denial needs an actionable reason. The Tutor's Banking page still offered a bare "Deny", which the server always refused and which showed no error. *Fixed:* the Banking page mounts the rebuilt decision queue.
+7. **"Your own account, card and savings"** in the child's subtitle, and "a named account and a card" in the Tutor's. *Fixed:* "a practice card, pockets and goals", and "a named practice card".
+8. **"Digital Banking" as the section name.** *Reviewed, kept.* It is the SPEC's name for the section, and the page now states that it is practice with coins that stay in the app.
+
+## Enforcing mechanisms (S07.6)
+
+| Mechanism | Where |
+|---|---|
+| Control registry | `docs/operations/block-d-controls.json` |
+| Registry gate (CI, unfiltered) | `agent/tools/check-no-unbacked-guarantee.mjs`, self-tests `check-no-unbacked-guarantee.test.mjs` |
+| Server contract: simulation declared, no number, holds from `FREEZE_HOLDS` | `backend/src/routes/banking.ts` (`GET /api/v1/banking/overview`, `GET /api/v1/banking/accounts/:kidId/freeze`), `backend/src/services/moneyPresentation.ts` |
+| Client refusal of an unbacked answer | `frontend/src/rebuild/banking/bankingApi.ts` |
+| Copy gate for guarantee words | `agent/tools/check-family-copy-tone.mjs` (D.8), category `guarantee` |
+| Rebuilt surfaces | `frontend/src/rebuild/banking/CoinAccount.tsx`, `TutorFreeze.tsx` |

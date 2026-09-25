@@ -106,17 +106,34 @@ interface IntelEngagementEntry {
   active_days_30d: number;
 }
 
-/** Mirrors the backend's FamilyEngagementRow (services/insights.ts) as-is — a
- * DB-view read, not a proxied /admin/intel/* endpoint, so the fields stay
- * snake_case rather than being camelCased like the other Intel* entries. */
-interface IntelFamilyEntry {
-  family_id: string;
-  family_created_at: string;
-  members: number;
+/**
+ * S07.6 (D.6): the staff family-engagement insight on the per-child shape.
+ * Mirrors Core's FamilyEngagementInsight (services/insights.ts) and the
+ * migration family_engagement_insight key for key; the snake_case keys are a
+ * DB-function read, not a proxied /admin/intel/* endpoint.
+ * agent/tools/check-family-engagement-contract.mjs keeps the three equal.
+ * Per-child rows come only for children whose analytics consent the H.1 gate
+ * admits, and carry no identity; the summary counts every child.
+ */
+interface IntelFamilySummary {
+  children: number;
+  children_with_tasks: number;
+  active_children: number;
   tasks_created: number;
-  tasks_completed: number;
-  last_task_at: string | null;
+  tasks_approved: number;
+  active_days: number;
+  listed_children: number;
 }
+
+interface IntelFamilyChild {
+  guardians: number;
+  tasks_created: number;
+  tasks_approved: number;
+  first_link_on: string;
+  last_task_on: string | null;
+}
+
+type FamiliesInsight = { summary: IntelFamilySummary; children: IntelFamilyChild[]; consent: { kidsTotal: number; kidsConsented: number } };
 
 interface IntelChurnEntry {
   user_id: string;
@@ -316,7 +333,8 @@ interface IntelBundle {
   trends: IntelTrendPoint[] | null;
   funnel: IntelFunnelStep[] | null;
   cohorts: IntelCohortEntry[] | null;
-  families: IntelFamilyEntry[] | null;
+  familySummary: IntelFamilySummary | null;
+  familyChildren: IntelFamilyChild[] | null;
   dropoff: IntelDropoffEntry[] | null;
   calibration: IntelCalibrationEntry[] | null;
   engagement: IntelEngagementEntry[] | null;
@@ -693,17 +711,13 @@ function FunnelsTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => stri
 /* ------------------------------------------------------------------ */
 
 function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => string; pf: Intl.NumberFormat }) {
-  const questTotals = useMemo(() => {
-    const families = data.families ?? [];
-    return families.reduce(
-      (acc, f) => ({ created: acc.created + f.tasks_created, completed: acc.completed + f.tasks_completed }),
-      { created: 0, completed: 0 },
-    );
-  }, [data.families]);
-  const questCompletionRate = questTotals.created > 0 ? questTotals.completed / questTotals.created : null;
+  // S07.6 (D.6): the rate is the whole population's (the summary), never the
+  // listed rows', which are only the consented children.
+  const questCompletionRate = data.familySummary && data.familySummary.tasks_created > 0
+    ? data.familySummary.tasks_approved / data.familySummary.tasks_created : null;
   const questFamilies = useMemo(
-    () => (data.families ? [...data.families].sort((a, b) => b.tasks_created - a.tasks_created).slice(0, 25) : []),
-    [data.families],
+    () => (data.familyChildren ? [...data.familyChildren].sort((a, b) => b.tasks_created - a.tasks_created).slice(0, 25) : []),
+    [data.familyChildren],
   );
 
   const cohortLabels = useMemo(() => {
@@ -817,19 +831,19 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
               label={t('admin.intel.retention.kpiQuestCompletion')}
               className="w-fit shadow-glass border border-outline/50"
             />
-            <Table<IntelFamilyEntry>
+            <Table<IntelFamilyChild>
               rows={questFamilies}
-              rowKey={(r) => r.family_id}
+              rowKey={(r) => String(questFamilies.indexOf(r))}
               columns={[
-                { key: 'members', header: t('admin.intel.retention.colMembers'), cell: (r) => r.members.toLocaleString(), numeric: true },
+                { key: 'guardians', header: t('admin.intel.retention.colMembers'), cell: (r) => r.guardians.toLocaleString(), numeric: true },
                 { key: 'assigned', header: t('admin.intel.retention.colTasksAssigned'), cell: (r) => r.tasks_created.toLocaleString(), numeric: true, primary: true },
-                { key: 'completed', header: t('admin.intel.retention.colTasksCompleted'), cell: (r) => r.tasks_completed.toLocaleString(), numeric: true },
+                { key: 'completed', header: t('admin.intel.retention.colTasksCompleted'), cell: (r) => r.tasks_approved.toLocaleString(), numeric: true },
                 {
                   key: 'last',
                   header: t('admin.intel.retention.colLastActivity'),
-                  cell: (r) => (r.last_task_at ? new Date(r.last_task_at).toLocaleDateString() : '—'),
+                  cell: (r) => (r.last_task_on ? new Date(`${r.last_task_on}T00:00:00Z`).toLocaleDateString(undefined, { timeZone: 'UTC' }) : '—'),
                 },
-              ] satisfies TableColumn<IntelFamilyEntry>[]}
+              ] satisfies TableColumn<IntelFamilyChild>[]}
             />
           </div>
         ) : (
@@ -1362,7 +1376,7 @@ export function AdminIntelPage() {
       get<IntelSessionEntry[]>(`/admin/intel/sessions/depth?limit=200&${windowQuery}`),
       get<IntelExperiment[]>('/admin/intel/experiments'),
       get<IntelAlert[]>('/admin/intel/alerts'),
-      get<{ families: IntelFamilyEntry[]; consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=100'),
+      get<FamiliesInsight>('/admin/insights/families?limit=100'),
       get<IntelQualityReport>(`/admin/intel/quality?${windowQuery}`),
       get<{ skills: IntelSkillHealth[] }>(`/admin/intel/learning/content-health?limit=50&${windowQuery}`),
       get<IntelLearningOverview>(`/admin/intel/learning/overview?limit=100&${windowQuery}`),
@@ -1380,13 +1394,14 @@ export function AdminIntelPage() {
     setState({
       status: 'ready',
       data: {
-        consent: unwrap<{ families: IntelFamilyEntry[]; consent: { kidsTotal: number; kidsConsented: number } }>(consentR)?.consent ?? null,
+        consent: unwrap<FamiliesInsight>(consentR)?.consent ?? null,
         summary: summaryData,
         trends: unwrap<IntelTrendPoint[]>(trendsR),
         anomalies: unwrap<IntelAnomaly[]>(anomaliesR),
         funnel: unwrap<IntelFunnelStep[]>(funnelR),
         cohorts: unwrap<IntelCohortEntry[]>(cohortsR),
-        families: unwrap<{ families: IntelFamilyEntry[]; consent: { kidsTotal: number; kidsConsented: number } }>(consentR)?.families ?? null,
+        familySummary: unwrap<FamiliesInsight>(consentR)?.summary ?? null,
+        familyChildren: unwrap<FamiliesInsight>(consentR)?.children ?? null,
         dropoff: unwrap<IntelDropoffEntry[]>(dropoffR),
         calibration: unwrap<IntelCalibrationEntry[]>(calibrationR),
         engagement: unwrap<IntelEngagementEntry[]>(engagementR),

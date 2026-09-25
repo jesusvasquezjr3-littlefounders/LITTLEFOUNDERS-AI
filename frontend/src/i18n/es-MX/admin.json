@@ -1148,12 +1148,12 @@
       "colSize": "Tamaño",
       "colWeek": "Semana {{n}}",
       "questTitle": "Cumplimiento de Misiones",
-      "questSubtitle": "Tareas asignadas por familia y cuántas se completaron realmente.",
+      "questSubtitle": "Tareas por niño con Tutor y cuántas se aprobaron. Solo se listan niños con consentimiento de analítica.",
       "questEmpty": "Aún no hay datos de tareas familiares.",
       "kpiQuestCompletion": "Tasa de Cumplimiento de Misiones",
-      "colMembers": "Miembros",
+      "colMembers": "Tutores",
       "colTasksAssigned": "Asignadas",
-      "colTasksCompleted": "Completadas",
+      "colTasksCompleted": "Aprobadas",
       "colLastActivity": "Última Actividad"
     },
     "segments": {

@@ -6,7 +6,7 @@ import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { TeenWallet } from '@/rebuild/wallet/TeenWallet';
 import { invalidateWalletAccess } from './useWalletAccess';
-import { moneyHabitsCopy } from '../family/moneyHabitsCopy';
+import { moneyHabitsInRegister } from '../family/coinAccountCopy';
 import type { Session, Transport } from '@/rebuild/wallet/walletApi';
 import en from '@/i18n/en-US/teenWallet.json';
 import es from '@/i18n/es-MX/teenWallet.json';
@@ -34,7 +34,9 @@ export function TeenWalletPage() {
     return { token: 'session', transport };
   }, [getToken]);
 
-  return <TeenWallet copy={copy} habits={moneyHabitsCopy(locale)} locale={locale} dark={isDark} session={session} tasksHref="/tasks" onOpenTasks={() => navigate('/tasks')}
+  // S07.6 (D.12): only a self-registered teen reaches /wallet (Core admission
+  // by age), and the database gives every such teen the 'teen' register.
+  return <TeenWallet copy={copy} habits={moneyHabitsInRegister(locale, 'teen')} locale={locale} dark={isDark} session={session} tasksHref="/tasks" onOpenTasks={() => navigate('/tasks')}
     onAccessChanged={invalidateWalletAccess}
     inviteLinkFor={(token) => `${window.location.origin}/family?join=${encodeURIComponent(token)}`}
     copyText={async (text) => {

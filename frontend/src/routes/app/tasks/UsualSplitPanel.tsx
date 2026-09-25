@@ -4,17 +4,21 @@ import { useTheme } from '@/theme/useTheme';
 import { UsualSplit } from '@/rebuild/family/UsualSplit';
 import { fetchUsualSplit, saveUsualSplit, type Split, type UsualSplit as Usual } from '@/rebuild/family/moneyHabitsApi';
 import { hubSession } from '../family/familyHubSession';
-import { moneyHabitsCopy } from '../family/moneyHabitsCopy';
+import { moneyHabitsInRegister } from '../family/coinAccountCopy';
+import { useMoneyRegister } from '../family/useMoneyRegister';
+import { DEFAULT_REGISTER } from '@/rebuild/family/moneyRegister';
 
 /*
  * S07.4 (D.13) data plane for the child's own usual split. Loads only when
  * opened; a save is re-read so the surface shows what the server holds.
+ * S07.6 (D.12): the count line is in the child's register.
  */
 export function UsualSplitPanel({ token, onSaved }: { token: string | null; onSaved?: () => void }) {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  const all = moneyHabitsCopy(locale);
+  const register = useMoneyRegister(token) ?? DEFAULT_REGISTER;
+  const all = moneyHabitsInRegister(locale, register);
   const copy = { ...all.usualSplit, save: all.split.save, spend: all.split.spend, share: all.split.share, more: all.split.more, less: all.split.less };
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,7 +49,7 @@ export function UsualSplitPanel({ token, onSaved }: { token: string | null; onSa
     if (res.ok) { setValue(res.data); setVersion((v) => v + 1); onSaved?.(); }
   }
 
-  return <UsualSplit key={version} copy={copy} locale={locale} dark={isDark} open={open} loading={loading} failed={failed} value={value} busy={busy} notice={notice}
+  return <UsualSplit key={version} register={register} copy={copy} locale={locale} dark={isDark} open={open} loading={loading} failed={failed} value={value} busy={busy} notice={notice}
       onToggle={() => { generation.current++; setNotice(null); if (open) { setOpen(false); } else { setOpen(true); void load(); } }}
       onRetry={() => void load()} onSave={(split) => void save(split)} />;
 }

@@ -41,8 +41,8 @@
     "LESSON_AGE_ELIGIBILITY_REQUIRED": "We need age information before opening this lesson.",
     "LESSON_ELIGIBILITY_MISSING": "This lesson is not ready to open yet.",
     "KID_LIMIT_REACHED": "This account already has the maximum number of children.",
-    "ACCOUNT_FROZEN": "This account is frozen. Your credits stay safe until it is unfrozen.",
-    "GUARDIAN_FREEZE": "Your guardian froze this card. Ask them to unfreeze it.",
+    "ACCOUNT_FROZEN": "This account is frozen. Your coins wait here until it is unfrozen.",
+    "GUARDIAN_FREEZE": "Your Tutor froze this card. Ask them to unfreeze it.",
     "FREEZE_CHANGED": "The freeze changed. Check the updated card before trying again.",
     "GUARDIAN_APPROVAL_REQUIRED": "A guardian must approve a connection before you can follow this profile."
   }

@@ -40,8 +40,11 @@ test('catches a migration changed alone', () => {
   const failures = mutate((live) => ({
     readMigration: (suffix) => suffix === '_savings_bonus_age_framing' ? live.readMigration(suffix).replace('::int < 13 THEN', '::int < 12 THEN') : live.readMigration(suffix),
   }));
-  assert.equal(failures.length, 1);
+  // S07.6: the teen register (D.12) reads the same cutoff as the bonus framing
+  // (D.11), so moving it alone breaks both, which is the point: one design.
+  assert.equal(failures.length, 2);
   assert.match(failures[0], /percent_min_age/);
+  assert.match(failures[1], /register\.teen_min_age/);
 });
 
 test('catches an unchecked threshold and a log with no review', () => {

@@ -1,6 +1,6 @@
 # S07: Family Hub and independent teen wallet
 
-Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5 recorded 24 September 2026 (the lane's verification date). Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5 and S07.6 recorded 24 September 2026 (the lane's verification date). Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
@@ -21,6 +21,7 @@ Risk classification: **structural/safety (money-adjacent state and family trust)
 | S07.3 | D.2 forgiving chore streak, D.10 expected contribution versus paid bonus task, D.11 savings bonus framed by age | The chore streak is computed by a lapse-tolerant model (two free rest days a week, permanent best and total, a Tutor's holiday pause) from practised days that only the task itself can record; a Tutor tags every chore as a family contribution (0–2 coins) or a bonus task (1–500) with no preselected kind; under 13 (or with no known birth date) the savings bonus is the fixed 1 coin per 10 saved and no percentage reaches the child, whoever writes the rule; 13–17 keep the Tutor's 0–20% with a worked example checked by the database; every threshold sits in the Block D threshold log and a gate keeps log, Core and migrations equal; three Appendix H diagnostics served to analytics staff | Rebuilt chore composer, chore streak, holiday pause, bonus settings and bonus explainer (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Family and Banking routes | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 77 new Core tests, 37 new component/copy tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, B.21 adoption of the model, copy/native review, production baselines and Product acceptance pending |
 | S07.4 | D.13 recommended default split with an easy override and redemption timing, D.14 a real destination for the Share pocket, D.15 the next-goal prompt at the celebration, D.16 goal progress by provenance | Every holder owns a usual split (the recommended 50 / 40 / 10 until changed; only the holder sets it); every payout arrives pre-split by it, one tap keeps it and any split that places every coin is accepted; an allowance's Save part may go to a goal; Share coins go to a place a Tutor (or a self-registered teen) chose, and whoever chose it records what really happened with a required note, enforced for every writer; a goal is reached in the transaction that covered it and opens a next step whose first view is the one celebration, with a next goal that follows it; every goal carries its provenance (own, bonus, Tutor), a read without it is refused, and one component draws every goal bar; a consent-gated behaviour stream (the H.1 gate, fail-closed, never blocking, 400-day retention) feeds five Appendix H diagnostics served to analytics staff; new thresholds in the Block D log | Rebuilt split chooser, usual split, goals with provenance and the next-goal card, Share giving and the Tutor's Share places (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Banking, Family and Wallet routes; a static D.16 release gate | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a hand-computed diagnostic timeline, the S07.1/S07.2 checks re-run over the whole chain, 57 new Core tests, 49 new component/copy/gate/data-plane tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, copy/native review, production baselines, family usability testing and Product acceptance pending |
 | S07.5 | D.17 a graduated-autonomy ladder inside the parent-managed system, D.18 a rationale requirement and communication scaffolding for approval and denial | Three independence levels for every child in a family (by age and record, never role): Level 1 is the old flat model, Level 2 self-logs family contributions and pre-approves rewards up to a Tutor-set amount (at most 20 coins), Level 3 self-logs chores up to 100 coins and pre-approves up to 100; the spending limit and the hold apply at every level; a documented age-and-track-record rule per level shown with the child's own numbers; a Tutor moves up only when eligible and down only with an actionable reason, the child asks and may step down, support staff and the evidence-based system step-down lower a level; every decision is one immutable record, and no "not yet" (sent back, cancelled, denied, declined, questioned) exists without a subject reason code and an actionable reason (a "later" with a date), for every writer; the child's own words reach the Tutor at decision time; three "not yet"s in 14 days open a "talk about it" nudge and the child can ask to talk; the rule is in `docs/operations/FAMILY-INDEPENDENCE-AND-DECISIONS.md` and 20 thresholds in the Block D log; three Appendix H diagnostics (progression, nudge trigger rate, human-scored actionability) served to analytics staff | Rebuilt decision queue and reason form (Tutor Tasks), independence ladder (Family, per child), the child's level, decision notes, mark-done-with-a-note and ask-for-a-reward-with-a-reason (child Tasks) in `frontend/src/rebuild/family/`, three locales, light/dark, 375/1280 px; the legacy approve/cancel/deny buttons replaced; nothing celebrates | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a crafted metric timeline and real concurrency, the S07.1 and S07.2 checks re-run over the whole chain, 48 new adversarial Core tests, 30 new component/copy/parity tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, Product/Safety review of every threshold, production baselines, the first human-scored sample, family usability testing, native copy review and Product acceptance pending |
+| S07.6 | D.6 the family-engagement staff insight on the per-child shape, D.7 honest simulation visuals and no unbacked guarantee, D.8 a tone gate for Family Hub and banking copy, D.12 age-differentiated presentation | One database function serves the staff insight per child: counts over every child with a verified Tutor, and per-child rows only for H.1-admitted children, with no identity. Request outcomes and a nightly probe feed Appendix H's Staff Family-Engagement Insight Uptime, and a gate keeps the key contract equal across the database, its probe, Core and the console. Every control a family sees is registered with its enforcing SQL and adversarial proof, and a gate fails when an enforcing function loses its guard, when the UI's freeze holds differ from the database's, or when a payment SDK appears. The written principle and the quarterly audit are in `docs/operations/NO-UNBACKED-GUARANTEE.md`. A tone gate (bank register, guarantee, glossary, shouting; reviewed exceptions; no raw Core message on a family surface) reports the Tone-Gate Pass Rate. The database decides the age register (young, transition, teen) from age evidence as one design with D.11, and Core shapes the child's numbers by it. The register cutoffs are in the Block D log, and the register distribution is served to analytics staff | Rebuilt coin account and Tutor freeze card (`frontend/src/rebuild/banking/`) in three locales and three registers, light/dark, 375/1280 px, mounted in the Banking route in place of the legacy card, freeze switch, banner, meter and statement summary. The usual split, goal progress and bonus explainer are presented per register. The Banking page's dead bare "Deny" is replaced by the reason-carrying queue. The legacy staff console reads the per-child contract | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain with the S07.1-S07.5 checks re-run, 54 new Core tests, 41 new component and copy tests, 35 new gate self-tests, 12 real-Chrome configurations). Full Supabase stack run, types regeneration, the first human No-Unbacked-Guarantee Audit and Stage 4 spot-check, family usability testing, native copy review, production baselines and Product acceptance pending |
 
 ## Current state found (verified against the code, 24 September 2026)
 
@@ -849,3 +850,295 @@ Every configuration had zero axe violations, no panel overflow or page scroll, 4
 - Native review of `familyAutonomy.json` in three locales, and human Product/Safety review of the twelve proposals above.
 
 D.17 and D.18 are not accepted.
+
+## S07.6: current state found (verified against the code, 24 September 2026)
+
+The SPEC's "Current State" was accurate for D.6 and D.8, partly stale for D.7 and D.12, and the code held two further defects the SPEC did not name.
+
+- **D.6 confirmed.** 0074 redefined `insights_family_engagement` per child: `kid_user_id`, `first_guardian_link_at`, `guardians`, `tasks_created`, `tasks_approved`, `last_task_at`. Core's `readFamilyEngagement` still parsed `family_id`, `family_created_at`, `members`, `tasks_completed`, so every row failed validation and `GET /api/v1/admin/insights/families` answered "Family views unreachable" for every request since 0074. The console kept typing the old shape. The PostgreSQL verifier reproduces the column mismatch on the chain before S07.6. A Core test reproduces the refusal: the legacy shape is now a recorded `shape_mismatch`, never served.
+- **D.7 partly stale.** D.1's enforcement is real (S02, and S07.1-S07.5 keep it for every writer), so the concern is presentation. The legacy Banking page still showed:
+  - a card with a monospace `LF-####-####` number;
+  - the freeze as a switch inside a "Card details" dialog, with a hint that understated what it holds;
+  - "Your credits stay safe";
+  - "A parent/guardian froze this card".
+
+  Two defects were **not in the SPEC**:
+  - the spending limit read "Weekly" and "Resets: Every week", while the database counts a rolling 7 or 30 days and checks at request time;
+  - since S07.5 the Tutor's Banking page offered a bare "Deny" that the server always refuses (a denial needs an actionable reason, D.18), with no error shown. A control displayed as working and not backed is exactly D.7's failure.
+- **D.8 confirmed.** No gate screened this Block's copy. B.14's Forge tone gate is not built in this branch either (S05 lane, Open).
+- **D.12 partly stale.** D.11 (S07.3) already framed the savings bonus by age. Everything else was presented identically to a 7-year-old and a 17-year-old:
+  - every rebuilt child surface was written to the 6-9 band;
+  - the usual split read "out of 10" for a teen;
+  - the legacy Banking page showed the same card, limit and statement to everyone.
+
+## S07.6 implementation and rationale (D.6, D.7, D.8, D.12)
+
+Two expand migrations, in this order after the S07.5 migrations (descriptive names; the orchestrator assigns the final numbers at merge):
+1. `family_money_register` (D.12);
+2. `family_engagement_insight` (D.6).
+
+Neither redefines an earlier function, so the S07.1-S07.5 verifiers were re-run over the whole chain only to prove nothing regressed. `database/types/database.ts` was not hand-edited.
+
+### D.6: the staff insight on the per-child shape
+
+- **One database function serves it.** `family_engagement_insight(p_limit, p_active_days)` reads the per-child view, which stays the single definition of engagement per child. It answers two things:
+  - a **summary** over every child with a verified Tutor: children, children with chores, children active in 30 days, chores created and approved. These are bookkeeping counts, so no consent is needed for a number no one can trace to a child;
+  - **per-child rows**, only for children the H.1 analytics gate admits (`family_analytics_admitted`, the gate every Block D behavioural diagnostic uses). The rows carry Tutors, chores created and approved, and the first link and last chore by day. They have **no identity**: no child id, no Tutor id.
+
+  Revoking consent removes the row at once. Out-of-range limits and windows are refused.
+- **Core** (`readFamilyEngagementInsight`) parses it strictly. A row carrying an extra key, such as a smuggled id, is refused. "The database did not answer" (`unavailable`) is told apart from "it answered in another shape" (`shape_mismatch`, the D.6 failure mode). The route returns `{ summary, children, consent }`.
+- **Uptime (Appendix H: Staff Family-Engagement Insight Uptime, target 100%).** Two sources are recorded in `staff_insight_checks`, which uses closed vocabularies, holds no identity, and has no browser or service-role table access (only two functions write it):
+  - every staff request's outcome, recorded best-effort by Core;
+  - a nightly probe (`probe_family_engagement_insight`, called by `insights-maintenance.yml`, guarded) that calls the same function and checks the contract keys. It keeps 400 days.
+
+  `GET /api/v1/admin/family/engagement-uptime` (analytics staff) reports each source's checks and successes. An empty window is reported as no checks, never as 100%.
+- **The contract as a gate.** The keys are written in four places: the function, the probe, Core's parser and the console's types. `agent/tools/check-family-engagement-contract.mjs` fails on any difference, since that difference is how D.6 happened.
+- **The console.** It is still the legacy staff console, whose rebuild belongs to Block G. It now reads the per-child contract. Its approval rate comes from the whole population, never from the consented rows. It says that only consented children are listed.
+
+### D.7: no unbacked guarantee
+
+- **The written principle and the human audit.** `docs/operations/NO-UNBACKED-GUARANTEE.md` holds the rules, how a new control is admitted, the quarterly audit checklist and the audit log. The log's first entry is an Engineering pre-audit with 8 findings, which does **not** replace the human audit.
+- **The control registry and its gate.** `docs/operations/block-d-controls.json` lists 10 controls, each with its written claim, its enforcement, its adversarial proof and its copy keys:
+  - the practice card;
+  - the freeze and each of its four holds;
+  - who may lift a freeze;
+  - the spending limit;
+  - the bonus framing;
+  - the register.
+
+  `agent/tools/check-no-unbacked-guarantee.mjs` (unfiltered repo gates) fails when:
+  - an enforcement or proof disappears;
+  - **the latest migration that redefines an enforcing SQL function drops its guard**;
+  - Core's or the client's `FREEZE_HOLDS` differ from the registry;
+  - a rebuilt surface declares an unregistered `data-control`;
+  - a copy key is missing in a locale;
+  - any package depends on a payment, card-issuing or bank-linking SDK (the claim "no bank or card behind it" would stop being true).
+- **At the server.** The rebuilt account contract (`GET /api/v1/banking/overview`, and the Tutor's `GET /api/v1/banking/accounts/:kidId/freeze`):
+  - declares `simulated: true`;
+  - carries no card number;
+  - lists what a freeze holds from `FREEZE_HOLDS`: reward requests, approvals and pre-approvals; chore and allowance splits; the scheduled allowance and bonus; Share gifts. It lists them whether or not the account is frozen, so the explanation before a freeze is as honest as the one during it;
+  - gives `by` relative to the reader, and `canChange`: a child may lift only their own freeze.
+- **At the client.** `rebuild/banking/bankingApi.ts` refuses a card that:
+  - is not a declared simulation;
+  - carries a number;
+  - claims a hold nobody enforces;
+  - has a freeze without its author;
+  - gives a child `canChange` over a Tutor's freeze.
+- **The rebuilt surfaces.**
+  - `CoinAccount` (child) is a flat practice card in a token hue with its practice label and "coins stay in the app". It shows the holds from the server, "nothing is lost", Unfreeze only for the child's own freeze, the pockets, the limit (said to be checked when a reward is asked for, over the last 7 or 30 days) and this month.
+  - `TutorFreeze` (Tutor) shows the same holds, "a freeze moves no coins", who set the freeze, and which age view the child reads. It asks once before freezing.
+
+  Both re-read the state after every change, never assuming it.
+- **Mounting.** On the child's Banking page, the rebuilt coin account replaces:
+  - the legacy card;
+  - the freeze switch (the dialog keeps name and colour only);
+  - the frozen banner;
+  - the pocket tiles;
+  - the limit meter;
+  - the statement summary.
+
+  On the Tutor's Banking page, the rebuilt freeze card replaces the switch and the number line. The dead bare "Deny" is replaced by S07.5's reason-carrying decision queue. The Tutor's legacy limit form now says "Counts the last: 7 days / 30 days" and when the limit is checked.
+
+### D.8: the tone gate
+
+`agent/tools/check-family-copy-tone.mjs` with `agent/tools/family-copy-tone.lexicon.json` is D.8's "equivalent review step". B.14 is not built in this branch; its lexicon should be merged with this one when it lands.
+
+- **Scope.** Every Family Hub and banking string in three locales: 7 namespaces, the `tasks`, `banking` and `family` subtrees of `common.json`, and 8 error codes. That is 3,480 strings.
+- **Categories.** Each carries a stated reason:
+  - bank register (Law 2);
+  - guarantee (D.7);
+  - the controlled glossary;
+  - shouting.
+- **Exceptions.** Each names the key, the category and why. The gate fails on an exception that no longer excuses anything.
+- **Core's messages.** They are English developer diagnostics a family never reads: every family surface resolves the error code to copy. So the gate fails instead when a Family Hub or banking surface renders a raw `error.message`.
+- **The metric.** It prints Appendix H's Tone-Gate Pass Rate; `--report` writes it as JSON.
+- **The human step.** The Stage 4 spot-check is written in `docs/operations/FAMILY-COPY-TONE-GATE.md`.
+- **The first run found real copy.** 15 family-facing keys were rewritten in all three locales, legacy strings included:
+  - "redeem" / "redemption";
+  - "Deny" / "Denied";
+  - "credits";
+  - "stay safe";
+  - "guardian";
+  - "Rejected".
+
+### D.12: one design, three registers
+
+- **The database decides** (`family_money_register`): `young` (6-9, or age unknown), `transition` (10-12), `teen` (13-17, a self-registered teen, and an 18-year-old still in a family), or NULL for an account with no wallet.
+  - It reads age evidence, never role.
+  - It returns `teen` exactly when D.11's `savings_bonus_framing` is `percent`, so D.11 and D.12 are one design by construction; the verifier checks this for every population.
+  - A birthday moves the register at read time; nothing is stored.
+- **Core serves it and shapes by it.** `GET /api/v1/banking/register` serves it to every wallet holder. `GET /api/v1/banking/overview` shapes the child's numbers at the server:
+  - young gets what is left of the limit, three month totals, and no cap, used amount, percentage or statement line;
+  - transition adds the cap and what was used, given and corrected;
+  - teen adds the used percentage and the latest 8 lines.
+- **The client never picks a register.** It reads it once per session (`useMoneyRegister`), presents the young register while it loads or when it fails, and refuses an answer carrying numbers its register is not given.
+- **Registered surfaces, in three locales** (`coinAccount.json`, `moneyRegister.json`):
+  - `CoinAccount`: a copy set per register, with its own tone, numbers and detail, checked against its band's budget;
+  - `UsualSplit`: "5 of 10", then "5 of 10" with "so 50 of 100" under it, then "50%";
+  - `GoalProgress`: "12 of 30", then "12 of 30, 18 to go", then "12 of 30 (40%)", with provenance unchanged;
+  - `SavingsBonusExplainer`: the transition register gains the bridge "1 for every 10 is like 10 for every 100", reaching toward a rate with concrete scaffolding (Appendix G §1.5);
+  - `TeenWallet`: always the teen register.
+
+  Every child-facing component declares its policy in `REGISTER_POLICY`, and a test fails when one is added without it. The register-neutral ones carry no ratio and are written to the youngest band's budget, with the reason recorded. The design is `docs/operations/FAMILY-AGE-REGISTERS.md`.
+- **Measured.** The cutoffs and the teen's statement lines are in the Block D threshold log (5 new keys across D.6 and D.12). The register distribution (`GET /api/v1/admin/family/register-distribution`, counts only) is served to analytics staff for the recalibration.
+
+## S07.6 decisions taken on the SPEC's conservative default (proposals for owner review)
+
+1. **Staff read per-child engagement rows only for consented children, with no identity.** The population summary counts everyone. Whether staff should read per-child rows at all is a Safety/Privacy question.
+2. **Uptime has two sources.** Request outcomes and a nightly probe. A database that cannot be reached cannot record its own outage, so that window rests on the probe's gap and Core's error log.
+3. **The register cutoffs are 10 and 13.** Unknown age reads young. An 18-year-old still in a family reads teen.
+4. **Numbers per register.** The young register shows no ratio at all (a limit is "what is left"). The transition register uses "out of 100" scaffolding. Only the teen register reads percentages. A teen's pocket percentages always add to 100 (largest remainder).
+5. **The teen reads the latest 8 statement lines** on the card.
+6. **The register-neutral components keep one copy set,** written to the 6-9 budget. Teen-specific wording for them (for example `MyLevel`) is a proposal, not built.
+7. **The practice card shows no number.** The legacy `display_number` column stays until the wave-2 contract migration drops it.
+8. **The young register's hold names are simplified.** "Rewards / Splitting coins / New coins / Share gifts" are each true of what the database holds.
+9. **A Tutor confirms a freeze; a child does not.** A child's own freeze is theirs to lift at once.
+10. **The tone gate's scope excludes Core's developer messages** and fails on any family surface rendering one. The six exceptions are listed with reasons.
+11. **Legacy strings were rewritten, not deleted,** to avoid key churn across lanes. Their removal is the wave-2 cleanup.
+12. **"Digital Banking" is kept** as the section name (the SPEC's); the page states that it is practice with coins that stay in the app.
+
+## S07.6 verification log
+
+Executed 24 September 2026 (the lane's verification date) in the S07 worktree, first-hand, on the tree being committed. Commands are relative to the named directory. Local results only, not CI or production observations.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Physical PostgreSQL, S07.6 | Lane cluster (PostgreSQL 17.6, `.lane-cache/pg`, port 15507); root: `python database/scripts/verify-money-presentation-postgres.py` with `LF_PG_BIN/PORT/USER/DATA`; the cluster was stopped with `pg_ctl stop -m fast` afterwards | Passed, 12 check groups. Report: `audit-results/s07-money-presentation-postgres.json`. Details below this table |
+| Physical PostgreSQL, S07.1-S07.5 over the whole chain | Root, same cluster: `python database/scripts/verify-autonomy-decisions-postgres.py`, `verify-money-habits-postgres.py`, `verify-chore-streak-bonus-postgres.py`, and `LF_PG_FULL_CHAIN=1` for `verify-family-state-machine-postgres.py` and `verify-teen-wallet-postgres.py` | All passed: 16, 14, 11, 14 and 17 check groups. The two S07.6 migrations change no earlier function, and every earlier check still holds with them in the chain |
+| Core adversarial | `backend/`: `npx vitest run src/__tests__/moneyPresentation.test.ts src/__tests__/insights.test.ts src/__tests__/blockDThresholds.test.ts` | 54 new tests (`moneyPresentation.test.ts`), the families test in `insights.test.ts` rewritten to the per-child contract, and one new threshold test. Coverage below this table |
+| Core regression | `backend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 78 files (+1 skipped), 1,852 tests + 1 documented skip |
+| Frontend regression | `frontend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 228 files, 2,429 tests. 41 new: `CoinAccount.test.tsx` 22 and `coinAccountCopy.test.ts` 19. The D.1 freeze tests (`KidBankingFreeze`, `ParentBankingFreeze`) were rewritten on the rebuilt panels, keeping all five guarantees. The staff console's families fixture is on the per-child shape |
+| Real Chrome matrix | `frontend/`: `COIN_ACCOUNT_URL=http://localhost:5340 node scripts/verify-coin-account.mjs` (dev server with `VITE_CACHE_DIR` in the lane cache, stopped afterwards) | 12 of 12 configurations (EN/es-MX/pt-BR × light/dark × 375/1280). 84 captures and `report.json` in `audit-results/coin-account/`. Journey steps below this table |
+| Static migration gates | `database/`: `npm test`; `node scripts/railway-migrate.test.mjs` re-run on its own | Passed. 137 files pass the numbering, RLS and phase checks (103 expand, 34 contract, 23 contract pending); the lifecycle gate covers 55 states across 13 columns; 28 of 28 node tests pass. The operator transport passes its 12 scenarios with both S07.6 files (`railway-migrate integration OK`), re-run on its own after the full `npm test` hit my own 900-second timeout during that step (see failures below) |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` (after staging, so the new files are scanned), `bash agent/tools/check-i18n.sh` (Git Bash), `npm run tools:test`, `node agent/tools/check-block-d-thresholds.mjs`, `node agent/tools/check-no-unbacked-guarantee.mjs`, `node agent/tools/check-family-copy-tone.mjs --report audit-results/s07-family-copy-tone.json`, `node agent/tools/check-family-engagement-contract.mjs`, `node database/scripts/check-family-lifecycle.mjs` | Passed: spec authority, tokens and assets OK; no credential patterns; i18n file and key parity, no hardcoded strings, every static key present; 97 of 97 tool tests (35 new); 50 thresholds agree (5 new); 10 controls enforced and proved across 68 rebuilt surfaces; 3,480 strings pass the tone gate (100%); the insight keys agree in four places; 55 lifecycle states keep a producer and a consumer |
+
+**PostgreSQL S07.6 check groups (12):**
+- **D.6 reproduced** on the chain before S07.6: the view is per child and has none of the per-family keys Core parsed. **D.12 reproduced:** no register existed.
+- **The register follows age evidence, never role:**
+  - no birth date, 7 and 9 read young;
+  - 10 and 12 read transition;
+  - 13, 18, an independent teen and a linked teen read teen;
+  - an adult, a guest, the Tutor and an unrelated parent have none.
+- **One design with D.11:** for every population, teen is exactly the percentage framing, and there is no register without a framing.
+- **Birthdays move the register at read time:**
+  - 9 to 10 moves young to transition;
+  - 12 to 13 moves transition to teen;
+  - a birth date added to an unknown-age child moves it too;
+  - a role grant changes nothing.
+- **The register distribution** counts wallet holders per register (`teen=5, transition=3, young=1`), counts only.
+- **No browser or anon session** calls the register or the distribution.
+- **The insight on the per-child shape.** The summary counts all 8 linked children (5 with chores, 8 chores, 6 approved, 3 active). The rows list only the 3 children the H.1 gate admits:
+  - the 7-year-old is excluded even with consent (the under-13 origin marker);
+  - the 10-year-old is excluded without consent.
+
+  Rows come newest first, and the JSON carries no id.
+- **Consent and bounds.** Revoking consent removes the row at once while the population count stays. The limit is honoured, and five out-of-range calls are refused.
+- **The uptime record resists every writer.** No browser or anon session calls the four functions. No browser or service-role session touches the table. The recorder refuses an outcome or insight outside the closed vocabulary.
+- **The probe** answers:
+  - `ok` on the real insight;
+  - `shape_mismatch` when the insight answers without the contract keys;
+  - `unavailable` when the view under it is gone.
+
+  It prunes checks older than 400 days.
+- **Uptime per source over a window** reads `probe=1/1/ok, request=2/1/shape_mismatch`. An empty window reports zero checks, never 100%.
+- **Replay** of both migrations keeps every check row and every answer.
+
+**Core coverage (54 new tests):**
+- **Thresholds and shaping.** The teen register's age equals D.11's. The migration's register function never reads a role. Limits and months are shaped per register. The freeze author is relative to the reader, and an unattributed freeze is a Tutor's.
+- **`/banking/register`:**
+  - served to a parent-created child, a linked teen and an independent teen from the database;
+  - refused to an adult, a guest, a parent and staff before any read;
+  - a register the client names is ignored;
+  - an unreadable register is a 502, never guessed;
+  - an account with no wallet is refused.
+- **`/banking/overview`:**
+  - refused to an unlinked teen, an adult, a guest, a parent and staff before any account read;
+  - a declared simulation with no card number, even when the row has one;
+  - every real hold is listed;
+  - a child may lift only their own freeze;
+  - each register's exact keys (no ratio, percentage or line list for young, no percentage for transition);
+  - 502 when the register, the account, the limit or the credits cannot be read;
+  - no card before one is opened.
+- **`/banking/accounts/:kidId/freeze`:**
+  - refused to the child, a linked teen, an unlinked teen, an adult, a guest and staff;
+  - 404 for an unrelated parent before any read;
+  - the author relative to the Tutor, and the child's register;
+  - a malformed id is 400.
+- **`/admin/insights/families`:**
+  - the per-child shape, with its outcome recorded and no id;
+  - the legacy per-family shape is a recorded `shape_mismatch` and never served;
+  - a row smuggling an id is refused;
+  - an unreachable database is a recorded `unavailable`;
+  - refused to support-only staff, a parent, a child and an adult before any read;
+  - the contract keys are pinned.
+- **Metrics.** Uptime per source with no rate for an empty window. The register distribution, with no share for an empty population. Both analytics-only. A malformed uptime answer is a 502.
+
+**Browser matrix journey (each configuration):**
+1. **Child, young register.**
+   - The practice card and "coins stay in the app", with no card number anywhere on the page.
+   - The four holds from the server; "what is left" of the limit and when it is checked; no percentage.
+   - Freeze (exact body), "You froze it.", the informational notice, then Unfreeze (exact body).
+   - The usual split reads "5 of 10" with no percentage.
+2. **Child, transition register.** Used of the cap over the last 7 days and "of your 40" totals, with no percentage. The bonus's "out of 100" bridge. The usual split "5 of 10" over "so 50 of 100".
+3. **Linked teen, teen register, a Tutor's freeze.** The limit with its percentage and the statement lines. "Your Tutor froze it." and "Only your Tutor can lift it.", with no Unfreeze button.
+4. **Tutor.** "Nico sees the ages 6-9 view.", "A freeze moves no coins.", a confirmation before freezing with no request sent, then Freeze (exact body) and "You froze it."
+
+Every configuration had:
+- zero axe violations;
+- no panel overflow or page scroll;
+- 48 px targets;
+- a copy role on every text node;
+- only registered `data-control` values;
+- no celebration element;
+- zero browser errors.
+
+Captures inspected in this session:
+- en-US light 375, young;
+- es-MX dark 375, transition;
+- pt-BR dark 1280, teen with a Tutor's freeze (before the fixes below);
+- en-US dark 1280, teen (after);
+- en-US light 375 and es-MX light 375, the Tutor's confirmation;
+- pt-BR light 375, the transition split (before and after the fix below).
+
+**Failures and their resolution:**
+- **Line endings.** Python's `write_text` on this host (and once the file tool) wrote CRLF into several LF files. All were normalised before any commit, and every later edit writes bytes.
+- **Test and gate mistakes of my own:**
+  - a regex literal broken by that conversion;
+  - an expected pocket total;
+  - an error body read as `undefined` instead of the envelope's `null`;
+  - a PL/pgSQL fixture written as SQL (validated at creation);
+  - a verifier cut at the wrong migration;
+  - a service-role count on a table it correctly cannot read;
+  - the registry gate reading a `REVOKE ... ON FUNCTION` as a definition, which is now fixed to `CREATE [OR REPLACE] FUNCTION` only and pinned by a test;
+  - backspace characters injected into a regex by an unescaped Python string.
+- **A real finding by the tone gate's first run.** 15 family-facing keys in three locales used bank register, "safe", "guardian" or "rejected". They were rewritten (see D.8).
+- **Real findings from looking at the captures:**
+  - the teen read "Your Tutor froze it." twice, so the second line became "Only your Tutor can lift it.";
+  - the teen's pocket percentages added to 101, now fixed by largest-remainder rounding with a test;
+  - the Tutor's confirmation squeezed its prompt beside its buttons at 375 px, so it now stacks;
+  - the transition split wrapped its long count line, so "so 50 of 100" now sits on its own line under "5 of 10".
+- **Consequences of the new design, caught by existing tests:**
+  - `designClasses.test.ts` caught a class with no rule;
+  - the old hold name in the freeze test;
+  - the Block D threshold gate's own test now sees two failures when the 13-year cutoff moves alone, because the register and the bonus share it, which is intended.
+- **The first `npm test` in `database/`** hit my own 900-second `timeout` inside the operator transport test (exit 124) after every other step passed. The transport test was re-run on its own (row above). A killed run is not counted as evidence.
+
+**Cross-lane findings (not changed here):**
+- **B.14 (S05).** This gate's lexicon should be merged with Forge's lesson tone gate when it lands.
+- **B.23 (S05).** The "graduation" moment around 10-12 is B.23's to design. The Family Hub register changes silently.
+- **H.1 / A.2.** The per-child staff rows use the H.1 gate, so a parent-created child under 13 is never listed, the same finding as S07.4 and S07.5.
+- **Block G.** The staff console is still legacy. The uptime metric is served by the API only, and a console surface belongs to the console rebuild.
+- **Legacy nav.** The learner navigation still reads "AI Tutor" (glossary: Mentor). That belongs to another lane's shell work.
+
+**Remaining limitations:**
+- No full Supabase (PostgREST/GoTrue) stack run of the new routes and functions.
+- `database.ts` has not been regenerated: `staff_insight_checks` and five functions.
+- No production baseline yet for Staff Family-Engagement Insight Uptime, the register distribution or the Tone-Gate Pass Rate.
+- The first human No-Unbacked-Guarantee Audit and the first Stage 4 spot-check have not been done.
+- Appendix H Stage 5 family usability testing of the three registers has not been run.
+- Native review of `coinAccount.json` and `moneyRegister.json` in three locales.
+- The legacy `display_number` column is still stored; its removal is a wave-2 contract migration.
+- The browser matrix uses a synthetic Core.
+- Product/Safety review of the twelve proposals above.
+
+D.6, D.7, D.8 and D.12 are not accepted.

@@ -15,7 +15,7 @@
     "confirm": "Confirm",
     "reject": "Reject",
     "confirmed": "Confirmed. They are now a Tutor.",
-    "rejectedNotice": "Rejected. They cannot see this account.",
+    "rejectedNotice": "Not confirmed. They cannot see this account.",
     "conflict": "Another Tutor already decided.",
     "decisionFailed": "Could not save the decision. Try again.",
     "leave": "Step away",

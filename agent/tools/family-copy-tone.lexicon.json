@@ -1,0 +1,256 @@
+{
+  "about": "S07.6 (D.8): the Family Hub and Digital Banking tone gate's scope, lexicon and reviewed exceptions. Law 2: speak like a mentor, never like a bank. D.7: no copy may imply a guarantee the system does not enforce. Owner log §5: the controlled glossary. agent/tools/check-family-copy-tone.mjs reads this file; docs/operations/FAMILY-COPY-TONE-GATE.md explains how to change it. An exception needs a reason a reviewer can check.",
+  "version": 1,
+  "scope": {
+    "namespaces": [
+      "familyHub",
+      "familyMoney",
+      "moneyHabits",
+      "familyAutonomy",
+      "teenWallet",
+      "coinAccount",
+      "moneyRegister"
+    ],
+    "subtrees": [
+      "common:tasks",
+      "common:banking",
+      "common:family"
+    ],
+    "errorCodes": [
+      "ACCOUNT_FROZEN",
+      "GUARDIAN_FREEZE",
+      "FREEZE_CHANGED",
+      "SPEND_LIMIT_REACHED",
+      "INSUFFICIENT_BALANCE",
+      "KID_LIMIT_REACHED",
+      "PARENT_VERIFICATION_REQUIRED",
+      "PARENT_VERIFICATION_REVOKED"
+    ],
+    "surfaces": [
+      "frontend/src/rebuild/family",
+      "frontend/src/rebuild/banking",
+      "frontend/src/rebuild/wallet",
+      "frontend/src/routes/app/banking",
+      "frontend/src/routes/app/tasks",
+      "frontend/src/routes/app/family",
+      "frontend/src/routes/app/wallet"
+    ],
+    "surfacesWhy": "Core's error messages are English developer diagnostics. A family reads only copy resolved by error code (errors.json) or the rebuilt surfaces' own copy, both in scope here. The gate fails if a Family Hub or banking surface starts rendering a raw Core message."
+  },
+  "categories": {
+    "bank_register": {
+      "why": "Law 2: transactional, procedural or legal banking language turns a moment of friction into a bank notice.",
+      "en-US": [
+        "insufficient funds?",
+        "funds",
+        "transactions?",
+        "declined",
+        "overdraft",
+        "fees?",
+        "penalt(?:y|ies)",
+        "violations?",
+        "non-?compliance",
+        "pursuant",
+        "per policy",
+        "account holder",
+        "balance due",
+        "debit(?:ed)?",
+        "credit card",
+        "APY",
+        "interest rate",
+        "processed",
+        "processing",
+        "authori[sz]ation",
+        "unauthori[sz]ed",
+        "invalid request",
+        "error code",
+        "deny",
+        "denied",
+        "denial",
+        "rejected",
+        "redeem(?:ed|ing|s)?",
+        "redemptions?",
+        "credits?"
+      ],
+      "es-MX": [
+        "fondos insuficientes",
+        "fondos",
+        "transacci[oó]n(?:es)?",
+        "sobregiro",
+        "comisi[oó]n(?:es)?",
+        "cargos?",
+        "penalizaci[oó]n",
+        "multas?",
+        "infracci[oó]n",
+        "titular de la cuenta",
+        "d[eé]bito",
+        "tarjeta de cr[eé]dito",
+        "tasa de inter[eé]s",
+        "procesad[oa]",
+        "no autorizad[oa]",
+        "solicitud inv[aá]lida",
+        "c[oó]digo de error",
+        "denegad[oa]s?",
+        "negad[oa]s?",
+        "canje(?:s|ar)?",
+        "cr[eé]ditos?",
+        "rechaz\\w*"
+      ],
+      "pt-BR": [
+        "saldo insuficiente",
+        "fundos",
+        "transa[cç][aã]o",
+        "transa[cç][oõ]es",
+        "cheque especial",
+        "tarifas?",
+        "taxas?",
+        "multas?",
+        "penalidades?",
+        "infra[cç][aã]o",
+        "titular da conta",
+        "d[eé]bito",
+        "cart[aã]o de cr[eé]dito",
+        "taxa de juros",
+        "processad[oa]",
+        "n[aã]o autorizad[oa]",
+        "solicita[cç][aã]o inv[aá]lida",
+        "c[oó]digo de erro",
+        "negad[oa]s?",
+        "rejeitad[oa]s?",
+        "resgat(?:e|ar|es)",
+        "cr[eé]ditos?",
+        "recus\\w*"
+      ]
+    },
+    "guarantee": {
+      "why": "D.7: no copy may promise safety, protection, insurance or a real bank or card that the simulation cannot back.",
+      "en-US": [
+        "guarantee[sd]?",
+        "secure[sd]?",
+        "securely",
+        "safe",
+        "safely",
+        "protected",
+        "protects?",
+        "protection",
+        "insured",
+        "FDIC",
+        "risk-free",
+        "never lose",
+        "real money",
+        "real card",
+        "bank account",
+        "bank card",
+        "debit card"
+      ],
+      "es-MX": [
+        "garantiza\\w*",
+        "garant[ií]as?",
+        "segur[oa]s?",
+        "seguridad",
+        "protegid[oa]s?",
+        "protecci[oó]n",
+        "asegurad[oa]s?",
+        "sin riesgo",
+        "dinero real",
+        "tarjeta real",
+        "cuenta bancaria",
+        "tarjeta de d[eé]bito"
+      ],
+      "pt-BR": [
+        "garant\\w*",
+        "segur[oa]s?",
+        "seguran[cç]a",
+        "protegid[oa]s?",
+        "prote[cç][aã]o",
+        "assegurad[oa]s?",
+        "sem risco",
+        "dinheiro real",
+        "cart[aã]o real",
+        "conta banc[aá]ria",
+        "cart[aã]o de d[eé]bito"
+      ]
+    },
+    "glossary": {
+      "why": "Owner log §5: coins, never money; a chore is never a job; approve, never accept; rest day, never streak freeze; the verified parent is the Tutor, never a guardian.",
+      "en-US": [
+        "money",
+        "dollars?",
+        "pesos",
+        "reais",
+        "jobs?",
+        "streak freeze",
+        "accept(?:ed|s)?",
+        "guardians?"
+      ],
+      "es-MX": [
+        "dinero",
+        "d[oó]lares",
+        "pesos",
+        "trabajos?",
+        "empleos?",
+        "congelar (?:la )?racha",
+        "aceptad[oa]",
+        "aceptar",
+        "tutor legal",
+        "apoderad[oa]"
+      ],
+      "pt-BR": [
+        "dinheiro",
+        "d[oó]lares",
+        "reais",
+        "empregos?",
+        "trabalhos?",
+        "congelar (?:a )?sequ[eê]ncia",
+        "aceit(?:ar|o|a)",
+        "respons[aá]vel legal"
+      ]
+    },
+    "shouting": {
+      "why": "Law 2: a mentor never shouts: no stacked exclamation marks, no words in capitals, no raw error codes.",
+      "patterns": [
+        "!!",
+        "\\b[A-Z]{4,}\\b",
+        "\\b[A-Z]+_[A-Z_]+\\b"
+      ],
+      "allowCaps": [
+        "FAQ",
+        "APY",
+        "FDIC",
+        "LF"
+      ]
+    }
+  },
+  "exceptions": [
+    {
+      "key": "familyMoney:bonusSettings.notInterest",
+      "category": "bank_register",
+      "why": "The S07.3 (D.11) disclosure: a bonus the family adds, not a bank interest rate. Naming what it is not is the honesty line."
+    },
+    {
+      "key": "familyMoney:bonusTeen.notInterest",
+      "category": "bank_register",
+      "why": "The teen's form of the D.11 disclosure: a bonus the family adds, not a bank interest rate."
+    },
+    {
+      "key": "common:banking.parent.bonusHint",
+      "category": "bank_register",
+      "why": "The legacy form of the same disclosure: a bonus the family adds, not a bank interest rate."
+    },
+    {
+      "key": "familyHub:coGuardians.pending",
+      "category": "glossary",
+      "why": "An adult accepting an invitation to join, not a Tutor approving a chore or reward (the glossary's approve rule)."
+    },
+    {
+      "key": "teenWallet:parents.waiting",
+      "category": "glossary",
+      "why": "An adult accepting the teen's invitation, not a Tutor approving a chore or reward (the glossary's approve rule)."
+    },
+    {
+      "key": "familyHub:coGuardians.reject",
+      "category": "bank_register",
+      "why": "A Tutor refusing an adult who asked to join the child's account, a safety decision about a person, not a money transaction."
+    }
+  ]
+}

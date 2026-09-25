@@ -41,8 +41,8 @@
     "LESSON_AGE_ELIGIBILITY_REQUIRED": "Necesitamos tu información de edad antes de abrir esta lección.",
     "LESSON_ELIGIBILITY_MISSING": "Esta lección todavía no está lista para abrirse.",
     "KID_LIMIT_REACHED": "Esta cuenta ya tiene el máximo de hijos.",
-    "ACCOUNT_FROZEN": "Esta cuenta está congelada. Tus créditos se conservan hasta que se descongele.",
-    "GUARDIAN_FREEZE": "Tu tutor congeló esta tarjeta. Pídele que la descongele.",
+    "ACCOUNT_FROZEN": "Esta cuenta está congelada. Tus monedas esperan aquí hasta que se descongele.",
+    "GUARDIAN_FREEZE": "Tu Tutor congeló esta tarjeta. Pídele que la descongele.",
     "FREEZE_CHANGED": "La congelación cambió. Revisa la tarjeta actualizada antes de volver a intentar.",
     "GUARDIAN_APPROVAL_REQUIRED": "Un tutor debe aprobar la conexión antes de que puedas seguir este perfil."
   }

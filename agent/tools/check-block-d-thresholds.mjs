@@ -93,6 +93,12 @@ export const RULES = [
   { key: 'decisions.child_note_max_chars', core: ['backend/src/services/familyAutonomy.ts', 'CHILD_NOTE_MAX_CHARS'], sql: ['_family_autonomy_ladder', ["'child_note_max_chars', {v},"]] },
   { key: 'talk.nudge_denials', core: ['backend/src/services/familyAutonomy.ts', 'TALK_NUDGE_DENIALS'], sql: ['_family_autonomy_ladder', ["'talk_nudge_denials', {v},"]] },
   { key: 'talk.nudge_window_days', core: ['backend/src/services/familyAutonomy.ts', 'TALK_NUDGE_WINDOW_DAYS'], sql: ['_family_autonomy_ladder', ["'talk_nudge_window_days', {v},"]] },
+  // S07.6 (D.6, D.12): the age registers and the staff insight.
+  { key: 'register.transition_min_age', core: ['backend/src/services/moneyPresentation.ts', 'REGISTER_TRANSITION_MIN_AGE'], sql: ['_family_money_register', ['v_age >= {v} THEN']] },
+  { key: 'register.teen_min_age', core: ['backend/src/services/moneyPresentation.ts', 'REGISTER_TEEN_MIN_AGE'], sql: ['_savings_bonus_age_framing', ['::int < {v} THEN']] },
+  { key: 'register.teen_statement_lines', core: ['backend/src/services/moneyPresentation.ts', 'TEEN_STATEMENT_LINES'] },
+  { key: 'engagement.active_days', core: ['backend/src/services/insights.ts', 'ENGAGEMENT_ACTIVE_DAYS'], sql: ['_family_engagement_insight', ['p_active_days int DEFAULT {v}']] },
+  { key: 'staff_insight.retention_days', sql: ['_family_engagement_insight', ['p_retain_days int DEFAULT {v}']] },
 ];
 
 /** Pure check over in-memory inputs, so the gate can be tested against known-bad fixtures. */

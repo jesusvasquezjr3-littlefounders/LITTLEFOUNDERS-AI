@@ -55,6 +55,11 @@ Owner of the review: the Pedagogical Lead (Appendix H, Stage 7), with Product. C
 | `decisions.child_note_max_chars` | 140 | D.18 | Proposal (S07.5): one short message | `CHILD_NOTE_MAX_CHARS`, `services/familyAutonomy.ts` | `family_autonomy_ladder`: `'child_note_max_chars', 140,` |
 | `talk.nudge_denials` | 3 | D.18 | Proposal (S07.5) for the SPEC's "defined pattern of repeated denials" | `TALK_NUDGE_DENIALS`, `services/familyAutonomy.ts` | `family_autonomy_ladder`: `'talk_nudge_denials', 3,` |
 | `talk.nudge_window_days` | 14 | D.18 | Proposal (S07.5): two weeks, and at most one nudge per child in that time | `TALK_NUDGE_WINDOW_DAYS`, `services/familyAutonomy.ts` | `family_autonomy_ladder`: `'talk_nudge_window_days', 14,` |
+| `register.transition_min_age` | 10 | D.12 | Appendix G §1.5: a grasp of what a bank does emerges around 10-11, and B.23 places the register "graduation" around 10-12 | `REGISTER_TRANSITION_MIN_AGE`, `services/moneyPresentation.ts` | `family_money_register`: `v_age >= 10 THEN` |
+| `register.teen_min_age` | 13 | D.12, D.11 | One design with D.11: the teen register is exactly the percentage bonus framing | `REGISTER_TEEN_MIN_AGE`, `services/moneyPresentation.ts` | `savings_bonus_age_framing`: `::int < 13 THEN` (the register reads that framing) |
+| `register.teen_statement_lines` | 8 | D.12 | Proposal (S07.6): the latest lines a teen reads on the card; the full list stays in the statement | `TEEN_STATEMENT_LINES`, `services/moneyPresentation.ts` | Not stored |
+| `engagement.active_days` | 30 | D.6 | Proposal (S07.6): a child with a chore in the last 30 days counts as active in the staff insight | `ENGAGEMENT_ACTIVE_DAYS`, `services/insights.ts` | `family_engagement_insight`: `p_active_days int DEFAULT 30` |
+| `staff_insight.retention_days` | 400 | D.6 (D.21) | The same bound as the other insight records | Not stored in Core; the insights maintenance workflow calls the probe | `family_engagement_insight`: `p_retain_days int DEFAULT 400` |
 
 ## Review history
 
@@ -63,6 +68,7 @@ Owner of the review: the Pedagogical Lead (Appendix H, Stage 7), with Product. C
 | 2026-09-24 | All rows | Initial values recorded with S07.3. The rest-day count and milestones come from the Bible and OD-7; the per-ten ratio and the 13-year cutoff come from the SPEC; the pause bounds and the contribution cap are Engineering proposals awaiting Product review. | Engineering (S07 lane) |
 | 2026-09-25 | `split.*`, `share.*`, `next_goal.*`, `post_goal.*`, `redemption_timing.*`, `money_events.retention_days` | Initial values recorded with S07.4. The recommended split, the Share limits and windows and the metric bins are Engineering proposals awaiting Product review; the retention bound reuses the learning-events bound. | Engineering (S07 lane) |
 | 2026-09-24 | `autonomy.*`, `decisions.*`, `talk.*` | Initial values recorded with S07.5 (D.17, D.18). Every value is an Engineering proposal awaiting Product and Safety review: Appendix G supports gradual, volitional fading and a mandatory actionable reason, but gives no number for any of them. | Engineering (S07 lane) |
+| 2026-09-24 | `register.*`, `engagement.active_days`, `staff_insight.retention_days` | Initial values recorded with S07.6 (D.6, D.12). The 10-year register cutoff follows Appendix G §1.5 and B.23's graduation; the teen cutoff is D.11's by construction; the active window, the teen's statement lines and the check retention are Engineering proposals awaiting Product review. | Engineering (S07 lane) |
 
 ## What a recalibration looks at
 
@@ -74,6 +80,8 @@ Owner of the review: the Pedagogical Lead (Appendix H, Stage 7), with Product. C
 - The Share window and limit: the Share-Bucket Destination Completion Rate (`GET /api/v1/admin/family/share-completion`), including holders with Share coins and no place.
 - The post-goal windows: the Post-Goal Motivation Cliff and Save-Bucket Contribution Persistence (`GET /api/v1/admin/family/post-goal-motivation`, `/save-persistence`).
 - The independence ladder: the Independence-Tier Progression Rate and the step-downs by who lowered a level (`GET /api/v1/admin/family/autonomy-progression`). A near-zero progression rate says the rule is too strict or the ladder is hard to find; many system or Tutor step-downs soon after a promotion say a level opens too early.
+- The age registers: the register distribution (`GET /api/v1/admin/family/register-distribution`), read with the Age-Tier Bonus Comprehension Proxy. A 10-12 group that fails the transition scaffolding argues for a later cutoff, never for giving a percentage below 13.
+- The staff insight: the Staff Family-Engagement Insight Uptime (`GET /api/v1/admin/family/engagement-uptime`), target 100%.
 - The reason rule and the nudge: the Denial-Reason Actionability Rate (a human-scored, consent-gated sample, `GET /api/v1/admin/family/denial-actionability` and `/denial-reasons/sample`) and the Repeated-Denial Communication-Nudge Trigger Rate (`GET /api/v1/admin/family/talk-nudges`). Reasons that pass the structural check but score as not actionable argue for a stricter check or better prompts, never for dropping the requirement.
 
 None of these thresholds is presented to families as scientifically proven (Block D Part 4 governance boundary).

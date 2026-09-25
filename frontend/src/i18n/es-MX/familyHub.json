@@ -15,7 +15,7 @@
     "confirm": "Confirmar",
     "reject": "Rechazar",
     "confirmed": "Confirmado. Ahora es Tutor.",
-    "rejectedNotice": "Rechazado. No puede ver esta cuenta.",
+    "rejectedNotice": "No confirmado. No puede ver esta cuenta.",
     "conflict": "Otro Tutor ya decidió.",
     "decisionFailed": "No se guardó la decisión. Intenta de nuevo.",
     "leave": "Retirarme",

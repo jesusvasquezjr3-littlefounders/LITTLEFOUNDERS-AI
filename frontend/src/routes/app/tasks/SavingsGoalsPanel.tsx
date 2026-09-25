@@ -4,19 +4,22 @@ import { useTheme } from '@/theme/useTheme';
 import { SavingsGoals } from '@/rebuild/family/SavingsGoals';
 import { archiveHabitGoal, createHabitGoal, declineNextStep, fetchHabitGoals, markNextStepSeen, type HabitGoal } from '@/rebuild/family/moneyHabitsApi';
 import { hubSession } from '../family/familyHubSession';
-import { moneyHabitsCopy } from '../family/moneyHabitsCopy';
+import { moneyHabitsInRegister } from '../family/coinAccountCopy';
+import { useMoneyRegister } from '../family/useMoneyRegister';
+import { DEFAULT_REGISTER } from '@/rebuild/family/moneyRegister';
 
 /*
  * S07.4 data plane for a child's savings goals (D.15, D.16), mounted in the
  * Tasks and Banking routes in place of the legacy goal lists. Every write is
  * re-read, so the surface shows what the server holds; `refreshKey` changes
  * after a payout lands so a goal the payout reached celebrates right away.
+ * S07.6 (D.12): the progress line is in the child's register.
  */
 export function SavingsGoalsPanel({ token, refreshKey }: { token: string | null; refreshKey: number }) {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  const copy = moneyHabitsCopy(locale);
+  const copy = moneyHabitsInRegister(locale, useMoneyRegister(token) ?? DEFAULT_REGISTER);
   const [goals, setGoals] = useState<HabitGoal[]>([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);

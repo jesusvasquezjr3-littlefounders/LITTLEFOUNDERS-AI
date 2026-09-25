@@ -71,3 +71,4 @@
 .lf-goal-progress [data-part='own'] { background: var(--mint-strong); }
 .lf-goal-progress [data-part='bonus'] { background: repeating-linear-gradient(135deg, var(--reward-strong) 0 4px, var(--reward-soft) 4px 8px); }
 .lf-goal-progress [data-part='family'] { background: radial-gradient(circle, var(--sky-strong) 2px, var(--sky-soft) 2.5px) 0 0 / 6px 6px; }
+.lf-money-habits-scale { flex: 1 0 100%; color: var(--content-muted); font-weight: 700; }

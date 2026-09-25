@@ -130,5 +130,11 @@ jobs:
           # day for Appendix H's Independence-Tier Progression Rate. Guarded so
           # it is a no-op until the migration that creates it is applied.
           run_sql "DO \$sweep\$ BEGIN IF to_regprocedure('public.record_family_autonomy_eligibility_all()') IS NOT NULL THEN PERFORM public.record_family_autonomy_eligibility_all(); END IF; END \$sweep\$;" 'autonomy_eligibility'
+          # S07.6 (D.6): Appendix H's Staff Family-Engagement Insight Uptime is
+          # measured every night, not only when someone opens the console. The
+          # probe calls the same function the staff endpoint serves, records
+          # ok / unavailable / shape_mismatch, and keeps 400 days of checks.
+          # Guarded so it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$probe\$ BEGIN IF to_regprocedure('public.probe_family_engagement_insight(integer)') IS NOT NULL THEN PERFORM public.probe_family_engagement_insight(400); END IF; END \$probe\$;" 'engagement_probe'
           run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'

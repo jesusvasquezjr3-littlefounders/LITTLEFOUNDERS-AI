@@ -52,6 +52,29 @@ jobs:
       - name: Block D thresholds agree across the log, Core and the migrations
         run: node agent/tools/check-block-d-thresholds.mjs
 
+      # S07.6 (D.7): no control a family sees may imply a guarantee the system
+      # does not enforce. docs/operations/block-d-controls.json names each
+      # control's enforcing SQL and its adversarial proof; the gate fails when
+      # the latest definition of an enforcing function drops its guard, when
+      # the freeze holds the UI lists differ from Core's or the registry's, or
+      # when a payment SDK appears. Evidence spans database, backend, frontend
+      # and docs, so it runs here, unfiltered.
+      - name: No Family Hub or banking control implies an unbacked guarantee
+        run: node agent/tools/check-no-unbacked-guarantee.mjs
+
+      # S07.6 (D.8): speak like a mentor, never like a bank. Every Family Hub
+      # and banking string in three locales against the bank-register,
+      # guarantee, glossary and shouting lexicon; prints Appendix H's
+      # Tone-Gate Pass Rate. A locale file can change alone, hence unfiltered.
+      - name: Family Hub and banking copy passes the tone gate
+        run: node agent/tools/check-family-copy-tone.mjs
+
+      # S07.6 (D.6): the staff family-engagement insight's keys are written in
+      # four places (the database function, its probe, Core, the console);
+      # D.6 was exactly those drifting apart.
+      - name: Family-engagement insight keys agree across the database, Core and the console
+        run: node agent/tools/check-family-engagement-contract.mjs
+
       # The acquisition surface is declared in frontend/ AND backend/ (no
       # workspaces, so no shared import). Either file can change alone, which
       # is why this belongs in the unfiltered job rather than either CI.

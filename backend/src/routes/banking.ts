@@ -43,6 +43,13 @@ import {
   saveBonusRule,
   type BonusFraming,
 } from '../services/savingsBonus.js';
+import {
+  FREEZE_HOLDS,
+  freezeAuthor,
+  presentSpendLimit,
+  presentStatement,
+  readMoneyRegister,
+} from '../services/moneyPresentation.js';
 
 /*
  * /api/v1/banking — BANKING.md's presentation-and-mechanics layer over
@@ -100,6 +107,32 @@ function toWireAccount(a: BankingAccountRow) {
     frozenBy: a.frozen_by,
     frozenAt: a.frozen_at,
     openedAt: a.opened_at,
+  };
+}
+
+/*
+ * S07.6 (D.7): the rebuilt account card. It is always declared a simulation,
+ * carries no card number (a number laid out like a card's implies a real
+ * card), and lists only what a freeze really holds (FREEZE_HOLDS, pinned to
+ * the database by docs/operations/block-d-controls.json), whether or not the
+ * account is frozen, so the explanation before a freeze is as honest as the
+ * one during it. `by` is relative to the reader.
+ */
+function presentAccount(a: BankingAccountRow, readerId: string, childId: string) {
+  const by = freezeAuthor(a.frozen, a.frozen_by, readerId, childId);
+  const readerIsChild = readerId === childId;
+  return {
+    nickname: a.nickname,
+    design: a.card_design,
+    simulated: true as const,
+    freeze: {
+      frozen: a.frozen,
+      by,
+      since: a.frozen ? a.frozen_at : null,
+      holds: [...FREEZE_HOLDS],
+      // A child lifts only a freeze they set themselves (D.1); a Tutor always may.
+      canChange: readerIsChild ? !a.frozen || by === 'you' : true,
+    },
   };
 }
 
@@ -274,6 +307,22 @@ export function bankingRouter(): Router {
     return ok(res, { account: toWireAccount(account) });
   });
 
+  /*
+   * S07.6 (D.7, D.12): the Tutor's rebuilt freeze card. What a freeze holds
+   * comes from the server, never from copy; the child's register lets the
+   * Tutor see which presentation their child reads.
+   */
+  router.get('/accounts/:kidId/freeze', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const [account, register] = await Promise.all([getBankingAccount(kidId.data), readMoneyRegister(kidId.data)]);
+    if (account === undefined || register === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    if (register === null) return fail(res, 409, 'WALLET_HOLDER_REQUIRED', 'This account has no wallet');
+    return ok(res, { register, account: account ? presentAccount(account, parent.id, kidId.data) : null });
+  });
+
   // ── PARENT: allowance / spend limit / savings bonus config ─────────────
 
   const SetAllowance = z
@@ -446,6 +495,35 @@ export function bankingRouter(): Router {
     return ok(res, { account: account ? toWireAccount(account) : null });
   });
 
+  /*
+   * S07.6 (D.7, D.12): the rebuilt coin account, in one read, shaped by the
+   * child's age register at the server: the card (a declared simulation, no
+   * card number), what a freeze really holds, the pockets, the spending limit
+   * and this month, each with only the numbers that register's reader is
+   * given. A failed read is 502, never a guessed register.
+   */
+  router.get('/overview', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    await runDueScheduledCredits(kid.id); // best-effort catch-up, same as GET /account
+    const [register, account, balances, limit, credits] = await Promise.all([
+      readMoneyRegister(kid.id), getBankingAccount(kid.id), getWalletBalances(kid.id), getSpendLimit(kid.id), getPendingCreditsForKid(kid.id),
+    ]);
+    if (register === UNAVAILABLE || account === undefined || balances === null || limit === undefined || credits === null) {
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    }
+    if (register === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    const [status, statement] = await Promise.all([spendLimitStatus(kid.id, limit), buildStatement(kid.id)]);
+    if (status === null || statement === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    return ok(res, {
+      register,
+      account: account ? presentAccount(account, kid.id, kid.id) : null,
+      pockets: { save: balances.save, spend: balances.spend, share: balances.share },
+      pendingCredits: credits.length,
+      spendLimit: presentSpendLimit(register, status),
+      statement: presentStatement(register, statement),
+    });
+  });
+
   router.patch('/account', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = UpdateAccount.safeParse(req.body);
@@ -568,6 +646,19 @@ export function bankingRouter(): Router {
     if (allocated === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not allocate the credit');
     if (allocated === false) return fail(res, 409, CONFLICT, 'This credit is not ready to allocate, or the split is invalid');
     return ok(res, { allocated: true });
+  });
+
+  /**
+   * S07.6 (D.12): the caller's own age register, for every wallet holder (an
+   * independent teen included), so every rebuilt money surface is presented
+   * in it. Decided by the database from age evidence; never chosen by a client.
+   */
+  router.get('/register', walletHolder, async (req, res) => {
+    const holder = authedUser(res);
+    const register = await readMoneyRegister(holder.id);
+    if (register === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the register');
+    if (register === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    return ok(res, { register });
   });
 
   router.get('/statement', walletHolder, async (req, res) => {
