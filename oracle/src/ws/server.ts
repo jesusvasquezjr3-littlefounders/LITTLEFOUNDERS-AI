@@ -3183,6 +3183,47 @@ async function transcribe(
 export const WS_PATH = '/ws/tutor';
 
 /**
+ * Product 10 E.6: the account behind these sessions is being erased.
+ *
+ * Every LIVE socket of that learner is closed and every session parked on
+ * this replica is dropped, WITHOUT the ordinary endings: no farewell turn, no
+ * close written back to Core, no post-session review and no trajectory
+ * emission. Each of those would either write rows about a person whose rows
+ * are being removed in the same minute or pay a model to grade a
+ * conversation nobody will keep. `closing` is set first so the socket's own
+ * close handler takes its graceful branch (clear the speech memo, release the
+ * claim) instead of parking the session for a resume that must never happen.
+ *
+ * A turn already in flight may still finish its one upstream call; its
+ * transcript write then fails at Core because the session row is gone.
+ * Parks published by ANOTHER replica are not reachable from here; the
+ * service runs as one replica today, and a foreign park expires on its TTL
+ * with no token that could resume it (Core mints none for an erased account).
+ */
+export function terminateSessionsForUser(userId: string): { live: number; parked: number } {
+  let live = 0;
+  let parked = 0;
+  for (const entry of [...liveSessions.values()]) {
+    if (entry.session.userId !== userId) continue;
+    entry.closing = true;
+    clearInterval(entry.heartbeat);
+    takeParked(entry.session.sessionId);
+    liveSessions.delete(entry.session.sessionId);
+    entry.speech.memo.clear();
+    void releaseLock(sessionLockKey(entry.session.sessionId), entry.lockOwner);
+    entry.socket.close(CLOSE_CODES.NORMAL, 'account removed');
+    live += 1;
+  }
+  for (const [sessionId, entry] of [...parkedSessions.entries()]) {
+    if (entry.orchestrator.sessionContext.userId !== userId) continue;
+    takeParked(sessionId);
+    entry.speech.memo.clear();
+    parked += 1;
+  }
+  return { live, parked };
+}
+
+/**
  * Lets index.ts shut the socket layer down without importing `ws` itself.
  *
  * `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round 119 point 5: a `ws` socket's

@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
+import { accountDeletionSweepRouter, accountRouter } from './routes/account.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
 import { badgeLinkSweepRouter, badgePublicRouter } from './routes/badgePublic.js';
@@ -68,7 +69,9 @@ export function createApp(): express.Express {
   // beside it is internal-key only.
   app.use('/api/v1/badges', badgePublicRouter());
   app.use('/api/v1/internal/badge-links', badgeLinkSweepRouter());
+  app.use('/api/v1/internal/account-deletions', accountDeletionSweepRouter());
   app.use('/api/v1/auth', authRouter());
+  app.use('/api/v1/account', accountRouter());
   app.use('/api/v1/verification', verificationRouter());
   app.use('/api/v1/learn', learnRouter());
   app.use('/api/v1/onboarding', onboardingRouter());

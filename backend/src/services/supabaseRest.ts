@@ -2032,7 +2032,8 @@ export interface BankingAccountRow {
   frozen: boolean;
   frozen_by: string | null;
   frozen_at: string | null;
-  opened_by: string;
+  /** NULL once the opening adult's account was erased (E.6). */
+  opened_by: string | null;
   opened_at: string;
 }
 
@@ -2102,7 +2103,8 @@ export async function setBankingAccountFrozen(kidId: string, frozen: boolean, fr
 export interface AllowanceRuleRow {
   id: string;
   kid_user_id: string;
-  parent_user_id: string;
+  /** NULL once the adult who set the rule was erased (E.6); the rule stays with the child. */
+  parent_user_id: string | null;
   amount: number;
   frequency: string;
   anchor_day: number;
@@ -2139,7 +2141,8 @@ export async function upsertAllowanceRule(row: {
 
 export interface SavingsBonusRuleRow {
   kid_user_id: string;
-  parent_user_id: string;
+  /** NULL once the adult who set the rule was erased (E.6); the rule stays with the child. */
+  parent_user_id: string | null;
   rate_bp: number;
   active: boolean;
   next_run_at: string;
@@ -2171,7 +2174,8 @@ export async function upsertSavingsBonusRule(row: {
 
 export interface SpendLimitRow {
   kid_user_id: string;
-  parent_user_id: string;
+  /** NULL once the adult who set the rule was erased (E.6); the rule stays with the child. */
+  parent_user_id: string | null;
   period: string;
   cap: number;
   active: boolean;

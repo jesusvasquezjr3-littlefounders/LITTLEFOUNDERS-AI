@@ -100,7 +100,8 @@ export async function upsertTutorPreferences(
 export interface VoiceConsentRow {
   id: string;
   user_id: string;
-  granted_by: string;
+  /** NULL once the granting guardian's account was erased (E.6); the consent was ended at that moment. */
+  granted_by: string | null;
   consent_text: string;
   locale: string;
   granted_at: string;

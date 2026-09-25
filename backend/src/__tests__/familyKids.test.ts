@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { erasureStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * POST /api/v1/family/kids — creating a child account and linking it.
@@ -56,6 +56,8 @@ function stub(opts: StubOptions = {}) {
         opts.writes.push({ url, method, body: JSON.parse(String(init.body)) as unknown });
       }
 
+      const erasure = erasureStubResponse(url);
+      if (erasure) return Promise.resolve(erasure);
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
       }
@@ -359,7 +361,11 @@ describe('managing an existing child', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`);
     expect(res.status).toBe(200);
     const audits = calls.filter((c) => c.includes('audit_logs'));
-    const del = calls.findIndex((c) => c === `DELETE /auth/v1/admin/users/${KID_ID_2}`);
+    // E.6: the child is erased through the shared lifecycle (one database
+    // transaction plus Mentor, stored-file and warehouse steps).
+    const del = calls.findIndex((c) => c.includes('/rpc/erase_account_data'));
+    expect(res.body.data).toMatchObject({ deleted: true, status: 'completed' });
+    expect(calls.some((c) => c.includes('/rpc/request_account_deletion'))).toBe(true);
     const firstAudit = calls.findIndex((c) => c.includes('audit_logs'));
     expect(audits.length).toBeGreaterThanOrEqual(2);
     // Afterwards there is no row left to name, and a mid-way failure would

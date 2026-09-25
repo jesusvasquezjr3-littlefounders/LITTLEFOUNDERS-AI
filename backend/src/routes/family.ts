@@ -5,6 +5,7 @@ import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { firstNameOnly, purgeBadgeImageIfUnreferenced, renderAchievementImage } from '../services/badges.js';
 import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
 import { assembleCourseTree } from '../services/courseTree.js';
+import { eraseNow } from '../services/accountDeletion.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
@@ -443,19 +444,23 @@ export function familyRouter(): Router {
     const kidId = await guardKid(req, res);
     if (!kidId) return res;
 
-    // Audited BEFORE the delete, because afterwards there is no row to name and
+    // Audited BEFORE the erasure, because afterwards there is no row to name and
     // a failure mid-way would otherwise leave no trace that it was attempted.
     await insertAuditLog(authedUser(res).id, 'family.kid_delete.requested', kidId, {});
-    const removed = await adminDeleteUser(kidId);
-    if (removed.error) {
-      return fail(res, removed.error.status >= 500 ? 502 : 400, removed.error.code, removed.error.message);
+    // E.6: the same erasure lifecycle as every other deletion - the child's
+    // database rows (one transaction), their Mentor sessions, stored files
+    // and warehouse rows - immediately, because the verified Tutor decided.
+    const outcome = await eraseNow({ subjectId: kidId, population: 'kid', initiatedBy: 'guardian', actorId: authedUser(res).id });
+    if (outcome === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not delete the account');
+    if (outcome === 'staff') return fail(res, 403, 'STAFF_ACCOUNT', 'A staff account is removed by a superadmin');
+    if (outcome.status === 'held') {
+      return ok(res, { deleted: false, status: 'held' }, 202);
     }
-    // Hard delete, and the cascade is the point: profiles, user_roles,
-    // guardian_links and the learning rows all reference auth.users ON DELETE
-    // CASCADE, so a guardian asking for their child to be removed gets the
-    // child's data removed rather than hidden behind a flag.
-    await insertAuditLog(authedUser(res).id, 'family.kid_deleted', kidId, {});
-    return ok(res, { deleted: true });
+    if (!outcome.accountErased) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not delete the account');
+    await insertAuditLog(authedUser(res).id, 'family.kid_deleted', kidId, { status: outcome.status });
+    // 'finishing': the account and its database rows are gone; stored files or
+    // warehouse rows are still being cleared by the daily sweep.
+    return ok(res, { deleted: true, status: outcome.status === 'completed' ? 'completed' : 'finishing' });
   });
 
   /*

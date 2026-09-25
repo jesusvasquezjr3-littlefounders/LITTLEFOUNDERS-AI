@@ -271,7 +271,7 @@
       },
       "deleteAccount": {
         "question": "Can I delete our account?",
-        "answer": "Yes — contact us and we'll process the deletion under the Privacy Notice."
+        "answer": "Yes, in Settings. Your account is deleted 14 days later unless you sign back in. Guest accounts go at once; a child's account is deleted by its Tutor."
       },
       "cancelTutor": {
         "question": "What happens to my child's account if I cancel mine?",

@@ -18,6 +18,7 @@ import * as sessions from '../services/sessions.js';
 import * as learning from '../services/learning.js';
 import * as staffAudit from '../services/staffAudit.js';
 import * as dataQuality from '../services/dataQuality.js';
+import { eraseSubject } from '../services/erasure.js';
 
 // ── Reusable Zod schemas ─────────────────────────────────────────────
 
@@ -161,8 +162,29 @@ const userIdParamSchema = z.object({ userId: z.string().uuid() });
 
 // ── Router ───────────────────────────────────────────────────────────
 
+const ErasureBody = z
+  .object({ userId: z.string().uuid(), anonIds: z.array(z.string().uuid()).max(1000).default([]) })
+  .strict();
+
 export function intelRouter(): Router {
   const router = Router();
+
+  /*
+   * POST /erasure — Product 10 E.6, the warehouse step of an account erasure
+   * (services/erasure.ts). Called by Core after the account is gone from
+   * Vault. Returns the rows removed per table; a failure is a 502 and Core
+   * retries it on the next daily sweep.
+   */
+  router.post('/erasure', async (req, res) => {
+    const parsed = ErasureBody.safeParse(req.body ?? {});
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId and anonIds must be uuids');
+    try {
+      return ok(res, await eraseSubject(parsed.data.userId, parsed.data.anonIds));
+    } catch (error) {
+      console.error('[dataintel] erasure failed:', error instanceof Error ? error.message : error);
+      return fail(res, 502, 'ERASURE_FAILED', 'The warehouse could not erase the account');
+    }
+  });
 
   // ═══ Core Metrics ═════════════════════════════════════════════════
 

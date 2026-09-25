@@ -271,7 +271,7 @@
       },
       "deleteAccount": {
         "question": "Posso excluir nossa conta?",
-        "answer": "Sim — você nos escreve e processamos a exclusão conforme o Aviso de Privacidade."
+        "answer": "Sim, em Configurações. Sua conta é excluída 14 dias depois, a menos que você entre de novo. Contas de convidado saem na hora; a conta de uma criança é excluída pelo Tutor dela."
       },
       "cancelTutor": {
         "question": "O que acontece com a conta do meu filho se eu cancelar a minha?",

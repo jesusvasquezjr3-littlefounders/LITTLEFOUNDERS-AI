@@ -31,6 +31,7 @@ import {
   readAnonAcquisition,
 } from '../services/audience.js';
 import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
+import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
 import {
@@ -432,6 +433,20 @@ export function adminRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
     const metrics = await getAchievementSharingMetrics(parsed.data.days);
     if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load achievement-sharing metrics');
+    return ok(res, metrics);
+  });
+
+  /*
+   * Appendix J Deletion-Request Clarity for E.6 (policy: ACCOUNT-DELETION.md):
+   * requests by initiator and population, the stated-timeline rate, the
+   * within-SLA completion rate and the open/overdue queue. Counts only.
+   */
+  const AccountDeletionQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/account-deletions', async (req, res) => {
+    const parsed = AccountDeletionQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const metrics = await getAccountDeletionMetrics(parsed.data.days);
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load account-deletion metrics');
     return ok(res, metrics);
   });
 

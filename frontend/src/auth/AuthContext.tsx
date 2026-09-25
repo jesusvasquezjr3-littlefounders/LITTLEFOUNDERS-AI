@@ -62,6 +62,19 @@ interface SessionPayload {
   user: { id: string; email: string | null } | null;
 }
 
+export interface PendingAccountDeletion {
+  status: 'pending' | 'held';
+  scheduledFor: string;
+}
+
+function parsePendingDeletion(value: unknown): PendingAccountDeletion | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const record = value as Record<string, unknown>;
+  if ((record.status !== 'pending' && record.status !== 'held') || typeof record.scheduledFor !== 'string') return null;
+  if (!Number.isFinite(Date.parse(record.scheduledFor))) return null;
+  return { status: record.status, scheduledFor: record.scheduledFor };
+}
+
 interface AuthContextValue {
   /** undefined = still restoring from storage */
   session: StoredSession | null | undefined;
@@ -83,6 +96,8 @@ interface AuthContextValue {
   suspended: boolean;
   /** A.1: Core answered /auth/me with ACCOUNT_DELETED (90-day suspension window ended). */
   deleted: boolean;
+  /** E.6: a self-service deletion scheduled for this account (pending or held by a safety review); the shell shows the deletion screen with the date and the keep action. Display-only: Core decides. */
+  accountDeletion: PendingAccountDeletion | null;
   /** Start using the platform with zero signup friction (Duolingo-style guest). */
   startGuestSession(input?: { under13Origin: true }): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
   /** Attach a permanent email+password identity to the CURRENT guest session, in place — never /signup, which would mint a second, blank identity. */
@@ -151,6 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [meLoaded, setMeLoaded] = useState(false);
   const [suspended, setSuspended] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const [accountDeletion, setAccountDeletion] = useState<PendingAccountDeletion | null>(null);
   // Fail-closed default: the beacon stays silent until /me confirms it may run.
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
@@ -170,6 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRoles([]);
       setAdminPermissions([]);
       setAvatarOptions({});
+      setAccountDeletion(null);
       setAnalyticsEnabled(false);
       setOnboardingComplete(false);
       setMeLoaded(!next);
@@ -235,6 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       analyticsEnabled?: boolean;
       newAccount?: boolean;
       onboardingComplete?: boolean;
+      accountDeletion?: unknown;
     }>('/auth/me', { token });
     if (stale()) return { newAccount: false, analyticsEnabled: false };
     // A.1: Core already revoked the sessions for a suspended or purged kid —
@@ -260,6 +278,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAdminPermissions(data.adminPermissions ?? []);
       setAvatarOptions(data.avatarOptions ?? {});
       setOnboardingComplete(data.onboardingComplete === true);
+      setAccountDeletion(parsePendingDeletion(data.accountDeletion));
     } else {
       // A failed refresh must not leave an earlier staff grant visible.
       setAdminPermissions([]);
@@ -454,6 +473,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     setRoles([]);
     setAdminPermissions([]);
+    setAccountDeletion(null);
     setAnalyticsEnabled(false);
     setMeLoaded(true);
     if (token) await api('/auth/logout', { method: 'POST', body: {}, token });
@@ -474,6 +494,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       onboardingComplete,
       suspended,
       deleted,
+      accountDeletion,
       startGuestSession,
       upgradeAccount,
       login,
@@ -495,6 +516,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       onboardingComplete,
       suspended,
       deleted,
+      accountDeletion,
       startGuestSession,
       upgradeAccount,
       login,
