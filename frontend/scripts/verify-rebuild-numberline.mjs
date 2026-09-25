@@ -88,12 +88,12 @@ try {
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 });
   if (!await page.evaluate("document.querySelector('.lf-number-line-slider').value === '8'")) findings.push({ interaction: 'keyboard-placement-failed' });
   await click('.lf-learning-actions .lf-button--accent');
-  if (!await page.evaluate("!!document.querySelector('.lf-learning-feedback--review') && document.querySelector('.lf-learning-progress')?.getAttribute('aria-valuenow') === '0'")) findings.push({ interaction: 'wrong-point-not-reviewed' });
-  await click('button[aria-label="Mover a la izquierda"]');
+  if (!await page.evaluate("!!document.querySelector('.lf-learning-feedback--review') && document.querySelector('.lf-learning-progress [role=progressbar]')?.getAttribute('aria-valuenow') === '0'")) findings.push({ interaction: 'wrong-point-not-reviewed' });
+  await click('button[aria-label="Coloca el punto: Mover a la izquierda"]');
   await click('.lf-learning-actions .lf-button--accent');
-  if (!await page.evaluate("!!document.querySelector('.lf-learning-feedback--met') && document.querySelector('.lf-learning-progress')?.getAttribute('aria-valuenow') === '100'")) findings.push({ interaction: 'correct-point-not-recognized' });
+  if (!await page.evaluate("!!document.querySelector('.lf-learning-feedback--met') && document.querySelector('.lf-learning-progress [role=progressbar]')?.getAttribute('aria-valuenow') === '100'")) findings.push({ interaction: 'correct-point-not-recognized' });
   await click('.lf-learning-actions .lf-button--accent');
-  if (!await page.evaluate("document.querySelector('.lf-number-line-slider').value === '0' && document.querySelector('.lf-learning-progress')?.getAttribute('aria-valuenow') === '0'")) findings.push({ interaction: 'retry-did-not-reset' });
+  if (!await page.evaluate("document.querySelector('.lf-number-line-slider').value === '0' && document.querySelector('.lf-learning-progress [role=progressbar]')?.getAttribute('aria-valuenow') === '0'")) findings.push({ interaction: 'retry-did-not-reset' });
   if (page.errors.length || page.failedRequests.length) findings.push({ runtimeErrors: page.errors, failedRequests: page.failedRequests });
 
   writeFileSync(join(output, 'report.json'), JSON.stringify({ configurations, findings, scope: 'Controlled M2 number-line pilot; no signed attempt or server grading.' }, null, 2));

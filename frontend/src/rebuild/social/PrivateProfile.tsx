@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialTiers.css';
@@ -41,8 +41,8 @@ export function PrivateProfile({ copy, locale, dark, username, mode, state, onRe
     <Copy role="body">{copy.body}</Copy>
     {mode === 'teenRequest' && <Button variant="accent" disabled={state === 'saving' || settled} onClick={onRequest}>{state === 'saving' ? copy.saving : copy.request}</Button>}
     {mode === 'managed' && <Copy role="body">{copy.managed}</Copy>}
-    {notice && <div role="status"><Copy role="body">{notice}</Copy></div>}
-    {state === 'failed' && <div role="alert"><Copy role="body">{copy.failed}</Copy></div>}
+    {notice && <InlineNotice tone={state === 'connected' ? 'success' : 'info'} live>{notice}</InlineNotice>}
+    {state === 'failed' && <InlineNotice tone="error" live>{copy.failed}</InlineNotice>}
   </section>;
 }
 

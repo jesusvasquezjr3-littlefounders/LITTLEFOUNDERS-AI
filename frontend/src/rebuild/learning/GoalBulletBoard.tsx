@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, Slider, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
-import { ParameterSlider } from './ParameterSlider';
 import './learning.css';
 import './goalBullet.css';
 
@@ -64,9 +63,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
   return <main className="lf-learning" data-surface="app" data-screen="goal">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100}
-          aria-valuenow={sequenceProgress(sequence, saved !== initial)} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, saved !== initial)}%` }} /></div> : null}
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, saved !== initial)} max={100} valueText={`${sequenceProgress(sequence, saved !== initial)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
@@ -86,9 +83,9 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
             <div className="lf-goal-axis"><span data-copy-role="data">{amount(minimum)}</span><span data-copy-role="data">{amount(maximum)}</span></div>
             <div className="lf-goal-legend" data-copy-role="data">{t.target}: {amount(target)}</div>
           </>}>
-          {() => <ParameterSlider label={t.amount} valueText={amount(saved)} minimum={minimum}
-            maximum={maximum} step={step} value={saved} onValueChange={setAmount}
-            stepper={{ decrease: t.less, increase: t.more }} />}
+          {() => <Slider label={t.amount} valueText={amount(saved)} min={minimum}
+            max={maximum} step={step} value={saved} onValueChange={setAmount}
+            stepLabels={{ decrease: t.less, increase: t.more }} />}
         </TeachingChartBoard>
         <footer className="lf-goal-foot"><div role="status" className="lf-goal-outcome">
           <span data-copy-role="body">{left === 0 ? t.reached : t.remaining}</span><strong data-copy-role="data">{left === 0 ? amount(saved) : amount(left)}</strong>

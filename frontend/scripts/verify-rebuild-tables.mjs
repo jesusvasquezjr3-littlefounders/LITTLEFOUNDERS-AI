@@ -58,7 +58,7 @@ try {
       })()`);
       await click('.lf-learning-view-toggle');
       for (let n = 0; n < 20; n++) {
-        if (await page.evaluate("document.querySelector('.lf-learning-view-toggle')?.getAttribute('aria-pressed')==='true'")) break;
+        if (await page.evaluate("!!document.querySelector('.lf-learning-table')")) break;
         await new Promise((done) => setTimeout(done, 50));
       }
       await page.evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
@@ -93,7 +93,7 @@ try {
         await page.evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
         const lastControl = await page.evaluate(`(() => {
           const foot=document.querySelector('.lf-learning-foot')?.getBoundingClientRect();
-          const button=document.querySelector('.lf-learning-control:last-child .lf-learning-stepper button:last-child')?.getBoundingClientRect();
+          const button=document.querySelector('.lf-learning-control:last-child .lf-stepper-button:last-child')?.getBoundingClientRect();
           if(!foot||!button) return 'last-control-missing';
           if(button.bottom>foot.top-4) return 'last-control-covered-by-footer';
           return null;

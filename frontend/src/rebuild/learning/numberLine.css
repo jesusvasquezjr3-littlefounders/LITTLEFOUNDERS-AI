@@ -7,9 +7,8 @@
 .lf-number-line-slider:focus-visible + .lf-number-line-marker { outline: 3px solid var(--primary-strong); outline-offset: 4px; }
 .lf-number-line-labels { display: flex; justify-content: space-between; padding-inline: var(--spacing-6); font-size: .875rem; font-weight: 800; }
 .lf-number-line-hint { color: var(--content-muted); font-size: .875rem; font-weight: 800; text-align: end; }
-.lf-number-line-stepper { display: flex; justify-content: space-between; gap: var(--spacing-2); }
-.lf-number-line-stepper button { min-inline-size: var(--target-base); block-size: var(--target-base); padding: 0; border: 0; border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); font-size: 1.5rem; font-weight: 800; cursor: pointer; }
-.lf-number-line-stepper button:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
+/* The shared stepper without a written value: left and right sit at the ends of the line they move along. */
+.lf-number-line-stepper .lf-stepper-controls { flex: 1 1 auto; justify-content: space-between; }
 .lf-fraction-area { margin-block-end: var(--spacing-4); }
 .lf-fraction-cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; min-block-size: var(--target-lg); overflow: hidden; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-fraction-cell { background: var(--surface); border-inline-end: 1px solid var(--edge); }.lf-fraction-cell--filled { background: var(--sky-strong); }

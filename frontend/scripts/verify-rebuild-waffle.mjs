@@ -81,7 +81,7 @@ try {
         }
         if(innerWidth===375&&${scale}===1&&!${spacing}){
           const action=main.querySelector('.lf-learning-actions button')?.getBoundingClientRect();
-          const first=main.querySelector('.lf-learning-stepper button')?.getBoundingClientRect();
+          const first=main.querySelector('.lf-learning-control .lf-stepper-button')?.getBoundingClientRect();
           const foot=main.querySelector('.lf-learning-foot')?.getBoundingClientRect();
           if(!action||!first||!foot||first.bottom>740||first.bottom>foot.top-4)
             issues.push('first-control-not-reachable');
@@ -97,9 +97,9 @@ try {
   for (const theme of ['light', 'dark']) {
     await page.evaluate('sessionStorage.clear()');
     await navigate('es-MX', theme, '6-9', 375, 1, false);
-    for (let n = 0; n < 3; n++) await click('button[aria-label="Añadir: Guardar"]');
-    for (let n = 0; n < 3; n++) await click('button[aria-label="Añadir: Gastar"]');
-    for (let n = 0; n < 4; n++) await click('button[aria-label="Añadir: Compartir"]');
+    for (let n = 0; n < 3; n++) await click('button[aria-label="Guardar: Añadir"]');
+    for (let n = 0; n < 3; n++) await click('button[aria-label="Gastar: Añadir"]');
+    for (let n = 0; n < 4; n++) await click('button[aria-label="Compartir: Añadir"]');
     const allocationIssues = await page.evaluate(`(() => {
       const issues=[],grid=document.querySelector('.lf-learning-waffle-grid');
       for(const [kind,count] of [['save',30],['spend',30],['share',40]])
@@ -128,10 +128,10 @@ try {
       findings.push({ theme, interaction: 'table-action-not-in-view', tableFoot });
     await capture(`waffle-table-375-${theme}.png`);
     await click('.lf-learning-actions button');
-    if (!await page.evaluate("!!document.querySelector('.lf-learning-feedback--met') && document.querySelector('.lf-learning-progress')?.getAttribute('aria-valuenow')==='100'"))
+    if (!await page.evaluate("!!document.querySelector('.lf-learning-feedback--met') && document.querySelector('.lf-learning-progress [role=progressbar]')?.getAttribute('aria-valuenow')==='100'"))
       findings.push({ theme, interaction: 'shared-scorer-not-met' });
     await click('.lf-learning-control-bar .lf-button');
-    await page.evaluate("document.querySelector('button[aria-label=\"Añadir: Guardar\"]').focus()");
+    await page.evaluate("document.querySelector('button[aria-label=\"Guardar: Añadir\"]').focus()");
     await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r', unmodifiedText: '\r' });
     await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
     await click('.lf-learning-view-toggle');

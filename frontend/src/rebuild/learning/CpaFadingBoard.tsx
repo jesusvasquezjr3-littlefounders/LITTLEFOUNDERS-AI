@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, TextField } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import type { LessonClientDocument, LessonClientSegment } from './lessonDocument';
 import './learning.css';
 
@@ -79,15 +80,15 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
         {stage.stage === 'abstract' ? <div className="lf-cpa-equation" aria-label={segment.payload.spokenText}><strong data-copy-role="data">{segment.payload.left}</strong><span aria-hidden="true">+</span><strong data-copy-role="data">{segment.payload.right}</strong><span aria-hidden="true">=</span><strong aria-hidden="true">?</strong></div> : null}
         {steps > 0 ? <ol className="lf-cpa-steps" aria-label={t.count}>{t.worked(segment.payload.left, segment.payload.right).slice(0, steps).map((item, index) => <li key={index} data-copy-role="body">{item}</li>)}</ol> : null}
       </section>
-      <div className="lf-learning-control-strip lf-cpa-answer"><label data-copy-role="label">{t.answer}<input aria-label={t.answer} inputMode="numeric" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></label></div>
-      <footer className="lf-learning-foot"><div className={`lf-learning-feedback${verdict ? ` lf-learning-feedback--${verdict}` : ''}`} role="status" data-copy-role="feedback">{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</div><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
+      <div className="lf-learning-control-strip lf-cpa-answer"><TextField label={t.answer} inputMode="numeric" pattern="[0-9]*" autoComplete="off" disabled={pending} value={value} onChange={(event) => { setValue(event.target.value); setVerdict(null); }} /></div>
+      <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
     </div>
   </div></main>;
 }
 
 export function cpaFadingPilotDocument(locale: Locale, ageBand: '6-9' | '10-12' = '6-9'): unknown {
-  const title = { 'en-US': 'Count a savings goal', 'es-MX': 'Cuenta una meta de ahorro', 'pt-BR': 'Conte uma meta de poupança' }[locale];
-  const prompt = { 'en-US': 'Put the two coin groups together.', 'es-MX': 'Junta los dos grupos de monedas.', 'pt-BR': 'Junte os dois grupos de moedas.' }[locale];
+  const title = { 'en-US': 'Count your savings', 'es-MX': 'Cuenta tu ahorro', 'pt-BR': 'Conte sua poupança' }[locale];
+  const prompt = { 'en-US': 'Join the coin groups.', 'es-MX': 'Junta los grupos de monedas.', 'pt-BR': 'Junte os grupos de moedas.' }[locale];
   const left = ageBand === '6-9' ? 4 : 12; const right = ageBand === '6-9' ? 3 : 8;
   const spokenText = ageBand === '6-9'
     ? { 'en-US': 'four plus three', 'es-MX': 'cuatro más tres', 'pt-BR': 'quatro mais três' }[locale]

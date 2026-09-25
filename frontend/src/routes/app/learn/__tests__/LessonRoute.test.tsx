@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { ThemeProvider } from '@/theme/useTheme';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import type { ComponentProps } from 'react';
 import i18n from '@/i18n';
@@ -61,11 +62,11 @@ const fixtureDocument: LessonDocument = {
 
 function renderLessonRoute(initialEntries: Parameters<typeof MemoryRouter>[0]['initialEntries']) {
   return render(
-    <MemoryRouter initialEntries={initialEntries}>
+    <ThemeProvider><MemoryRouter initialEntries={initialEntries}>
       <Routes>
         <Route path="/learn/lesson/:lessonId" element={<LessonRoute />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter></ThemeProvider>,
   );
 }
 
@@ -135,6 +136,26 @@ describe('LessonRoute', () => {
     expect(screen.queryByText('mock-complete')).toBeNull();
   });
 
+  it('mounts the rebuilt lesson and its state screens inside the design system root, in the app mode and document language', async () => {
+    localStorage.setItem('lf-theme', 'dark');
+    try {
+      mockedApi
+        .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'offline' } })
+        .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'es-MX', document: goalBulletPilotDocument('es-MX', '6-9'), audio: {} }, error: null });
+      renderLessonRoute(['/learn/lesson/lesson-1']);
+      const offline = await screen.findByRole('heading', { name: 'Connection lost' });
+      // The design-system root is the element that carries the mode and the language.
+      expect(offline.closest('[data-theme]')).toHaveAttribute('data-theme', 'dark');
+      expect(offline.closest('[data-theme]')).toHaveAttribute('lang', 'en-US');
+      fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+      const title = await screen.findByRole('heading', { level: 1, name: 'Alcanza una meta' });
+      const root = title.closest('[data-theme]');
+      expect(root).toHaveAttribute('data-theme', 'dark');
+      expect(root).toHaveAttribute('lang', 'es-MX');
+      expect(root).toHaveAttribute('data-age-band', '6-9');
+    } finally { localStorage.removeItem('lf-theme'); }
+  });
+
   it('starts a version-pinned v2 attempt and sends its opaque segment token only when the learner checks a valid allocation', async () => {
     const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
     mockedApi
@@ -146,9 +167,9 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    const addSave = await screen.findByRole('button', { name: 'Add: Save' });
+    const addSave = await screen.findByRole('button', { name: 'Save: Add' });
     for (let count = 0; count < 4; count++) fireEvent.click(addSave);
-    const addSpend = screen.getByRole('button', { name: 'Add: Spend' });
+    const addSpend = screen.getByRole('button', { name: 'Spend: Add' });
     for (let count = 0; count < 8; count++) fireEvent.click(addSpend);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
 
@@ -178,7 +199,7 @@ describe('LessonRoute', () => {
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
-    await screen.findByRole('button', { name: 'Add: Save' });
+    await screen.findByRole('button', { name: 'Save: Add' });
     expect(document.querySelector('.lf-mentor-band')?.getAttribute('aria-label')).toBe('zara');
     expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-a');
   });
@@ -311,7 +332,7 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    fireEvent.click(await screen.findByRole('button', { name: '2' }));
+    fireEvent.click(await screen.findByRole('radio', { name: '2' }));
     fireEvent.click(screen.getByRole('button', { name: 'Run' }));
     fireEvent.change(screen.getByLabelText('Multiply by'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Then add'), { target: { value: '10' } });
@@ -376,7 +397,7 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { score: 100, passed: true }, error: null });
 
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    fireEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    fireEvent.click(await screen.findByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', expect.objectContaining({ body: {
       segment_id: 'schema-structure-01', run_id: '99999999-9999-4999-8999-999999999999', attempt_token: 'schema-token', answer: { schema: 'change' },
@@ -563,14 +584,14 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
       .mockResolvedValueOnce({ data: run, error: null });
     const first = renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByRole('button', { name: 'Add: Save' });
+    await screen.findByRole('button', { name: 'Save: Add' });
     first.unmount();
 
     mockedApi
       .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
       .mockResolvedValueOnce({ data: { ...run, resumed: true }, error: null });
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    await screen.findByRole('button', { name: 'Add: Save' });
+    await screen.findByRole('button', { name: 'Save: Add' });
 
     expect(mockedApi.mock.calls[3]).toEqual(['/learn/lessons/lesson-1/v2-runs', {
       method: 'POST', token: 'token-123', body: { run_id: run.run_id },
@@ -586,13 +607,13 @@ describe('LessonRoute', () => {
       .mockResolvedValueOnce({ data: { verdict: { correct: false, score: 0 }, replayed: false, retry_attempt_token: 'second-token' }, error: null })
       .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null });
     renderLessonRoute(['/learn/lesson/lesson-1']);
-    const addSave = await screen.findByRole('button', { name: 'Add: Save' });
+    const addSave = await screen.findByRole('button', { name: 'Save: Add' });
     for (let count = 0; count < 3; count++) fireEvent.click(addSave);
-    const addSpend = screen.getByRole('button', { name: 'Add: Spend' });
+    const addSpend = screen.getByRole('button', { name: 'Spend: Add' });
     for (let count = 0; count < 9; count++) fireEvent.click(addSpend);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
-    await screen.findByRole('status');
-    fireEvent.click(screen.getByRole('button', { name: 'Remove: Spend' }));
+    await waitFor(() => expect(window.document.querySelector('.lf-learning-feedback--review')).not.toBeNull());
+    fireEvent.click(screen.getByRole('button', { name: 'Spend: Remove' }));
     fireEvent.click(addSave);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(mockedApi.mock.calls[3]?.[1]).toMatchObject({ body: expect.objectContaining({ attempt_token: 'second-token' }) }));
@@ -738,12 +759,12 @@ describe('LessonRoute', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={[{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]}>
+      <ThemeProvider><MemoryRouter initialEntries={[{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]}>
         <Routes>
           <Route path="/learn/lesson/:lessonId" element={<LessonRoute />} />
           <Route path="/learn/:courseSlug/placement" element={<div>placement quiz</div>} />
         </Routes>
-      </MemoryRouter>,
+      </MemoryRouter></ThemeProvider>,
     );
 
     expect(await screen.findByText('placement quiz')).toBeInTheDocument();

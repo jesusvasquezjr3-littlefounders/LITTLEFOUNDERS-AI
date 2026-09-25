@@ -13,6 +13,8 @@ import { clearCoursesCache } from './coursesCache';
 import { coursePath, placementPath } from './paths';
 import { checkpointKey, newCheckpoint, readCheckpoint, removeCheckpoint, writeCheckpoint } from '@/lesson-engine/player/checkpoint';
 import type { SessionState } from '@/lesson-engine/core/session';
+import { useTheme } from '@/theme/useTheme';
+import { RebuildRoot } from '@/rebuild/design/controls';
 import { AuthenticatedLessonDocument } from '@/rebuild/learning/AuthenticatedLessonDocument';
 import type { OnGrade, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeSchemaDiagram, OnGradeWorkedExample } from '@/rebuild/learning/LessonDocumentView';
 import { LessonEligibilityStateView, type LessonEligibilityState } from '@/rebuild/learning/LessonEligibilityStateView';
@@ -81,6 +83,10 @@ export function LessonRoute() {
 
 function LessonRouteSession() {
   const { i18n } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? 'dark' : 'light';
+  // Rebuilt state screens mount the design system's root (tokens, `app` container, mode, language); the legacy player does not use it.
+  const rebuilt = (view: JSX.Element) => <RebuildRoot theme={theme} locale={localeFromI18n(i18n.language)}>{view}</RebuildRoot>;
   const { lessonId = '' } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -244,7 +250,7 @@ function LessonRouteSession() {
   }
 
   if (state.status === 'loading') {
-    return <LessonTransportStateView state="opening" locale={localeFromI18n(i18n.language)} onBack={goBack} />;
+    return rebuilt(<LessonTransportStateView state="opening" locale={localeFromI18n(i18n.language)} onBack={goBack} />);
   }
 
   /*
@@ -269,20 +275,20 @@ function LessonRouteSession() {
   }
 
   if (state.status === 'error' && state.code === 'PLACEMENT_REQUIRED') {
-    return <LessonTransportStateView state="placement" locale={localeFromI18n(i18n.language)} onBack={goBack} />;
+    return rebuilt(<LessonTransportStateView state="placement" locale={localeFromI18n(i18n.language)} onBack={goBack} />);
   }
 
   if (state.status === 'error') {
     const eligibilityState = lessonEligibilityState(state.code);
-    if (eligibilityState) return <LessonEligibilityStateView state={eligibilityState} locale={localeFromI18n(i18n.language)} onBack={goBack} />;
-    if (state.offline) return <LessonTransportStateView state="offline" locale={localeFromI18n(i18n.language)} onBack={goBack}
-      onRetry={() => setLoadRevision((revision) => revision + 1)} />;
-    return <LessonTransportStateView state="load-error" locale={localeFromI18n(i18n.language)} onBack={goBack}
-      onRetry={() => setLoadRevision((revision) => revision + 1)} />;
+    if (eligibilityState) return rebuilt(<LessonEligibilityStateView state={eligibilityState} locale={localeFromI18n(i18n.language)} onBack={goBack} />);
+    if (state.offline) return rebuilt(<LessonTransportStateView state="offline" locale={localeFromI18n(i18n.language)} onBack={goBack}
+      onRetry={() => setLoadRevision((revision) => revision + 1)} />);
+    return rebuilt(<LessonTransportStateView state="load-error" locale={localeFromI18n(i18n.language)} onBack={goBack}
+      onRetry={() => setLoadRevision((revision) => revision + 1)} />);
   }
 
   if (!isLegacyLessonDocument(state.document)) {
-    return <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} onBack={goBack}
+    return <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} theme={theme} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
       onGradeFractionArea={state.v2Attempt ? gradeV2FractionArea : undefined} onGradeBarModel={state.v2Attempt ? gradeV2BarModel : undefined}
       onGradeSchemaDiagram={state.v2Attempt ? gradeV2SchemaDiagram : undefined} onGradeWorkedExample={state.v2Attempt ? gradeV2WorkedExample : undefined}

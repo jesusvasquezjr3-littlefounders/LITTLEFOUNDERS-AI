@@ -39,8 +39,9 @@ export function LessonTransportStateView({ state, locale, onBack, onRetry }: {
       <div className="lf-transport-state-content">
         <h1 data-copy-role="heading">{t.heading}</h1>
         <p data-copy-role="body">{t.body}</p>
+        {/* Indeterminate and still: a loading state is not one of the three idle loops (02 §9.4). */}
         {state === 'opening' ? <div className="lf-transport-state-progress" role="progressbar"
-          aria-label={t.heading}><span /></div> : null}
+          aria-label={t.heading} /> : null}
       </div>
       <div className="lf-transport-state-actions">
         {t.retry && onRetry ? <Button variant="accent" onClick={onRetry}>{t.retry}</Button> : null}

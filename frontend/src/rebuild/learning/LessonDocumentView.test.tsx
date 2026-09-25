@@ -31,6 +31,13 @@ type Pilot = ReturnType<typeof allocationPilotDocument> & { title: string; segme
 const pilot = () => structuredClone(allocationPilotDocument('en-US', '6-9')) as Pilot;
 const noop = () => {};
 
+/** The lesson foot's feedback region; steppers' written values are status regions too, so it is found by its hook. */
+const feedbackRegion = () => {
+  const region = document.querySelector<HTMLElement>('.lf-learning-feedback');
+  if (!region) throw new Error('feedback region missing');
+  return region;
+};
+
 describe('versioned pilot document renderer', () => {
   beforeEach(() => window.sessionStorage.clear());
 
@@ -43,8 +50,8 @@ describe('versioned pilot document renderer', () => {
     render(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} onGrade={onGrade} />);
     expect(screen.getByRole('heading', { name: 'Choose a split' })).toBeTruthy();
     expect(screen.getByText('Split two coins.')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGrade).toHaveBeenCalledWith({ save: 2, spend: 0, share: 0 }, 'allocate-01', expect.objectContaining({ version_id: 'rev-1' })));
     await waitFor(() => expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100'));
@@ -56,8 +63,8 @@ describe('versioned pilot document renderer', () => {
       onBack={noop} onGrade={onGrade} />);
     const waffle = screen.getByRole('img', { name: /Waffle chart/ });
     expect(waffle.querySelectorAll('.lf-learning-waffle-cell')).toHaveLength(100);
-    for (let i = 0; i < 3; i++) fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
-    for (let i = 0; i < 7; i++) fireEvent.click(screen.getByRole('button', { name: 'Add: Spend' }));
+    for (let i = 0; i < 3; i++) fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
+    for (let i = 0; i < 7; i++) fireEvent.click(screen.getByRole('button', { name: 'Spend: Add' }));
     expect(waffle.querySelectorAll('.lf-learning-waffle-cell--save')).toHaveLength(30);
     expect(waffle.querySelectorAll('.lf-learning-waffle-cell--spend')).toHaveLength(70);
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
@@ -74,8 +81,8 @@ describe('versioned pilot document renderer', () => {
       onBack={noop} onGrade={onGrade} />);
     const donut = screen.getByRole('img', { name: /Budget donut chart/ });
     expect(donut.querySelectorAll('.lf-learning-donut-segment')).toHaveLength(3);
-    for (let i = 0; i < 4; i++) fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
-    for (let i = 0; i < 8; i++) fireEvent.click(screen.getByRole('button', { name: 'Add: Spend' }));
+    for (let i = 0; i < 4; i++) fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
+    for (let i = 0; i < 8; i++) fireEvent.click(screen.getByRole('button', { name: 'Spend: Add' }));
     expect(donut.getAttribute('aria-label')).toContain('Save 20 coins');
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
     expect(screen.getByRole('table').textContent).toContain('Save20 coins');
@@ -124,11 +131,11 @@ describe('versioned pilot document renderer', () => {
     let resolveGrade!: (value: 'met') => void;
     const onGrade = vi.fn(() => new Promise<'met'>((resolve) => { resolveGrade = resolve; }));
     render(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} onGrade={onGrade} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(onGrade).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole('button', { name: 'Remove: Save' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Remove' }));
     await act(async () => resolveGrade('met'));
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0');
     expect(screen.queryByText('Your plan meets the goal.')).toBeNull();
@@ -142,8 +149,8 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(onGrade).not.toHaveBeenCalled();
     expect(screen.getByText('Allocate the rest first.')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(screen.getByText('Could not check. Try again.')).toBeTruthy());
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0');
@@ -188,15 +195,15 @@ describe('versioned pilot document renderer', () => {
     const grade = vi.fn(() => 'met' as const);
     const { rerender } = render(<LessonDocumentView raw={functionMachinePilotDocument('en-US')} locale="en-US" ageBand="10-12"
       onBack={noop} onGradeBarModel={grade} onComplete={async () => true} />);
-    expect(screen.getByRole('img', { name: /Input: 1\. Output: —/ })).toBeTruthy();
-    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1—2—3—');
+    expect(screen.getByRole('img', { name: /Input: 1\. Output: \?/ })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1?2?3?');
     fireEvent.change(screen.getByLabelText('Multiply by'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Then add'), { target: { value: '10' } });
     expect(screen.getByRole('button', { name: 'Check rule' })).toBeDisabled();
-    fireEvent.click(screen.getByRole('button', { name: '2' }));
+    fireEvent.click(screen.getByRole('radio', { name: '2' }));
     fireEvent.click(screen.getByRole('button', { name: 'Run' }));
     expect(screen.getByRole('img', { name: /Input: 2\. Output: 20/ })).toBeTruthy();
-    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1—2203—');
+    expect(screen.getByRole('table', { name: 'Function machine' })).toHaveTextContent('InputOutput1?2203?');
     fireEvent.click(screen.getByRole('button', { name: 'Check rule' }));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ multiplier: '5', offset: '10' }, 'function-machine-01', expect.anything()));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
@@ -299,7 +306,7 @@ describe('versioned pilot document renderer', () => {
     expect(screen.getByText('2/2')).toBeTruthy();
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('50');
     expect(onGrade).not.toHaveBeenCalled();
-    for (let i = 0; i < 12; i++) fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
+    for (let i = 0; i < 12; i++) fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(onGrade).toHaveBeenCalledWith({ save: 12, spend: 0, share: 0 }, 'allocate-01', expect.objectContaining({ lesson_id: 'pilot-savings-sequence' })));
     await waitFor(() => expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100'));
@@ -315,7 +322,7 @@ describe('versioned pilot document renderer', () => {
     render(<LessonDocumentView raw={document} locale="en-US" ageBand="6-9" onBack={noop} onGrade={onGrade} onComplete={onComplete} previewSequence />);
     fireEvent.change(screen.getByRole('slider'), { target: { value: '3' } });
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    for (let i = 0; i < 12; i++) fireEvent.click(screen.getByRole('button', { name: 'Add: Save' }));
+    for (let i = 0; i < 12; i++) fireEvent.click(screen.getByRole('button', { name: 'Save: Add' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy());
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
@@ -383,10 +390,10 @@ describe('versioned pilot document renderer', () => {
     const { rerender } = render(<LessonDocumentView raw={document} locale="en-US" ageBand="10-12" onBack={noop} />);
     expect(screen.getByRole('img', { name: /Case 1/ })).toBeTruthy();
     expect(screen.getByRole('status').textContent).toBe('Choose a link');
-    fireEvent.click(screen.getByRole('button', { name: 'AND' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'AND' }));
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('status').textContent).toBe('Rule says wait');
-    fireEvent.click(screen.getByRole('button', { name: 'OR' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'OR' }));
     expect(screen.getByRole('status').textContent).toBe('Rule says ready');
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
     expect(screen.getByRole('table').querySelectorAll('tbody tr')).toHaveLength(4);
@@ -407,8 +414,8 @@ describe('versioned pilot document renderer', () => {
     expect(screen.getByRole('table').querySelectorAll('tbody td:last-child')[10]?.textContent).not.toBe('Hidden');
     fireEvent.change(screen.getByRole('slider', { name: /Annual rate/ }), { target: { value: '1000' } });
     expect(screen.getByRole('table').querySelectorAll('tbody td:last-child')[10]?.textContent).toBe('Hidden');
-    fireEvent.click(screen.getByRole('button', { name: '30 years' }));
-    expect(screen.getByRole('button', { name: '30 years' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('radio', { name: '30 years' }));
+    expect(screen.getByRole('radio', { name: '30 years' })).toBeChecked();
     expect(screen.getByRole('table').querySelectorAll('tbody tr')).toHaveLength(31);
     rerender(<LessonDocumentView raw={document} locale="en-US" ageBand="adult" onBack={noop} />);
     expect(screen.getByText('This lesson cannot open.')).toBeTruthy();
@@ -471,7 +478,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Shaded parts: More' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(await screen.findByText('We could not check that. Try again.')).toBeTruthy();
-    expect(screen.getByRole('status')).toHaveClass('lf-learning-feedback--unavailable');
+    expect(feedbackRegion()).toHaveClass('lf-learning-feedback--unavailable');
 
     rerender(<LessonDocumentView raw={fractionNumberLinePilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeNumberLine={rejected} />);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
@@ -489,7 +496,7 @@ describe('versioned pilot document renderer', () => {
     expect(await screen.findByText('We could not check that. Try again.')).toBeTruthy();
 
     rerender(<LessonDocumentView raw={schemaDiagramPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeSchemaDiagram={rejected} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(await screen.findByText('We could not check that. Try again.')).toBeTruthy();
 
@@ -529,17 +536,17 @@ describe('versioned pilot document renderer', () => {
     const { rerender } = render(<LessonDocumentView raw={barModelPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={barGrade} />);
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Comparison' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Comparison' })).toBeDisabled();
     await waitFor(() => expect(barGrade).toHaveBeenCalledTimes(1));
     await act(async () => { resolveBar('met'); await Promise.resolve(); await Promise.resolve(); });
 
     let resolveSchema: (result: 'met') => void = () => {};
     const schemaGrade = vi.fn(() => new Promise<'met'>((resolve) => { resolveSchema = resolve; }));
     rerender(<LessonDocumentView raw={schemaDiagramPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeSchemaDiagram={schemaGrade} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Change' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Change' })).toBeDisabled();
     await waitFor(() => expect(schemaGrade).toHaveBeenCalledTimes(1));
     await act(async () => { resolveSchema('met'); await Promise.resolve(); await Promise.resolve(); });
   });
@@ -582,7 +589,7 @@ describe('versioned pilot document renderer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Shaded parts: More' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ n: 1, d: 2 }, 'fraction-area-01', expect.anything()));
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
+    await waitFor(() => expect(feedbackRegion()).toHaveTextContent('Correct'));
   });
 
   it('lets an authenticated M6 result reach the lesson finish action without a second grade', async () => {
@@ -604,7 +611,7 @@ describe('versioned pilot document renderer', () => {
       ? answer.model === 'comparison' ? 'met' as const : 'review' as const
       : answer.value === '19' ? 'met' as const : 'review' as const);
     render(<LessonDocumentView raw={barModelPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeBarModel={grade} />);
-    expect(screen.getByText('Build the model')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Build the model' })).toBeTruthy();
     expect(screen.queryByLabelText('How many coins does the smaller bar show?')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
     expect(screen.getByRole('table', { name: 'Build the model' })).toHaveTextContent('Smaller barUnknown');
@@ -625,9 +632,9 @@ describe('versioned pilot document renderer', () => {
       : id === 'schema-slots-01' ? answer.income === '24' && answer.spending === '9' ? 'met' as const : 'review' as const
         : answer.value === '15' ? 'met' as const : 'review' as const);
     render(<LessonDocumentView raw={schemaDiagramPilotDocument('en-US')} locale="en-US" ageBand="10-12" onBack={noop} onGradeSchemaDiagram={grade} />);
-    expect(screen.getByText('Choose the schema')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Choose the schema' })).toBeTruthy();
     expect(screen.queryByLabelText('Earned')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Change' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Change' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Correct'));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));

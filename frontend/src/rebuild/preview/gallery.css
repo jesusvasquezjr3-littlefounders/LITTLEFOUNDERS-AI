@@ -1,0 +1,11 @@
+/* Preview-only layout for the S03.2 overlay and shell catalogue. Tokens and logical properties only. */
+.lf-rebuild .lf-preview--gallery { justify-content: flex-start; }
+.lf-rebuild .lf-gallery { gap: var(--spacing-8); }
+.lf-rebuild .lf-gallery > .lf-button:first-child { align-self: flex-start; }
+.lf-rebuild .lf-gallery-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-gallery-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-rebuild .lf-gallery-filler { display: grid; gap: var(--spacing-5); }
+.lf-rebuild .lf-gallery-hero { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-rebuild .lf-gallery-form { display: grid; gap: var(--spacing-4); }
+.lf-rebuild .lf-gallery-form > .lf-button { justify-self: start; }
+.lf-rebuild .lf-gallery-footer-links { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-6); }

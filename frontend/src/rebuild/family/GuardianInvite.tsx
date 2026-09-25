@@ -1,4 +1,4 @@
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './guardianInvite.css';
@@ -53,9 +53,9 @@ export function GuardianInviteMint({ copy, locale, dark, open, creating, link, c
     <Button aria-expanded={open} onClick={open ? onClose : onOpen}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
-      {notice && <div role={noticeIsError ? 'alert' : 'status'}><Copy role="body">{notice}</Copy></div>}
+      {notice && <InlineNotice tone={noticeIsError ? 'error' : 'info'} live>{notice}</InlineNotice>}
       {link === null && !creating && <Button onClick={onMint}>{copy.invite}</Button>}
-      {creating && <div role="status"><Copy role="body">{copy.inviting}</Copy></div>}
+      {creating && <InlineNotice tone="info" live>{copy.inviting}</InlineNotice>}
       {link !== null && <div className="lf-guardian-invite-link">
         <Copy role="body">{copy.linkReady}</Copy>
         <div className="lf-guardian-invite-link-row">
@@ -80,9 +80,9 @@ export function GuardianInviteAccept({ copy, locale, dark, kidName, accepting, a
 }) {
   return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.acceptTitle}>
     <Copy role="heading" as="h2">{copy.acceptTitle}</Copy>
-    {accepted ? <div role="status"><Copy role="body">{copy.accepted}</Copy></div> : expired ? <div role="alert"><Copy role="body">{copy.expired}</Copy></div> : <>
+    {accepted ? <InlineNotice tone="success" live>{copy.accepted}</InlineNotice> : expired ? <InlineNotice tone="error" live>{copy.expired}</InlineNotice> : <>
       <Copy role="body">{copy.acceptBody.replace('{name}', kidName ?? '…')}</Copy>
-      {failed && <div role="alert"><Copy role="body">{copy.acceptFailed}</Copy></div>}
+      {failed && <InlineNotice tone="error" live>{copy.acceptFailed}</InlineNotice>}
       <Button onClick={onAccept} disabled={accepting || kidName === null}>{accepting ? copy.accepting : copy.accept}</Button>
     </>}
   </section>;

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialGraph.css';
@@ -23,9 +23,9 @@ export function SocialRequests({ copy, locale, dark, open, requests, loading, fa
     <Button aria-expanded={open} onClick={onToggle}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
-      {notice && <div role={decisionFailed ? 'alert' : 'status'}><Copy role="body">{notice}</Copy></div>}
-      {deciding && <div role="status"><Copy role="body">{copy.saving}</Copy></div>}
-      {failed ? <><div role="alert"><Copy role="body">{copy.failed}</Copy></div><Button onClick={onRetry}>{copy.retry}</Button></> : <>
+      {notice && <InlineNotice tone={decisionFailed ? 'error' : 'info'} live>{notice}</InlineNotice>}
+      {deciding && <InlineNotice tone="info" live>{copy.saving}</InlineNotice>}
+      {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
         <ul>{requests.map(request => <li key={request.requestId}>
           <Copy role="option">{request.requesterName || copy.hidden}</Copy>
           <Copy role="body">{copy.pending}</Copy>
@@ -36,7 +36,7 @@ export function SocialRequests({ copy, locale, dark, open, requests, loading, fa
           </div>
         </li>)}</ul>
         {!loading && requests.length === 0 && <Copy role="body">{copy.empty}</Copy>}
-        {loading && <div role="status"><Copy role="body">{copy.loading}</Copy></div>}
+        {loading && <LoadingState label={copy.loading} lines={2} />}
         {hasMore && <Button disabled={loading || deciding} onClick={onMore}>{copy.more}</Button>}
       </>}
     </>}

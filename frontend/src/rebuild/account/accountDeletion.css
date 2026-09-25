@@ -25,6 +25,6 @@
 .lf-account-deletion-details > summary:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
 .lf-account-deletion-details-body { display: grid; gap: var(--spacing-2); padding: 0 var(--spacing-4) var(--spacing-4); color: var(--content-muted); }
 .lf-account-deletion-confirm { display: grid; gap: var(--spacing-4); }
-.lf-account-deletion-ack { display: flex; align-items: center; gap: var(--spacing-3); min-block-size: var(--target-base); cursor: pointer; font-weight: 700; }
-.lf-account-deletion-ack input { inline-size: 1.5rem; block-size: 1.5rem; flex: none; margin: 0; accent-color: var(--error-strong); }
+/* One grid cell for the mounted status region and the alert, so an empty region adds no gap. */
+.lf-account-deletion-feedback { display: grid; min-inline-size: 0; }
 .lf-account-deletion .lf-button[data-destructive='true']:not(:disabled) { background: var(--error); color: var(--on-error); box-shadow: none; }

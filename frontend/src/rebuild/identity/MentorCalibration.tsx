@@ -1,4 +1,4 @@
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './mentorCalibration.css';
@@ -15,16 +15,16 @@ export function MentorCalibration({ copy, locale, dark, state, error, onChoose, 
 }) {
   return <section className="lf-rebuild lf-mentor-calibration" lang={locale} data-theme={dark ? 'dark' : 'light'} data-screen="mentor-calibration" aria-label={copy.question} aria-busy={state === 'saving'}>
     <Copy role="prompt" as="h2">{copy.question}</Copy>
-    {state === 'loading' ? <div role="status"><Copy role="body">{copy.loading}</Copy></div> : state === 'error' ? <>
-      <div role="alert"><Copy role="body">{copy.unavailable}</Copy></div>
+    {state === 'loading' ? <LoadingState label={copy.loading} lines={1} /> : state === 'error' ? <>
+      <InlineNotice tone="error" live>{copy.unavailable}</InlineNotice>
       <Button onClick={onRetry}>{copy.retry}</Button>
     </> : <>
       <Copy role="body">{copy.help}</Copy>
       <div className="lf-mentor-calibration-options">
         {([1, 2, 3] as const).map((tier, index) => <Button key={tier} disabled={state === 'saving'} onClick={() => onChoose(tier)}>{[copy.youngest, copy.middle, copy.older][index]}</Button>)}
       </div>
-      {state === 'saving' && <div role="status"><Copy role="body">{copy.saving}</Copy></div>}
-      {error && <div role="alert"><Copy role="body">{copy.unavailable}</Copy></div>}
+      {state === 'saving' && <InlineNotice tone="info" live>{copy.saving}</InlineNotice>}
+      {error && <InlineNotice tone="error" live>{copy.unavailable}</InlineNotice>}
     </>}
   </section>;
 }

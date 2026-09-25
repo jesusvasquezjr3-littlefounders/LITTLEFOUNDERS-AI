@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Button, Copy, Field } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState, TextField } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './ageScreen.css';
@@ -25,19 +25,19 @@ export function AgeScreen({ copy, locale, dark, state, error, onSubmit, onRetry,
   return <div className="lf-rebuild" data-theme={dark ? 'dark' : 'light'} lang={locale}>
     <main className="lf-age-screen" data-surface="app" data-screen="age-screen" data-age-band="6-9">
       <Copy role="heading" as="h1">{copy.title}</Copy>
-      {state === 'loading' ? <div role="status"><Copy role="body">{copy.loading}</Copy></div> :
+      {state === 'loading' ? <LoadingState label={copy.loading} lines={2} /> :
         state === 'error' ? <>
-          <div role="alert"><Copy role="body">{copy.unavailable}</Copy></div>
+          <InlineNotice tone="error" live>{copy.unavailable}</InlineNotice>
           <Button variant="accent" onClick={onRetry}>{copy.retry}</Button>
         </> : <form onSubmit={submit} className="lf-age-form" aria-busy={state === 'saving'}>
           <Copy role="body">{copy.help}</Copy>
           <div className="lf-age-date">
-            <Field label={copy.day} aria-label={copy.day} inputMode="numeric" pattern="[0-9]{1,2}" maxLength={2} required value={day} onChange={e => setDay(e.target.value)} disabled={state === 'saving'} />
-            <Field label={copy.month} aria-label={copy.month} inputMode="numeric" pattern="[0-9]{1,2}" maxLength={2} required value={month} onChange={e => setMonth(e.target.value)} disabled={state === 'saving'} />
-            <Field label={copy.year} aria-label={copy.year} inputMode="numeric" pattern="[0-9]{4}" maxLength={4} required value={year} onChange={e => setYear(e.target.value)} disabled={state === 'saving'} />
+            <TextField label={copy.day} inputMode="numeric" pattern="[0-9]{1,2}" maxLength={2} required autoComplete="off" value={day} onChange={e => setDay(e.target.value)} disabled={state === 'saving'} />
+            <TextField label={copy.month} inputMode="numeric" pattern="[0-9]{1,2}" maxLength={2} required autoComplete="off" value={month} onChange={e => setMonth(e.target.value)} disabled={state === 'saving'} />
+            <TextField label={copy.year} inputMode="numeric" pattern="[0-9]{4}" maxLength={4} required autoComplete="off" value={year} onChange={e => setYear(e.target.value)} disabled={state === 'saving'} />
           </div>
-          {error && <div role="alert"><Copy role="body">{copy[error]}</Copy></div>}
-          <Button type="submit" variant="accent" disabled={state === 'saving'}>{state === 'saving' ? copy.saving : copy.continue}</Button>
+          {error && <InlineNotice tone="error" live>{copy[error]}</InlineNotice>}
+          <Button type="submit" variant="accent" pending={state === 'saving'} pendingLabel={copy.saving}>{copy.continue}</Button>
         </form>}
       <Button onClick={onExit}>{copy.exit}</Button>
     </main>

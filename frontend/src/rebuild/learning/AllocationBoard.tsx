@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button, Copy, StatusMark } from '../design/controls';
+import { Button, Slider, Stepper, ProgressBar } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import { changeAllocation, inspectAllocation, reallocateBoundary, remaining, type Allocation, type Pocket } from './allocationModel';
 import { decodeAllocationCheckpoint, encodeAllocationCheckpoint } from './allocationCheckpoint';
 import { learningFixtures } from './allocationFixtures';
@@ -26,9 +27,9 @@ const copy: Record<Locale, CopySet> = {
     back: 'Back', title: { young: 'Split your money', tween: 'Make a money plan', teen: 'Set your allocation', adult: 'Plan your budget' }, lesson: 'Practice', progress: 'Lesson progress',
     question: {
       young: 'Split 12 coins. Save at least 4.',
-      tween: 'You have 60 coins. Save at least 20. How will you split them?',
-      teen: 'You have 300 coins. Save at least 100. What is your plan?',
-      adult: 'You have USD 1,200. Set aside at least USD 400. How will you allocate it?',
+      tween: 'You have 60 coins and must save at least 20. How will you split them?',
+      teen: 'You have 300 coins and must save at least 100. What is your plan?',
+      adult: 'Set aside at least USD 400 of your USD 1,200. How will you allocate it?',
     },
     board: 'Board', balance: 'Your split', save: 'Save', spend: 'Spend', share: 'Share', left: 'Left',
     add: 'Add', remove: 'Remove', reset: 'Reset', check: 'Check', checking: 'Checking…', again: 'Try again', continue: 'Continue',
@@ -42,10 +43,10 @@ const copy: Record<Locale, CopySet> = {
   'es-MX': {
     back: 'Volver', title: { young: 'Divide tu dinero', tween: 'Planea tu dinero', teen: 'Define tu reparto', adult: 'Planea tu presupuesto' }, lesson: 'Práctica', progress: 'Progreso de lección',
     question: {
-      young: 'Tienes 12 monedas. Guarda al menos 4. ¿Dónde irán?',
-      tween: 'Tienes 60 monedas. Guarda al menos 20. ¿Cómo las repartirás?',
-      teen: 'Tienes 300 monedas. Guarda al menos 100. ¿Cuál es tu plan?',
-      adult: 'Tienes 1,200 MXN. Reserva al menos 400 MXN. ¿Cómo los distribuirás?',
+      young: 'Tienes 12 monedas y debes guardar al menos 4. ¿Dónde irán?',
+      tween: 'Tienes 60 monedas y debes guardar al menos 20. ¿Cómo las repartirás?',
+      teen: 'Tienes 300 monedas y debes guardar al menos 100. ¿Cuál es tu plan?',
+      adult: 'Reserva al menos 400 MXN de tus 1,200 MXN. ¿Cómo los distribuirás?',
     },
     board: 'Pizarrón', balance: 'Tu reparto', save: 'Guardar', spend: 'Gastar', share: 'Compartir', left: 'Restan',
     add: 'Añadir', remove: 'Quitar', reset: 'Restablecer', check: 'Comprobar', checking: 'Comprobando…', again: 'Reintentar', continue: 'Continuar',
@@ -59,10 +60,10 @@ const copy: Record<Locale, CopySet> = {
   'pt-BR': {
     back: 'Voltar', title: { young: 'Divida seu dinheiro', tween: 'Planeje seu dinheiro', teen: 'Defina sua divisão', adult: 'Planeje seu orçamento' }, lesson: 'Prática', progress: 'Progresso da lição',
     question: {
-      young: 'Você tem 12 moedas. Guarde pelo menos 4. Para onde elas vão?',
-      tween: 'Você tem 60 moedas. Guarde pelo menos 20. Como vai dividi-las?',
-      teen: 'Você tem 300 moedas. Guarde pelo menos 100. Qual é seu plano?',
-      adult: 'Você tem BRL 1.200. Reserve pelo menos BRL 400. Como vai distribuir?',
+      young: 'Você tem 12 moedas e precisa guardar pelo menos 4. Para onde elas vão?',
+      tween: 'Você tem 60 moedas e precisa guardar pelo menos 20. Como vai dividi-las?',
+      teen: 'Você tem 300 moedas e precisa guardar pelo menos 100. Qual é seu plano?',
+      adult: 'Reserve pelo menos BRL 400 dos seus BRL 1.200. Como vai distribuir?',
     },
     board: 'Quadro', balance: 'Sua divisão', save: 'Guardar', spend: 'Gastar', share: 'Compartilhar', left: 'Restam',
     add: 'Adicionar', remove: 'Retirar', reset: 'Recomeçar', check: 'Conferir', checking: 'Conferindo…', again: 'Tentar de novo', continue: 'Continuar',
@@ -181,9 +182,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
     <div className="lf-learning-inner">
       <header className="lf-learning-top">
         <Button onClick={onBack}>{t.back}</Button>
-        <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={sequenceProgress(sequence, verdict === 'met')} data-copy-role="data">
-          <span style={{ inlineSize: `${sequenceProgress(sequence, verdict === 'met')}%` }} />
-        </div>
+        <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, verdict === 'met')} max={100} valueText={`${sequenceProgress(sequence, verdict === 'met')}%`} />
         <span data-copy-role="data">{sequence ? `${sequence.index + 1}/${sequence.total}` : t.lesson}</span>
       </header>
       {mentorStage ? <CompactMentorStage ageBand={ageBand} theme={theme} verdict={verdict === 'unavailable' ? null : verdict} character={mentorStage.character} scene={mentorStage.scene} /> : null}
@@ -265,29 +264,21 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           <div className={showTable ? 'lf-learning-left lf-learning-left--visually-hidden' : 'lf-learning-left'} aria-live="polite" aria-atomic="true"><span data-copy-role="body">{t.left}</span> <strong data-copy-role="data">{amount(left)}</strong></div>
           <div className="lf-learning-controls" role="group" aria-label={t.balance}>
             {pockets.map((pocket) => <div className="lf-learning-control" key={pocket}>
-              <div className="lf-learning-control-label"><span data-copy-role="body">{t[pocket]}</span><strong data-copy-role="data">{amount(allocation[pocket])}</strong></div>
-              <div className="lf-learning-stepper">
-                <button type="button" aria-label={`${t.remove}: ${t[pocket]}`} disabled={allocation[pocket] === 0} onClick={() => change(pocket, -1)}>−</button>
-                <button type="button" aria-label={`${t.add}: ${t[pocket]}`} disabled={left < item.step} onClick={() => change(pocket, 1)}>+</button>
-              </div>
+              <Stepper valuePlacement="label" label={t[pocket]} value={allocation[pocket]} valueText={amount(allocation[pocket])}
+                min={0} max={allocation[pocket] + left} step={item.step} labels={{ decrease: t.remove, increase: t.add }}
+                onValueChange={(next) => change(pocket, next > allocation[pocket] ? 1 : -1)} />
             </div>)}
           </div>
           {left === 0 && !showTable ? <div className="lf-learning-sliders" role="group" aria-label={t.balance}>
-            <label data-copy-role="body">{t.moveSaveSpend}
-              <input type="range" min={0} max={allocation.save + allocation.spend} step={item.step} value={allocation.save}
-                disabled={allocation.save + allocation.spend === 0} aria-valuetext={amount(allocation.save)} onChange={(event) => reallocate('save-spend', Number(event.target.value))} />
-            </label>
-            <label data-copy-role="body">{t.moveSpendShare}
-              <input type="range" min={allocation.save} max={item.total} step={item.step} value={allocation.save + allocation.spend}
-                disabled={allocation.spend + allocation.share === 0} aria-valuetext={amount(allocation.spend)} onChange={(event) => reallocate('spend-share', Number(event.target.value))} />
-            </label>
+            <Slider label={t.moveSaveSpend} valueText={amount(allocation.save)} min={0} max={allocation.save + allocation.spend} step={item.step}
+              value={allocation.save} disabled={allocation.save + allocation.spend === 0} onValueChange={(next) => reallocate('save-spend', next)} />
+            <Slider label={t.moveSpendShare} valueText={amount(allocation.spend)} min={allocation.save} max={item.total} step={item.step}
+              value={allocation.save + allocation.spend} disabled={allocation.spend + allocation.share === 0} onValueChange={(next) => reallocate('spend-share', next)} />
           </div> : null}
           </>}
         </TeachingChartBoard>
         <footer className="lf-learning-foot">
-          <div role="status" className={verdict ? `lf-learning-feedback lf-learning-feedback--${verdict}` : 'lf-learning-feedback'}>
-            {verdict ? <><StatusMark correct={verdict === 'met'} /><Copy role="body">{t[verdict]}</Copy></> : null}
-          </div>
+          <LessonFeedback verdict={verdict}>{verdict ? t[verdict] : null}</LessonFeedback>
           <div className="lf-learning-actions">
             <Button variant="accent" disabled={pending} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button>
           </div>

@@ -1,0 +1,410 @@
+/*
+ * Shared control set (Frontend Bible 02 §3 components, §4.4, §7, §8, §9; S03.1).
+ * Tokens only: every colour, radius, space, type step, elevation, focus and
+ * motion value is a custom property generated from Bible 02 (tokens.css).
+ * Logical properties only. No ellipsis, clamp or hidden overflow on text.
+ * Transitions and animations exist only inside a no-preference motion query,
+ * so reduced motion removes the travel and keeps every state change.
+ *
+ * Selectors carry `.lf-rebuild` so they outrank the root's element resets in
+ * system.css regardless of stylesheet order; the first-generation `.lf-button`
+ * base, accent, success and disabled rules stay in system.css unchanged (the
+ * first-generation field was retired in S03.6), and the new colour roles apply
+ * only while enabled so the shared disabled treatment always wins.
+ */
+
+/* ---- Buttons: the remaining colour roles, sizes and the pending state ---- */
+.lf-rebuild .lf-button--brand:not(:disabled) { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.lf-rebuild .lf-button--reward:not(:disabled) { background: var(--reward); color: var(--on-reward); box-shadow: none; }
+.lf-rebuild .lf-button--sky:not(:disabled) { background: var(--sky); color: var(--on-sky); box-shadow: none; }
+.lf-rebuild .lf-button--mint:not(:disabled) { background: var(--mint); color: var(--on-mint); box-shadow: none; }
+.lf-rebuild .lf-button--berry:not(:disabled) { background: var(--berry); color: var(--on-berry); box-shadow: none; }
+.lf-rebuild .lf-button--danger:not(:disabled) { background: var(--error); color: var(--on-error); box-shadow: none; }
+.lf-rebuild .lf-button--inverse:not(:disabled) { background: var(--surface); color: var(--content); box-shadow: none; }
+.lf-rebuild .lf-button--sm { min-block-size: var(--target-min); padding: var(--spacing-2) var(--spacing-5); }
+.lf-rebuild .lf-button--lg { min-block-size: var(--target-lg); padding: var(--spacing-3) var(--spacing-8); font: var(--type-button-lg); }
+.lf-rebuild .lf-button--pending { cursor: progress; }
+.lf-rebuild .lf-button.lf-button--pending:active { transform: none; }
+.lf-rebuild .lf-button-group { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-rebuild .lf-button-group > * { flex: 1 1 auto; }
+
+.lf-rebuild .lf-icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  padding: 0;
+  border: 0;
+  border-radius: var(--rounded-full);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-control);
+  cursor: pointer;
+}
+.lf-rebuild .lf-icon-button--soft { background: var(--primary-soft); color: var(--primary-strong); box-shadow: none; }
+.lf-rebuild .lf-icon-button--inverse { background: var(--surface); color: var(--content); box-shadow: none; }
+.lf-rebuild .lf-icon-button:disabled { background: var(--sunken); color: var(--content-disabled); box-shadow: none; cursor: default; }
+
+/* ---- Fields: label, help above, control, error directly under (02 §9.8) ---- */
+.lf-rebuild .lf-input-field { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-input-label { font: var(--type-label); letter-spacing: var(--type-label-tracking); color: var(--content); }
+.lf-rebuild .lf-input-help { font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-input-error { display: flex; align-items: flex-start; gap: var(--spacing-2); font: var(--type-caption); color: var(--error-strong); }
+.lf-rebuild .lf-input-error .lf-system-glyph { inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+.lf-rebuild .lf-input-box { position: relative; display: flex; align-items: center; min-inline-size: 0; }
+.lf-rebuild .lf-input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--target-base);
+  padding: var(--spacing-4) var(--spacing-5);
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  font: var(--type-body);
+  letter-spacing: var(--type-body-tracking);
+  box-shadow: inset 0 0 0 var(--focus-width) transparent;
+}
+.lf-rebuild .lf-input::placeholder { color: var(--content-muted); opacity: 1; }
+.lf-rebuild .lf-input:focus-visible { outline: none; box-shadow: inset 0 0 0 var(--focus-width) var(--focus-color), 0 0 0 var(--spacing-1) var(--primary-soft); }
+.lf-rebuild .lf-input[aria-invalid='true'] { box-shadow: inset 0 0 0 var(--focus-width) var(--error-strong); }
+.lf-rebuild .lf-input[aria-invalid='true']:focus-visible { box-shadow: inset 0 0 0 var(--focus-width) var(--error-strong), 0 0 0 var(--spacing-1) var(--primary-soft); }
+.lf-rebuild .lf-input:disabled { color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-input[type='number'] { appearance: textfield; }
+.lf-rebuild .lf-input::-webkit-inner-spin-button, .lf-rebuild .lf-input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.lf-rebuild .lf-input-box:has(.lf-input-reveal) .lf-input { padding-inline-end: calc(var(--target-min) + var(--spacing-3)); }
+.lf-rebuild .lf-input-reveal {
+  position: absolute;
+  inset-inline-end: var(--spacing-1);
+  display: grid;
+  place-items: center;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  padding: 0;
+  border: 0;
+  border-radius: var(--rounded-full);
+  background: transparent;
+  color: var(--content-muted);
+  cursor: pointer;
+}
+.lf-rebuild .lf-input-reveal:disabled { color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-select { appearance: none; padding-inline-end: calc(var(--spacing-5) + var(--spacing-6) + var(--spacing-2)); cursor: pointer; }
+.lf-rebuild .lf-select-chevron { position: absolute; inset-inline-end: var(--spacing-5); rotate: 90deg; pointer-events: none; color: var(--content-muted); }
+
+.lf-rebuild .lf-check-field { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-check { display: flex; align-items: center; gap: var(--spacing-3); min-block-size: var(--target-min); cursor: pointer; }
+.lf-rebuild .lf-check-control { position: relative; display: grid; place-items: center; flex: none; inline-size: var(--spacing-8); block-size: var(--spacing-8); }
+.lf-rebuild .lf-check-input {
+  appearance: none;
+  margin: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  border: 2px solid var(--edge);
+  border-radius: var(--rounded-sm);
+  background: var(--surface);
+  cursor: pointer;
+}
+.lf-rebuild .lf-check-input:checked { border-color: var(--primary); background: var(--primary); }
+.lf-rebuild .lf-check-input[aria-invalid='true'] { border-color: var(--error-strong); }
+.lf-rebuild .lf-check-input:disabled { border-color: var(--content-disabled); background: var(--sunken); cursor: default; }
+.lf-rebuild .lf-check-mark { position: absolute; inline-size: var(--spacing-5); block-size: var(--spacing-5); color: var(--on-primary); visibility: hidden; pointer-events: none; }
+.lf-rebuild .lf-check-input:checked + .lf-check-mark { visibility: visible; }
+.lf-rebuild .lf-check-input:disabled:checked + .lf-check-mark { color: var(--content-disabled); }
+.lf-rebuild .lf-check-label { min-inline-size: 0; font: var(--type-body); }
+.lf-rebuild .lf-check:has(.lf-check-input:disabled) { color: var(--content-disabled); cursor: default; }
+
+/* ---- Choose one: radio rows and the segmented control (02 §9.5 shape table) ---- */
+.lf-rebuild .lf-radio-group, .lf-rebuild .lf-segmented { display: grid; gap: var(--spacing-2); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.lf-rebuild .lf-radio-group > legend, .lf-rebuild .lf-segmented > legend { padding: 0; margin-block-end: var(--spacing-2); }
+.lf-rebuild .lf-radio-options { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-radio-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-block-size: var(--target-lg);
+  padding: var(--spacing-4) var(--spacing-5);
+  border-radius: var(--rounded-md);
+  background: var(--primary-soft);
+  color: var(--content);
+  font: var(--type-answer);
+  cursor: pointer;
+}
+.lf-rebuild .lf-radio-label { min-inline-size: 0; }
+.lf-rebuild .lf-radio-input {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  flex: none;
+  margin: 0;
+  inline-size: var(--spacing-6);
+  block-size: var(--spacing-6);
+  border: 2px solid currentColor;
+  border-radius: var(--rounded-full);
+  color: inherit;
+  cursor: pointer;
+}
+.lf-rebuild .lf-radio-input::before { content: ''; inline-size: var(--spacing-3); block-size: var(--spacing-3); border-radius: var(--rounded-full); background: currentColor; scale: 0; }
+.lf-rebuild .lf-radio-input:checked::before { scale: 1; }
+.lf-rebuild .lf-radio-option:has(.lf-radio-input:checked) { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-radio-option:has(.lf-radio-input:disabled) { background: var(--sunken); color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-radio-group--invalid .lf-radio-option { box-shadow: inset 0 0 0 var(--focus-width) var(--error-strong); }
+.lf-rebuild :is(.lf-radio-input, .lf-segmented-input):focus-visible { outline: none; }
+.lf-rebuild :is(.lf-radio-option, .lf-segmented-option):has(:focus-visible) { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+
+.lf-rebuild .lf-segmented-options { display: flex; flex-wrap: wrap; gap: var(--spacing-2); padding: var(--spacing-1); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild .lf-segmented-option {
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  min-block-size: var(--target-min);
+  min-inline-size: min-content;
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--rounded-sm);
+  color: var(--content);
+  font: var(--type-label);
+  cursor: pointer;
+}
+/* Never narrower than a target, even for a one-character option such as "2" (02 §8): the words keep a floor inside the padding. */
+.lf-rebuild .lf-segmented-option > span { min-inline-size: calc(var(--target-min) - var(--spacing-4) * 2); text-align: center; }
+.lf-rebuild .lf-segmented-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.lf-rebuild .lf-segmented-option:has(.lf-segmented-input:checked) { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-segmented-option:has(.lf-segmented-input:disabled) { color: var(--content-disabled); cursor: default; }
+
+/* ---- Switch: thumb position, a check and the state word change together ---- */
+.lf-rebuild .lf-toggle-field { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  inline-size: 100%;
+  min-block-size: var(--target-base);
+  padding: var(--spacing-2) 0;
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--content);
+  text-align: start;
+  cursor: pointer;
+}
+.lf-rebuild .lf-toggle-label { flex: 1 1 12em; min-inline-size: 0; font: var(--type-label); }
+.lf-rebuild .lf-toggle-state { font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-toggle-track {
+  position: relative;
+  flex: none;
+  inline-size: var(--spacing-14);
+  block-size: var(--spacing-8);
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  box-shadow: inset 0 0 0 2px var(--edge);
+}
+.lf-rebuild .lf-toggle-thumb {
+  position: absolute;
+  inset-block-start: var(--spacing-1);
+  inset-inline-start: var(--spacing-1);
+  display: grid;
+  place-items: center;
+  inline-size: var(--spacing-6);
+  block-size: var(--spacing-6);
+  border-radius: var(--rounded-full);
+  background: var(--edge);
+  color: var(--primary);
+}
+.lf-rebuild .lf-toggle-thumb .lf-system-glyph { inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+.lf-rebuild .lf-toggle[aria-checked='true'] .lf-toggle-track { background: var(--primary); box-shadow: none; }
+.lf-rebuild .lf-toggle[aria-checked='true'] .lf-toggle-thumb { inset-inline-start: calc(100% - var(--spacing-6) - var(--spacing-1)); background: var(--on-primary); }
+.lf-rebuild .lf-toggle[aria-busy='true'] { cursor: progress; }
+.lf-rebuild .lf-toggle:disabled { color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-toggle:disabled .lf-toggle-track { background: var(--sunken); box-shadow: inset 0 0 0 2px var(--content-disabled); }
+.lf-rebuild .lf-toggle:disabled .lf-toggle-thumb { background: var(--content-disabled); }
+
+/* ---- Slider and stepper ---- */
+.lf-rebuild .lf-slider { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-slider-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-2); }
+.lf-rebuild .lf-slider-value { font: var(--type-numeral); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-slider-input { inline-size: 100%; block-size: var(--target-lg); margin: 0; accent-color: var(--primary-strong); cursor: pointer; }
+.lf-rebuild .lf-slider-input:disabled { cursor: default; }
+/* The discrete −/+ alternative keeps the 8 px tap gap from the range above it (03 §3): the grid gives 4 px, this adds 4. */
+.lf-rebuild .lf-slider-steps { display: flex; justify-content: space-between; gap: var(--spacing-2); margin-block-start: var(--spacing-1); }
+
+.lf-rebuild .lf-stepper { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-stepper-controls { display: flex; align-items: center; gap: var(--spacing-2); }
+.lf-rebuild .lf-stepper-button {
+  display: grid;
+  place-items: center;
+  inline-size: var(--target-base);
+  block-size: var(--target-base);
+  padding: 0;
+  border: 0;
+  border-radius: var(--rounded-full);
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  cursor: pointer;
+}
+.lf-rebuild .lf-stepper-button:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-stepper-value { min-inline-size: var(--target-base); font: var(--type-numeral); font-variant-numeric: tabular-nums; text-align: center; }
+/* The buttons keep their 48 px floor; a long value or label wraps instead of squeezing them. */
+.lf-rebuild .lf-stepper-controls { flex-wrap: wrap; }
+.lf-rebuild .lf-stepper-button { flex: none; }
+/*
+ * Value under the label, both buttons at the end: one compact row. The words never get less than their longest
+ * word (02 §7 rule 4): when the row cannot hold the words and the buttons, the buttons wrap under them
+ * (found by the S03.5 route audit: "Compartilhar" beside the Mentor stage at 768 px with WCAG 1.4.12 spacing).
+ */
+.lf-rebuild .lf-stepper--labelled { display: block; container: lf-stepper / inline-size; }
+.lf-rebuild .lf-stepper-layout { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: var(--spacing-3); row-gap: var(--spacing-2); }
+.lf-rebuild .lf-stepper-text { display: grid; row-gap: var(--spacing-1); flex: 1 1 min-content; min-inline-size: min-content; }
+.lf-rebuild .lf-stepper-text > .lf-stepper-value { min-inline-size: 0; text-align: start; }
+.lf-rebuild .lf-stepper-layout > .lf-stepper-controls { flex: none; }
+@container lf-stepper (max-width: 239px) {
+  .lf-rebuild .lf-stepper-layout > .lf-stepper-controls { inline-size: 100%; justify-content: space-between; }
+}
+
+/* ---- Chips and pills ---- */
+.lf-rebuild .lf-chip-group { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+/* A chip or pill is sized by its words, even as a direct child of a grid card. */
+.lf-rebuild :is(.lf-status-chip, .lf-pill) { justify-self: start; }
+.lf-rebuild .lf-status-chip { display: inline-flex; align-items: center; gap: var(--spacing-1); max-inline-size: 100%; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); font: var(--type-chip); }
+.lf-rebuild :is(.lf-status-chip, .lf-choice-chip, .lf-notice) .lf-system-glyph { inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+.lf-rebuild .lf-status-chip--success { background: var(--success-soft); color: var(--success-strong); }
+.lf-rebuild .lf-status-chip--warning { background: var(--warning-soft); color: var(--warning-strong); }
+.lf-rebuild .lf-status-chip--error { background: var(--error-soft); color: var(--error-strong); }
+.lf-rebuild .lf-status-chip--sky { background: var(--sky-soft); color: var(--sky-strong); }
+.lf-rebuild .lf-status-chip--primary { background: var(--primary-soft); color: var(--primary-strong); }
+.lf-rebuild .lf-status-chip--reward { background: var(--reward); color: var(--on-reward); }
+.lf-rebuild .lf-choice-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  min-block-size: var(--target-min);
+  min-inline-size: min-content;
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 0;
+  border-radius: var(--rounded-full);
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font: var(--type-chip);
+  cursor: pointer;
+}
+.lf-rebuild .lf-choice-chip[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-choice-chip:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-pill { display: inline-flex; align-items: center; max-inline-size: 100%; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); font: var(--type-chip); }
+.lf-rebuild .lf-pill--primary { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-pill--success { background: var(--success); color: var(--on-success); }
+.lf-rebuild .lf-pill--reward { background: var(--reward); color: var(--on-reward); }
+.lf-rebuild .lf-pill--sky { background: var(--sky); color: var(--on-sky); }
+.lf-rebuild .lf-pill--mint { background: var(--mint); color: var(--on-mint); }
+.lf-rebuild .lf-pill--berry { background: var(--berry); color: var(--on-berry); }
+.lf-rebuild .lf-pill--inverse { background: var(--on-primary); color: var(--primary-ridge); }
+
+/* ---- Cards and list rows: separation by fill or soft elevation, never a line ---- */
+.lf-rebuild .lf-card { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: var(--elevation-card); }
+.lf-rebuild .lf-card--primary { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.lf-rebuild .lf-card--sky { background: var(--sky); color: var(--on-sky); box-shadow: none; }
+.lf-rebuild .lf-card--mint { background: var(--mint); color: var(--on-mint); box-shadow: none; }
+.lf-rebuild .lf-card--berry { background: var(--berry); color: var(--on-berry); box-shadow: none; }
+.lf-rebuild .lf-card-heading { margin: 0; font: var(--type-title); }
+
+.lf-rebuild .lf-list { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-list-item { min-inline-size: 0; }
+.lf-rebuild .lf-list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  inline-size: 100%;
+  min-block-size: var(--target-base);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-card);
+  font: var(--type-body);
+  text-align: start;
+}
+.lf-rebuild .lf-list-row--pressable { cursor: pointer; }
+/* Dark mode has no shadow, so a row inside a card steps up a surface instead of vanishing into it (02 §5). */
+.lf-rebuild[data-theme='dark'] .lf-card .lf-list-row { background: var(--raised); }
+.lf-rebuild .lf-list-row-leading, .lf-rebuild .lf-list-row-trailing, .lf-rebuild .lf-list-row-chevron { flex: none; }
+.lf-rebuild .lf-list-row-text { display: grid; flex: 1 1 12em; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-list-row-title { font: var(--type-label); }
+.lf-rebuild .lf-list-row-supporting { font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-list-row-trailing { font: var(--type-label); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-list-row-chevron { color: var(--content-muted); }
+
+/* ---- Banners and inline notices (02 §9.2 feedback grammar) ---- */
+.lf-rebuild .lf-banner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); font: var(--type-label); }
+.lf-rebuild .lf-banner-text { flex: 1 1 12em; min-inline-size: 0; }
+.lf-rebuild .lf-banner-action { flex: none; }
+.lf-rebuild .lf-banner--success { background: var(--success); color: var(--on-success); }
+.lf-rebuild .lf-banner--retry { background: var(--warning); color: var(--on-warning); }
+.lf-rebuild .lf-banner--error { background: var(--error); color: var(--on-error); }
+.lf-rebuild .lf-banner--info { background: var(--sky); color: var(--on-sky); }
+.lf-rebuild .lf-notice { display: flex; align-items: flex-start; gap: var(--spacing-2); max-inline-size: none; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); font: var(--type-body); }
+.lf-rebuild .lf-notice--success { background: var(--success-soft); color: var(--success-strong); }
+.lf-rebuild .lf-notice--retry { background: var(--warning-soft); color: var(--warning-strong); }
+.lf-rebuild .lf-notice--error { background: var(--error-soft); color: var(--error-strong); }
+.lf-rebuild .lf-notice--info { background: var(--sky-soft); color: var(--sky-strong); }
+
+/* ---- Progress, skeleton, loading, empty and error states ---- */
+.lf-rebuild .lf-progress { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-progress-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-2); }
+.lf-rebuild .lf-progress-value { font: var(--type-label); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-progress-track { display: block; block-size: var(--spacing-3); border-radius: var(--rounded-full); background: var(--sunken); overflow: hidden; }
+.lf-rebuild .lf-progress-fill { display: block; block-size: 100%; border-radius: inherit; background: var(--primary); }
+.lf-rebuild .lf-progress--mint .lf-progress-fill { background: var(--mint); }
+.lf-rebuild .lf-progress--reward .lf-progress-fill { background: var(--reward); }
+/* A bare capsule has no head row: the screen writes its value beside it (the lesson top bar's "2/4"). */
+.lf-rebuild .lf-progress--bare { gap: 0; align-content: center; }
+
+.lf-rebuild .lf-skeleton { display: grid; gap: var(--spacing-2); }
+.lf-rebuild .lf-skeleton-line { display: block; block-size: var(--spacing-4); border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-rebuild .lf-skeleton-line:nth-child(3n + 2) { inline-size: 85%; }
+.lf-rebuild .lf-skeleton-line:nth-child(3n) { inline-size: 60%; }
+.lf-rebuild .lf-loading { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-loading-label { font: var(--type-body); color: var(--content-muted); }
+
+.lf-rebuild .lf-state { display: grid; justify-items: start; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-6); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: var(--elevation-card); }
+.lf-rebuild .lf-state-heading { margin: 0; font: var(--type-title); }
+.lf-rebuild .lf-state-body { color: var(--content-muted); }
+.lf-rebuild .lf-state-action { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-rebuild .lf-state--error .lf-state-glyph { display: grid; place-items: center; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--error-soft); color: var(--error-strong); }
+.lf-rebuild .lf-state--empty .lf-state-art { inline-size: var(--spacing-24); block-size: auto; }
+/* Own class B art (07 §3): a 48 px icon reads at the size its form language is drawn for; `lg` for a card's lead. */
+.lf-rebuild .lf-art { display: block; flex: none; inline-size: var(--target-min); block-size: var(--target-min); }
+.lf-rebuild .lf-art--lg { inline-size: var(--spacing-16); block-size: var(--spacing-16); }
+
+/* ---- Mentor avatar slot: square, transparent, real-model renders only ---- */
+.lf-rebuild .lf-avatar { display: inline-grid; place-items: center; flex: none; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--primary-soft); overflow: hidden; }
+.lf-rebuild .lf-avatar--xs { inline-size: var(--spacing-8); block-size: var(--spacing-8); }
+.lf-rebuild .lf-avatar--md { inline-size: var(--target-lg); block-size: var(--target-lg); }
+.lf-rebuild .lf-avatar--lg { inline-size: var(--spacing-24); block-size: var(--spacing-24); }
+.lf-rebuild .lf-avatar img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+
+/* ---- Motion: press feedback and in-place state changes only (02 §9.1, 04 §2) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild :is(.lf-icon-button, .lf-choice-chip, .lf-stepper-button, .lf-list-row--pressable, .lf-segmented-option, .lf-radio-option, .lf-input-reveal) {
+    transition: transform var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard);
+  }
+  .lf-rebuild :is(.lf-icon-button, .lf-choice-chip, .lf-stepper-button, .lf-list-row--pressable, .lf-input-reveal):not(:disabled):active,
+  .lf-rebuild :is(.lf-segmented-option, .lf-radio-option):not(:has(:disabled)):active {
+    transform: scale(var(--press-scale));
+    transition-duration: var(--dur-instant);
+  }
+  .lf-rebuild .lf-toggle-thumb { transition: inset-inline-start var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard); }
+  .lf-rebuild .lf-toggle-track { transition: background-color var(--dur-micro) var(--ease-standard); }
+  .lf-rebuild .lf-radio-input::before { transition: scale var(--dur-micro) var(--ease-standard); }
+  .lf-rebuild .lf-progress-fill { transition: inline-size var(--dur-component) var(--ease-standard); }
+}
+
+/* ---- Forced colours: shadows and fills disappear, so functional edges return ---- */
+@media (forced-colors: active) {
+  .lf-rebuild :is(.lf-icon-button, .lf-choice-chip, .lf-stepper-button, .lf-segmented-option, .lf-radio-option, .lf-list-row--pressable, .lf-toggle-track, .lf-input) { border: 2px solid ButtonText; }
+  .lf-rebuild .lf-toggle-thumb { background: ButtonText; }
+  .lf-rebuild .lf-toggle[aria-checked='true'] .lf-toggle-thumb { background: Highlight; }
+}

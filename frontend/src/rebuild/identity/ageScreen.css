@@ -1,12 +1,13 @@
 .lf-age-screen {
   max-inline-size: 34rem;
   margin-inline: auto;
-  padding: clamp(1.25rem, 5vw, 3rem);
-  padding-block-start: clamp(2rem, 10vh, 6rem);
+  padding: var(--spacing-5);
+  padding-block-start: var(--spacing-8);
   display: grid;
   gap: var(--spacing-6);
 }
 .lf-age-form { display: grid; gap: var(--spacing-6); }
 .lf-age-date { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: var(--spacing-3); }
-.lf-age-screen [role='alert'] { color: var(--error-strong); }
-@media (max-width: 340px) { .lf-age-date { grid-template-columns: 1fr; } }
+/* Fixed steps by the `app` container, never fluid or by the viewport (02 §6, §7 rule 9). */
+@container app (min-width: 640px) { .lf-age-screen { padding: var(--spacing-12); padding-block-start: var(--spacing-24); } }
+@container app (max-width: 339px) { .lf-age-date { grid-template-columns: 1fr; } }

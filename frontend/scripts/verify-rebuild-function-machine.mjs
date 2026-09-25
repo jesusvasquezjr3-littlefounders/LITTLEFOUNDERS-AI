@@ -44,6 +44,14 @@ async function setInput(selector, value) {
   })()`);
 }
 
+/** A radio is chosen from the keyboard with Space (Enter submits a form instead). */
+async function selectWithSpace(selector) {
+  const focused = await page.evaluate(`(() => { const input = document.querySelector(${JSON.stringify(selector)}); input?.focus(); return document.activeElement === input; })()`);
+  if (!focused) throw new Error(`Missing keyboard control ${selector}`);
+  await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: ' ', code: 'Space', windowsVirtualKeyCode: 32, text: ' ' });
+  await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+}
+
 async function activateWithKeyboard(selector) {
   const focused = await page.evaluate(`(() => {
     const button = document.querySelector(${JSON.stringify(selector)});
@@ -66,7 +74,8 @@ try {
       if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal-scroll');
       if (root.querySelectorAll('h1').length !== 1) issues.push('heading-count');
       if (!root.querySelector('.lf-function-machine[role=img]') || root.querySelectorAll('.lf-function-machine-table tbody tr').length !== 3 || root.querySelectorAll('.lf-function-machine-table thead th[scope=col]').length !== 2) issues.push('representation-or-table');
-      if (root.querySelectorAll('.lf-function-machine-try button[aria-pressed]').length !== 3 || !root.querySelector('.lf-function-machine-try button:not([aria-pressed])')) issues.push('trial-controls');
+      // S03.6: the trial inputs are the shared segmented control (native radios); Run is the shared button.
+      if (root.querySelectorAll('.lf-function-machine-try .lf-segmented input[type=radio]').length !== 3 || root.querySelectorAll('.lf-function-machine-try .lf-segmented input:checked').length !== 1 || !root.querySelector('.lf-function-machine-try > .lf-button')) issues.push('trial-controls');
       if (innerWidth === 375 && ${scale} === 1 && !${spacing} && root.querySelector('.lf-function-machine-try')?.getBoundingClientRect().bottom > 740) issues.push('trial-action-below-first-view');
       for (const element of root.querySelectorAll('button, input')) {
         const box = element.getBoundingClientRect();
@@ -87,11 +96,11 @@ try {
   }
 
   await navigate('es-MX', 'light', '10-12', 375, 1, false);
-  await setInput('.lf-function-machine-rule label:nth-of-type(1) input', '5');
-  await setInput('.lf-function-machine-rule label:nth-of-type(2) input', '10');
+  await setInput('.lf-function-machine-rule .lf-input-field:nth-of-type(1) input', '5');
+  await setInput('.lf-function-machine-rule .lf-input-field:nth-of-type(2) input', '10');
   const beforeRun = await page.evaluate("document.querySelector('.lf-learning-actions button')?.disabled");
-  await activateWithKeyboard('.lf-function-machine-try button:nth-child(2)');
-  await activateWithKeyboard('.lf-function-machine-try button:nth-child(4)');
+  await selectWithSpace('.lf-function-machine-try .lf-segmented-option:nth-child(2) input');
+  await activateWithKeyboard('.lf-function-machine-try > .lf-button');
   await waitFor("document.querySelector('.lf-function-machine[role=img]')?.getAttribute('aria-label')?.includes('Salida: 20')");
   await activateWithKeyboard('.lf-learning-actions button');
   await waitFor("document.querySelector('[role=status]')?.textContent === 'Correcto'");

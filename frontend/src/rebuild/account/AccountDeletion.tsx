@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { Button, Copy, Field } from '../design/controls';
+import { Button, Checkbox, Copy, Glyph, InlineNotice, LoadingState, TextField } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './accountDeletion.css';
@@ -38,6 +38,8 @@ export interface AccountDeletionCopy {
   acknowledge: string;
   password: string;
   passwordHint: string;
+  showPassword: string;
+  hidePassword: string;
   confirm: string;
   back: string;
   working: string;
@@ -131,10 +133,10 @@ function Body({ copy, locale, view, onStart, onBack, onConfirm, onKeep, onRetry,
 } & AccountDeletionHandlers) {
   switch (view.kind) {
     case 'loading':
-      return <div role="status"><Copy role="body">{copy.loading}</Copy></div>;
+      return <LoadingState label={copy.loading} lines={2} />;
     case 'unavailable':
       return <>
-        <div role="alert"><Copy role="body">{copy.unavailable}</Copy></div>
+        <InlineNotice tone="error" live>{copy.unavailable}</InlineNotice>
         <div className="lf-actions"><Button onClick={onRetry}>{copy.retry}</Button></div>
       </>;
     case 'blocked':
@@ -148,8 +150,10 @@ function Body({ copy, locale, view, onStart, onBack, onConfirm, onKeep, onRetry,
         <Copy role="body">{copy.scheduledBody.replace('{date}', date)}</Copy>
         {view.status === 'held' ? <Copy role="body">{copy.heldBody}</Copy> : null}
         <Copy role="body">{view.signedOut ? copy.signedOut : copy.scheduledKeep}</Copy>
-        <div role={view.keepFailed ? 'alert' : 'status'}>
-          {view.keepFailed ? <Copy role="body">{copy.keepFailed}</Copy> : view.keeping ? <Copy role="body">{copy.keeping}</Copy> : null}
+        {/* The status region stays mounted so "keeping" is announced once; a failure is its own alert. */}
+        <div className="lf-account-deletion-feedback">
+          <div role="status">{view.keeping && !view.keepFailed ? <InlineNotice tone="info">{copy.keeping}</InlineNotice> : null}</div>
+          {view.keepFailed ? <InlineNotice tone="error" live>{copy.keepFailed}</InlineNotice> : null}
         </div>
         <div className="lf-actions">
           {view.signedOut
@@ -161,12 +165,12 @@ function Body({ copy, locale, view, onStart, onBack, onConfirm, onKeep, onRetry,
     }
     case 'kept':
       return <>
-        <div role="status"><Copy role="body">{copy.kept}</Copy></div>
+        <InlineNotice tone="success" live>{copy.kept}</InlineNotice>
         {onContinue ? <div className="lf-actions"><Button variant="accent" onClick={onContinue}>{copy.continue}</Button></div> : null}
       </>;
     case 'deleted':
       return <>
-        <div role="status"><Copy role="body">{copy.deletedBody}</Copy></div>
+        <InlineNotice tone="info" live>{copy.deletedBody}</InlineNotice>
         {view.finishing ? <Copy role="body">{copy.finishingBody}</Copy> : null}
       </>;
   }
@@ -178,11 +182,13 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
 } & AccountDeletionHandlers) {
   const [acknowledged, setAcknowledged] = useState(false);
   const [password, setPassword] = useState('');
-  const ackId = useId();
   const errorId = useId();
   const needsPassword = view.reauth === 'password';
   const canConfirm = acknowledged && (!needsPassword || password.length > 0) && !view.submitting;
-  const errorText = view.error === 'password' ? copy.wrongPassword : view.error === 'reauth' ? copy.reauth : view.error === 'failed' ? copy.failed : null;
+  // A wrong password belongs to the password field (02 §9.8: the error sits
+  // directly under its control); the other two errors are about the request.
+  const passwordError = view.error === 'password' ? copy.wrongPassword : undefined;
+  const errorText = view.error === 'reauth' ? copy.reauth : view.error === 'failed' ? copy.failed : null;
   if (view.step === 'intro') {
     return <>
       <Copy role="body">{view.immediate ? copy.immediateBody : copy.graceBody.replace('{days}', String(view.graceDays))}</Copy>
@@ -191,8 +197,7 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
         <summary data-copy-role="action">
           {copy.detailsLabel}
           {/* System glyph, class A (chevron): shows that the row opens. */}
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="lf-system-glyph lf-account-deletion-chevron" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          <Glyph name="chevron" className="lf-system-glyph lf-account-deletion-chevron" />
         </summary>
         <div className="lf-account-deletion-details-body">
           <Copy role="body">{copy.detailsProfile}</Copy>
@@ -215,22 +220,22 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
       event.preventDefault();
       if (canConfirm) onConfirm?.({ password: needsPassword ? password : null });
     }}>
-      <label className="lf-account-deletion-ack" htmlFor={ackId}>
-        <input id={ackId} type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} />
-        <span data-copy-role="option">{copy.acknowledge}</span>
-      </label>
+      <Checkbox label={copy.acknowledge} checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} />
       {needsPassword
-        ? <Field label={copy.password} hint={copy.passwordHint} type="password" autoComplete="current-password" value={password}
-          aria-invalid={view.error === 'password'} onChange={(event) => setPassword(event.target.value)} />
+        ? <TextField label={copy.password} help={copy.passwordHint} type="password"
+          revealLabels={{ show: copy.showPassword, hide: copy.hidePassword }} autoComplete="current-password" value={password}
+          error={passwordError} errorLive onChange={(event) => setPassword(event.target.value)} />
         : null}
-      <div id={errorId} role={errorText ? 'alert' : 'status'}>
-        {view.submitting ? <Copy role="body">{copy.working}</Copy> : errorText ? <Copy role="body">{errorText}</Copy> : null}
+      {/* The status region stays mounted so "working" is announced once; an error is its own alert, announced once. */}
+      <div id={errorId} className="lf-account-deletion-feedback">
+        <div role="status">{view.submitting ? <InlineNotice tone="info">{copy.working}</InlineNotice> : null}</div>
+        {!view.submitting && errorText ? <InlineNotice tone="error" live>{errorText}</InlineNotice> : null}
       </div>
       <div className="lf-actions">
         {view.error === 'reauth'
           ? <Button variant="accent" onClick={onSignIn}>{copy.signInAgain}</Button>
           : <Button type="submit" data-destructive="true" disabled={!canConfirm} aria-busy={view.submitting}
-            aria-describedby={errorText ? errorId : undefined}>{copy.confirm}</Button>}
+            aria-describedby={!view.submitting && errorText ? errorId : undefined}>{copy.confirm}</Button>}
         <Button onClick={onBack} disabled={view.submitting}>{copy.back}</Button>
       </div>
     </form>

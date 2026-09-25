@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, TextField } from '../design/controls';
+import { LessonFeedback } from './LessonFeedback';
 import { type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import type { LessonSequenceControl } from './lessonSequence';
 import { StepReplay } from './StepReplay';
@@ -77,11 +78,10 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
               return <li key={step.id} className={className}>
                 <span className="lf-worked-example-number" data-copy-role="data">{stepIndex + 1}</span>
                 <span className="lf-worked-example-expression" data-copy-role="data">{step.expression}</span>
-                {faded && stepIndex <= index + 1 ? <label className="lf-worked-example-blank" data-copy-role="label">
-                  <span>{t.faded}</span>
-                  <input aria-label={t.input + ': ' + step.expression} disabled={pending} value={values[step.id] ?? ''}
+                {faded && stepIndex <= index + 1 ? <div className="lf-worked-example-blank">
+                  <TextField label={t.faded} aria-label={t.input + ': ' + step.expression} inputMode="decimal" autoComplete="off" disabled={pending} value={values[step.id] ?? ''}
                     onChange={(event) => { setVerdict(null); setValues((current) => ({ ...current, [step.id]: event.target.value })); }} />
-                </label> : index >= stepIndex ? <span className="lf-worked-example-result" data-copy-role="data">{t.result}: {step.result}</span>
+                </div> : index >= stepIndex ? <span className="lf-worked-example-result" data-copy-role="data">{t.result}: {step.result}</span>
                   : <span className="lf-worked-example-pending" data-copy-role="body">…</span>}
               </li>;
             })}
@@ -91,15 +91,13 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
           <StepReplay steps={steps.length - 1} index={Math.min(index, steps.length - 1)} onChange={setIndex}
             labels={{ previous: t.previous, next: t.next, play: t.play, pause: t.pause, step: t.step }} />
           {index < steps.length - 1 && index + 1 < fadeAt ? <div className="lf-worked-example-prediction">
-            <label data-copy-role="label">{t.predict}
-              <input aria-label={t.predict} value={prediction} onChange={(event) => setPrediction(event.target.value)}
-                placeholder={t.predictHint} />
-            </label>
+            <TextField label={t.predict} autoComplete="off" value={prediction} onChange={(event) => setPrediction(event.target.value)}
+              placeholder={t.predictHint} />
             <Button variant="accent" disabled={!prediction.trim()} onClick={revealNext}>{t.reveal}</Button>
           </div> : index < steps.length - 1 ? <div className="lf-worked-example-prediction">
             <Button variant="accent" disabled={!values[steps[index + 1]?.id ?? '']?.trim()} onClick={revealNext}>{t.reveal}</Button>
           </div> : <div className="lf-worked-example-complete"><p data-copy-role="body">{t.complete}</p>
-            <div role="status" className={verdict ? `lf-learning-feedback lf-learning-feedback--${verdict}` : 'lf-learning-feedback'} data-copy-role="feedback">{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</div>
+            <LessonFeedback verdict={verdict}>{verdict === 'met' ? t.correct : verdict === 'review' ? t.retry : verdict === 'unavailable' ? t.unavailable : null}</LessonFeedback>
             <Button variant="accent" disabled={pending || !complete} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button>
           </div>}
         </div>

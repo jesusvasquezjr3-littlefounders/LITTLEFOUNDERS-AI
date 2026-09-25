@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './memorySelfReview.css';
@@ -90,12 +90,12 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
   return <section ref={root} className="lf-rebuild lf-memory-self-review" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.title} aria-busy={phase === 'loading'}>
     <Copy role="heading" as="h2">{copy.title}</Copy>
-    {phase === 'loading' ? <div role="status"><Copy role="body">{copy.loading}</Copy></div> : phase === 'failed' ? <>
-      <div role="alert"><Copy role="body">{copy.loadFailed}</Copy></div>
+    {phase === 'loading' ? <LoadingState label={copy.loading} lines={2} /> : phase === 'failed' ? <>
+      <InlineNotice tone="error" live>{copy.loadFailed}</InlineNotice>
       <Button onClick={onRetry}>{copy.retry}</Button>
     </> : <>
       <Copy role="body">{copy.help}</Copy>
-      {notice && <div role={noticeKind === 'alert' ? 'alert' : 'status'}><Copy role="body">{notice}</Copy></div>}
+      {notice && <InlineNotice tone={noticeKind === 'alert' ? 'error' : 'info'} live>{notice}</InlineNotice>}
       <div className="lf-memory-current">
         <Copy role="body">{copy.currentLabel}</Copy>
         {current === null ? <Copy role="body">{copy.currentEmpty}</Copy> : <Copy role="data">{current}</Copy>}
@@ -109,7 +109,7 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
             return <li key={note.id} className="lf-memory-note">
               <div className="lf-memory-note-meta">
                 <Copy role="body">{copy.proposedOn}</Copy>
-                <time dateTime={note.createdAt}>{date.format(new Date(note.createdAt))}</time>
+                <time dateTime={note.createdAt} data-copy-role="data">{date.format(new Date(note.createdAt))}</time>
                 {outOfDate && !verdict && <span className="lf-memory-chip"><Copy role="body" as="span">{copy.outOfDate}</Copy></span>}
               </div>
               <Copy role="data">{note.proposed}</Copy>
@@ -118,13 +118,13 @@ export function MemorySelfReview({ copy, locale, dark, phase, notes, current, de
                 <Copy role="data">{note.expectedBefore}</Copy>
               </div>}
               <div className="lf-memory-note-actions">
-                {verdict ? <div role="status"><Copy role="body">{verdict === 'kept' ? copy.kept : copy.deleted}</Copy></div> : <>
+                {verdict ? <InlineNotice tone="success" live>{verdict === 'kept' ? copy.kept : copy.deleted}</InlineNotice> : <>
                   <Button variant="success" disabled={busy} onClick={(event) => { lastAction.current = event.currentTarget; onDecide(note.id, 'approved'); }}>{copy.approve}</Button>
                   <Button disabled={busy} onClick={(event) => { lastAction.current = event.currentTarget; onDecide(note.id, 'rejected'); }}>{copy.delete}</Button>
                 </>}
               </div>
-              {busy && <div role="status"><Copy role="body">{copy.deciding}</Copy></div>}
-              {failedId === note.id && <div role="alert"><Copy role="body">{copy.decisionFailed}</Copy></div>}
+              {busy && <InlineNotice tone="info" live>{copy.deciding}</InlineNotice>}
+              {failedId === note.id && <InlineNotice tone="error" live>{copy.decisionFailed}</InlineNotice>}
             </li>;
           })}
         </ul>

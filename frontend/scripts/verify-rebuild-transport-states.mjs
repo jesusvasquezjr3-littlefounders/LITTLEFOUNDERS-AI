@@ -110,12 +110,15 @@ try {
     findings.push({ interaction: 'load-error-keyboard-back-failed' });
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await navigate('opening', 'es-MX', 'dark', 375, 1, false);
-  if (!await page.evaluate("getComputedStyle(document.querySelector('.lf-transport-state-progress span')).animationName==='none'"))
+  if (!await page.evaluate("!!document.querySelector('.lf-transport-state-progress') && document.getAnimations().length === 0"))
     findings.push({ interaction: 'reduced-motion-loading' });
   await activate('.lf-transport-state-actions button', true);
   if (!await page.evaluate("!!document.querySelector('[data-screen=home]')"))
     findings.push({ interaction: 'opening-keyboard-back-failed' });
   await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await navigate('opening', 'es-MX', 'light', 375, 1, false);
+  if (await page.evaluate("document.getAnimations().some((animation) => animation.effect?.getTiming().iterations === Infinity)"))
+    findings.push({ interaction: 'loading-state-idle-loop' });
   if (page.errors.length || page.failedRequests.length) findings.push({ runtimeErrors: page.errors, failedRequests: page.failedRequests });
   writeFileSync(join(output, 'report.json'), JSON.stringify({ configurations, findings,
     scope: 'Controlled lesson transport-state presentation; no server attempt, saved progress or retry network contract.' }, null, 2));

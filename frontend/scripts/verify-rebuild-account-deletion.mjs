@@ -12,7 +12,7 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
  * Checks: no horizontal scroll; every visible string sits under a
  * data-copy-role; Copy Budget per role and the first-view budget at 375 px;
  * no clipped or off-screen text; text >= 14 px; 48 px targets for buttons,
- * the details summary and the acknowledgement row; body-text contrast >= 4.5:1;
+ * the details summary and the acknowledgement row (the shared Checkbox); body-text contrast >= 4.5:1;
  * the timeline (days or date) visible before any confirmation; a visible
  * keyboard focus ring on the summary, the acknowledgement and the buttons;
  * the enabled destructive button's contrast; no motion under
@@ -75,7 +75,7 @@ const AUDIT = (locale, width, scale, state) => `(() => {
     if (parseFloat(s.fontSize) < 14 * ${scale}) issues.push('text-size:' + text);
   }
   if (${width} === 375 && ${scale} === 1 && firstView > Math.ceil(40 * factor)) issues.push('first-view:' + firstView);
-  for (const b of root.querySelectorAll('button, summary, .lf-account-deletion-ack')) {
+  for (const b of root.querySelectorAll('button, summary, .lf-check')) {
     const r = b.getBoundingClientRect(); if (r.height < 48 || r.width < 48) issues.push('touch-target:' + b.textContent.trim());
   }
   const lum = c => { const [r, g, b] = c.match(/\\d+(\\.\\d+)?/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * r + .7152 * g + .0722 * b; };

@@ -1,8 +1,7 @@
 import { useMemo, useState, type PointerEvent } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, Slider, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
-import { ParameterSlider } from './ParameterSlider';
 import { ratioTableRows } from './ratioTableModel';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
@@ -66,8 +65,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence }: {
   return <main className="lf-learning" data-surface="app" data-screen="ratio-table">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress} aria-valuemin={0} aria-valuemax={100}
-          aria-valuenow={sequenceProgress(sequence, changed)} data-copy-role="data"><span style={{ inlineSize: `${sequenceProgress(sequence, changed)}%` }} /></div> : null}
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, changed)} max={100} valueText={`${sequenceProgress(sequence, changed)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span>
       </header>
       <div className="lf-learning-content">
@@ -86,9 +84,9 @@ export function RatioTableBoard({ document, segment, onBack, sequence }: {
             <div className="lf-ratio-line"><span data-copy-role="data">{t.total}</span><div className="lf-ratio-ticks" style={{ gridTemplateColumns: `repeat(${allRows.length}, minmax(0, 1fr))` }}>{allRows.map((row) => <span key={row.packs} aria-hidden="true" className={row.packs <= packs ? undefined : 'lf-ratio-tick--future'}>{amount(row.price)}</span>)}<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} /></div></div>
             <p className="lf-ratio-unit" data-copy-role="data">{t.unit}: <strong data-copy-role="data">{amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}</strong></p>
           </div>}>
-          {() => <ParameterSlider className="lf-ratio-control" label={t.packs} valueText={`${packs} ${packs === 1 ? t.pack : t.packs}`}
-            minimum={segment.payload.minimumPacks} maximum={segment.payload.maximumPacks} step={1} value={packs} onValueChange={setPacks}
-            stepper={{ decrease: `${t.packs}: −`, increase: `${t.packs}: +` }} />}
+          {() => <Slider className="lf-ratio-control" label={t.packs} valueText={`${packs} ${packs === 1 ? t.pack : t.packs}`}
+            min={segment.payload.minimumPacks} max={segment.payload.maximumPacks} step={1} value={packs} onValueChange={setPacks}
+            stepLabels={{ decrease: '−', increase: '+' }} />}
         </TeachingChartBoard>
         {sequence ? <footer className="lf-ratio-foot"><Button variant="accent" disabled={!changed} onClick={sequence.onAdvance}>{t.continue}</Button></footer> : null}
       </div>

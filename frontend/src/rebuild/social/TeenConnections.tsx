@@ -1,5 +1,5 @@
 import { useEffect, useRef, type MouseEvent } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialTiers.css';
@@ -55,10 +55,10 @@ export function TeenConnections({ copy, locale, dark, requests, followers, loadi
   return <section ref={root} aria-label={copy.title} className="lf-rebuild lf-social-tier-card" data-social-audit="teen-connections" lang={locale} data-theme={dark ? 'dark' : 'light'}>
     <Copy role="heading" as="h2">{copy.title}</Copy>
     <Copy role="body">{copy.intro}</Copy>
-    {notice && <div role={notice.tone}><Copy role="body">{notice.text}</Copy></div>}
-    {busy && <div role="status"><Copy role="body">{copy.saving}</Copy></div>}
+    {notice && <InlineNotice tone={notice.tone === 'alert' ? 'error' : 'info'} live>{notice.text}</InlineNotice>}
+    {busy && <InlineNotice tone="info" live>{copy.saving}</InlineNotice>}
     {failed ? <div className="lf-social-tier-row">
-      <div role="alert"><Copy role="body">{copy.failed}</Copy></div>
+      <InlineNotice tone="error" live>{copy.failed}</InlineNotice>
       <Button onClick={onRetry}>{copy.retry}</Button>
     </div> : <>
       <ul className="lf-social-tier-list">{requests.map((request) => <li key={request.requestId}>
@@ -73,7 +73,7 @@ export function TeenConnections({ copy, locale, dark, requests, followers, loadi
         </div>
       </li>)}</ul>
       {!loading && requests.length === 0 && <Copy role="body">{copy.empty}</Copy>}
-      {loading && <div role="status"><Copy role="body">{copy.loading}</Copy></div>}
+      {loading && <LoadingState label={copy.loading} lines={2} />}
       {hasMore && <Button disabled={busy || loading} onClick={onMore}>{copy.more}</Button>}
       <Copy role="heading" as="h2">{copy.followersTitle}</Copy>
       <ul className="lf-social-tier-list">{followers.map((follower) => <li key={follower.username}>

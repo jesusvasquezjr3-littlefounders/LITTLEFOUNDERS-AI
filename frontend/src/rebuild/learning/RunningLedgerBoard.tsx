@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, ProgressBar } from '../design/controls';
 import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegment } from './lessonDocument';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { runningLedger, type LedgerEntry } from './runningLedgerModel';
@@ -82,9 +82,7 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence }: {
   return <main className="lf-learning" data-surface="app" data-screen="running-ledger">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <div className="lf-learning-progress" role="progressbar" aria-label={t.progress}
-          aria-valuemin={0} aria-valuemax={100} aria-valuenow={sequenceProgress(sequence, entries.length > 0)}
-          data-copy-role="data"><span style={{ inlineSize: `${sequenceProgress(sequence, entries.length > 0)}%` }} /></div> : null}
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, entries.length > 0)} max={100} valueText={`${sequenceProgress(sequence, entries.length > 0)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1>

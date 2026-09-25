@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import type { AgeBand } from '../design/copyBudget';
+import { useIdleMotion } from '../design/controls';
 import type { LessonMentorStage } from './lessonDocument';
 import { StaticThemeProvider } from '../../theme/useTheme';
 import { getDeviceProbe, pickInitialTier } from '../../tutor-scene/quality';
@@ -32,8 +33,10 @@ export function CompactMentorStage({ ageBand, theme, verdict, character, scene }
   // the tier governor asked for a still — a look-alike would be a false
   // learner continuity, so a non-dina static band is simply rendered 3D.
   const staticStill = staticScene && character === 'dina';
+  // The character's catalogue idle loop takes the hero object's idle slot (02 §9.4, 08 §3): one of the three.
+  const idle = useIdleMotion('hero', !staticStill);
   const showStill = character === 'dina' && (staticScene || !ready);
-  return <div className={`lf-mentor-band lf-mentor-band--${ageBand}`} aria-label={character} data-render-mode={staticStill ? 'still' : '3d'} data-mentor-state={emotion} data-mentor-character={character} data-mentor-scene={scene}>
+  return <div className={`lf-mentor-band lf-mentor-band--${ageBand}`} aria-label={character} data-render-mode={staticStill ? 'still' : '3d'} data-mentor-state={emotion} data-mentor-character={character} data-mentor-scene={scene} data-idle-motion={idle ? 'hero' : undefined}>
     {showStill ? <picture>
       <source media="(min-width: 640px)" srcSet={`/rebuild/mentor-stills/dina-square-${mode}.png`} />
       <img className="lf-mentor-band-still" src={`/rebuild/mentor-stills/dina-${variant}-${mode}.png`} alt="" aria-hidden="true" />

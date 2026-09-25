@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, type NoticeTone } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './achievementShare.css';
@@ -46,16 +46,18 @@ export function AchievementShare({ copy, locale, dark, variant = 'achievement', 
   const notice = status === 'preparing' ? copy.preparing
     : status === 'shared' ? copy.shared
       : status === 'downloaded' ? copy.downloaded
-        : status === 'failed' ? copy.failed
-          : null;
+        : null;
+  const tone: NoticeTone = status === 'preparing' ? 'info' : 'success';
   return <section className="lf-rebuild lf-achievement-share" data-share-audit="achievement" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={label}>
     <Button variant="accent" aria-describedby={disclosureId} disabled={status === 'preparing'} aria-busy={status === 'preparing'} onClick={onShare}>{label}</Button>
     <div id={disclosureId} className="lf-achievement-share-disclosure">
       <Copy role="body">{copy.disclosure}</Copy>
       <Copy role="body">{copy.keepNote}</Copy>
     </div>
-    <div role={status === 'failed' ? 'alert' : 'status'}>
-      {notice ? <Copy role="body">{notice}</Copy> : null}
+    {/* The status region stays mounted so each state is announced once; a failure is its own alert. */}
+    <div className="lf-achievement-share-feedback">
+      <div role="status">{notice ? <InlineNotice tone={tone}>{notice}</InlineNotice> : null}</div>
+      {status === 'failed' ? <InlineNotice tone="error" live>{copy.failed}</InlineNotice> : null}
     </div>
   </section>;
 }

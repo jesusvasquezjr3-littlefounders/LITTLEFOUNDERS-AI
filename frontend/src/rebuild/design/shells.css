@@ -1,0 +1,377 @@
+/*
+ * Shared shells (Frontend Bible 02 §4.4, §4.5, §7 rule 9, §8, §9.8; 03 §3.4;
+ * S03.2). Layout changes by the `app` container width, never the viewport:
+ * phone (<640), tablet (640–839) and desktop (>=840, the side rail). Every
+ * edge that can meet a device notch or home indicator pads to the safe area.
+ * Separation is a fill step or a soft shadow, never a line (02 §4.4; K28).
+ * Tokens and logical properties only.
+ */
+
+/* ---- Focus: links get the same ring as every other pressable ---- */
+.lf-rebuild a:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+/* Route focus lands on the page heading or <main>; that is a reading position, not a control. */
+.lf-rebuild .lf-shell [tabindex='-1']:focus { outline: none; }
+
+/* ---- Skip link: the first stop, visible only while focused ---- */
+.lf-rebuild .lf-skip-link {
+  position: fixed;
+  inset-block-start: max(var(--spacing-2), env(safe-area-inset-top));
+  inset-inline-start: max(var(--spacing-2), env(safe-area-inset-left));
+  z-index: var(--layer-toast);
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  padding: var(--spacing-2) var(--spacing-5);
+  border-radius: var(--rounded-full);
+  background: var(--primary);
+  color: var(--on-primary);
+  font: var(--type-button);
+  text-decoration: none;
+}
+.lf-rebuild .lf-skip-link:not(:focus) {
+  inline-size: 2px;
+  block-size: 2px;
+  min-block-size: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.lf-rebuild .lf-skip-link:focus-visible { outline-color: var(--content); }
+
+/* ---- Brand mark and navigation links ---- */
+.lf-rebuild .lf-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  color: inherit;
+  font: var(--type-title);
+  text-decoration: none;
+}
+.lf-rebuild .lf-button-link { text-decoration: none; }
+.lf-rebuild .lf-nav-list { margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-nav-entry { min-inline-size: 0; }
+.lf-rebuild .lf-nav-link { color: var(--content-muted); text-decoration: none; overflow-wrap: break-word; cursor: pointer; }
+.lf-rebuild .lf-nav-link[aria-current='page'] { background: var(--primary-soft); color: var(--primary-strong); }
+.lf-rebuild .lf-nav-icon-slot { display: inline-grid; place-items: center; flex: none; }
+.lf-rebuild .lf-nav-icon { inline-size: var(--spacing-6); block-size: var(--spacing-6); }
+
+.lf-rebuild .lf-nav-list--rail { display: grid; gap: var(--spacing-2); }
+.lf-rebuild .lf-nav-link--rail {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-block-size: var(--target-base);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--rounded-full);
+  font: var(--type-label);
+}
+.lf-rebuild .lf-nav-list--sheet { display: grid; gap: var(--spacing-2); }
+.lf-rebuild .lf-nav-link--sheet {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-block-size: var(--target-base);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-md);
+  color: var(--content);
+  font: var(--type-answer);
+}
+
+/* ---- Frame: one <main>, a rail from 840 px ---- */
+.lf-rebuild .lf-shell { display: flex; flex-direction: column; min-block-size: 100dvh; background: var(--base); color: var(--content); }
+.lf-rebuild .lf-shell-frame { display: grid; flex: 1 1 auto; grid-template-columns: minmax(0, 1fr); }
+.lf-rebuild .lf-shell-rail { display: none; }
+.lf-rebuild .lf-shell-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  min-inline-size: 0;
+  padding-block: max(var(--spacing-6), env(safe-area-inset-top)) var(--spacing-8);
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+
+/* ---- The docked tab bar: thumb zone on phones and tablets (03 §3.4) ---- */
+.lf-rebuild .lf-tabbar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: var(--layer-nav);
+  padding-block: var(--spacing-2) max(var(--spacing-3), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-3), env(safe-area-inset-left)) max(var(--spacing-3), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-nav-list--tab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+  border-radius: var(--rounded-xl);
+  background: var(--surface);
+  box-shadow: var(--elevation-float);
+}
+.lf-rebuild .lf-nav-list--tab > .lf-nav-entry { display: flex; flex: 1 1 0; min-inline-size: min-content; }
+.lf-rebuild .lf-nav-link--tab {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  min-block-size: var(--target-lg);
+  min-inline-size: var(--target-min);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--rounded-lg);
+  font: var(--type-chip);
+  text-align: center;
+}
+.lf-rebuild[data-theme='dark'] .lf-nav-list--tab { background: var(--raised); }
+
+/* Below 360 px, when every tab has its own icon, only the current tab keeps a visible label (02 §7 rule 9). */
+@container app (max-width: 359px) {
+  .lf-rebuild .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry:not(:has([aria-current='page'])) { flex: 0 0 var(--target-min); }
+  .lf-rebuild .lf-nav-list--tab[data-icons='all'] .lf-nav-link:not([aria-current='page']) .lf-nav-label {
+    position: absolute;
+    inline-size: 2px;
+    block-size: 2px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ---- Console app bar (parent and staff on phones and tablets) ---- */
+.lf-rebuild .lf-appbar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--layer-nav);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2) var(--spacing-3);
+  padding-block: max(var(--spacing-2), env(safe-area-inset-top)) var(--spacing-2);
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-appbar-menu { margin-inline-start: auto; }
+
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-nav-list--tab { max-inline-size: calc(var(--spacing-32) * 5); margin-inline: auto; }
+  .lf-rebuild .lf-shell-main { padding-inline: max(var(--spacing-8), env(safe-area-inset-left)) max(var(--spacing-8), env(safe-area-inset-right)); }
+}
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-shell-frame { grid-template-columns: calc(var(--spacing-32) * 2) minmax(0, 1fr); }
+  .lf-rebuild .lf-shell-rail {
+    position: sticky;
+    inset-block-start: 0;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    gap: var(--spacing-3);
+    block-size: 100dvh;
+    overflow-y: auto;
+    padding-block: max(var(--spacing-5), env(safe-area-inset-top)) var(--spacing-5);
+    padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) var(--spacing-4);
+    background: var(--surface);
+    box-shadow: var(--elevation-card);
+  }
+  .lf-rebuild .lf-shell-rail > .lf-brand-mark { padding-inline: var(--spacing-4); }
+  .lf-rebuild .lf-shell-rail > .lf-pill { align-self: flex-start; margin-inline-start: var(--spacing-4); }
+  .lf-rebuild .lf-shell--learner .lf-tabbar, .lf-rebuild .lf-shell--console :is(.lf-tabbar, .lf-appbar) { display: none; }
+  .lf-rebuild .lf-shell-main { gap: var(--spacing-8); padding-block: var(--spacing-8) var(--spacing-10); }
+}
+
+/* ---- Public site ---- */
+.lf-rebuild .lf-site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--layer-nav);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding-block: max(var(--spacing-3), env(safe-area-inset-top)) var(--spacing-3);
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-site-links, .lf-rebuild .lf-site-actions { display: none; }
+.lf-rebuild .lf-site-menu { margin-inline-start: auto; }
+/* A public page's h1 is the marketing display step, at least 3x the body (03 §3.2); the token steps with the container. */
+.lf-rebuild .lf-shell--site main h1 { font: var(--type-display-2xl); letter-spacing: var(--type-display-2xl-tracking); }
+.lf-rebuild .lf-site-footer {
+  display: grid;
+  gap: var(--spacing-4);
+  padding-block: var(--spacing-8) max(var(--spacing-8), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+  background: var(--surface);
+}
+/* Footer links are standalone targets, not links inside a sentence: they meet the 48 px floor (02 §8). */
+.lf-rebuild :is(.lf-site-footer, .lf-auth-footer) a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--target-min);
+  min-inline-size: var(--target-min);
+  color: inherit;
+  font: var(--type-label);
+}
+.lf-rebuild .lf-sticky-action {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--layer-nav);
+  padding-block: var(--spacing-3) max(var(--spacing-3), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+  background: var(--surface);
+  box-shadow: var(--elevation-float);
+}
+.lf-rebuild .lf-sticky-action > .lf-button { inline-size: 100%; }
+.lf-rebuild .lf-sticky-action[data-visible='false'] { visibility: hidden; transform: translateY(100%); }
+.lf-rebuild .lf-shell--site:has(.lf-sticky-action) { padding-block-end: calc(var(--target-lg) + var(--spacing-8)); }
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-site-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin-inline-start: auto; }
+  .lf-rebuild .lf-site-menu { margin-inline-start: 0; }
+  .lf-rebuild .lf-sticky-action { display: none; }
+  .lf-rebuild .lf-shell--site:has(.lf-sticky-action) { padding-block-end: 0; }
+  .lf-rebuild .lf-site-footer { padding-inline: max(var(--spacing-8), env(safe-area-inset-left)) max(var(--spacing-8), env(safe-area-inset-right)); }
+}
+@container app (min-width: 1120px) {
+  .lf-rebuild .lf-site-links { display: block; }
+  .lf-rebuild .lf-site-links .lf-nav-list--rail { display: flex; flex-wrap: wrap; }
+  .lf-rebuild .lf-site-menu { display: none; }
+}
+
+/* ---- Sign-in ---- */
+.lf-rebuild .lf-auth-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding-block: max(var(--spacing-3), env(safe-area-inset-top)) var(--spacing-3);
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-auth-main { align-items: center; }
+.lf-rebuild .lf-auth-column { display: grid; gap: var(--spacing-5); inline-size: 100%; max-inline-size: calc(var(--spacing-32) * 4); }
+.lf-rebuild .lf-auth-footer {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--spacing-4) max(var(--spacing-6), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-auth-main { justify-content: center; }
+  .lf-rebuild .lf-auth-column { padding: var(--spacing-8); border-radius: var(--rounded-xl); background: var(--surface); box-shadow: var(--elevation-card); }
+}
+
+/* ---- Full-bleed single-state screen (02 §4.5, rule 15) ---- */
+.lf-rebuild .lf-single-state--primary { background: var(--primary); color: var(--on-primary); --focus-color: var(--on-primary); }
+.lf-rebuild .lf-single-state--accent { background: var(--accent); color: var(--on-accent); --focus-color: var(--on-accent); }
+.lf-rebuild .lf-single-state--success { background: var(--success); color: var(--on-success); --focus-color: var(--on-success); }
+.lf-rebuild .lf-single-state--sky { background: var(--sky); color: var(--on-sky); --focus-color: var(--on-sky); }
+.lf-rebuild .lf-single-state--mint { background: var(--mint); color: var(--on-mint); --focus-color: var(--on-mint); }
+.lf-rebuild .lf-single-state--berry { background: var(--berry); color: var(--on-berry); --focus-color: var(--on-berry); }
+.lf-rebuild .lf-single-state--reward { background: var(--reward); color: var(--on-reward); --focus-color: var(--on-reward); }
+.lf-rebuild .lf-single-state :is(a, button, input, select):focus-visible { outline-color: var(--focus-color); }
+.lf-rebuild .lf-single-state-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding-block: max(var(--spacing-3), env(safe-area-inset-top)) var(--spacing-2);
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-single-state-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-5);
+  inline-size: 100%;
+  max-inline-size: calc(var(--spacing-32) * 5);
+  margin-inline: auto;
+  padding-block: var(--spacing-6);
+  padding-inline: max(var(--spacing-5), env(safe-area-inset-left)) max(var(--spacing-5), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-single-state-actions {
+  position: sticky;
+  inset-block-end: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  inline-size: 100%;
+  max-inline-size: calc(var(--spacing-32) * 5);
+  margin-inline: auto;
+  padding-block: var(--spacing-4) max(var(--spacing-5), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-5), env(safe-area-inset-left)) max(var(--spacing-5), env(safe-area-inset-right));
+  background: inherit;
+}
+.lf-rebuild .lf-single-state-actions > * { flex: 1 1 auto; }
+
+/* ---- Dashboard page: 7:5 from an 840 px container of its own (03 §3.3) ---- */
+.lf-rebuild .lf-dashboard { container: lf-dashboard / inline-size; min-inline-size: 0; }
+.lf-rebuild .lf-dashboard-grid { display: grid; gap: var(--spacing-6); }
+.lf-rebuild .lf-dashboard-primary, .lf-rebuild .lf-dashboard-secondary { display: grid; gap: var(--spacing-5); align-content: start; min-inline-size: 0; }
+@container lf-dashboard (min-width: 840px) {
+  .lf-rebuild .lf-dashboard-grid--split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
+}
+
+/* ---- Data table: stacked cards below an 840 px container (02 §9.8) ---- */
+.lf-rebuild .lf-table-wrap { container: lf-table / inline-size; min-inline-size: 0; }
+.lf-rebuild .lf-table {
+  inline-size: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-table-caption { padding-block-end: var(--spacing-3); font: var(--type-title); text-align: start; caption-side: top; }
+.lf-rebuild .lf-table th { padding: var(--spacing-3) var(--spacing-4); color: var(--content-muted); font: var(--type-label); text-align: start; vertical-align: bottom; }
+.lf-rebuild .lf-table-cell { padding: var(--spacing-3) var(--spacing-4); font: var(--type-body); vertical-align: top; }
+.lf-rebuild .lf-table-row:nth-child(odd) { background: var(--sunken); }
+.lf-rebuild .lf-table-label { display: none; }
+/* The zebra fill follows the table's rounded corners instead of poking out of them. */
+.lf-rebuild .lf-table-row:last-child > .lf-table-cell:first-child { border-end-start-radius: var(--rounded-lg); }
+.lf-rebuild .lf-table-row:last-child > .lf-table-cell:last-child { border-end-end-radius: var(--rounded-lg); }
+@container lf-table (max-width: 839px) {
+  .lf-rebuild .lf-table, .lf-rebuild .lf-table tbody, .lf-rebuild .lf-table-row, .lf-rebuild .lf-table-cell, .lf-rebuild .lf-table-caption { display: block; }
+  .lf-rebuild .lf-table { border-radius: 0; background: none; box-shadow: none; }
+  .lf-rebuild .lf-table-head {
+    position: absolute;
+    inline-size: 2px;
+    block-size: 2px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .lf-rebuild .lf-table tbody { display: grid; gap: var(--spacing-3); }
+  .lf-rebuild .lf-table-row, .lf-rebuild .lf-table-row:nth-child(odd) {
+    display: grid;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    border-radius: var(--rounded-lg);
+    background: var(--surface);
+    box-shadow: var(--elevation-card);
+  }
+  .lf-rebuild .lf-table-cell { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-1) var(--spacing-2); padding: 0; border-radius: 0; }
+  .lf-rebuild .lf-table-label { display: inline; color: var(--content-muted); font: var(--type-label); }
+  .lf-rebuild .lf-table-label::after { content: ':'; }
+  .lf-rebuild .lf-table-value { min-inline-size: 0; }
+}
+
+/* ---- Motion: the docked call to action slides up once it has a reason to be there ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-sticky-action { transition: transform var(--dur-transition) var(--ease-enter), visibility 0s; }
+  .lf-rebuild .lf-sticky-action[data-visible='false'] { transition: transform var(--dur-transition) var(--ease-exit), visibility 0s linear var(--dur-transition); }
+  .lf-rebuild .lf-nav-link { transition: background-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard); }
+}
+
+@media (forced-colors: active) {
+  .lf-rebuild :is(.lf-nav-list--tab, .lf-shell-rail, .lf-appbar, .lf-site-header, .lf-table-row) { border: 2px solid CanvasText; }
+  .lf-rebuild .lf-nav-link[aria-current='page'] { border: 2px solid Highlight; }
+}
+
+/* User-generated tokens wrap anywhere; kept last so no shell rule overrides it (02 §7 rule 8). */
+.lf-rebuild .lf-shell .ugc { overflow-wrap: anywhere; hyphens: none; min-inline-size: 0; }

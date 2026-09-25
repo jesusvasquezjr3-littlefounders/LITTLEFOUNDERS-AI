@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
-import { Button } from '../design/controls';
+import { Button, Celebration, celebrationPart, CountUp } from '../design/controls';
 import './result.css';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
@@ -44,39 +44,59 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
   if (!parsed.success || parsed.data.locale !== locale) return <main className="lf-result" data-surface="app" data-screen="result-unavailable">
     <div className="lf-result-inner"><h1 data-copy-role="heading">{t.unavailable}</h1><Button variant="accent" onClick={onContinue}>{t.continue}</Button></div>
   </main>;
-  const receipt = parsed.data;
+  return <CompletedLesson receipt={parsed.data} t={t} locale={locale} onContinue={onContinue} fixture={fixture} />;
+}
+
+type ResultCopy = (typeof copy)[Locale];
+
+/**
+ * Lesson complete is on the OD-7 milestone list, so this is the one screen of
+ * the lesson that celebrates: the medal pops, the tiles rise in sequence, the
+ * numbers count up and the bars fill, once per completion. Reduced motion and a
+ * revisit show the settled frame directly.
+ */
+function CompletedLesson({ receipt, t, locale, onContinue, fixture }: {
+  receipt: LessonCompletionReceipt; t: ResultCopy; locale: Locale; onContinue: () => void; fixture: boolean;
+}) {
   const accuracy = Math.round(100 * receipt.first_try_correct / receipt.graded_count);
   const best = Math.max(accuracy, receipt.previous_best_percent);
   const newBest = accuracy > receipt.previous_best_percent;
   const duration = `${Math.floor(receipt.duration_seconds / 60)}:${String(receipt.duration_seconds % 60).padStart(2, '0')}`;
-  const xp = new Intl.NumberFormat(locale).format(receipt.awarded_xp);
+  const number = new Intl.NumberFormat(locale);
+  const pop = celebrationPart('pop');
+  const fill = celebrationPart('fill');
+  const tile = (order: number) => celebrationPart('rise', order);
   return <main className="lf-result" data-surface="app" data-screen={fixture ? 'result-preview' : 'result'}>
+    <Celebration milestone="lesson-complete" momentId={receipt.completion_id}>
     <div className="lf-result-inner">
       {fixture ? <p className="lf-result-preview-label" data-copy-role="body">{t.preview}</p> : null}
       <div className="lf-result-hero">
-        <img src="/rebuild/art/lesson-medal.svg" alt="" className="lf-result-medal" />
+        <img src="/rebuild/art/lesson-medal.svg" alt="" className={`lf-result-medal ${pop.className}`} />
         <h1 data-copy-role="heading">{t.done}</h1>
         {accuracy < receipt.previous_best_percent ? null
           : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
       </div>
       <div className="lf-result-sheet">
         <div className="lf-result-stats" aria-label={t.done}>
-          <div className="lf-result-stat"><strong data-copy-role="data">+{xp}</strong><span data-copy-role="body">{t.xp}</span></div>
-          <div className="lf-result-stat"><strong data-copy-role="data">{accuracy}%</strong><span data-copy-role="body">{t.accuracy}</span></div>
-          <div className="lf-result-stat"><strong data-copy-role="data">{duration}</strong><span data-copy-role="body">{t.time}</span></div>
+          <div className={`lf-result-stat ${tile(1).className}`} style={tile(1).style}><strong data-copy-role="data">
+            <CountUp value={receipt.awarded_xp} format={(value) => `+${number.format(value)}`} /></strong><span data-copy-role="body">{t.xp}</span></div>
+          <div className={`lf-result-stat ${tile(2).className}`} style={tile(2).style}><strong data-copy-role="data">
+            <CountUp value={accuracy} format={(value) => `${value}%`} /></strong><span data-copy-role="body">{t.accuracy}</span></div>
+          <div className={`lf-result-stat ${tile(3).className}`} style={tile(3).style}><strong data-copy-role="data">{duration}</strong><span data-copy-role="body">{t.time}</span></div>
         </div>
-        <section className="lf-result-compare" aria-label={t.comparison}>
+        <section className={`lf-result-compare ${tile(4).className}`} style={tile(4).style} aria-label={t.comparison}>
           <div className="lf-result-compare-head"><h2 data-copy-role="heading">{t.comparison}</h2>
             {newBest ? <span className="lf-result-best-note" data-copy-role="body">{t.newBest}</span> : null}</div>
           {([{ label: t.today, value: accuracy }, { label: t.best, value: best }] as const).map(({ label, value }) =>
             <div className="lf-result-row" key={label}><span data-copy-role="body">{label}</span>
               <div className="lf-result-bar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value}>
-                <span style={{ inlineSize: `${value}%` }} /></div><strong data-copy-role="data">{value}%</strong></div>)}
+                <span className={fill.className} style={{ inlineSize: `${value}%` }} /></div><strong data-copy-role="data">{value}%</strong></div>)}
           {accuracy < receipt.previous_best_percent ? <p className="lf-result-saved-best" data-copy-role="body">
             {t.savedBest(receipt.previous_best_percent)}</p> : null}
         </section>
-        <Button variant="accent" onClick={onContinue}>{t.continue}</Button>
+        <Button variant="accent" breathing onClick={onContinue}>{t.continue}</Button>
       </div>
     </div>
+    </Celebration>
   </main>;
 }

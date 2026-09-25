@@ -1,0 +1,223 @@
+/*
+ * Overlays and out-of-flow feedback (Frontend Bible 02 rules 2, 12 and 13,
+ * §4.4, §5, §9.8; 04 §2–3; S03.2). Every layer is `position: fixed` against
+ * the real viewport, in a body-level host (`.lf-layer-root`) that carries the
+ * surface's theme. The z-index order is the generated `--layer-*` tokens:
+ * sticky nav 30 → sheet 50 → dialog scrim 65 → toast 70. Neutral surfaces
+ * separate by the float shadow in light mode and by the `raised` surface step
+ * in dark mode, never by an outline. Tokens and logical properties only.
+ */
+
+/* A host is not a page: no height, no background of its own. */
+.lf-rebuild.lf-layer-root { min-block-size: 0; background: none; }
+
+.lf-rebuild .lf-visually-hidden {
+  position: absolute;
+  inline-size: 2px;
+  block-size: 2px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- Modal layers: scrim, dialog, sheet ---- */
+.lf-rebuild .lf-layer { position: fixed; inset: 0; }
+.lf-rebuild .lf-layer--scrim { z-index: var(--layer-scrim); }
+.lf-rebuild .lf-layer--sheet { z-index: var(--layer-sheet); display: flex; flex-direction: column; justify-content: flex-end; }
+.lf-rebuild .lf-scrim { position: fixed; inset: 0; background: color-mix(in srgb, var(--ink) 66%, transparent); }
+
+.lf-rebuild .lf-dialog-frame {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: max(var(--spacing-4), env(safe-area-inset-top)) max(var(--spacing-4), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-dialog {
+  display: grid;
+  gap: var(--spacing-4);
+  inline-size: 100%;
+  max-inline-size: calc(var(--spacing-24) * 5);
+  margin: auto;
+  padding: var(--spacing-6);
+  border-radius: var(--rounded-xl);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-float);
+}
+.lf-rebuild .lf-dialog-heading { margin: 0; font: var(--type-headline); text-wrap: balance; }
+.lf-rebuild .lf-dialog-description { font: var(--type-body); color: var(--content); }
+.lf-rebuild .lf-dialog-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin-block-start: var(--spacing-2); }
+.lf-rebuild .lf-dialog-actions > * { flex: 1 1 auto; }
+
+.lf-rebuild .lf-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  max-block-size: 90dvh;
+  margin-inline: auto;
+  border-start-start-radius: var(--rounded-xl);
+  border-start-end-radius: var(--rounded-xl);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-float);
+}
+.lf-rebuild .lf-sheet--full { block-size: 100dvh; max-block-size: none; border-radius: 0; background: var(--base); }
+.lf-rebuild .lf-sheet-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding-block: var(--spacing-4) var(--spacing-2);
+  padding-inline: max(var(--spacing-5), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-sheet--full .lf-sheet-header { padding-block-start: max(var(--spacing-3), env(safe-area-inset-top)); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-rebuild .lf-sheet-heading { flex: 1 1 12em; min-inline-size: 0; margin: 0; font: var(--type-title); text-wrap: balance; }
+.lf-rebuild .lf-sheet-close { margin-inline-start: auto; }
+.lf-rebuild .lf-sheet-body {
+  display: grid;
+  gap: var(--spacing-4);
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: var(--spacing-2) var(--spacing-5);
+  padding-inline: max(var(--spacing-5), env(safe-area-inset-left)) max(var(--spacing-5), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-sheet--full .lf-sheet-body { align-content: start; padding-block-start: var(--spacing-4); }
+.lf-rebuild .lf-sheet-footer {
+  padding-block: var(--spacing-3) max(var(--spacing-4), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-5), env(safe-area-inset-left)) max(var(--spacing-5), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-sheet--bottom .lf-sheet-body:last-child { padding-block-end: max(var(--spacing-5), env(safe-area-inset-bottom)); }
+.lf-rebuild .lf-sheet-actions { display: flex; flex-direction: column; gap: var(--spacing-3); }
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-sheet--bottom { max-inline-size: calc(var(--spacing-32) * 5); }
+}
+
+/* ---- Anchored layers: popover, menu, tooltip ---- */
+.lf-rebuild .lf-anchored {
+  position: fixed;
+  max-inline-size: min(22em, calc(100vw - var(--spacing-8)));
+  max-block-size: calc(100dvh - var(--spacing-8));
+  overflow-y: auto;
+}
+.lf-rebuild .lf-anchored--nav { z-index: var(--layer-nav); }
+.lf-rebuild .lf-anchored--sheet { z-index: var(--layer-sheet); }
+.lf-rebuild .lf-anchored--scrim { z-index: var(--layer-scrim); }
+.lf-rebuild .lf-anchored--toast { z-index: var(--layer-toast); }
+.lf-rebuild .lf-popover {
+  display: grid;
+  gap: var(--spacing-3);
+  inline-size: max-content;
+  padding: var(--spacing-4) var(--spacing-5);
+  border-radius: var(--rounded-md);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-float);
+  font: var(--type-body);
+}
+.lf-rebuild .lf-menu {
+  display: grid;
+  gap: var(--spacing-2);
+  inline-size: max-content;
+  min-inline-size: calc(var(--spacing-32) + var(--spacing-16));
+  padding: var(--spacing-2);
+  border-radius: var(--rounded-md);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-float);
+}
+.lf-rebuild .lf-menu-item {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 0;
+  border-radius: var(--rounded-sm);
+  background: transparent;
+  color: var(--content);
+  font: var(--type-label);
+  text-align: start;
+  overflow-wrap: break-word;
+  cursor: pointer;
+}
+.lf-rebuild .lf-menu-item:focus { background: var(--primary-soft); color: var(--primary-strong); }
+.lf-rebuild .lf-menu-item[aria-disabled='true'] { color: var(--content-disabled); cursor: default; }
+.lf-rebuild .lf-tooltip-anchor { display: inline-flex; }
+.lf-rebuild .lf-tooltip {
+  inline-size: max-content;
+  max-inline-size: min(18em, calc(100vw - var(--spacing-8)));
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-sm);
+  background: var(--content);
+  color: var(--base);
+  font: var(--type-caption);
+}
+
+/* ---- Toasts (z 70) and the announcer ---- */
+.lf-rebuild .lf-toast-region {
+  position: fixed;
+  inset-inline: 0;
+  z-index: var(--layer-toast);
+  display: grid;
+  gap: var(--spacing-2);
+  justify-items: center;
+  padding-inline: max(var(--spacing-3), env(safe-area-inset-left)) max(var(--spacing-3), env(safe-area-inset-right));
+  pointer-events: none;
+}
+.lf-rebuild .lf-toast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  inline-size: 100%;
+  max-inline-size: calc(var(--spacing-32) * 4);
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-4);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--elevation-float);
+  font: var(--type-label);
+  pointer-events: auto;
+}
+.lf-rebuild .lf-toast-text { flex: 1 1 10em; min-inline-size: 0; max-inline-size: none; }
+.lf-rebuild .lf-toast--success { background: var(--success); color: var(--on-success); }
+.lf-rebuild .lf-toast--info { background: var(--sky); color: var(--on-sky); }
+.lf-rebuild .lf-toast--error { background: var(--error); color: var(--on-error); }
+.lf-rebuild .lf-announcer > * {
+  position: absolute;
+  inline-size: 2px;
+  block-size: 2px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- Dark mode: elevation is a lighter surface step, never a shadow (02 §5) ---- */
+.lf-rebuild[data-theme='dark'] :is(.lf-dialog, .lf-sheet--bottom, .lf-popover, .lf-menu) { background: var(--raised); }
+.lf-rebuild[data-theme='dark'] .lf-sheet--full .lf-sheet-header { background: var(--surface); }
+
+/* ---- Motion: the overlay arrives; the page behind it does not move (04 §2–3) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-scrim { animation: lf-overlay-fade var(--dur-component) var(--ease-enter); }
+  .lf-rebuild .lf-dialog { animation: lf-dialog-enter var(--dur-component) var(--ease-enter); }
+  .lf-rebuild .lf-sheet--bottom { animation: lf-sheet-enter var(--dur-transition) var(--ease-enter); }
+  .lf-rebuild .lf-sheet--full { animation: lf-overlay-fade var(--dur-component) var(--ease-enter); }
+  .lf-rebuild :is(.lf-popover, .lf-menu, .lf-tooltip) { animation: lf-overlay-fade var(--dur-micro) var(--ease-enter); }
+  .lf-rebuild .lf-toast { animation: lf-toast-enter var(--dur-component) var(--ease-enter); }
+  .lf-rebuild .lf-menu-item { transition: background-color var(--dur-instant) var(--ease-standard); }
+  @keyframes lf-overlay-fade { from { opacity: 0; } }
+  @keyframes lf-dialog-enter { from { opacity: 0; transform: scale(.96); } }
+  @keyframes lf-sheet-enter { from { transform: translateY(100%); } }
+  @keyframes lf-toast-enter { from { opacity: 0; transform: translateY(var(--spacing-4)); } }
+}
+
+/* ---- Forced colours: shadows disappear, so overlay edges return ---- */
+@media (forced-colors: active) {
+  .lf-rebuild :is(.lf-dialog, .lf-sheet, .lf-popover, .lf-menu, .lf-tooltip, .lf-toast) { border: 2px solid CanvasText; }
+}

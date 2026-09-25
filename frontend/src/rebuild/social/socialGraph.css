@@ -1,5 +1,4 @@
 .lf-rebuild.lf-social-graph { min-block-size: 0; padding: 1rem; display: grid; gap: .75rem; border-radius: var(--rounded-lg); }
-.lf-social-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
 .lf-social-graph ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .75rem; }
 .lf-social-graph li { min-inline-size: 0; overflow-wrap: anywhere; }
 .lf-social-graph p, .lf-social-graph h2 { margin: 0; }

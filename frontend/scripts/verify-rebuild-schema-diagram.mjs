@@ -35,7 +35,7 @@ try {
     configurations++; if (issues.length) findings.push({ locale, theme, width, scale, spacing, issues });
   }
   await go('es-MX', 'light', '10-12', 375, 1, false);
-  await page.evaluate(`document.querySelector('.lf-scale-toggle button')?.click()`);
+  await page.evaluate(`document.querySelector('.lf-segmented-option input')?.click()`);
   await waitFor("document.querySelector('.lf-learning-actions button')?.disabled === false");
   await page.evaluate(`document.querySelector('.lf-learning-actions button')?.click()`);
   await waitFor("document.querySelector('.lf-learning-actions button')?.textContent === 'Continuar'");
@@ -44,8 +44,8 @@ try {
   await page.evaluate(`for(const [index,value] of ['24','9'].entries()){const input=document.querySelectorAll('.lf-schema-slot input')[index],set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;set.call(input,value);input.dispatchEvent(new Event('input',{bubbles:true}));}document.querySelector('.lf-learning-actions button')?.click()`);
   await waitFor("document.querySelector('.lf-learning-actions button')?.textContent === 'Continuar'");
   await page.evaluate(`document.querySelector('.lf-learning-actions button')?.click()`);
-  await waitFor("!!document.querySelector('.lf-parameter-slider input')");
-  await page.evaluate(`const input=document.querySelector('.lf-parameter-slider input'),set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;set.call(input,'15');input.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('.lf-learning-actions button')?.click()`);
+  await waitFor("!!document.querySelector('.lf-learning-control-strip .lf-input-field input')");
+  await page.evaluate(`const input=document.querySelector('.lf-learning-control-strip .lf-input-field input'),set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;set.call(input,'15');input.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('.lf-learning-actions button')?.click()`);
   await waitFor("document.querySelector('[role=status]')?.textContent === 'Correcto'");
   const flow = await page.evaluate(`({title:document.querySelector('h2')?.textContent,correct:document.querySelector('[role=status]')?.textContent})`);
   if (flow.title !== 'Resuelve el esquema' || flow.correct !== 'Correcto') findings.push({ flow });

@@ -113,6 +113,8 @@ describe('AccountDeletion', () => {
         const { container, unmount } = render(<AccountDeletion copy={copy} locale="en-US" dark={false} view={view}
           layout="screen" onSignOut={() => undefined} onContinue={() => undefined} />);
         for (const element of container.querySelectorAll('p, h1, h2, button, summary, label span')) {
+          // A string, not a box: the shared Checkbox's control span inside the label holds no text.
+          if (!element.textContent?.trim() && element.tagName !== 'BUTTON') continue;
           expect(element.getAttribute('data-copy-role'), `${name}: ${element.textContent}`).toBeTruthy();
         }
         unmount();

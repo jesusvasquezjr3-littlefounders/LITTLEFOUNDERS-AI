@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import en from '../../i18n/en-US/rebuild.json';
 import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
-import { Button, Copy, Field, StatusMark } from '../design/controls';
+import { AnswerChoice, Banner, Button, Copy, InlineNotice, TextField } from '../design/controls';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from '../learning/AllocationBoard';
 import { growthPilotDocument } from '../learning/GrowthBoard';
@@ -32,6 +32,10 @@ import type { LessonMentorStage } from '../learning/lessonDocument';
 import { AchievementSharePreview } from '../family/AchievementSharePreview';
 import { AccountDeletionPreview } from '../account/AccountDeletionPreview';
 import { SocialTiersPreview } from '../social/SocialTiersPreview';
+import { SystemGallery } from './SystemGallery';
+import { RebuildProvider } from '../design/controls';
+import { OverlayGallery } from './OverlayGallery';
+import { GalleryIndex, SHELL_KINDS, ShellGallery, type ShellKind } from './ShellGallery';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -62,6 +66,21 @@ export function Preview() {
   if (screen === 'achievement-share') return <AchievementSharePreview locale={locale} theme={theme as 'light' | 'dark'} state={params.get('state')} />;
   if (screen === 'social-tiers') return <SocialTiersPreview locale={locale} theme={theme as 'light' | 'dark'} state={params.get('state')} />;
   if (screen === 'account-deletion') return <AccountDeletionPreview locale={locale} theme={theme as 'light' | 'dark'} state={params.get('state')} layout={params.get('layout')} />;
+  if (screen === 'gallery' || screen === 'overlays' || screen === 'shell') {
+    // S03.2 component gallery: dev/preview only (this entry never ships; see main.tsx).
+    const shell = SHELL_KINDS.includes(params.get('shell') as ShellKind) ? params.get('shell') as ShellKind : 'learner';
+    const open = (next: string, kind?: ShellKind) => {
+      const query = new URLSearchParams({ locale, theme, screen: next, ...(kind ? { shell: kind } : {}) });
+      location.search = query.toString();
+    };
+    return <div className="lf-rebuild" data-theme={theme} data-age-band={ageBand} lang={locale}>
+      <RebuildProvider environment={{ theme: theme === 'dark' ? 'dark' : 'light', locale, ageBand }} labels={{ dismiss: t.designGallery.dismiss }}>
+        {screen === 'overlays' ? <OverlayGallery key={locale} t={t.designGallery} s={t.designSystem} onBack={() => open('gallery')} />
+          : screen === 'shell' ? <ShellGallery key={`${locale}:${shell}`} kind={shell} t={t.designGallery} s={t.designSystem} locale={locale} onGallery={() => open('gallery')} />
+          : <GalleryIndex t={t.designGallery} onOpen={open} />}
+      </RebuildProvider>
+    </div>;
+  }
   return <div className="lf-rebuild" data-theme={theme} data-age-band={ageBand} lang={locale}>
     {screen === 'opening' || screen === 'offline' || screen === 'loaderror'
       ? <LessonTransportStateView state={screen === 'loaderror' ? 'load-error' : screen}
@@ -109,6 +128,7 @@ export function Preview() {
             { value }, { target: ageBand === '6-9' ? 7 : 37 });
           return result === 'met' || result === 'review' ? result : 'invalid';
         }} />
+      : screen === 'system' ? <SystemGallery key={locale} t={t.designSystem} theme={theme === 'dark' ? 'dark' : 'light'} onBack={() => go('home')} />
       : screen === 'result' || screen === 'replay' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-1', lesson_id: 'pilot-savings-sequence', version_id: 'rev-1', locale,
         first_try_correct: screen === 'replay' ? 2 : 3, graded_count: 4, awarded_xp: 40, duration_seconds: 200,
@@ -174,15 +194,12 @@ export function Preview() {
         <Button onClick={() => go('home')}>{t.back}</Button>
         <h1 data-copy-role="prompt">{t.question}</h1>
         <div className="lf-choices" role="group" aria-label={t.question}>
-          {(['save', 'spend'] as const).map((choice) => <button key={choice} type="button"
-            className="lf-choice" data-copy-role="option" aria-pressed={answer === choice}
-            disabled={checked} onClick={() => setAnswer(choice)}>
-            <span className="lf-choice-marker" aria-hidden="true">{answer === choice ? '●' : '○'}</span>
-            {t[choice]}
-          </button>)}
+          {(['save', 'spend'] as const).map((choice) => <AnswerChoice key={choice} label={t[choice]}
+            selected={answer === choice} disabled={checked} onSelect={() => setAnswer(choice)}
+            verdict={checked && answer === choice ? (choice === 'save' ? 'correct' : 'retry') : null} />)}
         </div>
-        <div role="status" className={checked ? `lf-feedback ${answer === 'save' ? 'lf-feedback--correct' : 'lf-feedback--retry'}` : undefined}>
-          {checked ? <><StatusMark correct={answer === 'save'} /><Copy role="body">{answer === 'save' ? t.correct : t.hint}</Copy></> : null}
+        <div role="status" className="lf-feedback">
+          {checked ? <Banner tone={answer === 'save' ? 'success' : 'retry'} live={false}>{answer === 'save' ? t.correct : t.hint}</Banner> : null}
         </div>
         <Button variant="accent" disabled={!answer} onClick={() => checked ? (setChecked(false), setAnswer(null)) : setChecked(true)}>
           {checked ? t.again : t.check}
@@ -191,10 +208,10 @@ export function Preview() {
         <Button onClick={() => go('home')}>{t.back}</Button>
         <h1 data-copy-role="heading">{t.controls}</h1>
         <form className="lf-form" onSubmit={(event) => { event.preventDefault(); setFormState(goal.trim() ? 'saved' : 'error'); }}>
-          <Field label={t.name} value={goal} onChange={(event) => { setGoal(event.target.value); setFormState('idle'); }}
-            aria-invalid={formState === 'error'} hint={formState === 'error' ? t.required : t.nameHint} />
+          <TextField label={t.name} value={goal} onChange={(event) => { setGoal(event.target.value); setFormState('idle'); }}
+            help={t.nameHint} error={formState === 'error' ? t.required : undefined} />
           <Button variant="accent" type="submit">{t.confirm}</Button>
-          <div role="status">{formState === 'saved' ? <Copy role="body">{t.confirmed}</Copy> : null}</div>
+          <div role="status">{formState === 'saved' ? <InlineNotice tone="success">{t.confirmed}</InlineNotice> : null}</div>
         </form>
       </>}
       </div>

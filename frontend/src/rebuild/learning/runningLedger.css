@@ -4,10 +4,10 @@
 .lf-ledger-bar { fill: var(--sky); stroke: var(--sky-strong); stroke-width: 3; }
 .lf-ledger-point { fill: var(--sky-strong); }
 .lf-ledger-axis { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; min-block-size: 140px; background: var(--surface); font-weight: 800; font-size: .875rem; }
-.lf-ledger-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); }
-.lf-ledger-controls .lf-button { min-inline-size: 0; min-block-size: var(--target-base); padding-inline: var(--spacing-2); background: var(--primary-soft); color: var(--primary-strong); }
+.lf-ledger-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-ledger-controls .lf-button { flex: 1 1 0; min-block-size: var(--target-base); padding-inline: var(--spacing-2); background: var(--primary-soft); color: var(--primary-strong); }
 .lf-ledger-controls .lf-button:disabled { background: var(--sunken); color: var(--content-disabled); }
-.lf-ledger-controls .lf-button:last-child { grid-column: 1 / -1; }
+.lf-ledger-controls .lf-button:last-child { flex-basis: 100%; }
 .lf-ledger-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-ledger-foot p { font-weight: 800; }
 .lf-ledger-foot strong { font-family: Fredoka, sans-serif; font-size: 1.25rem; }

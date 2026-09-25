@@ -39,6 +39,6 @@
     "test:all": "bash agent/tools/run-all.sh test",
     "typecheck:all": "bash agent/tools/run-all.sh type-check",
     "lint:all": "bash agent/tools/run-all.sh lint",
-    "spec:check": "node agent/tools/check-product-spec.mjs && node agent/tools/check-achievement-sharing.mjs && node agent/tools/check-account-deletion.mjs && node agent/tools/check-social-tiers.mjs && node agent/tools/check-social-governance.mjs && node agent/tools/sync-v2-visual-scorer.mjs --check && node agent/tools/sync-v2-growth-comparison.mjs --check && node agent/tools/sync-v2-tax-bracket.mjs --check && node agent/tools/check-v2-lesson-capability-parity.mjs && node frontend/scripts/build-rebuild-tokens.mjs --check && node frontend/scripts/check-rebuild-assets.mjs"
+    "spec:check": "node agent/tools/check-product-spec.mjs && node agent/tools/check-achievement-sharing.mjs && node agent/tools/check-account-deletion.mjs && node agent/tools/check-social-tiers.mjs && node agent/tools/check-social-governance.mjs && node agent/tools/sync-v2-visual-scorer.mjs --check && node agent/tools/sync-v2-growth-comparison.mjs --check && node agent/tools/sync-v2-tax-bracket.mjs --check && node agent/tools/check-v2-lesson-capability-parity.mjs && node frontend/scripts/build-rebuild-tokens.mjs --check && node frontend/scripts/check-rebuild-assets.mjs && node frontend/scripts/build-rebuild-emails.mjs --check"
   }
 }

@@ -1,4 +1,4 @@
-import { Button, Copy } from '../design/controls';
+import { Button, Copy, InlineNotice, LoadingState } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
 import './socialNotices.css';
@@ -49,13 +49,13 @@ export function SocialNotices({ copy, locale, dark, open, notices, loading, fail
     <Button aria-expanded={open} onClick={open ? onClose : onOpen}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
-      {failed ? <><div role="alert"><Copy role="body">{copy.failed}</Copy></div><Button onClick={onRetry}>{copy.retry}</Button></> : <>
+      {failed ? <><InlineNotice tone="error" live>{copy.failed}</InlineNotice><Button onClick={onRetry}>{copy.retry}</Button></> : <>
         <ul>{notices.map(notice => <li key={notice.noticeId}>
           <Copy role="body">{notice.subjectName !== null ? copy.bodyNamed.replace('{name}', notice.subjectName) : copy.body}</Copy>
           <Copy role="body">{date.format(new Date(notice.createdAt))}</Copy>
         </li>)}</ul>
         {!loading && notices.length === 0 && <Copy role="body">{copy.empty}</Copy>}
-        {loading && <div role="status"><Copy role="body">{copy.loading}</Copy></div>}
+        {loading && <LoadingState label={copy.loading} lines={2} />}
       </>}
     </>}
   </section>;

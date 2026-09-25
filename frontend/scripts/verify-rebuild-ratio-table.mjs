@@ -64,15 +64,15 @@ try {
     if(!await page.evaluate("document.querySelector('.lf-ratio-diagram')?.getAttribute('aria-label')?.includes('9 artículos; 45 monedas')")) findings.push({theme,interaction:'drag-pair-linked-values'});
     await capture(`ratio-table-filled-375-${theme}.png`);
     await click('.lf-learning-view-toggle');
-    for(let n=0;n<20;n++){if(await page.evaluate("document.querySelector('.lf-learning-view-toggle')?.getAttribute('aria-pressed')==='true'")) break;await new Promise(done=>setTimeout(done,50));}
+    for(let n=0;n<20;n++){if(await page.evaluate("!!document.querySelector('.lf-ratio-table')")) break;await new Promise(done=>setTimeout(done,50));}
     if(!await page.evaluate("document.querySelectorAll('.lf-ratio-table tbody tr').length===3 && document.querySelector('.lf-ratio-table')?.textContent?.includes('45 monedas')")) findings.push({theme,interaction:'table-parity'});
     await capture(`ratio-table-table-375-${theme}.png`);
     await click('.lf-learning-view-toggle');
-    for(let n=0;n<20;n++){if(await page.evaluate("document.querySelector('.lf-learning-view-toggle')?.getAttribute('aria-pressed')==='false'")) break;await new Promise(done=>setTimeout(done,50));}
+    for(let n=0;n<20;n++){if(await page.evaluate("!document.querySelector('.lf-ratio-table')")) break;await new Promise(done=>setTimeout(done,50));}
     await page.evaluate("document.querySelector('input[type=range]')?.focus()");
     await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39}); await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});
     if(!await page.evaluate("document.querySelector('input[type=range]')?.value==='4'")) findings.push({theme,interaction:'keyboard-slider'});
-    await click('.lf-parameter-stepper button:first-child');
+    await click('.lf-slider-steps .lf-stepper-button:first-child');
     if(!await page.evaluate("document.querySelector('input[type=range]')?.value==='3'")) findings.push({theme,interaction:'stepper'});
   }
   for(const age of ['6-9','13-17','adult']) { await navigate('es-MX','light',age,375,1,false); if(!await page.evaluate("!!document.querySelector('[data-screen=lesson-unavailable]')&&!document.querySelector('.lf-ratio-diagram')")) findings.push({age,issue:'age-gate'}); }

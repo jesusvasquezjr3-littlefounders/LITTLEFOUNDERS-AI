@@ -1,0 +1,49 @@
+{
+  "common": {
+    "fallback": "¿El botón no funciona? Abre este enlace:",
+    "tagline": "Donde niños y familias aprenden sobre dinero y emprendimiento, de forma divertida.",
+    "rights": "© 2026 LittleFounders. Todos los derechos reservados."
+  },
+  "confirmation": {
+    "title": "Confirma tu correo",
+    "preheader": "Confirma tu correo para empezar en LittleFounders.",
+    "heading": "Confirma tu correo",
+    "body": "¡Te damos la bienvenida a LittleFounders! Confirma este correo para activar tu cuenta.",
+    "action": "Confirmar correo",
+    "safety": "¿No te registraste? Ignora este correo y no se activará ninguna cuenta."
+  },
+  "emailChange": {
+    "title": "Confirma tu nuevo correo",
+    "preheader": "Confirma tu nuevo correo para LittleFounders.",
+    "heading": "Confirma tu nuevo correo",
+    "body": "Recibimos una solicitud para cambiar tu cuenta de LittleFounders a este correo.",
+    "action": "Confirmar nuevo correo",
+    "safety": "¿No lo pediste? Ignora este correo y cambia tu contraseña."
+  },
+  "invite": {
+    "title": "Te invitaron",
+    "preheader": "Te invitaron a LittleFounders.",
+    "heading": "Te invitaron",
+    "body": "Únete a LittleFounders, donde las familias aprenden sobre dinero juntas.",
+    "action": "Unirme a LittleFounders",
+    "safety": "¿No lo esperabas? Puedes ignorar este correo sin problema."
+  },
+  "magicLink": {
+    "title": "Tu enlace para entrar",
+    "preheader": "Tu enlace para entrar a LittleFounders.",
+    "heading": "Entra a LittleFounders",
+    "body": "Toca el botón para entrar. No necesitas contraseña.",
+    "note": "El enlace funciona una vez y vence pronto.",
+    "action": "Iniciar sesión",
+    "safety": "¿No intentaste entrar? Puedes ignorar este correo."
+  },
+  "recovery": {
+    "title": "Restablece tu contraseña",
+    "preheader": "Restablece tu contraseña de LittleFounders.",
+    "heading": "Restablece tu contraseña",
+    "body": "Toca el botón para elegir una contraseña nueva.",
+    "note": "El enlace funciona una vez y vence pronto.",
+    "action": "Restablecer contraseña",
+    "safety": "¿No lo pediste? Ignora este correo; tu contraseña no cambia."
+  }
+}

@@ -65,9 +65,8 @@ body { margin: 0; }
 .lf-button:disabled { color: var(--content-disabled); background: var(--sunken); box-shadow: none; cursor: default; }
 .lf-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-actions > * { flex: 1 1 auto; }
-.lf-field { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
-.lf-field label, .lf-preview-settings label { font-weight: 800; }
-.lf-field input, .lf-preview-settings select {
+.lf-preview-settings label { font-weight: 800; }
+.lf-preview-settings select {
   min-inline-size: 0;
   inline-size: 100%;
   min-block-size: var(--target-base);
@@ -77,8 +76,6 @@ body { margin: 0; }
   border: 0;
   border-radius: var(--rounded-md);
 }
-.lf-field input[aria-invalid='true'] { box-shadow: inset 0 0 0 3px var(--error-strong); }
-.lf-field input[aria-invalid='true'] + p { color: var(--error-strong); }
 .lf-preview {
   display: flex;
   flex-direction: column;
@@ -114,9 +111,8 @@ body { margin: 0; }
 .lf-choice[aria-pressed='true'] { outline: 3px solid var(--on-primary); outline-offset: 3px; }
 .lf-choice:disabled { cursor: default; }
 .lf-choice-marker { flex-shrink: 0; }
-.lf-feedback { display: flex; align-items: center; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); }
-.lf-feedback--correct { background: var(--success); color: var(--on-success); }
-.lf-feedback--retry { background: var(--warning); color: var(--on-warning); }
+/* A persistent live region; the verdict is the shared Banner inside it. */
+.lf-feedback { display: grid; }
 .lf-system-glyph { inline-size: 24px; block-size: 24px; flex-shrink: 0; }
 .lf-preview-settings { display: flex; flex-wrap: wrap; gap: var(--spacing-6); padding: var(--spacing-6); }
 .lf-preview-settings label { display: grid; flex: 1 1 auto; gap: var(--spacing-2); }

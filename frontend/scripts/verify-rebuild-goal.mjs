@@ -84,7 +84,7 @@ try {
   await click('.lf-learning-view-toggle');
   if (!await page.evaluate("document.querySelectorAll('.lf-learning-table tbody tr').length===3 && document.querySelector('.lf-learning-table tbody tr:last-child td')?.textContent==='6 monedas'")) findings.push({ interaction: 'table-parity' });
   await click('.lf-learning-view-toggle');
-  for (let i = 0; i < 3; i++) await click('button[aria-label="Guardar más"]');
+  for (let i = 0; i < 3; i++) await click('button[aria-label="Cambia el ahorro: Guardar más"]');
   if (!await page.evaluate("document.querySelector('input[type=range]').value==='12' && document.querySelector('.lf-goal-outcome')?.textContent.includes('Meta alcanzada')")) findings.push({ interaction: 'target-not-met' });
   await click('.lf-learning-control-bar .lf-button');
   if (!await page.evaluate("document.querySelector('input[type=range]').value==='4'")) findings.push({ interaction: 'reset-failed' });
