@@ -330,8 +330,8 @@
       "frozenHold": "Seus créditos ficam aqui enquanto o cartão está congelado. Você poderá dividi-los quando ele for descongelado."
     },
     "statement": {
-      "title": "Extrato",
-      "viewCta": "Ver o extrato deste mês",
+      "title": "Resumo do mês",
+      "viewCta": "Ver este mês",
       "prevMonth": "Mês anterior",
       "nextMonth": "Próximo mês",
       "earned": "Ganho",

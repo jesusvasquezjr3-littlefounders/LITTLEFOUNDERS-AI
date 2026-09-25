@@ -84,6 +84,19 @@ const envelopeShape = {
     .object({ character: characterIdSchema, emotion: characterEmotionSchema.optional() })
     .optional(),
   audio_segment_id: z.string().optional(),
+  /** B.18 (Mayer's redundancy principle): how this segment uses the voice
+   *  channel. Omitted: every narrated field is read aloud exactly as shown, so
+   *  each narrated on-screen block must stay caption-length. text_only: the
+   *  segment is not narrated at all (Echo skips it). differentiated: Echo reads
+   *  script_md INSTEAD of prompt_md, so the narration explains while prompt_md
+   *  stays a short on-screen cue. There is no audio-only mode: the screen always
+   *  keeps a caption for accessibility and muted devices (Frontend 08 section 5). */
+  narration: z
+    .discriminatedUnion('mode', [
+      z.object({ mode: z.literal('text_only') }),
+      z.object({ mode: z.literal('differentiated'), script_md: markdownLite }),
+    ])
+    .optional(),
 }
 
 /** Factory for one segment type. Content types pass no answer schema. */

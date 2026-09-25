@@ -28,6 +28,7 @@
     "catalog:check": "tsx src/catalog/check.ts",
     "graph:check": "tsx src/catalog/graphCheck.ts",
     "contract:check": "tsx src/contract/check.ts",
+    "content:gates": "tsx src/contentGates/cli.ts",
     "verify:course": "tsx --env-file-if-exists=.env src/verifyCourse.ts",
     "graph:backfill": "tsx --env-file-if-exists=.env.production src/scripts/backfill-graph.ts"
   },

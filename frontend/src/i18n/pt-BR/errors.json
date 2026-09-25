@@ -18,7 +18,7 @@
     "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto, tente uma mais nítida e bem iluminada.",
     "USERNAME_TAKEN": "Esse @usuário já está em uso, tente outro.",
     "LESSON_LOCKED": "Esta lição ainda não está desbloqueada, termine as anteriores primeiro.",
-    "ATTEMPTS_EXHAUSTED": "Não há mais tentativas para esta pergunta.",
+    "ATTEMPTS_EXHAUSTED": "Pronto com esta. Vamos em frente.",
     "UNSUPPORTED_SEGMENT": "Esta parte da lição não pode ser avaliada agora.",
     "PULSE_UNCONFIGURED": "O analytics não está configurado nesta implantação.",
     "UPSTREAM_FAILED": "Um serviço interno não respondeu.",

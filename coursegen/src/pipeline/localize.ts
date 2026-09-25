@@ -12,6 +12,8 @@ import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/sch
 import type { LessonLocale } from '../contract/core/types.js';
 import { runVocabularyGate, NON_VISIBLE_KEYS, type GateProblem, type GateContext } from './gates.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+import { runLessonContentGates } from '../contentGates/lessonGates.js';
+import { audienceForTier } from '../contentGates/budgets.js';
 
 type PathSegment = string | number;
 
@@ -167,6 +169,22 @@ export class LocalizeVocabError extends Error {
   constructor(locale: LessonLocale, problems: GateProblem[]) {
     super(`localize: ${locale} re-gate found ${problems.length} forbidden-vocabulary hit(s) after translation`);
     this.name = 'LocalizeVocabError';
+    this.locale = locale;
+    this.problems = problems;
+  }
+}
+
+/** A translated document failed a Forge content gate (11 redundancy, 12 tone, 13 Copy Budget). */
+export class LocalizeContentGateError extends Error {
+  readonly locale: LessonLocale;
+  readonly problems: GateProblem[];
+
+  constructor(locale: LessonLocale, problems: GateProblem[]) {
+    super(
+      `localize: ${locale} re-gate found ${problems.length} content-gate problem(s) after translation — ` +
+        problems.slice(0, 3).map((p) => `[gate ${p.gate}] ${p.message}`).join('; '),
+    );
+    this.name = 'LocalizeContentGateError';
     this.locale = locale;
     this.problems = problems;
   }
@@ -419,6 +437,21 @@ export async function localizeLesson(
     if (vocabProblems.length > 0) {
       throw new LocalizeVocabError(targetLocale, vocabProblems);
     }
+  }
+
+  /*
+   * Forge content gates 11-13 re-run on the TARGET locale (S05.4a): the tone
+   * lexicon is per language, and Bible 06 budgets differ per locale (en-US at
+   * 1x, es-MX/pt-BR at 1.25x). Bible 06 §5.9: a translation that cannot meet
+   * its budget is never truncated; the es-MX source is rewritten shorter, so
+   * the slot fails with the itemized problems instead of shipping over budget.
+   */
+  const contentProblems = runLessonContentGates(
+    parsed.data,
+    audienceForTier(gateCtx.taxonomy, gateCtx.tier, gateCtx.register ?? 'kid'),
+  ).problems;
+  if (contentProblems.length > 0) {
+    throw new LocalizeContentGateError(targetLocale, contentProblems);
   }
 
   return { document: parsed.data, targetLocale };

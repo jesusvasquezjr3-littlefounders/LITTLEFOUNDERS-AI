@@ -330,8 +330,8 @@
       "frozenHold": "Your credits stay here while the card is frozen. You can split them after it is unfrozen."
     },
     "statement": {
-      "title": "Statement",
-      "viewCta": "View this month's statement",
+      "title": "Month summary",
+      "viewCta": "See this month",
       "prevMonth": "Previous month",
       "nextMonth": "Next month",
       "earned": "Earned",

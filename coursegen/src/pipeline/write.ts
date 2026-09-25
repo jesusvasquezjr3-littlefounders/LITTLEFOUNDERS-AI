@@ -28,6 +28,8 @@ import type { LessonLocale } from '../contract/core/types.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { ICON_PALETTE } from './generationQuality.js';
 import { CONTENT_PLAYBOOK, tierReasoningGuidance } from './contentPlaybook.js';
+import { contentGateGuidance } from '../contentGates/guidance.js';
+import { audienceForTier } from '../contentGates/budgets.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues, CorrectiveRetryExhaustedError } from './correctiveRetry.js';
 
 const MAX_WRITE_ATTEMPTS = 4;
@@ -289,6 +291,9 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     CONTENT_PLAYBOOK,
     '',
     `AGE-TIER REASONING CEILING for THIS lesson — ${tierReasoningGuidance(input.ctx.tier)}`,
+    '',
+    // Gates 11-13 stated up front (S05.4a): same numbers the gates enforce, per tier.
+    contentGateGuidance(audienceForTier(input.gateCtx?.taxonomy, input.ctx.tier, input.gateCtx?.register ?? 'kid')),
     '',
     'HARD RULES (mechanical constraints — the playbook above is the quality bar; these are the non-negotiable format rules):',
     renderBaseHardRules(),

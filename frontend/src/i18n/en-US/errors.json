@@ -18,7 +18,7 @@
     "DOCUMENT_UNREADABLE": "We couldn't read that photo, try a sharper, well-lit one.",
     "USERNAME_TAKEN": "That @username is taken, try another one.",
     "LESSON_LOCKED": "This lesson isn't unlocked yet, finish the ones before it first.",
-    "ATTEMPTS_EXHAUSTED": "No attempts left for this question.",
+    "ATTEMPTS_EXHAUSTED": "That's it for this one. Let's keep going.",
     "UNSUPPORTED_SEGMENT": "This part of the lesson can't be graded right now.",
     "PULSE_UNCONFIGURED": "Analytics isn't configured on this deployment.",
     "UPSTREAM_FAILED": "An internal service didn't answer.",

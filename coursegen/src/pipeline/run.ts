@@ -361,6 +361,7 @@ async function processSlot(
     facts: course.facts,
     topicTitle: slot.topic.title_es,
     skipVocabularyGate: !register.vocabularyGates,
+    register: register.register,
   };
   const locales = options.locales ?? DEFAULT_LOCALES;
 

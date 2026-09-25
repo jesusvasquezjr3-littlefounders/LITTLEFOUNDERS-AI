@@ -1,0 +1,28 @@
+{
+  "tier": "tier1",
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "red-team-b18", "title": "Cuento las monedas", "locale": "es-MX", "subject": "money", "estimated_minutes": 3, "objectives": ["Contar monedas para pagar un vaso."], "cast": ["liruf"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-contar", "type": "quiz_mcq", "prompt_md": "¿Cuántas monedas paga Liruf?", "difficulty": 1, "xp": 10,
+        "hints": ["Mira con calma cada moneda del frasco, cuenta una por una despacio y después suma todas las monedas que encontraste ahí."],
+        "payload": { "options": [
+          { "id": "o3", "text_md": "3 monedas", "rationale_md": "Te faltó contar una." },
+          { "id": "o4", "text_md": "4 monedas" }
+        ] },
+        "answer": { "correct_option_id": "o4" }
+      },
+      {
+        "id": "s2-guion", "type": "quiz_mcq", "prompt_md": "¿Cuál vaso cuesta menos?", "difficulty": 1, "xp": 10,
+        "narration": { "mode": "differentiated", "script_md": "¿Cuál vaso cuesta menos?" },
+        "payload": { "options": [
+          { "id": "a", "text_md": "Vaso chico" },
+          { "id": "b", "text_md": "Vaso grande", "rationale_md": "El grande cuesta más." }
+        ] },
+        "answer": { "correct_option_id": "a" }
+      }
+    ]
+  }
+}

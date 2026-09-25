@@ -25,7 +25,14 @@ export function extractNarratables(document: LessonDocument): NarrationUnit[] {
   const units: NarrationUnit[] = [];
 
   for (const segment of document.segments) {
-    push(units, segment, 'prompt', segment.prompt_md);
+    // B.18 (Mayer's redundancy principle): the author chose a channel. A
+    // text_only segment is deliberately silent; a differentiated segment's
+    // prompt clip reads the spoken script, never the on-screen cue. Forge's
+    // redundancy gate (coursegen/src/contentGates) mirrors this exact rule —
+    // agent/tools/check-narration-parity.mjs keeps the two in step.
+    if (segment.narration?.mode === 'text_only') continue;
+    const promptSource = segment.narration?.mode === 'differentiated' ? segment.narration.script_md : segment.prompt_md;
+    push(units, segment, 'prompt', promptSource);
     pushStoryBodies(units, segment);
     pushChoices(units, segment);
     segment.hints?.forEach((hint, i) => push(units, segment, `hint.${i}`, hint));

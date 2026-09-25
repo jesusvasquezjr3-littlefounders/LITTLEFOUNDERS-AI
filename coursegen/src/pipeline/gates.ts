@@ -17,8 +17,12 @@ import {
 import { runGenerationQualityGate } from './generationQuality.js';
 import { runReadabilityGate } from './readability.js';
 import { CONTENT_TYPES } from '../contract/registry.js';
+import { runLessonContentGates } from '../contentGates/lessonGates.js';
+import { audienceForTier } from '../contentGates/budgets.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+// 11-13 are the Forge content gates (src/contentGates): 11 redundancy (B.18),
+// 12 Law 2 tone (B.14), 13 Copy Budget (OD-13).
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -2505,6 +2509,12 @@ export interface GateContext {
    * (review, localization) stay valid; the write stage always passes it.
    */
   plannedSegmentTypes?: readonly string[];
+  /**
+   * Audience register for the OD-13 Copy Budget (gate 13): the kid register uses
+   * the 6-9 limits when the tier reaches below age 10; adult never does.
+   * Defaults to kid, the stricter reading.
+   */
+  register?: 'kid' | 'adult';
 }
 
 /*
@@ -2586,6 +2596,9 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     // catches text that reads like an adult paragraph BEFORE a paid judge call.
     ...runReadabilityGate(document, ctx.tier),
     ...runPlanFidelityGate(document, ctx.plannedSegmentTypes),
+    // Gates 11-13 (Appendix C Stage 2 order: redundancy B.18, tone B.14, Copy
+    // Budget OD-13). Deterministic and free; see src/contentGates/.
+    ...runLessonContentGates(document, audienceForTier(ctx.taxonomy, ctx.tier, ctx.register ?? 'kid')).problems,
   ];
   return { ok: problems.length === 0, problems, document };
 }

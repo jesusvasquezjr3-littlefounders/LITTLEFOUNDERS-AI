@@ -1,0 +1,28 @@
+{
+  "tier": "tier1",
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "compliant-sample", "title": "El vaso justo", "locale": "es-MX", "subject": "money", "estimated_minutes": 3, "objectives": ["Elegir un precio justo para un vaso de limonada."], "cast": ["liruf", "dina"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-historia", "type": "story_dialogue", "prompt_md": "Escucha a Liruf.", "difficulty": 1, "xp": 0,
+        "payload": { "lines": [
+          { "character": "liruf", "text_md": "Hoy abro mi puesto de limonada." },
+          { "character": "dina", "text_md": "¿Cuánto cobrarás por cada vaso?" }
+        ] }
+      },
+      {
+        "id": "s2-precio", "type": "quiz_mcq", "prompt_md": "¿Qué precio es justo?", "difficulty": 1, "xp": 10,
+        "narration": { "mode": "differentiated", "script_md": "Liruf gasta 3 monedas en limones por cada vaso. Piensa qué precio cubre los limones y que sus vecinos sí pagarían con gusto." },
+        "payload": { "options": [
+          { "id": "o1", "text_md": "1 moneda", "rationale_md": "No alcanza para los limones." },
+          { "id": "o5", "text_md": "5 monedas" },
+          { "id": "o50", "text_md": "50 monedas", "rationale_md": "Es demasiado para un vaso." }
+        ] },
+        "answer": { "correct_option_id": "o5" },
+        "explanation_md": "5 monedas cubren los limones y los vecinos pagan."
+      }
+    ]
+  }
+}
