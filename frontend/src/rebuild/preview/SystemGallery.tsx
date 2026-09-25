@@ -136,7 +136,7 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
         <List label={t.cards}>
           <ListRow title={t.rowLesson} supporting={t.rowLessonInfo} onPress={() => undefined} />
           <ListRow title={t.rowTask} supporting={t.rowTaskInfo} trailing={<Chip tone="warning" glyph="info">{t.waiting}</Chip>} />
-          <ListRow title={t.mentorName} titleRole="data" leading={<MentorAvatar renderId={`lesson.dina.square.${theme}`} label={null} size="sm" />}
+          <ListRow title={t.mentorName} titleRole="data" leading={<MentorAvatar renderId={`mentor.dina.avatar.${theme}`} label={null} size="sm" />}
             trailing={<RewardChip>{coinsText(40)}</RewardChip>} />
         </List>
       </section>
@@ -160,9 +160,9 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
       <section className="lf-system-section" aria-labelledby="system-mentor">
         <h2 id="system-mentor" data-copy-role="heading">{t.mentor}</h2>
         <div className="lf-system-row">
-          <MentorAvatar renderId={`lesson.dina.square.${theme}`} label={t.mentorName} size="lg" />
-          <MentorAvatar renderId={`lesson.dina.square.${theme}`} label={t.mentorName} size="md" />
-          <MentorAvatar renderId={`lesson.dina.square.${theme}`} label={t.mentorName} size="sm" />
+          <MentorAvatar renderId={`mentor.dina.avatar.${theme}`} label={t.mentorName} size="lg" />
+          <MentorAvatar renderId={`mentor.dina.avatar.${theme}`} label={t.mentorName} size="md" />
+          <MentorAvatar renderId={`mentor.dina.avatar.${theme}`} label={t.mentorName} size="sm" />
         </div>
       </section>
     </div>

@@ -191,3 +191,31 @@ describe('generated tokens', () => {
     expect(tokens).toMatch(/@container app \(min-width: 640px\)[\s\S]*--type-display-lg: 700 32px/);
   });
 });
+
+describe('Text Fit Contract across every rebuilt stylesheet (02 §7 rules 1-4)', () => {
+  const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => (entry.isDirectory() ? walk(join(dir, entry.name)) : entry.name.endsWith('.css') ? [join(dir, entry.name)] : []));
+  const sheets = walk(local('..')).map((file) => ({ file: file.slice(file.lastIndexOf('rebuild')), css: withoutComments(readFileSync(file, 'utf8')) }));
+
+  it('never squeezes a button below its longest word or keeps its label on one line', () => {
+    // Rule 4: every button carries min-inline-size: min-content; rule 2: buttons wrap and grow.
+    const offences: string[] = [];
+    // A text button's minimum inline size is min-content, or a floor that only widens it (min(100%, >= 120px)).
+    // A zero, a touch-target length or any smaller length replaces min-content and lets a word spill.
+    const allowed = (value: string) => value === 'min-content' || (/^min\(100%,\s*\d+px\)$/.test(value) && Number(/(\d+)px/.exec(value)![1]) >= 120);
+    for (const { file, css } of sheets) for (const [, selector, declarations] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      const isTextButton = /\.lf-button\b/.test(selector!);
+      if ((isTextButton || /(^|[\s,>(])button\b/.test(selector!)) && /\bwhite-space\s*:\s*nowrap/.test(declarations!)) offences.push(`${file}: ${selector!.trim()} (nowrap)`);
+      if (!isTextButton) continue;
+      for (const [, value] of declarations!.matchAll(/\bmin-(?:inline-size|width)\s*:\s*([^;]+)/g)) {
+        if (!allowed(value!.trim().replace(/\s*!important$/, ''))) offences.push(`${file}: ${selector!.trim()} (min-inline-size: ${value!.trim()})`);
+      }
+    }
+    expect(offences).toEqual([]);
+  });
+
+  it('never truncates system text with an ellipsis or a line clamp (rule 1)', () => {
+    const offences = sheets.filter(({ css }) => /text-overflow\s*:\s*ellipsis|line-clamp\s*:/.test(css)).map(({ file }) => file);
+    expect(offences).toEqual([]);
+  });
+});

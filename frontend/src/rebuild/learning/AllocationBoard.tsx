@@ -26,9 +26,9 @@ const copy: Record<Locale, CopySet> = {
     back: 'Back', title: { young: 'Split your money', tween: 'Make a money plan', teen: 'Set your allocation', adult: 'Plan your budget' }, lesson: 'Practice', progress: 'Lesson progress',
     question: {
       young: 'Split 12 coins. Save at least 4.',
-      tween: 'You have 60 coins. Save at least 20. How will you split them?',
-      teen: 'You have 300 coins. Save at least 100. What is your plan?',
-      adult: 'You have USD 1,200. Set aside at least USD 400. How will you allocate it?',
+      tween: 'You have 60 coins and must save at least 20. How will you split them?',
+      teen: 'You have 300 coins and must save at least 100. What is your plan?',
+      adult: 'Set aside at least USD 400 of your USD 1,200. How will you allocate it?',
     },
     board: 'Board', balance: 'Your split', save: 'Save', spend: 'Spend', share: 'Share', left: 'Left',
     add: 'Add', remove: 'Remove', reset: 'Reset', check: 'Check', checking: 'Checking…', again: 'Try again', continue: 'Continue',
@@ -42,10 +42,10 @@ const copy: Record<Locale, CopySet> = {
   'es-MX': {
     back: 'Volver', title: { young: 'Divide tu dinero', tween: 'Planea tu dinero', teen: 'Define tu reparto', adult: 'Planea tu presupuesto' }, lesson: 'Práctica', progress: 'Progreso de lección',
     question: {
-      young: 'Tienes 12 monedas. Guarda al menos 4. ¿Dónde irán?',
-      tween: 'Tienes 60 monedas. Guarda al menos 20. ¿Cómo las repartirás?',
-      teen: 'Tienes 300 monedas. Guarda al menos 100. ¿Cuál es tu plan?',
-      adult: 'Tienes 1,200 MXN. Reserva al menos 400 MXN. ¿Cómo los distribuirás?',
+      young: 'Tienes 12 monedas y debes guardar al menos 4. ¿Dónde irán?',
+      tween: 'Tienes 60 monedas y debes guardar al menos 20. ¿Cómo las repartirás?',
+      teen: 'Tienes 300 monedas y debes guardar al menos 100. ¿Cuál es tu plan?',
+      adult: 'Reserva al menos 400 MXN de tus 1,200 MXN. ¿Cómo los distribuirás?',
     },
     board: 'Pizarrón', balance: 'Tu reparto', save: 'Guardar', spend: 'Gastar', share: 'Compartir', left: 'Restan',
     add: 'Añadir', remove: 'Quitar', reset: 'Restablecer', check: 'Comprobar', checking: 'Comprobando…', again: 'Reintentar', continue: 'Continuar',
@@ -59,10 +59,10 @@ const copy: Record<Locale, CopySet> = {
   'pt-BR': {
     back: 'Voltar', title: { young: 'Divida seu dinheiro', tween: 'Planeje seu dinheiro', teen: 'Defina sua divisão', adult: 'Planeje seu orçamento' }, lesson: 'Prática', progress: 'Progresso da lição',
     question: {
-      young: 'Você tem 12 moedas. Guarde pelo menos 4. Para onde elas vão?',
-      tween: 'Você tem 60 moedas. Guarde pelo menos 20. Como vai dividi-las?',
-      teen: 'Você tem 300 moedas. Guarde pelo menos 100. Qual é seu plano?',
-      adult: 'Você tem BRL 1.200. Reserve pelo menos BRL 400. Como vai distribuir?',
+      young: 'Você tem 12 moedas e precisa guardar pelo menos 4. Para onde elas vão?',
+      tween: 'Você tem 60 moedas e precisa guardar pelo menos 20. Como vai dividi-las?',
+      teen: 'Você tem 300 moedas e precisa guardar pelo menos 100. Qual é seu plano?',
+      adult: 'Reserve pelo menos BRL 400 dos seus BRL 1.200. Como vai distribuir?',
     },
     board: 'Quadro', balance: 'Sua divisão', save: 'Guardar', spend: 'Gastar', share: 'Compartilhar', left: 'Restam',
     add: 'Adicionar', remove: 'Retirar', reset: 'Recomeçar', check: 'Conferir', checking: 'Conferindo…', again: 'Tentar de novo', continue: 'Continuar',

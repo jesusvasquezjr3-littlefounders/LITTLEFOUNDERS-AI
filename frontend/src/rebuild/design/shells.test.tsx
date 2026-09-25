@@ -111,20 +111,21 @@ describe('learner shell', () => {
     expect(mentor.querySelector('[data-copy-role="data"]')?.textContent).toBe('Dina');
     const avatar = mentor.querySelector('[data-slot="mentor-avatar"] img')!;
     expect(avatar.getAttribute('data-character')).toBe('dina');
-    expect(avatar.getAttribute('src')).toBe('/rebuild/mentor-stills/dina-square-light.png');
-    expect(avatar.getAttribute('data-pose')).toBe('think.wait');
+    expect(avatar.getAttribute('src')).toBe('/rebuild/mentor-avatars/dina-light.png');
+    expect(avatar.getAttribute('data-pose')).toBe('ambient.idle');
     expect(document.querySelector('.lf-tabbar')).toHaveAttribute('data-dock');
   });
 
   it('uses the dark render in dark mode', () => {
     render(<Learner page="learn" theme="dark" />);
-    expect(document.querySelector('.lf-tabbar [data-slot="mentor-avatar"] img')?.getAttribute('src')).toBe('/rebuild/mentor-stills/dina-square-dark.png');
+    expect(document.querySelector('.lf-tabbar [data-slot="mentor-avatar"] img')?.getAttribute('src')).toBe('/rebuild/mentor-avatars/dina-dark.png');
   });
 
-  it('never draws a stand-in: a character without a render and an unchosen Mentor show only words', () => {
+  it('shows each chosen character in its own render, and an unchosen Mentor as words only (never a stand-in)', () => {
     render(<Learner page="learn" character="zara" />);
     const zara = [...document.querySelectorAll('.lf-tabbar a')].find((link) => link.textContent === 'Zara')!;
-    expect(zara.querySelector('img, svg, [data-slot]')).toBeNull();
+    expect(zara.querySelector('[data-slot="mentor-avatar"] img')).toHaveAttribute('src', '/rebuild/mentor-avatars/zara-light.png');
+    expect(zara.querySelector('svg')).toBeNull();
     cleanup();
     render(<Learner page="learn" character={null} />);
     const mentor = [...document.querySelectorAll('.lf-tabbar a')].find((link) => link.textContent === 'Mentor')!;

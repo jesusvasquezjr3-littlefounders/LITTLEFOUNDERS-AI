@@ -6,7 +6,7 @@ import {
   GLYPH_FAMILIES, IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip,
   SegmentedControl, SelectField, Slider, StatusMark, Stepper, Switch, SYSTEM_GLYPHS, TextField,
 } from './controls';
-import { resolveMentorRender } from './assets';
+import { findMentorAvatar, MENTOR_CHARACTERS, resolveMentorRender } from './assets';
 
 /** Every visible string sits inside an element that declares its copy role (02 rule 19). */
 function expectCopyRoles(container: HTMLElement) {
@@ -297,17 +297,18 @@ describe('display components', () => {
 
 describe('Mentor avatar slot', () => {
   it('shows a manifest render of the real model in a catalogue pose', () => {
-    render(<MentorAvatar renderId="lesson.dina.square.light" label="Dina" />);
+    render(<MentorAvatar renderId="mentor.dina.avatar.light" label="Dina" />);
     const slot = screen.getByRole('img', { name: 'Dina' });
     const image = slot.querySelector('img')!;
-    expect(image).toHaveAttribute('src', '/rebuild/mentor-stills/dina-square-light.png');
+    expect(image).toHaveAttribute('src', '/rebuild/mentor-avatars/dina-light.png');
     expect(image).toHaveAttribute('data-character', 'dina');
-    expect(image).toHaveAttribute('data-pose', 'think.wait');
+    expect(image).toHaveAttribute('data-pose', 'ambient.idle');
     expect(slot).not.toHaveAttribute('data-refused');
   });
 
-  it('refuses anything that is not a square real-model render, with no letter or glyph fallback', () => {
-    for (const id of ['lesson.result.medal', 'lesson.dina.young.light', 'unknown', '/rebuild/mentor-stills/dina-square-light.png']) {
+  it('refuses anything that is not a transparent avatar render of the real model, with no letter or glyph fallback', () => {
+    // A stage still keeps its scene behind the character, so it is not an avatar (02 §9.7).
+    for (const id of ['lesson.result.medal', 'lesson.dina.young.light', 'lesson.dina.square.light', 'glyph.close', 'unknown', '/rebuild/mentor-avatars/dina-light.png']) {
       const { container, unmount } = render(<MentorAvatar renderId={id} label="Dina" />);
       const slot = container.querySelector('[data-slot="mentor-avatar"]')!;
       expect(slot).toHaveAttribute('data-refused', 'true');
@@ -319,7 +320,12 @@ describe('Mentor avatar slot', () => {
   });
 
   it('validates provenance: character, own source model and catalogue pose', () => {
-    expect(resolveMentorRender('lesson.dina.square.dark')).toMatchObject({ character: 'dina', sourceModel: '/scenes/dina.glb', poseId: 'think.wait' });
+    for (const character of MENTOR_CHARACTERS) for (const theme of ['light', 'dark'] as const) {
+      const id = findMentorAvatar(character, theme);
+      expect(id).toBe(`mentor.${character}.avatar.${theme}`);
+      expect(resolveMentorRender(id!)).toMatchObject({ character, sourceModel: `/scenes/${character}.glb`, poseId: 'ambient.idle', background: 'transparent', slot: 'mentor.avatar' });
+    }
+    expect(resolveMentorRender('lesson.dina.square.dark')).toBeNull();
     expect(resolveMentorRender('lesson.result.medal')).toBeNull();
   });
 });

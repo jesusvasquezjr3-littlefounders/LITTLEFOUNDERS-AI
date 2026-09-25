@@ -181,7 +181,7 @@ try {
     await expectTrue('pending-holds', `document.querySelector('.lf-button--pending').textContent === ${JSON.stringify(pendingText)} && document.querySelector('.lf-button--pending').getAttribute('aria-busy') === 'true'`);
     await click('.lf-state--error .lf-button');
     await expectTrue('retry-pending', `document.querySelector('.lf-state--error .lf-button').getAttribute('aria-busy') === 'true'`);
-    await expectTrue('avatar-real-render', `[...document.querySelectorAll('[data-slot=mentor-avatar] img')].every(i => i.naturalWidth > 0 && i.dataset.character === 'dina' && i.dataset.pose === 'think.wait') && !document.querySelector('[data-refused]')`);
+    await expectTrue('avatar-real-render', `[...document.querySelectorAll('[data-slot=mentor-avatar] img')].every(i => i.naturalWidth > 0 && i.dataset.character === 'dina' && i.dataset.pose === 'ambient.idle' && i.getAttribute('src') === '/rebuild/mentor-avatars/dina-${theme}.png') && document.querySelectorAll('[data-slot=mentor-avatar] img').length > 0 && !document.querySelector('[data-refused]')`);
     await expectTrue('scroll-kept-on-rerender', `scrollY > 0`);
     await expectTrue('motion-on', `getComputedStyle(document.querySelector('.lf-toggle-thumb')).transitionDuration !== '0s'`);
     await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }, { name: 'prefers-color-scheme', value: theme }] });

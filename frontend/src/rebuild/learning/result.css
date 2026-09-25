@@ -6,15 +6,15 @@
 .lf-result-hero h1 { font-family: Fredoka, sans-serif; font-size: 2rem; line-height: 1.1; }
 .lf-result-hero p { font-size: 1.125rem; font-weight: 800; }
 .lf-result-sheet { display: grid; gap: var(--spacing-4); }
-.lf-result-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-2); }
-.lf-result-stat { min-inline-size: 0; display: grid; justify-items: center; align-content: center; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-2); border-radius: var(--rounded-lg); background: color-mix(in srgb, var(--on-accent) 9%, transparent); text-align: center; }
+.lf-result-stats { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-result-stat { flex: 1 1 0; min-inline-size: min-content; display: grid; justify-items: center; align-content: center; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-2); border-radius: var(--rounded-lg); background: color-mix(in srgb, var(--on-accent) 9%, transparent); text-align: center; }
 .lf-result-stat strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 .lf-result-stat span { font-size: .875rem; font-weight: 800; }
 .lf-result-compare { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: color-mix(in srgb, var(--on-accent) 9%, transparent); }
 .lf-result-compare-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-result-compare h2 { font-family: Fredoka, sans-serif; font-size: 1.5rem; }
 .lf-result-best-note { padding: var(--spacing-1) var(--spacing-2); border-radius: var(--rounded-full); background: var(--on-accent); color: var(--accent); font-size: .875rem; font-weight: 800; }
-.lf-result-row { display: grid; grid-template-columns: 72px minmax(0, 1fr) 44px; align-items: center; gap: var(--spacing-2); font-weight: 800; }
+.lf-result-row { display: grid; grid-template-columns: minmax(min-content, 72px) minmax(0, 1fr) 44px; align-items: center; gap: var(--spacing-2); font-weight: 800; }
 .lf-result-row > strong { text-align: end; font-variant-numeric: tabular-nums; }
 .lf-result-saved-best { font-weight: 800; line-height: 1.4; }
 .lf-result-bar { block-size: 12px; border-radius: var(--rounded-full); background: color-mix(in srgb, var(--on-accent) 15%, transparent); overflow: hidden; }

@@ -29,11 +29,10 @@
 .lf-parameter-stepper { display: flex; justify-content: space-between; gap: var(--spacing-2); }
 .lf-parameter-stepper button { min-inline-size: var(--target-base); block-size: var(--target-base); padding: 0; border: 0; border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); font-size: 1.5rem; font-weight: 800; cursor: pointer; }
 .lf-parameter-stepper button:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
-.lf-scale-toggle { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); }
-.lf-scale-toggle button { min-block-size: var(--target-base); padding: var(--spacing-1) var(--spacing-2); border: 0; border-radius: var(--rounded-md); background: var(--surface); color: var(--content); font: inherit; font-weight: 800; cursor: pointer; }
+.lf-scale-toggle { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-scale-toggle button { flex: 1 1 0; min-inline-size: min-content; min-block-size: var(--target-base); padding: var(--spacing-1) var(--spacing-2); border: 0; border-radius: var(--rounded-md); background: var(--surface); color: var(--content); font: inherit; font-weight: 800; cursor: pointer; }
 .lf-scale-toggle button[aria-pressed="true"] { background: var(--primary-soft); box-shadow: 0 0 0 3px var(--primary-strong); color: var(--primary-strong); }
-.lf-learning-control-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
-.lf-learning-control-bar .lf-button { min-inline-size: var(--target-base); }
+.lf-learning-control-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
 .lf-learning-view-toggle { justify-self: end; min-block-size: var(--target-base); min-inline-size: var(--target-base); flex: none; padding-inline: var(--spacing-2); border: 0; border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); font: inherit; font-size: .875rem; font-weight: 800; cursor: pointer; }
 .lf-learning-chart { inline-size: 100%; block-size: 64px; }
 .lf-bar-model { display: grid; gap: var(--spacing-3); }
@@ -156,7 +155,7 @@
 .lf-function-machine-rule h2 { grid-column: 1 / -1; margin: 0; }
 .lf-function-machine-rule label { display: grid; gap: var(--spacing-1); font-weight: 800; }
 .lf-cpa-board { gap: var(--spacing-4); }
-.lf-cpa-stage { padding: var(--spacing-1) var(--spacing-2); border-radius: var(--rounded-full); background: var(--primary-soft); color: var(--primary-strong); font-weight: 800; white-space: nowrap; }
+.lf-cpa-stage { padding: var(--spacing-1) var(--spacing-2); border-radius: var(--rounded-full); background: var(--primary-soft); color: var(--primary-strong); font-weight: 800; }
 .lf-cpa-concrete, .lf-cpa-pictorial { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--spacing-3); }
 .lf-cpa-concrete > span, .lf-cpa-pictorial > span, .lf-cpa-equation > span { color: var(--primary-strong); font-family: Fredoka, sans-serif; font-size: 2rem; font-weight: 800; }
 .lf-cpa-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-2); min-block-size: 84px; padding: var(--spacing-3); border-radius: var(--rounded-lg); background: var(--sunken); }
@@ -191,9 +190,9 @@
     .lf-worked-example-steps { gap: var(--spacing-1); }
     .lf-worked-example-step { min-block-size: 0; gap: var(--spacing-1); padding: var(--spacing-1) var(--spacing-2); }
     .lf-worked-example-expression { font-size: 1rem; }
-    .lf-learning-control-strip .lf-worked-example-prediction { order: -1; grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
-    .lf-worked-example-prediction label { grid-column: 1; }
-    .lf-worked-example-prediction .lf-button { grid-column: 2; inline-size: auto; white-space: nowrap; }
+    .lf-learning-control-strip .lf-worked-example-prediction { order: -1; display: flex; flex-wrap: wrap; align-items: end; }
+    .lf-worked-example-prediction label { flex: 1 1 12em; }
+    .lf-worked-example-prediction .lf-button { flex: 1 0 auto; inline-size: auto; }
   }
   @container app (min-width: 640px) {
   .lf-learning { padding: var(--spacing-8); }

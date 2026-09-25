@@ -86,8 +86,8 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
 }
 
 export function cpaFadingPilotDocument(locale: Locale, ageBand: '6-9' | '10-12' = '6-9'): unknown {
-  const title = { 'en-US': 'Count a savings goal', 'es-MX': 'Cuenta una meta de ahorro', 'pt-BR': 'Conte uma meta de poupança' }[locale];
-  const prompt = { 'en-US': 'Put the two coin groups together.', 'es-MX': 'Junta los dos grupos de monedas.', 'pt-BR': 'Junte os dois grupos de moedas.' }[locale];
+  const title = { 'en-US': 'Count your savings', 'es-MX': 'Cuenta tu ahorro', 'pt-BR': 'Conte sua poupança' }[locale];
+  const prompt = { 'en-US': 'Join the coin groups.', 'es-MX': 'Junta los grupos de monedas.', 'pt-BR': 'Junte os grupos de moedas.' }[locale];
   const left = ageBand === '6-9' ? 4 : 12; const right = ageBand === '6-9' ? 3 : 8;
   const spokenText = ageBand === '6-9'
     ? { 'en-US': 'four plus three', 'es-MX': 'cuatro más tres', 'pt-BR': 'quatro mais três' }[locale]

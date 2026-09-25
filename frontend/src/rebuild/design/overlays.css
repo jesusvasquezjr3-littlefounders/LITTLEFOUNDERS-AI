@@ -125,7 +125,7 @@
 }
 .lf-rebuild .lf-menu {
   display: grid;
-  gap: var(--spacing-1);
+  gap: var(--spacing-2);
   inline-size: max-content;
   min-inline-size: calc(var(--spacing-32) + var(--spacing-16));
   padding: var(--spacing-2);

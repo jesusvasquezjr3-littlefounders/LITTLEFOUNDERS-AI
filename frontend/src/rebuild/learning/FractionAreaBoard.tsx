@@ -18,7 +18,7 @@ const copy: Record<Locale, Copy> = {
 
 export function fractionAreaPilotDocument(locale: Locale): unknown {
   const title = { 'en-US': 'Make equal shares', 'es-MX': 'Haz partes iguales', 'pt-BR': 'Faça partes iguais' }[locale];
-  const prompt = { 'en-US': 'Show one half. Split it into equal parts and shade the amount.', 'es-MX': 'Muestra una mitad. Divídela en partes iguales y colorea la cantidad.', 'pt-BR': 'Mostre uma metade. Divida em partes iguais e pinte a quantidade.' }[locale];
+  const prompt = { 'en-US': 'Split the shape into equal parts. Shade one half.', 'es-MX': 'Divide la figura en partes iguales. Colorea una mitad.', 'pt-BR': 'Divida a figura em partes iguais. Pinte uma metade.' }[locale];
   const spokenText = { 'en-US': 'one half', 'es-MX': 'una mitad', 'pt-BR': 'uma metade' }[locale];
   return { schema_version: 2, course_id: 'financial-education', pathway_id: 'financial-young', chapter_id: 'equal-shares', lesson_id: 'pilot-fraction-area', version_id: 'rev-1', locale, age_band: '6-9', eligibility: { minimum_age: 7, maximum_age: 9 }, knowledge_component_ids: ['kc-equal-shares'], adventure_scene_id: 'diorama-a', title, required_capabilities: ['visual.fraction-area.v1', 'operation.partition-equal.v1', 'operation.shade-parts.v1', 'operation.split-equivalent.v1'], segments: [{ id: 'fraction-area-01', type: 'math.fraction-area.v2', grading: 'server', prompt, visual: { type: 'fraction-area' }, payload: { minimumParts: 2, maximumParts: 6, initialParts: 2, initialShaded: 0, spokenText } }] };
 }

@@ -364,7 +364,7 @@ try {
     await expectTrue('skip-link-moves-to-main', `document.activeElement === document.querySelector('main')`);
     await expectTrue('lang', `document.documentElement.lang === ${JSON.stringify(locale)} && document.querySelector('.lf-shell').lang === ${JSON.stringify(locale)}`);
     await expectTrue('tabbar-docked', `(() => { const t = document.querySelector('.lf-tabbar'); const r = t.getBoundingClientRect(); return getComputedStyle(t).display !== 'none' && Math.abs(r.bottom - innerHeight) <= 1 && getComputedStyle(document.querySelector('.lf-shell-rail')).display === 'none'; })()`);
-    await expectTrue('mentor-tab-real-render', `(() => { const a = [...document.querySelectorAll('.lf-tabbar a')][1]; const i = a.querySelector('[data-slot=mentor-avatar] img'); return a.textContent === 'Dina' && i.naturalWidth > 0 && i.dataset.character === 'dina' && i.getAttribute('src').endsWith('dina-square-${theme}.png'); })()`);
+    await expectTrue('mentor-tab-real-render', `(() => { const a = [...document.querySelectorAll('.lf-tabbar a')][1]; const i = a.querySelector('[data-slot=mentor-avatar] img'); return a.textContent === 'Dina' && i.naturalWidth > 0 && i.dataset.character === 'dina' && i.getAttribute('src') === '/rebuild/mentor-avatars/dina-${theme}.png'; })()`);
     const title = await page.evaluate('document.title');
     await page.evaluate('window.scrollTo(0, 600)');
     await click('.lf-tabbar a[data-nav-id=wallet]', { scroll: false });
@@ -376,9 +376,9 @@ try {
     await viewport(1280);
     await expectTrue('rail-at-desktop', `getComputedStyle(document.querySelector('.lf-shell-rail')).display === 'flex' && getComputedStyle(document.querySelector('.lf-tabbar')).display === 'none'`);
     await viewport(375);
-    // A teen without a parent: no Tasks, and Zara has no render yet, so no picture at all (never a stand-in).
+    // A teen without a parent: no Tasks, and the chosen Mentor (Zara) in her own real-model render.
     await navigate({ locale, theme, screen: 'shell', shell: 'teen' });
-    await expectTrue('teen-no-tasks-no-standin', `(() => { const ids = [...document.querySelectorAll('.lf-tabbar a')].map(a => a.dataset.navId); const m = document.querySelector('.lf-tabbar a[data-nav-id=mentor]'); return !ids.includes('tasks') && m.textContent === 'Zara' && !m.querySelector('img,svg'); })()`);
+    await expectTrue('teen-no-tasks-own-mentor', `(() => { const ids = [...document.querySelectorAll('.lf-tabbar a')].map(a => a.dataset.navId); const m = document.querySelector('.lf-tabbar a[data-nav-id=mentor]'); const i = m.querySelector('[data-slot=mentor-avatar] img'); return !ids.includes('tasks') && m.textContent === 'Zara' && i?.naturalWidth > 0 && i.dataset.character === 'zara' && i.getAttribute('src') === '/rebuild/mentor-avatars/zara-${theme}.png' && !m.querySelector('svg'); })()`);
 
     // Staff: permission-aware navigation and the phone menu sheet.
     await navigate({ locale, theme, screen: 'shell', shell: 'staff' });

@@ -144,8 +144,12 @@ class Page {
   }
 }
 
-/** Open a page at a given viewport and theme. */
-export async function openPage(browserUrl, { width, height, dark }) {
+/**
+ * Open a page at a given viewport and theme. `newWindow` gives the page a window of
+ * its own: a second tab in one window is hidden, and a hidden page gets no
+ * animation frames and throttled timers, so a pool of pages must not share one.
+ */
+export async function openPage(browserUrl, { width, height, dark, newWindow = false }) {
   const socket = new WebSocket(browserUrl)
   await new Promise((ok, fail) => {
     socket.addEventListener('open', ok, { once: true })
@@ -166,7 +170,7 @@ export async function openPage(browserUrl, { width, height, dark }) {
       socket.send(JSON.stringify({ id, method, params }))
     })
 
-  const { targetId } = await attach('Target.createTarget', { url: 'about:blank' })
+  const { targetId } = await attach('Target.createTarget', { url: 'about:blank', ...(newWindow ? { newWindow: true } : {}) })
   const { sessionId } = await attach('Target.attachToTarget', { targetId, flatten: true })
 
   const page = new Page(socket, sessionId)
