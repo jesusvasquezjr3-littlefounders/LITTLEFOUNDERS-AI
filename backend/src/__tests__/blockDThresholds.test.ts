@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { REST_DAYS_PER_WEEK, STREAK_MILESTONES } from '../services/choreStreak.js';
 import { BONUS_PER_TEN_COINS, BONUS_PER_TEN_RATE_BP, BONUS_PER_TEN_UNIT, MAX_BONUS_RATE_BP, PERCENT_FRAMING_MIN_AGE } from '../services/savingsBonus.js';
 import { MAX_CONTRIBUTION_COINS, PAUSE_MAX_BACKDATE_DAYS, PAUSE_MAX_DAYS, PAUSE_MAX_LEAD_DAYS } from '../routes/tasks.js';
+import * as autonomy from '../services/familyAutonomy.js';
 import { RECOMMENDED_SAVE_PCT, RECOMMENDED_SHARE_PCT, RECOMMENDED_SPEND_PCT, RECOMMENDED_SPLIT, SHARE_COMPLETION_WINDOW_DAYS, SHARE_GIFT_MAX_COINS } from '../services/moneyHabits.js';
 
 /*
@@ -23,7 +24,7 @@ const migration = (suffix: string) => {
   return readFileSync(join(root, 'database/migrations', name), 'utf8');
 };
 
-const values = new Map([...log.matchAll(/^\| `([a-z_.]+)` \| ([^|]+) \|/gm)].map((m) => [m[1]!, m[2]!.trim()]));
+const values = new Map([...log.matchAll(/^\| `([a-z0-9_.]+)` \| ([^|]+) \|/gm)].map((m) => [m[1]!, m[2]!.trim()]));
 const num = (key: string) => {
   const raw = values.get(key);
   if (raw === undefined) throw new Error(`threshold ${key} is missing from the log`);
@@ -37,6 +38,20 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
 
   it('lists every threshold exactly once', () => {
     expect([...values.keys()].sort()).toEqual([
+      'autonomy.auto_step_down_questioned',
+      'autonomy.auto_step_down_window_days',
+      'autonomy.level2_max_not_approved_pct',
+      'autonomy.level2_min_age',
+      'autonomy.level2_min_approved',
+      'autonomy.level2_preapproved_cap',
+      'autonomy.level3_max_not_approved_pct',
+      'autonomy.level3_min_age',
+      'autonomy.level3_min_approved',
+      'autonomy.level3_min_days_at_level2',
+      'autonomy.level3_preapproved_cap',
+      'autonomy.level3_self_log_max_coins',
+      'autonomy.progression_window_days',
+      'autonomy.record_window_days',
       'chore.contribution_max_coins',
       'chore_streak.completion_day_tolerance_days',
       'chore_streak.milestones',
@@ -45,6 +60,10 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'chore_streak.pause_max_days',
       'chore_streak.pause_max_lead_days',
       'chore_streak.rest_days_per_week',
+      'decisions.child_note_max_chars',
+      'decisions.reason_min_chars',
+      'decisions.reason_min_words',
+      'decisions.revisit_max_days',
       'money_events.retention_days',
       'next_goal.prompt_window_days',
       'post_goal.after_days',
@@ -62,6 +81,8 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'split.recommended_save_pct',
       'split.recommended_share_pct',
       'split.recommended_spend_pct',
+      'talk.nudge_denials',
+      'talk.nudge_window_days',
     ]);
   });
 
@@ -125,6 +146,38 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
     expect(migration('_share_gift_flows')).toContain(`p_amount NOT BETWEEN 1 AND ${SHARE_GIFT_MAX_COINS}`);
     expect(events).toContain(`p_retain_days int DEFAULT ${num('money_events.retention_days')}`);
     expect(events).toContain(`(1, '0_24h', 0, ${num('redemption_timing.first_bin_hours')})`);
+  });
+
+  it('matches the S07.5 ladder, reason rule and nudge thresholds in Core and in the database', () => {
+    const ladder = migration('_family_autonomy_ladder');
+    const pairs: [string, number, string][] = [
+      ['autonomy.level2_min_age', autonomy.AUTONOMY_LEVEL2_MIN_AGE, 'level2_min_age'],
+      ['autonomy.level2_min_approved', autonomy.AUTONOMY_LEVEL2_MIN_APPROVED, 'level2_min_approved'],
+      ['autonomy.level2_max_not_approved_pct', autonomy.AUTONOMY_LEVEL2_MAX_NOT_APPROVED_PCT, 'level2_max_not_approved_pct'],
+      ['autonomy.level2_preapproved_cap', autonomy.AUTONOMY_LEVEL2_PREAPPROVED_CAP, 'level2_preapproved_cap'],
+      ['autonomy.level3_min_age', autonomy.AUTONOMY_LEVEL3_MIN_AGE, 'level3_min_age'],
+      ['autonomy.level3_min_approved', autonomy.AUTONOMY_LEVEL3_MIN_APPROVED, 'level3_min_approved'],
+      ['autonomy.level3_max_not_approved_pct', autonomy.AUTONOMY_LEVEL3_MAX_NOT_APPROVED_PCT, 'level3_max_not_approved_pct'],
+      ['autonomy.level3_min_days_at_level2', autonomy.AUTONOMY_LEVEL3_MIN_DAYS_AT_LEVEL2, 'level3_min_days_at_level2'],
+      ['autonomy.level3_preapproved_cap', autonomy.AUTONOMY_LEVEL3_PREAPPROVED_CAP, 'level3_preapproved_cap'],
+      ['autonomy.level3_self_log_max_coins', autonomy.AUTONOMY_LEVEL3_SELF_LOG_MAX_COINS, 'level3_self_log_max_coins'],
+      ['autonomy.record_window_days', autonomy.AUTONOMY_RECORD_WINDOW_DAYS, 'record_window_days'],
+      ['autonomy.auto_step_down_questioned', autonomy.AUTONOMY_AUTO_STEP_DOWN_QUESTIONED, 'auto_step_down_questioned'],
+      ['autonomy.auto_step_down_window_days', autonomy.AUTONOMY_AUTO_STEP_DOWN_WINDOW_DAYS, 'auto_step_down_window_days'],
+      ['autonomy.progression_window_days', autonomy.AUTONOMY_PROGRESSION_WINDOW_DAYS, 'progression_window_days'],
+      ['decisions.reason_min_chars', autonomy.DECISION_REASON_MIN_CHARS, 'reason_min_chars'],
+      ['decisions.reason_min_words', autonomy.DECISION_REASON_MIN_WORDS, 'reason_min_words'],
+      ['decisions.revisit_max_days', autonomy.DECISION_REVISIT_MAX_DAYS, 'revisit_max_days'],
+      ['decisions.child_note_max_chars', autonomy.CHILD_NOTE_MAX_CHARS, 'child_note_max_chars'],
+      ['talk.nudge_denials', autonomy.TALK_NUDGE_DENIALS, 'talk_nudge_denials'],
+      ['talk.nudge_window_days', autonomy.TALK_NUDGE_WINDOW_DAYS, 'talk_nudge_window_days'],
+    ];
+    for (const [key, core, sqlKey] of pairs) {
+      expect(num(key), key).toBe(core);
+      expect(ladder, key).toContain(`'${sqlKey}', ${core},`);
+    }
+    // The client mirrors the caps it shows.
+    expect(autonomy.PREAPPROVED_CAP).toEqual({ 1: 0, 2: num('autonomy.level2_preapproved_cap'), 3: num('autonomy.level3_preapproved_cap') });
   });
 
   it('keeps a review history with a dated first entry', () => {

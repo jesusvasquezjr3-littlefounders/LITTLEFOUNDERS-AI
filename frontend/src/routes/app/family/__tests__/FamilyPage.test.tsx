@@ -46,6 +46,7 @@ vi.mock('../CoGuardiansPanel', () => ({ CoGuardiansPanel: () => null, GuardianRe
 vi.mock('../WalletCorrectionsPanel', () => ({ WalletCorrectionsPanel: () => null }));
 vi.mock('../StreakPausesPanel', () => ({ StreakPausesPanel: () => null }));
 vi.mock('../ShareDestinationsPanel', () => ({ ShareDestinationsPanel: () => null }));
+vi.mock('../AutonomyLadderPanel', () => ({ AutonomyLadderPanel: () => null }));
 vi.mock('../GuardianInvitePanel', () => ({ GuardianInvitePanel: () => null, GuardianInviteJoin: () => null }));
 vi.mock('../ManageKidPanel', () => ({ ManageKidPanel: () => null }));
 vi.mock('../SocialGraphPanel', () => ({ SocialGraphPanel: () => null }));

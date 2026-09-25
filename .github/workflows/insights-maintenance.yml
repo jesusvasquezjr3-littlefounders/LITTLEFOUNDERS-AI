@@ -125,5 +125,10 @@ jobs:
           # behaviour stream keeps 400 days, like learning_events. Guarded so
           # it is a no-op until the migration that creates it is applied.
           run_sql "DO \$prune\$ BEGIN IF to_regprocedure('public.prune_family_money_events(integer)') IS NOT NULL THEN PERFORM public.prune_family_money_events(400); END IF; END \$prune\$;" 'prune_family_money'
+          # S07.5 (D.17): a birthday can open a child's next independence level
+          # without any decision; the nightly sweep records the first eligible
+          # day for Appendix H's Independence-Tier Progression Rate. Guarded so
+          # it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$sweep\$ BEGIN IF to_regprocedure('public.record_family_autonomy_eligibility_all()') IS NOT NULL THEN PERFORM public.record_family_autonomy_eligibility_all(); END IF; END \$sweep\$;" 'autonomy_eligibility'
           run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'

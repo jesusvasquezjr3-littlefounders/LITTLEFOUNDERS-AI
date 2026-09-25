@@ -35,13 +35,34 @@ const NEXT_SQL = SQL('_savings_goal_next_step');
 const HABITS_API = 'frontend/src/rebuild/family/moneyHabitsApi.ts';
 const SHARE_UI = 'frontend/src/rebuild/family/ShareGiving.tsx';
 const GOALS_UI = 'frontend/src/rebuild/family/SavingsGoals.tsx';
+// S07.5 (D.17, D.18): the independence ladder and the decision record.
+const AUTONOMY_RULES = SQL('_family_autonomy_rules');
+const AUTONOMY_FLOWS = SQL('_family_autonomy_flows');
+const DECISION_GUARDS = SQL('_family_decision_guards');
+const DECISION_FLOWS = SQL('_family_decision_flows');
+const NUDGES_SQL = SQL('_family_talk_nudges');
+const AUTONOMY_API = 'frontend/src/rebuild/family/familyAutonomyApi.ts';
+const AUTONOMY_SERVICE = 'backend/src/services/familyAutonomy.ts';
+const QUEUE_UI = 'frontend/src/rebuild/family/DecisionQueue.tsx';
+const CHILD_COPY = 'frontend/src/i18n/en-US/familyAutonomy.json';
 
 export const REGISTRY = {
+  // S07.5 (D.17, D.18): every task transition goes through the decision
+  // flows; a chore sent back returns to open, a self-logged one is approved.
   'tasks.status': {
-    open: { producer: [E(TASKS, "router.post('/', requireRole(['parent'])")], consumer: [E(TASKS, "transitionTaskStatus(id.data, 'open', 'done', { completed_on: todayLocal })")] },
-    done: { producer: [E(TASKS, "transitionTaskStatus(id.data, 'open', 'done', { completed_on: todayLocal })")], consumer: [E(TASKS, "transitionTaskStatus(id.data, 'done', 'approved'")] },
-    approved: { producer: [E(TASKS, "transitionTaskStatus(id.data, 'done', 'approved'")], consumer: [E(SQL('_family_hub_transition_guards'), "v_task.status <> 'approved'"), E('database/migrations/*_enforce_banking_freeze.sql', "v_task.status <> 'approved'")] },
-    cancelled: { producer: [E(TASKS, "'cancelled', {")], consumer: [E('frontend/src/routes/app/tasks/ParentTaskBoard.tsx', "task.status === 'cancelled'")] },
+    open: {
+      producer: [E(TASKS, "router.post('/', requireRole(['parent'])"), E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'open', completed_on = NULL, decision_id = v_decision")],
+      consumer: [E(TASKS, 'markTaskDone(id.data, kid.id, todayLocal'), E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'done', completed_on = p_completed_on, child_note = v_note")],
+    },
+    done: {
+      producer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'done', completed_on = p_completed_on, child_note = v_note")],
+      consumer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'approved', decided_by = p_actor"), E(QUEUE_UI, "kind: 'approveChore', chore: c")],
+    },
+    approved: {
+      producer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'approved', decided_by = p_actor"), E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'approved', decided_at = now(), decision_id = v_decision")],
+      consumer: [E(SQL('_family_hub_transition_guards'), "v_task.status <> 'approved'"), E('database/migrations/*_enforce_banking_freeze.sql', "v_task.status <> 'approved'")],
+    },
+    cancelled: { producer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'cancelled', decided_by = p_actor")], consumer: [E('frontend/src/routes/app/tasks/ParentTaskBoard.tsx', "task.status === 'cancelled'")] },
   },
   // S07.3 (D.10): each chore is an expected family contribution or a paid
   // bonus task. Both kinds must stay producible by the Tutor's composer and
@@ -63,9 +84,9 @@ export const REGISTRY = {
     archived: { producer: [E('backend/src/services/supabaseRest.ts', "status: 'archived'")], consumer: [E(GOALS_UI, "g.status !== 'archived'")] },
   },
   'redemptions.status': {
-    requested: { producer: [E(TASKS, 'insertRedemption({')], consumer: [E(SQL('_enforce_banking_freeze'), "v_redemption.status <> 'requested'")] },
-    approved: { producer: [E(SQL('_enforce_banking_freeze'), "SET status = 'approved'")], consumer: [E(SQL('_family_hub_lifecycle_flows'), "v_status <> 'approved'")] },
-    denied: { producer: [E(SQL('_enforce_banking_freeze'), "SET status = 'denied'")], consumer: [E(ACTIVITY, 'denied: copy.denied')] },
+    requested: { producer: [E(DECISION_FLOWS, 'INSERT INTO public.redemptions (catalog_id, kid_user_id, child_reason_kind, child_note)')], consumer: [E(DECISION_FLOWS, "IF v_redemption.status <> 'requested' THEN")] },
+    approved: { producer: [E(DECISION_FLOWS, "UPDATE public.redemptions SET status = 'approved', decided_by = p_actor"), E(DECISION_FLOWS, "UPDATE public.redemptions SET status = 'approved', decided_at = now(), decision_id = v_decision")], consumer: [E(SQL('_family_hub_lifecycle_flows'), "v_status <> 'approved'")] },
+    denied: { producer: [E(DECISION_FLOWS, "UPDATE public.redemptions SET status = 'denied', decided_by = p_actor")], consumer: [E(ACTIVITY, 'denied: copy.denied'), E(CHILD_COPY, '"denied": "Not yet"')] },
     fulfilled: { producer: [E(SQL('_family_hub_lifecycle_flows'), "SET status = 'fulfilled'")], consumer: [E(ACTIVITY, 'fulfilled: copy.fulfilled')] },
   },
   'wallet_ledger.reason': {
@@ -99,6 +120,34 @@ export const REGISTRY = {
     prompted: { producer: [E(NEXT_SQL, "SET state = 'prompted', prompted_at = now()")], consumer: [E(NEXT_SQL, "v_state NOT IN ('pending', 'prompted')"), E(HABITS_API, "g.nextStep.state === 'prompted'")] },
     set: { producer: [E(NEXT_SQL, "SET state = 'set', decided_at = now(), next_goal_id = NEW.id")], consumer: [E(NEXT_SQL, "AND state <> 'set'"), E(HABITS_API, "'set', 'declined'].includes")] },
     declined: { producer: [E(NEXT_SQL, "SET state = 'declined', decided_at = now()")], consumer: [E(NEXT_SQL, "OLD.state IN ('pending', 'prompted', 'declined') AND NEW.state = 'set'")] },
+  },
+  // S07.5 (D.17): the child's own ask for the next level, and its answer.
+  'family_autonomy_requests.status': {
+    pending: {
+      producer: [E(AUTONOMY_FLOWS, 'INSERT INTO public.family_autonomy_requests (kid_user_id, requested_level, child_note)')],
+      consumer: [E(AUTONOMY_FLOWS, "IF v_request.status <> 'pending' THEN"), E(AUTONOMY_SERVICE, 'status=eq.pending')],
+    },
+    granted: { producer: [E(AUTONOMY_FLOWS, "SET status = 'granted', decision_id = v_decision")], consumer: [E(AUTONOMY_RULES, "IF NEW.status = 'granted' AND")] },
+    declined: { producer: [E(AUTONOMY_FLOWS, "SET status = 'declined', decision_id = v_decision")], consumer: [E(AUTONOMY_SERVICE, "z.enum(['pending', 'granted', 'declined'])")] },
+  },
+  // S07.5 (D.18): every decision on a chore, a reward request or a level request.
+  'family_decisions.outcome': {
+    approved: { producer: [E(DECISION_GUARDS, "VALUES (NEW.assigned_to, 'task', NEW.id, 'done', 'approved', NEW.decided_by, 'tutor')")], consumer: [E(AUTONOMY_RULES, "count(*) FILTER (WHERE d.outcome = 'approved'"), E(CHILD_COPY, '"approved": "Approved"')] },
+    self_logged: { producer: [E(DECISION_FLOWS, "VALUES (p_kid, 'task', p_task, 'done', 'self_logged', p_kid, 'child')")], consumer: [E(AUTONOMY_RULES, "d.outcome IN ('self_logged', 'preapproved')"), E(CHILD_COPY, '"self_logged": "Counted on your own"')] },
+    preapproved: { producer: [E(DECISION_FLOWS, "'requested', 'preapproved', p_kid, 'child'")], consumer: [E(AUTONOMY_RULES, "d.outcome IN ('self_logged', 'preapproved')"), E(CHILD_COPY, '"preapproved": "Approved by your level"')] },
+    sent_back: { producer: [E(TASKS, "decideChore(req, res, 'sent_back')")], consumer: [E(AUTONOMY_RULES, "p_outcome IN ('sent_back', 'denied', 'questioned')"), E(CHILD_COPY, '"sent_back": "Try again"')] },
+    cancelled: { producer: [E(TASKS, "decideChore(req, res, 'cancelled')")], consumer: [E(AUTONOMY_RULES, "(p_outcome = 'cancelled' AND p_prior_status = 'done')"), E(CHILD_COPY, '"cancelled": "Removed"')] },
+    denied: { producer: [E(DECISION_FLOWS, "'requested', 'denied', p_actor, 'tutor'")], consumer: [E(AUTONOMY_RULES, "p_outcome IN ('sent_back', 'denied', 'questioned')"), E(CHILD_COPY, '"denied": "Not yet"')] },
+    granted: { producer: [E(AUTONOMY_FLOWS, "'pending', 'granted', p_actor, 'tutor'")], consumer: [E(AUTONOMY_RULES, "v_decision.outcome <> NEW.status"), E(CHILD_COPY, '"granted": "New level"')] },
+    declined: { producer: [E(AUTONOMY_FLOWS, "'pending', 'declined', p_actor, 'tutor'")], consumer: [E(NUDGES_SQL, "OR v_decision.outcome = 'declined')"), E(CHILD_COPY, '"declined": "Not yet"')] },
+    confirmed: { producer: [E(QUEUE_UI, "onAction({ kind: 'confirm', review: d })"), E(TASKS, "outcome: z.enum(['confirmed', 'questioned'])")], consumer: [E(CHILD_COPY, '"confirmed": "Looks good"')] },
+    questioned: { producer: [E(QUEUE_UI, "onAction({ kind: 'question', review: d, notYet })"), E(TASKS, "outcome: z.enum(['confirmed', 'questioned'])")], consumer: [E(NUDGES_SQL, "IF NEW.outcome = 'questioned' THEN"), E(CHILD_COPY, '"questioned": "Your Tutor asked"')] },
+  },
+  // S07.5 (D.18): the "talk about it" nudge.
+  'family_talk_nudges.status': {
+    open: { producer: [E(NUDGES_SQL, 'INSERT INTO public.family_talk_nudges (kid_user_id, origin, decision_id, denials)')], consumer: [E(AUTONOMY_SERVICE, "'&status=eq.open'"), E(AUTONOMY_API, "v.status === 'open'")] },
+    talked: { producer: [E(NUDGES_SQL, 'UPDATE public.family_talk_nudges SET status = p_outcome, closed_by = p_actor'), E(QUEUE_UI, "outcome: 'talked'")], consumer: [E(NUDGES_SQL, "n.status = 'talked'")] },
+    dismissed: { producer: [E(NUDGES_SQL, 'UPDATE public.family_talk_nudges SET status = p_outcome, closed_by = p_actor'), E(QUEUE_UI, "outcome: 'dismissed'")], consumer: [E(NUDGES_SQL, "n.status = 'dismissed'")] },
   },
   'personal_rewards.status': {
     active: { producer: [E(TEEN_FLOWS, 'INSERT INTO public.personal_rewards (holder_user_id, title, cost)')], consumer: [E(TEEN_UI, "r.status === 'active'"), E(TEEN_FLOWS, "v_reward.status <> 'active'")] },

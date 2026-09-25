@@ -1,12 +1,12 @@
 # S07: Family Hub and independent teen wallet
 
-Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026. Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5 recorded 24 September 2026 (the lane's verification date). Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
 - Product D.1–D.23 and the Block D "Real-World Money Practice Standard" (non-negotiable constraints: no control shown as active unless enforced; no lifecycle state without a producing and consuming flow; no chore, redemption or banking-account state reachable through a path that bypasses parent-driven business rules).
 - Appendix G (research framework) and Appendix H (metrics, Definition of Done, Stage 2 adversarial bypass testing, phasing: D.1/D.4 are Phase 0, D.5 is Phase 1).
-- Owner decision log: OD-3 Option B (§7, independent teen wallet), OD-21 (every declared Family Hub lifecycle state gets a working flow; build, not remove), OD-23 (zero paid spend), §5 glossary ("Tutor" is only the verified parent; coins, never money).
+- Owner decision log: OD-3 Option B (§7, independent teen wallet; §2 access model: "under the parent's approvals and the independence tiers of D.17"), OD-21 (every declared Family Hub lifecycle state gets a working flow; build, not remove), OD-23 (zero paid spend), §5 glossary ("Tutor" is only the verified parent; coins, never money).
 - Frontend Bible 02 §1–2 and 06 for every rebuilt surface.
 
 Risk classification: **structural/safety (money-adjacent state and family trust)**. Every change is subject to Appendix H Stage 2: an adversarial test must show the control restricts behavior through every path (UI, direct API, data gateway), not only that it displays correctly.
@@ -20,6 +20,7 @@ Risk classification: **structural/safety (money-adjacent state and family trust)
 | S07.2 | D.3 per OD-3 Option B (owner log §7): the self-registered teen's personal wallet | An eligible teen (13–17 by the stored age declaration, never role) logs income and splits it across Save/Spend/Share in one step with no approval, keeps savings goals, defines and marks their own rewards, and moves coins out of their own goal; Tasks, chore approval, reward requests and every parent-set rule stay guardian-only; adults, guests, under-13 arrivals, parent-created children (family wallet instead), staff and aged-out accounts hold no personal wallet, enforced by the database for every writer and by Core admission; a teen-initiated parent link layers the family mechanics onto the same ledger, goals and rewards without migration; Appendix H's Teen Independent-Mode Adoption is served to analytics staff | Rebuilt `/wallet` surface (`frontend/src/rebuild/wallet/`) in three locales, light/dark, 375/1280 px; learner shell shows Wallet, Tasks locked until a parent links, no Family entry for a teen | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 73 adversarial Core tests, 42 component/route tests, 12 real-Chrome journeys); full Supabase stack run, types regeneration, copy/native review, production metric and Product acceptance pending |
 | S07.3 | D.2 forgiving chore streak, D.10 expected contribution versus paid bonus task, D.11 savings bonus framed by age | The chore streak is computed by a lapse-tolerant model (two free rest days a week, permanent best and total, a Tutor's holiday pause) from practised days that only the task itself can record; a Tutor tags every chore as a family contribution (0–2 coins) or a bonus task (1–500) with no preselected kind; under 13 (or with no known birth date) the savings bonus is the fixed 1 coin per 10 saved and no percentage reaches the child, whoever writes the rule; 13–17 keep the Tutor's 0–20% with a worked example checked by the database; every threshold sits in the Block D threshold log and a gate keeps log, Core and migrations equal; three Appendix H diagnostics served to analytics staff | Rebuilt chore composer, chore streak, holiday pause, bonus settings and bonus explainer (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Family and Banking routes | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 77 new Core tests, 37 new component/copy tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, B.21 adoption of the model, copy/native review, production baselines and Product acceptance pending |
 | S07.4 | D.13 recommended default split with an easy override and redemption timing, D.14 a real destination for the Share pocket, D.15 the next-goal prompt at the celebration, D.16 goal progress by provenance | Every holder owns a usual split (the recommended 50 / 40 / 10 until changed; only the holder sets it); every payout arrives pre-split by it, one tap keeps it and any split that places every coin is accepted; an allowance's Save part may go to a goal; Share coins go to a place a Tutor (or a self-registered teen) chose, and whoever chose it records what really happened with a required note, enforced for every writer; a goal is reached in the transaction that covered it and opens a next step whose first view is the one celebration, with a next goal that follows it; every goal carries its provenance (own, bonus, Tutor), a read without it is refused, and one component draws every goal bar; a consent-gated behaviour stream (the H.1 gate, fail-closed, never blocking, 400-day retention) feeds five Appendix H diagnostics served to analytics staff; new thresholds in the Block D log | Rebuilt split chooser, usual split, goals with provenance and the next-goal card, Share giving and the Tutor's Share places (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Banking, Family and Wallet routes; a static D.16 release gate | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a hand-computed diagnostic timeline, the S07.1/S07.2 checks re-run over the whole chain, 57 new Core tests, 49 new component/copy/gate/data-plane tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, copy/native review, production baselines, family usability testing and Product acceptance pending |
+| S07.5 | D.17 a graduated-autonomy ladder inside the parent-managed system, D.18 a rationale requirement and communication scaffolding for approval and denial | Three independence levels for every child in a family (by age and record, never role): Level 1 is the old flat model, Level 2 self-logs family contributions and pre-approves rewards up to a Tutor-set amount (at most 20 coins), Level 3 self-logs chores up to 100 coins and pre-approves up to 100; the spending limit and the hold apply at every level; a documented age-and-track-record rule per level shown with the child's own numbers; a Tutor moves up only when eligible and down only with an actionable reason, the child asks and may step down, support staff and the evidence-based system step-down lower a level; every decision is one immutable record, and no "not yet" (sent back, cancelled, denied, declined, questioned) exists without a subject reason code and an actionable reason (a "later" with a date), for every writer; the child's own words reach the Tutor at decision time; three "not yet"s in 14 days open a "talk about it" nudge and the child can ask to talk; the rule is in `docs/operations/FAMILY-INDEPENDENCE-AND-DECISIONS.md` and 20 thresholds in the Block D log; three Appendix H diagnostics (progression, nudge trigger rate, human-scored actionability) served to analytics staff | Rebuilt decision queue and reason form (Tutor Tasks), independence ladder (Family, per child), the child's level, decision notes, mark-done-with-a-note and ask-for-a-reward-with-a-reason (child Tasks) in `frontend/src/rebuild/family/`, three locales, light/dark, 375/1280 px; the legacy approve/cancel/deny buttons replaced; nothing celebrates | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a crafted metric timeline and real concurrency, the S07.1 and S07.2 checks re-run over the whole chain, 48 new adversarial Core tests, 30 new component/copy/parity tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, Product/Safety review of every threshold, production baselines, the first human-scored sample, family usability testing, native copy review and Product acceptance pending |
 
 ## Current state found (verified against the code, 24 September 2026)
 
@@ -610,3 +611,241 @@ Every configuration had zero axe violations, no panel overflow or page scroll, 4
 - Appendix H Stage 5 (family usability testing of the split chooser, Share and the next-goal prompt) has not been run.
 
 D.13, D.14, D.15 and D.16 are not accepted.
+
+## S07.5: current state found (verified against the code, 24 September 2026)
+
+The SPEC's "Current State" was accurate for D.17 and partly stale for D.18:
+
+- **D.17 confirmed.** Nothing in the database or Core knew a child's age or record when approving. A chore reached `approved` only with a verified guardian as `decided_by`, and a reward only through `decide_redemption` called by a Tutor, for an 8-year-old and a 17-year-old alike. There was no level, no pre-approved amount and no self-logging anywhere.
+- **D.18 confirmed, and worse than stated for rewards.** A chore's only "not yet" was a cancel with an optional reason of up to 240 characters. A chore could not be sent back to finish: cancelling was the only way to refuse it. A reward denial carried **no reason at all**: the route took `{ approve }` only. The SPEC says "an optional, short reason" for both. Nothing captured the child's own reasoning: a reward request carried only `catalogId`. Both gaps were reproduced on PostgreSQL over the chain before this checkpoint (first check group below).
+
+## S07.5 implementation and rationale (D.17, D.18)
+
+Six migrations, in this order after the S07.4 migrations (descriptive names; the orchestrator assigns the final numbers at merge):
+1. `family_autonomy_ladder` (expand): the tables, the thresholds and the actionable-reason rule;
+2. `family_autonomy_rules` (expand): the level in force, the eligibility rule, and the guards of the decision record and of level requests;
+3. `family_autonomy_flows` (expand): who may move a level;
+4. `family_decision_guards` (`contract`): the task guard;
+5. `family_decision_flows` (`contract`): the redemption guard and the flows;
+6. `family_talk_nudges` (expand): the nudge, the step-down and the metrics.
+
+The work is split in six because the operator transport (`railway-migrate.test.mjs`) refuses a file over the Windows command-line limit, the limit S07.1 and S07.4 met: the first draft was two files of 57 KB and 38 KB. The task, redemption, completion-day and streak-day functions are redefined. Each keeps every S07.1-S07.4 rule word for word and only adds to it. The S07.1 and S07.2 verifiers re-ran every check over the whole chain to prove it (below). The two `contract` parts ship with, never ahead of, the S07.5 Core release: the current Core's optional-reason cancel and its bare deny call are refused by design. `database/types/database.ts` was not hand-edited.
+
+The documented rule is `docs/operations/FAMILY-INDEPENDENCE-AND-DECISIONS.md`; every number is in the Block D threshold log (20 new keys).
+
+### The decision record (D.18, and D.17's track record)
+
+- **Every decision is one immutable row** in `family_decisions`: the subject (a chore, a reward request or a level request), the state it was taken from (read from the subject, never trusted), the outcome, who decided, and for every "not yet" a reason code and a reason. Ten outcomes: approved, self-logged, pre-approved, sent back, cancelled, denied, granted, declined, and a Tutor's later look, confirmed or questioned.
+- **Every writer is covered.** A Tutor's approval through the S07.1 path (a direct guardian update) records its own decision in a trigger, so the track record never misses a yes. A "not yet" cannot be recorded that way, because it needs the reason. A deferred check refuses a decision row whose state change did not happen, and the task and redemption guards refuse a state change without its decision. No browser or service-role write reaches the table; only the flows write it.
+- **Backfill (OD-9).** Past approvals and past reward decisions became legacy rows before the guard existed, so a child's record starts from their real history. A past bare cancellation was not turned into a denial: nobody can tell whether the chore had been marked done.
+
+### D.18: no "not yet" without a reason the child can act on
+
+- **Chores.** A chore marked done can be approved, **sent back** (it returns to open with no completion day, and the practised streak day is taken back, as a cancellation already did), or cancelled. Sending back and cancelling need a task code (not finished, needs a redo, not a good fit, let's talk first) and a reason.
+- **Rewards.** A denial needs a reward code (save more first, later on a date, not a good fit, let's talk first) and a reason. "Later" needs the date to ask again, from tomorrow to 90 days ahead. The legacy `decide_redemption(..., false, ...)` now refuses. The approval path of that function is unchanged, and it records its decision.
+- **Actionable, not just present.** The reason must be 12 to 240 characters with at least three different words, and never a brush-off: "not now", "maybe later", "because I said so", "ahora no", "porque sí", "agora não" and 50 more. Normalization is accent- and case-proof, and never depends on the database locale. The same verdict is computed by the database (`family_reason_actionable`), Core and the client, and all three are pinned to `database/scripts/fixtures/denial-reasons.json` (55 cases in three languages). A structural check cannot judge meaning, so the human-scored sample below measures that.
+- **The child's own reasoning reaches the Tutor at the moment of decision:**
+  - a note when marking a chore done;
+  - why they want a reward: a closed set a young child can tap, required, plus an optional note;
+  - a note on a level request.
+
+  None of it can be edited afterwards.
+- **The child reads every decision:** the outcome, the reason, the code and the date to ask again. They can press "Let's talk" on any "not yet", which opens a card for the Tutor (the child starts the conversation too, Appendix G §4.2).
+- **"Talk about it".** Three "not yet"s within 14 days open a "Time to talk" card for the Tutor, at most once per 14 days per child, with a one-line suggestion. The Tutor closes it as "we talked" or "not now". The database writes it when the pattern happens, so no flow can forget it.
+
+### D.17: a graduated-autonomy ladder
+
+- **Three levels** for every child in a family: a parent-created child, or a linked teen. The ladder follows the child's age and record, never their role. An unlinked teen has no ladder, because their personal wallet already has no approval step (OD-3 Option B).
+  - Level 1, "Ask first": the previous flat model. Every child starts here.
+  - Level 2, "Small steps": family contributions (D.10) are **self-logged**, meaning approved at once by the child under their level. Rewards up to the Tutor's pre-approved amount (at most 20 coins) are approved and paid with no tap.
+  - Level 3, "Trusted": every chore up to 100 coins is self-logged. A chore that asks for a photo self-logs only once the photo is in. Rewards up to the pre-approved amount (at most 100 coins) need no tap.
+
+  At every level the spending limit and the hold still stop a pre-approved reward. They are the safety boundary Appendix G §4.4 reserves for the parent.
+- **The rule, with the child's own numbers.** Level 2 needs age 8+, 10 approved in 60 days and at most 1 in 4 not approved. Level 3 needs age 12+, 20 approved, at most 1 in 5, and 28 days on Level 2. A cancel of a chore never marked done does not count against the child. A "not yet" to a level request never counts: asking to grow is not a failure. A parent-created child with no birth date stays on Level 1 until the Tutor adds one (the conservative default).
+- **The level in force is capped by age at use.** If a birth date changes, the level and the amount fall back to what the age allows, whatever is stored. The database checks this every time a chore or a reward goes through without a Tutor.
+- **Who moves a level.** The database enforces it for every writer:
+  - a verified Tutor moves up only when the rule is met, and down only with a reason code and an actionable reason;
+  - the child asks for the next level (optionally in their own words), and may step down on their own;
+  - staff with `manage_support` lower a level with a reason (the product-team rollback, `POST /api/v1/admin/family-autonomy/:kidId/lower`);
+  - the system steps a level down by one when a Tutor questions three self-directed items within 30 days, following the Appendix D demotion precedent.
+
+  Nobody else can move a level, and no writer can forge a system change. A level row cannot move without its change row, and a change row without its level row is refused at commit.
+- **Afterwards.** Every self-directed item appears in the Tutor's queue, "Done on their own", for 30 days. The Tutor answers "Looks good" or "Ask about it" (a question needs an actionable reason, and the child reads it). Coins already moved stay where they are; a correction is the audited S07.1 Tutor correction.
+- **Measured.** First-eligible moments are recorded after every decision and by the nightly sweep in `insights-maintenance.yml` (a birthday opens a level without any decision). A promotion always records its own.
+
+### Measured (Appendix H, all Diagnostic)
+
+- **Independence-Tier Progression Rate** (`GET /api/v1/admin/family/autonomy-progression`): of the children first eligible for a level, how many reached it within 30 days, and how many are still inside the window. It also reports the step-downs by who lowered the level, which is the rollback path in use.
+- **Repeated-Denial Communication-Nudge Trigger Rate** (`/talk-nudges`): the qualifying patterns are recomputed from the decision record alone, as episodes of three "not yet"s in 14 days no sooner than 14 days apart, and compared with the nudges that opened in the same transaction. It also counts child asks and how nudges were closed.
+- **Denial-Reason Actionability Rate** (`/denial-actionability`, with `/denial-reasons/sample` and `POST /denial-reasons/:id/score`): staff with `view_analytics` score a random sample. The sample carries the reason, its code and an opaque id only, and only for children the H.1 analytics gate admits. The structural compliance of every "not yet" is reported next to the human score.
+
+### Rebuilt surfaces and mounting
+
+The surfaces live in `frontend/src/rebuild/family/`:
+- `NotYetForm`, `DecisionQueue`, `AutonomyLadder` (the Tutor);
+- `MyLevel`, `DecisionNotes`, `ChoreDone` and `RewardAsk` (the child);
+- the API layer `familyAutonomyApi.ts`. It shape-checks every response: an "eligible" that contradicts its own conditions, an amount over the cap, and a "not yet" without its reason are all refused, never shown.
+
+They import nothing legacy and use the S07.1 injected transport. The copy lives in `i18n/<locale>/familyAutonomy.json`, checked for:
+- key parity and the Copy Budget role of every key;
+- the youngest band (6-9) for the child's surfaces and adult for the Tutor's;
+- the 6-9 first-view budget;
+- the glossary (coins, never money; Tutor only for the parent; approve, never accept; no freeze, no percentage);
+- no exclamation mark. A new level is not an OD-7 milestone, so nothing celebrates.
+
+Mounting, through route wrappers:
+- `DecisionQueuePanel` sits at the top of the Tutor's Tasks page. It replaces the legacy approve, cancel and deny buttons, which could not carry a reason.
+- `AutonomyLadderPanel` sits on each child's card on the Family page.
+- `MyLevelPanel`, `DecisionNotesPanel`, `ChoreDonePanel` (replacing "Mark done") and `RewardAskPanel` (replacing the reward request button) sit on the child's Tasks page.
+
+The legacy task list stays as a read-only history. Its strings are left for the wave-2 cleanup.
+
+## S07.5 decisions taken on the SPEC's conservative default (proposals for owner review)
+
+1. **Three levels**, the Definition of Done's minimum of two beyond the flat model: Level 1 is the old model, then "Small steps" and "Trusted". Level names and every threshold are Engineering proposals (all 20 keys in the threshold log). Appendix G supports gradual, volitional fading, but gives no number.
+2. **No automatic promotion.** Meeting the rule only makes a level available; a Tutor decides, and the child can ask (Appendix G §2.5; Beyers et al. 2024).
+3. **What stays unilateral at every level:** the spending limit, the hold, and a chore worth more than 100 coins.
+4. **Unknown age means Level 1.** A parent-created child without a birth date cannot move up until the Tutor adds one.
+5. **The system steps down** one level after three questioned self-directed items in 30 days (at most once per 30 days), following the Appendix D demotion precedent. The child reads "Back to Level N for now. Try again soon." Whether an automatic step-down is wanted at all is an owner question.
+6. **Self-directed coins are not clawed back** when a Tutor questions an item. The coins stay where they are; the Tutor can use the audited correction.
+7. **What counts as "not approved":** sent back, denied, questioned, and cancelled after "done". A cancelled open chore and a declined level request do not count.
+8. **The actionable-reason rule is structural** (length, three different words, a brush-off list in three languages). The human-scored sample decides whether it is enough.
+9. **A child counter-proposal** (Appendix G §4.4's negotiation surface) is not built. The child's voice here is their reason on every request, their ask for a level, and "Let's talk". A structured counter-offer is an owner question.
+10. **The "talk about it" pattern is three "not yet"s in 14 days**, at most one card per 14 days per child. The child's own "Let's talk" has no limit beyond one per decision.
+11. **Staff read reasons only in the consent-gated sample.** The text is written by a Tutor about their child, so the sample carries no identity beyond an opaque id and only admits children the H.1 gate admits. Safety should review whether staff may read these reasons at all.
+12. **The decision record lives as long as its chore, reward or request.** Whether reasons are pruned earlier is D.21's written retention policy.
+
+## S07.5 verification log
+
+Executed 24 September 2026 (the lane's verification date) in the S07 worktree, first-hand, on the tree being committed. Commands are relative to the named directory. Local results only, not CI or production observations.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Physical PostgreSQL, S07.5 | Lane cluster (PostgreSQL 17.6, `.lane-cache/pg`, port 15507); root: `python database/scripts/verify-autonomy-decisions-postgres.py` with `LF_PG_BIN/PORT/USER/DATA`; the cluster was stopped with `pg_ctl stop -m fast` afterwards | Passed, 16 check groups. Report: `audit-results/s07-autonomy-decisions-postgres.json`. Details below this table |
+| Physical PostgreSQL, S07.1 and S07.2 over the whole chain | Root: `LF_PG_FULL_CHAIN=1 python database/scripts/verify-family-state-machine-postgres.py` and `LF_PG_FULL_CHAIN=1 python database/scripts/verify-teen-wallet-postgres.py` | Both passed all their check groups (14 and 17) through the last S07.5 migration. The redefined task, redemption, completion-day and streak-day functions keep every S07.1 and S07.2 rule, and the S07.1 direct approvals still pass because they now record their own decision |
+| Physical PostgreSQL, S07.4 | Root: `python database/scripts/verify-money-habits-postgres.py` | Passed, 14 check groups (its own chain, unchanged) |
+| Core adversarial | `backend/`: `npx vitest run src/__tests__/familyAutonomy.test.ts src/__tests__/tasks.test.ts src/__tests__/blockDThresholds.test.ts` | 48 new adversarial tests pass (`familyAutonomy.test.ts`). In `tasks.test.ts`, 23 tests were rewritten for the decision flows and 2 added (a cancel and a reward request without a reason are refused before any write). The threshold test gains one. Coverage: every child route is refused to an unlinked teen, an adult, a guest, a parent and staff; every Tutor route is refused to the six non-parent populations, and a stranger gets 404, all before any write; the caller, never a body field, is the child and the actor; each "not yet" body (no code, no reason, a wrong code, "Not now", "Ahora no", "porque sim", a repeated word, a date on the wrong code, a date outside 1-90 days) is refused before any write; a lowering without an actionable reason and an amount over the cap are refused; every database refusal is mapped; a transport failure or a surprising answer is never reported as success; a queue that cannot be read in full is refused (502); support-only rollback; analytics-only metrics with null rates for empty populations; a sample without identity |
+| Core regression | `backend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 77 files (+1 skipped), 1,797 tests + 1 documented skip |
+| Frontend regression | `frontend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 226 files, 2,388 tests. The 30 new tests: 17 surface, parity and API-shape, 13 copy |
+| Real Chrome matrix | `frontend/`: `FAMILY_AUTONOMY_URL=http://localhost:5340 node scripts/verify-family-autonomy.mjs` (dev server with `VITE_CACHE_DIR` in the lane cache, stopped afterwards) | 12 of 12 configurations (EN/es-MX/pt-BR × light/dark × 375/1280). 96 captures and `report.json` in `audit-results/family-autonomy/`. Journey steps below this table |
+| Static migration gates | `database/`: `npm test`, and `node scripts/railway-migrate.test.mjs` re-run on its own | Passed. 135 files pass the numbering, RLS and phase checks (101 expand, 34 contract, 23 contract pending). The lifecycle gate covers 55 states across 13 columns. 28 of 28 node tests pass. The operator transport passes its 12 scenarios with all six S07.5 files (`railway-migrate integration OK`); see the failures below for the runs that did not count |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` (after staging, so the new files are scanned), `bash agent/tools/check-i18n.sh` (Git Bash), `npm run tools:test`, `node agent/tools/check-block-d-thresholds.mjs` | Passed: spec authority, tokens and assets OK; no credential patterns; i18n file and key parity, no hardcoded strings, every static key present; 62 of 62 tool tests; 45 thresholds agree (20 new) |
+
+**PostgreSQL S07.5 check groups (16):**
+- **Gaps reproduced** on the chain before the first S07.5 migration: no decision record, level or nudge; a Tutor cancels a chore the child marked done with no reason at all, and denies a reward with no reason.
+- **Backfill (OD-9):** the approved chore and the denied reward from before became legacy decision rows, and their subjects point at them.
+- **The actionable-reason rule** matches the shared fixture for all 55 cases.
+- **Chores (D.18):**
+  - the child's note is kept and cannot be edited;
+  - send-back and cancel need a task code and an actionable reason, and are refused for none, "Not now", a reward code, a stranger and the child;
+  - a sent-back chore is open again with no completion day, and its practised day is taken back;
+  - a direct service-role cancel or send-back without a decision is refused;
+  - the S07.1 direct approval records its own decision.
+- **Rewards (D.18):**
+  - the child's reason is required and immutable;
+  - the legacy bare denial is refused;
+  - a denial needs a reward code and an actionable reason;
+  - "later" needs a date 1-90 days ahead;
+  - a denial moves no coins, and the legacy approval pays and records itself.
+- **The decision record resists every writer:** no service-role or browser insert. Even a superuser cannot edit a decision, forge a legacy row, record a decision without its state change (refused at commit), or attach one to another child. The child and the Tutor read it; a stranger and another child do not.
+- **Eligibility (D.17):**
+  - every child starts on Level 1;
+  - the 9-year-old is refused at 5 approved and 4 not approved, then eligible at exactly the 25% boundary (12 and 4);
+  - the 7-year-old is refused by age;
+  - a child with no birth date is refused until one is added;
+  - a stranger and the child cannot promote;
+  - the amount is capped at 20;
+  - Level 3 is refused without 28 days on Level 2.
+- **Level 2:**
+  - a contribution is self-logged, while a bonus chore waits;
+  - a forged self-logged bonus chore is refused by the task guard;
+  - a reward inside the amount is paid with no tap, one above it waits, and a forged pre-approval is refused;
+  - the spending limit and the hold still stop a pre-approved reward.
+- **Level 3:**
+  - eligible on day 29, not on day 0, and the cap is 100;
+  - a 100-coin chore self-logs and a 150-coin one waits;
+  - a photo chore waits until the photo is in;
+  - a birth date changed to 11 drops the level in force to 2 at once.
+- **Afterwards and rollback:**
+  - reviews happen once, and a question needs a reason;
+  - the third question in 30 days steps the level down 3 to 2 (a system change), and a forged system change is refused;
+  - a Tutor lowers a level only with a reason;
+  - the child steps down but never up;
+  - staff lower a level only with `manage_support` (analytics-only, no-grant admins and a parent are refused), only downward, and only with a reason.
+- **The child's voice:**
+  - one pending ask;
+  - "not yet" to it needs a level code and a reason;
+  - a grant only when eligible, and a direct promotion grants the pending ask;
+  - an unlinked teen, an adult and a guest have no ladder, while a linked teen climbs it.
+- **Level tables:** no service-role or browser write. A superuser cannot write a level without its change, a change without its level, or edit a change. RLS reads for the party only; no browser reads the eligibility log.
+- **Concurrency:** 8 simultaneous pre-approved 10-coin requests against 20 coins give exactly 2 paid and 6 waiting, and Spend ends at 0.
+- **"Talk about it":**
+  - the third "not yet" in 14 days opens one nudge and the fourth adds none;
+  - an open-chore cancel is not a denial;
+  - the child's ask is idempotent, never about a yes or another child's decision;
+  - no forged pattern nudge, even by a superuser;
+  - only a Tutor closes a nudge, once.
+- **Replay** of the six migrations preserved every row (87/10/4/4/5) and every refusal.
+- **Metrics on a crafted, backdated timeline:**
+  - progression `2=3/1/1 3=0/0/0`;
+  - step-downs `child=0 staff=0 system=1 tutor=1`;
+  - nudge rate `2/1/1/1/0/1` (a missing nudge is detected);
+  - actionability `9/9/8/4/3`;
+  - the sample excludes the under-13 child and carries no identity;
+  - only `view_analytics` staff score, once per reason.
+
+**Browser matrix journey (each configuration):**
+1. Tutor, Tasks, the decision queue:
+   - the child's note and reason are shown next to their chore and reward;
+   - "Send back" with no code, then with "Not now", is refused locally with no request, and an actionable reason is sent with the exact body;
+   - a reward "Not yet" with "later" carries its date (exact body);
+   - the "Time to talk" card closes as "we talked", and "Done on their own" is confirmed (exact bodies).
+2. Tutor, Family, the ladder:
+   - the rule is shown with the child's numbers ("12 of 10 approved in 60 days");
+   - "Move up" (exact body);
+   - the amount is raised twice within the cap and saved;
+   - "Move down" needs a reason, then sends it (exact body).
+3. Child, Tasks:
+   - my level ("Level 2: Small steps", "Rewards up to 10 coins need no asking.", "7 of 20 to Trusted"), with no percentage;
+   - asking for the next level in my words (exact body);
+   - a "not yet" with its reason and date, and "Let's talk" sent once;
+   - a chore marked done with my note;
+   - a reward asked for only with a reason (refused locally without one), approved by my level (exact body).
+
+Every configuration had zero axe violations, no panel overflow or page scroll, 48 px targets, a copy role on every text node, no celebration element and zero browser errors. Seven captures were inspected in this session:
+- es-MX dark 375, the child's level, with the note being written;
+- en-US dark 375, the Tutor's reason form (before and after the fix below);
+- pt-BR dark 375, the reason form after the fix;
+- pt-BR dark 1280, the ladder with every condition met;
+- es-MX light 375, the reward reason;
+- en-US light 1280, the child's notes.
+
+**Failures and their resolution:**
+- **The verifier's own first mistakes.** An admin role cannot be granted without a superadmin on the company domain, so the staff fixtures bypass that chain for setup only. The first record expectation forgot the backfilled legacy decisions. A metric timeline written in two transactions had two different `now()` values. The replay check reused a decided chore. `information_schema.routine_columns` does not exist on PostgreSQL 17, so the check uses `pg_get_function_result` instead.
+- **A real leak, found by the verifier.** `family_talk_request` returned an existing child nudge for any caller who named its decision, so another child's "Let's talk" id could be read. The lookup now also requires the child to match, and the guard refuses a mismatch (`TALK_NUDGE_INVALID`).
+- **Transport size.** The first draft was two migrations of 57 KB and 38 KB. `railway-migrate.test.mjs` refused the first (`Argument list too long`), so the work is now six files, each at most 22 KB. A later transport run reported "migration drift" because a migration was edited while the test ran, and another run of `npm test` ended with exit 127 and no transport output. Only the clean stand-alone re-run is recorded as the result.
+- **Threshold keys with digits.** The Block D gate and its test read only `[a-z_.]` keys, so `autonomy.level2_*` was invisible. Both now read `[a-z0-9_.]`. The last key of the thresholds object had no trailing comma, so every key got one (a non-threshold `thresholds_version` closes the object).
+- **Copy.** The child's level view (31 words) and the reward-reason view (31) exceeded the 25-word first-view budget. The level name became the heading, the unlock and pre-approval lines were shortened, and the reason options were cut to two or three words.
+- **Matrix findings:**
+  - text typed into a textarea had no copy role (the user's own words now carry `data`);
+  - an error message with an apostrophe broke the helper's generated script;
+  - clicks landed on moving targets while panels above were still loading, so the helper now waits for a stable box;
+  - in dark mode the unselected reason options were invisible on the form's fill (a more specific list-row rule won), so their fill now wins.
+- **A legacy test.** `FamilyPage.test.tsx` mocks every per-child panel and needed the new ladder panel mocked too.
+
+**Cross-lane findings (not changed here):**
+- **D.23.** Its reflective prompt ("what would you tell your kid about this decision?") belongs on this decision surface. The API already accepts an optional note on a yes; the prompt and its metric are D.23's work.
+- **D.21.** Decision reasons live as long as their chore, reward or request. Their retention belongs to D.21's written policy.
+- **Staff console.** The support rollback is served by the API only. A console surface belongs to the staff console rebuild (Block G).
+- **H.1 / A.2.** The actionability sample uses the H.1 gate, so a parent-created child under 13 is never sampled (the S07.4 finding).
+
+**Remaining limitations:**
+- No full Supabase (PostgREST/GoTrue) stack run of the new routes, triggers and RLS.
+- `database.ts` has not been regenerated: five new tables, and new columns on `tasks` and `redemptions`.
+- The three diagnostics have no production baseline and no first human-scored sample yet.
+- Every threshold is a proposal awaiting Product and Safety review.
+- The browser matrix uses a synthetic Core, and a date field is set through its native setter.
+- Appendix H Stage 5 (family usability testing: does a denial feel explained, does a level feel earned) has not been run.
+- Native review of `familyAutonomy.json` in three locales, and human Product/Safety review of the twelve proposals above.
+
+D.17 and D.18 are not accepted.

@@ -85,6 +85,22 @@ import {
   SHARE_COMPLETION_WINDOW_DAYS,
 } from '../services/moneyHabits.js';
 import {
+  AUTONOMY_PROGRESSION_WINDOW_DAYS,
+  isRefusal as isAutonomyRefusal,
+  listAutonomyChanges,
+  readAutonomyProgression,
+  readAutonomyStatus,
+  readDenialActionability,
+  readDenialReasonSample,
+  readTalkNudgeRate,
+  reasonActionable,
+  scoreDenialReason,
+  staffLowerAutonomy,
+  toWireAutonomy,
+  toWireChange,
+  UNAVAILABLE as AUTONOMY_UNAVAILABLE,
+} from '../services/familyAutonomy.js';
+import {
   getAdminOverview,
   getAdminContentSummary,
   getReviewLessonDetail,
@@ -411,6 +427,10 @@ export function adminRouter(): Router {
   router.use('/reports', requireAdminPermission('manage_support'));
   // D.4's Appendix H metric: a read-only integrity count, analytics-grade.
   router.use('/family', requireAdminPermission('view_analytics'));
+  // S07.5 (D.17, Appendix H DoD (d)): lowering a child's independence level
+  // after a support review changes a family's state, so it needs the
+  // support grant, never the read-only analytics grant.
+  router.use('/family-autonomy', requireAdminPermission('manage_support'));
   // IP exclusions and non-read intelligence operations change operational
   // state. A read-only analytics grant cannot authorize those changes.
   router.use('/analytics/exclusions', requireAdminPermission('manage_support'));
@@ -1312,6 +1332,123 @@ export function adminRouter(): Router {
       holdersWithShare: row.holders_with_share,
       holdersWithoutDestination: row.holders_without_destination,
     });
+  });
+
+  // ── S07.5 (D.17, D.18): Appendix H metrics ───────────────────────────────
+  /*
+   * Independence-Tier Progression Rate (Diagnostic): of the children who
+   * first met the rule for a level, how many reached it within the window;
+   * plus the rollback path in use (levels lowered, by who).
+   */
+  router.get('/family/autonomy-progression', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const data = await readAutonomyProgression(since);
+    if (data === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the progression metric');
+    return ok(res, {
+      since: since.toISOString(),
+      windowDays: AUTONOMY_PROGRESSION_WINDOW_DAYS,
+      levels: data.levels.map((l) => ({ level: l.level, judged: l.judged, progressed: l.progressed, waiting: l.waiting, progressionRate: l.judged > 0 ? l.progressed / l.judged : null })),
+      stepDowns: Object.fromEntries(data.stepDowns.map((d) => [d.actor_kind, d.step_downs])),
+    });
+  });
+
+  /** Repeated-Denial Communication-Nudge Trigger Rate (Diagnostic): patterns recomputed from the decisions against nudges opened. */
+  router.get('/family/talk-nudges', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readTalkNudgeRate(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the nudge metric');
+    return ok(res, {
+      since: since.toISOString(),
+      patterns: row.patterns, nudged: row.nudged, triggerRate: row.patterns > 0 ? row.nudged / row.patterns : null,
+      childAsks: row.child_asks, talked: row.talked, dismissed: row.dismissed, stillOpen: row.still_open,
+    });
+  });
+
+  /** Denial-Reason Actionability Rate: human scores over a consent-gated sample, plus the structural compliance of every "not yet". */
+  router.get('/family/denial-actionability', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readDenialActionability(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the actionability metric');
+    return ok(res, {
+      since: since.toISOString(),
+      denials: row.denials, structured: row.structured, structuredRate: row.denials > 0 ? row.structured / row.denials : null,
+      admitted: row.admitted, scored: row.scored, actionable: row.actionable, actionabilityRate: row.scored > 0 ? row.actionable / row.scored : null,
+    });
+  });
+
+  const DenialSampleQuery = z.object({
+    days: z.coerce.number().int().min(1).max(365).default(30),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+  }).strict();
+
+  /*
+   * The sample staff score. The reason text and its code only: no child,
+   * family or decision identity beyond an opaque id, and only children the
+   * H.1 analytics gate admits (the database filters).
+   */
+  router.get('/family/denial-reasons/sample', async (req, res) => {
+    const q = DenialSampleQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365 and limit 1-50');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readDenialReasonSample(since, q.data.limit);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the sample');
+    return ok(res, {
+      since: since.toISOString(),
+      reasons: rows.map((r) => ({ id: r.decision_id, subject: r.subject, outcome: r.outcome, reasonCode: r.reason_code, reason: r.reason, passesStructuralCheck: reasonActionable(r.reason) })),
+    });
+  });
+
+  const ScoreBody = z.object({ actionable: z.boolean() }).strict();
+
+  router.post('/family/denial-reasons/:id/score', async (req, res) => {
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const body = ScoreBody.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'actionable must be a boolean');
+    const result = await scoreDenialReason(id.data, authedUser(res).id, body.data.actionable);
+    if (result === AUTONOMY_UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the score');
+    if (isAutonomyRefusal(result)) {
+      return result.refused === 'DENIAL_SCORE_FORBIDDEN'
+        ? fail(res, 403, 'FORBIDDEN', 'You do not have permission to score reasons')
+        : fail(res, 404, 'NOT_FOUND', 'No such reason in the sample');
+    }
+    return ok(res, { scored: result });
+  });
+
+  // ── S07.5 (D.17): the product-team rollback of an independence level ────
+  router.get('/family-autonomy/:kidId', async (req, res) => {
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const [status, changes] = await Promise.all([readAutonomyStatus(kidId.data), listAutonomyChanges(kidId.data, 20)]);
+    if (!status || changes === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the level');
+    if (!status.in_family) return fail(res, 404, 'NOT_FOUND', 'No child in a family with this id');
+    return ok(res, { autonomy: toWireAutonomy(status), changes: changes.map((c) => toWireChange(c, authedUser(res).id)) });
+  });
+
+  const LowerLevel = z.object({ level: z.number().int().min(1).max(2), reason: z.string().max(240) }).strict();
+
+  router.post('/family-autonomy/:kidId/lower', async (req, res) => {
+    const actor = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const body = LowerLevel.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'A lower level and a reason are required');
+    if (!reasonActionable(body.data.reason)) return fail(res, 400, 'AUTONOMY_REASON_REQUIRED', 'Say what the family can do next, in a few words');
+    // The reason exists in the audit trail even if the write fails.
+    await insertAuditLog(actor.id, 'family_autonomy.staff_lower', kidId.data, { level: body.data.level });
+    const result = await staffLowerAutonomy(kidId.data, actor.id, body.data.level, body.data.reason.trim());
+    if (result === AUTONOMY_UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not lower the level');
+    if (isAutonomyRefusal(result)) {
+      const status = result.refused === 'AUTONOMY_STAFF_FORBIDDEN' ? 403 : result.refused === 'AUTONOMY_NOT_IN_FAMILY' ? 404 : result.refused === 'AUTONOMY_REASON_REQUIRED' ? 400 : 409;
+      return fail(res, status, result.refused, 'The change was refused');
+    }
+    return ok(res, { level: result });
   });
 
   router.get('/users/timeline', async (req, res) => {

@@ -14,7 +14,6 @@ import { endChoreStreakPause, getPauseKid, livePauses, pauseChoreStreak, readStr
 import {
   allocateTaskReward,
   archiveGoal,
-  decideRedemption,
   evidenceStillReferencedElsewhere,
   getCatalogForGuardians,
   getCatalogForParent,
@@ -37,11 +36,9 @@ import {
   insertAuditLog,
   insertCatalogItem,
   insertGoal,
-  insertRedemption,
   insertTask,
   setCatalogItemActive,
   setTaskEvidence,
-  transitionTaskStatus,
   type CatalogItemRow,
   type GoalRow,
   type RedemptionRow,
@@ -82,6 +79,46 @@ import {
   WALLET_BUCKETS,
   type GuardianActionRow,
 } from '../services/familyLifecycle.js';
+import {
+  CHILD_NOTE_MAX_CHARS,
+  CHILD_REWARD_REASONS,
+  closeTalk,
+  decideLevelRequest,
+  decideRedemptionWithReason,
+  decideTask,
+  DECISION_REASON_MAX_CHARS,
+  DECISION_REVISIT_MAX_DAYS,
+  getDecision,
+  getLevelRequestKid,
+  getNudgeKid,
+  LEVEL_LOWER_REASON_CODES,
+  LEVEL_REQUEST_REASON_CODES,
+  listAutonomyChanges,
+  listDecisions,
+  listNudges,
+  listPendingLevelRequests,
+  markTaskDone,
+  NOT_YET_OUTCOMES,
+  PREAPPROVED_CAP,
+  readAutonomyStatus,
+  reasonActionable,
+  requestLevel,
+  requestRedemption,
+  requestTalk,
+  reviewDecision,
+  reviewedIds,
+  REWARD_REASON_CODES,
+  selfLogTask,
+  setAutonomy,
+  stepDownAutonomy,
+  TASK_REASON_CODES,
+  toWireAutonomy,
+  toWireChange,
+  catalogItems,
+  subjectTitles,
+  type DecisionRow,
+  type NudgeRow,
+} from '../services/familyAutonomy.js';
 
 /*
  * Wire shapes: every OTHER route in this codebase (routes/family.ts above
@@ -114,6 +151,8 @@ function toWireTask(t: TaskRow) {
     kind: t.kind,
     // S07.3 (D.2): the child's local day of the completion.
     completedOn: t.completed_on,
+    // S07.5 (D.18): the child's own words when marking it done.
+    childNote: t.child_note ?? null,
   };
 }
 
@@ -250,7 +289,108 @@ function toWireRedemption(r: RedemptionRow) {
     decidedAt: r.decided_at,
     decidedBy: r.decided_by,
     fulfilledAt: r.fulfilled_at ?? null,
+    // S07.5 (D.18): the child's own reason, surfaced to the Tutor at decision time.
+    childReasonKind: r.child_reason_kind ?? null,
+    childNote: r.child_note ?? null,
   };
+}
+
+/*
+ * S07.5 (D.18): one decision as the family reads it. Who decided is shared as
+ * "you" (the calling Tutor), "a Tutor", or the child themself under their
+ * level; never another account's id.
+ */
+function toWireDecision(d: DecisionRow, callerId: string, title: string | null) {
+  return {
+    id: d.id,
+    subject: d.subject,
+    subjectId: d.task_id ?? d.redemption_id ?? d.level_request_id,
+    title,
+    outcome: d.outcome,
+    by: d.actor_kind,
+    byMe: d.actor_user_id === callerId,
+    reasonCode: d.reason_code,
+    reason: d.reason,
+    revisitOn: d.revisit_on,
+    reviewsDecisionId: d.reviews_decision_id,
+    createdAt: d.created_at,
+  };
+}
+
+function toWireNudge(n: NudgeRow) {
+  return { id: n.id, kidUserId: n.kid_user_id, origin: n.origin, decisionId: n.decision_id, denials: n.denials, status: n.status, createdAt: n.created_at };
+}
+
+/** Database refusals from the S07.5 RPCs, mapped to the API's error envelope. */
+const DECISION_REFUSALS: Record<string, { status: number; message: string }> = {
+  DECISION_REASON_REQUIRED: { status: 400, message: 'A "not yet" needs a reason code and a reason' },
+  DECISION_REASON_NOT_ACTIONABLE: { status: 400, message: 'Say what they can do next, in a few words' },
+  DECISION_REVISIT_INVALID: { status: 400, message: 'Pick a date from tomorrow to 90 days ahead, only for "later"' },
+  DECISION_NOTE_INVALID: { status: 400, message: 'A note on a yes is up to 240 characters' },
+  DECISION_OUTCOME_INVALID: { status: 409, message: 'This request is no longer waiting for that decision' },
+  DECISION_ALREADY_REVIEWED: { status: 409, message: 'This was already reviewed' },
+  DECISION_NOT_FOUND: { status: 404, message: 'No such decision' },
+  NOT_A_GUARDIAN: { status: 404, message: 'No such child for this account' },
+  TASK_NOT_FOUND: { status: 404, message: 'No such task' },
+  TASK_NOT_OPEN: { status: 409, message: 'This task is not open' },
+  TASK_NOTE_INVALID: { status: 400, message: 'A note is up to 140 characters' },
+  TASK_EVIDENCE_REQUIRED: { status: 409, message: 'This task requires a photo before it can be approved' },
+  TASK_COMPLETION_DAY_INVALID: { status: 400, message: 'localDate must be the local day of the completion' },
+  REDEMPTION_NOT_FOUND: { status: 404, message: 'No such redemption' },
+  REDEMPTION_DECIDED: { status: 409, message: 'This redemption was already decided' },
+  REDEMPTION_REASON_REQUIRED: { status: 400, message: 'Pick why you want it' },
+  REDEMPTION_NOTE_INVALID: { status: 400, message: 'A note is up to 140 characters' },
+  REWARD_UNAVAILABLE: { status: 404, message: 'No such reward' },
+  SPEND_LIMIT_REACHED: { status: 409, message: 'This would go over the spending limit' },
+  INSUFFICIENT_BALANCE: { status: 409, message: 'Balance no longer covers this redemption' },
+  ACCOUNT_FROZEN: { status: 409, message: 'This account is frozen; the operation is on hold' },
+  AUTONOMY_NOT_ELIGIBLE: { status: 409, message: 'The rule for that level is not met yet' },
+  AUTONOMY_LIMIT_INVALID: { status: 400, message: 'The pre-approved amount is above what this level allows' },
+  AUTONOMY_REASON_REQUIRED: { status: 400, message: 'Lowering a level needs a reason code and a reason' },
+  AUTONOMY_REASON_INVALID: { status: 400, message: 'A reason is only given when lowering a level' },
+  AUTONOMY_NO_CHANGE: { status: 409, message: 'Nothing changed' },
+  AUTONOMY_STALE: { status: 409, message: 'The level changed meanwhile; refresh and try again' },
+  AUTONOMY_NOT_IN_FAMILY: { status: 403, message: 'Levels are for children in a family' },
+  AUTONOMY_CHILD_STEP_DOWN_ONLY: { status: 409, message: 'You are already on the first level' },
+  AUTONOMY_REQUEST_PENDING: { status: 409, message: 'You already asked; your Tutor will answer' },
+  AUTONOMY_REQUEST_INVALID: { status: 400, message: 'Check the request' },
+  AUTONOMY_REQUEST_DECIDED: { status: 409, message: 'This request was already answered' },
+  AUTONOMY_REQUEST_NOT_FOUND: { status: 404, message: 'No such request' },
+  TALK_NUDGE_INVALID: { status: 409, message: 'You can ask to talk about a "not yet" you received' },
+  TALK_NUDGE_CLOSED: { status: 409, message: 'This was already closed' },
+  TALK_NUDGE_NOT_FOUND: { status: 404, message: 'No such nudge' },
+};
+
+function decisionRefusal(res: Parameters<typeof fail>[0], refused: string, fallback: string) {
+  const mapped = DECISION_REFUSALS[refused];
+  return mapped ? fail(res, mapped.status, refused, mapped.message) : fail(res, 409, 'CONFLICT', fallback);
+}
+
+// S07.5 (D.18): the shape of a "not yet", checked before any write; the
+// database checks it again for every writer.
+const ReasonText = z.string().max(DECISION_REASON_MAX_CHARS);
+const RevisitOn = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const ChildNote = z.string().max(CHILD_NOTE_MAX_CHARS).nullable().optional();
+
+/** Days from today (UTC) to a calendar date, or NaN. */
+function daysAhead(date: string) {
+  return Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`)) / 86_400_000);
+}
+
+/** Why a "not yet" body is unusable, or null when the database may judge it. */
+function notYetProblem(body: Record<string, unknown>, codes: readonly string[]) {
+  const code = typeof body.reasonCode === 'string' ? body.reasonCode : null;
+  const reason = typeof body.reason === 'string' ? body.reason : null;
+  const revisitOn = typeof body.revisitOn === 'string' ? body.revisitOn : null;
+  if (!code || !codes.includes(code) || !reason) return 'DECISION_REASON_REQUIRED';
+  if (!reasonActionable(reason)) return 'DECISION_REASON_NOT_ACTIONABLE';
+  if (code === 'later_date') {
+    const days = revisitOn ? daysAhead(revisitOn) : Number.NaN;
+    if (!(days >= 1 && days <= DECISION_REVISIT_MAX_DAYS)) return 'DECISION_REVISIT_INVALID';
+  } else if (revisitOn) {
+    return 'DECISION_REVISIT_INVALID';
+  }
+  return null;
 }
 
 /**
@@ -457,52 +597,52 @@ export function tasksRouter(): Router {
     return ok(res, { tasks: tasks.map(toWireTask) });
   });
 
-  router.post('/:id/approve', requireRole(['parent']), async (req, res) => {
+  /*
+   * S07.5 (D.18): every decision on a chore goes through one database flow
+   * that records it (family_decide_task). A yes may carry an encouraging
+   * note; sending a chore back to finish and cancelling it each need a reason
+   * code and a reason the child can act on.
+   */
+  const ApproveTask = z.object({ note: ReasonText.nullable().optional() }).strict();
+  const NotYetTask = z.object({ reasonCode: z.enum(TASK_REASON_CODES), reason: ReasonText }).strict();
+
+  async function decideChore(req: Parameters<RequestHandler>[0], res: Parameters<typeof fail>[0], outcome: 'approved' | 'sent_back' | 'cancelled') {
     const parent = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    let reasonCode: string | null = null;
+    let reason: string | null = null;
+    if (outcome === 'approved') {
+      const body = ApproveTask.safeParse(req.body ?? {});
+      if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'A note is up to 240 characters');
+      reason = body.data.note?.trim() || null;
+    } else {
+      const raw = (req.body ?? {}) as Record<string, unknown>;
+      const problem = notYetProblem(raw, TASK_REASON_CODES);
+      if (problem) return decisionRefusal(res, problem, 'Check the reason');
+      const body = NotYetTask.safeParse(raw);
+      if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'A reason code and a reason are required');
+      reasonCode = body.data.reasonCode;
+      reason = body.data.reason.trim();
+    }
     const task = await getTaskById(id.data);
     if (!task) return fail(res, 404, NOT_FOUND, 'No such task');
     if (!(await guardParentOf(task.assigned_to, res, parent.id))) return;
-    if (task.requires_evidence && !hasEvidence(task)) {
+    if (outcome === 'approved' && task.requires_evidence && !hasEvidence(task)) {
       return fail(res, 409, CONFLICT, 'This task requires a photo before it can be approved');
     }
-
-    // decided_by/decided_at: the database re-checks that this actor is a
-    // verified guardian of the assignee (family_hub_transition_guards).
-    const updated = await transitionTaskStatus(id.data, 'done', 'approved', {
-      decided_by: parent.id,
-      decided_at: new Date().toISOString(),
-    });
-    if (!updated) return fail(res, 409, CONFLICT, 'This task is not awaiting approval');
-    await insertAuditLog(parent.id, 'tasks.approved', id.data, {});
+    const result = await decideTask({ taskId: id.data, actorId: parent.id, outcome, reasonCode, reason });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The decision was refused');
+    await insertAuditLog(parent.id, `tasks.${outcome === 'approved' ? 'approved' : outcome}`, id.data, { reasonCode });
+    const updated = await getTaskById(id.data);
+    if (!updated) return fail(res, 502, DATA_UNAVAILABLE, 'The decision was recorded; reload to see it');
     return ok(res, { task: toWireTask(updated) });
-  });
+  }
 
-  const CancelTask = z.object({ reason: z.string().trim().min(1).max(240).nullable().optional() }).strict();
-
-  router.post('/:id/cancel', requireRole(['parent']), async (req, res) => {
-    const parent = authedUser(res);
-    const id = z.string().uuid().safeParse(req.params.id);
-    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
-    const parsedBody = CancelTask.safeParse(req.body ?? {});
-    if (!parsedBody.success) return fail(res, 400, 'VALIDATION_ERROR', 'reason must be 240 characters or fewer');
-    const task = await getTaskById(id.data);
-    if (!task) return fail(res, 404, NOT_FOUND, 'No such task');
-    if (!(await guardParentOf(task.assigned_to, res, parent.id))) return;
-    if (task.status !== 'open' && task.status !== 'done') {
-      return fail(res, 409, CONFLICT, 'This task can no longer be cancelled');
-    }
-
-    const updated = await transitionTaskStatus(id.data, task.status, 'cancelled', {
-      cancel_reason: parsedBody.data.reason ?? null,
-      decided_by: parent.id,
-      decided_at: new Date().toISOString(),
-    });
-    if (!updated) return fail(res, 409, CONFLICT, 'This task changed state — refresh and try again');
-    await insertAuditLog(parent.id, 'tasks.cancelled', id.data, { reason: parsedBody.data.reason ?? null });
-    return ok(res, { task: toWireTask(updated) });
-  });
+  router.post('/:id/approve', requireRole(['parent']), (req, res) => decideChore(req, res, 'approved'));
+  router.post('/:id/send-back', requireRole(['parent']), (req, res) => decideChore(req, res, 'sent_back'));
+  router.post('/:id/cancel', requireRole(['parent']), (req, res) => decideChore(req, res, 'cancelled'));
 
   // ── PARENT: a kid's wallet/goals, read-only (family monitoring) ────────
 
@@ -744,25 +884,48 @@ export function tasksRouter(): Router {
     return ok(res, { redemptions: redemptions.map(toWireRedemption) });
   });
 
-  const DecideRedemption = z.object({ approve: z.boolean() }).strict();
+  /*
+   * S07.5 (D.18): a yes (with an optional note) or a denial with a reward
+   * reason code, an actionable reason and, for "later", a date.
+   */
+  const DecideRedemption = z
+    .object({
+      approve: z.boolean(),
+      reasonCode: z.enum(REWARD_REASON_CODES).nullable().optional(),
+      reason: ReasonText.nullable().optional(),
+      revisitOn: RevisitOn.nullable().optional(),
+      note: ReasonText.nullable().optional(),
+    })
+    .strict();
 
   router.post('/redemptions/:id/decide', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
-    const parsed = DecideRedemption.safeParse(req.body);
-    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'approve must be a boolean');
+    const raw = (req.body ?? {}) as Record<string, unknown>;
+    if (raw.approve === false) {
+      const problem = notYetProblem(raw, REWARD_REASON_CODES);
+      if (problem) return decisionRefusal(res, problem, 'Check the reason');
+    }
+    const parsed = DecideRedemption.safeParse(raw);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'approve must be a boolean, with a reason for a denial');
     const redemption = await getRedemptionById(id.data);
     if (!redemption) return fail(res, 404, NOT_FOUND, 'No such redemption');
     if (!(await guardParentOf(redemption.kid_user_id, res, parent.id))) return;
 
-    const decided = await decideRedemption(id.data, parsed.data.approve, parent.id);
-    if (decided === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
-    if (decided === false) {
-      return fail(res, 409, CONFLICT, parsed.data.approve ? 'Balance no longer covers this redemption' : 'This redemption was already decided');
-    }
-    await insertAuditLog(parent.id, parsed.data.approve ? 'tasks.redemption_approved' : 'tasks.redemption_denied', id.data, {});
-    return ok(res, { decided: true });
+    const { approve } = parsed.data;
+    const result = await decideRedemptionWithReason({
+      redemptionId: id.data,
+      actorId: parent.id,
+      approve,
+      reasonCode: approve ? null : parsed.data.reasonCode,
+      reason: approve ? parsed.data.note?.trim() || null : parsed.data.reason?.trim(),
+      revisitOn: approve ? null : parsed.data.revisitOn,
+    });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The decision was refused');
+    await insertAuditLog(parent.id, approve ? 'tasks.redemption_approved' : 'tasks.redemption_denied', id.data, { reasonCode: parsed.data.reasonCode ?? null });
+    return ok(res, { decided: true, status: result });
   });
 
   /*
@@ -826,7 +989,7 @@ export function tasksRouter(): Router {
     return task;
   }
 
-  const CompleteTask = z.object({ localDate: z.string().refine(isCalendarDate, 'localDate must be YYYY-MM-DD').optional() }).strict();
+  const CompleteTask = z.object({ localDate: z.string().refine(isCalendarDate, 'localDate must be YYYY-MM-DD').optional(), note: ChildNote }).strict();
 
   router.post('/:id/complete', familyChild, async (req, res) => {
     const kid = authedUser(res);
@@ -845,16 +1008,23 @@ export function tasksRouter(): Router {
     // OD-7); its failure never blocks marking the chore done (§1.14).
     const todayLocal = resolveLocalToday(parsedBody.data.localDate);
     const before = await readStreakFacts([kid.id]);
-    const updated = await transitionTaskStatus(id.data, 'open', 'done', { completed_on: todayLocal });
-    if (!updated) return fail(res, 409, CONFLICT, 'This task is not open');
+    // S07.5 (D.17, D.18): one database flow marks it done with the child's
+    // note, then lets the child's level self-log it (or leaves it for the
+    // Tutor). Core never approves anything here.
+    const marked = await markTaskDone(id.data, kid.id, todayLocal, parsedBody.data.note?.trim() || null);
+    if (marked === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not mark the task done');
+    if (isRefusal(marked)) return decisionRefusal(res, marked.refused, 'This task is not open');
+    const updated = await getTaskById(id.data);
+    if (!updated) return fail(res, 502, DATA_UNAVAILABLE, 'The task was marked done; reload to see it');
+    const selfLogged = marked.self_logged;
 
     const facts = before?.get(kid.id);
-    if (!facts) return ok(res, { task: toWireTask(updated), streak: null, milestone: null });
+    if (!facts) return ok(res, { task: toWireTask(updated), streak: null, milestone: null, selfLogged });
     const day = updated.completed_on ?? todayLocal;
     const beforeState = evaluateStreak({ practisedDays: facts.practisedDays, pauses: livePauses(facts.pauses), today: todayLocal, legacyBest: facts.legacyBest }).state;
     const afterState = streakFromFacts({ ...facts, practisedDays: [...facts.practisedDays, day] }, todayLocal);
     const milestone = milestoneReached(beforeState, afterState, !facts.practisedDays.includes(day));
-    return ok(res, { task: toWireTask(updated), streak: toWireStreak(afterState, facts.pauses, todayLocal), milestone });
+    return ok(res, { task: toWireTask(updated), streak: toWireStreak(afterState, facts.pauses, todayLocal), milestone, selfLogged });
   });
 
   const StreakQuery = z.object({ today: z.string().optional() }).strict();
@@ -991,7 +1161,17 @@ export function tasksRouter(): Router {
       }
     }
 
-    return ok(res, { task: toWireTask(updated) });
+    // S07.5 (D.17): a chore that asked for a photo is self-logged once the
+    // photo is in, when the child's level admits it. A refusal or a
+    // transport failure leaves it waiting for the Tutor; the photo is saved.
+    if (updated.status === 'done') {
+      const logged = await selfLogTask(id.data, kid.id);
+      if (logged === true) {
+        const after = await getTaskById(id.data);
+        if (after) return ok(res, { task: toWireTask(after), selfLogged: true });
+      }
+    }
+    return ok(res, { task: toWireTask(updated), selfLogged: false });
   });
 
   /** Streams the photo back — never a raw Depot URL (§1.9). Either the assigned kid or a verified guardian of theirs may view it. */
@@ -1261,12 +1441,17 @@ export function tasksRouter(): Router {
     return ok(res, { items: items.map(toWireCatalogItem) });
   });
 
-  const RequestRedemption = z.object({ catalogId: z.string().uuid() }).strict();
+  // S07.5 (D.18): the child says why (a closed set a young child can tap,
+  // plus an optional note); the level may pre-approve it (D.17).
+  const RequestRedemption = z.object({ catalogId: z.string().uuid(), reasonKind: z.enum(CHILD_REWARD_REASONS), note: ChildNote }).strict();
 
   router.post('/redemptions', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = RequestRedemption.safeParse(req.body);
-    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'catalogId must be a uuid');
+    if (!parsed.success) {
+      const missing = typeof (req.body ?? {}).reasonKind !== 'string';
+      return missing ? decisionRefusal(res, 'REDEMPTION_REASON_REQUIRED', 'Pick why you want it') : fail(res, 400, 'VALIDATION_ERROR', 'Check the request');
+    }
     const item = await getCatalogItemById(parsed.data.catalogId);
     if (!item || !item.active) return fail(res, 404, NOT_FOUND, 'No such reward');
     const guardians = await getVerifiedGuardiansOfKid(kid.id);
@@ -1288,9 +1473,12 @@ export function tasksRouter(): Router {
     }
 
     if (!await requireUnfrozenBanking(kid.id, res)) return;
-    const redemption = await insertRedemption({ catalog_id: item.id, kid_user_id: kid.id });
-    if (!redemption) return fail(res, 502, DATA_UNAVAILABLE, 'Could not request the redemption');
-    return ok(res, { redemption: toWireRedemption(redemption) }, 201);
+    const requested = await requestRedemption(kid.id, item.id, parsed.data.reasonKind, parsed.data.note?.trim() || null);
+    if (requested === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not request the redemption');
+    if (isRefusal(requested)) return decisionRefusal(res, requested.refused, 'The request was refused');
+    const redemption = await getRedemptionById(requested.id);
+    if (!redemption) return fail(res, 502, DATA_UNAVAILABLE, 'The request was saved; reload to see it');
+    return ok(res, { redemption: toWireRedemption(redemption), preapproved: requested.preapproved }, 201);
   });
 
   router.get('/redemptions/mine', familyChild, async (req, res) => {
@@ -1298,6 +1486,266 @@ export function tasksRouter(): Router {
     const redemptions = await getRedemptionsForKid(kid.id);
     if (redemptions === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load redemptions');
     return ok(res, { redemptions: redemptions.map(toWireRedemption) });
+  });
+
+  // ── S07.5 (D.18): the Tutor's decision queue ──────────────────────────────
+  /*
+   * Everything waiting for a Tutor, with the child's own words next to each
+   * request: chores marked done (and open chores, which may be removed with
+   * a reason), reward requests, the self-directed items the child's level
+   * let through (to look at afterwards), "talk about it" nudges and level
+   * requests. One child (kidId) or all of the caller's children.
+   */
+  const QueueQuery = z.object({ kidId: z.string().uuid().optional() }).strict();
+  const REVIEW_WINDOW_DAYS = 30;
+
+  router.get('/decisions/queue', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const q = QueueQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    let kidIds: string[];
+    if (q.data.kidId) {
+      if (!(await guardParentOf(q.data.kidId, res, parent.id))) return;
+      kidIds = [q.data.kidId];
+    } else {
+      const links = await getVerifiedKidLinks(parent.id);
+      if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+      kidIds = links.map((l) => l.kid_user_id);
+    }
+    const [tasks, redemptions, selfDirected, nudges, requests] = await Promise.all([
+      getTasksForKids(kidIds),
+      getRedemptionsForKids(kidIds),
+      listDecisions(kidIds, { sinceDays: REVIEW_WINDOW_DAYS, outcomes: ['self_logged', 'preapproved'] }),
+      listNudges(kidIds, { openOnly: true }),
+      listPendingLevelRequests(kidIds),
+    ]);
+    if (tasks === null || redemptions === null || selfDirected === null || nudges === null || requests === null) {
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the decisions waiting for you');
+    }
+    const waitingRewards = redemptions.filter((r) => r.status === 'requested');
+    const [reviewed, items, childAsks] = await Promise.all([
+      reviewedIds(selfDirected.map((d) => d.id)),
+      catalogItems(waitingRewards.map((r) => r.catalog_id)),
+      Promise.all(nudges.filter((n) => n.decision_id).map((n) => getDecision(n.decision_id!))),
+    ]);
+    if (reviewed === null || items === null || childAsks.some((d) => d === UNAVAILABLE)) {
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the decisions waiting for you');
+    }
+    const toReview = selfDirected.filter((d) => !reviewed.has(d.id));
+    const nudgeDecisions = childAsks.filter((d): d is DecisionRow => d !== null && d !== UNAVAILABLE);
+    const titles = await subjectTitles([...toReview, ...nudgeDecisions]);
+    if (titles === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the decisions waiting for you');
+    const decisionById = new Map(nudgeDecisions.map((d) => [d.id, d]));
+    const titleOf = (d: DecisionRow) => titles.get(d.task_id ?? d.redemption_id ?? '') ?? null;
+    return ok(res, {
+      chores: tasks.filter((t) => t.status === 'done').map(toWireTask),
+      openChores: tasks.filter((t) => t.status === 'open').map(toWireTask),
+      rewards: waitingRewards.map((r) => ({ ...toWireRedemption(r), title: items.get(r.catalog_id)?.title ?? null, cost: items.get(r.catalog_id)?.cost ?? null })),
+      reviews: toReview.map((d) => ({ ...toWireDecision(d, parent.id, titleOf(d)), kidUserId: d.kid_user_id })),
+      nudges: nudges.map((n) => {
+        const d = n.decision_id ? decisionById.get(n.decision_id) : undefined;
+        return { ...toWireNudge(n), decision: d ? toWireDecision(d, parent.id, titleOf(d)) : null };
+      }),
+      levelRequests: requests.map((r) => ({ id: r.id, kidUserId: r.kid_user_id, level: r.requested_level, note: r.child_note, createdAt: r.created_at })),
+    });
+  });
+
+  const ReviewBody = z
+    .object({ outcome: z.enum(['confirmed', 'questioned']), reasonCode: z.enum(TASK_REASON_CODES).or(z.enum(REWARD_REASON_CODES)).nullable().optional(), reason: ReasonText.nullable().optional() })
+    .strict();
+
+  router.post('/decisions/:id/review', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const raw = (req.body ?? {}) as Record<string, unknown>;
+    const reviewed = await getDecision(id.data);
+    if (reviewed === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the decision');
+    if (!reviewed || !['self_logged', 'preapproved'].includes(reviewed.outcome)) return fail(res, 404, NOT_FOUND, 'No such decision');
+    if (!(await guardParentOf(reviewed.kid_user_id, res, parent.id))) return;
+    if (raw.outcome === 'questioned') {
+      const problem = notYetProblem(raw, reviewed.subject === 'task' ? TASK_REASON_CODES : REWARD_REASON_CODES.filter((c) => c !== 'later_date'));
+      if (problem) return decisionRefusal(res, problem, 'Check the reason');
+    }
+    const body = ReviewBody.safeParse(raw);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Say whether it looks good, or why not');
+    const result = await reviewDecision({
+      decisionId: id.data, actorId: parent.id, outcome: body.data.outcome,
+      reasonCode: body.data.outcome === 'questioned' ? body.data.reasonCode : null,
+      reason: body.data.outcome === 'questioned' ? body.data.reason?.trim() : null,
+    });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The review was refused');
+    await insertAuditLog(parent.id, `tasks.self_directed_${result}`, id.data, {});
+    return ok(res, { outcome: result });
+  });
+
+  const CloseNudge = z.object({ outcome: z.enum(['talked', 'dismissed']) }).strict();
+
+  router.post('/nudges/:id/close', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const body = CloseNudge.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'outcome must be talked or dismissed');
+    const kidId = await getNudgeKid(id.data);
+    if (kidId === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the nudge');
+    if (!kidId) return fail(res, 404, NOT_FOUND, 'No such nudge');
+    if (!(await guardParentOf(kidId, res, parent.id))) return;
+    const result = await closeTalk(id.data, parent.id, body.data.outcome);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not close the nudge');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The nudge could not be closed');
+    return ok(res, { status: result });
+  });
+
+  // ── S07.5 (D.18): the child's own decisions, and "let's talk" ─────────────
+  router.get('/decisions/mine', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const [decisions, asks] = await Promise.all([
+      listDecisions([kid.id], { sinceDays: 60, limit: 30 }),
+      listNudges([kid.id], { openOnly: false, sinceDays: 60 }),
+    ]);
+    if (decisions === null || asks === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your decisions');
+    const titles = await subjectTitles(decisions);
+    if (titles === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your decisions');
+    const asked = new Map(asks.filter((n) => n.origin === 'child' && n.decision_id).map((n) => [n.decision_id!, n.status]));
+    return ok(res, {
+      decisions: decisions.map((d) => ({
+        ...toWireDecision(d, kid.id, titles.get(d.task_id ?? d.redemption_id ?? '') ?? null),
+        notYet: NOT_YET_OUTCOMES.includes(d.outcome),
+        talk: asked.get(d.id) ?? null,
+      })),
+    });
+  });
+
+  router.post('/decisions/:id/talk', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const decision = await getDecision(id.data);
+    if (decision === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the decision');
+    if (!decision || decision.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such decision');
+    const result = await requestTalk(kid.id, id.data);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not send it');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'It could not be sent');
+    return ok(res, { nudgeId: result }, 201);
+  });
+
+  // ── S07.5 (D.17): the independence ladder ─────────────────────────────────
+  router.get('/autonomy', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const [status, changes] = await Promise.all([readAutonomyStatus(kid.id), listAutonomyChanges(kid.id, 5)]);
+    if (!status || changes === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your level');
+    return ok(res, { autonomy: toWireAutonomy(status), changes: changes.map((c) => toWireChange(c, kid.id)) });
+  });
+
+  const AskLevel = z.object({ note: ChildNote }).strict();
+
+  router.post('/autonomy/request', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const body = AskLevel.safeParse(req.body ?? {});
+    if (!body.success) return decisionRefusal(res, 'AUTONOMY_REQUEST_INVALID', 'Check the request');
+    const result = await requestLevel(kid.id, body.data.note?.trim() || null);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not send your request');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The request was refused');
+    return ok(res, { requestId: result }, 201);
+  });
+
+  router.post('/autonomy/step-down', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const result = await stepDownAutonomy(kid.id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not change your level');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The change was refused');
+    return ok(res, { level: result });
+  });
+
+  router.get('/:kidId/autonomy', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const [status, changes] = await Promise.all([readAutonomyStatus(kidId.data), listAutonomyChanges(kidId.data, 10)]);
+    if (!status || changes === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the level');
+    return ok(res, { autonomy: toWireAutonomy(status), changes: changes.map((c) => toWireChange(c, parent.id)) });
+  });
+
+  /*
+   * A Tutor moves a level: up only when the documented rule says eligible
+   * (the database checks it), down only with a reason code and an
+   * actionable reason, and sets the pre-approved amount within the level's
+   * cap. The same call changes only the amount when the level stays.
+   */
+  const SetLevel = z
+    .object({
+      level: z.number().int().min(1).max(3),
+      preapprovedLimit: z.number().int().min(0).max(PREAPPROVED_CAP[3]),
+      reasonCode: z.enum(LEVEL_LOWER_REASON_CODES).nullable().optional(),
+      reason: ReasonText.nullable().optional(),
+    })
+    .strict();
+
+  router.put('/:kidId/autonomy', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const body = SetLevel.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'A level from 1 to 3 and a pre-approved amount are required');
+    if (body.data.preapprovedLimit > PREAPPROVED_CAP[body.data.level as 1 | 2 | 3]) return decisionRefusal(res, 'AUTONOMY_LIMIT_INVALID', 'Check the amount');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const current = await readAutonomyStatus(kidId.data);
+    if (!current) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the level');
+    const lowering = body.data.level < current.stored_level;
+    if (lowering && (!body.data.reasonCode || !reasonActionable(body.data.reason))) return decisionRefusal(res, 'AUTONOMY_REASON_REQUIRED', 'Say why');
+    if (!lowering && (body.data.reasonCode || body.data.reason)) return decisionRefusal(res, 'AUTONOMY_REASON_INVALID', 'No reason is given here');
+    const result = await setAutonomy({
+      kidId: kidId.data, actorId: parent.id, level: body.data.level, limit: body.data.preapprovedLimit,
+      reasonCode: lowering ? body.data.reasonCode : null, reason: lowering ? body.data.reason?.trim() : null,
+    });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not change the level');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The change was refused');
+    await insertAuditLog(parent.id, 'tasks.autonomy_set', kidId.data, { level: body.data.level, preapprovedLimit: body.data.preapprovedLimit });
+    const status = await readAutonomyStatus(kidId.data);
+    return ok(res, { level: result, autonomy: status ? toWireAutonomy(status) : null });
+  });
+
+  const DecideLevelRequest = z
+    .object({
+      grant: z.boolean(),
+      preapprovedLimit: z.number().int().min(0).max(PREAPPROVED_CAP[3]).nullable().optional(),
+      reasonCode: z.enum(LEVEL_REQUEST_REASON_CODES).nullable().optional(),
+      reason: ReasonText.nullable().optional(),
+      revisitOn: RevisitOn.nullable().optional(),
+    })
+    .strict();
+
+  router.post('/autonomy/requests/:id/decide', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const raw = (req.body ?? {}) as Record<string, unknown>;
+    if (raw.grant === false) {
+      const problem = notYetProblem(raw, LEVEL_REQUEST_REASON_CODES);
+      if (problem) return decisionRefusal(res, problem, 'Check the reason');
+    }
+    const body = DecideLevelRequest.safeParse(raw);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'grant must be a boolean, with a reason for "not yet"');
+    const kidId = await getLevelRequestKid(id.data);
+    if (kidId === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the request');
+    if (!kidId) return fail(res, 404, NOT_FOUND, 'No such request');
+    if (!(await guardParentOf(kidId, res, parent.id))) return;
+    const result = await decideLevelRequest({
+      requestId: id.data, actorId: parent.id, grant: body.data.grant,
+      limit: body.data.grant ? body.data.preapprovedLimit ?? 0 : null,
+      reasonCode: body.data.grant ? null : body.data.reasonCode,
+      reason: body.data.grant ? null : body.data.reason?.trim(),
+      revisitOn: body.data.grant ? null : body.data.revisitOn,
+    });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the answer');
+    if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The answer was refused');
+    await insertAuditLog(parent.id, `tasks.autonomy_request_${result}`, id.data, {});
+    return ok(res, { status: result });
   });
 
   return router;

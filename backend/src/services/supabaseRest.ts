@@ -1612,10 +1612,14 @@ export interface TaskRow {
   kind: 'contribution' | 'bonus';
   /** S07.3 (D.2): the child's local day of the completion, stamped once at open -> done. */
   completed_on: string | null;
+  /** S07.5 (D.18): the child's own note when marking the chore done, shown to the Tutor. */
+  child_note?: string | null;
+  /** S07.5 (D.17, D.18): the decision the last transition points at (family_decisions). */
+  decision_id?: string | null;
 }
 
 const TASK_FIELDS =
-  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at,cancel_reason,requires_evidence,kind,completed_on';
+  'id,assigned_by,assigned_to,title,reward_coins,recurrence,due_at,status,allocated,created_at,evidence_bucket,evidence_hash,evidence_ext,evidence_uploaded_at,cancel_reason,requires_evidence,kind,completed_on,child_note,decision_id';
 
 export async function insertTask(row: {
   assigned_by: string;
@@ -1928,9 +1932,14 @@ export interface RedemptionRow {
   decided_by: string | null;
   /** S07.1 (OD-21): set when a verified guardian marks the approved reward delivered. */
   fulfilled_at: string | null;
+  /** S07.5 (D.18): the child's own reason (a closed set) and optional note, shown to the Tutor at decision time. */
+  child_reason_kind?: string | null;
+  child_note?: string | null;
+  /** S07.5 (D.17, D.18): the decision the last transition points at (family_decisions). */
+  decision_id?: string | null;
 }
 
-const REDEMPTION_FIELDS = 'id,catalog_id,kid_user_id,status,created_at,decided_at,decided_by,fulfilled_at';
+const REDEMPTION_FIELDS = 'id,catalog_id,kid_user_id,status,created_at,decided_at,decided_by,fulfilled_at,child_reason_kind,child_note,decision_id';
 
 export async function insertRedemption(row: { catalog_id: string; kid_user_id: string }): Promise<RedemptionRow | null> {
   const rows = await serviceRest<RedemptionRow[]>('/redemptions', {

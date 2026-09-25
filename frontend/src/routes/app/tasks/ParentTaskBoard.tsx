@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-import { Button, Card, ConfirmButton, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
 import { ChoreComposerPanel } from './ChoreComposerPanel';
+import { DecisionQueuePanel } from './DecisionQueuePanel';
 import { choreKindLine } from '../family/familyMoneyCopy';
 
 /*
@@ -49,13 +50,7 @@ export function ParentTaskBoard() {
   }, []);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
-  const [busyTask, setBusyTask] = useState<string | null>(null);
-  const [busyRedemption, setBusyRedemption] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [taskActionError, setTaskActionError] = useState<{ id: string; code: string } | null>(null);
-  const [redemptionActionError, setRedemptionActionError] = useState<{ id: string; code: string } | null>(null);
-  const [liveMessage, setLiveMessage] = useState('');
-  const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,66 +84,15 @@ export function ParentTaskBoard() {
     };
   }, [getToken, reloadKey]);
 
-  function announce(message: string) {
-    setLiveMessage(message);
-    liveRegionRef.current?.focus();
-  }
-
   const kidName = useMemo(() => {
     const byId = new Map((state.status === 'ready' ? state.kids : []).map((k) => [k.userId, k.displayName ?? k.username ?? '?']));
     return (id: string) => byId.get(id) ?? '?';
   }, [state]);
 
-  async function onApprove(taskId: string, title: string) {
-    if (!token || busyTask) return;
-    setBusyTask(taskId);
-    setTaskActionError(null);
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/approve`, { method: 'POST', token });
-    setBusyTask(null);
-    if (res.error) {
-      setTaskActionError({ id: taskId, code: res.error.code });
-      return;
-    }
-    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
-    announce(t('tasks.parent.approvedAnnounce', { title }));
-  }
-
-  async function onCancel(taskId: string, reason: string) {
-    if (!token || busyTask) return;
-    setBusyTask(taskId);
-    setTaskActionError(null);
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/cancel`, { method: 'POST', token, body: { reason: reason.trim() || null } });
-    setBusyTask(null);
-    if (res.error) {
-      setTaskActionError({ id: taskId, code: res.error.code });
-      return;
-    }
-    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
-    announce(t('tasks.parent.cancelledAnnounce', { title: res.data.task.title }));
-  }
-
   async function onToggleCatalog(item: WireCatalogItem) {
     if (!token) return;
     const res = await api<{ item: WireCatalogItem }>(`/tasks/catalog/${item.id}`, { method: 'PATCH', token, body: { active: !item.active } });
     if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, catalog: prev.catalog.map((c) => (c.id === item.id ? res.data.item : c)) } : prev));
-  }
-
-  async function onDecideRedemption(redemptionId: string, approve: boolean) {
-    if (!token || busyRedemption) return;
-    setBusyRedemption(redemptionId);
-    setRedemptionActionError(null);
-    const res = await api<{ decided: boolean }>(`/tasks/redemptions/${redemptionId}/decide`, { method: 'POST', token, body: { approve } });
-    setBusyRedemption(null);
-    if (res.error) {
-      setRedemptionActionError({ id: redemptionId, code: res.error.code });
-      return;
-    }
-    setState((prev) =>
-      prev.status === 'ready'
-        ? { ...prev, redemptions: prev.redemptions.map((r) => (r.id === redemptionId ? { ...r, status: approve ? 'approved' : 'denied' } : r)) }
-        : prev,
-    );
-    announce(approve ? t('tasks.parent.redemptionApprovedAnnounce') : t('tasks.parent.redemptionDeniedAnnounce'));
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('tasks.loading')} />;
@@ -162,15 +106,15 @@ export function ParentTaskBoard() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      <div ref={liveRegionRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
-        {liveMessage}
-      </div>
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
           <p className="lf-body text-content-muted">{t('tasks.parent.subtitle')}</p>
         </div>
       </header>
+
+      {/* S07.5 (D.17, D.18): everything waiting for a Tutor, with the child's own words; every "not yet" carries a reason. */}
+      {state.kids.length > 0 && <DecisionQueuePanel token={token} kids={state.kids} refreshKey={reloadKey} onChanged={() => setReloadKey((k) => k + 1)} />}
 
       {/* S07.3 (D.10): every chore is tagged as a family contribution or a bonus task. */}
       {state.kids.length > 0 && <ChoreComposerPanel kids={state.kids} token={token} onCreated={() => setReloadKey((k) => k + 1)} />}
@@ -210,16 +154,7 @@ export function ParentTaskBoard() {
           ) : (
             <ul className="flex flex-col gap-2">
               {[...awaitingApproval, ...open].map((task) => (
-                <TaskRow
-                  key={task.id}
-                  task={task}
-                  kidName={kidName(task.assignedTo)}
-                  token={token}
-                  busy={busyTask === task.id}
-                  errorCode={taskActionError?.id === task.id ? taskActionError.code : null}
-                  onApprove={task.status === 'done' ? () => void onApprove(task.id, task.title) : undefined}
-                  onCancel={(reason) => void onCancel(task.id, reason)}
-                />
+                <TaskRow key={task.id} task={task} kidName={kidName(task.assignedTo)} token={token} busy={false} />
               ))}
             </ul>
           )}
@@ -260,50 +195,6 @@ export function ParentTaskBoard() {
               </ul>
             )}
             <AddCatalogItemCard token={token} onCreated={(item) => setState((prev) => (prev.status === 'ready' ? { ...prev, catalog: [item, ...prev.catalog] } : prev))} />
-          </section>
-
-          <section aria-labelledby="parent-redemptions-heading">
-            <SectionHeading id="parent-redemptions-heading" icon="pending_actions" tone="warning">
-              {t('tasks.parent.redemptionsTitle')}
-            </SectionHeading>
-            {pendingRedemptions.length === 0 ? (
-              <p className="lf-caption text-content-muted">{t('tasks.parent.redemptionsEmpty')}</p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {pendingRedemptions.map((r) => {
-                  const item = state.catalog.find((c) => c.id === r.catalogId);
-                  return (
-                    <li key={r.id} className="flex flex-col gap-2 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
-                      <span className="min-w-0">
-                        <span className="lf-label block truncate text-content">
-                          {kidName(r.kidUserId)} — {item?.title ?? '?'}
-                        </span>
-                        <span className="lf-caption block text-content-faint">{t('tasks.parent.redemptionStatusRequested')}</span>
-                      </span>
-                      {redemptionActionError?.id === r.id && (
-                        <span className="lf-caption text-error-strong">
-                          {t(`errors.api.${redemptionActionError.code}`, { defaultValue: t('errors.api.INTERNAL') })}
-                        </span>
-                      )}
-                      <div className="flex gap-2">
-                        <ConfirmButton
-                          variant="secondary"
-                          className="min-h-8 flex-1 px-2.5 lf-caption"
-                          disabled={busyRedemption === r.id}
-                          confirmQuestion={t('tasks.parent.denyConfirmQuestion')}
-                          onConfirm={() => void onDecideRedemption(r.id, false)}
-                        >
-                          {t('tasks.parent.redemptionDeny')}
-                        </ConfirmButton>
-                        <Button type="button" variant="success" className="min-h-8 flex-1 px-2.5 lf-caption" disabled={busyRedemption === r.id} onClick={() => void onDecideRedemption(r.id, true)}>
-                          {t('tasks.parent.redemptionApprove')}
-                        </Button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
           </section>
         </div>
       </div>

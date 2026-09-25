@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
+import { Card, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
 import { type WalletBalances, type WireCatalogItem, type WireLedgerEntry, type WireRedemption, type WireTask } from './types';
@@ -14,6 +14,7 @@ import { AllocationPanel } from './AllocationPanel';
 import { SavingsGoalsPanel } from './SavingsGoalsPanel';
 import { ShareGivingPanel } from './ShareGivingPanel';
 import { UsualSplitPanel } from './UsualSplitPanel';
+import { ChoreDonePanel, DecisionNotesPanel, MyLevelPanel, RewardAskPanel } from './FamilyVoicePanels';
 import { choreKindLine } from '../family/familyMoneyCopy';
 import { isStreakMilestone, type StreakMilestone } from '@/rebuild/family/familyMoneyApi';
 
@@ -58,8 +59,9 @@ export function KidTaskBoard() {
   // S07.4: goals, the Share destination and the split chooser are rebuilt
   // panels; a landed payout bumps them so a reached goal celebrates at once.
   const [moneyVersion, setMoneyVersion] = useState(0);
-  const [busyTask, setBusyTask] = useState<string | null>(null);
-  const [busyRedemption, setBusyRedemption] = useState<string | null>(null);
+  // S07.5 (D.17, D.18): the child's level and decision notes follow every
+  // chore marked done and every reward asked for.
+  const [voiceVersion, setVoiceVersion] = useState(0);
   const [evidenceVersion, setEvidenceVersion] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const [liveMessage, setLiveMessage] = useState('');
@@ -121,29 +123,22 @@ export function KidTaskBoard() {
     if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, balances: res.data.balances } : prev));
   }
 
-  async function onComplete(taskId: string, title: string) {
-    if (!token || busyTask) return;
-    setBusyTask(taskId);
-    // The kid's LOCAL calendar day anchors the streak (same construction as
-    // LessonRoute.tsx's local_date — guaranteed YYYY-MM-DD, unlike
-    // toLocaleDateString('sv') on some browsers).
-    const localDate = (() => {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    })();
-    const res = await api<{ task: WireTask; milestone?: unknown }>(`/tasks/${taskId}/complete`, { method: 'POST', token, body: { localDate } });
-    setBusyTask(null);
-    if (res.data) {
-      setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
-      announce(t('tasks.kid.completedAnnounce', { title }));
-      setMilestone(isStreakMilestone(res.data.milestone) ? res.data.milestone : null);
-      setStreakVersion((v) => v + 1);
-    }
+  /** S07.5: the rebuilt ChoreDone marked it (with the child's note); the level may have counted it at once. */
+  function onMarked(task: WireTask, answer: { task: Record<string, unknown>; selfLogged: boolean; milestone?: unknown }) {
+    const status = answer.selfLogged ? 'approved' : 'done';
+    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === task.id ? { ...tt, status } : tt)) } : prev));
+    announce(t('tasks.kid.completedAnnounce', { title: task.title }));
+    setMilestone(isStreakMilestone(answer.milestone) ? answer.milestone : null);
+    setStreakVersion((v) => v + 1);
+    setVoiceVersion((v) => v + 1);
   }
 
   function onEvidenceUploaded(taskId: string) {
     setEvidenceVersion((v) => v + 1);
     setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? { ...tt, hasEvidence: true } : tt)) } : prev));
+    // S07.5 (D.17): a photo can let the child's level count the chore.
+    setReloadKey((k) => k + 1);
+    setVoiceVersion((v) => v + 1);
   }
 
   async function onAllocated(task: WireTask) {
@@ -160,12 +155,11 @@ export function KidTaskBoard() {
     if (ledgerRes.data) setState((prev) => (prev.status === 'ready' ? { ...prev, ledger: ledgerRes.data.entries } : prev));
   }
 
-  async function onRedeem(catalogId: string) {
-    if (!token || busyRedemption) return;
-    setBusyRedemption(catalogId);
-    const res = await api<{ redemption: WireRedemption }>('/tasks/redemptions', { method: 'POST', token, body: { catalogId } });
-    setBusyRedemption(null);
-    if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, redemptions: [res.data.redemption, ...prev.redemptions] } : prev));
+  /** S07.5: the rebuilt RewardAsk sent the child's reason; the level may have approved it at once. */
+  function onAsked(answer: { redemption: Record<string, unknown>; preapproved: boolean }) {
+    setVoiceVersion((v) => v + 1);
+    if (answer.preapproved) void refreshMoney();
+    setReloadKey((k) => k + 1);
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('tasks.loading')} />;
@@ -219,6 +213,10 @@ export function KidTaskBoard() {
         </div>
       </header>
 
+      {/* S07.5 (D.17): the child's own level, and (D.18) the notes on their decisions. */}
+      <MyLevelPanel token={token} refreshKey={voiceVersion} />
+      <DecisionNotesPanel token={token} refreshKey={voiceVersion} />
+
       {/* S07.3 (D.2): the lapse-tolerant chore streak (two free rest days a week). */}
       <ChoreStreakPanel token={token} refreshKey={streakVersion} milestone={milestone} />
 
@@ -259,7 +257,7 @@ export function KidTaskBoard() {
           ) : (
             <ul className="flex flex-col gap-2">
               {todo.map((task) => (
-                <li key={task.id} className="flex flex-col gap-2.5 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm sm:flex-row sm:items-center sm:gap-3">
+                <li key={task.id} className="flex flex-col gap-2.5 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                   <Icon name={task.status === 'done' ? 'pending_actions' : 'radio_button_unchecked'} className="hidden shrink-0 text-[20px] text-content-faint sm:block" aria-hidden />
                   <span className="min-w-0 flex-1">
                     <span className="lf-label flex flex-wrap items-center gap-x-2 truncate text-content">
@@ -276,12 +274,13 @@ export function KidTaskBoard() {
                   <div className="flex shrink-0 items-center gap-2">
                     {task.hasEvidence && <EvidenceThumbnail key={evidenceVersion} taskId={task.id} token={token} alt={t('tasks.kid.evidenceAlt', { title: task.title })} />}
                     <EvidenceUploadButton taskId={task.id} token={token} replace={task.hasEvidence} onUploaded={() => onEvidenceUploaded(task.id)} />
-                    {task.status === 'open' && (
-                      <Button type="button" variant="success" className="min-h-9 px-3 lf-caption" disabled={busyTask === task.id} onClick={() => void onComplete(task.id, task.title)}>
-                        {busyTask === task.id ? t('tasks.kid.completing') : t('tasks.kid.complete')}
-                      </Button>
-                    )}
                   </div>
+                  {/* S07.5 (D.17, D.18): mark it done with an optional note; the level may count it at once. */}
+                  {task.status === 'open' && (
+                    <div className="w-full basis-full">
+                      <ChoreDonePanel token={token} taskId={task.id} title={task.title} onMarked={(answer) => onMarked(task, answer)} />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -307,7 +306,7 @@ export function KidTaskBoard() {
                   const requested = state.redemptions.some((r) => r.catalogId === item.id && r.status === 'requested');
                   const affordable = state.balances.spend >= item.cost;
                   return (
-                    <li key={item.id} className="flex items-center gap-2.5 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
+                    <li key={item.id} className="flex flex-wrap items-center gap-2.5 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
                       <Icon name="redeem" className="shrink-0 text-[18px] text-delight" aria-hidden />
                       <span className="min-w-0 flex-1">
                         <span className="lf-label block truncate text-content">{item.title}</span>
@@ -316,15 +315,14 @@ export function KidTaskBoard() {
                           {!affordable ? ` · ${t('tasks.kid.catalogNotEnough')}` : ''}
                         </span>
                       </span>
-                      <Button
-                        type="button"
-                        variant="primary"
-                        className="min-h-9 shrink-0 px-3 lf-caption"
-                        disabled={!affordable || requested || busyRedemption === item.id}
-                        onClick={() => void onRedeem(item.id)}
-                      >
-                        {busyRedemption === item.id ? t('tasks.kid.catalogRequesting') : requested ? t('tasks.parent.redemptionStatusRequested') : t('tasks.kid.catalogRequestCta')}
-                      </Button>
+                      {requested ? (
+                        <span className="lf-caption shrink-0 text-content-faint">{t('tasks.parent.redemptionStatusRequested')}</span>
+                      ) : (
+                        /* S07.5 (D.18): the child says why; the level may approve it at once (D.17). */
+                        <div className="w-full basis-full">
+                          <RewardAskPanel token={token} catalogId={item.id} title={item.title} disabled={!affordable} onAsked={onAsked} />
+                        </div>
+                      )}
                     </li>
                   );
                 })}

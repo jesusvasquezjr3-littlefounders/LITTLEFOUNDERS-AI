@@ -1,0 +1,225 @@
+{
+  "description": "D.18 actionable-reason cases. database/migrations/*_family_autonomy_ladder.sql family_reason_actionable(), backend/src/services/familyAutonomy.ts reasonActionable() and frontend/src/rebuild/family/familyAutonomyApi.ts reasonActionable() must agree on every case.",
+  "cases": [
+    {
+      "text": "Not now",
+      "actionable": false
+    },
+    {
+      "text": "not now.",
+      "actionable": false
+    },
+    {
+      "text": "NOT RIGHT NOW!!",
+      "actionable": false
+    },
+    {
+      "text": "Maybe later",
+      "actionable": false
+    },
+    {
+      "text": "because I said so",
+      "actionable": false
+    },
+    {
+      "text": "Because I say so.",
+      "actionable": false
+    },
+    {
+      "text": "We will see",
+      "actionable": false
+    },
+    {
+      "text": "Ask me later",
+      "actionable": false
+    },
+    {
+      "text": "No thank you",
+      "actionable": false
+    },
+    {
+      "text": "Not at the moment",
+      "actionable": false
+    },
+    {
+      "text": "Ahora no",
+      "actionable": false
+    },
+    {
+      "text": "Ahorita no",
+      "actionable": false
+    },
+    {
+      "text": "Más tarde",
+      "actionable": false
+    },
+    {
+      "text": "Tal vez después",
+      "actionable": false
+    },
+    {
+      "text": "Porque lo digo yo",
+      "actionable": false
+    },
+    {
+      "text": "En otro momento",
+      "actionable": false
+    },
+    {
+      "text": "Ya veremos",
+      "actionable": false
+    },
+    {
+      "text": "Por ahora no",
+      "actionable": false
+    },
+    {
+      "text": "Agora não",
+      "actionable": false
+    },
+    {
+      "text": "Talvez depois",
+      "actionable": false
+    },
+    {
+      "text": "Porque eu disse",
+      "actionable": false
+    },
+    {
+      "text": "Depois a gente vê",
+      "actionable": false
+    },
+    {
+      "text": "Por enquanto não",
+      "actionable": false
+    },
+    {
+      "text": "no no no no no no",
+      "actionable": false
+    },
+    {
+      "text": "aaaa bbbb",
+      "actionable": false
+    },
+    {
+      "text": "",
+      "actionable": false
+    },
+    {
+      "text": "   ",
+      "actionable": false
+    },
+    {
+      "text": "short one",
+      "actionable": false
+    },
+    {
+      "text": "No.",
+      "actionable": false
+    },
+    {
+      "text": "!!!!!!!!!!!!!!!!",
+      "actionable": false
+    },
+    {
+      "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "actionable": false
+    },
+    {
+      "text": "nope nope nope nope",
+      "actionable": false
+    },
+    {
+      "text": "Pregunta después",
+      "actionable": false
+    },
+    {
+      "text": "Não agora",
+      "actionable": false
+    },
+    {
+      "text": "The dishes are still in the sink; rinse them and ask again.",
+      "actionable": true
+    },
+    {
+      "text": "Save 10 more coins first, then we can get it.",
+      "actionable": true
+    },
+    {
+      "text": "Let's wait until Saturday, after your test.",
+      "actionable": true
+    },
+    {
+      "text": "Make your bed with the pillow on top, then mark it done.",
+      "actionable": true
+    },
+    {
+      "text": "Lava los platos que quedan y vuelve a marcarla.",
+      "actionable": true
+    },
+    {
+      "text": "Junta 10 monedas más y lo pedimos juntos.",
+      "actionable": true
+    },
+    {
+      "text": "Esperemos al sábado, después del examen.",
+      "actionable": true
+    },
+    {
+      "text": "Guarde os brinquedos da sala e marque de novo.",
+      "actionable": true
+    },
+    {
+      "text": "Junte mais 10 moedas e pedimos juntos.",
+      "actionable": true
+    },
+    {
+      "text": "Vamos esperar até sábado, depois da prova.",
+      "actionable": true
+    },
+    {
+      "text": "Not now: finish homework first, then ask again.",
+      "actionable": true
+    },
+    {
+      "text": "Ahora no: termina la tarea y vuelve a pedirlo.",
+      "actionable": true
+    },
+    {
+      "text": "Agora não: termine a lição e peça de novo.",
+      "actionable": true
+    },
+    {
+      "text": "Please redo the towels, fold them in half.",
+      "actionable": true
+    },
+    {
+      "text": "xxxxxxxxxxxx y z",
+      "actionable": true
+    },
+    {
+      "text": "  Sweep under the table too, please.  ",
+      "actionable": true
+    },
+    {
+      "text": "MÁS TARDE",
+      "actionable": false
+    },
+    {
+      "text": "AGORA NÃO",
+      "actionable": false
+    },
+    {
+      "text": "Ahora No, Mañana Sí",
+      "actionable": true
+    },
+    {
+      "text": "Porque\tsí",
+      "actionable": false
+    },
+    {
+      "text": "ÉCHALE GANAS: TERMINA LA TAREA",
+      "actionable": true
+    }
+  ]
+}

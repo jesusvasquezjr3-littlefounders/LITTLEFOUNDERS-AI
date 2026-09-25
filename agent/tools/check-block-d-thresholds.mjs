@@ -20,7 +20,7 @@ const LOG = 'docs/operations/BLOCK-D-THRESHOLD-LOG.md';
 
 /** Every `| \`key\` | value |` row of the log. */
 export function readLog(text) {
-  return new Map([...text.matchAll(/^\| `([a-z_.]+)` \| ([^|]+) \|/gm)].map((m) => [m[1], m[2].trim()]));
+  return new Map([...text.matchAll(/^\| `([a-z0-9_.]+)` \| ([^|]+) \|/gm)].map((m) => [m[1], m[2].trim()]));
 }
 
 /** The literal value of `export const NAME = <number>` (or an `as const` number list) in a source file. */
@@ -72,6 +72,27 @@ export const RULES = [
   { key: 'redemption_timing.second_bin_hours', sql: ['_family_money_events', ["(2, '24_72h', 24, {v})", "(3, '72_168h', {v}, 168)"]] },
   { key: 'redemption_timing.third_bin_hours', sql: ['_family_money_events', ["(3, '72_168h', 72, {v})", "(4, '168h_plus', {v}, 1000000)"]] },
   { key: 'money_events.retention_days', sql: ['_family_money_events', ['p_retain_days int DEFAULT {v}']] },
+  // S07.5 (D.17, D.18): the independence ladder, the reason rule and the nudge.
+  { key: 'autonomy.level2_min_age', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL2_MIN_AGE'], sql: ['_family_autonomy_ladder', ["'level2_min_age', {v},"]] },
+  { key: 'autonomy.level2_min_approved', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL2_MIN_APPROVED'], sql: ['_family_autonomy_ladder', ["'level2_min_approved', {v},"]] },
+  { key: 'autonomy.level2_max_not_approved_pct', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL2_MAX_NOT_APPROVED_PCT'], sql: ['_family_autonomy_ladder', ["'level2_max_not_approved_pct', {v},"]] },
+  { key: 'autonomy.level2_preapproved_cap', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL2_PREAPPROVED_CAP'], sql: ['_family_autonomy_ladder', ["'level2_preapproved_cap', {v},"]] },
+  { key: 'autonomy.level3_min_age', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL3_MIN_AGE'], sql: ['_family_autonomy_ladder', ["'level3_min_age', {v},"]] },
+  { key: 'autonomy.level3_min_approved', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL3_MIN_APPROVED'], sql: ['_family_autonomy_ladder', ["'level3_min_approved', {v},"]] },
+  { key: 'autonomy.level3_max_not_approved_pct', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL3_MAX_NOT_APPROVED_PCT'], sql: ['_family_autonomy_ladder', ["'level3_max_not_approved_pct', {v},"]] },
+  { key: 'autonomy.level3_min_days_at_level2', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL3_MIN_DAYS_AT_LEVEL2'], sql: ['_family_autonomy_ladder', ["'level3_min_days_at_level2', {v},"]] },
+  { key: 'autonomy.level3_preapproved_cap', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL3_PREAPPROVED_CAP'], sql: ['_family_autonomy_ladder', ["'level3_preapproved_cap', {v},"]] },
+  { key: 'autonomy.level3_self_log_max_coins', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_LEVEL3_SELF_LOG_MAX_COINS'], sql: ['_family_autonomy_ladder', ["'level3_self_log_max_coins', {v},"]] },
+  { key: 'autonomy.record_window_days', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_RECORD_WINDOW_DAYS'], sql: ['_family_autonomy_ladder', ["'record_window_days', {v},"]] },
+  { key: 'autonomy.auto_step_down_questioned', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_AUTO_STEP_DOWN_QUESTIONED'], sql: ['_family_autonomy_ladder', ["'auto_step_down_questioned', {v},"]] },
+  { key: 'autonomy.auto_step_down_window_days', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_AUTO_STEP_DOWN_WINDOW_DAYS'], sql: ['_family_autonomy_ladder', ["'auto_step_down_window_days', {v},"]] },
+  { key: 'autonomy.progression_window_days', core: ['backend/src/services/familyAutonomy.ts', 'AUTONOMY_PROGRESSION_WINDOW_DAYS'], sql: ['_family_autonomy_ladder', ["'progression_window_days', {v},"]] },
+  { key: 'decisions.reason_min_chars', core: ['backend/src/services/familyAutonomy.ts', 'DECISION_REASON_MIN_CHARS'], sql: ['_family_autonomy_ladder', ["'reason_min_chars', {v},"]] },
+  { key: 'decisions.reason_min_words', core: ['backend/src/services/familyAutonomy.ts', 'DECISION_REASON_MIN_WORDS'], sql: ['_family_autonomy_ladder', ["'reason_min_words', {v},"]] },
+  { key: 'decisions.revisit_max_days', core: ['backend/src/services/familyAutonomy.ts', 'DECISION_REVISIT_MAX_DAYS'], sql: ['_family_autonomy_ladder', ["'revisit_max_days', {v},"]] },
+  { key: 'decisions.child_note_max_chars', core: ['backend/src/services/familyAutonomy.ts', 'CHILD_NOTE_MAX_CHARS'], sql: ['_family_autonomy_ladder', ["'child_note_max_chars', {v},"]] },
+  { key: 'talk.nudge_denials', core: ['backend/src/services/familyAutonomy.ts', 'TALK_NUDGE_DENIALS'], sql: ['_family_autonomy_ladder', ["'talk_nudge_denials', {v},"]] },
+  { key: 'talk.nudge_window_days', core: ['backend/src/services/familyAutonomy.ts', 'TALK_NUDGE_WINDOW_DAYS'], sql: ['_family_autonomy_ladder', ["'talk_nudge_window_days', {v},"]] },
 ];
 
 /** Pure check over in-memory inputs, so the gate can be tested against known-bad fixtures. */
