@@ -176,6 +176,12 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
    * Honoured only while a check-in is open.
    */
   z.object({ type: z.literal('check_in_response'), aligned: z.boolean() }).strict(),
+  /**
+   * C.15: the learner's answer to the goal restatement (`goal_check`) on the
+   * two equal chips: `agreed` = "yes, that's it", false = "something else".
+   * Honoured only while the goal check is open.
+   */
+  z.object({ type: z.literal('goal_response'), agreed: z.boolean() }).strict(),
   z.object({ type: z.literal('ping') }).strict(),
 ]);
 
@@ -438,6 +444,12 @@ export type ServerMessage =
    * `check_in_response` or the learner's own words.
    */
   | { type: 'check_in' }
+  /**
+   * C.15: the turn just delivered restated the session goal as one
+   * confirming question. The stage shows two equal chips; the answer is
+   * `goal_response` or the learner's own words.
+   */
+  | { type: 'goal_check' }
   /**
    * C.16: sent once, just before `closed` on a graceful close. `script` is
    * the closing script this ending used; `effort` the specific act a

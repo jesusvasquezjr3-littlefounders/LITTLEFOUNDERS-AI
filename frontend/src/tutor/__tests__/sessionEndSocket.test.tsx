@@ -143,3 +143,30 @@ describe('useTutorSocket — the C.19 check-in', () => {
     expect(answers).toEqual([{ type: 'check_in_response', aligned: false }]);
   });
 });
+
+describe('useTutorSocket — the C.15 goal chips', () => {
+  it('opens on goal_check after the restatement turn; a new turn or the closing clears it', async () => {
+    const { socket } = await openSession();
+    act(() => socket.emit({ ...TURN_BASE, type: 'turn', seq: 3, next: 'ask' }));
+    act(() => socket.emit({ type: 'goal_check' }));
+    expect(latest!.goalCheckOpen).toBe(true);
+    act(() => socket.emit({ ...TURN_BASE, type: 'turn', seq: 4, next: 'ask' }));
+    expect(latest!.goalCheckOpen).toBe(false);
+
+    act(() => socket.emit({ type: 'goal_check' }));
+    act(() => socket.emit({ type: 'session_closing', script: 'completed', effort: 'none', topic: null }));
+    expect(latest!.goalCheckOpen).toBe(false);
+  });
+
+  it('answering sends exactly one goal_response and clears the chips at once', async () => {
+    const { socket } = await openSession();
+    act(() => socket.emit({ ...TURN_BASE, type: 'turn', seq: 3, next: 'ask' }));
+    act(() => socket.emit({ type: 'goal_check' }));
+    act(() => latest!.answerGoal(true));
+    expect(latest!.goalCheckOpen).toBe(false);
+    const answers = socket.sent
+      .map((m) => JSON.parse(m) as { type: string })
+      .filter((m) => m.type === 'goal_response');
+    expect(answers).toEqual([{ type: 'goal_response', agreed: true }]);
+  });
+});

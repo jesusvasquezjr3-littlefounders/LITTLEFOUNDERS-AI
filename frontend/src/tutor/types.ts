@@ -213,6 +213,12 @@ export type ServerMessage =
    * or the learner's own words (mirrors oracle/src/ws/protocol.ts).
    */
   | { type: 'check_in' }
+  /**
+   * C.15: the turn just delivered restated the session goal as one confirming
+   * question. Two equal chips; the answer is `goal_response` or the learner's
+   * own words (mirrors oracle/src/ws/protocol.ts).
+   */
+  | { type: 'goal_check' }
   /** C.16: how the session ended, sent once just before `closed` on a graceful close. */
   | { type: 'session_closing'; script: ClosingScript; effort: EffortAct | null; topic: string | null }
   | { type: 'state'; budget: BudgetState; remainingMs: number; turnCount: number }
@@ -665,6 +671,8 @@ export type ClientMessage =
   | { type: 'session_end_response'; accepted: boolean }
   /** C.19: the learner's answer to the check-in: `aligned` = "we're good", false = "not really". */
   | { type: 'check_in_response'; aligned: boolean }
+  /** C.15: the learner's answer to the goal restatement: `agreed` = "yes, that's it", false = "something else". */
+  | { type: 'goal_response'; agreed: boolean }
   | { type: 'end_session' }
   | { type: 'ping' };
 

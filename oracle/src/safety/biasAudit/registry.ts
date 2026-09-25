@@ -15,6 +15,13 @@ import {
   isTerseReply,
   normalizeAnswer,
 } from '../../tutor/telemetryLexicon.js';
+import {
+  answersDecision,
+  classifyExplanation,
+  classifyGoalReply,
+  CONCEPT_FAMILIES,
+  type ConceptFamily,
+} from '../../tutor/explanationLexicon.js';
 
 /*
  * C.20 — THE REGISTRY OF AUDITED COMPONENTS.
@@ -43,7 +50,7 @@ import {
  */
 
 export type AuditKind = 'lexical' | 'prosodic' | 'model';
-export type AuditFeeds = 'behavioral_telemetry' | 'moderation' | 'adaptation_offer';
+export type AuditFeeds = 'behavioral_telemetry' | 'moderation' | 'adaptation_offer' | 'self_explanation' | 'alliance';
 
 export interface AuditedComponent {
   id: string;
@@ -60,6 +67,7 @@ export interface AuditedComponent {
 }
 
 const LEXICON = 'oracle/src/tutor/telemetryLexicon.ts';
+const EXPLANATION = 'oracle/src/tutor/explanationLexicon.ts';
 
 /** Word-count bands: the verbosity channel compares a learner with THEMSELVES, so parity is judged by band. */
 export function lengthBand(words: number): string {
@@ -146,6 +154,42 @@ export const AUDITED_COMPONENTS: AuditedComponent[] = [
     functions: ['classifyStopReply'],
     mode: 'fixture',
     run: (text) => classifyStopReply(text),
+  },
+  {
+    id: 'self_explanation.quality',
+    description: 'The C.14 explanation-quality check (concept / off_concept / filler) — routes the targeted follow-up',
+    kind: 'lexical',
+    feeds: ['self_explanation'],
+    sources: [EXPLANATION],
+    functions: ['classifyExplanation', 'conceptsNamed'],
+    mode: 'fixture',
+    // `context` is the comma-separated concept families the decision rests on.
+    run: (text, _locale, context) =>
+      classifyExplanation(
+        text,
+        context.split(',').filter((f): f is ConceptFamily => (CONCEPT_FAMILIES as readonly string[]).includes(f)),
+      ),
+  },
+  {
+    id: 'self_explanation.decision_answer',
+    description: 'Whether a reply to the Mentor’s money-decision question makes a choice — opens the C.14 prompt',
+    kind: 'lexical',
+    feeds: ['self_explanation'],
+    sources: [EXPLANATION],
+    functions: ['answersDecision'],
+    mode: 'fixture',
+    // `context` is the Mentor’s own question.
+    run: (text, _locale, context) => String(answersDecision(text, context)),
+  },
+  {
+    id: 'alliance.goal_reply',
+    description: 'The learner’s answer to the C.15 goal-agreement restatement (agree / other / unclear)',
+    kind: 'lexical',
+    feeds: ['alliance'],
+    sources: [EXPLANATION],
+    functions: ['classifyGoalReply'],
+    mode: 'fixture',
+    run: (text) => classifyGoalReply(text),
   },
   {
     id: 'moderation.input_classifier',

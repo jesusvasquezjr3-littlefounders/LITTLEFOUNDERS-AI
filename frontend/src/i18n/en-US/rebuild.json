@@ -215,5 +215,64 @@
     "choiceLabel": "Your answer",
     "aligned": "We're good",
     "misaligned": "Not really"
+  },
+  "mentorGoalCheck": {
+    "choiceLabel": "Your answer",
+    "agree": "Yes, that's it",
+    "other": "Something else"
+  },
+  "mentorAllianceCheck": {
+    "question": "Did I get what you wanted today?",
+    "choiceLabel": "Your answer",
+    "yes": "Yes",
+    "partly": "A little",
+    "no": "Not really",
+    "thanks": "Thanks for telling me.",
+    "failed": "That did not save. Try again.",
+    "retry": "Try again"
+  },
+  "mentorProfile": {
+    "titleOwn": "How you learn",
+    "titleChild": "How they learn",
+    "intro": "The Mentor adjusts to this, from past sessions.",
+    "empty": "Nothing yet. It builds after a few sessions.",
+    "notCurrent": "Last updated over a month ago.",
+    "loading": "Loading.",
+    "loadFailed": "This did not load. Try later.",
+    "helpLabel": "Asking for help",
+    "help": {
+      "independent": "Tries first, then asks",
+      "hint_seeking": "Asks for hints often",
+      "tell_early": "Asks for the answer early",
+      "unknown": "Not enough sessions yet"
+    },
+    "persistenceLabel": "Hard moments",
+    "persistence": {
+      "persists": "Usually stays with it",
+      "disengages_early": "Often stops early",
+      "unknown": "Not enough sessions yet"
+    },
+    "explanationLabel": "Explaining choices",
+    "explanation": {
+      "explains": "Names the idea",
+      "needs_scaffold": "Gets a sentence starter",
+      "unknown": "Not enough sessions yet"
+    },
+    "declinedLabel": "Turned down",
+    "declinedNone": "Nothing",
+    "adaptation": {
+      "slower_pacing": "Slower pace",
+      "more_examples": "More examples",
+      "less_text": "Less text",
+      "more_visual": "More pictures",
+      "repeat_before_advancing": "Repeat first"
+    },
+    "paceLabel": "Usual reply time",
+    "paceSeconds": "About {n} seconds",
+    "paceUnknown": "Not measured yet",
+    "reset": "Reset profile",
+    "resetting": "Resetting",
+    "resetDone": "Profile reset.",
+    "resetFailed": "That did not reset. Try again."
   }
 }

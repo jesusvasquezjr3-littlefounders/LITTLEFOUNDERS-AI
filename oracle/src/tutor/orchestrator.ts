@@ -86,6 +86,9 @@ import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } fro
 import { whiteboardComputesOk } from './whiteboard.js';
 import {
   checkInResponse,
+  continuityOpeningResponse,
+  renegotiationResponse,
+  selfExplanationResponse,
   completedCloseResponse,
   consentRevokedResponse,
   interruptedCloseResponse,
@@ -125,6 +128,45 @@ import {
   type TelemetryInput,
 } from './behavioralTelemetry.js';
 import { CHECK_IN_ALIGNED_INSTRUCTION, CHECK_IN_LEAD_INSTRUCTION, repairInstruction } from './checkIn.js';
+import {
+  AllianceController,
+  AllianceSnapshotSchema,
+  claimsSharedHistory,
+  EMPTY_ALLIANCE,
+  GOAL_ADOPT_INSTRUCTION,
+  GOAL_AGREED_INSTRUCTION,
+  GOAL_AGREEMENT_INSTRUCTION,
+  GOAL_OTHER_INSTRUCTION,
+  RENEGOTIATION_FOLLOW_INSTRUCTION,
+  RENEGOTIATION_LEAD_INSTRUCTION,
+  strictestAllianceMode,
+  type AllianceReport,
+} from './allianceController.js';
+import {
+  EMPTY_SELF_EXPLANATION,
+  explainInstruction,
+  followupInstruction,
+  SELF_EXPLANATION_LEAD_INSTRUCTION,
+  SELF_EXPLANATION_PASS_INSTRUCTION,
+  SelfExplanation,
+  SelfExplanationSnapshotSchema,
+  type SelfExplanationReport,
+} from './selfExplanation.js';
+import {
+  answersDecision,
+  CONCEPT_FAMILIES,
+  classifyGoalReply,
+  familiesForDecision,
+  isDecisionQuestion,
+} from './explanationLexicon.js';
+import {
+  DispositionObserver,
+  DispositionObserverSnapshotSchema,
+  dispositionEffects,
+  EMPTY_DISPOSITION_OBSERVER,
+  type DispositionEffects,
+  type DispositionObservation,
+} from './dispositionProfile.js';
 import { classifyCheckInReply } from './telemetryLexicon.js';
 import { predictedCorrectFrom } from './controller.js';
 import type { SpeechResult } from '../voice/speech.js';
@@ -300,6 +342,12 @@ export interface TurnEmission {
    * chips (Frontend Bible 08 §4: "a turn with chips, not a modal").
    */
   checkIn?: boolean;
+  /**
+   * C.15: this turn restates the session goal as one confirming question.
+   * The server sends `goal_check` after it so the stage can show two equal
+   * chips ("Yes, that's it" / "Something else").
+   */
+  goalCheck?: boolean;
 }
 
 /**
@@ -447,6 +495,16 @@ export const OrchestratorSnapshotSchema = z
      * Defaulted for records parked by the previous build.
      */
     behavioralTelemetry: BehavioralTelemetrySnapshotSchema.default(EMPTY_BEHAVIORAL_TELEMETRY),
+    /*
+     * C.15 / C.14 / C.7: the Alliance Controller (goal, task, bond and the
+     * renegotiation windows), the self-explanation move (an open "why did
+     * you pick that?" must survive a resume) and this session's disposition
+     * observations ride the snapshot. Defaulted for records parked by the
+     * previous build.
+     */
+    alliance: AllianceSnapshotSchema.default(EMPTY_ALLIANCE),
+    selfExplanation: SelfExplanationSnapshotSchema.default(EMPTY_SELF_EXPLANATION),
+    dispositionObserver: DispositionObserverSnapshotSchema.default(EMPTY_DISPOSITION_OBSERVER),
   })
   .strict();
 
@@ -475,6 +533,14 @@ interface ProduceOptions {
   checkIn?: boolean;
   /** C.19: this turn is the repair after the learner said the help is not working. */
   repair?: boolean;
+  /** C.15: this turn restates the session goal as one confirming question (the goal chips follow). */
+  goalProposal?: boolean;
+  /** C.15: the system's renegotiation question follows this turn. */
+  renegotiation?: boolean;
+  /** C.14: the system's self-explanation question follows this turn. */
+  selfExplanationPrompt?: boolean;
+  /** C.14: this turn is the targeted follow-up after a low-quality explanation. */
+  selfExplanationFollowup?: boolean;
 }
 
 export class TutorOrchestrator {
@@ -576,6 +642,14 @@ export class TutorOrchestrator {
   private readonly sessionClosing = new SessionCloser();
   /** C.9/C.19: the Behavioral Telemetry Layer and the check-in lifecycle (`behavioralTelemetry.ts`). */
   private readonly behavioralTelemetry: BehavioralTelemetry;
+  /** C.15: the Alliance Controller — bond, goal and task agreement (`allianceController.ts`). */
+  private readonly alliance: AllianceController;
+  /** C.14: the self-explanation move after financial decisions (`selfExplanation.ts`). */
+  private readonly selfExplanation: SelfExplanation;
+  /** C.7: what this session contributes to the persistent disposition profile. */
+  private readonly dispositionObserver: DispositionObserver;
+  /** C.7: what the learner's disposition profile changes this session (derived from the pinned context). */
+  private readonly dispositionEffects: DispositionEffects;
   /**
    * The V4 harness backlog's TRAJECTORY LOG (ROADMAP.md "Remaining harness
    * phases", /ORACLE.md §20): one entry per real `controller.decide()` call
@@ -652,10 +726,25 @@ export class TutorOrchestrator {
       strictestTelemetryMode(config.TUTOR_BEHAVIORAL_TELEMETRY, session.behavioralTelemetryMode ?? 'act'),
       session.locale,
     );
+    /*
+     * C.7: the learner's persistent disposition profile, read beside the
+     * mastery values (never instead of them). Server-side only.
+     */
+    this.dispositionEffects = dispositionEffects(session.dispositionProfile ?? null);
     this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? [], {
       corroborationMinObservations: config.TUTOR_CORROBORATION_MIN_OBSERVATIONS,
       corroborationRollbackKcKeys: config.TUTOR_CORROBORATION_ROLLBACK_KC_KEYS,
+      stuckDegradeAfter: this.dispositionEffects.stuckDegradeAfter,
     });
+    // Cross-session task agreement: an adaptation turned down across sessions
+    // and never taken is not offered again unprompted.
+    for (const adaptation of this.dispositionEffects.seededDeclines) recordDeclinedAdaptation(this.plan, adaptation);
+    this.alliance = new AllianceController(
+      strictestAllianceMode(config.TUTOR_ALLIANCE_CONTROLLER, session.allianceMode ?? 'act'),
+      session.allianceContinuity ?? null,
+    );
+    this.selfExplanation = new SelfExplanation(config.TUTOR_SELF_EXPLANATION);
+    this.dispositionObserver = new DispositionObserver(session.dispositionProfile != null, this.dispositionEffects);
     this.minorPosture = session.isMinor;
   }
 
@@ -736,6 +825,9 @@ export class TutorOrchestrator {
       sessionEndSignal: this.sessionEndSignal.snapshot(),
       sessionClosing: this.sessionClosing.snapshot(),
       behavioralTelemetry: this.behavioralTelemetry.snapshot(),
+      alliance: this.alliance.snapshot(),
+      selfExplanation: this.selfExplanation.snapshot(),
+      dispositionObserver: this.dispositionObserver.snapshot(),
     };
   }
 
@@ -805,6 +897,9 @@ export class TutorOrchestrator {
     this.sessionEndSignal.restore(snapshot.sessionEndSignal);
     this.sessionClosing.restore(snapshot.sessionClosing);
     this.behavioralTelemetry.restore(snapshot.behavioralTelemetry);
+    this.alliance.restore(snapshot.alliance);
+    this.selfExplanation.restore(snapshot.selfExplanation);
+    this.dispositionObserver.restore(snapshot.dispositionObserver);
   }
 
   refreshIsMinor(isMinor: boolean): void {
@@ -834,7 +929,15 @@ export class TutorOrchestrator {
 
   /** Per-strategy client idle-nudge budget, or null while the brain is off. */
   get idleNudgeMs(): number | null {
-    return this.controller.active ? IDLE_NUDGE_MS[this.controller.currentStrategy] : null;
+    if (!this.controller.active) return null;
+    const base = IDLE_NUDGE_MS[this.controller.currentStrategy];
+    // C.7: a learner whose typical reply takes longer is not nudged before their own pace.
+    const floor = this.dispositionEffects.idleNudgeFloorMs;
+    if (floor !== null && floor > base) {
+      this.dispositionObserver.noteIdleNudgePaced();
+      return floor;
+    }
+    return base;
   }
 
   /**
@@ -1156,6 +1259,9 @@ export class TutorOrchestrator {
     if (adaptation !== this.lastOfferedAdaptation) return;
     this.lastOfferedAdaptation = null;
     if (!this.adaptations.includes(adaptation)) this.adaptations.push(adaptation);
+    // C.15 task agreement (the pattern of declines resets) and C.7.
+    this.alliance.noteAccepted();
+    this.dispositionObserver.noteAdaptation(adaptation, true);
   }
 
   /**
@@ -1179,6 +1285,14 @@ export class TutorOrchestrator {
     if (adaptation !== this.lastOfferedAdaptation) return;
     this.lastOfferedAdaptation = null;
     recordDeclinedAdaptation(this.plan, adaptation);
+    /*
+     * C.15: a decline is ALLIANCE DATA, not only a style to skip. A defined
+     * pattern of them (`renegotiateAfterDeclines` in a row) makes the next
+     * Mentor turn carry the renegotiation question instead of persisting
+     * silently with the same plan.
+     */
+    this.alliance.noteDeclined();
+    this.dispositionObserver.noteAdaptation(adaptation, false);
   }
 
   /**
@@ -1201,8 +1315,19 @@ export class TutorOrchestrator {
      * (decided by Core, `opening`), instead of an opening that pretends
      * nothing happened.
      */
+    /*
+     * C.15 persona continuity: when this persona has never worked with the
+     * learner (a first meeting or a persona switch) or not for a long time,
+     * the honest written introduction replaces a greeting that assumes a
+     * shared history. A queued re-engagement (C.16) is persona-neutral and
+     * keeps precedence; the model's turns then carry the continuity note.
+     */
+    this.alliance.noteOpening();
+    const continuity = opening === 'greeting' ? this.alliance.continuityOpening : null;
     return this.scriptedOutcome(
-      openingResponse(this.session.character, this.session.locale, opening),
+      continuity !== null
+        ? continuityOpeningResponse(this.session.character, this.session.locale, continuity)
+        : openingResponse(this.session.character, this.session.locale, opening),
       this.currentBudget(nowMs),
       null,
       null,
@@ -1232,6 +1357,10 @@ export class TutorOrchestrator {
     // that as "no measurement", never as a fast answer.
     const latencyMs = servedAt === undefined ? null : Math.max(0, Date.now() - servedAt);
     this.segmentServedAt.delete(segmentId);
+    // C.14: the graded activity's own type, read before the slot is cleared —
+    // a decision type is a financial decision point.
+    const decisionFamilies =
+      this.openUngradedSegmentId === segmentId ? familiesForDecision(this.openActivity?.type) : null;
     // C.8/C.12: read BEFORE any of this answer's evidence is applied (the
     // skill estimate is nudged on the next line) — a surprising miss is judged
     // against what the learner's own history predicted.
@@ -1270,11 +1399,35 @@ export class TutorOrchestrator {
       { source: 'activity', text: null, latencyMs, graded: { correct, pCorrect, answer: null } },
       signalled,
     );
-    // The check-in or the stop-or-continue offer SUPERSEDES this turn's
-    // maneuver: each must stand alone, and a remediation question beside it
-    // could never be answered. The controller's decision is still logged.
-    const extra = checkIn ? CHECK_IN_LEAD_INSTRUCTION : offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
-    const skillName = checkIn || offering ? null : strategySkill;
+    // C.14 / C.15: the learner moved on to an activity instead of answering
+    // an open system question, and one more learner turn happened.
+    this.noteAllianceTurn({ source: 'activity', replyMs: null, hint: false, tell: false, answeredQuestion: false });
+    // A disengagement firing: the session did not get better (C.15 window).
+    if (checkIn) this.alliance.noteDisengagement();
+    const renegotiation = this.renegotiationCarried(checkIn);
+    const selfExplain =
+      !checkIn && !renegotiation && !offering && decisionFamilies !== null
+        ? this.selfExplanation.consider({
+            source: 'activity',
+            families: decisionFamilies,
+            verifiedWrong: !correct,
+            scaffolded: this.dispositionEffects.scaffoldedExplanations,
+          })
+        : false;
+    // The check-in, the renegotiation, the stop-or-continue offer or the
+    // self-explanation lead SUPERSEDES this turn's maneuver: each must stand
+    // alone, and a remediation question beside it could never be answered.
+    // The controller's decision is still logged.
+    const extra = checkIn
+      ? CHECK_IN_LEAD_INSTRUCTION
+      : renegotiation
+        ? RENEGOTIATION_LEAD_INSTRUCTION
+        : offering
+          ? SESSION_END_OFFER_INSTRUCTION
+          : selfExplain
+            ? SELF_EXPLANATION_LEAD_INSTRUCTION
+            : strategyExtra;
+    const skillName = checkIn || renegotiation || offering || selfExplain ? null : strategySkill;
 
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
@@ -1401,6 +1554,8 @@ export class TutorOrchestrator {
         verdict: correct ? 'after_correct' : 'after_incorrect',
         sessionEndOffer: offering,
         checkIn,
+        renegotiation,
+        selfExplanationPrompt: selfExplain,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1489,6 +1644,7 @@ export class TutorOrchestrator {
     if (classification.category !== null && classification.action !== 'allow') {
       const stopping = classification.action === 'session_stopped';
       if (stopping) this.stopped = true;
+      this.supersedeSystemQuestions();
       // Never added to `history` — same reason as handleLearnerText: even the
       // sanitized text must not re-enter the model's context on a later turn.
       return this.scriptedOutcome(
@@ -1542,8 +1698,23 @@ export class TutorOrchestrator {
       },
       signalled,
     );
-    const extra = checkIn ? CHECK_IN_LEAD_INSTRUCTION : offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
-    const skillName = checkIn || offering ? null : strategySkill;
+    this.noteAllianceTurn({
+      source: input.source,
+      replyMs: this.behavioralTelemetry.replyLatency(input.onsetAtMs),
+      hint: false,
+      tell: false,
+      answeredQuestion: false,
+    });
+    if (checkIn) this.alliance.noteDisengagement();
+    const renegotiation = this.renegotiationCarried(checkIn);
+    const extra = checkIn
+      ? CHECK_IN_LEAD_INSTRUCTION
+      : renegotiation
+        ? RENEGOTIATION_LEAD_INSTRUCTION
+        : offering
+          ? SESSION_END_OFFER_INSTRUCTION
+          : strategyExtra;
+    const skillName = checkIn || renegotiation || offering ? null : strategySkill;
 
     const summary = result.correct
       ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
@@ -1558,6 +1729,7 @@ export class TutorOrchestrator {
         verdict: result.correct ? 'after_correct' : 'after_incorrect',
         sessionEndOffer: offering,
         checkIn,
+        renegotiation,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1782,6 +1954,8 @@ export class TutorOrchestrator {
     if (classification.category !== null && classification.action !== 'allow') {
       const stopping = classification.action === 'session_stopped';
       if (stopping) this.stopped = true;
+      // Safety wins over every open system question (C.14, C.15).
+      this.supersedeSystemQuestions();
       // The learner's turn IS recorded (a guardian must be able to read what
       // was said), but it is recorded by the caller against the transcript —
       // never added to `history`, so it cannot reach the model on a later turn
@@ -1851,6 +2025,34 @@ export class TutorOrchestrator {
         checkInReply = reply;
         metaReply = true;
       }
+      // "Not really" at a check-in: the session did not get better (C.15 window).
+      if (reply === 'misaligned') this.alliance.noteDisengagement();
+    }
+
+    /*
+     * C.15 GOAL AGREEMENT, answered in words. "Yes" settles the goal and the
+     * lesson starts; "something else" asks what they want instead; anything
+     * else is recorded as unconfirmed and answered as an ordinary turn (the
+     * move never loops). After "something else", the learner's own words ARE
+     * the goal.
+     */
+    let goalDirective: string | null = null;
+    if (fenced.cleaned !== '' && this.alliance.goalCheckOpen) {
+      const reply = classifyGoalReply(fenced.cleaned);
+      this.alliance.answerGoal(reply);
+      if (reply !== 'unclear') {
+        goalDirective = reply === 'agree' ? GOAL_AGREED_INSTRUCTION : GOAL_OTHER_INSTRUCTION;
+        metaReply = true;
+      }
+    } else if (fenced.cleaned !== '' && this.alliance.goalAskedOther) {
+      this.alliance.adoptLearnerGoal();
+      goalDirective = GOAL_ADOPT_INSTRUCTION;
+    }
+    // C.15: the learner answered the renegotiation question in their own words.
+    let renegotiationFollow = false;
+    if (fenced.cleaned !== '' && this.alliance.renegotiationOpen) {
+      this.alliance.answerRenegotiation(true);
+      renegotiationFollow = true;
     }
 
     if (fenced.cleaned === '') {
@@ -1883,6 +2085,17 @@ export class TutorOrchestrator {
 
     this.history.push({ speaker: 'learner', text: fenced.cleaned });
     this.sessionClosing.noteLearnerTurn();
+    const tellRequest = !metaReply && isTellRequest(fenced.cleaned);
+    const hintRequest = !metaReply && !tellRequest && isHintRequest(fenced.cleaned);
+    // Read BEFORE this turn is counted: was a system question waiting for it?
+    const explanationAwaited = this.selfExplanation.awaitingExplanation;
+    this.noteAllianceTurn({
+      source: input.source,
+      replyMs: metaReply ? null : this.behavioralTelemetry.replyLatency(input.onsetAtMs),
+      hint: hintRequest,
+      tell: tellRequest,
+      answeredQuestion: explanationAwaited,
+    });
     const verdictNote =
       verdict === null
         ? ''
@@ -2025,22 +2238,100 @@ export class TutorOrchestrator {
           signalled,
         );
     const repair = checkInReply === 'misaligned';
+    if (checkIn) this.alliance.noteDisengagement();
+    const renegotiation = !repair && this.renegotiationCarried(checkIn);
+    /*
+     * C.14: the reply to an open "why did you pick that?" is quality-checked.
+     * A stated wrong idea goes to C.18's unsound path; a help request to the
+     * C.13 ladder; otherwise the check decides between a SPECIFIC
+     * acknowledgement, ONE targeted follow-up, or (on a second miss) the
+     * Mentor stating the reason once.
+     */
+    let explanationDirective: string | null = null;
+    let explanationFollowup = false;
+    if (explanationAwaited) {
+      const reading = this.selfExplanation.readReply(fenced.cleaned, {
+        misconception: stated !== null,
+        help: hintRequest || tellRequest,
+      });
+      if (reading?.kind === 'pass') explanationDirective = SELF_EXPLANATION_PASS_INSTRUCTION;
+      else if (reading?.kind === 'followup') {
+        explanationDirective = followupInstruction(reading.family);
+        explanationFollowup = true;
+      } else if (reading?.kind === 'explain') explanationDirective = explainInstruction(reading.family);
+    }
+    /*
+     * C.14: a conversational FINANCIAL DECISION POINT — the learner just
+     * answered the Mentor's own money-decision question ("would you save it
+     * or spend it?") with a choice, not a question, a help request or an
+     * unsound claim (C.18 owns that turn).
+     */
+    const conversationalDecision =
+      !metaReply &&
+      !explanationAwaited &&
+      verdict === null &&
+      stated === null &&
+      !hintRequest &&
+      !tellRequest &&
+      !fenced.cleaned.includes('?') &&
+      isDecisionQuestion(lastTutorLine) &&
+      answersDecision(fenced.cleaned, lastTutorLine);
+    // The goal-agreement opening move rides the first substantive learner
+    // turn that no repair, check-in, renegotiation or stop offer claims.
+    const goalProposal =
+      !metaReply && goalDirective === null && !repair && !checkIn && !renegotiation && !offering && this.alliance.goalPromptDue;
     /*
      * One directive per turn, in this order: the C.19 repair after "not
      * really" (the plan does not continue as if nothing happened), the
-     * system's check-in, the stop-or-continue offer, then the controller's
-     * maneuver — with a note that the learner confirmed, after "yes".
+     * system's check-in, the C.15 renegotiation, the stop-or-continue offer,
+     * the C.15 goal agreement (its answer, then the opening move), the C.14
+     * explanation reading, the answer to a renegotiation, the C.14 prompt
+     * lead, then the controller's maneuver — with a note that the learner
+     * confirmed, after "yes".
      */
+    const higher = repair || checkIn || renegotiation || offering || goalDirective !== null || goalProposal;
+    if (higher && explanationFollowup) {
+      // A higher directive took the follow-up's turn: the move closes here.
+      this.selfExplanation.supersede();
+      explanationDirective = null;
+      explanationFollowup = false;
+    }
+    const selfExplain =
+      !higher &&
+      explanationDirective === null &&
+      !renegotiationFollow &&
+      conversationalDecision &&
+      this.selfExplanation.consider({
+        source: 'conversation',
+        families: CONCEPT_FAMILIES,
+        verifiedWrong: false,
+        scaffolded: this.dispositionEffects.scaffoldedExplanations,
+      });
     const maneuver = repair
       ? repairInstruction(this.plan.declinedAdaptations)
       : checkIn
         ? CHECK_IN_LEAD_INSTRUCTION
-        : offering
-          ? SESSION_END_OFFER_INSTRUCTION
-          : checkInReply === 'aligned'
-            ? [strategyManeuver, CHECK_IN_ALIGNED_INSTRUCTION].filter((part) => part !== null).join('\n\n')
-            : strategyManeuver;
-    const skillName = repair || checkIn || offering ? null : strategySkill;
+        : renegotiation
+          ? RENEGOTIATION_LEAD_INSTRUCTION
+          : offering
+            ? SESSION_END_OFFER_INSTRUCTION
+            : goalDirective !== null
+              ? goalDirective
+              : goalProposal
+                ? GOAL_AGREEMENT_INSTRUCTION
+                : explanationDirective !== null
+                  ? explanationDirective
+                  : renegotiationFollow
+                    ? RENEGOTIATION_FOLLOW_INSTRUCTION
+                    : selfExplain
+                      ? SELF_EXPLANATION_LEAD_INSTRUCTION
+                      : checkInReply === 'aligned'
+                        ? [strategyManeuver, CHECK_IN_ALIGNED_INSTRUCTION].filter((part) => part !== null).join('\n\n')
+                        : strategyManeuver;
+    const skillName =
+      repair || checkIn || renegotiation || offering || goalDirective !== null || goalProposal || selfExplain
+        ? null
+        : strategySkill;
     /*
      * C.13: the hint ladder advances on the learner's own words and its
      * directive rides the same instruction the model receives — escalation
@@ -2078,6 +2369,10 @@ export class TutorOrchestrator {
         sessionEndOffer: offering,
         checkIn,
         repair,
+        renegotiation,
+        goalProposal,
+        selfExplanationPrompt: selfExplain,
+        selfExplanationFollowup: explanationFollowup,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -2222,6 +2517,7 @@ export class TutorOrchestrator {
   async respondToCheckIn(aligned: boolean, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
     if (!this.behavioralTelemetry.checkInOpen || this.stopped) return null;
     this.behavioralTelemetry.recordCheckInReply(aligned ? 'aligned' : 'misaligned');
+    if (!aligned) this.alliance.noteDisengagement();
     if (aligned) {
       return this.produce(CHECK_IN_ALIGNED_INSTRUCTION, nowMs, { isSystemPrompted: true, signal });
     }
@@ -2235,6 +2531,64 @@ export class TutorOrchestrator {
   /** C.19: whether the system's check-in is waiting for the learner's answer. */
   get checkInOpen(): boolean {
     return this.behavioralTelemetry.checkInOpen;
+  }
+
+  /**
+   * C.15: the learner answered the goal restatement with the stage's two
+   * equal chips (`goal_response`). Refused (null) unless the goal check is
+   * actually open — a replayed or forged frame steers nothing. "Yes" starts
+   * the lesson on the agreed goal; "something else" asks what they want.
+   */
+  async respondToGoalCheck(agreed: boolean, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+    if (!this.alliance.goalCheckOpen || this.stopped) return null;
+    this.alliance.answerGoal(agreed ? 'agree' : 'other');
+    return this.produce(agreed ? GOAL_AGREED_INSTRUCTION : GOAL_OTHER_INSTRUCTION, nowMs, {
+      isSystemPrompted: true,
+      signal,
+    });
+  }
+
+  /** C.15: whether the goal restatement is waiting for the learner's answer. */
+  get goalCheckOpen(): boolean {
+    return this.alliance.goalCheckOpen;
+  }
+
+  /**
+   * C.14/C.15: one learner turn for the Alliance Controller, the
+   * self-explanation move and the disposition observations. A turn that
+   * moves on past an open system question closes it as unanswered.
+   */
+  private noteAllianceTurn(input: {
+    source: 'typed' | 'spoken' | 'activity';
+    replyMs: number | null;
+    hint: boolean;
+    tell: boolean;
+    answeredQuestion: boolean;
+  }): void {
+    if (!input.answeredQuestion) this.selfExplanation.noteMovedOn();
+    if (input.source === 'activity' && this.alliance.renegotiationOpen) this.alliance.answerRenegotiation(false);
+    this.alliance.noteLearnerTurn();
+    this.selfExplanation.noteLearnerTurn();
+    this.dispositionObserver.noteLearnerTurn({ source: input.source, replyMs: input.replyMs, hint: input.hint, tell: input.tell });
+  }
+
+  /**
+   * C.15: whether THIS turn carries a due renegotiation. The C.19 check-in
+   * wins (it is itself a renegotiation of the task) and supersedes it.
+   */
+  private renegotiationCarried(checkIn: boolean): boolean {
+    if (!this.alliance.renegotiationDue) return false;
+    if (checkIn) {
+      this.alliance.supersedeRenegotiation();
+      return false;
+    }
+    return !this.stopped && this.sessionClosing.phase === 'none';
+  }
+
+  /** A safety line or a closing took the moment of every open system question (C.14, C.15). */
+  private supersedeSystemQuestions(): void {
+    this.selfExplanation.supersede();
+    this.alliance.supersedeRenegotiation();
   }
 
   /**
@@ -2353,6 +2707,9 @@ export class TutorOrchestrator {
     opening: SessionOpening;
     endSignal: SessionEndSignalReport;
     behavioralTelemetry?: BehavioralTelemetryReport;
+    alliance?: AllianceReport;
+    selfExplanation?: SelfExplanationReport;
+    disposition: DispositionObservation;
   } {
     return {
       closingScript: closingScriptFor(reason),
@@ -2360,7 +2717,22 @@ export class TutorOrchestrator {
       endSignal: this.sessionEndSignal.report(),
       // C.9/C.19: nothing is reported while the layer is switched off.
       ...(this.behavioralTelemetry.mode === 'off' ? {} : { behavioralTelemetry: this.behavioralTelemetry.report() }),
+      // C.15 / C.14: likewise while each is switched off.
+      ...(this.alliance.mode === 'off' ? {} : { alliance: this.alliance.report() }),
+      ...(this.selfExplanation.mode === 'off' ? {} : { selfExplanation: this.selfExplanation.report() }),
+      // C.7: what this session contributes to the persistent profile.
+      disposition: this.dispositionObserver.report(),
     };
+  }
+
+  /** C.15: the Alliance Controller's record (tests and diagnostics). */
+  get allianceReport(): AllianceReport {
+    return this.alliance.report();
+  }
+
+  /** C.14: the self-explanation move's record (tests and diagnostics). */
+  get selfExplanationReport(): SelfExplanationReport {
+    return this.selfExplanation.report();
   }
 
   /** C.9/C.19: the layer's record for Core (Default-to-Inaction and Repair Initiation Rates). */
@@ -2546,10 +2918,37 @@ export class TutorOrchestrator {
    */
   private async produce(userContent: string, nowMs: number, opts: ProduceOptions = {}): Promise<TurnOutcome | null> {
     let outcome: TurnOutcome | null = null;
+    /*
+     * C.15 persona continuity: a Mentor meeting this learner for the first
+     * time (or after a long gap) is told on its turns not to claim a shared
+     * history — a fixed system sentence, never anything about the learner.
+     */
+    const continuityNote = this.alliance.continuityNote();
+    const content = continuityNote === '' ? userContent : `${userContent}\n\n${continuityNote}`;
     try {
-      outcome = await this.produceTurn(userContent, nowMs, opts);
+      outcome = await this.produceTurn(content, nowMs, opts);
       return outcome;
     } finally {
+      const closingNow =
+        this.stopped ||
+        this.sessionClosing.phase !== 'none' ||
+        (outcome !== null && (outcome.closeReason !== null || (outcome.after?.closeReason ?? null) !== null));
+      // C.14: a prompt or follow-up this turn could not carry — the moment has passed.
+      if (opts.selfExplanationPrompt === true && this.selfExplanation.promptDue) {
+        if (closingNow) this.selfExplanation.supersede();
+        else this.selfExplanation.markPromptNotDelivered();
+      }
+      if (opts.selfExplanationFollowup === true && this.selfExplanation.followupDue) {
+        if (closingNow) this.selfExplanation.supersede();
+        else this.selfExplanation.markFollowupNotDelivered();
+      }
+      // C.15: a renegotiation still due stays due for the next learner turn;
+      // a Mentor turn that went out without it is counted (a real miss if the
+      // session then ends with it undelivered). A closing supersedes it.
+      if (this.alliance.renegotiationDue) {
+        if (closingNow) this.alliance.supersedeRenegotiation();
+        else if (outcome !== null) this.alliance.noteTurnWithoutRenegotiation();
+      }
       if (opts.sessionEndOffer === true && !this.sessionEndSignal.offerOpen) {
         this.sessionEndSignal.markOfferNotDelivered();
       }
@@ -3408,6 +3807,14 @@ export class TutorOrchestrator {
              */
             const affectClaim = claimsLearnerAffect(parsed.turn.say);
             /*
+             * C.15: A FIRST MEETING OR A PERSONA SWITCH IS NEVER FALSELY
+             * FAMILIAR. "Last time we…", "I remember you" or "good to see you
+             * again" from a persona that has never worked with this learner
+             * is manufactured intimacy (Appendix D §3.4). Bucketed with the
+             * false verdicts: repaired once, never delivered.
+             */
+            const falseFamiliarity = this.alliance.requiresFreshStart && claimsSharedHistory(parsed.turn.say);
+            /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the
              * faults below, each of which is worth one attempt at doing
@@ -3473,6 +3880,7 @@ export class TutorOrchestrator {
               repairableIsFalseVerdict =
                 sycophantic ||
                 affectClaim ||
+                falseFamiliarity ||
                 falsePraise ||
                 unearnedPraise ||
                 reintroduction ||
@@ -3498,6 +3906,10 @@ export class TutorOrchestrator {
                   ? 'agreed with, or praised, an idea or money decision the learner stated that the system detected as NOT sound. Never endorse it because they seem pleased: name one sensible thing in their reasoning, then show kindly, with one concrete consequence, where the idea breaks, and ask what they would change'
                   : 'told the learner their answer was right, but the system VERIFIED it was WRONG. Never affirm a wrong answer to be kind: say plainly and warmly that it is not quite it yet, praise only one specific thing they actually did, and help with the step that went wrong';
               console.warn('[oracle] C.18 turn affirmed a verified-wrong answer or an unsound idea — asking again');
+            } else if (falseFamiliarity && attempt === 0) {
+              turnCorrection =
+                'claimed a shared history with the learner ("last time we", "I remember you", "good to see you again"), but you have NEVER worked with this learner before as yourself. Say the same thing without any claim of remembering them or of anything "we" did before; you may mention that they practised a topic before';
+              console.warn('[oracle] C.15 turn claimed a shared history on a first meeting — asking again');
             } else if (affectClaim && attempt === 0) {
               turnCorrection =
                 'told the learner how they feel or seem (tired, bored, frustrated or similar). You cannot know that, and a child labelled by a machine learns to hide. Say the same thing WITHOUT any claim about their feelings, energy or mood — talk about the work, or ask plainly what they would like to do';
@@ -3703,6 +4115,7 @@ export class TutorOrchestrator {
                 nothingNew ||
                 sycophantic ||
                 affectClaim ||
+                falseFamiliarity ||
                 falsePraise ||
                 falseCorrection ||
                 falseAffordability ||
@@ -3724,6 +4137,9 @@ export class TutorOrchestrator {
                 }
                 if (affectClaim) {
                   console.warn("[oracle] a claim about the learner's emotional state SURVIVED the retry — scripted line instead");
+                }
+                if (falseFamiliarity) {
+                  console.warn('[oracle] C.15 a false shared-history claim SURVIVED the retry — scripted line instead');
                 }
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
@@ -3917,10 +4333,20 @@ export class TutorOrchestrator {
       }
       closingPlan = null;
     }
-    if (closingPlan !== null || opts.sessionEndOffer === true || opts.checkIn === true) {
+    if (
+      closingPlan !== null ||
+      opts.sessionEndOffer === true ||
+      opts.checkIn === true ||
+      opts.renegotiation === true ||
+      opts.goalProposal === true ||
+      opts.selfExplanationPrompt === true ||
+      opts.selfExplanationFollowup === true
+    ) {
       // An offer stands alone (Frontend Bible 08 §4: two equal choices), a
-      // closing turn introduces nothing new (Appendix D §3.5), and the turn
-      // before the system's check-in only reacts (C.19).
+      // closing turn introduces nothing new (Appendix D §3.5), the turn
+      // before the system's check-in, renegotiation or self-explanation
+      // question only reacts (C.19, C.15, C.14), and the goal restatement
+      // and the explanation follow-up are questions that must stand alone.
       turn = { ...turn, next: 'ask', segmentRequest: null, offerAdaptation: null };
     }
 
@@ -4158,6 +4584,52 @@ export class TutorOrchestrator {
       this.behavioralTelemetry.markRepairOffered(turn.offerAdaptation != null);
     }
 
+    const followsDeliveredModelTurn =
+      after === undefined &&
+      source === 'model' &&
+      safety === null &&
+      closingPlan === null &&
+      !this.stopped &&
+      afterBudget.state !== 'ended';
+    /*
+     * C.15: THE SYSTEM'S RENEGOTIATION QUESTION follows this model turn — a
+     * written line, so a defined pattern of declines always produces the
+     * renegotiation and never depends on the model choosing to ask.
+     */
+    if (opts.renegotiation === true && followsDeliveredModelTurn && this.alliance.renegotiationDue) {
+      after = await this.scriptedOutcome(renegotiationResponse(this.session.locale), afterBudget, null, null);
+      this.alliance.markRenegotiationDelivered();
+    }
+    /*
+     * C.14: THE SYSTEM'S SELF-EXPLANATION QUESTION follows the reacting turn
+     * after a financial decision — written, pre-generatable, and asked on
+     * every selected decision.
+     */
+    if (opts.selfExplanationPrompt === true && followsDeliveredModelTurn && after === undefined) {
+      const variant = this.selfExplanation.variant;
+      if (variant !== null && this.selfExplanation.promptDue) {
+        after = await this.scriptedOutcome(selfExplanationResponse(this.session.locale, variant), afterBudget, null, null);
+        this.selfExplanation.markPromptDelivered();
+      }
+    }
+    // C.14: the targeted follow-up IS this model turn.
+    if (opts.selfExplanationFollowup === true && source === 'model' && safety === null && closingPlan === null) {
+      this.selfExplanation.markFollowupDelivered();
+    }
+    // C.15: the goal restatement IS this model turn; the chips follow it.
+    let goalCheck = false;
+    if (opts.goalProposal === true && source === 'model' && safety === null && closingPlan === null && !this.stopped) {
+      this.alliance.markGoalProposed();
+      goalCheck = true;
+    }
+    // C.15 task and bond: an adaptation this turn offered, and whether it
+    // referenced something specific the learner did (C.18's classification).
+    const honesty = this.turnHonesty(turn.say, opts.verdict ?? null, falseAffirmationCaught);
+    if (source === 'model' && safety === null) {
+      if (turn.offerAdaptation != null) this.alliance.noteOfferDelivered();
+      this.alliance.notePraise(honesty.praise);
+    }
+
     const closeReason =
       /*
        * Checked BEFORE the generic `turn.next === 'close'` case, not after —
@@ -4189,8 +4661,9 @@ export class TutorOrchestrator {
         moderation: moderationRecord,
         // Every turn produce() settles on — including a scripted line that REPLACED a caught
         // sycophantic draft, which is exactly the turn the audit most needs to count.
-        honesty: this.turnHonesty(turn.say, opts.verdict ?? null, falseAffirmationCaught),
+        honesty,
         ...(offerDelivered ? { sessionEndOffer: true } : {}),
+        ...(goalCheck ? { goalCheck: true } : {}),
       },
       safety,
       budget: afterBudget,

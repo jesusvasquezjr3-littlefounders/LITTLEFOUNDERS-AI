@@ -103,6 +103,8 @@ describe('registry completeness: nothing that reads a learner’s words escapes 
       ['./telemetryLexicon.js', ['classifyCheckInReply']],
       ['./sessionEndSignal.js', ['classifyStopReply']],
       ['./hintLadder.js', ['isHintRequest', 'isTellRequest']],
+      // C.14 / C.15 (S06.5): the decision answer and the goal reply.
+      ['./explanationLexicon.js', ['answersDecision', 'classifyGoalReply']],
     ] as const) {
       const imported = importsFrom('oracle/src/tutor/orchestrator.ts', module);
       for (const name of names) {
@@ -110,6 +112,9 @@ describe('registry completeness: nothing that reads a learner’s words escapes 
         expect(registered.has(name), name).toBe(true);
       }
     }
+    // C.14: the explanation-quality check is read by the self-explanation move.
+    expect(importsFrom('oracle/src/tutor/selfExplanation.ts', './explanationLexicon.js')).toContain('classifyExplanation');
+    expect(registered.has('classifyExplanation')).toBe(true);
     expect(registered.has('classifyLearnerInput')).toBe(true);
     expect(registered.has('deterministicModeration')).toBe(true);
   });

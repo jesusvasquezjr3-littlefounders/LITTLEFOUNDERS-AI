@@ -102,6 +102,14 @@ export interface ControllerOptions {
    * Appendix F Stage 7 kill switch, until root-caused. Empty by default.
    */
   corroborationRollbackKcKeys?: readonly string[];
+  /**
+   * C.7: questioning turns without progress after which SOCRATIC/FLUENCY
+   * degrade to FADED — 3 by default, lowered for a learner whose persistent
+   * disposition profile shows early disengagement or an early "just tell
+   * me" habit (`dispositionProfile.ts`). Integer in [1, 3]; anything else
+   * falls back to 3.
+   */
+  stuckDegradeAfter?: number;
 }
 
 /**
@@ -514,6 +522,8 @@ export class PedagogicalController {
 
   /** Operator configuration (constructor-derived, never session state). */
   private readonly corroboration: { min: number; rollbackKcKeys: ReadonlySet<string> };
+  /** C.7: the learner's disposition, read beside mastery (constructor-derived from the session context). */
+  private readonly disposition: { stuckDegradeAfter: 1 | 2 | 3 };
 
   constructor(
     private readonly plan: SessionPlanEntry[],
@@ -537,6 +547,11 @@ export class PedagogicalController {
           ? requested
           : CORROBORATION_MIN_OBSERVATIONS,
       rollbackKcKeys: new Set(options.corroborationRollbackKcKeys ?? []),
+    };
+    const degrade = options.stuckDegradeAfter;
+    this.disposition = {
+      stuckDegradeAfter:
+        degrade === 1 || degrade === 2 || degrade === 3 ? degrade : 3,
     };
     for (const entry of plan) this.pKnown.set(entry.kcId, entry.pKnown);
     this.strategy = this.plan.length > 0 ? this.baseStrategy(this.plan[0]!) : 'DIRECT';
@@ -820,7 +835,9 @@ export class PedagogicalController {
      * learner straight back to the band. This one changes the TEACHING — a faded
      * example gives them the shape of the answer and asks for the last step.
      */
-    const stuck = this.questioningWithoutProgress >= 3;
+    // C.7: the learner's disposition lowers this for an early disengager or
+    // an early "just tell me" asker (3 by default; see ControllerOptions).
+    const stuck = this.questioningWithoutProgress >= this.disposition.stuckDegradeAfter;
     if (p < 0.85) return stuck ? 'FADED' : 'SOCRATIC';
     return stuck ? 'FADED' : 'FLUENCY';
   }

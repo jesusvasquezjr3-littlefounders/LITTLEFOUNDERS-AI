@@ -2194,6 +2194,38 @@ async function onMessage(live: Live, raw: string): Promise<void> {
       return;
     }
 
+    case 'goal_response': {
+      /*
+       * C.15: the learner's answer to the goal restatement on the two equal
+       * chips. Refused unless the goal check is actually open — a replayed or
+       * hand-crafted frame steers nothing — and checked BEFORE the claim.
+       * "Yes" starts the lesson on the agreed goal; "something else" asks
+       * what they would like instead (a model turn either way).
+       */
+      if (!live.orchestrator.goalCheckOpen) {
+        send(live.socket, {
+          type: 'error',
+          code: 'NO_GOAL_CHECK',
+          message: 'There is no open question to answer.',
+        });
+        return;
+      }
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.respondToGoalCheck(message.data.agreed, Date.now(), live.abort.signal),
+        );
+      } finally {
+        live.abort = null;
+        releaseTurn(live);
+      }
+      return;
+    }
+
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
       //
@@ -2893,6 +2925,10 @@ async function deliver(
   // chips (Frontend Bible 08 §4: "a turn with chips, not a modal"). The
   // answer arrives as `check_in_response` or in the learner's own words.
   if (emission.checkIn === true) send(live.socket, { type: 'check_in' });
+
+  // C.15: this turn restated the session goal — the stage shows two equal
+  // chips. The answer arrives as `goal_response` or in the learner's words.
+  if (emission.goalCheck === true) send(live.socket, { type: 'goal_check' });
 
   if (emission.turn.next === 'segment' && emission.turn.segmentRequest) {
     if (segmentAttempt > MAX_SEGMENT_RETRIES) {

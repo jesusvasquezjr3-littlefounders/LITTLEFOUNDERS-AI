@@ -17,6 +17,7 @@ import process from 'node:process';
 import { runPedagogyGym } from '../src/tutor/pedagogyGym.js';
 import { runSessionEndGym } from '../src/tutor/sessionEndGym.js';
 import { runTelemetryGym } from '../src/tutor/telemetryGym.js';
+import { runAllianceGym } from '../src/tutor/allianceGym.js';
 
 function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void {
   console.log('== The simulated-student gym: reactive students against the real controller ==');
@@ -49,7 +50,13 @@ function main(): void {
    * Default-to-Inaction floor and the no-emotion-label check.
    */
   const telemetry = runTelemetryGym();
-  const ok = controller.ok && sessionEnd.ok && telemetry.ok;
+  /*
+   * C.15/C.14: the Alliance Controller (goal agreement, the renegotiation
+   * trigger, persona continuity) and the self-explanation move against the
+   * same Stage 2 learners (`src/tutor/allianceGym.ts`).
+   */
+  const alliance = runAllianceGym();
+  const ok = controller.ok && sessionEnd.ok && telemetry.ok && alliance.ok;
 
   if (process.argv.includes('--json')) {
     console.log(
@@ -62,6 +69,7 @@ function main(): void {
             defaultToInaction: telemetry.defaultToInaction,
             reports: telemetry.reports.map(({ readings: _readings, ...rest }) => rest),
           },
+          alliance: alliance.reports,
         },
         null,
         2,
@@ -87,16 +95,24 @@ function main(): void {
     }
     console.log(`  default-to-inaction across the suite: ${(telemetry.defaultToInaction * 100).toFixed(1)}% (floor 85%)`);
     console.log('');
+    console.log('== The Alliance Controller and the self-explanation move (C.15/C.14) against the simulated learners ==');
+    console.log('');
+    for (const report of alliance.reports) {
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${report.why}`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log('');
     const totalProblems =
       reports.reduce((sum, report) => sum + report.problems.length, 0) +
       sessionEnd.reports.reduce((sum, report) => sum + report.problems.length, 0) +
-      telemetry.reports.reduce((sum, report) => sum + report.problems.length, 0);
+      telemetry.reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      alliance.reports.reduce((sum, report) => sum + report.problems.length, 0);
     if (!ok) {
       console.log(`gym:pedagogy FAILED — ${totalProblems} problem(s) across ${reports.length} scenario(s).`);
       console.log('Each of these archetypes is a reactive student; a violation here is a sequence a real session could produce.');
     } else {
       console.log(
-        `gym:pedagogy OK — ${reports.length} reactive student archetype(s), ${sessionEnd.reports.length} session-end persona(s) and ${telemetry.reports.length} telemetry persona(s), no guardrail violations.`,
+        `gym:pedagogy OK — ${reports.length} reactive student archetype(s), ${sessionEnd.reports.length} session-end persona(s), ${telemetry.reports.length} telemetry persona(s) and ${alliance.reports.length} alliance persona(s), no guardrail violations.`,
       );
     }
   }

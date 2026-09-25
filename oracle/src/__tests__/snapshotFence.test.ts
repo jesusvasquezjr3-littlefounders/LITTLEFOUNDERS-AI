@@ -71,6 +71,8 @@ const ORCHESTRATOR_EXCLUDED: Record<string, string> = {
   startedAtMs: 'carried by the park record and passed to restore() — the budget clock must not restart',
   synthesize: 'a closure over one socket’s SpeechScope; rebuilt on the far side, cannot travel',
   pendingDiscardedAudio: 'unsettled Promises; awaitPendingCosts() folds their cost in BEFORE snapshot()',
+  dispositionEffects:
+    'C.7 derived at construction from the pinned SessionContext.dispositionProfile the park record carries — rebuilt identically on the far side, not session state',
 };
 
 /** The same, for `PedagogicalController`. */
@@ -79,6 +81,8 @@ const CONTROLLER_EXCLUDED: Record<string, string> = {
   kcStates: 'a constructor argument, rebuilt on the far side from the park record’s own SessionContext',
   corroboration:
     'C.10 operator configuration derived from env at construction (TUTOR_CORROBORATION_*), rebuilt identically on the far side — config, not session state',
+  disposition:
+    'C.7 derived at construction from the pinned SessionContext.dispositionProfile the park record carries, rebuilt identically on the far side — not session state',
 };
 
 describe('the park snapshot covers every field either class actually has', () => {

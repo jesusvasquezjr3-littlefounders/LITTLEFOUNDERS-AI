@@ -15,6 +15,9 @@ import type { TurnHonesty } from '../tutor/feedbackHonesty.js';
 import { SESSION_OPENINGS, type ClosingScript, type SessionOpening } from '../tutor/sessionClosing.js';
 import type { SessionEndSignalReport } from '../tutor/sessionEndSignal.js';
 import type { BehavioralTelemetryReport } from '../tutor/behavioralTelemetry.js';
+import { CONTINUITY_KINDS, type AllianceReport } from '../tutor/allianceController.js';
+import type { SelfExplanationReport } from '../tutor/selfExplanation.js';
+import { DispositionProfileSchema, type DispositionObservation } from '../tutor/dispositionProfile.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -190,6 +193,33 @@ export const SessionContextSchema = z
      * `act`, i.e. the env switch alone decides.
      */
     behavioralTelemetryMode: z.enum(['act', 'shadow']).optional(),
+    /*
+     * C.7: the derived projection of this learner's persistent disposition
+     * profile (help-seeking style, persistence, explanation style, adaptations
+     * turned down across sessions, typical reply pace). SERVER-SIDE ONLY: it
+     * steers the controller's strategy selection and which written line the
+     * system uses, and is never a field of the sealed model context. Null
+     * when the learner has no profile yet or Core could not read it (a failed
+     * read is not a profile: nothing is changed). OPTIONAL: negotiated.
+     */
+    dispositionProfile: DispositionProfileSchema.nullable().optional(),
+    /*
+     * C.15: whether THIS persona has worked with this learner before, decided
+     * by Core from the persistent persona-rapport history: first_meeting,
+     * persona_switch, memory_gap or continuing. Null when Core could not say
+     * (the ordinary opening, no continuity move). Selects a written line and
+     * one fixed instruction; never part of the model context. OPTIONAL.
+     */
+    allianceContinuity: z.enum(CONTINUITY_KINDS).nullable().optional(),
+    /*
+     * C.15 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * Alliance Controller's kill-switch condition (a persona's bond proxy
+     * dropping more than 15% below its baseline, or renegotiations that do not
+     * improve sessions). `shadow` suspends the renegotiation trigger and the
+     * continuity re-establishment and keeps the passive tracking; the
+     * orchestrator applies the STRICTER of this and TUTOR_ALLIANCE_CONTROLLER.
+     */
+    allianceMode: z.enum(['act', 'shadow']).optional(),
   })
   .strict();
 
@@ -203,7 +233,13 @@ export const SessionContextSchema = z
  * so deploying Core before Oracle would have refused every session in the
  * gap). Kept identical to Core's list by `npm run telemetry:check`.
  */
-export const CONTEXT_OPTIONAL_FIELDS = ['opening', 'behavioralTelemetryMode'] as const;
+export const CONTEXT_OPTIONAL_FIELDS = [
+  'opening',
+  'behavioralTelemetryMode',
+  'dispositionProfile',
+  'allianceContinuity',
+  'allianceMode',
+] as const;
 
 export type SessionContext = z.infer<typeof SessionContextSchema>;
 
@@ -391,6 +427,25 @@ export interface CloseSessionInput {
    * nothing the learner wrote. Absent while the layer is switched off.
    */
   behavioralTelemetry?: BehavioralTelemetryReport;
+  /**
+   * C.15: the Alliance Controller's record — the continuity move, the goal
+   * agreement, adaptation offers/accepts/declines, bond references and every
+   * renegotiation with its outcome and whether the session improved after
+   * it. Labels and counts only. Absent while the controller is off.
+   */
+  alliance?: AllianceReport;
+  /**
+   * C.14: the self-explanation move's record — each prompt's decision
+   * source, concept family, variant and quality labels. Never what the
+   * learner said. Absent while the move is off.
+   */
+  selfExplanation?: SelfExplanationReport;
+  /**
+   * C.7: what this session contributes to the persistent disposition profile
+   * (help requests, typical reply pace, adaptations taken or turned down)
+   * and which profile effects were applied. Numbers and closed labels only.
+   */
+  disposition?: DispositionObservation;
 }
 
 /**

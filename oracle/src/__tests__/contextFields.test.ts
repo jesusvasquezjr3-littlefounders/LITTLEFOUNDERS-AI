@@ -40,9 +40,17 @@ describe('context optional fields', () => {
     vi.stubGlobal('fetch', fetchMock);
     expect(await fetchSessionContext(CONTEXT.sessionId)).not.toBeNull();
     const headers = (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].headers as Record<string, string>;
-    expect(headers['x-oracle-context-fields']).toBe('opening,behavioralTelemetryMode');
+    expect(headers['x-oracle-context-fields']).toBe(
+      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode',
+    );
     expect(headers['x-internal-api-key']).toBeDefined();
-    expect(CONTEXT_OPTIONAL_FIELDS).toEqual(['opening', 'behavioralTelemetryMode']);
+    expect(CONTEXT_OPTIONAL_FIELDS).toEqual([
+      'opening',
+      'behavioralTelemetryMode',
+      'dispositionProfile',
+      'allianceContinuity',
+      'allianceMode',
+    ]);
   });
 
   it('parses the announced fields, and refuses a context carrying a field it never announced', async () => {
@@ -52,5 +60,38 @@ describe('context optional fields', () => {
     expect(await fetchSessionContext(CONTEXT.sessionId)).toBeNull();
     vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, behavioralTelemetryMode: 'loud' })));
     expect(await fetchSessionContext(CONTEXT.sessionId)).toBeNull();
+  });
+
+  it('C.7/C.15: parses the disposition projection and the alliance fields, strictly', async () => {
+    const profile = {
+      sessionsObserved: 4,
+      helpStyle: 'tell_early',
+      persistence: 'persists',
+      explanation: 'needs_scaffold',
+      persistentlyDeclined: ['less_text'],
+      typicalTypedReplyMs: 9000,
+      typicalSpokenReplyMs: null,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        coreReplies({ ...CONTEXT, dispositionProfile: profile, allianceContinuity: 'persona_switch', allianceMode: 'shadow' }),
+      ),
+    );
+    const parsed = await fetchSessionContext(CONTEXT.sessionId);
+    expect(parsed?.dispositionProfile?.helpStyle).toBe('tell_early');
+    expect(parsed?.allianceContinuity).toBe('persona_switch');
+    expect(parsed?.allianceMode).toBe('shadow');
+    // An emotion label smuggled into the profile, an unknown continuity or a
+    // louder-than-act mode each refuse the whole context.
+    for (const bad of [
+      { dispositionProfile: { ...profile, mood: 'bored' } },
+      { dispositionProfile: { ...profile, helpStyle: 'lazy' } },
+      { allianceContinuity: 'best_friends' },
+      { allianceMode: 'loud' },
+    ]) {
+      vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, ...bad })));
+      expect(await fetchSessionContext(CONTEXT.sessionId), JSON.stringify(bad)).toBeNull();
+    }
   });
 });

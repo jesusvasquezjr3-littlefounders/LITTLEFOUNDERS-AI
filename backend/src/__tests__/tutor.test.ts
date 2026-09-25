@@ -164,6 +164,8 @@ interface StubOpts {
    * count fixture).
    */
   sessionsToday?: number;
+  /** S06.5: answers a request before every other branch when it returns a Response (the C.7/C.15 tables). */
+  intercept?: (url: string, method: string, body?: string) => Response | null;
 }
 
 function stub(opts: StubOpts = {}) {
@@ -178,6 +180,8 @@ function stub(opts: StubOpts = {}) {
       for (const fragment of opts.restFailures ?? []) {
         if (url.includes(fragment)) return Promise.resolve(new Response(null, { status: 500 }));
       }
+      const intercepted = opts.intercept?.(url, method, init?.body as string | undefined);
+      if (intercepted) return Promise.resolve(intercepted);
 
       if (url.includes('/api/v1/tutor/preflight')) {
         return Promise.resolve(
@@ -5416,5 +5420,403 @@ describe('C.9 / C.19 — the Behavioral Telemetry Layer close record and the Sta
     const { response } = await contextWith({ fields: 'opening, somethingElse ,behavioralTelemetryMode' });
     expect(response.body.data.behavioralTelemetryMode).toBe('act');
     expect(response.body.data).not.toHaveProperty('somethingElse');
+  });
+});
+
+describe('C.15 / C.14 / C.7 — the alliance close record, the bond proxy and the disposition profile (S06.5)', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const OTHER = '55555555-5555-4555-8555-555555555555';
+  const ALLIANCE_ID = '66666666-6666-4666-8666-666666666666';
+  const ALLIANCE = {
+    mode: 'act',
+    continuity: 'persona_switch',
+    continuityMove: 'delivered',
+    goalAgreement: 'agreed',
+    goalSettledAtTurn: 2,
+    learnerTurns: 9,
+    adaptationOffers: 2,
+    adaptationAccepts: 0,
+    adaptationDeclines: 2,
+    bondSpecificTurns: 2,
+    bondGenericTurns: 1,
+    renegotiations: [{ observation: 1, atTurn: 5, mode: 'act', outcome: 'answered', improved: true }],
+  };
+  const SELF_EXPLANATION = {
+    mode: 'act',
+    prompts: 2,
+    events: [
+      { observation: 1, source: 'activity', family: 'saving', variant: 'why', mode: 'act', firstQuality: 'concept', followupQuality: null, outcome: 'passed_first' },
+      { observation: 2, source: 'conversation', family: 'needs_wants', variant: 'why', mode: 'act', firstQuality: 'filler', followupQuality: 'filler', outcome: 'explained_by_mentor' },
+    ],
+  };
+  const DISPOSITION = {
+    learnerTurns: 9,
+    hintRequests: 2,
+    tellRequests: 1,
+    typedReplyMs: 6000,
+    spokenReplyMs: null,
+    acceptedAdaptations: [],
+    declinedAdaptations: ['slower_pacing', 'more_examples'],
+    profileReceived: true,
+    applied: ['seeded_declines'],
+  };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 18,
+    segmentCount: 2,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const close = (body: Record<string, unknown>) =>
+    request(createApp()).post(CLOSE_URL).set('x-internal-api-key', process.env.INTERNAL_API_KEY as string).send(body);
+  const posted = (calls: { url: string; method: string; body?: string }[], table: string) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes(`/rest/v1/${table}`))
+      .flatMap((c) => {
+        const body = JSON.parse(String(c.body)) as unknown;
+        return (Array.isArray(body) ? body : [body]) as Record<string, unknown>[];
+      });
+
+  beforeEach(async () => {
+    const { resetAllianceKillSwitchCache } = await import('../services/pedagogy/alliance.js');
+    resetAllianceKillSwitchCache();
+  });
+
+  it('records the alliance state, the renegotiation and self-explanation ledgers, and folds the disposition profile', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody({ alliance: ALLIANCE, selfExplanation: SELF_EXPLANATION, disposition: DISPOSITION }));
+    expect(response.status).toBe(200);
+    expect(posted(calls, 'tutor_session_alliance')[0]).toMatchObject({
+      session_id: SESSION,
+      character: 'rho',
+      mode: 'act',
+      continuity: 'persona_switch',
+      continuity_move: 'delivered',
+      goal_agreement: 'agreed',
+      goal_settled_at_turn: 2,
+      adaptation_declines: 2,
+      bond_specific_turns: 2,
+      self_explanation_mode: 'act',
+      self_explanation_prompts: 2,
+    });
+    expect(posted(calls, 'tutor_alliance_renegotiation')).toEqual([
+      expect.objectContaining({ session_id: SESSION, observation: 1, outcome: 'answered', improved: true }),
+    ]);
+    expect(posted(calls, 'tutor_self_explanation_event').map((r) => r.outcome)).toEqual(['passed_first', 'explained_by_mentor']);
+    const profile = posted(calls, 'learner_disposition_profile')[0]!;
+    expect(profile).toMatchObject({ user_id: KID, sessions_observed: 1, behavior_sessions: 1, typed_reply_ms: 6000 });
+    expect(profile.adaptation_history).toEqual({ slower_pacing: { accepted: 0, declined: 1 }, more_examples: { accepted: 0, declined: 1 } });
+    // No ledger row carries a user id, the learner's words, a nickname or an emotion label.
+    for (const table of ['tutor_session_alliance', 'tutor_alliance_renegotiation', 'tutor_self_explanation_event']) {
+      const text = JSON.stringify(posted(calls, table));
+      expect(text).not.toMatch(/user_id|nickname|frustrat|bored|angry|sad|anxious|emotion|mood/i);
+    }
+  });
+
+  it('an older Oracle (no alliance, no disposition) still closes and only the rapport and end facts move', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody())).status).toBe(200);
+    expect(posted(calls, 'tutor_session_alliance')).toEqual([]);
+    const profile = posted(calls, 'learner_disposition_profile')[0]!;
+    expect(profile).toMatchObject({ sessions_observed: 1, behavior_sessions: 1, hint_rate: null });
+    expect(profile.persona_rapport).toMatchObject({ rho: { sessions: 1 } });
+  });
+
+  it('a safety stop never enters the behavioural profile: only the persona-rapport count moves', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody({ closeReason: 'safety_stop', disposition: DISPOSITION }))).status).toBe(200);
+    const profile = posted(calls, 'learner_disposition_profile')[0]!;
+    expect(profile).toMatchObject({ sessions_observed: 1, behavior_sessions: 0, hint_rate: null, left_rate: null, typed_reply_ms: null });
+    expect(profile.adaptation_history).toEqual({});
+    expect(profile.persona_rapport).toMatchObject({ rho: { sessions: 1 } });
+  });
+
+  it.each([
+    ['an emotion label in the alliance record', { alliance: { ...ALLIANCE, mood: 'frustrated' } }],
+    ['learner text in a self-explanation event', { selfExplanation: { ...SELF_EXPLANATION, events: [{ ...SELF_EXPLANATION.events[0], text: 'porque si' }] } }],
+    ['an unknown renegotiation outcome', { alliance: { ...ALLIANCE, renegotiations: [{ ...ALLIANCE.renegotiations[0], outcome: 'pending' }] } }],
+    ['a settled goal without its turn', { alliance: { ...ALLIANCE, goalSettledAtTurn: null } }],
+    ['more answers than offers', { alliance: { ...ALLIANCE, adaptationDeclines: 5 } }],
+    ['a shadow controller that renegotiated', { alliance: { ...ALLIANCE, mode: 'shadow' } }],
+    ['a shadow move that prompted', { selfExplanation: { ...SELF_EXPLANATION, mode: 'shadow' } }],
+    ['an unknown concept family', { selfExplanation: { ...SELF_EXPLANATION, events: [{ ...SELF_EXPLANATION.events[0], family: 'crypto' }] } }],
+    ['more help requests than learner turns', { disposition: { ...DISPOSITION, hintRequests: 20 } }],
+    ['a free-text field in the disposition observation', { disposition: { ...DISPOSITION, note: 'shy kid' } }],
+  ])('%s is a 400 that closes nothing', async (_label, extra) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody(extra as Record<string, unknown>));
+    expect(response.status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+    expect(posted(calls, 'learner_disposition_profile')).toEqual([]);
+  });
+
+  it('a lost first-close race writes nothing; a failed ledger or profile write never fails the close', async () => {
+    const lost = stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:20:00Z' }] });
+    expect((await close(closeBody({ alliance: ALLIANCE, disposition: DISPOSITION }))).status).toBe(200);
+    expect(posted(lost, 'tutor_session_alliance')).toEqual([]);
+    expect(posted(lost, 'learner_disposition_profile')).toEqual([]);
+    stub({ session: [SESSION_ROW], restFailures: ['/rest/v1/tutor_session_alliance', '/rest/v1/learner_disposition_profile'] });
+    const response = await close(closeBody({ alliance: ALLIANCE, disposition: DISPOSITION }));
+    expect(response.status).toBe(200);
+    expect(response.body.data.closed).toBe(true);
+  });
+
+  it('a failed profile READ is not an empty profile: nothing is written over real history', async () => {
+    const calls = stub({
+      session: [SESSION_ROW],
+      intercept: (url, method) =>
+        method === 'GET' && url.includes('/rest/v1/learner_disposition_profile') ? new Response(null, { status: 500 }) : null,
+    });
+    expect((await close(closeBody({ disposition: DISPOSITION }))).status).toBe(200);
+    expect(posted(calls, 'learner_disposition_profile')).toEqual([]);
+  });
+
+  it('a learner session (even the owner) cannot post the internal close', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ alliance: ALLIANCE }));
+    expect(response.status).toBe(403);
+  });
+
+  // ── the session context ──
+
+  const PROFILE_ROW = {
+    user_id: KID,
+    sessions_observed: 6,
+    behavior_sessions: 6,
+    hint_rate: '0.100',
+    tell_rate: '0.200',
+    typed_reply_ms: 12000,
+    spoken_reply_ms: null,
+    disengagement_rate: '0.100',
+    misaligned_rate: null,
+    left_rate: '0.500',
+    se_prompts: '5.000',
+    se_first_pass: '1.000',
+    adaptation_history: { less_text: { accepted: 0, declined: 2.5 } },
+    persona_rapport: { liruf: { sessions: 4, lastAt: new Date(Date.now() - 86_400_000).toISOString(), bondYes: 3, bondAnswered: 4 } },
+    help_style: 'tell_early',
+    persistence: 'disengages_early',
+    explanation: 'needs_scaffold',
+    last_session_at: new Date(Date.now() - 86_400_000).toISOString(),
+    updated_at: new Date(Date.now() - 86_400_000).toISOString(),
+  };
+  const ALL_FIELDS = 'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode';
+  async function contextFor(opts: { profile?: unknown[] | 'fail'; fields?: string; sessions?: unknown[] }) {
+    const calls = stub({
+      session: [SESSION_ROW],
+      sessions: opts.sessions ?? [],
+      intercept: (url, method) => {
+        if (method === 'GET' && url.includes('/rest/v1/learner_disposition_profile')) {
+          return opts.profile === 'fail' ? new Response(null, { status: 500 }) : jsonResponse(200, opts.profile ?? []);
+        }
+        if (method === 'GET' && url.includes('/rest/v1/audit_logs')) return jsonResponse(200, []);
+        return null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', opts.fields ?? ALL_FIELDS);
+    return { response, calls };
+  }
+
+  it('sends the disposition projection, the continuity and the alliance mode to an Oracle that asked', async () => {
+    const { response } = await contextFor({ profile: [PROFILE_ROW] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.dispositionProfile).toEqual({
+      sessionsObserved: 6,
+      helpStyle: 'tell_early',
+      persistence: 'disengages_early',
+      explanation: 'needs_scaffold',
+      persistentlyDeclined: ['less_text'],
+      typicalTypedReplyMs: 12000,
+      typicalSpokenReplyMs: null,
+    });
+    // This session is with Doctor Rho; the learner has only ever worked with Liruf.
+    expect(response.body.data.allianceContinuity).toBe('persona_switch');
+    expect(response.body.data.allianceMode).toBe('act');
+  });
+
+  it('continuity: a first meeting, continuing, a memory gap, and from the session rows for older learners', async () => {
+    expect((await contextFor({ profile: [] })).response.body.data.allianceContinuity).toBe('first_meeting');
+    const recent = new Date(Date.now() - 3 * 86_400_000).toISOString();
+    const old = new Date(Date.now() - 45 * 86_400_000).toISOString();
+    const withRho = (lastAt: string) => ({ ...PROFILE_ROW, persona_rapport: { rho: { sessions: 2, lastAt, bondYes: 0, bondAnswered: 0 } } });
+    expect((await contextFor({ profile: [withRho(recent)] })).response.body.data.allianceContinuity).toBe('continuing');
+    expect((await contextFor({ profile: [withRho(old)] })).response.body.data.allianceContinuity).toBe('memory_gap');
+    const fromRows = await contextFor({ profile: [], sessions: [{ character: 'rho', ended_at: recent }] });
+    expect(fromRows.response.body.data.allianceContinuity).toBe('continuing');
+  });
+
+  it('a failed profile read sends no guess: a null projection and a null continuity', async () => {
+    const { response } = await contextFor({ profile: 'fail' });
+    expect(response.status).toBe(200);
+    expect(response.body.data.dispositionProfile).toBeNull();
+    expect(response.body.data.allianceContinuity).toBeNull();
+  });
+
+  it('an Oracle that did not announce the fields gets none of them, and no profile read happens', async () => {
+    const { response, calls } = await contextFor({ profile: [PROFILE_ROW], fields: 'opening,behavioralTelemetryMode' });
+    expect(response.body.data).not.toHaveProperty('dispositionProfile');
+    expect(response.body.data).not.toHaveProperty('allianceContinuity');
+    expect(response.body.data).not.toHaveProperty('allianceMode');
+    expect(calls.some((c) => c.url.includes('/rest/v1/learner_disposition_profile'))).toBe(false);
+  });
+
+  it('Stage 7: a persona whose bond proxy fell more than 15% below its baseline rolls the controller back to shadow', async () => {
+    const now = Date.now();
+    const answers = [
+      ...Array.from({ length: 60 }, (_, i) => ({ character: 'liruf', bond_proxy: 'yes', bond_proxy_at: new Date(now - (30 + (i % 40)) * 86_400_000).toISOString() })),
+      ...Array.from({ length: 40 }, (_, i) => ({ character: 'liruf', bond_proxy: i % 2 === 0 ? 'no' : 'partly', bond_proxy_at: new Date(now - (1 + (i % 10)) * 86_400_000).toISOString() })),
+    ];
+    const calls = stub({
+      session: [SESSION_ROW],
+      intercept: (url, method) => {
+        if (method === 'GET' && url.includes('/rest/v1/tutor_session_alliance')) return jsonResponse(200, answers);
+        if (method === 'GET' && url.includes('/rest/v1/tutor_alliance_renegotiation')) return jsonResponse(200, []);
+        if (method === 'GET' && url.includes('/rest/v1/audit_logs')) return jsonResponse(200, []);
+        return null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', 'allianceMode');
+    expect(response.body.data.allianceMode).toBe('shadow');
+    const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'));
+    expect(audit).toHaveLength(1);
+    const row = JSON.parse(String(audit[0]!.body));
+    expect(row).toMatchObject({ actor_id: null, action: 'mentor.kill_switch.alliance.triggered' });
+    expect(row.detail.causes).toEqual(['bond_proxy_drop']);
+    expect(JSON.stringify(row.detail)).not.toMatch(/user|nickname|text/i);
+  });
+
+  // ── the bond proxy (learner surface) ──
+
+  const closedSession = (extra: Record<string, unknown> = {}) => ({
+    ...SESSION_ROW,
+    ended_at: new Date(Date.now() - 3_600_000).toISOString(),
+    close_reason: 'completed',
+    ...extra,
+  });
+  const allianceIntercept =
+    (row: unknown[] | 'fail' = [{ id: ALLIANCE_ID, character: 'rho', bond_proxy: null }], patched: unknown[] = [{ id: ALLIANCE_ID }]) =>
+    (url: string, method: string): Response | null => {
+      if (!url.includes('/rest/v1/tutor_session_alliance')) return null;
+      if (method === 'PATCH') return jsonResponse(200, patched);
+      return row === 'fail' ? new Response(null, { status: 500 }) : jsonResponse(200, row);
+    };
+  const answer = (token: string, body: object = { answer: 'yes' }) =>
+    request(createApp()).post(`/api/v1/tutor/sessions/${SESSION}/alliance-check`).set('Authorization', `Bearer ${token}`).send(body);
+
+  it('the learner (a parent-created under-13 kid) answers once for their own closed session', async () => {
+    const calls = stub({ session: [closedSession()], intercept: allianceIntercept() });
+    const response = await answer(mintToken({ sub: KID }), { answer: 'partly' });
+    expect(response.status).toBe(200);
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/tutor_session_alliance'))!;
+    expect(decodeURIComponent(patch.url)).toContain('bond_proxy=is.null');
+    expect(JSON.parse(String(patch.body))).toMatchObject({ bond_proxy: 'partly' });
+    expect(posted(calls, 'learner_disposition_profile')[0]!.persona_rapport).toMatchObject({ rho: { bondAnswered: 1, bondYes: 0.5 } });
+  });
+
+  it.each([
+    ['an independent teen', { declaredAgeBand: '13_to_17' as const, roles: [{ role: 'universal' }] }],
+    ['an adult', { declaredAgeBand: 'adult' as const, roles: [{ role: 'universal' }] }],
+  ])('%s answers their own session too', async (_label, extra) => {
+    stub({ session: [closedSession()], intercept: allianceIntercept(), ...extra });
+    expect((await answer(mintToken({ sub: KID }))).status).toBe(200);
+  });
+
+  it('refuses every other population and every wrong moment', async () => {
+    // The verified parent Tutor cannot answer for the child.
+    stub({ session: [closedSession()], intercept: allianceIntercept(), guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }] });
+    expect((await answer(mintToken({ sub: PARENT }))).status).toBe(403);
+    // Another learner, a guest, staff: not their session.
+    stub({ session: [closedSession()], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: OTHER }))).status).toBe(403);
+    expect((await answer(mintToken({ sub: OTHER, is_anonymous: true }))).status).toBe(403);
+    stub({ session: [closedSession()], intercept: allianceIntercept(), roles: [{ role: 'admin' }] });
+    expect((await answer(mintToken({ sub: OTHER }))).status).toBe(403);
+    // Unauthenticated, and the internal key is not a learner.
+    stub({ session: [closedSession()], intercept: allianceIntercept() });
+    expect((await request(createApp()).post(`/api/v1/tutor/sessions/${SESSION}/alliance-check`).send({ answer: 'yes' })).status).toBe(401);
+    const internal = await request(createApp())
+      .post(`/api/v1/tutor/sessions/${SESSION}/alliance-check`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ answer: 'yes' });
+    expect(internal.status).toBe(401);
+    // An open session, a safety stop, a day late, already answered, a lost race, never tracked, a failed read.
+    stub({ session: [SESSION_ROW], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('SESSION_OPEN');
+    stub({ session: [closedSession({ close_reason: 'safety_stop' })], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('NOT_ASKED');
+    stub({ session: [closedSession({ ended_at: new Date(Date.now() - 30 * 3_600_000).toISOString() })], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('TOO_LATE');
+    stub({ session: [closedSession()], intercept: allianceIntercept([{ id: ALLIANCE_ID, character: 'rho', bond_proxy: 'yes' }]) });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('ALREADY_ANSWERED');
+    stub({ session: [closedSession()], intercept: allianceIntercept(undefined, []) });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('ALREADY_ANSWERED');
+    stub({ session: [closedSession()], intercept: allianceIntercept([]) });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('NOT_TRACKED');
+    stub({ session: [closedSession()], intercept: allianceIntercept('fail') });
+    expect((await answer(mintToken({ sub: KID }))).status).toBe(502);
+    // A free-text answer or an extra field is refused by the schema.
+    stub({ session: [closedSession()], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }), { answer: 'it was boring' })).status).toBe(400);
+    expect((await answer(mintToken({ sub: KID }), { answer: 'yes', why: 'fun' })).status).toBe(400);
+  });
+
+  // ── the profile, readable and resettable ──
+
+  const profileRead = (url: string, method: string) =>
+    method === 'GET' && url.includes('/learner_disposition_profile') ? jsonResponse(200, [PROFILE_ROW]) : null;
+
+  it('the learner reads their own profile as closed labels; a verified guardian reads their child’s; nobody else', async () => {
+    stub({ intercept: profileRead });
+    const own = await request(createApp()).get('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(own.status).toBe(200);
+    expect(own.body.data).toMatchObject({ exists: true, current: true, helpStyle: 'tell_early', persistentlyDeclined: ['less_text'], typicalReplySeconds: 12 });
+    expect(own.body.data.effects).toEqual(expect.arrayContaining(['stuck_degrade_early', 'scaffolded_explanation', 'seeded_declines']));
+    expect(JSON.stringify(own.body.data)).not.toMatch(/frustrat|bored|angry|sad|anxious|emotion|mood/i);
+
+    stub({ guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }], intercept: profileRead });
+    const guardian = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(guardian.status).toBe(200);
+    stub({ guardianLinks: [], intercept: profileRead });
+    const stranger = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: OTHER })}`);
+    expect(stranger.status).toBe(403);
+    stub({ restFailures: ['/rest/v1/learner_disposition_profile'] });
+    expect((await request(createApp()).get('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`)).status).toBe(502);
+  });
+
+  it('reset follows the memory-review rule: a child cannot, their verified guardian can; a teen without a guardian and an adult can', async () => {
+    const deletes = (calls: { url: string; method: string }[]) =>
+      calls.filter((c) => c.method === 'DELETE' && c.url.includes('/learner_disposition_profile'));
+    let calls = stub({ roles: [{ role: 'kid' }] });
+    const child = await request(createApp()).delete('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(child.status).toBe(403);
+    expect(child.body.error.code).toBe('GUARDIAN_MANAGED');
+    expect(deletes(calls)).toEqual([]);
+
+    calls = stub({ guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }] });
+    const byGuardian = await request(createApp()).delete(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(byGuardian.status).toBe(200);
+    expect(deletes(calls)).toHaveLength(1);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'))).toBe(true);
+
+    calls = stub({ guardianLinks: [] });
+    expect((await request(createApp()).delete(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: OTHER })}`)).status).toBe(403);
+    expect(deletes(calls)).toEqual([]);
+
+    for (const band of ['13_to_17', 'adult'] as const) {
+      calls = stub({ declaredAgeBand: band, roles: [{ role: 'universal' }], guardianLinks: [] });
+      const own = await request(createApp()).delete('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+      expect(own.status, band).toBe(200);
+      expect(deletes(calls), band).toHaveLength(1);
+    }
   });
 });

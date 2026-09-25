@@ -36,7 +36,14 @@ import { insertAuditLog, serviceRest } from '../supabaseRest.js';
  * announces it can parse them (`x-oracle-context-fields`). Mirrors Oracle's
  * `core/client.ts` CONTEXT_OPTIONAL_FIELDS (checked by `npm run telemetry:check`).
  */
-export const CONTEXT_OPTIONAL_FIELDS = ['opening', 'behavioralTelemetryMode'] as const;
+export const CONTEXT_OPTIONAL_FIELDS = [
+  'opening',
+  'behavioralTelemetryMode',
+  // C.7 / C.15 (S06.5): server-side only; see services/pedagogy/disposition.ts and alliance.ts.
+  'dispositionProfile',
+  'allianceContinuity',
+  'allianceMode',
+] as const;
 
 export const TELEMETRY_CHANNELS = [
   'latencyShift',

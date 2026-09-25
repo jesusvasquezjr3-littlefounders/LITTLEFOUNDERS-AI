@@ -180,6 +180,8 @@ export interface TutorSocket {
   closingSummary: SessionClosingSummary | null;
   /** C.19: the Mentor's last turn was the check-in ("are we on the same page?") and waits for an answer. */
   checkInOpen: boolean;
+  /** C.15: the Mentor's last turn restated the session goal and waits for "yes" or "something else". */
+  goalCheckOpen: boolean;
   closedReason: string | null;
   error: { code: string; message: string } | null;
   /**
@@ -220,6 +222,8 @@ export interface TutorSocket {
   answerSessionEnd: (accepted: boolean) => void;
   /** C.19: answer the check-in on its chips. Never sent unless a check-in is open. */
   answerCheckIn: (aligned: boolean) => void;
+  /** C.15: answer the goal restatement on its chips. Never sent unless the goal check is open. */
+  answerGoal: (agreed: boolean) => void;
   endSession: () => void;
 }
 
@@ -277,6 +281,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [sessionEndOffer, setSessionEndOffer] = useState(false);
   const [closingSummary, setClosingSummary] = useState<SessionClosingSummary | null>(null);
   const [checkInOpen, setCheckInOpen] = useState(false);
+  const [goalCheckOpen, setGoalCheckOpen] = useState(false);
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [error, setError] = useState<TutorSocket['error']>(null);
   /** V4: the lesson thread the last turn carried; null in open chat. */
@@ -319,6 +324,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     setSessionEndOffer(false);
     setClosingSummary(null);
     setCheckInOpen(false);
+    setGoalCheckOpen(false);
     setClosedReason(null);
     setError(null);
     setThinking(false);
@@ -476,6 +482,8 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             // C.19: likewise the check-in — `check_in` follows the turn
             // that asks it, so any new turn closes the chips first.
             setCheckInOpen(false);
+            // C.15: and the goal chips — `goal_check` follows its own turn.
+            setGoalCheckOpen(false);
             break;
           case 'turn_audio':
             // The voice catching up with its own turn. A stale seq is a clip for
@@ -518,10 +526,14 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           case 'check_in':
             setCheckInOpen(true);
             break;
+          case 'goal_check':
+            setGoalCheckOpen(true);
+            break;
           case 'session_closing':
             setClosingSummary({ script: message.script, effort: message.effort, topic: message.topic });
             setSessionEndOffer(false);
             setCheckInOpen(false);
+            setGoalCheckOpen(false);
             break;
           case 'state':
             setBudget(message.budget);
@@ -782,6 +794,16 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     [send],
   );
 
+  const answerGoal = useCallback(
+    (agreed: boolean) => {
+      // Cleared at once so a double tap cannot send two answers; the server
+      // refuses an answer to a goal check that is no longer open anyway.
+      setGoalCheckOpen(false);
+      send({ type: 'goal_response', agreed });
+    },
+    [send],
+  );
+
   const endSession = useCallback(() => send({ type: 'end_session' }), [send]);
 
   return {
@@ -799,6 +821,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     sessionEndOffer,
     closingSummary,
     checkInOpen,
+    goalCheckOpen,
     closedReason,
     error,
     thinking,
@@ -813,6 +836,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     answerAdaptation,
     answerSessionEnd,
     answerCheckIn,
+    answerGoal,
     endSession,
   };
 }

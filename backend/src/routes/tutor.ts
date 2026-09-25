@@ -31,6 +31,27 @@ import {
   getTelemetryKillSwitch,
   recordTelemetryFirings,
 } from '../services/pedagogy/behavioralTelemetry.js';
+import {
+  AllianceReportBody,
+  BOND_PROXY_ANSWERS,
+  getAllianceKillSwitch,
+  getAllianceRow,
+  recordAllianceClose,
+  SelfExplanationReportBody,
+  writeBondProxy,
+  ALLIANCE_THRESHOLDS,
+} from '../services/pedagogy/alliance.js';
+import {
+  decideContinuity,
+  deleteDispositionProfile,
+  DispositionObservationBody,
+  explainProfile,
+  getDispositionProfile,
+  listRecentPersonaSessions,
+  recordDispositionBondProxy,
+  recordDispositionClose,
+  toOracleProjection,
+} from '../services/pedagogy/disposition.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
 import {
   ADAPTATIONS,
@@ -614,6 +635,23 @@ function internalRouter(): Router {
      * an Oracle that can receive it.
      */
     const killSwitch = accepts.has('behavioralTelemetryMode') ? await getTelemetryKillSwitch() : null;
+    /*
+     * C.7 / C.15: the learner's disposition projection, this persona's
+     * continuity and the Alliance Controller's Stage 7 verdict — each only
+     * for an Oracle that announced it can parse it. SERVER-SIDE ONLY: Oracle
+     * keeps them out of the sealed model context. A FAILED read is not an
+     * empty profile (§1.14): the projection travels as null (nothing is
+     * changed) and the continuity as null (the ordinary opening), never as a
+     * guess about this learner.
+     */
+    const wantsDisposition = accepts.has('dispositionProfile') || accepts.has('allianceContinuity');
+    const dispositionRow = wantsDisposition ? await getDispositionProfile(session.user_id) : undefined;
+    const recentPersonas = accepts.has('allianceContinuity') ? await listRecentPersonaSessions(session.user_id, session.id) : null;
+    const allianceContinuity =
+      accepts.has('allianceContinuity') && dispositionRow !== undefined && recentPersonas !== null
+        ? decideContinuity(dispositionRow, recentPersonas, session.character as 'dina' | 'liruf' | 'rho' | 'zara', new Date())
+        : null;
+    const allianceKillSwitch = accepts.has('allianceMode') ? await getAllianceKillSwitch() : null;
 
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
@@ -676,6 +714,11 @@ function internalRouter(): Router {
       kcStates: pedagogyPlan?.kcStates ?? null,
       ...(accepts.has('opening') ? { opening } : {}),
       ...(killSwitch !== null ? { behavioralTelemetryMode: killSwitch.mode } : {}),
+      ...(accepts.has('dispositionProfile')
+        ? { dispositionProfile: dispositionRow ? toOracleProjection(dispositionRow) : null }
+        : {}),
+      ...(accepts.has('allianceContinuity') ? { allianceContinuity } : {}),
+      ...(allianceKillSwitch !== null ? { allianceMode: allianceKillSwitch.mode } : {}),
     });
   });
 
@@ -1585,6 +1628,16 @@ function internalRouter(): Router {
      * inside, so an emotion label or an unknown outcome refuses the close.
      */
     behavioralTelemetry: BehavioralTelemetryReportBody.optional(),
+    /*
+     * C.15 / C.14 / C.7 (Appendix F §1.2): the Alliance Controller's record,
+     * the self-explanation events and this session's disposition
+     * observations. OPTIONAL (an older Oracle, or a component switched off);
+     * strict inside, so an emotion label or the learner's words refuse the
+     * close.
+     */
+    alliance: AllianceReportBody.optional(),
+    selfExplanation: SelfExplanationReportBody.optional(),
+    disposition: DispositionObservationBody.optional(),
   });
 
   router.post('/sessions/:id/close', async (req, res) => {
@@ -1638,6 +1691,42 @@ function internalRouter(): Router {
           events: telemetry.events,
         });
         if (!written) console.warn(`[tutor] behavioral-telemetry firings NOT recorded for session ${owner.id}`);
+      }
+    }
+
+    /*
+     * C.15 / C.14 / C.7: the alliance record, the self-explanation ledger and
+     * the disposition profile, written only by the close that actually
+     * landed. Best-effort: a failed write costs metric data points or one
+     * session's contribution to the profile, never the close.
+     */
+    if (outcome === 'closed') {
+      const owner = await getTutorSession(parsed.data.sessionId);
+      if (owner) {
+        if (parsed.data.alliance || parsed.data.selfExplanation) {
+          const written = await recordAllianceClose({
+            sessionId: owner.id,
+            character: owner.character,
+            alliance: parsed.data.alliance,
+            selfExplanation: parsed.data.selfExplanation,
+          });
+          if (!written) console.warn(`[tutor] alliance / self-explanation record NOT fully written for session ${owner.id}`);
+        }
+        const telemetryEvents = parsed.data.behavioralTelemetry?.events;
+        const answered = (telemetryEvents ?? []).filter((e) => e.outcome === 'aligned' || e.outcome === 'misaligned');
+        const seEvents = (parsed.data.selfExplanation?.events ?? []).filter(
+          (e) => e.mode === 'act' && e.firstQuality !== null && e.firstQuality !== 'unanswered' && e.firstQuality !== 'help',
+        );
+        const folded = await recordDispositionClose(owner.user_id, parsed.data.disposition ?? null, {
+          character: owner.character as 'dina' | 'liruf' | 'rho' | 'zara',
+          closeReason: parsed.data.closeReason,
+          endedAt: new Date().toISOString(),
+          disengagementFired: telemetryEvents === undefined ? null : telemetryEvents.length > 0,
+          checkInMisaligned: answered.length === 0 ? null : answered.some((e) => e.outcome === 'misaligned'),
+          selfExplanationPrompts: seEvents.length,
+          selfExplanationFirstPass: seEvents.filter((e) => e.firstQuality === 'concept').length,
+        });
+        if (!folded) console.warn(`[tutor] disposition profile NOT updated for session ${owner.id}`);
       }
     }
 
@@ -3187,6 +3276,92 @@ export function tutorRouter(): Router {
     if (calibration.tier !== session.tier) return fail(res, 409, 'SESSION_AGE_CHANGED', 'Start a session with the confirmed teaching register');
     const { url, expiresAt } = tutorSocketUrl(session.id, user.id);
     return ok(res, { sessionId: session.id, socketUrl: url, socketExpiresAt: expiresAt });
+  });
+
+  /*
+   * C.15 THE END-OF-SESSION BOND PROXY: "did I get what you were going for
+   * today?" (Appendix D §3.4; Appendix F §1.2 Alliance Bond Proxy Score).
+   * The learner answers it on the closing surface AFTER the session closed.
+   * Their own session only (a guardian answers nothing for the child), once,
+   * within a day of the close, and never after a safety stop — nothing on
+   * that screen may invite the learner back into the lesson or ask them to
+   * rate it.
+   */
+  const AllianceCheckBody = z.object({ answer: z.enum(BOND_PROXY_ANSWERS) }).strict();
+
+  router.post('/sessions/:id/alliance-check', async (req, res) => {
+    const sessionId = z.string().uuid().safeParse(req.params.id);
+    if (!sessionId.success) return fail(res, 400, VALIDATION, 'Invalid session id');
+    const body = AllianceCheckBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, VALIDATION, 'Choose one answer');
+    const user = authedUser(res);
+
+    const session = await getTutorSession(sessionId.data);
+    if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
+    if (session.user_id !== user.id) return fail(res, 403, 'FORBIDDEN', 'This is not your session');
+    if (session.ended_at === null) return fail(res, 409, 'SESSION_OPEN', 'The session has not ended yet');
+    if (session.close_reason === 'safety_stop') return fail(res, 409, 'NOT_ASKED', 'This session does not ask for feedback');
+    if (Date.now() - Date.parse(session.ended_at) > ALLIANCE_THRESHOLDS.bondProxyWindowHours * 3_600_000) {
+      return fail(res, 409, 'TOO_LATE', 'This question has closed');
+    }
+    const row = await getAllianceRow(session.id);
+    if (row === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the session record');
+    if (row === null) return fail(res, 409, 'NOT_TRACKED', 'This session did not record the question');
+    if (row.bond_proxy !== null) return fail(res, 409, 'ALREADY_ANSWERED', 'Already answered');
+    const written = await writeBondProxy(row.id, body.data.answer);
+    if (written === 'failed') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save the answer');
+    if (written === 'already') return fail(res, 409, 'ALREADY_ANSWERED', 'Already answered');
+    // Persona rapport (C.7), best-effort: the metric row is the record.
+    const folded = await recordDispositionBondProxy(user.id, session.character as 'dina' | 'liruf' | 'rho' | 'zara', body.data.answer);
+    if (!folded) console.warn(`[tutor] bond proxy not folded into the disposition profile for session ${session.id}`);
+    return ok(res, { recorded: true });
+  });
+
+  /*
+   * C.7 THE DISPOSITION PROFILE, READABLE AND RESETTABLE (Appendix D §2.6:
+   * interpretable, never a black box; the learner-memory boundary). Closed
+   * labels and numbers only. The learner reads their own; a verified
+   * guardian reads their child's. A reset follows the memory-review rule
+   * (OD-18): a child's profile is reset by their verified guardian; a teen
+   * without a guardian link and an adult reset their own.
+   */
+  router.get('/disposition', async (_req, res) => {
+    const row = await getDispositionProfile(authedUser(res).id);
+    if (row === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning profile');
+    return ok(res, explainProfile(row));
+  });
+
+  router.delete('/disposition', async (_req, res) => {
+    const user = authedUser(res);
+    const reviewer = await classifyMemoryReview(user.id);
+    if (reviewer === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve who manages this profile');
+    if (reviewer === 'guardian-review') return fail(res, 403, 'GUARDIAN_MANAGED', 'A verified Tutor manages this profile');
+    if (reviewer === 'hold') return fail(res, 403, 'AGE_EVIDENCE_REQUIRED', 'Complete the age check first');
+    if (!(await deleteDispositionProfile(user.id))) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not reset the learning profile');
+    return ok(res, { reset: true });
+  });
+
+  router.get('/kids/:kidUserId/disposition', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const guardian = await isVerifiedGuardian(authedUser(res).id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    const row = await getDispositionProfile(kidUserId.data);
+    if (row === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning profile');
+    return ok(res, explainProfile(row));
+  });
+
+  router.delete('/kids/:kidUserId/disposition', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    if (!(await deleteDispositionProfile(kidUserId.data))) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not reset the learning profile');
+    await insertAuditLog(user.id, 'mentor.disposition_profile.reset_by_guardian', 'tutor', { learner: kidUserId.data });
+    return ok(res, { reset: true });
   });
 
   /** A full transcript, for replay (/ORACLE.md §12). Owner or verified guardian. */

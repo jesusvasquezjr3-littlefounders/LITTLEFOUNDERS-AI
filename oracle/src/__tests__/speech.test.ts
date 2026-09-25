@@ -138,15 +138,21 @@ describe('the scripted set is closed, which is what makes it buyable once', () =
      *
      * 26, not 25 (C.19, 2026-09-25): the disengagement check-in the system
      * asks when the Behavioral Telemetry Layer fires.
+     *
+     * 32, not 26 (C.14/C.15, 2026-09-25): the three self-explanation
+     * questions (why / how / a sentence stem), the renegotiation question
+     * after repeated declined adaptations, and the two persona-continuity
+     * openings (introduce / reconnect) that replace a falsely familiar
+     * greeting.
      */
-    expect(catalogue).toHaveLength(26 * CHARACTER_IDS.length * LOCALES.length);
+    expect(catalogue).toHaveLength(32 * CHARACTER_IDS.length * LOCALES.length);
 
     for (const character of CHARACTER_IDS) {
       for (const locale of LOCALES) {
         const slot = catalogue.filter((l) => l.character === character && l.locale === locale);
-        expect(slot).toHaveLength(26);
+        expect(slot).toHaveLength(32);
         // Keys stay unique — the three model-down variants are `model_down.0..2`.
-        expect(new Set(slot.map((l) => l.key)).size).toBe(26);
+        expect(new Set(slot.map((l) => l.key)).size).toBe(32);
         for (const line of slot) expect(line.text.trim().length).toBeGreaterThan(0);
       }
     }

@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { CONTEXT_OPTIONAL_FIELDS } from '../core/client.js';
 
 /*
  * A REAL session, end to end.
@@ -146,6 +147,8 @@ let servedOpening: string | null = null;
 let announcedContextFields: string | null = null;
 /** C.9: the Stage 7 rollback verdict the fake Core serves; `null` omits the field (an older Core). */
 let servedTelemetryMode: 'act' | 'shadow' | null = null;
+/** C.7/C.15: extra optional context fields the fake Core serves (the disposition projection, continuity, mode). */
+let servedAllianceFields: Record<string, unknown> | null = null;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -203,6 +206,7 @@ function startFakeCore(): Promise<Server> {
           ...(servedSessionPlan ? { sessionPlan: servedSessionPlan } : {}),
           ...(servedOpening ? { opening: servedOpening } : {}),
           ...(servedTelemetryMode ? { behavioralTelemetryMode: servedTelemetryMode } : {}),
+          ...(servedAllianceFields ?? {}),
         });
       }
       if (url.includes('/tutor/internal/turns')) {
@@ -766,13 +770,83 @@ describe('a real live session over a real websocket', () => {
     socket.close();
   });
 
+  it('C.15/C.14/C.7 over a real websocket: honest introduction, goal chips, a forged goal answer refused, and the close record', async () => {
+    freshJournal();
+    const { resetConfigCache } = await import('../env.js');
+    process.env.TUTOR_ALLIANCE_CONTROLLER = 'act';
+    process.env.TUTOR_SELF_EXPLANATION = 'act';
+    resetConfigCache();
+    servedAllianceFields = {
+      allianceContinuity: 'persona_switch',
+      dispositionProfile: {
+        sessionsObserved: 5,
+        helpStyle: 'independent',
+        persistence: 'persists',
+        explanation: 'explains',
+        persistentlyDeclined: ['less_text'],
+        typicalTypedReplyMs: null,
+        typicalSpokenReplyMs: null,
+      },
+    };
+    let socket: WebSocket | null = null;
+    try {
+      socket = open(await socketUrl()).socket;
+      const opening = await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      const { continuityOpeningResponse } = await import('../tutor/scripted.js');
+      expect(opening.find((m) => m.type === 'turn')?.say).toBe(continuityOpeningResponse('rho', 'es-MX', 'introduce').say);
+
+      // A forged goal answer before any goal was proposed: refused, no model call.
+      const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
+      socket.send(JSON.stringify({ type: 'goal_response', agreed: true }));
+      expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'NO_GOAL_CHECK' });
+      expect(modelJournal.bodies).toHaveLength(0);
+      const invalid = collect(socket, (m) => m.filter((x) => x.type === 'error').length >= 1);
+      socket.send(JSON.stringify({ type: 'goal_response', agreed: 'sure' }));
+      expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+
+      // The first learner message: the restatement arrives with the goal chips.
+      const proposed = collect(socket, (m) => m.some((x) => x.type === 'goal_check'));
+      socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+      const frames = await proposed;
+      expect(frames.findIndex((m) => m.type === 'turn')).toBeLessThan(frames.findIndex((m) => m.type === 'goal_check'));
+      // (The last body is the moderation judge's: this is a minor's session.)
+      expect(modelJournal.bodies.some((body) => body.includes('GOAL AGREEMENT'))).toBe(true);
+      // The disposition projection never reaches the model.
+      for (const body of modelJournal.bodies) expect(body).not.toMatch(/persistentlyDeclined|sessionsObserved|helpStyle/);
+
+      // Past the per-learner turn-rate floor (MIN_TURN_INTERVAL_MS).
+      await new Promise((r) => setTimeout(r, 750));
+      const answered = collect(socket, (m) => m.filter((x) => x.type === 'turn').length >= 1);
+      socket.send(JSON.stringify({ type: 'goal_response', agreed: true }));
+      await answered;
+      expect(modelJournal.bodies.some((body) => body.includes('confirmed the goal'))).toBe(true);
+
+      const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+      socket.send(JSON.stringify({ type: 'end_session' }));
+      await ending;
+      const close = journal.closes.at(-1) as Record<string, unknown>;
+      expect(close).toMatchObject({
+        alliance: { mode: 'act', continuity: 'persona_switch', continuityMove: 'delivered', goalAgreement: 'agreed' },
+        selfExplanation: { mode: 'act', prompts: 0, events: [] },
+        disposition: { profileReceived: true, applied: ['seeded_declines'] },
+      });
+      expect(JSON.stringify(close)).not.toContain('bici');
+    } finally {
+      if (socket !== null && socket.readyState === WebSocket.OPEN) socket.close();
+      servedAllianceFields = null;
+      process.env.TUTOR_ALLIANCE_CONTROLLER = 'off';
+      process.env.TUTOR_SELF_EXPLANATION = 'off';
+      resetConfigCache();
+    }
+  });
+
   it("C.9: announces the optional context fields it parses, and accepts Core's rollback verdict", async () => {
     freshJournal();
     servedTelemetryMode = 'shadow';
     try {
       const { socket } = open(await socketUrl());
       await collect(socket, (m) => m.some((x) => x.type === 'turn'));
-      expect(announcedContextFields).toBe('opening,behavioralTelemetryMode');
+      expect(announcedContextFields).toBe(CONTEXT_OPTIONAL_FIELDS.join(','));
       const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
       socket.send(JSON.stringify({ type: 'end_session' }));
       await ending;

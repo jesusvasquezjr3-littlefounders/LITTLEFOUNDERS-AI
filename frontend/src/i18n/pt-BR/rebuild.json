@@ -215,5 +215,64 @@
     "choiceLabel": "Sua resposta",
     "aligned": "Sim, tudo bem",
     "misaligned": "Não muito"
+  },
+  "mentorGoalCheck": {
+    "choiceLabel": "Sua resposta",
+    "agree": "Sim, isso",
+    "other": "Outra coisa"
+  },
+  "mentorAllianceCheck": {
+    "question": "Entendi o que você queria hoje?",
+    "choiceLabel": "Sua resposta",
+    "yes": "Sim",
+    "partly": "Um pouco",
+    "no": "Não muito",
+    "thanks": "Valeu por me contar.",
+    "failed": "Não salvou. Tente de novo.",
+    "retry": "Tentar de novo"
+  },
+  "mentorProfile": {
+    "titleOwn": "Como você aprende",
+    "titleChild": "Como aprende",
+    "intro": "O Mentor se ajusta a isso, com base em sessões passadas.",
+    "empty": "Ainda nada. Isso se forma depois de algumas sessões.",
+    "notCurrent": "Atualizado há mais de um mês.",
+    "loading": "Carregando.",
+    "loadFailed": "Não carregou. Tente mais tarde.",
+    "helpLabel": "Pedir ajuda",
+    "help": {
+      "independent": "Tenta primeiro, depois pergunta",
+      "hint_seeking": "Pede dicas com frequência",
+      "tell_early": "Pede a resposta cedo",
+      "unknown": "Ainda faltam sessões"
+    },
+    "persistenceLabel": "Momentos difíceis",
+    "persistence": {
+      "persists": "Costuma continuar",
+      "disengages_early": "Costuma parar cedo",
+      "unknown": "Ainda faltam sessões"
+    },
+    "explanationLabel": "Explicar escolhas",
+    "explanation": {
+      "explains": "Diz a ideia",
+      "needs_scaffold": "Recebe um começo de frase",
+      "unknown": "Ainda faltam sessões"
+    },
+    "declinedLabel": "Recusou",
+    "declinedNone": "Nada",
+    "adaptation": {
+      "slower_pacing": "Ir mais devagar",
+      "more_examples": "Mais exemplos",
+      "less_text": "Menos texto",
+      "more_visual": "Mais desenhos",
+      "repeat_before_advancing": "Repetir antes"
+    },
+    "paceLabel": "Tempo usual de resposta",
+    "paceSeconds": "Cerca de {n} segundos",
+    "paceUnknown": "Ainda sem medir",
+    "reset": "Redefinir perfil",
+    "resetting": "Redefinindo",
+    "resetDone": "Perfil redefinido.",
+    "resetFailed": "Não redefiniu. Tente de novo."
   }
 }

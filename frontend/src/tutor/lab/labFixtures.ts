@@ -2295,6 +2295,8 @@ export function useLabSocket(
     closingSummary: null,
     // C.19 has no lab scene yet either: no check-in is open.
     checkInOpen: false,
+    // Nor C.15: no goal restatement is waiting for its chips.
+    goalCheckOpen: false,
     closedReason,
     error: null,
     sendText: (text: string) => {
@@ -2326,6 +2328,7 @@ export function useLabSocket(
     answerAdaptation: () => setAdaptationOffer(null),
     answerSessionEnd: () => {},
     answerCheckIn: () => {},
+    answerGoal: () => {},
     endSession: () => setClosedReason('learner_ended'),
   };
 }

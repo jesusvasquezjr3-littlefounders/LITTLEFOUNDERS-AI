@@ -789,6 +789,166 @@ const OUTPUT_DETERMINISTIC: AuditItem[] = [
   }),
 ];
 
+// ── self_explanation.quality (C.14) ──────────────────────────────────────────
+const SAVING_DECISION = 'saving,spending,sharing,time,budget';
+const EXPLANATION_ITEMS: AuditItem[] = [
+  item('self_explanation.quality', 'en-US', 'concept', 'concept', {
+    standard: 'Because I want to save some money for later.',
+    regional: "Cause I'm fixin' to save some for later",
+    vernacular: 'cuz I be saving for later',
+    code_switch: 'because I want to save it, para después',
+    child_spelling: 'becuz i want to save it for later',
+    asr: 'because i want to save some money for later',
+  }, { context: SAVING_DECISION }),
+  item('self_explanation.quality', 'en-US', 'filler', 'filler', {
+    standard: "Because it's right.",
+    regional: 'Just cause',
+    vernacular: 'cuz it is',
+    code_switch: 'porque sí',
+    child_spelling: 'becuz its rite',
+    asr: 'because its right',
+  }, { context: SAVING_DECISION }),
+  item('self_explanation.quality', 'es-MX', 'concept', 'concept', {
+    standard: 'Porque quiero ahorrar para después.',
+    regional: 'Porque quiero guardar pa después, che',
+    vernacular: 'pos pa ahorrar pa luego',
+    code_switch: 'porque quiero hacer saving para después',
+    child_spelling: 'porke kiero aorrar para despues',
+    asr: 'porque quiero ahorrar para despues',
+  }, { context: SAVING_DECISION }),
+  item('self_explanation.quality', 'es-MX', 'filler', 'filler', {
+    standard: 'Porque sí.',
+    regional: 'Porque sí nomás',
+    vernacular: 'pos porque sí',
+    code_switch: 'just because',
+    child_spelling: 'porq si',
+    asr: 'porque si',
+  }, { context: SAVING_DECISION }),
+  item('self_explanation.quality', 'pt-BR', 'concept', 'concept', {
+    standard: 'Porque eu quero guardar para depois.',
+    regional: 'Oxe, porque eu quero guardar pra depois',
+    vernacular: 'pq tô guardando pra depois',
+    code_switch: 'porque eu quero save pra depois',
+    child_spelling: 'porqe eu kero guardar pra depois',
+    asr: 'porque eu quero guardar para depois',
+  }, { context: SAVING_DECISION }),
+  item('self_explanation.quality', 'pt-BR', 'filler', 'filler', {
+    standard: 'Porque sim.',
+    regional: 'Ah, porque sim',
+    vernacular: 'sei lá',
+    code_switch: 'because yes',
+    child_spelling: 'pq sim',
+    asr: 'porque sim',
+  }, { context: SAVING_DECISION }),
+];
+
+// ── self_explanation.decision_answer (C.14) ──────────────────────────────────
+const Q_EN = 'You got 20 dollars. Would you save it or spend it?';
+const Q_ES = 'Te dieron 20 pesos. ¿Los ahorras o los gastas?';
+const Q_PT = 'Você ganhou 20 reais. Vai guardar ou gastar?';
+const DECISION_ITEMS: AuditItem[] = [
+  item('self_explanation.decision_answer', 'en-US', 'choice', 'true', {
+    standard: 'I would save it.',
+    regional: "I'd save it, y'all",
+    vernacular: 'I be saving it',
+    code_switch: 'save it, lo ahorro',
+    child_spelling: 'i wud save it',
+    asr: 'i would save it',
+  }, { context: Q_EN }),
+  item('self_explanation.decision_answer', 'en-US', 'no-choice', 'false', {
+    standard: 'lol',
+    regional: 'shoot',
+    vernacular: 'bruh',
+    code_switch: 'jaja',
+    child_spelling: 'lol',
+    asr: 'ha ha',
+  }, { context: Q_EN }),
+  item('self_explanation.decision_answer', 'es-MX', 'choice', 'true', {
+    standard: 'Los ahorro.',
+    regional: 'Los guardo, che',
+    vernacular: 'pos los ahorro',
+    code_switch: 'los ahorro, save',
+    child_spelling: 'los aorro',
+    asr: 'los ahorro',
+  }, { context: Q_ES }),
+  item('self_explanation.decision_answer', 'es-MX', 'no-choice', 'false', {
+    standard: 'Jaja',
+    regional: 'Jajaja che',
+    vernacular: 'nel jaja',
+    code_switch: 'lol',
+    child_spelling: 'jaja',
+    asr: 'ja ja',
+  }, { context: Q_ES }),
+  item('self_explanation.decision_answer', 'pt-BR', 'choice', 'true', {
+    standard: 'Eu vou guardar.',
+    regional: 'Oxe, vou guardar',
+    vernacular: 'vou guardar, tá ligado',
+    code_switch: 'vou save, guardar',
+    child_spelling: 'vo guardar',
+    asr: 'eu vou guardar',
+  }, { context: Q_PT }),
+  item('self_explanation.decision_answer', 'pt-BR', 'no-choice', 'false', {
+    standard: 'kkk',
+    regional: 'Bah',
+    vernacular: 'kkkkk',
+    code_switch: 'lol',
+    child_spelling: 'kkk',
+    asr: 'ha ha',
+  }, { context: Q_PT }),
+];
+
+// ── alliance.goal_reply (C.15) ───────────────────────────────────────────────
+const GOAL_ITEMS: AuditItem[] = [
+  item('alliance.goal_reply', 'en-US', 'agree', 'agree', {
+    standard: "Yes, that's it.",
+    regional: "Yes ma'am, that's right",
+    vernacular: 'yeah that be it',
+    code_switch: 'yes, eso',
+    child_spelling: 'yes thats it',
+    asr: 'yeah thats it',
+  }),
+  item('alliance.goal_reply', 'en-US', 'other', 'other', {
+    standard: 'No, something else.',
+    regional: "Nah, I'd rather do something else",
+    vernacular: 'nah not that',
+    code_switch: 'no, otra cosa',
+    child_spelling: 'no sumthing else',
+    asr: 'no something else',
+  }),
+  item('alliance.goal_reply', 'es-MX', 'agree', 'agree', {
+    standard: 'Sí, eso.',
+    regional: 'Sí, eso mismo, che',
+    vernacular: 'simón, eso',
+    code_switch: 'yes, eso',
+    child_spelling: 'si eso',
+    asr: 'si eso',
+  }),
+  item('alliance.goal_reply', 'es-MX', 'other', 'other', {
+    standard: 'No, otra cosa.',
+    regional: 'No, mejor otra cosa',
+    vernacular: 'nel, otra cosa',
+    code_switch: 'no, something else',
+    child_spelling: 'no otra kosa',
+    asr: 'no otra cosa',
+  }),
+  item('alliance.goal_reply', 'pt-BR', 'agree', 'agree', {
+    standard: 'Sim, isso mesmo.',
+    regional: 'Sim, isso mesmo, visse',
+    vernacular: 'isso aí, fechou',
+    code_switch: 'yes, isso',
+    child_spelling: 'sim isso mesmo',
+    asr: 'sim isso mesmo',
+  }),
+  item('alliance.goal_reply', 'pt-BR', 'other', 'other', {
+    standard: 'Não, outra coisa.',
+    regional: 'Oxe, outra coisa',
+    vernacular: 'num, outra coisa',
+    code_switch: 'no, something else',
+    child_spelling: 'naum outra coisa',
+    asr: 'nao outra coisa',
+  }),
+];
+
 export const AUDIT_ITEMS: AuditItem[] = [
   ...HEDGING,
   ...TERSE,
@@ -798,6 +958,9 @@ export const AUDIT_ITEMS: AuditItem[] = [
   ...HELP,
   ...CHECK_IN,
   ...STOP,
+  ...EXPLANATION_ITEMS,
+  ...DECISION_ITEMS,
+  ...GOAL_ITEMS,
   ...INPUT,
   ...OUTPUT_DETERMINISTIC,
 ];

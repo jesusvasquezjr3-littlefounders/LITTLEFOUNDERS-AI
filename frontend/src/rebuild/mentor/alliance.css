@@ -1,0 +1,68 @@
+/* C.15 / C.7 surfaces: the goal chips, the end-of-session bond proxy and the
+   learner disposition profile (Frontend Bible 08 §2 response area; Bible 02
+   §4.4 panels). A panel on the page with a surface fill and a soft shadow,
+   never an outline; dark mode steps the surface instead of shadowing. No
+   animation of its own, so reduced motion needs no override: nothing moves. */
+.lf-rebuild.lf-alliance-panel {
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: 0 1px 3px rgb(17 19 42 / .08), 0 1px 2px rgb(17 19 42 / .06);
+  display: grid;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+  max-inline-size: 40rem;
+  /* .lf-rebuild is a page root (min-block-size: 100dvh); this is a panel. */
+  min-block-size: 0;
+  align-content: start;
+}
+.lf-rebuild.lf-alliance-panel[data-theme='dark'] { box-shadow: none; }
+
+.lf-alliance-question { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+/* EQUAL chips: one column each, the same control and size, side by side where
+   they fit and stacked where they do not. */
+.lf-alliance-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--spacing-3);
+}
+/* Three chips never wrap 2 + 1 (an orphan chip reads as a different, lesser
+   answer): one row where all three fit, otherwise one column. */
+.lf-alliance-chips--three { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 40rem) {
+  .lf-alliance-chips--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Sunken fill in both themes: on the surface panel the chips need their own
+   boundary, and in dark mode the control shadow is off (Bible 02 §4.4). */
+.lf-alliance-chip {
+  inline-size: 100%;
+  min-block-size: var(--target-base);
+  background: var(--sunken);
+  overflow-wrap: anywhere;
+}
+
+.lf-alliance-status { display: grid; gap: var(--spacing-2); justify-items: start; }
+
+/* The disposition profile: label / value rows that wrap on a narrow screen. */
+.lf-disposition h2 { margin: 0; }
+.lf-disposition-list { display: grid; gap: var(--spacing-2); margin: 0; }
+.lf-disposition-row {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+  gap: var(--spacing-2) var(--spacing-3);
+  padding-block: var(--spacing-2);
+  border-block-end: 1px solid var(--sunken);
+}
+/* The label reads as a label: muted, beside or above its value. */
+.lf-disposition-row dt { color: var(--content-muted); margin: 0; overflow-wrap: anywhere; }
+.lf-disposition-row dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 30rem) {
+  .lf-disposition-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The isolated preview fixtures. */
+.lf-preview--mentor-goal-check .lf-preview-content,
+.lf-preview--mentor-alliance-check .lf-preview-content,
+.lf-preview--mentor-profile .lf-preview-content { gap: var(--spacing-6); }

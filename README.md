@@ -129,6 +129,7 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | Mentor honesty record (C.18: Oracle `TurnHonesty`, Core `TurnHonestyBody`/`turnHonesty.ts`, `tutor_turn_honesty`) | `npm run honesty:check` |
 | Mentor session end (C.16 closing scripts/openings, C.8/C.12 signal record: Oracle `sessionClosing.ts`/`sessionEndSignal.ts`, Core `sessionEnd.ts`/`CloseBody`, the `*_mentor_session_end_and_closing` CHECKs, the client's `ClosingScript`) | `npm run session-end:check` |
 | Mentor behavioral telemetry (C.9 channels/firing record, C.19 check-in outcomes and frames, the optional context fields: Oracle `behavioralTelemetry.ts`/`client.ts`/`protocol.ts`, Core `services/pedagogy/behavioralTelemetry.ts`, the `*_mentor_behavioral_telemetry` columns and CHECKs, the client's `check_in` frames) | `npm run telemetry:check` |
+| Mentor alliance / self-explanation / disposition (C.15 alliance record and renegotiation outcomes, C.14 events and concept families, C.7 profile labels, projection and observation, the bond-proxy answers, the `goal_check` frames: Oracle `allianceController.ts`/`selfExplanation.ts`/`explanationLexicon.ts`/`dispositionProfile.ts`/`protocol.ts`, Core `services/pedagogy/alliance.ts`/`disposition.ts`, the `*_mentor_alliance_and_disposition` CHECKs, the client's `types.ts` and `rebuild/mentor/allianceApi.ts`) | `npm run alliance:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
@@ -198,6 +199,15 @@ npm --prefix backend run tutor:telemetry-report -- [--since=YYYY-MM-DD] [--json]
                                                # Stage 7 Kill-Switch Trigger Log. Core rolls the layer back to shadow AUTOMATICALLY when the
                                                # floor or the invariant breaks; --resolve records the root cause and lifts the rollback.
                                                # Policy: docs/rebuild/mentor/BEHAVIORAL-TELEMETRY-POLICY.md
+npm --prefix backend run tutor:alliance-report -- [--since=YYYY-MM-DD] [--json] [--resolve="root cause"] [--purge-stale]
+                                               # C.15/C.14/C.7 monitor (read-only except --resolve/--purge-stale, no model call):
+                                               # Goal-Agreement Completion Rate (near 100%, exit 1 below 95%), Renegotiation Trigger Rate,
+                                               # Alliance Bond Proxy Score per persona, Self-Explanation Pass Rate, Disposition-Profile
+                                               # Completeness and the Alliance Controller's Stage 7 log. Core rolls renegotiation and persona
+                                               # continuity back to shadow AUTOMATICALLY on a bond-proxy drop; --resolve lifts it.
+                                               # --purge-stale is the C.7 retention job (profiles not updated for 365 days). Switches:
+                                               # TUTOR_ALLIANCE_CONTROLLER / TUTOR_SELF_EXPLANATION=act|shadow|off.
+                                               # Policy: docs/rebuild/mentor/ALLIANCE-AND-DISPOSITION-POLICY.md
 npm --prefix oracle run bias-audit -- [--json | --check | --record --trigger material_change --notes "..." | --judge-plan]
                                                # C.20 dialect/code-switch/child-spelling/ASR bias audit of every lexical component feeding
                                                # C.9, the check-in/stop replies and moderation (fixture-based, free). Oracle's npm test fails

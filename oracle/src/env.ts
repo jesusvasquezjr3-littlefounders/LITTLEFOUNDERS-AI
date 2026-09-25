@@ -247,6 +247,28 @@ const Env = z.object({
   TUTOR_BEHAVIORAL_TELEMETRY: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
 
   /**
+   * C.15 Stage 7 kill switch for the Alliance Controller
+   * (`tutor/allianceController.ts`). `act` (default): the goal-agreement
+   * opening move, the renegotiation trigger after repeated declined
+   * adaptations, and the persona-continuity re-establishment. `shadow`:
+   * the renegotiation trigger and the continuity re-establishment are
+   * suspended (recorded, never acted on) and the passive bond/goal tracking
+   * keeps running — the Appendix F Part 3 rollback. `off`: nothing. Core's
+   * automatic rollback verdict can only make it stricter. An unknown value
+   * falls back to `act`, never a silent off.
+   */
+  TUTOR_ALLIANCE_CONTROLLER: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
+   * C.14 switch for the self-explanation move (`tutor/selfExplanation.ts`).
+   * `act` (default): after a financial decision the system asks the learner
+   * why, checks the reply names the idea and follows up once. `shadow`: the
+   * decision points are recorded, never prompted. `off`: nothing. An unknown
+   * value falls back to `act`.
+   */
+  TUTOR_SELF_EXPLANATION: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
    * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
    * item is a separate, larger, architecturally-undecided piece of work).
    *

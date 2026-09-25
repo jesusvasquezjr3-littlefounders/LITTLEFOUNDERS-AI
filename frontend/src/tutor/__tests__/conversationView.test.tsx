@@ -67,6 +67,7 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     sessionEndOffer: false,
     closingSummary: null,
     checkInOpen: false,
+    goalCheckOpen: false,
     closedReason: null,
     error: null,
     thinking: false,
@@ -81,6 +82,7 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     answerAdaptation: vi.fn(),
     answerSessionEnd: vi.fn(),
     answerCheckIn: vi.fn(),
+    answerGoal: vi.fn(),
     endSession: vi.fn(),
     ...overrides,
   };
