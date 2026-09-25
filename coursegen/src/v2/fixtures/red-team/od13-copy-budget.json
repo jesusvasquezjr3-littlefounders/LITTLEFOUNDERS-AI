@@ -1,0 +1,61 @@
+{
+  "expected_gate": 13,
+  "note": "OD-13: a 6-9 prompt far over the 12-word budget",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-young",
+    "chapter_id": "saving-basics",
+    "lesson_id": "v2-red-team-od13-copy-budget",
+    "age_band": "6-9",
+    "eligibility": {
+      "minimum_age": 6,
+      "maximum_age": 9
+    },
+    "knowledge_component_ids": [
+      "kc-saving-allocation"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Liruf reparte las monedas de su semana entre guardar, gastar y compartir.",
+    "title": {
+      "en-US": "Split your coins",
+      "es-MX": "Reparte tus monedas",
+      "pt-BR": "Divida suas moedas"
+    },
+    "new_concepts": [
+      "kc-saving-allocation"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "allocate-01",
+        "type": "money.allocation.v2",
+        "grading": "server",
+        "visual": {
+          "type": "stacked-bar"
+        },
+        "payload": {
+          "total": 12,
+          "step": 1,
+          "currency": "coins"
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Liruf has twelve shiny coins from helping at home this week, and he wants to split all of them between saving, spending and sharing today."
+          },
+          "es-MX": {
+            "prompt": "Liruf tiene doce monedas brillantes por ayudar en casa esta semana y quiere repartirlas todas entre guardar, gastar y compartir hoy mismo sin olvidar ninguna."
+          },
+          "pt-BR": {
+            "prompt": "Liruf tem doze moedas brilhantes por ajudar em casa nesta semana e quer dividir todas entre guardar, gastar e compartilhar hoje mesmo sem esquecer nenhuma."
+          }
+        },
+        "rubric": {
+          "minimumSave": 4
+        }
+      }
+    ]
+  }
+}

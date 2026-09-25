@@ -1,0 +1,56 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "discounts",
+  "lesson_id": "v2-percent-grid",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-percent-of"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara ve una oferta y quiere saber cuanto se descuenta de verdad.",
+  "title": {
+    "en-US": "What does the sale take?",
+    "es-MX": "¿Cuánto quita la oferta?",
+    "pt-BR": "Quanto a oferta tira?"
+  },
+  "new_concepts": [
+    "kc-percent-of"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "percent-grid-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "none",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 200,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A game costs 200 coins. Try different discounts."
+        },
+        "es-MX": {
+          "prompt": "Un juego cuesta 200 monedas. Prueba varios descuentos."
+        },
+        "pt-BR": {
+          "prompt": "Um jogo custa 200 moedas. Teste descontos diferentes."
+        }
+      }
+    }
+  ]
+}

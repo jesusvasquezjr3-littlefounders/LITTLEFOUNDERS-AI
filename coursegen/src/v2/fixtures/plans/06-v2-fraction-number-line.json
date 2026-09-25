@@ -1,0 +1,62 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fraction-magnitude",
+  "lesson_id": "v2-fraction-number-line",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-fraction-magnitude"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara ya gasto una parte de sus monedas y quiere ubicar esa fraccion en la recta.",
+  "title": {
+    "en-US": "Fractions have a place",
+    "es-MX": "Las fracciones tienen lugar",
+    "pt-BR": "Frações têm um lugar"
+  },
+  "new_concepts": [
+    "kc-fraction-magnitude"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "fraction-line-01",
+      "type": "math.number-line.fraction.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "payload": {
+        "maximumWhole": 1,
+        "divisions": 4,
+        "initialUnits": 0
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara spent three quarters of her coins. Place it.",
+          "spokenText": "three quarters"
+        },
+        "es-MX": {
+          "prompt": "Zara gastó tres cuartos de sus monedas. Ubícalo.",
+          "spokenText": "tres cuartos"
+        },
+        "pt-BR": {
+          "prompt": "Zara gastou três quartos das moedas. Marque na reta.",
+          "spokenText": "três quartos"
+        }
+      },
+      "rubric": {
+        "targetNumerator": 3,
+        "targetDenominator": 4,
+        "toleranceUnits": 0
+      }
+    }
+  ]
+}

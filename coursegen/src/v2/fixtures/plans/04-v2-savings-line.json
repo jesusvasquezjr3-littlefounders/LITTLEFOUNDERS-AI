@@ -1,0 +1,86 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "saving-over-time",
+  "lesson_id": "v2-savings-line",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-saving-over-time"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina ahorra cada semana lo que gana vendiendo pulseras en el tianguis del domingo.",
+  "title": {
+    "en-US": "Watch savings grow",
+    "es-MX": "Mira crecer tu ahorro",
+    "pt-BR": "Veja a poupança crescer"
+  },
+  "new_concepts": [
+    "kc-saving-over-time"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Dina vende pulseras en el tianguis del domingo y guarda una parte en pesos cada semana.",
+        "problem_refs": [
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "en-US": {
+        "scenario": "Dina sells bracelets at a Saturday yard sale and sets aside dollars every week.",
+        "problem_refs": [
+          "us-parent-silence"
+        ],
+        "anchors": [
+          "yard sale"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Dina vende pulseiras na feira livre do bairro e separa reais toda semana.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira livre"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "savings-line-01",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 8,
+        "minimum": 0,
+        "maximum": 80,
+        "step": 10,
+        "initial": 10,
+        "currency": "local",
+        "unit": "week"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina saves after each yard sale. Move the weekly amount."
+        },
+        "es-MX": {
+          "prompt": "Dina ahorra después de cada tianguis. Mueve lo que guarda por semana."
+        },
+        "pt-BR": {
+          "prompt": "Dina guarda depois de cada feira livre. Mude o valor por semana."
+        }
+      }
+    }
+  ]
+}

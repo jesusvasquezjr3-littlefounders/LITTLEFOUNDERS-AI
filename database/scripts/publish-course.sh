@@ -3,7 +3,8 @@
 #
 # Forge writes draft/review content. This local operator shortcut must use the
 # same release_course preflight as Core: complete locales, reviewable lessons,
-# and a fresh Forge verification after the last document change. It cannot
+# and a fresh Forge verification after the last document change that attests
+# every Forge release gate in public.forge_release_gates (S05.4c). It cannot
 # turn an unchecked hierarchy into child-visible content.
 #
 # This remains local-dev only. Production publishing goes through the

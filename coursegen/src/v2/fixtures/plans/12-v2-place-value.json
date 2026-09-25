@@ -1,0 +1,52 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "tens-and-ones",
+  "lesson_id": "v2-place-value",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-tens-and-ones"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf cambia diez monedas sueltas por una bolsita de diez.",
+  "title": {
+    "en-US": "Trade ten for one",
+    "es-MX": "Cambia diez por una",
+    "pt-BR": "Troque dez por uma"
+  },
+  "new_concepts": [
+    "kc-tens-and-ones"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "place-value-01",
+      "type": "math.place-value.v2",
+      "grading": "none",
+      "visual": {
+        "type": "base-ten"
+      },
+      "payload": {
+        "total": 14
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 14 coins. Trade ten for a bag."
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 14 monedas. Cambia diez por una bolsita."
+        },
+        "pt-BR": {
+          "prompt": "Liruf tem 14 moedas. Troque dez por um saquinho."
+        }
+      }
+    }
+  ]
+}

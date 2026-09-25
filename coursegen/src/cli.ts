@@ -2,7 +2,11 @@
 // Forge CLI — the ONLY entry point that spends money (COURSE_ENGINE.md §4).
 // `npm run generate -- --course financial-education [--slots a1-s1-t1-l1,...]
 //   [--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>]
-//   [--register kid|adult]`
+//   [--register kid|adult] [--max-usd <n>]`
+//
+// OD-23: a paid run (no --dry-run) must state the owner-approved USD ceiling
+// with --max-usd; it only ever lowers the scaled run budget (spendGuard.ts,
+// docs/content/FORGE-OWNER-RUN-GENERATION.md).
 //
 // Operator-triggered only — never run by CI or any automatic process
 // (/AGENTS.md sign-off rule, BOUNDARIES.md #8).
@@ -12,6 +16,8 @@ import { fileURLToPath } from 'node:url';
 import { runGeneration } from './pipeline/run.js';
 import { REGISTERS, isRegister, type Register } from './pipeline/register.js';
 import { LESSON_LOCALES, type LessonLocale } from './contract/core/types.js';
+import { spendCeilingRefusal } from './pipeline/spendGuard.js';
+import { GateSubmissionLog, firstSubmissionPassRates } from './pipeline/gateSubmissionLog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
@@ -25,7 +31,8 @@ interface CliOptions {
   dryRun?: boolean;
   runId?: string;
   register?: Register;
-  onExistingPublished?: 'demote-to-review' | 'keep-published';
+  onExistingPublished?: 'demote-to-review';
+  maxUsd?: number;
 }
 
 /** A value-taking flag must never swallow the NEXT flag as its value (§1.14) — `--run-id --dry-run` would silently create a run named "--dry-run". */
@@ -88,10 +95,21 @@ function parseArgs(argv: string[]): CliOptions {
       case '--run-id':
         opts.runId = requireValue('--run-id', argv[++i]);
         break;
+      case '--max-usd': {
+        const value = Number(requireValue('--max-usd', argv[++i]));
+        if (!Number.isFinite(value) || value <= 0) {
+          console.error('generate: --max-usd must be a positive number of US dollars');
+          process.exit(1);
+        }
+        opts.maxUsd = value;
+        break;
+      }
       case '--on-existing-published': {
         const mode = argv[++i];
-        if (mode !== 'demote-to-review' && mode !== 'keep-published') {
-          console.error("generate: --on-existing-published must be 'demote-to-review' or 'keep-published'");
+        if (mode !== 'demote-to-review') {
+          console.error(
+            "generate: --on-existing-published must be 'demote-to-review' (the in-place 'keep-published' swap was removed: live content returns only through the verified release, Product G.2)",
+          );
           process.exit(1);
         }
         opts.onExistingPublished = mode;
@@ -117,8 +135,9 @@ function parseArgs(argv: string[]): CliOptions {
 function printUsage(): void {
   console.error(
     'Usage: npm run generate -- --course <slug> [--slots a1-s1-t1-l1,...] ' +
-    '[--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>] [--register kid|adult]\n' +
-      "    [--on-existing-published demote-to-review|keep-published]  (required only when the run touches live, already-published lessons)",
+    '[--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>] [--register kid|adult] [--max-usd <n>]\n' +
+      '    --max-usd is required for a paid run: the owner-approved USD ceiling (OD-23)\n' +
+      "    [--on-existing-published demote-to-review]  (required only when the run touches live, already-published lessons)",
   );
 }
 
@@ -132,6 +151,11 @@ async function main(): Promise<void> {
     console.error('generate: --no-images and --require-images cannot be used together');
     process.exit(1);
   }
+  const refusal = spendCeilingRefusal({ command: 'generate', flag: '--max-usd', dryRun: !!opts.dryRun, ceilingUsd: opts.maxUsd });
+  if (refusal) {
+    console.error(refusal);
+    process.exit(1);
+  }
 
   const summary = await runGeneration({
     course: opts.course,
@@ -143,6 +167,7 @@ async function main(): Promise<void> {
     runId: opts.runId,
     register: opts.register,
     onExistingPublished: opts.onExistingPublished,
+    ...(opts.maxUsd !== undefined ? { maxUsdOverride: opts.maxUsd } : {}),
     curriculumRoot: path.join(PACKAGE_ROOT, 'curriculum'),
     runsRoot: path.join(PACKAGE_ROOT, 'runs'),
   });
@@ -158,6 +183,11 @@ async function main(): Promise<void> {
   for (const failure of summary.failed) console.log(`    - ${failure.slotId}: ${failure.error}`);
   if (summary.alreadyDone.length > 0) console.log(`  already done before this run: ${summary.alreadyDone.length}`);
   if (summary.dryRun.length > 0) console.log(`  dry-run validated (nothing written, nothing paid): ${summary.dryRun.length}`);
+  // Appendix C 1.3: Forge Gate Pass Rate per gate, on first submission (runs/<run-id>/gate-submissions.jsonl).
+  const rates = firstSubmissionPassRates(await GateSubmissionLog.read(path.join(PACKAGE_ROOT, 'runs', summary.runId))).filter((r) => r.evaluated > 0);
+  if (rates.length > 0) {
+    console.log(`  first-submission gate pass rate: ${rates.map((r) => `g${r.gate} ${r.passed}/${r.evaluated}`).join(' · ')}`);
+  }
   if (summary.skipped.length > 0) {
     console.log(`  skipped: ${summary.skipped.length}`);
     for (const s of summary.skipped) console.log(`    - ${s.slotId}: ${s.reason}`);

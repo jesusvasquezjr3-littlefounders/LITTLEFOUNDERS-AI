@@ -1,0 +1,57 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "budget-parts",
+  "lesson_id": "v2-allocation-donut",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-budget-parts"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho divide sesenta monedas del mes y compara las partes en un circulo.",
+  "title": {
+    "en-US": "Your month in a circle",
+    "es-MX": "Tu mes en un círculo",
+    "pt-BR": "Seu mês em um círculo"
+  },
+  "new_concepts": [
+    "kc-budget-parts"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "allocate-donut-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "donut"
+      },
+      "payload": {
+        "total": 60,
+        "step": 5,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Split 60 coins for the month. Save at least a third."
+        },
+        "es-MX": {
+          "prompt": "Reparte 60 monedas del mes. Guarda al menos un tercio."
+        },
+        "pt-BR": {
+          "prompt": "Divida 60 moedas do mês. Guarde pelo menos um terço."
+        }
+      },
+      "rubric": {
+        "minimumSave": 20
+      }
+    }
+  ]
+}

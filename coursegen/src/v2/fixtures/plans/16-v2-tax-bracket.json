@@ -1,0 +1,69 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-teen",
+  "chapter_id": "tax-basics",
+  "lesson_id": "v2-tax-bracket",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-marginal-tax"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina consigue su primer trabajo de verano y quiere entender como se llenan los tramos de impuesto.",
+  "title": {
+    "en-US": "How brackets fill",
+    "es-MX": "Cómo se llenan los tramos",
+    "pt-BR": "Como as faixas se enchem"
+  },
+  "new_concepts": [
+    "kc-marginal-tax"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "tax-01",
+      "type": "visual.tax-bracket.v2",
+      "grading": "none",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "payload": {
+        "minimumIncomeMinor": 0,
+        "maximumIncomeMinor": 60000,
+        "incomeStepMinor": 5000,
+        "initialIncomeMinor": 30000,
+        "brackets": [
+          {
+            "upToMinor": 10000,
+            "rateBasisPoints": 1000
+          },
+          {
+            "upToMinor": 30000,
+            "rateBasisPoints": 2000
+          },
+          {
+            "upToMinor": null,
+            "rateBasisPoints": 3000
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move the income and watch each bracket fill."
+        },
+        "es-MX": {
+          "prompt": "Mueve el ingreso y mira cómo se llena cada tramo."
+        },
+        "pt-BR": {
+          "prompt": "Mova a renda e veja cada faixa se encher."
+        }
+      }
+    }
+  ]
+}

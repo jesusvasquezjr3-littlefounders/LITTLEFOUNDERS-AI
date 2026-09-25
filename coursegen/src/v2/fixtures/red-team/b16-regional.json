@@ -1,0 +1,61 @@
+{
+  "expected_gate": 16,
+  "note": "B.16: a Brazilian document that keeps the Mexican tianguis and pesos",
+  "plan": {
+    "plan_version": 1,
+    "course_id": "financial-education",
+    "pathway_id": "financial-young",
+    "chapter_id": "saving-basics",
+    "lesson_id": "v2-red-team-b16-regional",
+    "age_band": "6-9",
+    "eligibility": {
+      "minimum_age": 6,
+      "maximum_age": 9
+    },
+    "knowledge_component_ids": [
+      "kc-saving-allocation"
+    ],
+    "adventure_scene_id": "diorama-a",
+    "brief": "Liruf reparte las monedas de su semana entre guardar, gastar y compartir.",
+    "title": {
+      "en-US": "Split your coins",
+      "es-MX": "Reparte tus monedas",
+      "pt-BR": "Divida suas moedas"
+    },
+    "new_concepts": [
+      "kc-saving-allocation"
+    ],
+    "regional": {
+      "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+    },
+    "segments": [
+      {
+        "id": "allocate-01",
+        "type": "money.allocation.v2",
+        "grading": "server",
+        "visual": {
+          "type": "stacked-bar"
+        },
+        "payload": {
+          "total": 12,
+          "step": 1,
+          "currency": "coins"
+        },
+        "copy": {
+          "en-US": {
+            "prompt": "Split 12 coins. Save at least 4."
+          },
+          "es-MX": {
+            "prompt": "Reparte 12 monedas. Guarda al menos 4."
+          },
+          "pt-BR": {
+            "prompt": "Divida 12 moedas no tianguis. Guarde 5 pesos."
+          }
+        },
+        "rubric": {
+          "minimumSave": 4
+        }
+      }
+    ]
+  }
+}

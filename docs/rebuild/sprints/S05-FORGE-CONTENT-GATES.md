@@ -1,6 +1,6 @@
 # S05: Forge content-pipeline gates
 
-Status: in progress. Started 24 September 2026. Checkpoints S05.4a (B.14, B.18, OD-13) and S05.4b (B.17, B.11, B.16). Owner: Engineering for implementation; the Pedagogical Lead (Appendix C Stage 3 reviewer), Product and the brand owner for the threshold and lexicon reviews named below. Nothing here is accepted or released.
+Status: in progress. Started 24 September 2026. Checkpoints S05.4a (B.14, B.18, OD-13), S05.4b (B.17, B.11, B.16) and S05.4c (Appendix C pipeline integration, G.2 release preflight, OD-23 runbook, lane review). Owner: Engineering for implementation; the Pedagogical Lead (Appendix C Stage 3 reviewer), Product and the brand owner for the threshold and lexicon reviews named below. Nothing here is accepted or released.
 
 Parent record: [S05 Lesson Engine design](S05-LESSON-ENGINE-DESIGN.md). OD-17 still governs sequencing: these gates verify content, they do not authorize catalog regeneration or any paid generation (OD-23).
 
@@ -11,6 +11,7 @@ Parent record: [S05 Lesson Engine design](S05-LESSON-ENGINE-DESIGN.md). OD-17 st
 - Owner decision OD-13 (Copy Budget: "Lesson prompts, options and Mentor turns get the same limits as a Forge content gate next to B.17 and B.18"), OD-11 glossary, OD-23 (zero spend).
 - Appendix C Part 3 Stage 2 (gate order: concept cap, redundancy, tone, …; "a lesson failing any gate returns to Stage 1 with an itemized, specific failure report"), Part 2.1 Definition of Done ("Gated": the gate demonstrably blocks a deliberately non-compliant red-team lesson), Part 1.3 metrics (Forge Gate Pass Rate per gate; Threshold Recalibration Log).
 - Appendix B §1.5 (Mayer's redundancy principle). `docs/product-audit/COSMIC_NARRATIVE.md` Law 2.
+- S05.4c: Product G.2 ("No path to production content for children should exist that is structurally exempt from the same gates the primary interface enforces"), Appendix C Part 3 Stages 1–6 (Stage 2's gate list, Stage 5 "metrics are a launch requirement") and Part 1.3 (Forge Gate Pass Rate per gate **on first submission**, from pipeline logs), owner decisions OD-17 (generation later targets the verified v2 contract; no catalog regeneration before owner acceptance) and OD-23 (zero spend; every spending pipeline ships a dry-run and an operator runbook).
 - Frontend Bible 06 (Copy Budget numbers, word/sentence definition, layering, §5.9 translations) and 08 §2/§5 (speech plate caption; "The Forge content gate for authored segments follows B.18 (no long on-screen text duplicating narration)").
 
 ## Point-by-point checkpoints
@@ -19,6 +20,7 @@ Parent record: [S05 Lesson Engine design](S05-LESSON-ENGINE-DESIGN.md). OD-17 st
 |---|---|---|---|---|
 | S05.4a | B.14 tone gate, B.18 redundancy gate, OD-13 Copy Budget content gate | Deterministic gates 11–13 inside Forge's `runAllGates` (write corrective retry, judge revision, localization re-gate, `verify:course` release attestation) and a zero-spend `content:gates` command over catalog YAML, the committed course corpus, run checkpoints, JSON documents and family-facing UI copy; wired into `release:readiness`; red-team sample per gate blocks; B.18 channel choice (`narration.mode`) added to the v1 contract and honoured by Echo | No new surface. Six family-facing UI strings that failed the tone gate were rewritten in EN/es-MX/pt-BR within the Copy Budget | In progress: implemented and locally verified; Stage 3 reviewer sign-off on lexicon/thresholds, content rewrite of the failing catalogs/corpus, live-pipeline metric data and acceptance pending |
 | S05.4b | B.17 concept cap (working-memory limits per lesson), B.11 mentor misjudgment episodes, B.16 cultural localization (Regional Adaptation Gate) | Lesson-policy gates 14–16 decided from the catalog (Forge run preflight skips a blocked slot with zero spend, `content:gates`, `verify:course`) and checked on every document inside `runAllGates` (write retry, judge revision, localization re-gate, release attestation). Authoring contract fields `new_concepts`, `mentor_misjudgment`, `regional_scenarios` and an optional `concepts.yaml` registry; market problem inventory `coursegen/regional/markets.yaml`; written policy and per-market checklist `docs/content/REGIONAL-ADAPTATION-GATE.md`; localization adapts to the market scenario instead of translating; one red-team sample per gate blocks and a compliant localized episode passes | No new surface; no UI copy changed | In progress: implemented and locally verified; content-team declarations (density for 2,462 lessons, market scenarios for 439 lessons), validation of the 3 flagged episodes and 4 inventory hypotheses, the per-market write stage for amounts, live metric data and acceptance pending |
+| S05.4c | Appendix C pipeline integration: every Forge gate in the shared release preflight (G.2); zero-spend v2 emitter validated by Core's strict v2 contract; owner-run generation runbook (OD-23); lane review of S05.4 | Release-gate manifest (31 ids) recorded per gate by `verify:course`, with the content watermark it captured before reading, and required by Vault (`forge_release_gates`, `forge_release_verification_refusal` shared by `release_course` and the new `release_lesson`); API-role publication and live v2 pointer moves refused by triggers; Forge `keep-published` removed; v2 plans → emitter → v2 gates → Core `validateV2LessonForGrading` (20 plans, all 21 segment kinds, 60 documents; 5 red-team plans each blocked by its own gate); `--max-usd`/`--budget-usd` required on paid runs; first-submission gate log; B.14 UI tone gate in frontend CI; migration size cap for the Railway transport | No new surface. Two staff-console refusal strings (`RELEASE_VERIFICATION_INCOMPLETE`, `RELEASE_COURSE_RELEASE_REQUIRED`) in EN/es-MX/pt-BR within the Copy Budget | In progress: implemented and locally verified; physical-PostgreSQL evidence of the two migrations, the first owner-run pilot (live metric data), a v2 authoring stage and v2 publication transaction, asset-only live patches, and acceptance pending |
 
 ## S05.4a — verified current state (before that checkpoint)
 
@@ -191,6 +193,112 @@ The write prompt states the lesson's own policy (`lessonPolicyGuidance`): its de
 
 A JSON sample carries its own `policy`. Through `runAllGates` and through `content:gates`, each red-team lesson fails exactly its own gate among gates 11–16.
 
+## S05.4c — verified current state (before this checkpoint)
+
+Checked against the code on 24 September 2026:
+
+- **The release preflight never read the Forge result.** `release_course` (0031) only required that SOME `course_release_verifications` row was newer than the last document update. Its `checks` JSON was never read, so an attestation written by a Forge that predated gates 11–16, or a hand-written row, unlocked a release. `verified_at` came from the operator's clock.
+- **Two G.2 paths bypassed it entirely.** The S02.4b inventory had already named both as open questions:
+  - the staff console's lesson **Approve** (`POST /admin/moderation/:lessonId/status` with `published`) patched `lessons.status` directly, so a regenerated lesson in a live course reached learners with no Forge verification;
+  - Forge's `--on-existing-published keep-published` swapped a live lesson's documents in place, with no verification and no human read.
+
+  Nothing in Vault stopped any service-role caller from doing the same with one PATCH, or from moving the v2 pointer (`lesson_document_version_current`, 0101) of a published lesson.
+- **Forge had no v2 path.** Forge produces v1 documents only. Nothing emitted the verified v2 lesson document, and gates 11–16 had no v2 adapter (a documented S05.4a/b open item).
+- **B.14's UI half did not block a UI release.** The UI copy tone scan runs in `release:readiness` and in coursegen's test suite, but coursegen CI never runs on a frontend-only copy change, and frontend CD deploys whatever frontend CI passes.
+- **Appendix C's first-submission metric had no data source.** "Forge Gate Pass Rate (per gate)" is defined on first submission from pipeline logs, but the write stage kept only the final result.
+- **Paid runs had no owner ceiling.** The run budget is a kill switch with a $50 floor per run: a one-slot paid run was allowed $50.
+
+## S05.4c — implementation and rationale
+
+### One release preflight for every Forge gate (G.2, Appendix C Stage 2)
+
+- **Manifest.** `coursegen/src/release/gateManifest.ts` gives every release check a stable id (31 today):
+  - the catalog checks, including the B.17, B.11 and B.16 policy halves and catalog tone and Copy Budget;
+  - one check per Forge document gate (1–9 and 11–16; gate 10, plan fidelity, is generation-only with a stated reason because the plan is not persisted with the document);
+  - the course release checks;
+  - `forge.release.v2-content`.
+
+  Each check names its SPEC ids and whether a blueprint's `known_exception` may excuse it: only the legacy gates 1–9. Appendix C Stage 1 gives no draft a gate exemption, and B.17 says "split, not shipped as authored".
+- **Evaluation.** `coursegen/src/release/evaluate.ts` is the pure evaluation behind `verify:course`. It returns exactly one result per id, in manifest order, with per-gate pass counts (the release-time Forge Gate Pass Rate). It fails closed:
+  - a contract failure counts against every document gate;
+  - a lesson with no age tier, an empty document set or no catalog strings fails its checks;
+  - an unreadable or mislabelled v2 activation fails.
+
+  `verify:course` now writes that list as the attestation, plus a JSON report under `coursegen/runs/verify-course/`.
+- **Vault.** The `forge_release_gate_manifest` migration adds `public.forge_release_gates` (seeded from the manifest; service-role only, RLS on) and `forge_release_verification_refusal(course_id)`, the verification half of the preflight. It refuses:
+  - `VERIFICATION_REQUIRED` unless the attestation is newer than the latest document change **and** the latest v2 activation;
+  - `VERIFICATION_INCOMPLETE` unless every required id carries `ok: true` and no entry failed.
+
+  `release_course` calls it and also locks and recounts the course's v2 pointers. A trigger stamps `verified_at` with the database clock.
+- **Content watermark (lane review).** `verify:course` reads the course, evaluates it and only then writes the attestation, so a document written while it was running would be older than the attestation and ride on it unread. `forge_release_content_watermark(course_id)` (latest document change or v2 activation) is now captured by `verify:course` **before** its first read and stored in `course_release_verifications.content_watermark`; the shared refusal function returns `VERIFICATION_REQUIRED` unless the attested watermark equals the current one. The value round-trips as Vault's own text, so microsecond precision is kept. The database cannot tell a forged complete attestation from a real one: the service-role key is that trust boundary, and the runbook says so.
+- **Parity.** `agent/tools/check-forge-release-gate-parity.mjs` (`npm run forge:release-gates:check`, a named `repo-gates` step, self-tested by `tools:test`) fails when Forge's `GateNumber` union, the manifest and the seeded rows disagree in either direction.
+
+### Release-only publication (lane-review G.2 fixes)
+
+- **One path per scope.** The `release_only_publication` migration adds `release_lesson(lesson_id)`: it publishes one review lesson of an already-live course after the same locale and reviewability checks and the same `forge_release_verification_refusal`. A lesson whose course or section is not live gets `COURSE_RELEASE_REQUIRED`: release the whole course.
+- **Guards.** Triggers refuse any write by the API roles (`anon`, `authenticated`, `service_role`) that makes a lesson or a course `published`, and any activation or move of the v2 pointer of a published lesson. `release_course` and `release_lesson` are `SECURITY DEFINER`, so they pass. Migrations, seeds and operator `psql` sessions run as the database owner and are outside the guard by design.
+- **Core.** The moderation route now calls `release_lesson` for `published`, maps every refusal to its own envelope code (`RELEASE_VERIFICATION_INCOMPLETE` and `RELEASE_COURSE_RELEASE_REQUIRED` are new, in 3 locales within the Copy Budget), and audits `admin.lesson.release`. Other statuses stay an audited update. The course route maps `VERIFICATION_INCOMPLETE` too.
+- **Forge.** `keep-published` is removed from the publish stage, `generate` and the run options. A regenerated live slot demotes to review and returns only through the verified release. The decision stays explicit (`--on-existing-published demote-to-review`), so an operator never demotes live lessons by accident.
+
+This implements the SPEC's first G.2 option ("remove the direct-publish bypass") for these paths; the S02.4b inventory's open question is answered with the conservative default and recorded below as a proposal.
+
+### Zero-spend v2 emitter validated by Core (OD-17, OD-23)
+
+- **Plan contract** (`coursegen/src/v2/plan.ts`). A v2 lesson plan is the Stage 0/1 output for one lesson:
+  - identity, age pathway, knowledge components, segment kinds with locale-neutral numbers, and private rubrics;
+  - per-market copy for every learner-visible string;
+  - the gate 14–16 declarations (`new_concepts`, `mentor_misjudgment`, `regional`).
+
+  In a paid run a model would author the copy. In the dry-run the plan carries fixture copy.
+- **Emitter** (`coursegen/src/v2/emit.ts`). It builds the three market documents and the answer keys. Rubrics go to `answer_keys` only, and `required_capabilities` is exactly what the segments need. Every visible string comes from copy, and the three markets must fill the same fields; a string left in the neutral payload, or copy that overwrites a number, is a gate 1 problem. A lesson with any blocking finding emits nothing.
+- **v2 gates** (`coursegen/src/v2/gates.ts`). The same measurement code as v1 runs over the v2 shape:
+  - tone (12) on every visible string;
+  - Copy Budget (13): title = heading, prompt = prompt, diagram labels = option, readouts and worked-step text = data;
+  - regional residue and scenarios (16);
+  - at plan level, the B.17 ceiling by age pathway (6–9, 10–12, 13+), a flagged B.11 episode (it blocks: the v2 contract has no Mentor voice channel yet), and B.16 scenario analysis, with local-currency amounts requiring scenarios.
+
+  Gate 11 is reported as not applicable (no v2 narration channel), never as a silent pass.
+- **Capabilities.** Forge keeps only the capability map needed to assemble documents (`coursegen/src/v2/contract.ts`), now the third copy checked by `check-v2-lesson-capability-parity.mjs` (in `spec:check`).
+- **Fixtures.** Twenty committed plans cover all 21 v2 segment kinds, three markets each (60 documents), including a local-currency savings lesson with a scenario per market. Five red-team plans each block on exactly their own gate (12, 13, 14, 15, 16).
+- **Validated by Core, not by a copy.** `npm run v2:emit` writes `documents.json` and `report.json` (zero-spend receipt: 0 model, image, voice, network or Vault calls). `npm --prefix backend run forge-v2:check` validates the rows with `validateV2LessonForGrading`, the exact function Core runs before delivering or grading a v2 lesson. The committed output `coursegen/src/v2/fixtures/emitted.json` is checked by Core's `contract:check` (so by Core's `npm test` and CI; `backend-ci` now also watches `coursegen/src/v2/**`), and coursegen's test fails if the committed output is stale. `npm run forge:v2:dry-run` chains both. No catalog was regenerated (OD-17).
+
+### Owner-run generation (OD-23)
+
+- **Runbook.** [`docs/content/FORGE-OWNER-RUN-GENERATION.md`](../../content/FORGE-OWNER-RUN-GENERATION.md) covers:
+  - what costs money, and the zero-spend form of each step;
+  - preconditions, the rehearsal, and pilot-then-run;
+  - live lessons, Stage 3 review, verification and release, with the refusal codes;
+  - metrics capture, and what never to do.
+- **Enforced ceiling.** A paid `generate` refuses to start without `--max-usd`, and a paid `generate:track` without `--budget-usd` (`coursegen/src/pipeline/spendGuard.ts`). The value only lowers the scaled budget.
+- **First-submission metric.** The write stage now reports the first draft's gate result through a callback, so a slot that later fails is still counted. `run.ts` appends it to `runs/<run-id>/gate-submissions.jsonl`, and `generate` prints the per-gate first-submission pass rate. It is zero-cost telemetry of what a run already computes.
+
+### B.14 UI copy now blocks the UI release
+
+`frontend-ci.yml` runs `npm run content:gates` from `coursegen/` (no `--course`: UI copy only) after the i18n check, and watches `coursegen/src/contentGates/**`. A family-facing string that fails the Law 2 tone gate now fails the workflow that deploys it.
+
+## S05.4 lane review (24 September 2026)
+
+Each requirement's mandate compared adversarially with what the gates enforce, after S05.4a–c:
+
+| Requirement | Mandate | Gap found | Resolution |
+|---|---|---|---|
+| G.2 (preflight) | No path to child-visible content exempt from the gates | `release_course` ignored the attestation's content | Per-gate attestation + `forge_release_gates` (above) |
+| G.2 (paths) | Same | Lesson Approve, Forge `keep-published`, and any service-role PATCH or v2 pointer move published without verification | `release_lesson`, triggers, Core route, Forge removal (above). Asset-only in-place patches remain (open items) |
+| B.14 | Tone gate on lesson content **and** system/UI copy before release | UI scan did not gate the frontend deploy | Frontend CI step (above) |
+| B.14, B.16, B.17, OD-13 | Gates on every authored lesson | v2 documents had no adapter | v2 gates in the emitter and at release (`forge.release.v2-content`) |
+| B.18 | Flag narrated text that duplicates on-screen text | v2 has no narration channel | Reported as not applicable; revisit when v2 gains narration |
+| B.11 | ≥1 no-shame misjudgment episode per course, flagged for validation | Enforced for v1 (catalog + documents + release) | A flagged v2 plan blocks until v2 has a Mentor voice |
+| B.17 | Count genuinely new concepts; block over the ceiling | v1 enforced; v2 plans declare counts but novelty across a v2 pathway is not computed (no v2 catalog graph yet) | Ceiling enforced per plan; cross-lesson novelty for v2 is an open item |
+| B.16 | Named gate, per-market checklist, adaptation beyond translation | Amount adaptation not built (S05.4b) | Unchanged open item; v2 plans carry per-market copy, so amounts may differ per market in v2 |
+| G.2 (race) | Same | `verify:course` reads, evaluates, then attests: a document written meanwhile would be older than the attestation and unlock unread | Content watermark captured before reading and compared by the preflight (above); pinned in `check-migrations.mjs` and by a source-order test |
+| G.2 (rollout) | The preflight migration must be applicable by the owner's migration transport | Adding the watermark grew `forge_release_gate_manifest` to 24,913 bytes; `railway-migrate.test.mjs` failed with "Argument list too long" (the base64 payload is one Windows command-line argument, capped at 32,767 characters) | Comments that restated 0031 were cut (22,396 bytes); `check-migrations.mjs` now refuses any migration over 23,000 bytes in seconds (0025, 22,799 bytes, is the largest proven) |
+| Appendix C DoD "Gated" (v2) | A red-team lesson demonstrably blocked by the pipeline tool | The v2 red-team samples blocked only in unit tests; `v2:emit --plans <red-team dir>` rejected them as malformed plans | The plan loader accepts the red-team wrapper; the command itself now blocks each sample on its own gate |
+| Appendix C 1.3 | Pass rate per gate on first submission, from pipeline logs | No first-submission record | `gate-submissions.jsonl` + run summary |
+| Appendix C Stage 2 order | Fixed fail-fast order, cheap before expensive | Deterministic gates run in pipeline order 1–16, all reported | Recorded interpretation: every gate here is deterministic and runs before the paid judge, and catalog-level blocks skip the slot before any paid call; the order among free checks does not change cost, and a full itemized report is what Stage 2 requires on failure |
+| OD-23 | Zero-spend dry-run + runbook for every spending pipeline | No owner ceiling on paid runs | `--max-usd` / `--budget-usd` required; runbook |
+
+Stage 2 gates that belong to other lanes (B.26/B.27 shame language beyond B.11 episodes, B.7 interactive behavior, B.22 reward mechanics) are not implemented here; the manifest and `forge_release_gates` take a new gate by adding one id and one migration row, and the parity gate fails until both exist.
+
 ## Threshold Recalibration Log (Appendix C Part 1.3)
 
 Every number below is a starting point, reviewed at least quarterly in the first year and whenever a review-queue sample shows a systematic false block or false pass. A change is recorded here with its date and evidence; the lexicon is part of this log.
@@ -211,6 +319,7 @@ Every number below is a starting point, reviewed at least quarterly in the first
 | Shame lexicon (B.11 episodes) | `SHAME_LEXICON` in `misjudgment.ts` (EN 30, es-MX 30, pt-BR 23 self- or person-directed labels) | Appendix B §1.8/§2.8 (feedback scoped to the action, never the person) | 24 Sep 2026 (initial) |
 | Scenario copy threshold (B.16) | A non-authoring scenario brief with a token Jaccard of at least 0.8 against the es-MX brief is a copy | Engineering starting point | 24 Sep 2026 (initial) |
 | Market anchors (B.16) | `coursegen/regional/markets.yaml` (Mexico 5, Brazil 6, United States 2); currency words count only next to a number | Content team; screened for words that are ordinary in another content language | 24 Sep 2026 (initial) |
+| v2 audiences (S05.4c) | Copy Budget 6–9 limits for the `6-9` age pathway only; working-memory band `6-9`→6–9, `10-12`→10–12, `13-17`/`adult`→13+, unknown→6–9; diagram labels are option copy, readouts and worked-step text are data | Bible 06 §3.1/§3.3 and Product B.17 applied to the v2 age pathways (OD-16) | 24 Sep 2026 (initial) |
 
 Lexicon calibration on 24 September 2026: the first draft blocked 58 catalog strings, all of them teaching or narrative uses (the fraud-radar adventure naming "ganancia garantizada" as a warning sign, quotes in straight single quotes, "tiempo limitado" as an ordinary constraint, "FOMO" as a taught concept). After adding straight-quote detection, the warning-cue rule, the everyday-urgency review tier and removing concept names, the same inputs produce 0 blocks and 57 review items, while every real UI violation and every red-team phrase still blocks.
 
@@ -285,6 +394,26 @@ Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/
 | Forge static checks | `coursegen/`: `npm run type-check`, `npm run lint`, `npm run contract:check` | Passed; contract copies identical (10 files); the v1 lesson contract is unchanged |
 | Repository gates | Root: `npm run spec:check`, `npm run secrets:check` | Both OK |
 
+### S05.4c verification log
+
+Executed 24–25 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/spec-s05f`) with `VITEST_MAX_THREADS=3`. The checkpoint was interrupted once (usage limit) and resumed on 25 September; the resumed session re-ran every row below on the final tree. Local results only: no CI, database, network or model call, and zero spend.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Release evaluation, spend guard, first-submission log, v2 emitter, publish stage, write stage (focused) | `coursegen/`: `npx vitest run src/__tests__/{releaseEvaluate,spendGuard,gateSubmissionLog,v2Emit,publish-vault,write}.test.ts` | 6 files, 92 tests passed. They cover: one result per manifest id, in order; fail-closed cases (contract failure counts against every document gate, missing tier, empty document set, no catalog strings, unreadable or mislabelled v2 activation); only gates 1–9 excusable by `known_exception`; the real lemonade course and corpus evaluated end to end; `verify:course` captures the content watermark before its first read and never attests without it (source-order pin); a paid `generate` / `generate:track` without `--max-usd` / `--budget-usd` exits 1 through the real CLIs; the ceiling only lowers the scaled budget; the first draft's gate result is logged even when the slot later fails; `keep-published` is refused; all 21 v2 segment kinds across 20 plans; no network call possible during an emit; each of the 5 red-team plans blocks on exactly its own gate (12, 13, 14, 15, 16) and emits nothing, also through the `v2:emit` command over the red-team directory; the committed `emitted.json` is not stale |
+| Core validates Forge's v2 output | `backend/`: `npx vitest run src/__tests__/forgeV2Emitted.test.ts`; root `npm run forge:v2:dry-run` | 8 tests passed; `forge-v2:check OK — 60 Forge-emitted v2 rows pass Core's strict contract` (`validateV2LessonForGrading`, the function Core runs before delivering or grading) |
+| v2 red team through the command | `coursegen/`: `npm run v2:emit -- --plans src/v2/fixtures/red-team --out runs/v2-emit/red-team` | Exit 1; 5 of 5 plans blocked, each on its own gate, 0 documents written (before the lane-review fix the command rejected the samples as malformed plans instead) |
+| Core release routes, adversarial | `backend/`: `npx vitest run src/__tests__/admin.test.ts -t "moderation/:lessonId/status"` plus the course-route refusal table | 10 moderation tests passed: `published` goes only through `release_lesson` and is audited `admin.lesson.release`; each of 7 refusal codes maps to its envelope with no status write and no audit; a family account (kid, teen, adult or parent all carry the `universal` role) and staff without `manage_content` get 403 before any release call; `draft` stays an audited status update. The course route maps `VERIFICATION_INCOMPLETE` too |
+| Vault static pins | `database/`: `node scripts/check-migrations.mjs`, `node scripts/check-migration-phase.mjs`, `node --test scripts/*.test.mjs` | `migrations OK — 113 file(s)` (now including the Railway transport size cap; the release-gate manifest migration is 22,396 bytes, release-only publication 9,167); `migration-phase OK — 91 expand, 22 contract`; 21 node tests passed (publish CLI boundary includes the `VERIFICATION_INCOMPLETE` refusal). Each new pin was shown red on a weakened scratch copy: no shared refusal function, no gate-id check, no v2 activation, no watermark comparison, a watermark without v2 activations, a missing `release_lesson` / status / v2-pointer guard, and a migration padded past 23,000 bytes |
+| Release-gate parity | Root: `npm run forge:release-gates:check`; `node --test agent/tools/check-forge-release-gate-parity.test.mjs` (in `tools:test`) | `forge release-gate parity OK — 31 release checks recorded by verify:course and required by release_course`; 6 self-tests: red when Forge gains a gate the manifest does not record, when the manifest records a check the database does not require, when the database requires a check `verify:course` never records, and when a gate number disagrees; a later migration may retire a requirement |
+| v2 capability parity | Root: `node agent/tools/check-v2-lesson-capability-parity.mjs` (in `spec:check`) | OK across Core, browser and Forge copies |
+| UI copy (B.14) and i18n | `coursegen/`: `npm run content:gates` (the new frontend-CI step); root (Git Bash) `bash agent/tools/check-i18n.sh` | `content:gates OK — no blocking finding` on the family-facing UI copy; i18n all three phases OK. The two new staff refusal strings are within the body budget (EN 12 words / 2 sentences; ES and PT 13 of 15) |
+| Service suites | `coursegen/`, `backend/`, `frontend/`: `npm run type-check`, `npm run lint`, `npm test` | See the root aggregate row; each service also passed alone on 25 September (coursegen 52 files / 774 tests and backend 71 files / 1,488 tests before the three lane-review tests were added; frontend 211 files / 2,189 tests) |
+| Root aggregates | Root: `npm run typecheck:all`, `npm run lint:all`, `npm run test:all` | typecheck:all and lint:all OK across all services; test:all green in every package on the final tree: audiogen 17 files / 170 tests, backend 71 files / 1,489 tests (1 skipped), coursegen 52 files / 777 tests, dataintel 194, email-server 35, filebase 34, frontend 211 files / 2,189 tests, oracle 41 files / 1,136 tests, parent-id-check 26, picturegen 103. `database` failed inside that run (the transport size row of the lane review) and, after the fix, passed alone: `npm test` exit 0 (migrations, phase, 21 node tests, 12 Railway transport scenarios) |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check`, `npm run tools:test` | spec:check OK (113 headings, parity, tokens, assets); secrets OK; tools:test 69 passed, 0 failed; `forge:release-gates:check` OK |
+
+Failures met and resolved during the checkpoint: the `v2:emit` command could not run the red-team samples (loader fixed, test added); `verify:course`'s read-then-attest race (content watermark added, pinned); an overclaim in the migration comment and the runbook that a hand-written attestation can never unlock a release (reworded: only an incomplete one; the service-role key is the trust boundary); the first wording of `RELEASE_VERIFICATION_INCOMPLETE` said "skipped" when the gate may also have failed (rewritten in 3 locales). The database package's Railway transport test then failed inside `test:all` with "Argument list too long" on `forge_release_gate_manifest` once the watermark was added (24,913 bytes); the migration was trimmed to 22,396 bytes, a size cap was added to `check-migrations.mjs` (shown red on a padded copy), and the suite was re-run green (row above). A first attempt of that test had run for over 30 minutes under the shared machine's load and was stopped.
+
 ## Remaining limitations and open items
 
 ### S05.4a open items
@@ -292,10 +421,10 @@ Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/
 - **Content is not yet compliant.** The four catalogs and the committed corpus fail (baseline table). Rewriting them is authoring work; nothing was regenerated or rewritten by this checkpoint, and no paid call was made.
 - **Live-pipeline behaviour is unobserved.** Gates 11–13 now run inside the write corrective-retry loop and the localization re-gate; their effect on retry count and cost per lesson is unmeasured until an owner-run generation (OD-23). The write prompt states the budgets up front to keep retries rare.
 - **Stage 3 review of the lexicon and thresholds** has not happened. Review items (57 on the current catalogs, 4 on the corpus) need a Pedagogical Reviewer; a false block found later is a recalibration entry above.
-- **v2 lesson documents** carry no narration channel yet; when the v2 contract gains one, add a v2 adapter to `lessonModel.ts`. The rendered-app copy-budget audit remains the authority for v2 prompts and all first views.
+- **v2 lesson documents** carry no narration channel yet; when the v2 contract gains one, add the redundancy check to the v2 adapter. The rendered-app copy-budget audit remains the authority for v2 prompts and all first views. (S05.4c built the v2 adapter for gates 12, 13 and 16 and reports gate 11 as not applicable.)
 - **Rebuild inline literals** are tone-scanned but not budgeted (their role is declared in the DOM via `data-copy-role`, which the rendered-app audit measures).
 - **Legacy UI copy change** is verified by i18n parity and the frontend suite, not by a browser screenshot of the kid banking screen and the error toast (both are legacy surfaces the rebuild replaces).
-- **Physical environments.** No real database, Echo run or CI run was involved; the Core release preflight's reliance on `verify:course` is unchanged code, verified by reading, not by a live release attempt.
+- **Physical environments.** No real database, Echo run or CI run was involved; the Core release preflight's reliance on `verify:course` is unchanged code, verified by reading, not by a live release attempt. (S05.4c now makes the preflight read the attestation per gate; its physical-PostgreSQL evidence is an S05.4c open item.)
 
 ### S05.4b open items
 
@@ -317,7 +446,24 @@ Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/
   - Mentor-Misjudgment Content Coverage in production.
 
   `verify:course` gained the policy check, but it is verified by tests and reading, not by a run against a real database.
-- **The v2 lesson documents have no adapter.** Gates 14–16 read v1 documents, which Forge produces today. The same policies apply to v2 through a v2 text adapter when Forge targets the v2 contract.
+- **The v2 lesson documents have no adapter.** Resolved in S05.4c: `coursegen/src/v2/gates.ts` applies gates 12–16 to v2 plans and documents (gate 14 per plan; cross-lesson novelty for v2 pathways still open, see S05.4c).
+
+### S05.4c open items
+
+- **No physical PostgreSQL evidence.** `forge_release_gate_manifest` and `release_only_publication` were verified by the static gates only: numbering, RLS, phase declaration, and the new pins, which were each shown going red on a weakened copy. Also unverified on a real database (both migrations are `contract` and applied by hand):
+  - the plpgsql itself;
+  - the trigger behaviour under PostgREST's `service_role`;
+  - the lock order of `release_lesson` against `release_course`;
+  - that `release_course` still releases a verified course;
+  - that the content watermark round-trips through PostgREST at microsecond precision and refuses an attestation written after a concurrent document change.
+
+  A disposable-stack run (`database/scripts/disposable-stack.sh`) covering the refusal codes, the triggers and a full release is required before rollout.
+- **Every existing course's release is now blocked until it is re-verified.** No attestation written before this checkpoint carries a content watermark or names gate ids, so `release_course` returns `RELEASE_VERIFICATION_REQUIRED` (then `RELEASE_VERIFICATION_INCOMPLETE` for an older Forge) for every course after the migration. Given the S05.4a/b baselines, `verify:course` will then fail for every current catalog until content is rewritten and declared. This is the intended effect of G.2, and it must be planned: a published course stays published; only a new release is refused.
+- **Asset-only in-place patches of live documents remain.** `images:backfill` (Prism, paid) and Echo's narration stamps write the `document` of already-published lessons in place. No text changes, but images are learner-visible. Such a change forces a fresh verification before the next release; it is not blocked when it happens. Proposal and question below. These two tools also have no command-line owner ceiling like `--max-usd`.
+- **v2 generation is dry-run only.** No model authors v2 plans yet, and no reviewed v2 publication transaction exists (0101 names it as future work). Until both exist, v2 content reaches Vault only by an operator inserting versions and pointers, which the new guard refuses for published lessons and the release preflight re-gates for review lessons. Cross-lesson B.17 novelty for v2 pathways, and B.11 episodes in v2 (no Mentor voice channel), are open.
+- **Live metrics.** The first-submission log and the per-gate release report exist, but no paid run has produced data (OD-23). Appendix C "Measured" stays open until the owner-run pilot.
+- **CI not run.** The new `repo-gates` step, the `frontend-ci` UI tone step and the `backend-ci` path were verified by running their commands locally. The workflows themselves run only on push, which is the owner's decision.
+- **Core `RELEASE_REFUSALS` in the legacy staff console.** The two new codes render through the existing `errors.api.<CODE>` lookup. No screenshot of the legacy console was taken, because the staff console rebuild belongs to S09.
 
 ## Owner questions and recorded proposals
 
@@ -334,3 +480,15 @@ Executed 24 September 2026 in the lane worktree (`C:/lf-wt/s05f`, branch `codex/
 6. **B.11 episodes.** Proposal (implemented): at least 1 per course, with three existing lessons flagged as candidates. Question: confirm the three candidates, and decide who authors the first-lemonade-stand episode.
 7. **B.16 amounts.** Should Forge gain a per-market write stage that re-derives the answer key (paid generation, owner-run), or does same-number play money reviewed at Stage 3 remain acceptable? Proposal: build the stage when Forge moves to the v2 contract; until then, Stage 3 judges amounts.
 8. **No bypass for undeclared lessons.** Proposal (implemented): a Forge run skips undeclared slots even in the QA smoke course (first-lemonade-stand), because B.17 requires density to be decided before generation.
+
+**S05.4c**
+
+9. **Single-lesson approval.** The staff console's lesson Approve now publishes only through `release_lesson`. That requires the same fresh, complete Forge verification as a course release, and only into an already-live course. Proposal (implemented): keep per-lesson approval with that preflight. Question: confirm, or remove per-lesson approval so that only whole-course releases exist.
+10. **No in-place live swap.** Forge's `keep-published` is removed. Regenerating a live v1 lesson therefore takes it out of the learner catalog until it is released again (a planned outage). The no-outage path for live content is the v2 versioned document with a reviewed publication transaction. Proposal (implemented): accept the outage for v1 regeneration. Question: confirm.
+11. **Asset-only patches of live documents.** `images:backfill` and Echo's narration stamps change the `document` of published lessons in place. Two options:
+    - (a) require demotion, or a new v2 version, before any change to a live document; this is the proposal, enforced later with a physical-database-tested guard that must allow Echo's audio-only writes;
+    - (b) allow asset-only patches with a mandatory retroactive `verify:course` within 30 days, G.2's second option.
+
+    Question: choose (a) or (b).
+12. **Owner ceilings on the other paid tools.** `generate` and `generate:track` now require the owner-approved USD ceiling. Proposal: add the same requirement to `images:backfill` (paid mode) and `audiogen narrate:all`. Question: confirm.
+13. **Re-verification after the migration.** Every course needs a fresh `verify:course` from the S05.4c Forge before its next release, and per the baselines every current catalog fails it until its content is rewritten and declared. Question: confirm this is acceptable, or name a course whose content work should be prioritised before the migration is applied.

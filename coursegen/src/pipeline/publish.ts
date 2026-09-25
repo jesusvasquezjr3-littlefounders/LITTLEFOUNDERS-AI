@@ -129,13 +129,21 @@ export interface PublishInput {
    *  - `demote-to-review` keeps COURSE_ENGINE §6's human gate literally: new
    *    content is unreviewed, so it leaves the learner-visible catalog until a
    *    human releases it. Correct, and an outage if you did not plan for it.
-   *  - `keep-published` swaps the content of an already-approved slot in place.
-   *    The lesson stays live and the child's path is never broken, at the cost
-   *    of the new content going out without a fresh human read.
    *
-   * Both are legitimate; picking one for the operator is not. Fail closed.
+   * There used to be a second choice, `keep-published`, that swapped the
+   * content of a live slot in place: the lesson stayed live and the new
+   * content went out with no Forge release verification and no human read.
+   * The S05.4c lane review removed it (Product G.2: "No path to production
+   * content for children should exist that is structurally exempt from the
+   * same gates the primary interface enforces"). The regenerated lesson now
+   * returns through Core's release_lesson / release_course preflight, which
+   * requires a fresh verify:course attestation of every Forge release gate.
+   * Live content without an outage is the v2 versioned-document path (0101).
+   *
+   * The decision stays explicit, so an operator never demotes live lessons
+   * by accident. Fail closed.
    */
-  onExistingPublished?: 'demote-to-review' | 'keep-published';
+  onExistingPublished?: 'demote-to-review';
 }
 
 /**
@@ -291,15 +299,16 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
     `/lessons?topic_id=eq.${topic.id}&slug=eq.${encodeURIComponent(input.lesson.slug)}&select=status`,
   );
   const wasPublished = existing[0]?.status === 'published';
-  if (wasPublished && !input.onExistingPublished) {
+  if (wasPublished && input.onExistingPublished !== 'demote-to-review') {
     throw new Error(
       `publish: "${input.lesson.slug}" is already status='published' and this run did not say what to do with it. ` +
-        'Re-publishing live kid-facing content is a decision, not a default: pass onExistingPublished=' +
-        "'keep-published' (swap the content in place, lesson stays live, no fresh human review) or " +
-        "'demote-to-review' (COURSE_ENGINE §6's human gate — the lesson LEAVES the learner catalog until released again).",
+        "Regenerating live kid-facing content demotes it: pass onExistingPublished='demote-to-review' " +
+        '(the lesson LEAVES the learner catalog until Core releases it again through the verified release preflight). ' +
+        'There is no in-place live swap (Product G.2).',
     );
   }
-  const status = wasPublished && input.onExistingPublished === 'keep-published' ? 'published' : 'review';
+  // A regenerated slot is always unreviewed content.
+  const status = 'review';
 
   const [lesson] = await vaultUpsert<RowWithId>(
     'lessons',

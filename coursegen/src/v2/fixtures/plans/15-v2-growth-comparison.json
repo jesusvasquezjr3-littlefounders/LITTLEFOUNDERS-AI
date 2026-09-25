@@ -1,0 +1,62 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-teen",
+  "chapter_id": "compound-growth",
+  "lesson_id": "v2-growth-comparison",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-compound-growth"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara compara dos caminos de ahorro a largo plazo con interes simple y compuesto.",
+  "title": {
+    "en-US": "Compare growth paths",
+    "es-MX": "Compara caminos de crecimiento",
+    "pt-BR": "Compare caminhos de crescimento"
+  },
+  "new_concepts": [
+    "kc-compound-growth"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "growth-01",
+      "type": "visual.growth-comparison.v2",
+      "grading": "none",
+      "visual": {
+        "type": "multi-line"
+      },
+      "payload": {
+        "principalMinor": 10000,
+        "minimumRateBps": 200,
+        "maximumRateBps": 1200,
+        "rateStepBps": 200,
+        "initialRateBps": 800,
+        "minimumYears": 5,
+        "maximumYears": 30,
+        "yearStep": 5,
+        "initialYears": 10,
+        "predictionStepMinor": 1000,
+        "predictionMaximumMinor": 1000000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict, then compare simple and compound growth over the years."
+        },
+        "es-MX": {
+          "prompt": "Predice y luego compara el crecimiento simple y compuesto con los años."
+        },
+        "pt-BR": {
+          "prompt": "Preveja e depois compare o crescimento simples e composto ao longo dos anos."
+        }
+      }
+    }
+  ]
+}

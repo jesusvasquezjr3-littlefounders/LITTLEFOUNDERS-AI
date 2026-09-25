@@ -285,13 +285,39 @@ describe('writeLessonDocument', () => {
       ...baseInput(),
       gateCtx: { taxonomy: buildTaxonomy(), tier: 'tier1', facts: buildFacts(), topicTitle: 'x' },
     };
-    const result = await writeLessonDocument(input, { complete: complete as never });
+    const seen: unknown[] = [];
+    const result = await writeLessonDocument(input, { complete: complete as never, onFirstSubmission: (s) => seen.push(s) });
     expect(result.attempts).toBe(2);
+    // S05.4c: the FIRST draft's gate result is kept for the Appendix C 1.3
+    // first-submission pass rate, even though the retry fixed it.
+    expect(result.firstSubmission?.evaluated).toBe(true);
+    expect(result.firstSubmission?.failedGates).toContain(6);
+    expect(seen).toEqual([result.firstSubmission]);
     // The 2nd call's messages must carry the gate's actionable message.
     const secondCallArgs = complete.mock.calls[1]![0] as ChatCompleteRequest;
     const joined = secondCallArgs.messages.map((m) => m.content).join(' ');
     expect(joined).toContain('[gate 6');
     expect(joined).toContain('too generic');
+  });
+
+  it('counts an unparseable first draft as a contract failure that never reached gates 2-16', async () => {
+    let call = 0;
+    const complete = vi.fn(async (): Promise<ChatCompleteResult> => {
+      call++;
+      if (call === 1) return { content: 'not json at all', promptTokens: 1, completionTokens: 1 };
+      return { content: JSON.stringify(validDocumentJson(false)), promptTokens: 1, completionTokens: 1 };
+    });
+    const input: WriteInput = { ...baseInput(), gateCtx: { taxonomy: buildTaxonomy(), tier: 'tier1', facts: buildFacts(), topicTitle: 'x' } };
+    const result = await writeLessonDocument(input, { complete: complete as never });
+    expect(result.firstSubmission).toEqual({ evaluated: false, failedGates: [1] });
+  });
+
+  it('records no first submission when the write runs without gates', async () => {
+    const complete = vi.fn(async (): Promise<ChatCompleteResult> => ({ content: JSON.stringify(validDocumentJson(false)), promptTokens: 1, completionTokens: 1 }));
+    const onFirstSubmission = vi.fn();
+    const result = await writeLessonDocument(baseInput(), { complete: complete as never, onFirstSubmission });
+    expect(result.firstSubmission).toBeUndefined();
+    expect(onFirstSubmission).not.toHaveBeenCalled();
   });
 
   it('salvages only after the final full-document retry is also invalid', async () => {

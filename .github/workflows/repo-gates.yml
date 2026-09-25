@@ -85,6 +85,15 @@ jobs:
       - name: Demonstrate steps agree across every copy
         run: node agent/tools/check-demo-step-parity.mjs
 
+      # S05.4c: Forge's gates (coursegen), the attestation verify:course writes
+      # and the gate ids Vault's release preflight requires (migrations) are
+      # three hand-kept lists in two packages. A Forge gate missing from the
+      # preflight ships content it would refuse; a database requirement Forge
+      # never records makes every release impossible. Unfiltered because the
+      # drift lives in the gap between packages.
+      - name: Every Forge gate is required by the release preflight
+        run: node agent/tools/check-forge-release-gate-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

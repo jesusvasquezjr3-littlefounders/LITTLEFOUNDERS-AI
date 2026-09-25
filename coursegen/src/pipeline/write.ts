@@ -25,7 +25,7 @@ import { lessonMetaSchema, lessonScoringSchema } from '../contract/core/schemaBa
 import { TYPE_TO_SCHEMA, GRADED_TYPES } from '../contract/registry.js';
 import { shapeExample } from './shapeExample.js';
 import type { LessonLocale } from '../contract/core/types.js';
-import { runAllGates, type GateContext } from './gates.js';
+import { runAllGates, type GateContext, type GateNumber } from './gates.js';
 import { ICON_PALETTE } from './generationQuality.js';
 import { CONTENT_PLAYBOOK, tierReasoningGuidance } from './contentPlaybook.js';
 import { contentGateGuidance, lessonPolicyGuidance } from '../contentGates/guidance.js';
@@ -95,11 +95,24 @@ export interface WriteResult {
   droppedSegments: number;
   /** Bounded schema/gate feedback from the final failed full-document attempt. */
   lastIssues?: string;
+  /**
+   * The gates the FIRST draft failed, before any corrective retry (S05.4c,
+   * Appendix C 1.3 "Forge Gate Pass Rate (per gate)"). Absent when the write
+   * ran without gates.
+   */
+  firstSubmission?: { evaluated: boolean; failedGates: GateNumber[] };
 }
 
 export interface WriteDeps {
   ledger?: UsageLedger;
   complete?: typeof completeDeepSeek;
+  /**
+   * Called once, as soon as the first draft has been gated (S05.4c). A
+   * callback rather than only a return field so a write that later throws
+   * (every retry exhausted) is still counted: those are exactly the drafts
+   * the first-submission pass rate exists to show.
+   */
+  onFirstSubmission?: (submission: NonNullable<WriteResult['firstSubmission']>) => void;
 }
 
 export function renderFactsBlock(facts: FactsFile, refs: readonly string[]): string {
@@ -669,6 +682,13 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
 
   let lastRawJson: unknown;
   let lastIssues: string | undefined;
+  // Only the first draft counts for the first-submission pass rate.
+  let firstSubmission: WriteResult['firstSubmission'];
+  const noteFirst = (evaluated: boolean, failedGates: GateNumber[]) => {
+    if (!input.gateCtx || firstSubmission !== undefined) return;
+    firstSubmission = { evaluated, failedGates: [...new Set(failedGates)].sort((a, b) => a - b) };
+    deps.onFirstSubmission?.(firstSubmission);
+  };
 
   try {
     const { data, attempts } = await withCorrectiveRetry<LessonDocumentParsed>({
@@ -690,6 +710,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
         const json = safeJsonParse(raw);
         if (!json.ok) {
           lastIssues = `invalid JSON: ${json.error}`;
+          noteFirst(false, [1]);
           if (process.env.FORGE_DEBUG_WRITE) console.error('DEBUG raw write output (unparseable):', raw);
           return { ok: false, issues: lastIssues };
         }
@@ -697,6 +718,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
         const parsed = lessonDocumentSchema.safeParse(lastRawJson);
         if (!parsed.success) {
           lastIssues = formatZodIssues(parsed.error.issues, WRITE_ISSUE_TRUNCATE);
+          noteFirst(false, [1]);
           if (process.env.FORGE_DEBUG_WRITE) console.error('DEBUG raw write output:', JSON.stringify(json.value, null, 2));
           return { ok: false, issues: lastIssues };
         }
@@ -714,6 +736,9 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
             ...input.gateCtx,
             plannedSegmentTypes: input.skeleton.segments.map((segment) => segment.type),
           });
+          // A contract failure (gate 1) stops runAllGates before gates 2-16.
+          const failed = gateReport.problems.map((p) => p.gate);
+          noteFirst(!failed.includes(1), failed);
           if (!gateReport.ok || !gateReport.document) {
             lastIssues = gateReport.problems
               .slice(0, WRITE_ISSUE_TRUNCATE)
@@ -726,7 +751,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
         return { ok: true, data: parsed.data };
       },
     });
-    return { document: data, attempts, salvaged: false, droppedSegments: 0 };
+    return { document: data, attempts, salvaged: false, droppedSegments: 0, ...(firstSubmission ? { firstSubmission } : {}) };
   } catch (err) {
     if (!(err instanceof CorrectiveRetryExhaustedError)) throw err;
   }
@@ -745,7 +770,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
     const sanitized = repairDocument(stripNullValues(json.value));
     const parsed = lessonDocumentSchema.safeParse(sanitized);
     if (parsed.success) {
-      return { document: parsed.data, attempts: MAX_WRITE_ATTEMPTS + 1, salvaged: false, droppedSegments: 0 };
+      return { document: parsed.data, attempts: MAX_WRITE_ATTEMPTS + 1, salvaged: false, droppedSegments: 0, ...(firstSubmission ? { firstSubmission } : {}) };
     }
     lastIssues = formatZodIssues(parsed.error.issues, WRITE_ISSUE_TRUNCATE);
   } else {
@@ -763,6 +788,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
       salvaged: true,
       droppedSegments: salvage.dropped,
       lastIssues,
+      ...(firstSubmission ? { firstSubmission } : {}),
     };
   }
 

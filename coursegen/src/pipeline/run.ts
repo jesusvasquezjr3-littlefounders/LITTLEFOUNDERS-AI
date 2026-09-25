@@ -30,6 +30,7 @@ import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { reviewLesson, ReviewFailedError } from './review.js';
 import { RubricLog } from './rubricLog.js';
+import { GateSubmissionLog } from './gateSubmissionLog.js';
 import { ingestRunTelemetry } from '../vault/telemetry.js';
 import { LiveTelemetry } from './liveTelemetry.js';
 import { localizeLesson, translateTitle } from './localize.js';
@@ -119,7 +120,7 @@ export interface RunOptions {
    * `status='published'` and a blind demotion removes the lesson from every
    * child's path.
    */
-  onExistingPublished?: 'demote-to-review' | 'keep-published';
+  onExistingPublished?: 'demote-to-review';
 }
 
 export interface RunDeps {
@@ -319,6 +320,7 @@ async function processSlot(
   rubricLog?: RubricLog,
   live?: LiveTelemetry,
   coursePolicy?: CoursePolicy,
+  gateLog?: GateSubmissionLog,
 ): Promise<ProcessSlotOutcome> {
   if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'already-published' };
   if (!course.taxonomy || !course.facts || !course.catalog) {
@@ -440,7 +442,16 @@ async function processSlot(
           // because write's salvage/last-resort paths bypass the loop.
           gateCtx,
         },
-        { ledger },
+        {
+          ledger,
+          // Appendix C 1.3 first-submission pass rate per gate — telemetry
+          // only, never able to kill a run.
+          onFirstSubmission: (submission) => {
+            void gateLog
+              ?.record({ slotId: slot.slotId, locale: AUTHORING_LOCALE, ...submission })
+              .catch((e: unknown) => console.warn(`[forge] gate submission log write failed (run continues): ${e instanceof Error ? e.message : String(e)}`));
+          },
+        },
       );
       salvaged = salvaged || writeResult.salvaged;
       droppedSegments += writeResult.droppedSegments;
@@ -981,6 +992,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   );
   const register = resolveRegister(loadResult.course.taxonomy, options.register ?? 'kid');
   const rubricLog = new RubricLog(runDir);
+  const gateLog = new GateSubmissionLog(runDir);
   /** Final outcome per slot THIS invocation — the per-slot telemetry ingested to Vault at the end. */
   const slotOutcomes: ProcessSlotOutcome[] = [];
 
@@ -1046,7 +1058,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       // run (rethrown by processSlot), so retries never blow past the
       // kill-switches.
       const slotStartedAt = Date.now();
-      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live, coursePolicy);
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live, coursePolicy, gateLog);
       let attempt = 1;
       while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
         attempt++;
@@ -1061,7 +1073,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
             `${prep === 'resumed' ? 'resuming from checkpoint stage' : 'regenerating from scratch'}: ${outcome.error?.slice(0, 160)}`,
         );
         await store.save(checkpoint);
-        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live, coursePolicy);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live, coursePolicy, gateLog);
       }
       outcome.durationMs = Date.now() - slotStartedAt;
       slotOutcomes.push(outcome);

@@ -30,10 +30,15 @@ if run_case 'f|VERIFICATION_REQUIRED|Run Forge verification.|0|0|0|0' 'safe-cour
   echo 'an unverified course was reported as released' >&2
   exit 1
 fi
+# S05.4c: a fresh verification that does not attest every Forge release gate.
+if run_case 'f|VERIFICATION_INCOMPLETE|The Forge verification does not attest every required release gate (1 missing, 0 failed).|0|0|0|0' 'safe-course' >/dev/null 2>&1; then
+  echo 'a course missing a Forge release gate was reported as released' >&2
+  exit 1
+fi
 if run_case '' 'missing-course' >/dev/null 2>&1; then
   echo 'a missing course was reported as released' >&2
   exit 1
 fi
 run_case 't|RELEASED|Course hierarchy released.|1|1|1|1' "quoted'course" >/dev/null
 
-echo 'publish-course boundary OK — verified release, refusal, missing slug and quoted slug'
+echo 'publish-course boundary OK — verified release, unverified and incomplete-gate refusals, missing slug and quoted slug'

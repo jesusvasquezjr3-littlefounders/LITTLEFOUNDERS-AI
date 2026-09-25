@@ -1,0 +1,100 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "compare-savings",
+  "lesson_id": "v2-bar-model",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-compare-quantities"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Ana y Leo comparan cuanto han ahorrado y buscan la diferencia.",
+  "title": {
+    "en-US": "Compare two savings",
+    "es-MX": "Compara dos ahorros",
+    "pt-BR": "Compare duas poupanças"
+  },
+  "new_concepts": [
+    "kc-compare-quantities"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "bar-structure-01",
+      "type": "math.bar-model.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bar-model"
+      },
+      "payload": {
+        "whole": 50,
+        "difference": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Choose the model.",
+          "knownLabel": "Ana",
+          "unknownLabel": "Leo",
+          "spokenText": "fifty and twelve more"
+        },
+        "es-MX": {
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Elige el modelo.",
+          "knownLabel": "Ana",
+          "unknownLabel": "Leo",
+          "spokenText": "cincuenta y doce más"
+        },
+        "pt-BR": {
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Escolha o modelo.",
+          "knownLabel": "Ana",
+          "unknownLabel": "Leo",
+          "spokenText": "cinquenta e doze a mais"
+        }
+      },
+      "rubric": {
+        "model": "comparison"
+      }
+    },
+    {
+      "id": "bar-answer-01",
+      "type": "math.bar-model.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bar-model"
+      },
+      "payload": {
+        "whole": 50,
+        "difference": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many coins did Leo save?",
+          "knownLabel": "Ana",
+          "unknownLabel": "Leo",
+          "spokenText": "fifty minus twelve"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas monedas ahorró Leo?",
+          "knownLabel": "Ana",
+          "unknownLabel": "Leo",
+          "spokenText": "cincuenta menos doce"
+        },
+        "pt-BR": {
+          "prompt": "Quantas moedas Leo guardou?",
+          "knownLabel": "Ana",
+          "unknownLabel": "Leo",
+          "spokenText": "cinquenta menos doze"
+        }
+      },
+      "rubric": {
+        "target": 38
+      }
+    }
+  ]
+}

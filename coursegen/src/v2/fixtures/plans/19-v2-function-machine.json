@@ -1,0 +1,75 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "savings-rules",
+  "lesson_id": "v2-function-machine",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-savings-function"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho guarda la misma cantidad cada semana ademas de un regalo inicial y busca la regla.",
+  "title": {
+    "en-US": "Find the savings rule",
+    "es-MX": "Encuentra la regla de ahorro",
+    "pt-BR": "Ache a regra da poupança"
+  },
+  "new_concepts": [
+    "kc-savings-function"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "function-machine-01",
+      "type": "math.function-machine.v2",
+      "grading": "server",
+      "visual": {
+        "type": "function-machine"
+      },
+      "payload": {
+        "examples": [
+          {
+            "input": 1,
+            "output": 15
+          },
+          {
+            "input": 2,
+            "output": 20
+          },
+          {
+            "input": 3,
+            "output": 25
+          }
+        ],
+        "multiplierMaximum": 9,
+        "offsetMaximum": 50
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Try each week, then guess the rule."
+        },
+        "es-MX": {
+          "prompt": "Prueba cada semana y adivina la regla."
+        },
+        "pt-BR": {
+          "prompt": "Teste cada semana e descubra a regra."
+        }
+      },
+      "rubric": {
+        "multiplier": 5,
+        "offset": 10,
+        "heldOutInputs": [
+          4,
+          6
+        ]
+      }
+    }
+  ]
+}

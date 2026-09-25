@@ -1,0 +1,145 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "change-schemas",
+  "lesson_id": "v2-schema-diagram",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-change-schemas"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Leo gano monedas lavando bicicletas, gasto algunas y quiere saber cuantas le quedan.",
+  "title": {
+    "en-US": "Find what is left",
+    "es-MX": "Encuentra lo que queda",
+    "pt-BR": "Descubra o que sobra"
+  },
+  "new_concepts": [
+    "kc-change-schemas"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "schema-structure-01",
+      "type": "math.schema-diagram.structure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "income": 24,
+        "spending": 9
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo earned 24 coins and spent 9. Choose the schema.",
+          "incomeLabel": "Earned",
+          "spendingLabel": "Spent",
+          "remainingLabel": "Left",
+          "spokenText": "twenty four minus nine"
+        },
+        "es-MX": {
+          "prompt": "Leo ganó 24 monedas y gastó 9. Elige el esquema.",
+          "incomeLabel": "Ganado",
+          "spendingLabel": "Gastado",
+          "remainingLabel": "Queda",
+          "spokenText": "veinticuatro menos nueve"
+        },
+        "pt-BR": {
+          "prompt": "Leo ganhou 24 moedas e gastou 9. Escolha o esquema.",
+          "incomeLabel": "Ganho",
+          "spendingLabel": "Gasto",
+          "remainingLabel": "Sobra",
+          "spokenText": "vinte e quatro menos nove"
+        }
+      },
+      "rubric": {
+        "schema": "change"
+      }
+    },
+    {
+      "id": "schema-slots-01",
+      "type": "math.schema-diagram.slots.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "income": 24,
+        "spending": 9
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each number in its box.",
+          "incomeLabel": "Earned",
+          "spendingLabel": "Spent",
+          "remainingLabel": "Left",
+          "spokenText": "twenty four minus nine"
+        },
+        "es-MX": {
+          "prompt": "Pon cada número en su casilla.",
+          "incomeLabel": "Ganado",
+          "spendingLabel": "Gastado",
+          "remainingLabel": "Queda",
+          "spokenText": "veinticuatro menos nueve"
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada número na sua caixa.",
+          "incomeLabel": "Ganho",
+          "spendingLabel": "Gasto",
+          "remainingLabel": "Sobra",
+          "spokenText": "vinte e quatro menos nove"
+        }
+      },
+      "rubric": {
+        "income": 24,
+        "spending": 9
+      }
+    },
+    {
+      "id": "schema-answer-01",
+      "type": "math.schema-diagram.answer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "schema-diagram"
+      },
+      "payload": {
+        "income": 24,
+        "spending": 9
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How many coins are left?",
+          "incomeLabel": "Earned",
+          "spendingLabel": "Spent",
+          "remainingLabel": "Left",
+          "spokenText": "twenty four minus nine"
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas monedas quedan?",
+          "incomeLabel": "Ganado",
+          "spendingLabel": "Gastado",
+          "remainingLabel": "Queda",
+          "spokenText": "veinticuatro menos nueve"
+        },
+        "pt-BR": {
+          "prompt": "Quantas moedas sobram?",
+          "incomeLabel": "Ganho",
+          "spendingLabel": "Gasto",
+          "remainingLabel": "Sobra",
+          "spokenText": "vinte e quatro menos nove"
+        }
+      },
+      "rubric": {
+        "target": 15
+      }
+    }
+  ]
+}

@@ -26,4 +26,23 @@ test('reports a missing capability and a segment present in only one layer', () 
   assert.ok(problems.some((problem) => problem.startsWith('visual.growth-comparison.v2:')));
 });
 
+test('reports a Forge emitter copy that drifts from Core (S05.4c)', () => {
+  const forge = core.replace('const capabilities = {', 'export const V2_SEGMENT_CAPABILITIES = {');
+  assert.deepEqual(checkV2LessonCapabilityParity(core, browser, forge), []);
+  const drifted = forge.replace(", 'operation.parameter-slider.v1'", '');
+  const problems = checkV2LessonCapabilityParity(core, browser, drifted);
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /^visual\.growth-comparison\.v2: Core .* differs from Forge/);
+});
+
+test('the shipped Core, browser and Forge capability maps agree', async () => {
+  const { readFileSync } = await import('node:fs');
+  const root = new URL('../../', import.meta.url);
+  const read = (file) => readFileSync(new URL(file, root), 'utf8');
+  assert.deepEqual(
+    checkV2LessonCapabilityParity(read('backend/src/services/v2LessonDocument.ts'), read('frontend/src/rebuild/learning/lessonDocument.ts'), read('coursegen/src/v2/contract.ts')),
+    [],
+  );
+});
+
 console.log('check-v2-lesson-capability-parity OK — parity and deliberate drift are covered');

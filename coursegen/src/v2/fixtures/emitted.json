@@ -1,0 +1,3590 @@
+[
+  {
+    "lesson_id": "v2-allocation-bar",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-allocation-bar",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Split your coins",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Split 12 coins. Save at least 4.",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "total": 12,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ],
+      "mentor_stage": {
+        "character": "liruf",
+        "scene": "diorama-a"
+      }
+    },
+    "answer_keys": {
+      "allocate-01": {
+        "minimumSave": 4
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-bar",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-allocation-bar",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Reparte tus monedas",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Reparte 12 monedas. Guarda al menos 4.",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "total": 12,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ],
+      "mentor_stage": {
+        "character": "liruf",
+        "scene": "diorama-a"
+      }
+    },
+    "answer_keys": {
+      "allocate-01": {
+        "minimumSave": 4
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-bar",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-allocation-bar",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Divida suas moedas",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Divida 12 moedas. Guarde pelo menos 4.",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "total": 12,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ],
+      "mentor_stage": {
+        "character": "liruf",
+        "scene": "diorama-a"
+      }
+    },
+    "answer_keys": {
+      "allocate-01": {
+        "minimumSave": 4
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-waffle",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-allocation-waffle",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Ten coins, three jars",
+      "required_capabilities": [
+        "visual.waffle.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-waffle-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Fill the grid. Save 3 or more.",
+          "visual": {
+            "type": "waffle"
+          },
+          "payload": {
+            "total": 10,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-waffle-01": {
+        "minimumSave": 3
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-waffle",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-allocation-waffle",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Diez monedas, tres frascos",
+      "required_capabilities": [
+        "visual.waffle.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-waffle-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Llena la cuadrícula. Guarda 3 o más.",
+          "visual": {
+            "type": "waffle"
+          },
+          "payload": {
+            "total": 10,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-waffle-01": {
+        "minimumSave": 3
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-waffle",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-allocation-waffle",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-allocation"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Dez moedas, três potes",
+      "required_capabilities": [
+        "visual.waffle.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-waffle-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Preencha a grade. Guarde 3 ou mais.",
+          "visual": {
+            "type": "waffle"
+          },
+          "payload": {
+            "total": 10,
+            "step": 1,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-waffle-01": {
+        "minimumSave": 3
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-donut",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "budget-parts",
+      "lesson_id": "v2-allocation-donut",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-budget-parts"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Your month in a circle",
+      "required_capabilities": [
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-donut-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Split 60 coins for the month. Save at least a third.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 60,
+            "step": 5,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-donut-01": {
+        "minimumSave": 20
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-donut",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "budget-parts",
+      "lesson_id": "v2-allocation-donut",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-budget-parts"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Tu mes en un círculo",
+      "required_capabilities": [
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-donut-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Reparte 60 monedas del mes. Guarda al menos un tercio.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 60,
+            "step": 5,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-donut-01": {
+        "minimumSave": 20
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-allocation-donut",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "budget-parts",
+      "lesson_id": "v2-allocation-donut",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-budget-parts"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Seu mês em um círculo",
+      "required_capabilities": [
+        "visual.donut.v1",
+        "operation.reallocate.v1"
+      ],
+      "segments": [
+        {
+          "id": "allocate-donut-01",
+          "type": "money.allocation.v2",
+          "grading": "server",
+          "prompt": "Divida 60 moedas do mês. Guarde pelo menos um terço.",
+          "visual": {
+            "type": "donut"
+          },
+          "payload": {
+            "total": 60,
+            "step": 5,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "allocate-donut-01": {
+        "minimumSave": 20
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-savings-line",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-over-time",
+      "lesson_id": "v2-savings-line",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-over-time"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Watch savings grow",
+      "required_capabilities": [
+        "visual.line.v1",
+        "operation.parameter-slider.v1"
+      ],
+      "segments": [
+        {
+          "id": "savings-line-01",
+          "type": "visual.savings-line.v2",
+          "grading": "none",
+          "prompt": "Dina saves after each yard sale. Move the weekly amount.",
+          "visual": {
+            "type": "line"
+          },
+          "payload": {
+            "periods": 8,
+            "minimum": 0,
+            "maximum": 80,
+            "step": 10,
+            "initial": 10,
+            "currency": "local",
+            "unit": "week"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-savings-line",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-over-time",
+      "lesson_id": "v2-savings-line",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-over-time"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Mira crecer tu ahorro",
+      "required_capabilities": [
+        "visual.line.v1",
+        "operation.parameter-slider.v1"
+      ],
+      "segments": [
+        {
+          "id": "savings-line-01",
+          "type": "visual.savings-line.v2",
+          "grading": "none",
+          "prompt": "Dina ahorra después de cada tianguis. Mueve lo que guarda por semana.",
+          "visual": {
+            "type": "line"
+          },
+          "payload": {
+            "periods": 8,
+            "minimum": 0,
+            "maximum": 80,
+            "step": 10,
+            "initial": 10,
+            "currency": "local",
+            "unit": "week"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-savings-line",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-over-time",
+      "lesson_id": "v2-savings-line",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-over-time"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Veja a poupança crescer",
+      "required_capabilities": [
+        "visual.line.v1",
+        "operation.parameter-slider.v1"
+      ],
+      "segments": [
+        {
+          "id": "savings-line-01",
+          "type": "visual.savings-line.v2",
+          "grading": "none",
+          "prompt": "Dina guarda depois de cada feira livre. Mude o valor por semana.",
+          "visual": {
+            "type": "line"
+          },
+          "payload": {
+            "periods": 8,
+            "minimum": 0,
+            "maximum": 80,
+            "step": 10,
+            "initial": 10,
+            "currency": "local",
+            "unit": "week"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-number-line-whole",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "counting-coins",
+      "lesson_id": "v2-number-line-whole",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-count-to-twenty"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Find the coins",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "operation.place-point.v1"
+      ],
+      "segments": [
+        {
+          "id": "number-line-01",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Liruf has 12 coins. Mark 12 on the line.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 20,
+            "step": 1,
+            "initial": 0
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "number-line-01": {
+        "target": 12
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-number-line-whole",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "counting-coins",
+      "lesson_id": "v2-number-line-whole",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-count-to-twenty"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Encuentra las monedas",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "operation.place-point.v1"
+      ],
+      "segments": [
+        {
+          "id": "number-line-01",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Liruf tiene 12 monedas. Marca 12 en la recta.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 20,
+            "step": 1,
+            "initial": 0
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "number-line-01": {
+        "target": 12
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-number-line-whole",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "counting-coins",
+      "lesson_id": "v2-number-line-whole",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-count-to-twenty"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Encontre as moedas",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "operation.place-point.v1"
+      ],
+      "segments": [
+        {
+          "id": "number-line-01",
+          "type": "math.number-line.whole.v2",
+          "grading": "server",
+          "prompt": "Liruf tem 12 moedas. Marque 12 na reta.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 20,
+            "step": 1,
+            "initial": 0
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "number-line-01": {
+        "target": 12
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-fraction-number-line",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "fraction-magnitude",
+      "lesson_id": "v2-fraction-number-line",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-fraction-magnitude"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Fractions have a place",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "visual.fraction-area.v1",
+        "operation.place-point.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "fraction-line-01",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Zara spent three quarters of her coins. Place it.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 4,
+            "initialUnits": 0,
+            "spokenText": "three quarters"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "fraction-line-01": {
+        "targetNumerator": 3,
+        "targetDenominator": 4,
+        "toleranceUnits": 0
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-fraction-number-line",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "fraction-magnitude",
+      "lesson_id": "v2-fraction-number-line",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-fraction-magnitude"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Las fracciones tienen lugar",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "visual.fraction-area.v1",
+        "operation.place-point.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "fraction-line-01",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Zara gastó tres cuartos de sus monedas. Ubícalo.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 4,
+            "initialUnits": 0,
+            "spokenText": "tres cuartos"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "fraction-line-01": {
+        "targetNumerator": 3,
+        "targetDenominator": 4,
+        "toleranceUnits": 0
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-fraction-number-line",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "fraction-magnitude",
+      "lesson_id": "v2-fraction-number-line",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-fraction-magnitude"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Frações têm um lugar",
+      "required_capabilities": [
+        "visual.number-line.v1",
+        "visual.fraction-area.v1",
+        "operation.place-point.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "fraction-line-01",
+          "type": "math.number-line.fraction.v2",
+          "grading": "server",
+          "prompt": "Zara gastou três quartos das moedas. Marque na reta.",
+          "visual": {
+            "type": "number-line"
+          },
+          "payload": {
+            "maximumWhole": 1,
+            "divisions": 4,
+            "initialUnits": 0,
+            "spokenText": "três quartos"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "fraction-line-01": {
+        "targetNumerator": 3,
+        "targetDenominator": 4,
+        "toleranceUnits": 0
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-fraction-area",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "equal-shares",
+      "lesson_id": "v2-fraction-area",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-equal-shares"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Make equal shares",
+      "required_capabilities": [
+        "visual.fraction-area.v1",
+        "operation.partition-equal.v1",
+        "operation.shade-parts.v1",
+        "operation.split-equivalent.v1"
+      ],
+      "segments": [
+        {
+          "id": "fraction-area-01",
+          "type": "math.fraction-area.v2",
+          "grading": "server",
+          "prompt": "Share the pizza. Shade one half.",
+          "visual": {
+            "type": "fraction-area"
+          },
+          "payload": {
+            "minimumParts": 2,
+            "maximumParts": 6,
+            "initialParts": 2,
+            "initialShaded": 0,
+            "spokenText": "one half"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "fraction-area-01": {
+        "targetNumerator": 1,
+        "targetDenominator": 2
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-fraction-area",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "equal-shares",
+      "lesson_id": "v2-fraction-area",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-equal-shares"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Haz partes iguales",
+      "required_capabilities": [
+        "visual.fraction-area.v1",
+        "operation.partition-equal.v1",
+        "operation.shade-parts.v1",
+        "operation.split-equivalent.v1"
+      ],
+      "segments": [
+        {
+          "id": "fraction-area-01",
+          "type": "math.fraction-area.v2",
+          "grading": "server",
+          "prompt": "Comparte la pizza. Colorea una mitad.",
+          "visual": {
+            "type": "fraction-area"
+          },
+          "payload": {
+            "minimumParts": 2,
+            "maximumParts": 6,
+            "initialParts": 2,
+            "initialShaded": 0,
+            "spokenText": "una mitad"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "fraction-area-01": {
+        "targetNumerator": 1,
+        "targetDenominator": 2
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-fraction-area",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "equal-shares",
+      "lesson_id": "v2-fraction-area",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 7,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-equal-shares"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Faça partes iguais",
+      "required_capabilities": [
+        "visual.fraction-area.v1",
+        "operation.partition-equal.v1",
+        "operation.shade-parts.v1",
+        "operation.split-equivalent.v1"
+      ],
+      "segments": [
+        {
+          "id": "fraction-area-01",
+          "type": "math.fraction-area.v2",
+          "grading": "server",
+          "prompt": "Divida a pizza. Pinte uma metade.",
+          "visual": {
+            "type": "fraction-area"
+          },
+          "payload": {
+            "minimumParts": 2,
+            "maximumParts": 6,
+            "initialParts": 2,
+            "initialShaded": 0,
+            "spokenText": "uma metade"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "fraction-area-01": {
+        "targetNumerator": 1,
+        "targetDenominator": 2
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-bar-model",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "compare-savings",
+      "lesson_id": "v2-bar-model",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-compare-quantities"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Compare two savings",
+      "required_capabilities": [
+        "visual.bar-model.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "bar-structure-01",
+          "type": "math.bar-model.structure.v2",
+          "grading": "server",
+          "prompt": "Ana saved 50 coins, 12 more than Leo. Choose the model.",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "whole": 50,
+            "difference": 12,
+            "knownLabel": "Ana",
+            "unknownLabel": "Leo",
+            "spokenText": "fifty and twelve more"
+          }
+        },
+        {
+          "id": "bar-answer-01",
+          "type": "math.bar-model.answer.v2",
+          "grading": "server",
+          "prompt": "How many coins did Leo save?",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "whole": 50,
+            "difference": 12,
+            "knownLabel": "Ana",
+            "unknownLabel": "Leo",
+            "spokenText": "fifty minus twelve"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "bar-structure-01": {
+        "model": "comparison"
+      },
+      "bar-answer-01": {
+        "target": 38
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-bar-model",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "compare-savings",
+      "lesson_id": "v2-bar-model",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-compare-quantities"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Compara dos ahorros",
+      "required_capabilities": [
+        "visual.bar-model.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "bar-structure-01",
+          "type": "math.bar-model.structure.v2",
+          "grading": "server",
+          "prompt": "Ana ahorró 50 monedas, 12 más que Leo. Elige el modelo.",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "whole": 50,
+            "difference": 12,
+            "knownLabel": "Ana",
+            "unknownLabel": "Leo",
+            "spokenText": "cincuenta y doce más"
+          }
+        },
+        {
+          "id": "bar-answer-01",
+          "type": "math.bar-model.answer.v2",
+          "grading": "server",
+          "prompt": "¿Cuántas monedas ahorró Leo?",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "whole": 50,
+            "difference": 12,
+            "knownLabel": "Ana",
+            "unknownLabel": "Leo",
+            "spokenText": "cincuenta menos doce"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "bar-structure-01": {
+        "model": "comparison"
+      },
+      "bar-answer-01": {
+        "target": 38
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-bar-model",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "compare-savings",
+      "lesson_id": "v2-bar-model",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-compare-quantities"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Compare duas poupanças",
+      "required_capabilities": [
+        "visual.bar-model.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "bar-structure-01",
+          "type": "math.bar-model.structure.v2",
+          "grading": "server",
+          "prompt": "Ana guardou 50 moedas, 12 a mais que Leo. Escolha o modelo.",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "whole": 50,
+            "difference": 12,
+            "knownLabel": "Ana",
+            "unknownLabel": "Leo",
+            "spokenText": "cinquenta e doze a mais"
+          }
+        },
+        {
+          "id": "bar-answer-01",
+          "type": "math.bar-model.answer.v2",
+          "grading": "server",
+          "prompt": "Quantas moedas Leo guardou?",
+          "visual": {
+            "type": "bar-model"
+          },
+          "payload": {
+            "whole": 50,
+            "difference": 12,
+            "knownLabel": "Ana",
+            "unknownLabel": "Leo",
+            "spokenText": "cinquenta menos doze"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "bar-structure-01": {
+        "model": "comparison"
+      },
+      "bar-answer-01": {
+        "target": 38
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-schema-diagram",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "change-schemas",
+      "lesson_id": "v2-schema-diagram",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-change-schemas"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Find what is left",
+      "required_capabilities": [
+        "visual.schema-diagram.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "schema-structure-01",
+          "type": "math.schema-diagram.structure.v2",
+          "grading": "server",
+          "prompt": "Leo earned 24 coins and spent 9. Choose the schema.",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Earned",
+            "spendingLabel": "Spent",
+            "remainingLabel": "Left",
+            "spokenText": "twenty four minus nine"
+          }
+        },
+        {
+          "id": "schema-slots-01",
+          "type": "math.schema-diagram.slots.v2",
+          "grading": "server",
+          "prompt": "Put each number in its box.",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Earned",
+            "spendingLabel": "Spent",
+            "remainingLabel": "Left",
+            "spokenText": "twenty four minus nine"
+          }
+        },
+        {
+          "id": "schema-answer-01",
+          "type": "math.schema-diagram.answer.v2",
+          "grading": "server",
+          "prompt": "How many coins are left?",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Earned",
+            "spendingLabel": "Spent",
+            "remainingLabel": "Left",
+            "spokenText": "twenty four minus nine"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "schema-structure-01": {
+        "schema": "change"
+      },
+      "schema-slots-01": {
+        "income": 24,
+        "spending": 9
+      },
+      "schema-answer-01": {
+        "target": 15
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-schema-diagram",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "change-schemas",
+      "lesson_id": "v2-schema-diagram",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-change-schemas"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Encuentra lo que queda",
+      "required_capabilities": [
+        "visual.schema-diagram.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "schema-structure-01",
+          "type": "math.schema-diagram.structure.v2",
+          "grading": "server",
+          "prompt": "Leo ganó 24 monedas y gastó 9. Elige el esquema.",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Ganado",
+            "spendingLabel": "Gastado",
+            "remainingLabel": "Queda",
+            "spokenText": "veinticuatro menos nueve"
+          }
+        },
+        {
+          "id": "schema-slots-01",
+          "type": "math.schema-diagram.slots.v2",
+          "grading": "server",
+          "prompt": "Pon cada número en su casilla.",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Ganado",
+            "spendingLabel": "Gastado",
+            "remainingLabel": "Queda",
+            "spokenText": "veinticuatro menos nueve"
+          }
+        },
+        {
+          "id": "schema-answer-01",
+          "type": "math.schema-diagram.answer.v2",
+          "grading": "server",
+          "prompt": "¿Cuántas monedas quedan?",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Ganado",
+            "spendingLabel": "Gastado",
+            "remainingLabel": "Queda",
+            "spokenText": "veinticuatro menos nueve"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "schema-structure-01": {
+        "schema": "change"
+      },
+      "schema-slots-01": {
+        "income": 24,
+        "spending": 9
+      },
+      "schema-answer-01": {
+        "target": 15
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-schema-diagram",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "change-schemas",
+      "lesson_id": "v2-schema-diagram",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-change-schemas"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Descubra o que sobra",
+      "required_capabilities": [
+        "visual.schema-diagram.v1",
+        "operation.build-slots.v1",
+        "operation.structure-check.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "schema-structure-01",
+          "type": "math.schema-diagram.structure.v2",
+          "grading": "server",
+          "prompt": "Leo ganhou 24 moedas e gastou 9. Escolha o esquema.",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Ganho",
+            "spendingLabel": "Gasto",
+            "remainingLabel": "Sobra",
+            "spokenText": "vinte e quatro menos nove"
+          }
+        },
+        {
+          "id": "schema-slots-01",
+          "type": "math.schema-diagram.slots.v2",
+          "grading": "server",
+          "prompt": "Coloque cada número na sua caixa.",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Ganho",
+            "spendingLabel": "Gasto",
+            "remainingLabel": "Sobra",
+            "spokenText": "vinte e quatro menos nove"
+          }
+        },
+        {
+          "id": "schema-answer-01",
+          "type": "math.schema-diagram.answer.v2",
+          "grading": "server",
+          "prompt": "Quantas moedas sobram?",
+          "visual": {
+            "type": "schema-diagram"
+          },
+          "payload": {
+            "income": 24,
+            "spending": 9,
+            "incomeLabel": "Ganho",
+            "spendingLabel": "Gasto",
+            "remainingLabel": "Sobra",
+            "spokenText": "vinte e quatro menos nove"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "schema-structure-01": {
+        "schema": "change"
+      },
+      "schema-slots-01": {
+        "income": 24,
+        "spending": 9
+      },
+      "schema-answer-01": {
+        "target": 15
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-goal-bullet",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-goals",
+      "lesson_id": "v2-goal-bullet",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-goal"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "How close is the goal?",
+      "required_capabilities": [
+        "visual.bullet.v1",
+        "operation.parameter-slider.v1"
+      ],
+      "segments": [
+        {
+          "id": "goal-bullet-01",
+          "type": "visual.goal-bullet.v2",
+          "grading": "none",
+          "prompt": "Rho wants 60 coins for a skateboard. Move his savings.",
+          "visual": {
+            "type": "bullet"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "target": 60,
+            "step": 10,
+            "initial": 20,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-goal-bullet",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-goals",
+      "lesson_id": "v2-goal-bullet",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-goal"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "¿Qué tan cerca está la meta?",
+      "required_capabilities": [
+        "visual.bullet.v1",
+        "operation.parameter-slider.v1"
+      ],
+      "segments": [
+        {
+          "id": "goal-bullet-01",
+          "type": "visual.goal-bullet.v2",
+          "grading": "none",
+          "prompt": "Rho quiere 60 monedas para una patineta. Mueve su ahorro.",
+          "visual": {
+            "type": "bullet"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "target": 60,
+            "step": 10,
+            "initial": 20,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-goal-bullet",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-goals",
+      "lesson_id": "v2-goal-bullet",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-goal"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Quão perto está a meta?",
+      "required_capabilities": [
+        "visual.bullet.v1",
+        "operation.parameter-slider.v1"
+      ],
+      "segments": [
+        {
+          "id": "goal-bullet-01",
+          "type": "visual.goal-bullet.v2",
+          "grading": "none",
+          "prompt": "Rho quer 60 moedas para um skate. Mova a poupança dele.",
+          "visual": {
+            "type": "bullet"
+          },
+          "payload": {
+            "minimum": 0,
+            "maximum": 100,
+            "target": 60,
+            "step": 10,
+            "initial": 20,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-percent-grid",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "discounts",
+      "lesson_id": "v2-percent-grid",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-percent-of"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "What does the sale take?",
+      "required_capabilities": [
+        "visual.percent-grid.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "percent-grid-01",
+          "type": "visual.percent-grid.v2",
+          "grading": "none",
+          "prompt": "A game costs 200 coins. Try different discounts.",
+          "visual": {
+            "type": "percent-grid"
+          },
+          "payload": {
+            "baseUnits": 200,
+            "step": 10,
+            "initialPercent": 0,
+            "mode": "discount",
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-percent-grid",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "discounts",
+      "lesson_id": "v2-percent-grid",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-percent-of"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "¿Cuánto quita la oferta?",
+      "required_capabilities": [
+        "visual.percent-grid.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "percent-grid-01",
+          "type": "visual.percent-grid.v2",
+          "grading": "none",
+          "prompt": "Un juego cuesta 200 monedas. Prueba varios descuentos.",
+          "visual": {
+            "type": "percent-grid"
+          },
+          "payload": {
+            "baseUnits": 200,
+            "step": 10,
+            "initialPercent": 0,
+            "mode": "discount",
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-percent-grid",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "discounts",
+      "lesson_id": "v2-percent-grid",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-percent-of"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Quanto a oferta tira?",
+      "required_capabilities": [
+        "visual.percent-grid.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "percent-grid-01",
+          "type": "visual.percent-grid.v2",
+          "grading": "none",
+          "prompt": "Um jogo custa 200 moedas. Teste descontos diferentes.",
+          "visual": {
+            "type": "percent-grid"
+          },
+          "payload": {
+            "baseUnits": 200,
+            "step": 10,
+            "initialPercent": 0,
+            "mode": "discount",
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-place-value",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "tens-and-ones",
+      "lesson_id": "v2-place-value",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-tens-and-ones"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Trade ten for one",
+      "required_capabilities": [
+        "visual.base-ten.v1",
+        "operation.trade-ten.v1",
+        "operation.linked-representations.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "place-value-01",
+          "type": "math.place-value.v2",
+          "grading": "none",
+          "prompt": "Liruf has 14 coins. Trade ten for a bag.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "total": 14
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-place-value",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "tens-and-ones",
+      "lesson_id": "v2-place-value",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-tens-and-ones"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Cambia diez por una",
+      "required_capabilities": [
+        "visual.base-ten.v1",
+        "operation.trade-ten.v1",
+        "operation.linked-representations.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "place-value-01",
+          "type": "math.place-value.v2",
+          "grading": "none",
+          "prompt": "Liruf tiene 14 monedas. Cambia diez por una bolsita.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "total": 14
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-place-value",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "tens-and-ones",
+      "lesson_id": "v2-place-value",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-tens-and-ones"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Troque dez por uma",
+      "required_capabilities": [
+        "visual.base-ten.v1",
+        "operation.trade-ten.v1",
+        "operation.linked-representations.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "place-value-01",
+          "type": "math.place-value.v2",
+          "grading": "none",
+          "prompt": "Liruf tem 14 moedas. Troque dez por um saquinho.",
+          "visual": {
+            "type": "base-ten"
+          },
+          "payload": {
+            "total": 14
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-savings-rule",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "savings-rules",
+      "lesson_id": "v2-savings-rule",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-saving"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Make a savings rule",
+      "required_capabilities": [
+        "visual.rule-diagram.v1",
+        "operation.choose-connective.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "savings-rule-01",
+          "type": "logic.savings-rule.v2",
+          "grading": "none",
+          "prompt": "Dina is 5 coins short of 20. Build her rule.",
+          "visual": {
+            "type": "rule-diagram"
+          },
+          "payload": {
+            "goal": 20,
+            "shortfall": 5
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-savings-rule",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "savings-rules",
+      "lesson_id": "v2-savings-rule",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-saving"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Crea una regla de ahorro",
+      "required_capabilities": [
+        "visual.rule-diagram.v1",
+        "operation.choose-connective.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "savings-rule-01",
+          "type": "logic.savings-rule.v2",
+          "grading": "none",
+          "prompt": "A Dina le faltan 5 monedas para 20. Arma su regla.",
+          "visual": {
+            "type": "rule-diagram"
+          },
+          "payload": {
+            "goal": 20,
+            "shortfall": 5
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-savings-rule",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "savings-rules",
+      "lesson_id": "v2-savings-rule",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-if-then-saving"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Crie uma regra de poupança",
+      "required_capabilities": [
+        "visual.rule-diagram.v1",
+        "operation.choose-connective.v1",
+        "operation.case-step.v1"
+      ],
+      "segments": [
+        {
+          "id": "savings-rule-01",
+          "type": "logic.savings-rule.v2",
+          "grading": "none",
+          "prompt": "Faltam 5 moedas para Dina chegar a 20. Monte a regra.",
+          "visual": {
+            "type": "rule-diagram"
+          },
+          "payload": {
+            "goal": 20,
+            "shortfall": 5
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-running-ledger",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "tracking-money",
+      "lesson_id": "v2-running-ledger",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-running-ledger"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Track every sale",
+      "required_capabilities": [
+        "visual.balance-meter.v1",
+        "operation.running-ledger.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "ledger-01",
+          "type": "money.running-ledger.v2",
+          "grading": "none",
+          "prompt": "Each sale brings 5 coins; each cup costs 3. Log six moves.",
+          "visual": {
+            "type": "balance-meter"
+          },
+          "payload": {
+            "initial": 10,
+            "sale": 5,
+            "cost": 3,
+            "maxEntries": 6
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-running-ledger",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "tracking-money",
+      "lesson_id": "v2-running-ledger",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-running-ledger"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Anota cada venta",
+      "required_capabilities": [
+        "visual.balance-meter.v1",
+        "operation.running-ledger.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "ledger-01",
+          "type": "money.running-ledger.v2",
+          "grading": "none",
+          "prompt": "Cada venta da 5 monedas; cada vaso cuesta 3. Anota seis movimientos.",
+          "visual": {
+            "type": "balance-meter"
+          },
+          "payload": {
+            "initial": 10,
+            "sale": 5,
+            "cost": 3,
+            "maxEntries": 6
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-running-ledger",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "tracking-money",
+      "lesson_id": "v2-running-ledger",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-running-ledger"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Anote cada venda",
+      "required_capabilities": [
+        "visual.balance-meter.v1",
+        "operation.running-ledger.v1",
+        "operation.step-replay.v1"
+      ],
+      "segments": [
+        {
+          "id": "ledger-01",
+          "type": "money.running-ledger.v2",
+          "grading": "none",
+          "prompt": "Cada venda rende 5 moedas; cada copo custa 3. Anote seis movimentos.",
+          "visual": {
+            "type": "balance-meter"
+          },
+          "payload": {
+            "initial": 10,
+            "sale": 5,
+            "cost": 3,
+            "maxEntries": 6
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-growth-comparison",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "compound-growth",
+      "lesson_id": "v2-growth-comparison",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-compound-growth"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Compare growth paths",
+      "required_capabilities": [
+        "visual.multi-line.v1",
+        "operation.parameter-slider.v1",
+        "operation.predict-reveal.v1",
+        "operation.scale-toggle.v1"
+      ],
+      "segments": [
+        {
+          "id": "growth-01",
+          "type": "visual.growth-comparison.v2",
+          "grading": "none",
+          "prompt": "Predict, then compare simple and compound growth over the years.",
+          "visual": {
+            "type": "multi-line"
+          },
+          "payload": {
+            "principalMinor": 10000,
+            "minimumRateBps": 200,
+            "maximumRateBps": 1200,
+            "rateStepBps": 200,
+            "initialRateBps": 800,
+            "minimumYears": 5,
+            "maximumYears": 30,
+            "yearStep": 5,
+            "initialYears": 10,
+            "predictionStepMinor": 1000,
+            "predictionMaximumMinor": 1000000
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-growth-comparison",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "compound-growth",
+      "lesson_id": "v2-growth-comparison",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-compound-growth"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Compara caminos de crecimiento",
+      "required_capabilities": [
+        "visual.multi-line.v1",
+        "operation.parameter-slider.v1",
+        "operation.predict-reveal.v1",
+        "operation.scale-toggle.v1"
+      ],
+      "segments": [
+        {
+          "id": "growth-01",
+          "type": "visual.growth-comparison.v2",
+          "grading": "none",
+          "prompt": "Predice y luego compara el crecimiento simple y compuesto con los años.",
+          "visual": {
+            "type": "multi-line"
+          },
+          "payload": {
+            "principalMinor": 10000,
+            "minimumRateBps": 200,
+            "maximumRateBps": 1200,
+            "rateStepBps": 200,
+            "initialRateBps": 800,
+            "minimumYears": 5,
+            "maximumYears": 30,
+            "yearStep": 5,
+            "initialYears": 10,
+            "predictionStepMinor": 1000,
+            "predictionMaximumMinor": 1000000
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-growth-comparison",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "compound-growth",
+      "lesson_id": "v2-growth-comparison",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 13,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-compound-growth"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Compare caminhos de crescimento",
+      "required_capabilities": [
+        "visual.multi-line.v1",
+        "operation.parameter-slider.v1",
+        "operation.predict-reveal.v1",
+        "operation.scale-toggle.v1"
+      ],
+      "segments": [
+        {
+          "id": "growth-01",
+          "type": "visual.growth-comparison.v2",
+          "grading": "none",
+          "prompt": "Preveja e depois compare o crescimento simples e composto ao longo dos anos.",
+          "visual": {
+            "type": "multi-line"
+          },
+          "payload": {
+            "principalMinor": 10000,
+            "minimumRateBps": 200,
+            "maximumRateBps": 1200,
+            "rateStepBps": 200,
+            "initialRateBps": 800,
+            "minimumYears": 5,
+            "maximumYears": 30,
+            "yearStep": 5,
+            "initialYears": 10,
+            "predictionStepMinor": 1000,
+            "predictionMaximumMinor": 1000000
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-tax-bracket",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "tax-basics",
+      "lesson_id": "v2-tax-bracket",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 14,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-marginal-tax"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "How brackets fill",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "tax-01",
+          "type": "visual.tax-bracket.v2",
+          "grading": "none",
+          "prompt": "Move the income and watch each bracket fill.",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "minimumIncomeMinor": 0,
+            "maximumIncomeMinor": 60000,
+            "incomeStepMinor": 5000,
+            "initialIncomeMinor": 30000,
+            "brackets": [
+              {
+                "upToMinor": 10000,
+                "rateBasisPoints": 1000
+              },
+              {
+                "upToMinor": 30000,
+                "rateBasisPoints": 2000
+              },
+              {
+                "upToMinor": null,
+                "rateBasisPoints": 3000
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-tax-bracket",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "tax-basics",
+      "lesson_id": "v2-tax-bracket",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 14,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-marginal-tax"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Cómo se llenan los tramos",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "tax-01",
+          "type": "visual.tax-bracket.v2",
+          "grading": "none",
+          "prompt": "Mueve el ingreso y mira cómo se llena cada tramo.",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "minimumIncomeMinor": 0,
+            "maximumIncomeMinor": 60000,
+            "incomeStepMinor": 5000,
+            "initialIncomeMinor": 30000,
+            "brackets": [
+              {
+                "upToMinor": 10000,
+                "rateBasisPoints": 1000
+              },
+              {
+                "upToMinor": 30000,
+                "rateBasisPoints": 2000
+              },
+              {
+                "upToMinor": null,
+                "rateBasisPoints": 3000
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-tax-bracket",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-teen",
+      "chapter_id": "tax-basics",
+      "lesson_id": "v2-tax-bracket",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 14,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-marginal-tax"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Como as faixas se enchem",
+      "required_capabilities": [
+        "visual.stacked-bar.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "tax-01",
+          "type": "visual.tax-bracket.v2",
+          "grading": "none",
+          "prompt": "Mova a renda e veja cada faixa se encher.",
+          "visual": {
+            "type": "stacked-bar"
+          },
+          "payload": {
+            "minimumIncomeMinor": 0,
+            "maximumIncomeMinor": 60000,
+            "incomeStepMinor": 5000,
+            "initialIncomeMinor": 30000,
+            "brackets": [
+              {
+                "upToMinor": 10000,
+                "rateBasisPoints": 1000
+              },
+              {
+                "upToMinor": 30000,
+                "rateBasisPoints": 2000
+              },
+              {
+                "upToMinor": null,
+                "rateBasisPoints": 3000
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-ratio-table",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "unit-price",
+      "lesson_id": "v2-ratio-table",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Price per sticker",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "ratio-table-01",
+          "type": "math.ratio-table.v2",
+          "grading": "none",
+          "prompt": "A pack of 3 stickers costs 15 coins. Change the packs.",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 3,
+            "pricePerPack": 15,
+            "minimumPacks": 1,
+            "maximumPacks": 4,
+            "initialPacks": 2,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-ratio-table",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "unit-price",
+      "lesson_id": "v2-ratio-table",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Precio por calcomanía",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "ratio-table-01",
+          "type": "math.ratio-table.v2",
+          "grading": "none",
+          "prompt": "Un paquete de 3 calcomanías cuesta 15 monedas. Cambia los paquetes.",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 3,
+            "pricePerPack": 15,
+            "minimumPacks": 1,
+            "maximumPacks": 4,
+            "initialPacks": 2,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-ratio-table",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "unit-price",
+      "lesson_id": "v2-ratio-table",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-unit-price"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Preço por figurinha",
+      "required_capabilities": [
+        "visual.ratio-table.v1",
+        "operation.parameter-slider.v1",
+        "operation.linked-representations.v1"
+      ],
+      "segments": [
+        {
+          "id": "ratio-table-01",
+          "type": "math.ratio-table.v2",
+          "grading": "none",
+          "prompt": "Um pacote de 3 figurinhas custa 15 moedas. Mude os pacotes.",
+          "visual": {
+            "type": "ratio-table"
+          },
+          "payload": {
+            "itemsPerPack": 3,
+            "pricePerPack": 15,
+            "minimumPacks": 1,
+            "maximumPacks": 4,
+            "initialPacks": 2,
+            "currency": "coins"
+          }
+        }
+      ]
+    },
+    "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-worked-example",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "discounts",
+      "lesson_id": "v2-worked-example",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-percent-of"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Find a sale price",
+      "required_capabilities": [
+        "visual.worked-example.v1",
+        "operation.step-replay.v1",
+        "operation.predict-next.v1",
+        "operation.backward-fade.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "worked-example-01",
+          "type": "math.worked-example.v2",
+          "grading": "server",
+          "prompt": "Follow the discount step by step.",
+          "visual": {
+            "type": "worked-example"
+          },
+          "payload": {
+            "steps": [
+              {
+                "id": "discount-part",
+                "expression": "20% × 50",
+                "result": "10",
+                "spokenText": "Twenty percent of 50 is 10"
+              },
+              {
+                "id": "discount-subtract",
+                "expression": "50 − 10",
+                "result": "40",
+                "spokenText": "Fifty minus 10 is 40"
+              },
+              {
+                "id": "sale-price",
+                "expression": "Sale price",
+                "result": "40",
+                "spokenText": "The sale price is 40"
+              }
+            ],
+            "fade_count": 1,
+            "response_step_ids": [
+              "discount-subtract",
+              "sale-price"
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "worked-example-01": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-worked-example",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "discounts",
+      "lesson_id": "v2-worked-example",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-percent-of"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Encuentra el precio de oferta",
+      "required_capabilities": [
+        "visual.worked-example.v1",
+        "operation.step-replay.v1",
+        "operation.predict-next.v1",
+        "operation.backward-fade.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "worked-example-01",
+          "type": "math.worked-example.v2",
+          "grading": "server",
+          "prompt": "Sigue el descuento paso a paso.",
+          "visual": {
+            "type": "worked-example"
+          },
+          "payload": {
+            "steps": [
+              {
+                "id": "discount-part",
+                "expression": "20% × 50",
+                "result": "10",
+                "spokenText": "El veinte por ciento de 50 es 10"
+              },
+              {
+                "id": "discount-subtract",
+                "expression": "50 − 10",
+                "result": "40",
+                "spokenText": "Cincuenta menos 10 es 40"
+              },
+              {
+                "id": "sale-price",
+                "expression": "Precio de oferta",
+                "result": "40",
+                "spokenText": "El precio de oferta es 40"
+              }
+            ],
+            "fade_count": 1,
+            "response_step_ids": [
+              "discount-subtract",
+              "sale-price"
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "worked-example-01": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-worked-example",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "discounts",
+      "lesson_id": "v2-worked-example",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-percent-of"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Ache o preço da oferta",
+      "required_capabilities": [
+        "visual.worked-example.v1",
+        "operation.step-replay.v1",
+        "operation.predict-next.v1",
+        "operation.backward-fade.v1",
+        "operation.number-input.v1"
+      ],
+      "segments": [
+        {
+          "id": "worked-example-01",
+          "type": "math.worked-example.v2",
+          "grading": "server",
+          "prompt": "Siga o desconto passo a passo.",
+          "visual": {
+            "type": "worked-example"
+          },
+          "payload": {
+            "steps": [
+              {
+                "id": "discount-part",
+                "expression": "20% × 50",
+                "result": "10",
+                "spokenText": "Vinte por cento de 50 é 10"
+              },
+              {
+                "id": "discount-subtract",
+                "expression": "50 − 10",
+                "result": "40",
+                "spokenText": "Cinquenta menos 10 é 40"
+              },
+              {
+                "id": "sale-price",
+                "expression": "Preço da oferta",
+                "result": "40",
+                "spokenText": "O preço da oferta é 40"
+              }
+            ],
+            "fade_count": 1,
+            "response_step_ids": [
+              "discount-subtract",
+              "sale-price"
+            ]
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "worked-example-01": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-function-machine",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "savings-rules",
+      "lesson_id": "v2-function-machine",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-savings-function"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Find the savings rule",
+      "required_capabilities": [
+        "visual.function-machine.v1",
+        "operation.try-input.v1",
+        "operation.guess-rule.v1",
+        "operation.held-out-check.v1"
+      ],
+      "segments": [
+        {
+          "id": "function-machine-01",
+          "type": "math.function-machine.v2",
+          "grading": "server",
+          "prompt": "Try each week, then guess the rule.",
+          "visual": {
+            "type": "function-machine"
+          },
+          "payload": {
+            "examples": [
+              {
+                "input": 1,
+                "output": 15
+              },
+              {
+                "input": 2,
+                "output": 20
+              },
+              {
+                "input": 3,
+                "output": 25
+              }
+            ],
+            "multiplierMaximum": 9,
+            "offsetMaximum": 50
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "function-machine-01": {
+        "multiplier": 5,
+        "offset": 10,
+        "heldOutInputs": [
+          4,
+          6
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-function-machine",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "savings-rules",
+      "lesson_id": "v2-function-machine",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-savings-function"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Encuentra la regla de ahorro",
+      "required_capabilities": [
+        "visual.function-machine.v1",
+        "operation.try-input.v1",
+        "operation.guess-rule.v1",
+        "operation.held-out-check.v1"
+      ],
+      "segments": [
+        {
+          "id": "function-machine-01",
+          "type": "math.function-machine.v2",
+          "grading": "server",
+          "prompt": "Prueba cada semana y adivina la regla.",
+          "visual": {
+            "type": "function-machine"
+          },
+          "payload": {
+            "examples": [
+              {
+                "input": 1,
+                "output": 15
+              },
+              {
+                "input": 2,
+                "output": 20
+              },
+              {
+                "input": 3,
+                "output": 25
+              }
+            ],
+            "multiplierMaximum": 9,
+            "offsetMaximum": 50
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "function-machine-01": {
+        "multiplier": 5,
+        "offset": 10,
+        "heldOutInputs": [
+          4,
+          6
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-function-machine",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "savings-rules",
+      "lesson_id": "v2-function-machine",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-savings-function"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Ache a regra da poupança",
+      "required_capabilities": [
+        "visual.function-machine.v1",
+        "operation.try-input.v1",
+        "operation.guess-rule.v1",
+        "operation.held-out-check.v1"
+      ],
+      "segments": [
+        {
+          "id": "function-machine-01",
+          "type": "math.function-machine.v2",
+          "grading": "server",
+          "prompt": "Teste cada semana e descubra a regra.",
+          "visual": {
+            "type": "function-machine"
+          },
+          "payload": {
+            "examples": [
+              {
+                "input": 1,
+                "output": 15
+              },
+              {
+                "input": 2,
+                "output": 20
+              },
+              {
+                "input": 3,
+                "output": 25
+              }
+            ],
+            "multiplierMaximum": 9,
+            "offsetMaximum": 50
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "function-machine-01": {
+        "multiplier": 5,
+        "offset": 10,
+        "heldOutInputs": [
+          4,
+          6
+        ]
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-cpa-count",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-cpa-count",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-count"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Count a savings goal",
+      "required_capabilities": [
+        "visual.cpa-count.v1",
+        "operation.count-objects.v1",
+        "operation.symbolic-answer.v1"
+      ],
+      "segments": [
+        {
+          "id": "cpa-concrete-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Put the coin groups together.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "four plus three"
+          }
+        },
+        {
+          "id": "cpa-pictorial-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Put the coin groups together.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "four plus three"
+          }
+        },
+        {
+          "id": "cpa-abstract-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Put the coin groups together.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "four plus three"
+          }
+        }
+      ],
+      "representation_progressions": [
+        {
+          "fading_group_id": "cpa-savings-01",
+          "problem_id": "saving-count-01",
+          "stages": [
+            {
+              "segment_id": "cpa-concrete-01",
+              "stage": "concrete",
+              "worked_steps_shown": 3
+            },
+            {
+              "segment_id": "cpa-pictorial-01",
+              "stage": "pictorial",
+              "worked_steps_shown": 2
+            },
+            {
+              "segment_id": "cpa-abstract-01",
+              "stage": "abstract",
+              "worked_steps_shown": 0
+            }
+          ]
+        }
+      ]
+    },
+    "answer_keys": {
+      "cpa-concrete-01": {
+        "target": 7
+      },
+      "cpa-pictorial-01": {
+        "target": 7
+      },
+      "cpa-abstract-01": {
+        "target": 7
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-cpa-count",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-cpa-count",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-count"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Cuenta tu meta de ahorro",
+      "required_capabilities": [
+        "visual.cpa-count.v1",
+        "operation.count-objects.v1",
+        "operation.symbolic-answer.v1"
+      ],
+      "segments": [
+        {
+          "id": "cpa-concrete-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Junta los grupos de monedas.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "cuatro más tres"
+          }
+        },
+        {
+          "id": "cpa-pictorial-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Junta los grupos de monedas.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "cuatro más tres"
+          }
+        },
+        {
+          "id": "cpa-abstract-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Junta los grupos de monedas.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "cuatro más tres"
+          }
+        }
+      ],
+      "representation_progressions": [
+        {
+          "fading_group_id": "cpa-savings-01",
+          "problem_id": "saving-count-01",
+          "stages": [
+            {
+              "segment_id": "cpa-concrete-01",
+              "stage": "concrete",
+              "worked_steps_shown": 3
+            },
+            {
+              "segment_id": "cpa-pictorial-01",
+              "stage": "pictorial",
+              "worked_steps_shown": 2
+            },
+            {
+              "segment_id": "cpa-abstract-01",
+              "stage": "abstract",
+              "worked_steps_shown": 0
+            }
+          ]
+        }
+      ]
+    },
+    "answer_keys": {
+      "cpa-concrete-01": {
+        "target": 7
+      },
+      "cpa-pictorial-01": {
+        "target": 7
+      },
+      "cpa-abstract-01": {
+        "target": 7
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-cpa-count",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-young",
+      "chapter_id": "saving-basics",
+      "lesson_id": "v2-cpa-count",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "6-9",
+      "eligibility": {
+        "minimum_age": 6,
+        "maximum_age": 9
+      },
+      "knowledge_component_ids": [
+        "kc-saving-count"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Conte sua meta de poupança",
+      "required_capabilities": [
+        "visual.cpa-count.v1",
+        "operation.count-objects.v1",
+        "operation.symbolic-answer.v1"
+      ],
+      "segments": [
+        {
+          "id": "cpa-concrete-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Junte os grupos de moedas.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "quatro mais três"
+          }
+        },
+        {
+          "id": "cpa-pictorial-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Junte os grupos de moedas.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "quatro mais três"
+          }
+        },
+        {
+          "id": "cpa-abstract-01",
+          "type": "math.cpa-count.v2",
+          "grading": "server",
+          "prompt": "Junte os grupos de moedas.",
+          "visual": {
+            "type": "cpa-count"
+          },
+          "payload": {
+            "left": 4,
+            "right": 3,
+            "spokenText": "quatro mais três"
+          }
+        }
+      ],
+      "representation_progressions": [
+        {
+          "fading_group_id": "cpa-savings-01",
+          "problem_id": "saving-count-01",
+          "stages": [
+            {
+              "segment_id": "cpa-concrete-01",
+              "stage": "concrete",
+              "worked_steps_shown": 3
+            },
+            {
+              "segment_id": "cpa-pictorial-01",
+              "stage": "pictorial",
+              "worked_steps_shown": 2
+            },
+            {
+              "segment_id": "cpa-abstract-01",
+              "stage": "abstract",
+              "worked_steps_shown": 0
+            }
+          ]
+        }
+      ]
+    },
+    "answer_keys": {
+      "cpa-concrete-01": {
+        "target": 7
+      },
+      "cpa-pictorial-01": {
+        "target": 7
+      },
+      "cpa-abstract-01": {
+        "target": 7
+      }
+    }
+  }
+]

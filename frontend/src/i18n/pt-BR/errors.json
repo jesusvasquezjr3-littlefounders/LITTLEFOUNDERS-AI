@@ -30,6 +30,8 @@
     "RELEASE_LESSONS_NOT_REVIEWABLE": "Cada lição deve estar em revisão ou já publicada antes do lançamento.",
     "RELEASE_INCOMPLETE_LOCALES": "Cada lição precisa dos documentos em en-US, es-MX e pt-BR antes do lançamento.",
     "RELEASE_VERIFICATION_REQUIRED": "Execute a verificação do curso no Forge após a última mudança de conteúdo e publique de novo.",
+    "RELEASE_VERIFICATION_INCOMPLETE": "Falta ou falhou um filtro obrigatório do Forge. Verifique o curso de novo.",
+    "RELEASE_COURSE_RELEASE_REQUIRED": "O curso desta lição ainda não está publicado. Publique o curso inteiro.",
     "RELEASE_BLOCKED": "A pré-verificação de lançamento recusou este curso.",
     "NOT_A_GUEST": "Esta conta já tem uma identidade permanente.",
     "ONBOARDING_ALREADY_COMPLETE": "O onboarding já havia sido concluído.",

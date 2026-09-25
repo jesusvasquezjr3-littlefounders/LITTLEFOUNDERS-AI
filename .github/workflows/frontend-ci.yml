@@ -6,11 +6,13 @@ on:
     paths:
       - 'frontend/**'
       - 'database/types/**'
+      - 'coursegen/src/contentGates/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
     paths:
       - 'frontend/**'
       - 'database/types/**'
+      - 'coursegen/src/contentGates/**'
       - '.github/workflows/frontend-ci.yml'
 
 jobs:
@@ -26,7 +28,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            coursegen/package-lock.json
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
@@ -35,6 +39,15 @@ jobs:
       - name: i18n key parity
         working-directory: .
         run: bash agent/tools/check-i18n.sh
+      # Product B.14: the Forge Law 2 tone gate screens system/UI copy "before
+      # release". That copy lives in frontend/ and ships through THIS workflow
+      # (frontend CD deploys what frontend CI passed), while the gate's code
+      # lives in coursegen/, whose CI a frontend-only copy change never runs.
+      # Found in the S05.4c lane review. With no --course, content:gates scans
+      # only the family-facing UI copy; any blocking finding fails the deploy.
+      - name: Forge tone gate over the UI copy (B.14)
+        working-directory: coursegen
+        run: npm ci && npm run content:gates
       # Asset gates — no browser, seconds each, so they belong in the fast job.
       # verify:rig proves no animation clip drags a character out of its own
       # stance; verify:placement proves every character stands on walkable
