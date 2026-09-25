@@ -3043,6 +3043,13 @@ async function serveSegment(
     ...(strategy ? { strategy } : {}),
   });
 
+  if (served !== null && 'liveSuspended' in served) {
+    // C.5: live generation is suspended for this content-risk category. No
+    // paid author or judge call is made for an item Core would refuse.
+    console.warn(`[oracle] live generation suspended by Core (${served.reason}); no activity authored`);
+    served = null;
+  }
+
   if (served !== null && 'needsGeneration' in served) {
     const candidate = await generateSegment({
       skillKey: served.skillKey,

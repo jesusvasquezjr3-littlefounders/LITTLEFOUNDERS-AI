@@ -125,6 +125,14 @@ jobs:
       - name: Spaced-review routing / dialogue register agree across every copy (OD-23 guard)
         run: node agent/tools/check-review-calibration-parity.mjs
 
+      # C.5 + C.6: Oracle and Core must classify a live-generated item with the
+      # same content-risk lexicon, the migration CHECKs must accept every row
+      # the governed live claim writes, and the Appendix E §3.1.1 floors (15%
+      # standard / 50% sensitive staff sampling) and the judge-calibration
+      # minimums may never be lowered without a Tier 1 review.
+      - name: Live-content governance / curated packs agree across every copy (Appendix E floors guard)
+        run: node agent/tools/check-live-content-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

@@ -1,0 +1,1110 @@
+{
+  "$comment": "Curated activity packs (C.6, tutor-pack.v1). Hand-authored at zero spend (OD-23) for a knowledge component that no published topic teaches, so every activity about it used to be live-generated. Loaded as status \"review\" by `npm --prefix backend run seed:tutor-packs`; a staff member publishes each pack. Contract: docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md section 5.",
+  "contract": "tutor-pack.v1",
+  "kc_key": "biz.goods-vs-services",
+  "demand_pattern": "kc_without_catalog_content",
+  "source": "hand_authored",
+  "packs": [
+    {
+      "tier": 1,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t1-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Sam sells cups of lemonade. What is Sam selling?",
+          "difficulty": 1,
+          "xp": 10,
+          "explanation_md": "Lemonade is a thing. The buyer can hold it and keep it.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "A thing you can hold"
+              },
+              {
+                "id": "b",
+                "text_md": "A service",
+                "rationale_md": "A service is help or work, like washing a bike. Lemonade is a thing you can hold."
+              },
+              {
+                "id": "c",
+                "text_md": "Nothing, because it gets drunk",
+                "rationale_md": "It is still a sale. The buyer gets the lemonade to keep and drink."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 1,
+          "xp": 10,
+          "explanation_md": "True. Nobody gets a thing to keep. The neighbor pays for the walk, which is work.",
+          "payload": {
+            "statement_md": "Walking a neighbor's dog for coins is selling a service."
+          },
+          "answer": {
+            "is_true": true
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-en-3",
+          "type": "sort_buckets",
+          "prompt_md": "Sort each sale: is the buyer getting a thing or a service?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "A thing is something you can hold and keep. A service is help or work someone does for you.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "A thing"
+              },
+              {
+                "id": "service",
+                "label": "A service"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "A toy car"
+              },
+              {
+                "id": "i2",
+                "text_md": "Washing a bike"
+              },
+              {
+                "id": "i3",
+                "text_md": "A cookie"
+              },
+              {
+                "id": "i4",
+                "text_md": "Reading a story to a little kid"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "thing",
+              "i2": "service",
+              "i3": "thing",
+              "i4": "service"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Which one is a service?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Watering plants is help you give. That makes it a service.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Watering plants for a neighbor"
+              },
+              {
+                "id": "b",
+                "text_md": "A box of crayons",
+                "rationale_md": "Crayons are a thing you can hold and keep."
+              },
+              {
+                "id": "c",
+                "text_md": "A jar of jam",
+                "rationale_md": "Jam is a thing. The buyer takes it home."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 1,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t1-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Sam vende vasos de limonada. ¿Qué está vendiendo?",
+          "difficulty": 1,
+          "xp": 10,
+          "explanation_md": "La limonada es un producto. El comprador la puede tomar y quedarse con ella.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Algo que se puede tomar en la mano"
+              },
+              {
+                "id": "b",
+                "text_md": "Un servicio",
+                "rationale_md": "Un servicio es ayuda o trabajo, como lavar una bici. La limonada es algo que se puede tomar en la mano."
+              },
+              {
+                "id": "c",
+                "text_md": "Nada, porque se la toman",
+                "rationale_md": "Sigue siendo una venta. El comprador recibe la limonada y se la queda."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 1,
+          "xp": 10,
+          "explanation_md": "Verdadero. Nadie recibe algo para quedarse. El vecino paga por el paseo, que es trabajo.",
+          "payload": {
+            "statement_md": "Pasear al perro de un vecino a cambio de monedas es vender un servicio."
+          },
+          "answer": {
+            "is_true": true
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-es-3",
+          "type": "sort_buckets",
+          "prompt_md": "Ordena cada venta: ¿el comprador recibe un producto o un servicio?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Un producto es algo que puedes tomar y quedarte. Un servicio es ayuda o trabajo que alguien hace por ti.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "Un producto"
+              },
+              {
+                "id": "service",
+                "label": "Un servicio"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Un carrito de juguete"
+              },
+              {
+                "id": "i2",
+                "text_md": "Lavar una bici"
+              },
+              {
+                "id": "i3",
+                "text_md": "Una galleta"
+              },
+              {
+                "id": "i4",
+                "text_md": "Leerle un cuento a un niño pequeño"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "thing",
+              "i2": "service",
+              "i3": "thing",
+              "i4": "service"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Cuál es un servicio?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Regar plantas es ayuda que das. Por eso es un servicio.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Regar las plantas de un vecino"
+              },
+              {
+                "id": "b",
+                "text_md": "Una caja de crayones",
+                "rationale_md": "Los crayones son un producto que puedes tomar y quedarte."
+              },
+              {
+                "id": "c",
+                "text_md": "Un frasco de mermelada",
+                "rationale_md": "La mermelada es un producto. El comprador se la lleva."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 1,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t1-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Sam vende copos de limonada. O que Sam está vendendo?",
+          "difficulty": 1,
+          "xp": 10,
+          "explanation_md": "A limonada é um produto. O comprador pode segurar e ficar com ela.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Uma coisa que dá para segurar"
+              },
+              {
+                "id": "b",
+                "text_md": "Um serviço",
+                "rationale_md": "Um serviço é ajuda ou trabalho, como lavar uma bicicleta. A limonada é uma coisa que dá para segurar."
+              },
+              {
+                "id": "c",
+                "text_md": "Nada, porque ela é bebida",
+                "rationale_md": "Continua sendo uma venda. O comprador recebe a limonada e fica com ela."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 1,
+          "xp": 10,
+          "explanation_md": "Verdadeiro. Ninguém recebe uma coisa para guardar. O vizinho paga pelo passeio, que é trabalho.",
+          "payload": {
+            "statement_md": "Passear com o cachorro de um vizinho em troca de moedas é vender um serviço."
+          },
+          "answer": {
+            "is_true": true
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-pt-3",
+          "type": "sort_buckets",
+          "prompt_md": "Separe cada venda: o comprador recebe um produto ou um serviço?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Um produto é algo que dá para segurar e guardar. Um serviço é ajuda ou trabalho que alguém faz por você.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "Um produto"
+              },
+              {
+                "id": "service",
+                "label": "Um serviço"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Um carrinho de brinquedo"
+              },
+              {
+                "id": "i2",
+                "text_md": "Lavar uma bicicleta"
+              },
+              {
+                "id": "i3",
+                "text_md": "Um biscoito"
+              },
+              {
+                "id": "i4",
+                "text_md": "Ler uma história para uma criança pequena"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "thing",
+              "i2": "service",
+              "i3": "thing",
+              "i4": "service"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t1-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Qual destes é um serviço?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Regar plantas é uma ajuda que você oferece. Por isso é um serviço.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Regar as plantas de um vizinho"
+              },
+              {
+                "id": "b",
+                "text_md": "Uma caixa de giz de cera",
+                "rationale_md": "O giz de cera é um produto que dá para segurar e guardar."
+              },
+              {
+                "id": "c",
+                "text_md": "Um pote de geleia",
+                "rationale_md": "A geleia é um produto. O comprador leva para casa."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t2-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Mia washes a car and gets 10 coins. Nothing is handed over. Was it a real sale?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Selling a service is a real sale. The buyer pays for work that is done for them.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Yes. Mia sold a service: her work"
+              },
+              {
+                "id": "b",
+                "text_md": "No, because nothing was handed over",
+                "rationale_md": "A sale can be help or work. The car owner paid for the washing, not for an object."
+              },
+              {
+                "id": "c",
+                "text_md": "Only if Mia also gives the soap",
+                "rationale_md": "The soap is not what was bought. The owner paid for a clean car, which is Mia's work."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "False. A haircut or a bike repair is a real sale, and nothing new goes home in a bag.",
+          "payload": {
+            "statement_md": "For a sale to be real, the buyer must take home something they can hold."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-en-3",
+          "type": "sort_buckets",
+          "prompt_md": "Sort each sale: is the buyer getting a thing or a service?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "A thing is something you can hold and keep. A service is help or work someone does for you.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "A thing"
+              },
+              {
+                "id": "service",
+                "label": "A service"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "A hand-made bracelet"
+              },
+              {
+                "id": "i2",
+                "text_md": "Fixing a flat bike tire"
+              },
+              {
+                "id": "i3",
+                "text_md": "A bag of apples"
+              },
+              {
+                "id": "i4",
+                "text_md": "A haircut"
+              },
+              {
+                "id": "i5",
+                "text_md": "A painted mug"
+              },
+              {
+                "id": "i6",
+                "text_md": "Raking leaves in a yard"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "thing",
+              "i2": "service",
+              "i3": "thing",
+              "i4": "service",
+              "i5": "thing",
+              "i6": "service"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-en-4",
+          "type": "number_input",
+          "prompt_md": "Tom sells 3 bracelets for 4 coins each. He also fixes one bike chain for 5 coins. How many coins does Tom get for things, not services?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "The bracelets are things: 3 × 4 = 12 coins. Fixing the chain is a service, so it does not count here.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 12,
+            "tolerance": 0
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t2-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Mía lava un coche y recibe 10 monedas. No entrega ningún objeto. ¿Fue una venta de verdad?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Vender un servicio es una venta de verdad. El comprador paga por un trabajo que hacen por él.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Sí. Mía vendió un servicio: su trabajo"
+              },
+              {
+                "id": "b",
+                "text_md": "No, porque no entregó ningún objeto",
+                "rationale_md": "Una venta puede ser ayuda o trabajo. El dueño pagó por el lavado, no por un objeto."
+              },
+              {
+                "id": "c",
+                "text_md": "Solo si Mía también regala el jabón",
+                "rationale_md": "El jabón no es lo que se compró. El dueño pagó por un coche limpio, que es el trabajo de Mía."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. Un corte de pelo o arreglar una bici son ventas reales, y nadie se lleva un objeto nuevo en una bolsa.",
+          "payload": {
+            "statement_md": "Para que una venta sea real, el comprador debe llevarse algo que pueda tomar en la mano."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-es-3",
+          "type": "sort_buckets",
+          "prompt_md": "Ordena cada venta: ¿el comprador recibe un producto o un servicio?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Un producto es algo que puedes tomar y quedarte. Un servicio es ayuda o trabajo que alguien hace por ti.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "Un producto"
+              },
+              {
+                "id": "service",
+                "label": "Un servicio"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Una pulsera hecha a mano"
+              },
+              {
+                "id": "i2",
+                "text_md": "Arreglar la llanta ponchada de una bici"
+              },
+              {
+                "id": "i3",
+                "text_md": "Una bolsa de manzanas"
+              },
+              {
+                "id": "i4",
+                "text_md": "Un corte de pelo"
+              },
+              {
+                "id": "i5",
+                "text_md": "Una taza pintada"
+              },
+              {
+                "id": "i6",
+                "text_md": "Barrer las hojas de un patio"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "thing",
+              "i2": "service",
+              "i3": "thing",
+              "i4": "service",
+              "i5": "thing",
+              "i6": "service"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-es-4",
+          "type": "number_input",
+          "prompt_md": "Tomás vende 3 pulseras a 4 monedas cada una. También arregla la cadena de una bici por 5 monedas. ¿Cuántas monedas recibe por productos, sin contar servicios?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Las pulseras son productos: 3 × 4 = 12 monedas. Arreglar la cadena es un servicio, así que aquí no cuenta.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 12,
+            "tolerance": 0
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t2-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Mia lava um carro e recebe 10 moedas. Nenhum objeto é entregue. Foi uma venda de verdade?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Vender um serviço é uma venda de verdade. O comprador paga por um trabalho feito para ele.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Sim. Mia vendeu um serviço: o trabalho dela"
+              },
+              {
+                "id": "b",
+                "text_md": "Não, porque nenhum objeto foi entregue",
+                "rationale_md": "Uma venda pode ser ajuda ou trabalho. O dono pagou pela lavagem, não por um objeto."
+              },
+              {
+                "id": "c",
+                "text_md": "Só se Mia também der o sabão",
+                "rationale_md": "O sabão não é o que foi comprado. O dono pagou por um carro limpo, que é o trabalho de Mia."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. Um corte de cabelo ou o conserto de uma bicicleta são vendas reais, e ninguém leva um objeto novo numa sacola.",
+          "payload": {
+            "statement_md": "Para uma venda ser real, o comprador precisa levar para casa algo que dá para segurar."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-pt-3",
+          "type": "sort_buckets",
+          "prompt_md": "Separe cada venda: o comprador recebe um produto ou um serviço?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Um produto é algo que dá para segurar e guardar. Um serviço é ajuda ou trabalho que alguém faz por você.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "Um produto"
+              },
+              {
+                "id": "service",
+                "label": "Um serviço"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Uma pulseira feita à mão"
+              },
+              {
+                "id": "i2",
+                "text_md": "Consertar o pneu furado de uma bicicleta"
+              },
+              {
+                "id": "i3",
+                "text_md": "Um saco de maçãs"
+              },
+              {
+                "id": "i4",
+                "text_md": "Um corte de cabelo"
+              },
+              {
+                "id": "i5",
+                "text_md": "Uma caneca pintada"
+              },
+              {
+                "id": "i6",
+                "text_md": "Varrer as folhas de um quintal"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "thing",
+              "i2": "service",
+              "i3": "thing",
+              "i4": "service",
+              "i5": "thing",
+              "i6": "service"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t2-pt-4",
+          "type": "number_input",
+          "prompt_md": "Tomás vende 3 pulseiras por 4 moedas cada. Ele também conserta a corrente de uma bicicleta por 5 moedas. Quantas moedas ele recebe por produtos, sem contar serviços?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "As pulseiras são produtos: 3 × 4 = 12 moedas. Consertar a corrente é um serviço, então não entra aqui.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 12,
+            "tolerance": 0
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t3-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "A lemonade stand also delivers drinks to houses for 2 extra coins. What does the delivery add?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Many businesses sell goods and services together. The drink is a good; bringing it to your door is a service.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "A service on top of the goods"
+              },
+              {
+                "id": "b",
+                "text_md": "More goods",
+                "rationale_md": "Delivery is work done for the buyer. The drink is the good; carrying it is the service."
+              },
+              {
+                "id": "c",
+                "text_md": "Nothing, since the drink is the same",
+                "rationale_md": "The buyer pays 2 extra coins for it, so it is something they value: a service."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "True. The student pays for the teacher's time and help, not for an object.",
+          "payload": {
+            "statement_md": "A music teacher who gives lessons is selling a service."
+          },
+          "answer": {
+            "is_true": true
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-en-3",
+          "type": "sort_buckets",
+          "prompt_md": "Sort each sale: is the buyer getting a thing or a service?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "A thing is something you can hold and keep. A service is help or work someone does for you.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "A thing"
+              },
+              {
+                "id": "service",
+                "label": "A service"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Fixing a flat tire"
+              },
+              {
+                "id": "i2",
+                "text_md": "A painted flower pot"
+              },
+              {
+                "id": "i3",
+                "text_md": "Looking after a younger cousin for an afternoon"
+              },
+              {
+                "id": "i4",
+                "text_md": "A bag of oranges"
+              },
+              {
+                "id": "i5",
+                "text_md": "Teaching someone to ride a bike"
+              },
+              {
+                "id": "i6",
+                "text_md": "A hand-made card"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "service",
+              "i2": "thing",
+              "i3": "service",
+              "i4": "thing",
+              "i5": "service",
+              "i6": "thing"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-en-4",
+          "type": "number_input",
+          "prompt_md": "A car wash sells soap bottles for 6 coins and washes cars for 15 coins. On Saturday it sold 2 bottles and washed 3 cars. How many coins came from the service?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Washing cars is the service: 3 × 15 = 45 coins. The 12 coins from the bottles came from selling goods.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 45,
+            "tolerance": 0
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t3-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Un puesto de limonada también lleva las bebidas a las casas por 2 monedas extra. ¿Qué agrega la entrega?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Muchos negocios venden productos y servicios juntos. La bebida es un producto; llevarla hasta tu puerta es un servicio.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Un servicio además del producto"
+              },
+              {
+                "id": "b",
+                "text_md": "Más productos",
+                "rationale_md": "La entrega es trabajo que se hace por el comprador. La bebida es el producto; llevarla es el servicio."
+              },
+              {
+                "id": "c",
+                "text_md": "Nada, porque la bebida es la misma",
+                "rationale_md": "El comprador paga 2 monedas extra por ella, así que es algo que valora: un servicio."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Verdadero. El alumno paga por el tiempo y la ayuda de la maestra, no por un objeto.",
+          "payload": {
+            "statement_md": "Una maestra de música que da clases está vendiendo un servicio."
+          },
+          "answer": {
+            "is_true": true
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-es-3",
+          "type": "sort_buckets",
+          "prompt_md": "Ordena cada venta: ¿el comprador recibe un producto o un servicio?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Un producto es algo que puedes tomar y quedarte. Un servicio es ayuda o trabajo que alguien hace por ti.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "Un producto"
+              },
+              {
+                "id": "service",
+                "label": "Un servicio"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Arreglar una llanta ponchada"
+              },
+              {
+                "id": "i2",
+                "text_md": "Una maceta pintada"
+              },
+              {
+                "id": "i3",
+                "text_md": "Cuidar a un primo pequeño una tarde"
+              },
+              {
+                "id": "i4",
+                "text_md": "Una bolsa de naranjas"
+              },
+              {
+                "id": "i5",
+                "text_md": "Enseñarle a alguien a andar en bici"
+              },
+              {
+                "id": "i6",
+                "text_md": "Una tarjeta hecha a mano"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "service",
+              "i2": "thing",
+              "i3": "service",
+              "i4": "thing",
+              "i5": "service",
+              "i6": "thing"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-es-4",
+          "type": "number_input",
+          "prompt_md": "Un autolavado vende botellas de jabón a 6 monedas y lava coches por 15 monedas. El sábado vendió 2 botellas y lavó 3 coches. ¿Cuántas monedas vinieron del servicio?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Lavar coches es el servicio: 3 × 15 = 45 monedas. Las 12 monedas de las botellas vinieron de vender productos.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 45,
+            "tolerance": 0
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-goods-services-t3-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Uma barraca de limonada também entrega as bebidas nas casas por 2 moedas a mais. O que a entrega acrescenta?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Muitos negócios vendem produtos e serviços juntos. A bebida é um produto; levar até a sua porta é um serviço.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Um serviço além do produto"
+              },
+              {
+                "id": "b",
+                "text_md": "Mais produtos",
+                "rationale_md": "A entrega é um trabalho feito para o comprador. A bebida é o produto; levar até a casa é o serviço."
+              },
+              {
+                "id": "c",
+                "text_md": "Nada, porque a bebida é a mesma",
+                "rationale_md": "O comprador paga 2 moedas a mais por ela, então é algo que ele valoriza: um serviço."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Verdadeiro. O aluno paga pelo tempo e pela ajuda da professora, não por um objeto.",
+          "payload": {
+            "statement_md": "Uma professora de música que dá aulas está vendendo um serviço."
+          },
+          "answer": {
+            "is_true": true
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-pt-3",
+          "type": "sort_buckets",
+          "prompt_md": "Separe cada venda: o comprador recebe um produto ou um serviço?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Um produto é algo que dá para segurar e guardar. Um serviço é ajuda ou trabalho que alguém faz por você.",
+          "payload": {
+            "buckets": [
+              {
+                "id": "thing",
+                "label": "Um produto"
+              },
+              {
+                "id": "service",
+                "label": "Um serviço"
+              }
+            ],
+            "items": [
+              {
+                "id": "i1",
+                "text_md": "Consertar um pneu furado"
+              },
+              {
+                "id": "i2",
+                "text_md": "Um vaso de flores pintado"
+              },
+              {
+                "id": "i3",
+                "text_md": "Cuidar de um primo pequeno por uma tarde"
+              },
+              {
+                "id": "i4",
+                "text_md": "Um saco de laranjas"
+              },
+              {
+                "id": "i5",
+                "text_md": "Ensinar alguém a andar de bicicleta"
+              },
+              {
+                "id": "i6",
+                "text_md": "Um cartão feito à mão"
+              }
+            ]
+          },
+          "answer": {
+            "assignments": {
+              "i1": "service",
+              "i2": "thing",
+              "i3": "service",
+              "i4": "thing",
+              "i5": "service",
+              "i6": "thing"
+            }
+          }
+        },
+        {
+          "id": "pack-goods-services-t3-pt-4",
+          "type": "number_input",
+          "prompt_md": "Um lava-rápido vende frascos de sabão por 6 moedas e lava carros por 15 moedas. No sábado vendeu 2 frascos e lavou 3 carros. Quantas moedas vieram do serviço?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Lavar carros é o serviço: 3 × 15 = 45 moedas. As 12 moedas dos frascos vieram da venda de produtos.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 45,
+            "tolerance": 0
+          }
+        }
+      ]
+    }
+  ]
+}

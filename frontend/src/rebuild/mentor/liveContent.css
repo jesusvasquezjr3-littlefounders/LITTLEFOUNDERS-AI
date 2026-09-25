@@ -1,0 +1,54 @@
+/* C.5 / C.6 staff panels (the live-content status, one review decision, the
+   curated-pack release). They reuse the alliance panel's surface and equal
+   chips (alliance.css) and the profile's label / value rows; this file only
+   lays out what is new. Tokens only; no animation of its own. */
+.lf-live-content h2,
+.lf-live-content h3 { margin: 0; overflow-wrap: anywhere; }
+.lf-live-content p { margin: 0; overflow-wrap: anywhere; }
+
+.lf-live-categories,
+.lf-live-packs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-3);
+}
+/* One card per category; side by side where both fit. */
+.lf-live-categories { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.lf-live-category,
+.lf-live-pack {
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  min-inline-size: 0;
+}
+/* A paused category states it in words first; the weight only reinforces. */
+.lf-live-category[data-suspended='true'] .lf-live-state { font-weight: 600; }
+
+.lf-live-tag { color: var(--content-muted); }
+.lf-live-item {
+  margin: 0;
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  overflow-wrap: anywhere;
+}
+/* The three decisions are equal controls; on the sunken-free panel they keep
+   the chip fill from alliance.css. */
+.lf-live-decision { font-weight: 600; }
+
+.lf-live-pack-key { font-weight: 600; }
+.lf-live-pack-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--spacing-3);
+}
+.lf-live-pack-actions .lf-button { inline-size: 100%; min-block-size: var(--target-base); }
+.lf-live-refusal { display: grid; gap: var(--spacing-2); }
+.lf-live-refusal ul { margin: 0; padding-inline-start: var(--spacing-4); display: grid; gap: var(--spacing-1); }
+.lf-live-refusal li { overflow-wrap: anywhere; }
+
+.lf-preview--staff-live-content .lf-preview-content { gap: var(--spacing-6); }

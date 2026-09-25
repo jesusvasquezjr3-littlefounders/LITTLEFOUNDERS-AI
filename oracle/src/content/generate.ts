@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
 import { complete, CompletionAbortedError, ModelUnavailableError } from '../model/provider.js';
@@ -5,6 +6,7 @@ import { sealGenerationBrief, type Locale } from '../context/schema.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
+import { classifyGeneratedContent } from './contentRisk.js';
 
 /*
  * Ladder tier 3: authoring one activity in the moment (/ORACLE.md §7.3).
@@ -162,9 +164,31 @@ const JUDGE_SYSTEM = [
   'Do NOT fail it for being simple, plain, or similar to other exercises.',
 ].join('\n');
 
-interface JudgeVerdict {
+export interface JudgeVerdict {
   pass: boolean;
   reason?: string;
+}
+
+/**
+ * C.5 — THE JUDGE'S IDENTITY, beside its model name: a SHA-256 over
+ * everything the judge is told (its system prompt and the age-band rules
+ * sent with every item). A calibration run (Appendix E §2.1/§3.2) is recorded
+ * against this hash, and Core refuses a live item approved by a judge whose
+ * model or hash does not match the current passed calibration — so editing
+ * this prompt, or pointing JUDGE_MODEL_NAME elsewhere, silently un-trusts
+ * the judge until it is recalibrated, which is the intended effect.
+ */
+export const CONTENT_JUDGE_PROMPT_HASH = createHash('sha256')
+  .update(JSON.stringify({ system: JUDGE_SYSTEM, tierRules: TIER_RULES }))
+  .digest('hex');
+
+/**
+ * The live-content judge, exported for the zero-spend calibration harness
+ * (`scripts/content-judge-calibration.ts`), whose live mode is owner-run
+ * (OD-23). Every other caller goes through `generateSegment`.
+ */
+export async function judgeCandidate(segment: unknown, tier: 1 | 2 | 3, signal?: AbortSignal): Promise<JudgeVerdict> {
+  return judge(segment, tier, signal);
 }
 
 async function judge(segment: unknown, tier: 1 | 2 | 3, signal?: AbortSignal): Promise<JudgeVerdict> {
@@ -457,11 +481,27 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
     return null;
   }
 
+  /*
+   * C.5: the content-risk category this item is judged and sampled under.
+   * Oracle reports what it can see (the item, the Mentor's brief, the
+   * learner-input classifier); Core adds the session's safety flags, re-runs
+   * the lexicon itself and takes the union, so this report can raise the
+   * category and never lower it.
+   */
+  const risk = classifyGeneratedContent({
+    prose,
+    brief: [sealed.framing, sealed.rationale],
+    locale: sealed.locale,
+  });
+
   return {
     segment: candidate,
     provenance: {
       author_model: config.MODEL_NAME,
       judge_model: config.JUDGE_MODEL_NAME,
+      judge_prompt_hash: CONTENT_JUDGE_PROMPT_HASH,
+      risk_category: risk.category,
+      risk_signals: risk.signals,
       attempts,
       skill_key: sealed.skillKey,
       tier: sealed.tier,

@@ -591,10 +591,31 @@ const NeedsGenerationSchema = z
   })
   .strict();
 
+/**
+ * C.5 / Appendix E §3.1.1(b): Core could not serve from the human-approved
+ * tiers, AND live generation is suspended for this request's content-risk
+ * category (the judge is uncalibrated or its calibration is stale, its
+ * approval concordance with staff fell below the floor, or staff review fell
+ * below the sampling floor). Oracle must not author anything — the call
+ * would cost money for an item Core will refuse — and the Mentor carries on
+ * in conversation exactly as when no activity is available.
+ *
+ * An OLDER Oracle facing a Core that sends this fails the strict union parse
+ * and treats it as "no activity", which is the same safe outcome.
+ */
+const LiveSuspendedSchema = z
+  .object({
+    needsGeneration: z.literal(false),
+    liveSuspended: z.literal(true),
+    reason: z.string().max(64),
+  })
+  .strict();
+
 export type ServedSegment = z.infer<typeof ServedSegmentSchema>;
 export type NeedsGeneration = z.infer<typeof NeedsGenerationSchema>;
+export type LiveSuspended = z.infer<typeof LiveSuspendedSchema>;
 
-const SegmentResponseSchema = z.union([ServedSegmentSchema, NeedsGenerationSchema]);
+const SegmentResponseSchema = z.union([ServedSegmentSchema, NeedsGenerationSchema, LiveSuspendedSchema]);
 
 /** Core rejected a generated candidate, with the specific reasons. */
 const RejectedSchema = z
@@ -633,7 +654,7 @@ export interface RequestSegmentInput {
  */
 export async function requestSegment(
   input: RequestSegmentInput,
-): Promise<ServedSegment | NeedsGeneration | null> {
+): Promise<ServedSegment | NeedsGeneration | LiveSuspended | null> {
   try {
     const body = await coreFetch('/tutor/internal/segments', {
       method: 'POST',

@@ -557,6 +557,8 @@ describe('GET + POST /api/v1/admin/content', () => {
       '/moderation', '/moderation/11111111-1111-4111-8111-111111111111',
       '/moderation/11111111-1111-4111-8111-111111111111/status',
       '/tutor/review-queue', '/tutor/review-queue/11111111-1111-4111-8111-111111111111/status',
+      // C.5 / C.6: the live-content status and the curated-pack release gate.
+      '/tutor/live-content/status', '/tutor/packs', '/tutor/packs/11111111-1111-4111-8111-111111111111/status',
     ];
     for (const path of paths) {
       const req = path.endsWith('/status') ? request(createApp()).post(`/api/v1/admin${path}`).send({ status: 'review' })
@@ -749,7 +751,7 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
     created_at: '2026-08-27T10:00:00Z',
   };
 
-  function stubTutorReview(capture: { url: string; method: string; body?: string }[] = []) {
+  function stubTutorReview(capture: { url: string; method: string; body?: string }[] = [], reviewOutcome: string = 'recorded') {
     vi.stubGlobal(
       'fetch',
       vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -761,6 +763,7 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
           if (init?.method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
           return Promise.resolve(jsonResponse(200, [PENDING_ROW]));
         }
+        if (url.includes('/rpc/record_tutor_live_review')) return Promise.resolve(jsonResponse(200, reviewOutcome));
         return Promise.resolve(jsonResponse(200, []));
       }),
     );
@@ -782,11 +785,16 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
       .set('Authorization', authed())
       .send({ status: 'rejected' });
     expect(res.status).toBe(200);
-    const patch = calls.find((c) => c.method === 'PATCH');
-    // The pending guard is in the URL: a second reviewer's stale tab cannot
-    // silently overwrite a decision already made.
-    expect(patch?.url).toContain('review_status=eq.pending');
-    expect(patch?.body).toContain('"rejected"');
+    // C.5: the verdict moves the segment AND the governance log in one
+    // transaction (`record_tutor_live_review`), whose own filter is the
+    // pending guard: a second reviewer's stale tab changes nothing.
+    const rpc = calls.find((c) => c.url.includes('/rpc/record_tutor_live_review'));
+    expect(JSON.parse(rpc?.body ?? '{}')).toEqual({
+      p_segment_id: SEGMENT_ID,
+      p_verdict: 'rejected',
+      p_issue: null,
+      p_reviewer: ADMIN_ID,
+    });
     // G.3: the decision must ALSO land in the central audit log — the
     // searchable staff-wide trail, not only the activity row.
     const audit = calls.find((c) => c.url.includes('/rest/v1/audit_logs') && c.method === 'POST');
@@ -1030,5 +1038,157 @@ describe('GET /api/v1/admin/intel/* (dataintel proxy)', () => {
 
     expect(res.status).toBe(403);
     expect(intelCalls).toHaveLength(0);
+  });
+});
+
+/*
+ * S06.12 — C.5 staff decisions feed the dynamic sampling rate and the judge's
+ * concordance; C.6 packs are released by a human through a contract check.
+ * Populations: a staff member with manage_content (allowed), staff without it,
+ * a non-staff account (kid) and no session (all refused before any data read).
+ */
+describe('S06.12 C.5/C.6 — staff governance surfaces', () => {
+  const SEGMENT_ID = '66666666-6666-4666-8666-666666666666';
+  const PACK_ID = '77777777-7777-4777-8777-777777777777';
+
+  interface World {
+    roles?: string[];
+    permissions?: string[];
+    reviewOutcome?: unknown;
+    packs?: unknown[];
+    calibration?: unknown[];
+    backlog?: unknown[];
+  }
+
+  function stubGovernance(world: World, calls: { url: string; method: string; body?: string }[] = []) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        calls.push({ url, method, body: init?.body as string | undefined });
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, (world.roles ?? ['admin']).map((role) => ({ role }))));
+        if (url.includes('/rest/v1/admin_permissions')) {
+          return Promise.resolve(jsonResponse(200, (world.permissions ?? ['manage_content']).map((permission) => ({ user_id: ADMIN_ID, permission }))));
+        }
+        if (url.includes('/rpc/record_tutor_live_review')) return Promise.resolve(jsonResponse(200, world.reviewOutcome ?? 'recorded'));
+        if (url.includes('/rest/v1/tutor_content_judge_calibration')) return Promise.resolve(jsonResponse(200, world.calibration ?? []));
+        if (url.includes('/rest/v1/tutor_live_content_log')) {
+          if (url.includes('reviewed_at=is.null')) return Promise.resolve(jsonResponse(200, world.backlog ?? []));
+          return Promise.resolve(jsonResponse(200, []));
+        }
+        if (url.includes('/rest/v1/tutor_packs')) {
+          if (method === 'PATCH') {
+            const patch = JSON.parse(String(init?.body)) as Record<string, unknown>;
+            return Promise.resolve(jsonResponse(200, [{ ...(world.packs?.[0] as object), ...patch }]));
+          }
+          return Promise.resolve(jsonResponse(200, world.packs ?? []));
+        }
+        if (url.includes('/rest/v1/kc?')) return Promise.resolve(jsonResponse(200, [{ tier_min: 3 }]));
+        if (url.includes('/rest/v1/audit_logs')) {
+          if (method === 'POST') return Promise.resolve(new Response(null, { status: 201 }));
+          return Promise.resolve(jsonResponse(200, []));
+        }
+        throw new Error(`unexpected ${method} ${url}`);
+      }),
+    );
+  }
+
+  const decide = (body: object) =>
+    request(createApp()).post(`/api/v1/admin/tutor/review-queue/${SEGMENT_ID}/status`).set('Authorization', authed()).send(body);
+
+  it('records a classified rejection (the input of the elevated rate) in one transaction', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stubGovernance({}, calls);
+    const res = await decide({ status: 'rejected', issue: 'safety' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ id: SEGMENT_ID, status: 'rejected', issue: 'safety' });
+    const rpc = calls.find((c) => c.url.includes('/rpc/record_tutor_live_review'));
+    expect(JSON.parse(rpc?.body ?? '{}')).toMatchObject({ p_verdict: 'rejected', p_issue: 'safety', p_reviewer: ADMIN_ID });
+    expect(calls.find((c) => c.url.includes('audit_logs') && c.method === 'POST')?.body).toContain('"issue":"safety"');
+  });
+
+  it('refuses an issue on an approval, an unknown issue class and extra fields', async () => {
+    stubGovernance({});
+    expect((await decide({ status: 'approved', issue: 'quality' })).status).toBe(400);
+    expect((await decide({ status: 'rejected', issue: 'boring' })).status).toBe(400);
+    expect((await decide({ status: 'rejected', rate: 0 })).status).toBe(400);
+  });
+
+  it('answers 409 when another reviewer already decided the item', async () => {
+    stubGovernance({ reviewOutcome: 'not_pending' });
+    const res = await decide({ status: 'approved' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ALREADY_DECIDED');
+  });
+
+  it('shows staff the per-category rate, floor, suspension and overdue backlog', async () => {
+    stubGovernance({
+      backlog: [
+        { risk_category: 'sensitive', created_at: new Date(Date.now() - 9 * 86_400_000).toISOString() },
+        { risk_category: 'sensitive', created_at: new Date().toISOString() },
+      ],
+    });
+    const res = await request(createApp()).get('/api/v1/admin/tutor/live-content/status').set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.data.calibration).toMatchObject({ state: 'uncalibrated', maxAgeDays: 35 });
+    expect(res.body.data.categories).toEqual([
+      expect.objectContaining({ category: 'standard', suspended: true, reasons: ['uncalibrated'], rate: 0.15, floor: 0.15, pending: 0 }),
+      expect.objectContaining({ category: 'sensitive', suspended: true, rate: 0.5, floor: 0.5, pending: 2, overdue: 1 }),
+    ]);
+  });
+
+  it('refuses every governance surface to staff without manage_content, a non-staff account and no session', async () => {
+    const paths: [string, 'get' | 'post'][] = [
+      ['/tutor/live-content/status', 'get'],
+      ['/tutor/packs', 'get'],
+      [`/tutor/packs/${PACK_ID}/status`, 'post'],
+      [`/tutor/review-queue/${SEGMENT_ID}/status`, 'post'],
+    ];
+    for (const [path, verb] of paths) {
+      const calls: { url: string; method: string; body?: string }[] = [];
+      stubGovernance({ permissions: ['view_analytics', 'manage_support'] }, calls);
+      const staff = await request(createApp())[verb](`/api/v1/admin${path}`).set('Authorization', authed()).send({ status: 'published' });
+      expect(staff.status, path).toBe(403);
+      expect(calls.filter((c) => !c.url.includes('/user_roles') && !c.url.includes('/admin_permissions'))).toEqual([]);
+
+      stubGovernance({ roles: ['kid'] });
+      const kid = await request(createApp())[verb](`/api/v1/admin${path}`).set('Authorization', authed()).send({ status: 'published' });
+      expect(kid.status, path).toBe(403);
+
+      const anonymous = await request(createApp())[verb](`/api/v1/admin${path}`).send({ status: 'published' });
+      expect(anonymous.status, path).toBe(401);
+    }
+  });
+
+  it('refuses to publish a pack whose stored content breaks tutor-pack.v1, listing why (422)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stubGovernance({
+      packs: [{
+        id: PACK_ID, skill_key: 'kc:money.percent-intro', kc_key: 'money.percent-intro', tier: 3, locale: 'en-US', status: 'review',
+        pack: { contract: 'tutor-pack.v1', segments: [{ id: 'pack-x-1', type: 'quiz_mcq', prompt_md: 'Q', difficulty: 2, xp: 10, explanation_md: 'E', payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] } }], answers: { 'pack-x-1': { correct_option_id: 'z' } } },
+        pack_version: 1, content_hash: null, source: 'hand_authored', demand_pattern: 'kc_without_catalog_content', risk_category: 'standard',
+        released_by: null, released_at: null, validated_at: null, updated_at: '2026-09-24T00:00:00Z',
+      }],
+    }, calls);
+    const res = await request(createApp()).post(`/api/v1/admin/tutor/packs/${PACK_ID}/status`).set('Authorization', authed()).send({ status: 'published' });
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('PACK_CONTRACT_FAILED');
+    expect(res.body.error.failures.join('\n')).toMatch(/4-12 segments|teaching rationale|exactly once/);
+    expect(calls.some((c) => c.method === 'PATCH')).toBe(false);
+  });
+
+  it('refuses an invented pack status and a malformed id', async () => {
+    stubGovernance({});
+    expect((await request(createApp()).post(`/api/v1/admin/tutor/packs/${PACK_ID}/status`).set('Authorization', authed()).send({ status: 'live' })).status).toBe(400);
+    expect((await request(createApp()).post('/api/v1/admin/tutor/packs/nope/status').set('Authorization', authed()).send({ status: 'published' })).status).toBe(400);
+    expect((await request(createApp()).get('/api/v1/admin/tutor/packs?status=draft').set('Authorization', authed())).status).toBe(400);
+  });
+
+  it('lists packs for review, answer keys included (staff judge the whole item)', async () => {
+    stubGovernance({ packs: [{ id: PACK_ID, status: 'review', pack: { answers: { x: { value: 8 } } } }] });
+    const res = await request(createApp()).get('/api/v1/admin/tutor/packs?status=review').set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.data.total).toBe(1);
   });
 });

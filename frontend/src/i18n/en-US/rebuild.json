@@ -274,5 +274,49 @@
     "resetting": "Resetting",
     "resetDone": "Profile reset.",
     "resetFailed": "That did not reset. Try again."
+  },
+  "staffLiveContent": {
+    "title": "Live Mentor activities",
+    "intro": "The Mentor writes these during a session. Staff review a share.",
+    "judgeLabel": "Content judge",
+    "judge": {
+      "passed": "Calibrated {n} days ago",
+      "uncalibrated": "Not calibrated. Live activities are paused.",
+      "stale": "Calibration expired. Live activities are paused."
+    },
+    "category": {
+      "standard": "Everyday topics",
+      "sensitive": "Sensitive topics"
+    },
+    "rate": "{rate} reviewed, never below {floor}",
+    "open": "Live activities on",
+    "reason": {
+      "uncalibrated": "Paused until the judge is calibrated",
+      "calibration_stale": "Paused until the judge is recalibrated",
+      "concordance_below_floor": "Paused: staff rejected too many",
+      "review_rate_below_floor": "Paused: reviews are behind"
+    },
+    "elevated": "Raised after an issue. {n} clean reviews to go.",
+    "overdue": "{n} reviews overdue",
+    "nothingOverdue": "No overdue reviews",
+    "loading": "Loading.",
+    "loadFailed": "This did not load. Try later.",
+    "reviewTitle": "Review this activity",
+    "reviewLabel": "Your decision",
+    "approve": "Approve",
+    "quality": "Quality issue",
+    "safety": "Safety issue",
+    "decided": "Decision recorded.",
+    "alreadyDecided": "Someone already decided this.",
+    "decideFailed": "That did not save. Try again.",
+    "packsTitle": "Activity packs to review",
+    "packsEmpty": "No packs are waiting.",
+    "packMeta": "Tier {tier}, {locale}, {count} activities",
+    "publish": "Publish",
+    "archive": "Archive",
+    "published": "Published.",
+    "archived": "Archived.",
+    "refused": "Not published. Fix these first:",
+    "packFailed": "That did not save. Try again."
   }
 }

@@ -76,9 +76,16 @@ const Env = z.object({
     .refine((value) => !value.startsWith('replace-me-'), 'LESSON_ATTEMPT_SECRET must be generated for this environment')
     .optional(),
 
-  // Fraction of live-generated tutor segments queued for post-hoc human
-  // review (/ORACLE.md §7.3). Zero is a valid deployment choice and a bad one.
+  // C.5 / Appendix E §3.1.1: the BASELINE share of live-generated Mentor
+  // activities sampled for post-hoc staff review, per content-risk category.
+  // The floors (15% standard, 50% sensitive) are Tier-1-adjacent: a value
+  // may RAISE the baseline, never lower it — a value below the floor is
+  // ignored (the floor applies) and logged at boot of the gate. Zero, once a
+  // valid choice here, is no longer possible. A quality or safety issue found
+  // by staff raises the rate further, automatically, for that category
+  // (services/pedagogy/liveContentGovernance.ts).
   TUTOR_LIVE_REVIEW_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.15),
+  TUTOR_LIVE_REVIEW_SENSITIVE_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.5),
 
   // The Tutor v3 pedagogical brain (KC graph + BKT + FSRS + session plan,
   // migration 0052). On by default WITH graceful degradation: while 0052 is

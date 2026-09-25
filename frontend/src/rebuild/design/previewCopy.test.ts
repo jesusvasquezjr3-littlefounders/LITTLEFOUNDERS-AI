@@ -4,7 +4,7 @@ import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
 import { checkCopy, type CopyRole, type Locale } from './copyBudget';
 
-const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite' | 'mentorSessionEnd' | 'mentorCheckIn' | 'mentorGoalCheck' | 'mentorAllianceCheck' | 'mentorProfile'>, CopyRole> = {
+const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite' | 'mentorSessionEnd' | 'mentorCheckIn' | 'mentorGoalCheck' | 'mentorAllianceCheck' | 'mentorProfile' | 'staffLiveContent'>, CopyRole> = {
   preview: 'body', heading: 'heading', intro: 'body', practice: 'action', controls: 'action',
   lessonDemo: 'action', lessonUnavailable: 'heading', lessonInvalid: 'heading', timelineDemo: 'action', numberLineDemo: 'action', age: 'body', adult: 'option',
   question: 'prompt', save: 'option', spend: 'option', check: 'action', again: 'action',
@@ -15,7 +15,7 @@ const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' |
 describe('new preview copy', () => {
   for (const [locale, strings] of Object.entries({ 'en-US': en, 'es-MX': es, 'pt-BR': pt })) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite' && key !== 'mentorSessionEnd' && key !== 'mentorCheckIn' && key !== 'mentorGoalCheck' && key !== 'mentorAllianceCheck' && key !== 'mentorProfile').sort()).toEqual(Object.keys(roles).sort());
+      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite' && key !== 'mentorSessionEnd' && key !== 'mentorCheckIn' && key !== 'mentorGoalCheck' && key !== 'mentorAllianceCheck' && key !== 'mentorProfile' && key !== 'staffLiveContent').sort()).toEqual(Object.keys(roles).sort());
       for (const key of Object.keys(roles) as (keyof typeof roles)[]) {
         expect(checkCopy(strings[key], roles[key], { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
       }
@@ -92,6 +92,17 @@ describe('new preview copy', () => {
         for (const [path, text] of entries) {
           const role = path.startsWith('title') ? 'heading' : ['reset', 'resetting'].includes(path) ? 'action' : 'body';
           expect(checkCopy(text.replace('{n}', '12'), role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `mentorProfile.${path}`).toEqual([]);
+        }
+      }
+      // C.5 / C.6: the staff live-content surfaces (adult staff; the app budget for adults).
+      for (const [key, value] of Object.entries(strings.staffLiveContent)) {
+        const entries: [string, string][] = typeof value === 'string' ? [[key, value]] : Object.entries(value).map(([k, v]) => [`${key}.${k}`, v]);
+        for (const [path, text] of entries) {
+          const role = ['title', 'reviewTitle', 'packsTitle'].includes(path) || path.startsWith('category.') ? 'heading'
+            : ['approve', 'quality', 'safety', 'publish', 'archive'].includes(path) ? 'action' : 'body';
+          const filled = text.replace('{n}', '12').replace('{rate}', '50%').replace('{floor}', '15%')
+            .replace('{tier}', '3').replace('{locale}', 'es-MX').replace('{count}', '4');
+          expect(checkCopy(filled, role, { locale: locale as Locale, ageBand: 'adult', surface: 'app' }), `staffLiveContent.${path}`).toEqual([]);
         }
       }
       for (const [key, text] of Object.entries(strings.ageScreen)) {

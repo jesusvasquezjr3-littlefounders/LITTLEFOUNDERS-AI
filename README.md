@@ -131,6 +131,7 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | Mentor behavioral telemetry (C.9 channels/firing record, C.19 check-in outcomes and frames, the optional context fields: Oracle `behavioralTelemetry.ts`/`client.ts`/`protocol.ts`, Core `services/pedagogy/behavioralTelemetry.ts`, the `*_mentor_behavioral_telemetry` columns and CHECKs, the client's `check_in` frames) | `npm run telemetry:check` |
 | Mentor alliance / self-explanation / disposition (C.15 alliance record and renegotiation outcomes, C.14 events and concept families, C.7 profile labels, projection and observation, the bond-proxy answers, the `goal_check` frames: Oracle `allianceController.ts`/`selfExplanation.ts`/`explanationLexicon.ts`/`dispositionProfile.ts`/`protocol.ts`, Core `services/pedagogy/alliance.ts`/`disposition.ts`, the `*_mentor_alliance_and_disposition` CHECKs, the client's `types.ts` and `rebuild/mentor/allianceApi.ts`) | `npm run alliance:check` |
 | Mentor spaced review / dialogue register (C.11 routing vocabularies, the rule's thresholds Core re-evaluates, `REVIEW_OPEN_TURNS`, the routing record, `kc_attempt.review_tier`; C.17 bands, variants, assignments and the register record; the OD-23 guard on `MENTOR_DIALOGUE_EXPERIMENT_BANDS`: Oracle `spacedReview.ts`/`controller.ts`/`dialogueCalibration.ts`, Core `services/pedagogy/spacedReview.ts`/`dialogueCalibration.ts`/`fsrs.ts`/`config.ts`, the `*_mentor_spaced_review_and_dialogue_calibration` CHECKs) | `npm run review-calibration:check` |
+| Mentor live-content governance / curated packs (C.5/C.6: the content-risk lexicon in Oracle `content/contentRisk.ts` and Core `services/pedagogy/contentRisk.ts`, the governance and ladder vocabularies, the pack demand patterns and sources, the `*_live_content_governance_and_curated_packs` CHECKs, the liveSuspended answer; the Appendix E floors guard: 15% / 50% sampling and the calibration minimums may never be lowered) | `npm run live-content:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
@@ -227,6 +228,30 @@ npm --prefix backend run tutor:dialogue-calibration-report -- [--since=YYYY-MM-D
                                                # surface `tutor`, target `mentor.dialogue-register` (variant A = control, B = calibrated),
                                                # created by staff; Core enrols only MENTOR_DIALOGUE_EXPERIMENT_BANDS (default `adult`, OD-23).
                                                # Switch: TUTOR_DIALOGUE_CALIBRATION=act|off (Oracle).
+npm --prefix backend run tutor:live-content-report -- [--resolve=<standard|sensitive>:<cause> --note="..."]
+                                               # C.5/C.6 monitor (read-only except the two operator flags, no model call): the live-content
+                                               # judge's calibration; per content-risk category the staff-sampling rate (floors 15% / 50%,
+                                               # raised after a staff rejection until 100 clean decisions), any Stage 7 suspension, the Judge
+                                               # Approval-Quality Concordance Rate (floor 90%), review coverage and the backlog past the 7-day
+                                               # SLA; the content-ladder shares, the weekly live share and the unmet demand (the next curated
+                                               # packs to author); the kill-switch log. Exit 1 = a human is needed (an uncalibrated judge
+                                               # counts: live generation stays suspended until a passed calibration is recorded).
+                                               # mentor-live-content-monitor.yml runs it weekly. A concordance trip resolves only after a
+                                               # PASSED calibration recorded after it. Policy: docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md
+npm --prefix backend run tutor:live-content-report -- --record-calibration=<file> --recorded-by="..." --note="..."
+                                               # records a live-content judge calibration (Appendix E §2.1/§3.2). Core recomputes every
+                                               # number from the raw labels and verdicts and REFUSES a dry run, a replay, fewer than two
+                                               # raters or ratings not from the human panel. The file comes from:
+npm --prefix oracle run content-judge:calibrate -- [--ratings=a.json,b.json] [--replay=<file>] [--out=<file>] [--live]
+                                               # the judge vs the human panel on the 44-item seed set (oracle/src/content/judgeCalibration/).
+                                               # Dry run by default (zero spend, never recordable). --live is ONE PAID CALL PER ITEM:
+                                               # owner-run only, refused unless CONTENT_JUDGE_CALIBRATION_LIVE=approved (OD-23).
+npm --prefix backend run seed:tutor-packs -- [--check]
+                                               # C.6 curated activity packs (database/seeds/tutor_packs/*.json, contract tutor-pack.v1):
+                                               # --check validates every pack (no credentials, what the tests run); without it the packs are
+                                               # upserted as `review` (changed content goes BACK to review). It never publishes: staff do,
+                                               # in the console (POST /admin/tutor/packs/:id/status), which re-runs the contract on the
+                                               # stored content. Zero spend: the seed packs are hand-authored.
 npm --prefix oracle run bias-audit -- [--json | --check | --record --trigger material_change --notes "..." | --judge-plan]
                                                # C.20 dialect/code-switch/child-spelling/ASR bias audit of every lexical component feeding
                                                # C.9, the check-in/stop replies and moderation (fixture-based, free). Oracle's npm test fails

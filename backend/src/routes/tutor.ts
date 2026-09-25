@@ -116,6 +116,7 @@ import {
   type TutorSessionRow,
 } from '../services/tutorData.js';
 import {
+  collectSegmentProse,
   LIVE_TYPE_ALLOWLIST,
   resolveSkill,
   serveFromBank,
@@ -124,6 +125,16 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
+import { classifyLiveContent, type ContentRiskCategory } from '../services/pedagogy/contentRisk.js';
+import {
+  admitLiveCandidate,
+  getLiveContentGate,
+  insertLiveSegmentChecked,
+  liveGenerationOpen,
+  recordLadderEvent,
+  sessionSafetyFlagCount,
+  type LadderRoute,
+} from '../services/pedagogy/liveContentGovernance.js';
 import {
   getActiveKcs,
   getKcEdges,
@@ -2142,6 +2153,30 @@ function internalRouter(): Router {
           excludeSegmentIds: alreadyServed,
         });
       }
+      let route: LadderRoute = candidate ? 'named_skill' : 'none';
+
+      /*
+       * C.6: THE CURATED PACK FOR THIS EXACT KNOWLEDGE COMPONENT.
+       *
+       * A KC that no published topic teaches (`kc.skill_key` null) had no
+       * human-approved content at all, so every activity about it was live
+       * generation: the highest-predictability live demand there is. A
+       * curated pack may target the KC itself (`kc:<kc key>`), and it is
+       * tried before the prerequisite and frontier rungs because it is about
+       * the exact KC the evidence will be filed under.
+       */
+      const activeKc = parsed.data.kcId ? kcCatalog?.find((k) => k.id === parsed.data.kcId) : undefined;
+      if (!candidate && activeKc?.key) {
+        candidate = await serveFromBank({
+          skillKey: `kc:${activeKc.key}`,
+          tier: session.tier,
+          locale: session.locale,
+          preferredTypes: parsed.data.preferredTypes,
+          difficulty: parsed.data.difficulty,
+          excludeSegmentIds: alreadyServed,
+        });
+        if (candidate) route = 'kc_pack';
+      }
 
       /*
        * THE GRAPH EARNS ITS KEEP: A PREREQUISITE THAT DOES HAVE CONTENT.
@@ -2173,12 +2208,33 @@ function internalRouter(): Router {
         const [edges, kcs] = await Promise.all([getKcEdges(), kcCatalog ?? getActiveKcs()]);
         if (edges && kcs) {
           const byId = new Map(kcs.map((k) => [k.id, k]));
-          const prerequisiteKeys = edges
+          const prerequisites = edges
             .filter((e) => e.dependent_kc_id === parsed.data.kcId)
-            .map((e) => byId.get(e.prerequisite_kc_id)?.skill_key)
-            .filter((k): k is string => typeof k === 'string' && k !== '');
+            .map((e) => byId.get(e.prerequisite_kc_id))
+            .filter((k): k is KcRow => k !== undefined);
 
-          for (const key of prerequisiteKeys) {
+          for (const prerequisite of prerequisites) {
+            const key = typeof prerequisite.skill_key === 'string' && prerequisite.skill_key !== '' ? prerequisite.skill_key : null;
+            // C.6: a prerequisite with no published topic may still have a
+            // curated pack of its own.
+            if (key === null) {
+              if (prerequisite.key) {
+                candidate = await serveFromBank({
+                  skillKey: `kc:${prerequisite.key}`,
+                  tier: session.tier,
+                  locale: session.locale,
+                  preferredTypes: parsed.data.preferredTypes,
+                  difficulty: parsed.data.difficulty,
+                  excludeSegmentIds: alreadyServed,
+                });
+              }
+              if (candidate) {
+                route = 'prerequisite';
+                console.warn(`[tutor] no content for the active KC; served its prerequisite pack kc:${prerequisite.key} instead`);
+                break;
+              }
+              continue;
+            }
             const fallbackSkill = await resolveSkill(key);
             if (fallbackSkill) {
               candidate = await serveFromCatalog({
@@ -2210,7 +2266,18 @@ function internalRouter(): Router {
                 excludeSegmentIds: alreadyServed,
               });
             }
+            if (!candidate && prerequisite.key) {
+              candidate = await serveFromBank({
+                skillKey: `kc:${prerequisite.key}`,
+                tier: session.tier,
+                locale: session.locale,
+                preferredTypes: parsed.data.preferredTypes,
+                difficulty: parsed.data.difficulty,
+                excludeSegmentIds: alreadyServed,
+              });
+            }
             if (candidate) {
+              route = 'prerequisite';
               console.warn(
                 `[tutor] no content for the active KC; served its prerequisite ${key} instead`,
               );
@@ -2271,6 +2338,7 @@ function internalRouter(): Router {
             });
           }
           if (candidate) {
+            route = 'frontier';
             console.warn(
               `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
             );
@@ -2278,7 +2346,46 @@ function internalRouter(): Router {
         }
       }
 
+      const eventKey = activeKc?.key ? `kc:${activeKc.key}` : namedSkill;
       if (!candidate) {
+        /*
+         * C.5 / Appendix E §3.1.1(b): the human-approved tiers missed. Live
+         * generation is open only while its content-risk category is not
+         * suspended (an uncalibrated or stale judge, a concordance or review
+         * floor breached). The request's category is read from what the
+         * Mentor asked for and the session's safety history; the item's own
+         * category is decided again, and finally, at verification.
+         */
+        const flags = await sessionSafetyFlagCount(session.id);
+        const requestRisk = classifyLiveContent({
+          texts: [parsed.data.framing, parsed.data.rationale],
+          reportedSignals: undefined,
+          // An unreadable safety history is treated as a flagged one.
+          sessionSafetyFlags: flags ?? 1,
+        });
+        const gate = liveGenerationOpen(await getLiveContentGate(), requestRisk.category);
+        if (!gate.open) {
+          void recordLadderEvent({
+            outcome: 'live_suspended',
+            route: 'none',
+            kcId: parsed.data.kcId ?? null,
+            skillKey: eventKey,
+            tier: session.tier,
+            locale: session.locale,
+            riskCategory: requestRisk.category,
+            reason: gate.reason,
+          });
+          return ok(res, { needsGeneration: false, liveSuspended: true, reason: gate.reason });
+        }
+        void recordLadderEvent({
+          outcome: 'needs_generation',
+          route: 'none',
+          kcId: parsed.data.kcId ?? null,
+          skillKey: eventKey,
+          tier: session.tier,
+          locale: session.locale,
+          riskCategory: requestRisk.category,
+        });
         return ok(res, {
           needsGeneration: true,
           skillKey: parsed.data.skillKey,
@@ -2291,6 +2398,16 @@ function internalRouter(): Router {
 
       candidate.provenance = stampPedagogy(candidate.provenance, parsed.data);
       const result = await persistAndServe(res, session.id, candidate, session.tier);
+      if (result !== 'conflict') {
+        void recordLadderEvent({
+          outcome: candidate.origin === 'bank' ? 'bank' : 'catalog',
+          route,
+          kcId: parsed.data.kcId ?? null,
+          skillKey: eventKey,
+          tier: session.tier,
+          locale: session.locale,
+        });
+      }
       if (result !== 'conflict') return result;
       // A concurrent request already claimed this exact candidate for this
       // session (migration 0064's fresh re-check) — loop and reselect
@@ -2322,9 +2439,54 @@ function internalRouter(): Router {
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
 
     const segment = parsed.data.segment as unknown as SegmentBase;
+    const ladderEvent = (
+      outcome: 'live_served' | 'live_refused',
+      risk: ContentRiskCategory | null,
+      reason: Parameters<typeof recordLadderEvent>[0]['reason'] = null,
+    ) =>
+      void recordLadderEvent({
+        outcome,
+        route: 'verify',
+        kcId: parsed.data.kcId ?? null,
+        skillKey: typeof parsed.data.provenance.skill_key === 'string' ? parsed.data.provenance.skill_key : null,
+        tier: session.tier,
+        locale: session.locale,
+        riskCategory: risk,
+        reason,
+      });
     const verification = verifyGeneratedSegment(segment, session.tier);
     if (!verification.ok) {
+      ladderEvent('live_refused', null, 'verification_failed');
       return ok(res, { accepted: false, failures: verification.failures });
+    }
+
+    /*
+     * C.5: THE GOVERNANCE GATE (Appendix E §3.1.1). Core decides the item's
+     * content-risk category itself (its own lexicon over the item and the
+     * rationale, the session's recorded safety flags) and takes the union
+     * with what Oracle reported, so a report can raise the category and
+     * never lower it. The item is served only if that category is not
+     * suspended and the judge that approved it is the calibrated one; the
+     * sampling rate is the category's current (baseline or elevated) rate.
+     */
+    const flags = await sessionSafetyFlagCount(session.id);
+    const risk = classifyLiveContent({
+      texts: [
+        collectSegmentProse(segment),
+        typeof parsed.data.provenance.rationale === 'string' ? parsed.data.provenance.rationale : '',
+      ],
+      reportedSignals: parsed.data.provenance.risk_signals,
+      sessionSafetyFlags: flags ?? 1,
+    });
+    const admission = admitLiveCandidate(
+      await getLiveContentGate(),
+      risk.category,
+      parsed.data.provenance.judge_model,
+      parsed.data.provenance.judge_prompt_hash,
+    );
+    if (!admission.admitted) {
+      ladderEvent('live_refused', risk.category, admission.reason);
+      return ok(res, { accepted: false, failures: [`live generation is not admitted: ${admission.reason}`] });
     }
 
     const candidate: LadderCandidate = {
@@ -2333,9 +2495,28 @@ function internalRouter(): Router {
       segment,
       answer: (segment.answer as Record<string, unknown> | undefined) ?? null,
       provenance: stampPedagogy(
-        { ...parsed.data.provenance, tier: 3, verification: verification.failures },
+        {
+          ...parsed.data.provenance,
+          tier: 3,
+          verification: verification.failures,
+          // Core's final classification replaces whatever Oracle reported.
+          risk_category: risk.category,
+          risk_signals: risk.signals,
+          sampling: { rate: admission.rate, elevated: admission.elevated },
+          calibration_id: admission.calibrationId,
+        },
         parsed.data,
       ),
+    };
+    const live = {
+      riskCategory: risk.category,
+      riskSignals: risk.signals,
+      sampleRate: admission.rate,
+      elevated: admission.elevated,
+      judgeModel: String(parsed.data.provenance.judge_model),
+      judgePromptHash: String(parsed.data.provenance.judge_prompt_hash),
+      calibrationId: admission.calibrationId,
+      locale: session.locale,
     };
 
     /*
@@ -2349,8 +2530,11 @@ function internalRouter(): Router {
      * to re-run — the candidate is whatever Oracle already generated).
      */
     for (let attempt = 0; attempt < 2; attempt++) {
-      const result = await persistAndServe(res, session.id, candidate, session.tier, verification.keyVerified);
-      if (result !== 'conflict') return result;
+      const result = await persistAndServe(res, session.id, candidate, session.tier, verification.keyVerified, live);
+      if (result !== 'conflict') {
+        if (res.statusCode === 200) ladderEvent('live_served', risk.category);
+        return result;
+      }
     }
     return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
   });
@@ -2661,6 +2845,22 @@ async function persistAndServe(
   candidate: LadderCandidate,
   tier: number,
   keyVerifiedOverride?: boolean,
+  /**
+   * C.5: the governance facts of an admitted LIVE candidate. A live item is
+   * claimed only through the governed function (segment + systematic
+   * sampling decision + log row in one transaction); there is no path that
+   * serves a live item without its sampling record.
+   */
+  live?: {
+    riskCategory: ContentRiskCategory;
+    riskSignals: readonly string[];
+    sampleRate: number;
+    elevated: boolean;
+    judgeModel: string;
+    judgePromptHash: string;
+    calibrationId: string;
+    locale: string;
+  },
 ): Promise<unknown | 'conflict'> {
   // A catalog or bank segment was human-published, so its key is verified by
   // construction. A live one is verified only if re-execution said so.
@@ -2671,21 +2871,48 @@ async function persistAndServe(
   // rather than ever comparing against an empty string.
   const sourceKey = typeof candidate.segment.id === 'string' && candidate.segment.id !== '' ? candidate.segment.id : null;
 
-  const row = await insertTutorSegmentChecked({
-    sessionId,
-    sourceKey,
-    origin: candidate.origin,
-    lessonId: candidate.lessonId,
-    segmentType: candidate.segment.type,
-    payload: candidate.segment as unknown as Record<string, unknown>,
-    answer: candidate.answer,
-    keyVerified,
-    provenance: candidate.provenance,
-    // Sample live segments into the human review queue (/ORACLE.md §7.3). This
-    // does not protect the first learner; it is what catches a SYSTEMATIC
-    // defect before it reaches the thousandth.
-    reviewStatus: candidate.origin === 'live' && shouldSampleForReview() ? 'pending' : null,
-  });
+  if (candidate.origin === 'live' && live === undefined) {
+    // Unreachable by construction; refusing is the only safe answer.
+    return fail(res, 500, 'INTERNAL', 'A live segment reached persistence without its governance record');
+  }
+  /*
+   * Live items are sampled into the staff review queue by the governed
+   * claim (C.5): systematically, at the category's current rate, never
+   * below the Appendix E floor. This does not protect the first learner; it
+   * is what catches a SYSTEMATIC defect early, and what drives the dynamic
+   * rate and the Stage 7 suspension.
+   */
+  const row = live !== undefined
+    ? await insertLiveSegmentChecked<TutorSegmentRow>({
+        sessionId,
+        sourceKey,
+        segmentType: candidate.segment.type,
+        payload: candidate.segment as unknown as Record<string, unknown>,
+        answer: candidate.answer,
+        keyVerified,
+        provenance: candidate.provenance,
+        riskCategory: live.riskCategory,
+        riskSignals: live.riskSignals,
+        tier,
+        locale: live.locale,
+        sampleRate: live.sampleRate,
+        elevated: live.elevated,
+        judgeModel: live.judgeModel,
+        judgePromptHash: live.judgePromptHash,
+        calibrationId: live.calibrationId,
+      })
+    : await insertTutorSegmentChecked({
+        sessionId,
+        sourceKey,
+        origin: candidate.origin,
+        lessonId: candidate.lessonId,
+        segmentType: candidate.segment.type,
+        payload: candidate.segment as unknown as Record<string, unknown>,
+        answer: candidate.answer,
+        keyVerified,
+        provenance: candidate.provenance,
+        reviewStatus: null,
+      });
   if (row === 'conflict') return 'conflict';
   if (row === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
 
@@ -2727,10 +2954,6 @@ async function persistAndServe(
 function servedDifficultyOf(segment: SegmentBase): number | null {
   const value = (segment as { difficulty?: unknown }).difficulty;
   return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5 ? value : null;
-}
-
-function shouldSampleForReview(): boolean {
-  return Math.random() < getConfig().TUTOR_LIVE_REVIEW_SAMPLE_RATE;
 }
 
 interface CourseTitleRow {

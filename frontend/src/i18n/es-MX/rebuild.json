@@ -274,5 +274,49 @@
     "resetting": "Reiniciando",
     "resetDone": "Perfil reiniciado.",
     "resetFailed": "No se reinició. Intenta de nuevo."
+  },
+  "staffLiveContent": {
+    "title": "Actividades en vivo del Mentor",
+    "intro": "El Mentor las escribe durante la sesión. El equipo revisa una parte.",
+    "judgeLabel": "Juez de contenido",
+    "judge": {
+      "passed": "Calibrado hace {n} días",
+      "uncalibrated": "Sin calibrar. Las actividades en vivo están en pausa.",
+      "stale": "Calibración vencida. Las actividades en vivo están en pausa."
+    },
+    "category": {
+      "standard": "Temas cotidianos",
+      "sensitive": "Temas sensibles"
+    },
+    "rate": "{rate} revisado, nunca menos de {floor}",
+    "open": "Actividades en vivo activas",
+    "reason": {
+      "uncalibrated": "En pausa hasta calibrar el juez",
+      "calibration_stale": "En pausa hasta recalibrar el juez",
+      "concordance_below_floor": "En pausa: el equipo rechazó demasiadas",
+      "review_rate_below_floor": "En pausa: revisiones atrasadas"
+    },
+    "elevated": "Subió tras un problema. Faltan {n} revisiones limpias.",
+    "overdue": "{n} revisiones atrasadas",
+    "nothingOverdue": "Sin revisiones atrasadas",
+    "loading": "Cargando.",
+    "loadFailed": "No se pudo cargar. Intenta más tarde.",
+    "reviewTitle": "Revisa esta actividad",
+    "reviewLabel": "Tu decisión",
+    "approve": "Aprobar",
+    "quality": "Problema de calidad",
+    "safety": "Problema de seguridad",
+    "decided": "Decisión registrada.",
+    "alreadyDecided": "Alguien ya lo decidió.",
+    "decideFailed": "No se guardó. Intenta de nuevo.",
+    "packsTitle": "Paquetes de actividades por revisar",
+    "packsEmpty": "No hay paquetes en espera.",
+    "packMeta": "Nivel {tier}, {locale}, {count} actividades",
+    "publish": "Publicar",
+    "archive": "Archivar",
+    "published": "Publicado.",
+    "archived": "Archivado.",
+    "refused": "No se publicó. Corrige esto primero:",
+    "packFailed": "No se guardó. Intenta de nuevo."
   }
 }

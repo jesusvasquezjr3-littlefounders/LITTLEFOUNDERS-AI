@@ -2816,6 +2816,10 @@ export interface TutorPackRow {
   locale: string;
   pack: Record<string, unknown>;
   status: string;
+  /** C.6 columns (curated-pack migration); absent on an older schema. */
+  pack_version?: number;
+  content_hash?: string | null;
+  source?: string;
 }
 
 /**

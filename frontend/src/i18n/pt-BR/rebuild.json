@@ -274,5 +274,49 @@
     "resetting": "Redefinindo",
     "resetDone": "Perfil redefinido.",
     "resetFailed": "Não redefiniu. Tente de novo."
+  },
+  "staffLiveContent": {
+    "title": "Atividades ao vivo do Mentor",
+    "intro": "O Mentor as escreve durante a sessão. A equipe revisa uma parte.",
+    "judgeLabel": "Juiz de conteúdo",
+    "judge": {
+      "passed": "Calibrado há {n} dias",
+      "uncalibrated": "Sem calibração. As atividades ao vivo estão pausadas.",
+      "stale": "Calibração vencida. As atividades ao vivo estão pausadas."
+    },
+    "category": {
+      "standard": "Temas do dia a dia",
+      "sensitive": "Temas sensíveis"
+    },
+    "rate": "{rate} revisado, nunca abaixo de {floor}",
+    "open": "Atividades ao vivo ativas",
+    "reason": {
+      "uncalibrated": "Pausado até calibrar o juiz",
+      "calibration_stale": "Pausado até recalibrar o juiz",
+      "concordance_below_floor": "Pausado: a equipe rejeitou demais",
+      "review_rate_below_floor": "Pausado: revisões atrasadas"
+    },
+    "elevated": "Aumentou após um problema. Faltam {n} revisões sem problema.",
+    "overdue": "{n} revisões atrasadas",
+    "nothingOverdue": "Nenhuma revisão atrasada",
+    "loading": "Carregando.",
+    "loadFailed": "Não carregou. Tente mais tarde.",
+    "reviewTitle": "Revise esta atividade",
+    "reviewLabel": "Sua decisão",
+    "approve": "Aprovar",
+    "quality": "Problema de qualidade",
+    "safety": "Problema de segurança",
+    "decided": "Decisão registrada.",
+    "alreadyDecided": "Alguém já decidiu isto.",
+    "decideFailed": "Não salvou. Tente de novo.",
+    "packsTitle": "Pacotes de atividades para revisar",
+    "packsEmpty": "Nenhum pacote aguardando.",
+    "packMeta": "Nível {tier}, {locale}, {count} atividades",
+    "publish": "Publicar",
+    "archive": "Arquivar",
+    "published": "Publicado.",
+    "archived": "Arquivado.",
+    "refused": "Não publicado. Corrija isto primeiro:",
+    "packFailed": "Não salvou. Tente de novo."
   }
 }

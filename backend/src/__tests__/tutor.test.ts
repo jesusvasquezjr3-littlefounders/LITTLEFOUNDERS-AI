@@ -9,13 +9,40 @@ import { knownMentorAgeTier } from '../services/mentorAgeCalibration.js';
 import { getLearnerMemory } from '../services/tutorData.js';
 import { GRADERS } from '../lesson-contract/registry.js';
 import { resetKillSwitchCache } from '../services/pedagogy/behavioralTelemetry.js';
+import { resetLiveContentGateCache } from '../services/pedagogy/liveContentGovernance.js';
 
 // Each scenario is an independent learner journey; hundreds of tests must not
 // consume one shared loopback client's rate budget across unrelated scenarios.
 beforeEach(() => {
   globalRateLimiter.resetKey(ipKeyGenerator('::ffff:127.0.0.1'));
   globalRateLimiter.resetKey('127.0.0.1');
+  // C.5: the live-content gate is cached per process; each scenario states its own.
+  resetLiveContentGateCache();
 });
+
+/*
+ * C.5: a PASSED, current calibration of the live-content judge. Without one
+ * (the default: no row) live generation is suspended for every category, so
+ * a test that expects the ladder to invite generation, or to serve a
+ * generated candidate, states this explicitly.
+ */
+const JUDGE_HASH = 'a'.repeat(64);
+const PASSED_CALIBRATION = {
+  id: '99999999-9999-4999-8999-999999999999',
+  judge_model: 'qwen3-max',
+  judge_prompt_hash: JUDGE_HASH,
+  seed_set_version: 'seed.v1',
+  seed_set_hash: 'b'.repeat(64),
+  raters: 3,
+  items_standard: 22,
+  items_sensitive: 22,
+  agreement_standard: 0.95,
+  agreement_sensitive: 0.95,
+  inter_rater_agreement: 0.9,
+  verdict: 'passed',
+  created_at: new Date(Date.now() - 86_400_000).toISOString(),
+};
+const JUDGED = { judge_model: 'qwen3-max', judge_prompt_hash: JUDGE_HASH };
 
 /*
  * The Tutor's Core surface (/ORACLE.md).
@@ -166,6 +193,16 @@ interface StubOpts {
   sessionsToday?: number;
   /** S06.5: answers a request before every other branch when it returns a Response (the C.7/C.15 tables). */
   intercept?: (url: string, method: string, body?: string) => Response | null;
+  /** C.5: `tutor_content_judge_calibration` rows (newest first). Absent = never calibrated. */
+  judgeCalibration?: unknown[];
+  /** C.5: `tutor_live_content_log` rows for every gate read. Absent = no history. */
+  liveLog?: unknown[];
+  /** C.5: the latest staff rejection read (`review_verdict=eq.rejected`). */
+  liveLatestIssue?: unknown[];
+  /** C.5: `audit_logs` rows for the kill-switch read. */
+  auditRows?: unknown[];
+  /** The session's `tutor_safety_flags` rows (C.5 reads them as a sensitive-context signal). */
+  safetyFlags?: unknown[];
 }
 
 function stub(opts: StubOpts = {}) {
@@ -420,7 +457,23 @@ function stub(opts: StubOpts = {}) {
         return Promise.resolve(jsonResponse(200, opts.awardedXp ?? requested));
       }
       if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, opts.turns ?? []));
-      if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, opts.safetyFlags ?? []));
+      // C.5 / C.6 governance tables.
+      if (url.includes('/rest/v1/tutor_content_judge_calibration')) return Promise.resolve(jsonResponse(200, opts.judgeCalibration ?? []));
+      if (url.includes('/rest/v1/tutor_live_content_log')) {
+        if (url.includes('review_verdict=eq.rejected')) return Promise.resolve(jsonResponse(200, opts.liveLatestIssue ?? []));
+        return Promise.resolve(jsonResponse(200, opts.liveLog ?? []));
+      }
+      if (url.includes('/rest/v1/tutor_content_ladder_events')) return Promise.resolve(new Response(null, { status: 201 }));
+      if (url.includes('/rest/v1/audit_logs') && method === 'GET' && url.includes('live_content')) {
+        return Promise.resolve(jsonResponse(200, opts.auditRows ?? []));
+      }
+      if (url.includes('/rpc/insert_tutor_live_segment_checked')) {
+        if (opts.segmentInsertResponses && opts.segmentInsertResponses.length > 0) {
+          return Promise.resolve(jsonResponse(200, opts.segmentInsertResponses.shift()));
+        }
+        return Promise.resolve(jsonResponse(200, opts.segment ?? []));
+      }
       // Class V (migration 0069). write_tutor_plan RETURNS void — PostgREST
       // answers a genuine call with an EMPTY 200 body, not a JSON `null`
       // literal, and `rest()`'s own "empty body on 2xx = success" branch is
@@ -2347,6 +2400,7 @@ describe('the internal surface', () => {
 
   it('accepts and persists a well-formed generated segment, stripped', async () => {
     stub({
+      judgeCalibration: [PASSED_CALIBRATION],
       segment: [
         {
           id: SEGMENT,
@@ -2365,7 +2419,7 @@ describe('the internal surface', () => {
       .send({
         sessionId: SESSION,
         segment: { ...MCQ_SEGMENT, answer: { correct_option_id: 'a' } },
-        provenance: { model: 'test' },
+        provenance: { model: 'test', ...JUDGED },
       });
 
     expect(response.status).toBe(200);
@@ -4336,7 +4390,7 @@ describe('serving an activity for a knowledge component nothing teaches', () => 
   });
 
   it('still asks for generation when no prerequisite has content either', async () => {
-    stub({ ...catalog, kcs: [{ id: UNMAPPED, key: 'biz.goods-vs-services', skill_key: null }], kcEdges: [] });
+    stub({ ...catalog, kcs: [{ id: UNMAPPED, key: 'biz.goods-vs-services', skill_key: null }], kcEdges: [], judgeCalibration: [PASSED_CALIBRATION] });
 
     const response = await request(createApp())
       .post('/api/v1/tutor/internal/segments')
@@ -6098,5 +6152,248 @@ describe('C.11 / C.17 — the spaced-review routing, the dialogue register and t
     const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs')).map((c) => JSON.parse(String(c.body)));
     expect(audit).toEqual([expect.objectContaining({ action: 'mentor.kill_switch.dialogue_calibration.triggered' })]);
     expect(audit[0].detail.regressions).toEqual([{ band: 'adult', outcome: 'bond_proxy' }]);
+  });
+});
+
+/*
+ * S06.12 — C.5 (the governed live-generation tier) and C.6 (the curated
+ * activity-pack tier) at Core's internal boundary. Oracle is the only caller
+ * (x-internal-api-key); a learner, a guardian or staff with a user token
+ * cannot reach either route at all.
+ */
+describe('S06.12 C.5/C.6 — the governed content ladder', () => {
+  const PERCENT_KC = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1';
+  const FRACTION_KC = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee0';
+  const SERVED = [{ id: SEGMENT, session_id: SESSION, seq: 0, origin: 'live', payload: MCQ_SEGMENT, key_verified: true }];
+  const segmentsBody = {
+    sessionId: SESSION,
+    skillKey: 'unknown',
+    difficulty: 2,
+    framing: 'Vamos a practicar.',
+    rationale: 'the learner asked for an exercise',
+  };
+  const verifyBody = (
+    provenance: Record<string, unknown>,
+    segment: Record<string, unknown> = { ...MCQ_SEGMENT, answer: { correct_option_id: 'a' } },
+  ) => ({ sessionId: SESSION, segment, provenance });
+  const PACK_ROW = {
+    id: 'ffffffff-ffff-4fff-8fff-fffffffffff1',
+    skill_key: 'kc:money.percent-intro',
+    tier: 2,
+    locale: 'es-MX',
+    status: 'published',
+    pack_version: 3,
+    content_hash: 'c'.repeat(64),
+    source: 'hand_authored',
+    pack: {
+      contract: 'tutor-pack.v1',
+      segments: [
+        { id: 'pack-percent-intro-t3-es-1', type: 'number_input', difficulty: 2, prompt_md: '¿Cuánto es el 10% de 80 monedas?', payload: { unit: 'monedas' } },
+      ],
+      answers: { 'pack-percent-intro-t3-es-1': { value: 8, tolerance: 0 } },
+    },
+  };
+  const post = (path: string, body: object) =>
+    request(createApp())
+      .post(`/api/v1/tutor/internal/${path}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+  const liveClaim = (calls: { url: string; body?: string }[]) => {
+    const call = calls.find((c) => c.url.includes('/rpc/insert_tutor_live_segment_checked'));
+    return call ? (JSON.parse(call.body ?? '{}') as Record<string, unknown>) : null;
+  };
+
+  it('refuses both internal routes to anyone without the internal key (no key, a learner token)', async () => {
+    stub({ judgeCalibration: [PASSED_CALIBRATION] });
+    for (const route of ['segments', 'segments/verify']) {
+      const anonymous = await request(createApp()).post(`/api/v1/tutor/internal/${route}`).send(segmentsBody);
+      expect([401, 403]).toContain(anonymous.status);
+      const learner = await request(createApp())
+        .post(`/api/v1/tutor/internal/${route}`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send(segmentsBody);
+      expect([401, 403]).toContain(learner.status);
+    }
+  });
+
+  it('C.5: an uncalibrated judge SUSPENDS live generation, and Oracle is told not to author', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls });
+    const response = await post('segments', segmentsBody);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ needsGeneration: false, liveSuspended: true, reason: 'uncalibrated' });
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'live_suspended', reason: 'uncalibrated' });
+  });
+
+  it('C.5: a stale calibration suspends it too', async () => {
+    stub({ judgeCalibration: [{ ...PASSED_CALIBRATION, created_at: new Date(Date.now() - 40 * 86_400_000).toISOString() }] });
+    const response = await post('segments', segmentsBody);
+    expect(response.body.data).toMatchObject({ liveSuspended: true, reason: 'calibration_stale' });
+  });
+
+  it('C.5: with a calibrated judge the ladder invites generation and records the demand', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], calls });
+    const response = await post('segments', segmentsBody);
+    expect(response.body.data.needsGeneration).toBe(true);
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'needs_generation', risk_category: 'standard' });
+  });
+
+  it('C.5: an open Stage 7 trip suspends only the category it names', async () => {
+    const trip = {
+      action: 'mentor.kill_switch.live_content.triggered',
+      created_at: new Date(Date.now() - 3_600_000).toISOString(),
+      detail: { category: 'sensitive', cause: 'concordance_below_floor' },
+    };
+    stub({ judgeCalibration: [PASSED_CALIBRATION], auditRows: [trip] });
+    const standard = await post('segments', segmentsBody);
+    expect(standard.body.data.needsGeneration).toBe(true);
+    resetLiveContentGateCache();
+    stub({ judgeCalibration: [PASSED_CALIBRATION], auditRows: [trip] });
+    const sensitive = await post('segments', { ...segmentsBody, framing: 'Tus papás se separaron y no alcanza el dinero para comer.' });
+    expect(sensitive.body.data).toMatchObject({ liveSuspended: true, reason: 'concordance_below_floor' });
+  });
+
+  it('C.5: refuses a candidate while the judge is uncalibrated, and never claims a segment', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ segment: SERVED, calls });
+    const response = await post('segments/verify', verifyBody(JUDGED));
+    expect(response.body.data).toEqual({ accepted: false, failures: ['live generation is not admitted: uncalibrated'] });
+    expect(calls.some((c) => c.url.includes('insert_tutor'))).toBe(false);
+  });
+
+  it('C.5: refuses a candidate approved by a judge other than the calibrated one', async () => {
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED });
+    const other = await post('segments/verify', verifyBody({ judge_model: 'qwen3-max', judge_prompt_hash: 'd'.repeat(64) }));
+    expect(other.body.data.failures).toEqual(['live generation is not admitted: judge_not_calibrated']);
+    const missing = await post('segments/verify', verifyBody({ model: 'test' }));
+    expect(missing.body.data.accepted).toBe(false);
+  });
+
+  it('C.5: serves a standard candidate through the governed claim at the 15% floor', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, calls });
+    const response = await post('segments/verify', verifyBody({ ...JUDGED, risk_signals: [] }));
+    expect(response.status).toBe(200);
+    expect(response.body.data.keyVerified).toBe(true);
+    const claim = liveClaim(calls)!;
+    expect(claim).toMatchObject({
+      p_risk_category: 'standard',
+      p_risk_signals: [],
+      p_sample_rate: 0.15,
+      p_elevated: false,
+      p_calibration_id: PASSED_CALIBRATION.id,
+      p_judge_prompt_hash: JUDGE_HASH,
+      p_locale: 'es-MX',
+    });
+    expect((claim.p_provenance as Record<string, unknown>).sampling).toEqual({ rate: 0.15, elevated: false });
+    // The ungoverned claim is never used for a live item.
+    expect(calls.some((c) => c.url.includes('/rpc/insert_tutor_segment_checked'))).toBe(false);
+  });
+
+  it('C.5: Core reads the item itself: a divorce story Oracle called standard is sampled as SENSITIVE (50%)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, calls });
+    const segment = {
+      ...MCQ_SEGMENT,
+      prompt_md: 'Los papás de Ana están divorciados. ¿Cuánto juntas si ahorras 25 cada semana durante 4 semanas?',
+      answer: { correct_option_id: 'a' },
+    };
+    await post('segments/verify', verifyBody({ ...JUDGED, risk_category: 'standard', risk_signals: [] }, segment));
+    expect(liveClaim(calls)).toMatchObject({ p_risk_category: 'sensitive', p_risk_signals: ['family_conflict'], p_sample_rate: 0.5 });
+  });
+
+  it('C.5: an Oracle-reported signal, an unknown code, or a safety flag in the session each raise the category', async () => {
+    const cases: [Record<string, unknown>, unknown[], string[]][] = [
+      [{ ...JUDGED, risk_signals: ['learner_classifier_match'] }, [], ['learner_classifier_match']],
+      [{ ...JUDGED, risk_signals: ['something_new'] }, [], ['unrecognized_signal']],
+      [{ ...JUDGED, risk_signals: [] }, [{ id: 'flag' }], ['session_safety_event']],
+    ];
+    for (const [provenance, flags, signals] of cases) {
+      resetLiveContentGateCache();
+      const calls: { url: string; method: string; body?: string }[] = [];
+      stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, calls, safetyFlags: flags });
+      await post('segments/verify', verifyBody(provenance));
+      expect(liveClaim(calls)).toMatchObject({ p_risk_category: 'sensitive', p_risk_signals: signals, p_sample_rate: 0.5 });
+    }
+  });
+
+  it('C.5: after a staff rejection the category runs ELEVATED (standard 50%)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({
+      judgeCalibration: [PASSED_CALIBRATION],
+      segment: SERVED,
+      calls,
+      liveLatestIssue: [{ reviewed_at: new Date(Date.now() - 3_600_000).toISOString() }],
+    });
+    await post('segments/verify', verifyBody(JUDGED));
+    expect(liveClaim(calls)).toMatchObject({ p_risk_category: 'standard', p_sample_rate: 0.5, p_elevated: true });
+  });
+
+  it('C.5: a failed read of the gate refuses the candidate (fail closed)', async () => {
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, restFailures: ['/tutor_content_judge_calibration'] });
+    const response = await post('segments/verify', verifyBody(JUDGED));
+    expect(response.body.data.failures).toEqual(['live generation is not admitted: gate_unavailable']);
+  });
+
+  it('C.5: a candidate that fails the deterministic gates is refused before the governance gate, and logged', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], calls });
+    await post('segments/verify', verifyBody(JUDGED, { ...MCQ_SEGMENT, answer: { correct_option_id: 'nope' } }));
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'live_refused', reason: 'verification_failed' });
+  });
+
+  it('C.6: serves the curated pack for a KC no published topic teaches, BEFORE any generation', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({
+      calls,
+      segment: [{ id: SEGMENT, seq: 0 }],
+      kcs: [{ id: PERCENT_KC, key: 'money.percent-intro', skill_key: null }],
+      kcEdges: [],
+      packs: [PACK_ROW],
+    });
+    const response = await post('segments', { ...segmentsBody, skillKey: 'financial-education/nothing', kcId: PERCENT_KC });
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({ origin: 'bank', segmentId: SEGMENT });
+    expect(JSON.stringify(response.body.data.segment)).not.toContain('tolerance');
+    const claim = calls.find((c) => c.url.includes('/rpc/insert_tutor_segment_checked'));
+    const provenance = JSON.parse(claim?.body ?? '{}').p_provenance as Record<string, unknown>;
+    expect(provenance).toMatchObject({
+      tier: 2,
+      pack_id: PACK_ROW.id,
+      skill_key: 'kc:money.percent-intro',
+      pack_version: 3,
+      content_hash: 'c'.repeat(64),
+      pack_source: 'hand_authored',
+    });
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'bank', route: 'kc_pack', skill_key: 'kc:money.percent-intro' });
+    // The live gate was never consulted: the curated tier answered.
+    expect(calls.some((c) => c.url.includes('tutor_content_judge_calibration'))).toBe(false);
+  });
+
+  it('C.6: reads only PUBLISHED packs (a pack in review is never served)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls, kcs: [{ id: PERCENT_KC, key: 'money.percent-intro', skill_key: null }], kcEdges: [], packs: [] });
+    await post('segments', { ...segmentsBody, kcId: PERCENT_KC });
+    const packRead = calls.find((c) => c.url.includes('/rest/v1/tutor_packs') && decodeURIComponent(c.url).includes('kc:money.percent-intro'));
+    expect(packRead?.url).toContain('status=eq.published');
+  });
+
+  it('C.6: a prerequisite KC with no topic is served from ITS curated pack', async () => {
+    stub({
+      segment: [{ id: SEGMENT, seq: 0 }],
+      kcs: [
+        { id: PERCENT_KC, key: 'money.percent-intro', skill_key: null },
+        { id: FRACTION_KC, key: 'money.fraction-of-amount', skill_key: null },
+      ],
+      kcEdges: [{ prerequisite_kc_id: FRACTION_KC, dependent_kc_id: PERCENT_KC }],
+      packs: [{ ...PACK_ROW, skill_key: 'kc:money.fraction-of-amount' }],
+    });
+    const response = await post('segments', { ...segmentsBody, kcId: PERCENT_KC });
+    expect(response.body.data).toMatchObject({ origin: 'bank' });
   });
 });

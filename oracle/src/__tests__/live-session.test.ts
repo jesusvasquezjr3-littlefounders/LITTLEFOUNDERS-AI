@@ -119,7 +119,7 @@ let segmentFailuresLeft = 0;
  * land in the same `serveSegment` branch, and the bound has to hold for the
  * expensive one or it is not a cost bound at all.
  */
-let segmentFailureShape: 'empty' | 'needs_generation' = 'empty';
+let segmentFailureShape: 'empty' | 'needs_generation' | 'live_suspended' = 'empty';
 /**
  * A session plan for the fake Core's session response, so the v3 brain is
  * ACTIVE. Off by default: every other test in this file describes an open
@@ -231,6 +231,11 @@ function startFakeCore(): Promise<Server> {
         journal.segmentRequests += 1;
         if (segmentFailuresLeft > 0) {
           segmentFailuresLeft -= 1;
+          if (segmentFailureShape === 'live_suspended') {
+            // C.5: live generation suspended for this category (e.g. the
+            // judge is uncalibrated). Oracle must not author anything.
+            return json(res, { needsGeneration: false, liveSuspended: true, reason: 'uncalibrated' });
+          }
           if (segmentFailureShape === 'needs_generation') {
             return json(res, {
               needsGeneration: true,
@@ -1310,6 +1315,35 @@ describe('a real live session over a real websocket', () => {
       .slice(modelCallsBefore)
       .filter((b) => !b.includes('child-safety reviewer'));
     expect(authored).toHaveLength(7);
+
+    socket.close();
+  }, 30_000);
+
+  /*
+   * C.5 (S06.12): when Core answers that live generation is SUSPENDED for
+   * this content-risk category, Oracle makes no author or judge call at all
+   * (the item would be refused, and the call would cost money), and the
+   * Mentor carries on in conversation exactly as when nothing is available.
+   */
+  it('makes no paid author call when Core suspends live generation', async () => {
+    freshJournal();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    segmentFailuresLeft = Number.POSITIVE_INFINITY;
+    segmentFailureShape = 'live_suspended';
+
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const modelCallsBefore = modelJournal.bodies.length;
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const frames = await untilQuiet(socket);
+
+    expect(journal.segmentRequests).toBe(2);
+    expect(frames.filter((f) => f.type === 'error' && f.code === 'NO_SEGMENT').length).toBeGreaterThanOrEqual(1);
+    // Only turn completions: not one activity-author or content-judge call.
+    const authored = modelJournal.bodies.slice(modelCallsBefore).filter((b) => b.includes('You author ONE practice activity'));
+    expect(authored).toHaveLength(0);
+    expect(modelJournal.bodies.slice(modelCallsBefore).some((b) => b.includes('You review ONE practice activity'))).toBe(false);
 
     socket.close();
   }, 30_000);

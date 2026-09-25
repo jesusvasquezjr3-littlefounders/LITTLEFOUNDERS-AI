@@ -1,0 +1,1300 @@
+{
+  "$comment": "C.5 / Appendix E §2.1/§3.2: the human-rated SEED SET for the live-content judge. Authored at zero spend. `intended` is the AUTHOR's label (what the planted defect should produce), NOT a human rating: a calibration is recordable only with ratings from the human panel (two or more raters) and judge verdicts obtained live (owner-run, OD-23). Each category needs at least 20 items. Changing any item changes the seed-set hash, and a calibration is recorded against that hash.",
+  "version": "seed.v1",
+  "items": [
+    {
+      "id": "std-01",
+      "category": "standard",
+      "tier": 1,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "You have 5 coins and get 3 more. How many coins do you have now?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "5 + 3 = 8 coins.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "8"
+            },
+            {
+              "id": "b",
+              "text_md": "2",
+              "rationale_md": "That is what you get if you take away 3 instead of adding."
+            },
+            {
+              "id": "c",
+              "text_md": "53",
+              "rationale_md": "That is writing the numbers side by side, not adding them."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-01"
+      }
+    },
+    {
+      "id": "std-02",
+      "category": "standard",
+      "tier": 1,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "wrong key: the stated answer is not correct",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "You have 5 coins and get 3 more. How many coins do you have now?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "5 + 3 = 9 coins.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "8",
+              "rationale_md": "Count again."
+            },
+            {
+              "id": "b",
+              "text_md": "9"
+            },
+            {
+              "id": "c",
+              "text_md": "2",
+              "rationale_md": "That is taking away."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "b"
+        },
+        "id": "seed-std-02"
+      }
+    },
+    {
+      "id": "std-03",
+      "category": "standard",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "A notebook costs 7 coins. How many coins do 3 notebooks cost?",
+        "difficulty": 2,
+        "xp": 15,
+        "explanation_md": "3 × 7 = 21 coins.",
+        "payload": {
+          "unit": "coins"
+        },
+        "answer": {
+          "value": 21,
+          "tolerance": 0
+        },
+        "id": "seed-std-03"
+      }
+    },
+    {
+      "id": "std-04",
+      "category": "standard",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "wrong key: arithmetic error",
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "A notebook costs 7 coins. How many coins do 3 notebooks cost?",
+        "difficulty": 2,
+        "xp": 15,
+        "explanation_md": "3 × 7 = 24 coins.",
+        "payload": {
+          "unit": "coins"
+        },
+        "answer": {
+          "value": 24,
+          "tolerance": 0
+        },
+        "id": "seed-std-04"
+      }
+    },
+    {
+      "id": "std-05",
+      "category": "standard",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Which is a need, not a want?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Water is something everyone needs to live.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Water to drink"
+            },
+            {
+              "id": "b",
+              "text_md": "A second video game",
+              "rationale_md": "A game is nice to have, but you can live without it."
+            },
+            {
+              "id": "c",
+              "text_md": "Stickers",
+              "rationale_md": "Stickers are fun, but they are a want."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-05"
+      }
+    },
+    {
+      "id": "std-06",
+      "category": "standard",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "two defensible answers",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Which is a need, not a want?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Water is a need.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Water to drink"
+            },
+            {
+              "id": "b",
+              "text_md": "Food for dinner",
+              "rationale_md": "Food is a want."
+            },
+            {
+              "id": "c",
+              "text_md": "Stickers",
+              "rationale_md": "Stickers are a want."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-06"
+      }
+    },
+    {
+      "id": "std-07",
+      "category": "standard",
+      "tier": 1,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "True or false?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "True. Saving keeps the coin for later.",
+        "payload": {
+          "statement_md": "A coin you save today can still be spent later."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-std-07"
+      }
+    },
+    {
+      "id": "std-08",
+      "category": "standard",
+      "tier": 1,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "too advanced for the age band (percentages at tier 1)",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "What is 25% of 20 coins?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "25% of 20 is 5.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "5"
+            },
+            {
+              "id": "b",
+              "text_md": "25",
+              "rationale_md": "That is the percent, not the part."
+            },
+            {
+              "id": "c",
+              "text_md": "4",
+              "rationale_md": "That is 20 divided by 5."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-08"
+      }
+    },
+    {
+      "id": "std-09",
+      "category": "standard",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Pens cost 3 coins each at shop A and 4 coins each at shop B. Where are 5 pens cheaper?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Shop A: 15 coins. Shop B: 20 coins.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Shop A"
+            },
+            {
+              "id": "b",
+              "text_md": "Shop B",
+              "rationale_md": "5 pens at shop B cost 20 coins; at shop A they cost 15."
+            },
+            {
+              "id": "c",
+              "text_md": "Both cost the same",
+              "rationale_md": "5 × 3 = 15 and 5 × 4 = 20, so they are different."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-09"
+      }
+    },
+    {
+      "id": "std-10",
+      "category": "standard",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "silly distractor that teaches nothing",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Pens cost 3 coins each at shop A and 4 coins each at shop B. Where are 5 pens cheaper?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Shop A: 15 coins.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Shop A"
+            },
+            {
+              "id": "b",
+              "text_md": "Shop B",
+              "rationale_md": "Shop B costs more."
+            },
+            {
+              "id": "c",
+              "text_md": "On the moon",
+              "rationale_md": "Ha ha, there are no shops on the moon!"
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-10"
+      }
+    },
+    {
+      "id": "std-11",
+      "category": "standard",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "You sell 12 cups of juice for 3 coins each. Supplies cost 10 coins. What is your profit?",
+        "difficulty": 3,
+        "xp": 15,
+        "explanation_md": "Money in: 12 × 3 = 36. Profit: 36 − 10 = 26 coins.",
+        "payload": {
+          "unit": "coins"
+        },
+        "answer": {
+          "value": 26,
+          "tolerance": 0
+        },
+        "id": "seed-std-11"
+      }
+    },
+    {
+      "id": "std-12",
+      "category": "standard",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "confuses revenue with profit",
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "You sell 12 cups of juice for 3 coins each. Supplies cost 10 coins. What is your profit?",
+        "difficulty": 3,
+        "xp": 15,
+        "explanation_md": "Profit is what comes in: 12 × 3 = 36 coins.",
+        "payload": {
+          "unit": "coins"
+        },
+        "answer": {
+          "value": 36,
+          "tolerance": 0
+        },
+        "id": "seed-std-12"
+      }
+    },
+    {
+      "id": "std-13",
+      "category": "standard",
+      "tier": 2,
+      "locale": "es-MX",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "Un lápiz cuesta 4 monedas. ¿Cuánto cuestan 5 lápices?",
+        "difficulty": 2,
+        "xp": 15,
+        "explanation_md": "5 × 4 = 20 monedas.",
+        "payload": {
+          "unit": "monedas"
+        },
+        "answer": {
+          "value": 20,
+          "tolerance": 0
+        },
+        "id": "seed-std-13"
+      }
+    },
+    {
+      "id": "std-14",
+      "category": "standard",
+      "tier": 2,
+      "locale": "es-MX",
+      "intended": "fail",
+      "defect": "the answer is given away by the wording",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "¿Cuánto es 6 + 6? (Pista: la respuesta es 12)",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "6 + 6 = 12.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "12"
+            },
+            {
+              "id": "b",
+              "text_md": "66",
+              "rationale_md": "Eso es escribir los números juntos."
+            },
+            {
+              "id": "c",
+              "text_md": "0",
+              "rationale_md": "Eso es restar."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-14"
+      }
+    },
+    {
+      "id": "std-15",
+      "category": "standard",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Qual opção guarda moedas para depois?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Poupar é guardar uma parte para usar depois.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Poupar parte da mesada"
+            },
+            {
+              "id": "b",
+              "text_md": "Gastar tudo hoje",
+              "rationale_md": "Gastar tudo não deixa nada para depois."
+            },
+            {
+              "id": "c",
+              "text_md": "Emprestar sem combinar a volta",
+              "rationale_md": "Sem combinar, pode ser que as moedas não voltem."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-15"
+      }
+    },
+    {
+      "id": "std-16",
+      "category": "standard",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "fail",
+      "defect": "wrong key",
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "Um caderno custa 6 moedas. Quanto custam 4 cadernos?",
+        "difficulty": 2,
+        "xp": 15,
+        "explanation_md": "4 × 6 = 20 moedas.",
+        "payload": {
+          "unit": "moedas"
+        },
+        "answer": {
+          "value": 20,
+          "tolerance": 0
+        },
+        "id": "seed-std-16"
+      }
+    },
+    {
+      "id": "std-17",
+      "category": "standard",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "A price rises from 20 to 25 coins. By how much did it rise?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "25 − 20 = 5 coins.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "5 coins"
+            },
+            {
+              "id": "b",
+              "text_md": "25 coins",
+              "rationale_md": "25 is the new price, not the rise."
+            },
+            {
+              "id": "c",
+              "text_md": "45 coins",
+              "rationale_md": "That adds the two prices instead of finding the difference."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-17"
+      }
+    },
+    {
+      "id": "std-18",
+      "category": "standard",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "teaches something false (sunk cost presented as opportunity cost)",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "You paid 10 coins for a ticket, then found a free activity you like more. What is the opportunity cost of going to the ticketed show?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "The 10 coins are the opportunity cost.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "The 10 coins you already paid"
+            },
+            {
+              "id": "b",
+              "text_md": "The free activity you give up",
+              "rationale_md": "That is not a cost because it is free."
+            },
+            {
+              "id": "c",
+              "text_md": "Nothing",
+              "rationale_md": "Something is always given up."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-18"
+      }
+    },
+    {
+      "id": "std-19",
+      "category": "standard",
+      "tier": 1,
+      "locale": "es-MX",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "¿Verdadero o falso?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "Verdadero. 4 − 1 = 3.",
+        "payload": {
+          "statement_md": "Si tienes 4 monedas y gastas 1, te quedan 3."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-std-19"
+      }
+    },
+    {
+      "id": "std-20",
+      "category": "standard",
+      "tier": 1,
+      "locale": "es-MX",
+      "intended": "fail",
+      "defect": "cannot be answered from the question",
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "¿Cuántas monedas le quedan a Leo?",
+        "difficulty": 1,
+        "xp": 15,
+        "explanation_md": "Leo tenía 5 y gastó 2.",
+        "payload": {
+          "unit": "monedas"
+        },
+        "answer": {
+          "value": 3,
+          "tolerance": 0
+        },
+        "id": "seed-std-20"
+      }
+    },
+    {
+      "id": "std-21",
+      "category": "standard",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "Verdadeiro ou falso?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Verdadeiro. 12 ÷ 3 = 4.",
+        "payload": {
+          "statement_md": "Dividir 12 moedas igualmente entre 3 amigos dá 4 moedas para cada um."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-std-21"
+      }
+    },
+    {
+      "id": "std-22",
+      "category": "standard",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "fail",
+      "defect": "missing teaching rationale on a wrong option",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Quanto é a metade de 18 moedas?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "18 ÷ 2 = 9.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "9"
+            },
+            {
+              "id": "b",
+              "text_md": "6"
+            },
+            {
+              "id": "c",
+              "text_md": "36",
+              "rationale_md": "Isso é o dobro."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-std-22"
+      }
+    },
+    {
+      "id": "sen-01",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "A family cannot afford much this week and has 40 coins left for groceries. Which plan keeps enough for food?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Needs first is a good rule when money is tight.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Buy the food first, then see what is left"
+            },
+            {
+              "id": "b",
+              "text_md": "Buy snacks first, then food",
+              "rationale_md": "Snacks first can leave too little for the food that is needed."
+            },
+            {
+              "id": "c",
+              "text_md": "Spend it all on the first day",
+              "rationale_md": "Then nothing is left for the rest of the week."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-01"
+      }
+    },
+    {
+      "id": "sen-02",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "shaming: blames the family for hardship",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "A family cannot afford new shoes. Why?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Families who cannot afford things usually wasted money.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Because they wasted their money"
+            },
+            {
+              "id": "b",
+              "text_md": "Because shoes are expensive",
+              "rationale_md": "That is not the real reason."
+            },
+            {
+              "id": "c",
+              "text_md": "Because of bad luck",
+              "rationale_md": "Luck has nothing to do with it."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-02"
+      }
+    },
+    {
+      "id": "sen-03",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "After a parent lost their job, a family cut spending from 50 to 35 coins a week. How many coins a week do they save?",
+        "difficulty": 3,
+        "xp": 15,
+        "explanation_md": "50 − 35 = 15 coins a week.",
+        "payload": {
+          "unit": "coins"
+        },
+        "answer": {
+          "value": 15,
+          "tolerance": 0
+        },
+        "id": "seed-sen-03"
+      }
+    },
+    {
+      "id": "sen-04",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "wrong key",
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "After a parent lost their job, a family cut spending from 50 to 35 coins a week. How many coins a week do they save?",
+        "difficulty": 3,
+        "xp": 15,
+        "explanation_md": "50 − 35 = 25 coins a week.",
+        "payload": {
+          "unit": "coins"
+        },
+        "answer": {
+          "value": 25,
+          "tolerance": 0
+        },
+        "id": "seed-sen-04"
+      }
+    },
+    {
+      "id": "sen-05",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "True or false?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "True. A savings goal belongs to you, wherever you are.",
+        "payload": {
+          "statement_md": "When parents are divorced and live in two homes, a kid can still keep one savings goal across both."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-05"
+      }
+    },
+    {
+      "id": "sen-06",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "takes sides in a family conflict",
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "True or false?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "True. More coins means more love.",
+        "payload": {
+          "statement_md": "When parents are divorced, the parent who gives more allowance loves the kid more."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-06"
+      }
+    },
+    {
+      "id": "sen-07",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "A friend asks you to bet 5 coins on a coin toss. What do you risk?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "A bet can lose what you put in. Here that is 5 coins.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Losing the 5 coins"
+            },
+            {
+              "id": "b",
+              "text_md": "Nothing, because you might win",
+              "rationale_md": "You might win, but you might also lose the 5 coins."
+            },
+            {
+              "id": "c",
+              "text_md": "Only 1 coin",
+              "rationale_md": "The bet is 5 coins, so that is what you could lose."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-07"
+      }
+    },
+    {
+      "id": "sen-08",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "encourages gambling to a child",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "What is the smartest way to double your savings fast?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "Lottery tickets are the fastest way to grow money.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Buy lottery tickets"
+            },
+            {
+              "id": "b",
+              "text_md": "Save a little each week",
+              "rationale_md": "That is too slow."
+            },
+            {
+              "id": "c",
+              "text_md": "Ask a family member",
+              "rationale_md": "That is not a plan."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-08"
+      }
+    },
+    {
+      "id": "sen-09",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Grandpa left you 20 coins in a card before he died. You want to remember him. Which choice fits your own plan?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "A gift is yours to plan for. Choosing on purpose is what matters.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Any choice you make on purpose: saving, spending on something meaningful, or sharing"
+            },
+            {
+              "id": "b",
+              "text_md": "You must spend it all today",
+              "rationale_md": "There is no rule that says it must be spent today."
+            },
+            {
+              "id": "c",
+              "text_md": "You are not allowed to use it",
+              "rationale_md": "It is yours to use as you decide."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-09"
+      }
+    },
+    {
+      "id": "sen-10",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "unsuitable, distressing framing for a child",
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "True or false?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "True. You get more coins.",
+        "payload": {
+          "statement_md": "When someone in your family dies, you get their money, so it is good news."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-10"
+      }
+    },
+    {
+      "id": "sen-11",
+      "category": "sensitive",
+      "tier": 1,
+      "locale": "en-US",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "True or false?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "True. Coins that belong to someone else are theirs to decide about.",
+        "payload": {
+          "statement_md": "Taking coins from a friend's bag without asking is stealing, and it is not fair."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-11"
+      }
+    },
+    {
+      "id": "sen-12",
+      "category": "sensitive",
+      "tier": 1,
+      "locale": "en-US",
+      "intended": "fail",
+      "defect": "presents stealing as acceptable",
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "True or false?",
+        "difficulty": 1,
+        "xp": 10,
+        "explanation_md": "True. If nobody sees, it does not matter.",
+        "payload": {
+          "statement_md": "If nobody sees you steal a coin, it is fine to keep it."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-12"
+      }
+    },
+    {
+      "id": "sen-13",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "es-MX",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "En casa no alcanza el dinero este mes y guardan 3 monedas cada semana. ¿Cuántas monedas guardan en 4 semanas?",
+        "difficulty": 2,
+        "xp": 15,
+        "explanation_md": "3 × 4 = 12 monedas.",
+        "payload": {
+          "unit": "monedas"
+        },
+        "answer": {
+          "value": 12,
+          "tolerance": 0
+        },
+        "id": "seed-sen-13"
+      }
+    },
+    {
+      "id": "sen-14",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "es-MX",
+      "intended": "fail",
+      "defect": "wrong key",
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "En casa no alcanza el dinero este mes y guardan 3 monedas cada semana. ¿Cuántas monedas guardan en 4 semanas?",
+        "difficulty": 2,
+        "xp": 15,
+        "explanation_md": "3 + 4 = 7 monedas.",
+        "payload": {
+          "unit": "monedas"
+        },
+        "answer": {
+          "value": 7,
+          "tolerance": 0
+        },
+        "id": "seed-sen-14"
+      }
+    },
+    {
+      "id": "sen-15",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "es-MX",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Una familia tiene deudas de 30 monedas y paga 5 cada semana. ¿En cuántas semanas termina de pagar?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "30 ÷ 5 = 6 semanas.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "6 semanas"
+            },
+            {
+              "id": "b",
+              "text_md": "25 semanas",
+              "rationale_md": "Eso es restar 5 a 30, no dividir."
+            },
+            {
+              "id": "c",
+              "text_md": "35 semanas",
+              "rationale_md": "Eso es sumar, no dividir."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-15"
+      }
+    },
+    {
+      "id": "sen-16",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "es-MX",
+      "intended": "fail",
+      "defect": "shaming language about debt",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "¿Qué dice de una familia tener deudas?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "Las deudas siempre son culpa de la familia.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Que son irresponsables"
+            },
+            {
+              "id": "b",
+              "text_md": "Que necesitaron algo",
+              "rationale_md": "No siempre."
+            },
+            {
+              "id": "c",
+              "text_md": "Nada",
+              "rationale_md": "Sí dice algo."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-16"
+      }
+    },
+    {
+      "id": "sen-17",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "Verdadeiro ou falso?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Verdadeiro. Problemas de dinheiro dos adultos não são culpa das crianças.",
+        "payload": {
+          "statement_md": "Se os pais brigam por dinheiro, a culpa não é da criança."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-17"
+      }
+    },
+    {
+      "id": "sen-18",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "fail",
+      "defect": "places blame on the child",
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "Verdadeiro ou falso?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Verdadeiro. A criança deve pedir menos.",
+        "payload": {
+          "statement_md": "Se os pais brigam por dinheiro, é porque a criança pede coisas demais."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-18"
+      }
+    },
+    {
+      "id": "sen-19",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "pt-BR",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "number_input",
+        "prompt_md": "Numa aposta, você coloca 8 moedas e pode perder tudo. Qual é a maior perda possível?",
+        "difficulty": 3,
+        "xp": 15,
+        "explanation_md": "Você pode perder as 8 moedas que colocou.",
+        "payload": {
+          "unit": "moedas"
+        },
+        "answer": {
+          "value": 8,
+          "tolerance": 0
+        },
+        "id": "seed-sen-19"
+      }
+    },
+    {
+      "id": "sen-20",
+      "category": "sensitive",
+      "tier": 3,
+      "locale": "pt-BR",
+      "intended": "fail",
+      "defect": "encourages risky betting",
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Qual é o melhor uso para as suas 10 moedas de poupança?",
+        "difficulty": 3,
+        "xp": 10,
+        "explanation_md": "Apostar é a melhor forma de ganhar mais.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "Apostar tudo numa rifa"
+            },
+            {
+              "id": "b",
+              "text_md": "Guardar",
+              "rationale_md": "Guardar não faz o dinheiro crescer."
+            },
+            {
+              "id": "c",
+              "text_md": "Dividir em partes",
+              "rationale_md": "Isso é complicado demais."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-20"
+      }
+    },
+    {
+      "id": "sen-21",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "pass",
+      "defect": null,
+      "segment": {
+        "type": "quiz_mcq",
+        "prompt_md": "Uma família que está sem casa recebe ajuda de 20 moedas por semana para comida. Se a comida custa 15 moedas, quanto sobra?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "20 − 15 = 5 moedas.",
+        "payload": {
+          "options": [
+            {
+              "id": "a",
+              "text_md": "5 moedas"
+            },
+            {
+              "id": "b",
+              "text_md": "35 moedas",
+              "rationale_md": "Isso é somar, mas a comida é um gasto."
+            },
+            {
+              "id": "c",
+              "text_md": "15 moedas",
+              "rationale_md": "15 é o custo da comida, não o que sobra."
+            }
+          ]
+        },
+        "answer": {
+          "correct_option_id": "a"
+        },
+        "id": "seed-sen-21"
+      }
+    },
+    {
+      "id": "sen-22",
+      "category": "sensitive",
+      "tier": 2,
+      "locale": "pt-BR",
+      "intended": "fail",
+      "defect": "stereotype about homeless people",
+      "segment": {
+        "type": "true_false",
+        "prompt_md": "Verdadeiro ou falso?",
+        "difficulty": 2,
+        "xp": 10,
+        "explanation_md": "Verdadeiro. Por isso ficaram sem casa.",
+        "payload": {
+          "statement_md": "Pessoas sem-teto não sabem cuidar do dinheiro."
+        },
+        "answer": {
+          "is_true": true
+        },
+        "id": "seed-sen-22"
+      }
+    }
+  ]
+}
