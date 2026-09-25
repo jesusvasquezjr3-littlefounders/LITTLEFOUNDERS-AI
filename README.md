@@ -127,10 +127,11 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | DeepSeek/Qwen config in `coursegen/` or `oracle/` | `npm run provider:check` |
 | Tutor whiteboard / segment / demonstrate shapes | `npm run instruments:check`, `npm run preferred-types:check`, `npm run demo-step:check` |
 | Mentor honesty record (C.18: Oracle `TurnHonesty`, Core `TurnHonestyBody`/`turnHonesty.ts`, `tutor_turn_honesty`) | `npm run honesty:check` |
+| Mentor session end (C.16 closing scripts/openings, C.8/C.12 signal record: Oracle `sessionClosing.ts`/`sessionEndSignal.ts`, Core `sessionEnd.ts`/`CloseBody`, the `*_mentor_session_end_and_closing` CHECKs, the client's `ClosingScript`) | `npm run session-end:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
-The rebuilt design foundation has an isolated development entry at `/rebuild.html` on the frontend dev server. It mounts no legacy UI, account session, analytics or paid-service client, and is not part of the production build. For its scoped browser checks, run `node scripts/verify-rebuild.mjs` from `frontend/` with `REBUILD_URL` set to the running local frontend origin (default `http://127.0.0.1:5190`). The report and mobile/desktop captures go to `audit-results/rebuild/`. This checks the foundation only; it does not replace the specification's full real-app text-fit, proportion and copy-budget gates before UI merge. Regenerate its color, spacing, radius and target CSS with `node scripts/build-rebuild-tokens.mjs` from `frontend/` after an authorized Bible change.
+The rebuilt design foundation has an isolated development entry at `/rebuild.html` on the frontend dev server. It mounts no legacy UI, account session, analytics or paid-service client, and is not part of the production build. For its scoped browser checks, run `node scripts/verify-rebuild.mjs` from `frontend/` with `REBUILD_URL` set to the running local frontend origin (default `http://127.0.0.1:5190`). The report and mobile/desktop captures go to `audit-results/rebuild/`. This checks the foundation only; it does not replace the specification's full real-app text-fit, proportion and copy-budget gates before UI merge. The Mentor session-end surfaces (C.8/C.12 stop-or-continue choice, C.16 closing states) have their own matrix: `node scripts/verify-rebuild-session-end.mjs` from `frontend/` (3 locales × 2 themes × 4 widths × 4 closing scripts, keyboard, pointer hit-test, reduced motion; report and captures in `audit-results/rebuild-session-end/`). Regenerate its color, spacing, radius and target CSS with `node scripts/build-rebuild-tokens.mjs` from `frontend/` after an authorized Bible change.
 
 | If you touched… | Run (**`cd` into the service first**) |
 |---|---|
@@ -185,6 +186,11 @@ npm --prefix backend run tutor:integrity-report -- [--since=YYYY-MM-DD] [--json]
                                                # compliance (hard 100%), mastery reversal rate, answer-reveal rate per persona/session
                                                # with drift, delivered false affirmations (zero tolerance). Exit 1 on any defect.
                                                # Thresholds: docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md
+npm --prefix backend run tutor:session-end-report -- [--since=YYYY-MM-DD] [--json]
+                                               # C.16/C.8/C.12 monitor (read-only, no model call): Session-Closing Script Accuracy
+                                               # (hard 100%, exit 1 on one wrong script), re-engagement openings delivered, and the
+                                               # Early-Warning Signal Trigger Rate + precision (diagnostic). Policy and kill switch
+                                               # (TUTOR_SESSION_END_SIGNAL=offer|shadow|off): docs/rebuild/mentor/SESSION-END-POLICY.md
 ```
 
 ## Deploying

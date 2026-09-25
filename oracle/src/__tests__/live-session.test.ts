@@ -44,7 +44,15 @@ interface CoreJournal {
   /* `costUsd` is on the wire body and therefore in this journal already
    * (it is a raw `JSON.parse` of the POST); it was simply never declared,
    * so no test could assert on the ledger half of a close. */
-  closes: { closeReason: string; turnCount: number; costUsd: number }[];
+  closes: {
+    closeReason: string;
+    turnCount: number;
+    costUsd: number;
+    /* C.16 / C.8 / C.12: what the close records beside the reason. */
+    closingScript?: string;
+    opening?: string;
+    endSignal?: { evaluated: boolean; events: unknown[] };
+  }[];
   segmentRequests: number;
 }
 
@@ -129,6 +137,11 @@ let servedSessionPlan: unknown[] | null = null;
  * so making IT slow would test the wrong thing.
  */
 let slowTurnDelayMs = 1_500;
+/**
+ * C.16: the opening the fake Core queues for this session. `null` omits the
+ * field, the shape an older Core sends (the greeting).
+ */
+let servedOpening: string | null = null;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -183,6 +196,7 @@ function startFakeCore(): Promise<Server> {
           voiceConsent: sessionConsent,
           intelDegraded: false,
           ...(servedSessionPlan ? { sessionPlan: servedSessionPlan } : {}),
+          ...(servedOpening ? { opening: servedOpening } : {}),
         });
       }
       if (url.includes('/tutor/internal/turns')) {
@@ -673,7 +687,59 @@ describe('a real live session over a real websocket', () => {
     expect(closing.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
 
+    // C.16: the closing state reaches the client just before `closed` — the
+    // completed script, naming the act the server observed (the learner
+    // talked the idea through; nothing was graded).
+    const summary = closing.find((m) => m.type === 'session_closing');
+    expect(summary).toMatchObject({ type: 'session_closing', script: 'completed', effort: 'talked_through' });
+    expect(closing.findIndex((m) => m.type === 'session_closing')).toBeLessThan(
+      closing.findIndex((m) => m.type === 'closed'),
+    );
+    // …and the close records the script, the opening and the end-signal record.
+    expect(journal.closes.at(-1)).toMatchObject({
+      closingScript: 'completed',
+      opening: 'greeting',
+      endSignal: { evaluated: false, events: [] },
+    });
+
     await closed();
+  });
+
+  it('C.16: opens with the re-engagement line Core queued after a silent dropout', async () => {
+    freshJournal();
+    servedOpening = 'reengage_left_fresh';
+    try {
+      const { socket } = open(await socketUrl());
+      const opening = await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      const greeting = opening.find((m) => m.type === 'turn');
+      const { openingResponse } = await import('../tutor/scripted.js');
+      expect(greeting?.say).toBe(openingResponse('rho', 'es-MX', 'reengage_left_fresh').say);
+      // Still written, not generated.
+      expect(modelJournal.bodies).toHaveLength(0);
+      socket.close();
+    } finally {
+      servedOpening = null;
+    }
+  });
+
+  it('C.8/C.12: refuses a forged stop-or-continue answer when no offer is open, without a model call', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'session_end_response', accepted: true }));
+    expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'NO_SESSION_END_OFFER' });
+    expect(modelJournal.bodies).toHaveLength(0);
+    expect(journal.closes).toHaveLength(0);
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    // A malformed answer is refused by the schema like any other frame.
+    const invalid = collect(socket, (m) => m.filter((x) => x.type === 'error').length >= 1);
+    socket.send(JSON.stringify({ type: 'session_end_response', accepted: 'yes' }));
+    expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+
+    socket.close();
   });
 
   /*

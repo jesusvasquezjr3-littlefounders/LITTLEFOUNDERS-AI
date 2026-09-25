@@ -85,15 +85,38 @@ import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, TutorTurnSchema, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
 import { whiteboardComputesOk } from './whiteboard.js';
 import {
-  closingResponse,
+  completedCloseResponse,
   consentRevokedResponse,
-  greetingResponse,
+  interruptedCloseResponse,
   moderationBlockedResponse,
   modelDownResponse,
+  openingResponse,
+  recapPromptResponse,
   safetyResponse,
+  safetyStopCloseResponse,
 } from './scripted.js';
+import {
+  classifyStopReply,
+  EMPTY_SESSION_END_SIGNAL,
+  SessionEndSignal,
+  SessionEndSignalSnapshotSchema,
+  type SessionEndSignalReport,
+} from './sessionEndSignal.js';
+import {
+  closingScriptFor,
+  EMPTY_SESSION_CLOSING,
+  RECAP_REFLECTION_INSTRUCTION,
+  SESSION_END_OFFER_INSTRUCTION,
+  SessionCloser,
+  SessionClosingSnapshotSchema,
+  type ClosingScript,
+  type ClosingSummary,
+  type SessionOpening,
+} from './sessionClosing.js';
+import { claimsLearnerAffect } from './affectClaims.js';
+import { predictedCorrectFrom } from './controller.js';
 import type { SpeechResult } from '../voice/speech.js';
-import type { SessionContext, TrajectoryStepInput } from '../core/client.js';
+import type { CloseReason, SessionContext, TrajectoryStepInput } from '../core/client.js';
 import type { WordTiming } from '../voice/provider.js';
 
 /*
@@ -253,6 +276,12 @@ export interface TurnEmission {
    * (safety line, farewell, budget close), which never came from the model.
    */
   honesty?: TurnHonesty | null;
+  /**
+   * C.8/C.12: this turn carries the stop-or-continue offer. The server sends
+   * `session_end_offer` after the turn so the stage can show two equal
+   * choices (Frontend Bible 08 §4).
+   */
+  sessionEndOffer?: boolean;
 }
 
 export interface SafetyEvent {
@@ -268,6 +297,15 @@ export interface TurnOutcome {
   budget: BudgetVerdict;
   /** Set when the session must end after this turn is delivered. */
   closeReason: 'completed' | 'hard_budget' | 'turn_cap' | 'safety_stop' | null;
+  /**
+   * C.16: a scripted line the system adds AFTER this turn — the completed
+   * close's effort line after the Mentor's recap reflection, the interrupted
+   * close after the budget's grace turn, or the recap question after the
+   * Mentor wrapped up. `ws/server.ts` delivers this turn first (with its
+   * audio), then `after`, and the session closes on `after`'s `closeReason`.
+   * When set, this outcome's own `closeReason` is always null.
+   */
+  after?: TurnOutcome;
 }
 
 export interface Synthesizer {
@@ -363,10 +401,40 @@ export const OrchestratorSnapshotSchema = z
      * build has no ladder and restores as a fresh one.
      */
     hintLadder: HintLadderSnapshotSchema.default({ levels: [], told: [] }),
+    /*
+     * C.8/C.12 and C.16: the session-end signal (baseline, window, offers)
+     * and the closing sequence (phase and the observed effort facts) ride
+     * the snapshot — a resume must neither restart the learner's baseline
+     * nor forget that the recap question is already open. Defaulted for
+     * records parked by the previous build.
+     */
+    sessionEndSignal: SessionEndSignalSnapshotSchema.default(EMPTY_SESSION_END_SIGNAL),
+    sessionClosing: SessionClosingSnapshotSchema.default(EMPTY_SESSION_CLOSING),
   })
   .strict();
 
 export type OrchestratorSnapshot = z.infer<typeof OrchestratorSnapshotSchema>;
+
+/** Options for one model turn (`TutorOrchestrator.produce`). */
+interface ProduceOptions {
+  nonce?: string;
+  isSystemPrompted?: boolean;
+  signal?: AbortSignal;
+  finalTurn?: boolean;
+  /**
+   * C.18: what this turn is reacting to, when the SERVER knows it — a
+   * verified-wrong answer or a stated wrong idea/unsound decision is what
+   * the anti-sycophancy check is run against.
+   */
+  verdict?: VerdictContext;
+  /**
+   * C.16: `completed_final` is the goodbye after the recap answer — the
+   * scripted effort line follows it (`after`) and carries the close.
+   */
+  closing?: 'completed_final';
+  /** C.8/C.12: this turn is meant to carry the stop-or-continue offer. */
+  sessionEndOffer?: boolean;
+}
 
 export class TutorOrchestrator {
   /*
@@ -461,6 +529,10 @@ export class TutorOrchestrator {
   private readonly usedSkillNames = new Set<string>();
   /** C.13: the hint ladder owns hint escalation per sub-step — policy, not per-turn LLM judgment. */
   private readonly hintLadder = new HintLadder();
+  /** C.8/C.12: the behavioral-signature session-end signal (`sessionEndSignal.ts`). */
+  private readonly sessionEndSignal: SessionEndSignal;
+  /** C.16: the closing sequence and the observed facts a completed close names. */
+  private readonly sessionClosing = new SessionCloser();
   /**
    * The V4 harness backlog's TRAJECTORY LOG (ROADMAP.md "Remaining harness
    * phases", /ORACLE.md §20): one entry per real `controller.decide()` call
@@ -527,6 +599,7 @@ export class TutorOrchestrator {
     this.plan = buildPlan(session.intent, session.courseContext, session.skillKey ?? null);
     this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
     const config = getConfig();
+    this.sessionEndSignal = new SessionEndSignal(config.TUTOR_SESSION_END_SIGNAL);
     this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? [], {
       corroborationMinObservations: config.TUTOR_CORROBORATION_MIN_OBSERVATIONS,
       corroborationRollbackKcKeys: config.TUTOR_CORROBORATION_ROLLBACK_KC_KEYS,
@@ -608,6 +681,8 @@ export class TutorOrchestrator {
       segmentServedAt: [...this.segmentServedAt.entries()],
       minorPosture: this.minorPosture,
       hintLadder: this.hintLadder.snapshot(),
+      sessionEndSignal: this.sessionEndSignal.snapshot(),
+      sessionClosing: this.sessionClosing.snapshot(),
     };
   }
 
@@ -674,6 +749,8 @@ export class TutorOrchestrator {
     for (const [id, at] of snapshot.segmentServedAt) this.segmentServedAt.set(id, at);
     this.minorPosture = snapshot.minorPosture;
     this.hintLadder.restore(snapshot.hintLadder);
+    this.sessionEndSignal.restore(snapshot.sessionEndSignal);
+    this.sessionClosing.restore(snapshot.sessionClosing);
   }
 
   refreshIsMinor(isMinor: boolean): void {
@@ -1063,9 +1140,15 @@ export class TutorOrchestrator {
    * pass (a scripted line is already reviewed text, §2.4), and recorded in the
    * transcript as `source: 'scripted'` like every other written line.
    */
-  async greet(nowMs: number): Promise<TurnOutcome> {
+  async greet(nowMs: number, opening: SessionOpening = 'greeting'): Promise<TurnOutcome> {
+    /*
+     * C.16: a learner returning after a silent dropout or a budget
+     * interruption hears the re-engagement message that ending queued
+     * (decided by Core, `opening`), instead of an opening that pretends
+     * nothing happened.
+     */
     return this.scriptedOutcome(
-      greetingResponse(this.session.character, this.session.locale),
+      openingResponse(this.session.character, this.session.locale, opening),
       this.currentBudget(nowMs),
       null,
       null,
@@ -1095,6 +1178,10 @@ export class TutorOrchestrator {
     // that as "no measurement", never as a fast answer.
     const latencyMs = servedAt === undefined ? null : Math.max(0, Date.now() - servedAt);
     this.segmentServedAt.delete(segmentId);
+    // C.8/C.12: read BEFORE any of this answer's evidence is applied (the
+    // skill estimate is nudged on the next line) — a surprising miss is judged
+    // against what the learner's own history predicted.
+    const pCorrect = this.predictedCorrect(skillKey);
     this.nudgeSkillEstimate(skillKey, correct);
     // The stuck instruction reads the counter recordGrade is about to bump,
     // so the order is: count the miss, then ask what it now amounts to.
@@ -1110,7 +1197,7 @@ export class TutorOrchestrator {
      * change-the-style line. Inactive controller = exactly the v2 path.
      */
     const hintAssisted = this.consumeLadderStep(correct);
-    const { text: extra, skillName } = this.strategyInstruction(
+    const { text: strategyExtra, skillName: strategySkill } = this.strategyInstruction(
       {
         kind: 'activity_result',
         correct,
@@ -1122,6 +1209,12 @@ export class TutorOrchestrator {
       nowMs,
       correct ? null : () => stuckInstruction(this.plan, skillKey),
     );
+    const offering = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, pCorrect }, nowMs);
+    // The stop-or-continue offer SUPERSEDES this turn's maneuver: an offer
+    // must stand alone, and a remediation question beside it could never be
+    // answered. The controller's decision is still logged (trajectory).
+    const extra = offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
+    const skillName = offering ? null : strategySkill;
 
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
@@ -1246,6 +1339,7 @@ export class TutorOrchestrator {
         finalTurn: graceTurn,
         nonce: fencedActivity?.nonce,
         verdict: correct ? 'after_correct' : 'after_incorrect',
+        sessionEndOffer: offering,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1355,17 +1449,28 @@ export class TutorOrchestrator {
     if (fenced.cleaned !== '') this.history.push({ speaker: 'learner', text: fenced.cleaned });
 
     const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
+    // C.8/C.12: the prediction this answer is judged against, before its evidence.
+    const pCorrect = this.predictedCorrect(skillKey);
     this.nudgeSkillEstimate(skillKey, result.correct);
     recordGrade(this.plan, skillKey, result.correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
     if (this.openUngradedSegmentId === segmentId) this.openUngradedSegmentId = null;
 
     const hintAssisted = this.consumeLadderStep(result.correct);
-    const { text: extra, skillName } = this.strategyInstruction(
+    const { text: strategyExtra, skillName: strategySkill } = this.strategyInstruction(
       { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode, hintAssisted },
       nowMs,
       result.correct ? null : () => stuckInstruction(this.plan, skillKey),
     );
+    // A spoken answer carries no reliable latency (speech timing is not
+    // answer timing), so it feeds the surprising-miss half of the signal only.
+    this.sessionClosing.noteLearnerTurn();
+    const offering = this.observeGraded(
+      { skill: skillKey, correct: result.correct, hintAssisted, latencyMs: null, pCorrect },
+      nowMs,
+    );
+    const extra = offering ? SESSION_END_OFFER_INSTRUCTION : strategyExtra;
+    const skillName = offering ? null : strategySkill;
 
     const summary = result.correct
       ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
@@ -1378,6 +1483,7 @@ export class TutorOrchestrator {
         signal,
         finalTurn: graceTurn,
         verdict: result.correct ? 'after_correct' : 'after_incorrect',
+        sessionEndOffer: offering,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1487,6 +1593,9 @@ export class TutorOrchestrator {
     decision: ControllerDecision,
     skillName: string | null,
   ): void {
+    // C.16: a corroborated mastery declaration is the session's peak — the
+    // completed close names it.
+    if (decision.evidence?.rule === 'mastery') this.sessionClosing.noteCorroboratedMastery();
     this.trajectoryLog.push({
       turnSeq: this.trajectoryLog.length + 1,
       eventKind,
@@ -1580,16 +1689,16 @@ export class TutorOrchestrator {
      */
     const { graceTurn, finalNote } = this.graceTurnFor(budget);
 
-    if (this.stopped || (budget.state === 'ended' && !graceTurn)) {
-      return this.scriptedOutcome(
-        closingResponse(this.session.locale, 'hard'),
-        budget,
-        budget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
-        null,
-      );
-    }
+    // C.16: a stopped (safety) session never hears the positive template.
+    if (this.stopped) return this.scriptedOutcome(safetyStopCloseResponse(this.session.locale), budget, 'safety_stop', null);
 
-    // ── classify BEFORE the model ────────────────────────────────────────────
+    /*
+     * ── classify BEFORE the model — and BEFORE the budget close ──────────────
+     *
+     * The classifier used to run only after the ended-budget check, so a
+     * disclosure typed in the last second of a session was answered with the
+     * cheerful time-is-up line. Safety wins over every closing script (C.16).
+     */
     const classification = classifyLearnerInput(raw, this.session.locale);
     if (classification.category !== null && classification.action !== 'allow') {
       const stopping = classification.action === 'session_stopped';
@@ -1612,6 +1721,37 @@ export class TutorOrchestrator {
     }
 
     const fenced = fenceUntrusted(raw, config.TURN_MAX_INPUT_CHARS);
+
+    // C.16: the answer to the co-constructed recap question closes the session.
+    if (this.sessionClosing.phase === 'recap_asked' && fenced.cleaned !== '') {
+      this.sessionClosing.noteLearnerTurn();
+      return this.finishCompletedClose(fenced, nowMs, signal);
+    }
+
+    if (budget.state === 'ended' && !graceTurn) {
+      return this.scriptedOutcome(
+        interruptedCloseResponse(this.session.locale),
+        budget,
+        budget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
+        null,
+      );
+    }
+
+    /*
+     * C.8/C.12: the learner answered the open stop-or-continue offer in words.
+     * Only an explicit stop accepts; anything else continues the lesson —
+     * the offer is never a default-accepted path.
+     */
+    if (this.sessionEndSignal.offerOpen && fenced.cleaned !== '') {
+      const reply = classifyStopReply(fenced.cleaned);
+      if (reply === 'accept') {
+        this.sessionEndSignal.recordResponse('accepted');
+        this.sessionClosing.noteLearnerTurn();
+        return this.beginCompletedClose(nowMs);
+      }
+      this.sessionEndSignal.recordResponse(reply === 'decline' ? 'declined' : 'unanswered');
+    }
+
     if (fenced.cleaned === '') {
       // Everything the learner sent was invisible characters or fence syntax.
       // Not worth a model call and not worth an error message either.
@@ -1641,6 +1781,7 @@ export class TutorOrchestrator {
     const verdict = checkAnswer(lastTutorLine, fenced.cleaned);
 
     this.history.push({ speaker: 'learner', text: fenced.cleaned });
+    this.sessionClosing.noteLearnerTurn();
     const verdictNote =
       verdict === null
         ? ''
@@ -1734,6 +1875,8 @@ export class TutorOrchestrator {
      * byte-identical to the behaviour before this block existed.
      */
     const stated = verdict === null ? classifyStatedMisconception(fenced.cleaned) : null;
+    const verdictSkill = this.controller.activeEntry?.skillKey ?? 'conversation';
+    const verdictPCorrect = verdict !== null ? this.predictedCorrect(verdictSkill) : null;
     const pedagogyEvent: PedagogyEvent =
       verdict !== null
         ? {
@@ -1745,7 +1888,24 @@ export class TutorOrchestrator {
         : stated !== null
           ? { kind: 'stated_misconception', misconceptionCode: stated }
           : { kind: 'conversation_turn' };
-    const { text: maneuver, skillName } = this.strategyInstruction(pedagogyEvent, nowMs, null);
+    const { text: strategyManeuver, skillName: strategySkill } = this.strategyInstruction(pedagogyEvent, nowMs, null);
+    // A verified conversational answer is a graded observation for C.8/C.12
+    // too (no latency: typing speed is not answer speed).
+    const offering =
+      verdict !== null && pedagogyEvent.kind === 'voice_result'
+        ? this.observeGraded(
+            {
+              skill: verdictSkill,
+              correct: verdict.correct,
+              hintAssisted: pedagogyEvent.hintAssisted === true,
+              latencyMs: null,
+              pCorrect: verdictPCorrect,
+            },
+            nowMs,
+          )
+        : false;
+    const maneuver = offering ? SESSION_END_OFFER_INSTRUCTION : strategyManeuver;
+    const skillName = offering ? null : strategySkill;
     /*
      * C.13: the hint ladder advances on the learner's own words and its
      * directive rides the same instruction the model receives — escalation
@@ -1779,6 +1939,7 @@ export class TutorOrchestrator {
             : stated !== null
               ? 'after_unsound_claim'
               : undefined,
+        sessionEndOffer: offering,
       },
     );
     this.commitSkillUse(skillName, outcome);
@@ -1853,10 +2014,174 @@ export class TutorOrchestrator {
     );
   }
 
-  /** Ends the session in character. */
+  /**
+   * Ends the session in character — the learner asked to (`end_session`).
+   *
+   * C.16: the script follows how the session ended. A stopped session gets
+   * the calm safety close, never the positive one. A learner who chooses to
+   * leave gets the completed close naming the act the server observed; the
+   * recap QUESTION is not asked here, because the learner is leaving now and
+   * holding them for one more answer would override their choice (recorded
+   * as a proposal in the S06 sprint record). `hard` is the budget variant.
+   */
   async farewell(nowMs: number, kind: 'soft' | 'hard'): Promise<TurnOutcome> {
     const budget = this.currentBudget(nowMs);
-    return this.scriptedOutcome(closingResponse(this.session.locale, kind), budget, 'completed', null);
+    if (this.stopped) return this.scriptedOutcome(safetyStopCloseResponse(this.session.locale), budget, 'safety_stop', null);
+    // Leaving while "stop here, or one more?" is open IS the answer to it.
+    if (this.sessionEndSignal.offerOpen) this.sessionEndSignal.recordResponse('accepted');
+    this.sessionClosing.phase = 'closed';
+    if (kind === 'hard') {
+      return this.scriptedOutcome(
+        interruptedCloseResponse(this.session.locale),
+        budget,
+        budget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
+        null,
+      );
+    }
+    return this.scriptedOutcome(
+      completedCloseResponse(this.session.locale, this.sessionClosing.effortAct()),
+      budget,
+      'completed',
+      null,
+    );
+  }
+
+  /**
+   * C.8/C.12: the learner answered the stop-or-continue offer with the stage's
+   * two equal choices (`session_end_response`). Refused (null) unless an
+   * offer is actually open — a replayed or forged response steers nothing.
+   */
+  async respondToSessionEndOffer(accepted: boolean, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+    if (!this.sessionEndSignal.offerOpen || this.stopped) return null;
+    if (accepted) {
+      this.sessionEndSignal.recordResponse('accepted');
+      return this.beginCompletedClose(nowMs);
+    }
+    this.sessionEndSignal.recordResponse('declined');
+    return this.produce(
+      'The learner chose to keep going. Continue the lesson with the next small step, in one or two short sentences. Do not mention stopping again.',
+      nowMs,
+      { isSystemPrompted: true, signal },
+    );
+  }
+
+  /** Whether a stop-or-continue offer is waiting for the learner's choice. */
+  get sessionEndOfferOpen(): boolean {
+    return this.sessionEndSignal.offerOpen;
+  }
+
+  /**
+   * C.16 completed close, step 1: the co-constructed recap question. Scripted
+   * (pre-generated audio, no model call); the session stays open for one
+   * answer, which `finishCompletedClose` turns into the goodbye.
+   */
+  private beginCompletedClose(nowMs: number): Promise<TurnOutcome> {
+    this.sessionClosing.phase = 'recap_asked';
+    return this.scriptedOutcome(recapPromptResponse(this.session.locale), this.currentBudget(nowMs), null, null);
+  }
+
+  /**
+   * C.16 completed close, step 2: the Mentor reflects the learner's answer
+   * in one sentence (a model turn with every honesty check), then the
+   * scripted line names the act the server observed and frames next time.
+   * `finalTurn` lets it through an ended budget: this IS the goodbye.
+   */
+  private async finishCompletedClose(
+    fenced: { block: string; cleaned: string; nonce: string },
+    nowMs: number,
+    signal?: AbortSignal,
+  ): Promise<TurnOutcome | null> {
+    this.history.push({ speaker: 'learner', text: fenced.cleaned });
+    // A recap that states a wrong idea must not be praised (C.18).
+    const stated = classifyStatedMisconception(fenced.cleaned);
+    const outcome = await this.produce(`${fenced.block}\n\n${RECAP_REFLECTION_INSTRUCTION}`, nowMs, {
+      nonce: fenced.nonce,
+      signal,
+      finalTurn: true,
+      closing: 'completed_final',
+      verdict: stated !== null ? 'after_unsound_claim' : undefined,
+    });
+    if (outcome !== null) this.sessionClosing.phase = 'closed';
+    return outcome;
+  }
+
+  /**
+   * C.8/C.12: feeds one graded observation to the session-end signal and the
+   * closing facts, and says whether the reacting turn should carry the offer.
+   * No offer while the session is already closing or stopped.
+   */
+  private observeGraded(
+    input: { skill: string; correct: boolean; hintAssisted: boolean; latencyMs: number | null; pCorrect: number | null },
+    nowMs: number,
+  ): boolean {
+    this.sessionClosing.noteGraded({ skill: input.skill, correct: input.correct, hintAssisted: input.hintAssisted });
+    const budget = this.currentBudget(nowMs);
+    const { offer } = this.sessionEndSignal.observe(
+      { latencyMs: input.latencyMs, correct: input.correct, pCorrect: input.pCorrect },
+      { elapsedMs: Math.max(0, nowMs - this.startedAtMs), remainingMs: Math.max(0, budget.remainingMs) },
+    );
+    if (!offer) return false;
+    if (this.stopped || this.sessionClosing.phase !== 'none' || budget.state === 'ended') {
+      this.sessionEndSignal.markOfferNotDelivered();
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * The learner's predicted probability of answering this skill correctly,
+   * BEFORE the new evidence: the controller's mirror when it is steering,
+   * else the session's own skill estimate. Null when nothing predicts it —
+   * such an answer can never count as a surprising miss.
+   */
+  private predictedCorrect(skillKey: string): number | null {
+    if (this.controller.active) return this.controller.predictedCorrect();
+    const state = this.skillStates.find((s) => s.skillKey === skillKey);
+    return state ? predictedCorrectFrom(state.masteryProbability) : null;
+  }
+
+  /** C.16: the closing script this session ends with, for a given close reason. */
+  closingScriptFor(reason: CloseReason): ClosingScript {
+    return closingScriptFor(reason);
+  }
+
+  /**
+   * C.16 / C.8 / C.12: what Core records at close, beside the close reason —
+   * the closing script, the opening the session began with, and the
+   * session-end signal's record.
+   */
+  closeRecord(reason: CloseReason): {
+    closingScript: ClosingScript;
+    opening: SessionOpening;
+    endSignal: SessionEndSignalReport;
+  } {
+    return {
+      closingScript: closingScriptFor(reason),
+      opening: this.session.opening ?? 'greeting',
+      endSignal: this.sessionEndSignal.report(),
+    };
+  }
+
+  /** C.16: what the client's closing state shows (Frontend Bible 08 §3–4). */
+  closingSummary(reason: CloseReason): ClosingSummary {
+    const script = closingScriptFor(reason);
+    return {
+      script,
+      effort: script === 'completed' ? this.sessionClosing.effortAct() : null,
+      // The safety close carries no topic: nothing on that screen invites
+      // the learner back into the lesson.
+      topic: script === 'safety_stop' ? null : (this.lessonThread?.topic ?? null),
+    };
+  }
+
+  /** C.8/C.12: the signal's record for Core (Early-Warning Signal Trigger Rate). */
+  get sessionEndReport(): SessionEndSignalReport {
+    return this.sessionEndSignal.report();
+  }
+
+  /** Whether the completed close had already begun (the recap question was asked). */
+  get closingInProgress(): boolean {
+    return this.sessionClosing.phase === 'recap_asked';
   }
 
   private currentBudget(nowMs: number): BudgetVerdict {
@@ -1901,7 +2226,7 @@ export class TutorOrchestrator {
     const openThread = this.lastTurn?.turn.next === 'ask' || this.openActivity !== null;
     const graceTurn = budget.state === 'ended' && !this.stopped && !this.closeGraceUsed && openThread;
     const finalNote = graceTurn
-      ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did), then say goodbye. Do NOT ask anything new, do NOT request or promise any activity.'
+      ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did). Do NOT say goodbye: the system adds a closing line that names where you will pick up next time. Do NOT ask anything new, do NOT request or promise any activity.'
       : '';
     return { graceTurn, finalNote };
   }
@@ -2006,21 +2331,27 @@ export class TutorOrchestrator {
     );
   }
 
-  private async produce(
+  /**
+   * Every model turn goes through here. C.8/C.12: a turn that was meant to
+   * carry the stop-or-continue offer and did NOT (any early return — a
+   * context-seal failure, an interrupt, a scripted replacement) records the
+   * firing as not offered and re-arms the signal, so an offer is never left
+   * pending and silently lost.
+   */
+  private async produce(userContent: string, nowMs: number, opts: ProduceOptions = {}): Promise<TurnOutcome | null> {
+    try {
+      return await this.produceTurn(userContent, nowMs, opts);
+    } finally {
+      if (opts.sessionEndOffer === true && !this.sessionEndSignal.offerOpen) {
+        this.sessionEndSignal.markOfferNotDelivered();
+      }
+    }
+  }
+
+  private async produceTurn(
     userContent: string,
     nowMs: number,
-    opts: {
-      nonce?: string;
-      isSystemPrompted?: boolean;
-      signal?: AbortSignal;
-      finalTurn?: boolean;
-      /**
-       * C.18: what this turn is reacting to, when the SERVER knows it — a
-       * verified-wrong answer or a stated wrong idea/unsound decision is what
-       * the anti-sycophancy check is run against.
-       */
-      verdict?: VerdictContext;
-    } = {},
+    opts: ProduceOptions = {},
   ): Promise<TurnOutcome | null> {
     const budget = this.currentBudget(nowMs);
 
@@ -2044,9 +2375,14 @@ export class TutorOrchestrator {
      * budget grants when the tutor's own last turn left a question or an
      * activity open (see handleLearnerText). It is minted exactly once.
      */
-    if (this.stopped || (budget.state === 'ended' && opts.finalTurn !== true)) {
+    if (this.stopped) {
+      if (opts.sessionEndOffer) this.sessionEndSignal.markOfferNotDelivered();
+      return this.scriptedOutcome(safetyStopCloseResponse(this.session.locale), budget, 'safety_stop', null);
+    }
+    if (budget.state === 'ended' && opts.finalTurn !== true) {
+      if (opts.sessionEndOffer) this.sessionEndSignal.markOfferNotDelivered();
       return this.scriptedOutcome(
-        closingResponse(this.session.locale, 'hard'),
+        interruptedCloseResponse(this.session.locale),
         budget,
         budget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
         null,
@@ -2839,6 +3175,15 @@ export class TutorOrchestrator {
             const sycophantic = isSycophantic(parsed.turn.say, opts.verdict);
             if (sycophantic) falseAffirmationCaught = true;
             /*
+             * THE MENTOR NEVER DECLARES HOW THE LEARNER FEELS (Block C
+             * non-negotiable, C.9/C.8 — `affectClaims.ts`). Checked on every
+             * model turn, not only on the session-end offer where a helpful
+             * model reaches for "you seem tired": the constraint applies
+             * regardless of which strategy is active. Bucketed with the false
+             * verdicts: repaired once, never delivered.
+             */
+            const affectClaim = claimsLearnerAffect(parsed.turn.say);
+            /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the
              * faults below, each of which is worth one attempt at doing
@@ -2903,6 +3248,7 @@ export class TutorOrchestrator {
                */
               repairableIsFalseVerdict =
                 sycophantic ||
+                affectClaim ||
                 falsePraise ||
                 unearnedPraise ||
                 reintroduction ||
@@ -2928,6 +3274,10 @@ export class TutorOrchestrator {
                   ? 'agreed with, or praised, an idea or money decision the learner stated that the system detected as NOT sound. Never endorse it because they seem pleased: name one sensible thing in their reasoning, then show kindly, with one concrete consequence, where the idea breaks, and ask what they would change'
                   : 'told the learner their answer was right, but the system VERIFIED it was WRONG. Never affirm a wrong answer to be kind: say plainly and warmly that it is not quite it yet, praise only one specific thing they actually did, and help with the step that went wrong';
               console.warn('[oracle] C.18 turn affirmed a verified-wrong answer or an unsound idea — asking again');
+            } else if (affectClaim && attempt === 0) {
+              turnCorrection =
+                'told the learner how they feel or seem (tired, bored, frustrated or similar). You cannot know that, and a child labelled by a machine learns to hide. Say the same thing WITHOUT any claim about their feelings, energy or mood — talk about the work, or ask plainly what they would like to do';
+              console.warn("[oracle] turn declared the learner's emotional state — asking again");
             } else if (falseAffordability && attempt === 0) {
               /*
                * DELIBERATELY ABOVE `repeated`, because the live turn that
@@ -3128,6 +3478,7 @@ export class TutorOrchestrator {
               if (
                 nothingNew ||
                 sycophantic ||
+                affectClaim ||
                 falsePraise ||
                 falseCorrection ||
                 falseAffordability ||
@@ -3146,6 +3497,9 @@ export class TutorOrchestrator {
                 // merely-imperfect turn, so none of them gets delivered.
                 if (sycophantic) {
                   console.warn('[oracle] C.18 affirmation of a verified-wrong answer SURVIVED the retry — scripted line instead');
+                }
+                if (affectClaim) {
+                  console.warn("[oracle] a claim about the learner's emotional state SURVIVED the retry — scripted line instead");
                 }
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
@@ -3282,6 +3636,67 @@ export class TutorOrchestrator {
           'about to close and the activity would never be attempted',
       );
       turn = { ...turn, next: 'ask', segmentRequest: null };
+    }
+
+    /*
+     * ── C.16 AND C.8/C.12: WHAT THIS TURN IS FOR DECIDES ITS SHAPE ──────────
+     *
+     * The closing script is the SYSTEM's, never the model's. A model turn that
+     * ends the session is followed by a scripted line (`TurnOutcome.after`)
+     * chosen from how the session is actually ending:
+     *
+     *   completed     the reflection of the learner's recap answer
+     *                 (`finishCompletedClose`) → the effort line naming an act
+     *                 the server observed, then the session closes;
+     *   interrupted   the budget ran out on this turn (the one grace turn, or
+     *                 a turn that crossed the cap mid-call) → "our time is up;
+     *                 next time we pick up right here";
+     *   recap         the Mentor wrapped up on its own (`next: 'close'` in a
+     *                 running session) → the co-constructed recap QUESTION,
+     *                 and the session stays open for one answer.
+     *
+     * The model's turn itself is then never the one that closes: its `next`
+     * becomes 'ask' and any activity or adaptation request is dropped, the
+     * same structural correction the ended-budget segment check above makes.
+     */
+    const modelAuthored = source === 'model';
+    let closingPlan: 'completed' | 'interrupted' | 'recap' | null =
+      opts.closing === 'completed_final'
+        ? 'completed'
+        : afterBudget.state === 'ended'
+          ? 'interrupted'
+          : turn.next === 'close' && this.sessionClosing.phase === 'none' && !this.stopped
+            ? 'recap'
+            : null;
+    if (closingPlan !== null && !modelAuthored) {
+      // The model failed and `turn` is the scripted "say that again" line: a
+      // question nobody will get to answer is not worth saying on the way
+      // out. The closing line alone is delivered (the reserved slot stays
+      // spent, like every other failed turn).
+      if (opts.sessionEndOffer) this.sessionEndSignal.markOfferNotDelivered();
+      if (closingPlan === 'completed') {
+        this.sessionClosing.phase = 'closed';
+        return this.scriptedOutcome(
+          completedCloseResponse(this.session.locale, this.sessionClosing.effortAct()),
+          afterBudget,
+          'completed',
+          null,
+        );
+      }
+      if (closingPlan === 'interrupted') {
+        return this.scriptedOutcome(
+          interruptedCloseResponse(this.session.locale),
+          afterBudget,
+          afterBudget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
+          null,
+        );
+      }
+      closingPlan = null;
+    }
+    if (closingPlan !== null || opts.sessionEndOffer === true) {
+      // An offer stands alone (Frontend Bible 08 §4: two equal choices), and
+      // a closing turn introduces nothing new (Appendix D §3.5).
+      turn = { ...turn, next: 'ask', segmentRequest: null, offerAdaptation: null };
     }
 
     // ── moderation: whole turn, before screen and before speech ──────────────
@@ -3440,6 +3855,49 @@ export class TutorOrchestrator {
     // after `this.seq` was reserved above (see that computation's own doc
     // comment for why a second read here would always agree with the first
     // and why an intervening disagreement would itself be the bug).
+    /*
+     * C.8/C.12: the offer reached the learner only if THIS model turn carried
+     * it — not a blocked turn's replacement, not a closing turn. Otherwise the
+     * firing is recorded as not offered and the signal re-arms at once.
+     */
+    let offerDelivered = false;
+    if (opts.sessionEndOffer === true) {
+      if (source === 'model' && safety === null && closingPlan === null && !this.stopped) {
+        this.sessionEndSignal.markOfferDelivered();
+        offerDelivered = true;
+      } else {
+        this.sessionEndSignal.markOfferNotDelivered();
+      }
+    }
+
+    /*
+     * C.16: the scripted line that follows this turn. A safety stop raised by
+     * this very turn wins over every closing script — its own line is the
+     * close, and it never reuses a positive one.
+     */
+    let after: TurnOutcome | undefined;
+    if (safety?.handled !== 'session_stopped' && !this.stopped && closingPlan !== null) {
+      if (closingPlan === 'completed') {
+        this.sessionClosing.phase = 'closed';
+        after = await this.scriptedOutcome(
+          completedCloseResponse(this.session.locale, this.sessionClosing.effortAct()),
+          afterBudget,
+          'completed',
+          null,
+        );
+      } else if (closingPlan === 'interrupted') {
+        after = await this.scriptedOutcome(
+          interruptedCloseResponse(this.session.locale),
+          afterBudget,
+          afterBudget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
+          null,
+        );
+      } else {
+        this.sessionClosing.phase = 'recap_asked';
+        after = await this.scriptedOutcome(recapPromptResponse(this.session.locale), afterBudget, null, null);
+      }
+    }
+
     const closeReason =
       /*
        * Checked BEFORE the generic `turn.next === 'close'` case, not after —
@@ -3472,10 +3930,13 @@ export class TutorOrchestrator {
         // Every turn produce() settles on — including a scripted line that REPLACED a caught
         // sycophantic draft, which is exactly the turn the audit most needs to count.
         honesty: this.turnHonesty(turn.say, opts.verdict ?? null, falseAffirmationCaught),
+        ...(offerDelivered ? { sessionEndOffer: true } : {}),
       },
       safety,
       budget: afterBudget,
-      closeReason,
+      // With a closing line queued, the session closes on IT, never on this turn.
+      closeReason: after ? null : closeReason,
+      ...(after ? { after } : {}),
     };
   }
 

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ADAPTATIONS } from '../context/schema.js';
+import type { ClosingScript, EffortAct } from '../tutor/sessionClosing.js';
 import {
   ACTIONS,
   EMOTIONS,
@@ -164,6 +165,11 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
     })
     .strict(),
   z.object({ type: z.literal('end_session') }).strict(),
+  /**
+   * C.8/C.12: the learner's choice on the stop-or-continue offer
+   * (`session_end_offer`). Honoured only while an offer is open.
+   */
+  z.object({ type: z.literal('session_end_response'), accepted: z.boolean() }).strict(),
   z.object({ type: z.literal('ping') }).strict(),
 ]);
 
@@ -413,6 +419,24 @@ export type ServerMessage =
   | {
       type: 'adaptation_offer';
       adaptation: (typeof ADAPTATIONS)[number];
+    }
+  /**
+   * C.8/C.12: the turn just delivered asked the learner to choose between
+   * stopping for today and doing one more. The stage shows two equal
+   * choices; the answer is `session_end_response`.
+   */
+  | { type: 'session_end_offer' }
+  /**
+   * C.16: sent once, just before `closed` on a graceful close. `script` is
+   * the closing script this ending used; `effort` the specific act a
+   * completed close named (null otherwise); `topic` the lesson the next
+   * session picks up from (null for a safety stop). Our own catalog text.
+   */
+  | {
+      type: 'session_closing';
+      script: ClosingScript;
+      effort: EffortAct | null;
+      topic: string | null;
     }
   | {
       type: 'state';

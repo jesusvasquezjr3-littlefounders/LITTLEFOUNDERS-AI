@@ -407,6 +407,12 @@ export async function closeTutorSession(input: {
   turnCount: number;
   segmentCount: number;
   costUsd: number;
+  /** C.16: the closing script Oracle used (omitted by an older Oracle). */
+  closingScript?: string;
+  /** C.16: the opening the session began with. */
+  opening?: string;
+  /** C.8/C.12: whether the session-end signal was evaluated at all. */
+  endSignal?: { evaluated: boolean };
 }): Promise<CloseTutorSessionOutcome> {
   const rows = await serviceRest<{ id: string }[]>(`/tutor_sessions?id=eq.${eu(input.sessionId)}&ended_at=is.null`, {
     method: 'PATCH',
@@ -417,6 +423,11 @@ export async function closeTutorSession(input: {
       turn_count: input.turnCount,
       segment_count: input.segmentCount,
       cost_usd: input.costUsd,
+      // Only named when reported, so a close from an older Oracle writes
+      // exactly the columns it always did.
+      ...(input.closingScript !== undefined ? { closing_script: input.closingScript } : {}),
+      ...(input.opening !== undefined ? { opening: input.opening } : {}),
+      ...(input.endSignal !== undefined ? { end_signal_evaluated: input.endSignal.evaluated } : {}),
     }),
   });
   if (rows === null) return 'failed';

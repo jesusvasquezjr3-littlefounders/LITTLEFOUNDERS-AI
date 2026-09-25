@@ -4,6 +4,7 @@ import type {
   BudgetState,
   ClientMessage,
   ServerMessage,
+  SessionClosingSummary,
   TutorWhiteboardWire,
   WordTiming,
 } from './types';
@@ -173,6 +174,10 @@ export interface TutorSocket {
   micRevoked: boolean;
   intelDegraded: boolean;
   adaptationOffer: Adaptation | null;
+  /** C.8/C.12: the Mentor's last turn asked "stop here, or one more?" and is waiting for the choice. */
+  sessionEndOffer: boolean;
+  /** C.16: how the session ended (the closing script), once the server says so. */
+  closingSummary: SessionClosingSummary | null;
   closedReason: string | null;
   error: { code: string; message: string } | null;
   /**
@@ -209,6 +214,8 @@ export interface TutorSocket {
     pedagogy?: { echo: string; attemptNumber: number },
   ) => void;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
+  /** C.8/C.12: answer the stop-or-continue offer. Never sent unless an offer is open. */
+  answerSessionEnd: (accepted: boolean) => void;
   endSession: () => void;
 }
 
@@ -263,6 +270,8 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [micRevoked, setMicRevoked] = useState(false);
   const [intelDegraded, setIntelDegraded] = useState(false);
   const [adaptationOffer, setAdaptationOffer] = useState<Adaptation | null>(null);
+  const [sessionEndOffer, setSessionEndOffer] = useState(false);
+  const [closingSummary, setClosingSummary] = useState<SessionClosingSummary | null>(null);
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [error, setError] = useState<TutorSocket['error']>(null);
   /** V4: the lesson thread the last turn carried; null in open chat. */
@@ -302,6 +311,8 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     setMicrophone(false);
     setIntelDegraded(false);
     setAdaptationOffer(null);
+    setSessionEndOffer(false);
+    setClosingSummary(null);
     setClosedReason(null);
     setError(null);
     setThinking(false);
@@ -452,6 +463,10 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
              * turn arrives right after and re-sets it via its own case below.
              */
             setAdaptationOffer(null);
+            // C.8/C.12: the same rule for the stop-or-continue offer — the
+            // server sends `session_end_offer` right AFTER the turn that asks
+            // it, so a new turn without one means the question has moved on.
+            setSessionEndOffer(false);
             break;
           case 'turn_audio':
             // The voice catching up with its own turn. A stale seq is a clip for
@@ -487,6 +502,13 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             break;
           case 'adaptation_offer':
             setAdaptationOffer(message.adaptation);
+            break;
+          case 'session_end_offer':
+            setSessionEndOffer(true);
+            break;
+          case 'session_closing':
+            setClosingSummary({ script: message.script, effort: message.effort, topic: message.topic });
+            setSessionEndOffer(false);
             break;
           case 'state':
             setBudget(message.budget);
@@ -727,6 +749,16 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     [send],
   );
 
+  const answerSessionEnd = useCallback(
+    (accepted: boolean) => {
+      // Cleared at once so a double tap cannot send two answers; the server
+      // refuses an answer to an offer that is no longer open anyway.
+      setSessionEndOffer(false);
+      send({ type: 'session_end_response', accepted });
+    },
+    [send],
+  );
+
   const endSession = useCallback(() => send({ type: 'end_session' }), [send]);
 
   return {
@@ -741,6 +773,8 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     micRevoked,
     intelDegraded,
     adaptationOffer,
+    sessionEndOffer,
+    closingSummary,
     closedReason,
     error,
     thinking,
@@ -753,6 +787,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     editLast,
     reportGrade,
     answerAdaptation,
+    answerSessionEnd,
     endSession,
   };
 }

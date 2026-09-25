@@ -1,0 +1,47 @@
+/* C.8/C.12 stop-or-continue choice and C.16 closing state (Frontend Bible 08
+   §3–4). Surface fill + soft shadow on the page, never an outline (Bible 02
+   §4.4); dark mode steps the surface instead of shadowing. No animation of
+   its own, so reduced motion needs no override: nothing here moves. */
+.lf-rebuild.lf-session-end-choice,
+.lf-rebuild.lf-session-closing {
+  padding: var(--spacing-6);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: 0 1px 3px rgb(17 19 42 / .08), 0 1px 2px rgb(17 19 42 / .06);
+  display: grid;
+  gap: var(--spacing-4);
+  min-inline-size: 0;
+  max-inline-size: 40rem;
+  /* .lf-rebuild is a page root (min-block-size: 100dvh); these are panels. */
+  min-block-size: 0;
+  align-content: start;
+}
+.lf-rebuild.lf-session-end-choice[data-theme='dark'],
+.lf-rebuild.lf-session-closing[data-theme='dark'] { box-shadow: none; }
+
+/* Two EQUAL choices: one column each, the same size and the same variant,
+   side by side where they fit and stacked where they do not. */
+.lf-session-end-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--spacing-3);
+}
+/* Sunken fill in both themes: on the surface panel the chips need their own
+   boundary, and in dark mode the control shadow is off (Bible 02 §4.4). */
+.lf-session-end-options > .lf-button { inline-size: 100%; min-block-size: var(--target-base); background: var(--sunken); }
+
+.lf-session-closing h2 { margin: 0; overflow-wrap: anywhere; }
+.lf-session-closing p { margin: 0; overflow-wrap: anywhere; }
+.lf-session-closing-topic {
+  background: var(--sunken);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-3) var(--spacing-4);
+}
+.lf-session-closing > .lf-button { justify-self: start; }
+@media (max-width: 599px) {
+  .lf-session-closing > .lf-button { justify-self: stretch; }
+}
+
+/* The isolated preview fixture stacks the two panels with the section gap. */
+.lf-preview--mentor-session-end .lf-preview-content { gap: var(--spacing-6); }

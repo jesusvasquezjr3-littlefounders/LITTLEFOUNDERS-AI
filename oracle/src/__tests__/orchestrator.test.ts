@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RECALL_TRIGGER, TutorOrchestrator } from '../tutor/orchestrator.js';
 import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
+import { interruptedCloseText } from '../tutor/scripted.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../core/client.js';
 
@@ -1735,7 +1736,11 @@ describe('a segment request the budget already refused is suppressed before deli
     // The turn-count crossed the cap DURING this call, so the session is
     // closing — the activity the model just asked for would never be
     // attempted, and must never reach the learner's screen.
-    expect(outcome?.closeReason).toBe('turn_cap');
+    // C.16: the session closes on the scripted INTERRUPTED line that follows
+    // this turn, never on the model's own turn.
+    expect(outcome?.closeReason).toBeNull();
+    expect(outcome?.after?.closeReason).toBe('turn_cap');
+    expect(outcome?.after?.emission.turn.say).toBe(interruptedCloseText('es-MX'));
     expect(outcome?.emission.turn.next).toBe('ask');
     expect(outcome?.emission.turn.segmentRequest).toBeNull();
     // The tutor's own words are untouched — only the promise behind them is
@@ -1778,7 +1783,10 @@ describe('a segment request the budget already refused is suppressed before deli
     expect(grace?.emission.source).toBe('model');
     expect(grace?.emission.turn.next).toBe('ask');
     expect(grace?.emission.turn.segmentRequest).toBeNull();
-    expect(grace?.closeReason).toBe('hard_budget');
+    // C.16: the interrupted close follows the grace turn and carries the close.
+    expect(grace?.closeReason).toBeNull();
+    expect(grace?.after?.closeReason).toBe('hard_budget');
+    expect(grace?.after?.emission.turn.say).toBe(interruptedCloseText('es-MX'));
 
     // And the grace ticket is still spent exactly once, same as every other
     // grace-turn test in this file — this fix does not change that contract.

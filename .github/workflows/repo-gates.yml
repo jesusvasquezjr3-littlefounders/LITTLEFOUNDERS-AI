@@ -93,6 +93,13 @@ jobs:
       - name: Mentor honesty record agrees across every copy
         run: node agent/tools/check-mentor-honesty-parity.mjs
 
+      # Product C.16 + C.8/C.12: the closing scripts, openings and the session-end
+      # signal record are hand-mirrored across Oracle, Core, the migration and the
+      # client. A drift makes Core refuse the close (400) or measures closing-script
+      # accuracy against a different table than the one Oracle closes with.
+      - name: Session-end record agrees across every copy
+        run: node agent/tools/check-session-end-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

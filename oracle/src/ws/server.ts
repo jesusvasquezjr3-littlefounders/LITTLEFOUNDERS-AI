@@ -926,6 +926,9 @@ async function finalizeParkedOnce(
   void closeSession({
     sessionId,
     closeReason,
+    // C.16: a parked close is a silent dropout (or a shutdown's abandon):
+    // the learner_left script, whose re-engagement Core queues for return.
+    ...entry.orchestrator.closeRecord(closeReason),
     // The transcript's own row count, not the model-turn count — see
     // `CloseSessionInput.turnCount`'s comment.
     turnCount: entry.transcriptSeq,
@@ -2047,7 +2050,12 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   // The opening line. Deliberately after `ready`: the client waits for the 3D
   // stage's own onReady before it plays anything, and handing over speech
   // while the assets resolve plays audio at a blank canvas (/TUTOR_3D.md §7b).
-  await deliver(live, await live.orchestrator.greet(Date.now()));
+  //
+  // C.16: a learner returning after a silent dropout or a budget interruption
+  // hears the re-engagement message that ending queued (Core decides it from
+  // their previous closed session), never an opening that pretends nothing
+  // happened. A Core that predates the field sends nothing: the greeting.
+  await deliver(live, await live.orchestrator.greet(Date.now(), live.session.opening ?? 'greeting'));
 }
 
 async function onMessage(live: Live, raw: string): Promise<void> {
@@ -2113,6 +2121,39 @@ async function onMessage(live: Live, raw: string): Promise<void> {
        */
       await attemptEndSession(live);
       return;
+
+    case 'session_end_response': {
+      /*
+       * C.8/C.12: the learner's choice on the stop-or-continue offer. Refused
+       * unless an offer is actually open — a replayed or hand-crafted frame
+       * steers nothing — and checked BEFORE the claim, like an unknown
+       * segment: a refusal this cheap should not spend the turn slot.
+       * Accepting starts the completed close (the recap question, scripted);
+       * declining continues the lesson (a model turn).
+       */
+      if (!live.orchestrator.sessionEndOfferOpen) {
+        send(live.socket, {
+          type: 'error',
+          code: 'NO_SESSION_END_OFFER',
+          message: 'There is no open choice to answer.',
+        });
+        return;
+      }
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.respondToSessionEndOffer(message.data.accepted, Date.now(), live.abort.signal),
+        );
+      } finally {
+        live.abort = null;
+        releaseTurn(live);
+      }
+      return;
+    }
 
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
@@ -2602,6 +2643,20 @@ async function deliver(
    */
   segmentAttempt = 0,
 ): Promise<void> {
+  /*
+   * C.16: A SCRIPTED LINE FOLLOWS THIS TURN (`TurnOutcome.after`) — the
+   * closing line after the Mentor's last turn, or the recap question after
+   * it wrapped up. This turn goes out first, its voice is awaited so the
+   * clip is not cut by the close, then the line, which carries the close.
+   */
+  if (outcome?.after) {
+    const { after, ...first } = outcome;
+    await deliver(live, first, learnerTurnSeq, segmentAttempt);
+    await first.emission.audio;
+    await deliver(live, after);
+    return;
+  }
+
   if (outcome === null) {
     // An interrupted production. Nothing to say — but the client's thinking
     // state must end on a server frame, not on a guess, so the budget frame
@@ -2772,6 +2827,11 @@ async function deliver(
   if (emission.turn.offerAdaptation) {
     send(live.socket, { type: 'adaptation_offer', adaptation: emission.turn.offerAdaptation });
   }
+
+  // C.8/C.12: this turn asked "stop here, or one more?" — the stage shows two
+  // equal choices (Frontend Bible 08 §4). Never a default-accepted path: the
+  // choice arrives as `session_end_response` or in the learner's own words.
+  if (emission.sessionEndOffer === true) send(live.socket, { type: 'session_end_offer' });
 
   if (emission.turn.next === 'segment' && emission.turn.segmentRequest) {
     if (segmentAttempt > MAX_SEGMENT_RETRIES) {
@@ -3044,6 +3104,9 @@ async function finish(
   const closeOutcome = await closeSession({
     sessionId: live.session.sessionId,
     closeReason: reason,
+    // C.16 / C.8 / C.12: which closing script this ending used, the opening
+    // the session began with, and the session-end signal's record.
+    ...live.orchestrator.closeRecord(reason),
     // The transcript's own row count (both speakers), not the model-turn
     // count — see `CloseSessionInput.turnCount`'s comment (found by
     // adversarial review, 2026-08-30, HIGH).
@@ -3144,6 +3207,12 @@ async function finish(
     console.warn('[oracle] trajectory emission crashed:', error instanceof Error ? error.message : error),
   );
 
+  /*
+   * C.16: what the closing state shows (Frontend Bible 08 §3–4) — which
+   * script ended the session, the act the completed close named, and the
+   * lesson it will pick up from. Our own catalog text only.
+   */
+  send(live.socket, { type: 'session_closing', ...live.orchestrator.closingSummary(reason) });
   send(live.socket, { type: 'closed', reason });
   live.socket.close(reason === 'completed' ? CLOSE_CODES.NORMAL : CLOSE_CODES.BUDGET_EXHAUSTED, reason);
 }

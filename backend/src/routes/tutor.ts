@@ -17,6 +17,14 @@ import {
   type FullProfileRow,
 } from '../services/supabaseRest.js';
 import { getOwnLearnerIntelligence } from '../services/learningIntel.js';
+import {
+  CLOSING_SCRIPTS,
+  decideOpening,
+  getPreviousClosedSession,
+  recordSessionEndSignal,
+  SESSION_OPENINGS,
+  SessionEndReportBody,
+} from '../services/pedagogy/sessionEnd.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
 import {
   ADAPTATIONS,
@@ -563,6 +571,22 @@ function internalRouter(): Router {
       ? await buildSessionPlan(session.user_id, session.tier, session.locale)
       : null;
 
+    /*
+     * C.16: the re-engagement a silent dropout or a budget interruption in the
+     * learner's PREVIOUS session queued for this return. Decided here from
+     * Core's own rows; a failed read opens with the plain greeting, never
+     * with a guess about what happened last time.
+     */
+    const previousClose = await getPreviousClosedSession(session.user_id, session.id);
+    const opening =
+      previousClose === undefined
+        ? 'greeting'
+        : decideOpening(previousClose, {
+            course_id: session.course_id,
+            topic_id: session.topic_id,
+            skill_key: session.skill_key,
+          });
+
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
       skillKeys: row.summary.skillKeys.slice(0, 5),
@@ -622,6 +646,7 @@ function internalRouter(): Router {
       intelDegraded,
       sessionPlan: pedagogyPlan?.plan ?? null,
       kcStates: pedagogyPlan?.kcStates ?? null,
+      opening,
     });
   });
 
@@ -1516,6 +1541,15 @@ function internalRouter(): Router {
     turnCount: z.number().int().nonnegative(),
     segmentCount: z.number().int().nonnegative(),
     costUsd: z.number().nonnegative(),
+    /*
+     * C.16 / C.8 / C.12 (Appendix F §1.1–1.2). OPTIONAL so an Oracle deployed
+     * before this Core still closes; each is validated against its closed
+     * vocabulary (hand-mirrored — `npm run session-end:check`), and a bad
+     * value refuses the close like any other malformed field.
+     */
+    closingScript: z.enum(CLOSING_SCRIPTS).optional(),
+    opening: z.enum(SESSION_OPENINGS).optional(),
+    endSignal: SessionEndReportBody.optional(),
   });
 
   router.post('/sessions/:id/close', async (req, res) => {
@@ -1537,6 +1571,23 @@ function internalRouter(): Router {
      * Best-effort after the close: a failed digest costs continuity, not the
      * session record.
      */
+    /*
+     * C.8/C.12: the signal's firings, written only by the close that actually
+     * landed (first close wins, like the row itself). Best-effort: a failed
+     * write costs Trigger Rate data points, never the close.
+     */
+    if (outcome === 'closed' && parsed.data.endSignal && parsed.data.endSignal.events.length > 0) {
+      const owner = await getTutorSession(parsed.data.sessionId);
+      if (owner) {
+        const written = await recordSessionEndSignal({
+          sessionId: owner.id,
+          character: owner.character,
+          events: parsed.data.endSignal.events,
+        });
+        if (!written) console.warn(`[tutor] session-end signal NOT recorded for session ${owner.id}`);
+      }
+    }
+
     if (closed) {
       const session = await getTutorSession(parsed.data.sessionId);
       if (session) {

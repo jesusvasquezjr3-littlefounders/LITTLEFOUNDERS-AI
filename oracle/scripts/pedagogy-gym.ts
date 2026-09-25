@@ -15,6 +15,7 @@
 
 import process from 'node:process';
 import { runPedagogyGym } from '../src/tutor/pedagogyGym.js';
+import { runSessionEndGym } from '../src/tutor/sessionEndGym.js';
 
 function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void {
   console.log('== The simulated-student gym: reactive students against the real controller ==');
@@ -34,19 +35,38 @@ function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void
 }
 
 function main(): void {
-  const { reports, ok } = runPedagogyGym();
+  const controller = runPedagogyGym();
+  const { reports } = controller;
+  /*
+   * C.8/C.12: the behavioral-signature session-end signal against Appendix F
+   * Part 3 Stage 2's simulated learners (`src/tutor/sessionEndGym.ts`).
+   */
+  const sessionEnd = runSessionEndGym();
+  const ok = controller.ok && sessionEnd.ok;
 
   if (process.argv.includes('--json')) {
-    console.log(JSON.stringify({ ok, reports }, null, 2));
+    console.log(JSON.stringify({ ok, reports, sessionEnd: sessionEnd.reports }, null, 2));
   } else {
     printHuman(reports);
     console.log('');
-    const totalProblems = reports.reduce((sum, report) => sum + report.problems.length, 0);
+    console.log('== The session-end signal (C.8/C.12) against the simulated learners ==');
+    console.log('');
+    for (const report of sessionEnd.reports) {
+      const offers = report.offers.map((o) => `minute ${o.minute.toFixed(1)}`).join(', ') || 'no offer';
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${offers} (${report.firings} firing(s))`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log('');
+    const totalProblems =
+      reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      sessionEnd.reports.reduce((sum, report) => sum + report.problems.length, 0);
     if (!ok) {
       console.log(`gym:pedagogy FAILED — ${totalProblems} problem(s) across ${reports.length} scenario(s).`);
       console.log('Each of these archetypes is a reactive student; a violation here is a sequence a real session could produce.');
     } else {
-      console.log(`gym:pedagogy OK — ${reports.length} reactive student archetype(s), no guardrail violations.`);
+      console.log(
+        `gym:pedagogy OK — ${reports.length} reactive student archetype(s) and ${sessionEnd.reports.length} session-end persona(s), no guardrail violations.`,
+      );
     }
   }
 

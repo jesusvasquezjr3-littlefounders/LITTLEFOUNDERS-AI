@@ -130,15 +130,20 @@ describe('the scripted set is closed, which is what makes it buyable once', () =
      * words)". The count is pinned here precisely so a new line cannot be
      * added without also being SYNTHESIZED — an unpregenerated scripted line
      * is a silent tutor, which is worse than a repeated one.
+     *
+     * 25, not 14 (C.16, 2026-09-24): the two generic closes (soft/hard) became
+     * the four end-reason scripts — the recap question, six completed closes
+     * (one per observed act), the interrupted close and the safety close —
+     * plus the four queued re-engagement openings. 14 − 2 + 13 = 25.
      */
-    expect(catalogue).toHaveLength(14 * CHARACTER_IDS.length * LOCALES.length);
+    expect(catalogue).toHaveLength(25 * CHARACTER_IDS.length * LOCALES.length);
 
     for (const character of CHARACTER_IDS) {
       for (const locale of LOCALES) {
         const slot = catalogue.filter((l) => l.character === character && l.locale === locale);
-        expect(slot).toHaveLength(14);
+        expect(slot).toHaveLength(25);
         // Keys stay unique — the three model-down variants are `model_down.0..2`.
-        expect(new Set(slot.map((l) => l.key)).size).toBe(14);
+        expect(new Set(slot.map((l) => l.key)).size).toBe(25);
         for (const line of slot) expect(line.text.trim().length).toBeGreaterThan(0);
       }
     }

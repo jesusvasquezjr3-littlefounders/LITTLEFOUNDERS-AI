@@ -224,6 +224,15 @@ const Env = z.object({
         .map((key) => key.trim())
         .filter((key) => key.length > 0),
     ),
+  /**
+   * Product C.8/C.12 — the behavioral-signature session-end signal
+   * (`tutor/sessionEndSignal.ts`). `offer` (default): the Mentor may offer to
+   * stop early when the signal fires. `shadow`: computed and logged, never
+   * offered. `off`: not computed. `shadow` and `off` are the Appendix F
+   * Stage 7 rollback — session management reverts to the time/turn caps.
+   * An unknown value falls back to `offer` rather than silently disabling it.
+   */
+  TUTOR_SESSION_END_SIGNAL: z.enum(['offer', 'shadow', 'off']).catch('offer').default('offer'),
 
   /**
    * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that

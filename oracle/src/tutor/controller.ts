@@ -164,6 +164,16 @@ export function mirrorBktUpdate(pKnown: number, correct: boolean): number {
   return Math.min(0.999, Math.max(0.001, learned));
 }
 
+/**
+ * C.8/C.12: the predicted probability of a CORRECT answer from a mastery
+ * belief — P(L)(1 − slip) + (1 − P(L))·guess, on the mirror's own
+ * parameters. A miss is "surprising" (Appendix D §2.5) when this is high.
+ */
+export function predictedCorrectFrom(pKnown: number): number {
+  const p = Math.min(1, Math.max(0, pKnown));
+  return p * (1 - MIRROR.pS) + (1 - p) * MIRROR.pG;
+}
+
 export interface ControllerDecision {
   strategy: Strategy;
   scaffolding: 0 | 1 | 2 | 3;
@@ -738,6 +748,18 @@ export class PedagogicalController {
   }
 
   /** The kcId a served activity should be stamped with right now. */
+  /**
+   * C.8/C.12: the predicted probability that the learner answers the ACTIVE
+   * knowledge component correctly, read from the local mastery mirror BEFORE
+   * the next piece of evidence is applied (the belief the answer is judged
+   * against). Null while the controller is dormant.
+   */
+  predictedCorrect(): number | null {
+    const entry = this.activeEntry;
+    if (!entry) return null;
+    return predictedCorrectFrom(this.pKnown.get(entry.kcId) ?? entry.pKnown);
+  }
+
   get activeKcId(): string | null {
     return this.activeEntry?.kcId ?? null;
   }

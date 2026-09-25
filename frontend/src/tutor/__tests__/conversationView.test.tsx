@@ -64,6 +64,8 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     micRevoked: false,
     intelDegraded: false,
     adaptationOffer: null,
+    sessionEndOffer: false,
+    closingSummary: null,
     closedReason: null,
     error: null,
     thinking: false,
@@ -76,6 +78,7 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     editLast: vi.fn(),
     reportGrade: vi.fn(),
     answerAdaptation: vi.fn(),
+    answerSessionEnd: vi.fn(),
     endSession: vi.fn(),
     ...overrides,
   };

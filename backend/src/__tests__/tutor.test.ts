@@ -4953,3 +4953,188 @@ describe('POST /api/v1/tutor/internal/segments — a claimed candidate is never 
     expect([a.body.data.segment?.id, b.body.data.segment?.id].sort()).toEqual(['seg-a', 'seg-b']);
   });
 });
+
+/*
+ * C.16 and C.8/C.12 — the close records which closing script ended the
+ * session, the opening it began with and the session-end signal's firings,
+ * and the NEXT session's context carries the re-engagement a silent dropout
+ * or a budget interruption queued. Internal surface only: the same
+ * x-internal-api-key gate every Oracle call goes through.
+ */
+describe('C.16 / C.8 / C.12 — the session-close record and the queued re-engagement', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const EVENT = {
+    observation: 10,
+    elapsedMs: 480_000,
+    remainingMs: 1_020_000,
+    latencySdBaseline: 0.02,
+    latencySdWindow: 1.3,
+    surpriseRateBaseline: 0,
+    surpriseRateWindow: 0.667,
+    mode: 'offer',
+    outcome: 'accepted',
+    confirmed: true,
+  };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 12,
+    segmentCount: 3,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const patchOf = (calls: { url: string; method: string; body?: string }[]) =>
+    JSON.parse(
+      calls.find((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions') && c.url.includes('ended_at=is.null'))
+        ?.body ?? '{}',
+    ) as Record<string, unknown>;
+  const signalRows = (calls: { url: string; method: string; body?: string }[]) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_session_end_signal'))
+      .flatMap((c) => JSON.parse(String(c.body)) as Record<string, unknown>[]);
+
+  it('records the closing script, the opening and whether the signal was evaluated, beside the reason', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody({ closingScript: 'completed', opening: 'reengage_left_resume', endSignal: { evaluated: true, events: [EVENT] } }));
+    expect(response.status).toBe(200);
+    expect(patchOf(calls)).toMatchObject({
+      close_reason: 'completed',
+      closing_script: 'completed',
+      opening: 'reengage_left_resume',
+      end_signal_evaluated: true,
+    });
+    const rows = signalRows(calls);
+    expect(rows).toHaveLength(1);
+    // Signal strength and the persona — no user id, no text, no emotion label.
+    expect(rows[0]).toEqual({
+      session_id: SESSION,
+      character: 'rho',
+      observation: 10,
+      elapsed_ms: 480_000,
+      remaining_ms: 1_020_000,
+      latency_sd_baseline: 0.02,
+      latency_sd_window: 1.3,
+      surprise_rate_baseline: 0,
+      surprise_rate_window: 0.667,
+      mode: 'offer',
+      outcome: 'accepted',
+      confirmed: true,
+    });
+  });
+
+  it('still closes a session for an Oracle that predates the fields, naming none of the new columns', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody());
+    expect(response.status).toBe(200);
+    const patch = patchOf(calls);
+    expect(patch.close_reason).toBe('completed');
+    expect(patch).not.toHaveProperty('closing_script');
+    expect(patch).not.toHaveProperty('opening');
+    expect(patch).not.toHaveProperty('end_signal_evaluated');
+    expect(signalRows(calls)).toEqual([]);
+  });
+
+  it.each([
+    ['an unknown closing script', { closingScript: 'cheerful' }],
+    ['an unknown opening', { opening: 'welcome_back_champ' }],
+    ['an emotion label smuggled into a firing', { endSignal: { evaluated: true, events: [{ ...EVENT, emotion: 'tired' }] } }],
+    ['a pending (unreported) outcome', { endSignal: { evaluated: true, events: [{ ...EVENT, outcome: 'pending' }] } }],
+    ['a rate outside 0-1', { endSignal: { evaluated: true, events: [{ ...EVENT, surpriseRateWindow: 1.5 }] } }],
+    [
+      'more than ten firings',
+      { endSignal: { evaluated: true, events: Array.from({ length: 11 }, (_, i) => ({ ...EVENT, observation: i + 1 })) } },
+    ],
+  ])('refuses %s with a 400 and closes nothing', async (_label, extra) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody(extra));
+    expect(response.status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+    expect(signalRows(calls)).toEqual([]);
+  });
+
+  it('writes no firings when another close already landed (first close wins)', async () => {
+    const calls = stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:00:05Z', close_reason: 'learner_left' }] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody({ closingScript: 'completed', endSignal: { evaluated: true, events: [EVENT] } }));
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: true });
+    expect(signalRows(calls)).toEqual([]);
+  });
+
+  it('a failed firing write never fails the close', async () => {
+    const calls = stub({ session: [SESSION_ROW], restFailures: ['/rest/v1/tutor_session_end_signal'] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody({ closingScript: 'completed', endSignal: { evaluated: true, events: [EVENT] } }));
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: false });
+    expect(patchOf(calls).closing_script).toBe('completed');
+  });
+
+  it('is not reachable with a learner session, even the session owner', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ closingScript: 'completed' }));
+    expect(response.status).toBe(403);
+  });
+
+  const context = () =>
+    request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+  const previous = (row: Record<string, unknown>) => ({
+    close_reason: 'learner_left',
+    ended_at: new Date(Date.now() - 86_400_000).toISOString(),
+    intent: 'weak_skill',
+    course_id: null,
+    topic_id: null,
+    skill_key: 'money.saving',
+    ...row,
+  });
+
+  it('queues the re-engagement after a silent dropout, resuming the same skill', async () => {
+    stub({ session: [{ ...SESSION_ROW, skill_key: 'money.saving' }], sessions: [previous({})] });
+    const response = await context();
+    expect(response.status).toBe(200);
+    expect(response.body.data.opening).toBe('reengage_left_resume');
+  });
+
+  it('names the interruption after a budget end, fresh when the learner chose something else', async () => {
+    stub({ session: [SESSION_ROW], sessions: [previous({ close_reason: 'hard_budget' })] });
+    expect((await context()).body.data.opening).toBe('reengage_interrupted_fresh');
+  });
+
+  it.each([['safety_stop'], ['consent_revoked'], ['completed']])(
+    'opens with the plain greeting after a %s close',
+    async (reason) => {
+      stub({ session: [SESSION_ROW], sessions: [previous({ close_reason: reason })] });
+      expect((await context()).body.data.opening).toBe('greeting');
+    },
+  );
+
+  it('opens with the plain greeting when the previous-session read fails (never a guess)', async () => {
+    // The read of the previous session is the only one with `id=neq.`.
+    stub({ session: [SESSION_ROW], restFailures: ['id=neq.'] });
+    const response = await context();
+    expect(response.status).toBe(200);
+    expect(response.body.data.opening).toBe('greeting');
+  });
+
+  it('opens with the plain greeting for a first session', async () => {
+    stub({ session: [SESSION_ROW], sessions: [] });
+    expect((await context()).body.data.opening).toBe('greeting');
+  });
+});

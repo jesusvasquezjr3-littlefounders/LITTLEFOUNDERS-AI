@@ -186,5 +186,29 @@
     "changed": "The note changed. We reloaded it.",
     "outOfDate": "Out of date",
     "decisionFailed": "We could not save that. Try again."
+  },
+  "mentorSessionEnd": {
+    "choiceLabel": "Stop or keep going",
+    "stop": "Stop for today",
+    "more": "One more",
+    "completedTitle": "Session done",
+    "interruptedTitle": "Paused for today",
+    "leftTitle": "Session paused",
+    "safetyTitle": "Lesson stopped",
+    "effort": {
+      "corroborated": "You got the same idea right twice in a row.",
+      "recovered": "You tried again after a miss and got it.",
+      "hint_then_solved": "You used a hint, then finished it yourself.",
+      "kept_going": "You kept working through the activities.",
+      "talked_through": "You thought it through out loud.",
+      "none": "Thanks for stopping by."
+    },
+    "interruptedNext": "We stopped in the middle, and that is okay.",
+    "interruptedNextNoTopic": "Next time, we start where we stopped.",
+    "leftBody": "You can pick up where you left off.",
+    "safetyBody": "Please talk to a grown-up you trust.",
+    "nextLabel": "Next time:",
+    "backToPath": "Back to path",
+    "previewTopic": "Saving for a goal"
   }
 }

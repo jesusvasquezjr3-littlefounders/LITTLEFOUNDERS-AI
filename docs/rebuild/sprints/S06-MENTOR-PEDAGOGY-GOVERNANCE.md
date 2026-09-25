@@ -17,8 +17,8 @@ Risk classification: **child-facing AI safety and pedagogy**. The Oracle's orche
 | S06.1 | C.13 first-class hint ladder (never-repeat escalation + just-tell-me escape), integrated in the learner-turn path and the park snapshot | Implemented and locally verified; live-conversation and human review pending |
 | S06.2 | C.18 anti-sycophancy constraint + answer-reveal-rate instrumentation | Implemented and locally verified; physical-PostgreSQL, live-conversation, calibrated-judge baseline and human review pending |
 | S06.3 | C.10 corroborating-evidence rule (two consecutive observations before mastery/remediation) | Implemented and locally verified, built in the same wave as S06.2; physical-PostgreSQL, production metric data and human review pending |
-| S06.4 | C.16 four end-reason closing scripts | Planned |
-| S06.5 | C.8/C.12 behavioral-signature session-end signal | Planned |
+| S06.4 | C.16 four end-reason closing scripts | Implemented and locally verified (the orchestrator's wave label S06.3, built together with S06.5); physical-PostgreSQL, live-conversation, pre-generated audio, stage composition and Tier 1 review pending |
+| S06.5 | C.8/C.12 behavioral-signature session-end signal | Implemented and locally verified (same wave as S06.4); physical-PostgreSQL, live-conversation, production metric data, calibration and Tier 1 review pending |
 | S06.6 | C.9/C.20 Behavioral Telemetry Layer (signal strength, never emotion labels) + dialect/ASR bias audit | Planned |
 | S06.7 | C.19 disengagement check-in move | Planned |
 | S06.8 | C.14 self-explanation prompt + quality check | Planned |
@@ -135,3 +135,94 @@ Remaining acceptance boundaries (C.10 and C.18 stay In progress):
 - Pedagogical Reviewer and Safety/Trust Lead sign-off (Tier 1) is pending.
 - The key-based reveal check covers numeric, tray and multiple-choice activities only.
 - There is no parent-facing surface for the evidence yet (`consecutiveCorrect` is exposed by the map API only).
+
+## S06.4 and S06.5 implementation and rationale (C.16, C.8/C.12)
+
+The orchestrator assigned C.16 and C.8/C.12 to one wave and labelled it checkpoint "S06.3". This record already uses S06.3 for C.10, so the wave is recorded here as S06.4 (C.16) and S06.5 (C.8/C.12), matching the plan above. It was started by an earlier agent that was interrupted by a usage limit; the uncommitted work it left (the three new Oracle modules, the scripted lines and most of the orchestrator wiring) was reviewed line by line, kept where it matched the SPEC, corrected where it did not (listed below) and finished. The written policy is the [Mentor session-end policy](../mentor/SESSION-END-POLICY.md); every threshold is in the [Threshold Recalibration Log](../mentor/THRESHOLD-RECALIBRATION-LOG.md) as "proposed, pending calibration".
+
+### Current state found (the SPEC's "Current State" was accurate, with one aggravating detail)
+
+- **C.16.** Every session closed on one of two positive templates: `SOFT_CLOSE` ("We did great work today…") and `HARD_CLOSE` ("That is our time for today. You worked hard…"). A stopped (safety) session asked for another turn got `HARD_CLOSE`, and so did the farewell of a stopped session. The input classifier ran only AFTER the ended-budget check, so a disclosure typed in the last second of a session was answered with the cheerful time-is-up line. The model wrote its own goodbye and a unilateral "what you learned" summary under the wrap-up instruction. Nothing was queued for a learner who silently left. Close reason was recorded; the script used was not.
+- **C.8/C.12.** Session management was purely clock- and turn-based (`session/budget.ts`). No latency-variability or surprising-miss measure existed. The controller mirrored BKT posteriors but exposed no predicted P(correct).
+
+### C.16: the four closing scripts (Oracle)
+
+- `oracle/src/tutor/sessionClosing.ts` owns the reason → script table (`completed`/`soft_budget` → completed; `hard_budget`/`error`/`consent_revoked` → interrupted; `learner_left`/`abandoned` → learner_left; `safety_stop` → safety_stop), the closed vocabulary of observed acts a completed close may name (`corroborated`, `recovered`, `hint_then_solved`, `kept_going`, `talked_through`, `none`), the snapshot-carried `SessionCloser` (phase and the facts behind the act), and the openings.
+- `scripted.ts` replaces the two generic closes with 13 human-written lines in three locales: the recap question, six completed closes (one per act), the interrupted close, the calm safety close and four re-engagement openings. All 25 catalogue texts × 4 characters × 3 locales (300 clips) stay pre-generatable.
+- `orchestrator.ts`: the SYSTEM owns the close. A model turn never carries it: `TurnOutcome.after` queues the scripted closing line after the model's turn and `ws/server.ts` delivers the two in order (awaiting the first clip), closing on `after`. A Mentor wrap-up (`next: "close"`) becomes the recap question; the learner's answer gets a one-sentence reflection (model, with every honesty check, a stated wrong idea never praised) followed by the effort line; a budget end (grace turn or a turn that crossed the cap) is followed by the interrupted line; a stopped session always gets the safety close. The classifier now runs before the budget close and before the recap answer. The wrap-up and final-turn instructions and the system prompt tell the model not to say goodbye or list what was learned. A model failure on a closing turn delivers the closing line alone, never "say that again" on the way out.
+- `ws/server.ts` greets with the opening Core decided, sends `session_closing {script, effort, topic}` before `closed`, and reports `closingScript`, `opening` and the signal record on BOTH close paths (graceful `finish()` and the parked `finalizeParked()`).
+
+### C.8/C.12: the behavioral-signature session-end signal (Oracle)
+
+- `oracle/src/tutor/sessionEndSignal.ts` implements Appendix D §2.5 exactly: after a 4-observation session-opening baseline, over a rolling window of recent graded turns, it fires only when BOTH the SD of ln(latency) and the surprising-miss rate (misses on items the learner's own history predicts at P(correct) ≥ 0.75) have risen over that learner's baseline. Elapsed time and turn count are not inputs (the clock only stamps a firing). It records signal strength only.
+- Graded observations come from activity grades (server-measured latency), spoken-answer verdicts and verified conversational answers (no latency: speech and typing times are not answer times). `PedagogicalController.predictedCorrect()` and the dormant path's skill estimate are read BEFORE the answer's evidence is applied.
+- The offer: the Mentor's reacting turn carries `SESSION_END_OFFER_INSTRUCTION` (two equal choices, no feelings described, no activity, no second question) instead of that turn's maneuver, and the server sends `session_end_offer`. The learner answers with `session_end_response` (refused with `NO_SESSION_END_OFFER` unless an offer is open) or in words (`classifyStopReply`: only an explicit stop accepts, only an explicit "keep going" declines, "yes"/"ok" is neither). Accepting starts the completed close; declining continues. At most 2 offers, re-armed 4 graded turns after the learner's answer. A firing whose turn could not carry it (scripted fallback, moderation block, interrupt, context-seal failure) is recorded `not_offered` and re-arms; `produce()` now wraps every exit so an offer is never left pending.
+- `affectClaims.ts` enforces the Block C non-negotiable on EVERY model turn: a declared emotional/fatigue state of the learner (EN/es-MX/pt-BR; questions, conditionals, third parties and the Mentor itself excluded) is repaired once and never delivered.
+- Stage 7 kill switch: `TUTOR_SESSION_END_SIGNAL=offer|shadow|off` (unknown → `offer`, never a silent off). The signal and the closing state ride the park snapshot (fence test green).
+- Stage 2 simulated students: `src/tutor/sessionEndGym.ts`, run by `npm run gym:pedagogy`, holds seven personas (disengaging, frustrated, slipping, gaming, reactant teen, masking, steady) with the behaviour each must get, and every persona is proven able to turn red against a deliberately broken signal.
+
+### Core, database and metrics
+
+- Migration `*_mentor_session_end_and_closing.sql` (expand): `tutor_sessions.closing_script`, `opening`, `end_signal_evaluated` (CHECKed vocabularies) and the new `tutor_session_end_signal` table (persona, session SET NULL at the purge, numbers only; RLS on, no client policy; unique per session and observation).
+- `backend/src/services/pedagogy/sessionEnd.ts`: the mirrored vocabularies and table, `decideOpening` (the queued re-engagement from Core's own row of the previous closed session: `hard_budget` → interrupted wording, `learner_left`/`abandoned`/`error` → "left" wording, `_resume` on the same skill/topic/course, nothing after a safety stop, a consent revocation or a completion, nothing past 30 days, and the plain greeting on a failed read), the firing writer and the pure Appendix F summaries.
+- `POST /tutor/internal/sessions/:id/close` accepts the three new fields (optional, so an older Oracle still closes; strictly validated, so an emotion label or a `pending` outcome is a 400) and writes firings only when its own close landed. `GET /tutor/internal/sessions/:id` returns `opening`.
+- `npm --prefix backend run tutor:session-end-report` (read-only, no model call) reports Session-Closing Script Accuracy (hard 100%, exit 1 on one wrong script), the openings delivered, and the Early-Warning Signal Trigger Rate, precision, offer outcomes, shadow firings and the persona split (diagnostic).
+- `npm run session-end:check` (new repo gate, wired into `repo-gates.yml`) keeps the Oracle, Core, migration and client copies identical.
+
+### Frontend (client API layer and rebuilt surfaces)
+
+- `src/tutor/types.ts` and `useTutorSocket.ts`: `session_end_offer`, `session_closing` and `session_end_response`; `sessionEndOffer`, `closingSummary` and `answerSessionEnd()` (cleared on a new turn, on answering and on a new session).
+- `src/rebuild/mentor/SessionEnd.tsx`: `SessionEndChoice` (two equal `Button`s, same variant and size, no default, no focus stolen) and `SessionClosing` (one heading and one summary line from the script and the observed act, the next topic as `data`, one action back to the path; the safety stop shows no topic and no praise). Tokens only, light and dark, 48 px targets, every string with its copy role, EN/es-MX/pt-BR copy within the 6–9 budget. Previewed at `/rebuild.html?screen=mentor-session-end&script=…`.
+- Not mounted on the live stage in this wave: the stage composition is wave-2 work on the finished design system, and the legacy screen is not restyled. On today's screen the learner answers the offer in words and hears the scripted closing line.
+
+### Corrections made to the interrupted agent's draft
+
+1. `beginCompletedClose` returned a Promise typed as a value (type error).
+2. The new snapshot field did not match the orchestrator member (`closer` vs `sessionClosing`): the snapshot fence was red; the member was renamed.
+3. The predicted P(correct) for activity and voice grades was read AFTER the skill estimate was nudged with the same answer, so a miss partly judged itself; it is now read first.
+4. The re-arm window counted from the firing, so observations made while an offer sat open let the signal re-offer immediately after a decline; it now counts from the answer.
+5. `classifyStopReply` used `\b` around accented words, so "ya terminé" or "aún no" never matched; whole-word matching is now Unicode-aware.
+6. Five scripted lines exceeded the 6–9 Mentor budget; they were shortened.
+7. The env doc comment for the rollback key list had been separated from its field.
+8. `produce()` never marked the offer delivered or not delivered, never appended the closing line and never checked affect claims; all three were missing and were built.
+
+### Proposals recorded for owner and pedagogy review
+
+See [session-end policy §7](../mentor/SESSION-END-POLICY.md#7-proposals-recorded-for-owner-and-pedagogy-review): leaving by choice skips the recap question; the 30-day re-engagement window and the `error` mapping; the proposed signal thresholds; voice-only sessions cannot fire the signal until C.9 supplies a spoken-answer latency; stage composition in wave 2; the one-time pre-generation of the 156 new clips needs the owner's approval under OD-23.
+
+### Deploy order (integration step for the orchestrator)
+
+Apply `*_mentor_session_end_and_closing.sql` first. Deploy Core next (it accepts the new close fields as optional and starts returning `opening`). Deploy Oracle last. The frontend is independent (it only reacts to frames an older Oracle never sends). Regenerate `database/types/database.ts` after the migration; Core writes the new columns through narrow local types. Run `npm run speech:pregenerate` in `oracle/` when the owner approves the one-time synthesis.
+
+### S06.4 and S06.5 verification log (24 September 2026)
+
+Executed 24–25 September 2026 in the lane worktree (`/c/lf-wt/s06`) with `VITEST_MAX_THREADS=3`. Local results only: no real database, no CI run, no live model or voice call, no production observation.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Resume review | `git status`/`git diff` of the interrupted work, then `npm run type-check` and the full Oracle suite on it as found | 1 type error, 2 red tests (snapshot fence on the misnamed member; the scripted-catalogue count). Eight defects fixed (list above) |
+| Signal unit tests | `oracle/`: `npx vitest run src/__tests__/sessionEndSignal.test.ts` | 24 pass: fires only on BOTH halves; not on latency alone, misses alone, hard-item misses, unknown predictions, an erratic-from-the-start baseline; clock never decides; baseline and minimum window; pending/delivered/not-offered/accepted/declined/unanswered; one offer at a time; max 2; re-arm from the answer; confirmation labels; shadow and off; snapshot round trip; stop replies in 3 locales incl. negated stops. First run: 2 red (re-arm from the firing; accented `\b`), both fixed |
+| Closing scripts | `npx vitest run src/__tests__/sessionClosing.test.ts` | 12 pass: every close reason maps to one of four scripts; act precedence; no act claimed without evidence; snapshot; every closing/opening line within the 6–9 Mentor budget in 3 locales (first run found 5 over-budget lines, shortened); no positive template; safety close neutral and praise-free; no celebration; re-entry point named; every line in the pre-generated catalogue |
+| Affect claims | `npx vitest run src/__tests__/affectClaims.test.ts` | 23 pass (12 declarations caught in 3 locales; questions, conditionals, third parties and the Mentor itself left alone) |
+| Pipeline integration | `npx vitest run src/__tests__/sessionEnd.test.ts` | 15 pass: safety close for a stopped session and its farewell; a disclosure after the budget ended gets the safety line; interrupted close without a model call; grace turn + system-added interrupted line; wrap-up → recap question → reflection + effort line; recap answer classified for safety first; farewell names the act; model failure still closes with the effort line; queued opening delivered and recorded; the offer through the real pipeline (fires before 15 minutes with more than 10 minutes left, supersedes the maneuver, decline continues, replay refused, accept starts the recap, words: "yes" is unanswered); shadow never offers; an affect claim repaired and, if it survives, replaced. First run: the offer tests were red because the fixture's skill state failed the strict context seal, which exposed a real gap (an offer left pending by an early return); fixture fixed and `produce()` wrapped |
+| Server end to end | `npx vitest run src/__tests__/live-session.test.ts` | 61 pass, incl. 3 new over a real websocket: `session_closing` before `closed` with the completed script and act, and the close journal carries `closingScript`, `opening` and `endSignal`; the queued opening greets a returning learner with no model call; a forged `session_end_response` is refused (`NO_SESSION_END_OFFER`, no model call, no close) and a malformed one is a validation error |
+| Simulated students | `npx vitest run src/__tests__/sessionEndGym.test.ts`; `npm run gym:pedagogy` | 7 pass; gym OK (4 controller archetypes, 7 session-end personas). First run: 3 mutation tests stayed green (personas not sensitive, and the re-arm check judged against the broken config); personas reworked (frustrated on hard items at an erratic pace, a new slipping persona) and checks moved to the policy values |
+| Oracle full | `oracle/`: `npm run type-check`, `npm run lint`, `npx vitest run`, `npm run verify:pedagogy`, `npm run verify:tutor` | Pass; 47 files, 1,305 tests (1,222 before this wave); privacy boundary sealed |
+| Core route tests (adversarial) | `backend/`: `npx vitest run src/__tests__/tutor.test.ts -t "C.16"` | 18 pass: close writes script/opening/evaluated and one firing row (no user id, text or label); an older Oracle's close names none of the new columns; unknown script, unknown opening, a smuggled `emotion` field, a `pending` outcome, a rate over 1 and 11 firings are each a 400 that closes nothing; a lost first-close race writes no firings; a failed firing write never fails the close; a learner session (even the owner) is 403; the context queues `reengage_left_resume` and `reengage_interrupted_fresh`, and the greeting after a safety stop, consent revocation, completion, failed read or first session |
+| Core unit tests | `npx vitest run src/__tests__/sessionEnd.test.ts` | 11 pass (opening decisions and staleness; the table; accuracy 100% / one-wrong-script defect / insufficient data; trigger rate, precision, persona split, diagnostic status) |
+| Core full | `backend/`: `npm run type-check`, `npm run lint`, `npx vitest run` | Pass; 72 files, 1,534 tests (1 skipped, pre-existing) |
+| Frontend | `frontend/`: `npm run type-check`, `npm run lint`, `npx vitest run` | Pass; 213 files, 2,201 tests, incl. `SessionEnd.test.tsx` (9), `sessionEndSocket.test.tsx` (3) and the extended preview copy-budget test. First full run: 1 red (`designClasses`: a hardcoded element id and an undefined preview class), fixed with `useId` and a defined class |
+| Real-Chrome matrix | `frontend/`: `REBUILD_URL=http://localhost:5330 node scripts/verify-rebuild-session-end.mjs` | 96 configurations (3 locales × 2 themes × 320/375/768/1280 px × 4 scripts), 0 findings, plus keyboard focus + Enter, pointer hit-test and reduced motion. The FIRST run also reported 0 findings, but the screenshots showed each panel stretched to a full screen (`.lf-rebuild` is a 100dvh page root) and, in dark mode, chips with no visible boundary. Both fixed, and the matrix gained proportion and chip-boundary checks so a number can no longer pass what the eye rejects. Screenshots reviewed: `completed-es-MX-light-375`, `interrupted-es-MX-dark-375`, `interrupted-es-MX-light-1280`, `safety_stop-en-US-dark-1280`, `completed-pt-BR-light-1280` (in `audit-results/rebuild-session-end/`) |
+| i18n | node steps of `agent/tools/check-i18n.sh` (key parity), `node agent/tools/check-hardcoded-strings.mjs`, `node agent/tools/check-t-keys.mjs` | Pass |
+| Parity gate | `npm run session-end:check`; `node --test agent/tools/check-session-end-parity.test.mjs` | OK; 8 tests (green on the tree, parsers read the real vocabularies, red on a table drift, a migration CHECK gap, a missing Core field, a client drift, an Oracle-only opening, a one-sided close reason) |
+| Repo gates | `npm run spec:check`, `npm run secrets:check` (rerun with every new file staged), `npm run tools:test`, `npm run honesty:check` | Pass; 69 tool tests (61 before this wave + 8 new) |
+| Migrations (static) | `database/`: `npm test` (Git Bash PATH) | Pass: 114 files sequential with RLS covered (the new table included), phase declarations agree (93 expand, 21 contract), 21 Node checks, and the Railway transport suite green (12 scenarios plus the static cross-checks) |
+
+Remaining acceptance boundaries (C.16 and C.8/C.12 stay In progress):
+
+- The migration has not been applied to a physical PostgreSQL, and types have not been regenerated.
+- No live or canary conversation has exercised the closing scripts or the offer (OD-23: zero paid spend); the 156 new clips are not pre-generated.
+- The choice and closing surfaces are not composed on the live stage (wave 2), and the `frontend/verification-tools` text-fit/proportion/copy-budget audits have not run against the real app driver for them.
+- No production metric data exists: Appendix F's "Measured" criterion needs one release cycle; the Trigger Rate baseline and every signal threshold are uncalibrated.
+- Voice-only and conversation-only sessions cannot fire the signal (no answer latency) until C.9.
+- Pedagogical Reviewer and Safety/Trust Lead sign-off (Tier 1: the safety-close and no-affect-claim constraints) is pending.

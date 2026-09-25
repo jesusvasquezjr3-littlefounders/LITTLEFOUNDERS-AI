@@ -186,5 +186,29 @@
     "changed": "A nota mudou. Nós recarregamos.",
     "outOfDate": "Desatualizada",
     "decisionFailed": "Não conseguimos salvar. Tente novamente."
+  },
+  "mentorSessionEnd": {
+    "choiceLabel": "Parar ou continuar",
+    "stop": "Parar por hoje",
+    "more": "Mais uma",
+    "completedTitle": "Sessão concluída",
+    "interruptedTitle": "Pausa por hoje",
+    "leftTitle": "Sessão pausada",
+    "safetyTitle": "Aula parada",
+    "effort": {
+      "corroborated": "Você acertou a mesma ideia duas vezes seguidas.",
+      "recovered": "Você tentou de novo depois de errar e conseguiu.",
+      "hint_then_solved": "Você usou uma dica e terminou por conta própria.",
+      "kept_going": "Você seguiu firme nas atividades.",
+      "talked_through": "Você pensou em voz alta passo a passo.",
+      "none": "Valeu por passar aqui."
+    },
+    "interruptedNext": "Paramos no meio, e tudo bem.",
+    "interruptedNextNoTopic": "Na próxima vez, continuamos de onde paramos.",
+    "leftBody": "Você pode continuar de onde parou.",
+    "safetyBody": "Converse com uma pessoa adulta de confiança.",
+    "nextLabel": "Na próxima vez:",
+    "backToPath": "Voltar à trilha",
+    "previewTopic": "Poupar para uma meta"
   }
 }

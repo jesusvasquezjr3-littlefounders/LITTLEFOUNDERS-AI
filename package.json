@@ -21,6 +21,7 @@
     "preferred-types:check": "node agent/tools/check-preferred-types-parity.mjs",
     "demo-step:check": "node agent/tools/check-demo-step-parity.mjs",
     "honesty:check": "node agent/tools/check-mentor-honesty-parity.mjs",
+    "session-end:check": "node agent/tools/check-session-end-parity.mjs",
     "roleplay-voices:check": "node agent/tools/check-roleplay-voice-parity.mjs",
     "roleplay-voices:generate": "node agent/tools/generate-roleplay-voices.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",

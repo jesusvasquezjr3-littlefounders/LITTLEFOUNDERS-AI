@@ -29,6 +29,7 @@ import { functionMachinePilotDocument } from '../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import type { LessonMentorStage } from '../learning/lessonDocument';
+import { SessionClosing, SessionEndChoice, type ClosingScript, type EffortAct } from '../mentor/SessionEnd';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -151,6 +152,16 @@ export function Preview() {
           if (!segment || segment.type !== 'math.cpa-count.v2') return 'invalid';
           const result = scoreV2Visual('math.cpa-count.v2', { left: segment.payload.left, right: segment.payload.right }, answer,
             { target: segment.payload.left + segment.payload.right }); return result === 'met' || result === 'review' ? result : 'invalid'; }} />
+      : screen === 'mentor-session-end' ? <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
+        data-screen="mentor-session-end"><div className="lf-preview-content">
+        {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}
+        <SessionEndChoice copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'} onChoose={() => undefined} />
+        <SessionClosing copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'}
+          script={(['completed', 'interrupted', 'learner_left', 'safety_stop'].includes(params.get('script') ?? '')
+            ? params.get('script') : 'completed') as ClosingScript}
+          effort={(params.get('effort') ?? 'recovered') as EffortAct}
+          topic={params.get('topic') === 'none' ? null : t.mentorSessionEnd.previewTopic} onBack={() => go('home')} />
+      </div></main>
       : <main className={`lf-preview lf-preview--${screen}`} data-surface="app" data-screen={screen}>
       <div className="lf-preview-content">
       {screen === 'home' ? <>

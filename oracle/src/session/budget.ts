@@ -111,15 +111,22 @@ export function evaluateBudget(input: BudgetInput, config: Config): BudgetVerdic
  * The instruction appended to the model's context once wrapping starts.
  *
  * Appended rather than swapped in: the tutor must keep everything it knows
- * about the learner while it says goodbye, or the farewell reads as a
- * different character walking in.
+ * about the learner while it wraps up, or the close reads as a different
+ * character walking in.
+ *
+ * C.16 (Appendix D §3.5): the model no longer writes the goodbye or a
+ * unilateral "what we did" summary. It finishes the thread and sets
+ * `next: "close"`; the SYSTEM then asks the co-constructed recap question
+ * ("what is one thing that clicked for you today?") and closes with a line
+ * naming an act it actually observed (`tutor/sessionClosing.ts`).
  */
 export const WRAP_UP_INSTRUCTION = [
   '',
   '## Time',
   '',
   'This session is nearly over. Begin wrapping up now, in character: finish the',
-  'thread you are on, say briefly what the learner did well and what they',
-  'learned, and invite them back. Do not start a new topic and do not request a',
-  'new activity. When you have said goodbye, set "next" to "close".',
+  'thread you are on. Do not start a new topic and do not request a new',
+  'activity. When the thread is finished, set "next" to "close" — and do NOT',
+  'say goodbye or list what was learned: the system then asks the learner what',
+  'clicked for them, and closes the session itself.',
 ].join('\n');

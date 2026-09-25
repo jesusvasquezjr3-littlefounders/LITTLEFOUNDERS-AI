@@ -19,12 +19,22 @@ Governance: the values marked Tier 1 are never-automate constraints under C.22. 
 | Minimum sequence turns before a reveal rate is judged | 50 | 3 | `mentorIntegrity.ts` | Engineering default | Proposed |
 | Reveal drift tolerance against the previous equal-length window | +2 percentage points | 2 | `mentorIntegrity.ts` | Appendix F §1.2 ("any upward drift is a controller defect") | Proposed; the SPEC reads "any" drift, so the tolerance only absorbs sampling noise and must be reviewed with real variance data |
 | Delivered false affirmations | 0 (zero tolerance) | 1 | `mentorIntegrity.ts`; `orchestrator.ts` never delivers a caught draft | Appendix F §1.2 Sycophancy Audit Score | Fixed by the SPEC |
+| Session-end signal: session-opening baseline (graded observations) | 4 | 2 | `oracle/src/tutor/sessionEndSignal.ts` `SESSION_END_SIGNAL_DEFAULTS.baselineSize` | Appendix D §2.5 ("against the learner's own session-opening baseline") | Proposed, pending calibration; introduced 2026-09-24 (S06.5) |
+| Session-end signal: rolling window; minimum window before evaluation | 8; 6 graded turns | 2 | `sessionEndSignal.ts` `windowSize`, `minWindow` | Appendix D §2.5 ("e.g., last 8–10 graded turns") | Proposed, pending calibration |
+| "Surprising" miss: predicted probability of a correct answer at or above which a miss counts | 0.75 | 2 | `sessionEndSignal.ts` `surpriseProbability` | Appendix D §2.5 ("items the learner's own history says they should get right") | Proposed, pending calibration |
+| Surprising-miss rate rise over the baseline; minimum surprising misses and expected items in the window | +0.25; 2; 3 | 2 | `sessionEndSignal.ts` | Appendix D §2.5 | Proposed, pending calibration |
+| Latency-spread rise over the baseline (SD of ln latency); minimum latency samples | +0.3; 3 | 2 | `sessionEndSignal.ts` | Appendix D §2.5 ("rising response-latency variability") | Proposed, pending calibration |
+| Stop offers per session; graded turns before re-offering (counted from the learner's answer) | 2; 4 | 2 | `sessionEndSignal.ts` `maxOffers`, `rearmAfterObservations` | Appendix D §3.6 (bias toward asking, never pestering); Bible 08 §4 | Proposed, pending calibration |
+| Firing confirmation: surprising misses in the next graded turns that confirm a firing | ≥ 2 in the next 4 | 3 | `sessionEndSignal.ts` `confirmWindow` | Appendix F §1.1 (precision of the Early-Warning Signal) | Proposed, pending calibration |
+| Session-Closing Script Accuracy target | 100% (one wrong script is a defect) | 1 | `backend/src/services/pedagogy/sessionEnd.ts` | Appendix F §1.2 | Fixed by the SPEC |
+| Minimum evaluated sessions / labelled firings before the trigger rate / precision is read | 50 / 20 | 3 | `sessionEnd.ts` `SESSION_END_THRESHOLDS` | Engineering default (statistical floor) | Proposed |
+| Re-engagement window: a dropout or interruption queues a return message only for a session starting within | 30 days | 2 | `sessionEnd.ts` `reengagementMaxAgeDays` | Appendix D §3.5 (queued for return) | Proposed, pending calibration; owner/pedagogy review requested |
 
 ## Kill-Switch Trigger Log
 
-Record every Stage 7 rollback here: date, knowledge components (`TUTOR_CORROBORATION_ROLLBACK_KC_KEYS`), cause, who decided, and resolution time. See [Mentor integrity policy §3.3](MENTOR-INTEGRITY-POLICY.md#33-kill-switch-appendix-f-part-3-stage-7).
+Record every Stage 7 rollback here: date, knowledge components (`TUTOR_CORROBORATION_ROLLBACK_KC_KEYS`) or the session-end signal mode (`TUTOR_SESSION_END_SIGNAL=shadow|off`, [session-end policy §6](SESSION-END-POLICY.md#6-instrumentation-and-metrics-appendix-f)), cause, who decided, and resolution time. See [Mentor integrity policy §3.3](MENTOR-INTEGRITY-POLICY.md#33-kill-switch-appendix-f-part-3-stage-7).
 
-| Date | KCs rolled back | Trigger and cause | Decided by | Resolved |
+| Date | KCs or component rolled back | Trigger and cause | Decided by | Resolved |
 |---|---|---|---|---|
 | (none) | | | | |
 
@@ -33,3 +43,4 @@ Record every Stage 7 rollback here: date, knowledge components (`TUTOR_CORROBORA
 | Date | Change | Evidence | Reviewer |
 |---|---|---|---|
 | 2026-09-24 | Log created with the C.10 and C.18 thresholds above (S06.2, S06.3) | [S06 sprint record](../sprints/S06-MENTOR-PEDAGOGY-GOVERNANCE.md) | Pending (Pedagogical Reviewer and Safety/Trust Lead) |
+| 2026-09-24 | Added the C.8/C.12 session-end signal and C.16 closing thresholds (S06.4, S06.5) | [S06 sprint record](../sprints/S06-MENTOR-PEDAGOGY-GOVERNANCE.md#s064-and-s065-implementation-and-rationale-c16-c8c12); `sessionEndGym.test.ts` persona floor | Pending (Pedagogical Reviewer and Safety/Trust Lead) |

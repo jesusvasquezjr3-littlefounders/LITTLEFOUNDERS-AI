@@ -12,6 +12,8 @@ import {
 } from '../context/schema.js';
 import type { WireDemoStep, WireWhiteboard } from '../ws/protocol.js';
 import type { TurnHonesty } from '../tutor/feedbackHonesty.js';
+import { SESSION_OPENINGS, type ClosingScript, type SessionOpening } from '../tutor/sessionClosing.js';
+import type { SessionEndSignalReport } from '../tutor/sessionEndSignal.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -168,6 +170,15 @@ export const SessionContextSchema = z
     voiceConsent: z.boolean(),
     /** Whether personalization could actually be read (§14: failure != empty). */
     intelDegraded: z.boolean(),
+    /**
+     * C.16: the opening this session begins with — the character's greeting,
+     * or the re-engagement message a silent dropout / a budget interruption
+     * in the learner's PREVIOUS session queued for their return. Decided by
+     * Core from its own rows (never from transcript text). OPTIONAL on the
+     * wire: a Core that predates it means the greeting. Never part of the
+     * model context — it selects a scripted line, nothing more.
+     */
+    opening: z.enum(SESSION_OPENINGS).optional(),
   })
   .strict();
 
@@ -333,6 +344,20 @@ export interface CloseSessionInput {
   turnCount: number;
   segmentCount: number;
   costUsd: number;
+  /**
+   * C.16: the closing script this ending used — the Session-Closing Script
+   * Accuracy metric (Appendix F §1.2) compares it with `closeReason`.
+   */
+  closingScript: ClosingScript;
+  /** C.16: the opening this session began with (greeting or a queued re-engagement). */
+  opening: SessionOpening;
+  /**
+   * C.8/C.12: the session-end signal's record — whether it was evaluated at
+   * all, and every firing with its measured deltas, mode and outcome
+   * (Early-Warning Signal Trigger Rate). Signal strength only, never an
+   * emotional label, and nothing the learner wrote.
+   */
+  endSignal: SessionEndSignalReport;
 }
 
 /**

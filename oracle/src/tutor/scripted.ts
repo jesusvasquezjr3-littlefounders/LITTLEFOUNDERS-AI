@@ -1,6 +1,7 @@
 import { CHARACTER_IDS, LOCALES, type CharacterId, type Locale } from '../context/schema.js';
 import type { SafetyCategory } from '../safety/classifier.js';
 import type { TutorTurn } from './turnSchema.js';
+import type { EffortAct, SessionOpening } from './sessionClosing.js';
 
 /*
  * Human-written lines, for every moment a generated one must not be used —
@@ -25,7 +26,7 @@ import type { TutorTurn } from './turnSchema.js';
  * ── THIS SET IS CLOSED, AND THAT IS WHAT MAKES IT FREE ──────────────────────
  *
  * Every text in this file is enumerated by `scriptedLineCatalogue()` below.
- * Across 4 characters and 3 locales the whole set is 144 pieces of audio that
+ * Across 4 characters and 3 locales the whole set is 300 pieces of audio that
  * never change, so `npm run speech:pregenerate` synthesises them ONCE and the
  * runtime serves the stored URLs forever after (/ORACLE.md §15).
  *
@@ -134,30 +135,110 @@ const MODERATION_BLOCKED: Trilingual = {
 };
 
 /*
- * The line must not promise anything. The previous wording said "terminamos
- * esta última parte y te dejo ir" — and there IS no last part: the socket
- * calls finish() the moment this is delivered. Both of the owner's sessions
- * on 2026-08-29 ended on that promise. A goodbye that announces one more
- * thing and then leaves is, to a child, a small broken promise on the way
- * out the door — the worst possible last impression.
+ * ── C.16: THE CLOSING LINES, ONE SET PER END-REASON ─────────────────────────
  *
- * Changing scripted text orphans its pregenerated clips: the first delivery
- * per character/locale synthesizes fresh and lands in the shared speech
- * cache, so the cost is one paid synthesis per slot, once, not a regression.
+ * These replace the single positive template ("We did great work today…")
+ * that used to close EVERY session, including interrupted ones. See
+ * `sessionClosing.ts` for the four scripts and how each is chosen.
+ *
+ * Each line obeys the Mentor copy budget (Frontend Bible 06 §3.1: 2
+ * sentences; 12 words for ages 6–9 in English, 25% more in es-MX and pt-BR),
+ * so one line serves every age band. `sessionClosing.test.ts` measures them.
+ *
+ * The earlier lesson still holds: a goodbye must never promise anything the
+ * socket will not deliver. "Next time, we pick up right here" is kept by the
+ * next session's opening (Core's `opening`) and the offers screen's
+ * "continue" chip, not by this line.
  */
-const SOFT_CLOSE: Trilingual = {
-  'en-US':
-    'We did great work today. Thank you for coming — I will be right here whenever you want to keep going.',
-  'es-MX':
-    'Hoy trabajamos muy bien. Gracias por venir; aquí te espero para seguir cuando tú quieras.',
-  'pt-BR':
-    'Hoje a gente trabalhou muito bem. Obrigado por vir; vou estar aqui esperando quando você quiser continuar.',
+
+/** The co-constructed recap question that opens a completed close. */
+const RECAP_PROMPT: Trilingual = {
+  'en-US': 'Before we stop: what is one thing that clicked for you today?',
+  'es-MX': 'Antes de terminar: ¿qué fue algo que hoy te quedó claro?',
+  'pt-BR': 'Antes de terminar: qual foi uma coisa que ficou clara hoje?',
 };
 
-const HARD_CLOSE: Trilingual = {
-  'en-US': 'That is our time for today. You worked hard — I will be here when you come back.',
-  'es-MX': 'Hasta aquí llegamos por hoy. Te esforzaste mucho; aquí voy a estar cuando regreses.',
-  'pt-BR': 'Por hoje é isso. Você se esforçou bastante; vou estar aqui quando você voltar.',
+/**
+ * The completed close: a SPECIFIC act the server observed, then forward
+ * framing. Never generic praise, and never a claim the data does not back.
+ */
+const COMPLETED_CLOSE: Record<EffortAct, Trilingual> = {
+  corroborated: {
+    'en-US': 'You got that idea right twice in a row. More next time!',
+    'es-MX': 'Te salió esa idea bien dos veces seguidas. ¡Seguimos la próxima!',
+    'pt-BR': 'Você acertou essa ideia duas vezes seguidas. Seguimos na próxima!',
+  },
+  recovered: {
+    'en-US': 'You tried again after a miss and got it. More next time!',
+    'es-MX': 'Lo intentaste otra vez después de fallar y te salió. ¡Seguimos la próxima!',
+    'pt-BR': 'Você tentou de novo depois de errar e conseguiu. Seguimos na próxima!',
+  },
+  hint_then_solved: {
+    'en-US': 'You took a hint, then finished it yourself. More next time!',
+    'es-MX': 'Usaste una pista y luego lo terminaste tú. ¡Seguimos la próxima!',
+    'pt-BR': 'Você usou uma dica e terminou por conta própria. Seguimos na próxima!',
+  },
+  kept_going: {
+    'en-US': 'You kept working through the activities today. More next time!',
+    'es-MX': 'Hoy seguiste trabajando en las actividades. ¡Seguimos la próxima!',
+    'pt-BR': 'Hoje você seguiu firme nas atividades. Seguimos na próxima!',
+  },
+  talked_through: {
+    'en-US': 'You thought out loud with me today. More next time!',
+    'es-MX': 'Hoy pensaste en voz alta conmigo. ¡Seguimos la próxima!',
+    'pt-BR': 'Hoje você pensou em voz alta comigo. Seguimos na próxima!',
+  },
+  none: {
+    'en-US': 'Thanks for stopping by. I will be here next time.',
+    'es-MX': 'Gracias por pasar. Aquí estaré la próxima vez.',
+    'pt-BR': 'Valeu por passar aqui. Vou estar aqui na próxima.',
+  },
+};
+
+/** Budget reached mid-task: the interruption said plainly, and where we resume. */
+const INTERRUPTED_CLOSE: Trilingual = {
+  'en-US': 'Time is up for today. Next time, we pick up right here.',
+  'es-MX': 'Se nos acabó el tiempo por hoy. La próxima, seguimos justo aquí.',
+  'pt-BR': 'Nosso tempo acabou por hoje. Na próxima, continuamos daqui mesmo.',
+};
+
+/**
+ * A stopped session (safety) that is asked for another turn. Calm, never
+ * cheerful, no praise: the category's own safety line already said why.
+ */
+const SAFETY_STOP_CLOSE: Trilingual = {
+  'en-US': 'We stop here for now. Please talk to a trusted grown-up.',
+  'es-MX': 'Nuestra clase está detenida por ahora. Habla con una persona adulta de confianza.',
+  'pt-BR': 'Nossa aula está parada por enquanto. Converse com uma pessoa adulta de confiança.',
+};
+
+/**
+ * The re-engagement message queued by a silent dropout or an interruption,
+ * spoken instead of the greeting when the learner returns. Low-pressure and
+ * no-blame; `resume` when this session reopens the same ground, `fresh`
+ * when the learner chose something else.
+ */
+const REENGAGEMENT: Record<Exclude<SessionOpening, 'greeting'>, Trilingual> = {
+  reengage_left_resume: {
+    'en-US': "Welcome back! Last time we stopped partway, so let's pick up there.",
+    'es-MX': '¡Qué bueno que volviste! La otra vez quedamos a medias; sigamos desde ahí.',
+    'pt-BR': 'Que bom que você voltou! Da outra vez paramos no meio; vamos continuar dali.',
+  },
+  reengage_left_fresh: {
+    'en-US': 'Welcome back, stopping last time was fine. What shall we explore?',
+    'es-MX': 'Qué bueno que volviste, y está bien haber parado la otra vez. ¿Qué vemos hoy?',
+    'pt-BR': 'Que bom que você voltou, tudo bem ter parado. O que vemos hoje?',
+  },
+  reengage_interrupted_resume: {
+    'en-US': "Welcome back! Time ran out last time, so let's pick up there.",
+    'es-MX': '¡Qué bueno que volviste! La otra vez se acabó el tiempo; seguimos desde ahí.',
+    'pt-BR': 'Que bom que você voltou! Da outra vez o tempo acabou; continuamos dali.',
+  },
+  reengage_interrupted_fresh: {
+    'en-US': 'Welcome back, time ran out last time. What shall we explore today?',
+    'es-MX': '¡Qué bueno que volviste! La otra vez se acabó el tiempo; ¿qué vemos hoy?',
+    'pt-BR': 'Que bom que você voltou! Da outra vez o tempo acabou; o que vemos hoje?',
+  },
 };
 
 const CONSENT_REVOKED: Trilingual = {
@@ -267,16 +348,46 @@ export function greetingResponse(character: CharacterId, locale: Locale): TutorT
   return turn(GREETINGS[character][locale], lively ? 'excited' : 'happy', 'wave');
 }
 
-export function closingResponse(locale: Locale, kind: 'soft' | 'hard'): TutorTurn {
-  return {
-    say: kind === 'soft' ? SOFT_CLOSE[locale] : HARD_CLOSE[locale],
-    emotion: 'proud',
-    action: kind === 'soft' ? 'nod' : 'wave',
-    next: 'close',
-    segmentRequest: null,
-    offerAdaptation: null,
-    savePlan: false,
-  };
+function closingTurn(say: string, emotion: TutorTurn['emotion'], action: TutorTurn['action']): TutorTurn {
+  return { say, emotion, action, next: 'close', segmentRequest: null, offerAdaptation: null, savePlan: false };
+}
+
+/** The co-constructed recap question; the session continues for one answer. */
+export function recapPromptText(locale: Locale): string {
+  return RECAP_PROMPT[locale];
+}
+
+export function recapPromptResponse(locale: Locale): TutorTurn {
+  return turn(RECAP_PROMPT[locale], 'happy', 'nod');
+}
+
+/** The completed close line, naming the act the server observed. */
+export function completedCloseText(locale: Locale, act: EffortAct): string {
+  return COMPLETED_CLOSE[act][locale];
+}
+
+export function completedCloseResponse(locale: Locale, act: EffortAct): TutorTurn {
+  // Warm, and deliberately NOT a celebration: no `celebrate` action and no
+  // `excited` emotion outside the milestone list (OD-7).
+  return closingTurn(COMPLETED_CLOSE[act][locale], 'happy', 'wave');
+}
+
+export function interruptedCloseText(locale: Locale): string {
+  return INTERRUPTED_CLOSE[locale];
+}
+
+export function interruptedCloseResponse(locale: Locale): TutorTurn {
+  return closingTurn(INTERRUPTED_CLOSE[locale], 'encouraging', 'wave');
+}
+
+export function safetyStopCloseResponse(locale: Locale): TutorTurn {
+  return closingTurn(SAFETY_STOP_CLOSE[locale], 'neutral', 'idle');
+}
+
+/** The opening line: the character's own greeting, or a queued re-engagement message. */
+export function openingResponse(character: CharacterId, locale: Locale, opening: SessionOpening): TutorTurn {
+  if (opening === 'greeting') return greetingResponse(character, locale);
+  return turn(REENGAGEMENT[opening][locale], 'happy', 'wave');
 }
 
 /*
@@ -287,10 +398,10 @@ export function closingResponse(locale: Locale, kind: 'soft' | 'hard'): TutorTur
  *
  * They are enumerated PER CHARACTER even though most of the texts are
  * character-independent, because the audio is not: each of the four has their
- * own cloned voice per locale (/ORACLE.md §3.3), so "That is our time for
+ * own cloned voice per locale (/ORACLE.md §3.3), so "Time is up for
  * today" is four different recordings, not one.
  *
- * 12 texts × 4 characters × 3 locales = 144 clips, and that number is the
+ * 25 texts × 4 characters × 3 locales = 300 clips, and that number is the
  * whole point: it is finite, it does not grow with usage, and once it exists
  * nobody is ever billed for any of it again.
  */
@@ -314,9 +425,17 @@ export function scriptedLineCatalogue(): ScriptedLine[] {
         lines.push({ key: `model_down.${i}`, character, locale, text: variant[locale] });
       });
       lines.push({ key: 'moderation_blocked', character, locale, text: MODERATION_BLOCKED[locale] });
-      lines.push({ key: 'soft_close', character, locale, text: SOFT_CLOSE[locale] });
-      lines.push({ key: 'hard_close', character, locale, text: HARD_CLOSE[locale] });
       lines.push({ key: 'consent_revoked', character, locale, text: CONSENT_REVOKED[locale] });
+      // C.16 closing scripts and the queued re-engagement openings.
+      lines.push({ key: 'closing.recap', character, locale, text: RECAP_PROMPT[locale] });
+      for (const [act, trilingual] of Object.entries(COMPLETED_CLOSE)) {
+        lines.push({ key: `closing.completed.${act}`, character, locale, text: trilingual[locale] });
+      }
+      lines.push({ key: 'closing.interrupted', character, locale, text: INTERRUPTED_CLOSE[locale] });
+      lines.push({ key: 'closing.safety_stop', character, locale, text: SAFETY_STOP_CLOSE[locale] });
+      for (const [opening, trilingual] of Object.entries(REENGAGEMENT)) {
+        lines.push({ key: `opening.${opening}`, character, locale, text: trilingual[locale] });
+      }
     }
   }
   return lines;
