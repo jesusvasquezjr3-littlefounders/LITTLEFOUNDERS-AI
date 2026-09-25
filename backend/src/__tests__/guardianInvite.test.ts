@@ -25,6 +25,8 @@ function jsonResponse(status: number, body: unknown): Response {
 interface FamilyStubOpts {
   parentEvidence?: { status: string; method: string; birth_date: string } | null;
   roles?: string[];
+  /** Roles of the linked account (default: a parent-created child). */
+  kidRoles?: string[];
   links?: { parent_user_id: string; kid_user_id: string; verification_status: string }[];
   profiles?: unknown[];
   inviteRows?: unknown[];
@@ -65,6 +67,10 @@ function stubFamily(opts: FamilyStubOpts = {}) {
       }
       if (url.includes('/rest/v1/parent_verifications')) {
         return Promise.resolve(jsonResponse(200, evidence === null ? null : [evidence]));
+      }
+      if (url.includes(`/rest/v1/user_roles?user_id=eq.${KID_ID}`)) {
+        // S07.2: the linked account itself (a parent-created child holds `kid`).
+        return Promise.resolve(jsonResponse(200, (opts.kidRoles ?? ['kid']).map((role) => ({ user_id: KID_ID, role }))));
       }
       if (url.includes('/rest/v1/user_roles')) {
         return Promise.resolve(jsonResponse(200, roles.map((role) => ({ user_id: PARENT_ID, role }))));
@@ -114,6 +120,14 @@ describe('POST /api/v1/family/kids/:kidId/guardian-invite', () => {
     expect(insert?.body).toContain(PARENT_ID);
   });
 
+  it('refuses to mint for a self-registered teen who linked this parent: only the teen invites (S07.2, D.3)', async () => {
+    const calls = stubFamily({ kidRoles: ['universal'] });
+    const res = await auth(request(createApp()).post(`/api/v1/family/kids/${KID_ID}/guardian-invite`));
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('ACCOUNT_SELF_MANAGED');
+    expect(calls.some((c) => c.url.includes('/rest/v1/guardian_invites') && c.method === 'POST')).toBe(false);
+  });
+
   it('refuses a kid this parent does not verifiably supervise', async () => {
     const calls = stubFamily();
     const res = await auth(request(createApp()).post(`/api/v1/family/kids/${STRANGER_KID}/guardian-invite`));
@@ -143,7 +157,15 @@ describe('second-guardian preview and accept', () => {
     stubFamily({ inviteRows: [invite] });
     const res = await auth(request(createApp()).get(`/api/v1/family/guardian-invite/${INVITE_TOKEN}`), SECOND_PARENT_ID);
     expect(res.status).toBe(200);
-    expect(Object.keys(res.body.data).sort()).toEqual(['displayName', 'expiresAt', 'kidUserId', 'username'].sort());
+    expect(Object.keys(res.body.data).sort()).toEqual(['confirmedBy', 'displayName', 'expiresAt', 'kidUserId', 'username'].sort());
+    expect(res.body.data.confirmedBy).toBe('tutor');
+  });
+
+  it('tells the joining parent that a teen confirms an invite the teen issued (S07.2)', async () => {
+    stubFamily({ inviteRows: [{ ...invite, created_by: KID_ID }] });
+    const res = await auth(request(createApp()).get(`/api/v1/family/guardian-invite/${INVITE_TOKEN}`), SECOND_PARENT_ID);
+    expect(res.status).toBe(200);
+    expect(res.body.data.confirmedBy).toBe('account_holder');
   });
 
   it('treats an accepted, expired or unknown token as one indistinguishable 404', async () => {

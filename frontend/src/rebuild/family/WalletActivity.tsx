@@ -15,6 +15,8 @@ import './familyHub.css';
 export interface WalletActivityCopy {
   open: string; close: string; heading: string; loading: string; failed: string; retry: string; empty: string;
   earned: string; allowance: string; bonus: string; spent: string; correction: string; fromGoal: string; note: string;
+  /** S07.2: a linked teen's own entries. */
+  logged: string; rewardUsed: string; goalMoved: string;
   rewardsHeading: string; requested: string; approved: string; denied: string; fulfilled: string; rewardUntitled: string;
   save: string; spend: string; share: string;
 }
@@ -30,6 +32,7 @@ export function WalletActivity({ copy, locale, dark, open, loading, failed, entr
   const label = (e: LedgerEntry) => ({
     task_approved: copy.earned, allowance: copy.allowance, savings_bonus: copy.bonus, redemption: copy.spent,
     manual_adjustment: copy.correction, goal_withdrawal: copy.fromGoal,
+    self_income: copy.logged, personal_reward: copy.rewardUsed, goal_release: copy.goalMoved,
   })[e.reason];
   const status = (s: RedemptionStatus) => ({ requested: copy.requested, approved: copy.approved, denied: copy.denied, fulfilled: copy.fulfilled })[s];
 

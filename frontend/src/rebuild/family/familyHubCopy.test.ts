@@ -15,7 +15,9 @@ import { checkCopy, type AgeBand, type CopyRole, type Locale } from '../design/c
 
 const ACTIONS = new Set(['title', 'close', 'retry', 'confirm', 'reject', 'leave', 'keep', 'leaveConfirm', 'submit', 'moveOut', 'deliver', 'open']);
 const OPTIONS = new Set(['save', 'spend', 'share', 'add', 'remove', 'toSpend', 'toSave', 'you', 'unnamed', 'byYou', 'byOther', 'kindAdjust', 'kindGoal',
-  'earned', 'allowance', 'bonus', 'spent', 'correction', 'fromGoal', 'requested', 'approved', 'denied', 'fulfilled', 'rewardUntitled', 'verified', 'rejected', 'revoked']);
+  'earned', 'allowance', 'bonus', 'spent', 'correction', 'fromGoal', 'requested', 'approved', 'denied', 'fulfilled', 'rewardUntitled', 'verified', 'rejected', 'revoked',
+  // S07.2: a linked teen's own entries on the same history.
+  'logged', 'rewardUsed', 'goalMoved']);
 const HEADINGS = new Set(['heading', 'adjustHeading', 'goalsHeading', 'rewardsHeading', 'historyHeading']);
 const DATA = new Set(['goalSaved', 'note']);
 

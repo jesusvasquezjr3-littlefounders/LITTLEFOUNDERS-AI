@@ -1,0 +1,89 @@
+/* S07.2 teen wallet (D.3). Tokens only; separation by fill, never outline; pockets use the wallet identity hues (Bible 02 §4). */
+.lf-rebuild.lf-teen-wallet {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-6);
+  padding: var(--spacing-6) var(--spacing-4);
+  min-block-size: 0;
+  max-inline-size: 960px;
+  margin-inline: auto;
+}
+.lf-teen-wallet p, .lf-teen-wallet h1, .lf-teen-wallet h2 { margin: 0; }
+.lf-teen-wallet-header { display: grid; gap: var(--spacing-2); justify-items: start; }
+.lf-teen-wallet-header p { color: var(--content-muted); }
+.lf-teen-wallet-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  color: var(--content);
+  font-size: .875rem;
+  font-weight: 800;
+}
+.lf-teen-wallet-balance { display: grid; gap: var(--spacing-4); padding: var(--spacing-6); border-radius: var(--rounded-lg); background: var(--surface); }
+.lf-teen-wallet-total { font: 700 2rem/1.1 Fredoka, sans-serif; }
+.lf-teen-wallet-pockets, .lf-teen-wallet-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--spacing-3); }
+.lf-teen-wallet-pockets li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--pocket-soft);
+  min-block-size: var(--target-min);
+}
+.lf-teen-wallet-pockets li > span:nth-child(2) { flex: 1 1 auto; font-weight: 800; }
+[data-pocket='save'] { --pocket: var(--mint); --pocket-soft: var(--mint-soft); }
+[data-pocket='spend'] { --pocket: var(--sky); --pocket-soft: var(--sky-soft); }
+[data-pocket='share'] { --pocket: var(--berry); --pocket-soft: var(--berry-soft); }
+.lf-teen-wallet-swatch { inline-size: 16px; block-size: 16px; border-radius: var(--rounded-full); background: var(--pocket); flex-shrink: 0; }
+.lf-teen-wallet-amount { font-family: Fredoka, sans-serif; font-weight: 600; white-space: nowrap; }
+.lf-teen-wallet-amount--credit { color: var(--success-strong); }
+.lf-teen-wallet-muted { color: var(--content-muted); }
+.lf-teen-wallet-tabs { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-teen-wallet-tabs .lf-button { flex: 1 1 auto; }
+.lf-teen-wallet-tabs .lf-button[aria-expanded='true'] { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.lf-teen-wallet-section { display: grid; gap: var(--spacing-4); padding: var(--spacing-6) var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); min-inline-size: 0; }
+.lf-teen-wallet-list li { display: grid; gap: var(--spacing-2); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); min-inline-size: 0; overflow-wrap: anywhere; }
+.lf-teen-wallet-row { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-4); align-items: baseline; justify-content: space-between; }
+.lf-teen-wallet-form, .lf-teen-wallet-split, .lf-teen-wallet-choices { display: grid; gap: var(--spacing-4); min-inline-size: 0; border: 0; margin: 0; padding: 0; }
+.lf-teen-wallet legend { padding: 0; margin-block-end: var(--spacing-2); font-weight: 800; }
+.lf-teen-wallet-choices [role='group'] { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-teen-wallet-choices .lf-button { gap: var(--spacing-2); }
+.lf-teen-wallet-choices .lf-button[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); box-shadow: none; }
+.lf-teen-wallet-split-row { display: flex; align-items: flex-end; gap: var(--spacing-3); padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--pocket-soft); }
+.lf-teen-wallet-split-row .lf-teen-wallet-swatch { margin-block-end: var(--spacing-5); }
+.lf-teen-wallet-split-row .lf-field { flex: 1 1 auto; }
+.lf-teen-wallet .lf-field input { background: var(--sunken); }
+.lf-teen-wallet-split-row .lf-field input { background: var(--surface); }
+.lf-teen-wallet-select {
+  min-inline-size: 0;
+  inline-size: 100%;
+  min-block-size: var(--target-base);
+  padding: var(--spacing-4) var(--spacing-5);
+  background: var(--sunken);
+  color: var(--content);
+  border: 0;
+  border-radius: var(--rounded-md);
+}
+.lf-teen-wallet-progress { block-size: 12px; border-radius: var(--rounded-full); background: var(--surface); overflow: hidden; }
+.lf-teen-wallet-progress > span { display: block; block-size: 100%; background: var(--mint-strong); border-radius: inherit; }
+.lf-teen-wallet-notice { display: flex; gap: var(--spacing-2); align-items: flex-start; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--success-soft); }
+.lf-teen-wallet-notice--error { background: var(--error-soft); }
+.lf-teen-wallet-invite { display: grid; gap: var(--spacing-2); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-teen-wallet-invite > span:first-child { font-weight: 800; }
+.lf-teen-wallet-link { font-family: ui-monospace, monospace; font-size: .875rem; user-select: all; }
+.lf-teen-wallet a.lf-button { text-decoration: none; }
+.lf-teen-wallet a.lf-button:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+@container app (min-width: 720px) {
+  .lf-teen-wallet-pockets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lf-teen-wallet-tabs .lf-button { flex: 0 1 auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lf-teen-wallet-progress > span { transition: inline-size var(--dur-component) var(--ease-standard); }
+}
+/* A secondary control on a section reads by fill: sunken on the section, surface on a sunken row (dark mode has no visible control shadow). */
+.lf-teen-wallet-section .lf-button:not(.lf-button--accent):not(.lf-button--success):not(:disabled):not([aria-pressed='true']) { background: var(--sunken); box-shadow: none; }
+.lf-teen-wallet-section .lf-teen-wallet-list li .lf-button:not(.lf-button--accent):not(.lf-button--success):not(:disabled):not([aria-pressed='true']) { background: var(--surface); }

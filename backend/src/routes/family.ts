@@ -19,6 +19,7 @@ import { assembleCourseTree } from '../services/courseTree.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
+import { getChildRoleHolders, selfIssuedInviteIds } from '../services/teenWallet.js';
 import { mayDiscoverProfile, visibleSocialUsers } from '../services/socialVisibility.js';
 import {
   getConsentsForKids,
@@ -167,6 +168,9 @@ export function familyRouter(): Router {
         return { id, balances, streak };
       }),
     );
+    // S07.2: which linked accounts are self-registered teens (a display hint
+    // only; every account-holder control re-checks the role itself).
+    const childRoleHolders = await getChildRoleHolders(kidIds);
     const walletByKid = new Map(walletAndStreak.map((w) => [w.id, w.balances]));
     const streakByKid = new Map(walletAndStreak.map((w) => [w.id, w.streak]));
 
@@ -181,6 +185,7 @@ export function familyRouter(): Router {
           pendingApprovalCount: pendingByKid.get(l.kid_user_id) ?? 0,
           walletTotal: balances ? balances.save + balances.spend + balances.share : null,
           taskStreakDays: streakByKid.get(l.kid_user_id)?.current_streak_days ?? 0,
+          accountType: childRoleHolders === null ? null : childRoleHolders.has(l.kid_user_id) ? 'child' : 'teen',
         };
       }),
     });
@@ -342,6 +347,35 @@ export function familyRouter(): Router {
     return parsed.data;
   }
 
+  /*
+   * S07.2 (D.3, OD-3 Option B): a self-registered teen who linked a parent
+   * keeps ownership of their own account. The family mechanics (chores,
+   * approvals, reward catalog, allowance, freeze) layer onto their wallet,
+   * but the account-holder controls a parent has over a child they created
+   * (renaming, the birth date, the passphrase, deleting the account, the
+   * analytics consent the teen manages themself under H.1, and inviting
+   * another Tutor, which only the teen may do) are refused for it.
+   */
+  async function guardManagedChild(req: { params: Record<string, string | undefined> }, res: Parameters<typeof fail>[0]): Promise<string | null> {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return null;
+    return (await refuseSelfManaged(kidId, res)) ? null : kidId;
+  }
+
+  /** true = already responded (a self-managed teen account, or the role read failed). */
+  async function refuseSelfManaged(kidId: string, res: Parameters<typeof fail>[0]): Promise<boolean> {
+    const roles = await getRolesForGate(kidId);
+    if (roles === null) {
+      fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account type');
+      return true;
+    }
+    if (!roles.includes('kid')) {
+      fail(res, 403, 'ACCOUNT_SELF_MANAGED', 'This teen manages their own account');
+      return true;
+    }
+    return false;
+  }
+
   router.post('/kids/:kidId/social/requests/:requestId/decision', async (req, res) => {
     const kidId = await guardKid(req, res);
     if (!kidId) return res;
@@ -434,7 +468,7 @@ export function familyRouter(): Router {
   });
 
   router.patch('/kids/:kidId', async (req, res) => {
-    const kidId = await guardKid(req, res);
+    const kidId = await guardManagedChild(req, res);
     if (!kidId) return res;
     const parsed = UpdateKid.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the child account details');
@@ -452,7 +486,7 @@ export function familyRouter(): Router {
   });
 
   router.post('/kids/:kidId/passphrase', async (req, res) => {
-    const kidId = await guardKid(req, res);
+    const kidId = await guardManagedChild(req, res);
     if (!kidId) return res;
     const parsed = z.object({ passphrase: z.string().min(8).max(72) }).safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'The passphrase must be at least 8 characters');
@@ -468,7 +502,7 @@ export function familyRouter(): Router {
   });
 
   router.delete('/kids/:kidId', async (req, res) => {
-    const kidId = await guardKid(req, res);
+    const kidId = await guardManagedChild(req, res);
     if (!kidId) return res;
 
     // Audited BEFORE the delete, because afterwards there is no row to name and
@@ -502,6 +536,7 @@ export function familyRouter(): Router {
     if (!links.some((l) => l.kid_user_id === kidId)) {
       return fail(res, 403, 'FORBIDDEN', 'No verified guardian link for this kid');
     }
+    if (await refuseSelfManaged(kidId, res)) return res;
     const granted = await grantAnalyticsConsent(kidId, user.id);
     if (granted === null) return fail(res, 502, DATA_UNAVAILABLE, 'Consent could not be stored');
     // The PARENT's decision is itself family conduct. Subject is the parent;
@@ -523,6 +558,7 @@ export function familyRouter(): Router {
     if (!links.some((l) => l.kid_user_id === kidId)) {
       return fail(res, 403, 'FORBIDDEN', 'No verified guardian link for this kid');
     }
+    if (await refuseSelfManaged(kidId, res)) return res;
     const revoked = await revokeAnalyticsConsent(kidId);
     if (revoked === null) return fail(res, 502, DATA_UNAVAILABLE, 'Consent could not be revoked');
     if (revoked === 'changed') {
@@ -757,7 +793,7 @@ export function familyRouter(): Router {
    * gate already admits only ID-verified parents to every route here.
    */
   router.post('/kids/:kidId/guardian-invite', async (req, res) => {
-    const kidId = await guardKid(req, res);
+    const kidId = await guardManagedChild(req, res);
     if (!kidId) return res;
     const parent = authedUser(res);
     const invite = await createGuardianInvite(kidId, parent.id);
@@ -778,6 +814,9 @@ export function familyRouter(): Router {
       displayName: preview.displayName,
       username: preview.username,
       expiresAt: preview.expiresAt,
+      // S07.2: who confirms the new Tutor once accepted. A teen confirms an
+      // invite they issued themself; otherwise the child's current Tutor does.
+      confirmedBy: preview.selfIssued ? 'account_holder' : 'tutor',
     });
   });
 
@@ -872,11 +911,15 @@ export function familyRouter(): Router {
     if (links === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your Tutor requests');
     const names = await getDisplayNames(links.map((l) => l.kid_user_id));
     if (names === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your Tutor requests');
+    // S07.2: a link from a teen's own invite waits for the teen, not a Tutor.
+    const selfIssued = await selfIssuedInviteIds(links.flatMap((l) => (l.verification_status === 'pending' && l.invite_id ? [l.invite_id] : [])));
+    if (selfIssued === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your Tutor requests');
     return ok(res, {
       links: links.map((l) => ({
         linkId: l.id,
         kidDisplayName: names.get(l.kid_user_id) ?? null,
         status: l.verification_status,
+        awaiting: l.verification_status === 'pending' ? (l.invite_id && selfIssued.has(l.invite_id) ? 'account_holder' : 'tutor') : null,
         updatedAt: l.revoked_at ?? l.decided_at ?? l.created_at,
       })),
     });

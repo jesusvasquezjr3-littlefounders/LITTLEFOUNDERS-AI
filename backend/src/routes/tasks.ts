@@ -1,10 +1,12 @@
 import { requireUnfrozenBanking } from '../middleware/bankingFreeze.js';
-import { Router } from 'express';
+import { Router, type RequestHandler } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
+import { requireWalletAccess } from '../middleware/walletAccess.js';
+import { getSelfActionDetails } from '../services/teenWallet.js';
 import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
 import { isCalendarDate, nextStreak } from '../services/streak.js';
 import {
@@ -31,6 +33,7 @@ import {
   getVerifiedKidLinks,
   getWalletBalances,
   getWalletLedger,
+  getOwnRoles,
   upsertTaskStreak,
   insertAuditLog,
   insertCatalogItem,
@@ -137,8 +140,11 @@ function toWireRedemption(r: RedemptionRow) {
  * a coin that moved without an explanation is exactly the broken promise
  * D.5 exists to prevent.
  */
-function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianActionRow>) {
+type SelfDetails = NonNullable<Awaited<ReturnType<typeof getSelfActionDetails>>>;
+
+function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianActionRow>, selfActions?: SelfDetails) {
   const action = e.guardian_action_id ? actions?.get(e.guardian_action_id) : undefined;
+  const self = e.self_action_id ? selfActions?.get(e.self_action_id) : undefined;
   return {
     id: e.id,
     bucket: e.bucket,
@@ -148,16 +154,21 @@ function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianAct
     goalId: e.goal_id,
     redemptionId: e.redemption_id,
     note: action?.reason ?? null,
+    // S07.2: a teen's own entry says where the coins came from (income) or
+    // which of their personal rewards they marked; never free text.
+    source: self?.source ?? null,
+    rewardTitle: self?.reward_title ?? null,
     createdAt: e.created_at,
   };
 }
 
-/** Resolves the guardian reasons behind one page of ledger rows. null = unreadable; the caller refuses rather than showing an unexplained movement. */
+/** Resolves the guardian reasons and the teen's own action details behind one page of ledger rows. null = unreadable; the caller refuses rather than showing an unexplained movement. */
 async function ledgerWithNotes(entries: WalletLedgerRow[]) {
   const ids = entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : []));
-  const actions = await getGuardianActionsByIds(ids);
-  if (actions === null) return null;
-  return entries.map((e) => toWireLedgerEntry(e, actions));
+  const selfIds = entries.flatMap((e) => (e.self_action_id ? [e.self_action_id] : []));
+  const [actions, selfActions] = await Promise.all([getGuardianActionsByIds(ids), getSelfActionDetails(selfIds)]);
+  if (actions === null || selfActions === null) return null;
+  return entries.map((e) => toWireLedgerEntry(e, actions, selfActions));
 }
 
 function toWireGuardianAction(a: GuardianActionRow, callerId: string) {
@@ -564,9 +575,27 @@ export function tasksRouter(): Router {
     return ok(res, { fulfilled: true });
   });
 
-  // ── KID: own tasks ───────────────────────────────────────────────────────
+  // ── CHILD IN A FAMILY: own tasks ─────────────────────────────────────────
+  /*
+   * S07.2 (D.3, OD-3 Option B): a child in a family is a parent-created child
+   * OR a self-registered teen who linked a verified parent. The family
+   * mechanics (chores, reward requests) layer onto the teen's existing wallet;
+   * an unlinked teen is refused, because tasks and anything a parent approves
+   * stay guardian-only. Balances, history and goals are admitted for every
+   * wallet holder (the teen's personal wallet uses these same endpoints).
+   */
+  const familyChild = requireWalletAccess('familyChild');
+  const walletHolder = requireWalletAccess('holder');
+  /** Evidence is viewed by a verified guardian (parent role) or the child in a family. */
+  const evidenceViewer: RequestHandler = async (req, res, next) => {
+    const roles = await getOwnRoles(authedUser(res).accessToken, authedUser(res).id);
+    if (!roles) return void fail(res, 502, DATA_UNAVAILABLE, 'Could not verify permissions');
+    if (roles.some((r) => r.role === 'parent')) return void next();
+    return familyChild(req, res, next);
+  };
 
-  router.get('/mine', requireRole(['kid']), async (req, res) => {
+
+  router.get('/mine', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const tasks = await getTasksForKid(kid.id);
     if (tasks === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load tasks');
@@ -585,7 +614,7 @@ export function tasksRouter(): Router {
 
   const CompleteTask = z.object({ localDate: z.string().refine(isCalendarDate, 'localDate must be YYYY-MM-DD').optional() }).strict();
 
-  router.post('/:id/complete', requireRole(['kid']), async (req, res) => {
+  router.post('/:id/complete', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -615,7 +644,7 @@ export function tasksRouter(): Router {
     return ok(res, { task: toWireTask(updated) });
   });
 
-  router.get('/streak', requireRole(['kid']), async (req, res) => {
+  router.get('/streak', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const streak = await getTaskStreak(kid.id);
     return ok(res, {
@@ -631,7 +660,7 @@ export function tasksRouter(): Router {
    * "nothing changes once decided" boundary /:id/allocate already enforces
    * for the wallet side.
    */
-  router.post('/:id/evidence', requireRole(['kid']), evidenceUploadRateLimiter, evidenceUpload.single('photo'), async (req, res) => {
+  router.post('/:id/evidence', familyChild, evidenceUploadRateLimiter, evidenceUpload.single('photo'), async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -680,7 +709,7 @@ export function tasksRouter(): Router {
   });
 
   /** Streams the photo back — never a raw Depot URL (§1.9). Either the assigned kid or a verified guardian of theirs may view it. */
-  router.get('/:id/evidence', requireRole(['parent', 'kid']), async (req, res) => {
+  router.get('/:id/evidence', evidenceViewer, async (req, res) => {
     const caller = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -714,7 +743,7 @@ export function tasksRouter(): Router {
     .strict()
     .refine((v) => v.save + v.spend + v.share > 0, 'Split must add up to more than zero');
 
-  router.post('/:id/allocate', requireRole(['kid']), async (req, res) => {
+  router.post('/:id/allocate', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -753,14 +782,14 @@ export function tasksRouter(): Router {
 
   // ── KID: wallet ──────────────────────────────────────────────────────────
 
-  router.get('/wallet', requireRole(['kid']), async (req, res) => {
+  router.get('/wallet', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const balances = await getWalletBalances(kid.id);
     if (!balances) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the wallet');
     return ok(res, { balances });
   });
 
-  router.get('/wallet/ledger', requireRole(['kid']), async (req, res) => {
+  router.get('/wallet/ledger', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const entries = await getWalletLedger(kid.id, 100);
     if (entries === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the ledger');
@@ -779,7 +808,7 @@ export function tasksRouter(): Router {
     })
     .strict();
 
-  router.post('/goals', requireRole(['kid']), async (req, res) => {
+  router.post('/goals', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const parsed = CreateGoal.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the goal details');
@@ -788,7 +817,7 @@ export function tasksRouter(): Router {
     return ok(res, { goal: toWireGoal(goal, 0) }, 201);
   });
 
-  router.get('/goals', requireRole(['kid']), async (req, res) => {
+  router.get('/goals', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const goals = await getGoalsForKid(kid.id);
     if (goals === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals');
@@ -796,7 +825,7 @@ export function tasksRouter(): Router {
     return ok(res, { goals: withProgress });
   });
 
-  router.patch('/goals/:id', requireRole(['kid']), async (req, res) => {
+  router.patch('/goals/:id', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -810,7 +839,7 @@ export function tasksRouter(): Router {
 
   // ── KID: redemption catalog + requests ──────────────────────────────────
 
-  router.get('/catalog/available', requireRole(['kid']), async (req, res) => {
+  router.get('/catalog/available', familyChild, async (req, res) => {
     const kid = authedUser(res);
     // A kid has no direct FK to a catalog — it is resolved through their OWN
     // verified guardians, the mirror image of guardParentOf above.
@@ -823,7 +852,7 @@ export function tasksRouter(): Router {
 
   const RequestRedemption = z.object({ catalogId: z.string().uuid() }).strict();
 
-  router.post('/redemptions', requireRole(['kid']), async (req, res) => {
+  router.post('/redemptions', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = RequestRedemption.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'catalogId must be a uuid');
@@ -853,7 +882,7 @@ export function tasksRouter(): Router {
     return ok(res, { redemption: toWireRedemption(redemption) }, 201);
   });
 
-  router.get('/redemptions/mine', requireRole(['kid']), async (req, res) => {
+  router.get('/redemptions/mine', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const redemptions = await getRedemptionsForKid(kid.id);
     if (redemptions === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load redemptions');

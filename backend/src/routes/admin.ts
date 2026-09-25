@@ -72,6 +72,7 @@ import {
 } from '../services/analyticsExclusions.js';
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
 import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
+import { getTeenWalletAdoption } from '../services/teenWallet.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -1121,6 +1122,29 @@ export function adminRouter(): Router {
       tables,
       transitions: tables.reduce((sum, t) => sum + t.transitions, 0),
       outsideService: tables.reduce((sum, t) => sum + t.outsideService, 0),
+    });
+  });
+
+  /*
+   * D.3 (Appendix H, "Teen Independent-Mode Adoption", Diagnostic, no
+   * target): eligible self-registered teens today, how many used their
+   * personal wallet, split by whether a parent is linked now, and how many
+   * first used it inside the window. Counts only, never an identity.
+   */
+  router.get('/family/teen-wallet-adoption', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await getTeenWalletAdoption(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the adoption metric');
+    return ok(res, {
+      since: since.toISOString(),
+      eligibleTeens: row.eligible_teens,
+      adopters: row.adopters,
+      independentAdopters: row.independent_adopters,
+      linkedAdopters: row.linked_adopters,
+      newAdopters: row.new_adopters,
+      adoptionRate: row.eligible_teens > 0 ? row.adopters / row.eligible_teens : null,
     });
   });
 

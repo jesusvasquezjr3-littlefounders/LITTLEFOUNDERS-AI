@@ -390,8 +390,9 @@ describe('guardian-link lifecycle (pending / rejected / revoked)', () => {
     const res = await request(createApp()).get('/api/v1/family/guardian-links/mine').set('Authorization', as(SECOND));
     expect(res.status).toBe(200);
     expect(res.body.data.links).toEqual([
-      { linkId: LINK_SECOND, kidDisplayName: 'Nico', status: 'pending', updatedAt: '2026-09-20T00:00:00Z' },
-      { linkId: LINK_PARENT, kidDisplayName: 'Nico', status: 'rejected', updatedAt: '2026-09-21T00:00:00Z' },
+      // S07.2: who the pending adult waits for (a Tutor here; the teen for a teen's own invite).
+      { linkId: LINK_SECOND, kidDisplayName: 'Nico', status: 'pending', awaiting: 'tutor', updatedAt: '2026-09-20T00:00:00Z' },
+      { linkId: LINK_PARENT, kidDisplayName: 'Nico', status: 'rejected', awaiting: null, updatedAt: '2026-09-21T00:00:00Z' },
     ]);
     expect(JSON.stringify(res.body)).not.toContain(KID);
   });

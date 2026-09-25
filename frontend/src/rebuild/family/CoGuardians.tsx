@@ -80,7 +80,7 @@ export function CoGuardians({ copy, locale, dark, kidName, open, guardians, load
   </section>;
 }
 
-export interface GuardianRequestsCopy { title: string; pending: string; rejected: string; revoked: string; unnamed: string; failed: string; retry: string }
+export interface GuardianRequestsCopy { title: string; pending: string; pendingTeen: string; rejected: string; revoked: string; unnamed: string; failed: string; retry: string }
 
 export function GuardianRequests({ copy, locale, dark, links, failed, onRetry }: {
   copy: GuardianRequestsCopy; locale: string; dark: boolean; links: OwnLink[]; failed: boolean; onRetry: () => void;
@@ -93,7 +93,8 @@ export function GuardianRequests({ copy, locale, dark, links, failed, onRetry }:
       <div className="lf-family-hub-notice" role="alert"><StatusMark correct={false} /><Copy role="body">{copy.failed}</Copy></div>
       <Button onClick={onRetry}>{copy.retry}</Button>
     </> : <ul>{links.map((l) => <li key={l.linkId} data-link-status={l.status}>
-      <Copy role="body"><span className="ugc">{copy[l.status].replace('{name}', l.kidDisplayName || copy.unnamed)}</span></Copy>
+      <Copy role="body"><span className="ugc">{(l.status === 'pending' && l.awaiting === 'account_holder' ? copy.pendingTeen : copy[l.status])
+        .replace('{name}', l.kidDisplayName || copy.unnamed)}</span></Copy>
       <time data-copy-role="data" className="lf-family-hub-muted" dateTime={l.updatedAt}>{date.format(new Date(l.updatedAt))}</time>
     </li>)}</ul>}
   </section>;

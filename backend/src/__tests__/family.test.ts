@@ -65,6 +65,7 @@ describe('current verified-parent boundary', () => {
 
 describe('GET /api/v1/family/kids', () => {
   it('lists only VERIFIED kids with whitelisted fields', async () => {
+    db.user_roles.push({ user_id: KID_ID, role: 'kid' });
     const res = await auth(request(createApp()).get('/api/v1/family/kids'));
     expect(res.status).toBe(200);
     // Deliberately an exact-shape assertion, not a subset match: this test is the
@@ -79,6 +80,9 @@ describe('GET /api/v1/family/kids', () => {
         pendingApprovalCount: 0,
         walletTotal: 0,
         taskStreakDays: 0,
+        // S07.2: a display hint, never an access decision ('teen' = a
+        // self-registered teen who linked this parent).
+        accountType: 'child',
       },
     ]);
   });

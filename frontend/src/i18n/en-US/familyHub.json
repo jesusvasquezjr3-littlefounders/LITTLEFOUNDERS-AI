@@ -34,7 +34,8 @@
     "revoked": "{name}: you stepped away.",
     "unnamed": "A child account",
     "failed": "Could not load your requests. Try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "pendingTeen": "{name}: waiting for them to confirm you."
   },
   "walletCorrections": {
     "title": "Coin corrections",
@@ -107,6 +108,9 @@
     "rewardUntitled": "A reward",
     "save": "Save",
     "spend": "Spend",
-    "share": "Share"
+    "share": "Share",
+    "logged": "Coins you logged",
+    "rewardUsed": "Used your own reward",
+    "goalMoved": "You moved goal coins"
   }
 }

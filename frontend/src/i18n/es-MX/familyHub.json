@@ -34,7 +34,8 @@
     "revoked": "{name}: te retiraste.",
     "unnamed": "Una cuenta infantil",
     "failed": "No se pudieron cargar tus solicitudes. Intenta de nuevo.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "pendingTeen": "{name}: esperando que te confirme."
   },
   "walletCorrections": {
     "title": "Corregir monedas",
@@ -107,6 +108,9 @@
     "rewardUntitled": "Una recompensa",
     "save": "Ahorrar",
     "spend": "Gastar",
-    "share": "Compartir"
+    "share": "Compartir",
+    "logged": "Monedas que registraste",
+    "rewardUsed": "Usaste tu propio premio",
+    "goalMoved": "Moviste monedas de una meta"
   }
 }

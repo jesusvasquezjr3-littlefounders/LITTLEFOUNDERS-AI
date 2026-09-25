@@ -129,9 +129,11 @@ const LinkRow = z.object({
   verified_at: z.string().nullable(),
   decided_at: z.string().nullable(),
   revoked_at: z.string().nullable(),
+  /** S07.2: the invite that produced the link (a teen's own invite is the teen's to confirm). */
+  invite_id: z.string().uuid().nullable().optional(),
 });
 export type LinkRow = z.infer<typeof LinkRow>;
-const LINK_FIELDS = 'id,parent_user_id,kid_user_id,verification_status,created_at,verified_at,decided_at,revoked_at';
+const LINK_FIELDS = 'id,parent_user_id,kid_user_id,verification_status,created_at,verified_at,decided_at,revoked_at,invite_id';
 
 export async function listLinksForKid(kidId: string): Promise<LinkRow[] | null> {
   const rows = await serviceRest<unknown>(`/guardian_links?kid_user_id=eq.${eu(kidId)}&select=${LINK_FIELDS}&order=created_at.asc`);

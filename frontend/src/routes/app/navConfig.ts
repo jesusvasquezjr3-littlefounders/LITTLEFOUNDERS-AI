@@ -28,8 +28,40 @@ export const NAV_ITEMS: NavItem[] = [
 /** Home route after login. */
 export const APP_HOME = '/learn';
 
-export function isUnlocked(item: NavItem, roles: string[]): boolean {
+/** S07.2 (D.3, OD-3 Option B): the self-registered teen's personal wallet. Never locked: absent for everyone else. */
+export const WALLET_NAV_ITEM: NavItem = { key: 'wallet', path: '/wallet', icon: 'savings' };
+
+/** What the server says this account's wallet is (routes/app/wallet/useWalletAccess). */
+export interface NavWalletAccess { holder: 'teen' | 'managed_child' | null; familyChild: boolean }
+
+export function isUnlocked(item: NavItem, roles: string[], wallet?: NavWalletAccess): boolean {
   if (!item.requiresRole) return true;
+  // A teen who linked a verified parent is a child in a family: Tasks and
+  // Banking layer onto their wallet (Core admits them by age and link).
+  if (wallet?.familyChild && (item.key === 'tasks' || item.key === 'banking')) return true;
   const required = Array.isArray(item.requiresRole) ? item.requiresRole : [item.requiresRole];
   return required.some((r) => roles.includes(r));
+}
+
+/**
+ * The shell's items for this account. A self-registered teen sees Learn,
+ * Mentor, Tasks (locked until a parent links), Wallet and Profile (the
+ * Bible's learner shell); Banking appears once a parent links and set it
+ * up, and Family never does (a teen cannot become a Tutor). Everyone else
+ * keeps the registry as it is.
+ */
+export function navItemsFor(wallet?: NavWalletAccess): NavItem[] {
+  if (wallet?.holder !== 'teen') return NAV_ITEMS;
+  const items: NavItem[] = [];
+  for (const item of NAV_ITEMS) {
+    if (item.key === 'family' || (item.key === 'banking' && !wallet.familyChild)) continue;
+    items.push(item);
+    if (item.key === 'tasks') items.push(WALLET_NAV_ITEM);
+  }
+  return items;
+}
+
+/** Where a locked item leads: a teen is sent to their wallet (where a parent is invited), an adult to Tutor verification. */
+export function lockedTargetFor(wallet?: NavWalletAccess): string {
+  return wallet?.holder === 'teen' ? WALLET_NAV_ITEM.path : '/verify-parent';
 }

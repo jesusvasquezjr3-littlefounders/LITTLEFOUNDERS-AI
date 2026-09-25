@@ -85,6 +85,7 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
   const [accepted, setAccepted] = useState(false);
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [selfIssued, setSelfIssued] = useState(false);
   const validToken = TOKEN_RE.test(inviteToken);
 
   useEffect(() => {
@@ -94,9 +95,11 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
       const token = await getToken();
       if (cancelled) return;
       if (!token) return;
-      const result = await api<{ displayName: string | null }>(`/family/guardian-invite/${inviteToken}`, { token });
+      const result = await api<{ displayName: string | null; confirmedBy?: string }>(`/family/guardian-invite/${inviteToken}`, { token });
       if (cancelled) return;
       if (result.error || !result.data) { setExpired(true); return; }
+      // S07.2: a teen's own invite is confirmed by the teen, not a current Tutor.
+      setSelfIssued(result.data.confirmedBy === 'account_holder');
       setKidName(result.data.displayName);
     })();
     return () => { cancelled = true; };
@@ -117,5 +120,5 @@ export function GuardianInviteJoin({ inviteToken }: { inviteToken: string }) {
   }
 
   return <GuardianInviteAccept copy={copy} locale={locale} dark={isDark} kidName={kidName} accepting={accepting}
-    accepted={accepted} pending={pending} failed={failed} expired={expired} onAccept={() => void accept()} />;
+    accepted={accepted} pending={pending} selfIssued={selfIssued} failed={failed} expired={expired} onAccept={() => void accept()} />;
 }

@@ -34,6 +34,10 @@ export interface GuardianInviteCopy {
   acceptFailed: string;
   /** S07.1: an accepted invite waits for the child's current Tutor to confirm. */
   pending: string;
+  /** S07.2: a teen's own invite: the teen confirms the new Tutor. */
+  pendingTeen: string;
+  acceptTitleTeen: string;
+  acceptBodyTeen: string;
   expired: string;
 }
 
@@ -70,7 +74,7 @@ export function GuardianInviteMint({ copy, locale, dark, open, creating, link, c
   </section>;
 }
 
-export function GuardianInviteAccept({ copy, locale, dark, kidName, accepting, accepted, pending = false, failed, expired, onAccept }: {
+export function GuardianInviteAccept({ copy, locale, dark, kidName, accepting, accepted, pending = false, selfIssued = false, failed, expired, onAccept }: {
   copy: GuardianInviteCopy;
   locale: string;
   dark: boolean;
@@ -79,14 +83,18 @@ export function GuardianInviteAccept({ copy, locale, dark, kidName, accepting, a
   accepted: boolean;
   /** true when the database holds a PENDING link awaiting the current Tutor's confirmation. */
   pending?: boolean;
+  /** S07.2: a teen issued this invite for their own account, and confirms the new Tutor themself. */
+  selfIssued?: boolean;
   failed: boolean;
   expired: boolean;
   onAccept: () => void;
 }) {
-  return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.acceptTitle}>
-    <Copy role="heading" as="h2">{copy.acceptTitle}</Copy>
-    {accepted ? <div role="status"><Copy role="body">{pending ? copy.pending : copy.accepted}</Copy></div> : expired ? <div role="alert"><Copy role="body">{copy.expired}</Copy></div> : <>
-      <Copy role="body">{copy.acceptBody.replace('{name}', kidName ?? '…')}</Copy>
+  const title = selfIssued ? copy.acceptTitleTeen : copy.acceptTitle;
+  const pendingText = selfIssued ? copy.pendingTeen.replace('{name}', kidName ?? '…') : copy.pending;
+  return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={title}>
+    <Copy role="heading" as="h2">{title}</Copy>
+    {accepted ? <div role="status"><Copy role="body">{pending ? pendingText : copy.accepted}</Copy></div> : expired ? <div role="alert"><Copy role="body">{copy.expired}</Copy></div> : <>
+      <Copy role="body">{(selfIssued ? copy.acceptBodyTeen : copy.acceptBody).replace('{name}', kidName ?? '…')}</Copy>
       {failed && <div role="alert"><Copy role="body">{copy.acceptFailed}</Copy></div>}
       <Button onClick={onAccept} disabled={accepting || kidName === null}>{accepting ? copy.accepting : copy.accept}</Button>
     </>}

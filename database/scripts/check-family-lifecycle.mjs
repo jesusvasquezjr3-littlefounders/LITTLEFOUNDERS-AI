@@ -1,8 +1,8 @@
 // check-family-lifecycle.mjs — D.5 / OD-21 as a gate, not a promise.
 //
 // Appendix H's "Lifecycle-State Completeness Audit": every declared state in
-// the Task, Savings Goal, Redemption Request, Wallet Ledger and Guardian Link
-// schemas must have at least one flow that PRODUCES it and at least one that
+// the Task, Savings Goal, Redemption Request, Wallet Ledger, Guardian Link and
+// (S07.2) Personal Reward schemas must have at least one flow that PRODUCES it and at least one that
 // CONSUMES it. OD-21 decided "build, not remove" for the states the audit
 // found unused, and "no new Block D state may be declared without its
 // producing and consuming flow".
@@ -24,6 +24,9 @@ const TASKS = 'backend/src/routes/tasks.ts';
 const FAMILY = 'backend/src/routes/family.ts';
 const ACTIVITY = 'frontend/src/rebuild/family/WalletActivity.tsx';
 const LINKS_UI = 'frontend/src/rebuild/family/CoGuardians.tsx';
+// S07.2 (D.3, OD-3 Option B): the self-registered teen's own wallet.
+const TEEN_UI = 'frontend/src/rebuild/wallet/TeenWallet.tsx';
+const TEEN_FLOWS = SQL('_independent_teen_wallet_flows');
 
 export const REGISTRY = {
   'tasks.status': {
@@ -50,6 +53,13 @@ export const REGISTRY = {
     manual_adjustment: { producer: [E(SQL('_family_hub_lifecycle_flows'), "'manual_adjustment', p_actor, v_action")], consumer: [E(ACTIVITY, 'manual_adjustment: copy.correction'), E('backend/src/routes/banking.ts', "e.reason === 'manual_adjustment'")] },
     allowance: { producer: [E(SQL('_enforce_banking_freeze'), "'allowance', p_created_by")], consumer: [E(ACTIVITY, 'allowance: copy.allowance')] },
     savings_bonus: { producer: [E(SQL('_enforce_banking_freeze'), "'savings_bonus', p_kid_user_id")], consumer: [E(ACTIVITY, 'savings_bonus: copy.bonus')] },
+    self_income: { producer: [E(TEEN_FLOWS, "'self_income', p_goal_id, p_holder, v_action")], consumer: [E(TEEN_UI, 'self_income: e.source'), E(ACTIVITY, 'self_income: copy.logged')] },
+    personal_reward: { producer: [E(TEEN_FLOWS, "'personal_reward', p_holder, v_action")], consumer: [E(TEEN_UI, 'personal_reward: copy.history.reward'), E(ACTIVITY, 'personal_reward: copy.rewardUsed')] },
+    goal_release: { producer: [E(TEEN_FLOWS, "'goal_release', p_goal_id, p_holder, v_action")], consumer: [E(TEEN_UI, 'goal_release: copy.history.goalMove'), E('backend/src/routes/banking.ts', "e.reason === 'goal_release'")] },
+  },
+  'personal_rewards.status': {
+    active: { producer: [E(TEEN_FLOWS, 'INSERT INTO public.personal_rewards (holder_user_id, title, cost)')], consumer: [E(TEEN_UI, "r.status === 'active'"), E(TEEN_FLOWS, "v_reward.status <> 'active'")] },
+    archived: { producer: [E(TEEN_FLOWS, "SET status = 'archived', archived_at = now()")], consumer: [E(TEEN_FLOWS, "IF v_status <> 'active' THEN"), E('frontend/src/rebuild/wallet/walletApi.ts', "value.status === 'archived'")] },
   },
   'guardian_links.verification_status': {
     pending: { producer: [E(SQL('_family_hub_lifecycle_flows'), "THEN 'pending' ELSE 'verified' END")], consumer: [E(SQL('_family_hub_lifecycle_flows'), "v_link.verification_status <> 'pending'"), E(LINKS_UI, "g.status === 'pending'")] },

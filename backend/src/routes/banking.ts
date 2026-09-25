@@ -1,4 +1,5 @@
 import { requireUnfrozenBanking } from '../middleware/bankingFreeze.js';
+import { requireWalletAccess } from '../middleware/walletAccess.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
@@ -146,7 +147,8 @@ async function buildStatement(kidId: string, month?: string) {
   let spent = 0;
   let adjusted = 0;
   for (const e of entries) {
-    if (e.reason === 'goal_withdrawal') continue;
+    // S07.2: a teen moving coins out of their own goal is a transfer too.
+    if (e.reason === 'goal_withdrawal' || e.reason === 'goal_release') continue;
     if (e.reason === 'manual_adjustment') adjusted += e.amount;
     else if (e.amount >= 0) earned += e.amount;
     else spent += -e.amount;
@@ -371,9 +373,16 @@ export function bankingRouter(): Router {
     return ok(res, { statement });
   });
 
-  // ── KID: own account ─────────────────────────────────────────────────────
+  // ── CHILD IN A FAMILY: own account ──────────────────────────────────────
+  // S07.2 (D.3): a parent-created child, or a teen who linked a verified
+  // parent (the account, allowance, bonus and limit are guardian-set, so an
+  // unlinked teen has none). The monthly statement is admitted for every
+  // wallet holder, the independent teen included.
+  const familyChild = requireWalletAccess('familyChild');
+  const walletHolder = requireWalletAccess('holder');
 
-  router.get('/account', requireRole(['kid']), async (req, res) => {
+
+  router.get('/account', familyChild, async (req, res) => {
     const kid = authedUser(res);
     await runDueScheduledCredits(kid.id); // best-effort catch-up, same as the parent read above
     const account = await getBankingAccount(kid.id);
@@ -381,7 +390,7 @@ export function bankingRouter(): Router {
     return ok(res, { account: account ? toWireAccount(account) : null });
   });
 
-  router.patch('/account', requireRole(['kid']), async (req, res) => {
+  router.patch('/account', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = UpdateAccount.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the account details');
@@ -390,7 +399,7 @@ export function bankingRouter(): Router {
     return ok(res, { account: toWireAccount(account) });
   });
 
-  router.post('/account/freeze', requireRole(['kid']), async (req, res) => {
+  router.post('/account/freeze', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = SetFrozen.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'frozen must be a boolean');
@@ -406,14 +415,14 @@ export function bankingRouter(): Router {
     return ok(res, { account: toWireAccount(account) });
   });
 
-  router.get('/allowance', requireRole(['kid']), async (req, res) => {
+  router.get('/allowance', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const rule = await getAllowanceRule(kid.id);
     if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the allowance rule');
     return ok(res, { rule: rule ? toWireAllowanceRule(rule) : null });
   });
 
-  router.get('/spend-limit', requireRole(['kid']), async (req, res) => {
+  router.get('/spend-limit', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const limit = await getSpendLimit(kid.id);
     if (limit === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the spend limit');
@@ -422,14 +431,14 @@ export function bankingRouter(): Router {
     return ok(res, { status });
   });
 
-  router.get('/savings-bonus', requireRole(['kid']), async (req, res) => {
+  router.get('/savings-bonus', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const rule = await getSavingsBonusRule(kid.id);
     if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
     return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null });
   });
 
-  router.get('/wallet/pending-credits', requireRole(['kid']), async (req, res) => {
+  router.get('/wallet/pending-credits', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const credits = await getPendingCreditsForKid(kid.id);
     if (credits === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load pending credits');
@@ -441,7 +450,7 @@ export function bankingRouter(): Router {
     .strict()
     .refine((v) => v.save + v.spend + v.share > 0, 'Split must add up to more than zero');
 
-  router.post('/wallet/pending-credits/:id/allocate', requireRole(['kid']), async (req, res) => {
+  router.post('/wallet/pending-credits/:id/allocate', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -457,7 +466,7 @@ export function bankingRouter(): Router {
     return ok(res, { allocated: true });
   });
 
-  router.get('/statement', requireRole(['kid']), async (req, res) => {
+  router.get('/statement', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const q = MonthQuery.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'month must be YYYY-MM');

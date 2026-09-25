@@ -12,7 +12,9 @@
     "lockedBadge": "Tutor",
     "lockedHint": "Verifique sua identidade para desbloquear isso como Tutor — toque para começar",
     "profile": "Perfil",
-    "family": "Família"
+    "family": "Família",
+    "wallet": "Carteira",
+    "lockedTeenHint": "As tarefas precisam de um responsável vinculado. Toque para abrir sua carteira."
   },
   "upgrade": {
     "title": "Plano familiar",

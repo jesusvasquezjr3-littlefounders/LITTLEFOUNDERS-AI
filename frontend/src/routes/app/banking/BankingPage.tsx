@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { ParentBankingControlPanel } from './ParentBankingControlPanel';
 import { KidBankingHome } from './KidBankingHome';
+import { useWalletAccess } from '../wallet/useWalletAccess';
 
 /*
  * /banking — BANKING.md's money home: a named account, a card, goals in
@@ -14,9 +15,12 @@ import { KidBankingHome } from './KidBankingHome';
 export function BankingPage() {
   const { t } = useTranslation();
   const { roles } = useAuth();
+  const wallet = useWalletAccess();
 
   if (roles.includes('parent')) return <ParentBankingControlPanel />;
   if (roles.includes('kid')) return <KidBankingHome />;
+  // S07.2 (D.3): a teen who linked a verified parent sees their own account.
+  if (wallet.familyChild) return <KidBankingHome />;
 
   return <p className="lf-body p-6 text-content-muted">{t('banking.loading')}</p>;
 }

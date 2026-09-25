@@ -9,7 +9,7 @@
  */
 
 export type TransportResult = { data: unknown; error: null } | { data: null; error: { code: string } };
-export type Transport = (path: string, options: { token: string; method?: 'GET' | 'POST'; body?: unknown }) => Promise<TransportResult>;
+export type Transport = (path: string, options: { token: string; method?: 'GET' | 'POST' | 'PATCH'; body?: unknown }) => Promise<TransportResult>;
 export interface Session { token: string | null; transport: Transport }
 
 export type Outcome<T> = { ok: true; data: T } | { ok: false; code: string };
@@ -66,12 +66,14 @@ export function leaveChild(kidId: string, session: Session) {
     (data): data is { status: 'revoked' } => (data as { status?: unknown })?.status === 'revoked', { method: 'POST', body: {} });
 }
 
-export interface OwnLink { linkId: string; kidDisplayName: string | null; status: Exclude<LinkStatus, 'verified'>; updatedAt: string }
+/** S07.2: `awaiting` says who confirms a pending adult: the child's Tutor, or the teen who issued the invite. */
+export interface OwnLink { linkId: string; kidDisplayName: string | null; status: Exclude<LinkStatus, 'verified'>; awaiting?: 'tutor' | 'account_holder' | null; updatedAt: string }
 
 export function fetchOwnLinks(session: Session) {
   return call('/family/guardian-links/mine', session,
     (data): data is { links: OwnLink[] } => Array.isArray((data as { links?: unknown })?.links) && (data as { links: OwnLink[] }).links.every((l) =>
-      isUuid(l.linkId) && isNullableString(l.kidDisplayName) && ['pending', 'rejected', 'revoked'].includes(l.status) && isInstant(l.updatedAt)));
+      isUuid(l.linkId) && isNullableString(l.kidDisplayName) && ['pending', 'rejected', 'revoked'].includes(l.status) && isInstant(l.updatedAt)
+      && (l.awaiting === undefined || l.awaiting === null || l.awaiting === 'tutor' || l.awaiting === 'account_holder')));
 }
 
 // ── Guardian money actions and reward delivery ────────────────────────────
@@ -152,8 +154,12 @@ export function fulfillRedemption(redemptionId: string, session: Session) {
 
 // ── The child's own history ──────────────────────────────────────────────
 
-export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'goal_withdrawal' | 'allowance' | 'savings_bonus';
-const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 'manual_adjustment', 'goal_withdrawal', 'allowance', 'savings_bonus'];
+// S07.2: a teen who linked a parent keeps their own entries (logged income,
+// a personal reward, coins moved out of their own goal) on the same history.
+export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'goal_withdrawal' | 'allowance' | 'savings_bonus'
+  | 'self_income' | 'personal_reward' | 'goal_release';
+const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 'manual_adjustment', 'goal_withdrawal', 'allowance', 'savings_bonus',
+  'self_income', 'personal_reward', 'goal_release'];
 
 export interface LedgerEntry { id: number; bucket: Bucket; amount: number; reason: LedgerReason; note: string | null; createdAt: string }
 
