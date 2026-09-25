@@ -1,0 +1,54 @@
+{
+  "tier": "tier2",
+  "policy": {
+    "lesson": "compliant-localized",
+    "path": "adv-1/saga-1/topic-1/compliant-localized",
+    "tier": "tier2",
+    "concepts": {
+      "band": "6-9",
+      "target": 2,
+      "ceiling": 3,
+      "declared": ["comparar-precios"],
+      "declaredLabels": ["comparar precios"],
+      "future": [{ "id": "juros", "lesson": "adv-2/saga-1/topic-1/juros", "terms": { "pt-BR": ["juros"], "es-MX": ["interés"] } }]
+    },
+    "misjudgment": {
+      "character": "liruf",
+      "misjudgment": "Liruf gasta todo en el primer puesto de la feria sin comparar precios.",
+      "recovery": "Liruf dice qué haría distinto y compara precios en el siguiente puesto."
+    },
+    "regional": {
+      "required": true,
+      "reasons": ["cites the MXN fact mxn.reference_costs.limonada_vaso"],
+      "scenarios": {
+        "es-MX": { "scenario": "Liruf compra fruta en el tianguis del domingo y paga en pesos.", "problem_refs": ["mx-cash-and-informal-commerce"], "anchors": ["tianguis"] },
+        "en-US": { "scenario": "Liruf buys fruit at a neighbourhood yard sale on Saturday morning.", "problem_refs": ["us-parent-silence"], "anchors": ["yard sale"] },
+        "pt-BR": { "scenario": "Liruf compra frutas na feira livre do bairro e paga em reais.", "problem_refs": ["br-baseline-literacy-gap"], "anchors": ["feira livre"] }
+      }
+    }
+  },
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "compliant-localized", "title": "Liruf na feira", "locale": "pt-BR", "subject": "money", "estimated_minutes": 3, "objectives": ["Comparar preços antes de comprar."], "cast": ["liruf", "dina"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-historia", "type": "story_dialogue", "prompt_md": "Escute o Liruf.", "difficulty": 1, "xp": 0,
+        "payload": { "lines": [
+          { "character": "liruf", "text_md": "Gastei tudo na primeira barraca da feira livre." },
+          { "character": "dina", "text_md": "O que você faria diferente?" },
+          { "character": "liruf", "text_md": "Hoje eu comparo os preços antes." }
+        ] }
+      },
+      {
+        "id": "s2-comparar", "type": "quiz_mcq", "prompt_md": "Qual barraca tem a fruta mais barata?", "difficulty": 1, "xp": 10,
+        "payload": { "options": [
+          { "id": "o3", "text_md": "R$ 3" },
+          { "id": "o4", "text_md": "R$ 4", "rationale_md": "Custa mais que R$ 3." }
+        ] },
+        "answer": { "correct_option_id": "o3" },
+        "explanation_md": "R$ 3 é o menor preço da feira."
+      }
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "saving-basics",
+  "lesson_id": "v2-cpa-count",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-saving-count"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina junta dos grupos de monedas y cuenta cuantas tiene en total.",
+  "title": {
+    "en-US": "Count a savings goal",
+    "es-MX": "Cuenta tu meta de ahorro",
+    "pt-BR": "Conte sua meta de poupança"
+  },
+  "new_concepts": [
+    "kc-saving-count"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "representation_progressions": [
+    {
+      "fading_group_id": "cpa-savings-01",
+      "problem_id": "saving-count-01",
+      "stages": [
+        {
+          "segment_id": "cpa-concrete-01",
+          "stage": "concrete",
+          "worked_steps_shown": 3
+        },
+        {
+          "segment_id": "cpa-pictorial-01",
+          "stage": "pictorial",
+          "worked_steps_shown": 2
+        },
+        {
+          "segment_id": "cpa-abstract-01",
+          "stage": "abstract",
+          "worked_steps_shown": 0
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "id": "cpa-concrete-01",
+      "type": "math.cpa-count.v2",
+      "grading": "server",
+      "visual": {
+        "type": "cpa-count"
+      },
+      "payload": {
+        "left": 4,
+        "right": 3
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put the coin groups together.",
+          "spokenText": "four plus three"
+        },
+        "es-MX": {
+          "prompt": "Junta los grupos de monedas.",
+          "spokenText": "cuatro más tres"
+        },
+        "pt-BR": {
+          "prompt": "Junte os grupos de moedas.",
+          "spokenText": "quatro mais três"
+        }
+      },
+      "rubric": {
+        "target": 7
+      }
+    },
+    {
+      "id": "cpa-pictorial-01",
+      "type": "math.cpa-count.v2",
+      "grading": "server",
+      "visual": {
+        "type": "cpa-count"
+      },
+      "payload": {
+        "left": 4,
+        "right": 3
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put the coin groups together.",
+          "spokenText": "four plus three"
+        },
+        "es-MX": {
+          "prompt": "Junta los grupos de monedas.",
+          "spokenText": "cuatro más tres"
+        },
+        "pt-BR": {
+          "prompt": "Junte os grupos de moedas.",
+          "spokenText": "quatro mais três"
+        }
+      },
+      "rubric": {
+        "target": 7
+      }
+    },
+    {
+      "id": "cpa-abstract-01",
+      "type": "math.cpa-count.v2",
+      "grading": "server",
+      "visual": {
+        "type": "cpa-count"
+      },
+      "payload": {
+        "left": 4,
+        "right": 3
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put the coin groups together.",
+          "spokenText": "four plus three"
+        },
+        "es-MX": {
+          "prompt": "Junta los grupos de monedas.",
+          "spokenText": "cuatro más tres"
+        },
+        "pt-BR": {
+          "prompt": "Junte os grupos de moedas.",
+          "spokenText": "quatro mais três"
+        }
+      },
+      "rubric": {
+        "target": 7
+      }
+    }
+  ]
+}

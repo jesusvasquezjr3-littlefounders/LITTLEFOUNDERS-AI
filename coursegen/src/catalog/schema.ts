@@ -143,6 +143,21 @@ export type CatalogFile = z.infer<typeof catalogFileSchema>;
 
 // ---- adventures/*.yaml -------------------------------------------------------
 
+/** One market's scenario for a lesson (B.16 market-scenario authoring contract). */
+export const marketScenarioSchema = z
+  .object({
+    /** Author brief (authoring locale) describing the market's own situation, amounts and context. */
+    scenario: z.string().min(20).max(600),
+    /** Research-profile problems this scenario answers: ids from coursegen/regional/markets.yaml for THIS market. */
+    problem_refs: z.array(z.string().min(1).max(80)).min(1).max(4),
+    /** Words that must appear in this market's lesson document (proof the scenario was applied, not translated). */
+    anchors: z.array(z.string().min(2).max(40)).min(1).max(8),
+    /** Verified facts behind this market's amounts (facts.yaml ids); a currency-unit fact must be in this market's currency. */
+    fact_refs: z.array(z.string().min(1).max(120)).max(6).optional(),
+  })
+  .strict();
+export type MarketScenario = z.infer<typeof marketScenarioSchema>;
+
 export const lessonBlueprintSchema = z.object({
   position: z.number().int().min(1),
   slug: slugSchema,
@@ -192,7 +207,53 @@ export const lessonBlueprintSchema = z.object({
    * conflict that has been decided, never to silence a fixable defect.
    */
   known_exception: z.string().min(20).max(1200).optional(),
+  /**
+   * B.17 (working-memory limits): the GENUINELY NEW concepts this lesson
+   * introduces, as concept ids (kebab-case). `[]` is a valid declaration (a
+   * practice or consolidation lesson). Absent means the lesson's density is
+   * untracked, which the concept-cap gate reports as blocking at release: a
+   * density that is not declared cannot be proven to fit the age-tier ceiling.
+   * A concept is "new" only the first time it appears in course order; a later
+   * declaration of the same id is refused (it is reinforcement, not new).
+   */
+  new_concepts: z.array(slugSchema).max(12).optional(),
+  /**
+   * B.11 (mentors model flawed, human decisions): flags this lesson as a
+   * mentor-misjudgment-and-recovery episode. The named mentor makes a real
+   * money misjudgment and recovers, narrated with the same no-shame framing
+   * learner mistakes get. Every flagged episode goes to content-team validation
+   * (Appendix C Stage 3); each course needs at least one.
+   */
+  mentor_misjudgment: z
+    .object({
+      character: z.enum(['dina', 'liruf', 'rho', 'zara']),
+      misjudgment: z.string().min(20).max(400),
+      recovery: z.string().min(20).max(400),
+    })
+    .strict()
+    .optional(),
+  /**
+   * B.16 (cultural localization): the market-scenario authoring contract.
+   * Either one scenario per market — each tied to that market's research
+   * profile (`problem_refs` into coursegen/regional/markets.yaml) and carrying
+   * the context `anchors` its document must show — or a reviewed declaration
+   * that the lesson is market-neutral (`universal`), which is refused when the
+   * lesson cites market-specific amounts or context.
+   */
+  regional_scenarios: z
+    .union([
+      z.object({ universal: z.string().min(20).max(400) }).strict(),
+      z
+        .object({
+          'es-MX': marketScenarioSchema,
+          'en-US': marketScenarioSchema,
+          'pt-BR': marketScenarioSchema,
+        })
+        .strict(),
+    ])
+    .optional(),
 });
+
 
 // ---- spaced-review layer (COURSE_ENGINE.md §3.1) ---------------------------
 //
@@ -326,3 +387,39 @@ export type AdventureFile = z.infer<typeof adventureFileSchema>;
 /** Exported for the progression validator (src/catalog/progression.ts). */
 export type LessonBlueprint = z.infer<typeof lessonBlueprintSchema>;
 export type TopicBlueprint = z.infer<typeof topicBlueprintSchema>;
+
+// ---- concepts.yaml (optional, B.17) ------------------------------------------
+//
+// The course's concept registry: what each concept id in a lesson's
+// `new_concepts` means, per locale, and the surface terms that show a lesson
+// is using it. Optional so a catalog can adopt B.17 declarations first; once
+// the file exists every declared id must be registered, and the terms let the
+// concept-cap gate catch a generated lesson that introduces a LATER lesson's
+// concept early (an undeclared new concept).
+
+const conceptTermsSchema = z
+  .object({
+    'en-US': z.array(z.string().min(2).max(60)).max(12).optional(),
+    'es-MX': z.array(z.string().min(2).max(60)).max(12).optional(),
+    'pt-BR': z.array(z.string().min(2).max(60)).max(12).optional(),
+  })
+  .strict();
+
+export const conceptEntrySchema = z
+  .object({
+    label: localized(80),
+    terms: conceptTermsSchema.optional(),
+    /** Introduced by a prerequisite course: never "new" in this one. */
+    from_course: slugSchema.optional(),
+  })
+  .strict();
+
+export const conceptsFileSchema = z.object({
+  schema_version: z.literal(1),
+  concepts: z
+    .record(slugSchema, conceptEntrySchema)
+    .refine((o) => Object.keys(o).length > 0, { message: 'concepts must not be empty' }),
+});
+
+export type ConceptsFile = z.infer<typeof conceptsFileSchema>;
+export type ConceptEntry = z.infer<typeof conceptEntrySchema>;

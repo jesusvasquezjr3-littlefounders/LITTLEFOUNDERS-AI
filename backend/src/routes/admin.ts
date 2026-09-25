@@ -1140,6 +1140,11 @@ export function adminRouter(): Router {
     LESSONS_NOT_REVIEWABLE: { status: 409, code: 'RELEASE_LESSONS_NOT_REVIEWABLE' },
     INCOMPLETE_LOCALES: { status: 409, code: 'RELEASE_INCOMPLETE_LOCALES' },
     VERIFICATION_REQUIRED: { status: 409, code: 'RELEASE_VERIFICATION_REQUIRED' },
+    // S05.4c: the attestation is fresh but does not pass every Forge release
+    // gate Vault requires (forge_release_gates).
+    VERIFICATION_INCOMPLETE: { status: 409, code: 'RELEASE_VERIFICATION_INCOMPLETE' },
+    // S05.4c: release_lesson only publishes into an already-live course.
+    COURSE_RELEASE_REQUIRED: { status: 409, code: 'RELEASE_COURSE_RELEASE_REQUIRED' },
   };
 
   router.get('/content', async (_req, res) => {
@@ -1192,8 +1197,14 @@ export function adminRouter(): Router {
     if (!lessonId.success || !status.success || !isLessonStatus(status.data)) {
       return fail(res, 400, 'VALIDATION_ERROR', 'lessonId must be a uuid and status one of draft|review|published|archived');
     }
-    const done = await setLessonStatus(lessonId.data, status.data, authedUser(res).id);
-    if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the lesson');
+    // Publishing a lesson is a release through Vault's release_lesson
+    // preflight (Product G.2): the same Forge verification as a course release.
+    const result = await setLessonStatus(lessonId.data, status.data, authedUser(res).id);
+    if (result.outcome === 'blocked') {
+      const refusal = RELEASE_REFUSALS[result.code] ?? { status: 409, code: 'RELEASE_BLOCKED' };
+      return fail(res, refusal.status, refusal.code, result.message);
+    }
+    if (result.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the lesson');
     ok(res, { id: lessonId.data, status: status.data });
   });
 

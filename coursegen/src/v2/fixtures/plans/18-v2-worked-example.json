@@ -1,0 +1,122 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "discounts",
+  "lesson_id": "v2-worked-example",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-percent-of"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara sigue paso a paso como calcular el precio de oferta de una mochila.",
+  "title": {
+    "en-US": "Find a sale price",
+    "es-MX": "Encuentra el precio de oferta",
+    "pt-BR": "Ache o preço da oferta"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "worked-example-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "discount-part"
+          },
+          {
+            "id": "discount-subtract"
+          },
+          {
+            "id": "sale-price"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "discount-subtract",
+          "sale-price"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the discount step by step.",
+          "steps": [
+            {
+              "expression": "20% × 50",
+              "result": "10",
+              "spokenText": "Twenty percent of 50 is 10"
+            },
+            {
+              "expression": "50 − 10",
+              "result": "40",
+              "spokenText": "Fifty minus 10 is 40"
+            },
+            {
+              "expression": "Sale price",
+              "result": "40",
+              "spokenText": "The sale price is 40"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sigue el descuento paso a paso.",
+          "steps": [
+            {
+              "expression": "20% × 50",
+              "result": "10",
+              "spokenText": "El veinte por ciento de 50 es 10"
+            },
+            {
+              "expression": "50 − 10",
+              "result": "40",
+              "spokenText": "Cincuenta menos 10 es 40"
+            },
+            {
+              "expression": "Precio de oferta",
+              "result": "40",
+              "spokenText": "El precio de oferta es 40"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Siga o desconto passo a passo.",
+          "steps": [
+            {
+              "expression": "20% × 50",
+              "result": "10",
+              "spokenText": "Vinte por cento de 50 é 10"
+            },
+            {
+              "expression": "50 − 10",
+              "result": "40",
+              "spokenText": "Cinquenta menos 10 é 40"
+            },
+            {
+              "expression": "Preço da oferta",
+              "result": "40",
+              "spokenText": "O preço da oferta é 40"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "expectedValues": {
+          "discount-subtract": "40",
+          "sale-price": "40"
+        }
+      }
+    }
+  ]
+}

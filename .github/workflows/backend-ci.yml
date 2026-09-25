@@ -30,12 +30,14 @@ on:
       - 'backend/**'
       - 'database/types/**'
       - 'frontend/src/lesson-engine/**'
+      - 'coursegen/src/v2/**'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
       - 'backend/**'
       - 'database/types/**'
       - 'frontend/src/lesson-engine/**'
+      - 'coursegen/src/v2/**'
       - '.github/workflows/backend-ci.yml'
 
 jobs:

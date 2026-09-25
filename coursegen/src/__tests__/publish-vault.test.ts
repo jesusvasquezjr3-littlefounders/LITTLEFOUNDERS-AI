@@ -263,12 +263,16 @@ describe('publishLessonSlot — republishing live content is a decision, not a d
     expect(lessonWrites).toHaveLength(0);
   });
 
-  it("keeps the lesson live with 'keep-published' — the child's path is never broken", async () => {
+  // S05.4c lane review (Product G.2): the in-place live swap is gone. A caller
+  // that still passes it (an old script, a cast) is refused before any write,
+  // exactly like a run that states no policy.
+  it("refuses the removed 'keep-published' swap before writing anything", async () => {
     publishedProbe();
-    await publishLessonSlot({ ...samplePublishInput(), onExistingPublished: 'keep-published' });
-    const lessonsCall = upsertCalls().find((c) => (c[0] as string).includes('/lessons?'))!;
-    const body = JSON.parse((lessonsCall[1] as RequestInit).body as string) as [{ status: string }];
-    expect(body[0]!.status).toBe('published');
+    await expect(
+      publishLessonSlot({ ...samplePublishInput(), onExistingPublished: 'keep-published' as unknown as 'demote-to-review' }),
+    ).rejects.toThrow(/no in-place live swap/);
+    expect(upsertCalls().filter((c) => (c[0] as string).includes('/lessons?'))).toHaveLength(0);
+    expect(upsertTables()).not.toContain('lesson_documents');
   });
 
   it("honours COURSE_ENGINE §6's human gate with 'demote-to-review'", async () => {

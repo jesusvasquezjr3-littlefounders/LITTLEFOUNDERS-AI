@@ -1,0 +1,55 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "saving-basics",
+  "lesson_id": "v2-allocation-waffle",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-saving-allocation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara acomoda diez monedas en una cuadricula para ver cuantas guarda.",
+  "title": {
+    "en-US": "Ten coins, three jars",
+    "es-MX": "Diez monedas, tres frascos",
+    "pt-BR": "Dez moedas, três potes"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "allocate-waffle-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "waffle"
+      },
+      "payload": {
+        "total": 10,
+        "step": 1,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fill the grid. Save 3 or more."
+        },
+        "es-MX": {
+          "prompt": "Llena la cuadrícula. Guarda 3 o más."
+        },
+        "pt-BR": {
+          "prompt": "Preencha a grade. Guarde 3 ou mais."
+        }
+      },
+      "rubric": {
+        "minimumSave": 3
+      }
+    }
+  ]
+}

@@ -281,6 +281,14 @@ function stubData(
       // A.5: the users directory now projects each account's latest
       // verification row; the stub serves an empty verification history.
       if (url.includes('/rest/v1/parent_verifications')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/rpc/release_lesson')) {
+        return Promise.resolve(jsonResponse(200, [{
+          ok: !options.releaseRefusal,
+          code: options.releaseRefusal?.code ?? 'RELEASED',
+          message: options.releaseRefusal?.message ?? 'Lesson released.',
+          lessons_published: 1,
+        }]));
+      }
       if (url.includes('/rest/v1/rpc/release_course')) {
         return Promise.resolve(jsonResponse(200, [{
           ok: !options.releaseRefusal,
@@ -643,6 +651,7 @@ describe('GET + POST /api/v1/admin/content', () => {
     ['LESSONS_NOT_REVIEWABLE', 409, 'RELEASE_LESSONS_NOT_REVIEWABLE'],
     ['INCOMPLETE_LOCALES', 409, 'RELEASE_INCOMPLETE_LOCALES'],
     ['VERIFICATION_REQUIRED', 409, 'RELEASE_VERIFICATION_REQUIRED'],
+    ['VERIFICATION_INCOMPLETE', 409, 'RELEASE_VERIFICATION_INCOMPLETE'],
   ])('maps the %s release refusal to %i %s', async (rpcCode, status, envelopeCode) => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture, { releaseRefusal: { code: rpcCode, message: `Refused: ${rpcCode}` } });
@@ -731,6 +740,80 @@ describe('GET /api/v1/admin/moderation', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.total).toBe(1001);
     expect(res.body.data.lessons.at(-1)).toMatchObject({ slug: 'l1001' });
+  });
+});
+
+// S05.4c lane review (Product G.2): approving a lesson in the moderation queue
+// used to PATCH lessons.status = 'published' directly, so a regenerated lesson
+// of a live course reached children with no Forge verification. Publishing is
+// now Vault's release_lesson, which shares the course release preflight.
+describe('POST /api/v1/admin/moderation/:lessonId/status', () => {
+  it('publishes a lesson only through release_lesson, never a status write, and audits the release', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/moderation/${REVIEW_LESSON.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'published' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ id: REVIEW_LESSON.id, status: 'published' });
+    const rpc = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/release_lesson'));
+    expect(rpc?.body && JSON.parse(rpc.body)).toEqual({ p_lesson_id: REVIEW_LESSON.id });
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/lessons'))).toBe(false);
+    const audit = capture.calls.find((c) => c.method === 'POST' && c.url.includes('/audit_logs'));
+    expect(audit?.body).toContain('admin.lesson.release');
+  });
+
+  it.each([
+    ['VERIFICATION_REQUIRED', 409, 'RELEASE_VERIFICATION_REQUIRED'],
+    ['VERIFICATION_INCOMPLETE', 409, 'RELEASE_VERIFICATION_INCOMPLETE'],
+    ['COURSE_RELEASE_REQUIRED', 409, 'RELEASE_COURSE_RELEASE_REQUIRED'],
+    ['INCOMPLETE_LOCALES', 409, 'RELEASE_INCOMPLETE_LOCALES'],
+    ['LESSONS_NOT_REVIEWABLE', 409, 'RELEASE_LESSONS_NOT_REVIEWABLE'],
+    ['ARCHIVED', 409, 'RELEASE_ARCHIVED'],
+    ['NOT_FOUND', 404, 'RELEASE_NOT_FOUND'],
+  ])('maps the %s lesson release refusal to %i %s with no status write or audit', async (rpcCode, status, envelopeCode) => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { releaseRefusal: { code: rpcCode, message: `Refused: ${rpcCode}` } });
+    const res = await request(createApp())
+      .post(`/api/v1/admin/moderation/${REVIEW_LESSON.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'published' });
+    expect(res.status).toBe(status);
+    expect(res.body.error.code).toBe(envelopeCode);
+    expect(res.body.error.message).toBe(`Refused: ${rpcCode}`);
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/lessons'))).toBe(false);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(false);
+  });
+
+  it('refuses a family account and a staff member without manage_content before any release call', async () => {
+    for (const [role, permissions] of [
+      ['universal', undefined],
+      ['admin', ['manage_users', 'view_analytics', 'manage_support']],
+    ] as const) {
+      const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+      stubData(role, capture, permissions ? { permissions: [...permissions] } : {});
+      const res = await request(createApp())
+        .post(`/api/v1/admin/moderation/${REVIEW_LESSON.id}/status`)
+        .set('Authorization', staffAuth(role))
+        .send({ status: 'published' });
+      expect(res.status, role).toBe(403);
+      expect(capture.calls.some((c) => c.url.includes('/rpc/release_lesson')), role).toBe(false);
+      expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/lessons')), role).toBe(false);
+    }
+  });
+
+  it('keeps a non-publishing decision as an audited status update', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/moderation/${REVIEW_LESSON.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'draft' });
+    expect(res.status).toBe(200);
+    const patch = capture.calls.find((c) => c.method === 'PATCH' && c.url.includes('/lessons'));
+    expect(patch?.body && JSON.parse(patch.body)).toEqual({ status: 'draft' });
+    expect(capture.calls.some((c) => c.url.includes('/rpc/release_lesson'))).toBe(false);
   });
 });
 

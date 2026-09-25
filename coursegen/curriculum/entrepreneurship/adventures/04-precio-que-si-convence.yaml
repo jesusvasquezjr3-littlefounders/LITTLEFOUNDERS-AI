@@ -66,6 +66,11 @@ sagas:
               narrative_beat: "Liruf suma vinil, plantilla y sellador, y se le olvida la bolsita de regalo que le pone a cada funda antes de entregarla."
               difficulty: 2
               suggested_families: [choice, analyze]
+              # B.11: flagged mentor-misjudgment episode, pending content-team validation (Appendix C Stage 3).
+              mentor_misjudgment:
+                character: liruf
+                misjudgment: "Liruf calcula el costo de cada funda sin contar la bolsita de regalo, así que su precio no cubre todo lo que gasta."
+                recovery: "Liruf encuentra el costo olvidado, rehace la suma con la bolsita incluida y dice sin culpa qué revisará antes de poner precio."
             - position: 2
               slug: sumo-el-costo-completo
               micro_objective: "Suma, sin ayuda, el costo total de una funda personalizada incluyendo los 4 elementos: materiales, empaque, herramienta compartida y transporte."

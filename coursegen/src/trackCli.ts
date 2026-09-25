@@ -9,6 +9,7 @@
 // --track-id resumes: every shard keeps its own run-id/checkpoint.
 
 import path from 'node:path';
+import { spendCeilingRefusal } from './pipeline/spendGuard.js';
 import { fileURLToPath } from 'node:url';
 import { runTrack, type TrackReport } from './pipeline/track.js';
 import { REGISTERS, isRegister, type Register } from './pipeline/register.js';
@@ -173,6 +174,12 @@ async function main(): Promise<void> {
   }
   if (opts.noImages && opts.requireImages) {
     console.error('generate:track: --no-images and --require-images cannot be used together');
+    process.exit(1);
+  }
+  // OD-23: a paid track states the owner-approved ceiling (spendGuard.ts).
+  const refusal = spendCeilingRefusal({ command: 'generate:track', flag: '--budget-usd', dryRun: !!opts.dryRun, ceilingUsd: opts.budgetUsd });
+  if (refusal) {
+    console.error(refusal);
     process.exit(1);
   }
   const trackId = opts.trackId ?? `${opts.course}-track-${new Date().toISOString().slice(0, 10)}`;

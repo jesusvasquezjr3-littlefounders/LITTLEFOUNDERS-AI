@@ -29,6 +29,14 @@ bash agent/tools/run-all.sh build
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"
 npm --prefix coursegen run contract:check
+# S05.4a Forge content gates (B.18 redundancy, B.14 Law 2 tone, OD-13 Copy Budget):
+# catalog + committed course fixture + system/UI copy. Any blocking finding fails the release.
+npm run narration:check
+npm --prefix coursegen run content:gates -- --course "$COURSE"
+# S05.4c: every Forge gate is part of the shared release preflight, and the
+# zero-spend v2 emitter's output passes Core's strict v2 contract.
+npm run forge:release-gates:check
+npm run forge:v2:dry-run
 npm --prefix coursegen run generate -- --course "$COURSE" --run-id "$RUN_ID" --require-images --dry-run
 npm --prefix coursegen run generate:track -- --course "$COURSE" --track-id "$TRACK_ID" --require-images --dry-run
 npm --prefix audiogen run narrate:all -- --course "$COURSE" --dry-run

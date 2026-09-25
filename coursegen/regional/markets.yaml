@@ -1,0 +1,166 @@
+schema_version: 1
+
+# Market problem inventory — Product B.16 (cultural localization, not translation).
+#
+# Owner: the content / learning-design team (Appendix C Stage 0-3). Engineering
+# owns only the schema and the gate that reads this file
+# (coursegen/src/contentGates/regional.ts). The written policy and the
+# per-market checklist live in docs/content/REGIONAL-ADAPTATION-GATE.md.
+#
+# Evidence rule: `evidence: cited` entries restate a finding with its source,
+# as recorded in the brand's research foundation (docs/product-audit/
+# COSMIC_NARRATIVE.md section 1.1). `evidence: hypothesis` entries are
+# learning-design hypotheses the team must validate or delete before a
+# scenario that cites them is released; the gate lists every scenario that
+# cites a hypothesis as a Stage 3 review item. Never add a number here that
+# has no source.
+#
+# Anchors are context markers that identify ONE market. The gate uses them two
+# ways: a lesson document for another market that still carries them was
+# translated, not localized (blocking); and every market scenario declares its
+# own anchors, which its document must show. Only unambiguous markers belong
+# here: a word that is ordinary vocabulary in another content language
+# (Portuguese "peso" means weight, Spanish "boleto" means ticket, "mesada" is
+# regional Spanish for an allowance) would block honest lessons.
+
+markets:
+  es-MX:
+    country: Mexico
+    content_locale: es-MX
+    currency:
+      code: MXN
+      words: [peso, pesos]
+      # "$" is shared with the US; the currency check reads the words and codes.
+      symbols: ["$"]
+    research_profile: >-
+      Formal financial access has grown to about 80% of adults, yet research on
+      the 2024 national survey finds that financial education does not
+      automatically become financial wellbeing. The gap is judgment in daily
+      decisions, not access to an account.
+    problems:
+      - id: mx-access-without-wellbeing
+        statement: >-
+          Access has outpaced wellbeing: most adults have formal access, but
+          education alone has not turned into better everyday money outcomes.
+        evidence: cited
+        sources:
+          - "INEGI, ENIF 2024 (https://en.www.inegi.org.mx/programas/enif/2024/)"
+          - "Tec de Monterrey FAIR, Financial inclusion 2024 (https://fair.tec.mx/en/dissemination/financial-inclusion-2024)"
+        lesson_implications: >-
+          Scenarios practise a concrete decision in a familiar setting (what to
+          buy, when to wait, how to split money) rather than explaining what an
+          account or product is.
+      - id: mx-cash-and-informal-commerce
+        statement: >-
+          Children meet money mostly as cash in informal, face-to-face commerce
+          (street markets, neighbourhood shops), where prices, change and
+          haggling are visible.
+        evidence: hypothesis
+        sources: []
+        lesson_implications: >-
+          Use cash, change and small-shop or street-market situations as the
+          default context for younger learners.
+      - id: mx-informal-group-saving
+        statement: >-
+          Rotating group saving among family and friends (the tanda) is a
+          familiar way to save and to borrow, with trust as its main risk.
+        evidence: hypothesis
+        sources: []
+        lesson_implications: >-
+          Saving, trust and commitment lessons may use a tanda among
+          characters, with the trust risk made explicit.
+    anchors: [tianguis, tiendita, tanda, quincena, aguinaldo]
+
+  pt-BR:
+    country: Brazil
+    content_locale: pt-BR
+    currency:
+      code: BRL
+      words: [real, reais]
+      symbols: ["R$"]
+    research_profile: >-
+      A raw literacy gap: 45% of 15-year-olds fall below the baseline level of
+      financial literacy, against an OECD average of 18% (PISA 2022). The
+      first need is fundamentals, not product choice.
+    problems:
+      - id: br-baseline-literacy-gap
+        statement: >-
+          Nearly half of 15-year-olds are below the PISA baseline in financial
+          literacy (45% against an OECD average of 18%).
+        evidence: cited
+        sources:
+          - "OECD, PISA 2022 Results Volume IV, Brazil factsheet (https://www.oecd.org/en/publications/pisa-2022-results-volume-iv-factsheets_34d60137-en/brazil_1c815ef9-en.html)"
+        lesson_implications: >-
+          Build the fundamentals explicitly (counting money, comparing prices,
+          what a price or a cost is) with concrete and pictorial support before
+          any abstract step; never assume the prior course was mastered.
+      - id: br-instant-payments
+        statement: >-
+          Instant digital transfers (Pix) are part of everyday family life, so
+          money can leave in seconds, including to scams.
+        evidence: hypothesis
+        sources: []
+        lesson_implications: >-
+          Waiting, checking who is asking and confirming before paying are
+          natural scenario moments; scam lessons use a Pix request, not a
+          foreign payment method.
+      - id: br-installment-culture
+        statement: >-
+          Buying in instalments ("parcelado sem juros") is a common way to pay
+          for everyday goods, which hides the total price and stacks future
+          commitments.
+        evidence: hypothesis
+        sources: []
+        lesson_implications: >-
+          Total-price, future-commitment and budgeting lessons compare paying
+          at once with paying in instalments.
+    anchors: [Pix, padaria, "feira livre", cofrinho, vaquinha, "parcelado sem juros"]
+
+  en-US:
+    country: United States
+    content_locale: en-US
+    currency:
+      code: USD
+      words: [dollar, dollars]
+      symbols: ["$"]
+      # The world reference currency: a teen lesson in Mexico or Brazil may
+      # legitimately compare with dollars, so its mentions are not "foreign".
+      international: true
+    research_profile: >-
+      The market has solved access to money for children (cards, accounts, a
+      government seed account) but not judgment. Young people learn money from
+      video and social platforms and an AI, while parents find money hard to
+      discuss.
+    problems:
+      - id: us-access-not-judgment
+        statement: >-
+          Children have cards, accounts and, from 2026, a government-seeded
+          account; nobody has credibly solved judgment about money.
+        evidence: cited
+        sources:
+          - "docs/product-audit/COSMIC_NARRATIVE.md section 1.1 (Contrary Research, Medialogic, IRS and Treasury on Trump Accounts)"
+        lesson_implications: >-
+          Scenarios centre on a decision the learner could get wrong with money
+          they already have (delaying gratification, impulse spending).
+      - id: us-finfluencer-confidence-gap
+        statement: >-
+          44% of Gen Z get financial information from YouTube and 34% from
+          Instagram or TikTok; confidence runs ahead of literacy.
+        evidence: cited
+        sources:
+          - "Wells Fargo 2026 Money Study (via docs/product-audit/COSMIC_NARRATIVE.md section 1.1)"
+        lesson_implications: >-
+          Teen scenarios examine a claim from a creator or an app and ask who
+          benefits.
+      - id: us-parent-silence
+        statement: >-
+          56% of parents are reluctant to discuss money with their children;
+          impulse spending, budgeting, the value of work and delaying
+          gratification are the lessons they find hardest to teach.
+        evidence: cited
+        sources:
+          - "T. Rowe Price, Parents, Kids & Money; Wakefield Research for Wealth Enhancement 2026 (via docs/product-audit/COSMIC_NARRATIVE.md section 1.1)"
+        lesson_implications: >-
+          Scenarios give the family a concrete, low-stakes moment to talk about
+          (an allowance choice, a chore, a saving goal).
+    anchors: ["yard sale", "garage sale"]

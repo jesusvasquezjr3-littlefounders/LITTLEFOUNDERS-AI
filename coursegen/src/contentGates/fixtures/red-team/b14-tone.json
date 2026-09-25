@@ -1,0 +1,19 @@
+{
+  "tier": "tier1",
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "red-team-b14", "title": "El puesto de Liruf", "locale": "es-MX", "subject": "money", "estimated_minutes": 3, "objectives": ["Decidir cuánto ahorrar."], "cast": ["liruf"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-ahorro", "type": "quiz_mcq", "prompt_md": "¡Actúa ya! ¿Cuánto guardas hoy?", "difficulty": 1, "xp": 10,
+        "payload": { "options": [
+          { "id": "a", "text_md": "2 monedas" },
+          { "id": "b", "text_md": "Nada", "rationale_md": "Ya no tienes intentos." }
+        ] },
+        "answer": { "correct_option_id": "a" },
+        "explanation_md": "Guardar es fácil: duplica tu dinero."
+      }
+    ]
+  }
+}

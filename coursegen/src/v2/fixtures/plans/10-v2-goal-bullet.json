@@ -1,0 +1,57 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "saving-goals",
+  "lesson_id": "v2-goal-bullet",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-saving-goal"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho junta monedas para una patineta y revisa que tan cerca esta de su meta.",
+  "title": {
+    "en-US": "How close is the goal?",
+    "es-MX": "¿Qué tan cerca está la meta?",
+    "pt-BR": "Quão perto está a meta?"
+  },
+  "new_concepts": [
+    "kc-saving-goal"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "goal-bullet-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "target": 60,
+        "step": 10,
+        "initial": 20,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho wants 60 coins for a skateboard. Move his savings."
+        },
+        "es-MX": {
+          "prompt": "Rho quiere 60 monedas para una patineta. Mueve su ahorro."
+        },
+        "pt-BR": {
+          "prompt": "Rho quer 60 moedas para um skate. Mova a poupança dele."
+        }
+      }
+    }
+  ]
+}

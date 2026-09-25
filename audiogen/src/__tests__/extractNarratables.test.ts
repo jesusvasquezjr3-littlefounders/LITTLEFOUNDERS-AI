@@ -255,3 +255,25 @@ describe('eavesdrop (type 57)', () => {
     expect(units.some((u) => u.text.includes('No ganar ni perder'))).toBe(false);
   });
 });
+
+describe('extractNarratables — B.18 voice-channel choice', () => {
+  it('produces no narration at all for a text_only segment', () => {
+    const document: LessonDocument = structuredClone(fixture);
+    document.segments[1]!.narration = { mode: 'text_only' };
+    document.segments[5]!.narration = { mode: 'text_only' };
+    const units = extractNarratables(document);
+    expect(units.some((u) => u.segment_id === 's2' || u.segment_id === 's6')).toBe(false);
+    expect(units.some((u) => u.segment_id === 's1')).toBe(true);
+  });
+
+  it('reads script_md instead of the on-screen prompt for a differentiated segment', () => {
+    const document: LessonDocument = structuredClone(fixture);
+    document.segments[5]!.narration = { mode: 'differentiated', script_md: 'Liruf needs **5** coins. Which price covers the lemons?' };
+    const units = extractNarratables(document);
+    const prompt = units.find((u) => u.unit_id === 's6.prompt');
+    expect(prompt?.text).not.toContain('Quiz prompt');
+    expect(prompt?.text).toContain('Which price covers the lemons?');
+    // The rest of the segment still narrates as before.
+    expect(units.find((u) => u.unit_id === 's6.explanation')?.text).toBe('Great job');
+  });
+});

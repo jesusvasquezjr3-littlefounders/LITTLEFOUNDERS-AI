@@ -33,6 +33,9 @@ export interface SegmentNarrator {
   emotion?: CharacterEmotion
 }
 
+/** B.18: text_only = not narrated; differentiated = Echo narrates script_md in place of prompt_md. */
+export type SegmentNarration = { mode: 'text_only' } | { mode: 'differentiated'; script_md: string }
+
 /** Envelope shared by every segment. `payload`/`answer` are narrowed per type by the family schemas. */
 export interface SegmentBase {
   id: string
@@ -47,6 +50,8 @@ export interface SegmentBase {
   explanation_md?: string
   narrator?: SegmentNarrator
   audio_segment_id?: string
+  /** B.18 voice-channel choice; see schemaBase.ts. Rendering ignores it: it only changes what Echo narrates. */
+  narration?: SegmentNarration
   payload: Record<string, unknown>
   /** Server-only answer key. Stripped by stripAnswers() before any production serve. */
   answer?: Record<string, unknown>

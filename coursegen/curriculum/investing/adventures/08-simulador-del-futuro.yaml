@@ -66,6 +66,11 @@ sagas:
               narrative_beat: "Rho comete un error en el simulador - no le costó nada real, solo aprendió la lección sin pagar el precio de verdad."
               difficulty: 2
               suggested_families: [story, choice]
+              # B.11: flagged mentor-misjudgment episode, pending content-team validation (Appendix C Stage 3).
+              mentor_misjudgment:
+                character: rho
+                misjudgment: "En el simulador, Rho elige una opción sin revisar cuánto le costaría, y el resultado le sale caro."
+                recovery: "Rho explica sin culpa qué revisaría la próxima vez y repite la decisión simulada con ese paso."
             - position: 2
               slug: comparo-el-costo-del-mismo-error
               micro_objective: "Compara el costo de un error dentro del simulador contra el costo del mismo error con dinero real."

@@ -1,0 +1,57 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "unit-price",
+  "lesson_id": "v2-ratio-table",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-unit-price"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf compra paquetes de tres calcomanias y quiere saber cuanto cuesta cada una.",
+  "title": {
+    "en-US": "Price per sticker",
+    "es-MX": "Precio por calcomanía",
+    "pt-BR": "Preço por figurinha"
+  },
+  "new_concepts": [
+    "kc-unit-price"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "ratio-table-01",
+      "type": "math.ratio-table.v2",
+      "grading": "none",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "itemsPerPack": 3,
+        "pricePerPack": 15,
+        "minimumPacks": 1,
+        "maximumPacks": 4,
+        "initialPacks": 2,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A pack of 3 stickers costs 15 coins. Change the packs."
+        },
+        "es-MX": {
+          "prompt": "Un paquete de 3 calcomanías cuesta 15 monedas. Cambia los paquetes."
+        },
+        "pt-BR": {
+          "prompt": "Um pacote de 3 figurinhas custa 15 moedas. Mude os pacotes."
+        }
+      }
+    }
+  ]
+}

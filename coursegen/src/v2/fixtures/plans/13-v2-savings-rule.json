@@ -1,0 +1,53 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "savings-rules",
+  "lesson_id": "v2-savings-rule",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-if-then-saving"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina decide una regla: si le faltan monedas para su meta, no compra dulces esa semana.",
+  "title": {
+    "en-US": "Make a savings rule",
+    "es-MX": "Crea una regla de ahorro",
+    "pt-BR": "Crie uma regra de poupança"
+  },
+  "new_concepts": [
+    "kc-if-then-saving"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "savings-rule-01",
+      "type": "logic.savings-rule.v2",
+      "grading": "none",
+      "visual": {
+        "type": "rule-diagram"
+      },
+      "payload": {
+        "goal": 20,
+        "shortfall": 5
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina is 5 coins short of 20. Build her rule."
+        },
+        "es-MX": {
+          "prompt": "A Dina le faltan 5 monedas para 20. Arma su regla."
+        },
+        "pt-BR": {
+          "prompt": "Faltam 5 moedas para Dina chegar a 20. Monte a regra."
+        }
+      }
+    }
+  ]
+}

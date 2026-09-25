@@ -330,8 +330,8 @@
       "frozenHold": "Tus créditos siguen aquí mientras la tarjeta está congelada. Podrás repartirlos cuando se descongele."
     },
     "statement": {
-      "title": "Estado de cuenta",
-      "viewCta": "Ver el estado de cuenta de este mes",
+      "title": "Resumen del mes",
+      "viewCta": "Ver este mes",
       "prevMonth": "Mes anterior",
       "nextMonth": "Mes siguiente",
       "earned": "Ganado",

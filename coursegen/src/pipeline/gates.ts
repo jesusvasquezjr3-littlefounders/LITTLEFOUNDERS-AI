@@ -17,8 +17,16 @@ import {
 import { runGenerationQualityGate } from './generationQuality.js';
 import { runReadabilityGate } from './readability.js';
 import { CONTENT_TYPES } from '../contract/registry.js';
+import { runLessonContentGates } from '../contentGates/lessonGates.js';
+import { audienceForTier } from '../contentGates/budgets.js';
+import { runLessonPolicyGates, type LessonPolicy } from '../contentGates/policyGates.js';
+import type { MarketInventory } from '../contentGates/regional.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+// 11-13 are the Forge content gates (src/contentGates): 11 redundancy (B.18),
+// 12 Law 2 tone (B.14), 13 Copy Budget (OD-13). 14-16 are the lesson-policy
+// gates (src/contentGates/policyGates.ts): 14 concept cap (B.17), 15 mentor
+// misjudgment (B.11), 16 regional adaptation (B.16).
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -2505,6 +2513,21 @@ export interface GateContext {
    * (review, localization) stay valid; the write stage always passes it.
    */
   plannedSegmentTypes?: readonly string[];
+  /**
+   * Audience register for the OD-13 Copy Budget (gate 13): the kid register uses
+   * the 6-9 limits when the tier reaches below age 10; adult never does.
+   * Defaults to kid, the stricter reading.
+   */
+  register?: 'kid' | 'adult';
+  /**
+   * The lesson's catalog policy (S05.4b): declared density and later concepts
+   * (B.17), the mentor-misjudgment flag (B.11) and market scenarios (B.16).
+   * Absent (a document with no catalog behind it), gate 16 still rejects
+   * another market's context in the document.
+   */
+  lessonPolicy?: LessonPolicy;
+  /** Market problem inventory override (tests); defaults to coursegen/regional/markets.yaml. */
+  markets?: MarketInventory;
 }
 
 /*
@@ -2586,6 +2609,11 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     // catches text that reads like an adult paragraph BEFORE a paid judge call.
     ...runReadabilityGate(document, ctx.tier),
     ...runPlanFidelityGate(document, ctx.plannedSegmentTypes),
+    // Gates 11-13 (Appendix C Stage 2 order: redundancy B.18, tone B.14, Copy
+    // Budget OD-13). Deterministic and free; see src/contentGates/.
+    ...runLessonContentGates(document, audienceForTier(ctx.taxonomy, ctx.tier, ctx.register ?? 'kid')).problems,
+    // Gates 14-16 (S05.4b): concept cap B.17, mentor misjudgment B.11, regional adaptation B.16.
+    ...runLessonPolicyGates(document, ctx.lessonPolicy, ctx.markets).problems,
   ];
   return { ok: problems.length === 0, problems, document };
 }

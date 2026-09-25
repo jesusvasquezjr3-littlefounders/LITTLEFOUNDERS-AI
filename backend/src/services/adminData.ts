@@ -687,15 +687,44 @@ export function isLessonStatus(s: string): s is LessonStatus {
 }
 
 /** Approve (review→published) or reject (review→draft) a lesson at the human gate. Audited. */
-export async function setLessonStatus(lessonId: string, status: LessonStatus, actorId: string): Promise<boolean> {
+interface LessonReleaseRow {
+  ok: boolean;
+  code: string;
+  message: string;
+  lessons_published: number;
+}
+
+/**
+ * Lesson status changes from the staff moderation queue. Publishing is a
+ * RELEASE, never a status write (Product G.2, S05.4c): `release_lesson` runs
+ * the same verification preflight as the course release (a fresh Forge
+ * verify:course attesting every required release gate), and Vault refuses a
+ * direct API-role write of status='published'. Other statuses stay a plain
+ * audited update.
+ */
+export async function setLessonStatus(lessonId: string, status: LessonStatus, actorId: string): Promise<CourseStatusResult> {
+  if (status === 'published') {
+    const rows = await serviceRest<LessonReleaseRow[]>('/rpc/release_lesson', {
+      method: 'POST',
+      body: JSON.stringify({ p_lesson_id: lessonId }),
+    });
+    const release = rows?.[0];
+    if (!release) return { outcome: 'unavailable' };
+    if (!release.ok) return { outcome: 'blocked', code: release.code, message: release.message };
+    const audited = await insertAuditLog(actorId, 'admin.lesson.release', lessonId, { lessonsPublished: release.lessons_published });
+    if (!audited) {
+      console.error(`[backend] audit write FAILED for admin.lesson.release lesson=${lessonId} actor=${actorId}`);
+    }
+    return { outcome: 'ok' };
+  }
   const res = await serviceRest<unknown>(`/lessons?id=eq.${encodeURIComponent(lessonId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ status }),
   });
-  if (res === null) return false;
+  if (res === null) return { outcome: 'unavailable' };
   await insertAuditLog(actorId, 'admin.lesson.set_status', lessonId, { status });
-  return true;
+  return { outcome: 'ok' };
 }
 
 // ── Audit log ────────────────────────────────────────────────────────────────

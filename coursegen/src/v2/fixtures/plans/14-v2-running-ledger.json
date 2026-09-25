@@ -1,0 +1,55 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-teen",
+  "chapter_id": "tracking-money",
+  "lesson_id": "v2-running-ledger",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-running-ledger"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho lleva la cuenta de lo que entra y sale de su puesto de limonada.",
+  "title": {
+    "en-US": "Track every sale",
+    "es-MX": "Anota cada venta",
+    "pt-BR": "Anote cada venda"
+  },
+  "new_concepts": [
+    "kc-running-ledger"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "none",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 10,
+        "sale": 5,
+        "cost": 3,
+        "maxEntries": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each sale brings 5 coins; each cup costs 3. Log six moves."
+        },
+        "es-MX": {
+          "prompt": "Cada venta da 5 monedas; cada vaso cuesta 3. Anota seis movimientos."
+        },
+        "pt-BR": {
+          "prompt": "Cada venda rende 5 moedas; cada copo custa 3. Anote seis movimentos."
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "tier": "tier1",
+  "document": {
+    "schema_version": 1,
+    "meta": { "slug": "red-team-od13", "title": "El precio de la limonada", "locale": "es-MX", "subject": "money", "estimated_minutes": 3, "objectives": ["Comparar dos precios."], "cast": ["liruf"] },
+    "scoring": { "pass_threshold": 70, "hint_penalty_pct": 10, "max_attempts": 2, "hearts": null },
+    "segments": [
+      {
+        "id": "s1-precio", "type": "quiz_mcq", "title": "Un precio justo para todos los vecinos del barrio de Liruf",
+        "prompt_md": "Liruf vende limonada en la plaza del pueblo cada sábado por la mañana con su amiga Dina. ¿Qué precio pone hoy?",
+        "narration": { "mode": "text_only" },
+        "difficulty": 1, "xp": 10,
+        "payload": { "options": [
+          { "id": "a", "text_md": "5 monedas por cada vaso grande de limonada fría" },
+          { "id": "b", "text_md": "50 monedas", "rationale_md": "Es mucho." }
+        ] },
+        "answer": { "correct_option_id": "a" }
+      }
+    ]
+  }
+}

@@ -75,6 +75,13 @@ export interface LessonSegment {
   explanation_md?: string;
   narrator?: { character: string; emotion?: string };
   audio_segment_id?: string;
+  /**
+   * B.18 (Mayer's redundancy principle) voice-channel choice, mirrored from the
+   * Forge contract (coursegen/src/contract/core/schemaBase.ts). text_only: this
+   * segment produces no narration. differentiated: the prompt clip reads
+   * script_md, never the on-screen prompt_md.
+   */
+  narration?: { mode: 'text_only' } | { mode: 'differentiated'; script_md: string };
   payload: Record<string, unknown>;
 }
 

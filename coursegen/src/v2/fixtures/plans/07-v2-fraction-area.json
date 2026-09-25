@@ -1,0 +1,62 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "equal-shares",
+  "lesson_id": "v2-fraction-area",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-equal-shares"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho y Dina comparten una pizza y quieren partes iguales.",
+  "title": {
+    "en-US": "Make equal shares",
+    "es-MX": "Haz partes iguales",
+    "pt-BR": "Faça partes iguais"
+  },
+  "new_concepts": [
+    "kc-equal-shares"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "fraction-area-01",
+      "type": "math.fraction-area.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-area"
+      },
+      "payload": {
+        "minimumParts": 2,
+        "maximumParts": 6,
+        "initialParts": 2,
+        "initialShaded": 0
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Share the pizza. Shade one half.",
+          "spokenText": "one half"
+        },
+        "es-MX": {
+          "prompt": "Comparte la pizza. Colorea una mitad.",
+          "spokenText": "una mitad"
+        },
+        "pt-BR": {
+          "prompt": "Divida a pizza. Pinte uma metade.",
+          "spokenText": "uma metade"
+        }
+      },
+      "rubric": {
+        "targetNumerator": 1,
+        "targetDenominator": 2
+      }
+    }
+  ]
+}
