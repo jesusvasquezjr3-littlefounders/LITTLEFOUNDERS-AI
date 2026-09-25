@@ -28,7 +28,6 @@ test('the parsers actually read the real vocabularies (a vacuous pass is a failu
   assert.deepEqual(migrationVocab(sql, 'outcome'), ['catalog', 'bank', 'needs_generation', 'live_suspended', 'live_served', 'live_refused']);
   assert.deepEqual(migrationVocab(sql, 'review_issue'), ['quality', 'safety']);
   assert.equal(numericField(real[FILES.coreGovernance], 'LIVE_CONTENT_THRESHOLDS', 'concordanceFloor'), 0.9);
-  assert.equal(numericField(real[FILES.coreGovernance], 'LIVE_CONTENT_THRESHOLDS', 'calibrationMinItemsPerCategory'), 20);
 });
 
 test('RED when one side of the lexicon changes', () => {
@@ -68,9 +67,9 @@ test('RED when a configured baseline defaults below its floor, or the env exampl
   assert.ok(env.some((p) => p.includes('below the standard floor')), env.join('\n'));
 });
 
-test('RED when a calibration minimum is lowered', () => {
-  const problems = checkLiveContentParity(patched(FILES.coreGovernance, 'calibrationInterRater: 0.85,', 'calibrationInterRater: 0.7,'), sql);
-  assert.ok(problems.some((p) => p.includes('calibrationInterRater')), problems.join('\n'));
+test('RED when the concordance floor is lowered (the calibration floors moved to judge-calibration:check)', () => {
+  const problems = checkLiveContentParity(patched(FILES.coreGovernance, 'concordanceFloor: 0.9,', 'concordanceFloor: 0.8,'), sql);
+  assert.ok(problems.some((p) => p.includes('concordanceFloor')), problems.join('\n'));
 });
 
 test('RED when Oracle stops parsing the suspension (it would pay for items Core refuses)', () => {

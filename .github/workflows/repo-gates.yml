@@ -141,7 +141,62 @@ jobs:
       - name: Evaluation loop / quality dashboard agree across every copy (C.23 fence, Appendix F SLAs)
         run: node agent/tools/check-evaluation-loop-parity.mjs
 
+      # C.23: the judge-calibration standard (judges, questions, strata, failure
+      # reasons) is hand-mirrored across Core, Oracle's harnesses and the
+      # migration, and its Tier 1 floors (panel agreement and kappa, judge
+      # agreement per stratum and kappa, the verbosity gap, the per-judge
+      # minimum strata, the monthly cadence) may never be lowered here.
+      - name: Judge calibration standard agrees across every copy (Tier 1 floors guard)
+        run: node agent/tools/check-judge-calibration-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests
         run: npm run tools:test
+
+  # C.22: the tiered self-improvement governance model (Appendix E §3.1,
+  # Appendix F Part 3). Its own job because two of its checks read history:
+  # the Tier 1 change record and the decisions are append-only against the
+  # base, and no commit of automated origin may touch a Tier 1 or live-content
+  # file (or any governed file without a cleared proposal record). The static
+  # checks (every Mentor file classified, every Tier 1 change recorded, Tier 2
+  # bounds, declared pipelines, tier statements) run here too. The release
+  # audit (--release, sign-offs required) runs in release:readiness.
+  mentor-governance:
+    name: Mentor self-improvement governance (C.22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tier classification, Tier 1 change record and the automated-origin fence
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "pull_request" ]; then
+            BASE="origin/$BASE_REF"
+            RANGE="$BASE..HEAD"
+          elif [ -n "${BEFORE:-}" ] && ! echo "$BEFORE" | grep -Eq '^0+$' && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            BASE="$BEFORE"
+            RANGE="$BEFORE..$AFTER"
+          else
+            BASE=""
+            RANGE=""
+          fi
+          ARGS=()
+          if [ -n "$BASE" ]; then ARGS+=("--base=$BASE" "--range=$RANGE"); fi
+          node agent/tools/check-mentor-governance.mjs "${ARGS[@]}" --report=tier-compliance.json
+
+      - name: Keep the audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tier-compliance-audit
+          path: tier-compliance.json
+          if-no-files-found: ignore

@@ -50,7 +50,8 @@ export interface RatingSet {
 export interface CalibrationFile {
   seedSet: SeedSet;
   ratings: RatingSet[];
-  judge: { model: string; promptHash: string; mode: 'live' | 'replay' | 'dry_run'; verdicts: Record<string, SeedLabel> };
+  /** authorModel: the model that writes the items the judge approves (C.23 self-enhancement check). */
+  judge: { model: string; promptHash: string; mode: 'live' | 'replay' | 'dry_run'; authorModel?: string | null; verdicts: Record<string, SeedLabel> };
 }
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));

@@ -29,6 +29,10 @@ beforeEach(() => {
 const JUDGE_HASH = 'a'.repeat(64);
 const PASSED_CALIBRATION = {
   id: '99999999-9999-4999-8999-999999999999',
+  judge_id: 'live_content_judge',
+  kind: 'calibration',
+  verifies_calibration_id: null,
+  scope: ['approve'],
   judge_model: 'qwen3-max',
   judge_prompt_hash: JUDGE_HASH,
   seed_set_version: 'seed.v1',
@@ -193,7 +197,7 @@ interface StubOpts {
   sessionsToday?: number;
   /** S06.5: answers a request before every other branch when it returns a Response (the C.7/C.15 tables). */
   intercept?: (url: string, method: string, body?: string) => Response | null;
-  /** C.5: `tutor_content_judge_calibration` rows (newest first). Absent = never calibrated. */
+  /** C.5: `mentor_judge_calibration` rows (newest first). Absent = never calibrated. */
   judgeCalibration?: unknown[];
   /** C.5: `tutor_live_content_log` rows for every gate read. Absent = no history. */
   liveLog?: unknown[];
@@ -459,7 +463,7 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, opts.turns ?? []));
       if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, opts.safetyFlags ?? []));
       // C.5 / C.6 governance tables.
-      if (url.includes('/rest/v1/tutor_content_judge_calibration')) return Promise.resolve(jsonResponse(200, opts.judgeCalibration ?? []));
+      if (url.includes('/rest/v1/mentor_judge_calibration')) return Promise.resolve(jsonResponse(200, opts.judgeCalibration ?? []));
       if (url.includes('/rest/v1/tutor_live_content_log')) {
         if (url.includes('review_verdict=eq.rejected')) return Promise.resolve(jsonResponse(200, opts.liveLatestIssue ?? []));
         return Promise.resolve(jsonResponse(200, opts.liveLog ?? []));
@@ -6333,7 +6337,7 @@ describe('S06.12 C.5/C.6 — the governed content ladder', () => {
   });
 
   it('C.5: a failed read of the gate refuses the candidate (fail closed)', async () => {
-    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, restFailures: ['/tutor_content_judge_calibration'] });
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, restFailures: ['/mentor_judge_calibration'] });
     const response = await post('segments/verify', verifyBody(JUDGED));
     expect(response.body.data.failures).toEqual(['live generation is not admitted: gate_unavailable']);
   });
@@ -6372,7 +6376,7 @@ describe('S06.12 C.5/C.6 — the governed content ladder', () => {
     const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
     expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'bank', route: 'kc_pack', skill_key: 'kc:money.percent-intro' });
     // The live gate was never consulted: the curated tier answered.
-    expect(calls.some((c) => c.url.includes('tutor_content_judge_calibration'))).toBe(false);
+    expect(calls.some((c) => c.url.includes('mentor_judge_calibration'))).toBe(false);
   });
 
   it('C.6: reads only PUBLISHED packs (a pack in review is never served)', async () => {

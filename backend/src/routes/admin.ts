@@ -41,6 +41,7 @@ import {
   resetLiveContentGateCache,
   RISK_CATEGORIES,
 } from '../services/pedagogy/liveContentGovernance.js';
+import { JUDGE_REGISTRY } from '../services/pedagogy/judgeCalibration.js';
 import { listTutorPacks, PACK_STATUSES, setTutorPackStatus } from '../services/tutorPacks.js';
 import {
   acknowledgeFlag,
@@ -1306,7 +1307,7 @@ export function adminRouter(): Router {
         ageDays: gate.calibration.ageDays,
         judgeModel: gate.calibration.row?.judge_model ?? null,
         recordedAt: gate.calibration.row?.created_at ?? null,
-        maxAgeDays: LIVE_CONTENT_THRESHOLDS.calibrationMaxAgeDays,
+        maxAgeDays: JUDGE_REGISTRY.live_content_judge.standard.maxAgeDays,
       },
       categories: RISK_CATEGORIES.map((category) => {
         const entry = gate.categories[category];

@@ -7,6 +7,7 @@ import {
   parseVerdicts,
   rubricHash,
   runTranscriptJudge,
+  TRANSCRIPT_JUDGE_SYSTEM,
   type JudgeBatch,
 } from '../evaluation/transcriptJudge.js';
 
@@ -114,5 +115,27 @@ describe('C.21 transcript judge harness', () => {
     const a = agreement(b, { verdicts: { t1: { emotion_label: 'fail', tell_honored: 'pass' }, t2: { emotion_label: 'pass', tell_honored: 'pass' } } });
     expect(a).toMatchObject({ compared: 4, agreed: 3, rate: 0.75 });
     expect(a.byCriterion.tell_honored).toMatchObject({ compared: 2, agreed: 1, rate: 0.5 });
+  });
+
+  // ── C.23 (S06.14): the calibration run over the gold set ──
+  it('C.23: accepts a gold-set batch with an age band, and names the band to the judge', () => {
+    const b = { ...batch(), source: 'gold_set' as const, transcripts: batch().transcripts.map((t) => ({ ...t, ageBand: 'teen' as const })) };
+    const parsed = parseBatch(b);
+    expect(parsed.ok).toBe(true);
+    expect(judgeUserMessage(b, b.transcripts[0]!)).toContain('tier 2 (teen)');
+    expect(parseBatch({ ...b, transcripts: b.transcripts.map((t) => ({ ...t, ageBand: 'toddler' })) }).ok).toBe(false);
+  });
+
+  it('C.23: tells the judge what pass and fail mean (a yes/no question answered pass/fail was ambiguous)', () => {
+    expect(TRANSCRIPT_JUDGE_SYSTEM).toContain('"pass" when the Mentor did the right thing');
+    expect(TRANSCRIPT_JUDGE_SYSTEM).toContain('did NOT happen');
+  });
+
+  it('C.23: the run carries the author model and which batch it judged, for Core to recompute and record', async () => {
+    const b = { ...batch(), source: 'gold_set' as const };
+    const out = await runTranscriptJudge({ ...base, authorModel: 'deepseek-v4-flash', raw: b, mode: 'dry_run' });
+    expect(out.ok && out.run.judge).toMatchObject({ model: 'judge-x', authorModel: 'deepseek-v4-flash' });
+    expect(out.ok && out.run.batch).toEqual({ source: 'gold_set', transcripts: 2 });
+    expect(out.ok && out.run.calibration).toBe('uncalibrated');
   });
 });

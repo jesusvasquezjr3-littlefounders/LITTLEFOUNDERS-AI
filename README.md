@@ -133,6 +133,8 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | Mentor spaced review / dialogue register (C.11 routing vocabularies, the rule's thresholds Core re-evaluates, `REVIEW_OPEN_TURNS`, the routing record, `kc_attempt.review_tier`; C.17 bands, variants, assignments and the register record; the OD-23 guard on `MENTOR_DIALOGUE_EXPERIMENT_BANDS`: Oracle `spacedReview.ts`/`controller.ts`/`dialogueCalibration.ts`, Core `services/pedagogy/spacedReview.ts`/`dialogueCalibration.ts`/`fsrs.ts`/`config.ts`, the `*_mentor_spaced_review_and_dialogue_calibration` CHECKs) | `npm run review-calibration:check` |
 | Mentor live-content governance / curated packs (C.5/C.6: the content-risk lexicon in Oracle `content/contentRisk.ts` and Core `services/pedagogy/contentRisk.ts`, the governance and ladder vocabularies, the pack demand patterns and sources, the `*_live_content_governance_and_curated_packs` CHECKs, the liveSuspended answer; the Appendix E floors guard: 15% / 50% sampling and the calibration minimums may never be lowered) | `npm run live-content:check` |
 | Mentor evaluation loop / quality dashboard (C.21/C.24: the transcript rubric criteria, the score outcomes in Core and Oracle's judge harness, the owner roles, flag kinds, severities and statuses in Core, the rebuilt staff client and the `*_mentor_evaluation_loop_and_quality_dashboard` CHECKs, the hourly workflow and its route; the C.23 fence: no judge-written scores; the Appendix F 24-hour freshness and weekly review) | `npm run evaluation-loop:check` |
+| Mentor judge calibration (C.23: judges, kinds, questions, strata and failure reasons in Core `judgeCalibration.ts`, Oracle's harnesses and the `*_mentor_judge_calibration_registry` CHECKs; the Tier 1 floors guard: panel agreement 85% and kappa 0.60, judge agreement 90% per stratum and kappa 0.70, the 15-point verbosity gap, the per-judge minimum strata and the monthly cadence may never be lowered; live runs stay owner-approved) | `npm run judge-calibration:check` |
+| Mentor self-improvement governance (C.22: every file under the Mentor's governed roots classified in `docs/rebuild/mentor/governance/registry.json`; every Tier 1 / live-content change recorded in `tier1-change-record.json` (append-only); no promotion without a decision signed by both leads; Tier 2 parameters inside their bounds; repo-writing workflows declared; no automated commit on Tier 1). After changing a Tier 1 file: `npm run governance:check -- --record --change="<what>"`, then both leads sign. `--release` is the Tier-Compliance Audit (sign-offs required; run by `release:readiness`); CI adds `--base`/`--range` (job `mentor-governance`) | `npm run governance:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
@@ -260,7 +262,19 @@ npm --prefix oracle run transcript-judge -- --batch=<file> [--replay=<file>] [--
                                                # C.21 live transcript judge, dry run by default (the fixture labels stand in for the
                                                # judge, zero spend). --live is ONE PAID CALL PER TRANSCRIPT: owner-run only, refused unless
                                                # TRANSCRIPT_JUDGE_LIVE=approved (OD-23). Output is always uncalibrated Tier 3 information;
-                                               # nothing records judge scores until C.23.
+                                               # a LIVE run over the gold batch is the judge half of a C.23 calibration (below).
+npm --prefix backend run tutor:judge-calibration -- --status | --dry-run | --export-rating-sheet=<dir> | --export-gold-batch=<file>
+                                               # C.23 judge calibration (zero spend; policy docs/rebuild/mentor/JUDGE-CALIBRATION-POLICY.md).
+                                               # --status: every registered judge's trust (uncalibrated/failed/recalibration_required/stale/
+                                               # passed), scope and due date; exit 1 = a human is needed. --dry-run: the whole computation on
+                                               # the 47-transcript gold set with the author's labels (never recordable). --export-rating-sheet:
+                                               # the BLIND sheet + JSON template for the human panel. --export-gold-batch: the gold set as a
+                                               # judge batch for `transcript-judge -- --batch=<file> --live` (47 paid calls, owner-run).
+npm --prefix backend run tutor:judge-calibration -- --record --judge=<transcript_judge|live_content_judge> --run=<file> [--ratings=a.json,b.json] [--spot-check-of=<id>] --recorded-by="..." --note="..."
+                                               # recomputes from the raw labels and verdicts and records through record_mentor_judge_
+                                               # calibration (the database recomputes the verdict again). A failed spot check sets the judge
+                                               # to recalibration_required. --verify-proposal=<file>: may the calibrated transcript judge
+                                               # gate Stage 3 of that Tier 2 change proposal (C.22)?
 npm --prefix backend run seed:tutor-packs -- [--check]
                                                # C.6 curated activity packs (database/seeds/tutor_packs/*.json, contract tutor-pack.v1):
                                                # --check validates every pack (no credentials, what the tests run); without it the packs are

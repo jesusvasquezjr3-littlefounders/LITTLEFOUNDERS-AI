@@ -45,6 +45,7 @@ import { evaluateDialogueKillSwitch, type CalibrationOutcomeRow } from './dialog
 import { summarizeLadder, type LadderEventRow } from './liveContentGovernance.js';
 import { summarizeDefaultToInaction, TELEMETRY_THRESHOLDS, type TelemetrySessionRow } from './behavioralTelemetry.js';
 import { summarizeTriggerRate, type ClosedSessionRow, type SignalEventRow } from './sessionEnd.js';
+import { judgeTrust, type CalibrationRecordRow } from './judgeCalibration.js';
 
 export const OWNER_ROLES = ['pedagogical_lead', 'safety_trust_lead', 'engineering_lead'] as const;
 export type OwnerRole = (typeof OWNER_ROLES)[number];
@@ -176,7 +177,7 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'mastery.corroboration_compliance', category: 'pedagogy', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_trajectory_step', instrumented: 'yes' },
   { id: 'mastery.reversal_rate', category: 'pedagogy', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'ceiling', value: MENTOR_INTEGRITY_THRESHOLDS.masteryReversalCeiling }, minSample: MENTOR_INTEGRITY_THRESHOLDS.masteryReversalMinDeclarations, source: 'tutor_trajectory_step (90-day reversal window)', instrumented: 'yes' },
   rubricSignal('hint_repeat'),
-  notInstrumented('rubric.tell_honored', 'pedagogy', 'C.13', 'pedagogical_lead', 'C.23: a calibrated transcript judge (judge-only criterion)'),
+  notInstrumented('rubric.tell_honored', 'pedagogy', 'C.13', 'pedagogical_lead', 'a calibrated transcript judge scoring real sessions (C.23 calibration exists; real-session scoring needs a privacy review and a spend decision)'),
   rubricSignal('self_explanation'),
   { id: 'spaced_review.routing', category: 'pedagogy', requirement: 'C.11', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_review_routing (rule re-evaluation)', instrumented: 'yes' },
   { id: 'disposition.completeness', category: 'pedagogy', requirement: 'C.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learner_disposition_profile, tutor_sessions', instrumented: 'yes' },
@@ -199,13 +200,13 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'judge.content_calibration', category: 'safety_governance', requirement: 'C.5', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_content_judge_calibration, the live-content gate', instrumented: 'yes' },
   { id: 'kill_switch.open', category: 'safety_governance', requirement: 'C.21', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 0 }, minSample: 1, source: 'audit_logs mentor.kill_switch.* (every Stage 7 rollback)', instrumented: 'yes' },
   { id: 'bias_audit.coverage', category: 'safety_governance', requirement: 'C.20', owner: 'safety_trust_lead', threshold: { kind: 'floor', value: 1 }, minSample: 1, source: 'Oracle bias audit', pending: 'npm --prefix oracle run bias-audit; .github/workflows/mentor-bias-audit.yml', instrumented: 'external' },
-  notInstrumented('transcript_judge.agreement', 'safety_governance', 'C.23', 'safety_trust_lead', 'C.23: the transcript-judge calibration process (S06.14)'),
-  notInstrumented('governance.tier_compliance', 'safety_governance', 'C.22', 'safety_trust_lead', 'C.22: the Tier-Compliance Audit (S06.14)'),
+  { id: 'transcript_judge.agreement', category: 'safety_governance', requirement: 'C.23', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'mentor_judge_calibration (the transcript judge: latest calibration and spot checks)', instrumented: 'yes' },
+  { id: 'governance.tier_compliance', category: 'safety_governance', requirement: 'C.22', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the repository gate (Tier 1 change record, automated-origin fence)', pending: 'npm run governance:check -- --release (release-readiness); the repo-gates workflow on every push', instrumented: 'external' },
   // ── Appendix F §1.4 QA and pipeline ──
   { id: 'evaluation.coverage', category: 'pipeline', requirement: 'C.21', owner: 'engineering_lead', threshold: { kind: 'floor', value: T.coverageFloor }, minSample: T.coverageMinSessions, source: 'tutor_sessions.evaluation_rubric_hash', instrumented: 'yes' },
   { id: 'content_ladder.distribution', category: 'pipeline', requirement: 'C.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'tutor_content_ladder_events', instrumented: 'yes' },
   { id: 'simulated_student.pass_rate', category: 'pipeline', requirement: 'C.21', owner: 'engineering_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 0, source: 'Oracle pedagogy gym', pending: 'npm --prefix oracle run gym:pedagogy (CI)', instrumented: 'external' },
-  notInstrumented('canary.regression_rate', 'pipeline', 'C.22', 'engineering_lead', 'Appendix F Stage 5 canary rollout (not built)'),
+  { id: 'canary.regression_rate', category: 'pipeline', requirement: 'C.22', owner: 'engineering_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 0, source: 'Stage 5 outcomes in the change-proposal records', pending: 'npm run governance:check -- --report (docs/rebuild/mentor/governance/proposals)', instrumented: 'external' },
   // ── Appendix C §1.1 learning outcomes ──
   { id: 'learning.delayed_retention', category: 'learning_outcome', requirement: 'B.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'spaced-review first attempts (admin_retention_at_distance)', instrumented: 'yes' },
   { id: 'learning.practice_success_band', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'band', value: T.practiceBand.low, upper: T.practiceBand.high }, minSample: T.practiceMinAttempts, source: 'kc_attempt (Mentor practice)', instrumented: 'yes' },
@@ -291,6 +292,8 @@ export interface QualitySources {
   dialogue: CalibrationOutcomeRow[] | null;
   ladder: LadderEventRow[] | null;
   liveGate: { calibration: string; suspended: { category: string; reasons: string[] }[] } | null;
+  /** C.23: every judge's recorded calibration runs and spot checks. */
+  judgeCalibrations: CalibrationRecordRow[] | null;
   killSwitchAudit: AuditRow[] | null;
   completeness: { active: number; current: number } | null;
   kcAttempts: KcAttemptRow[] | null;
@@ -584,6 +587,21 @@ function evaluateOne(
         value: passed ? 1 : 0,
         sample: 1,
         detail: { calibration: src.liveGate.calibration, suspendedCategories: src.liveGate.suspended.length },
+      });
+    }
+    case 'transcript_judge.agreement': {
+      if (src.judgeCalibrations === null) return unavailable(def);
+      const trust = judgeTrust('transcript_judge', src.judgeCalibrations, src.now);
+      const trusted = trust.state === 'passed';
+      // Appendix F §1.3: below threshold, or not re-checked on the cadence, is
+      // a breach (a spot check below threshold also requires recalibration).
+      if (!trusted) anomalies.push(anomalyFor(def, 'threshold_breach', 'all', 0, 1, { calibration: trust.state }));
+      return reading(def.id, {
+        status: trusted ? 'ok' : 'breach',
+        value: trusted ? 1 : 0,
+        sample: 1,
+        detail: { calibration: trust.state, scopeCriteria: trust.scope.length, dueSoon: trust.dueSoon ? 1 : 0, ageDays: trust.ageDays },
+        sourceLatestAt: trust.latest?.created_at ?? null,
       });
     }
     case 'kill_switch.open': {

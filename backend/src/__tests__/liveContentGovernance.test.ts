@@ -44,17 +44,14 @@ const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000).toISOStr
 
 const PASSED: CalibrationRow = {
   id: '99999999-9999-4999-8999-999999999999',
+  judge_id: 'live_content_judge',
+  kind: 'calibration',
+  verifies_calibration_id: null,
   judge_model: 'qwen3-max',
   judge_prompt_hash: HASH,
   seed_set_version: 'seed.v1',
-  seed_set_hash: 'b'.repeat(64),
-  raters: 3,
-  items_standard: 22,
-  items_sensitive: 22,
-  agreement_standard: '0.9545',
-  agreement_sensitive: '0.9091',
-  inter_rater_agreement: '0.9000',
   verdict: 'passed',
+  scope: ['approve'],
   created_at: daysAgo(3),
 };
 
@@ -96,10 +93,18 @@ describe('C.5 dynamic sampling (the SPEC: raise on an issue, restore after 5 cle
 
 describe('C.5 the calibrated judge', () => {
   it('trusts only a passed calibration younger than the cadence', () => {
-    expect(calibrationStatus(null, NOW).state).toBe('uncalibrated');
-    expect(calibrationStatus({ ...PASSED, verdict: 'failed' }, NOW).state).toBe('uncalibrated');
-    expect(calibrationStatus(PASSED, NOW).state).toBe('passed');
-    expect(calibrationStatus({ ...PASSED, created_at: daysAgo(36) }, NOW).state).toBe('stale');
+    expect(calibrationStatus([], NOW).state).toBe('uncalibrated');
+    expect(calibrationStatus([{ ...PASSED, verdict: 'failed' }], NOW).state).toBe('uncalibrated');
+    expect(calibrationStatus([PASSED], NOW)).toMatchObject({ state: 'passed', row: PASSED });
+    expect(calibrationStatus([{ ...PASSED, created_at: daysAgo(36) }], NOW)).toMatchObject({ state: 'stale', row: null });
+    // C.23: a failed recalibration after a pass un-trusts the judge, and a
+    // transcript-judge row never vouches for the content judge.
+    const later = { ...PASSED, id: 'later', verdict: 'failed' as const, created_at: daysAgo(1) };
+    expect(calibrationStatus([later, PASSED], NOW).state).toBe('uncalibrated');
+    expect(calibrationStatus([{ ...PASSED, judge_id: 'transcript_judge' }], NOW).state).toBe('uncalibrated');
+    // A failed spot check requires a new calibration.
+    const spot = { ...PASSED, id: 'spot', kind: 'spot_check' as const, verifies_calibration_id: PASSED.id, verdict: 'failed' as const, created_at: daysAgo(1) };
+    expect(calibrationStatus([spot, PASSED], NOW).state).toBe('uncalibrated');
   });
 
   it('matches the approving judge by model AND prompt hash', () => {
@@ -363,7 +368,7 @@ function stubWorld(world: World) {
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = decodeURIComponent(String(input));
       const method = init?.method ?? 'GET';
-      if (url.includes('/tutor_content_judge_calibration')) {
+      if (url.includes('/mentor_judge_calibration')) {
         if (world.calibration === 'fail') return Promise.resolve(new Response(null, { status: 500 }));
         return Promise.resolve(jsonResponse(200, world.calibration ?? []));
       }

@@ -13,7 +13,7 @@ Every threshold below is **proposed, pending calibration**. Each one is recorded
 
 - **Tier 3 (fully automated).** Transcript scoring, anomaly flagging and dashboard reporting all belong here (Appendix E §3.1). Their output is information for a human. Nothing in this loop changes what the Mentor does in a live session.
 - **Tier 1.** The rubric is the core evaluation rubric. A change to it needs full human review, so it never enters an automated path (§2.2).
-- **Judges.** An AI judge may score transcripts only after it has been calibrated against a human panel (C.23, Appendix E §3.2). Until then its output is Tier 3 information from an owner-run harness. The schema refuses judge-written scores (§3.3).
+- **Judges.** An AI judge may be trusted only after it has been calibrated against a human panel (C.23, Appendix E §3.2; the [judge-calibration policy](JUDGE-CALIBRATION-POLICY.md), built in S06.14). A calibrated transcript judge may gate Stage 3 of a Tier 2 change, on the criteria in its scope. Otherwise its output is Tier 3 information from an owner-run harness. The schema still refuses judge-written scores (§3.3).
 
 ## 2. The rubric
 
@@ -72,7 +72,7 @@ Source: `backend/src/services/pedagogy/transcriptFixtures.ts`. It holds 14 hand-
 
 The intended labels are the author's, never a human panel's. They prove the plumbing and the rules; they are not a calibration.
 
-### 3.3 The live judge: a dry-run path only until C.23
+### 3.3 The live judge: owner-run, calibrated under C.23
 
 The harness is `npm --prefix oracle run transcript-judge -- --batch=<file>`. The batch comes from `npm --prefix backend run tutor:evaluate -- --export-judge-batch=<file>`.
 
@@ -82,7 +82,7 @@ The harness is `npm --prefix oracle run transcript-judge -- --batch=<file>`. The
 | `--replay=<file>` | Recomputes agreement from an earlier live output. | Zero |
 | `--live` | Owner-run only (OD-23). One call per transcript. Refused unless `TRANSCRIPT_JUDGE_LIVE=approved` and a judge key is configured. | Paid |
 
-The output is always labelled "uncalibrated: Tier 3 information only". No path records judge scores in the database: `tutor_transcript_score.scorer` admits `rules` only. Widening that CHECK is the schema half of the C.23 decision.
+The output is always labelled "uncalibrated: Tier 3 information only": a run is never trusted by itself. Since S06.14, a live run over the gold set (`--export-gold-batch`) is the judge half of a C.23 calibration, which Core recomputes and records. No path records judge scores for real sessions: `tutor_transcript_score.scorer` admits `rules` only. Scoring real sessions with a judge would send children's transcripts to a paid provider every hour. That needs a privacy review and an ongoing spend decision as well as a calibration, so the calibrated judge's first use is Stage 3 over simulated-student transcripts.
 
 ## 4. The loop
 

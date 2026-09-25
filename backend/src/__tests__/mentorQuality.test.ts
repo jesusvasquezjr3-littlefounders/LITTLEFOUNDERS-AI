@@ -28,6 +28,13 @@ import type { AllianceSessionRow } from '../services/pedagogy/alliance.js';
 const NOW = new Date('2026-09-25T12:00:00Z');
 const recent = (days: number) => new Date(NOW.getTime() - days * 86_400_000).toISOString();
 
+/** C.23: a passed, fresh transcript-judge calibration (the calm baseline). */
+const TRANSCRIPT_CALIBRATION = {
+  id: 'cal-1', judge_id: 'transcript_judge', kind: 'calibration' as const, verifies_calibration_id: null, judge_model: 'qwen3-max',
+  judge_prompt_hash: 'a'.repeat(64), seed_set_version: 'transcript-gold.v1', verdict: 'passed' as const, scope: ['tell_honored'],
+  created_at: new Date(NOW.getTime() - 3 * 86_400_000).toISOString(),
+};
+
 function empty(): QualitySources {
   return {
     now: NOW,
@@ -45,6 +52,7 @@ function empty(): QualitySources {
     dialogue: [],
     ladder: [],
     liveGate: { calibration: 'passed', suspended: [] },
+    judgeCalibrations: [TRANSCRIPT_CALIBRATION],
     killSwitchAudit: [],
     completeness: { active: 0, current: 0 },
     kcAttempts: [],

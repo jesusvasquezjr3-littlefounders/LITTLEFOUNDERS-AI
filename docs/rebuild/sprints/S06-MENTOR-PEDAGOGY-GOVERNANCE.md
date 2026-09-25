@@ -27,7 +27,7 @@ Risk classification: **child-facing AI safety and pedagogy**. The Oracle's orche
 | S06.11 | C.17 age-band dialogue calibration | Implemented and locally verified (same wave as S06.10); the owner/Product+Legal decision on enrolling minor bands (OD-23), physical-PostgreSQL, a running experiment and production data, native-speaker review of the controlling-language lexicon and Tier 1 review pending |
 | S06.12 | C.5 dynamic judge-sampling rate + C.6 curated activity-pack tier | Implemented and locally verified (the orchestrator's wave label S06.7); physical-PostgreSQL, the human panel's seed-set ratings and the owner-run live judge calibration (OD-23), loading and human release of the 21 seed packs, native-speaker and pedagogical review, production data, staff-console composition (wave 2) and Tier 1 review pending |
 | S06.13 | C.21 transcript scoring + anomaly flags + dashboard; C.24 consolidated monitoring | Implemented and locally verified (the orchestrator's wave label S06.8); physical-PostgreSQL, naming the owners, production data and threshold calibration, sign-off of rubric v1, the calibrated transcript judge (C.23), staff-console composition (wave 2) and Tier 3 review pending |
-| S06.14 | C.22 tiered governance + C.23 judge calibration process | Planned |
+| S06.14 | C.22 tiered governance + C.23 judge calibration process | Implemented and locally verified (the orchestrator's wave label S06.9); physical-PostgreSQL, the two leads' sign-offs (adoption decision and 8 baseline rows), the human panel's ratings and the owner-run live judge calibrations (OD-23), branch protection on main, and Tier 1 review pending |
 
 ## S06.1 implementation and rationale
 
@@ -714,3 +714,177 @@ Remaining acceptance boundaries (C.21 and C.24 stay In progress):
 - **Appendix C metrics.** Most Appendix C engagement-health and learning-outcome metrics are not instrumented by their owning requirements yet; the dashboard lists each one.
 - **Staff surface.** It is an isolated rebuilt surface. Composition in the finished staff console, and the text-fit, proportion and copy-budget audits against the real app driver, are wave 2 work.
 - **Tier 3 review.** The Pedagogical Lead has not yet confirmed the metrics are live and visible (Appendix F Part 2.1).
+
+## S06.14 implementation and rationale (C.22, C.23)
+
+The orchestrator labelled this wave checkpoint "S06.9". This record already uses S06.9 for C.15 and C.7, so the wave is recorded as S06.14, which the plan above reserved for C.22 and C.23. The worktree was clean at `566154b5`, with no uncommitted draft to resume, so the wave was built from the SPEC.
+
+- **Written policies:** the [self-improvement governance policy](../mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md) (C.22) and the [judge-calibration policy](../mentor/JUDGE-CALIBRATION-POLICY.md) (C.23, with the owner-run runbook).
+- **Thresholds:** every new one is in the [Threshold Recalibration Log](../mentor/THRESHOLD-RECALIBRATION-LOG.md) as "proposed, pending calibration".
+
+### Current state found (the SPEC's "Current State" was partly stale)
+
+**C.22.** The SPEC was accurate on the substance. Each S06 policy had a tier table, but:
+
+- no document defined the tiers or the promotion rule;
+- nothing enforced them. Nothing stopped an automated commit from changing the moderation judge, the rubric or a kill-switch floor, and no record said which Tier 1 code had been reviewed;
+- one workflow could already write to the repository: `pulse-dependabot-automerge.yml` merges Dependabot pull requests. No declaration bounded what it could reach.
+
+**C.23.** The SPEC was stale. S06.12 had built a calibration for one judge (the live-content judge): raw agreement per category, 2 or more raters, a 35-day cadence. S06.13 had built an uncalibrated transcript-judge harness. Missing:
+
+- a standard shared by every judge;
+- chance-corrected agreement. Raw agreement on a seed set where most items pass flatters an approve-everything judge;
+- a minimum number of fail items per stratum;
+- any check of the documented judge biases;
+- spot checks and an automatic recalibration trigger;
+- a gold set for the transcript judge;
+- any path by which a calibrated judge could gate a Tier 2 change.
+
+The dashboard listed `transcript_judge.agreement`, `governance.tier_compliance` and `canary.regression_rate` as not instrumented.
+
+### C.23: one calibration standard for every judge
+
+- **The registry and the standard** (`backend/src/services/pedagogy/judgeCalibration.ts`). `JUDGE_REGISTRY` names each judge, what a passed calibration lets it do, its questions, strata, cadence, owner-run harness and approval variable. `computeJudgeCalibration` recomputes everything from raw labels and verdicts:
+  1. the panel's pairwise agreement (≥ 85%) and Fleiss' kappa (≥ 0.60);
+  2. the judge against the panel majority **in every stratum** (≥ 90%, enough items, at least N panel passes and N fails), with Cohen's kappa per question (≥ 0.70). A false alarm counts against the judge, as a miss does;
+  3. the verbosity-bias gap (≤ 15 points) and the self-enhancement check (not the author's model family).
+
+  The **scope** is the list of calibrated questions, so the transcript judge may be trusted on some criteria and not others. Dry runs, replays, author labels, a single rater, a duplicate rater name, a missing verdict and an identity mismatch are all refused.
+- **Trust over time** (`judgeTrust`). The five states are `uncalibrated`, `failed`, `recalibration_required`, `stale` and `passed`, with a due date and a "due soon" warning.
+  - The latest full calibration decides.
+  - A failed spot check requires a new calibration (Appendix F §1.3's automatic trigger).
+  - A passed spot check restarts the monthly cadence.
+- **The database boundary** (migration `*_mentor_judge_calibration_registry.sql`, expand). `mentor_judge_calibration` and `mentor_judge_calibration_stratum` enforce three things:
+  - CHECK floors for every threshold, and per-judge minimum strata;
+  - a pass must follow from its own numbers, and may not come from the same model family;
+  - the only write path, `record_mentor_judge_calibration`, recomputes each stratum's pass and the scope, and checks a spot check's target, then refuses a row whose claims differ.
+
+  RLS is on with no client policy.
+- **The live-content judge moved onto it.** The live gate reads the content judge's trust from the shared registry, and its recording command writes there. `tutor_content_judge_calibration` was never written in any environment; it is left in place and marked superseded. Its bar gains the kappas, label balance and bias checks.
+- **The transcript gold set** (`transcriptGoldSet.ts`, `transcript-gold.v1`). 47 hand-written transcripts in 3 locales and 3 age bands, split into strata:
+  - `routine` (20): the plain cases;
+  - `hard` (27): borderline cases, which is where Appendix E says judges fail.
+
+  Every question has at least 10 applicable transcripts per stratum, with 4 of each label. Ids are opaque, so the panel's sheet cannot leak an answer.
+- **The pipeline** (`npm --prefix backend run tutor:judge-calibration`):
+  - `--export-rating-sheet` writes the blind sheet and a JSON template;
+  - `--export-gold-batch` writes the judge batch, which Oracle's strict schema accepts, with a new `gold_set` source and age band;
+  - `--dry-run` runs everything at zero spend and is never recordable;
+  - `--record` handles either judge and spot checks;
+  - `--status` shows every judge's trust;
+  - `--verify-proposal` answers whether the transcript judge may gate Stage 3 of a given Tier 2 change. It checks the trust at the time of scoring, the identity and the scope. A calibration recorded after the scoring cannot vouch for it.
+- **Oracle.**
+  - The transcript judge's system prompt now defines pass and fail (defect 1 below).
+  - Both harness runs carry the author model.
+  - Live runs stay refused without `TRANSCRIPT_JUDGE_LIVE=approved` or `CONTENT_JUDGE_CALIBRATION_LIVE=approved` (OD-23).
+- **Dashboard (C.24).** `transcript_judge.agreement` is instrumented, and is an urgent breach for the Safety/Trust Lead whenever the judge is not `passed`. `governance.tier_compliance` and `canary.regression_rate` are `external`, with the governance gate as their source. The staff preview fixtures follow.
+- **Unchanged on purpose.** Judge-written transcript scores stay unrecordable (`scorer` admits `rules` only). Scoring real sessions would send children's transcripts to a paid provider every hour, which needs a privacy review and a spend decision as well as a calibration.
+
+### C.22: the tiered model, enforced
+
+- **The registry** (`docs/rebuild/mentor/governance/registry.json`). It holds 12 components:
+  - 7 Tier 1: the safety judge, the rubric and judges, the Stage 2 suites and bias audit, the non-negotiables, the monetization-adjacent session caps, the Stage 7 thresholds, and the governance model itself;
+  - 1 on the live-content axis;
+  - 3 Tier 2: dialogue and persona, pacing and signals, runtime;
+  - 1 Tier 3: reporting.
+
+  Each has an owner, a policy, named examples and an append-only tier history. Every one of the 78 files under the governed roots belongs to exactly one component, and a file that mixes tiers takes the strictest. The registry also holds:
+  - 7 Tier 2 parameters with approved bounds;
+  - the automation policy documents for C.5, C.21, C.23 and C.24;
+  - the declared automated pipelines;
+  - an empty list of proposal generators;
+  - the Appendix F Stage 2 personas;
+  - the adoption decision.
+- **The Tier 1 change record** (`tier1-change-record.json`). It holds one row per change to each Tier 1 or live-content component: the content hash (LF-normalized, the bias-audit log excluded), what changed, `origin: human`, and the two sign-offs. It is append-only against the base, and a sign-off, once given, cannot change. The 8 baseline rows record the code as found at adoption.
+- **The gate** (`npm run governance:check`, `agent/tools/check-mentor-governance.mjs`) checks:
+  - Stage 0 coverage;
+  - that every Tier 1 change is recorded;
+  - that no promotion happens without a decision signed by both leads;
+  - that Tier 2 values stay inside their bounds;
+  - that the tier statements exist (DoD c);
+  - that every repo-writing workflow is declared and cannot reach Tier 1;
+  - the proposal records (`evaluateProposal`: the tier is computed from the paths; automated plus Tier 1 is a violation; the stages each tier needs, with Stage 3 bypassed for Tier 1, routed to Stage 4 when the judge is uncalibrated, two distinct Stage 4 reviewers, a canary of at least 20 human-read transcripts, and the metric shipped at Stage 6);
+  - the Canary Regression Rate;
+  - with `--range`, the automated-origin fence: a `[bot]` author or a `Mentor-Change-Origin: automated` trailer never touches Tier 1 or live content, and cites a cleared `Mentor-Proposal` for any other governed file.
+- **Where the gate runs.**
+  - `--release` is the Tier-Compliance Audit: every Tier 1 version and decision signed off. `release:readiness` runs it.
+  - CI runs the rest on every push and pull request in a new `repo-gates.yml` job (`mentor-governance`, full history, `--base` and `--range`), and uploads the audit JSON.
+- **The judge-calibration guard** (`npm run judge-calibration:check`, in `repo-gates.yml`) checks:
+  - the vocabulary parity across Core, Oracle and the migration;
+  - the Tier 1 floors, the per-judge minimums and the monthly cadence;
+  - the recomputation needles in the SQL function;
+  - that the live gate and the dashboard read the registry;
+  - the owner-approval refusals.
+
+  The live-content gate's copy of the calibration minimums moved here, and it keeps the concordance floor.
+- **The first Tier-Compliance Audit** (C.22 DoD b) was run against the current architecture before any proposal generator exists. Its result is recorded in the [governance policy §7](../mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md#7-the-tier-compliance-audit-appendix-f-13):
+  - no violation;
+  - one declared pipeline, scoped to `pulse/**`;
+  - no automated commit touching Tier 1 in `main..HEAD`;
+  - the release audit fails, as designed, until the 8 baseline rows and the adoption decision are signed.
+
+### Defects found while building, and their fixes
+
+1. **The transcript judge's prompt was ambiguous.** Every judge question is a yes/no question ("Did the Mentor repeat a hint…?"), and the prompt said to answer "pass" or "fail" without saying which meant yes. A live calibration would have measured the model's guess at the convention, not its judgement. The prompt now defines pass as "the Mentor did the right thing on that question", and an Oracle test pins it. This changes the judge identity; the judge was uncalibrated, so there was no trust to lose.
+2. **The panel's sheet leaked the answers.** The first gold-set ids were descriptive (`h05-es-tag-question-paraphrased-hint`), and the blind sheet printed them. Ids are now opaque (`gold-` plus 8 hex characters), and a test asserts that neither the key nor the author note appears in the sheet or the batch.
+3. **Two author labels were mis-coded** (a tag-question emotion claim and a hedged boredom claim were labelled pass). The dry run's per-stratum table showed only 3 hard emotion fails where 4 were planned, and both were fixed.
+4. **Kappa sat on the wrong level.** Kappa was first applied per stratum row, so a clean routine stratum showed "not met" because of a hard-stratum miss. Kappa is now judged per question, separately from each stratum's own pass, in Core and in the SQL function.
+5. **A mutation survived.** Removing the weakest-stratum rule left the suite green, because the first test's disagreements also dropped kappa below its floor. The test now uses three false alarms, so kappa stays at or above 0.70 and only the stratum rule can exclude the question. The mutation now turns it red, and it was restored.
+
+### Proposals recorded for owner and pedagogy review
+
+See [governance policy §10](../mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md#10-proposals-recorded-for-owner-review) and [judge-calibration policy §9](../mentor/JUDGE-CALIBRATION-POLICY.md#9-proposals-recorded-for-owner-and-pedagogy-review). The ones with a consequence:
+
+- **Release blocking.** `release:readiness` now fails until both leads sign the adoption decision and the baseline rows. This is the SPEC's reading.
+- **The component boundaries.** Mixed files are Tier 1, including `controller.ts`, `orchestrator.ts` and Core's kill-switch modules.
+- **The kappa floors and the verbosity gap.** These are engineering readings of "a defined threshold".
+- **Branch protection on `main`**, requiring the `mentor-governance` job.
+- **Runtime clamping** of Tier 2 environment overrides.
+- **A human-panel calibration of the moderation judge.**
+
+### Deploy order (integration step for the orchestrator)
+
+1. Apply `*_mentor_judge_calibration_registry.sql` before the Core release. Without it, the live gate cannot read a calibration and keeps live generation suspended (fail closed, the same state as today), the transcript-judge signal is `unavailable`, and recording fails. `gate-auto-apply.mjs` answers `apply=true` (additive).
+2. Core, Oracle and the frontend can then deploy in any order. The Oracle changes are the harness and scripts only; nothing in the live path changed.
+3. **Merge integration.**
+   - Any lane that changed a file in a Tier 1 or live-content component turns `governance:check` red until `npm run governance:check -- --record --change="<what>"` is run on the merged tree and the record is committed. This is the C.22 rule working as designed; the baseline rows here hash this lane's tree.
+   - A new Mentor file from another lane must be classified in the registry.
+   - Renumber migration `0120` at merge if it collides. Code, tests and the gates reference only the descriptive suffix.
+   - No bias-audited Oracle file changed.
+4. Regenerate `database/types/database.ts`. Core uses narrow local types.
+5. **Owner-side.**
+   - The two leads sign the adoption decision and the baseline rows.
+   - Branch protection on `main` (repository configuration).
+   - The panels rate both seed sets.
+   - Approve and run the two live calibrations: 91 paid calls (OD-23).
+
+### S06.14 verification log (25 September 2026)
+
+Executed 25 September 2026 in the lane worktree (`/c/lf-wt/s06`) with `VITEST_MAX_THREADS=3`. These are local results only: no real database, no CI run, no live model or judge call, and no production observation.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| C.23 standard, trust, Stage 3, gold set, export, record | `backend/`: `npx vitest run src/__tests__/judgeCalibration.test.ts` | 37 pass, covering:<ul><li>**Statistics.** Fleiss and Cohen kappa known values; always-pass on a 90/10 set scores 0; majority and tie rules; model families.</li><li>**Registry and floors.** The content judge keeps the S06.12 bar.</li><li>**Gold-set integrity.** At least 10 per question per stratum, 4 of each label; no controlling-language label for a child; no money words.</li><li>**Computation.** The dry run is never recordable. A clean panel and a clean judge pass all 6 questions. Always-pass calibrates nothing. Weakest-stratum exclusion. A false alarm counts. A noisy panel fails. Same family fails. Verbosity bias fails. Six refusal kinds. A spot check with the same identity and scope (and scope lost). The content judge answers pass/fail only.</li><li>**Trust.** Uncalibrated, passed, stale, due soon; a failed recalibration; a failed spot check requires recalibration; a new pass restores trust; a passed spot check restarts the cadence; no cross-judge vouching; the end of the first year.</li><li>**Stage 3.** Scope only; uncalibrated, stale, a wrong identity, a wrong judge or empty criteria route to Stage 4; a later calibration cannot vouch.</li><li>**Blind export.** No labels, keys, notes or strata; opaque ids; rating-file refusals; run-file refusals; the batch keys match Oracle's strict schema.</li><li>**Recording.** One RPC with every threshold, then the audit row; a dry run never reaches the database; a database refusal message is surfaced.</li><li>**Dashboard.** OK only when passed; stale and recalibration required are urgent breaches; unavailable when unreadable; the two external signals.</li></ul>First run: 1 red (defect 4), fixed. **Mutation:** removing the weakest-stratum rule survived the first test (defect 5); after the fix it turns red, and it was restored |
+| Live gate on the shared registry | `npx vitest run src/__tests__/liveContentGovernance.test.ts` | 37 pass. `calibrationStatus` now reads rows: a failed recalibration and a failed spot check un-trust the judge; a transcript-judge row never vouches for the content judge. The fetch-stubbed gate reads `mentor_judge_calibration`. The route suites (`tutor.test.ts`, `admin.test.ts`) point at the new table |
+| Loop and dashboard | `npx vitest run src/__tests__/evaluationLoop.test.ts src/__tests__/mentorQuality.test.ts src/__tests__/mentorQualityRoutes.test.ts` | 41 pass. The loop reads the calibration registry and opens an urgent flag for the uncalibrated transcript judge |
+| Core full | `backend/`: `npm run type-check`, `npm run lint`, `npx vitest run` | Pass. 82 files (1 skipped, pre-existing), 1,909 passed + 1 skipped (1,872 before, +37). First lint run: 2 unused parameters in the new test, fixed |
+| Oracle | `oracle/`: `npm run type-check`, `npm run lint`, `npx vitest run`, `npm run verify:tutor`, `npm run verify:pedagogy`, `npm run gym:pedagogy`, `npm run bias-audit -- --check` | Pass. 62 files, 1,674 tests (1,671 before, +3 in `transcriptJudge.test.ts`: the gold-set source and age band, the pass/fail definition, the author model on the run). The privacy boundary is sealed. Gym OK. Bias audit: 0 failures, 1 known gap, no audited file changed. The first full run had 3 red files that I had not touched (`boot-skills` timing out at 10 s, `hardening`, `live-session`), with the Core suite running in parallel. They passed alone (79 tests), and the quiet full rerun passed |
+| Pipeline end to end (zero spend) | `tutor:judge-calibration -- --export-rating-sheet`, `--export-gold-batch`; `oracle transcript-judge -- --batch=<gold> --out=<run>`; the same with `--live`; `tutor:judge-calibration -- --record --judge=transcript_judge --run=<dry run> --ratings=a,b` | The sheet is 47 transcripts, with no label, stratum or key. Oracle's strict schema accepted the Core gold batch ("a live run makes 47 paid call(s)"). `--live` is refused (exit 2) without approval. `--record` on the dry-run file computes all 12 strata and is **refused** ("not obtained live"). `--dry-run` shows full scope and "NOT RECORDABLE" |
+| Governance gate | `node --test agent/tools/check-mentor-governance.test.mjs`; `npm run governance:check -- --range=main..HEAD`; `-- --release --report=…` | 18 pass. They prove red on each of: an unclassified or doubly claimed file; a stale component; missing examples or policy; a tier/history mismatch; an unrecorded Tier 1 change (and green after `--record`); an automated ledger row; append-only violations (row removed, hash or sign-off rewritten, decision or component removed); an unsigned promotion or a move out of the live axis; a Tier 2 value out of bounds or in the wrong tier; a missing tier statement; an undeclared or over-scoped workflow (a comment is not a capability); proposal stage rules (never automate, weaker tier, Stage 3 bypass, distinct reviewers, Stage 2 failures, canary minimum, Stage 6); the canary rate; the commit fence (bot on Tier 1, trailer without proposal, files outside the proposal, a draft proposal). Also: CRLF-insensitive hashing and the excluded audit log. On the real tree: 12 components, 78 files, 8 recorded components, 19 lane commits checked, OK. The release audit fails with 9 problems (8 unsigned components and the adoption decision), as designed. The gate also caught its own edit: changing the gate file after the first baseline turned `governance.model` red until it was re-recorded |
+| Judge-calibration guard | `npm run judge-calibration:check`; `node --test agent/tools/check-judge-calibration-parity.test.mjs` | OK. 7 pass: green on the tree; the parsers read real values; red on a lowered Core floor or gap, a lowered judge minimum or a looser cadence, a lowered SQL floor, a dropped stratum, removal of the same-family rule, a client policy, Oracle dropping `gold_set` or the author model, a live run losing its approval, and the live gate reading the wrong judge |
+| Other gates | `npm run live-content:check` (and its 11 tests, calibration floors moved out, concordance guard kept), `npm run evaluation-loop:check`, `npm run tools:test` | OK. 141 tool tests (116 before, +25) |
+| Frontend | `frontend/`: `npm run type-check`, `npm run lint`, `npx vitest run` | Pass. 218 files, 2,246 tests (fixtures only changed: the three signals' instrumented state) |
+| Real Chrome | `REBUILD_URL=http://localhost:5330 node scripts/verify-rebuild-mentor-quality.mjs` (Vite on 5330, stopped afterwards) | 36 configurations, 0 findings (3 locales × 2 themes × 4 widths plus the state and interaction checks). I read the en-US dark 1280 screenshot by hand: "Transcript judge agreement" shows ✗ Needs review, and "Tier rules followed" and "Canary rollbacks" show "Measured elsewhere". Evidence: `audit-results/rebuild-mentor-quality/` (ignored by git). No copy changed, so the i18n check was not needed |
+| Migrations (static) | `database/`: `node scripts/check-migrations.mjs`, `node scripts/check-migration-phase.mjs`; `gate-auto-apply.mjs` on a simulated dry run listing the new file | 120 files, sequential, RLS covered (2 new tables); phase declarations agree (99 expand, 21 contract); the auto-apply gate answers `apply=true` (additive) |
+| Railway transport suite | `database/`: `npm test` (the whole suite, ending with `railway-migrate.test.mjs`) | Pass: 21 Node checks, then 12 transport scenarios plus the static probe-map/DEPLOYMENT.md DDL cross-checks |
+| Repo gates | `npm run spec:check`, `npm run secrets:check` (every new file staged), `npm run governance:check` on the staged tree | Pass on the first run |
+
+Remaining acceptance boundaries (C.22 and C.23 stay In progress):
+
+- **Database.** The migration has not been applied to a physical PostgreSQL. The recording function's recomputation and the CHECKs have only static evidence and the fetch-stubbed RPC contract. The types have not been regenerated.
+- **Sign-off (Tier 1).** The Pedagogical Reviewer and the Safety/Trust Lead have not signed the adoption decision, the 8 baseline rows or the calibration standard. The release audit fails until they do, by design.
+- **Calibration.** No panel has rated either seed set. The live calibrations are owner-run (OD-23: 44 + 47 paid calls). Until then, both judges are `uncalibrated`, live generation stays suspended, and Stage 3 routes to human review.
+- **Gold-set review.** The gold set is hand-written. It needs native-speaker review (es-MX, pt-BR) and pedagogy review of the hard cases, and should grow from consented real transcripts once a privacy review allows it.
+- **Enforcement the owner controls.** Branch protection on `main` (requiring the `mentor-governance` job), and runtime clamping of Tier 2 environment overrides, are proposals.
+- **The pipeline itself.** No proposal has gone through it yet, and no automated proposal generator exists. The canary infrastructure is the H.7 experiment console. The first real Tier 2 change will be the pipeline's own acceptance test.
+- **Thresholds.** Every new threshold (kappas, verbosity gap, strata sizes, canary minimum, Tier 2 bounds) still needs calibration.

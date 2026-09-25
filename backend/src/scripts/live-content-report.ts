@@ -75,7 +75,8 @@ export function calibrationInputFrom(file: CalibrationFile): CalibrationInput {
     seedSet: {
       version: file.seedSet.version,
       hash: seedSetHash(file.seedSet.items),
-      items: file.seedSet.items.map((i) => ({ id: i.id, category: i.category })),
+      // The judged text's length feeds the verbosity-bias check (C.23).
+      items: file.seedSet.items.map((i) => ({ id: i.id, category: i.category, length: JSON.stringify(i.segment ?? i).length })),
     },
     ratings: file.ratings,
     judge: file.judge,
@@ -93,7 +94,12 @@ async function recordCalibration(path: string): Promise<number> {
   const input = calibrationInputFrom(file);
   const result = computeCalibration(input);
   console.log(`Seed set ${input.seedSet.version} (${input.seedSet.hash.slice(0, 12)}), ${file.ratings.length} rater(s), judge ${input.judge.model} (${input.judge.mode})`);
-  console.log(`  inter-rater agreement ${pct(result.interRater)} (≥ ${pct(LIVE_CONTENT_THRESHOLDS.calibrationInterRater)})`);
+  const g = result.general;
+  console.log(`  inter-rater agreement ${pct(result.interRater)} (≥ ${pct(g.thresholds.interRater)}), Fleiss kappa ${g.interRaterKappa.toFixed(3)} (≥ ${g.thresholds.interRaterKappa})`);
+  console.log(
+    `  judge kappa ${g.strata[0]?.questionKappa.toFixed(3) ?? 'n/a'} (≥ ${g.thresholds.judgeKappa}); length-bias gap ${g.lengthBiasGap === null ? 'n/a' : pct(g.lengthBiasGap)}; judge family ${g.judgeFamily}, author family ${g.authorFamily}`,
+  );
+  if (g.failureReasons.length > 0) console.log(`  failure reasons: ${g.failureReasons.join(', ')}`);
   console.log(`  standard  ${result.itemsStandard} items, judge-human agreement ${pct(result.agreementStandard)}`);
   console.log(`  sensitive ${result.itemsSensitive} items, judge-human agreement ${pct(result.agreementSensitive)}`);
   for (const d of result.disagreements.slice(0, 20)) console.log(`  disagreement ${d.id} (${d.category}): human ${d.human}, judge ${d.judge}`);
@@ -102,19 +108,18 @@ async function recordCalibration(path: string): Promise<number> {
     for (const r of result.refusals) console.error(`  - ${r}`);
     return 1;
   }
-  const id = await recordJudgeCalibration({
+  const outcome = await recordJudgeCalibration({
     result,
     seedSet: input.seedSet,
     judge: input.judge,
-    raters: file.ratings.length,
     recordedBy: recordedBy.trim(),
     note: note.trim(),
   });
-  if (id === null) {
-    console.error('The calibration row did not land.');
+  if (!outcome.ok) {
+    console.error(`The calibration row did not land: ${outcome.why}`);
     return 1;
   }
-  console.log(`\nRecorded calibration ${id}: ${result.verdict.toUpperCase()}.`);
+  console.log(`\nRecorded calibration ${outcome.id}: ${result.verdict.toUpperCase()}.`);
   return result.verdict === 'passed' ? 0 : 1;
 }
 
@@ -168,7 +173,9 @@ async function report(): Promise<number> {
 
   console.log('LIVE-GENERATION CONTENT JUDGE (C.5, Appendix E §3.1.1)');
   const cal = gate.calibration;
-  console.log(`  calibration: ${cal.state}${cal.row ? ` — ${cal.row.judge_model}, ${cal.ageDays} day(s) old, standard ${pct(Number(cal.row.agreement_standard))}, sensitive ${pct(Number(cal.row.agreement_sensitive))}, inter-rater ${pct(Number(cal.row.inter_rater_agreement))}` : ''}`);
+  console.log(
+    `  calibration: ${cal.state}${cal.row ? ` — ${cal.row.judge_model}, seed ${cal.row.seed_set_version}, ${cal.ageDays} day(s) since verified (per-stratum detail: npm run tutor:judge-calibration -- --status)` : ''}`,
+  );
   if (cal.state !== 'passed') flag(`the judge is ${cal.state}: live generation is suspended for every category until a passed calibration is recorded (owner-run, OD-23)`);
   if (gate.ignoredBaselines.length > 0) flag(`configured baseline below the floor ignored for ${gate.ignoredBaselines.join(', ')}`);
 

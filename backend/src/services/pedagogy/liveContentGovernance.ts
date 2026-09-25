@@ -22,7 +22,9 @@
  *      (model + prompt hash) has a passed calibration against a human-rated
  *      seed set (Appendix E §2.1/§3.2), no older than the re-check cadence.
  *      An item approved by a different judge than the calibrated one is
- *      refused.
+ *      refused. Since C.23 (S06.14) the calibration standard, its records
+ *      and the trust rule are the shared ones in `judgeCalibration.ts`
+ *      (`mentor_judge_calibration`), the same for every evaluation judge.
  *   4. STAGE 7. If staff disagree with the judge too often (the Judge
  *      Approval-Quality Concordance Rate below 90%) or staff review falls
  *      below the floor, live generation for that category is SUSPENDED: the
@@ -39,6 +41,15 @@
 import { getConfig } from '../../config.js';
 import { insertAuditLog, serviceRest } from '../supabaseRest.js';
 import type { ContentRiskCategory } from './contentRisk.js';
+import {
+  computeJudgeCalibration,
+  judgeTrust,
+  readCalibrationRows,
+  recordCalibration,
+  type CalibrationComputation,
+  type CalibrationRecordRow,
+  type JudgeLabel,
+} from './judgeCalibration.js';
 
 // ── vocabularies and thresholds ──────────────────────────────────────────────
 
@@ -66,14 +77,8 @@ export const LIVE_CONTENT_THRESHOLDS = {
   reviewWindowDays: 30,
   /** Below this many served items in the window, coverage is not judged. */
   reviewMinServed: 20,
-  /** Calibration: judge-human agreement per category (pre-registered). */
-  calibrationAgreement: 0.9,
-  /** Calibration: human inter-rater agreement on the seed set (Appendix E §2.1, ~85%). */
-  calibrationInterRater: 0.85,
-  /** Calibration: seed items per category. */
-  calibrationMinItemsPerCategory: 20,
-  /** Calibration: re-check cadence (Appendix F §1.3: monthly in the first year), with grace. */
-  calibrationMaxAgeDays: 35,
+  // The calibration bar and cadence live in `judgeCalibration.ts`
+  // (JUDGE_REGISTRY.live_content_judge.standard), shared by every judge (C.23).
   gateCacheMs: 60_000,
 } as const;
 
@@ -182,42 +187,25 @@ export function samplingState(
 
 // ── 3. the calibrated judge (pure) ───────────────────────────────────────────
 
-export interface CalibrationRow {
-  id: string;
-  judge_model: string;
-  judge_prompt_hash: string;
-  seed_set_version: string;
-  seed_set_hash: string;
-  raters: number;
-  items_standard: number;
-  items_sensitive: number;
-  agreement_standard: number | string;
-  agreement_sensitive: number | string;
-  inter_rater_agreement: number | string;
-  verdict: 'passed' | 'failed';
-  created_at: string;
-}
+/** A recorded calibration run of the live-content judge (`mentor_judge_calibration`, C.23). */
+export type CalibrationRow = CalibrationRecordRow;
 
 export type CalibrationState = 'passed' | 'uncalibrated' | 'stale';
 
 /**
- * The LATEST recorded run decides: a failed recalibration un-trusts a judge
- * that passed before. A passed run older than the cadence is stale.
+ * The live-content judge's trust, from its recorded runs (C.23's shared
+ * rule): the latest full calibration decides, so a failed recalibration
+ * un-trusts a judge that passed before; a failed spot check requires a new
+ * calibration; a pass not re-verified within the cadence is stale. For this
+ * gate every other untrusted state suspends as `uncalibrated`.
  */
 export function calibrationStatus(
-  latest: CalibrationRow | null,
+  rows: readonly CalibrationRecordRow[],
   now: Date,
-  t = LIVE_CONTENT_THRESHOLDS,
-): { state: CalibrationState; ageDays: number | null } {
-  if (latest === null || latest.verdict !== 'passed') {
-    return { state: 'uncalibrated', ageDays: latest === null ? null : ageDays(latest.created_at, now) };
-  }
-  const age = ageDays(latest.created_at, now);
-  return { state: age > t.calibrationMaxAgeDays ? 'stale' : 'passed', ageDays: age };
-}
-
-function ageDays(iso: string, now: Date): number {
-  return Math.floor((now.getTime() - Date.parse(iso)) / 86_400_000);
+): { state: CalibrationState; ageDays: number | null; row: CalibrationRecordRow | null } {
+  const trust = judgeTrust('live_content_judge', rows, now);
+  const state: CalibrationState = trust.state === 'passed' ? 'passed' : trust.state === 'stale' ? 'stale' : 'uncalibrated';
+  return { state, ageDays: trust.ageDays, row: state === 'passed' ? trust.calibration : null };
 }
 
 /** Whether the judge that approved an item is the calibrated one. */
@@ -379,9 +367,6 @@ export interface LiveContentGate {
   ignoredBaselines: ContentRiskCategory[];
 }
 
-const CALIBRATION_SELECT =
-  'id,judge_model,judge_prompt_hash,seed_set_version,seed_set_hash,raters,items_standard,items_sensitive,agreement_standard,agreement_sensitive,inter_rater_agreement,verdict,created_at';
-
 let gateCache: { at: number; gate: LiveContentGate } | null = null;
 
 /** Test hook: forget the cached gate. */
@@ -404,12 +389,10 @@ function unavailableGate(): LiveContentGate {
   return { degraded: true, calibration: { state: 'uncalibrated', row: null, ageDays: null }, categories, ignoredBaselines: ignored };
 }
 
-export async function latestCalibration(): Promise<CalibrationRow | null | undefined> {
-  const rows = await serviceRest<CalibrationRow[]>(
-    `/tutor_content_judge_calibration?select=${CALIBRATION_SELECT}&order=created_at.desc&limit=1`,
-  );
-  if (rows === null) return undefined;
-  return rows[0] ?? null;
+/** The live-content judge's recorded runs (newest first), or undefined when the read failed. */
+export async function calibrationRows(): Promise<CalibrationRecordRow[] | undefined> {
+  const rows = await readCalibrationRows('live_content_judge', 50);
+  return rows === null ? undefined : rows;
 }
 
 async function killSwitchRows(): Promise<AuditRow[] | null> {
@@ -511,14 +494,14 @@ export async function getLiveContentGate(now: Date = new Date()): Promise<LiveCo
   if (ignored.length > 0) {
     console.warn(`[tutor] live-content sampling baseline below the Appendix E floor ignored for: ${ignored.join(', ')}`);
   }
-  const [calibration, audit] = await Promise.all([latestCalibration(), killSwitchRows()]);
-  if (calibration === undefined || audit === null) return unavailableGate();
+  const [rows, audit] = await Promise.all([calibrationRows(), killSwitchRows()]);
+  if (rows === undefined || audit === null) return unavailableGate();
 
-  const status = calibrationStatus(calibration, now, t);
+  const status = calibrationStatus(rows, now);
   let open = openTrips(audit);
   // Trips are only evaluated against a judge that is trusted at all; an
   // uncalibrated judge is already suspended everywhere.
-  const trusted = status.state === 'passed' ? calibration : null;
+  const trusted = status.row;
 
   const categories = {} as Record<ContentRiskCategory, CategoryGate>;
   for (const category of RISK_CATEGORIES) {
@@ -534,7 +517,7 @@ export async function getLiveContentGate(now: Date = new Date()): Promise<LiveCo
 
   const gate: LiveContentGate = {
     degraded: false,
-    calibration: { state: status.state, row: calibration, ageDays: status.ageDays },
+    calibration: { state: status.state, row: status.row, ageDays: status.ageDays },
     categories,
     ignoredBaselines: ignored,
   };
@@ -673,9 +656,10 @@ export async function resolveLiveContentKillSwitch(input: {
   if (!trip) return { ok: false, why: `no open ${input.cause} trip for ${input.category}` };
   if (input.cause === 'concordance_below_floor') {
     // Appendix E §3.1.1(b): suspended "until the judge is recalibrated".
-    const calibration = await latestCalibration();
-    if (calibration === undefined) return { ok: false, why: 'could not read the calibration log' };
-    if (calibration === null || calibration.verdict !== 'passed' || calibration.created_at <= trip.trippedAt) {
+    const rows = await calibrationRows();
+    if (rows === undefined) return { ok: false, why: 'could not read the calibration log' };
+    const current = calibrationStatus(rows, now).row;
+    if (current === null || current.created_at <= trip.trippedAt) {
       return { ok: false, why: 'a concordance trip resolves only after a PASSED calibration recorded after the trip' };
     }
   }
@@ -702,15 +686,21 @@ export async function resolveLiveContentKillSwitch(input: {
 }
 
 // ── 9. calibration against a human-rated seed set (Appendix E §2.1/§3.2) ────
+//
+// Since C.23 the computation is the shared standard in `judgeCalibration.ts`
+// (inter-rater agreement raw and chance-corrected, the judge per category
+// with both labels present, Cohen's kappa, the verbosity and self-
+// enhancement checks). This is the content judge's adapter: one question
+// ("approve"), pass/fail only, strata = the two risk categories.
 
 export type SeedLabel = 'pass' | 'fail';
 
 export interface CalibrationInput {
-  seedSet: { version: string; hash: string; items: { id: string; category: ContentRiskCategory }[] };
+  seedSet: { version: string; hash: string; items: { id: string; category: ContentRiskCategory; length?: number }[] };
   /** One entry per human rater: that rater's label for every item. */
   ratings: { rater: string; source: 'human_panel' | string; labels: Record<string, SeedLabel> }[];
   /** The judge's verdict per item, and how the verdicts were obtained. */
-  judge: { model: string; promptHash: string; mode: 'live' | 'replay' | string; verdicts: Record<string, SeedLabel> };
+  judge: { model: string; promptHash: string; mode: 'live' | 'replay' | string; authorModel?: string | null; verdicts: Record<string, SeedLabel> };
 }
 
 export interface CalibrationResult {
@@ -723,139 +713,85 @@ export interface CalibrationResult {
   agreementSensitive: number;
   interRater: number;
   disagreements: { id: string; category: ContentRiskCategory; human: SeedLabel; judge: SeedLabel }[];
+  /** The full shared computation (kappas, bias checks, failure reasons). */
+  general: CalibrationComputation;
 }
+
+const asQuestion = (labels: Record<string, SeedLabel>): Record<string, Record<string, JudgeLabel>> =>
+  Object.fromEntries(Object.entries(labels).map(([id, l]) => [id, { approve: l }]));
 
 /**
- * Computes a calibration run from its raw parts — never from a number the
- * harness computed — so the recorded agreement is reproducible.
- *
- *   inter-rater agreement  mean pairwise percent agreement over all items
- *   the human label        the panel's majority; a tie is `fail` (half the
- *                          panel suspects a defect, which is not a pass)
- *   judge agreement        per category, judge verdict = human label
- *
- * NOT RECORDABLE (refused, whatever the numbers): fewer than two raters, a
- * rating file not from the human panel (e.g. the seed author's intended
- * labels), a judge verdict set not obtained live, or an item without a
- * label from every rater and the judge.
+ * Computes a content-judge calibration run from its raw parts — never from a
+ * number the harness computed — with the shared C.23 standard. NOT
+ * RECORDABLE whatever the numbers: fewer than two raters, a rating file not
+ * from the human panel, a judge not run live, or a missing label/verdict.
  */
-export function computeCalibration(input: CalibrationInput, t = LIVE_CONTENT_THRESHOLDS): CalibrationResult {
-  const refusals: string[] = [];
-  const items = input.seedSet.items;
-  if (input.ratings.length < 2) refusals.push('at least two human raters are required');
-  for (const r of input.ratings) {
-    if (r.source !== 'human_panel') refusals.push(`rating set "${r.rater}" is not from the human panel (source: ${r.source})`);
-  }
-  if (input.judge.mode !== 'live') refusals.push(`judge verdicts were not obtained live (mode: ${input.judge.mode})`);
-  if (!/^[0-9a-f]{64}$/.test(input.judge.promptHash)) refusals.push('judge prompt hash is not a SHA-256');
-
-  const humanLabel = new Map<string, SeedLabel>();
-  let pairAgree = 0;
-  let pairTotal = 0;
-  for (const item of items) {
-    const labels = input.ratings.map((r) => r.labels[item.id]);
-    if (labels.some((l) => l !== 'pass' && l !== 'fail') || (input.judge.verdicts[item.id] !== 'pass' && input.judge.verdicts[item.id] !== 'fail')) {
-      refusals.push(`item ${item.id} is missing a label or a judge verdict`);
-      continue;
-    }
-    const passes = labels.filter((l) => l === 'pass').length;
-    humanLabel.set(item.id, passes * 2 > labels.length ? 'pass' : 'fail');
-    for (let i = 0; i < labels.length; i++) {
-      for (let j = i + 1; j < labels.length; j++) {
-        pairTotal += 1;
-        if (labels[i] === labels[j]) pairAgree += 1;
-      }
-    }
-  }
-
-  const disagreements: CalibrationResult['disagreements'] = [];
-  const agreementFor = (category: ContentRiskCategory): { n: number; agreement: number } => {
-    const scoped = items.filter((i) => i.category === category && humanLabel.has(i.id));
-    let agree = 0;
-    for (const item of scoped) {
-      const human = humanLabel.get(item.id)!;
-      const judge = input.judge.verdicts[item.id] as SeedLabel;
-      if (human === judge) agree += 1;
-      else disagreements.push({ id: item.id, category, human, judge });
-    }
-    return { n: scoped.length, agreement: scoped.length === 0 ? 0 : agree / scoped.length };
-  };
-  const standard = agreementFor('standard');
-  const sensitive = agreementFor('sensitive');
-  const interRater = pairTotal === 0 ? 0 : pairAgree / pairTotal;
-
-  const passed =
-    refusals.length === 0 &&
-    standard.n >= t.calibrationMinItemsPerCategory &&
-    sensitive.n >= t.calibrationMinItemsPerCategory &&
-    standard.agreement >= t.calibrationAgreement &&
-    sensitive.agreement >= t.calibrationAgreement &&
-    interRater >= t.calibrationInterRater;
-
+export function computeCalibration(input: CalibrationInput): CalibrationResult {
+  const general = computeJudgeCalibration({
+    judgeId: 'live_content_judge',
+    kind: 'calibration',
+    seedSet: {
+      version: input.seedSet.version,
+      hash: input.seedSet.hash,
+      items: input.seedSet.items.map((i) => ({ id: i.id, stratum: i.category, length: i.length ?? 0 })),
+    },
+    ratings: input.ratings.map((r) => ({ rater: r.rater, source: r.source, labels: asQuestion(r.labels) })),
+    judge: {
+      model: input.judge.model,
+      promptHash: input.judge.promptHash,
+      mode: input.judge.mode,
+      authorModel: input.judge.authorModel ?? null,
+      verdicts: asQuestion(input.judge.verdicts),
+    },
+  });
+  const stratum = (c: ContentRiskCategory) => general.strata.find((s) => s.question === 'approve' && s.stratum === c);
   return {
-    recordable: refusals.length === 0,
-    refusals,
-    verdict: passed ? 'passed' : 'failed',
-    itemsStandard: standard.n,
-    itemsSensitive: sensitive.n,
-    agreementStandard: round4(standard.agreement),
-    agreementSensitive: round4(sensitive.agreement),
-    interRater: round4(interRater),
-    disagreements,
+    recordable: general.recordable,
+    refusals: general.refusals,
+    verdict: general.verdict,
+    itemsStandard: stratum('standard')?.items ?? 0,
+    itemsSensitive: stratum('sensitive')?.items ?? 0,
+    agreementStandard: stratum('standard')?.agreement ?? 0,
+    agreementSensitive: stratum('sensitive')?.agreement ?? 0,
+    interRater: general.interRaterAgreement,
+    disagreements: general.disagreements.map((d) => ({
+      id: d.item,
+      category: d.stratum as ContentRiskCategory,
+      human: d.panel as SeedLabel,
+      judge: d.judge as SeedLabel,
+    })),
+    general,
   };
 }
 
-function round4(n: number): number {
-  return Math.floor(n * 10_000) / 10_000;
-}
-
-/** Records a computed calibration run (operator, service role). */
+/** Records a computed content-judge calibration run (operator, service role). */
 export async function recordJudgeCalibration(input: {
   result: CalibrationResult;
   seedSet: CalibrationInput['seedSet'];
   judge: CalibrationInput['judge'];
-  raters: number;
   recordedBy: string;
   note: string;
-}): Promise<string | null> {
-  const t = LIVE_CONTENT_THRESHOLDS;
-  if (!input.result.recordable) return null;
-  const rows = await serviceRest<{ id: string }[]>('/tutor_content_judge_calibration', {
-    method: 'POST',
-    headers: { Prefer: 'return=representation' },
-    body: JSON.stringify({
-      judge_model: input.judge.model,
-      judge_prompt_hash: input.judge.promptHash,
-      seed_set_version: input.seedSet.version,
-      seed_set_hash: input.seedSet.hash,
-      raters: input.raters,
-      items_standard: input.result.itemsStandard,
-      items_sensitive: input.result.itemsSensitive,
-      agreement_standard: input.result.agreementStandard,
-      agreement_sensitive: input.result.agreementSensitive,
-      inter_rater_agreement: input.result.interRater,
-      threshold_agreement: t.calibrationAgreement,
-      threshold_inter_rater: t.calibrationInterRater,
-      min_items_per_category: t.calibrationMinItemsPerCategory,
-      verdict: input.result.verdict,
-      recorded_by: input.recordedBy.slice(0, 120),
-      note: input.note.slice(0, 1000),
-    }),
+}): Promise<{ ok: true; id: string } | { ok: false; why: string }> {
+  const outcome = await recordCalibration({
+    result: input.result.general,
+    seedSet: { version: input.seedSet.version, hash: input.seedSet.hash },
+    judge: { model: input.judge.model, promptHash: input.judge.promptHash, authorModel: input.judge.authorModel ?? null },
+    verifiesId: null,
+    recordedBy: input.recordedBy,
+    note: input.note,
   });
-  const id = rows?.[0]?.id ?? null;
-  if (id !== null) {
-    resetLiveContentGateCache();
-    await insertAuditLog(null, LIVE_CONTENT_CALIBRATION_RECORDED, 'tutor', {
-      component: 'live_content_judge',
-      calibrationId: id,
-      verdict: input.result.verdict,
-      judgeModel: input.judge.model,
-      agreementStandard: input.result.agreementStandard,
-      agreementSensitive: input.result.agreementSensitive,
-      interRater: input.result.interRater,
-    });
-  }
-  return id;
+  if (!outcome.ok) return outcome;
+  resetLiveContentGateCache();
+  await insertAuditLog(null, LIVE_CONTENT_CALIBRATION_RECORDED, 'tutor', {
+    component: 'live_content_judge',
+    calibrationId: outcome.id,
+    verdict: input.result.verdict,
+    judgeModel: input.judge.model,
+    agreementStandard: input.result.agreementStandard,
+    agreementSensitive: input.result.agreementSensitive,
+    interRater: input.result.interRater,
+  });
+  return outcome;
 }
 
 // ── 10. the claim ────────────────────────────────────────────────────────────

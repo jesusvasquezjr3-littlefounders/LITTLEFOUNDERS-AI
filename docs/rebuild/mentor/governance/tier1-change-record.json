@@ -1,0 +1,86 @@
+{
+  "kind": "mentor-tier1-change-record",
+  "version": 1,
+  "entries": [
+    {
+      "component": "safety.judge",
+      "hash": "00183cfd5bbb6785144a6f0294b1dfdc865314fd98f5b2a0e8554aa0fe36f7de",
+      "files": 7,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "evaluation.rubric_and_judges",
+      "hash": "24c4b7c29bb1bec4424462da60cdf82bd7c46e49dfefd2e5a7e9dc714088910f",
+      "files": 8,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "evaluation.stage2_and_bias_audit",
+      "hash": "cefbe61a57fb61ac4978566dde8b9effd9a40039b0d0f266cf6cd0d7d8c11e95",
+      "files": 10,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "cced1c0268140577fb96f54dce9691ba9981640fe56557f3baf9f3699abee33d",
+      "files": 9,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.monetization_adjacent",
+      "hash": "8d2b65d1f7a1c64bc4301e0952ed0ebaac1caceda51a873effa3fa0b2b6d542e",
+      "files": 3,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "afbe30940b562a30772c58b0b3871db410808bab2de889f8142ad597dc8c4ffd",
+      "files": 8,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "42d26a5e73ec6b3430061844e8e66f88ae2b9ad85a773d91e4c2f05668323ffe",
+      "files": 3,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "live_content.judge_and_packs",
+      "hash": "ad9870909cb1e8c33c3341c196678d91ec325fb549874128d4233ad3f4d26a3b",
+      "files": 5,
+      "date": "2026-09-25",
+      "change": "Baseline at adoption of the tiered model (S06.14): the Mentor code as found, including this checkpoint's C.23 changes (shared judge-calibration registry, transcript gold set, judge pass/fail semantics)",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    }
+  ]
+}

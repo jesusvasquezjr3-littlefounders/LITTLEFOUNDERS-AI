@@ -97,12 +97,12 @@ async function main(): Promise<number> {
       verdicts[item.id] = verdict.pass ? 'pass' : 'fail';
       console.log(`  ${item.id} ${verdicts[item.id]}${verdict.reason ? ` — ${verdict.reason}` : ''}`);
     }
-    judge = { model: config.JUDGE_MODEL_NAME, promptHash: CONTENT_JUDGE_PROMPT_HASH, mode: 'live', verdicts };
+    judge = { model: config.JUDGE_MODEL_NAME, promptHash: CONTENT_JUDGE_PROMPT_HASH, mode: 'live', authorModel: config.MODEL_NAME, verdicts };
   } else if (replay) {
     const previous = JSON.parse(readFileSync(replay, 'utf8')) as CalibrationFile;
     judge = { ...previous.judge, mode: 'replay' };
   } else {
-    judge = { model: judgeModelName, promptHash: CONTENT_JUDGE_PROMPT_HASH, mode: 'dry_run', verdicts: dryRunVerdicts(seed) };
+    judge = { model: judgeModelName, promptHash: CONTENT_JUDGE_PROMPT_HASH, mode: 'dry_run', authorModel: process.env.MODEL_NAME ?? null, verdicts: dryRunVerdicts(seed) };
     console.log(`  Dry run: no judge call made. Judge identity ${judgeModelName} / ${CONTENT_JUDGE_PROMPT_HASH.slice(0, 12)}; a live run makes ${seed.items.length} paid call(s).`);
   }
 

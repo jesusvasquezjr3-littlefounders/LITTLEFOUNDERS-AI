@@ -1072,7 +1072,7 @@ describe('S06.12 C.5/C.6 — staff governance surfaces', () => {
           return Promise.resolve(jsonResponse(200, (world.permissions ?? ['manage_content']).map((permission) => ({ user_id: ADMIN_ID, permission }))));
         }
         if (url.includes('/rpc/record_tutor_live_review')) return Promise.resolve(jsonResponse(200, world.reviewOutcome ?? 'recorded'));
-        if (url.includes('/rest/v1/tutor_content_judge_calibration')) return Promise.resolve(jsonResponse(200, world.calibration ?? []));
+        if (url.includes('/rest/v1/mentor_judge_calibration')) return Promise.resolve(jsonResponse(200, world.calibration ?? []));
         if (url.includes('/rest/v1/tutor_live_content_log')) {
           if (url.includes('reviewed_at=is.null')) return Promise.resolve(jsonResponse(200, world.backlog ?? []));
           return Promise.resolve(jsonResponse(200, []));

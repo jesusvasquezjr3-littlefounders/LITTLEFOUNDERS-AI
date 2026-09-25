@@ -119,6 +119,9 @@ describe('C.21 the evaluation pass', () => {
     expect(flags.find((f) => f.signal_id === 'rubric.closing_script')).toMatchObject({ kind: 'zero_tolerance' });
     // The live-content judge starts uncalibrated: a breach for its owner, never hidden.
     expect(flags.find((f) => f.signal_id === 'judge.content_calibration')).toMatchObject({ owner_role: 'safety_trust_lead' });
+    // C.23: so does the transcript judge (read from mentor_judge_calibration), urgently.
+    expect(calls.some((c) => c.url.includes('/mentor_judge_calibration?') && c.method === 'GET')).toBe(true);
+    expect(flags.find((f) => f.signal_id === 'transcript_judge.agreement')).toMatchObject({ owner_role: 'safety_trust_lead', severity: 'urgent' });
 
     const run = JSON.parse(calls.find((c) => c.url.includes('tutor_evaluation_run') && c.method === 'POST')!.body!) as Record<string, unknown>;
     expect(run).toMatchObject({ trigger: 'operator', scored: 2, failed: 0, rubric_hash: TRANSCRIPT_RUBRIC_HASH });

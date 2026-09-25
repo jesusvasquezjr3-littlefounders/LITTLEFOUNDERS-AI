@@ -10,7 +10,7 @@
  *           oracle/src/core/client.ts                         the liveSuspended answer it parses
  *   Core    backend/src/services/pedagogy/contentRisk.ts      the same lexicon (between markers)
  *           backend/src/services/pedagogy/liveContentGovernance.ts
- *                                                             floors, calibration thresholds, the
+ *                                                             floors, the concordance floor, the
  *                                                             ladder-event and review vocabularies
  *           backend/src/services/tutorPacks.ts                pack demand patterns and sources
  *           backend/src/config.ts, backend/.env.example       the configured baselines
@@ -24,11 +24,12 @@
  * for items Core will refuse.
  *
  * APPENDIX E §3.1.1 GUARD (Tier-1-adjacent). The staff-sampling floors (15%
- * standard, 50% sensitive) and the calibration minimums may be RAISED by a
+ * standard, 50% sensitive) and the concordance floor may be RAISED by a
  * human decision; lowering any of them is a Tier 1 change that needs full
  * human review, after which this guard is updated in the same reviewed
  * change. The guard fails on any lower value in code, config default, the
- * env example or the migration.
+ * env example or the migration. The judge-calibration minimums are guarded
+ * by `npm run judge-calibration:check` since C.23 (S06.14) made them shared.
  */
 
 import { readFileSync, readdirSync } from 'node:fs';
@@ -52,7 +53,9 @@ export const FILES = {
 /** The floors Appendix E §3.1.1 sets; never lowered without a Tier 1 review. */
 export const APPENDIX_E_FLOORS = { standard: 0.15, sensitive: 0.5 };
 /** The calibration minimums this build pre-registered (proposed, pending calibration). */
-export const CALIBRATION_MINIMUMS = { calibrationAgreement: 0.9, calibrationInterRater: 0.85, calibrationMinItemsPerCategory: 20, concordanceFloor: 0.9 };
+// The judge-calibration bar moved to the shared C.23 standard (judgeCalibration.ts,
+// mentor_judge_calibration); `npm run judge-calibration:check` guards its floors.
+export const CALIBRATION_MINIMUMS = { concordanceFloor: 0.9 };
 
 const quoted = (text) => [...text.matchAll(/'([A-Za-z_.:-]+)'/g)].map((m) => m[1]);
 const sameSet = (a, b) => a.length === b.length && [...a].sort().every((v, i) => v === [...b].sort()[i]);
@@ -164,16 +167,11 @@ export function checkLiveContentParity(read, sql) {
     else if (e < APPENDIX_E_FLOORS[category]) problems.push(`${FILES.coreEnv}: ${name}=${e}, below the ${category} floor`);
   }
 
-  // ── calibration minimums (Core thresholds vs the migration's CHECK floors) ──
+  // ── the concordance floor (the calibration floors are judge-calibration:check's) ──
   for (const [field, minimum] of Object.entries(CALIBRATION_MINIMUMS)) {
     const value = numericField(src.coreGovernance, 'LIVE_CONTENT_THRESHOLDS', field);
     if (value === null) problems.push(`${FILES.coreGovernance}: could not read LIVE_CONTENT_THRESHOLDS.${field}`);
     else if (value < minimum) problems.push(`LIVE_CONTENT_THRESHOLDS.${field} lowered to ${value} (minimum ${minimum}): a Tier 1 change`);
-  }
-  for (const [column, minimum] of [['threshold_agreement', 0.9], ['threshold_inter_rater', 0.85], ['min_items_per_category', 20]]) {
-    const m = new RegExp(`${column}\\s+\\w+(?:\\(\\d+,\\s*\\d+\\))?\\s+NOT NULL CHECK \\(${column} BETWEEN ([0-9.]+)`).exec(sql);
-    if (!m) problems.push(`migration: could not read the CHECK floor of ${column}`);
-    else if (Number(m[1]) < minimum) problems.push(`migration: ${column} may be recorded as low as ${m[1]} (minimum ${minimum})`);
   }
 
   // ── the suspension answer: Core sends it, Oracle parses it ──
@@ -198,7 +196,7 @@ function main() {
     return;
   }
   console.log(
-    'live-content:check OK — Oracle, Core and the migration agree on the content-risk lexicon and every governance vocabulary; the Appendix E floors (15% / 50%) and calibration minimums are intact',
+    'live-content:check OK — Oracle, Core and the migration agree on the content-risk lexicon and every governance vocabulary; the Appendix E floors (15% / 50%) and the concordance floor are intact',
   );
 }
 
