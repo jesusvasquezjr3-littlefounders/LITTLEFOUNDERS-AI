@@ -4,7 +4,7 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
 
 // Real-app driver for Frontend Bible 03 and verification-tools/proportion-audit.reference.mjs.
 const origin = process.env.REBUILD_URL ?? 'http://127.0.0.1:5190';
-const output = resolve('../audit-results/rebuild-proportions');
+const output = resolve(process.env.REBUILD_PROPORTIONS_SCOPE === 'controls' ? '../audit-results/rebuild-proportions-controls' : '../audit-results/rebuild-proportions');
 mkdirSync(output, { recursive: true });
 const browser = await launchBrowser(mkdtempSync(join(output, 'chrome-')));
 const page = await openPage(browser.browser, { width: 375, height: 740, dark: false });
@@ -69,9 +69,14 @@ const appendixCurrentSurfaces = [
   { screen: 'cpafading', ages: ['6-9', '10-12'] },
 ];
 
+// S03.1: the preview-only shared control catalogue, measured on its own.
+const controlSurfaces = [{ screen: 'system', ages: ['6-9'] }];
+
 const surfaces = process.env.REBUILD_PROPORTIONS_SCOPE === 'appendix-current'
   ? appendixCurrentSurfaces
-  : [...coreSurfaces, ...appendixCurrentSurfaces];
+  : process.env.REBUILD_PROPORTIONS_SCOPE === 'controls'
+    ? controlSurfaces
+    : [...coreSurfaces, ...appendixCurrentSurfaces];
 
 try {
   for (const { screen, ages } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
@@ -122,7 +127,9 @@ try {
     findings,
     scope: process.env.REBUILD_PROPORTIONS_SCOPE === 'appendix-current'
       ? 'Current controlled Appendix P candidate renderers only.'
-      : 'All current controlled lesson and Appendix P candidate renderers.',
+      : process.env.REBUILD_PROPORTIONS_SCOPE === 'controls'
+        ? 'S03.1 shared control catalogue only.'
+        : 'All current controlled lesson and Appendix P candidate renderers.',
   }, null, 2));
   console.log(JSON.stringify({ configurations, findings: findings.length, output }));
   if (findings.length) { console.error(JSON.stringify(findings.slice(0, 8), null, 2)); process.exitCode = 1; }

@@ -6,6 +6,11 @@ const publicRoot = resolve(root, 'public');
 const manifest = JSON.parse(readFileSync(resolve(root, 'src/rebuild/assets/manifest.json'), 'utf8'));
 const failures = [];
 const listed = new Set();
+// Mentor renders must come from the real model in a catalogue pose (Bible 02 rule 21, 07 §4).
+const mentorCharacters = new Set(['rho', 'zara', 'liruf', 'dina']);
+const poseCatalogue = new Set([...readFileSync(resolve(root, 'src/tutor-scene/poseLibrary.ts'), 'utf8')
+  .matchAll(/\{\s*id:\s*'([^']+)',\s*category:/g)].map((match) => match[1]));
+if (poseCatalogue.size < 10) failures.push('Pose catalogue could not be read');
 const requiredStage = new Set(['young', 'teen', 'square'].flatMap((shape) => ['light', 'dark'].map((mode) => `/rebuild/mentor-stills/dina-${shape}-${mode}.png`)));
 const medalPath = '/rebuild/art/lesson-medal.svg';
 const required = new Set([...requiredStage, medalPath]);
@@ -15,6 +20,11 @@ for (const asset of manifest) {
   listed.add(asset.path);
   if (!required.has(asset.path)) failures.push(`Unexpected or unreferenced asset: ${asset.path}`);
   if (asset.class !== 'B') failures.push(`Invalid asset class: ${asset.id}`);
+  if (asset.type === 'render') {
+    if (!mentorCharacters.has(asset.character)) failures.push(`Render of an unknown character: ${asset.id}`);
+    if (asset.sourceModel !== `/scenes/${asset.character}.glb`) failures.push(`Render not from the character's own model: ${asset.id}`);
+    if (!poseCatalogue.has(asset.poseId)) failures.push(`Render pose is not in the pose catalogue: ${asset.id}`);
+  }
   const file = resolve(publicRoot, `.${asset.path}`);
   if (!file.startsWith(publicRoot + sep)) { failures.push(`Unsafe asset path: ${asset.path}`); continue; }
   try {

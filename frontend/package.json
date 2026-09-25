@@ -33,6 +33,7 @@
     "verify:worked-example": "node scripts/verify-rebuild-worked-example.mjs",
     "verify:function-machine": "node scripts/verify-rebuild-function-machine.mjs",
     "verify:cpa-fading": "node scripts/verify-rebuild-cpa-fading.mjs",
+    "verify:controls": "node scripts/verify-rebuild-controls.mjs",
     "verify:tutor-ui": "node scripts/verify-tutor-ui.mjs",
     "verify:tutor-a11y": "node scripts/verify-tutor-a11y.mjs",
     "assets:walkmask": "tsx scripts/generate-walkmask.ts",

@@ -1,0 +1,8 @@
+/* Preview-only layout for the S03.1 control catalogue. Tokens and logical properties only. */
+.lf-rebuild .lf-preview--system { justify-content: flex-start; }
+.lf-rebuild .lf-system-gallery { gap: var(--spacing-8); }
+.lf-rebuild .lf-system-gallery > .lf-button:first-child { align-self: flex-start; }
+.lf-rebuild .lf-system-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-system-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-rebuild .lf-system-form { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-system-form > .lf-button { justify-self: start; }

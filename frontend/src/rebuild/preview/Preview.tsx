@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import en from '../../i18n/en-US/rebuild.json';
 import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
-import { Button, Copy, Field, StatusMark } from '../design/controls';
+import { AnswerChoice, Button, Copy, Field, StatusMark } from '../design/controls';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { allocationPilotDocument, donutPilotDocument, wafflePilotDocument } from '../learning/AllocationBoard';
 import { growthPilotDocument } from '../learning/GrowthBoard';
@@ -29,6 +29,7 @@ import { functionMachinePilotDocument } from '../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import type { LessonMentorStage } from '../learning/lessonDocument';
+import { SystemGallery } from './SystemGallery';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -103,6 +104,7 @@ export function Preview() {
             { value }, { target: ageBand === '6-9' ? 7 : 37 });
           return result === 'met' || result === 'review' ? result : 'invalid';
         }} />
+      : screen === 'system' ? <SystemGallery key={locale} t={t.designSystem} theme={theme === 'dark' ? 'dark' : 'light'} onBack={() => go('home')} />
       : screen === 'result' || screen === 'replay' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-1', lesson_id: 'pilot-savings-sequence', version_id: 'rev-1', locale,
         first_try_correct: screen === 'replay' ? 2 : 3, graded_count: 4, awarded_xp: 40, duration_seconds: 200,
@@ -168,12 +170,8 @@ export function Preview() {
         <Button onClick={() => go('home')}>{t.back}</Button>
         <h1 data-copy-role="prompt">{t.question}</h1>
         <div className="lf-choices" role="group" aria-label={t.question}>
-          {(['save', 'spend'] as const).map((choice) => <button key={choice} type="button"
-            className="lf-choice" data-copy-role="option" aria-pressed={answer === choice}
-            disabled={checked} onClick={() => setAnswer(choice)}>
-            <span className="lf-choice-marker" aria-hidden="true">{answer === choice ? '●' : '○'}</span>
-            {t[choice]}
-          </button>)}
+          {(['save', 'spend'] as const).map((choice) => <AnswerChoice key={choice} label={t[choice]}
+            selected={answer === choice} disabled={checked} onSelect={() => setAnswer(choice)} />)}
         </div>
         <div role="status" className={checked ? `lf-feedback ${answer === 'save' ? 'lf-feedback--correct' : 'lf-feedback--retry'}` : undefined}>
           {checked ? <><StatusMark correct={answer === 'save'} /><Copy role="body">{answer === 'save' ? t.correct : t.hint}</Copy></> : null}

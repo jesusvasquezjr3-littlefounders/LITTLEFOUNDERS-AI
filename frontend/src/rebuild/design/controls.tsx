@@ -1,14 +1,29 @@
-import { useId, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
+import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import type { CopyRole } from './copyBudget';
+import { Glyph } from './glyphs';
+import './controls.css';
+
+/*
+ * The shared control set of the rebuilt frontend (Frontend Bible 02; S03.1).
+ * Every rebuilt surface imports its controls from here and never from the
+ * legacy application (02 rule 23).
+ */
+export { Button, ButtonGroup, IconButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonVariant } from './buttons';
+export { Checkbox, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextField, type ChoiceOption, type SelectOption, type TextFieldProps } from './fields';
+export { Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Skeleton,
+  type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';
+export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
 
 export function Copy({ role, children, as: Tag = 'p' }: { role: CopyRole; children: ReactNode; as?: 'p' | 'span' | 'h1' | 'h2' }) {
   return <Tag data-copy-role={role}>{children}</Tag>;
 }
 
-export function Button({ children, variant = 'secondary', ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'accent' | 'secondary' | 'success' }) {
-  return <button {...props} type={props.type ?? 'button'} className={`lf-button lf-button--${variant}`} data-copy-role="action">{children}</button>;
-}
-
+/**
+ * The first-generation text field used by the age screen and the preview form.
+ * New surfaces use `TextField`, which adds the Bible's error glyph and message
+ * placement; this one stays until those surfaces are recomposed (S03 wave 2),
+ * because changing it now would not be a pure refactor.
+ */
 export function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
   const id = useId();
   return <div className="lf-field">
@@ -20,7 +35,18 @@ export function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputEl
 
 /** In-house system glyphs, class A. No identity or character pictograms. */
 export function StatusMark({ correct }: { correct: boolean }) {
-  return <svg viewBox="0 0 24 24" aria-hidden="true" className="lf-system-glyph" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d={correct ? 'M5 12l4 4L19 6' : 'M6 6l12 12M18 6L6 18'} />
-  </svg>;
+  return <Glyph name={correct ? 'check' : 'cross'} />;
+}
+
+/**
+ * Answer option on the full-bleed lesson screen (02 `answer-idle` /
+ * `answer-selected`): a rounded rectangle that chooses one of several.
+ */
+export function AnswerChoice({ label, selected, disabled, onSelect }: { label: ReactNode; selected: boolean; disabled?: boolean; onSelect: () => void }) {
+  return <button type="button"
+    className="lf-choice" data-copy-role="option" aria-pressed={selected}
+    disabled={disabled} onClick={onSelect}>
+    <span className="lf-choice-marker" aria-hidden="true">{selected ? '●' : '○'}</span>
+    {label}
+  </button>;
 }

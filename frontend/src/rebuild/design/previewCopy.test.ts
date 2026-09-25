@@ -4,7 +4,7 @@ import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
 import { checkCopy, type CopyRole, type Locale } from './copyBudget';
 
-const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite'>, CopyRole> = {
+const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite' | 'designSystem'>, CopyRole> = {
   preview: 'body', heading: 'heading', intro: 'body', practice: 'action', controls: 'action',
   lessonDemo: 'action', lessonUnavailable: 'heading', lessonInvalid: 'heading', timelineDemo: 'action', numberLineDemo: 'action', age: 'body', adult: 'option',
   question: 'prompt', save: 'option', spend: 'option', check: 'action', again: 'action',
@@ -12,10 +12,19 @@ const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' |
   confirm: 'action', confirmed: 'body', required: 'body', theme: 'body', light: 'option',
   dark: 'option', language: 'body',
 };
+/** Roles of the S03.1 control catalogue strings, measured at the youngest (6–9) budget. */
+function designSystemRole(key: string): CopyRole {
+  if (['title', 'buttons', 'fields', 'choices', 'status', 'cards', 'feedback', 'mentor', 'cardTitle', 'courseTitle', 'empty', 'failed'].includes(key)) return 'heading';
+  if (['continue', 'saveCoins', 'share', 'help', 'approve', 'remove', 'cancel', 'claim', 'open', 'details', 'saving', 'close', 'menu',
+    'show', 'hide', 'less', 'more', 'retryAction', 'retrying'].includes(key)) return 'action';
+  if (['pocketSave', 'pocketSpend', 'pocketShare', 'daily', 'weekly', 'on', 'off', 'chart', 'table'].includes(key)) return 'option';
+  if (['coinsValue', 'progressValue', 'mentorName'].includes(key)) return 'data';
+  return 'body';
+}
 describe('new preview copy', () => {
   for (const [locale, strings] of Object.entries({ 'en-US': en, 'es-MX': es, 'pt-BR': pt })) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite').sort()).toEqual(Object.keys(roles).sort());
+      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite' && key !== 'designSystem').sort()).toEqual(Object.keys(roles).sort());
       for (const key of Object.keys(roles) as (keyof typeof roles)[]) {
         expect(checkCopy(strings[key], roles[key], { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
       }
@@ -57,6 +66,9 @@ describe('new preview copy', () => {
         const role = key === 'title' || key === 'acceptTitle' ? 'heading'
           : ['close', 'invite', 'copy', 'accept'].includes(key) ? 'action' : 'body';
         expect(checkCopy(text.replace('{name}', 'Ana'), role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `guardianInvite.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.designSystem)) {
+        expect(checkCopy(text.replace('{n}', '40'), designSystemRole(key), { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), `designSystem.${key}`).toEqual([]);
       }
       for (const [key, text] of Object.entries(strings.memorySelfReview)) {
         const role = key === 'title' ? 'heading' : ['approve', 'delete', 'retry'].includes(key) ? 'action' : 'body';
