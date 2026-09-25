@@ -44,6 +44,14 @@
     "ACCOUNT_FROZEN": "This account is frozen. Your credits stay safe until it is unfrozen.",
     "GUARDIAN_FREEZE": "Your guardian froze this card. Ask them to unfreeze it.",
     "FREEZE_CHANGED": "The freeze changed. Check the updated card before trying again.",
-    "GUARDIAN_APPROVAL_REQUIRED": "A guardian must approve a connection before you can follow this profile."
+    "GUARDIAN_APPROVAL_REQUIRED": "A guardian must approve a connection before you can follow this profile.",
+    "PROFILE_FIELD_UNSAFE": "That name could help someone find a young person outside LittleFounders. Use a first name or nickname.",
+    "PROFILE_REVIEW_REQUIRED": "Change your name first. It could help strangers find you.",
+    "SUBJECT_CONSENT_REQUIRED": "This account decides who connects. Ask to connect instead.",
+    "GUARDIAN_MANAGED_CONNECTIONS": "A Tutor manages this account’s connections.",
+    "SOCIAL_REQUEST_COOLDOWN": "You can ask again later.",
+    "SOCIAL_REQUEST_LIMIT": "Too many requests are waiting. Try later.",
+    "SOCIAL_ALREADY_CONNECTED": "You are already connected.",
+    "SOCIAL_UNAVAILABLE": "Connections are not available for this account."
   }
 }

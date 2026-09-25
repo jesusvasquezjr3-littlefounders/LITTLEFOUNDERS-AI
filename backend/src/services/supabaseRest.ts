@@ -362,6 +362,11 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
 
 const LIST_LIMIT = 60;
 
+/** Whitelisted cards for ids an authorized route already resolved (E.8 teen request queue). */
+export async function getSocialCards(ids: string[]): Promise<ListedUser[] | null> {
+  return hydrateUsers([...new Set(ids)]);
+}
+
 export async function listFollowers(userId: string): Promise<ListedUser[]> {
   const rows = await rest<{ follower_id: string }[]>(
     `/follows?followed_id=eq.${eu(userId)}&select=follower_id&order=created_at.desc&limit=${LIST_LIMIT}`,

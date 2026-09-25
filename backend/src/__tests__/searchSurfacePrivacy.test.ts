@@ -56,6 +56,13 @@ function stub(opts: StubOpts = {}) {
       const method = init?.method ?? 'GET';
       calls.push({ url, method, body: init?.body as string | undefined });
 
+      if (url.includes('/rpc/social_tier')) {
+        // The database's E.8 tier: the subject's follows its roles; every other account is a screened adult.
+        const id = (JSON.parse(String(init?.body ?? '{}')) as { p_user?: string }).p_user;
+        if (id !== KID_ROW.user_id) return Promise.resolve(jsonResponse(200, 'adult'));
+        if (opts.targetRoles === null) return Promise.resolve(jsonResponse(200, null));
+        return Promise.resolve(jsonResponse(200, (opts.targetRoles ?? ['parent']).includes('kid') ? 'guardian' : 'adult'));
+      }
       if (url.includes('/rpc/has_current_social_approval')) return Promise.resolve(jsonResponse(200, opts.approvalResult ?? false));
       if (url.includes('/rpc/withdraw_social_connection')) return Promise.resolve(jsonResponse(200, true));
       if (url.includes('/rpc/request_social_connection')) return Promise.resolve(jsonResponse(200, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'));

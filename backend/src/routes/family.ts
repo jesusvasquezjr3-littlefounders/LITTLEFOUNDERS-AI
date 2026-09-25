@@ -9,7 +9,8 @@ import { eraseNow } from '../services/accountDeletion.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
-import { mayDiscoverProfile, visibleSocialUsers } from '../services/socialVisibility.js';
+import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
+import { profileFieldFlags, reviewProfileFields } from '../services/profileFieldSafety.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -150,6 +151,12 @@ export function familyRouter(): Router {
           userId: l.kid_user_id,
           displayName: byId.get(l.kid_user_id)?.display_name ?? null,
           username: byId.get(l.kid_user_id)?.username ?? null,
+          // E.13: which of the child's fields keeps the child hidden from
+          // every approved outside connection until the Tutor changes it.
+          profileReview: reviewProfileFields({
+            username: byId.get(l.kid_user_id)?.username ?? null,
+            displayName: byId.get(l.kid_user_id)?.display_name ?? null,
+          }),
           analyticsConsent: consents.get(l.kid_user_id) ?? false,
           pendingApprovalCount: pendingByKid.get(l.kid_user_id) ?? 0,
           walletTotal: balances ? balances.save + balances.spend + balances.share : null,
@@ -206,6 +213,15 @@ export function familyRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the child account details');
     const { displayName, username, passphrase, locale } = parsed.data;
     const birthDate = parsed.data.birthDate ?? null;
+
+    // E.13: before anything is written, neither the handle nor the name may
+    // carry what would locate the child off-platform. The database refuses
+    // the same values (profile_fields_guard) from any writer.
+    const unsafe = [
+      ...(profileFieldFlags(username).length > 0 ? ['username'] : []),
+      ...(profileFieldFlags(displayName).length > 0 ? ['displayName'] : []),
+    ];
+    if (unsafe.length > 0) return fail(res, 422, 'PROFILE_FIELD_UNSAFE', 'That name could help someone find the child outside LittleFounders', { fields: unsafe });
 
     // Counted from the VERIFIED links, which is the same source /kids reads, so
     // the cap can never disagree with what the parent sees.
@@ -337,7 +353,10 @@ export function familyRouter(): Router {
     const page = await getPendingSocialRequests(kidId, query.data.offset);
     if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load connection requests');
     const ids = [...new Set(page.requests.map(item => item.requesterId))];
-    const visible = await Promise.all(ids.map(async id => await mayDiscoverProfile(authedUser(res).id, id) ? id : null));
+    // The requester chose to ask this family: a private teen's card is enough
+    // to name them to the deciding guardian (E.8). A hidden or flagged
+    // account stays unnamed.
+    const visible = await Promise.all(ids.map(async id => await profileAccess(authedUser(res).id, id) !== 'none' ? id : null));
     const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
     if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load request participants');
     const nameById = new Map(names.map(row => [row.user_id, row.display_name]));
@@ -417,6 +436,9 @@ export function familyRouter(): Router {
     if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
     if (parsed.data.birthDate !== undefined) patch.birth_date = parsed.data.birthDate;
     if (Object.keys(patch).length === 0) return fail(res, 400, 'VALIDATION_ERROR', 'Nothing to change');
+    if (patch.display_name !== undefined && profileFieldFlags(patch.display_name).length > 0) {
+      return fail(res, 422, 'PROFILE_FIELD_UNSAFE', 'That name could help someone find the child outside LittleFounders', { fields: ['displayName'] });
+    }
 
     const ok_ = await patchKidProfileFields(kidId, patch);
     if (!ok_) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the child profile');

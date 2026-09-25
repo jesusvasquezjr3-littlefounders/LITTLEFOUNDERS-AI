@@ -1,0 +1,28 @@
+/* E.8 / E.13 social-tier surfaces: tokens only, light and dark via data-theme. */
+.lf-rebuild.lf-social-tier-card {
+  min-block-size: 0;
+  display: grid;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+.lf-rebuild.lf-social-tier-card > .lf-button { justify-self: start; }
+.lf-rebuild.lf-social-tier-notice { background: var(--warning-soft); box-shadow: inset 0 0 0 1px var(--warning-ridge); }
+.lf-social-tier-handle { color: var(--content-muted); font-weight: 700; }
+.lf-social-tier-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--spacing-3); }
+.lf-social-tier-list > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+}
+.lf-social-tier-who { display: grid; gap: var(--spacing-1); min-inline-size: 0; flex: 1 1 12rem; }
+.lf-social-tier-who time { color: var(--content-muted); font-size: .875rem; }
+.lf-social-tier-actions, .lf-social-tier-row { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: center; }

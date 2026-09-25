@@ -31,6 +31,7 @@ import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import type { LessonMentorStage } from '../learning/lessonDocument';
 import { AchievementSharePreview } from '../family/AchievementSharePreview';
 import { AccountDeletionPreview } from '../account/AccountDeletionPreview';
+import { SocialTiersPreview } from '../social/SocialTiersPreview';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -59,6 +60,7 @@ export function Preview() {
     window.scrollTo(0, 0);
   };
   if (screen === 'achievement-share') return <AchievementSharePreview locale={locale} theme={theme as 'light' | 'dark'} state={params.get('state')} />;
+  if (screen === 'social-tiers') return <SocialTiersPreview locale={locale} theme={theme as 'light' | 'dark'} state={params.get('state')} />;
   if (screen === 'account-deletion') return <AccountDeletionPreview locale={locale} theme={theme as 'light' | 'dark'} state={params.get('state')} layout={params.get('layout')} />;
   return <div className="lf-rebuild" data-theme={theme} data-age-band={ageBand} lang={locale}>
     {screen === 'opening' || screen === 'offline' || screen === 'loaderror'

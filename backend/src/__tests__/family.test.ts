@@ -79,6 +79,8 @@ describe('GET /api/v1/family/kids', () => {
         pendingApprovalCount: 0,
         walletTotal: 0,
         taskStreakDays: 0,
+        // E.13: flags only (which field), never the reviewed text a second time.
+        profileReview: { flagged: false, fields: [] },
       },
     ]);
   });

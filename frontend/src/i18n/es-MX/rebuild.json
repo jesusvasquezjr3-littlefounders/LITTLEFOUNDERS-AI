@@ -101,6 +101,57 @@
     "pending": "En espera de aprobación del tutor.",
     "failed": "Solicitud sin confirmar. Intenta de nuevo."
   },
+  "socialRequestTeen": {
+    "action": "Pedir conexión",
+    "saving": "Enviando…",
+    "pending": "Pedido enviado. Esa persona decide.",
+    "failed": "No se envió. Intenta de nuevo."
+  },
+  "privateProfile": {
+    "title": "Este perfil es privado",
+    "body": "Solo las personas que acepte pueden verlo.",
+    "request": "Pedir conexión",
+    "saving": "Enviando…",
+    "pending": "Pedido enviado. Esa persona decide.",
+    "failed": "No se envió. Intenta de nuevo.",
+    "managed": "Tu Tutor maneja tus conexiones.",
+    "cooldown": "Podrás pedirlo de nuevo más adelante.",
+    "limit": "Hay muchas solicitudes en espera. Intenta después.",
+    "connected": "Ya están conectados."
+  },
+  "teenConnections": {
+    "title": "Tus conexiones",
+    "intro": "Tu perfil es privado. Tú eliges quién se conecta.",
+    "loading": "Cargando…",
+    "failed": "Tus conexiones no cargaron.",
+    "retry": "Intentar de nuevo",
+    "empty": "Nadie espera para conectarse.",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "saving": "Guardando…",
+    "accepted": "Aceptado. Ya puede ver tu perfil.",
+    "declined": "Rechazado. Podrá pedirlo de nuevo en 30 días.",
+    "decisionFailed": "No se guardó. Intenta de nuevo.",
+    "conflict": "Esa solicitud cambió. La lista se actualizó.",
+    "review": "Cambia tu nombre antes de conectarte.",
+    "more": "Ver más",
+    "followersTitle": "Quienes te siguen",
+    "noFollowers": "Nadie te sigue ahora.",
+    "remove": "Quitar",
+    "removed": "Quitado. Ya no ve tu perfil.",
+    "removeFailed": "No se quitó. Intenta de nuevo."
+  },
+  "profileSafety": {
+    "title": "Tu nombre necesita un cambio",
+    "body": "Podría ayudar a extraños a encontrarte. Tu perfil está oculto hasta entonces.",
+    "username": "Cambia tu nombre de usuario en Ajustes.",
+    "displayName": "Cambia tu nombre en Ajustes.",
+    "askTutor": "Pregunta a tu Tutor por tu nombre de usuario.",
+    "kidTitle": "{name} necesita otro nombre",
+    "kidBody": "Podría ayudar a extraños a encontrarle. Las conexiones de fuera no ven nada hasta entonces.",
+    "kidUsername": "Su nombre de usuario requiere ayuda de soporte.",
+    "kidDisplayName": "Cambia su nombre aquí abajo."
+  },
   "socialRequests": {
     "title": "Solicitudes de conexión",
     "close": "Cerrar solicitudes",

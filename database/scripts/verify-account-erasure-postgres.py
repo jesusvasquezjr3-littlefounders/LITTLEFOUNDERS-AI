@@ -148,7 +148,9 @@ try:
     ALTER TABLE badge_shares ENABLE TRIGGER badge_shares_refuse_insert;
     """)
     # Social edges, mail, a converted anonymous visitor and its events, GoTrue audit entries.
+    # Both parties are screened adults: since S08.6 an unscreened account has no social layer.
     run(f"""
+    INSERT INTO account_age_declarations (user_id, declared_age_band) VALUES ('{P1}', 'adult'), ('{ADULT}', 'adult');
     INSERT INTO follows (follower_id, followed_id) VALUES ('{P1}', '{ADULT}'), ('{ADULT}', '{P1}');
     INSERT INTO blocks (blocker_id, blocked_id) VALUES ('{P2}', '{P1}');
     INSERT INTO email_logs (to_address, subject, user_id) VALUES ('parent.one@example.com', 'Welcome', NULL),

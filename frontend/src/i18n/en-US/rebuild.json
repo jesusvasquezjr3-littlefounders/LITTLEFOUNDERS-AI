@@ -101,6 +101,57 @@
     "pending": "Waiting for guardian approval.",
     "failed": "Request not confirmed. Try again."
   },
+  "socialRequestTeen": {
+    "action": "Ask to connect",
+    "saving": "Sending…",
+    "pending": "Asked. They decide.",
+    "failed": "Not sent. Try again."
+  },
+  "privateProfile": {
+    "title": "This profile is private",
+    "body": "Only people they accept can see it.",
+    "request": "Ask to connect",
+    "saving": "Sending…",
+    "pending": "Asked. They decide.",
+    "failed": "Not sent. Try again.",
+    "managed": "Your Tutor handles your connections.",
+    "cooldown": "You can ask again later.",
+    "limit": "Too many requests are waiting. Try later.",
+    "connected": "You are already connected."
+  },
+  "teenConnections": {
+    "title": "Your connections",
+    "intro": "Your profile is private. You choose who connects.",
+    "loading": "Loading…",
+    "failed": "Your connections did not load.",
+    "retry": "Try again",
+    "empty": "Nobody is waiting to connect.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "saving": "Saving…",
+    "accepted": "Accepted. They can see your profile.",
+    "declined": "Declined. They can ask again in 30 days.",
+    "decisionFailed": "Not saved. Try again.",
+    "conflict": "That request changed. The list is updated.",
+    "review": "Change your name before you connect.",
+    "more": "Show more",
+    "followersTitle": "People who follow you",
+    "noFollowers": "Nobody follows you right now.",
+    "remove": "Remove",
+    "removed": "Removed. They no longer see your profile.",
+    "removeFailed": "Not removed. Try again."
+  },
+  "profileSafety": {
+    "title": "Your name needs a change",
+    "body": "It could help strangers find you. Your profile is hidden until then.",
+    "username": "Change your username in Settings.",
+    "displayName": "Change your name in Settings.",
+    "askTutor": "Ask your Tutor about your username.",
+    "kidTitle": "{name} needs a new name",
+    "kidBody": "It could help strangers find them. Outside connections see nothing until then.",
+    "kidUsername": "Their username needs help from support.",
+    "kidDisplayName": "Change their name below."
+  },
   "socialRequests": {
     "title": "Connection requests",
     "close": "Close requests",

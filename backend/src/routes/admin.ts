@@ -73,6 +73,7 @@ import {
   revokeExclusion,
 } from '../services/analyticsExclusions.js';
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
+import { readSocialSafetyMetrics } from '../services/socialTier.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -434,6 +435,25 @@ export function adminRouter(): Router {
     const metrics = await getAchievementSharingMetrics(parsed.data.days);
     if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load achievement-sharing metrics');
     return ok(res, metrics);
+  });
+
+  /*
+   * Appendix J social-layer metrics for E.8 and E.13 (policy: SOCIAL-TIERS.md):
+   * accounts by social tier (Age-Tier Differentiation), the Profile-Content
+   * Safety Review Coverage (in scope / reviewed / flagged, and the same for
+   * the guardian tier the metric names) and the teen consent queue. Counts
+   * only; a malformed answer fails the read rather than rendering zeros.
+   */
+  router.get('/analytics/social-safety', async (req, res) => {
+    if (Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No query fields are accepted');
+    const metrics = await readSocialSafetyMetrics();
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load social-safety metrics');
+    const { inScope, reviewed, guardianTierInScope, guardianTierReviewed } = metrics.profileReview;
+    return ok(res, {
+      ...metrics,
+      reviewCoverage: inScope === 0 ? null : reviewed / inScope,
+      guardianTierReviewCoverage: guardianTierInScope === 0 ? null : guardianTierReviewed / guardianTierInScope,
+    });
   });
 
   /*

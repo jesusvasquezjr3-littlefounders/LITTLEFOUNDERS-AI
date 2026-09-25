@@ -19,6 +19,10 @@ const ZERO_STATS = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, str
 afterEach(() => vi.unstubAllGlobals());
 
 interface StubOpts {
+  /** Tier the database answers for accounts other than the profile subject (the viewer). */
+  viewerTier?: string | null;
+  subjectTier?: string | null;
+  teenConsent?: boolean;
   approvalResult?: unknown;
   viewerGuardianIds?: string[];
   withdrawalResult?: unknown;
@@ -52,6 +56,17 @@ function stub(opts: StubOpts = {}) {
       const method = init?.method ?? 'GET';
       calls.push({ url, method, body: init?.body as string | undefined });
 
+      if (url.includes('/rpc/social_tier')) {
+        const id = (JSON.parse(String(init?.body ?? '{}')) as { p_user?: string }).p_user;
+        if (id === PROFILE_ROW.user_id) {
+          if (opts.subjectTier !== undefined) return Promise.resolve(jsonResponse(200, opts.subjectTier));
+          if (opts.targetRoles === null) return Promise.resolve(jsonResponse(200, null));
+          return Promise.resolve(jsonResponse(200, (opts.targetRoles ?? ['parent']).includes('kid') ? 'guardian' : 'adult'));
+        }
+        return Promise.resolve(jsonResponse(200, opts.viewerTier === undefined ? 'adult' : opts.viewerTier));
+      }
+      if (url.includes('/rpc/has_current_teen_consent')) return Promise.resolve(jsonResponse(200, opts.teenConsent ?? false));
+      if (url.includes('/rest/v1/social_consent_requests')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rpc/has_current_social_approval')) return Promise.resolve(jsonResponse(200, opts.approvalResult ?? false));
       if (url.includes('/rpc/withdraw_social_connection')) return Promise.resolve(jsonResponse(opts.withdrawalStatus ?? 200, opts.withdrawalResult === undefined ? true : opts.withdrawalResult));
       if (url.includes('/rpc/request_social_connection')) return Promise.resolve(jsonResponse(200, opts.requestResult === undefined ? 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' : opts.requestResult));
@@ -119,8 +134,8 @@ describe('GET /api/v1/profile', () => {
     expect(res.status).toBe(401);
   });
 
-  it('returns the own profile with avatar options, counts, birthDate, and learningStats', async () => {
-    stub({ learningStats: [{ xp_points: 120, minutes_learned: 45, lessons_completed: 3, streak_days: 2 }] });
+  it('returns the own profile with avatar options, birthDate, social tier and learningStats, but no follower counts (E.9)', async () => {
+    const calls = stub({ learningStats: [{ xp_points: 120, minutes_learned: 45, lessons_completed: 3, streak_days: 2 }] });
     const res = await request(createApp())
       .get('/api/v1/profile')
       .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com' })}`);
@@ -133,10 +148,14 @@ describe('GET /api/v1/profile', () => {
       email: 'ana@example.com',
       locale: 'es-MX',
       birthDate: '1990-05-01',
-      followers: 7,
-      following: 7,
       learningStats: { xpPoints: 120, minutesLearned: 45, lessonsCompleted: 3, streakDays: 2 },
+      social: { tier: 'adult', privateProfile: false },
+      profileReview: { flagged: false, fields: [] },
     });
+    expect(res.body.data).not.toHaveProperty('followers');
+    expect(res.body.data).not.toHaveProperty('following');
+    // No count query is even issued.
+    expect(calls.some((call) => call.url.includes('/rest/v1/follows'))).toBe(false);
   });
 });
 
@@ -444,7 +463,7 @@ describe('E.1 connection request admission', () => {
     const calls = stub({ targetRoles: ['kid'], guardianIds: [viewer] });
     const res = await request(createApp()).post(endpoint).set('Authorization', `Bearer ${mintToken({ sub: viewer })}`).send({});
     expect(res.status).toBe(202);
-    expect(res.body.data).toEqual({ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', status: 'pending', following: false });
+    expect(res.body.data).toEqual({ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', status: 'pending', following: false, decidedBy: 'guardian' });
     expect(calls.find(call => call.url.includes('/rpc/request_social_connection'))?.body).toBe(JSON.stringify({ p_requester_id: viewer, p_kid_user_id: PROFILE_ROW.user_id }));
     expect(calls.some(call => call.url.includes('/rest/v1/follows') && call.method === 'POST')).toBe(false);
   });
