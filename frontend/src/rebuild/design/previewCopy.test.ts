@@ -4,7 +4,7 @@ import es from '../../i18n/es-MX/rebuild.json';
 import pt from '../../i18n/pt-BR/rebuild.json';
 import { checkCopy, type CopyRole, type Locale } from './copyBudget';
 
-const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite'>, CopyRole> = {
+const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' | 'analyticsChoice' | 'socialGraph' | 'socialHistory' | 'socialRequest' | 'socialRequests' | 'badgeShares' | 'achievementShare' | 'socialNotices' | 'memorySelfReview' | 'kidSuspended' | 'guardianInvite'>, CopyRole> = {
   preview: 'body', heading: 'heading', intro: 'body', practice: 'action', controls: 'action',
   lessonDemo: 'action', lessonUnavailable: 'heading', lessonInvalid: 'heading', timelineDemo: 'action', numberLineDemo: 'action', age: 'body', adult: 'option',
   question: 'prompt', save: 'option', spend: 'option', check: 'action', again: 'action',
@@ -15,7 +15,7 @@ const roles: Record<Exclude<keyof typeof en, 'ageScreen' | 'mentorCalibration' |
 describe('new preview copy', () => {
   for (const [locale, strings] of Object.entries({ 'en-US': en, 'es-MX': es, 'pt-BR': pt })) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite').sort()).toEqual(Object.keys(roles).sort());
+      expect(Object.keys(strings).filter(key => key !== 'ageScreen' && key !== 'mentorCalibration' && key !== 'analyticsChoice' && key !== 'socialGraph' && key !== 'socialHistory' && key !== 'socialRequest' && key !== 'socialRequests' && key !== 'badgeShares' && key !== 'achievementShare' && key !== 'socialNotices' && key !== 'memorySelfReview' && key !== 'kidSuspended' && key !== 'guardianInvite').sort()).toEqual(Object.keys(roles).sort());
       for (const key of Object.keys(roles) as (keyof typeof roles)[]) {
         expect(checkCopy(strings[key], roles[key], { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), key).toEqual([]);
       }
@@ -44,6 +44,11 @@ describe('new preview copy', () => {
       for (const [key, text] of Object.entries(strings.badgeShares)) {
         const role = ['title', 'close', 'retry', 'revoke'].includes(key) ? 'action' : 'body';
         expect(checkCopy(text.replace('{date}', '20 Sep 2026'), role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `badgeShares.${key}`).toEqual([]);
+      }
+      for (const [key, text] of Object.entries(strings.achievementShare)) {
+        // F.3's point-of-action disclosure is budgeted as body copy, never exempted as legal text.
+        const role = ['share', 'shareGoal'].includes(key) ? 'action' : 'body';
+        expect(checkCopy(text, role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `achievementShare.${key}`).toEqual([]);
       }
       for (const [key, text] of Object.entries(strings.socialNotices)) {
         const role = ['title', 'close', 'retry'].includes(key) ? 'action' : 'body';

@@ -5,7 +5,9 @@ import '../design/system.css';
 import './badgeShares.css';
 
 /*
- * F.2: the parent's per-share "revoke this link" surface — an isolated
+ * F.2: the parent's per-link "revoke this link" surface — since OD-20 it
+ * lists only LEGACY links issued before new shares became pictures, each
+ * until its own expiry date, and says so (legacyNote) — an isolated
  * rebuild component (no legacy imports, Bible 02 rule 23), copy-driven and
  * data-fetch-free exactly like the social panels: the thin Family-page
  * wrapper (routes/app/family/BadgeSharesPanel.tsx) owns transport, this
@@ -33,6 +35,7 @@ export interface BadgeSharesCopy {
   revoked: string;
   revokeFailed: string;
   expires: string;
+  legacyNote: string;
 }
 
 export function BadgeShares({ copy, locale, dark, open, shares, loading, failed, revokingToken, notice, revokeFailed, onRevoke, onToggle, onRetry }: {
@@ -63,6 +66,7 @@ export function BadgeShares({ copy, locale, dark, open, shares, loading, failed,
     <Button aria-expanded={open} onClick={onToggle}>{open ? copy.close : copy.title}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
+      <Copy role="body">{copy.legacyNote}</Copy>
       {notice && <div role={revokeFailed ? 'alert' : 'status'}><Copy role="body">{notice}</Copy></div>}
       {revokingToken && <div role="status"><Copy role="body">{copy.revoking}</Copy></div>}
       {failed ? <><div role="alert"><Copy role="body">{copy.failed}</Copy></div><Button onClick={onRetry}>{copy.retry}</Button></> : <>

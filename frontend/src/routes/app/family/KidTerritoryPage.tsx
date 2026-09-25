@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
+import { api, BASE_URL } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { TerritoryProgressStrip, TerritoryView } from '@/routes/app/learn/TerritoryPage';
 import { type CourseTree } from '@/routes/app/learn/types';
+import { shareAchievementImage, type AchievementImageRequest, type AchievementShareOutcome } from '@/rebuild/family/achievementImage';
 
 /*
  * /family/:kidId/territory — a kid's territory through the parent's eyes:
@@ -48,18 +49,12 @@ function toSupportedLocale(resolved: string | undefined): SupportedLocale {
 /** Mirrors backend/src/routes/family.ts's MIN_SHAREABLE_STREAK_DAYS — a client-side hide, not the enforcement (the server re-checks). */
 const MIN_SHAREABLE_STREAK_DAYS = 3;
 
-interface BadgeIssued {
-  token: string;
-  imageUrl: string;
-  shareUrl: string;
-}
-
 interface ReachedGoal {
   id: string;
   title: string;
 }
 
-type ShareStatus = 'idle' | 'busy' | 'shared' | 'copied' | 'error';
+type ShareStatus = 'idle' | 'busy' | 'shared' | 'saved' | 'error';
 
 export function KidTerritoryPage() {
   const { t, i18n } = useTranslation();
@@ -89,43 +84,41 @@ export function KidTerritoryPage() {
     };
   }, [kidId, getToken]);
 
-  /** Hands an issued badge's share URL to the OS share sheet, or clipboard where unavailable — shared logic between the streak and goal share buttons. */
-  async function shareBadgeUrl(url: string, setStatus: (s: ShareStatus) => void) {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: t('family.badge.share'), url });
-        trackInsight('badge_shared', { routeClass: 'family' });
-        setStatus('shared');
-        setTimeout(() => setStatus('idle'), 2500);
-      } catch {
-        setStatus('idle');
-      }
+  /*
+   * OD-20 (Product 10 F.1): a share is a PICTURE Core renders for this
+   * verified guardian, handed to the device share sheet where it accepts
+   * image files and downloaded otherwise — no link is created, so nothing
+   * public exists for anyone the parent did not send it to. Core re-verifies
+   * the guardian link and the achievement; this page authorizes nothing.
+   * badge_shared fires only on a completed hand-off, never on a dismissed
+   * share sheet; Core counts every rendered picture as a share initiated.
+   */
+  async function shareAchievement(request: AchievementImageRequest, setStatus: (s: ShareStatus) => void) {
+    setStatus('busy');
+    const token = await getToken();
+    if (!token) {
+      setStatus('error');
       return;
     }
-    await navigator.clipboard.writeText(url);
+    const outcome: AchievementShareOutcome = await shareAchievementImage({
+      baseUrl: BASE_URL, token, kidId, request, title: t('family.badge.share'),
+    });
+    if (outcome === 'failed') {
+      setStatus('error');
+      return;
+    }
+    if (outcome === 'cancelled') {
+      setStatus('idle');
+      return;
+    }
     trackInsight('badge_shared', { routeClass: 'family' });
-    setStatus('copied');
+    setStatus(outcome === 'shared' ? 'shared' : 'saved');
     setTimeout(() => setStatus('idle'), 2500);
   }
 
   async function handleShareGoal() {
     if (!reachedGoal) return;
-    setGoalShareStatus('busy');
-    const token = await getToken();
-    if (!token) {
-      setGoalShareStatus('error');
-      return;
-    }
-    const { data, error } = await api<BadgeIssued>(`/family/kids/${kidId}/badge`, {
-      method: 'POST',
-      token,
-      body: { kind: 'goal_reached', goalId: reachedGoal.id, locale: toSupportedLocale(i18n.resolvedLanguage) },
-    });
-    if (error || !data) {
-      setGoalShareStatus('error');
-      return;
-    }
-    await shareBadgeUrl(data.shareUrl, setGoalShareStatus);
+    await shareAchievement({ kind: 'goal_reached', goalId: reachedGoal.id, locale: toSupportedLocale(i18n.resolvedLanguage) }, setGoalShareStatus);
   }
 
   useEffect(() => {
@@ -162,32 +155,9 @@ export function KidTerritoryPage() {
 
   const { tree, stats } = state.payload;
 
-  /*
-   * "Compartir logro" — issues a streak badge (backend/src/routes/family.ts
-   * re-enforces MIN_SHAREABLE_STREAK_DAYS server-side regardless of the
-   * client-side hide above) and hands it to the OS share sheet, falling back
-   * to copy-to-clipboard where navigator.share is unavailable (desktop
-   * Safari/Firefox). badge_generated is emitted SERVER-side (0072) on issue;
-   * badge_shared is emitted here only on an actually-completed share/copy —
-   * never on a cancelled share sheet (AbortError), which is not a share.
-   */
+  /** Streak picture — the server re-enforces MIN_SHAREABLE_STREAK_DAYS regardless of the client-side hide above. */
   async function handleShare() {
-    setShareStatus('busy');
-    const token = await getToken();
-    if (!token) {
-      setShareStatus('error');
-      return;
-    }
-    const { data, error } = await api<BadgeIssued>(`/family/kids/${kidId}/badge`, {
-      method: 'POST',
-      token,
-      body: { kind: 'streak', locale: toSupportedLocale(i18n.resolvedLanguage) },
-    });
-    if (error || !data) {
-      setShareStatus('error');
-      return;
-    }
-    await shareBadgeUrl(data.shareUrl, setShareStatus);
+    await shareAchievement({ kind: 'streak', locale: toSupportedLocale(i18n.resolvedLanguage) }, setShareStatus);
   }
 
   return (
@@ -231,23 +201,25 @@ export function KidTerritoryPage() {
             onClick={() => void handleShare()}
             disabled={shareStatus === 'busy'}
             className="w-fit gap-2"
-            variant={shareStatus === 'shared' || shareStatus === 'copied' ? 'success' : shareStatus === 'error' ? 'secondary' : 'primary'}
+            variant={shareStatus === 'shared' || shareStatus === 'saved' ? 'success' : shareStatus === 'error' ? 'secondary' : 'primary'}
           >
-            <Icon name={shareStatus === 'shared' || shareStatus === 'copied' ? 'check' : 'ios_share'} />
+            <Icon name={shareStatus === 'shared' || shareStatus === 'saved' ? 'check' : 'ios_share'} />
             {shareStatus === 'busy'
               ? t('family.badge.sharing')
               : shareStatus === 'shared'
                 ? t('family.badge.shared')
-                : shareStatus === 'copied'
-                  ? t('family.badge.copied')
+                : shareStatus === 'saved'
+                  ? t('family.badge.saved')
                   : shareStatus === 'error'
                     ? t('family.badge.error')
                     : t('family.badge.share')}
           </Button>
-          {/* F.3: the point-of-action disclosure — un-buried, beside the
-              button, in the mentor's own voice. It names the growth loop
-              and the real F.1/F.2 mechanics (30-day expiry + revoke). */}
+          {/* F.3 (OD-20 image flow): the point-of-action disclosure — un-buried,
+              beside the button, in the mentor's own voice: a picture with the
+              first name, no link, a sent picture stays sent, and it shows
+              LittleFounders. */}
           <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
+          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosureKeep')}</p>
         </>
       ) : null}
 
@@ -257,20 +229,21 @@ export function KidTerritoryPage() {
             onClick={() => void handleShareGoal()}
             disabled={goalShareStatus === 'busy'}
             className="w-fit gap-2"
-            variant={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'success' : goalShareStatus === 'error' ? 'secondary' : 'primary'}
+            variant={goalShareStatus === 'shared' || goalShareStatus === 'saved' ? 'success' : goalShareStatus === 'error' ? 'secondary' : 'primary'}
           >
-            <Icon name={goalShareStatus === 'shared' || goalShareStatus === 'copied' ? 'check' : 'savings'} />
+            <Icon name={goalShareStatus === 'shared' || goalShareStatus === 'saved' ? 'check' : 'savings'} />
             {goalShareStatus === 'busy'
               ? t('family.badge.sharing')
               : goalShareStatus === 'shared'
                 ? t('family.badge.shared')
-                : goalShareStatus === 'copied'
-                  ? t('family.badge.copied')
+                : goalShareStatus === 'saved'
+                  ? t('family.badge.saved')
                   : goalShareStatus === 'error'
                     ? t('family.badge.error')
                     : t('family.badge.shareGoal', { title: reachedGoal.title })}
           </Button>
           <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
+          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosureKeep')}</p>
         </>
       ) : null}
 

@@ -55,8 +55,15 @@ export const INSTRUMENTED_EVENTS = [
   'parent_report_viewed',
   'badge_generated',
   'badge_shared',
-  'badge_link_click',
 ] as const;
+
+/**
+ * Values the database CHECK still permits but no client may emit any more.
+ * `badge_link_click` measured a stranger opening a legacy badge link — viewer
+ * reach, which OD-20's Appendix L never counts. Core refuses it; the CHECK is
+ * narrowed in the dated removal (docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
+ */
+export const RETIRED_EVENTS = ['badge_link_click'] as const;
 
 export type InstrumentedEvent = (typeof INSTRUMENTED_EVENTS)[number];
 

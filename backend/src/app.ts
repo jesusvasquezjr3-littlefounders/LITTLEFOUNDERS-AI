@@ -4,7 +4,7 @@ import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
-import { badgePublicRouter } from './routes/badgePublic.js';
+import { badgeLinkSweepRouter, badgePublicRouter } from './routes/badgePublic.js';
 import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
@@ -62,11 +62,12 @@ export function createApp(): express.Express {
   // is on the internal-traffic exclusion list before mounting any analytics
   // script (routes/analytics.ts). One call per browser session.
   app.use('/api/v1/analytics', analyticsRouter());
-  // Public, unauthenticated: the ONE Core read a stranger's browser hits
-  // directly (see routes/badgePublic.ts header). No requireAuth — the whole
-  // point of the shareable-badge loop is a click from someone who is not
-  // yet, and may never become, an account.
+  // Public, unauthenticated: the legacy badge-link read a stranger's browser
+  // hits directly while pre-OD-20 links live (see routes/badgePublic.ts
+  // header); retired outright from BADGE_LINK_ROUTE_RETIRES_AT. The sweep
+  // beside it is internal-key only.
   app.use('/api/v1/badges', badgePublicRouter());
+  app.use('/api/v1/internal/badge-links', badgeLinkSweepRouter());
   app.use('/api/v1/auth', authRouter());
   app.use('/api/v1/verification', verificationRouter());
   app.use('/api/v1/learn', learnRouter());

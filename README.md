@@ -122,6 +122,7 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | If you touched… | Run (repo root) |
 |---|---|
 | Binding product specification or new frontend foundation | `npm run spec:check` — import integrity, agent parity, requirement inventory, new UI boundary and Bible token parity |
+| Achievement sharing (Core share/badge routes, Depot badge renderer, `/badge` legacy page, `COSMIC_NARRATIVE.md` §5) | `npm run sharing:check` — OD-20 legacy-link window parity across Core/edge/page, no public-link write path, no viewer-reach event, brand position and policy present (also part of `spec:check`) |
 | `frontend/` (anything user-facing) | `npm run i18n:check` — 3-locale key parity + hardcoded-string scan |
 | Public pages, titles, share copy, `site.mjs` | `npm run seo:check` + `npm run paths:check` |
 | DeepSeek/Qwen config in `coursegen/` or `oracle/` | `npm run provider:check` |
@@ -129,7 +130,7 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
-The rebuilt design foundation has an isolated development entry at `/rebuild.html` on the frontend dev server. It mounts no legacy UI, account session, analytics or paid-service client, and is not part of the production build. For its scoped browser checks, run `node scripts/verify-rebuild.mjs` from `frontend/` with `REBUILD_URL` set to the running local frontend origin (default `http://127.0.0.1:5190`). The report and mobile/desktop captures go to `audit-results/rebuild/`. This checks the foundation only; it does not replace the specification's full real-app text-fit, proportion and copy-budget gates before UI merge. Regenerate its color, spacing, radius and target CSS with `node scripts/build-rebuild-tokens.mjs` from `frontend/` after an authorized Bible change.
+The rebuilt design foundation has an isolated development entry at `/rebuild.html` on the frontend dev server. It mounts no legacy UI, account session, analytics or paid-service client, and is not part of the production build. For its scoped browser checks, run `node scripts/verify-rebuild.mjs` from `frontend/` with `REBUILD_URL` set to the running local frontend origin (default `http://127.0.0.1:5190`). The report and mobile/desktop captures go to `audit-results/rebuild/`. The S08.4 sharing surfaces (share action + legacy-link panel) have their own matrix: `node scripts/verify-rebuild-achievement-share.mjs` from `frontend/` (`REBUILD_URL`, optional `AUDIT_OUT`; 3 locales × 2 themes × 4 widths × 2 text scales × 4 states, plus keyboard focus and reduced motion). Staff read Appendix L's sharing metrics at `GET /api/v1/admin/analytics/achievement-sharing?days=N` (view_analytics). This checks the foundation only; it does not replace the specification's full real-app text-fit, proportion and copy-budget gates before UI merge. Regenerate its color, spacing, radius and target CSS with `node scripts/build-rebuild-tokens.mjs` from `frontend/` after an authorized Bible change.
 
 | If you touched… | Run (**`cd` into the service first**) |
 |---|---|
@@ -223,12 +224,13 @@ RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/id_ed25519 \
 
 ## Scheduled production jobs
 
-Nine workflows run against production on a schedule with no external alerting — a missed or failed run surfaces only as a red GitHub run, so someone has to look. Two of them are promises to users, not maintenance:
+Ten workflows run against production on a schedule with no external alerting — a missed or failed run surfaces only as a red GitHub run, so someone has to look. Three of them are promises to users, not maintenance:
 
 | Workflow | When (UTC) | What it holds up |
 |---|---|---|
 | `tutor-retention.yml` | 03:00 daily | The AI Tutor's 90-day data-retention promise. **Legally load-bearing** — this is the sweep itself |
 | `tutor-retention-watch.yml` | 06:00 daily | Notices when the sweep above stops running. A silent sweep failure otherwise looks identical to a sweep with nothing to delete |
+| `badge-link-retirement.yml` | 03:30 daily | F.2 under OD-20: deletes the Depot image of every dead legacy badge link (revoked, expired, post-cutover; all of them after 24 Oct 2026) so an image never outlives its link. Runs until the dated removal in `docs/rebuild/policies/ACHIEVEMENT-SHARING.md` deletes it |
 | `tutor-content-bridge.yml` | 06:50 daily | Whether the KC graph still reaches published content — a broken bridge sends every activity to paid live generation |
 | `insights-maintenance.yml` | 07:30 daily | Insights rollup refresh + retention prune |
 | `vault-drift.yml` | 07:30 daily | Whether production's schema is where the repo thinks it is |

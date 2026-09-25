@@ -120,17 +120,28 @@
     "denied": "Solicitação recusada."
   },
   "badgeShares": {
-    "title": "Conquistas compartilhadas",
+    "title": "Links anteriores",
     "close": "Fechar links",
     "loading": "Carregando links…",
     "failed": "Não foi possível carregar. Tente novamente.",
-    "empty": "Nenhuma conquista compartilhada.",
+    "empty": "Nenhum link ativo.",
     "retry": "Tentar novamente",
     "revoke": "Revogar link",
     "revoking": "Revogando…",
     "revoked": "Link revogado.",
     "revokeFailed": "Não foi possível revogar. Tente novamente.",
-    "expires": "Expira em {date}"
+    "expires": "Expira em {date}",
+    "legacyNote": "Os links anteriores deixam de funcionar na data indicada."
+  },
+  "achievementShare": {
+    "share": "Compartilhar conquista",
+    "shareGoal": "Compartilhar meta",
+    "preparing": "Criando a imagem…",
+    "shared": "Imagem compartilhada.",
+    "downloaded": "Imagem salva no seu dispositivo.",
+    "failed": "Não foi possível criar a imagem. Tente novamente.",
+    "disclosure": "Você recebe uma imagem com o primeiro nome. Nenhum link é criado.",
+    "keepNote": "Quem receber pode guardá-la. Ela mostra o nome LittleFounders."
   },
   "socialNotices": {
     "title": "Avisos de segurança",

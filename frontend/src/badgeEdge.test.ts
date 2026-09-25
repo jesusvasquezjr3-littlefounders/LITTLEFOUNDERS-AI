@@ -1,10 +1,19 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import badgeHandler from '../api/badge/[token]';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import badgeHandler, { BADGE_LINK_ROUTE_RETIRES_AT } from '../api/badge/[token]';
 
 const token = 'a'.repeat(32);
 const shell = '<html><head><title>LittleFounders</title><meta name="robots" content="noindex, follow" /></head><body><div id="root"></div></body></html>';
 
-afterEach(() => vi.unstubAllGlobals());
+// Pinned inside the legacy window (after the OD-20 cutover, before the
+// retirement date) so these cases do not change meaning on 24 October 2026.
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(new Date('2026-10-01T12:00:00.000Z'));
+});
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
 
 function stubBadge(status: number, data?: unknown) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
@@ -63,5 +72,21 @@ describe('public badge edge response', () => {
       `http://localhost:4000/api/v1/badges/${token}`,
       { cache: 'no-store' },
     );
+  });
+
+  it('is retired from the dated removal: 410, private headers, and Core is never asked', async () => {
+    vi.setSystemTime(new Date(BADGE_LINK_ROUTE_RETIRES_AT));
+    const fetchMock = stubBadge(200, {
+      firstName: 'Sofía',
+      achievementKind: 'streak',
+      achievementLabel: '7-day streak',
+      imageUrl: 'https://media.example/badge.png',
+    });
+    const response = await badgeHandler(new Request(`https://littlefounders.ai/badge/${token}`));
+
+    expect(response.status).toBe(410);
+    expectPrivate(response);
+    expect(await response.text()).not.toContain('Sofía');
+    expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual(['https://littlefounders.ai/app-shell.html']);
   });
 });

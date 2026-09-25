@@ -38,11 +38,9 @@ export type InsightEvent =
   | 'task_view'
   | 'profile_edit' | 'avatar_edit' | 'tutor_open'
   | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke'
-  // parent report + shareable-achievement-badge loop (0072). badge_link_click
-  // is emitted from the public, unauthenticated badge landing page (see
-  // ANON_EVENTS on Core) — every other new value here requires a signed-in
-  // caller and rides the normal consent-gated authenticated batch.
-  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared' | 'badge_link_click';
+  // parent report + achievement sharing (0072). All require a signed-in
+  // caller. badge_link_click (viewer reach) is retired under OD-20.
+  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared';
 
 export type InsightRouteClass =
   | 'learn'

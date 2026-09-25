@@ -208,6 +208,27 @@ The parent must always be able to see what their child is learning, what the gui
 
 ---
 
+## 5. Sharing a Child's Achievement — What It Is and What It Is Not
+
+*(Brand position required by Product 10 F.5; it describes the behaviour shipped under owner decision OD-20, 24 September 2026. Operational detail and enforcement: `docs/rebuild/policies/ACHIEVEMENT-SHARING.md`.)*
+
+**What it is.** A proud moment a parent chooses to send to people who care. When a child finishes a course, keeps a learning streak or reaches a savings goal, the parent can ask for a picture of it and send that picture themselves, to a grandparent on WhatsApp or to the family group. The parent decides whether it leaves the house, and to whom.
+
+**What it deliberately is not.**
+- **Not a public listing.** We make no page and no link. There is nothing a stranger can open, nothing a search engine can find and nothing a messaging app can preview from our servers. The picture exists on the parent's device and wherever the parent sends it.
+- **Not a marketing use of a child.** Our name is on the picture and we say so before it is made. We do not tag it, track where it goes or count who sees it. What we count is how often a parent chose to share, because that is the only number that tells us whether the moment mattered to the family.
+- **Not the child's decision alone, and not ours.** Only a parent whose identity we have verified, and who is that child's guardian, can make the picture. The child cannot, a stranger cannot, and neither can our own staff.
+
+**The promises that come with it.**
+- The achievement is real: we check it before we draw anything.
+- The picture shows the child's first name, the achievement and our name. Never a surname, an age, a photo or anything that could find the child.
+- Before the parent taps, we tell them plainly what they are about to make: a picture with their child's first name, no link, and that whoever receives it can keep it.
+- No new link is made under this decision. Links made before it keep their revoke control and 30-day expiry until they end, and the public page that served them is retired on 24 October 2026.
+
+**Why this is the brand, not a compliance footnote.** Law 2 says we are the only financial voice in the child's life that has nothing to sell them. A proud moment turned into an acquisition funnel would break that promise in the one place a family is most open. Law 5 says the parent sees the whole story, and here the parent also *owns* it: they start it, they choose who receives it, and nothing about it lives on our side once it is sent.
+
+---
+
 ### Appendix — Sources
 
 - [Pew Research — Views of children's financial future (Jan 2025)](https://www.pewresearch.org/global/2025/01/09/views-of-childrens-financial-future/)

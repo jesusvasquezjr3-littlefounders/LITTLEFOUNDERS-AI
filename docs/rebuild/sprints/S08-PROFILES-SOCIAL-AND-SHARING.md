@@ -1,10 +1,10 @@
 # S08: profiles, social and achievement lifecycle
 
-Status: in progress. Started 24 September 2026. Owner: Engineering for implementation; Product and Safety/Trust for the decisions/reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S08.4 recorded the same day. Owner: Engineering for implementation; Product and Safety/Trust for the decisions/reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
-- Product E.5–E.13, F.3–F.6.
+- Product E.5–E.13, F.1–F.6 (F.1/F.2 architecture per owner decision OD-20, 24 September 2026).
 - Appendix I (profile/social safety research), Appendix J (profile/social metrics), Appendix K/L (achievement sharing research + metrics).
 - Frontend Bible 02 and 06 for rebuilt surfaces.
 
@@ -17,6 +17,7 @@ Risk classification: **child-safety boundary**. Existing production UI may recei
 | S08.1 | E.5 Tutor-badge visibility | Badge shown only inside an established relationship (subject's verified-linked kid, mutual approved follow, self, staff) AND only for a currently ID-verified parent; ambiguous reads hide it | Public profile renders exactly the server's isTutor verdict | In progress: implementation and local verification recorded; real-database and human review pending |
 | S08.2 | F.3 share-flow disclosure | A short, un-buried, point-of-action disclosure beside each Share button naming the real mechanics (anyone with the link can open it; 30-day expiry; revoke from the Family panel) and the growth purpose | Disclosure rendered beside both share buttons in the parent territory surface | In progress: implementation and local verification recorded; copy/human review pending |
 | S08.3 | F.4 share age_band | The declared-but-unused age_band is now populated from the kid's stored birth date at share time in the column's own vocabulary (6-8/9-11/12-14); NULL outside the teaching bands rather than guessed | No surface change (server-derived field) | In progress: implementation and local verification recorded; real-database evidence pending |
+| S08.4 | F.1 image architecture (OD-20), F.3 disclosure rewrite, F.5 brand position and metrics, F.6 standing constraints; legacy-link cutover and dated retirement (F.2 for legacy links only) | A share is a PNG rendered once for the verified guardian and handed to them (share sheet with file, or download); nothing persisted, no link, no stored image; old issuer 410; DB refuses new badge_shares rows; legacy links served only if issued before the cutover, retired 24 Oct 2026; daily image sweep; shares initiated counted by hand-off, never viewer reach; brand position in COSMIC_NARRATIVE §5; F.6 constraints pinned by a population release-gate suite and `sharing:check` | Rebuilt share action with bound point-of-action disclosure (3 locales, both themes, 48 px, keyboard, reduced motion) and legacy-link panel note; live territory page switched to the image flow without restyling | In progress: implementation and local verification recorded; Stage 3 Safety/Trust review, copy review, physical PostgreSQL and production evidence pending |
 
 ## S08.1 implementation and rationale
 
@@ -31,6 +32,40 @@ Inspected evidence: the share flow issued a permanent link with no disclosure of
 ## S08.3 implementation and rationale
 
 Inspected evidence: `badge_shares.age_band` (vocabulary 6-8/9-11/12-14) was never populated. The share route now computes it from the kid's stored birth date (the same date math as the age screens) at issue time; a kid outside the teaching bands or without a date gets NULL rather than a guessed value. `getKidProfiles` gained `birth_date` for the server-side computation only — it is never a response field.
+
+## S08.4 implementation and rationale
+
+Scope: F.1 (architecture, per OD-20), F.3 (disclosure rewritten for the image flow), F.5 (brand position, reflected in copy and metrics), F.6 (standing constraints pinned), and the legacy-link retirement OD-20 requires (F.2 now governs legacy links only). The written policy, runbook and metric map are in [`docs/rebuild/policies/ACHIEVEMENT-SHARING.md`](../policies/ACHIEVEMENT-SHARING.md); the brand position is `docs/product-audit/COSMIC_NARRATIVE.md` §5.
+
+**Inspected evidence (current state, not the SPEC's legacy description).** F.2 (S02.4c) had already added a 30-day expiry, per-link revoke with image purge and `noindex`, so the SPEC's "permanent, indexable" description was stale. What remained true: every share still minted a company-hosted public page plus a world-readable Depot image, a messaging app still built a rich preview from the Vercel function's Open Graph tags, the link carried `utm_campaign=badge-share`, the landing page counted strangers' visits (`badge_link_click`, anonymous), and an expired link whose page was never visited again kept its image world-readable forever (the purge only ran on revoke or on a visit). The Depot image's kicker was hard-coded Spanish, a goal label said "LF Coins", and long names or labels clipped off the 1080 px canvas.
+
+**F.1 — image architecture (enforced at Core, Depot and the database).**
+- Core `POST /api/v1/family/kids/:kidId/achievement-image` replaces the link issuer. It keeps every existing gate (verified adult parent, `guardKid`, server-side achievement verification), renders through Depot, re-checks `guardKid` after the reads, and returns the PNG in the response (`Cache-Control: no-store, private`, `Content-Disposition: attachment`, `nosniff`). It writes no `badge_shares` row, mints no token and returns no URL. The body is `.strict()`, requires the declared hand-off and refuses any client label, name, image or age field.
+- The old `POST .../badge` answers 410 `SHARE_LINKS_RETIRED` before reading, rendering or storing anything.
+- Depot `POST /api/v1/badges/render` returns bytes and writes nothing to storage. The old compose-and-store `POST /api/v1/badges` answers 410 and writes nothing, so even an outdated Core cannot mint a new public image. Core accepts only a real PNG under 8 MB and refuses (never substitutes) otherwise.
+- Migration `close_badge_share_links` (contract) adds a BEFORE INSERT trigger that makes `badge_shares` refuse every new row from any role. It is declared contract because an older Core stores the image before inserting the row; applied early, it would strand a public image with no row to revoke or sweep. The migration-phase gate lists it as pending and auto-apply refuses it.
+- Frontend: `rebuild/family/achievementImage.ts` is the client layer (hand-off chosen before the request with a probe `canShare({files})`, share sheet with a PNG file, download of a local object URL otherwise; a dismissed sheet is `cancelled`, never a failure or an unasked download; any other share refusal, such as an expired user activation, falls back to a download). The live territory page (legacy, no restyle) now calls it for both the streak and the reached-goal buttons; the `copied` state became `saved`.
+
+**Legacy links (OD-20: keep F.2 until expiry, then retire the route).**
+- Cutover `2026-09-24T00:00:00.000Z` (OD-20's date) and retirement `2026-10-24T00:00:00.000Z` (cutover + 30 days, when every legacy link has expired) live in `backend/src/services/badgeLinkWindow.ts`. A link is live only if issued before the cutover, un-revoked, inside its window and before retirement. A post-cutover row is never served and its image is purged.
+- From the retirement date Core's public read answers 410 without a database read, the Vercel function answers 410 without calling Core, the landing page shows its not-found state without calling Core, and the Family list returns no links. Revoke stays callable until the dated removal.
+- New internal `POST /api/v1/internal/badge-links/purge` plus daily `.github/workflows/badge-link-retirement.yml` purge the Depot image of every dead legacy link, closing the unvisited-expiry gap. Each run is audited (`badge_links.images_swept`, including zero-purge runs), an ambiguous twin-reference read never deletes, and a failed read is a 502, never a zero.
+- The dated removal (delete the legacy code, then a contract migration dropping `badge_shares`, which also retires the legacy `age_band` column, and narrowing the event CHECK) is a written runbook in the policy, deliberately not a migration now: the table must keep serving legacy links until 24 October 2026.
+
+**F.3 — disclosure for the image flow.** Two body lines directly under each Share button, bound with `aria-describedby`: "You get a picture with their first name. No link is made." / "Anyone you send it to can keep it. It shows LittleFounders." (es-MX and pt-BR equivalents in the policy). They name what is created, what is not, the part nobody can undo (this replaces F.2's third-party caching caveat, which no longer applies to new shares) and the brand exposure. They drop every expiry/revoke claim, because the image has neither. Each line fits the Copy Budget (12 words EN, 15 ES/PT, two sentences) in all locales, pinned by `previewCopy.test.ts`. The legacy-link panel now reads "Old share links" and says those links stop working on their date.
+
+**F.5 — brand position, copy and metrics.** `COSMIC_NARRATIVE.md` §5 states what sharing is (a proud moment a parent chooses to send), what it deliberately is not (a public listing, a marketing use of a child, anyone's decision but the verified guardian's), its promises and why this is Law 2 and Law 5. The copy repeats it at the point of action. Metrics follow OD-20: migration `achievement_share_initiations` (expand; RLS on, no policy; no user, kid, name or image column) records one row per rendered image by kind and hand-off, and `GET /api/v1/admin/analytics/achievement-sharing` (view_analytics) reports shares initiated, the Persistent Public URL Rate (structurally 0) and the legacy lifecycle. Viewer reach is gone: `badge_link_click` is no longer recordable, the anonymous beacon drops it, the landing page tracks nothing, and the usage dashboard lists it as a retired event (the DB CHECK is narrowed at the dated removal). `sharing:check` is the Appendix L Brand-Narrative Coverage Check.
+
+**F.6 — standing constraints.** Written in the policy (section 2) and pinned by `backend/src/__tests__/achievementSharingConstraints.test.ts`: direct requests from 13 refused populations (no session, parent-created under-13 kid, guest, independent teen, adult non-parent, parent unverified/revoked/other-method, minor with a parent role, kid+parent, staff admin, superadmin, unlinked verified parent), a guardian link revoked mid-request, five unearned achievements, client-supplied fields, the exact minimized Depot body (first name only) and the no-persistence invariant. Two mutations (removing the post-read `guardKid`, replacing `firstNameOnly`) were run and each failed the suite. `sharing:check` (now part of `spec:check`) pins the cross-service facts: date parity, no insert path, no stored image, the closing trigger, no viewer reach, the brand position and the policy text; its self-test proves each check fails on the regression it guards.
+
+**F.4 under OD-20.** S08.3 populated `badge_shares.age_band`, but the new flow persists no entity, so there is no producer any more. The field is legacy-only and is removed with the table in the dated removal; the new `achievement_share_initiations` table has a producer and a consumer for every column. `shareAgeBand` was deleted as dead code.
+
+**Image quality.** The renderer localizes its kicker line (it was Spanish in every locale), goal labels say coins/monedas/moedas per the glossary, long first names shrink to fit one line and long labels wrap onto up to four lines. The art itself (system-font emoji on a gradient) is still the legacy template; redrawing it as a house-style asset is a wave-2 design-system item.
+
+**Proposals recorded for the owner (conservative defaults implemented).**
+1. Cutover instant: OD-20 says links issued "before this decision" keep their controls. The cutover is 00:00 UTC on 24 September 2026, so a link minted later that day by the live platform is refused (fail closed). If the owner prefers the production deploy instant, only the constant and its two mirrors change.
+2. The picture carries the LittleFounders name (the only growth element left). The disclosure says so. Removing the name from the image is a one-line renderer change if the owner prefers a brand-free picture.
+3. The sweep is a scheduled production workflow; it starts running when the owner pushes and deploys this lane.
 
 ## Verification log
 
@@ -48,3 +83,29 @@ Executed 24 September 2026 against the current working tree. Commands below are 
 Execution notes: the badge-visibility stub initially ignored the `role=eq.` filter, which made every viewer read as staff — the stub now filters by the requested role (a harness correction, not a product change). The age-band test's first expectation used a birth date that lands in 9-11 today; the fixture now uses a date that lands in 6-8.
 
 Remaining acceptance boundaries: real PostgreSQL evidence for the badge reads and the populated column, visual/device matrices, and human Product/Safety review. None of E.5, F.3 or F.4 is accepted.
+
+## S08.4 verification log
+
+Executed 24 September 2026 in the S08 lane worktree against local fixtures only (no database, no production, no paid calls). Commands are relative to the named directory.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Depot renderer and retirement | `filebase/`: `npx vitest run src/__tests__/badges.test.ts` | 11 tests: render returns PNG bytes with no-store and leaves FILEBASE_ROOT unchanged, every kind × locale deterministic, extra fields (ageBand, surname, photo, bucket) refused, retired compose answers 410 and stores nothing, label wrap and longest name/label |
+| Depot regression and static checks | `filebase/`: `npm test`, `npm run type-check`, `npm run lint` | 8 files, 40 tests passed; type-check and lint clean |
+| F.6 population suite and image route | `backend/`: `npx vitest run src/__tests__/achievementSharingConstraints.test.ts src/__tests__/familyBadge.test.ts` | 34 tests (24 + 10). Mutation check: removing the post-read `guardKid` and replacing `firstNameOnly` each failed the suite (2 failures), then restored |
+| Legacy links, sweep, metrics, viewer reach | `backend/`: `npx vitest run src/__tests__/badgePublic.test.ts src/__tests__/badgeRevoke.test.ts src/__tests__/badgeLinkSweep.test.ts src/__tests__/achievementSharingMetrics.test.ts src/__tests__/achievementViewerReach.test.ts` | 7 + 16 + 8 + 5 + 2 = 38 tests; clocks pinned so no case changes meaning on 24 October 2026 |
+| Core regression and static checks | `backend/`: `npm test`, `npm run type-check`, `npm run lint` | 74 files, 1,512 tests passed + 1 documented skip; type-check (including tests) and lint clean |
+| Frontend units | `frontend/`: `npx vitest run src/rebuild/family src/routes/app/family/__tests__/KidTerritoryShare.test.tsx src/routes/app/family/__tests__/BadgeSharesPanel.test.tsx src/badgeEdge.test.ts src/routes/admin/analytics/usageShared.test.ts src/rebuild/design/previewCopy.test.ts` | 14 + 4 + 9 + 4 + 6 + 3 tests passed |
+| Frontend regression and static checks | `frontend/`: `npm test`, `npm run type-check`, `npm run lint` | 214 files, 2,209 tests passed; type-check and lint clean. The first full run failed one test (`designClasses.test.ts`: a status wrapper class with no stylesheet rule); the unused class was removed and the full suite rerun clean |
+| Real-Chrome matrix | `frontend/`: `REBUILD_URL=http://localhost:5350 AUDIT_OUT=../.lane-cache/verify-achievement-share node scripts/verify-rebuild-achievement-share.mjs` (Vite on 5350) | 192 configurations (3 locales × 2 themes × 320/375/768/1280 px × 1.0/1.4 text scale × 4 states), 0 findings; keyboard Tab lands on the share button with a visible ring; reduced motion gives 0 s transitions. Screenshots es-MX light 375 (failed state) and pt-BR dark 1280 inspected by eye; a rendered 1080×1920 goal picture with a long name and label was also inspected |
+| Database static gates | `database/`: `npm test` | 113 files sequential, RLS covered; migration-phase OK (92 expand, 21 contract), `close_badge_share_links` listed as pending contract; 21 node tests passed; railway-migrate self-test passed |
+| Cross-service gate | Root: `npm run sharing:check`, `node --test agent/tools/check-achievement-sharing.test.mjs` | OK; 7 self-tests, each regression class proven to fail |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check`, `npm run tools:test`; i18n node steps (key parity script, `check-hardcoded-strings.mjs`, `check-t-keys.mjs`) | spec:check OK (113 requirement headings; achievement sharing OK); secrets:check OK; tools:test 63 passed; i18n key parity identical across en-US/es-MX/pt-BR, hardcoded-string and t-key checks OK |
+
+Execution notes and resolutions:
+- The first Core type-check failed on the supertest binary-parser signature in two test files; the parser now takes `unknown` and narrows (a harness type fix, no product change).
+- The first `sharing:check` flagged the landing page because its own header comment named the retired event; the check now matches the quoted event string or a `trackInsight` call. Its self-test then showed the `.strict()` check passing on a comment; it now requires `}).strict()` on code.
+- jsdom has no object-URL API; the client-layer test stands it in per test.
+- The first `database/` run was started with piped output and only finished in the background; it was rerun with output to a file.
+
+Remaining limitations (not accepted): Appendix L Stage 3 Safety/Trust review and Forge tone/copy review of the disclosure (with native es-MX/pt-BR review); physical PostgreSQL evidence for both migrations (trigger refusing INSERT while UPDATE revoke still works; the counter table's RLS); an iOS/Android device check of the file share sheet (the matrix uses the fixture preview, not a real share sheet); production readings of the new metrics and an external indexing spot-check of the legacy page; the dated removal itself (on or after 25 October 2026); the house-style redraw of the image art; regenerated `database/types/database.ts` for the new table (integration step).

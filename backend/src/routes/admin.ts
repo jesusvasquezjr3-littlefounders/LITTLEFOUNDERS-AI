@@ -30,6 +30,7 @@ import {
   readSignupFunnelIntegrity,
   readAnonAcquisition,
 } from '../services/audience.js';
+import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
 import {
@@ -419,6 +420,21 @@ export function adminRouter(): Router {
   });
 
   /** Web-analytics overview (Plausible): aggregate KPIs + daily timeseries, optionally filtered. */
+  /*
+   * Appendix L achievement-sharing metrics under OD-20 (Product 10 F.1-F.5):
+   * shares initiated by hand-off and kind, the Persistent Public URL Rate
+   * (target zero) and the legacy links' lifecycle. Never viewer reach.
+   * Guarded by the '/analytics' view_analytics mount above.
+   */
+  const AchievementSharingQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/achievement-sharing', async (req, res) => {
+    const parsed = AchievementSharingQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const metrics = await getAchievementSharingMetrics(parsed.data.days);
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load achievement-sharing metrics');
+    return ok(res, metrics);
+  });
+
   router.get('/analytics/overview', async (req, res) => {
     const parsed = PeriodSchema.safeParse(req.query);
     const range = parsed.success ? rangeFromQuery(parsed.data) : null;
