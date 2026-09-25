@@ -16,20 +16,15 @@
 export const COMBO_FLOOR = 2
 
 /*
- * Every third answer in the run gets the extra beat.
- *
- * Often enough that a good run is acknowledged more than once, rare enough that
- * the beat keeps meaning something. A burst on EVERY correct answer is
- * wallpaper: the learner stops seeing it by the fourth one, and it costs the
- * same to draw.
+ * B.20 / OD-7 (S05.3e): a run of right answers is INFORMATION, never a
+ * celebration. The "every third answer" VFX ring this module used to schedule
+ * (`burst`) was a celebration effect on correct answers, which the closed
+ * milestone list forbids (Frontend Bible 02 D7, rule 17). The run is still
+ * named in words; nothing bursts, floats or overshoots.
  */
-export const COMBO_MILESTONE = 3
-
 export interface ComboBeat {
   /** Name the run — "3 in a row!". */
   show: boolean
-  /** Add the one-shot VFX ring on top of it. */
-  burst: boolean
 }
 
 /**
@@ -44,7 +39,6 @@ export function comboBeat(streak: number, correct: boolean): ComboBeat {
    * paying attention — and this engine's first rule about wrong answers is that
    * it never mocks (LESSON_ENGINE.md P3).
    */
-  if (!correct) return { show: false, burst: false }
-  const show = streak >= COMBO_FLOOR
-  return { show, burst: show && streak % COMBO_MILESTONE === 0 }
+  if (!correct) return { show: false }
+  return { show: streak >= COMBO_FLOOR }
 }

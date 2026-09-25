@@ -17,8 +17,12 @@ import {
 import { runGenerationQualityGate } from './generationQuality.js';
 import { runReadabilityGate } from './readability.js';
 import { CONTENT_TYPES } from '../contract/registry.js';
+import { runRewardMechanicGate } from './rewardMechanicGate.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+// 17: the reward-mechanic structural gate (Appendix C Stage 2 gate 7, B.22,
+// S05.3e; rewardMechanicGate.ts). Numbered clear of the content gates other
+// lanes add (11-16) so the lists merge without renumbering.
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 17;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -30,6 +34,8 @@ export interface GateReport {
   ok: boolean;
   problems: GateProblem[];
   document?: LessonDocumentParsed;
+  /** Flags for the Stage 3 pedagogical reviewer that do not block (B.22 mystery-reward language). */
+  review?: GateProblem[];
 }
 
 // ---- Gate 1: contract Zod parse ---------------------------------------------
@@ -2569,9 +2575,14 @@ export function runPlanFidelityGate(
 }
 
 export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport {
+  // Gate 17 reads the raw document, so a randomized reward is named for what
+  // it is even when the contract gate also refuses the document.
+  const reward = runRewardMechanicGate(rawDocument);
+  const rewardProblems: GateProblem[] = reward.blocking.map((finding) => ({ gate: 17, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` }));
+  const review: GateProblem[] = reward.review.map((finding) => ({ gate: 17, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` }));
   const gate1 = runContractGate(rawDocument);
   if (!gate1.ok || !gate1.document) {
-    return { ok: false, problems: gate1.problems };
+    return { ok: false, problems: [...rewardProblems, ...gate1.problems], ...(review.length ? { review } : {}) };
   }
   const document = gate1.document;
   const problems: GateProblem[] = [
@@ -2586,6 +2597,7 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     // catches text that reads like an adult paragraph BEFORE a paid judge call.
     ...runReadabilityGate(document, ctx.tier),
     ...runPlanFidelityGate(document, ctx.plannedSegmentTypes),
+    ...rewardProblems,
   ];
-  return { ok: problems.length === 0, problems, document };
+  return { ok: problems.length === 0, problems, document, ...(review.length ? { review } : {}) };
 }

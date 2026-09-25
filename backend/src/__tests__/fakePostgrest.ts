@@ -10,7 +10,7 @@
  * correct), plus GET/POST/PATCH.
  */
 
-import { nextStreak } from '../services/streak.js';
+import { advanceHabitStreak, habitStateFromStats, pausedDays, type HabitStreakState } from '../services/habitStreak.js';
 
 export type FakeRow = Record<string, unknown>;
 export type FakeDb = Record<string, FakeRow[]>;
@@ -65,7 +65,14 @@ function fakeCompleteLesson(db: FakeDb, p: FakeCompletionInput): FakeRow | null 
   let previous = progress.find(r => r.user_id === p.p_user_id && r.lesson_id === p.p_lesson_id);
   const xpDelta = Math.max(0, p.p_xp - Number(previous?.xp_earned ?? 0));
   const newlyPassed = p.p_passed && !previous?.passed;
-  const streak = p.p_passed ? nextStreak(stats.last_active_date as string | null, Number(stats.streak_days), p.p_local_date) : Number(stats.streak_days);
+  // S05.3e: the habit streak model, exactly as habit_streak_advance runs it.
+  const before = fakeHabitState(stats);
+  const advanced = p.p_passed ? advanceHabitStreak(before, p.p_local_date, fakePausedDays(db, p.p_user_id)) : null;
+  const after: HabitStreakState = advanced ? advanced.state : before;
+  const streak = after.current;
+  const dayPassed = !p.p_passed ? Number(stats.day_lessons_passed ?? 0)
+    : stats.last_active_date === p.p_local_date ? Number(stats.day_lessons_passed ?? 0) + 1
+      : !stats.last_active_date || String(stats.last_active_date) < p.p_local_date ? 1 : Number(stats.day_lessons_passed ?? 0);
   const kind = !previous || (Number(previous.attempts ?? 0) === 0 && !previous.passed) ? 'first' : previous.passed ? 'replay' : 'retry';
   const priorBest = kind === 'first' ? null : Number(previous?.best_score ?? 0);
   const result = {
@@ -82,17 +89,44 @@ function fakeCompleteLesson(db: FakeDb, p: FakeCompletionInput): FakeRow | null 
     replay: { kind, previous_best_score: priorBest, best_score_kept: priorBest !== null && p.p_score < priorBest,
       notice: priorBest !== null && p.p_score < priorBest ? 'best_kept' : priorBest !== null && p.p_score > priorBest ? 'new_best' : 'none',
       xp_policy: 'improvement_only' },
+    streak: { model: 'rest-days-v1', outcome: advanced ? advanced.outcome : 'not_practised',
+      rest_days_bridged: advanced?.restDaysBridged ?? 0, rest_days_left: 2 - after.restDaysUsed,
+      milestone: advanced?.milestone ?? null, days_practiced: after.daysPracticed,
+      best: Math.max(Number(stats.longest_streak ?? 0), after.best), run_before: Number(stats.streak_days) },
+    pace: { lessons_passed_today: after.lastActiveDate === p.p_local_date ? dayPassed : 0 },
   };
   if (!previous) { previous = { user_id: p.p_user_id, lesson_id: p.p_lesson_id }; progress.push(previous); }
   Object.assign(previous, { best_score: result.best_score, passed: Boolean(previous.passed || p.p_passed),
     xp_earned: result.xp_earned, attempts: Number(previous.attempts ?? 0) + 1, completed_at: new Date().toISOString() });
   Object.assign(stats, { xp_points: Number(stats.xp_points) + xpDelta,
     minutes_learned: result.minutes_learned, lessons_completed: result.lessons_completed,
-    streak_days: streak, longest_streak: result.longest_streak,
-    ...(p.p_passed ? { last_active_date: p.p_local_date } : {}) });
+    streak_days: streak, longest_streak: Math.max(result.longest_streak, after.best),
+    last_active_date: after.lastActiveDate, rest_days_used: after.restDaysUsed, days_practiced: after.daysPracticed,
+    day_lessons_passed: dayPassed });
   if (p.p_run_id) receipts.push({ user_id: p.p_user_id, lesson_id: p.p_lesson_id, run_id: p.p_run_id, result });
   return result;
 }
+
+function fakeHabitState(stats: FakeRow): HabitStreakState {
+  return habitStateFromStats({
+    streak_days: Number(stats.streak_days ?? 0), longest_streak: Number(stats.longest_streak ?? 0),
+    last_active_date: (stats.last_active_date as string | null | undefined) ?? null,
+    rest_days_used: Number(stats.rest_days_used ?? 0), days_practiced: Number(stats.days_practiced ?? 0),
+  });
+}
+
+function fakePausedDays(db: FakeDb, userId: unknown): Set<number> {
+  return pausedDays((db.learning_streak_pauses ?? [])
+    .filter(r => r.learner_id === userId && !r.cancelled_at)
+    .map(r => ({ startsOn: String(r.starts_on), endsOn: String(r.ends_on) })));
+}
+
+/** Mirrors the guardian check in set_/cancel_learning_streak_pause (S05.3e). */
+function fakeVerifiedGuardian(db: FakeDb, guardianId: unknown, learnerId: unknown): boolean {
+  return (db.guardian_links ?? []).some(l => l.parent_user_id === guardianId && l.kid_user_id === learnerId && l.verification_status === 'verified');
+}
+
+const fakeDay = (date: string) => Math.round(Date.parse(date + 'T00:00:00Z') / 86_400_000);
 
 /** Builds a `global.fetch` replacement backed by `db` (mutated in place by writes). */
 export function createFakeFetch(db: FakeDb): typeof fetch {
@@ -252,6 +286,50 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
           fading_group_id: p.p_fading_group_id, stage: p.p_stage, receipt_jti: p.p_receipt_jti });
       }
       return respond(204, null, true);
+    }
+    // S05.3e: onboarding's day one on the habit model (record_learning_practice_day).
+    if (table === 'rpc/record_learning_practice_day' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as { p_user_id: string; p_local_date: string };
+      const statsRows = db.learning_stats ??= [];
+      let stats = statsRows.find(r => r.user_id === p.p_user_id);
+      if (!stats) {
+        stats = { user_id: p.p_user_id, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null };
+        statsRows.push(stats);
+      }
+      const advanced = advanceHabitStreak(fakeHabitState(stats), p.p_local_date, fakePausedDays(db, p.p_user_id));
+      Object.assign(stats, { streak_days: advanced.state.current, longest_streak: Math.max(Number(stats.longest_streak ?? 0), advanced.state.best),
+        last_active_date: advanced.state.lastActiveDate, rest_days_used: advanced.state.restDaysUsed, days_practiced: advanced.state.daysPracticed });
+      return respond(200, { current: advanced.state.current, best: advanced.state.best, outcome: advanced.outcome, milestone: advanced.milestone });
+    }
+    // S05.3e: the guardian's holiday pause, with the SQL's own link and range checks.
+    if (table === 'rpc/set_learning_streak_pause' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as { p_guardian_id: string; p_learner_id: string; p_starts_on: string; p_ends_on: string; p_today: string };
+      if (!fakeVerifiedGuardian(db, p.p_guardian_id, p.p_learner_id)) return respond(200, { status: 'forbidden' });
+      if (fakeDay(p.p_ends_on) < fakeDay(p.p_starts_on) || fakeDay(p.p_ends_on) - fakeDay(p.p_starts_on) > 20
+        || fakeDay(p.p_starts_on) < fakeDay(p.p_today) - 7 || fakeDay(p.p_starts_on) > fakeDay(p.p_today) + 60) return respond(200, { status: 'invalid' });
+      const pauses = db.learning_streak_pauses ??= [];
+      for (const row of pauses) {
+        if (row.learner_id === p.p_learner_id && !row.cancelled_at && String(row.ends_on) >= p.p_today) row.cancelled_at = new Date().toISOString();
+      }
+      const id = 'aaaaaaaa-0000-4000-8000-' + String(pauses.length + 1).padStart(12, '0');
+      pauses.push({ id, learner_id: p.p_learner_id, starts_on: p.p_starts_on, ends_on: p.p_ends_on, set_by: p.p_guardian_id, cancelled_at: null });
+      return respond(200, { status: 'set', id, starts_on: p.p_starts_on, ends_on: p.p_ends_on });
+    }
+    if (table === 'rpc/cancel_learning_streak_pause' && method === 'POST') {
+      const p = JSON.parse(String(init?.body)) as { p_guardian_id: string; p_learner_id: string; p_today: string };
+      if (!fakeVerifiedGuardian(db, p.p_guardian_id, p.p_learner_id)) return respond(200, { status: 'forbidden' });
+      let changed = 0;
+      for (const row of db.learning_streak_pauses ?? []) {
+        if (row.learner_id !== p.p_learner_id || row.cancelled_at) continue;
+        if (String(row.starts_on) >= p.p_today) {
+          row.cancelled_at = new Date().toISOString();
+          changed += 1;
+        } else if (String(row.ends_on) >= p.p_today) {
+          row.ends_on = new Date((fakeDay(p.p_today) - 1) * 86_400_000).toISOString().slice(0, 10);
+          changed += 1;
+        }
+      }
+      return respond(200, { status: changed > 0 ? 'cancelled' : 'none' });
     }
     // Contract double only: SQL rollback/concurrency is verified separately.
     if (table === 'rpc/complete_lesson' && method === 'POST') {

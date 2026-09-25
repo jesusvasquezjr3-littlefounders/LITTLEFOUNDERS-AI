@@ -1,0 +1,58 @@
+/* B.21 / B.24 (S05.3e). Tokens only; separation by fill, never by outline (Bible 02 §4.4). */
+
+/* A dashboard of independent cards: a neutral page (rule 15). */
+.lf-rhythm { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
+.lf-rhythm-inner { display: grid; gap: var(--spacing-5); max-inline-size: 760px; margin-inline: auto; }
+.lf-rhythm-inner > * { min-inline-size: 0; }
+.lf-rhythm-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-rhythm-top h1 { font-size: 1.75rem; }
+.lf-rhythm-state { min-block-size: min(50dvh, 360px); display: grid; align-content: center; gap: var(--spacing-3); }
+.lf-rhythm-state .lf-button { justify-self: start; }
+
+/* The streak: the reward hue (coins, XP, stars, streak; Bible 02 §4.2). */
+.lf-rhythm-streak { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--reward-soft); color: var(--content); }
+.lf-rhythm-streak h2, .lf-rhythm-pace h2, .lf-rhythm-choices h2 { font-size: 1.25rem; }
+.lf-rhythm-count { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; }
+.lf-rhythm-flame { inline-size: 40px; block-size: 50px; flex: none; }
+.lf-rhythm-count strong { font-family: Fredoka, sans-serif; font-size: 3rem; line-height: 1; font-variant-numeric: tabular-nums; color: var(--reward-strong); }
+.lf-rhythm-count span { font-weight: 800; font-size: 1.125rem; }
+.lf-rhythm-status { font-weight: 800; }
+/* One fact per row on a phone (label, then its number), three tiles when there is room. Words never break mid-word. */
+.lf-rhythm-facts { display: grid; gap: var(--spacing-2); margin: 0; }
+.lf-rhythm-facts > div { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); }
+.lf-rhythm-facts dt { font-weight: 800; color: var(--content-muted); overflow-wrap: break-word; hyphens: manual; }
+.lf-rhythm-facts dd { margin: 0; font-family: Fredoka, sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.lf-rhythm-rule { font-weight: 700; }
+
+/* Two tabs: the selected one is a real interaction state (4.4 case 2), shown by its fill. */
+.lf-rhythm-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); padding: var(--spacing-1); border-radius: var(--rounded-full); background: var(--sunken); max-inline-size: 420px; }
+.lf-rhythm-tab {
+  min-block-size: var(--target-base); padding: var(--spacing-2) var(--spacing-4); border: 0; border-radius: var(--rounded-full);
+  background: transparent; color: var(--content); font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1rem; cursor: pointer;
+  transition: background-color var(--dur-micro), transform var(--dur-micro) var(--ease-standard);
+}
+.lf-rhythm-tab[aria-selected='true'] { background: var(--primary); color: var(--on-primary); }
+.lf-rhythm-tab:active { transform: scale(.97); }
+.lf-rhythm-panel { display: grid; gap: var(--spacing-5); }
+.lf-rhythm-panel[hidden] { display: none; }
+
+/* The learner's own plan and choices: a quiet surface. */
+.lf-rhythm-pace, .lf-rhythm-choices { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--shadow-control); }
+.lf-rhythm-options { display: grid; grid-template-columns: repeat(3, minmax(var(--target-base), 1fr)); gap: var(--spacing-2); max-inline-size: 360px; }
+.lf-rhythm-options .lf-button { min-block-size: var(--target-lg); font-size: 1.25rem; }
+.lf-rhythm-today { font-weight: 800; }
+.lf-rhythm-notice { color: var(--content-muted); font-weight: 700; }
+.lf-rhythm-choices .lf-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-rhythm .lf-rhythm-top > .lf-button { justify-self: start; }
+
+@container app (min-width: 640px) {
+  .lf-rhythm { padding: var(--spacing-8); }
+  .lf-rhythm-top h1 { font-size: 2.25rem; }
+  .lf-rhythm-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lf-rhythm-facts > div { display: grid; align-content: start; justify-content: stretch; gap: var(--spacing-1); padding: var(--spacing-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-rhythm-tab { transition: none; }
+  .lf-rhythm-tab:active { transform: none; }
+}

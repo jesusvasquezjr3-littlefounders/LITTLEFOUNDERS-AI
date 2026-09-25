@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { matchPath } from 'react-router-dom';
 import {
+  LEARNING_RHYTHM_ROUTE_PATH,
+  learningRhythmPath,
   COURSE_ROUTE_PATH,
   LESSON_ROUTE_PATH,
   PLACEMENT_ROUTE_PATH,
@@ -68,4 +70,11 @@ describe('the rest of the /learn URLs are routable', () => {
       expect(match?.params.courseSlug).toBe('money-basics');
     });
   }
+});
+
+describe('learningRhythmPath (S05.3e)', () => {
+  it('is matched by its own route and never read as a course slug first', () => {
+    expect(matchPath(`/${LEARNING_RHYTHM_ROUTE_PATH}`, learningRhythmPath())).not.toBeNull();
+    expect(learningRhythmPath()).toBe('/learn/rhythm');
+  });
 });

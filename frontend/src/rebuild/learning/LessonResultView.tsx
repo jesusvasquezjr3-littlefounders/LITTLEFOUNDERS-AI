@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
 import { Button } from '../design/controls';
+import { mayCelebrate, streakMilestone } from '../design/milestones';
 import './result.css';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
@@ -32,6 +33,20 @@ export const lessonCompletionReceiptSchema = z.object({
     assessed: z.number().int().nonnegative().safe(), sound: z.number().int().nonnegative().safe(),
     partial: z.number().int().nonnegative().safe(), unsupported: z.number().int().nonnegative().safe(),
   }).strict().optional(),
+  /*
+   * S05.3e. B.20: the closed OD-7 list Core says this completion reached (the
+   * screen celebrates nothing else; see design/milestones.ts) and the skill
+   * behind the XP, so the tally reads as information, not payment. B.21: the
+   * streak after this run. B.24: today's lessons against the learner's pace.
+   */
+  celebrations: z.array(z.string().max(40)).max(10).optional(),
+  recognition: z.object({ skills: z.array(z.string().min(1).max(80)).min(1).max(2) }).strict().optional(),
+  streak: z.object({
+    days: z.number().int().nonnegative().safe(),
+    milestone: z.union([z.literal(7), z.literal(30), z.literal(100)]).nullable(),
+    rest_days_bridged: z.number().int().nonnegative().safe(),
+  }).strict().optional(),
+  pace: z.object({ goal: z.number().int().min(1).max(3), passed_today: z.number().int().nonnegative().safe(), goal_met: z.boolean() }).strict().optional(),
 }).strict().refine((value) => value.first_try_correct <= value.graded_count, 'Invalid accuracy')
   .refine((value) => !value.judgment || (value.judgment.sound + value.judgment.partial + value.judgment.unsupported === value.judgment.assessed
     && value.judgment.assessed <= value.graded_count), 'Invalid judgment')
@@ -40,23 +55,29 @@ export type LessonCompletionReceipt = z.infer<typeof lessonCompletionReceiptSche
 
 const copy: Record<Locale, { done: string; preview: string; score: (correct: number, total: number) => string; xp: string; accuracy: string;
   time: string; comparison: string; today: string; best: string; newBest: string; savedBest: (best: number) => string;
-  reasoned: string; continue: string; unavailable: string }> = {
+  reasoned: string; continue: string; unavailable: string; figured: (skill: string) => string; streak: (days: number) => string; paceDone: string }> = {
   'en-US': { done: 'Lesson complete!', preview: 'Sample result', score: (a, n) => `${a}/${n} on first try.`,
     xp: 'XP earned', accuracy: 'First-try accuracy', time: 'Time', comparison: 'Today vs your best', today: 'Today', best: 'Best',
     newBest: 'New best', savedBest: (best) => `Your saved best is still ${best}%. This was practice.`,
     reasoned: 'Well-explained choices',
-    continue: 'Continue', unavailable: 'Result unavailable' },
+    continue: 'Continue', unavailable: 'Result unavailable',
+    figured: (skill) => `You worked out: ${skill}.`, streak: (days) => `${days}-day streak`, paceDone: 'Today\'s plan is done.' },
   'es-MX': { done: '¡Lección terminada!', preview: 'Resultado de ejemplo', score: (a, n) => `${a}/${n} al primer intento.`,
     xp: 'XP ganados', accuracy: 'Aciertos al primer intento', time: 'Tiempo', comparison: 'Hoy frente a tu mejor marca', today: 'Hoy', best: 'Mejor',
     newBest: 'Nueva mejor marca', savedBest: (best) => `Tu mejor marca sigue en ${best}%. Fue práctica.`,
     reasoned: 'Decisiones bien explicadas',
-    continue: 'Continuar', unavailable: 'Resultado no disponible' },
+    continue: 'Continuar', unavailable: 'Resultado no disponible',
+    figured: (skill) => `Resolviste: ${skill}.`, streak: (days) => `Racha de ${days} días`, paceDone: 'Tu plan de hoy está listo.' },
   'pt-BR': { done: 'Lição concluída!', preview: 'Resultado de exemplo', score: (a, n) => `${a}/${n} na primeira tentativa.`,
     xp: 'XP ganhos', accuracy: 'Acertos na primeira tentativa', time: 'Tempo', comparison: 'Hoje e seu recorde', today: 'Hoje', best: 'Recorde',
     newBest: 'Novo recorde', savedBest: (best) => `Seu recorde salvo continua ${best}%. Foi prática.`,
     reasoned: 'Escolhas bem explicadas',
-    continue: 'Continuar', unavailable: 'Resultado indisponível' },
+    continue: 'Continuar', unavailable: 'Resultado indisponível',
+    figured: (skill) => `Você resolveu: ${skill}.`, streak: (days) => `Sequência de ${days} dias`, paceDone: 'Seu plano de hoje está feito.' },
 };
+
+/** Exported for the Copy Budget test: every string the result screen can show. */
+export const lessonResultCopy = copy;
 
 /**
  * Shape validation is display-only; the caller must obtain a completion
@@ -94,14 +115,27 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
   const newBest = receipt.replay ? receipt.replay.notice === 'new_best' : accuracy > receipt.previous_best_percent;
   const duration = `${Math.floor(receipt.duration_seconds / 60)}:${String(receipt.duration_seconds % 60).padStart(2, '0')}`;
   const xp = new Intl.NumberFormat(locale).format(receipt.awarded_xp);
+  // B.20 / OD-7: motion only for what Core put on the closed list.
+  const celebrateLesson = mayCelebrate(receipt.celebrations, 'lesson-complete');
+  const milestone = receipt.streak?.milestone ? streakMilestone(receipt.streak.milestone) : null;
+  const celebrateStreak = milestone !== null && mayCelebrate(receipt.celebrations, milestone);
+  const skill = receipt.recognition?.skills[0] ?? null;
+  // B.24: the learner's own plan for today, met by this lesson: a plain status, never a celebration.
+  const paceDone = receipt.pace ? receipt.pace.goal_met && receipt.pace.passed_today === receipt.pace.goal : false;
+  // A first completion has no earlier best to compare with.
+  const showComparison = !receipt.replay || receipt.replay.kind !== 'first' || keptBest;
   return <main className={rootClass} {...host} data-surface="app" data-screen={fixture ? 'result-preview' : 'result'}>
     <div className="lf-result-inner">
       {fixture ? <p className="lf-result-preview-label" data-copy-role="body">{t.preview}</p> : null}
       <div className="lf-result-hero">
-        <img src="/rebuild/art/lesson-medal.svg" alt="" className="lf-result-medal" />
+        <img src="/rebuild/art/lesson-medal.svg" alt="" className="lf-result-medal" {...(celebrateLesson ? { 'data-celebrate': 'lesson-complete' } : {})} />
         <h1 data-copy-role="heading">{t.done}</h1>
-        {keptBest ? null
-          : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
+        {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. */}
+        {skill ? <p className="lf-result-figured" data-copy-role="body">{t.figured(skill)}</p>
+          : keptBest ? null
+            : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
+        {celebrateStreak && receipt.streak ? <p className="lf-result-streak" data-copy-role="body" data-celebrate={milestone}>
+          <img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p> : null}
       </div>
       <div className="lf-result-sheet">
         <div className="lf-result-stats" aria-label={t.done}>
@@ -112,7 +146,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
         {receipt.judgment && receipt.judgment.assessed > 0 ? <p className="lf-result-judgment">
           <strong data-copy-role="data">{receipt.judgment.sound}/{receipt.judgment.assessed}</strong>
           <span data-copy-role="body">{t.reasoned}</span></p> : null}
-        <section className="lf-result-compare" aria-label={t.comparison}>
+        {showComparison ? <section className="lf-result-compare" aria-label={t.comparison}>
           {/* B.5: a lower run leads with the kept best; the notice itself names the comparison. */}
           {keptBest ? <p className="lf-result-saved-best" data-copy-role="body">{t.savedBest(receipt.previous_best_percent)}</p>
             : <div className="lf-result-compare-head"><h2 data-copy-role="heading">{t.comparison}</h2>
@@ -121,7 +155,8 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
             <div className="lf-result-row" key={label}><span data-copy-role="body">{label}</span>
               <div className="lf-result-bar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value}>
                 <span style={{ inlineSize: `${value}%` }} /></div><strong data-copy-role="data">{value}%</strong></div>)}
-        </section>
+        </section> : null}
+        {paceDone ? <p className="lf-result-pace" role="status" data-copy-role="body">{t.paceDone}</p> : null}
         <Button variant="accent" onClick={onContinue}>{t.continue}</Button>
       </div>
     </div>

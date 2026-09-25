@@ -43,6 +43,9 @@ import { LearningNarrative } from '../family/LearningNarrative';
 import { LearningBridges } from '../family/LearningBridges';
 import { bridgesFixture, narrativePreviewStates } from '../family/familyLearningFixtures';
 import type { LessonMentorStage } from '../learning/lessonDocument';
+import { LearningRhythmView } from '../learning/LearningRhythmView';
+import { StreakPauseControl } from '../family/StreakPauseControl';
+import { milestoneReceipt, rhythmPreviewStates, streak as streakFixture, streakPausePreviewStates } from '../learning/motivationFixtures';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -129,7 +132,7 @@ export function Preview() {
       : screen === 'learnershortcut' ? <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
         <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
           bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}
-          onOpenJournal={() => go('journal')} onBridge={async () => 'done'} />
+          onOpenJournal={() => go('journal')} onOpenRhythm={() => go('rhythm')} onBridge={async () => 'done'} />
       </main>
       : screen === 'familylearning' ? <main className="lf-family-preview" data-surface="app" data-screen="family-learning-preview">
         <LearningBridges key={`bridges:${locale}`} fixture locale={locale} dark={theme === 'dark'}
@@ -147,6 +150,17 @@ export function Preview() {
           const judgment = scoreV2Judgment('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
           return { verdict: verdict === 'met' || verdict === 'review' ? verdict : 'invalid', ...(judgment === 'invalid' ? {} : { judgment }) };
         }} />
+      : screen === 'rhythm' ? <LearningRhythmView key={`rhythm:${locale}:${params.get('rhythm')}`} fixture locale={locale} dark={theme === 'dark'}
+        state={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
+        onBack={() => go('home')} onRetry={() => {}} onOpenPath={() => {}} onOpenMentor={() => {}}
+        onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} />
+      : screen === 'streakpause' ? <main className="lf-family-preview" data-surface="app" data-screen="streak-pause-host">
+        <StreakPauseControl key={`pause:${locale}:${params.get('pause')}`} fixture locale={locale} dark={theme === 'dark'} today="2026-09-24"
+          state={streakPausePreviewStates[params.get('pause') ?? 'ready'] ?? streakPausePreviewStates.ready!}
+          onPause={async (startsOn, endsOn) => ({ status: 'saved', streak: streakFixture({ status: 'paused', pause: { startsOn, endsOn } }) })}
+          onEnd={async () => ({ status: 'ended', streak: streakFixture({}) })} onRetry={() => {}} />
+      </main>
+      : screen === 'resultmilestone' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={milestoneReceipt(locale)} />
       : screen === 'resultkept' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-2', lesson_id: 'pilot-decide-justify', version_id: 'rev-001', locale,
         first_try_correct: 1, graded_count: 2, awarded_xp: 0, duration_seconds: 95, previous_best_percent: 100,

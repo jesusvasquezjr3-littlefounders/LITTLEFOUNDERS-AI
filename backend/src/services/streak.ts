@@ -1,5 +1,12 @@
 /*
- * Pure day-streak computation for POST /learn/lessons/:id/complete.
+ * LEGACY all-or-nothing day streak. Since S05.3e (B.21) the LEARNING streak
+ * runs on the lapse-tolerant habit model in habitStreak.ts (and its SQL twin
+ * inside complete_lesson). `nextStreak` below survives only for the chore
+ * streak (routes/tasks.ts, kid_task_streaks) until D.2 (S07) moves that
+ * entity onto the same habit model; do not use it for anything new.
+ * `isCalendarDate` is shared and stays.
+ *
+ * Original note: pure day-streak computation for POST /learn/lessons/:id/complete.
  *
  * The streak is anchored to learning_stats.last_active_date (0009): the
  * LOCAL calendar date (client-reported, YYYY-MM-DD) of the learner's last

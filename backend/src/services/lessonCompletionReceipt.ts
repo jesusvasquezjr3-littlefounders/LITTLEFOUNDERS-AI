@@ -1,3 +1,5 @@
+import type { PaceStatus } from './autonomy.js';
+import type { CelebrationMilestone } from './celebrationBudget.js';
 import type { LessonCompletionResult } from './supabaseRest.js';
 import type { V2PublicLesson } from './v2LessonDocument.js';
 
@@ -32,6 +34,17 @@ export interface V2CompletionReceipt {
     xp_policy: 'improvement_only';
   };
   judgment: { assessed: number; sound: number; partial: number; unsupported: number };
+  /*
+   * S05.3e. B.20: the closed OD-7 list this completion reached (the result
+   * screen celebrates nothing else) and what was figured out, so the XP tally
+   * reads as information about a skill rather than payment. B.21: the streak
+   * after this run, and its milestone if it reached one. B.24: today's passed
+   * lessons against the learner's own pace.
+   */
+  celebrations: CelebrationMilestone[];
+  recognition?: { skills: string[] };
+  streak?: { days: number; milestone: 7 | 30 | 100 | null; rest_days_bridged: number };
+  pace?: { goal: number; passed_today: number; goal_met: boolean };
 }
 
 /** True when the result screen must say the saved best is unaffected (B.5). */
@@ -49,6 +62,7 @@ export function buildV2CompletionReceipt(input: {
   runId: string;
   document: Pick<V2PublicLesson, 'lesson_id' | 'version_id' | 'locale'>;
   secondsSpent: number;
+  motivation?: { celebrations: CelebrationMilestone[]; recognition?: { skills: string[] }; pace?: PaceStatus };
 }): V2CompletionReceipt | null {
   const { completion, runId, document } = input;
   if (completion.first_try_correct === undefined || completion.graded_count === undefined
@@ -71,5 +85,9 @@ export function buildV2CompletionReceipt(input: {
       xp_policy: completion.replay.xp_policy,
     },
     judgment: completion.judgment ?? { assessed: 0, sound: 0, partial: 0, unsupported: 0 },
+    celebrations: input.motivation?.celebrations ?? [],
+    ...(input.motivation?.recognition ? { recognition: input.motivation.recognition } : {}),
+    ...(completion.streak ? { streak: { days: completion.streak_days, milestone: completion.streak.milestone, rest_days_bridged: completion.streak.rest_days_bridged } } : {}),
+    ...(input.motivation?.pace ? { pace: { goal: input.motivation.pace.goal, passed_today: input.motivation.pace.passedToday, goal_met: input.motivation.pace.goalMet } } : {}),
   };
 }

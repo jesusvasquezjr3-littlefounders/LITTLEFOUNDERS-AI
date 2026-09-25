@@ -360,6 +360,30 @@ describe('B.19 staff calibration routes', () => {
     expect(JSON.stringify(res.body)).not.toContain(userId);
   });
 
+  it('S05.3e: adds rest-day utilization and autonomy adoption, and degrades to null before the motivation migration', async () => {
+    grantStaff(['manage_content']);
+    scriptReads();
+    const pending = await auth(request(createApp()).get('/api/v1/admin/content/learning-quality?days=28'), staff);
+    expect(pending.status).toBe(200);
+    expect(pending.body.data.motivation).toBeNull();
+    db.__rpc!.push(
+      { name: 'learning_rest_day_utilization', body: [{ learners_with_lapse: 40, kept_by_rest_days: 31, restarted: 12, utilization_rate: '0.7750', rest_days_used: 52 }] },
+      { name: 'learning_autonomy_adoption', body: [
+        { lever: 'path', offered: 120, exercised: 34, adoption_rate: '0.2833' },
+        { lever: 'pace', offered: 80, exercised: 22, adoption_rate: '0.2750' },
+        { lever: 'mentor', offered: 80, exercised: 51, adoption_rate: '0.6375' }] },
+    );
+    const res = await auth(request(createApp()).get('/api/v1/admin/content/learning-quality?days=28'), staff);
+    expect(res.body.data.motivation).toEqual({
+      restDays: { learners_with_lapse: 40, kept_by_rest_days: 31, restarted: 12, utilization_rate: 0.775, rest_days_used: 52 },
+      autonomy: [
+        { lever: 'path', offered: 120, exercised: 34, adoption_rate: 0.2833 },
+        { lever: 'pace', offered: 80, exercised: 22, adoption_rate: 0.275 },
+        { lever: 'mentor', offered: 80, exercised: 51, adoption_rate: 0.6375 }],
+    });
+    expect(JSON.stringify(res.body)).not.toContain(userId);
+  });
+
   it('refuses every non-content population: learner, parent, analytics-only staff, guest', async () => {
     scriptReads();
     db.user_roles = [{ user_id: userId, role: 'kid' }];

@@ -95,12 +95,21 @@ const learningQualitySurfaces = [
   { screen: 'learningquality', ages: ['adult'], query: {}, want: 'learning-quality-host' },
 ];
 
+// B.20 / B.21 / B.24 (S05.3e): the learner rhythm, the guardian holiday pause and the milestone result.
+const motivationSurfaces = [
+  { screen: 'rhythm', ages: ['6-9', '13-17'], query: { rhythm: 'open' }, want: 'rhythm-preview' },
+  { screen: 'rhythm', ages: ['6-9'], query: { rhythm: 'resting' }, want: 'rhythm-preview' },
+  { screen: 'streakpause', ages: ['adult'], query: { pause: 'ready' }, want: 'streak-pause-host' },
+  { screen: 'resultmilestone', ages: ['6-9'], query: {}, want: 'result-preview' },
+];
+
 const scope = process.env.REBUILD_PROPORTIONS_SCOPE;
 const surfaces = scope === 'appendix-current' ? appendixCurrentSurfaces
   : scope === 'course-path' ? coursePathSurfaces
     : scope === 'narrative' ? narrativeSurfaces
       : scope === 'learning-quality' ? learningQualitySurfaces
-        : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces, ...narrativeSurfaces, ...learningQualitySurfaces];
+        : scope === 'motivation' ? motivationSurfaces
+          : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces, ...narrativeSurfaces, ...learningQualitySurfaces, ...motivationSurfaces];
 
 try {
   for (const { screen, ages, path, query: extra, want: wantScreen } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
@@ -159,7 +168,9 @@ try {
         ? 'The B.6 rebuilt course path preview fixtures only.'
         : scope === 'narrative'
           ? 'The S05.3c recall, decision journal, learner shortcut and Family Hub learning preview fixtures only.'
-          : 'All current controlled lesson, Appendix P candidate, course-path and S05.3c narrative renderers.',
+          : scope === 'motivation'
+            ? 'The S05.3e learner rhythm, guardian holiday pause and milestone result preview fixtures only.'
+            : 'All current controlled lesson, Appendix P candidate, course-path, S05.3c narrative, S05.3d learning-quality and S05.3e motivation renderers.',
   }, null, 2));
   console.log(JSON.stringify({ configurations, findings: findings.length, output }));
   if (findings.length) { console.error(JSON.stringify(findings.slice(0, 8), null, 2)); process.exitCode = 1; }

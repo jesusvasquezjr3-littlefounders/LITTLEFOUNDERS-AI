@@ -113,6 +113,17 @@ export type JudgmentDifferentiationRow = z.infer<typeof JudgmentRow>;
 
 const DisplayRateRow = z.object({ below_best: count, shown: count, display_rate: z.coerce.number().min(0).max(1).nullable() });
 
+// S05.3e (B.21, B.24): Appendix C's rest-day utilization and autonomy adoption.
+const RestDayRow = z.object({
+  learners_with_lapse: count, kept_by_rest_days: count, restarted: count,
+  utilization_rate: z.coerce.number().min(0).max(1).nullable(), rest_days_used: count,
+});
+const AutonomyRow = z.object({
+  lever: z.enum(['path', 'mentor', 'pace']), offered: count, exercised: count,
+  adoption_rate: z.coerce.number().min(0).max(1).nullable(),
+});
+export type MotivationMetrics = { restDays: z.infer<typeof RestDayRow>; autonomy: z.infer<typeof AutonomyRow>[] };
+
 async function rpc<T>(name: string, body: Record<string, unknown>, schema: z.ZodType<T>): Promise<T | null> {
   const result = await serviceRest<unknown>(`/rpc/${name}`, { method: 'POST', body: JSON.stringify(body) });
   const parsed = schema.safeParse(result);
@@ -128,6 +139,12 @@ export interface LearningQualityReport {
   bandLog: z.infer<typeof LogRow>[];
   judgment: (JudgmentDifferentiationRow & { status: JudgmentSignalStatus })[];
   replayNotice: z.infer<typeof DisplayRateRow> & { target: number; belowTarget: boolean };
+  /**
+   * Null when the motivation functions are not reachable yet (the
+   * *_motivation_events.sql contract migration needs an operator dispatch);
+   * the rest of the report does not depend on them.
+   */
+  motivation: MotivationMetrics | null;
   thresholds: {
     judgmentDivergenceFloor: number; judgmentMinAttempts: number; replayNoticeTarget: number; bandReviewCadenceDays: number;
   };
@@ -138,7 +155,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
   const until = now.toISOString();
   const since = new Date(now.getTime() - days * 86_400_000).toISOString();
   const window = { p_since: since, p_until: until };
-  const [lessons, reviews, bands, log, judgment, replay] = await Promise.all([
+  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy] = await Promise.all([
     rpc('practice_success_band_metrics', window, z.array(MetricRow)),
     serviceRest<unknown>('/practice_difficulty_reviews?select=id,lesson_id,direction,window_days,evidence,status,decision,decision_note,opened_at,resolved_at&order=opened_at.desc&limit=100')
       .then((rows) => { const parsed = z.array(ReviewRow).safeParse(rows); return parsed.success ? parsed.data : null; }),
@@ -148,6 +165,8 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
       .then((rows) => { const parsed = z.array(LogRow).safeParse(rows); return parsed.success ? parsed.data : null; }),
     rpc('learning_judgment_differentiation', window, z.array(JudgmentRow)),
     rpc('learning_replay_notice_display_rate', window, z.array(DisplayRateRow)),
+    rpc('learning_rest_day_utilization', window, z.array(RestDayRow)),
+    rpc('learning_autonomy_adoption', window, z.array(AutonomyRow)),
   ]);
   if (!lessons || !reviews || !bands || !log || !judgment || !replay) return null;
   const band = bands[0];
@@ -161,6 +180,10 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     judgment: judgment.map((row) => ({ ...row, status: classifyJudgmentSignal({ attempts: row.attempts, divergentShare: row.divergent_share }) }))
       .sort((a, b) => Number(b.status === 'tracks_correctness') - Number(a.status === 'tracks_correctness') || b.attempts - a.attempts),
     replayNotice: { ...rate, target: REPLAY_NOTICE_TARGET, belowTarget: rate.display_rate !== null && rate.display_rate < REPLAY_NOTICE_TARGET },
+    motivation: restDays && autonomy ? {
+      restDays: restDays[0] ?? { learners_with_lapse: 0, kept_by_rest_days: 0, restarted: 0, utilization_rate: null, rest_days_used: 0 },
+      autonomy,
+    } : null,
     thresholds: {
       judgmentDivergenceFloor: JUDGMENT_DIVERGENCE_FLOOR, judgmentMinAttempts: JUDGMENT_MIN_ATTEMPTS,
       replayNoticeTarget: REPLAY_NOTICE_TARGET, bandReviewCadenceDays: BAND_REVIEW_CADENCE_DAYS,

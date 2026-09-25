@@ -27,5 +27,14 @@ export function learningQualityFixture(): Record<string, unknown> {
     ],
     replayNotice: { below_best: 10, shown: 9, display_rate: 0.9, target: 1, belowTarget: true },
     thresholds: { judgmentDivergenceFloor: 0.1, judgmentMinAttempts: 30, replayNoticeTarget: 1, bandReviewCadenceDays: 90 },
+    // S05.3e: rest-day utilization (B.21) and autonomy adoption (B.24).
+    motivation: {
+      restDays: { learners_with_lapse: 40, kept_by_rest_days: 31, restarted: 12, utilization_rate: 0.775, rest_days_used: 52 },
+      autonomy: [
+        { lever: 'path' as const, offered: 120, exercised: 34, adoption_rate: 0.2833 },
+        { lever: 'pace' as const, offered: 80, exercised: 22, adoption_rate: 0.275 },
+        { lever: 'mentor' as const, offered: 80, exercised: 51, adoption_rate: 0.6375 },
+      ],
+    },
   };
 }

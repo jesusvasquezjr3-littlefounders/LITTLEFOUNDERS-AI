@@ -60,6 +60,10 @@ export const INSTRUMENTED_EVENTS = [
   // the result screen writes replay_notice_view.
   'replay_below_best',
   'replay_notice_view',
+  // B.21 / B.24 motivation signals (S05.3e): all three written by Core only.
+  'streak_rest_day',
+  'streak_restart',
+  'path_choice',
 ] as const;
 
 export type InstrumentedEvent = (typeof INSTRUMENTED_EVENTS)[number];

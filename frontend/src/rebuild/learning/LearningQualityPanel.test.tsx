@@ -69,4 +69,18 @@ describe('S05.3d staff learning-quality panel', () => {
       unmount();
     }
   });
+
+  it('S05.3e: shows rest-day utilization and the three autonomy levers, and says when the migration is pending', () => {
+    const { unmount } = render(<LearningQualityPanel state={{ status: 'ready', report: learningQualityFixture() }} locale="en-US" dark={false}
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+    expect(screen.getByRole('heading', { name: 'Motivation signals' })).toBeTruthy();
+    expect(screen.getByText('Rest days kept 31 of 40 streaks that met a missed day.')).toBeTruthy();
+    expect(screen.getByText('Path choice')).toBeTruthy();
+    expect(screen.getByText('34 of 120 chose it themselves.')).toBeTruthy();
+    expect(screen.queryByText(/avatar/i)).toBeNull();
+    unmount();
+    render(<LearningQualityPanel state={{ status: 'ready', report: { ...learningQualityFixture(), motivation: null } }} locale="en-US" dark={false}
+      onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />);
+    expect(screen.getByText('Available once the motivation migration is applied.')).toBeTruthy();
+  });
 });

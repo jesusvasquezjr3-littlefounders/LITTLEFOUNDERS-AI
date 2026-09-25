@@ -5,6 +5,9 @@ import { useTheme } from '@/theme/useTheme';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { LearningBridges } from '@/rebuild/family/LearningBridges';
 import { LearningNarrative } from '@/rebuild/family/LearningNarrative';
+import { StreakPauseControl } from '@/rebuild/family/StreakPauseControl';
+import { endKidStreakPause, fetchKidStreak, setKidStreakPause, type KidStreakState, type StreakPauseTransport } from '@/rebuild/family/streakPause';
+import { localDate } from '@/rebuild/learning/motivation';
 import {
   actOnKidBridge,
   dismissKidBridge,
@@ -22,6 +25,9 @@ import {
  *                           absent when there is nothing to suggest;
  *   LearningNarrativePanel  B.10's course-learning narrative, read only when
  *                           the guardian opens it.
+ *   StreakPausePanel        B.21's holiday pause (S05.3e): the child's streak
+ *                           as it reads today and the pause the verified
+ *                           parent may set or end.
  * Core is the enforcing boundary (verified parent, verified link, one
  * transaction per real goal or task); these hosts only move data. Keyed by
  * child and session, so switching child never shows another child's rows.
@@ -99,4 +105,29 @@ function ScopedNarrative({ kidUserId, token }: { kidUserId: string; token: strin
     }}
     onRetry={() => void load()}
     onMore={() => void more()} />;
+}
+
+export function StreakPausePanel(props: { kidUserId: string; token: string | null }) {
+  return <ScopedStreakPause key={`${props.kidUserId}:${props.token}`} {...props} />;
+}
+
+function ScopedStreakPause({ kidUserId, token }: { kidUserId: string; token: string | null }) {
+  const locale = useLocale();
+  const { isDark } = useTheme();
+  const today = localDate();
+  const transport = useCallback<StreakPauseTransport>(async (path, init) => {
+    if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
+    return api<unknown>(path, { token, method: init?.method, body: init?.body });
+  }, [token]);
+  const [state, setState] = useState<KidStreakState>({ status: 'loading' });
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    let active = true;
+    void fetchKidStreak(transport, kidUserId, today).then((next) => { if (active) setState(next); });
+    return () => { active = false; };
+  }, [transport, kidUserId, today, revision]);
+  return <StreakPauseControl key={state.status} state={state} locale={locale} dark={isDark} today={today}
+    onPause={(startsOn, endsOn) => setKidStreakPause(transport, kidUserId, startsOn, endsOn, today)}
+    onEnd={() => endKidStreakPause(transport, kidUserId, today)}
+    onRetry={() => { setState({ status: 'loading' }); setRevision((n) => n + 1); }} />;
 }

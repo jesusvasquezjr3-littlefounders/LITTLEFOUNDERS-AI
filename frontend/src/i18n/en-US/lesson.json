@@ -91,6 +91,7 @@
     "progressTitle": "What you took away",
     "yourBest": "Your best",
     "savedBestStill": "Your saved best is still {{best}}. This was practice.",
+    "workedOut": "You worked out: {{skill}}.",
     "newBest": "New best!",
     "today": "Today"
   },

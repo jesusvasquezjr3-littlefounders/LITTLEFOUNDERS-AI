@@ -2,6 +2,7 @@ import { requireAgeScreen } from '../middleware/ageScreen.js';
 import {
   getRolesForGate,
   hasActiveAnalyticsConsent,
+  deterministicEventId,
   insertLearningEvents,
   stampRole,
 } from '../services/insights.js';
@@ -37,6 +38,10 @@ import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptT
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { offerBridgeAfterCompletion, recordGradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
+import { learnMotivationRouter } from './learnMotivation.js';
+import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type CelebrationMilestone } from '../services/celebrationBudget.js';
+import { pathChoice, paceStatus, type PaceStatus } from '../services/autonomy.js';
+import { topicTeaches } from '../services/narrative/narrativeData.js';
 import { buildV2CompletionReceipt, replayNoticeRequired } from '../services/lessonCompletionReceipt.js';
 import {
   completeLesson,
@@ -76,6 +81,8 @@ import {
   type CourseHierarchyRow,
   type LessonHierarchyRow,
   type LessonDocumentRow,
+  getPacePreference,
+  type LessonCompletionResult,
 } from '../services/supabaseRest.js';
 
 /*
@@ -494,7 +501,12 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
  * divides a client event by this one, so both must be dropped for the same
  * learners or the rate would lie.
  */
-function recordServerLearnEvent(user: AuthedUser, event: 'replay_below_best', lessonId: string): void {
+function recordServerLearnEvent(
+  user: AuthedUser,
+  event: 'replay_below_best' | 'streak_rest_day' | 'streak_restart' | 'path_choice',
+  lessonId: string | null,
+  extra: { value?: number; clientEventId?: string } = {},
+): void {
   if (user.isGuest) return;
   void (async () => {
     const screening = await readAgeScreen(user.id);
@@ -504,8 +516,60 @@ function recordServerLearnEvent(user: AuthedUser, event: 'replay_below_best', le
     if (roles.includes('kid')) {
       if ((await hasActiveAnalyticsConsent(user.id)) !== true) return;
     } else if (!await allowsSelfManagedAnalytics(user.id, screening)) return;
-    await insertLearningEvents([{ user_id: user.id, role: stampRole(roles), event, route_class: 'learn', lesson_id: lessonId }]);
+    await insertLearningEvents([{
+      user_id: user.id, role: stampRole(roles), event, route_class: 'learn', lesson_id: lessonId,
+      ...(extra.value !== undefined ? { value: extra.value } : {}),
+      ...(extra.clientEventId ? { client_event_id: extra.clientEventId } : {}),
+    }]);
   })();
+}
+
+/**
+ * B.21 (S05.3e): the Appendix C rest-day utilization inputs, from Core's own
+ * completion result. A rest day kept the run; a restart means a run of two or
+ * more days had broken (a one-day "run" breaking is not a lost streak).
+ */
+function recordStreakOutcome(user: AuthedUser, completion: LessonCompletionResult): void {
+  if (completion.replayed || !completion.streak) return;
+  if (completion.streak.outcome === 'bridged' && completion.streak.rest_days_bridged > 0) {
+    recordServerLearnEvent(user, 'streak_rest_day', null, { value: completion.streak.rest_days_bridged });
+  } else if (completion.streak.outcome === 'restarted' && completion.streak.run_before >= 2) {
+    recordServerLearnEvent(user, 'streak_restart', null, { value: completion.streak.run_before });
+  }
+}
+
+/**
+ * B.20 / B.21 / B.24 (S05.3e): what Core adds to every completion response.
+ * `celebrations` is the closed OD-7 list this completion reached (the client
+ * celebrates nothing else); `recognition` names what was figured out, so the
+ * XP tally is informational, not payment (B.20); `pace` compares today's
+ * passed lessons with the learner's own plan (B.24). Best-effort reads: a
+ * missing enrichment is omitted, never invented.
+ */
+async function completionMotivation(input: {
+  user: AuthedUser; completion: LessonCompletionResult; before: CourseTree & { pathway?: PathwayView }; after: (CourseTree & { pathway?: PathwayView }) | null; topicId: string; locale: string | null;
+}): Promise<{ celebrations: CelebrationMilestone[]; recognition?: { skills: string[] }; pace?: PaceStatus }> {
+  const celebrations = completionCelebrations({
+    passed: input.completion.passed,
+    streak: input.completion.streak ?? null,
+    courseCompleted: courseCompletedNow(input.before, input.after),
+    badgeEarned: badgeEarnedNow(input.before, input.after),
+  });
+  const [teaches, preference] = await Promise.all([
+    input.completion.passed ? topicTeaches([input.topicId]) : Promise.resolve(null),
+    input.completion.pace ? getPacePreference(input.user.id) : Promise.resolve(undefined),
+  ]);
+  const locale = input.locale === 'en-US' || input.locale === 'pt-BR' ? input.locale : 'es-MX';
+  const skills = (teaches?.get(input.topicId) ?? []).slice(0, 2).flatMap((kc) => {
+    const title = kc.title as Record<string, unknown> | undefined;
+    const text = title?.[locale] ?? title?.['es-MX'] ?? title?.['en-US'];
+    return typeof text === 'string' && text.length > 0 ? [text] : [];
+  });
+  return {
+    celebrations,
+    ...(skills.length > 0 ? { recognition: { skills } } : {}),
+    ...(input.completion.pace && preference !== undefined ? { pace: paceStatus(preference, input.completion.pace.lessons_passed_today) } : {}),
+  };
 }
 
 export function learnRouter(): Router {
@@ -513,6 +577,8 @@ export function learnRouter(): Router {
   router.use(requireAuth, requireAgeScreen);
   // B.9 / B.13 (S05.3c): the learner's decision journal and self-directed bridge prompts.
   router.use(learnNarrativeRouter());
+  // B.21 / B.24 (S05.3e): the learner's streak, pace and autonomy levers.
+  router.use(learnMotivationRouter());
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
   // state, never raw events, answers, or another learner's data.
@@ -743,6 +809,17 @@ export function learnRouter(): Router {
     // B.9 (S05.3c): one earlier, relevant story decision from this course,
     // resurfaced as the lesson opens. Best-effort: never blocks the lesson.
     const narrativeRecall = await resurfaceForLesson({ userId: user.id, tree: ctx.tree, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId });
+    // B.24 (S05.3e): opening a lesson from a path that offered a real choice is
+    // the Appendix C adoption signal (1 = not the recommendation). One per
+    // learner, lesson and day: a reload is the same choice.
+    const pathway = (ctx.tree as Partial<PathwayCourseTree>).pathway;
+    const choice = pathway ? pathChoice(pathway, lessonId) : null;
+    if (choice) {
+      recordServerLearnEvent(user, 'path_choice', lessonId, {
+        value: choice.exercised ? 1 : 0,
+        clientEventId: deterministicEventId(`path_choice:${user.id}:${lessonId}:${new Date().toISOString().slice(0, 10)}`),
+      });
+    }
 
     return ok(res, {
       lesson: {
@@ -1103,18 +1180,24 @@ export function learnRouter(): Router {
       if (!completion) return fail(res, 409, 'UNSUPPORTED_LESSON', 'Complete every learning step first');
       // B.5: the denominator of the replay-notice display rate, server-side and consent-gated.
       if (replayNoticeRequired(completion) && !completion.replayed) recordServerLearnEvent(user, 'replay_below_best', lessonId);
+      recordStreakOutcome(user, completion);
+      const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
+      if (refreshed && courseEngine() === 'pathway') await settleCourseBadges(user.id, ctx.course, refreshed);
+      // B.20 / B.24 (S05.3e): the closed celebration list, what was figured out, and today's pace.
+      const motivation = await completionMotivation({
+        user, completion, before: ctx.tree, after: refreshed?.tree ?? null, topicId: ctx.topic.id, locale: document.locale,
+      });
       const receipt = buildV2CompletionReceipt({
         completion, runId: run.id, document,
         secondsSpent: parsed.data.seconds_spent ?? Math.round((parsed.data.minutes_spent ?? 0) * 60),
+        motivation,
       });
-      const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
-      if (refreshed && courseEngine() === 'pathway') await settleCourseBadges(user.id, ctx.course, refreshed);
       // B.13 (S05.3c): a completion that finishes a bridge topic offers a family prompt.
       const selfBridge = completion.replayed ? null : await offerBridgeAfterCompletion({
         user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
         before: ctx.tree, after: refreshed?.tree ?? null,
       });
-      return ok(res, { ...completion, ...(receipt ? { receipt } : {}), ...(selfBridge ? { self_bridge: selfBridge } : {}) });
+      return ok(res, { ...completion, ...motivation, ...(receipt ? { receipt } : {}), ...(selfBridge ? { self_bridge: selfBridge } : {}) });
     }
 
     const scoring = (picked.document as { scoring?: { pass_threshold?: number } }).scoring ?? {};
@@ -1210,6 +1293,8 @@ export function learnRouter(): Router {
 
     // B.5: the denominator of the replay-notice display rate (see 0120's function).
     if (replayNoticeRequired(completion) && !completion.replayed) recordServerLearnEvent(user, 'replay_below_best', lessonId);
+    // B.21 (S05.3e): rest-day utilization inputs.
+    recordStreakOutcome(user, completion);
 
     if (completion.streak_extended && !completion.replayed) {
       void (async () => {
@@ -1233,6 +1318,10 @@ export function learnRouter(): Router {
       user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
       before: ctx.tree, after: refreshedTree,
     }) : null;
+    // B.20 / B.24 (S05.3e): the closed celebration list, what was figured out, and today's pace.
+    const motivation = await completionMotivation({
+      user, completion, before: ctx.tree, after: refreshedTree, topicId: ctx.topic.id, locale: picked.locale,
+    });
 
     return ok(res, {
       score: completion.score,
@@ -1250,6 +1339,8 @@ export function learnRouter(): Router {
       next_lesson_id: refreshedTree?.nextLessonId ?? ctx.tree.nextLessonId,
       // B.5: server-authored replay facts; the result screen states the kept best from these.
       ...(completion.replay ? { replay: completion.replay } : {}),
+      ...(completion.streak ? { streak: completion.streak } : {}),
+      ...motivation,
       ...(selfBridge ? { self_bridge: selfBridge } : {}),
     });
   });

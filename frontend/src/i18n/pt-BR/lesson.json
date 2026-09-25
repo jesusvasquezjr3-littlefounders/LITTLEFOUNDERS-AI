@@ -91,6 +91,7 @@
     "progressTitle": "O que você leva",
     "yourBest": "Seu melhor",
     "savedBestStill": "Seu recorde salvo continua {{best}}. Foi prática.",
+    "workedOut": "Você resolveu: {{skill}}.",
     "newBest": "Novo recorde!",
     "today": "Hoje"
   },

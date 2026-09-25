@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
-import { Button, CountUp, Icon, LottieIcon, SectionHeading } from '@/components/ui'
+import { Button, Icon, LottieIcon, SectionHeading } from '@/components/ui'
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
@@ -29,7 +29,7 @@ import MarkdownLite from '../core/MarkdownLite'
 import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
 import { StreakCelebration } from './StreakCelebration'
 import { playSfx, playLessonBgm, stopLessonBgm } from './sfx'
-import { formatDuration, useCountUp, type ServerCompletion } from './completion'
+import { formatDuration, streakCelebrationFor, useCountUp, type ServerCompletion } from './completion'
 import type { LessonCheckpoint } from './checkpoint'
 import type { SessionState } from '../core/session'
 
@@ -262,10 +262,11 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
   }
 
   if (state.phase === 'results') {
-    // v1 flow: the cinematic streak overlay runs FIRST (once per day, when
-    // this pass extended the day streak), then reveals the results summary.
-    const showStreakCelebration =
-      !celebrationDone && server !== null && server.streak_extended && server.first_today && server.streak_days > 0
+    // The streak overlay runs FIRST, then reveals the results summary. B.20 /
+    // OD-7 (S05.3e): only a streak MILESTONE (7, 30 or 100 days) that Core
+    // named in `celebrations` gets it; an ordinary practised day updates the
+    // number on the results screen without a takeover.
+    const showStreakCelebration = !celebrationDone && server !== null && streakCelebrationFor(server) !== null
     if (showStreakCelebration) {
       return <StreakCelebration streakDays={server.streak_days} onContinue={() => setCelebrationDone(true)} />
     }
@@ -387,15 +388,17 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
               key={state.streak}
               className="lf-pop lf-chip lf-chip-warning lf-label relative"
             >
-              {comboBeat(state.streak, true).burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               <span className="lf-number">{state.streak}</span>
             </span>
           ) : null}
-          <span className="lf-chip lf-chip-accent lf-label">
-            <Icon name="bolt" fill className="text-[18px]" />
-            <CountUp value={earnedXp(doc, state)} className="lf-number" />
-          </span>
+          {/*
+           * B.20 (S05.3e): no live XP counter here. Rewards earned during a
+           * lesson are tallied on the results screen, never announced per
+           * answer; a number that ticks up on every right answer is exactly
+           * the "payment per output" framing the overjustification research
+           * warns about (Appendix B §2.5).
+           */}
         </div>
       </header>
 
@@ -976,7 +979,6 @@ function FeedbackBanner({
               key={streak}
               className="lf-pop relative inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1 lf-label text-warning-strong"
             >
-              {beat.burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               {t('lesson.combo', { count: streak })}
             </p>
@@ -1171,6 +1173,10 @@ export function ResultsScreen({
           <p className="lf-body text-content-muted">
             {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
           </p>
+          {/* B.20 (S05.3e): the XP below is paired with what was figured out, named by Core. */}
+          {passed && server?.recognition?.skills[0] ? (
+            <p className="lf-body font-bold text-content">{t('lesson.results.workedOut', { skill: server.recognition.skills[0] })}</p>
+          ) : null}
           {best !== null && (
             <span
               className={cn(

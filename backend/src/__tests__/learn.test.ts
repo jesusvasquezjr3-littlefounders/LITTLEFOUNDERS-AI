@@ -1350,6 +1350,10 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
       locale: 'en-US', first_try_correct: 0, graded_count: 1, awarded_xp: 20, duration_seconds: 60, previous_best_percent: 0,
       replay: { kind: 'first', notice: 'none', best_score_kept: false, xp_policy: 'improvement_only' },
       judgment: { assessed: 0, sound: 0, partial: 0, unsupported: 0 },
+      // S05.3e: the closed celebration list, the streak after this run and today's pace (B.20, B.21, B.24).
+      celebrations: ['lesson-complete'],
+      streak: { days: 1, milestone: null, rest_days_bridged: 0 },
+      pace: { goal: 1, passed_today: 1, goal_met: true },
     });
   });
 

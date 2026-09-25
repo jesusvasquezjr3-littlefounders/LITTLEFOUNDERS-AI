@@ -16,7 +16,10 @@ import {
   readKidLearningRecord,
   topicTeaches,
 } from '../services/narrative/narrativeData.js';
-import { getFullOwnProfile, getVerifiedKidLinks, insertAuditLog } from '../services/supabaseRest.js';
+import { cancelStreakPause, getFullOwnProfile, getVerifiedKidLinks, insertAuditLog, setStreakPause } from '../services/supabaseRest.js';
+import { pauseRangeRefusal } from '../services/habitStreak.js';
+import { isCalendarDate } from '../services/streak.js';
+import { loadStreakView } from './learnMotivation.js';
 
 /*
  * /api/v1/family/learning (S05.3c) — the guardian's side of course learning.
@@ -33,6 +36,13 @@ import { getFullOwnProfile, getVerifiedKidLinks, insertAuditLog } from '../servi
  * B.13 — the child's open bridge prompts and the two actions on them. Acting
  * creates a REAL savings goal or task in one database transaction that
  * re-checks the guardian link; tasks remain guardian-only.
+ *
+ * B.21 (S05.3e) — the child's habit streak as the model reads it today, and
+ * the holiday pause (Frontend Bible 02 §9.6 rule 3): a verified guardian may
+ * pause the streak for up to 21 days so a family trip or an illness never
+ * reads as a lapse. The database function re-checks the verified link and the
+ * range; every change is audited. The child's pace stays the child's own
+ * choice (B.24): there is no guardian route to set it.
  */
 
 const NOT_FOUND = 'NOT_FOUND';
@@ -220,6 +230,56 @@ export function familyLearningRouter(): Router {
       await insertAuditLog(user.id, 'learning_bridge.acted', prompt.id, { action: prompt.action, taskId: result.task_id ?? null, goalId: result.goal_id ?? null });
     }
     return ok(res, { status: 'acted', replayed: result.replayed === true, taskId: result.task_id ?? null, goalId: result.goal_id ?? null }, result.replayed ? 200 : 201);
+  });
+
+  // ── B.21 (S05.3e) ───────────────────────────────────────────────────────
+
+  const LocalDate = z.string().refine(isCalendarDate, 'Dates must be YYYY-MM-DD');
+  const StreakQuery = z.object({ local_date: LocalDate.optional() }).strict();
+  const PauseBody = z.object({ starts_on: LocalDate, ends_on: LocalDate, local_date: LocalDate.optional() }).strict();
+  const serverToday = () => new Date().toISOString().slice(0, 10);
+
+  router.get('/kids/:kidId/streak', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const query = StreakQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'local_date must be YYYY-MM-DD');
+    const view = await loadStreakView(kidId, query.data.local_date ?? serverToday());
+    if (!view) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the streak');
+    return ok(res, { streak: view });
+  });
+
+  router.put('/kids/:kidId/streak-pause', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const body = PauseBody.safeParse(req.body);
+    if (!body.success || Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a start and an end date');
+    const today = body.data.local_date ?? serverToday();
+    const refusal = pauseRangeRefusal(body.data.starts_on, body.data.ends_on, today);
+    if (refusal) return fail(res, 400, 'STREAK_PAUSE_INVALID', 'A pause lasts up to 21 days and starts within the last week or the next 60 days', { reason: refusal });
+    const user = authedUser(res);
+    const status = await setStreakPause({ guardianId: user.id, learnerId: kidId, startsOn: body.data.starts_on, endsOn: body.data.ends_on, today });
+    if (status === 'forbidden') return fail(res, 404, NOT_FOUND, 'No such child for this account');
+    if (status === 'invalid') return fail(res, 400, 'STREAK_PAUSE_INVALID', 'A pause lasts up to 21 days and starts within the last week or the next 60 days');
+    if (status !== 'set') return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the pause');
+    await insertAuditLog(user.id, 'learning_streak.paused', kidId, { startsOn: body.data.starts_on, endsOn: body.data.ends_on });
+    const view = await loadStreakView(kidId, today);
+    return ok(res, { streak: view });
+  });
+
+  router.delete('/kids/:kidId/streak-pause', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const query = StreakQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, 'VALIDATION_ERROR', 'local_date must be YYYY-MM-DD');
+    const today = query.data.local_date ?? serverToday();
+    const user = authedUser(res);
+    const status = await cancelStreakPause({ guardianId: user.id, learnerId: kidId, today });
+    if (status === 'forbidden') return fail(res, 404, NOT_FOUND, 'No such child for this account');
+    if (status !== 'cancelled' && status !== 'none') return fail(res, 502, DATA_UNAVAILABLE, 'Could not end the pause');
+    if (status === 'cancelled') await insertAuditLog(user.id, 'learning_streak.pause_ended', kidId, { endedOn: today });
+    const view = await loadStreakView(kidId, today);
+    return ok(res, { status, streak: view });
   });
 
   router.post('/kids/:kidId/bridges/:promptId/dismiss', async (req, res) => {

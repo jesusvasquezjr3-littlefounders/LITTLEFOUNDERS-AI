@@ -68,4 +68,4 @@
 .lf-learner-shortcut .lf-journal-section { align-content: start; }
 .lf-learner-shortcut .lf-journal-section h2 { font-size: 1.5rem; }
 .lf-learner-shortcut > * { min-inline-size: 0; }
-.lf-learner-shortcut-link { display: flex; align-items: flex-start; }
+.lf-learner-shortcut-link { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }

@@ -7,7 +7,7 @@ import { useTheme } from '@/theme/useTheme';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { LearnerNarrativeShortcut } from '@/rebuild/learning/LearnerNarrativeShortcut';
 import { answerSelfBridge, fetchSelfBridges, type NarrativeTransport, type SelfBridge } from '@/rebuild/learning/narrative';
-import { decisionJournalPath } from './paths';
+import { decisionJournalPath, learningRhythmPath } from './paths';
 
 /*
  * S05.3c host for the rebuilt learner shortcut on the learning home: reads an
@@ -38,5 +38,6 @@ export function LearnerNarrativePanel() {
 
   return <LearnerNarrativeShortcut bridges={bridges} locale={locale} dark={isDark}
     onOpenJournal={() => navigate(decisionJournalPath())}
+    onOpenRhythm={() => navigate(learningRhythmPath())}
     onBridge={(id, answer) => answerSelfBridge(transport, id, answer)} />;
 }

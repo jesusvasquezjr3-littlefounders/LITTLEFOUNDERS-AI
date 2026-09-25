@@ -8,7 +8,9 @@ const failures = [];
 const listed = new Set();
 const requiredStage = new Set(['young', 'teen', 'square'].flatMap((shape) => ['light', 'dark'].map((mode) => `/rebuild/mentor-stills/dina-${shape}-${mode}.png`)));
 const medalPath = '/rebuild/art/lesson-medal.svg';
-const required = new Set([...requiredStage, medalPath]);
+// S05.3e: the streak-milestone mark on the result screen (B.21, OD-7).
+const inHouseSvgs = new Set([medalPath, '/rebuild/art/streak-flame.svg']);
+const required = new Set([...requiredStage, ...inHouseSvgs]);
 
 for (const asset of manifest) {
   if (listed.has(asset.path)) failures.push(`Duplicate asset path: ${asset.path}`);
@@ -26,7 +28,7 @@ for (const asset of manifest) {
       const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
       const [w, h] = asset.aspect.split(':').map(Number);
       if (!w || !h || Math.abs(width / height - w / h) > .01) failures.push(`Asset aspect differs from manifest: ${asset.path}`);
-    } else if (asset.path === medalPath) {
+    } else if (inHouseSvgs.has(asset.path)) {
       const svg = bytes.toString('utf8');
       if (asset.type !== 'svg' || asset.generatedBy !== 'in-house SVG' || !svg.startsWith('<svg ') || svg.includes('<script') || svg.includes('<image')) {
         failures.push(`Invalid result artwork: ${asset.path}`);

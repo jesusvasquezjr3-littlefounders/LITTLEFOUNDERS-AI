@@ -27,6 +27,8 @@ type Copy = {
   reasoning: string; reasoningEmpty: string; diverge: (share: string, attempts: number) => string;
   signal: Record<LearningQualityReport['judgment'][number]['status'], string>;
   replay: string; replayRate: (shown: number, total: number) => string; replayNone: string; replayLow: string;
+  motivation: string; motivationPending: string; restDays: (kept: number, lapsed: number) => string; restDaysNone: string;
+  lever: Record<'path' | 'mentor' | 'pace', string>; adoption: (exercised: number, offered: number) => string; adoptionNone: string;
 };
 
 const copy: Record<Locale, Copy> = {
@@ -44,6 +46,9 @@ const copy: Record<Locale, Copy> = {
     reasoning: 'Reasoning signal', reasoningEmpty: 'No reasoning answers in this window.', diverge: (share, n) => `${share} of ${n} answers differ from correctness.`,
     signal: { distinct: 'Measures reasoning', tracks_correctness: 'Tracks correctness only', insufficient_sample: 'Not enough data' },
     replay: 'Replay notice', replayRate: (s, n) => `${s} of ${n} lower replays showed the saved best.`, replayNone: 'No lower replays in this window.', replayLow: 'Below the 100% target.',
+    motivation: 'Motivation signals', motivationPending: 'Available once the motivation migration is applied.',
+    restDays: (k, n) => `Rest days kept ${k} of ${n} streaks that met a missed day.`, restDaysNone: 'No missed days in this window.',
+    lever: { path: 'Path choice', mentor: 'Mentor choice', pace: 'Pace choice' }, adoption: (e, o) => `${e} of ${o} chose it themselves.`, adoptionNone: 'No data in this window.',
   },
   'es-MX': {
     title: 'Calidad del aprendizaje', intro: (l, u) => `La práctica debe lograr ${l}-${u}% de aciertos al primer intento por lección.`,
@@ -59,6 +64,9 @@ const copy: Record<Locale, Copy> = {
     reasoning: 'Señal de razonamiento', reasoningEmpty: 'No hay respuestas razonadas en este periodo.', diverge: (share, n) => `${share} de ${n} respuestas difieren del acierto.`,
     signal: { distinct: 'Mide el razonamiento', tracks_correctness: 'Solo sigue el acierto', insufficient_sample: 'Faltan datos' },
     replay: 'Aviso al repetir', replayRate: (s, n) => `${s} de ${n} repeticiones más bajas mostraron la mejor marca.`, replayNone: 'No hay repeticiones más bajas en este periodo.', replayLow: 'Debajo de la meta de 100%.',
+    motivation: 'Señales de motivación', motivationPending: 'Disponible cuando se aplique la migración de motivación.',
+    restDays: (k, n) => `Los días de descanso mantuvieron ${k} de ${n} rachas con un día sin práctica.`, restDaysNone: 'No hubo días sin práctica en este periodo.',
+    lever: { path: 'Elección de ruta', mentor: 'Elección de Mentor', pace: 'Elección de ritmo' }, adoption: (e, o) => `${e} de ${o} lo eligieron por su cuenta.`, adoptionNone: 'Sin datos en este periodo.',
   },
   'pt-BR': {
     title: 'Qualidade da aprendizagem', intro: (l, u) => `A prática deve ter ${l}-${u}% de acertos na primeira tentativa por lição.`,
@@ -74,6 +82,9 @@ const copy: Record<Locale, Copy> = {
     reasoning: 'Sinal de raciocínio', reasoningEmpty: 'Nenhuma resposta justificada neste período.', diverge: (share, n) => `${share} de ${n} respostas diferem do acerto.`,
     signal: { distinct: 'Mede o raciocínio', tracks_correctness: 'Só acompanha o acerto', insufficient_sample: 'Poucos dados' },
     replay: 'Aviso de repetição', replayRate: (s, n) => `${s} de ${n} repetições mais baixas mostraram o recorde.`, replayNone: 'Nenhuma repetição mais baixa neste período.', replayLow: 'Abaixo da meta de 100%.',
+    motivation: 'Sinais de motivação', motivationPending: 'Disponível quando a migração de motivação for aplicada.',
+    restDays: (k, n) => `Os dias de descanso mantiveram ${k} de ${n} sequências com um dia sem prática.`, restDaysNone: 'Nenhum dia sem prática neste período.',
+    lever: { path: 'Escolha de trilha', mentor: 'Escolha de Mentor', pace: 'Escolha de ritmo' }, adoption: (e, o) => `${e} de ${o} escolheram por conta própria.`, adoptionNone: 'Sem dados neste período.',
   },
 };
 
@@ -154,6 +165,19 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
       <h3 id={`${headingId}-replay`} data-copy-role="heading">{t.replay}</h3>
       <p data-copy-role="body">{report.replayNotice.below_best === 0 ? t.replayNone : t.replayRate(report.replayNotice.shown, report.replayNotice.below_best)}</p>
       {report.replayNotice.belowTarget ? <p className="lf-quality-flag" data-copy-role="body">{t.replayLow}</p> : null}
+    </section>
+
+    {/* S05.3e: Appendix C's rest-day utilization (B.21) and autonomy adoption (B.24), diagnostic. */}
+    <section className="lf-quality-block" aria-labelledby={`${headingId}-motivation`}>
+      <h3 id={`${headingId}-motivation`} data-copy-role="heading">{t.motivation}</h3>
+      {!report.motivation ? <p data-copy-role="body">{t.motivationPending}</p> : <>
+        <p data-copy-role="body">{report.motivation.restDays.learners_with_lapse === 0 ? t.restDaysNone
+          : t.restDays(report.motivation.restDays.kept_by_rest_days, report.motivation.restDays.learners_with_lapse)}</p>
+        <ul className="lf-quality-list">{report.motivation.autonomy.map((row) => <li key={row.lever} className="lf-quality-row">
+          <p className="lf-quality-name" data-copy-role="data">{t.lever[row.lever]}</p>
+          <p data-copy-role="data">{row.offered === 0 ? t.adoptionNone : t.adoption(row.exercised, row.offered)}</p>
+        </li>)}</ul>
+      </>}
     </section>
   </section>;
 }

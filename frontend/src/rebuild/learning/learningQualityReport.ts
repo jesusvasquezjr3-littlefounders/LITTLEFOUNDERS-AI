@@ -48,6 +48,17 @@ export const learningQualityReportSchema = z.object({
   thresholds: z.object({
     judgmentDivergenceFloor: z.number(), judgmentMinAttempts: z.number().int(), replayNoticeTarget: z.number(), bandReviewCadenceDays: z.number().int(),
   }),
+  /*
+   * S05.3e (B.21, B.24): Appendix C's rest-day utilization and autonomy
+   * adoption. Null until the motivation migration is applied; absent from an
+   * older Core. Diagnostic: the adoption baseline is set after release.
+   */
+  motivation: z.object({
+    restDays: z.object({ learners_with_lapse: count, kept_by_rest_days: count, restarted: count,
+      utilization_rate: z.number().min(0).max(1).nullable(), rest_days_used: count }),
+    autonomy: z.array(z.object({ lever: z.enum(['path', 'mentor', 'pace']), offered: count, exercised: count,
+      adoption_rate: z.number().min(0).max(1).nullable() })),
+  }).nullable().optional(),
 });
 export type LearningQualityReport = z.infer<typeof learningQualityReportSchema>;
 export type ReviewDecision = 'make_harder' | 'make_easier' | 'adjust_band' | 'no_change';

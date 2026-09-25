@@ -100,14 +100,15 @@ describe('POST /api/v1/onboarding/complete', () => {
    * PATCH, leaving the caller safely retryable rather than silently
    * overwriting accumulated stats from an assumed-zero read.
    */
-  it('never writes learning_stats when the read fails transiently, and leaves onboarding retryable', async () => {
+  it('never writes learning_stats when the streak transaction fails transiently, and leaves onboarding retryable', async () => {
+    // S05.3e (B.21): the day is recorded by record_learning_practice_day, one
+    // atomic transaction on the habit model; a failure writes nothing.
     const realFetch = createFakeFetch(db);
     vi.stubGlobal(
       'fetch',
       vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
-        const method = (init?.method ?? 'GET').toUpperCase();
-        if (url.includes('/learning_stats') && method === 'GET') {
+        if (url.includes('/rpc/record_learning_practice_day')) {
           return Promise.resolve(new Response('', { status: 500 }));
         }
         return realFetch(input, init);
@@ -120,5 +121,6 @@ describe('POST /api/v1/onboarding/complete', () => {
     expect(res.status).toBe(502);
     expect(db.onboarding_responses).toHaveLength(0);
     expect(db.profiles[0]).toMatchObject({ display_name: 'Ana' }); // profile write already landed — safe, idempotent overwrite on retry
+    expect(db.learning_stats[0]).toMatchObject({ streak_days: 0, last_active_date: null });
   });
 });

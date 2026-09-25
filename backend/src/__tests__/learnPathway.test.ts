@@ -353,5 +353,39 @@ describe('the shelf, the course path and the guardian view', () => {
   });
 });
 
+describe('B.24 path choice (S05.3e): opening a lesson from a path with a real choice', () => {
+  async function pathChoices(wait = 40): Promise<FakeRow[]> {
+    for (let i = 0; i < wait; i += 1) {
+      await new Promise((done) => setTimeout(done, 5));
+      const rows = (built.db.learning_events ?? []).filter((row) => row.event === 'path_choice');
+      if (rows.length) return rows;
+    }
+    return [];
+  }
+
+  it('records the recommendation as 0 and another frontier lesson as 1, once per lesson and day, for a consenting teen', async () => {
+    place(TEEN15, 'money', 'teen');
+    built.db.user_roles!.push({ user_id: TEEN15, role: 'universal' });
+    built.db.teen_analytics_preferences = [{ user_id: TEEN15, enabled: true, disclosure_version: 1 }];
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.t1}`)).status).toBe(200);
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.k1}`)).status).toBe(200);
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.k1}`)).status).toBe(200); // a reload is the same choice
+    await pathChoices();
+    await new Promise((done) => setTimeout(done, 40));
+    const rows = (built.db.learning_events ?? []).filter((row) => row.event === 'path_choice');
+    expect(rows.map((row) => [row.lesson_id, row.value]).sort()).toEqual([[built.lesson.k1, 1], [built.lesson.t1, 0]].sort());
+    expect(rows.every((row) => row.user_id === TEEN15 && row.route_class === 'learn')).toBe(true);
+  });
+
+  it('records nothing for a teen who opted out of analytics', async () => {
+    place(TEEN15, 'money', 'teen');
+    built.db.user_roles!.push({ user_id: TEEN15, role: 'universal' });
+    built.db.teen_analytics_preferences = [{ user_id: TEEN15, enabled: false, disclosure_version: 1 }];
+    expect((await get(TEEN15, `/learn/lessons/${built.lesson.k1}`)).status).toBe(200);
+    await new Promise((done) => setTimeout(done, 60));
+    expect((built.db.learning_events ?? []).filter((row) => row.event === 'path_choice')).toEqual([]);
+  });
+});
+
 // Keep the fake's row type honest for the fixture helpers above.
 export type { FakeRow };

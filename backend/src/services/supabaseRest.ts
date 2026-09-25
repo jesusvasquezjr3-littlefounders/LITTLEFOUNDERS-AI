@@ -2277,6 +2277,20 @@ export const ReplayReceipt = z.object({
 }).strict();
 export type ReplayReceipt = z.infer<typeof ReplayReceipt>;
 
+/** B.21: what a completion did to the habit streak, server-authored (habit_streak_advance). */
+export const CompletionStreak = z.object({
+  model: z.literal('rest-days-v1'),
+  outcome: z.enum(['first', 'same_day', 'extended', 'bridged', 'restarted', 'earlier_date', 'not_practised']),
+  rest_days_bridged: z.number().int().nonnegative(),
+  rest_days_left: z.number().int().min(0).max(2),
+  milestone: z.union([z.literal(7), z.literal(30), z.literal(100)]).nullable(),
+  days_practiced: z.number().int().nonnegative(),
+  best: z.number().int().nonnegative(),
+  /** The stored run before this completion (the Appendix C restart signal). */
+  run_before: z.number().int().nonnegative(),
+});
+export type CompletionStreak = z.infer<typeof CompletionStreak>;
+
 const LessonCompletionResult = z.object({
   score: z.number(), passed: z.boolean(), best_score: z.number(),
   xp_earned: z.number(), xp_delta: z.number(), streak_days: z.number(),
@@ -2291,6 +2305,10 @@ const LessonCompletionResult = z.object({
     assessed: z.number().int().nonnegative(), sound: z.number().int().nonnegative(),
     partial: z.number().int().nonnegative(), unsupported: z.number().int().nonnegative(),
   }).strict().optional(),
+  // B.21 / B.24 (S05.3e, *_habit_streak_and_autonomy.sql). Optional: a receipt
+  // stored before that migration is replayed as it was stored.
+  streak: CompletionStreak.optional(),
+  pace: z.object({ lessons_passed_today: z.number().int().nonnegative() }).optional(),
 });
 export type LessonCompletionResult = z.infer<typeof LessonCompletionResult>;
 
@@ -2316,4 +2334,95 @@ export async function completeV2Lesson(input: {
   });
   const parsed = LessonCompletionResult.safeParse(result);
   return parsed.success ? parsed.data : null;
+}
+
+
+// ── B.21 / B.24 (S05.3e): habit streak state, holiday pauses and pace ──────
+
+/** The streak model's stored state (learning_stats), read with the service role. Null when Vault did not answer. */
+export interface HabitStreakRow {
+  streak_days: number;
+  longest_streak: number | null;
+  last_active_date: string | null;
+  rest_days_used: number;
+  days_practiced: number;
+  day_lessons_passed: number;
+}
+const HabitStreakRowSchema = z.object({
+  streak_days: z.number().int().nonnegative(),
+  longest_streak: z.number().int().nonnegative().nullable().default(0),
+  last_active_date: z.string().nullable(),
+  // The migration's column defaults, so a row written before it reads the same.
+  rest_days_used: z.number().int().min(0).max(2).default(0),
+  days_practiced: z.number().int().nonnegative().default(0),
+  day_lessons_passed: z.number().int().nonnegative().default(0),
+});
+export async function getHabitStreakRow(userId: string): Promise<HabitStreakRow | null> {
+  const rows = await serviceRest<unknown[]>(
+    `/learning_stats?user_id=eq.${eu(userId)}&select=streak_days,longest_streak,last_active_date,rest_days_used,days_practiced,day_lessons_passed&limit=1`,
+  );
+  if (rows === null) return null;
+  if (rows.length === 0) return { streak_days: 0, longest_streak: 0, last_active_date: null, rest_days_used: 0, days_practiced: 0, day_lessons_passed: 0 };
+  const parsed = HabitStreakRowSchema.safeParse(rows[0]);
+  return parsed.success ? parsed.data : null;
+}
+
+export interface StreakPauseRow { id: string; starts_on: string; ends_on: string }
+const StreakPauseRowSchema = z.object({ id: z.string().uuid(), starts_on: z.string(), ends_on: z.string() });
+/** Pauses that are not cancelled and end on or after `fromDate` (the ones that can still matter). */
+export async function getStreakPauses(userId: string, fromDate: string): Promise<StreakPauseRow[] | null> {
+  const rows = await serviceRest<unknown[]>(
+    `/learning_streak_pauses?learner_id=eq.${eu(userId)}&cancelled_at=is.null&ends_on=gte.${es(fromDate)}&select=id,starts_on,ends_on&order=starts_on.asc&limit=50`,
+  );
+  const parsed = z.array(StreakPauseRowSchema).safeParse(rows);
+  return parsed.success ? parsed.data : null;
+}
+
+export type PauseWriteStatus = 'set' | 'cancelled' | 'none' | 'forbidden' | 'invalid' | 'unavailable';
+/** The guardian's holiday pause. The function re-checks the verified link itself. */
+export async function setStreakPause(input: { guardianId: string; learnerId: string; startsOn: string; endsOn: string; today: string }): Promise<PauseWriteStatus> {
+  const { ok, body } = await serviceRestRaw('/rpc/set_learning_streak_pause', {
+    method: 'POST',
+    body: JSON.stringify({ p_guardian_id: input.guardianId, p_learner_id: input.learnerId, p_starts_on: input.startsOn, p_ends_on: input.endsOn, p_today: input.today }),
+  });
+  const status = (body as { status?: unknown } | null)?.status;
+  if (!ok) return 'unavailable';
+  return status === 'set' || status === 'forbidden' || status === 'invalid' ? status : 'unavailable';
+}
+export async function cancelStreakPause(input: { guardianId: string; learnerId: string; today: string }): Promise<PauseWriteStatus> {
+  const { ok, body } = await serviceRestRaw('/rpc/cancel_learning_streak_pause', {
+    method: 'POST',
+    body: JSON.stringify({ p_guardian_id: input.guardianId, p_learner_id: input.learnerId, p_today: input.today }),
+  });
+  const status = (body as { status?: unknown } | null)?.status;
+  if (!ok) return 'unavailable';
+  return status === 'cancelled' || status === 'none' || status === 'forbidden' || status === 'invalid' ? status : 'unavailable';
+}
+
+/** Onboarding's day one, advanced atomically on the habit model (record_learning_practice_day). */
+export async function recordLearningPracticeDay(userId: string, localDate: string): Promise<{ current: number } | null> {
+  const result = await serviceRest<unknown>('/rpc/record_learning_practice_day', {
+    method: 'POST', body: JSON.stringify({ p_user_id: userId, p_local_date: localDate }),
+  });
+  const parsed = z.object({ current: z.number().int().nonnegative() }).passthrough().safeParse(result);
+  return parsed.success ? { current: parsed.data.current } : null;
+}
+
+export interface PacePreferenceRow { daily_lesson_goal: number; chosen_at: string }
+/** Undefined when Vault did not answer; null when the learner never chose. */
+export async function getPacePreference(userId: string): Promise<PacePreferenceRow | null | undefined> {
+  const rows = await serviceRest<unknown[]>(`/learning_pace_preferences?user_id=eq.${eu(userId)}&select=daily_lesson_goal,chosen_at&limit=1`);
+  if (rows === null) return undefined;
+  const parsed = z.array(z.object({ daily_lesson_goal: z.number().int().min(1).max(3), chosen_at: z.string() })).safeParse(rows);
+  if (!parsed.success) return undefined;
+  return parsed.data[0] ?? null;
+}
+export async function upsertPacePreference(userId: string, goal: number): Promise<boolean> {
+  const now = new Date().toISOString();
+  const res = await serviceRest<unknown>('/learning_pace_preferences?on_conflict=user_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
+    body: JSON.stringify({ user_id: userId, daily_lesson_goal: goal, chosen_at: now, updated_at: now }),
+  });
+  return res !== null;
 }

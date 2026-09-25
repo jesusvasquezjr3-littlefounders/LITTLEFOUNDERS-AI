@@ -46,6 +46,8 @@ export const TERRITORY_ROUTE_PATH = 'learn/:courseSlug/territory' as const;
 export const COURSE_PATH_ROUTE_PATH = 'learn/:courseSlug/path' as const;
 /** B.9 (S05.3c): the learner's decision journal. A static segment, so it ranks above learn/:courseSlug. */
 export const DECISION_JOURNAL_ROUTE_PATH = 'learn/journal' as const;
+/** B.21 / B.24 (S05.3e): the learner's streak, pace and choices. A static segment, like the journal. */
+export const LEARNING_RHYTHM_ROUTE_PATH = 'learn/rhythm' as const;
 
 export function coursePath(courseSlug: string): string {
   return `/${COURSE_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
@@ -71,4 +73,8 @@ export function coursePathPath(courseSlug: string): string {
 
 export function decisionJournalPath(): string {
   return `/${DECISION_JOURNAL_ROUTE_PATH}`;
+}
+
+export function learningRhythmPath(): string {
+  return `/${LEARNING_RHYTHM_ROUTE_PATH}`;
 }

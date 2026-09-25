@@ -4,6 +4,7 @@ import '../design/tokens.css';
 import '../design/system.css';
 import './narrative.css';
 import { SelfBridgeList, decisionJournalCopy } from './DecisionJournalView';
+import { learningRhythmCopy } from './LearningRhythmView';
 import type { BridgeOutcome, SelfBridge } from './narrative';
 
 /*
@@ -14,13 +15,17 @@ import type { BridgeOutcome, SelfBridge } from './narrative';
  * only to an independent teen (Option B), so for every other learner this is
  * the link alone. No counter, no badge, no reminder copy (B.25).
  *
+ * S05.3e adds a second quiet link to the learner's rhythm (B.21 streak with
+ * rest days, B.24 pace and choices), when the host provides it.
+ *
  * Presentation only: the host owns transport and navigation.
  */
-export function LearnerNarrativeShortcut({ bridges, locale, dark, onOpenJournal, onBridge, fixture = false }: {
+export function LearnerNarrativeShortcut({ bridges, locale, dark, onOpenJournal, onOpenRhythm, onBridge, fixture = false }: {
   bridges: SelfBridge[];
   locale: Locale;
   dark: boolean;
   onOpenJournal: () => void;
+  onOpenRhythm?: () => void;
   onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>;
   fixture?: boolean;
 }) {
@@ -30,6 +35,7 @@ export function LearnerNarrativeShortcut({ bridges, locale, dark, onOpenJournal,
     <SelfBridgeList bridges={bridges} locale={locale} onBridge={onBridge} />
     <div className="lf-learner-shortcut-link">
       <Button onClick={onOpenJournal}>{t.title}</Button>
+      {onOpenRhythm ? <Button onClick={onOpenRhythm}>{learningRhythmCopy[locale].title}</Button> : null}
     </div>
   </section>;
 }
