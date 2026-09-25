@@ -8,7 +8,15 @@ import './controls.css';
  * Every rebuilt surface imports its controls from here and never from the
  * legacy application (02 rule 23).
  */
-export { Button, ButtonGroup, IconButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonVariant } from './buttons';
+export { Button, ButtonGroup, ButtonLink, IconButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonVariant } from './buttons';
+export { ConfirmDialog, DestructiveAction, Dialog, Menu, Popover, Sheet, Tooltip,
+  type ConfirmDialogProps, type DialogProps, type MenuItem, type MenuTriggerProps, type PopoverTriggerProps, type SheetProps, type TooltipTriggerProps } from './overlays';
+export { RebuildProvider, useAnnounce, useToast, type Politeness, type ToastOptions, type ToastTone } from './feedback';
+export { useRebuildEnvironment, type RebuildEnvironment, type RebuildTheme } from './layers';
+export { AuthShell, BrandMark, CONSOLE_TAB_LIMIT, ConsoleShell, DashboardLayout, DataTable, LearnerShell, permittedStaffItems, SingleStateScreen, SiteShell, SkipLink,
+  STAFF_PERMISSIONS, StaffShell, TutorShell, useDocumentMeta, useRouteFocus,
+  type ConsoleShellProps, type LearnerShellProps, type ShellCommonProps, type ShellLinkAction, type ShellNavItem, type SingleStateHue, type SiteShellProps,
+  type StaffGrants, type StaffNavItem, type StaffPermission, type TableColumn } from './shells';
 export { Checkbox, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextField, type ChoiceOption, type SelectOption, type TextFieldProps } from './fields';
 export { Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Skeleton,
   type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';

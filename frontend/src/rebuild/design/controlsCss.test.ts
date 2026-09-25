@@ -12,7 +12,12 @@ import { describe, expect, it } from 'vitest';
 const local = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 const read = (path: string) => readFileSync(local(path), 'utf8');
 const controls = read('./controls.css');
+const overlays = read('./overlays.css');
+const shells = read('./shells.css');
 const gallery = read('../preview/systemGallery.css');
+const shellGallery = read('../preview/gallery.css');
+/** Every shared stylesheet of the rebuilt design system (S03.1 controls, S03.2 overlays and shells). */
+const shared = controls + overlays + shells;
 const tokens = read('./tokens.css');
 const system = read('./system.css');
 const withoutComments = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -41,13 +46,15 @@ function rules(css: string) {
 }
 
 describe('shared control stylesheet contract', () => {
-  for (const [name, css] of [['controls.css', controls], ['systemGallery.css', gallery]] as const) {
+  for (const [name, css] of [['controls.css', controls], ['overlays.css', overlays], ['shells.css', shells], ['systemGallery.css', gallery], ['gallery.css', shellGallery]] as const) {
     const source = withoutComments(css);
     it(`${name} uses tokens only: no colour literals, no off-token sizes`, () => {
-      expect(source.match(/#[0-9a-f]{3,8}\b/gi) ?? []).toEqual([]);
+      // Container-query conditions carry the Bible's own breakpoints (640, 840, 1120 px; 03 §3.2, 02 §7 rule 9, §9.8).
+      const declarations = source.replace(/@container[^{]*/g, '');
+      expect(declarations.match(/#[0-9a-f]{3,8}\b/gi) ?? []).toEqual([]);
       expect(source.match(/\b(?:rgba?|hsla?|oklch|lab|lch)\(/gi) ?? []).toEqual([]);
       // 2px is the functional edge line (02 §4.4 exception 1); every other length is a token.
-      expect((source.match(/\b\d+(?:\.\d+)?(?:px|rem|em|pt)\b/g) ?? []).filter((value) => value !== '2px' && !/^\d+(?:\.\d+)?em$/.test(value))).toEqual([]);
+      expect((declarations.match(/\b\d+(?:\.\d+)?(?:px|rem|em|pt)\b/g) ?? []).filter((value) => value !== '2px' && !/^\d+(?:\.\d+)?em$/.test(value))).toEqual([]);
       expect(source).not.toMatch(/!important/);
     });
     it(`${name} uses logical properties only`, () => {
@@ -71,11 +78,12 @@ describe('shared control stylesheet contract', () => {
   }
 
   it('gives every pressable and field a touch floor from the target tokens (02 §8)', () => {
-    const all = rules(controls);
+    const all = rules(shared);
     const floor = (selector: string) => all.some((rule) => rule.selector.split(',').some((part) => part.trim().endsWith(selector))
       && /(?:min-)?block-size:\s*var\(--target-(?:min|base|lg)\)/.test(rule.body));
     for (const selector of ['.lf-icon-button', '.lf-input', '.lf-input-reveal', '.lf-check', '.lf-radio-option', '.lf-segmented-option',
-      '.lf-toggle', '.lf-slider-input', '.lf-stepper-button', '.lf-choice-chip', '.lf-list-row', '.lf-button--sm', '.lf-button--lg']) {
+      '.lf-toggle', '.lf-slider-input', '.lf-stepper-button', '.lf-choice-chip', '.lf-list-row', '.lf-button--sm', '.lf-button--lg',
+      '.lf-menu-item', '.lf-skip-link', '.lf-brand-mark', '.lf-nav-link--tab', '.lf-nav-link--rail', '.lf-nav-link--sheet', '.lf-auth-footer) a']) {
       expect(floor(selector), selector).toBe(true);
     }
   });
@@ -99,8 +107,9 @@ describe('shared control stylesheet contract', () => {
     for (const size of ['md', 'lg']) expect(controls).toContain(`.lf-avatar--${size}`);
   });
 
-  it('shares no class name with the legacy application, whose global CSS would otherwise restyle a shared control', () => {
-    const classes = [...new Set([...withoutComments(controls).matchAll(/\.(lf-[a-z0-9-]+)/g)].map((match) => match[1]))];
+  // Reads the whole legacy source tree; generous timeout because other test files run in parallel.
+  it('shares no class name with the legacy application, whose global CSS would otherwise restyle a shared control', { timeout: 30_000 }, () => {
+    const classes = [...new Set([...withoutComments(shared).matchAll(/\.(lf-[a-z0-9-]+)/g)].map((match) => match[1]))];
     const src = local('../..');
     const legacy = readdirSync(src, { recursive: true, encoding: 'utf8' })
       .filter((file) => /\.(?:tsx?|css)$/.test(file) && !file.replace(/\\/g, '/').startsWith('rebuild/'))
@@ -116,11 +125,49 @@ describe('shared control stylesheet contract', () => {
   });
 
   it('never puts a line around a filled component (02 §4.4)', () => {
-    for (const rule of rules(controls)) {
+    for (const rule of rules(shared)) {
       if (!/background:\s*var\(--(?:primary|accent|reward|success|error|sky|mint|berry|warning)\)/.test(rule.body)) continue;
       expect(rule.body, rule.selector).not.toMatch(/(?:^|;)\s*border:\s*(?!0)/);
       expect(rule.body, rule.selector).not.toMatch(/box-shadow:\s*inset/);
     }
+  });
+});
+
+describe('overlay and shell stylesheet contract (S03.2)', () => {
+  it('anchors every overlay to the real viewport (02 rule 12)', () => {
+    const all = rules(overlays + shells);
+    for (const selector of ['.lf-layer', '.lf-scrim', '.lf-dialog-frame', '.lf-anchored', '.lf-toast-region', '.lf-skip-link', '.lf-sticky-action']) {
+      const rule = all.find((entry) => entry.selector === `.lf-rebuild ${selector}`);
+      expect(rule?.body, selector).toMatch(/position:\s*fixed/);
+    }
+    // `absolute` appears only in the visually-hidden pattern, never on an overlay container.
+    for (const rule of all.filter((entry) => /position:\s*absolute/.test(entry.body))) expect(rule.body, rule.selector).toMatch(/clip-path:\s*inset\(50%\)/);
+  });
+
+  it('layers only through the generated 02 §9.8 order: nav 30, sheet 50, scrim 65, toast 70', () => {
+    const zIndexes = [...withoutComments(shared).matchAll(/z-index:\s*([^;]+);/g)].map((match) => match[1]!.trim());
+    expect(zIndexes.length).toBeGreaterThan(5);
+    expect(zIndexes.filter((value) => !/^var\(--layer-(?:nav|sheet|scrim|toast)\)$/.test(value))).toEqual([]);
+    const layer = (name: string) => Number(tokens.match(new RegExp(`--layer-${name}: (\\d+);`))?.[1]);
+    expect([layer('nav'), layer('sheet'), layer('scrim'), layer('toast')]).toEqual([30, 50, 65, 70]);
+  });
+
+  it('changes layout by container width, never by the viewport (02 §7 rule 9)', () => {
+    expect(withoutComments(overlays + shells)).not.toMatch(/@media[^{]*(?:min|max)-(?:width|height)/);
+    expect(shells).toMatch(/@container app \(min-width: 840px\)/);
+    expect(shells).toMatch(/@container lf-table \(max-width: 839px\)/);
+    expect(shells).toMatch(/@container app \(max-width: 359px\)/);
+    expect(shells).toMatch(/@container lf-dashboard \(min-width: 840px\)/);
+  });
+
+  it('pads every edge that can meet a notch or home indicator to the safe area', () => {
+    for (const side of ['top', 'bottom', 'left', 'right']) expect(shells, side).toContain(`env(safe-area-inset-${side})`);
+    for (const side of ['top', 'bottom', 'left', 'right']) expect(overlays, side).toContain(`env(safe-area-inset-${side})`);
+  });
+
+  it('separates overlays by the raised surface step in dark mode, never by a shadow or an outline (02 §5)', () => {
+    expect(overlays).toMatch(/\[data-theme='dark'\] :is\(\.lf-dialog, \.lf-sheet--bottom, \.lf-popover, \.lf-menu\) \{ background: var\(--raised\); \}/);
+    for (const rule of rules(overlays + shells)) expect(rule.body, rule.selector).not.toMatch(/(?:^|;)\s*border(?:-[a-z-]+)?:\s*(?!0)[^;]*(?:outline|edge)/);
   });
 });
 

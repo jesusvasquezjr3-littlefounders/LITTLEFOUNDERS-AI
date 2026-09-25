@@ -308,6 +308,8 @@
   text-align: start;
 }
 .lf-rebuild .lf-list-row--pressable { cursor: pointer; }
+/* Dark mode has no shadow, so a row inside a card steps up a surface instead of vanishing into it (02 §5). */
+.lf-rebuild[data-theme='dark'] .lf-card .lf-list-row { background: var(--raised); }
 .lf-rebuild .lf-list-row-leading, .lf-rebuild .lf-list-row-trailing, .lf-rebuild .lf-list-row-chevron { flex: none; }
 .lf-rebuild .lf-list-row-text { display: grid; flex: 1 1 12em; gap: var(--spacing-1); min-inline-size: 0; }
 .lf-rebuild .lf-list-row-title { font: var(--type-label); }
@@ -354,6 +356,7 @@
 
 /* ---- Mentor avatar slot: square, transparent, real-model renders only ---- */
 .lf-rebuild .lf-avatar { display: inline-grid; place-items: center; flex: none; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--primary-soft); overflow: hidden; }
+.lf-rebuild .lf-avatar--xs { inline-size: var(--spacing-8); block-size: var(--spacing-8); }
 .lf-rebuild .lf-avatar--md { inline-size: var(--target-lg); block-size: var(--target-lg); }
 .lf-rebuild .lf-avatar--lg { inline-size: var(--spacing-24); block-size: var(--spacing-24); }
 .lf-rebuild .lf-avatar img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }

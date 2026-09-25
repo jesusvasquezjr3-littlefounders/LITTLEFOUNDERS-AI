@@ -4,7 +4,8 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
 
 // Real-app driver for Frontend Bible 03 and verification-tools/proportion-audit.reference.mjs.
 const origin = process.env.REBUILD_URL ?? 'http://127.0.0.1:5190';
-const output = resolve(process.env.REBUILD_PROPORTIONS_SCOPE === 'controls' ? '../audit-results/rebuild-proportions-controls' : '../audit-results/rebuild-proportions');
+const scopeOutput = { controls: 'rebuild-proportions-controls', shells: 'rebuild-proportions-shells' }[process.env.REBUILD_PROPORTIONS_SCOPE] ?? 'rebuild-proportions';
+const output = resolve(`../audit-results/${scopeOutput}`);
 mkdirSync(output, { recursive: true });
 const browser = await launchBrowser(mkdtempSync(join(output, 'chrome-')));
 const page = await openPage(browser.browser, { width: 375, height: 740, dark: false });
@@ -72,25 +73,36 @@ const appendixCurrentSurfaces = [
 // S03.1: the preview-only shared control catalogue, measured on its own.
 const controlSurfaces = [{ screen: 'system', ages: ['6-9'] }];
 
+// S03.2: the preview-only overlay catalogue and every shared shell state, measured on their own.
+const shellSurfaces = [
+  { screen: 'gallery', ages: ['6-9'] }, { screen: 'overlays', ages: ['6-9'] },
+  ...['learner', 'teen', 'tutor', 'staff', 'staff-limited', 'site', 'auth', 'single', 'table'].map((shell) => ({ screen: 'shell', shell, ages: ['6-9'] })),
+];
+
 const surfaces = process.env.REBUILD_PROPORTIONS_SCOPE === 'appendix-current'
   ? appendixCurrentSurfaces
   : process.env.REBUILD_PROPORTIONS_SCOPE === 'controls'
     ? controlSurfaces
-    : [...coreSurfaces, ...appendixCurrentSurfaces];
+    : process.env.REBUILD_PROPORTIONS_SCOPE === 'shells'
+      ? shellSurfaces
+      : [...coreSurfaces, ...appendixCurrentSurfaces];
 
 try {
-  for (const { screen, ages } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
+  for (const { screen, shell, ages } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
     await page.send('Emulation.setDeviceMetricsOverride', { width, height: 740, deviceScaleFactor: 1, mobile: width < 768 });
-    const query = new URLSearchParams({ locale, theme, screen, age }).toString();
+    const query = new URLSearchParams({ locale, theme, screen, age, ...(shell ? { shell } : {}) }).toString();
+    // A shell's <main> carries no data-screen; its root names the shell instead.
+    const ready = shell ? `document.querySelector('main') && document.querySelector('.lf-shell')?.dataset.shell === ${JSON.stringify(shell === 'teen' ? 'learner' : shell === 'staff-limited' ? 'staff' : shell === 'single' ? 'single-state' : shell === 'table' ? 'tutor' : shell)}`
+      : `document.querySelector('main')?.dataset.screen === ${JSON.stringify(expectedScreen(screen))}`;
     await page.send('Page.navigate', { url: `${origin}/rebuild.html?${query}` });
     for (let n = 0; n < 100; n++) {
-      if (await page.evaluate(`document.querySelector('main')?.dataset.screen === ${JSON.stringify(expectedScreen(screen))}`)) break;
+      if (await page.evaluate(`!!(${ready})`)) break;
       await new Promise((done) => setTimeout(done, 50));
     }
     await page.evaluate('document.fonts.ready');
     const issues = await page.evaluate(`(() => {
       const main=document.querySelector('main'),issues=[];
-      if(!main||main.dataset.screen!==${JSON.stringify(expectedScreen(screen))}) return ['wrong-screen'];
+      if(!(${ready})) return ['wrong-screen'];
       const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0;};
       const scale=new Set([12,14,16,18,20,24,28,32,36,40,48,56,60,64,72,96]);
       for(const e of main.querySelectorAll('*')){
@@ -120,7 +132,7 @@ try {
       return [...new Set(issues)];
     })()`);
     configurations++;
-    if (issues.length) findings.push({ screen, age, locale, theme, width, issues });
+    if (issues.length) findings.push({ screen, shell, age, locale, theme, width, issues });
   }
   writeFileSync(join(output, 'report.json'), JSON.stringify({
     configurations,
@@ -129,7 +141,9 @@ try {
       ? 'Current controlled Appendix P candidate renderers only.'
       : process.env.REBUILD_PROPORTIONS_SCOPE === 'controls'
         ? 'S03.1 shared control catalogue only.'
-        : 'All current controlled lesson and Appendix P candidate renderers.',
+        : process.env.REBUILD_PROPORTIONS_SCOPE === 'shells'
+          ? 'S03.2 overlay catalogue and shared shell states only.'
+          : 'All current controlled lesson and Appendix P candidate renderers.',
   }, null, 2));
   console.log(JSON.stringify({ configurations, findings: findings.length, output }));
   if (findings.length) { console.error(JSON.stringify(findings.slice(0, 8), null, 2)); process.exitCode = 1; }

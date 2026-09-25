@@ -171,7 +171,7 @@ export function ErrorState({ heading, body, retryLabel, retryingLabel, retrying 
  * leaves the slot empty. There is no letter, glyph or look-alike fallback
  * (02 rule 21, 07 §4).
  */
-export function MentorAvatar({ renderId, label, size = 'md' }: { renderId: string; label: string | null; size?: 'sm' | 'md' | 'lg' }) {
+export function MentorAvatar({ renderId, label, size = 'md' }: { renderId: string; label: string | null; size?: 'xs' | 'sm' | 'md' | 'lg' }) {
   const asset = resolveMentorRender(renderId);
   return <span className={`lf-avatar lf-avatar--${size}`} data-slot="mentor-avatar" data-refused={asset ? undefined : 'true'}
     role={asset && label ? 'img' : undefined} aria-label={asset && label ? label : undefined} aria-hidden={asset && label ? undefined : true}>

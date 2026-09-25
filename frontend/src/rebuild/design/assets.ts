@@ -36,3 +36,14 @@ export function resolveMentorRender(id: string): (ManifestAsset & { character: M
   if (asset.aspect !== '1:1') return null;
   return { ...asset, character, poseId: asset.poseId };
 }
+
+/**
+ * The square avatar render of one Mentor character for a colour mode, or null
+ * when that character has no approved-or-draft square render yet (S03.4 adds
+ * the missing characters). Callers render an empty slot, never a stand-in.
+ */
+export function findMentorAvatar(character: MentorCharacter, theme: 'light' | 'dark'): string | null {
+  const match = assets.find((entry) => entry.type === 'render' && entry.character === character && entry.aspect === '1:1'
+    && (entry.modes === theme || entry.modes === 'both') && resolveMentorRender(entry.id) !== null);
+  return match?.id ?? null;
+}

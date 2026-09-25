@@ -30,6 +30,9 @@ import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
 import type { LessonMentorStage } from '../learning/lessonDocument';
 import { SystemGallery } from './SystemGallery';
+import { RebuildProvider } from '../design/controls';
+import { OverlayGallery } from './OverlayGallery';
+import { GalleryIndex, SHELL_KINDS, ShellGallery, type ShellKind } from './ShellGallery';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -57,6 +60,21 @@ export function Preview() {
     setScreen(next); setAnswer(null); setChecked(false); setFormState('idle');
     window.scrollTo(0, 0);
   };
+  if (screen === 'gallery' || screen === 'overlays' || screen === 'shell') {
+    // S03.2 component gallery: dev/preview only (this entry never ships; see main.tsx).
+    const shell = SHELL_KINDS.includes(params.get('shell') as ShellKind) ? params.get('shell') as ShellKind : 'learner';
+    const open = (next: string, kind?: ShellKind) => {
+      const query = new URLSearchParams({ locale, theme, screen: next, ...(kind ? { shell: kind } : {}) });
+      location.search = query.toString();
+    };
+    return <div className="lf-rebuild" data-theme={theme} data-age-band={ageBand} lang={locale}>
+      <RebuildProvider environment={{ theme: theme === 'dark' ? 'dark' : 'light', locale, ageBand }} labels={{ dismiss: t.designGallery.dismiss }}>
+        {screen === 'overlays' ? <OverlayGallery key={locale} t={t.designGallery} s={t.designSystem} onBack={() => open('gallery')} />
+          : screen === 'shell' ? <ShellGallery key={`${locale}:${shell}`} kind={shell} t={t.designGallery} s={t.designSystem} locale={locale} onGallery={() => open('gallery')} />
+          : <GalleryIndex t={t.designGallery} onOpen={open} />}
+      </RebuildProvider>
+    </div>;
+  }
   return <div className="lf-rebuild" data-theme={theme} data-age-band={ageBand} lang={locale}>
     {screen === 'opening' || screen === 'offline' || screen === 'loaderror'
       ? <LessonTransportStateView state={screen === 'loaderror' ? 'load-error' : screen}

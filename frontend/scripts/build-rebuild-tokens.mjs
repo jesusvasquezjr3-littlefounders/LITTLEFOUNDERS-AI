@@ -81,6 +81,12 @@ export function generateTokens(markdown) {
   if (!press.scale) throw new Error('Missing press motion');
   light.push(`  --press-scale: ${press.scale};`);
 
+  // Layering (02 §9.8): the one fixed z-index order, read from the Bible's own
+  // sentence so overlays can never be reordered by hand.
+  const layers = markdown.match(/sticky nav \((\d+)\) → mobile menu sheet \((\d+)\) → dialog scrim \((\d+)\) → toast \((\d+)\)/);
+  if (!layers) throw new Error('Missing the 02 §9.8 z-index order');
+  light.push(`  --layer-nav: ${layers[1]};`, `  --layer-sheet: ${layers[2]};`, `  --layer-scrim: ${layers[3]};`, `  --layer-toast: ${layers[4]};`);
+
   const container = (width, lines) => lines.length
     ? `@container app (min-width: ${width}px) {\n  .lf-rebuild > * {\n${lines.map((line) => `  ${line}`).join('\n')}\n  }\n}\n` : '';
   return `/* Generated from Frontend Bible 02. Run node scripts/build-rebuild-tokens.mjs. */\n.lf-rebuild {\n${light.join('\n')}\n}\n.lf-rebuild[data-theme="dark"] {\n${dark.join('\n')}\n}\n`
