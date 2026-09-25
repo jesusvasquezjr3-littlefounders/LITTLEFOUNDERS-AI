@@ -28,11 +28,13 @@ import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
 import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
+import { CoursePathRoute } from '@/routes/app/learn/CoursePathRoute';
 import { PlacementPage } from '@/routes/app/learn/PlacementPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import {
+  COURSE_PATH_ROUTE_PATH,
   COURSE_ROUTE_PATH,
   LESSON_ROUTE_PATH,
   PLACEMENT_ROUTE_PATH,
@@ -375,6 +377,7 @@ export function App() {
             <Route path="learn" element={<LearnPage />} />
             <Route path={COURSE_ROUTE_PATH} element={<CoursePage />} />
             <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryPage />} />
+            <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRoute />} />
             <Route
               path="tasks"
               element={

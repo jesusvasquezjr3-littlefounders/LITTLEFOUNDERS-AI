@@ -10,7 +10,7 @@ import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { getConfig } from '../config.js';
-import { authedUser, requireAuth } from '../middleware/auth.js';
+import { authedUser, requireAuth, type AuthedUser } from '../middleware/auth.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
@@ -18,6 +18,19 @@ import { completableSegmentIds, findGradingSegment, pickLessonLocale, stripAnswe
 import { isCalendarDate } from '../services/streak.js';
 import { lessonEligibilityForBirthDate } from '../services/lessonEligibility.js';
 import { getTutorPreferences } from '../services/tutorData.js';
+import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
+import { applyCoursePathway, lessonChapterAccess, pathwayBadgeAward, type PathwayCourseTree, type PathwayView } from '../services/pathway/coursePathway.js';
+import { projectCoursePath } from '../services/pathway/coursePathProjection.js';
+import {
+  courseEngine,
+  coursePathwayInputs,
+  freezeLegacyCourseBadge,
+  loadLearnerPathwayContext,
+  loadPathwayContent,
+  recordPathwayBadge,
+  type LearnerPathwayContext,
+} from '../services/pathway/pathwayData.js';
+import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../services/pathway/pathwayPolicy.js';
 import { gradeV2Visual, projectV2MentorStage, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
@@ -94,8 +107,34 @@ async function getEffectiveLessonDocumentLocales(lessonId: string): Promise<Less
   return getLessonDocumentLocales(lessonId);
 }
 
-/** Fetch the full published hierarchy for one course + this user's progress, and assemble the per-user tree. Returns null on a downstream fetch failure. */
-export async function loadCourseTree(accessToken: string, userId: string, course: CourseHierarchyRow): Promise<CourseTree | null> {
+/** A learner's course tree: the linear tree, or the pathway tree with its `pathway` view (COURSE_PATHWAY_ENGINE). */
+export type LearnerCourseTree = CourseTree & { pathway?: PathwayView };
+
+export interface LearnerCourseLoad {
+  tree: LearnerCourseTree;
+  /** Present in pathway mode: the learner's graph context, reused by the B.2 check and badge settlement. */
+  pathway: LearnerPathwayContext | null;
+}
+
+/**
+ * The pathway engine's inputs for one learner (B.6, S05.3b). Null in linear
+ * mode; 'unreachable' when any read failed — never a silent linear fallback,
+ * which would hand a minor chapters the safeguard closes.
+ */
+async function learnerPathwayContext(userId: string, ageScreen: AgeScreenState | undefined): Promise<LearnerPathwayContext | null | 'unreachable'> {
+  if (courseEngine() !== 'pathway') return null;
+  const screen = ageScreen ?? await readAgeScreen(userId);
+  if (!screen) return 'unreachable';
+  return await loadLearnerPathwayContext(userId, screen) ?? 'unreachable';
+}
+
+/**
+ * Fetch the full published hierarchy for one course + this user's progress,
+ * and assemble the per-user tree. In pathway mode the tree's lock state,
+ * progress and placement gate come from the pathway engine instead of the
+ * flat order. Returns null on a downstream fetch failure.
+ */
+export async function loadLearnerCourse(accessToken: string, userId: string, course: CourseHierarchyRow, ageScreen?: AgeScreenState): Promise<LearnerCourseLoad | null> {
   const adventures = await getAdventuresByCourseIds(accessToken, [course.id]);
   if (!adventures) return null;
   const sagas = await getSagasByAdventureIds(
@@ -128,7 +167,141 @@ export async function loadCourseTree(accessToken: string, userId: string, course
   ]);
   if (placement === null || credits === null) return null;
   const placementCreditedLessonIds = new Set(credits.map((c) => c.lesson_id));
-  return assembleCourseTree(course, adventures, sagas, topics, lessons, progress, placementCreditedLessonIds, placement.length > 0);
+  const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, progress, placementCreditedLessonIds, placement.length > 0);
+  const ctx = await learnerPathwayContext(userId, ageScreen);
+  if (ctx === 'unreachable') return null;
+  if (!ctx) return { tree, pathway: null };
+  const content = await loadPathwayContent(adventures.map((a) => a.id), topics.map((t) => t.id), ctx.kcKeyById);
+  if (!content) return null;
+  const inputs = coursePathwayInputs(course, adventures.map((a) => a.id), content, ctx, placement.length > 0);
+  return { tree: applyCoursePathway(tree, inputs), pathway: ctx };
+}
+
+/** The tree alone (placement, lesson context and the refreshed tree after a completion). */
+export async function loadCourseTree(accessToken: string, userId: string, course: CourseHierarchyRow, ageScreen?: AgeScreenState): Promise<LearnerCourseTree | null> {
+  return (await loadLearnerCourse(accessToken, userId, course, ageScreen))?.tree ?? null;
+}
+
+/**
+ * Why a lesson cannot be opened, graded or completed right now, or null. The
+ * same decision for all four lesson endpoints: a lesson in a chapter the age
+ * safeguard closes (P4) is age-restricted whatever the learner has shown; any
+ * other locked lesson is simply not on the frontier yet.
+ */
+export function lessonAdmissionRefusal(tree: LearnerCourseTree, lessonId: string): { code: string; message: string } | null {
+  const node = findLessonNode(tree, lessonId);
+  if (tree.pathway && lessonChapterAccess(tree as PathwayCourseTree, lessonId) === 'closed') {
+    return { code: 'LESSON_AGE_RESTRICTED', message: 'This lesson is not available for this age' };
+  }
+  if (node?.state === 'locked') return { code: 'LESSON_LOCKED', message: 'This lesson is still locked' };
+  if (tree.course.placementRequired) return { code: 'PLACEMENT_REQUIRED', message: "Complete this course's placement quiz first" };
+  return null;
+}
+
+/**
+ * Rule B4/B5 — make every badge the learner holds right now permanent, after
+ * any write that can complete a course (a lesson completion, a placement) and
+ * on the course read, so an interrupted write converges on the next visit.
+ * Idempotent: rows are keyed by (learner, course, award) and never updated.
+ *
+ *  - A completed pathway records its stage credential.
+ *  - A badge the live full-course rule grants that is not stored yet is frozen
+ *    as `legacy` for the stage the course's legacy chapters form, so growing
+ *    the catalog can never revoke it (OD-9). The migration froze every badge
+ *    that existed when it ran; this covers badges earned after it.
+ * Pathway mode only: the linear engine keeps the pre-B.6 behavior exactly and
+ * must run before the B.6 tables exist. A failed write is logged and retried
+ * on the next read; it never fails the learner's completion, which is already
+ * committed.
+ */
+export async function settleCourseBadges(userId: string, course: CourseHierarchyRow, load: LearnerCourseLoad): Promise<void> {
+  if (!load.tree.pathway || !load.pathway) return;
+  const writes: Array<Promise<boolean>> = [];
+  const award = pathwayBadgeAward(load.tree.pathway);
+  if (award) writes.push(recordPathwayBadge(userId, course.id, award));
+  const stored = load.pathway.storedBadges.get(course.id) ?? [];
+  // Any stored row already makes the badge permanent (the badge RPC reads stored rows), so only an
+  // UNSTORED live badge is frozen — never a legacy row invented from a stage credential.
+  if (!award && stored.length === 0 && load.pathway.completedCourseSlugs.has(course.slug)) {
+    writes.push(freezeLegacyCourseBadge(userId, course));
+  }
+  const results = await Promise.all(writes);
+  if (results.some((stored) => !stored)) console.error(`[backend] could not record a course badge for "${course.slug}"; it will be retried on the next read`);
+}
+
+type CourseEntry =
+  | { kind: 'open'; load: LearnerCourseLoad }
+  | { kind: 'refused'; status: number; code: string; message: string; details?: Record<string, unknown> };
+
+/*
+ * B.2: course-level prerequisites are ENFORCED, not dormant. A course whose
+ * declared `requires` are not met refuses to open, naming the missing
+ * prerequisites so the learner knows exactly what to finish first.
+ * Enforcement is on the entry point only: the shelf keeps listing the course
+ * (it is a real, reachable course, with a visible first step), and earned
+ * progress stays earned.
+ *
+ * Linear engine (S05.2ba): every declared prerequisite needs its badge.
+ * Pathway engine (B.6 rule P7, S05.3b): a badge of the required course from
+ * ANY stage satisfies it, a frozen legacy badge included; it is WAIVED when
+ * the learner's pathway in the required course would be a younger bridge (a
+ * teen or an adult facing a children's course), because OD-16 never makes an
+ * older learner complete another stage's chapters; what that course teaches
+ * still reaches them through the shared graph. The age safeguard runs first:
+ * a course with no chapter open to this learner refuses with
+ * COURSE_AGE_RESTRICTED before anything else is decided.
+ */
+async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScreen: AgeScreenState | undefined): Promise<CourseEntry> {
+  const requires = Array.isArray(course.requires) ? course.requires.filter((slug): slug is string => typeof slug === 'string' && slug.length > 0) : [];
+  if (courseEngine() !== 'pathway') {
+    if (requires.length > 0) {
+      const completed = await getCompletedCourseBadgesByUserId(user.id);
+      const completedSlugs = new Set(completed.map((badge) => badge.course_slug));
+      const missing = requires.filter((slug) => !completedSlugs.has(slug));
+      if (missing.length > 0) {
+        return { kind: 'refused', status: 409, code: 'COURSE_PREREQUISITE_REQUIRED', message: 'Finish the prerequisite course first', details: { missingPrerequisites: missing } };
+      }
+    }
+    const load = await loadLearnerCourse(user.accessToken, user.id, course, ageScreen);
+    if (!load) return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
+    return { kind: 'open', load };
+  }
+
+  const load = await loadLearnerCourse(user.accessToken, user.id, course, ageScreen);
+  if (!load || !load.tree.pathway || !load.pathway) return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
+  if (load.tree.pathway.basis === 'unavailable') {
+    return { kind: 'refused', status: 403, code: 'COURSE_AGE_RESTRICTED', message: 'This course is not available for this age yet' };
+  }
+  const missing: string[] = [];
+  for (const slug of requires) {
+    const decision = await prerequisiteDecision(user.accessToken, slug, load.pathway);
+    if (decision === 'unreachable') return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
+    if (decision === 'missing') missing.push(slug);
+  }
+  if (missing.length > 0) {
+    return { kind: 'refused', status: 409, code: 'COURSE_PREREQUISITE_REQUIRED', message: 'Finish the prerequisite course first', details: { missingPrerequisites: missing } };
+  }
+  await settleCourseBadges(user.id, course, load);
+  return { kind: 'open', load };
+}
+
+/** Rule P7 for one declared prerequisite, from the learner's own graph context. */
+async function prerequisiteDecision(accessToken: string, slug: string, ctx: LearnerPathwayContext): Promise<'satisfied' | 'waived-younger-stage' | 'missing' | 'unreachable'> {
+  if (ctx.completedCourseSlugs.has(slug)) return 'satisfied';
+  const required = await getPublishedCourseBySlug(accessToken, slug);
+  // An unpublished or unknown prerequisite can never be earned: it stays missing, as under the linear rule.
+  if (!required) return 'missing';
+  if ((ctx.storedBadges.get(required.id) ?? []).length > 0) return 'satisfied';
+  const adventures = await getAdventuresByCourseIds(accessToken, [required.id]);
+  if (!adventures) return 'unreachable';
+  const content = await loadPathwayContent(adventures.map((a) => a.id), [], ctx.kcKeyById);
+  if (!content) return 'unreachable';
+  const inputs = coursePathwayInputs(required, adventures.map((a) => a.id), content, ctx, false);
+  const resolution = resolvePathway(ctx.age, adventures.map((a) => {
+    const row = content.chapters.get(a.id);
+    return { id: a.id, policy: row ? chapterPolicy(row) : null };
+  }));
+  return coursePrerequisiteDecision(resolution, inputs.earnedStages);
 }
 
 /*
@@ -162,7 +335,7 @@ export interface CourseAssemblyFailure {
 }
 
 export interface CourseTreeLoad {
-  trees: Map<string, CourseTree>;
+  trees: Map<string, LearnerCourseTree>;
   failures: CourseAssemblyFailure[];
 }
 
@@ -187,6 +360,7 @@ export async function loadCourseTrees(
   accessToken: string,
   userId: string,
   courses: readonly CourseHierarchyRow[],
+  ageScreen?: AgeScreenState,
 ): Promise<CourseTreeLoad | null> {
   if (courses.length === 0) return { trees: new Map(), failures: [] };
 
@@ -207,6 +381,12 @@ export async function loadCourseTrees(
   if (!placements) return null;
   const credits = await getPlacementCreditsForCourses(accessToken, userId, courseIds);
   if (!credits) return null;
+  // Pathway mode (B.6): one learner context and one content read for the
+  // whole shelf, like every level above.
+  const ctx = await learnerPathwayContext(userId, ageScreen);
+  if (ctx === 'unreachable') return null;
+  const content = ctx ? await loadPathwayContent(adventures.map((a) => a.id), topics.map((t) => t.id), ctx.kcKeyById) : null;
+  if (ctx && !content) return null;
 
   // Regroup by course. Doing this in memory is what buys the round-trips back:
   // every row above was fetched once for the whole shelf.
@@ -226,7 +406,7 @@ export async function loadCourseTrees(
   }
   const featuredId = featuredCourseId(courses, lessonsByCourse, progress);
 
-  const trees = new Map<string, CourseTree>();
+  const trees = new Map<string, LearnerCourseTree>();
   const failures: CourseAssemblyFailure[] = [];
   for (const course of courses) {
     const courseAdventures = adventuresByCourse.get(course.id) ?? [];
@@ -243,19 +423,20 @@ export async function loadCourseTrees(
      * to empty a learner's whole shelf.
      */
     try {
-      trees.set(
-        course.id,
-        assembleCourseTree(
-          course,
-          courseAdventures,
-          courseSagas,
-          courseTopics,
-          courseLessons,
-          progress.filter((row) => courseLessonIds.has(row.lesson_id)),
-          new Set((creditsByCourse.get(course.id) ?? []).map((c) => c.lesson_id)),
-          placedCourseIds.has(course.id),
-        ),
+      const tree = assembleCourseTree(
+        course,
+        courseAdventures,
+        courseSagas,
+        courseTopics,
+        courseLessons,
+        progress.filter((row) => courseLessonIds.has(row.lesson_id)),
+        new Set((creditsByCourse.get(course.id) ?? []).map((c) => c.lesson_id)),
+        placedCourseIds.has(course.id),
       );
+      const adventureIds = courseAdventures.map((a) => a.id);
+      trees.set(course.id, ctx && content
+        ? applyCoursePathway(tree, coursePathwayInputs(course, adventureIds, content, ctx, placedCourseIds.has(course.id)))
+        : tree);
     } catch (error) {
       console.warn(`[backend] course tree assembly failed for "${course.slug}":`, error);
       failures.push({ course, featured: course.id === featuredId });
@@ -279,11 +460,11 @@ interface LessonContext {
   lessonRow: { id: string; slug: string; title: Record<string, unknown>; difficulty: number; xp_total: number; estimated_minutes: number };
   topic: { id: string; slug: string };
   course: CourseHierarchyRow;
-  tree: CourseTree;
+  tree: LearnerCourseTree;
 }
 
 /** Walk lesson -> topic -> saga -> adventure -> course, then build that course's tree, to resolve one lesson's unlock state (endpoints 3-5). */
-async function resolveLessonContext(accessToken: string, userId: string, lessonId: string): Promise<'not_found' | 'unreachable' | LessonContext> {
+async function resolveLessonContext(accessToken: string, userId: string, lessonId: string, ageScreen?: AgeScreenState): Promise<'not_found' | 'unreachable' | LessonContext> {
   const lesson = await getLessonById(accessToken, lessonId);
   if (!lesson) return 'not_found';
   const topic = await getTopicById(accessToken, lesson.topic_id);
@@ -294,7 +475,7 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
   if (!adventure) return 'not_found';
   const course = await getPublishedCourseById(accessToken, adventure.course_id);
   if (!course) return 'not_found';
-  const tree = await loadCourseTree(accessToken, userId, course);
+  const tree = await loadCourseTree(accessToken, userId, course, ageScreen);
   if (!tree) return 'unreachable';
   if (!findLessonNode(tree, lessonId)) return 'not_found';
   return { lessonRow: lesson, topic, course, tree };
@@ -387,7 +568,7 @@ export function learnRouter(): Router {
      * migration, and `progress` counts real passes UNION placement credits.
      * Getting that union wrong misreports every learner silently.
      */
-    const loaded = await loadCourseTrees(user.accessToken, user.id, courseRows);
+    const loaded = await loadCourseTrees(user.accessToken, user.id, courseRows, res.locals.ageScreen as AgeScreenState);
     if (!loaded) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
     /*
@@ -429,6 +610,17 @@ export function learnRouter(): Router {
         inProgress: summary.inProgress,
         adventureCount: summary.adventureCount,
         progress: summary.progress,
+        // B.6 pathway mode only: the learner's stage and how this course
+        // serves it. `unavailable` is the age safeguard (a 9-year-old and a
+        // teen-only course); the shelf still lists it so nothing vanishes.
+        ...(tree.pathway ? {
+          pathway: {
+            learnerStage: tree.pathway.learnerStage,
+            pathwayStage: tree.pathway.pathwayStage,
+            basis: tree.pathway.basis,
+            recommendedLessonId: tree.nextLessonId,
+          },
+        } : {}),
       });
     }
 
@@ -456,42 +648,37 @@ export function learnRouter(): Router {
     const user = authedUser(res);
     const course = await getPublishedCourseBySlug(user.accessToken, req.params.slug as string);
     if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
-    /*
-     * B.2: course-level prerequisites are now ENFORCED, not dormant. A course
-     * whose declared `requires` slugs are not all completed refuses to open,
-     * naming the missing prerequisites so the learner knows exactly what to
-     * finish first. Enforcement is soft-err on the entry point only: the
-     * shelf keeps listing the course (it is a real, reachable course — with a
-     * visible first step), and nothing blocks re-entering a course the learner
-     * already started before an authoring change (progress already earned
-     * stays earned; only NEW entry is gated).
-     */
-    const requires = Array.isArray(course.requires) ? course.requires.filter((slug): slug is string => typeof slug === 'string' && slug.length > 0) : [];
-    if (requires.length > 0) {
-      const completed = await getCompletedCourseBadgesByUserId(user.id);
-      const completedSlugs = new Set(completed.map((badge) => badge.course_slug));
-      const missing = requires.filter((slug) => !completedSlugs.has(slug));
-      if (missing.length > 0) {
-        return fail(res, 409, 'COURSE_PREREQUISITE_REQUIRED', 'Finish the prerequisite course first', {
-          missingPrerequisites: missing,
-        });
-      }
-    }
-    const tree = await loadCourseTree(user.accessToken, user.id, course);
-    if (!tree) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
-    return ok(res, tree);
+    const entry = await courseEntry(user, course, res.locals.ageScreen as AgeScreenState);
+    if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
+    return ok(res, entry.load.tree);
+  });
+
+  /*
+   * 2b. GET /courses/:slug/path — the rebuilt course path (B.6, S05.3b). The
+   * same pathway decision as the tree, projected to what a learner needs on
+   * one screen: chapters with their access, the frontier with titles, what is
+   * blocked and why, and the skills the pathway teaches. Pathway mode only.
+   */
+  router.get('/courses/:slug/path', async (req, res) => {
+    if (courseEngine() !== 'pathway') return fail(res, 409, 'PATHWAY_ENGINE_DISABLED', 'The course path is not enabled yet');
+    const user = authedUser(res);
+    const course = await getPublishedCourseBySlug(user.accessToken, req.params.slug as string);
+    if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
+    const entry = await courseEntry(user, course, res.locals.ageScreen as AgeScreenState);
+    if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
+    if (!entry.load.tree.pathway || !entry.load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
+    return ok(res, projectCoursePath(entry.load.tree as PathwayCourseTree, entry.load.pathway.kcTitles));
   });
 
   // 3. GET /lessons/:id — meta + client-safe document, locale-resolved.
   router.get('/lessons/:id', async (req, res) => {
     const user = authedUser(res);
     const lessonId = req.params.id as string;
-    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId);
+    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId, res.locals.ageScreen as AgeScreenState);
     if (ctx === 'unreachable') return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
-    const node = findLessonNode(ctx.tree, lessonId);
-    if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
-    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
+    const refusal = lessonAdmissionRefusal(ctx.tree, lessonId);
+    if (refusal) return fail(res, 403, refusal.code, refusal.message);
 
     const docs = await getEffectiveLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
@@ -558,12 +745,11 @@ export function learnRouter(): Router {
 
     const user = authedUser(res);
     const lessonId = req.params.id as string;
-    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId);
+    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId, res.locals.ageScreen as AgeScreenState);
     if (ctx === 'unreachable') return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
-    const node = findLessonNode(ctx.tree, lessonId);
-    if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
-    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
+    const refusal = lessonAdmissionRefusal(ctx.tree, lessonId);
+    if (refusal) return fail(res, 403, refusal.code, refusal.message);
 
     const docs = await getEffectiveLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
@@ -683,12 +869,11 @@ export function learnRouter(): Router {
 
     const user = authedUser(res);
     const lessonId = req.params.id as string;
-    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId);
+    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId, res.locals.ageScreen as AgeScreenState);
     if (ctx === 'unreachable') return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
-    const node = findLessonNode(ctx.tree, lessonId);
-    if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
-    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
+    const refusal = lessonAdmissionRefusal(ctx.tree, lessonId);
+    if (refusal) return fail(res, 403, refusal.code, refusal.message);
 
     const { segment_id: segmentId, answer } = parsed.data;
     if ('attempt_token' in parsed.data) {
@@ -841,12 +1026,11 @@ export function learnRouter(): Router {
 
     const user = authedUser(res);
     const lessonId = req.params.id as string;
-    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId);
+    const ctx = await resolveLessonContext(user.accessToken, user.id, lessonId, res.locals.ageScreen as AgeScreenState);
     if (ctx === 'unreachable') return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
-    const node = findLessonNode(ctx.tree, lessonId);
-    if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
-    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
+    const refusal = lessonAdmissionRefusal(ctx.tree, lessonId);
+    if (refusal) return fail(res, 403, refusal.code, refusal.message);
 
     const docs = await getEffectiveLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
@@ -874,6 +1058,10 @@ export function learnRouter(): Router {
         p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
       });
       if (!completion) return fail(res, 409, 'UNSUPPORTED_LESSON', 'Complete every learning step first');
+      if (courseEngine() === 'pathway') {
+        const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
+        if (refreshed) await settleCourseBadges(user.id, ctx.course, refreshed);
+      }
       return ok(res, completion);
     }
 
@@ -981,7 +1169,10 @@ export function learnRouter(): Router {
     }
 
     // Re-fetch the tree so `progress`/`next_lesson_id` reflect the write above.
-    const refreshedTree = await loadCourseTree(user.accessToken, user.id, ctx.course);
+    // Pathway mode: a completion can finish the pathway, so settle its badge (B4) here too.
+    const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
+    if (refreshed) await settleCourseBadges(user.id, ctx.course, refreshed);
+    const refreshedTree = refreshed?.tree ?? null;
 
     return ok(res, {
       score: completion.score,

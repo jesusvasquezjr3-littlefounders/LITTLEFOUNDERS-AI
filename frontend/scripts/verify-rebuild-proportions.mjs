@@ -4,7 +4,7 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
 
 // Real-app driver for Frontend Bible 03 and verification-tools/proportion-audit.reference.mjs.
 const origin = process.env.REBUILD_URL ?? 'http://127.0.0.1:5190';
-const output = resolve('../audit-results/rebuild-proportions');
+const output = resolve(process.env.REPORT_DIR ?? '../audit-results/rebuild-proportions');
 mkdirSync(output, { recursive: true });
 const browser = await launchBrowser(mkdtempSync(join(output, 'chrome-')));
 const page = await openPage(browser.browser, { width: 375, height: 740, dark: false });
@@ -69,23 +69,36 @@ const appendixCurrentSurfaces = [
   { screen: 'cpafading', ages: ['6-9', '10-12'] },
 ];
 
-const surfaces = process.env.REBUILD_PROPORTIONS_SCOPE === 'appendix-current'
-  ? appendixCurrentSurfaces
-  : [...coreSurfaces, ...appendixCurrentSurfaces];
+// B.6 / S05.3b: the rebuilt course path, one fixture per learner the server can describe.
+const coursePathSurfaces = [
+  { screen: 'coursepath', path: 'child', ages: ['6-9'] },
+  { screen: 'coursepath', path: 'bridge', ages: ['10-12'] },
+  { screen: 'coursepath', path: 'placement', ages: ['13-17'] },
+  { screen: 'coursepath', path: 'adult', ages: ['adult'] },
+  { screen: 'coursepath', path: 'complete', ages: ['6-9'] },
+];
+
+const scope = process.env.REBUILD_PROPORTIONS_SCOPE;
+const surfaces = scope === 'appendix-current' ? appendixCurrentSurfaces
+  : scope === 'course-path' ? coursePathSurfaces
+    : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces];
 
 try {
-  for (const { screen, ages } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
+  for (const { screen, ages, path } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
     await page.send('Emulation.setDeviceMetricsOverride', { width, height: 740, deviceScaleFactor: 1, mobile: width < 768 });
-    const query = new URLSearchParams({ locale, theme, screen, age }).toString();
+    const query = new URLSearchParams({ locale, theme, screen, age, ...(path ? { path } : {}) }).toString();
+    const want = path ? 'course-path-preview' : expectedScreen(screen);
+    // Every course-path fixture renders the same screen name, so also wait for this URL's own render.
+    const ready = path ? `location.search === ${JSON.stringify('?' + query)} && ` : '';
     await page.send('Page.navigate', { url: `${origin}/rebuild.html?${query}` });
     for (let n = 0; n < 100; n++) {
-      if (await page.evaluate(`document.querySelector('main')?.dataset.screen === ${JSON.stringify(expectedScreen(screen))}`)) break;
+      if (await page.evaluate(`${ready}document.querySelector('main')?.dataset.screen === ${JSON.stringify(want)}`)) break;
       await new Promise((done) => setTimeout(done, 50));
     }
     await page.evaluate('document.fonts.ready');
     const issues = await page.evaluate(`(() => {
       const main=document.querySelector('main'),issues=[];
-      if(!main||main.dataset.screen!==${JSON.stringify(expectedScreen(screen))}) return ['wrong-screen'];
+      if(!main||main.dataset.screen!==${JSON.stringify(want)}) return ['wrong-screen'];
       const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0;};
       const scale=new Set([12,14,16,18,20,24,28,32,36,40,48,56,60,64,72,96]);
       for(const e of main.querySelectorAll('*')){
@@ -115,14 +128,16 @@ try {
       return [...new Set(issues)];
     })()`);
     configurations++;
-    if (issues.length) findings.push({ screen, age, locale, theme, width, issues });
+    if (issues.length) findings.push({ screen, ...(path ? { path } : {}), age, locale, theme, width, issues });
   }
   writeFileSync(join(output, 'report.json'), JSON.stringify({
     configurations,
     findings,
-    scope: process.env.REBUILD_PROPORTIONS_SCOPE === 'appendix-current'
+    scope: scope === 'appendix-current'
       ? 'Current controlled Appendix P candidate renderers only.'
-      : 'All current controlled lesson and Appendix P candidate renderers.',
+      : scope === 'course-path'
+        ? 'The B.6 rebuilt course path preview fixtures only.'
+        : 'All current controlled lesson, Appendix P candidate and course-path renderers.',
   }, null, 2));
   console.log(JSON.stringify({ configurations, findings: findings.length, output }));
   if (findings.length) { console.error(JSON.stringify(findings.slice(0, 8), null, 2)); process.exitCode = 1; }

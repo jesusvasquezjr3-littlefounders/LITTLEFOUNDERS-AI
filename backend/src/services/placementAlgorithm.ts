@@ -101,6 +101,12 @@ export interface PlacementSignals {
   educationLevel?: EducationLevel;
   ageYears?: number;
   aiPriorFraction?: number;
+  /**
+   * B.6 rule P6 (S05.3b): where the Mentor's graph already shows this learner
+   * (Mentor mastery, skills shown in another stage) along the pathway's
+   * topics. Like every signal here it only moves the first question.
+   */
+  graphPriorFraction?: number;
 }
 
 /** How many probes a learner may be asked before the search stops and commits. */
@@ -195,6 +201,9 @@ export function seedFraction(signals: PlacementSignals): number {
   if (signals.ageYears !== undefined && Number.isFinite(signals.ageYears)) priors.push(agePrior(signals.ageYears));
   if (signals.aiPriorFraction !== undefined && Number.isFinite(signals.aiPriorFraction)) {
     priors.push(Math.min(1, Math.max(0, signals.aiPriorFraction)));
+  }
+  if (signals.graphPriorFraction !== undefined && Number.isFinite(signals.graphPriorFraction)) {
+    priors.push(Math.min(1, Math.max(0, signals.graphPriorFraction)));
   }
   if (priors.length === 0) return 0.3;
   return priors.reduce((a, b) => a + b, 0) / priors.length;

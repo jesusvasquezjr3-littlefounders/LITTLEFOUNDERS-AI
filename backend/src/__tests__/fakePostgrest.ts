@@ -96,6 +96,44 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       for (const id of new Set(ids)) credits.push({ user_id: row.user_id, course_id: row.course_id, lesson_id: id, topic_id: db.lessons?.find(item => item.id === id)?.topic_id });
       return respond(200, 'created');
     }
+    // Contract double for B.6's stage-entry placement (S05.3b). It mirrors the
+    // SQL's refusals that Core relies on: credits only inside the course's
+    // published lessons of the SAME pathway stage (legacy age tiers map
+    // tier1/tier2 child, tier3 tween, tier4 teen), replay vs conflict per
+    // stage, B.1's per-course row kept when absent, earlier credits untouched.
+    if (table === 'rpc/commit_course_pathway_placement' && method === 'POST') {
+      const { p_result: row, p_lesson_ids: ids } = JSON.parse(String(init?.body)) as { p_result: FakeRow; p_lesson_ids: string[] };
+      const tierStage: Record<string, string> = { tier1: 'child', tier2: 'child', tier3: 'tween', tier4: 'teen' };
+      const stageOfLesson = (lessonId: string): string | null => {
+        const lesson = db.lessons?.find(item => item.id === lessonId);
+        const topic = db.topics?.find(item => item.id === lesson?.topic_id);
+        const saga = db.sagas?.find(item => item.id === topic?.saga_id);
+        const adventure = db.adventures?.find(item => item.id === saga?.adventure_id);
+        if (!lesson || !adventure || adventure.course_id !== row.course_id || lesson.status !== 'published') return null;
+        return (adventure.pathway_stage as string | null | undefined) ?? tierStage[String(adventure.age_tier ?? 'tier1')] ?? null;
+      };
+      if (ids.some(id => stageOfLesson(id) !== row.pathway_stage)) return respond(400, { message: 'Credit outside the pathway stage' });
+      const entries = db.course_pathway_placements ??= [];
+      const credits = db.placement_credits ??= [];
+      const prior = entries.find(item => item.user_id === row.user_id && item.course_id === row.course_id && item.pathway_stage === row.pathway_stage);
+      if (prior) {
+        const same = prior.method === row.method && prior.start_topic_id === row.start_topic_id && prior.credited_topics === row.credited_topics
+          && ids.every(id => credits.some(item => item.user_id === row.user_id && item.lesson_id === id));
+        return respond(200, same ? 'replayed' : 'conflict');
+      }
+      entries.push({ user_id: row.user_id, course_id: row.course_id, pathway_stage: row.pathway_stage, method: row.method, start_topic_id: row.start_topic_id, credited_topics: row.credited_topics });
+      const placements = db.course_placements ??= [];
+      if (!placements.some(item => item.user_id === row.user_id && item.course_id === row.course_id)) {
+        placements.push({ user_id: row.user_id, course_id: row.course_id, claimed_level: row.claimed_level, education_level: row.education_level,
+          quiz_answers: row.quiz_answers, start_topic_id: row.start_topic_id, start_lesson_id: row.start_lesson_id, method: row.method });
+      }
+      for (const id of new Set(ids)) {
+        if (!credits.some(item => item.user_id === row.user_id && item.lesson_id === id)) {
+          credits.push({ user_id: row.user_id, course_id: row.course_id, lesson_id: id, topic_id: db.lessons?.find(item => item.id === id)?.topic_id });
+        }
+      }
+      return respond(200, 'created');
+    }
     if (table === 'rpc/record_lesson_grade' && method === 'POST') {
       const p = JSON.parse(String(init?.body));
       const receipts = db.lesson_grade_receipts ??= [];
@@ -235,7 +273,7 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
     if (method === 'GET') {
       const matched = rows.filter((r) => matchesFilters(r, params));
       const select = params.get('select');
-      if (select && /^[a-z_]+(?:,[a-z_]+)*$/.test(select)) {
+      if (select && /^[a-z_][a-z0-9_]*(?:,[a-z_][a-z0-9_]*)*$/.test(select)) {
         return respond(200, applyRange(matched, params).map(row => Object.fromEntries(
           select.split(',').map(key => [key, row[key]]),
         )));

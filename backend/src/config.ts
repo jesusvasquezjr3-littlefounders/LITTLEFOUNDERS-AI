@@ -91,6 +91,15 @@ const Env = z.object({
     .default('true')
     .transform((v) => v !== 'false' && v !== '0' && v !== 'off'),
 
+  // B.6 / OD-22 (S05.3b): which course engine the learner routes run.
+  // `linear` is the legacy single flat lesson order. `pathway` is the age-
+  // pathway frontier on the Mentor's knowledge graph (docs/rebuild/sprints/
+  // S05-B6-PATHWAY-POLICY.md). The policy is an engineering proposal until the
+  // owner accepts it (OD-22), and `pathway` reads tables the B.6 migrations
+  // add, so it stays off until both are true: an operator switches it on after
+  // acceptance and after the migrations are applied, never a deploy by accident.
+  COURSE_PATHWAY_ENGINE: z.enum(['linear', 'pathway']).default('linear'),
+
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });

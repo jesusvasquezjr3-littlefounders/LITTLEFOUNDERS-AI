@@ -366,7 +366,7 @@ export function assembleCourseTree(
  */
 export function flattenTopicsForPlacement(tree: CourseTree): PlacementTopic[] {
   const all: PlacementTopic[] = [];
-  for (const adventure of tree.adventures) {
+  for (const adventure of placementChapters(tree)) {
     for (const saga of adventure.sagas) {
       for (const topic of saga.topics) {
         all.push({
@@ -417,6 +417,21 @@ export function flattenTopicsForPlacement(tree: CourseTree): PlacementTopic[] {
   }));
 }
 
+/**
+ * B.6 rule P6 (S05.3b): a placement is the entry into ONE pathway stage, so in
+ * pathway mode it walks only that stage's chapters. Optional chapters (another
+ * stage, open to this learner) and closed ones are never placed into or
+ * credited: an adult's entry placement never credits childhood chapters, and a
+ * minor's never touches adult ones. A linear tree carries no access and keeps
+ * every chapter, exactly as before.
+ */
+function placementChapters(tree: CourseTree): CourseTree['adventures'] {
+  return tree.adventures.filter((adventure) => {
+    const access = (adventure as { pathwayAccess?: string }).pathwayAccess;
+    return access === undefined || access === 'pathway';
+  });
+}
+
 export interface PlacementProbeForClient {
   topicId: string;
   prompt: string;
@@ -457,7 +472,7 @@ export function placementProbeForTopic(
  * intake is only ever allowed to produce a rough position.
  */
 export function courseOutline(tree: CourseTree, locale: 'en-US' | 'es-MX' | 'pt-BR'): string[] {
-  return tree.adventures
+  return placementChapters(tree)
     .map((adventure) => {
       const title = adventure.title as Record<string, string> | null;
       return title?.[locale] ?? title?.['es-MX'] ?? Object.values(title ?? {})[0] ?? adventure.slug;

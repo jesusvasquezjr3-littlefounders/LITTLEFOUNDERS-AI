@@ -28,6 +28,8 @@ import { workedExamplePilotDocument } from '../learning/WorkedExampleBoard';
 import { functionMachinePilotDocument } from '../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
+import { CoursePathView } from '../learning/CoursePathView';
+import { coursePathPreviewStates } from '../learning/coursePathFixtures';
 import type { LessonMentorStage } from '../learning/lessonDocument';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
@@ -103,6 +105,9 @@ export function Preview() {
             { value }, { target: ageBand === '6-9' ? 7 : 37 });
           return result === 'met' || result === 'review' ? result : 'invalid';
         }} />
+      : screen === 'coursepath' ? <CoursePathView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'}
+        state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
+        missingTitles={['Entrepreneurship']} onOpenLesson={() => go('lesson')} onPlacement={() => go('home')} onBack={() => go('home')} onRetry={() => go('coursepath')} />
       : screen === 'result' || screen === 'replay' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-1', lesson_id: 'pilot-savings-sequence', version_id: 'rev-1', locale,
         first_try_correct: screen === 'replay' ? 2 : 3, graded_count: 4, awarded_xp: 40, duration_seconds: 200,

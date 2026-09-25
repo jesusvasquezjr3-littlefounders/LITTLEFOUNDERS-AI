@@ -42,6 +42,8 @@ export function lessonPath(lessonId: string): string {
 export const COURSE_ROUTE_PATH = 'learn/:courseSlug' as const;
 export const PLACEMENT_ROUTE_PATH = 'learn/:courseSlug/placement' as const;
 export const TERRITORY_ROUTE_PATH = 'learn/:courseSlug/territory' as const;
+/** B.6 (S05.3b): the rebuilt course path on the pathway engine. */
+export const COURSE_PATH_ROUTE_PATH = 'learn/:courseSlug/path' as const;
 
 export function coursePath(courseSlug: string): string {
   return `/${COURSE_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
@@ -59,4 +61,8 @@ export function placementPath(courseSlug: string): string {
 
 export function territoryPath(courseSlug: string): string {
   return `/${TERRITORY_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
+}
+
+export function coursePathPath(courseSlug: string): string {
+  return `/${COURSE_PATH_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
 }

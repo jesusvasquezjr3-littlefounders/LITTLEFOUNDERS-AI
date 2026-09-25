@@ -664,7 +664,7 @@ function inFilter(ids: string[]): string {
  * any batch propagates as null instead of returning a partial list silently.
  */
 const ID_BATCH_SIZE = 150;
-async function restBatchedByIds<T>(
+export async function restBatchedByIds<T>(
   ids: string[],
   fetchBatch: (batch: string[]) => Promise<T[] | null>,
 ): Promise<T[] | null> {
