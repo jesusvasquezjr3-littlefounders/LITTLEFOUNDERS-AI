@@ -5,6 +5,7 @@
 The [S05 visual coverage ledger](S05-VISUAL-COVERAGE.md) tracks every required first-release family and reusable operation against Appendix A/P without changing their scope.
 The [owner visual review register](S05-VISUAL-REVIEW.md) lists each preview screen and state; all approvals remain pending.
 The [future lesson-format runbook](S05-NEW-LESSON-FORMATS.md) records the contract a new format must meet after the engine is accepted; it does not authorize Forge or catalog regeneration now.
+The [S05 learning-experience sprint record](S05-LEARNING-EXPERIENCE.md) tracks the S05.3 checkpoints onward, starting with the B.6 data layer; the [B.6 pathway policy](S05-B6-PATHWAY-POLICY.md) is the owner-review proposal (OD-22) for pathway eligibility, the graph frontier, placement entry, cross-stage credit, badges and legacy-credit equivalence.
 
 **S05 goal and exit gate:** Deliver a complete, working, age-pathway-aware lesson engine and new learner UI, including every first-release Appendix A/P visual and interaction, versioned answerless content, server-authoritative grading, recovery, and the compact real Mentor stage. Product and frontend gates must pass on the integrated app, and the owner must visually accept every lesson screen and state. Only then is the engine ready for the separate Forge/catalog regeneration phase. Local fixture verification, a code commit, or an internal demo cannot satisfy this exit gate.
 

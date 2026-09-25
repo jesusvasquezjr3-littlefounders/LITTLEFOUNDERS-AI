@@ -141,6 +141,7 @@ The rebuilt design foundation has an isolated development entry at `/rebuild.htm
 | A character's mesh/skin (re-exported, re-rigged, or re-optimized) | `frontend/` → `npm run verify:skin` / `npm run verify:pose` / `npm run verify:clearance` |
 | Migrations | `database/` → `npm run db:reset` twice (both green) + regenerate types (`npm run db:types`) |
 | The KC graph / tutor content bridge | `backend/` → `npm run seed:kc`, then `npm run audit:content-bridge` — **`seed:kc` is a required rollout step, not an optional seed.** No migration inserts KC rows (`0052_kc_graph.sql` only creates the schema), so without it every activity falls through to paid live generation. |
+| The B.6 topic → KC map (`database/seeds/kc_topic_map.v1.json`) or any curriculum topic | `coursegen/` → `npm run kc:map` (drift gate: every topic, kind, review_of and hard prerequisite matches the YAML and every teaching topic names a KC; `-- --write` refreshes the repeated facts and never invents a KC) and `backend/` → `npm test` (the map agrees with the KC graph and the frontier never deadlocks on the real catalog). Policy: `docs/rebuild/sprints/S05-B6-PATHWAY-POLICY.md`. |
 
 `.github/workflows/repo-gates.yml` re-runs the repo-wide set (secrets, i18n, marketing paths, provider/instrument/preferred-types/demo-step parity, tools self-tests) on every PR and push, without a `paths:` filter — but CI is the backstop, not the gate. Commit locally as you go and **push once, at the end, when everything is green together.**
 
@@ -175,6 +176,10 @@ npm --prefix backend run seed:kc               # REQUIRED after migration 0052 �
                                                # Idempotent; refuses a cyclic graph. A missing seed surfaces as "no KC is ever
                                                # available" for every learner, far from its cause. In production this runs as
                                                # tutor-deploy.yml's `seed-kc` step, where the credentials live.
+                                               # Since S05.3a it also writes the B.6 topic → KC map into topic_knowledge_components
+                                               # and fails on a published topic with no mapping. Apply the B.6 data-layer and
+                                               # kc_strand_widening migrations first; the 72 new KCs load as draft (invisible to the
+                                               # Mentor) until the owner accepts the pathway policy and they are activated in the seed.
 npm --prefix backend run audit:content-bridge  # does every mapped kc.skill_key still reach a PUBLISHED lesson? (daily in CI too)
 npm --prefix backend run placement:verify      # the real placement search over the real catalog — NOT frontend's verify:placement,
                                                # which is 3D island placement and unrelated despite the name

@@ -29,6 +29,7 @@ import {
   upsertLearnerMastery,
   upsertMemoryCard,
   type KcRow,
+  type KcStrand,
   type MemoryCardRow,
 } from './kcData.js';
 import { serviceRest } from '../supabaseRest.js';
@@ -132,7 +133,7 @@ export interface AttemptOutcome {
 interface KcOnlyRow {
   id: string;
   key: string;
-  strand: 'money_math' | 'entrepreneurship';
+  strand: KcStrand;
   title: Record<string, string>;
   objective: Record<string, string>;
   tier_min: number;

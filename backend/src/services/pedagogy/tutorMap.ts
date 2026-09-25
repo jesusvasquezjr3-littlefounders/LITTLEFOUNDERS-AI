@@ -15,6 +15,7 @@ import {
   getKcEdges,
   getLearnerMastery,
   getMemoryCards,
+  type KcStrand,
   type Localized,
 } from './kcData.js';
 
@@ -23,7 +24,7 @@ export type MapNodeState = 'locked' | 'available' | 'in_progress' | 'mastered' |
 export interface TutorMapNode {
   kcId: string;
   kcKey: string;
-  strand: 'money_math' | 'entrepreneurship';
+  strand: KcStrand;
   title: string;
   state: MapNodeState;
   /** Rounded posterior for display, null before any evidence. */

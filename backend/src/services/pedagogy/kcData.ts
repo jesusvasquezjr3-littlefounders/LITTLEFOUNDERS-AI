@@ -16,10 +16,13 @@ const eu = (v: string): string => encodeURIComponent(v);
 
 export type Localized = Partial<Record<'en-US' | 'es-MX' | 'pt-BR', string>>;
 
+/** 0052 + the B.6 widening (S05.3a): the draft money_life/investing KCs are not served until activated. */
+export type KcStrand = 'money_math' | 'entrepreneurship' | 'money_life' | 'investing';
+
 export interface KcRow {
   id: string;
   key: string;
-  strand: 'money_math' | 'entrepreneurship';
+  strand: KcStrand;
   title: Localized;
   objective: Localized;
   tier_min: number;
