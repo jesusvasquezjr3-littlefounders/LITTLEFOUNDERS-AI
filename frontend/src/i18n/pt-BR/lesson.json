@@ -13,10 +13,6 @@
     "correct": "Resposta certa",
     "notThis": "Esta não era"
   },
-  "chips": {
-    "hearts_one": "{{count}} coração restante",
-    "hearts_other": "{{count}} corações restantes"
-  },
   "intro": {
     "start": "Começar lição",
     "minutes_one": "{{count}} minuto",
@@ -54,24 +50,24 @@
     "score": "Pontuação: {{score}} de 100",
     "xp": "XP ganhos",
     "bestStreak": "Melhor sequência",
-    "passedBody": "Você está um passo mais perto de ser um grande founder.",
+    "passedBody": "Mais um passo no seu caminho de founder.",
     "failedBody": "Todo founder pratica. Jogue de novo e veja sua pontuação crescer!",
     "done": "Concluir",
     "time": "Tempo",
     "dayStreak": "Sequência de dias",
-    "glowTitle": "Seu superpoder de hoje",
+    "glowTitle": "O que você fez bem",
     "growTitle": "Sua próxima missão",
     "glow": {
       "effort": "Você terminou a lição inteira: cada tentativa te deixa mais forte.",
       "family": {
-        "story": "As histórias não têm segredos para você.",
-        "choice": "Você toma decisões como um verdadeiro founder.",
-        "input": "Suas contas saíram perfeitas.",
-        "arrange": "Colocar as coisas em ordem é a sua praia.",
-        "money": "Você cuida do dinheiro como um especialista.",
-        "analyze": "Você tem olho de detetive.",
-        "storyplay": "Você vive cada aventura ao máximo.",
-        "maker": "Um construtor de primeira."
+        "story": "Você acompanhou cada história até o fim.",
+        "choice": "Você pensou nas opções antes de escolher.",
+        "input": "Suas contas saíram certas.",
+        "arrange": "Você colocou cada passo em ordem.",
+        "money": "Você contou o dinheiro com cuidado.",
+        "analyze": "Você encontrou as pistas nos dados.",
+        "storyplay": "Você jogou cada aventura até o fim.",
+        "maker": "Você construiu peça por peça."
       }
     },
     "grow": {
@@ -125,8 +121,6 @@
   "lab": {
     "title": "Laboratório de Lições",
     "subtitle": "{{types}} tipos de segmento · {{graded}} avaliáveis",
-    "heartsOn": "Corações: sim",
-    "heartsOff": "Corações: não",
     "showcase": "Jogar showcase",
     "playFamily": "Jogar família"
   },

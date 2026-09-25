@@ -170,8 +170,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
       secondsSpentRef.current = Math.max(1, Math.round((Date.now() - lessonStartRef.current) / 1000))
       // lesson_complete is emitted SERVER-SIDE only (backend/src/routes/learn.ts,
       // 0072) as of the NSM hardening pass — the results screen is reached on
-      // BOTH outcomes (hearts exhausted or a score below threshold also finish
-      // the run) after the same POST /complete round trip the server event
+      // BOTH outcomes (a score below threshold also finishes the run) after the same POST /complete round trip the server event
       // rides on, so a client-side copy here would double-count every passing
       // completion (client_event_id dedup only collapses RETRIES of the same
       // beacon, not two independently-generated events for one completion).
@@ -323,12 +322,9 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
       {/* Sticky glass header */}
       <header className="lf-glass sticky top-0 z-30 shadow-glass-sm">
         {/*
-          * Close, then the bar, then the score. The three counters used to be
-          * three different objects — a bare icon+number for hearts, a pill for
-          * the streak, a pill for XP — which read as three unrelated pieces of
-          * information rather than as one score. They are now one chip shape
-          * (§Tactile), and the difference between them is tone, which is what
-          * distinguishes them anyway.
+          * Close, then the bar, then the score. The counters are one chip
+          * shape (§Tactile). The lives counter is gone (OD-1): a wrong answer
+          * costs nothing, so nothing counts it.
           *
           * `max-w-board` and not 720: at 1440 a lesson header pinned to 720px
           * leaves the counters floating in the middle of the screen while the
@@ -360,20 +356,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
               <div className="lf-track-fill" style={{ width: `${progressPct(doc, state)}%` }} />
             </div>
           </div>
-          {state.hearts !== null ? (
-            /*
-             * One line, deliberately. `answerSurfaces.test.tsx` exempts a red
-             * HEART from P3's "no red wrong" by matching /hearts|favorite/ on
-             * the same source line as the colour — so splitting the className
-             * onto its own line silently drops the exemption and the guard
-             * reports a life counter as a mistake painted red. The guard is
-             * right about the rule; the formatting is what has to give.
-             */
-            <span className="lf-chip lf-chip-error lf-label" aria-label={t('lesson.chips.hearts', { count: state.hearts })}>
-              <Icon name="favorite" fill className="text-[18px]" />
-              <span className="lf-number">{state.hearts}</span>
-            </span>
-          ) : null}
+          {/* OD-1 and B.26 (S05.3f): no lives. A wrong answer spends nothing, so nothing here counts it. */}
           {state.streak >= 2 ? (
             /*
              * `key` on the streak replays the pop on EVERY increment. Without

@@ -103,13 +103,23 @@ const motivationSurfaces = [
   { screen: 'resultmilestone', ages: ['6-9'], query: {}, want: 'result-preview' },
 ];
 
+// B.23 / B.26 (S05.3f): the graduation card, the guided-review offer and the register-framed result.
+const wellbeingSurfaces = [
+  { screen: 'graduation', ages: ['10-12'], query: { into: 'transition' }, want: 'graduation-host' },
+  { screen: 'graduation', ages: ['13-17'], query: { into: 'teen' }, want: 'graduation-host' },
+  { screen: 'guidedreview', ages: ['6-9'], query: { register: 'young' }, want: 'guided-review-host' },
+  { screen: 'guidedreview', ages: ['13-17'], query: { register: 'teen' }, want: 'guided-review-host' },
+  { screen: 'resultregister', ages: ['13-17'], query: { register: 'teen' }, want: 'result-preview' },
+];
+
 const scope = process.env.REBUILD_PROPORTIONS_SCOPE;
 const surfaces = scope === 'appendix-current' ? appendixCurrentSurfaces
   : scope === 'course-path' ? coursePathSurfaces
     : scope === 'narrative' ? narrativeSurfaces
       : scope === 'learning-quality' ? learningQualitySurfaces
         : scope === 'motivation' ? motivationSurfaces
-          : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces, ...narrativeSurfaces, ...learningQualitySurfaces, ...motivationSurfaces];
+          : scope === 'wellbeing' ? wellbeingSurfaces
+            : [...coreSurfaces, ...appendixCurrentSurfaces, ...coursePathSurfaces, ...narrativeSurfaces, ...learningQualitySurfaces, ...motivationSurfaces, ...wellbeingSurfaces];
 
 try {
   for (const { screen, ages, path, query: extra, want: wantScreen } of surfaces) for (const age of ages) for (const locale of ['en-US', 'es-MX', 'pt-BR']) for (const theme of ['light', 'dark']) for (const width of [320, 375, 768, 1280]) {
@@ -170,7 +180,9 @@ try {
           ? 'The S05.3c recall, decision journal, learner shortcut and Family Hub learning preview fixtures only.'
           : scope === 'motivation'
             ? 'The S05.3e learner rhythm, guardian holiday pause and milestone result preview fixtures only.'
-            : 'All current controlled lesson, Appendix P candidate, course-path, S05.3c narrative, S05.3d learning-quality and S05.3e motivation renderers.',
+            : scope === 'wellbeing'
+              ? 'The S05.3f graduation card, guided-review offer and register-framed result preview fixtures only.'
+              : 'All current controlled lesson, Appendix P candidate, course-path, S05.3c narrative, S05.3d learning-quality, S05.3e motivation and S05.3f wellbeing renderers.',
   }, null, 2));
   console.log(JSON.stringify({ configurations, findings: findings.length, output }));
   if (findings.length) { console.error(JSON.stringify(findings.slice(0, 8), null, 2)); process.exitCode = 1; }

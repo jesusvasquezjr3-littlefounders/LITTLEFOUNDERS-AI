@@ -21,7 +21,7 @@ describe('tab-local lesson recovery', () => {
     const key = checkpointKey('learner', 'lesson')
     const value = newCheckpoint()
     value.completion = { run_id: value.runId, seconds_spent: 42, local_date: '2026-09-16' }
-    value.state = { phase: 'results', stepPhase: 'feedback', index: 1, streak: 1, bestStreak: 1, hearts: 3, outcome: 'passed', seg: {
+    value.state = { phase: 'results', stepPhase: 'feedback', index: 1, streak: 1, bestStreak: 1, outcome: 'passed', seg: {
       exercise: { attempts: 1, hintsShown: 0, best: 100, done: true, firstTry: true, retries: 0, verdict: { correct: true, score: 100, tier: 'perfect', allowRetry: false } },
     } }
     writeCheckpoint(key, value)

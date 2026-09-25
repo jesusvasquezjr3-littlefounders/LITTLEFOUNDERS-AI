@@ -2121,11 +2121,7 @@
     background: rgb(var(--lf-warning-soft));
     color: rgb(var(--lf-warning-strong));
   }
-  .lf-chip-error {
-    border-color: rgb(var(--lf-error) / 0.35);
-    background: rgb(var(--lf-error-soft));
-    color: rgb(var(--lf-error-strong));
-  }
+  /* The error-tinted counter chip is gone with the lives counter it painted (OD-1, B.26, S05.3f). */
   .lf-chip-accent {
     border-color: rgb(var(--lf-accent) / 0.35);
     background: rgb(var(--lf-accent-soft));

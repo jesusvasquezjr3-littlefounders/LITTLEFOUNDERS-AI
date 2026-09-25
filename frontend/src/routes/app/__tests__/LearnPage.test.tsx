@@ -13,6 +13,7 @@ vi.mock('@/auth/AuthContext', () => {
 vi.mock('@/components/characters/control/CharacterActor', () => ({ default: () => <div aria-hidden="true" /> }));
 vi.mock('@/components/characters/DinaCharacter', () => ({ DinaCharacter: () => <div aria-hidden="true" /> }));
 vi.mock('@/routes/app/learn/LearnerNarrativePanel', () => ({ LearnerNarrativePanel: () => null }));
+vi.mock('@/routes/app/learn/RegisterGraduationPanel', () => ({ RegisterGraduationPanel: () => null }));
 
 const mockedApi = vi.mocked(api);
 

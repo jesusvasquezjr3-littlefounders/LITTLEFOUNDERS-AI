@@ -82,9 +82,7 @@ describe('the material is the only way to draw an answer', () => {
         .split('\n')
         .forEach((line, i) => {
           if (line.trimStart().startsWith('*') || line.trimStart().startsWith('//')) return
-          // A heart is red because it is a heart. It counts lives remaining and
-          // says nothing about whether the last answer was right.
-          if (/hearts|favorite/.test(line)) return
+          // No exemption for hearts any more: the lives counter is gone (OD-1).
           if (/\berror-soft\b|\bborder-error\b|\btext-error-strong\b/.test(line)) {
             offenders.push(`${file.slice(ENGINE.length)}:${i + 1}  ${line.trim().slice(0, 100)}`)
           }

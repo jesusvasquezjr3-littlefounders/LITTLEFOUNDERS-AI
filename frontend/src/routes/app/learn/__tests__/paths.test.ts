@@ -11,6 +11,8 @@ import {
   lessonPath,
   placementPath,
   territoryPath,
+  guidedReviewPath,
+  guidedReviewSkillFrom,
 } from '../paths';
 
 /*
@@ -76,5 +78,16 @@ describe('learningRhythmPath (S05.3e)', () => {
   it('is matched by its own route and never read as a course slug first', () => {
     expect(matchPath(`/${LEARNING_RHYTHM_ROUTE_PATH}`, learningRhythmPath())).not.toBeNull();
     expect(learningRhythmPath()).toBe('/learn/rhythm');
+  });
+});
+
+describe('guidedReviewPath (S05.3f, B.26)', () => {
+  it('opens the Mentor with the skill key, and only a skill key is read back', () => {
+    const href = guidedReviewPath('financial-education/saving-goal');
+    expect(matchPath('/tutor', href.split('?')[0]!)).not.toBeNull();
+    expect(guidedReviewSkillFrom(href.slice(href.indexOf('?')))).toBe('financial-education/saving-goal');
+    for (const search of ['', '?review=', '?review=../admin', '?review=a/b/c', '?review=ABC/def', '?review=%3Cscript%3E/x']) {
+      expect(guidedReviewSkillFrom(search), search).toBeNull();
+    }
   });
 });

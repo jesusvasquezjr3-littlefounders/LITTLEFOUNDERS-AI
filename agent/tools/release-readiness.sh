@@ -19,6 +19,10 @@ TRACK_ID="release-track-${COURSE}-${RUN_SUFFIX}"
 echo "== LittleFounders zero-spend release readiness: $COURSE =="
 npm run git:diff-check
 npm run secrets:check
+# B.25 (S05.3f): the automated dark-pattern gate, and a human-signed release
+# audit no older than 45 days with nothing failing or open
+# (docs/rebuild/DARK-PATTERN-AUDIT.md).
+node agent/tools/check-dark-patterns.mjs --release
 npm run i18n:check
 npm run deps:check
 npm run typecheck:all

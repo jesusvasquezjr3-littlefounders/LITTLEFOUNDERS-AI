@@ -78,3 +78,18 @@ export function decisionJournalPath(): string {
 export function learningRhythmPath(): string {
   return `/${LEARNING_RHYTHM_ROUTE_PATH}`;
 }
+
+/**
+ * B.26 / OD-1 (S05.3f): the Mentor's guided review of one skill, opened only
+ * when the learner accepts the offer. The Mentor starts a weak-skill session
+ * for that course/topic key (TutorExperience reads `review`).
+ */
+export function guidedReviewPath(skillKey: string): string {
+  return `/tutor?review=${encodeURIComponent(skillKey)}`;
+}
+
+/** The skill key a guided-review link carries, or null when it is not one. */
+export function guidedReviewSkillFrom(search: string): string | null {
+  const value = new URLSearchParams(search).get('review');
+  return value !== null && /^[a-z0-9-]+\/[a-z0-9-]+$/.test(value) ? value : null;
+}

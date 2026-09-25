@@ -1,0 +1,33 @@
+{
+  "checklist_version": "2026-09-24.1",
+  "procedure": "docs/rebuild/DARK-PATTERN-AUDIT.md",
+  "audits": [
+    {
+      "id": "2026-09-24-s053f-engineering-pre-audit",
+      "date": "2026-09-24",
+      "kind": "engineering-pre-audit",
+      "scope": "S05.3f lane (codex/spec-s05e): rebuilt UI (frontend/src/rebuild), the live lesson player, the three locales' i18n copy, Core's family-bridge and guardian-narrative catalogs, the Mentor's scripted lines and Forge gates 17-19. Not a release audit.",
+      "auditor": "Engineering (automated gate and code review)",
+      "signed_off_by": null,
+      "items": {
+        "DP-01": { "result": "pass", "evidence": "Gate: 0 time-pressure findings in copy; no countdown, timer or role=timer in rebuilt UI. Honest link-expiry notices are disclosures (the rule was narrowed after the first scan flagged them). Timed drills inside lesson content are MN-02." },
+        "DP-02": { "result": "pass", "evidence": "Gate: 0 parasocial findings, including the Mentor's scripted lines (oracle/src/tutor/scripted.ts). Live model output is not scanned: S06 measures it." },
+        "DP-03": { "result": "pass", "evidence": "Gate: no autoplay, no timed navigation and no dialog without Escape and a close handler in rebuilt UI. The CPA fading board advances between stages of one activity after the learner's own answer; that is not more content (rule narrowed accordingly)." },
+        "DP-04": { "result": "pass", "evidence": "Gate: 0 purchase-lure findings; pricing is parked (OD-5) and no upgrade flow exists." },
+        "DP-05": { "result": "pass", "evidence": "Gate: no leaderboard or ranking in rebuilt UI; the register policy pins comparison to the learner's own history for every band. Profile follower counts are Block E (S08)." },
+        "DP-06": { "result": "pass", "evidence": "npm run rewards:check passes (S05.3e): 8 declared non-reward draws, reward code never draws; Forge gate 17." },
+        "DP-07": { "result": "pass", "evidence": "Found and fixed in S05.3f: the live player's lives counter, early lesson end and lesson-lab toggle, and the three locales' lives strings are removed; a migrated document's scoring.hearts is ignored; Forge gate 18 blocks it. Gate checks all of it on every run." },
+        "DP-08": { "result": "pass", "evidence": "Declines are neutral ('Keep going', 'Got it'); gate lexicons find no shame or guilt language on any string." },
+        "DP-09": { "result": "open", "evidence": "Engineering found no learner notification, push or re-engagement email path (Core sends email only from staff routes). A person confirms, including authentication emails." },
+        "DP-10": { "result": "open", "evidence": "No advertising SDK or sponsored content found in the frontend; GA4 analytics loads only under consent (H.1). A person confirms." },
+        "SH-01": { "result": "pass", "evidence": "Gate: 0 self-global or trait-praise findings. Found and fixed: the live result screen's trait lines ('You have a detective's eye', 'like a pro') now name what the learner did, in three locales." },
+        "SH-02": { "result": "pass", "evidence": "Found and fixed: the wrong-answer 'edu_error' buzzer is now the neutral tap. A miss is never the error hue (P3 test and gate CSS rule); the compact stage reacts to a miss with encouragement only (register policy, tested); the live director never celebrates or saddens a miss (director test)." },
+        "SH-03": { "result": "pass", "evidence": "No rank or peer-visible result exists for a learner; misses change nothing anyone else sees." },
+        "FF-01": { "result": "pass", "evidence": "Gate: 0 family-finance moralizing findings across i18n, rebuilt UI, the family-bridge and narrative catalogs and scripted Mentor lines. Forge gate 18 blocks it in lesson content; existing catalog content was not regenerated (OD-23)." },
+        "MN-01": { "result": "open", "evidence": "The human walkthrough of every flow in three locales has not been done. Engineering evidence: the Chrome matrices listed in the S05.3f record." },
+        "MN-02": { "result": "open", "evidence": "Timed drills in the live choice and storyplay families reduce the score by 20 percent when time runs out (grade.ts, mirrored in Core). Proposal: remove the reduction or make timers opt-in. Forge gate 18 now flags timed segments for review." },
+        "MN-03": { "result": "open", "evidence": "The registers are defined and enforced (policy, gate 19); the first quarterly Age-Band Register Differentiation Audit is due after release." }
+      }
+    }
+  ]
+}

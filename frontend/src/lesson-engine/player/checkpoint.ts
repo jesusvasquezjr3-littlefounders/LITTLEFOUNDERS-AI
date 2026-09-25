@@ -10,7 +10,8 @@ const verdict = z.object({
 })
 const session = z.object({
   phase: z.enum(['intro', 'playing', 'results']), stepPhase: z.enum(['answer', 'checking', 'feedback']),
-  index: count, streak: count, bestStreak: count, hearts: count.nullable(),
+  // `hearts` is dropped when a checkpoint saved before OD-1 is restored (z.object strips it).
+  index: count, streak: count, bestStreak: count,
   outcome: z.enum(['passed', 'failed']).nullable(),
   seg: z.record(z.string(), z.object({
     attempts: count, hintsShown: count, best: z.number().min(0).max(100), done: z.boolean(),

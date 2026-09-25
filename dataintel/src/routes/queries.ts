@@ -628,6 +628,10 @@ export function intelRouter(): Router {
       const parsed = experimentSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
       const { name, metric, variantA, variantB, surface, target, minAge, maxAge } = parsed.data;
+      // B.28 (S05.3f): more events or sessions is never what an experiment wins on.
+      if (experiments.isEngagementVolumeMetric(metric)) {
+        return fail(res, 400, 'ENGAGEMENT_VOLUME_METRIC', 'Engagement volume cannot be an experiment success metric (B.28); use a return or learning metric');
+      }
       const result = await experiments.createExperiment(name, metric, variantA, variantB, surface, target, { minAge: minAge ?? null, maxAge: maxAge ?? null });
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Failed to create experiment');
       return ok(res, result, 201);

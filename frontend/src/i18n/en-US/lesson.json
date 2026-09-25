@@ -13,10 +13,6 @@
     "correct": "Correct answer",
     "notThis": "Not this one"
   },
-  "chips": {
-    "hearts_one": "{{count}} heart left",
-    "hearts_other": "{{count}} hearts left"
-  },
   "intro": {
     "start": "Start lesson",
     "minutes_one": "{{count}} minute",
@@ -54,24 +50,24 @@
     "score": "Score: {{score}} out of 100",
     "xp": "XP earned",
     "bestStreak": "Best streak",
-    "passedBody": "You're one step closer to being a great founder.",
+    "passedBody": "One more step on your founder path.",
     "failedBody": "Every founder practices. Play it again and watch your score grow!",
     "done": "Finish",
     "time": "Time",
     "dayStreak": "Day streak",
-    "glowTitle": "Today's superpower",
+    "glowTitle": "What you did well",
     "growTitle": "Your next quest",
     "glow": {
       "effort": "You finished the whole lesson, every try makes you stronger.",
       "family": {
-        "story": "Stories hold no secrets from you.",
-        "choice": "You make decisions like a true founder.",
-        "input": "Your numbers came out spot on.",
-        "arrange": "Putting things in order is your thing.",
-        "money": "You handle money like a pro.",
-        "analyze": "You have a detective’s eye.",
-        "storyplay": "You live every adventure to the fullest.",
-        "maker": "A first-class builder."
+        "story": "You followed each story to the end.",
+        "choice": "You weighed the options before choosing.",
+        "input": "Your numbers came out right.",
+        "arrange": "You put every step in order.",
+        "money": "You counted the money carefully.",
+        "analyze": "You spotted the clues in the data.",
+        "storyplay": "You played each adventure through.",
+        "maker": "You built it piece by piece."
       }
     },
     "grow": {
@@ -125,8 +121,6 @@
   "lab": {
     "title": "Lesson Lab",
     "subtitle": "{{types}} segment types · {{graded}} graded",
-    "heartsOn": "Hearts: on",
-    "heartsOff": "Hearts: off",
     "showcase": "Play showcase",
     "playFamily": "Play family"
   },

@@ -1,6 +1,5 @@
-.lf-mentor-band { position: relative; inline-size: 100%; block-size: 96px; overflow: hidden; background: var(--primary); }
-.lf-mentor-band--6-9 { block-size: 110px; }
-.lf-mentor-band--13-17, .lf-mentor-band--adult { block-size: 80px; }
+/* The phone band height comes from the register policy (B.23): 110, 96 or 80 px for 6-9, 10-12 and 13+. */
+.lf-mentor-band { position: relative; inline-size: 100%; block-size: var(--lf-mentor-band-size, 96px); overflow: hidden; background: var(--primary); }
 .lf-mentor-band-still { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: center 38%; }
 .lf-mentor-band-canvas { position: absolute !important; inset: 0; inline-size: 100%; block-size: 100%; overflow: hidden; }
 @container app (min-width: 640px) {

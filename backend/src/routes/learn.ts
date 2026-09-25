@@ -36,6 +36,8 @@ import { chapterPolicy, coursePrerequisiteDecision, resolvePathway } from '../se
 import { gradeV2Visual, projectV2MentorStage, stripV2MentorStage, v2CompletionRequiredSegmentIds, v2CpaAttemptPrerequisiteSegmentId, v2FirstUnaidedStage, v2GradePrerequisiteSegmentId, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 import { mintLessonAttemptToken, reissueLessonAttemptToken, verifyLessonAttemptToken } from '../services/lessonAttemptToken.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
+import { learnRegisterRouter } from './learnRegister.js';
+import { guidedReviewFor, localizedTitle, recentSkillOutcomes, recentV2Outcomes, withLearnerMentor, type GuidedReviewOffer } from '../services/guidedReview.js';
 import { offerBridgeAfterCompletion, recordGradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
 import { learnMotivationRouter } from './learnMotivation.js';
@@ -469,7 +471,7 @@ function groupBy<T, K>(rows: readonly T[], key: (row: T) => K): Map<K, T[]> {
 
 interface LessonContext {
   lessonRow: { id: string; slug: string; title: Record<string, unknown>; difficulty: number; xp_total: number; estimated_minutes: number };
-  topic: { id: string; slug: string };
+  topic: { id: string; slug: string; title?: unknown };
   course: CourseHierarchyRow;
   tree: LearnerCourseTree;
 }
@@ -572,6 +574,16 @@ async function completionMotivation(input: {
   };
 }
 
+async function v2GuidedReview(userId: string, documentVersionId: string, ctx: LessonContext, locale: string): Promise<GuidedReviewOffer | null> {
+  const outcomes = await recentV2Outcomes(userId, documentVersionId);
+  if (!outcomes) return null;
+  return withLearnerMentor(guidedReviewFor({
+    outcomesNewestFirst: outcomes,
+    skillKey: `${ctx.course.slug}/${ctx.topic.slug}`.toLowerCase(),
+    skill: localizedTitle(ctx.topic.title, locale),
+  }), userId);
+}
+
 export function learnRouter(): Router {
   const router = Router();
   router.use(requireAuth, requireAgeScreen);
@@ -579,6 +591,8 @@ export function learnRouter(): Router {
   router.use(learnNarrativeRouter());
   // B.21 / B.24 (S05.3e): the learner's streak, pace and autonomy levers.
   router.use(learnMotivationRouter());
+  // B.23 (S05.3f): the learner's age register and its one-time graduation moment.
+  router.use(learnRegisterRouter());
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
   // state, never raw events, answers, or another learner's data.
@@ -1045,7 +1059,13 @@ export function learnRouter(): Router {
           p_fading_group_id: firstUnaided.fadingGroupId, p_stage: firstUnaided.stage, p_receipt_jti: verified.payload.jti });
       }
       const retryAttemptToken = !receipt.replayed && !receipt.verdict.correct && receipt.retry_jti === next.payload.jti ? next.token : undefined;
-      return ok(res, { verdict: receipt.verdict, replayed: receipt.replayed, ...(retryAttemptToken ? { retry_attempt_token: retryAttemptToken } : {}) });
+      // B.26 / OD-1 (S05.3f): a miss costs nothing; a run of misses on this lesson earns an offer, never a lock.
+      const guidedReview = receipt.verdict.correct ? null : await v2GuidedReview(user.id, picked.document_version_id, ctx, document.locale);
+      return ok(res, {
+        verdict: receipt.verdict, replayed: receipt.replayed,
+        ...(retryAttemptToken ? { retry_attempt_token: retryAttemptToken } : {}),
+        ...(guidedReview ? { guided_review: guidedReview } : {}),
+      });
     }
 
     const docs = await getEffectiveLessonDocumentLocales(lessonId);
@@ -1112,7 +1132,13 @@ export function learnRouter(): Router {
       segment, answer, document: picked.document as Record<string, unknown>,
     });
 
-    return ok(res, { verdict: recorded.verdict });
+    // B.26 / OD-1 (S05.3f): after consecutive misses on this skill, the Mentor offers a guided review.
+    const skillKey = `${ctx.course.slug}/${ctx.topic.slug}`.toLowerCase();
+    const outcomes = recorded.verdict.correct ? null : await recentSkillOutcomes(user.id, skillKey, passThreshold);
+    const guidedReview = outcomes
+      ? await withLearnerMentor(guidedReviewFor({ outcomesNewestFirst: outcomes, skillKey, skill: localizedTitle(ctx.topic.title, picked.locale) }), user.id)
+      : null;
+    return ok(res, { verdict: recorded.verdict, ...(guidedReview ? { guided_review: guidedReview } : {}) });
   });
 
   // 5. POST /lessons/:id/complete — server recomputes the lesson score from

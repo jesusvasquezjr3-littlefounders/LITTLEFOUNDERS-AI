@@ -136,7 +136,7 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
     expect(state.seg.e1?.best).toBe(81) // no client-side re-penalization
   })
 
-  it('cheer mode (hearts null) never fails mid-lesson', () => {
+  it('a miss never ends a lesson early (OD-1: no lives)', () => {
     const d = doc()
     const state = play(d, [
       { type: 'BEGIN' },
@@ -148,21 +148,21 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
       { type: 'NEXT' },
     ])
     expect(state.phase).toBe('playing')
-    expect(state.hearts).toBeNull()
+    expect(state).not.toHaveProperty('hearts')
   })
 
-  it('arcade mode: exhausted wrong segments cost hearts; 0 hearts ends at results', () => {
+  it('ignores the legacy lives field of a migrated document: nothing is spent, nothing ends early (OD-1)', () => {
     const d = doc({ hearts: 1, max_attempts: 1 })
     const state = play(d, [
       { type: 'BEGIN' },
       { type: 'NEXT' },
       { type: 'SUBMIT' },
-      { type: 'VERDICT', segmentId: 'e1', verdict: v(0) }, // heart 1 → 0
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(0) },
       { type: 'NEXT' },
     ])
-    expect(state.hearts).toBe(0)
-    expect(state.phase).toBe('results')
-    expect(state.outcome).toBe('failed')
+    expect(state).not.toHaveProperty('hearts')
+    expect(state.phase).toBe('playing')
+    expect(state.outcome).toBeNull()
   })
 
   it('grade failure returns to answer without consuming an attempt', () => {

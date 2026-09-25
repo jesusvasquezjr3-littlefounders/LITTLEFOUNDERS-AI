@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
+import { loadEngagementHealth, type EngagementHealthReport } from './engagementHealth.js';
 
 /*
  * S05.3d: the content team's learning-quality reads and decisions.
@@ -145,6 +146,11 @@ export interface LearningQualityReport {
    * the rest of the report does not depend on them.
    */
   motivation: MotivationMetrics | null;
+  /**
+   * B.28 (S05.3f): session efficiency and Mentor resolution efficiency, with
+   * their trend. Null until the *_engagement_health.sql migration is applied.
+   */
+  engagementHealth: EngagementHealthReport | null;
   thresholds: {
     judgmentDivergenceFloor: number; judgmentMinAttempts: number; replayNoticeTarget: number; bandReviewCadenceDays: number;
   };
@@ -155,7 +161,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
   const until = now.toISOString();
   const since = new Date(now.getTime() - days * 86_400_000).toISOString();
   const window = { p_since: since, p_until: until };
-  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy] = await Promise.all([
+  const [lessons, reviews, bands, log, judgment, replay, restDays, autonomy, engagementHealth] = await Promise.all([
     rpc('practice_success_band_metrics', window, z.array(MetricRow)),
     serviceRest<unknown>('/practice_difficulty_reviews?select=id,lesson_id,direction,window_days,evidence,status,decision,decision_note,opened_at,resolved_at&order=opened_at.desc&limit=100')
       .then((rows) => { const parsed = z.array(ReviewRow).safeParse(rows); return parsed.success ? parsed.data : null; }),
@@ -167,6 +173,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
     rpc('learning_replay_notice_display_rate', window, z.array(DisplayRateRow)),
     rpc('learning_rest_day_utilization', window, z.array(RestDayRow)),
     rpc('learning_autonomy_adoption', window, z.array(AutonomyRow)),
+    loadEngagementHealth(now),
   ]);
   if (!lessons || !reviews || !bands || !log || !judgment || !replay) return null;
   const band = bands[0];
@@ -184,6 +191,7 @@ export async function loadLearningQualityReport(days: number, now = new Date()):
       restDays: restDays[0] ?? { learners_with_lapse: 0, kept_by_rest_days: 0, restarted: 0, utilization_rate: null, rest_days_used: 0 },
       autonomy,
     } : null,
+    engagementHealth,
     thresholds: {
       judgmentDivergenceFloor: JUDGMENT_DIVERGENCE_FLOOR, judgmentMinAttempts: JUDGMENT_MIN_ATTEMPTS,
       replayNoticeTarget: REPLAY_NOTICE_TARGET, bandReviewCadenceDays: BAND_REVIEW_CADENCE_DAYS,

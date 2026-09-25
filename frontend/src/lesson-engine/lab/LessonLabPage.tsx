@@ -3,7 +3,7 @@
 //
 // THE INSTRUMENT IS IN ENGLISH; THE PRODUCT INSIDE IT IS NOT — and until this
 // pass those two facts were not being kept in step. The page's own chrome runs
-// through i18n (it is real product chrome: the player, the hearts pill, the
+// through i18n (it is real product chrome: the player and the
 // theme toggle), while the FIXTURES were pinned to Spanish, so every screenshot
 // ever taken of this page showed English chrome around Spanish content and read
 // as a product full of hardcoded strings. It is not: a lesson document is
@@ -54,7 +54,6 @@ const LAB_TITLES: Record<Locale, { showcase: string; family: (name: string) => s
 function makeLabDocument(
   segments: SegmentBase[],
   title: string,
-  hearts: number | null,
   locale: Locale,
 ): LessonDocument {
   const cast = Array.from(
@@ -73,7 +72,8 @@ function makeLabDocument(
       objectives: [LAB_TITLES[locale].objective],
       cast: cast.length > 0 ? cast : ['dina'],
     },
-    scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts },
+    // OD-1: no lives, so the lab no longer offers a lives toggle.
+    scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
     segments,
   }
 }
@@ -99,7 +99,6 @@ function LabSwitch({ on, onClick, children }: { on: boolean; onClick: () => void
 export function LessonLabPage() {
   const { t, i18n } = useTranslation()
   const [active, setActive] = useState<LessonDocument | null>(null)
-  const [hearts, setHearts] = useState<number | null>(null)
 
   /**
    * ONE SWITCH FOR BOTH HALVES. Seeded from whatever i18next already resolved,
@@ -160,18 +159,9 @@ export function LessonLabPage() {
                 </LabSwitch>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={() => setHearts((h) => (h === null ? 3 : null))}
-              aria-pressed={hearts !== null}
-              className="lf-answer flex min-h-12 items-center gap-2 rounded-full px-4 lf-label text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              <Icon name="favorite" fill className={hearts !== null ? 'text-error-strong' : 'text-content-faint'} />
-              {hearts !== null ? t('lesson.lab.heartsOn') : t('lesson.lab.heartsOff')}
-            </button>
             <Button
               variant="primary"
-              onClick={() => setActive(makeLabDocument(allFixtures, titles.showcase, hearts, locale))}
+              onClick={() => setActive(makeLabDocument(allFixtures, titles.showcase, locale))}
             >
               <Icon name="play_arrow" className="mr-1" />
               {t('lesson.lab.showcase')}
@@ -186,7 +176,7 @@ export function LessonLabPage() {
               <Badge>{fixtures.length}</Badge>
               <Button
                 variant="secondary"
-                onClick={() => setActive(makeLabDocument(fixtures, titles.family(family), hearts, locale))}
+                onClick={() => setActive(makeLabDocument(fixtures, titles.family(family), locale))}
               >
                 {t('lesson.lab.playFamily')}
               </Button>
@@ -196,7 +186,7 @@ export function LessonLabPage() {
                 <Card key={fixture.id}>
                   <button
                     type="button"
-                    onClick={() => setActive(makeLabDocument([fixture], fixture.type, hearts, locale))}
+                    onClick={() => setActive(makeLabDocument([fixture], fixture.type, locale))}
                     className="flex w-full items-start justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                   >
                     <div className="min-w-0">

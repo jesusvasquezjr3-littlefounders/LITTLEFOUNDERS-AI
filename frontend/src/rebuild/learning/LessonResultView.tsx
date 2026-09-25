@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
 import { Button } from '../design/controls';
 import { mayCelebrate, streakMilestone } from '../design/milestones';
+import { REGISTERS, type LearnerRegister } from '../design/learnerRegisterPolicy.generated';
 import './result.css';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
@@ -55,25 +56,30 @@ export type LessonCompletionReceipt = z.infer<typeof lessonCompletionReceiptSche
 
 const copy: Record<Locale, { done: string; preview: string; score: (correct: number, total: number) => string; xp: string; accuracy: string;
   time: string; comparison: string; today: string; best: string; newBest: string; savedBest: (best: number) => string;
-  reasoned: string; continue: string; unavailable: string; figured: (skill: string) => string; streak: (days: number) => string; paceDone: string }> = {
+  reasoned: string; continue: string; unavailable: string; figured: (skill: string) => string; streak: (days: number) => string; paceDone: string;
+  /** B.23 (S05.3f): the heading and recognition line per register (the young register keeps `done` and `figured`). */
+  plainDone: string; showed: (skill: string) => string; built: (skill: string) => string; skillOnly: (skill: string) => string }> = {
   'en-US': { done: 'Lesson complete!', preview: 'Sample result', score: (a, n) => `${a}/${n} on first try.`,
     xp: 'XP earned', accuracy: 'First-try accuracy', time: 'Time', comparison: 'Today vs your best', today: 'Today', best: 'Best',
     newBest: 'New best', savedBest: (best) => `Your saved best is still ${best}%. This was practice.`,
     reasoned: 'Well-explained choices',
     continue: 'Continue', unavailable: 'Result unavailable',
-    figured: (skill) => `You worked out: ${skill}.`, streak: (days) => `${days}-day streak`, paceDone: 'Today\'s plan is done.' },
+    figured: (skill) => `You worked out: ${skill}.`, streak: (days) => `${days}-day streak`, paceDone: 'Today\'s plan is done.',
+    plainDone: 'Lesson complete', showed: (skill) => `You showed: ${skill}.`, built: (skill) => `Skill built: ${skill}.`, skillOnly: (skill) => `Skill: ${skill}.` },
   'es-MX': { done: '¡Lección terminada!', preview: 'Resultado de ejemplo', score: (a, n) => `${a}/${n} al primer intento.`,
     xp: 'XP ganados', accuracy: 'Aciertos al primer intento', time: 'Tiempo', comparison: 'Hoy frente a tu mejor marca', today: 'Hoy', best: 'Mejor',
     newBest: 'Nueva mejor marca', savedBest: (best) => `Tu mejor marca sigue en ${best}%. Fue práctica.`,
     reasoned: 'Decisiones bien explicadas',
     continue: 'Continuar', unavailable: 'Resultado no disponible',
-    figured: (skill) => `Resolviste: ${skill}.`, streak: (days) => `Racha de ${days} días`, paceDone: 'Tu plan de hoy está listo.' },
+    figured: (skill) => `Resolviste: ${skill}.`, streak: (days) => `Racha de ${days} días`, paceDone: 'Tu plan de hoy está listo.',
+    plainDone: 'Lección terminada', showed: (skill) => `Demostraste: ${skill}.`, built: (skill) => `Habilidad lograda: ${skill}.`, skillOnly: (skill) => `Habilidad: ${skill}.` },
   'pt-BR': { done: 'Lição concluída!', preview: 'Resultado de exemplo', score: (a, n) => `${a}/${n} na primeira tentativa.`,
     xp: 'XP ganhos', accuracy: 'Acertos na primeira tentativa', time: 'Tempo', comparison: 'Hoje e seu recorde', today: 'Hoje', best: 'Recorde',
     newBest: 'Novo recorde', savedBest: (best) => `Seu recorde salvo continua ${best}%. Foi prática.`,
     reasoned: 'Escolhas bem explicadas',
     continue: 'Continuar', unavailable: 'Resultado indisponível',
-    figured: (skill) => `Você resolveu: ${skill}.`, streak: (days) => `Sequência de ${days} dias`, paceDone: 'Seu plano de hoje está feito.' },
+    figured: (skill) => `Você resolveu: ${skill}.`, streak: (days) => `Sequência de ${days} dias`, paceDone: 'Seu plano de hoje está feito.',
+    plainDone: 'Lição concluída', showed: (skill) => `Você mostrou: ${skill}.`, built: (skill) => `Habilidade construída: ${skill}.`, skillOnly: (skill) => `Habilidade: ${skill}.` },
 };
 
 /** Exported for the Copy Budget test: every string the result screen can show. */
@@ -85,8 +91,15 @@ export const lessonResultCopy = copy;
  * "saved best is still X" notice is actually on screen (the numerator of
  * Appendix C's replay-notice display rate); a fixture never reports it.
  */
-export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown }: {
+export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young' }: {
   rawReceipt: unknown; locale: Locale; onContinue: () => void; fixture?: boolean;
+  /**
+   * B.23 (S05.3f): the learner's register, from Core. It changes the reward
+   * framing (the recognition line, whether the medal shows, whether XP leads
+   * or reads as data), never the tokens or components (OD-4). Unknown reads
+   * as the youngest register.
+   */
+  register?: LearnerRegister;
   /** Set when the view is mounted outside a themed `.lf-rebuild` host (the authenticated route). */
   dark?: boolean;
   onNoticeShown?: () => void;
@@ -120,29 +133,35 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
   const milestone = receipt.streak?.milestone ? streakMilestone(receipt.streak.milestone) : null;
   const celebrateStreak = milestone !== null && mayCelebrate(receipt.celebrations, milestone);
   const skill = receipt.recognition?.skills[0] ?? null;
+  const reward = REGISTERS[register].reward;
+  const heading = REGISTERS[register].tone.exclamations > 0 ? t.done : t.plainDone;
+  const recognition = (value: string) => reward.recognition === 'worked-out' ? t.figured(value)
+    : reward.recognition === 'showed' ? t.showed(value) : reward.recognition === 'built' ? t.built(value) : t.skillOnly(value);
+  const xpTile = <div className="lf-result-stat" key="xp"><strong data-copy-role="data">+{xp}</strong><span data-copy-role="body">{t.xp}</span></div>;
+  const accuracyTile = <div className="lf-result-stat" key="accuracy"><strong data-copy-role="data">{accuracy}%</strong><span data-copy-role="body">{t.accuracy}</span></div>;
+  const timeTile = <div className="lf-result-stat" key="time"><strong data-copy-role="data">{duration}</strong><span data-copy-role="body">{t.time}</span></div>;
+  // A tally that leads for young learners; plain data after capability for teens and adults.
+  const tiles = reward.currency === 'data' ? [accuracyTile, timeTile, xpTile] : [xpTile, accuracyTile, timeTile];
   // B.24: the learner's own plan for today, met by this lesson: a plain status, never a celebration.
   const paceDone = receipt.pace ? receipt.pace.goal_met && receipt.pace.passed_today === receipt.pace.goal : false;
   // A first completion has no earlier best to compare with.
   const showComparison = !receipt.replay || receipt.replay.kind !== 'first' || keptBest;
-  return <main className={rootClass} {...host} data-surface="app" data-screen={fixture ? 'result-preview' : 'result'}>
+  return <main className={rootClass} {...host} data-surface="app" data-screen={fixture ? 'result-preview' : 'result'}
+    data-register={register} data-age-band={REGISTERS[register].copyBand}>
     <div className="lf-result-inner">
       {fixture ? <p className="lf-result-preview-label" data-copy-role="body">{t.preview}</p> : null}
       <div className="lf-result-hero">
-        <img src="/rebuild/art/lesson-medal.svg" alt="" className="lf-result-medal" {...(celebrateLesson ? { 'data-celebrate': 'lesson-complete' } : {})} />
-        <h1 data-copy-role="heading">{t.done}</h1>
-        {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. */}
-        {skill ? <p className="lf-result-figured" data-copy-role="body">{t.figured(skill)}</p>
+        {reward.medal ? <img src="/rebuild/art/lesson-medal.svg" alt="" className="lf-result-medal" {...(celebrateLesson ? { 'data-celebrate': 'lesson-complete' } : {})} /> : null}
+        <h1 data-copy-role="heading">{heading}</h1>
+        {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. B.23: framed per register. */}
+        {skill ? <p className="lf-result-figured" data-copy-role="body">{recognition(skill)}</p>
           : keptBest ? null
             : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
         {celebrateStreak && receipt.streak ? <p className="lf-result-streak" data-copy-role="body" data-celebrate={milestone}>
           <img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p> : null}
       </div>
       <div className="lf-result-sheet">
-        <div className="lf-result-stats" aria-label={t.done}>
-          <div className="lf-result-stat"><strong data-copy-role="data">+{xp}</strong><span data-copy-role="body">{t.xp}</span></div>
-          <div className="lf-result-stat"><strong data-copy-role="data">{accuracy}%</strong><span data-copy-role="body">{t.accuracy}</span></div>
-          <div className="lf-result-stat"><strong data-copy-role="data">{duration}</strong><span data-copy-role="body">{t.time}</span></div>
-        </div>
+        <div className="lf-result-stats" aria-label={heading}>{tiles}</div>
         {receipt.judgment && receipt.judgment.assessed > 0 ? <p className="lf-result-judgment">
           <strong data-copy-role="data">{receipt.judgment.sound}/{receipt.judgment.assessed}</strong>
           <span data-copy-role="body">{t.reasoned}</span></p> : null}

@@ -66,4 +66,16 @@ describe('createCoreGrader', () => {
 
     await expect(grader.grade('seg-1', {}, { attempt_number: 1 })).rejects.toThrow('INTERNAL');
   });
+  it('S05.3f (B.26): hands the guided-review offer from Core to the host beside the verdict, and ignores a malformed one', async () => {
+    const verdict: Verdict = { correct: false, score: 0, tier: 'tryAgain', allowRetry: true };
+    const offer = { skill_key: 'money/save', skill: 'Saving toward a goal', misses: 3, character: 'dina' };
+    const onGuidedReview = vi.fn();
+    const grader = createCoreGrader('lesson-1', async () => 'token-123', undefined, { onGuidedReview });
+    mockedApi.mockResolvedValueOnce({ data: { verdict, guided_review: offer }, error: null });
+    expect(await grader.grade('seg-1', { choice: 'b' }, { attempt_number: 1 })).toEqual(verdict);
+    expect(onGuidedReview).toHaveBeenCalledWith(offer);
+    mockedApi.mockResolvedValueOnce({ data: { verdict, guided_review: { ...offer, misses: 1 } }, error: null });
+    await grader.grade('seg-1', { choice: 'b' }, { attempt_number: 2 });
+    expect(onGuidedReview).toHaveBeenCalledTimes(1);
+  });
 });

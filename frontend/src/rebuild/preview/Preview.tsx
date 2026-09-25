@@ -46,6 +46,9 @@ import type { LessonMentorStage } from '../learning/lessonDocument';
 import { LearningRhythmView } from '../learning/LearningRhythmView';
 import { StreakPauseControl } from '../family/StreakPauseControl';
 import { milestoneReceipt, rhythmPreviewStates, streak as streakFixture, streakPausePreviewStates } from '../learning/motivationFixtures';
+import { RegisterGraduationView } from '../learning/RegisterGraduationView';
+import { GuidedReviewOffer } from '../learning/GuidedReviewOffer';
+import type { LearnerRegister } from '../design/learnerRegisterPolicy.generated';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -62,6 +65,8 @@ export function Preview() {
   const [locale, setLocale] = useState<Locale>(initialLocale === 'es-MX' || initialLocale === 'pt-BR' ? initialLocale : 'en-US');
   const [theme, setTheme] = useState(params.get('theme') === 'dark' ? 'dark' : 'light');
   const [screen, setScreen] = useState(params.get('screen') ?? 'home');
+  // S05.3f (B.23): the learner register a register-aware screen reads in.
+  const previewRegister: LearnerRegister = (['young', 'transition', 'teen', 'adult'] as const).find((value) => value === params.get('register')) ?? 'young';
   const [ageBand, setAgeBand] = useState<AgeBand>(['6-9', '10-12', '13-17', 'adult'].includes(params.get('age') ?? '') ? params.get('age') as AgeBand : '6-9');
   const [answer, setAnswer] = useState<'save' | 'spend' | null>(null);
   const [checked, setChecked] = useState(false);
@@ -161,6 +166,18 @@ export function Preview() {
           onEnd={async () => ({ status: 'ended', streak: streakFixture({}) })} onRetry={() => {}} />
       </main>
       : screen === 'resultmilestone' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={milestoneReceipt(locale)} />
+      : screen === 'resultregister' ? <LessonResultView key={`resultregister:${previewRegister}`} locale={locale} onContinue={() => go('home')} fixture
+        register={previewRegister} rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete'], streak: undefined, pace: undefined }} />
+      : screen === 'graduation' ? <main className="lf-family-preview" data-surface="app" data-screen="graduation-host">
+        <RegisterGraduationView key={`graduation:${locale}:${params.get('into')}`} fixture locale={locale} dark={theme === 'dark'}
+          into={params.get('into') === 'teen' ? 'teen' : 'transition'} onAcknowledge={async () => params.get('save') !== 'fail'} />
+      </main>
+      : screen === 'guidedreview' ? <main className="lf-family-preview" data-surface="app" data-screen="guided-review-host">
+        <GuidedReviewOffer key={`guided:${locale}:${previewRegister}`} fixture locale={locale} dark={theme === 'dark'} register={previewRegister}
+          offer={{ skill_key: 'financial-education/saving-goal', misses: 3, character: 'dina',
+            skill: params.get('skill') === '0' ? null : { 'en-US': 'Saving toward a goal', 'es-MX': 'Ahorrar para una meta', 'pt-BR': 'Poupar para uma meta' }[locale] }}
+          onReview={() => go('home')} onDecline={() => go('home')} />
+      </main>
       : screen === 'resultkept' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-2', lesson_id: 'pilot-decide-justify', version_id: 'rev-001', locale,
         first_try_correct: 1, graded_count: 2, awarded_xp: 0, duration_seconds: 95, previous_best_percent: 100,

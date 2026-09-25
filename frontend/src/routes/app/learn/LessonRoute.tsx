@@ -24,6 +24,9 @@ import { parseNarrativeRecall, type NarrativeRecall } from '@/rebuild/learning/n
 import { useTheme } from '@/theme/useTheme';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
+import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
+import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
+import { guidedReviewPath } from './paths';
 
 /*
  * /learn/lesson/:lessonId — the fullscreen Lesson Player wired to Core
@@ -128,7 +131,27 @@ function LessonRouteSession() {
   }, [lessonId]);
   // Keep the run across reloads; Finish discards it so deliberate replay starts fresh.
   const runId = checkpoint.current.runId;
-  const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId), [lessonId, getToken, runId]);
+  // B.26 / OD-1 (S05.3f): a miss costs nothing; consecutive misses on one
+  // skill bring the learner's Mentor's offer to review it (never a lock).
+  const [guidedReview, setGuidedReview] = useState<GuidedReviewOfferValue | null>(null);
+  // B.23: the offer is worded in the learner's register, which Core resolves.
+  // Read only once an offer exists (most lessons never need it); until then,
+  // and if it fails, the youngest register is the reading.
+  const [register, setRegister] = useState<RegisterState>({ status: 'loading' });
+  const registerRequested = useRef(false);
+  useEffect(() => {
+    if (!guidedReview || registerRequested.current) return;
+    registerRequested.current = true;
+    void fetchLearnerRegister(async (path, init) => {
+      const token = await getToken();
+      if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
+      return api<unknown>(path, { token, method: init?.method, body: init?.body });
+    }).then((next) => { if (active.current) setRegister(next); });
+  }, [guidedReview, getToken]);
+  const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId, { onGuidedReview: setGuidedReview }), [lessonId, getToken, runId]);
+  const withOffer = (node: JSX.Element) => guidedReview ? <>{node}<GuidedReviewOffer offer={guidedReview} register={registerOf(register)}
+    locale={localeFromI18n(i18n.language)} dark={isDark} onDecline={() => setGuidedReview(null)}
+    onReview={(skillKey) => navigate(guidedReviewPath(skillKey))} /></> : node;
 
   useEffect(() => {
     let cancelled = false;
@@ -181,10 +204,12 @@ function LessonRouteSession() {
     const attemptToken = attempt.tokens[segmentId];
     const token = await getToken();
     if (!attemptToken || !token) throw new Error('No lesson attempt token');
-    const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown } }; replayed: boolean; retry_attempt_token?: string }>(`/learn/lessons/${lessonId}/grade`, {
+    const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown } }; replayed: boolean; retry_attempt_token?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
       method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken },
     });
     if (error || !data || (data.verdict.score !== 0 && data.verdict.score !== 100)) throw new Error('Could not grade v2 segment');
+    const offer = guidedReviewOfferSchema.safeParse(data.guided_review);
+    if (offer.success) setGuidedReview(offer.data);
     if (!data.verdict.correct && !data.replayed) {
       if (typeof data.retry_attempt_token !== 'string' || data.retry_attempt_token.length === 0) throw new Error('Could not renew v2 lesson attempt');
       setState((current) => current.status === 'ready' && current.v2Attempt?.runId === attempt.runId
@@ -309,21 +334,24 @@ function LessonRouteSession() {
   if (v2Receipt) {
     // The receipt is written in the lesson's own locale, which is the response locale.
     const receiptLocale = state.status === 'ready' && ['en-US', 'es-MX', 'pt-BR'].includes(state.locale) ? state.locale as Locale : localeFromI18n(i18n.language);
-    return <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack}
+    // B.23: a v2 lesson declares its audience band, and Core admits only learners inside it (S05.2a).
+    const band = state.status === 'ready' ? (state.document as { age_band?: unknown }).age_band : undefined;
+    const resultRegister = band === '6-9' || band === '10-12' || band === '13-17' || band === 'adult' ? registerForBand(band) : registerOf(register);
+    return <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack} register={resultRegister}
       onNoticeShown={() => trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })} />;
   }
 
   if (!isLegacyLessonDocument(state.document)) {
-    return <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} onBack={goBack}
+    return withOffer(<AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
       onGradeFractionArea={state.v2Attempt ? gradeV2FractionArea : undefined} onGradeBarModel={state.v2Attempt ? gradeV2BarModel : undefined}
       onGradeSchemaDiagram={state.v2Attempt ? gradeV2SchemaDiagram : undefined} onGradeWorkedExample={state.v2Attempt ? gradeV2WorkedExample : undefined}
       onGradeReasoning={state.v2Attempt ? gradeV2Reasoning : undefined}
       onComplete={state.v2Attempt ? completeV2 : undefined} metSegmentIds={state.v2Attempt?.metSegmentIds}
-      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} />;
+      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} />);
   }
 
-  return (
+  return withOffer(
     <LessonPlayer
       document={state.document}
       lessonId={lessonId}

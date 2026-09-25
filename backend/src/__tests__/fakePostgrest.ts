@@ -32,6 +32,31 @@ function matchesFilters(row: FakeRow, params: URLSearchParams): boolean {
   return true;
 }
 
+/**
+ * `order=col.desc` / `col.asc` on the first column, applied only when every
+ * matched row carries that column (rows seeded without it keep insertion
+ * order, as before). Stable, like PostgreSQL with a unique tiebreak.
+ */
+function applyOrder(rows: FakeRow[], params: URLSearchParams): FakeRow[] {
+  const order = params.get('order');
+  if (!order) return rows;
+  const [column, direction] = (order.split(',')[0] ?? '').split('.');
+  if (!column || !rows.every((row) => row[column] !== undefined && row[column] !== null)) return rows;
+  const sign = direction === 'desc' ? -1 : 1;
+  return [...rows].sort((a, b) => {
+    const x = a[column] as string | number;
+    const y = b[column] as string | number;
+    return x < y ? -sign : x > y ? sign : 0;
+  });
+}
+
+/** Strictly increasing timestamps for rows the doubles insert (the real columns DEFAULT now()). */
+let lastFakeTime = 0;
+export function fakeNow(): string {
+  lastFakeTime = Math.max(Date.now(), lastFakeTime + 1);
+  return new Date(lastFakeTime).toISOString();
+}
+
 /** PostgREST applies offset then limit; the export's truncation probe needs both. */
 function applyRange(rows: FakeRow[], params: URLSearchParams): FakeRow[] {
   const offset = Number(params.get('offset') ?? '0');
@@ -227,6 +252,7 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
         time_spent_seconds: p.p_context.timeSpentSeconds, course_id: p.p_context.courseId,
         topic_id: p.p_context.topicId, skill_key: p.p_context.skillKey, document_updated_at: p.p_context.documentUpdatedAt,
         diagnostic_code: p.p_hints_used > 0 ? 'hint_assisted' : count > 0 && verdict.correct ? 'retry_recovery' : !verdict.correct ? 'initial_incorrect' : undefined,
+        created_at: fakeNow(),
       });
       if (p.p_run_id) receipts.push({ user_id: p.p_user_id, lesson_id: p.p_lesson_id, run_id: p.p_run_id, segment_id: p.p_segment_id, client_attempt: p.p_client_attempt, verdict });
       return respond(200, { exhausted: false, verdict });
@@ -263,7 +289,7 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       }
       nonce.consumed_at = new Date().toISOString();
       const receipt = { jti: p.p_jti, user_id: p.p_user_id, run_id: p.p_run_id,
-        document_version_id: p.p_document_version_id, segment_id: p.p_segment_id, verdict: p.p_verdict };
+        document_version_id: p.p_document_version_id, segment_id: p.p_segment_id, verdict: p.p_verdict, created_at: fakeNow() };
       receipts.push(receipt);
       if ((table === 'rpc/record_v2_lesson_grade_retry' || table === 'rpc/record_v2_cpa_grade_retry') && (p.p_verdict as FakeRow).correct === false) {
         nonces.push({ jti: p.p_next_jti, user_id: p.p_user_id, run_id: p.p_run_id, document_version_id: p.p_document_version_id,
@@ -378,7 +404,7 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
     const rows = db[table];
 
     if (method === 'GET') {
-      const matched = rows.filter((r) => matchesFilters(r, params));
+      const matched = applyOrder(rows.filter((r) => matchesFilters(r, params)), params);
       const select = params.get('select');
       if (select && /^[a-z_][a-z0-9_]*(?:,[a-z_][a-z0-9_]*)*$/.test(select)) {
         return respond(200, applyRange(matched, params).map(row => Object.fromEntries(
