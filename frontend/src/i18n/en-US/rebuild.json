@@ -318,5 +318,169 @@
     "archived": "Archived.",
     "refused": "Not published. Fix these first:",
     "packFailed": "That did not save. Try again."
+  },
+  "staffMentorQuality": {
+    "title": "Mentor quality",
+    "intro": "Every Mentor signal in one place, with who must review it.",
+    "loading": "Loading.",
+    "loadFailed": "This did not load. Try later.",
+    "updated": "Updated {n} hours ago",
+    "stale": "Out of date: last update {n} hours ago",
+    "never": "Not computed yet. The hourly check has not run.",
+    "lastRun": {
+      "ok": "Last check complete",
+      "partial": "Last check could not read everything",
+      "failed": "Last check failed"
+    },
+    "noOwner": "No one is named for these roles:",
+    "flagsTitle": "Needs review",
+    "flagsEmpty": "No open flags.",
+    "kind": {
+      "threshold_breach": "Past its limit",
+      "zero_tolerance": "Zero-tolerance miss",
+      "upward_drift": "Rising",
+      "relative_drop": "Dropped",
+      "persona_disparity": "One Mentor lags behind",
+      "subgroup_disparity": "One group lags behind",
+      "source_unavailable": "Data missing"
+    },
+    "severity": {
+      "urgent": "Urgent",
+      "review": "Review"
+    },
+    "flagStatus": {
+      "open": "Open",
+      "acknowledged": "Acknowledged"
+    },
+    "flagMeta": "Owner: {role}. Seen {n} times.",
+    "acknowledge": "Acknowledge",
+    "resolve": "Resolve",
+    "noteLabel": "Root cause",
+    "noteHint": "At least 10 characters.",
+    "confirmResolve": "Mark resolved",
+    "cancel": "Cancel",
+    "acknowledged": "Acknowledged.",
+    "resolved": "Resolved.",
+    "notOwner": "Only the named owner can do this.",
+    "changed": "This flag changed. Reload the page.",
+    "actionFailed": "That did not save. Try again.",
+    "signalsTitle": "Signals",
+    "category": {
+      "pedagogy": "Teaching",
+      "relational": "Relationship",
+      "safety_governance": "Safety and governance",
+      "pipeline": "Pipeline",
+      "learning_outcome": "Learning outcomes",
+      "engagement_health": "Engagement health"
+    },
+    "signalStatus": {
+      "ok": "On target",
+      "breach": "Needs review",
+      "insufficient_data": "Too little data",
+      "diagnostic": "Watching the trend",
+      "unavailable": "Could not read",
+      "not_instrumented": "Not measured yet",
+      "external": "Measured elsewhere"
+    },
+    "notComputed": "Not computed yet",
+    "ownerRole": {
+      "pedagogical_lead": "Pedagogy lead",
+      "safety_trust_lead": "Safety and trust lead",
+      "engineering_lead": "Engineering lead"
+    },
+    "sample": "{n} observed",
+    "reviewTitle": "Weekly review",
+    "reviewDone": "{role}: signed this week",
+    "reviewMissing": "{role}: not signed yet",
+    "reviewRate": "Last week: {rate} of named owners signed",
+    "signReview": "Sign review",
+    "reviewSigned": "Review signed.",
+    "reviewAlready": "Already signed this week.",
+    "signal": {
+      "mastery": {
+        "corroboration_compliance": "Mastery backed by two answers",
+        "reversal_rate": "Mastery later reversed"
+      },
+      "rubric": {
+        "hint_repeat": "Hints never repeated",
+        "tell_honored": "Answer given when asked",
+        "self_explanation": "Explanations that name the idea",
+        "goal_agreement": "Goal agreed at the start",
+        "answer_reveal": "Answers revealed unasked",
+        "false_affirmation": "Wrong answers praised",
+        "praise_specificity": "Praise tied to a real step",
+        "check_in": "Check-in after drifting",
+        "closing_script": "Right closing for each ending",
+        "controlling_language": "Controlling words with teens",
+        "emotion_label": "Feelings stated as facts"
+      },
+      "spaced_review": {
+        "routing": "Review routing follows the rule"
+      },
+      "disposition": {
+        "completeness": "Learners with a current profile"
+      },
+      "session_end": {
+        "trigger_rate": "Early stop signal fired"
+      },
+      "alliance": {
+        "bond_proxy": "Learners who felt understood",
+        "renegotiation": "Plan renegotiated after declines"
+      },
+      "telemetry": {
+        "default_to_inaction": "Turns with no intervention",
+        "friction_rate": "Sessions with drift signals"
+      },
+      "dialogue": {
+        "ab_outcome": "Age-band test regressions"
+      },
+      "judge": {
+        "content_calibration": "Content judge calibrated"
+      },
+      "kill_switch": {
+        "open": "Automatic rollbacks in force"
+      },
+      "bias_audit": {
+        "coverage": "Bias audit coverage"
+      },
+      "transcript_judge": {
+        "agreement": "Transcript judge agreement"
+      },
+      "governance": {
+        "tier_compliance": "Tier rules followed"
+      },
+      "evaluation": {
+        "coverage": "Sessions scored"
+      },
+      "content_ladder": {
+        "distribution": "Activities written live"
+      },
+      "simulated_student": {
+        "pass_rate": "Simulated learner checks"
+      },
+      "canary": {
+        "regression_rate": "Canary rollbacks"
+      },
+      "learning": {
+        "delayed_retention": "Remembered weeks later",
+        "practice_success_band": "Practice success rate",
+        "time_to_mastery": "Attempts to master a skill",
+        "transfer_success": "Success in new contexts",
+        "judgment_quality": "Judgment beyond right answers",
+        "bridge_conversion": "Lessons turned into real tasks",
+        "decision_journal": "Past choices brought back"
+      },
+      "engagement": {
+        "session_efficiency": "Time spent practicing",
+        "mentor_resolution": "Turns to answer a question",
+        "streak_anxiety": "Returns driven by streak alerts",
+        "rest_day_use": "Rest days used",
+        "dark_pattern_audit": "Manipulative patterns found",
+        "variable_ratio_audit": "Random rewards for minors",
+        "reward_framing": "Rewards framed as learning",
+        "autonomy_adoption": "Learners choosing their path",
+        "parent_time_to_value": "Parent time to the weekly story"
+      }
+    }
   }
 }

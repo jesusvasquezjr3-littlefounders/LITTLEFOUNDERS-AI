@@ -29,7 +29,8 @@
     "verify:pedagogy": "tsx scripts/verify-pedagogy.ts",
     "gym:pedagogy": "tsx scripts/pedagogy-gym.ts",
     "bias-audit": "tsx --env-file-if-exists=.env scripts/bias-audit.ts",
-    "content-judge:calibrate": "tsx --env-file-if-exists=.env scripts/content-judge-calibration.ts"
+    "content-judge:calibrate": "tsx --env-file-if-exists=.env scripts/content-judge-calibration.ts",
+    "transcript-judge": "tsx --env-file-if-exists=.env scripts/transcript-judge.ts"
   },
   "dependencies": {
     "express": "^5.1.0",

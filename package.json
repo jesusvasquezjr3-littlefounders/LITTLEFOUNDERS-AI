@@ -26,6 +26,7 @@
     "alliance:check": "node agent/tools/check-alliance-parity.mjs",
     "review-calibration:check": "node agent/tools/check-review-calibration-parity.mjs",
     "live-content:check": "node agent/tools/check-live-content-parity.mjs",
+    "evaluation-loop:check": "node agent/tools/check-evaluation-loop-parity.mjs",
     "roleplay-voices:check": "node agent/tools/check-roleplay-voice-parity.mjs",
     "roleplay-voices:generate": "node agent/tools/generate-roleplay-voices.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",

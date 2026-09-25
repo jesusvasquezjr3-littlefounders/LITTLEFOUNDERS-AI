@@ -133,6 +133,14 @@ jobs:
       - name: Live-content governance / curated packs agree across every copy (Appendix E floors guard)
         run: node agent/tools/check-live-content-parity.mjs
 
+      # C.21 + C.24: the transcript rubric, the score outcomes, the owner roles
+      # and the flag vocabularies are hand-mirrored across Core, Oracle's judge
+      # harness, the rebuilt staff client and the migration. It also holds two
+      # guards: no judge-written scores until a judge is calibrated (C.23), and
+      # the Appendix F §1.4 service levels (24-hour freshness, weekly review).
+      - name: Evaluation loop / quality dashboard agree across every copy (C.23 fence, Appendix F SLAs)
+        run: node agent/tools/check-evaluation-loop-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

@@ -26,7 +26,7 @@ Risk classification: **child-facing AI safety and pedagogy**. The Oracle's orche
 | S06.10 | C.11 two-tier spaced review | Implemented and locally verified (the orchestrator's wave label S06.6, built together with S06.11); physical-PostgreSQL, live-conversation, production routing data, the first quarterly human spot check, calibration and Tier 1 review pending |
 | S06.11 | C.17 age-band dialogue calibration | Implemented and locally verified (same wave as S06.10); the owner/Product+Legal decision on enrolling minor bands (OD-23), physical-PostgreSQL, a running experiment and production data, native-speaker review of the controlling-language lexicon and Tier 1 review pending |
 | S06.12 | C.5 dynamic judge-sampling rate + C.6 curated activity-pack tier | Implemented and locally verified (the orchestrator's wave label S06.7); physical-PostgreSQL, the human panel's seed-set ratings and the owner-run live judge calibration (OD-23), loading and human release of the 21 seed packs, native-speaker and pedagogical review, production data, staff-console composition (wave 2) and Tier 1 review pending |
-| S06.13 | C.21 transcript scoring + anomaly flags + dashboard; C.24 consolidated monitoring | Planned |
+| S06.13 | C.21 transcript scoring + anomaly flags + dashboard; C.24 consolidated monitoring | Implemented and locally verified (the orchestrator's wave label S06.8); physical-PostgreSQL, naming the owners, production data and threshold calibration, sign-off of rubric v1, the calibrated transcript judge (C.23), staff-console composition (wave 2) and Tier 3 review pending |
 | S06.14 | C.22 tiered governance + C.23 judge calibration process | Planned |
 
 ## S06.1 implementation and rationale
@@ -573,3 +573,144 @@ Remaining acceptance boundaries (C.5 and C.6 stay In progress):
 - The seed packs have not been loaded or released by a human. Their text needs pedagogical and native-speaker review, and so does the es-MX/pt-BR lexicon.
 - The staff surfaces are isolated rebuilt panels. Composition in the finished staff console, and the text-fit, proportion and copy-budget audits against the real app driver, are wave 2 work.
 - The Tier 1 items (the floors, the calibration bar, the suspension rule, the union rule for the risk category) need Pedagogical Reviewer and Safety/Trust Lead sign-off.
+
+## S06.13 implementation and rationale (C.21, C.24)
+
+The orchestrator labelled this wave checkpoint "S06.8". This record already uses S06.8 for C.14, so the wave is recorded as S06.13, which the plan above reserved for C.21 and C.24. The worktree was clean at `7e2f9ef8`, with no uncommitted draft to resume, so the wave was built from the SPEC.
+
+- **Written policy:** the [evaluation loop and quality dashboard policy](../mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md). It states the tier each mechanism operates under, as C.22's Definition of Done requires of C.21 and C.24.
+- **Thresholds:** every one is in the [Threshold Recalibration Log](../mentor/THRESHOLD-RECALIBRATION-LOG.md) as "proposed, pending calibration".
+
+### Current state found (the SPEC's "Current State" was partly stale)
+
+**C.21.** The SPEC says no instrumented evaluation exists. By this wave that was no longer true: S06.1–S06.12 left seven operator reports and five Stage 7 kill switches. Each report covered one requirement and read its own table. Four gaps remained:
+
+- no **rubric** a session was scored against;
+- no **per-session** scoring, so one bad session vanished into a monthly average;
+- no independent read of what the Mentor actually **said**;
+- no **anomaly flags** that someone was required to act on.
+
+The honesty ledger, the telemetry firings and the alliance record already carried most of the evidence. It was never read session by session.
+
+**C.24.** The SPEC's description was accurate: nothing consolidated these signals. Each report printed to a terminal or a weekly workflow summary. Several tables' migration comments said "the C.24 dashboard later". No owner was named anywhere, and no review of the numbers was recorded.
+
+### C.21: the rubric, the scorer, the loop and the flags
+
+- **The rubric** (`transcriptRubric.ts`, `mentor-transcript-rubric.v1`). It has 12 criteria, each traced to an Appendix F metric or a Block C non-negotiable. Each criterion declares its kind (hard invariant, zero tolerance, ceiling, floor, diagnostic) and who can score it:
+  - 10 criteria are rule-scored;
+  - `tell_honored` and `scaffold_quality` are judge-only.
+
+  The rubric is Tier 1 (Appendix E §3.1), so its SHA-256 is pinned to the last row of the rubric change record in the policy. That row names the Pedagogical Reviewer and the Safety/Trust Lead sign-offs, and both are pending for v1. Scores are stored with the hash, so trends never mix rubric versions.
+- **The deterministic scorer** (`transcriptScoring.ts`, zero spend).
+  - It re-reads the runtime's own records for each session, and it independently reads the delivered text in 3 locales for two checks.
+  - **Declared emotions:** a second-person emotion claim, with genuine questions excluded and tag questions kept as claims.
+  - **Repeated hints:** a hint repeated word for word inside a hint ladder.
+  - It never invents an opportunity: no opportunity means `not_applicable`, never a pass.
+- **The fixture set** (`transcriptFixtures.ts`). It holds 14 hand-written sessions in 3 locales covering every persona, with the author's intended outcome for all 12 criteria. The suite proves every rule-scored criterion both passes and fails.
+- **The loop** (`evaluationLoop.ts`). It runs hourly via `POST /api/v1/tutor/internal/evaluation/run` (internal key) from `mentor-evaluation-loop.yml`, from inside the container, like the retention sweep. Operators use `tutor:evaluate`, which is a dry run unless `--record` is passed.
+  - It scores ended, unscored sessions 10 minutes after they end, and stamps each with `tutor_sessions.evaluation_rubric_hash`, the coverage numerator.
+  - It then recomputes every signal and opens or refreshes flags.
+  - It stores a snapshot and a run row, and prunes its own artifacts.
+  - **Fail closed:** a batch whose rows cannot all be read is not scored, and an unreadable source is `unavailable` and raises an urgent flag.
+- **Anomaly flags** (`mentorQuality.ts`), in seven kinds:
+  - zero-tolerance or invariant violations;
+  - threshold breaches;
+  - upward drift against the previous window;
+  - bond-proxy drops against the persona's own baseline;
+  - persona disparities;
+  - **demographic-subgroup disparities** (age tier or locale within one persona, for rubric fail rates and for telemetry friction), which is Appendix E's "a persona producing disproportionately negative affect signals for a demographic subgroup";
+  - unreadable sources.
+
+  One active flag exists per anomaly (a unique index enforces it). The machine never closes one.
+- **The live judge: a dry-run path only.** Oracle's `transcript-judge` harness takes Core's exported batch and re-verifies the rubric against its hash. It has three modes:
+  - **Dry run:** the fixture scorer's intended labels stand in for the judge, at zero spend.
+  - **Replay:** recomputes agreement from an earlier live output.
+  - **Live:** refused unless `TRANSCRIPT_JUDGE_LIVE=approved`, before anything is read (OD-23).
+
+  Every output is labelled "uncalibrated: Tier 3 information only". The schema's `scorer` CHECK admits `rules` only, so judge scores cannot be recorded until C.23. The parity gate guards that fence.
+
+### C.24: the consolidated dashboard
+
+- **One registry of 46 signals.**
+  - All Appendix F §1.1–1.4 Mentor signals are included: answer-reveal rate, bond proxy, telemetry friction rate and content-ladder distribution, which C.24 names, plus every other signal S06 built.
+  - Appendix C's learning-outcome and engagement-health metrics are included. Delayed retention, the 70–85% practice success band and time to mastery are computed.
+  - The remaining metrics have no data source yet. They are listed as `not_instrumented`, with the requirement that owns them, and are never left off. Bias-audit coverage and simulated-student results are `external`, with the command that reports them.
+- **Named owners.** Every signal names an owner role: `pedagogical_lead`, `safety_trust_lead` or `engineering_lead`.
+  - Staff with `manage_users` name a person for a role. That person must be staff who can read analytics.
+  - Only a person named for the flag's role can acknowledge a flag, or resolve it with the root cause in 10 to 2,000 characters. Core enforces this against the database.
+  - Each owner signs one weekly review per role. That record is the Appendix F Dashboard Usage Rate.
+  - Every action is written to `audit_logs`.
+- **Freshness.** It is computed at read time: a snapshot older than 24 hours is out of date on every signal, and a loop that stopped never looks calm.
+- **Core endpoints.** `GET /api/v1/admin/mentor-quality`, `POST .../flags/:id/acknowledge`, `POST .../flags/:id/resolve` and `POST .../reviews` require `view_analytics` before any data is read. `POST .../owners` also requires `manage_users`.
+- **The rebuilt staff surface** is in `frontend/src/rebuild/staff/`:
+  - `mentorQualityApi.ts`, the client layer;
+  - `MentorQualityDashboard.tsx`, with four panels: status, flags, weekly review and signals;
+  - fixtures and CSS.
+
+  Its copy is `staffMentorQuality` in 3 locales, budget-checked at the adult app budget. The isolated preview is `?screen=staff-mentor-quality`. It shows actions only for the reader's named roles, as a courtesy; the control is Core.
+
+### Instrumentation and gates
+
+- **Migration** `*_mentor_evaluation_loop_and_quality_dashboard.sql` (expand). It adds `tutor_sessions.evaluation_rubric_hash` and six new tables: `tutor_transcript_score`, `tutor_evaluation_run`, `mentor_quality_snapshot`, `mentor_quality_owner`, `mentor_quality_flag` and `mentor_quality_review`. All have RLS and no client policy, and none holds text or a learner id.
+- **Gate:** `npm run evaluation-loop:check`, new and wired into `repo-gates.yml`. It checks that Core, Oracle's judge harness, the staff client and the migration agree on:
+  - the rubric criteria and the score outcomes;
+  - the owner roles, flag kinds, severities and statuses;
+  - the signal categories and statuses.
+
+  It also checks the C.23 fence (no `judge` scorer), the Appendix F service levels (24-hour freshness, weekly review) and that the workflow calls the route that exists.
+- **Operator commands:** `tutor:evaluate` and `transcript-judge`, both in README.
+
+### Defects found while building, and their fixes
+
+1. **A tag question hid a declared emotion.** The first scorer skipped every sentence ending in "?", so "Estás muy cansada, ¿verdad?" was not flagged. The lexicon test caught it. Spanish `¿…?` spans are now removed first, and tag questions (EN/ES/PT) are kept as claims.
+2. **Undefined class.** A class the stylesheet does not define (`lf-quality-flag-head`) turned `designClasses.test.ts` red in the full frontend run. It was removed.
+3. **Copy role on typed text.** The Chrome matrix found the resolution note's typed text had no copy role. The textarea is now `data`.
+4. **Owner list over budget.** The first owner-gap line ("No one is named for: {roles}") would exceed the 12-word body budget with all three roles filled. The role names are now a separate `data` line.
+
+### Proposals recorded for owner and pedagogy review
+
+See [policy §10](../mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md#10-proposals-recorded-for-owner-and-pedagogy-review):
+
+- the three owner roles and the assignment of each signal to a role;
+- the disparity rule;
+- sign-off of rubric v1;
+- whether unacknowledged urgent flags should also notify someone outside the dashboard. Nothing is sent today.
+
+### Deploy order (integration step for the orchestrator)
+
+1. Apply `*_mentor_evaluation_loop_and_quality_dashboard.sql` before the Core release. Without it, the evaluation route answers 502 and the dashboard answers 502. The Mentor's live path touches none of this. `gate-auto-apply.mjs` answers `apply=true` (additive).
+2. Deploy Core. `mentor-evaluation-loop.yml` then starts scoring hourly, and the first pass works through the backlog 500 sessions at a time. Oracle and the frontend can deploy in any order: the harness is operator-only and the surface is isolated.
+3. Staff with `manage_users` name a person for each of the three roles. Until then the dashboard shows the gap, and no flag can be acknowledged.
+4. Regenerate `database/types/database.ts`; Core uses narrow local types. The migration number `0119` may collide with other lanes. Renumber it at merge: code, tests and the gate reference only the descriptive suffix. No bias-audited Oracle file changed.
+
+### S06.13 verification log (25 September 2026)
+
+Executed 25 September 2026 in the lane worktree (`/c/lf-wt/s06`) with `VITEST_MAX_THREADS=3`. These are local results only: no real database, no CI run, no live model or judge call, and no production observation.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Rubric and scorer | `backend/`: `npx vitest run src/__tests__/transcriptEvaluation.test.ts` | 39 pass. The rubric hash matches the policy's last change-record row. Every criterion is traceable and typed. The 14 fixtures give 140 verdicts matching the intended outcomes, and every rule-scored criterion both passes and fails. The set covers 3 locales and 4 personas. An empty session is not applicable. Shadow and superseded firings are no opportunity. Short acknowledgements are ignored. The emotion lexicon has 14 claims flagged and 14 sentences that must stay silent. The judge batch carries the rubric and hash and no ids. First run: 1 red (defect 1), fixed |
+| Signals and flags | `npx vitest run src/__tests__/mentorQuality.test.ts` | 21 pass. Registry integrity. Not-instrumented and external rows are shown and raise no flag. Every unreadable source becomes an urgent flag for engineering. One false affirmation triggers a zero-tolerance flag. Declared emotion goes to Safety/Trust. The reveal ceiling applies per persona only above the sample. Upward drift is flagged. The goal floor is enforced. Persona and tier-subgroup disparities are flagged. The locale-subgroup friction disparity is flagged. Disparity needs gap, ratio and sample together. A bond-proxy relative drop and a persona disparity are flagged. Coverage uses only due sessions, so grace and zero-turn sessions are excluded. The open kill-switch fold is per component, with live content per category and cause. The uncalibrated judge is a breach. The practice band and time to mastery are read. A diagnostic signal never breaches. Scopes match the migration's CHECK. Freshness and review completion are computed. First run: 1 red (test arithmetic: median 1.5), fixed |
+| Loop (fetch-stubbed PostgREST) | `npx vitest run src/__tests__/evaluationLoop.test.ts` | 8 pass. The pass scores and stamps two sessions. It writes no text or user id. It flags a declared emotion, a delivered false affirmation, a wrong closing script and the uncalibrated judge. It records the run and a 46-signal snapshot, and prunes. A failed honesty read scores nothing (partial). A dry run writes nothing. An active flag is refreshed, not duplicated. A failed run insert is `failed`. The internal route refuses a caller with no key and a signed-in learner (with no data read), validates the body, runs with the key, and gives 502 when the pass cannot record itself. **Mutation:** accepting a missing honesty read turned the fail-closed test red; restored |
+| Dashboard routes (adversarial) | `npx vitest run src/__tests__/mentorQualityRoutes.test.ts` | 12 pass. The dashboard is served to `view_analytics` with the reader's named roles, and a signal missing from the snapshot is kept. A failed read gives 502. Every route refuses the parent-created kid, the independent teen, the adult learner and the verified parent Tutor (403). It refuses staff without `view_analytics` (403, no data read) and no session (401). A non-named staff member cannot acknowledge or resolve (403 `NOT_NAMED_OWNER`, no write). The named owner acknowledges, guarded on `status=open`, and it is audited. A conflict gives 409 and a missing flag 404. Resolving needs 10 or more characters, and extra fields are refused. The weekly review allows only a named owner, once per week. Naming an owner needs `manage_users`, refuses non-staff and staff without analytics (422), and is audited. **Mutation:** removing the named-owner check turned the refusal test red; restored |
+| Core full | `backend/`: `npm run type-check`, `npm run lint`, `npx vitest run` | Pass. 81 files (1 skipped, pre-existing), 1,872 tests (1,792 before this wave, +80) |
+| Oracle | `oracle/`: `npx vitest run src/__tests__/transcriptJudge.test.ts`; `npm run type-check`, `npm run lint`, `npx vitest run`, `npm run bias-audit -- --check` | 8 new pass: a tampered rubric is refused; the dry run makes no call and is labelled uncalibrated; live is refused before reading without approval or without a key; an approved live run with an injected judge makes one call per transcript and lists disagreements; replay needs a live run on the same rubric; verdict parsing is strict; the judge sees only judge-scorable questions. Full: 62 files, 1,671 tests (1,663 before). Bias audit: 0 failures, 1 known gap, no audited file changed |
+| Harness end to end | `npm --prefix backend run tutor:evaluate -- --fixtures`; `-- --export-judge-batch=<file>`; `npm --prefix oracle run transcript-judge -- --batch=<file>`; the same with `--live` | 140/140 verdicts match. The Core-exported batch's rubric hash is re-verified by Oracle. The dry run makes no call and reports "a live run makes 14 paid call(s)". `--live` is refused (exit 2) without `TRANSCRIPT_JUDGE_LIVE=approved` |
+| Frontend | `frontend/`: `npm run type-check`, `npm run lint`, `npx vitest run` | Pass after defect 2. 218 files, 2,246 tests (2,234 before). New: `MentorQuality.test.tsx` (12 tests). They cover: labels for every signal in 3 locales; freshness, stale, never computed and gaps in words; loading and failure with no numbers; flags urgent-first with owner and scope; actions only for the named owner; acknowledge; resolve gated on the root cause; a refusal said in words; statuses in words with glyphs only for on target and needs review; percentage, count and score formats; the weekly sign-off and "already signed"; 3 locales in dark mode; closed API bodies; no guessed success; Core code mapping. The copy budget in `previewCopy.test.ts` covers every `staffMentorQuality` string at the adult budget |
+| Real Chrome | `REBUILD_URL=http://localhost:5330 node scripts/verify-rebuild-mentor-quality.mjs` (Vite on 5330, stopped afterwards) | 36 configurations, 0 findings, covering 3 locales × 2 themes × 4 widths (320, 375, 768, 1280) plus: out of date and never computed; loading and failure; a reader with no role sees no actions; keyboard (visible focus, Enter acknowledges); resolving with a typed root cause at 320 px; a refused action; the weekly sign-off and "already signed"; a real pointer hit; reduced motion. The first run had 1 finding (defect 3), fixed. Screenshots were read by hand (es-MX light 375 cropped, en-US dark 1280 cropped): status, flags with owner and scope, and signal rows with status words and glyphs read correctly in both themes. Evidence: `audit-results/rebuild-mentor-quality/` (ignored by git) |
+| i18n | `bash agent/tools/check-i18n.sh` (Git Bash) | Pass: key parity, no hardcoded strings, every static `t()` key exists |
+| Parity gates | `npm run evaluation-loop:check`; `node --test agent/tools/check-evaluation-loop-parity.test.mjs`; `npm run tools:test` | OK. 8 new tests: green on the tree; the parsers read real values; red on a rubric criterion missing from the CHECK, a client flag kind or owner role drift, an Oracle outcome drift, a `judge` scorer admitted, a looser freshness or review cadence, a workflow calling the wrong route and a missing migration. 116 tool tests (108 before) |
+| Migrations (static) | `database/`: `node scripts/check-migrations.mjs`, `node scripts/check-migration-phase.mjs`; `gate-auto-apply.mjs` on a simulated dry run listing the new file | 119 files, sequential, with RLS covered (6 new tables); phase declarations agree (98 expand, 21 contract); the auto-apply gate answers `apply=true` (additive) |
+| Railway transport suite | `database/`: `npm test` (the whole suite, ending with `railway-migrate.test.mjs`) | Pass: 21 Node checks, then 12 transport scenarios plus the static probe-map/DEPLOYMENT.md DDL cross-checks (about 20 minutes under the shared load, with other lanes running the same suite) |
+| Repo gates | `npm run spec:check`, `npm run secrets:check` (every new file staged) | Pass on the first run |
+
+Remaining acceptance boundaries (C.21 and C.24 stay In progress):
+
+- **Database.** The migration has not been applied to a physical PostgreSQL. The CHECKs, the partial unique index and the PostgREST filters have only static and stubbed evidence, and the types have not been regenerated.
+- **Production data.** None exists yet: the Appendix F "Measured" criterion needs real or canary sessions scored and the dashboard read by its owners. Every threshold still needs calibration.
+- **Owners.** They are not named. The weekly review and flag actions start only after staff name a person for each role.
+- **Rubric sign-off.** The Pedagogical Reviewer and the Safety/Trust Lead have not signed rubric v1 (Tier 1).
+- **Judge-only criteria.** `tell_honored` and `scaffold_quality` stay unscored until a transcript judge is calibrated (C.23, S06.14). The live judge run is owner-run (OD-23).
+- **Appendix C metrics.** Most Appendix C engagement-health and learning-outcome metrics are not instrumented by their owning requirements yet; the dashboard lists each one.
+- **Staff surface.** It is an isolated rebuilt surface. Composition in the finished staff console, and the text-fit, proportion and copy-budget audits against the real app driver, are wave 2 work.
+- **Tier 3 review.** The Pedagogical Lead has not yet confirmed the metrics are live and visible (Appendix F Part 2.1).

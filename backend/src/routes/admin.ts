@@ -43,6 +43,16 @@ import {
 } from '../services/pedagogy/liveContentGovernance.js';
 import { listTutorPacks, PACK_STATUSES, setTutorPackStatus } from '../services/tutorPacks.js';
 import {
+  acknowledgeFlag,
+  getMentorQualityDashboard,
+  OWNER_ROLES,
+  recordOwnerReview,
+  resolveFlag,
+  RESOLUTION_NOTE_MAX,
+  RESOLUTION_NOTE_MIN,
+  setOwner,
+} from '../services/pedagogy/mentorQualityDashboard.js';
+import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
   renderTablesCsv,
@@ -405,6 +415,11 @@ export function adminRouter(): Router {
   router.use(/^\/intel-export\.(?:csv|xlsx)$/, requireAdminPermission('view_analytics'));
   router.use('/health/services', requireAdminPermission('view_analytics'));
   router.use('/learning/retention', requireAdminPermission('view_analytics'));
+  // C.24: the Mentor-quality dashboard is read with the analytics grant. The
+  // named-owner rule for acknowledging, resolving and reviewing is enforced in
+  // the service; naming an owner also needs manage_users.
+  router.use('/mentor-quality', requireAdminPermission('view_analytics'));
+  router.use('/mentor-quality/owners', requireAdminPermission('manage_users'));
   router.use('/emails', requireAdminPermission('manage_support'));
   router.use('/audit', requireAdminPermission('manage_support'));
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
@@ -1342,6 +1357,67 @@ export function adminRouter(): Router {
       });
     }
     return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the pack');
+  });
+
+  // ── C.24: the consolidated Mentor-quality and engagement-health dashboard ──
+  /*
+   * One read for the product/pedagogy team: every consolidated signal from
+   * the evaluation loop's latest snapshot (with the ones not instrumented yet
+   * listed as such), the active flags with their owner roles, the named
+   * owners, and the weekly review record. A failed read is a 502, never an
+   * empty, calm dashboard (§1.14).
+   */
+  router.get('/mentor-quality', async (_req, res) => {
+    const dashboard = await getMentorQualityDashboard(new Date(), authedUser(res).id);
+    if (!dashboard) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Mentor-quality dashboard');
+    ok(res, dashboard);
+  });
+
+  const flagOutcome = (res: Response, result: Awaited<ReturnType<typeof acknowledgeFlag>>, id: string, status: string) => {
+    if (result === 'done') return ok(res, { id, status });
+    if (result === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such flag');
+    if (result === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this flag\'s role can act on it');
+    if (result === 'conflict') return fail(res, 409, 'ALREADY_DECIDED', 'This flag changed meanwhile');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the flag');
+  };
+
+  router.post('/mentor-quality/flags/:flagId/acknowledge', async (req, res) => {
+    const flagId = z.string().uuid().safeParse(req.params.flagId);
+    const body = z.object({}).strict().safeParse(req.body ?? {});
+    if (!flagId.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'flagId must be a uuid and the body empty');
+    return flagOutcome(res, await acknowledgeFlag(flagId.data, authedUser(res).id), flagId.data, 'acknowledged');
+  });
+
+  const ResolveBody = z.object({ note: z.string().trim().min(RESOLUTION_NOTE_MIN).max(RESOLUTION_NOTE_MAX) }).strict();
+  router.post('/mentor-quality/flags/:flagId/resolve', async (req, res) => {
+    const flagId = z.string().uuid().safeParse(req.params.flagId);
+    const body = ResolveBody.safeParse(req.body);
+    if (!flagId.success || !body.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', `flagId must be a uuid and note the root cause in ${RESOLUTION_NOTE_MIN}-${RESOLUTION_NOTE_MAX} characters`);
+    }
+    return flagOutcome(res, await resolveFlag(flagId.data, authedUser(res).id, body.data.note), flagId.data, 'resolved');
+  });
+
+  const ReviewBody = z.object({ role: z.enum(OWNER_ROLES), note: z.string().trim().max(RESOLUTION_NOTE_MAX).optional() }).strict();
+  router.post('/mentor-quality/reviews', async (req, res) => {
+    const body = ReviewBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', `role must be one of ${OWNER_ROLES.join(', ')}`);
+    const result = await recordOwnerReview(authedUser(res).id, body.data.role, body.data.note || null);
+    if (result.ok) return ok(res, { role: body.data.role, week: result.week });
+    if (result.code === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this role can sign its review');
+    if (result.code === 'already') return fail(res, 409, 'ALREADY_REVIEWED', 'This week\'s review is already signed');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+  });
+
+  const OwnerBody = z.object({ role: z.enum(OWNER_ROLES), userId: z.string().uuid(), action: z.enum(['add', 'remove']) }).strict();
+  router.post('/mentor-quality/owners', async (req, res) => {
+    const body = OwnerBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'role, userId (uuid) and action add|remove are required');
+    const result = await setOwner({ ...body.data, actorId: authedUser(res).id });
+    if (result === 'done') return ok(res, body.data);
+    if (result === 'not_staff') return fail(res, 422, 'NOT_ELIGIBLE_OWNER', 'A named owner must be staff who can read analytics');
+    if (result === 'unchanged') return fail(res, 409, 'UNCHANGED', 'Nothing to change');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the owners');
   });
 
   // ── Tutor retention sweep health (/ORACLE.md §15.2 item 4, closed 2026-08-31) ─

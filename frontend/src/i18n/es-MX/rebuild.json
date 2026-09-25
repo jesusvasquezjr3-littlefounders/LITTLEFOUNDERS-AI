@@ -318,5 +318,169 @@
     "archived": "Archivado.",
     "refused": "No se publicó. Corrige esto primero:",
     "packFailed": "No se guardó. Intenta de nuevo."
+  },
+  "staffMentorQuality": {
+    "title": "Calidad del Mentor",
+    "intro": "Todas las señales del Mentor en un lugar, con quién debe revisarlas.",
+    "loading": "Cargando.",
+    "loadFailed": "No se pudo cargar. Inténtalo más tarde.",
+    "updated": "Actualizado hace {n} horas",
+    "stale": "Desactualizado: última actualización hace {n} horas",
+    "never": "Aún no se calcula. La revisión horaria no ha corrido.",
+    "lastRun": {
+      "ok": "Última revisión completa",
+      "partial": "La última revisión no pudo leer todo",
+      "failed": "La última revisión falló"
+    },
+    "noOwner": "Nadie asignado para estos roles:",
+    "flagsTitle": "Por revisar",
+    "flagsEmpty": "No hay alertas abiertas.",
+    "kind": {
+      "threshold_breach": "Pasó su límite",
+      "zero_tolerance": "Falla de tolerancia cero",
+      "upward_drift": "En aumento",
+      "relative_drop": "Bajó",
+      "persona_disparity": "Un Mentor se queda atrás",
+      "subgroup_disparity": "Un grupo se queda atrás",
+      "source_unavailable": "Faltan datos"
+    },
+    "severity": {
+      "urgent": "Urgente",
+      "review": "Revisar"
+    },
+    "flagStatus": {
+      "open": "Abierta",
+      "acknowledged": "Vista"
+    },
+    "flagMeta": "Responsable: {role}. Vista {n} veces.",
+    "acknowledge": "Marcar como vista",
+    "resolve": "Resolver",
+    "noteLabel": "Causa raíz",
+    "noteHint": "Al menos 10 caracteres.",
+    "confirmResolve": "Marcar resuelta",
+    "cancel": "Cancelar",
+    "acknowledged": "Marcada como vista.",
+    "resolved": "Resuelta.",
+    "notOwner": "Solo la persona responsable puede hacerlo.",
+    "changed": "Esta alerta cambió. Recarga la página.",
+    "actionFailed": "No se guardó. Inténtalo de nuevo.",
+    "signalsTitle": "Señales",
+    "category": {
+      "pedagogy": "Enseñanza",
+      "relational": "Relación",
+      "safety_governance": "Seguridad y gobernanza",
+      "pipeline": "Proceso",
+      "learning_outcome": "Resultados de aprendizaje",
+      "engagement_health": "Salud del uso"
+    },
+    "signalStatus": {
+      "ok": "En meta",
+      "breach": "Por revisar",
+      "insufficient_data": "Pocos datos",
+      "diagnostic": "Observando la tendencia",
+      "unavailable": "No se pudo leer",
+      "not_instrumented": "Aún sin medir",
+      "external": "Se mide en otro lugar"
+    },
+    "notComputed": "Aún sin calcular",
+    "ownerRole": {
+      "pedagogical_lead": "Líder de pedagogía",
+      "safety_trust_lead": "Líder de seguridad y confianza",
+      "engineering_lead": "Líder de ingeniería"
+    },
+    "sample": "{n} observados",
+    "reviewTitle": "Revisión semanal",
+    "reviewDone": "{role}: firmada esta semana",
+    "reviewMissing": "{role}: sin firmar",
+    "reviewRate": "Semana pasada: firmó el {rate} de responsables",
+    "signReview": "Firmar revisión",
+    "reviewSigned": "Revisión firmada.",
+    "reviewAlready": "Ya se firmó esta semana.",
+    "signal": {
+      "mastery": {
+        "corroboration_compliance": "Dominio respaldado por dos respuestas",
+        "reversal_rate": "Dominio revertido después"
+      },
+      "rubric": {
+        "hint_repeat": "Pistas nunca repetidas",
+        "tell_honored": "Respuesta dada cuando se pide",
+        "self_explanation": "Explicaciones que nombran la idea",
+        "goal_agreement": "Meta acordada al inicio",
+        "answer_reveal": "Respuestas reveladas sin pedirlas",
+        "false_affirmation": "Respuestas incorrectas elogiadas",
+        "praise_specificity": "Elogios ligados a un paso real",
+        "check_in": "Pregunta tras distraerse",
+        "closing_script": "Cierre correcto para cada final",
+        "controlling_language": "Lenguaje controlador con adolescentes",
+        "emotion_label": "Emociones afirmadas como hechos"
+      },
+      "spaced_review": {
+        "routing": "Repaso asignado según la regla"
+      },
+      "disposition": {
+        "completeness": "Estudiantes con perfil al día"
+      },
+      "session_end": {
+        "trigger_rate": "Señal temprana de pausa activada"
+      },
+      "alliance": {
+        "bond_proxy": "Estudiantes que se sintieron entendidos",
+        "renegotiation": "Plan renegociado tras rechazos"
+      },
+      "telemetry": {
+        "default_to_inaction": "Turnos sin intervención",
+        "friction_rate": "Sesiones con señales de distracción"
+      },
+      "dialogue": {
+        "ab_outcome": "Retrocesos en la prueba por edad"
+      },
+      "judge": {
+        "content_calibration": "Juez de contenido calibrado"
+      },
+      "kill_switch": {
+        "open": "Reversiones automáticas activas"
+      },
+      "bias_audit": {
+        "coverage": "Cobertura de la auditoría de sesgo"
+      },
+      "transcript_judge": {
+        "agreement": "Acuerdo del juez de conversaciones"
+      },
+      "governance": {
+        "tier_compliance": "Reglas de nivel cumplidas"
+      },
+      "evaluation": {
+        "coverage": "Sesiones evaluadas"
+      },
+      "content_ladder": {
+        "distribution": "Actividades escritas en vivo"
+      },
+      "simulated_student": {
+        "pass_rate": "Pruebas con estudiantes simulados"
+      },
+      "canary": {
+        "regression_rate": "Reversiones en prueba limitada"
+      },
+      "learning": {
+        "delayed_retention": "Recordado semanas después",
+        "practice_success_band": "Aciertos en práctica",
+        "time_to_mastery": "Intentos hasta dominar una habilidad",
+        "transfer_success": "Aciertos en contextos nuevos",
+        "judgment_quality": "Criterio más allá del acierto",
+        "bridge_conversion": "Lecciones convertidas en tareas reales",
+        "decision_journal": "Decisiones pasadas retomadas"
+      },
+      "engagement": {
+        "session_efficiency": "Tiempo dedicado a practicar",
+        "mentor_resolution": "Turnos para resolver una pregunta",
+        "streak_anxiety": "Regresos por alertas de racha",
+        "rest_day_use": "Días de descanso usados",
+        "dark_pattern_audit": "Patrones manipuladores encontrados",
+        "variable_ratio_audit": "Premios al azar para menores",
+        "reward_framing": "Premios presentados como aprendizaje",
+        "autonomy_adoption": "Estudiantes que eligen su camino",
+        "parent_time_to_value": "Tiempo de la familia hasta el resumen semanal"
+      }
+    }
   }
 }

@@ -1,0 +1,118 @@
+name: Mentor evaluation loop
+
+# PRODUCT C.21 + C.24: THE CONTINUOUS EVALUATION LOOP (Appendix E §3.1 Tier 3).
+#
+# Every hour, one pass of Core's evaluation loop:
+#   1. scores every ended, unscored Mentor session against the transcript
+#      rubric (deterministic, zero spend; no model call, OD-23);
+#   2. recomputes every consolidated Mentor-quality and engagement-health
+#      signal;
+#   3. opens or refreshes a flag for the named owner of every regression;
+#   4. stores the snapshot the staff dashboard reads, and the run row that
+#      proves the dashboard is fresh (Appendix F §1.4: within 24 hours).
+#
+# WHY IT CALLS CORE FROM INSIDE CORE: the same reason as tutor-retention.yml.
+# The route is internal-key-only; standing inside the container over
+# `railway ssh` and calling 127.0.0.1 needs no copy of the key on a runner.
+#
+# RED MEANS THE LOOP DID NOT RUN OR COULD NOT RECORD ITSELF, not that a
+# signal is in breach: breaches are flags for their named owners on the
+# dashboard, which is where a human acts on them. A 'partial' pass (a source
+# could not be read) is a warning here AND an urgent flag for the Engineering
+# Lead there.
+
+on:
+  schedule:
+    - cron: '17 * * * *' # hourly, off the top of the hour
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Sessions to score in this pass'
+        required: false
+        default: '500'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mentor-evaluation-loop
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    name: Score Mentor transcripts and refresh the quality signals
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Run one evaluation pass
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          LIMIT: ${{ github.event.inputs.limit || '500' }}
+        run: |
+          set -euo pipefail
+          case "$LIMIT" in
+            ''|*[!0-9]*) echo "limit must be a positive integer, got '$LIMIT'" >&2; exit 1 ;;
+          esac
+
+          # Same transport as tutor-retention.yml (see its comments): the
+          # request travels base64-encoded as one argument, and the key and
+          # port expand inside the container only.
+          remote_run() {
+            local script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{\"limit\": ${LIMIT}}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/tutor/internal/evaluation/run"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          body=''
+          for attempt in 1 2 3; do
+            if body=$(remote_run); then break; fi
+            echo "attempt ${attempt} failed:" >&2
+            printf '%s\n' "$body" | head -5 >&2
+            body=''
+            sleep 20
+          done
+          if [ -z "$body" ]; then
+            echo "::error::could not reach Core after 3 attempts — no evaluation pass ran"
+            exit 1
+          fi
+
+          status=$(printf '%s' "$body" | grep -o '"status":"[a-z]*"' | head -1 | cut -d'"' -f4)
+          scored=$(printf '%s' "$body" | grep -o '"scored":[0-9]*' | head -1 | cut -d: -f2)
+          # An absent status is NOT success: an error envelope or a proxy page
+          # must never read as "the loop ran" (AGENTS.md §1.14).
+          if [ -z "${status:-}" ] || [ -z "${scored:-}" ]; then
+            echo "::error::Core's reply carried no pass status; refusing to report a pass that may not have happened"
+            printf '%s\n' "$body" | head -5 >&2
+            exit 1
+          fi
+          echo "evaluation pass: status ${status}, ${scored} session(s) scored"
+          if [ "$status" = "partial" ]; then
+            echo "::warning::the pass could not read every source or write every flag — see the dashboard's urgent flags"
+          fi
+          {
+            echo "### Mentor evaluation loop (C.21 / C.24)"
+            echo ""
+            echo "status: ${status}; sessions scored: ${scored}"
+          } >> "$GITHUB_STEP_SUMMARY"

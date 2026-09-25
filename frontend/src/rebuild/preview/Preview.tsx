@@ -37,6 +37,8 @@ import { DispositionSummary } from '../mentor/DispositionSummary';
 import type { DispositionSummaryData } from '../mentor/allianceApi';
 import { LiveContentStatusPanel, LiveReviewDecision, PackRelease } from '../mentor/LiveContentGovernance';
 import type { LiveContentStatus, TutorPackSummary } from '../mentor/liveContentApi';
+import { MentorQualityDashboard } from '../staff/MentorQualityDashboard';
+import { previewMentorQuality } from '../staff/mentorQualityFixtures';
 
 /** C.7 preview fixture: a profile with every row populated (closed labels only). */
 const PREVIEW_PROFILE: DispositionSummaryData = {
@@ -250,6 +252,16 @@ export function Preview() {
           onStatus={async () => (params.get('pack') === 'refused'
             ? { ok: false, failures: ['segment pack-x-1: the key names an option that does not exist exactly once', 'tier 2 is below the knowledge component\'s tier_min 3'] }
             : params.get('pack') === 'failed' ? { ok: false } : { ok: true })} />
+      </div></main>
+      : screen === 'staff-mentor-quality' ? <main className="lf-preview lf-preview--staff-mentor-quality" data-surface="app"
+        data-screen="staff-mentor-quality"><div className="lf-preview-content">
+        {/* C.24 staff fixtures: ?state=ready|loading|failed, ?fresh=stale|never, ?viewer=none, ?flags=empty, ?act=failed|not_owner|changed, ?review=already|failed. */}
+        <MentorQualityDashboard copy={t.staffMentorQuality} locale={locale} dark={theme === 'dark'}
+          phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
+          data={previewMentorQuality({ fresh: params.get('fresh'), viewer: params.get('viewer'), empty: params.get('flags') === 'empty' })}
+          onAcknowledge={async () => (params.get('act') === 'failed' ? 'failed' : params.get('act') === 'not_owner' ? 'not_owner' : params.get('act') === 'changed' ? 'changed' : 'done')}
+          onResolve={async () => (params.get('act') === 'failed' ? 'failed' : params.get('act') === 'changed' ? 'changed' : 'done')}
+          onReview={async () => (params.get('review') === 'already' ? 'already' : params.get('review') === 'failed' ? 'failed' : 'done')} />
       </div></main>
       : screen === 'mentor-profile' ? <main className="lf-preview lf-preview--mentor-profile" data-surface="app"
         data-screen="mentor-profile"><div className="lf-preview-content">

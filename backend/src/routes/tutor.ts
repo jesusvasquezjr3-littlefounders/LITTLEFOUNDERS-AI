@@ -154,6 +154,7 @@ import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
+import { runEvaluationPass } from '../services/pedagogy/evaluationLoop.js';
 
 /*
  * The Tutor's API (/ORACLE.md). Two surfaces in one router file, and the split
@@ -1942,6 +1943,33 @@ function internalRouter(): Router {
     const status = await getTutorRetentionStatus();
     if (!status) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load the retention sweep status');
     return ok(res, status);
+  });
+
+  /*
+   * C.21 / C.24: ONE PASS OF THE EVALUATION LOOP (Appendix E §3.1 Tier 3).
+   * Scores every ended, unscored session against the transcript rubric,
+   * recomputes every consolidated signal, opens or refreshes flags for the
+   * named owners, and stores the snapshot the staff dashboard reads.
+   * Called hourly by .github/workflows/mentor-evaluation-loop.yml from inside
+   * the container (the key never leaves it). No model call: zero spend.
+   * A pass that could not read everything answers 200 with status 'partial'
+   * (and says what it could not do); one that could not record itself is a 502.
+   */
+  const EvaluationBody = z.object({ limit: z.number().int().min(1).max(5000).default(500) }).strict();
+  router.post('/evaluation/run', async (req, res) => {
+    const parsed = EvaluationBody.safeParse(req.body ?? {});
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
+    const result = await runEvaluationPass({ trigger: 'schedule', limit: parsed.data.limit });
+    if (result.status === 'failed') return fail(res, 502, 'DATA_UNAVAILABLE', 'The evaluation pass could not record its run');
+    return ok(res, {
+      status: result.status,
+      runId: result.runId,
+      scored: result.scoring.scored,
+      failed: result.scoring.failed,
+      backlogBefore: result.scoring.backlogBefore,
+      signals: result.signals,
+      flags: result.flags,
+    });
   });
 
   router.post('/retention/purge', async (req, res) => {
