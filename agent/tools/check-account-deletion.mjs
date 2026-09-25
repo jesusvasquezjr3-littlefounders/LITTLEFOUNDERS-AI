@@ -25,6 +25,8 @@ import { fileURLToPath } from 'node:url';
  *      Core equal the written policy, and the public FAQ in all three locales
  *      states the grace period instead of "contact us".
  *   5. The daily sweep workflow exists and calls the sweep route.
+ *   6. No table can block an erasure: every foreign key to an account
+ *      (auth.users or profiles) ends with ON DELETE CASCADE or SET NULL.
  */
 
 function read(root, path) {
@@ -94,6 +96,16 @@ export function checkAccountDeletion(root) {
     const answer = String(findKey(faq, 'deleteAccount')?.answer ?? '');
     if (!answer.includes(String(grace))) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ must state the ${grace}-day timeline`);
     if (/contact us|nos escribes|nos escreve/i.test(answer)) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ still sends people to "contact us"`);
+    // Signing in alone keeps nothing: it opens the deletion screen, and only
+    // "Keep account" cancels. The public answer must name that step.
+    const keep = { 'en-US': /\bkeep\b/i, 'es-MX': /\bconserv/i, 'pt-BR': /\bmant(?:enha|er)\b/i }[locale];
+    if (!keep.test(answer)) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ must say the account is kept only by choosing to keep it, not by signing in`);
+    // The marketing Copy Budget the FAQ audit applies: at most 25 words and
+    // two sentences (x1.25 words for es-MX and pt-BR).
+    const words = (answer.match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) ?? []).length;
+    const sentences = (answer.match(/[.!?](\s|$)/g) ?? []).length;
+    const limit = Math.floor(25 * (locale === 'en-US' ? 1 : 1.25));
+    if (words > limit || sentences > 2) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ answer is over the Copy Budget (${words}/${limit} words, ${sentences}/2 sentences)`);
   }
 
   // 5. The sweep runs.
@@ -102,6 +114,68 @@ export function checkAccountDeletion(root) {
     failures.push('.github/workflows/account-deletion.yml: the daily sweep must be scheduled and call the sweep route');
   }
 
+  // 6. No table can block an erasure.
+  failures.push(...accountForeignKeyFailures(root));
+
+  return failures;
+}
+
+/*
+ * 6. Every column that points at an account lets go of it. The erasure ends
+ * by deleting the auth.users row; a foreign key with NO ACTION or RESTRICT
+ * on any table makes that delete fail, so that account can never be erased.
+ * S08.5 found eight such columns (0114 re-declares them ON DELETE SET NULL).
+ * A table added later, by any lane, must cascade or set null too.
+ *
+ * Every declaration of `REFERENCES auth.users` or `REFERENCES profiles` in
+ * the migrations is read in apply order. For each table and column, the
+ * last declaration wins: a later ALTER that re-declares the key with a
+ * delete action fixes an earlier one.
+ */
+export function accountForeignKeyFailures(root) {
+  const dir = resolve(root, 'database/migrations');
+  const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
+  const last = new Map();
+  const name = (raw) => raw.replaceAll('"', '').replace(/\s/g, '').replace(/^public\./i, '').toLowerCase();
+  for (const file of files) {
+    const sql = readFileSync(join(dir, file), 'utf8').replace(/--[^\n]*/g, '');
+    const events = [
+      ...[...sql.matchAll(/\balter\s+table(?:\s+if\s+exists)?(?:\s+only)?\s+("?\w+"?(?:\s*\.\s*"?\w+"?)?)\s+rename\s+to\s+("?\w+"?)/gi)]
+        .map((m) => ({ index: m.index, rename: [name(m[1]), name(m[2])] })),
+      ...[...sql.matchAll(/\breferences\s+("?auth"?\s*\.\s*"?users"?|(?:"?public"?\s*\.\s*)?"?profiles"?)\b/gi)]
+        .map((m) => ({ index: m.index, match: m })),
+    ].sort((a, b) => a.index - b.index);
+    for (const event of events) {
+      if (event.rename) {
+        // A renamed table keeps its constraints (0082 renames banca_accounts).
+        const [from, to] = event.rename;
+        for (const [key, value] of [...last]) {
+          if (key.startsWith(`${from}.`)) {
+            last.delete(key);
+            last.set(`${to}.${key.slice(from.length + 1)}`, value);
+          }
+        }
+        continue;
+      }
+      const match = event.match;
+      const rest = sql.slice(match.index);
+      const clause = rest.slice(0, rest.search(/[,;]|$/));
+      const allowed = /\bon\s+delete\s+(cascade|set\s+null)\b/i.test(clause);
+      const before = sql.slice(0, match.index);
+      const line = before.slice(before.lastIndexOf('\n') + 1);
+      const column = (/foreign\s+key\s*\(\s*"?(\w+)"?\s*\)\s*$/i.exec(before.slice(-200))
+        ?? /(?:^|[,(]|\badd\s+column(?:\s+if\s+not\s+exists)?)\s*"?(\w+)"?\s+uuid\b[^,]*$/i.exec(line))?.[1]?.toLowerCase() ?? '?';
+      const tables = [...before.matchAll(/\b(?:create\s+table(?:\s+if\s+not\s+exists)?|alter\s+table(?:\s+only)?(?:\s+if\s+exists)?)\s+("?[\w]+"?(?:\s*\.\s*"?[\w]+"?)?)/gi)];
+      const table = name(tables.at(-1)?.[1] ?? '?');
+      last.set(`${table}.${column}`, { file, allowed });
+    }
+  }
+  const failures = [];
+  for (const [key, { file, allowed }] of last) {
+    if (!allowed) {
+      failures.push(`database/migrations/${file}: ${key} references an account without ON DELETE CASCADE or SET NULL; erasing that account would fail (E.6 one lifecycle)`);
+    }
+  }
   return failures;
 }
 
@@ -123,5 +197,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     for (const failure of failures) console.error(`  - ${failure}`);
     process.exit(1);
   }
-  console.log('account-deletion check OK: self-service path, one lifecycle, four-step cascade, stated timeline, daily sweep');
+  console.log('account-deletion check OK: self-service path, one lifecycle, four-step cascade, stated timeline, daily sweep, no foreign key that blocks an erasure');
 }

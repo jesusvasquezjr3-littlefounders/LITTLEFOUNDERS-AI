@@ -21,6 +21,8 @@ import { fileURLToPath } from 'node:url';
  *   4. Brand narrative coverage (Appendix L "Brand-Narrative Coverage Check",
  *      F.5): COSMIC_NARRATIVE.md carries the achievement-sharing position.
  *   5. The written policy exists and names the standing constraints (F.6).
+ *   6. Every share action carries F.3's point-of-action disclosure, bound to
+ *      its button, in every locale.
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -109,6 +111,51 @@ export function checkAchievementSharing(root) {
     if (!policy.includes(needle)) failures.push(`docs/rebuild/policies/ACHIEVEMENT-SHARING.md must carry "${needle}"`);
   }
 
+  // 6. The disclosure travels with every share action (F.3; Appendix L
+  //    "Point-of-Share Disclosure": displayed on 100% of share actions).
+  failures.push(...disclosureFailures(root));
+
+  return failures;
+}
+
+/*
+ * 6. Every screen that can start a share shows F.3's two disclosure lines
+ * beside each share button and describes the button with them
+ * (aria-describedby), so no share action exists without the disclosure.
+ * The rebuilt AchievementShare component binds its own; a screen that calls
+ * the transport directly must render both keys and bind them once per
+ * button. Both disclosure lines must exist in every locale.
+ */
+export function disclosureFailures(root) {
+  const failures = [];
+  const sources = walk(resolve(root, 'frontend/src'))
+    .filter((f) => /\.(ts|tsx)$/.test(f) && !/[\\/]__tests__[\\/]|\.test\.tsx?$/.test(f));
+  for (const file of sources) {
+    const name = relative(root, file).replaceAll('\\', '/');
+    if (name === 'frontend/src/rebuild/family/achievementImage.ts') continue;
+    const source = readFileSync(file, 'utf8');
+    if (name === 'frontend/src/rebuild/family/AchievementShare.tsx') {
+      if (!/aria-describedby=\{disclosureId\}/.test(source) || !/id=\{disclosureId\}/.test(source)
+        || !/copy\.disclosure\b/.test(source) || !/copy\.keepNote\b/.test(source)) {
+        failures.push(`${name}: the share button must be described by both disclosure lines (F.3)`);
+      }
+      continue;
+    }
+    if (!/\bshareAchievementImage\(/.test(source)) continue;
+    const buttons = (source.match(/t\('family\.badge\.share(?:Goal)?'(?:,\s*\{[^}]*\})?\)\}/g) ?? []).length;
+    const made = (source.match(/t\('family\.badge\.disclosure'\)/g) ?? []).length;
+    const keep = (source.match(/t\('family\.badge\.disclosureKeep'\)/g) ?? []).length;
+    const described = (source.match(/aria-describedby=/g) ?? []).length;
+    if (buttons === 0) failures.push(`${name}: starts a share but no share button label was found; render the rebuilt AchievementShare or the family.badge.share label`);
+    if (made < buttons || keep < buttons) failures.push(`${name}: ${buttons} share button(s) but ${Math.min(made, keep)} full disclosure(s); every share button needs both F.3 lines beside it`);
+    if (described < buttons) failures.push(`${name}: ${buttons} share button(s) but ${described} aria-describedby; each button must be described by its disclosure`);
+  }
+  for (const locale of ['en-US', 'es-MX', 'pt-BR']) {
+    const badge = JSON.parse(read(root, `frontend/src/i18n/${locale}/common.json`))?.family?.badge ?? {};
+    for (const key of ['disclosure', 'disclosureKeep']) {
+      if (typeof badge[key] !== 'string' || badge[key].trim() === '') failures.push(`frontend/src/i18n/${locale}/common.json: family.badge.${key} is missing`);
+    }
+  }
   return failures;
 }
 
@@ -118,6 +165,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     console.error(failures.join('\n'));
     process.exitCode = 1;
   } else {
-    console.log('Achievement sharing OK: window parity, no public-link path, no viewer reach, brand position, policy and standing constraints.');
+    console.log('Achievement sharing OK: window parity, no public-link path, no viewer reach, brand position, policy and standing constraints, disclosure on every share action.');
   }
 }

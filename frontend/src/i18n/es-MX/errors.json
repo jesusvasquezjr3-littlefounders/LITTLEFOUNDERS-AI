@@ -44,7 +44,7 @@
     "ACCOUNT_FROZEN": "Esta cuenta está congelada. Tus créditos se conservan hasta que se descongele.",
     "GUARDIAN_FREEZE": "Tu tutor congeló esta tarjeta. Pídele que la descongele.",
     "FREEZE_CHANGED": "La congelación cambió. Revisa la tarjeta actualizada antes de volver a intentar.",
-    "GUARDIAN_APPROVAL_REQUIRED": "Un tutor debe aprobar la conexión antes de que puedas seguir este perfil.",
+    "GUARDIAN_APPROVAL_REQUIRED": "Un Tutor debe aprobar la conexión antes de que puedas seguir este perfil.",
     "PROFILE_FIELD_UNSAFE": "Ese nombre podría ayudar a encontrar a una persona joven fuera de LittleFounders. Usa un nombre o apodo.",
     "PROFILE_REVIEW_REQUIRED": "Primero cambia tu nombre. Podría ayudar a extraños a encontrarte.",
     "SUBJECT_CONSENT_REQUIRED": "Esta cuenta decide quién se conecta. Mejor pide conexión.",

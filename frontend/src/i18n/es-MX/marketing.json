@@ -279,7 +279,7 @@
       },
       "deleteAccount": {
         "question": "¿Puedo borrar nuestra cuenta?",
-        "answer": "Sí, en Configuración. Tu cuenta se elimina 14 días después, salvo que vuelvas a iniciar sesión. Las cuentas de invitado se eliminan al instante; la cuenta de un niño la elimina su Tutor."
+        "answer": "Sí, en Configuración: se elimina 14 días después, salvo que inicies sesión y la conserves. Las cuentas de invitado se eliminan al instante; la de un niño la elimina su Tutor."
       },
       "cancelTutor": {
         "question": "¿Qué pasa con la cuenta de mi hijo si cancelo la mía?",

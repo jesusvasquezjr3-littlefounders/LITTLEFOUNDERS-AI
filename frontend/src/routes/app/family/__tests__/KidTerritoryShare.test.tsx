@@ -71,6 +71,22 @@ describe('territory share action (OD-20)', () => {
     expect(document.body.textContent).not.toMatch(/30 days|revoke|anyone with it can open/i);
   });
 
+  it('describes each share button with its own disclosure, so a screen reader hears it at the point of action', async () => {
+    renderPage();
+    const buttons = [
+      await screen.findByRole('button', { name: /Share achievement/ }),
+      await screen.findByRole('button', { name: /Share "Bike"/ }),
+    ];
+    const described = buttons.map((button) => (button.getAttribute('aria-describedby') ?? '')
+      .split(' ')
+      .map((id) => document.getElementById(id)?.textContent ?? '(missing)')
+      .join(' '));
+    for (const description of described) {
+      expect(description).toBe('You get a picture with their first name. No link is made. Anyone you send it to can keep it. It shows LittleFounders.');
+    }
+    expect(new Set(buttons.map((b) => b.getAttribute('aria-describedby'))).size).toBe(2);
+  });
+
   it('returns to idle on a dismissed share sheet and reports a failure honestly', async () => {
     mockShare.mockResolvedValueOnce('cancelled').mockResolvedValueOnce('failed');
     renderPage();

@@ -131,6 +131,22 @@ describe('F.6 constraint 3: first name, label and image only', () => {
     expect(JSON.stringify(body)).not.toMatch(/García|López|2017|birth|age|kid|user|photo|url/i);
   });
 
+  it('leaves out a goal title that could locate the child, and keeps a plain one', async () => {
+    const goal = (title: string) => ({ id: GOAL_ID, kid_user_id: KID_ID, title, target: 50, icon: 'bike', status: 'reached', created_at: '2026-09-01', reached_at: '2026-09-08' });
+    const label = async (title: string, locale: string) => {
+      const calls = stubAchievementTransport({ goal: goal(title) });
+      expect((await post({ body: { kind: 'goal_reached', goalId: GOAL_ID, locale, handoff: 'download' } })).status).toBe(200);
+      const render = calls.find((c) => c.url.includes('/api/v1/badges/render'));
+      return (JSON.parse(render?.body ?? '{}') as { label: string }).label;
+    };
+    for (const title of ['Trip with Lincoln Elementary', 'Bike, ask @sofia_g', 'call 555 123 4567', 'see tiktok.com/sofia', 'Party 2016']) {
+      expect(await label(title, 'en-US')).toBe('Saved 50 coins for a goal');
+    }
+    expect(await label('Escuela Primaria Juárez', 'es-MX')).toBe('Ahorró 50 monedas para una meta');
+    expect(await label('Instagram da Sofia', 'pt-BR')).toBe('Poupou 50 moedas para uma meta');
+    expect(await label('A new bike', 'en-US')).toBe('Saved 50 coins for "A new bike"');
+  });
+
   it('caps the first name at 40 characters', () => {
     expect(firstNameOnly('A'.repeat(60) + ' Surname')).toBe('A'.repeat(40));
     expect(firstNameOnly('Ana María')).toBe('Ana');

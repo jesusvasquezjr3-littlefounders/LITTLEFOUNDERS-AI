@@ -3,15 +3,16 @@ import { join, resolve } from 'node:path';
 import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
 
 /*
- * Real-Chrome check for the S08.7 published statements on the FAQ page
- * (Product 10 E.10 "no messaging" and E.11 "how long we keep who follows
- * whom"; policy docs/rebuild/policies/SOCIAL-GOVERNANCE.md). The FAQ is a
- * legacy marketing page (not restyled here), so this checks the two new
- * entries only: 3 locales x 2 themes x 320/375/768/1280 px x 1.0/1.4 text
- * scale.
+ * Real-Chrome check for the lane's published statements on the FAQ page:
+ * S08.7's Product 10 E.10 "no messaging" and E.11 "how long we keep who
+ * follows whom" (policy docs/rebuild/policies/SOCIAL-GOVERNANCE.md), and
+ * S08.5's E.6 "can I delete our account" (ACCOUNT-DELETION.md), added to the
+ * audit in S08.8. The FAQ is a legacy marketing page (not restyled here), so
+ * this checks those three entries only: 3 locales x 2 themes x
+ * 320/375/768/1280 px x 1.0/1.4 text scale.
  *
- * Each configuration opens /faq, presses the Privacy filter and both new
- * questions with real (topmost-hit) mouse events, and checks: both answers
+ * Each configuration opens /faq, presses each entry's category filter and
+ * its question with real (topmost-hit) mouse events, and checks: every answer
  * render in full; neither entry is clipped or outside the device width; the marketing
  * Copy Budget (question <= 8 words, answer <= 25 words and 2 sentences;
  * x1.25 for es-MX and pt-BR); no em dash; answer text >= 14 px with contrast
@@ -72,7 +73,8 @@ const byQuestion = (text) => `[...document.querySelectorAll('button[aria-expande
 
 for (const locale of LOCALES) {
   const faq = strings[locale];
-  const items = ['noMessaging', 'socialRetention'].map((id) => faq.items[id]);
+  const items = [['noMessaging', 'privacy'], ['socialRetention', 'privacy'], ['deleteAccount', 'support']]
+    .map(([id, category]) => ({ ...faq.items[id], category: faq.categories[category] }));
   for (const theme of ['light', 'dark']) {
     for (const width of WIDTHS) {
       for (const scale of SCALES) {
@@ -85,9 +87,10 @@ for (const locale of LOCALES) {
         if (!loaded) { findings.push({ key, issue: 'faq-not-loaded' }); continue; }
         await page.evaluate(`localStorage.setItem('lf-theme', '${theme}'); document.documentElement.classList.toggle('dark', ${theme === 'dark'}); document.documentElement.style.fontSize='${16 * scale}px'`);
         await page.evaluate('document.fonts.ready');
-        await click(byText(faq.categories.privacy));
-        // The accordion opens one answer at a time: open and audit each in turn.
+        // The accordion opens one answer at a time: open and audit each in turn,
+        // under its own category filter.
         for (const item of items) {
+          await click(byText(item.category));
           if (!await until(`!!(${byQuestion(item.question)})`)) { findings.push({ key, issue: `missing-question:${item.question}` }); continue; }
           await click(byQuestion(item.question));
           if (!await until(`(${byQuestion(item.question)})?.getAttribute('aria-expanded') === 'true'`)) { findings.push({ key, issue: `did-not-open:${item.question}` }); continue; }
@@ -130,9 +133,9 @@ for (const locale of LOCALES) {
           for (const issue of audit) findings.push({ key, issue: `${issue}:${item.question}` });
         }
         if (SHOTS.has(key)) {
-          await click(byQuestion(items[0].question));
-          await wait(200);
-          await page.evaluate(`(${byQuestion(items[0].question)} || document.body).scrollIntoView({ block: 'center', behavior: 'instant' })`);
+          // The last entry audited is still open: capture it.
+          const last = items[items.length - 1];
+          await page.evaluate(`(${byQuestion(last.question)} || document.body).scrollIntoView({ block: 'center', behavior: 'instant' })`);
           await wait(150);
           const shot = await page.send('Page.captureScreenshot', { format: 'png' });
           const file = join(output, `faq-${locale}-${theme}-${width}-${String(scale).replace('.', '_')}.png`);

@@ -119,3 +119,36 @@ test('a FAQ that goes back to "contact us" fails', () => {
 test('an unscheduled sweep fails', () => {
   withFixture((root) => edit(root, '.github/workflows/account-deletion.yml', "  schedule:\n    - cron: '45 3 * * *'", '  push:'), /daily sweep must be scheduled/);
 });
+
+test('a new table whose key would block an erasure fails', () => {
+  withFixture((root) => writeFileSync(join(root, 'database/migrations/9998_new_lane_table.sql'),
+    'create table if not exists public.guardian_notes (\n    id uuid primary key,\n    written_by uuid not null references auth.users (id),\n    kid_user_id uuid not null references auth.users (id) on delete cascade\n);\n'),
+  /guardian_notes\.written_by references an account without ON DELETE/);
+  withFixture((root) => writeFileSync(join(root, 'database/migrations/9998_new_lane_table.sql'),
+    'ALTER TABLE public.tasks ADD COLUMN reviewed_by uuid REFERENCES public.profiles(user_id) ON DELETE RESTRICT;\n'),
+  /tasks\.reviewed_by references an account/);
+});
+
+test('a later migration that re-declares the key with SET NULL fixes it', () => {
+  const root = fixture();
+  try {
+    writeFileSync(join(root, 'database/migrations/9998_new_lane_table.sql'),
+      'create table if not exists public.guardian_notes (\n    id uuid primary key,\n    written_by uuid not null references auth.users (id)\n);\nalter table public.guardian_notes rename to family_notes;\n');
+    writeFileSync(join(root, 'database/migrations/9999_fix_lane_table.sql'),
+      'ALTER TABLE public.family_notes\n    DROP CONSTRAINT IF EXISTS guardian_notes_written_by_fkey,\n    ADD CONSTRAINT family_notes_written_by_fkey\n        FOREIGN KEY (written_by) REFERENCES auth.users (id) ON DELETE SET NULL;\n');
+    assert.deepEqual(checkAccountDeletion(root), []);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('a FAQ that says signing in alone keeps the account fails', () => {
+  withFixture((root) => edit(root, 'frontend/src/i18n/es-MX/marketing.json', 'salvo que inicies sesión y la conserves.', 'salvo que vuelvas a iniciar sesión.'), /es-MX\/marketing\.json: the deletion FAQ must say the account is kept/);
+});
+
+test('an over-budget deletion FAQ answer fails', () => {
+  withFixture((root) => edit(root, 'frontend/src/i18n/en-US/marketing.json',
+    "Guest accounts go at once; a Tutor deletes a child's.",
+    "Guest accounts go at once. A Tutor deletes a child's account from the Family page."),
+  /en-US\/marketing\.json: the deletion FAQ answer is over the Copy Budget/);
+});

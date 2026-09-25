@@ -1,6 +1,6 @@
 # S08: profiles, social and achievement lifecycle
 
-Status: in progress. Started 24 September 2026; S08.4 and S08.5 recorded the same day, S08.6 and S08.7 on 25 September 2026. Owner: Engineering for implementation; Product and Safety/Trust for the decisions/reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S08.4 and S08.5 recorded the same day, S08.6, S08.7 and the S08.8 lane review on 25 September 2026. Owner: Engineering for implementation; Product and Safety/Trust for the decisions/reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
@@ -22,6 +22,7 @@ Risk classification: **child-safety boundary**. Existing production UI may recei
 | S08.5 | E.6 self-service account deletion for adults, parents, independent teens and guests; the SPEC's kid and staff rules; one erasure lifecycle shared with the Tutor's delete-a-child and A.1's 90-day purge | Server-enforced eligibility by population (kid refused, staff refused, guest and self-registered under-13 erased at once, everyone else a 14-day grace period with every session signed out and keep-by-signing-in); confirmation enforced by Core (acknowledgement + password or recent sign-in); four recorded, idempotent erasure steps (Oracle live/parked sessions, one Core transaction, Depot files, warehouse rows with tombstones) completed only when all four are recorded; safety-review hold; A.1 suspension triggered by the erasure; audit trail; daily sweep; Appendix J metric; written policy and `deletion:check` standing guardrail; FAQ states the timeline in 3 locales | Rebuilt deletion surface (Settings card + public `/account-deletion` screen) in 3 locales, both themes, 48 px targets, keyboard, reduced motion, first-view budget; signed-in accounts with a scheduled deletion land on the keep/sign-out screen | In progress: implementation and local verification recorded (including real PostgreSQL 17 evidence of the database half); owner decisions on grace period/SLA, legal copy review, real Supabase/GoTrue and production evidence pending |
 | S08.6 | E.8 age-tiered social layer, E.9 follower/following counts, E.13 profile-content audit (and E.5 in lists) | Four tiers decided by the database from age evidence: guardian (child: non-discoverable, guardian-approved inbound, family-or-approved outbound, no self-loosening), teen (private card, the teen accepts or declines each connection and removes followers; 20-pending cap, 30-day decline cooldown), adult (public), closed (guest/unscreened: no social layer); enforced by the follow trigger and the visibility policy; no follower/following count on any surface; one SQL/Core classifier over username and display name with a write guard, a review record with 100% coverage, flagged minors hidden outside the family; minors' activity date withheld; Appendix J metric; `social:check` | Rebuilt private card, teen connections panel and safety notice (3 locales, both themes, 48 px, keyboard, reduced motion, no counts); legacy profile pages switched to Core's tier verdict and unnumbered list links without restyling | In progress: implementation and local verification recorded (including real PostgreSQL 17 evidence of the database half); Stage 3/5 reviews, owner decisions, real Supabase and production evidence pending |
 | S08.7 | E.7 research foundation, E.10 no person-to-person messaging, E.11 social-graph retention and disclosure, E.12 cartoon-only avatars and the social-layer brand position | Appendix I adopted with a Block E Threshold Recalibration Log whose lapsed review turns `guardrails:check` red; "no messaging" governed by a live-catalog scan, a repository gate, a Core route test and a default-off/opt-in register for any future feature; a written retention/disclosure policy enforced by a daily database sweep (unanswered requests expire, closed requests, report notes, reports, cases and notices age out, and every follow that exposes a child without a current guardian's approval is removed) with the append-only audit log untouched; avatar and cover shapes enforced for every writer and projected on every read; brand position in `COSMIC_NARRATIVE.md` §6; Appendix J metric | No new rebuilt surface; the FAQ states the no-messaging rule and the request windows in 3 locales (legacy page, not restyled) | In progress: implementation and local verification recorded (including real PostgreSQL 17 evidence of the database half); the first Safety/Trust recalibration, counsel review of the retention policy, owner decisions, real Supabase and production evidence pending |
+| S08.8 | Lane review of every commit since `337c9f0e` against E.6–E.13, F.1, F.3 (OD-20), F.5 and F.6 | Each requirement's mandate compared with what the code enforces, by population (see the review table). Five real gaps fixed: an erasure could be blocked by any lane's new account foreign key, now a `deletion:check` rule over every migration; the live Share buttons were not described by their disclosure, and nothing gated the disclosure's presence, now bound and pinned by `sharing:check`; a reached goal's free-text title could carry locating text into a picture that cannot be recalled, now classified and replaced by a generic label; the public deletion FAQ claimed signing in keeps the account and was over the Copy Budget; the approval refusal did not use the glossary's Tutor | FAQ entry audited in real Chrome (48 configurations, 0 findings); live territory page wiring unit-tested (no visual change) | In progress: review and fixes implemented and locally verified; every earlier checkpoint's open items stand (see the lane summary) |
 
 ## S08.1 implementation and rationale
 
@@ -197,6 +198,130 @@ Scope: E.7 (research foundation), E.10 (the absence of messaging as a governed c
 5. A follow whose approving guardian is no longer current is removed, even when another guardian remains linked.
 6. A quarterly first-year recalibration owned by the Safety/Trust Lead.
 
+## S08.8 lane review: implementation and rationale
+
+Scope: an adversarial review of every commit on `codex/spec-s08` since `337c9f0e` against the SPEC acceptance criteria of E.6–E.13, F.1, F.3 (rewritten for OD-20), F.5 and F.6. The commits are S08.4 to S08.7: `25b63329`, `1dd5fd4d`, `83aefbda` and `8fb917c5`, 158 files. They were read with Block E and F's standards, Appendices J and L (Definition of Done, metrics, pipeline), OD-3, OD-6/OD-11 (glossary), OD-20 and OD-23.
+
+**Resume note.** This checkpoint was started by an agent that hit its usage limit before writing anything. The worktree was clean at `8fb917c5` when work resumed.
+
+**Method.** Each requirement's mandate was compared with the code that enforces it. The enforcing boundary came first: database, then Core, then the surface. Each was also checked by population: parent-created under-13 child, guest, independent teen 13 to 17, adult, verified parent Tutor, and staff by permission. The review hunted for:
+
+- mandates skipped or shrunk;
+- authorization only in the UI;
+- uncovered populations;
+- untested failure paths;
+- untranslated or over-budget copy;
+- legacy imports in rebuilt UI;
+- CRLF damage;
+- undocumented behavior;
+- doc claims the code does not support.
+
+### What each requirement mandates and what the code enforces
+
+| ID | SPEC mandate (short) | What the code enforces (boundary) | Populations checked | Review verdict |
+|---|---|---|---|---|
+| E.6 | Self-service deletion for adults and guests, or an honest documented process; a visible shape and timeline (Law 5) | Core `/api/v1/account/deletion` decides eligibility from roles, the write-once age declaration and GoTrue's guest flag. Confirmation is server-side: a `.strict()` acknowledgement, plus password re-entry or a sign-in within 15 minutes. One four-step erasure lifecycle is recorded in the database, with a daily sweep, a metric and the FAQ | Child refused (403). Staff refused twice (Core and database). Guest and self-registered under-13 erased at once. Teen, adult and Tutor get a 14-day grace period with sign-out | Sound, with two gaps fixed. Any new `auth.users` foreign key without a delete action would make an erasure fail (gap 1). The FAQ promised that signing in keeps the account, and it was over budget (gap 4) |
+| E.7 | Treat Appendix I as authoritative; recalibrate on the Appendix B/D/G cadence; re-check the moving regulation | Policy §1 map, a nine-threshold recalibration log whose lapsed date turns `guardrails:check` red, and a regulatory watch list | Not population-specific | Sound. The first recalibration and counsel's check are human steps and stay open |
+| E.8 | Two tiers: the child strictest, with no self-loosening; the self-registered teen private by default, with mutual consent it manages; never the adult default | The database decides the tier from service-owned age evidence (the declaration is written once and browsers cannot touch it). The follow admission trigger and the visibility policy apply the tier. Core routes bind the teen to the session. Browsers read only their own rows of `profiles`, `avatars` and `learning_stats`, so the data gateway cannot bypass the card | Child, teen, adult, Tutor, guest and unscreened, each as viewer and subject. Staff are held to their own tier (no bypass) | Sound. No gap found |
+| E.9 | Remove counts, or make them private and opt-in, never next to XP, streak or badges | No count on the wire. No rendered count on any surface: the Family panel, teen panel and legacy pages were rechecked, including counts derived from `.length`. `social:check` | All viewers | Sound. No gap found |
+| E.10 | "No messaging or comments" as a standing constraint. Any future feature is default off, needs a guardian opt-in (child) or a teen opt-in with guardian notice, and is reviewed against Block E | Policy §2 rule and register, live-catalog scan, repository gate over migrations and Core and frontend routes, Core route test, FAQ | Child and teen (the rule); every population (no surface exists) | Sound. The FAQ states the child rule only; the teen rule is in the policy |
+| E.11 | A written, published retention and deletion policy for follows, requests and blocks. Being followed is a disclosure event that needs a guardian's awareness for a child | Policy §3. A daily sweep applies seven windows in one transaction and removes and audits unconsented child edges. The append-only audit log is untouched. Nothing goes to analytics or the warehouse. The FAQ windows are compared with the database | Child (consent rule), teen (requests), every account (windows) | Sound. No gap found |
+| E.12 | Cartoon-only avatars as a standing constraint (no upload without a re-review); a brand statement on the social layer | Database shape guards for every writer, projection on every Core read, pinned upload surfaces, and `COSMIC_NARRATIVE.md` §6 with its coverage check | Every writer (browser, service role, owner) | Sound. No gap found |
+| E.13 | A content-level review of a child's username and display name for off-platform locators, and of any future free text | One classifier in SQL and Core with a shared corpus, a database write guard, a review record with 100% coverage, and flagged minors hidden outside the family. The same classifier now also checks a reached goal's title before it enters a shared picture (gap 3) | Child (Tutor creation and rename, own display-name edit), teen (own rename), Tutor notice | Sound, extended by gap 3 |
+| F.1 | Prefer an image handed to the parent, with no company-hosted persistent URL (decided by OD-20) | Core returns the PNG and persists nothing. Depot renders behind the internal key and stores nothing. The old issuer and the compose endpoint answer 410. The database refuses new `badge_shares` rows. Legacy links are dated out | Every refused population, by direct request (F.6 suite) | Sound. No gap found |
+| F.3 | A short, un-buried disclosure at the point of action, rewritten for the image flow (OD-20), in the Mentor's plain voice | Two lines under each Share button in three locales, within the Copy Budget. The rebuilt component binds them | The verified Tutor (the only population that sees Share) | Gap 2 fixed. The live page's buttons were not described by the disclosure, and no gate checked that the disclosure was present at every share action |
+| F.5 | A brand statement on what sharing is and is not, describing the shipped mechanics | `COSMIC_NARRATIVE.md` §5. Metrics count shares initiated, never viewer reach. `sharing:check` | Not population-specific | Sound. No gap found |
+| F.6 | Guardian-only initiation, server-side achievement verification and first-name-only minimization as standing constraints | A release-gate suite of direct requests: 13 refused populations, a mid-request revocation, unearned achievements, client-supplied fields and the exact Depot body. Depot's strict schema. `sharing:check` | Child, guest, teen, adult non-parent, unverified, revoked or other-method parent, minor with a parent role, kid plus parent, staff admin and superadmin, unlinked verified parent | Gap 3 fixed. A goal's free-text title could carry a school, a handle or a phone number into the picture |
+
+Mechanical checks, all clean:
+
+- No rebuilt file under `frontend/src/rebuild/{account,family,social}` imports a legacy component.
+- Every rebuilt string goes through `Copy`, `Button` or `Field`, which carry `data-copy-role`.
+- The rebuilt stylesheets use tokens only and gate motion behind `prefers-reduced-motion`.
+- No file in the lane diff gained a carriage return. `dataintel/src/routes/queries.ts` was CRLF before the lane and kept its endings.
+- The lane's own strings follow the glossary.
+
+### Gaps found and fixed
+
+1. **Any lane could make an account impossible to erase (E.6).** The erasure ends by deleting the `auth.users` row. A foreign key to `auth.users` or `profiles` declared with NO ACTION or RESTRICT makes that delete fail, and the account then stays in `processing` forever. S08.5 fixed the eight such columns it found, but nothing stopped the next one, and five other lanes are adding migrations now.
+   - The fix is rule 6 of `deletion:check`. It reads every `REFERENCES auth.users` and `REFERENCES profiles`, in every migration, in apply order and in either case. It resolves the table and column, whether the key is an inline column, an `ADD COLUMN` or a `FOREIGN KEY (...)`. It follows table renames (0082 renamed `banca_accounts`) and lets a later re-declaration win (0114's `SET NULL` fixes). The final declaration of every column must say `ON DELETE CASCADE` or `SET NULL`.
+   - Self-tests: a new lowercase NO ACTION column fails, an uppercase `RESTRICT` `ADD COLUMN` fails, and a rename followed by a later fix passes.
+   - A read-only run against the other five lane worktrees found only the eight columns that this lane's `account_deletion_requests` migration already fixes, so the merged tree passes.
+2. **The live Share buttons were not described by their disclosure (F.3).** The legacy territory page showed both disclosure lines but did not bind them. A screen-reader user who focused Share never heard what they were about to make.
+   - Each button now has `aria-describedby` pointing at its own two lines. It uses two ids and no wrapper, so the legacy layout is unchanged.
+   - Nothing checked that a share action carried the disclosure at all, although Appendix L's "Point-of-Share Disclosure" metric requires it on 100% of share actions. Rule 6 of `sharing:check` now does. Every frontend file that calls the image transport must render both lines and one description per share button. The rebuilt `AchievementShare` must bind its own. Both lines must exist in every locale.
+   - Four self-tests prove each regression fails, and a unit test asserts that each button's accessible description is exactly the two lines.
+3. **A goal's free-text title could put locating text in a picture that cannot be recalled (F.6, E.13).** A reached goal's label quoted its title as a family member typed it. "Trip with Lincoln Elementary", "call 555 123 4567" or a social handle would ride into an image the parent hands to anyone.
+   - Core now runs the E.13 classifier over the title. A flagged title is left out and the label names the goal generically: "Saved 50 coins for a goal", with es-MX and pt-BR equivalents in monedas and moedas. A plain title is kept.
+   - The F.6 suite pins seven flagged titles across three locales and one plain title. A mutation that bypasses the classifier fails it.
+4. **The public deletion answer overstated the rule and was over budget (E.6).** The FAQ said the account is deleted "unless you sign back in". Signing in only opens the deletion screen, and only "Keep account" cancels, so a person who signed in and left would still lose the account.
+   - The answer was also three sentences and 28 words. The marketing Copy Budget that the S08.7 FAQ audit applies is 25 words and two sentences (31 words for es-MX and pt-BR).
+   - All three locales now read "sign in and keep it" within budget: 25/25, 31/31 and 31/31 words, two sentences each. `deletion:check` now requires the keep step and the budget, with self-tests, and the FAQ Chrome audit covers this entry.
+5. **The approval refusal did not use the glossary (E.8 surface).** `GUARDIAN_APPROVAL_REQUIRED`, which the follow route returns for a child, said "guardian", "tutor" and "responsável". Owner log §5 names the verified parent "Tutor" in all three locales, and now the string does too.
+
+### Checked and found sound (not changed)
+
+- **Staff as viewers.** The visibility service has no staff bypass. Staff see children and teens only through their own tier and relationships. That is the conservative reading of G.6's "no staff read-access beyond the child and guardians".
+- **Internal endpoints.** Depot's render, Oracle's erasure and the warehouse erasure each sit behind the internal key. The three sweep workflows call Core inside the Railway container, so the key never leaves it, and a reply without counts fails the run.
+- **Image route failure paths.** Each has a test: Depot failure, a non-PNG answer, a child with no usable name, a failed metric write, a guardian link revoked mid-request and the retired issuer.
+- **E.6 while a deletion is pending.** The account can still call Core until the date, and the deletion runs regardless. The deletion screen is a user-experience step, never the authorization boundary. Cancellation, the one action it offers, is enforced by Core and the database.
+
+### Proposals and integration items (conservative defaults implemented)
+
+1. **Generic goal label.** A flagged goal title gets the generic label (gap 3). If the owner prefers refusing the share and asking the Tutor to rename the goal, only that branch changes.
+2. **Integration (E.6, S07).** Today a guardian link exists only for a parent-created child. The S07 lane may add a way to link an existing self-registered teen (OD-3: "only if a parent links later"). Then a teen's self-deletion would remove that link, and the linked guardian should be told before the erasure runs. Policy §9 records the check for that merge.
+3. **Integration (E.6, every lane).** `deletion:check` now fails the merged tree if any lane's migration adds an account foreign key without a delete action. The PostgreSQL erasure verifier should also be rerun on the merged schema.
+
+## Lane summary (S08.1–S08.8)
+
+For every requirement in its scope, S08 delivered the written policy and the mechanisms that enforce it:
+
+- database constraints and functions first, then Core routes bound to the session, then rebuilt surfaces;
+- adversarial tests by population;
+- real PostgreSQL 17 evidence for each database half;
+- a real-Chrome matrix for each rebuilt surface;
+- an Appendix J/L metric route;
+- a cross-package standing guardrail in `spec:check` (`sharing:check`, `deletion:check`, `social:check`, `guardrails:check`), each with a self-test that proves it fails on the regressions it guards.
+
+| ID | Delivered in | Honest status after S08.8 | What remains before acceptance |
+|---|---|---|---|
+| E.5 | S08.1, S08.6 | In progress: implemented and locally verified | Real-database evidence; human review |
+| E.6 | S08.5, S08.8 | In progress: implemented and locally verified | Owner decisions (grace period, SLA, teen notice); counsel review of the Privacy Notice and Terms; real Supabase/GoTrue and production evidence; the §2.1(4) reviewer; merged-schema erasure rerun (the Oracle full suite, owed since S08.5, passed in S08.8) |
+| E.7 | S08.7 | In progress: implemented and locally verified | First Safety/Trust recalibration (due 2026-12-24); regulatory re-check with counsel; the §2.1(4) reviewer |
+| E.8 | S08.6 | In progress: implemented and locally verified | Contract migration after the Core release; Stage 3 review; Stage 5 family pilot; owner decisions (policy §7); real Supabase and production evidence |
+| E.9 | S08.6 | In progress: implemented and locally verified | Appendix I Part 4 design review; owner confirmation of removal over opt-in |
+| E.10 | S08.7 | In progress: implemented and locally verified | Stage 3 review; owner decision for teens with no linked guardian; production catalog scan |
+| E.11 | S08.7 | In progress: implemented and locally verified | Counsel review; owner decisions on the windows and an audit-entry expiry; hand-applied contract migration; production readings |
+| E.12 | S08.7 | In progress: implemented and locally verified | Stage 3 Safety/Trust and brand review of §6; production `offSchema` reading |
+| E.13 | S08.6, S08.8 | In progress: implemented and locally verified | Stage 3 review of classifier samples and the stated rule limits (city, surname, unmarked handles); guardian-initiated handle change for a flagged child username; real Supabase and production evidence |
+| F.1 | S08.4 | In progress: implemented and locally verified | Stage 3 review; physical PostgreSQL evidence; device share-sheet check; the dated removal on or after 25 October 2026 |
+| F.3 | S08.2, S08.4, S08.8 | In progress: implemented and locally verified | Forge tone and copy review with native es-MX and pt-BR review; comprehension sampling |
+| F.5 | S08.4 | In progress: implemented and locally verified | Brand and Safety/Trust review; production metric readings |
+| F.6 | S08.4, S08.8 | In progress: implemented and locally verified | Human review; production evidence |
+
+This review did not reopen F.2 (legacy links only; S02.4c and S08.4) or F.4 (S08.3, then removed from the new flow in S08.4). Nothing in the lane is Accepted. Acceptance needs the human reviews, owner decisions and production evidence named above.
+
+Migrations added by the lane, named by suffix (the orchestrator renumbers at merge):
+
+| Migration | Phase |
+|---|---|
+| `achievement_share_initiations` | expand |
+| `close_badge_share_links` | contract |
+| `account_deletion_requests` | expand |
+| `account_erasure_function` | contract |
+| `social_age_tiers` | expand |
+| `social_tier_enforcement` | contract |
+| `social_standing_guardrails` | expand |
+| `social_graph_retention` | contract |
+
+S08.8 adds none.
+
+Integration steps:
+
+1. Regenerate `database/types/database.ts` for the new tables.
+2. Rerun the three PostgreSQL verifiers on the merged schema.
+3. Apply each contract migration by hand after its Core release, in the order the policies give.
+
 ## Verification log
 
 Executed 24 September 2026 against the current working tree. Commands below are relative to the named directory. These are local results, not CI or production observations.
@@ -341,3 +466,33 @@ Remaining limitations (not accepted):
 - The legacy FAQ still calls the AI "Tutor" in several older answers. This is outside this checkpoint's two entries, and the wave-2 rebuild of the page replaces it.
 - An approval row whose decider is no longer current is kept after its edge is removed. It admits nothing: the admission trigger refuses it.
 - Regenerated `database/types/database.ts` is not needed: no new table.
+
+## S08.8 verification log
+
+Executed on 25 September 2026 (lane clock; the checkpoint belongs to the 24 September plan) in the S08 lane worktree. Only local fixtures were used: no shared database, no production and no paid calls. Commands are relative to the named directory. Every test run used `VITEST_MAX_THREADS=3 VITEST_MAX_FORKS=3`.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Review baseline | `git -C /c/lf-wt/s08 log 337c9f0e..HEAD`, `git diff --stat 337c9f0e..HEAD`, `git ls-files --eol` over the 158 changed files | 4 commits and 158 files reviewed. No file gained a carriage return. `dataintel/src/routes/queries.ts` was CRLF before the lane (1,722 CRs at `337c9f0e`) and kept its endings |
+| Account foreign keys (gap 1) | Root: `node --test agent/tools/check-account-deletion.test.mjs`; `npm run deletion:check` | 15 self-tests passed (11 before S08.8). The new ones: a lowercase NO ACTION column fails, an uppercase `RESTRICT` `ADD COLUMN` fails, a rename followed by a later SET NULL fix passes, a FAQ that says signing in alone keeps the account fails, and an over-budget deletion answer fails. Real tree OK: 108 account references across 119 migrations resolve to a final CASCADE or SET NULL. The first version flagged `banca_accounts`: it did not follow 0082's table rename, so rename handling was added. It also missed an `ADD COLUMN` that follows `ALTER TABLE` on the same line; the self-test caught that and the column pattern was fixed |
+| Other lanes, read-only | The same rule, called on each sibling worktree's `database/migrations` (`s03`, `s05e`, `s05f`, `s06`, `s07`) | Each reports exactly the eight columns this lane's `account_deletion_requests` migration re-declares. No lane adds a new blocking key, so the merged tree passes |
+| Disclosure on every share action (gap 2) | Root: `node --test agent/tools/check-achievement-sharing.test.mjs`; `frontend/`: `npx vitest run src/routes/app/family/__tests__/KidTerritoryShare.test.tsx` | 8 self-tests passed (7 before). The new test proves four regressions each fail: a missing disclosure line, a missing `aria-describedby`, the rebuilt component's lost binding, and a missing locale key. The gate counted the live page's 2 share buttons. 5 page tests passed, including the new one: each button's accessible description is exactly the two lines, and the two buttons use different ids |
+| Goal title minimization (gap 3) | `backend/`: `npx vitest run src/__tests__/achievementSharingConstraints.test.ts src/__tests__/familyBadge.test.ts` | 25 + 10 tests passed. The new F.6 case covers 5 flagged English titles, 1 Spanish, 1 Portuguese and 1 plain title. Mutation check: the classifier branch replaced by `false` failed that test (1 failure, 24 passed), then the file was restored byte for byte (`cmp`) |
+| FAQ entries in real Chrome (gap 4) | `frontend/`: `REBUILD_URL=http://localhost:5350 AUDIT_OUT=../.lane-cache/verify-s088-faq node scripts/verify-social-governance-faq.mjs` (Vite on 5350; the harness now also opens the deletion entry under the Support filter) | 48 configurations (3 locales × 2 themes × 320/375/768/1280 px × 1.0/1.4 text scale). 0 findings on the three entries: rendered in full, not clipped, marketing Copy Budget, no em dash, text 14 px or more, contrast 4.5:1 or more. No console errors and no failed requests. The known legacy header overflow is reported separately (30 configurations, now counted once per entry: 90). Screenshots inspected by eye: es-MX dark 375 (the legacy consent banner covers the answer's end, as it covers any content until the visitor chooses) and pt-BR dark 320 at 1.4 (the answer fully visible) |
+| i18n | Root: `bash agent/tools/check-i18n.sh`, run after the last copy change | Identical key sets in en-US, es-MX and pt-BR, no hardcoded strings, and every static `t()` key resolves |
+| Focused frontend suites | `frontend/`: `npx vitest run src/routes/app/family src/rebuild/family src/rebuild/design/previewCopy.test.ts src/routes/app/profile src/rebuild/social src/rebuild/account src/routes/marketing` | 31 files and 213 tests passed |
+| Root type-check and lint | Root: `npm run typecheck:all`, `npm run lint:all` | Both exit 0 across all 11 packages (`database` has neither script, as documented) |
+| Root tests | Root: `npm run test:all` | Exit 0. audiogen 17 files / 168 tests; backend 79 files / 1,640 tests + 1 documented skipped file and test; coursegen 45 / 662; database: numbering, RLS and append-only audit OK (119 files), migration-phase OK (95 expand, 24 contract, 13 contract pending), 21 node tests, and the railway-migrate self-test OK (12 transport scenarios); dataintel 17 / 199; email-server 7 / 35; filebase 8 / 40; frontend 220 / 2,258; oracle 41 / 1,140; parent-id-check 3 / 26; picturegen 10 / 103 |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check`, `npm run tools:test` | All passed. spec:check covers 113 requirement headings and includes the two extended gates. tools:test: 105 tests (100 before S08.8) |
+
+Execution notes and resolutions:
+
+- **Two earlier open items are closed.** Oracle's full suite passed inside `test:all` (41 files, 1,140 tests); S08.5 had recorded three timing failures under load and owed a full run. `database` `npm test` passed end to end in one run; S08.7 had hit its own timeout inside the railway-migrate self-test. That self-test took about 72 minutes here, because four other lanes were running copies of it at the same moment. It was traced by process tree before being trusted (still spawning its fake transport), not killed.
+- **Python heredocs corrupted escapes twice.** One turned `\b` in a new regex into backspace bytes. Another dropped a backslash from a `replaceAll('\\', '/')`, which Node refused to parse. Both lines were rewritten with the file editor, and every edited file was scanned for control characters (0 found).
+- **Vite outlived its shell.** The server started for the matrix kept running after its shell stopped. It was identified by its command line (`vite --port 5350`) and stopped. No lane Chrome was left running.
+
+Remaining limitations (not accepted). Everything listed in the S08.4 to S08.7 logs stands, except the two items closed above. In addition:
+
+- The live territory page's `aria-describedby` binding is verified in jsdom, not in real Chrome. The page needs a live Core with a linked child. There is no visual change.
+- The goal-label fallback's wording (proposal 1) and the teen-linking integration check (proposal 2) need the owner and the S07 merge.
+- The PostgreSQL erasure verifier must be rerun on the merged schema.

@@ -634,6 +634,15 @@ export function familyRouter(): Router {
     'es-MX': (title, target) => `Ahorró ${target} monedas para "${title}"`,
     'pt-BR': (title, target) => `Poupou ${target} moedas para "${title}"`,
   };
+  // F.6 minimization: a goal title is free text a family member typed, and
+  // the picture cannot be recalled once sent. A title that carries a
+  // contact, link, handle, platform, school, place or birth year (the E.13
+  // classifier) is left out and the label names the goal generically.
+  const GOAL_REACHED_GENERIC_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (target: number) => string> = {
+    'en-US': (target) => `Saved ${target} coins for a goal`,
+    'es-MX': (target) => `Ahorró ${target} monedas para una meta`,
+    'pt-BR': (target) => `Poupou ${target} moedas para uma meta`,
+  };
 
   const AchievementImageRequest = z
     .object({
@@ -684,7 +693,9 @@ export function familyRouter(): Router {
       if (!goal || goal.kid_user_id !== kidId || goal.status !== 'reached') {
         return fail(res, 403, 'FORBIDDEN', 'This goal has not been reached yet');
       }
-      label = GOAL_REACHED_LABELS[locale](goal.title, goal.target);
+      label = profileFieldFlags(goal.title).length > 0
+        ? GOAL_REACHED_GENERIC_LABELS[locale](goal.target)
+        : GOAL_REACHED_LABELS[locale](goal.title, goal.target);
     } else {
       const statsRows = await getKidLearningStats(kidId);
       if (!statsRows) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load learning stats');

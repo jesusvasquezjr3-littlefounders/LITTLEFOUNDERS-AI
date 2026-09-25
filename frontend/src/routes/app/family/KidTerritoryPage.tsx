@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -65,6 +65,10 @@ export function KidTerritoryPage() {
   const [reachedGoal, setReachedGoal] = useState<ReachedGoal | null>(null);
   const [goalShareStatus, setGoalShareStatus] = useState<ShareStatus>('idle');
   const locale = i18n.resolvedLanguage ?? 'en-US';
+  // F.3: each Share button is described by its disclosure, so a screen
+  // reader hears it at the point of action, not only a sighted parent.
+  const streakDisclosureId = useId();
+  const goalDisclosureId = useId();
 
   useEffect(() => {
     let cancelled = false;
@@ -200,6 +204,7 @@ export function KidTerritoryPage() {
           <Button
             onClick={() => void handleShare()}
             disabled={shareStatus === 'busy'}
+            aria-describedby={`${streakDisclosureId}-made ${streakDisclosureId}-keep`}
             className="w-fit gap-2"
             variant={shareStatus === 'shared' || shareStatus === 'saved' ? 'success' : shareStatus === 'error' ? 'secondary' : 'primary'}
           >
@@ -218,8 +223,8 @@ export function KidTerritoryPage() {
               beside the button, in the mentor's own voice: a picture with the
               first name, no link, a sent picture stays sent, and it shows
               LittleFounders. */}
-          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
-          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosureKeep')}</p>
+          <p id={`${streakDisclosureId}-made`} className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
+          <p id={`${streakDisclosureId}-keep`} className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosureKeep')}</p>
         </>
       ) : null}
 
@@ -228,6 +233,7 @@ export function KidTerritoryPage() {
           <Button
             onClick={() => void handleShareGoal()}
             disabled={goalShareStatus === 'busy'}
+            aria-describedby={`${goalDisclosureId}-made ${goalDisclosureId}-keep`}
             className="w-fit gap-2"
             variant={goalShareStatus === 'shared' || goalShareStatus === 'saved' ? 'success' : goalShareStatus === 'error' ? 'secondary' : 'primary'}
           >
@@ -242,8 +248,8 @@ export function KidTerritoryPage() {
                     ? t('family.badge.error')
                     : t('family.badge.shareGoal', { title: reachedGoal.title })}
           </Button>
-          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
-          <p className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosureKeep')}</p>
+          <p id={`${goalDisclosureId}-made`} className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosure')}</p>
+          <p id={`${goalDisclosureId}-keep`} className="lf-caption max-w-md text-content-muted">{t('family.badge.disclosureKeep')}</p>
         </>
       ) : null}
 

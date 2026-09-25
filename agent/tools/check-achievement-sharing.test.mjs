@@ -23,6 +23,12 @@ const FILES = [
   'filebase/src/routes/badges.ts',
   'docs/product-audit/COSMIC_NARRATIVE.md',
   'docs/rebuild/policies/ACHIEVEMENT-SHARING.md',
+  'frontend/src/routes/app/family/KidTerritoryPage.tsx',
+  'frontend/src/rebuild/family/AchievementShare.tsx',
+  'frontend/src/rebuild/family/achievementImage.ts',
+  'frontend/src/i18n/en-US/common.json',
+  'frontend/src/i18n/es-MX/common.json',
+  'frontend/src/i18n/pt-BR/common.json',
 ];
 
 function fixture() {
@@ -93,4 +99,24 @@ test('fails when the brand position or the policy loses its substance', () => {
   withFixture((root) => edit(root, 'docs/product-audit/COSMIC_NARRATIVE.md', "## 5. Sharing a Child's Achievement", '## 5. Something else'), /missing the "Sharing a Child's Achievement"/);
   withFixture((root) => edit(root, 'docs/product-audit/COSMIC_NARRATIVE.md', 'count who sees it', 'measure the audience'), /never-viewer-reach/);
   withFixture((root) => edit(root, 'docs/rebuild/policies/ACHIEVEMENT-SHARING.md', 'Guardian-only initiation', 'Anyone may initiate'), /Guardian-only initiation/);
+});
+
+test('fails when a share button loses its disclosure or its description', () => {
+  const page = 'frontend/src/routes/app/family/KidTerritoryPage.tsx';
+  const keepLine = "className=\"lf-caption max-w-md text-content-muted\">{t('family.badge.disclosureKeep')}</p>";
+  withFixture((root) => {
+    const path = join(root, page);
+    const source = readFileSync(path, 'utf8');
+    const at = source.lastIndexOf(keepLine);
+    assert.ok(at > 0, 'fixture lacks the goal disclosure line');
+    writeFileSync(path, source.slice(0, source.lastIndexOf('<p', at)) + source.slice(at + keepLine.length));
+  }, /2 share button\(s\) but 1 full disclosure/);
+  withFixture((root) => edit(root, page, 'aria-describedby={`${goalDisclosureId}-made ${goalDisclosureId}-keep`}', ''), /2 share button\(s\) but 1 aria-describedby/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/family/AchievementShare.tsx', ' aria-describedby={disclosureId}', ''), /AchievementShare\.tsx: the share button must be described/);
+  withFixture((root) => {
+    const path = join(root, 'frontend/src/i18n/pt-BR/common.json');
+    const json = JSON.parse(readFileSync(path, 'utf8'));
+    delete json.family.badge.disclosureKeep;
+    writeFileSync(path, JSON.stringify(json, null, 2));
+  }, /pt-BR\/common\.json: family\.badge\.disclosureKeep is missing/);
 });

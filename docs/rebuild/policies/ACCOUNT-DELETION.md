@@ -86,8 +86,9 @@ Standing constraint (Block E standard, component 5): the self-service deletion p
 - the four steps and their completion rule;
 - the memory-ledger erasure;
 - this policy's grace period and SLA;
-- the FAQ in three locales;
-- the sweep workflow.
+- the FAQ in three locales, which must say the account is kept by choosing "Keep account" after signing in (signing in alone keeps nothing);
+- the sweep workflow;
+- every foreign key to an account (`auth.users` or `profiles`), in every migration from any lane: it must end `ON DELETE CASCADE` or `SET NULL`. A NO ACTION or RESTRICT key makes the final `auth.users` delete fail, so that account could never be erased (S08.5 found eight such columns). A later migration that re-declares the key, or renames the table, is followed (S08.8).
 
 Adversarial tests at each boundary:
 
@@ -110,5 +111,5 @@ Open items and owner questions (conservative defaults are implemented):
 
 - The 14-day grace period and the 48-hour SLA are proposals, and the owner decides both. Product owns the decision, which must be made before release (the same pattern as the other E.6 decision points).
 - Backup retention needs a statement in the Privacy Notice. The legal Terms text (retention after cancellation) should be read by counsel against this policy. Both are legal copy and were not changed here.
-- An independent teen's deletion notifies nobody, because no guardian exists in that flow. If the owner wants a notice, it goes to the teen's own email.
+- An independent teen's deletion notifies nobody, because no guardian exists in that flow: today a guardian link is only created for a parent-created child. If another lane adds a way for a parent to link an existing self-registered teen (OD-3: "only if a parent links later"), a teen's self-deletion must at least tell the linked guardian before the erasure runs, since the erasure removes that link. This is an integration check for that merge. If the owner wants a notice for the unlinked teen, it goes to the teen's own email.
 - Evidence against the real Supabase/GoTrue schema (the verify script uses a minimal `auth` shim), and the first production readings of the metric.
