@@ -1,6 +1,6 @@
 # S07: Family Hub and independent teen wallet
 
-Status: in progress. Started 24 September 2026; S07.2 and S07.3 recorded 25 September 2026. Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026. Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
@@ -19,6 +19,7 @@ Risk classification: **structural/safety (money-adjacent state and family trust)
 | S07.1b | D.5 / OD-21 lifecycle states | Redemption `fulfilled`, ledger `manual_adjustment` and `goal_withdrawal` (guardian-only, audited, required reason) and guardian-link `pending`, `rejected`, `revoked` each have a producing and a consuming flow; a gate refuses any Block D state without both | Rebuilt Tutors, coin-correction and child-history surfaces in three locales, light/dark, 375/1280 px | In progress: implementation and local verification recorded (PostgreSQL, Core, component and 12 real-Chrome journeys); full-stack run, copy/human review and Product acceptance pending |
 | S07.2 | D.3 per OD-3 Option B (owner log §7): the self-registered teen's personal wallet | An eligible teen (13–17 by the stored age declaration, never role) logs income and splits it across Save/Spend/Share in one step with no approval, keeps savings goals, defines and marks their own rewards, and moves coins out of their own goal; Tasks, chore approval, reward requests and every parent-set rule stay guardian-only; adults, guests, under-13 arrivals, parent-created children (family wallet instead), staff and aged-out accounts hold no personal wallet, enforced by the database for every writer and by Core admission; a teen-initiated parent link layers the family mechanics onto the same ledger, goals and rewards without migration; Appendix H's Teen Independent-Mode Adoption is served to analytics staff | Rebuilt `/wallet` surface (`frontend/src/rebuild/wallet/`) in three locales, light/dark, 375/1280 px; learner shell shows Wallet, Tasks locked until a parent links, no Family entry for a teen | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 73 adversarial Core tests, 42 component/route tests, 12 real-Chrome journeys); full Supabase stack run, types regeneration, copy/native review, production metric and Product acceptance pending |
 | S07.3 | D.2 forgiving chore streak, D.10 expected contribution versus paid bonus task, D.11 savings bonus framed by age | The chore streak is computed by a lapse-tolerant model (two free rest days a week, permanent best and total, a Tutor's holiday pause) from practised days that only the task itself can record; a Tutor tags every chore as a family contribution (0–2 coins) or a bonus task (1–500) with no preselected kind; under 13 (or with no known birth date) the savings bonus is the fixed 1 coin per 10 saved and no percentage reaches the child, whoever writes the rule; 13–17 keep the Tutor's 0–20% with a worked example checked by the database; every threshold sits in the Block D threshold log and a gate keeps log, Core and migrations equal; three Appendix H diagnostics served to analytics staff | Rebuilt chore composer, chore streak, holiday pause, bonus settings and bonus explainer (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Family and Banking routes | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain, 77 new Core tests, 37 new component/copy tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, B.21 adoption of the model, copy/native review, production baselines and Product acceptance pending |
+| S07.4 | D.13 recommended default split with an easy override and redemption timing, D.14 a real destination for the Share pocket, D.15 the next-goal prompt at the celebration, D.16 goal progress by provenance | Every holder owns a usual split (the recommended 50 / 40 / 10 until changed; only the holder sets it); every payout arrives pre-split by it, one tap keeps it and any split that places every coin is accepted; an allowance's Save part may go to a goal; Share coins go to a place a Tutor (or a self-registered teen) chose, and whoever chose it records what really happened with a required note, enforced for every writer; a goal is reached in the transaction that covered it and opens a next step whose first view is the one celebration, with a next goal that follows it; every goal carries its provenance (own, bonus, Tutor), a read without it is refused, and one component draws every goal bar; a consent-gated behaviour stream (the H.1 gate, fail-closed, never blocking, 400-day retention) feeds five Appendix H diagnostics served to analytics staff; new thresholds in the Block D log | Rebuilt split chooser, usual split, goals with provenance and the next-goal card, Share giving and the Tutor's Share places (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Banking, Family and Wallet routes; a static D.16 release gate | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a hand-computed diagnostic timeline, the S07.1/S07.2 checks re-run over the whole chain, 57 new Core tests, 49 new component/copy/gate/data-plane tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, copy/native review, production baselines, family usability testing and Product acceptance pending |
 
 ## Current state found (verified against the code, 24 September 2026)
 
@@ -402,3 +403,210 @@ Every configuration had zero axe violations, no panel overflow or page scroll, 4
 - B.21's adoption of the model.
 
 D.2, D.10 and D.11 are not accepted.
+
+## S07.4: current state found (verified against the code, 25 September 2026)
+
+The SPEC's "Current State" was partly stale for D.13 and D.16:
+
+- **D.13 partly stale.** The SPEC says the child has no discretion over the ratios. In fact the legacy allocation dialog let the child type any split that added up. But it always opened with every coin in Save. That default was fixed and nobody had chosen it, so it was not a recommendation. There was no usual split, and nothing recorded the default against the child's choice. An allowance's Save part could not go to a goal: `allocate_pending_credit` had no goal parameter, and the S07.1 ledger guard refused a tagged allowance row (reproduced on PostgreSQL). Nothing timed reward requests against credits.
+- **D.14 confirmed.** Share coins could not leave the Share pocket at all. No ledger reason debits Share except a Tutor's correction.
+- **D.15 confirmed.** A reached goal led nowhere. Core flipped the status in a second request, outside the allocation's transaction. The teen wallet announced it as plain status.
+- **D.16 partly stale.** The savings bonus has never been tagged to a goal: it lands in plain Save, and the S07.1 ledger guard refuses a bonus row with a goal (reproduced). No goal bar has therefore ever included bonus coins. But every goal display still showed one mixed total with no provenance:
+  - the legacy Tasks and Banking bars;
+  - the teen wallet's bar;
+  - the Tutor's correction panel ("{saved} of {target} coins").
+
+  Any future path that tagged coins other than the child's own to a goal would have been folded in silently.
+- **Not in the SPEC.** Coins in plain Save, bonus coins included, can never reach a goal: there is no "move to a goal" flow. Recorded as an owner question below; not built.
+
+## S07.4 implementation and rationale (D.13, D.14, D.15, D.16)
+
+Migrations (descriptive names; the orchestrator assigns the final numbers at merge), applied in this order after the S07.3 migrations:
+1. `family_money_events` (expand);
+2. `share_gift_destinations` (contract: the ledger reason CHECK is dropped and re-added as a pure widening);
+3. `share_gift_flows` (expand: the ledger guard is replaced, and the Share flows and metric);
+4. `wallet_usual_split` (expand);
+5. `savings_goal_next_step` (expand).
+
+The Share work is split in two because a single 33 KB file exceeded the Windows command-line limit of the operator transport (`railway-migrate.test.mjs`), the same limit S07.1 met.
+
+The ledger guard, the two allocation functions and `teen_log_income` are redefined. Each keeps every earlier rule word for word and only adds to it. The S07.1 and S07.2 PostgreSQL verifiers re-run all their checks over the whole chain to prove it (below). The migrations ship with, never ahead of, the Core release carrying the S07.4 routes. `database/types/database.ts` was not hand-edited.
+
+### The consent-gated behaviour stream (D.13, D.15 instrumentation)
+
+The Appendix H diagnostics of this checkpoint are records of what a child did with their coins and when. That is analytics, not bookkeeping. So they go into their own stream, `family_money_events`, and through the same gate as `learning_events` (H.1, 0090):
+- a parent-created child is recorded only while the Tutor's analytics consent is active;
+- a self-registered teen only with their own opt-in;
+- never a guest or an account with the under-13 origin marker.
+
+The gate is a BEFORE INSERT trigger that drops the row. No emitter can forget it, and a consent revoked mid-transaction still wins. It is fail-closed and never blocking: when the consent question cannot be answered, the event is dropped and the coin movement goes through untouched (proved on PostgreSQL). No browser role and not even Core's service role can write or read a row. Only the database's own emitters write, so no request can forge a behaviour. The stream holds closed vocabularies, integers and ids, never free text. `prune_family_money_events(400)` keeps it to 400 days, the `learning_events` bound, and the nightly `insights-maintenance.yml` calls it once the migration is applied. The PostgreSQL run proves that `family_analytics_admitted()` gives the same answer as the H.1 gate for all 11 populations.
+
+### D.13: a recommended default split with an easy override
+
+Owner log §8: no compulsory rationale was recorded, so the recommended default with an override applies.
+
+- **Every wallet holder has a usual split.** It is their own ratio and starts from the platform's recommended 50 / 40 / 10 until they change it. Only the holder sets it (`set_wallet_usual_split`, `SPLIT_OWNER_ONLY` for anyone else). A Tutor sees it read-only on the Share-places panel. A Tutor-set ratio would be the externally imposed category D.13 moves away from (Appendix G §2.1).
+- **Every payout arrives pre-split** by that ratio: a chore reward, an allowance, or a teen's logged income. Keeping it is one tap ("Use my split"). "Change it" opens per-pocket steppers and typed counts. Any split that places every coin is accepted, including everything in one pocket.
+- **The coin arithmetic is written three times and pinned to one fixture.** The database (`wallet_split_coins`), Core and the client each compute it (the floor of each share, the leftover coins to the largest remainders). All three are checked against `database/scripts/fixtures/split-coins.json` (200 cases).
+- **The usual split is shown "out of every 10 coins" to every age, never as a percentage.** D.11 found percentages unusable for young children. It is stored as percent.
+- **An allowance's Save part may now go to a goal**, as a chore reward's already could. The savings bonus still never may.
+- **Measured.** Every split writes a `split_allocated` event holding the default at that moment, computed in the database, and whether the child kept it. This is Appendix H's Split-Ratio Engagement Quality (`GET /api/v1/admin/family/split-engagement`).
+- **Reward requests are timed.** Every reward request (a catalog request, or a teen's personal reward) records the hours since the last allowance credit and the last earned credit to Spend, read from the ledger at that moment. Every own credit is recorded with its class and pocket.
+- **The Allowance-Triggered Redemption Spike** (`GET /api/v1/admin/family/redemption-timing`) reports requests per 100 child-days in four time-since-credit bins, allowance against earned credits. Each rate has a real denominator: the child-hours spent in each bin, computed from the credit events. This is the falsifiable test of Heath and Soll's rigidity prediction. The PostgreSQL run checks it against a hand-computed timeline.
+
+### D.14: a real destination for the Share pocket
+
+- **A share destination is a real place the family chooses:** a cause, a gift for someone, or a community action. A verified Tutor chooses it for a child in a family. A self-registered teen chooses their own (OD-3 Option B, no approval step). A linked teen can have both kinds. A holder has at most 10 active places.
+- **A share gift directs Share coins to a place.** The coins leave Share at once, so they cannot be pledged twice. The gift then waits for whoever chose the place to record what really happened:
+  - `given`, with a required note that the child reads;
+  - or `returned`, with a required reason.
+
+  The child may take a pledge back before it happens, with no note. A deferred constraint trigger refuses a gift without its debit, or a return without its single credit. The ledger guard refuses any forged gift row.
+- **D.1.** A Tutor's freeze holds the child's pledges and take-backs. The Tutor can still record what the family did.
+- **Honesty (D.7).** Coins are never sent anywhere. The copy says so on both sides ("Coins stay in the app", "Coins are never sent anywhere"), and a copy test pins it in all three locales.
+- **The monthly statement** reports gifts on their own `given` line, never as spending. The legacy statement card does not show that line yet: it belongs to the wave-2 Banking rebuild.
+- **Measured.** The Share-Bucket Destination Completion Rate (`GET /api/v1/admin/family/share-completion`) is read from the gifts themselves, which are bookkeeping, not behaviour:
+  - gifts pledged in the window and old enough to judge;
+  - given within 14 days, given later, returned, or still waiting;
+  - and the "invisible destination" risk itself: holders who have Share coins but no active place.
+- **Every transition is audited.** Share-place and gift transitions are in the D.4 transition audit. The OD-21 lifecycle gate registers every new state with a producer and a consumer: 39 states across 10 columns.
+
+### D.15: "what's your next goal?" at the celebration
+
+- **A reached goal opens a next step.** A goal is now reached inside the transaction that covered it: a chore allocation, an allowance, or a teen's income. Core no longer flips it. Reaching a goal opens its next step (`pending`), whatever path reached it.
+- **The first view is the celebration.** The child's first view of the reached goal is the one OD-7 celebration ("savings goal reached"). It happens only when `goal_next_step_seen` answers `true`, so it comes once per goal whoever reloads the page. The prompt sits in the same card: start a next goal, which follows this one (`set`), or "Not now" (`declined`). "Not now" is respected: the prompt does not come back, but a next goal can still follow later. A goal can be followed only once, only by the holder's own reached goal, and the link cannot change.
+- **Measured.** The Post-Goal Motivation Cliff (`GET /api/v1/admin/family/post-goal-motivation`) compares Save contributions per day in the 28 days up to a goal with the 14 days after it. It splits the goals by whether a next goal was set within 2 days, which is the D.15 mechanism under test. Save-Bucket Contribution Persistence (`/save-persistence`) is its baseline and counts own coins only, never the bonus.
+
+### D.16: goal progress by provenance
+
+- **The server gives every goal with its provenance.** `goal_progress_breakdown` splits a goal's coins into three parts:
+  - `own`: chores, allowance, the teen's own income;
+  - `bonus`;
+  - `family`: any other credit.
+
+  Every goal response carries `progress: {own, bonus, family, total}`, with `saved` kept as the total for older clients. A read that cannot provide it is refused (502) rather than shown as a mixed number. Coins taken out of a goal come out of the child's own part first, so "yours" is never overstated.
+- **One display draws every goal bar.** It is `<GoalProgress>`: own coins are solid, bonus coins striped, Tutor coins dotted, and each part that is not zero is named with its number, so the difference never rests on colour alone. When every coin is the child's own, it says "All yours".
+- **Every goal surface uses it.** It replaces:
+  - the legacy Tasks and Banking goal lists (through the new `SavingsGoalsPanel`);
+  - the teen wallet's bar;
+  - the Tutor's correction panel.
+- **Measured, as a release gate.** The Goal-Progress Bonus-Distinction Compliance Rate is enforced twice:
+  - statically, by `frontend/src/rebuild/family/goalProgressGate.test.ts`: no goal-progress display in the app, the family surfaces or the wallet outside `<GoalProgress>`, with a known-bad fixture proving it fails;
+  - at runtime, by the browser matrix, which checks every rendered goal bar's segments, legend and fills.
+
+### Rebuilt surfaces and mounting
+
+The surfaces live in `frontend/src/rebuild/family/`:
+- `SplitChooser`, `UsualSplit`, `GoalProgress`, `GoalNextStep`, `SavingsGoals`, `ShareGiving` and `ShareDestinations`;
+- the API layer `moneyHabitsApi.ts`, which shape-checks every response. A goal whose parts do not add up, a usual split that does not make 100, and a gift shown as given without its note are all refused.
+
+They import nothing legacy and use the S07.1 injected transport. The copy lives in `i18n/<locale>/moneyHabits.json`, checked for:
+- key parity and the Copy Budget role of every key;
+- the youngest band (6-9) for the child's surfaces, 13-17 for the teen's own-place lines and adult for the Tutor's;
+- the 6-9 first-view budget;
+- the controlled glossary (no money, withdraw, interest, freeze, job, invest or donate; no Mentor or bot; no percentage);
+- the honesty lines.
+
+Mounting, through route wrappers:
+- `AllocationPanel` (chore rewards on Tasks, allowances on Banking), `UsualSplitPanel`, `SavingsGoalsPanel` and `ShareGivingPanel` replace the legacy allocation dialogs and goal lists on the child's Tasks and Banking screens;
+- `ShareDestinationsPanel` sits on each child's card on the Family screen;
+- the teen wallet uses the same pieces: income pre-split by the usual split, the usual-split settings, goal provenance and the next goal, and a Share section.
+
+The legacy allocation and goal components were removed from `KidTaskBoard` and `KidBankingHome`. Their `common.json` strings are left for the wave-2 cleanup, to avoid collisions with other lanes. The legacy activity lists name the two new ledger reasons instead of calling them an "adjustment".
+
+## S07.4 decisions taken on the SPEC's conservative default (proposals for owner review)
+
+1. **The usual split belongs to the child.** The child (or teen) sets it and the Tutor sees it read-only. A Tutor-set default would be an externally imposed ratio. Whether a Tutor may suggest one is an owner question.
+2. **The recommended split is 50 / 40 / 10** (5 / 4 / 1 out of 10). Appendix G gives no evidence for any ratio. It is recorded in the threshold log for review.
+3. **The usual split is shown out of 10 to every age**, never as a percentage, even to teens: one representation, and no percentage for any child.
+4. **Share places.** For a child in a family only a Tutor chooses places. A child proposing a place for the Tutor to accept is an owner question. Places are archived, never deleted: at most 10 active per holder, and 1 to 1000 coins per gift.
+5. **Settling a gift.** The steward (whoever chose the place) records "given", always with a note. The child can take a pledge back before it happens. A Tutor returns one only with a reason.
+6. **The freeze and Share.** A freeze holds the child's pledges and take-backs, but not the Tutor's record of what happened (the same rule as S07.1 decision 3).
+7. **The next goal.** The prompt comes once per reached goal, and "Not now" ends it. Goals reached before S07.4 get no next step, so there is no late celebration.
+8. **Provenance.** Coins leaving a goal are taken from the child's own part first, so the "yours" number is a floor.
+9. **Diagnostic windows**, all recorded in the threshold log: time-since-credit bins of 24, 72 and 168 hours; a 28-day baseline and 14 days after for the cliff; 2 days for "a next goal was set"; 14 days for Share completion.
+10. **The behaviour stream follows the H.1 retention and revocation practice of `learning_events`:** 400 days, and a revoked consent stops new events without deleting past ones. D.21's written policy decides whether that holds.
+
+## S07.4 verification log
+
+Executed 25 September 2026 in the S07 worktree, first-hand, on the committed tree. Commands are relative to the named directory. Local results only, not CI or production observations.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Physical PostgreSQL, S07.4 | Lane cluster (PostgreSQL 17.6, `.lane-cache/pg`, port 15507); root: `python database/scripts/verify-money-habits-postgres.py` with `LF_PG_BIN/PORT/USER/DATA`; the cluster was stopped with `pg_ctl stop -m fast` afterwards | Passed, 14 check groups. Report: `audit-results/s07-money-habits-postgres.json`. Details below this table |
+| Physical PostgreSQL, S07.1 regression over the whole chain | Root: `LF_PG_FULL_CHAIN=1 LF_PG_REPORT=audit-results/s07-family-state-postgres-full-chain.json python database/scripts/verify-family-state-machine-postgres.py`; also the default mode | Both passed all their check groups. The full chain was applied through the last S07.4 migration, so the redefined ledger guard and allocation functions keep every S07.1 rule. One verifier line changed; see the failures below |
+| Physical PostgreSQL, S07.2 regression over the whole chain | Root: `LF_PG_FULL_CHAIN=1 LF_PG_REPORT=audit-results/s07-teen-wallet-postgres-full-chain.json python database/scripts/verify-teen-wallet-postgres.py` (the full-chain mode is new in this checkpoint); also the default mode | Both passed all 17 check groups. The full chain was applied through the last S07.4 migration, so the redefined ledger guard and `teen_log_income` keep every S07.2 rule |
+| Physical PostgreSQL, S07.3 | Root: `python database/scripts/verify-chore-streak-bonus-postgres.py` | Passed, 11 check groups (unchanged chain through its own parts) |
+| Core adversarial | `backend/`: `npx vitest run src/__tests__/moneyHabits.test.ts src/__tests__/blockDThresholds.test.ts` plus the tasks, banking and familyLifecycle files | 57 new adversarial tests pass (`moneyHabits.test.ts`), and the threshold test gains one; 2 allocation tests in `tasks.test.ts` were rewritten for the database-side flip. Coverage: every holder route refused to an adult, a guest, a parent and staff before any RPC; every Tutor route refused to the six non-parent populations, and a stranger gets 404 before any RPC; the caller, never a body field, is the holder and the actor; every database refusal mapped; a transport failure or an unexpected receipt is never reported as success; a goal list without provenance or next steps is refused (502); the metrics sit behind the analytics grant, with null rates for empty populations and 502 for a partial read |
+| Core regression | `backend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 76 files (+1 skipped), 1,747 tests + 1 documented skip |
+| Frontend regression | `frontend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 224 files, 2,358 tests. The 49 new tests: 19 surface, 17 copy, 4 D.16 gate, 9 data-plane |
+| Real Chrome matrix | `frontend/`: `MONEY_HABITS_URL=http://localhost:5340 node scripts/verify-money-habits.mjs` | 12 of 12 configurations (EN/es-MX/pt-BR × light/dark × 375/1280). 72 captures and `report.json` in `audit-results/money-habits/`. Journey steps below this table |
+| Static migration gates | `database/`: `npm test` | Passed. 129 files pass the numbering, RLS and phase checks (97 expand, 32 contract, 21 contract pending). The lifecycle gate covers 39 states across 10 columns. 28 of 28 node tests and the railway transport (12 scenarios) pass. The first run failed on the transport; see the failures below |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` (after staging, so the new files are scanned), `bash agent/tools/check-i18n.sh` (Git Bash), `npm run tools:test`, `node agent/tools/check-block-d-thresholds.mjs` | Passed: spec authority, tokens and assets OK; no credential patterns; i18n file and key parity, no hardcoded strings, every static key present; 62 of 62 tool tests; 25 thresholds agree (13 new) |
+
+**PostgreSQL S07.4 check groups (14):**
+- **Gaps reproduced** on the chain before the first S07.4 migration: no usual split, Share place, next step or behaviour stream; an allowance cannot carry a goal tag; a bonus row tagged to a goal is already refused.
+- **Consent gate:** equal to the H.1 gate for all 11 populations; no browser or service-role write or read of the stream.
+- **Usual split:** the default, the owner-only setter, refused sums, no wallet for an adult or a guest, no browser path; the fixture parity for all 200 cases.
+- **Split events:** kept, adjusted, an allowance to a goal, an older six-argument call, the teen's income; no event for the under-13 child or the teen who did not opt in; the coins still land when the consent store fails (the event is dropped); Split-Ratio Engagement exact.
+- **Redemption timing:** a catalog request and a personal reward, timed from the ledger; no event for the under-13 child; credits recorded with their class.
+- **Share:** places by the Tutor and by the teen, the refusals (child, stranger, adult, name, kind, limit), pledges, "given" only by the steward and always with a note, take-back, a Tutor's return with a reason, and exact ledger rows.
+- **Share forgery:** no direct service-role write; forged ledger rows refused; a gift without its debit refused at commit; a settled gift cannot reopen, even for a superuser; no browser write; RLS reads.
+- **Share and the freeze.**
+- **Concurrency:** 8 simultaneous 3-coin pledges against 10 coins → exactly 3; 8 simultaneous opposite settlements → exactly 1.
+- **Next goal:** reached in the allocation's own transaction, the step opened, the first view once, a foreign child refused, a follower only for one's own reached goal and only once, the link immutable, "not now" respected, no event under 13, no writer can reopen or forge a step, RLS.
+- **Provenance:** a chore and an allowance counted as the child's own, a withdrawal from the own part first, no writer can tag a bonus or an unexplained Tutor credit; a simulated future path shown apart (13 / 4 / 3), and a later withdrawal leaving 0 / 4 / 1.
+- **Retention and audit:** the 400-day prune and its log; the transitions in the D.4 audit, all through the service role.
+- **Replay** of the five migrations preserved every row and refusal.
+- **Diagnostics on a crafted, backdated timeline:** the redemption rates, the post-goal cliff and Save persistence equal the hand computation.
+
+**Browser matrix journey (each configuration):**
+1. Tutor, Family, Share places:
+   - a place without a kind is refused locally, with no request;
+   - a place is added with the exact body;
+   - marking a pledge done without a note is refused locally, then the settle carries the note;
+   - the child's usual split is shown out of 10.
+2. Child, Tasks:
+   - the chore reward arrives pre-split 5 / 4 / 1 and Enter keeps it, with the exact body;
+   - the usual split changes out of 10 (no percent) and is saved as percent;
+   - the reached goal celebrates once and carries the prompt, and the next goal follows it (the exact body; one first-view call);
+   - every goal bar shows its provenance, with the bonus drawn apart as a pattern and named;
+   - Share coins go to the family's place (the exact body), and the Tutor's note is shown.
+3. Teen, Wallet:
+   - income is pre-split 6 / 5 / 1 by the usual split;
+   - the teen adds their own place, gives coins, and "I did it" needs a note, then logs it.
+
+Every configuration had zero axe violations, no panel overflow or page scroll, 48 px targets, a copy role on every text node and zero browser errors. Six captures were inspected in this session, including the es-MX dark 375 child goals (own and bonus segments, the celebration and the prompt), the pt-BR light 1280 Tutor Share places (the required note), the es-MX dark 375 split chooser, and the en-US dark 375 and pt-BR dark 1280 child Share.
+
+**Failures and their resolution:**
+- **The first PostgreSQL runs.** The verifier's own mistakes were fixed: a helper named a column before its migration existed; the stream refuses browser reads with a privilege error, not an empty result; `split_allocated` events also carry a goal id.
+- **A consent failure blocked the wallet.** The S07.1 full-chain run found that the analytics gate could block a wallet write: its shim's `auth.users` has no `is_anonymous`, and the gate's error aborted the allocation. The gate is now fail-closed and never blocking. The S07.4 verifier proves the coins land when the consent question fails.
+- **The goal-reached flip moved into the database.** The S07.1 full-chain run failed where it flipped a goal that S07.4 had already reached in the same transaction. The verifier now flips only when the goal is not yet reached, which keeps the S07.1 check valid for both chains.
+- **A retention function read as a row deletion.** The migration phase gate read the prune function's `DELETE` as a row deletion at apply time. It is now a `WITH ... DELETE ... RETURNING` inside the function, with a comment. The migration deletes nothing when applied, so it stays `expand`.
+- **The Share migration was too large for the operator transport.** `railway-migrate.test.mjs` failed on the single 33 KB Share migration: the Windows command line refused its base64 payload (`Argument list too long`), the limit S07.1 met. It is now two files, `share_gift_destinations` and `share_gift_flows`, and every verifier, gate and document names both.
+- **A clash with the analytics console's drift test.** `usageShared.test.ts` reads the last event IN-list CHECK of the migrations as the `learning_events` vocabulary, and the new stream's CHECK matched it. The stream's CHECK now uses `= ANY (ARRAY[...])`.
+- **Dark mode on nested surfaces.** A nested `.lf-rebuild` without its own `data-theme` resets the tokens to light, so the split chooser and the usual-split settings (inside a wrapper, and inside the teen wallet) would have rendered light in dark mode. Both now carry their own theme and language.
+- **Matrix findings:**
+  - `<option>` text had no copy role;
+  - the matrix's own state leaked from one journey into the next (the usual split and a settle count);
+  - the Share total was oversized at 375 px (2.5rem across three lines, now 1.5rem);
+  - a secondary button on a list row read as plain text in dark mode (now filled);
+  - a gift row showed a bare number (now "{count} coins").
+
+  One run stopped at its eleventh configuration on a blank page after navigation. The page was empty, with no assertion about the product. The complete re-run passed 12 of 12.
+
+**Cross-lane findings (not changed here):**
+- **H.1 / A.2.** A parent-created child under 13 whose Tutor gave a birth date carries the A.2 under-13 origin marker, because `record_age_declaration` marks it. So the H.1 optional-event gate never admits that child, even with the Tutor's analytics consent. The Block D diagnostics mirror that gate exactly, so they exclude that population. Whether a Tutor's consent should admit a child who is under 13 because the Tutor said so belongs to the H.1 and A.2 owners.
+- **The legacy statement card** does not show the new `given` line (wave-2 Banking rebuild).
+- **Unused legacy strings.** `tasks.kid.allocate*` and the legacy goal strings in `common.json` are no longer rendered (wave-2 cleanup).
+
+**Remaining limitations:**
+- No full Supabase (PostgREST/GoTrue) stack run of the new routes, triggers and RLS.
+- `database.ts` has not been regenerated (five new tables, one new column on `wallet_ledger` and one on `savings_goals`).
+- The five diagnostics have no production baseline yet (one release cycle).
+- The browser matrix uses a synthetic Core.
+- The first threshold review of the new keys.
+- Human Product/Safety review of the proposals above, and native review of the copy.
+- Appendix H Stage 5 (family usability testing of the split chooser, Share and the next-goal prompt) has not been run.
+
+D.13, D.14, D.15 and D.16 are not accepted.

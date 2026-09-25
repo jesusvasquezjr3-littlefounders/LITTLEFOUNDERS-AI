@@ -242,7 +242,10 @@ service(db, f"INSERT INTO public.tasks (id, assigned_by, assigned_to, title, rew
 service(db, f"UPDATE public.tasks SET status = 'done' WHERE id = '{task2}'")
 service(db, f"UPDATE public.tasks SET status = 'approved', decided_by = '{pa}', decided_at = now() WHERE id = '{task2}'")
 assert service(db, f"SELECT public.allocate_task_reward('{task2}', '{kid}', 6, 4, 0, '{kid}', '{goal}')") == 't'
-service(db, f"UPDATE public.savings_goals SET status = 'reached', reached_at = now() WHERE id = '{goal}'")
+# From S07.4 (wallet_usual_split) the allocation itself reaches a covered goal in
+# the same transaction; before it, Core flipped the status in a second step.
+if service(db, f"SELECT status FROM public.savings_goals WHERE id = '{goal}'") != 'reached':
+    service(db, f"UPDATE public.savings_goals SET status = 'reached', reached_at = now() WHERE id = '{goal}'")
 refused(lambda: service(db, f"UPDATE public.savings_goals SET status = 'active', reached_at = NULL WHERE id = '{goal}'"), 'GOAL_TRANSITION_FORBIDDEN')
 check('service role: a goal cannot be marked reached without tagged savings covering the target, cannot change its target, cannot be created reached and cannot move back to active')
 

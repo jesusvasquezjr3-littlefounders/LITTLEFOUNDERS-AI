@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { trackInsight } from '@/lib/insights';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, ProgressBar, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail, EvidenceUploadButton } from './EvidencePhoto';
-import { GOAL_ICONS, GOAL_ICON_GLYPH, type GoalIcon, type WalletBalances, type WireCatalogItem, type WireGoal, type WireLedgerEntry, type WireRedemption, type WireTask } from './types';
+import { type WalletBalances, type WireCatalogItem, type WireLedgerEntry, type WireRedemption, type WireTask } from './types';
 import { WalletActivityPanel } from './WalletActivityPanel';
 import { ChoreStreakPanel } from './ChoreStreakPanel';
+import { AllocationPanel } from './AllocationPanel';
+import { SavingsGoalsPanel } from './SavingsGoalsPanel';
+import { ShareGivingPanel } from './ShareGivingPanel';
+import { UsualSplitPanel } from './UsualSplitPanel';
 import { choreKindLine } from '../family/familyMoneyCopy';
 import { isStreakMilestone, type StreakMilestone } from '@/rebuild/family/familyMoneyApi';
 
@@ -33,7 +37,6 @@ type LoadState =
       status: 'ready';
       tasks: WireTask[];
       balances: WalletBalances;
-      goals: WireGoal[];
       catalog: WireCatalogItem[];
       redemptions: WireRedemption[];
       ledger: WireLedgerEntry[];
@@ -52,7 +55,9 @@ export function KidTaskBoard() {
   }, []);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
-  const [allocatingTaskId, setAllocatingTaskId] = useState<string | null>(null);
+  // S07.4: goals, the Share destination and the split chooser are rebuilt
+  // panels; a landed payout bumps them so a reached goal celebrates at once.
+  const [moneyVersion, setMoneyVersion] = useState(0);
   const [busyTask, setBusyTask] = useState<string | null>(null);
   const [busyRedemption, setBusyRedemption] = useState<string | null>(null);
   const [evidenceVersion, setEvidenceVersion] = useState(0);
@@ -71,10 +76,9 @@ export function KidTaskBoard() {
       const tok = await getToken();
       if (!tok || cancelled) return;
       setToken(tok);
-      const [tasksRes, walletRes, goalsRes, catalogRes, redemptionsRes, ledgerRes] = await Promise.all([
+      const [tasksRes, walletRes, catalogRes, redemptionsRes, ledgerRes] = await Promise.all([
         api<{ tasks: WireTask[] }>('/tasks/mine', { token: tok }),
         api<{ balances: WalletBalances }>('/tasks/wallet', { token: tok }),
-        api<{ goals: WireGoal[] }>('/tasks/goals', { token: tok }),
         api<{ items: WireCatalogItem[] }>('/tasks/catalog/available', { token: tok }),
         api<{ redemptions: WireRedemption[] }>('/tasks/redemptions/mine', { token: tok }),
         api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token: tok }),
@@ -82,8 +86,8 @@ export function KidTaskBoard() {
       if (cancelled) return;
       // Direct property accesses (not a merged variable) so TypeScript can
       // narrow each result's `.data` to non-null below.
-      if (tasksRes.error || walletRes.error || goalsRes.error || catalogRes.error || redemptionsRes.error || ledgerRes.error) {
-        const code = (tasksRes.error ?? walletRes.error ?? goalsRes.error ?? catalogRes.error ?? redemptionsRes.error ?? ledgerRes.error)?.code ?? 'INTERNAL';
+      if (tasksRes.error || walletRes.error || catalogRes.error || redemptionsRes.error || ledgerRes.error) {
+        const code = (tasksRes.error ?? walletRes.error ?? catalogRes.error ?? redemptionsRes.error ?? ledgerRes.error)?.code ?? 'INTERNAL';
         setState({ status: 'error', code });
         return;
       }
@@ -91,7 +95,6 @@ export function KidTaskBoard() {
         status: 'ready',
         tasks: tasksRes.data.tasks,
         balances: walletRes.data.balances,
-        goals: goalsRes.data.goals,
         catalog: catalogRes.data.items,
         redemptions: redemptionsRes.data.redemptions,
         ledger: ledgerRes.data.entries,
@@ -144,29 +147,17 @@ export function KidTaskBoard() {
   }
 
   async function onAllocated(task: WireTask) {
-    setAllocatingTaskId(null);
     setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === task.id ? { ...tt, allocated: true } : tt)) } : prev));
+    setMoneyVersion((v) => v + 1);
+    await refreshMoney();
+  }
+
+  /** Pockets and history after a payout or a Share gift. */
+  async function refreshMoney() {
     await refreshWallet();
     if (!token) return;
-    const [goalsRes, ledgerRes] = await Promise.all([
-      api<{ goals: WireGoal[] }>('/tasks/goals', { token }),
-      api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token }),
-    ]);
-    if (goalsRes.data) setState((prev) => (prev.status === 'ready' ? { ...prev, goals: goalsRes.data.goals } : prev));
+    const ledgerRes = await api<{ entries: WireLedgerEntry[] }>('/tasks/wallet/ledger', { token });
     if (ledgerRes.data) setState((prev) => (prev.status === 'ready' ? { ...prev, ledger: ledgerRes.data.entries } : prev));
-  }
-
-  function onCreateGoal(goal: WireGoal) {
-    setState((prev) => (prev.status === 'ready' ? { ...prev, goals: [goal, ...prev.goals] } : prev));
-  }
-
-  async function onArchiveGoal(goalId: string, title: string) {
-    if (!token) return;
-    const res = await api<{ goal: WireGoal }>(`/tasks/goals/${goalId}`, { method: 'PATCH', token });
-    if (res.data) {
-      setState((prev) => (prev.status === 'ready' ? { ...prev, goals: prev.goals.filter((g) => g.id !== goalId) } : prev));
-      announce(t('tasks.kid.goalArchivedAnnounce', { title }));
-    }
   }
 
   async function onRedeem(catalogId: string) {
@@ -180,7 +171,6 @@ export function KidTaskBoard() {
   if (state.status === 'loading') return <LoadingOverlay label={t('tasks.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} onRetry={() => setReloadKey((k) => k + 1)} />;
 
-  const activeGoals = state.goals.filter((g) => g.status !== 'archived');
   const openTasks = state.tasks.filter((tt) => tt.status === 'open');
   const doneTasks = state.tasks.filter((tt) => tt.status === 'done');
   // S07.3 (D.10): a zero-coin family contribution has nothing to split.
@@ -205,6 +195,9 @@ export function KidTaskBoard() {
       const title = entry.redemptionId ? catalogTitleByRedemptionId.get(entry.redemptionId) : undefined;
       return title ? t('tasks.kid.activitySpent', { title }) : t('tasks.kid.activitySpentUntitled');
     }
+    // S07.4 (D.14): coins directed to a Share destination are never an "adjustment".
+    if (entry.reason === 'share_gift') return t('tasks.kid.activityShared');
+    if (entry.reason === 'share_gift_returned') return t('tasks.kid.activityShareReturned');
     return t('tasks.kid.activityAdjustment');
   }
 
@@ -242,28 +235,15 @@ export function KidTaskBoard() {
         <Icon name="arrow_forward" className="text-[16px]" aria-hidden />
       </Link>
 
+      {/* S07.4 (D.13): each payout arrives pre-split by the child's own usual split; keeping it is one tap. */}
       {toAllocate.length > 0 && (
         <div className="flex flex-col gap-3">
-          {toAllocate.map((task) =>
-            allocatingTaskId === task.id ? (
-              <AllocateCard key={task.id} task={task} goals={activeGoals} token={token} onDone={() => void onAllocated(task)} onCancel={() => setAllocatingTaskId(null)} />
-            ) : (
-              <Card key={task.id} className="flex items-center gap-3 border-2 border-accent/60 bg-accent-soft p-4">
-                <span className="lf-tile h-9 w-9 shrink-0 text-accent">
-                  <Icon name="celebration" aria-hidden />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="lf-label block truncate text-content">{task.title}</span>
-                  <span className="lf-caption block text-content-faint">{t('tasks.kid.allocateTitle', { count: task.rewardCoins })}</span>
-                </span>
-                <Button type="button" variant="primary" className="min-h-9 shrink-0 px-3 lf-caption" onClick={() => setAllocatingTaskId(task.id)}>
-                  {t('tasks.kid.allocateCta')}
-                </Button>
-              </Card>
-            ),
-          )}
+          {toAllocate.map((task) => (
+            <AllocationPanel key={task.id} token={token} kind="task" id={task.id} amount={task.rewardCoins} title={task.title} onDone={() => void onAllocated(task)} />
+          ))}
         </div>
       )}
+      <UsualSplitPanel token={token} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <section aria-labelledby="kid-tasks-heading">
@@ -309,44 +289,11 @@ export function KidTaskBoard() {
         </section>
 
         <div className="flex flex-col gap-6">
-          <section aria-labelledby="kid-goals-heading">
-            <SectionHeading id="kid-goals-heading" icon="savings" tone="success">
-              {t('tasks.kid.goalsTitle')}
-            </SectionHeading>
-            {activeGoals.length === 0 ? (
-              <Card className="flex flex-col items-center gap-2 p-6 text-center">
-                <Icon name="savings" className="text-[28px] text-content-faint" aria-hidden />
-                <p className="lf-caption text-content-muted">{t('tasks.kid.goalEmptyBody')}</p>
-              </Card>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {activeGoals.map((goal) => (
-                  <li
-                    key={goal.id}
-                    className={`flex flex-col gap-2 rounded-lg border px-4 py-3 shadow-glass-sm ${goal.status === 'reached' ? 'border-2 border-success/60 bg-success-soft' : 'border-outline/70 bg-surface'}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Icon name={goal.status === 'reached' ? 'emoji_events' : GOAL_ICON_GLYPH[goal.icon]} className="shrink-0 text-[18px] text-success" aria-hidden />
-                      <span className="min-w-0 flex-1">
-                        <span className="lf-label block truncate text-content">{goal.title}</span>
-                        <span className="lf-caption block text-content-faint">{goal.status === 'reached' ? t('tasks.kid.goalReached') : `${goal.saved} / ${goal.target}`}</span>
-                      </span>
-                      <ConfirmButton
-                        variant="secondary"
-                        className="min-h-8 shrink-0 px-2.5 lf-caption"
-                        confirmQuestion={t('tasks.kid.goalArchiveConfirmQuestion')}
-                        onConfirm={() => void onArchiveGoal(goal.id, goal.title)}
-                      >
-                        {t('tasks.kid.goalArchive')}
-                      </ConfirmButton>
-                    </div>
-                    <ProgressBar value={(goal.saved / goal.target) * 100} label={goal.title} tone={goal.status === 'reached' ? 'accent' : 'primary'} />
-                  </li>
-                ))}
-              </ul>
-            )}
-            <AddGoalCard token={token} onCreated={onCreateGoal} />
-          </section>
+          {/* S07.4 (D.15, D.16): goals with provenance and the next-goal prompt. */}
+          <SavingsGoalsPanel token={token} refreshKey={moneyVersion} />
+
+          {/* S07.4 (D.14): the Share pocket's real destination. */}
+          <ShareGivingPanel token={token} refreshKey={moneyVersion} onChanged={() => void refreshMoney()} />
 
           <section aria-labelledby="kid-rewards-heading">
             <SectionHeading id="kid-rewards-heading" icon="redeem" tone="delight">
@@ -414,148 +361,3 @@ export function KidTaskBoard() {
     </div>
   );
 }
-
-function AllocateCard({
-  task,
-  goals,
-  token,
-  onDone,
-  onCancel,
-}: {
-  task: WireTask;
-  goals: WireGoal[];
-  token: string | null;
-  onDone: () => void;
-  onCancel: () => void;
-}) {
-  const { t } = useTranslation();
-  const [save, setSave] = useState(task.rewardCoins);
-  const [spend, setSpend] = useState(0);
-  const [share, setShare] = useState(0);
-  const [goalId, setGoalId] = useState<string>('');
-  const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-
-  const total = save + spend + share;
-  const remaining = task.rewardCoins - total;
-  const ready = total === task.rewardCoins && save >= 0 && spend >= 0 && share >= 0;
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!ready || submitting || !token) return;
-    setSubmitting(true);
-    setErrorCode(null);
-    const res = await api<{ allocated: boolean }>(`/tasks/${task.id}/allocate`, {
-      method: 'POST',
-      token,
-      body: { save, spend, share, goalId: save > 0 && goalId ? goalId : null },
-    });
-    setSubmitting(false);
-    if (res.error) {
-      setErrorCode(res.error.code);
-      return;
-    }
-    onDone();
-  }
-
-  return (
-    <Card className="flex flex-col gap-4 border-2 border-accent/60 p-5">
-      <div>
-        <h2 className="lf-title text-content">{t('tasks.kid.allocateTitle', { count: task.rewardCoins })}</h2>
-        <p className="lf-body text-content-muted">{t('tasks.kid.allocateBody')}</p>
-      </div>
-      <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-4">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Field label={t('tasks.kid.save')} type="number" min={0} max={task.rewardCoins} value={save} onChange={(e) => setSave(Number(e.target.value))} />
-          <Field label={t('tasks.kid.spend')} type="number" min={0} max={task.rewardCoins} value={spend} onChange={(e) => setSpend(Number(e.target.value))} />
-          <Field label={t('tasks.kid.share')} type="number" min={0} max={task.rewardCoins} value={share} onChange={(e) => setShare(Number(e.target.value))} />
-        </div>
-        {save > 0 && goals.length > 0 && (
-          <div className="flex flex-col gap-1.5">
-            <span className="lf-label text-content">{t('tasks.kid.allocateGoal')}</span>
-            <Dropdown
-              value={goalId}
-              options={[{ value: '', label: t('tasks.kid.allocateNoGoal') }, ...goals.map((g) => ({ value: g.id, label: g.title }))]}
-              onChange={setGoalId}
-              ariaLabel={t('tasks.kid.allocateGoal')}
-            />
-          </div>
-        )}
-        <p className={`lf-caption ${remaining === 0 ? 'text-success' : 'text-content-muted'}`}>
-          {remaining > 0 ? t('tasks.kid.allocateRemaining', { count: remaining }) : remaining < 0 ? t('tasks.kid.allocateTooMuch') : null}
-        </p>
-        {errorCode && <ErrorBanner code={errorCode} />}
-        <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={onCancel}>
-            {t('tasks.parent.cancel')}
-          </Button>
-          <Button type="submit" variant="primary" disabled={!ready || submitting}>
-            {submitting ? t('tasks.kid.allocateSubmitting') : t('tasks.kid.allocateSubmit')}
-          </Button>
-        </div>
-      </form>
-    </Card>
-  );
-}
-
-function AddGoalCard({ token, onCreated }: { token: string | null; onCreated: (goal: WireGoal) => void }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [target, setTarget] = useState(50);
-  const [icon, setIcon] = useState<GoalIcon>('star');
-  const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-
-  const ready = title.trim().length > 0 && target >= 1;
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!ready || submitting || !token) return;
-    setSubmitting(true);
-    setErrorCode(null);
-    const res = await api<{ goal: WireGoal }>('/tasks/goals', { method: 'POST', token, body: { title: title.trim(), target, icon } });
-    setSubmitting(false);
-    if (res.error) {
-      setErrorCode(res.error.code);
-      return;
-    }
-    onCreated(res.data.goal);
-    setTitle('');
-    setTarget(50);
-    setOpen(false);
-  }
-
-  if (!open) {
-    return (
-      <Button type="button" variant="secondary" className="mt-2 min-h-9 px-3 lf-caption" onClick={() => setOpen(true)}>
-        <Icon name="add" className="mr-1.5 text-[16px]" aria-hidden />
-        {t('tasks.kid.goalsAddCta')}
-      </Button>
-    );
-  }
-
-  return (
-    <Card className="mt-2 flex flex-col gap-4 p-5">
-      <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-4">
-        <Field label={t('tasks.kid.goalTitle')} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} />
-        <Field label={t('tasks.kid.goalTarget')} type="number" min={1} max={100000} value={target} onChange={(e) => setTarget(Number(e.target.value))} />
-        <div className="flex flex-col gap-1.5">
-          <span className="lf-label text-content">{t('tasks.kid.goalIcon')}</span>
-          <Dropdown value={icon} options={GOAL_ICONS.map((i) => ({ value: i, label: t(`tasks.goalIcons.${i}`) }))} onChange={(v) => setIcon(v as GoalIcon)} ariaLabel={t('tasks.kid.goalIcon')} />
-        </div>
-        {errorCode && <ErrorBanner code={errorCode} />}
-        <div className="flex gap-2">
-          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-            {t('tasks.parent.cancel')}
-          </Button>
-          <Button type="submit" variant="primary" disabled={!ready || submitting}>
-            {submitting ? t('tasks.kid.goalSubmitting') : t('tasks.kid.goalSubmit')}
-          </Button>
-        </div>
-      </form>
-    </Card>
-  );
-}
-
-export default KidTaskBoard;

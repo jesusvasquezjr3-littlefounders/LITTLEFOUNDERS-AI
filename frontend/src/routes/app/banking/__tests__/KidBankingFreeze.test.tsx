@@ -8,6 +8,14 @@ vi.mock('@/lib/api', () => ({ api: mocks.api }));
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: mocks.getToken, session: { user: { id: 'kid' } } }) }));
 // S07.3's rebuilt bonus explainer has its own tests (rebuild/family/FamilyMoney.test.tsx).
 vi.mock('../SavingsBonusPanel', () => ({ SavingsBonusPanel: () => null }));
+// S07.4's rebuilt goals, usual split and split chooser have their own tests
+// (rebuild/family/MoneyHabits.test.tsx, routes/app/tasks/__tests__/MoneyHabitsPanels.test.tsx);
+// here the page only has to hand the freeze to the payout's split control.
+vi.mock('../../tasks/SavingsGoalsPanel', () => ({ SavingsGoalsPanel: () => null }));
+vi.mock('../../tasks/UsualSplitPanel', () => ({ UsualSplitPanel: () => null }));
+vi.mock('../../tasks/AllocationPanel', () => ({
+  AllocationPanel: ({ frozen }: { frozen?: boolean }) => <button type="button" disabled={frozen}>Split them</button>,
+}));
 beforeEach(async () => { mocks.api.mockReset(); await i18n.changeLanguage('en-US'); });
 function fixture(owner = 'parent', failure = false) {
   let frozen = true;
@@ -30,7 +38,7 @@ function fixture(owner = 'parent', failure = false) {
 it('preserves pending credit and explains the hold while disabling guardian unfreeze', async () => {
   fixture();
   expect(await screen.findByText('Your credits stay here while the card is frozen. You can split them after it is unfrozen.')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Sort your reward' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Split them' })).toBeDisabled();
   fireEvent.click(screen.getByRole('button', { name: 'Card details' }));
   const toggle = screen.getByRole('switch', { name: 'Freeze this card' });
   expect(toggle).toBeDisabled(); fireEvent.click(toggle);
@@ -41,7 +49,7 @@ it('resumes allocation controls only after successful own-freeze release', async
   fireEvent.click(screen.getByRole('button', { name: 'Card details' }));
   fireEvent.click(screen.getByRole('switch', { name: 'Freeze this card' }));
   await waitFor(() => expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false'));
-  expect(screen.getByRole('button', { name: 'Sort your reward' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Split them' })).toBeEnabled();
 });
 it('shows a failed unfreeze and retains the confirmed frozen state and credits', async () => {
   fixture('kid', true); await screen.findByText('Synthetic account');
@@ -49,5 +57,5 @@ it('shows a failed unfreeze and retains the confirmed frozen state and credits',
   fireEvent.click(screen.getByRole('switch', { name: 'Freeze this card' }));
   await screen.findByRole('alert');
   expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
-  expect(screen.getByRole('button', { name: 'Sort your reward' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Split them' })).toBeDisabled();
 });

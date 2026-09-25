@@ -6,6 +6,7 @@ import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { TeenWallet } from '@/rebuild/wallet/TeenWallet';
 import { invalidateWalletAccess } from './useWalletAccess';
+import { moneyHabitsCopy } from '../family/moneyHabitsCopy';
 import type { Session, Transport } from '@/rebuild/wallet/walletApi';
 import en from '@/i18n/en-US/teenWallet.json';
 import es from '@/i18n/es-MX/teenWallet.json';
@@ -33,7 +34,7 @@ export function TeenWalletPage() {
     return { token: 'session', transport };
   }, [getToken]);
 
-  return <TeenWallet copy={copy} locale={locale} dark={isDark} session={session} tasksHref="/tasks" onOpenTasks={() => navigate('/tasks')}
+  return <TeenWallet copy={copy} habits={moneyHabitsCopy(locale)} locale={locale} dark={isDark} session={session} tasksHref="/tasks" onOpenTasks={() => navigate('/tasks')}
     onAccessChanged={invalidateWalletAccess}
     inviteLinkFor={(token) => `${window.location.origin}/family?join=${encodeURIComponent(token)}`}
     copyText={async (text) => {

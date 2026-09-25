@@ -8,6 +8,8 @@
  * shared Core client), so this layer imports nothing outside the rebuild.
  */
 
+import { isProgress, type GoalProgressParts } from './moneyHabitsApi';
+
 export type TransportResult = { data: unknown; error: null } | { data: null; error: { code: string } };
 export type Transport = (path: string, options: { token: string; method?: 'GET' | 'POST' | 'PATCH' | 'PUT'; body?: unknown }) => Promise<TransportResult>;
 export interface Session { token: string | null; transport: Transport }
@@ -104,12 +106,13 @@ export function postWalletAdjustment(kidId: string, input: { bucket: Bucket; amo
     (data): data is { actionId: string } => isUuid((data as { actionId?: unknown })?.actionId), { method: 'POST', body: input });
 }
 
-export interface KidGoal { id: string; title: string; target: number; status: 'active' | 'reached' | 'archived'; saved: number }
+/** S07.4 (D.16): a goal always arrives with its provenance; one without it is refused, never shown as a mixed number. */
+export interface KidGoal { id: string; title: string; target: number; status: 'active' | 'reached' | 'archived'; saved: number; progress: GoalProgressParts }
 
 function isGoal(value: unknown): value is KidGoal {
   const g = value as KidGoal;
   return typeof value === 'object' && value !== null && isUuid(g.id) && typeof g.title === 'string' && isInt(g.target) && isInt(g.saved)
-    && ['active', 'reached', 'archived'].includes(g.status);
+    && ['active', 'reached', 'archived'].includes(g.status) && isProgress(g.progress) && g.progress.total === g.saved;
 }
 
 export function fetchKidGoals(kidId: string, session: Session) {
@@ -156,10 +159,11 @@ export function fulfillRedemption(redemptionId: string, session: Session) {
 
 // S07.2: a teen who linked a parent keeps their own entries (logged income,
 // a personal reward, coins moved out of their own goal) on the same history.
+// S07.4 (D.14): coins directed to a Share destination, and a pledge that came back.
 export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'goal_withdrawal' | 'allowance' | 'savings_bonus'
-  | 'self_income' | 'personal_reward' | 'goal_release';
+  | 'self_income' | 'personal_reward' | 'goal_release' | 'share_gift' | 'share_gift_returned';
 const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 'manual_adjustment', 'goal_withdrawal', 'allowance', 'savings_bonus',
-  'self_income', 'personal_reward', 'goal_release'];
+  'self_income', 'personal_reward', 'goal_release', 'share_gift', 'share_gift_returned'];
 
 export interface LedgerEntry { id: number; bucket: Bucket; amount: number; reason: LedgerReason; note: string | null; createdAt: string }
 

@@ -33,7 +33,9 @@
     "invalidAmount": "Enter 1 to 1000 coins.",
     "splitMismatch": "Split all {n} coins first.",
     "frozen": "Your account is frozen for now.",
-    "failed": "Could not add the coins. Try again."
+    "failed": "Could not add the coins. Try again.",
+    "useUsual": "Use my split",
+    "usualNote": "Filled in with your usual split. Change any pocket."
   },
   "goals": {
     "open": "Goals",
@@ -94,7 +96,9 @@
     "tutorGoalMove": "Tutor moved goal coins",
     "familyAllowance": "Family allowance",
     "bonus": "Savings bonus",
-    "note": "Tutor's reason: {note}"
+    "note": "Tutor's reason: {note}",
+    "shared": "Coins you shared",
+    "shareBack": "Shared coins came back"
   },
   "parents": {
     "open": "Parents",

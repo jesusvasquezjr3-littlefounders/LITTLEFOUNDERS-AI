@@ -24,6 +24,8 @@ Cluster selection (never the shared Docker stack):
   LF_PG_USER  superuser (default audit_owner)
   LF_PG_DATA  the data directory the server must report (ownership check)
   LF_PG_REPORT report path (default audit-results/s07-teen-wallet-postgres.json)
+  LF_PG_FULL_CHAIN=1  run every check over the WHOLE migration chain (later
+               checkpoints redefine the ledger guard and teen_log_income)
 """
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -43,7 +45,12 @@ MIGRATIONS = sorted((ROOT / 'database/migrations').glob('*.sql'))
 S07_2_PARTS = ['_independent_teen_wallet_schema.sql', '_independent_teen_wallet_guards.sql', '_independent_teen_wallet_ledger.sql',
                '_independent_teen_wallet_flows.sql', '_independent_teen_guardian_link.sql']
 PARTS = [next(m for m in MIGRATIONS if m.name.endswith(suffix)) for suffix in S07_2_PARTS]
-TARGET = PARTS[-1]
+# LF_PG_FULL_CHAIN=1 runs every S07.2 check over the WHOLE migration chain
+# (later checkpoints redefine the ledger guard and teen_log_income; the S07.2
+# rules must still hold), and replays every migration from the first S07.2 part.
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
+REPLAY = MIGRATIONS[MIGRATIONS.index(PARTS[0]):] if FULL_CHAIN else PARTS
 BASE = [str(BIN / 'psql.exe' if (BIN / 'psql.exe').exists() else BIN / 'psql'), '-X', '-h', '127.0.0.1', '-p', PORT,
         '-U', USER, '-v', 'ON_ERROR_STOP=1', '-Atq']
 
@@ -93,7 +100,7 @@ def fresh(upto):
 
 
 def replay(database):
-    for part in PARTS:
+    for part in REPLAY:
         sql(part.read_text(encoding='utf-8'), database)
 
 
@@ -481,6 +488,7 @@ report = {
     'database': db,
     'reproduction_database': before,
     'migrations': [part.name for part in PARTS],
+    'applied_through': TARGET.name,
     'checks': checks,
     'provenance': 'Actual migration chain on fresh native PostgreSQL with a minimal Supabase role/auth shim; '
                   'browser roles exercised through SET ROLE with request.jwt claims, concurrency through parallel '

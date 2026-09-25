@@ -285,7 +285,9 @@
       "activitySpent": "Gastou em \"{{title}}\"",
       "activitySpentUntitled": "Gastou em uma recompensa",
       "activityAdjustment": "Ajuste",
-      "streakLabel": "Sequência de {{count}} dias"
+      "streakLabel": "Sequência de {{count}} dias",
+      "activityShared": "Moedas que você compartilhou",
+      "activityShareReturned": "Moedas compartilhadas voltaram"
     },
     "goalIcons": {
       "star": "Estrela",
@@ -327,7 +329,9 @@
       "reasonAllowance": "Mesada",
       "reasonSavingsBonus": "Bônus que sua família adicionou",
       "redeemLink": "Resgate suas LF Coins em Tarefas",
-      "frozenHold": "Seus créditos ficam aqui enquanto o cartão está congelado. Você poderá dividi-los quando ele for descongelado."
+      "frozenHold": "Seus créditos ficam aqui enquanto o cartão está congelado. Você poderá dividi-los quando ele for descongelado.",
+      "reasonShareGift": "Moedas que você compartilhou",
+      "reasonShareReturned": "Moedas compartilhadas voltaram"
     },
     "statement": {
       "title": "Extrato",

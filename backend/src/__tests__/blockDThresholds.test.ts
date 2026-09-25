@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { REST_DAYS_PER_WEEK, STREAK_MILESTONES } from '../services/choreStreak.js';
 import { BONUS_PER_TEN_COINS, BONUS_PER_TEN_RATE_BP, BONUS_PER_TEN_UNIT, MAX_BONUS_RATE_BP, PERCENT_FRAMING_MIN_AGE } from '../services/savingsBonus.js';
 import { MAX_CONTRIBUTION_COINS, PAUSE_MAX_BACKDATE_DAYS, PAUSE_MAX_DAYS, PAUSE_MAX_LEAD_DAYS } from '../routes/tasks.js';
+import { RECOMMENDED_SAVE_PCT, RECOMMENDED_SHARE_PCT, RECOMMENDED_SPEND_PCT, RECOMMENDED_SPLIT, SHARE_COMPLETION_WINDOW_DAYS, SHARE_GIFT_MAX_COINS } from '../services/moneyHabits.js';
 
 /*
  * Appendix H's Block D Threshold Recalibration Log is enforced, not only
@@ -44,10 +45,23 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'chore_streak.pause_max_days',
       'chore_streak.pause_max_lead_days',
       'chore_streak.rest_days_per_week',
+      'money_events.retention_days',
+      'next_goal.prompt_window_days',
+      'post_goal.after_days',
+      'post_goal.baseline_days',
+      'redemption_timing.first_bin_hours',
+      'redemption_timing.second_bin_hours',
+      'redemption_timing.third_bin_hours',
       'savings_bonus.max_rate_bp',
       'savings_bonus.per_ten_coins',
       'savings_bonus.per_ten_unit',
       'savings_bonus.percent_min_age',
+      'share.completion_window_days',
+      'share.destination_limit',
+      'share.gift_max_coins',
+      'split.recommended_save_pct',
+      'split.recommended_share_pct',
+      'split.recommended_spend_pct',
     ]);
   });
 
@@ -93,6 +107,24 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
     const max = num('savings_bonus.max_rate_bp');
     expect(max).toBe(MAX_BONUS_RATE_BP);
     expect(migration('_banca_digital')).toContain(`rate_bp between 0 and ${max}`);
+  });
+
+  it('matches the S07.4 recommended split, Share bounds and diagnostic windows in Core and in the database', () => {
+    const split = migration('_wallet_usual_split');
+    const share = migration('_share_gift_destinations');
+    const events = migration('_family_money_events');
+    expect([num('split.recommended_save_pct'), num('split.recommended_spend_pct'), num('split.recommended_share_pct')])
+      .toEqual([RECOMMENDED_SAVE_PCT, RECOMMENDED_SPEND_PCT, RECOMMENDED_SHARE_PCT]);
+    expect(RECOMMENDED_SPLIT.save + RECOMMENDED_SPLIT.spend + RECOMMENDED_SPLIT.share).toBe(100);
+    expect(split).toContain(`SELECT ${RECOMMENDED_SAVE_PCT} AS save_pct, ${RECOMMENDED_SPEND_PCT} AS spend_pct, ${RECOMMENDED_SHARE_PCT} AS share_pct`);
+    expect(num('share.gift_max_coins')).toBe(SHARE_GIFT_MAX_COINS);
+    expect(share).toContain(`amount BETWEEN 1 AND ${SHARE_GIFT_MAX_COINS}`);
+    expect(share).toMatch(new RegExp(`>= ${num('share.destination_limit')} THEN\\s+RAISE EXCEPTION 'SHARE_DESTINATION_LIMIT'`));
+    expect(num('share.completion_window_days')).toBe(SHARE_COMPLETION_WINDOW_DAYS);
+    expect(migration('_share_gift_flows')).toContain(`p_window_days int DEFAULT ${SHARE_COMPLETION_WINDOW_DAYS}`);
+    expect(migration('_share_gift_flows')).toContain(`p_amount NOT BETWEEN 1 AND ${SHARE_GIFT_MAX_COINS}`);
+    expect(events).toContain(`p_retain_days int DEFAULT ${num('money_events.retention_days')}`);
+    expect(events).toContain(`(1, '0_24h', 0, ${num('redemption_timing.first_bin_hours')})`);
   });
 
   it('keeps a review history with a dated first entry', () => {

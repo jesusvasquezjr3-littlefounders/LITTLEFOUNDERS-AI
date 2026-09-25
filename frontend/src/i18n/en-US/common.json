@@ -285,7 +285,9 @@
       "activitySpent": "Spent on \"{{title}}\"",
       "activitySpentUntitled": "Spent on a reward",
       "activityAdjustment": "Adjustment",
-      "streakLabel": "{{count}}-day streak"
+      "streakLabel": "{{count}}-day streak",
+      "activityShared": "Coins you shared",
+      "activityShareReturned": "Shared coins came back"
     },
     "goalIcons": {
       "star": "Star",
@@ -327,7 +329,9 @@
       "reasonAllowance": "Allowance",
       "reasonSavingsBonus": "Bonus your family added",
       "redeemLink": "Redeem LF Coins on Tasks",
-      "frozenHold": "Your credits stay here while the card is frozen. You can split them after it is unfrozen."
+      "frozenHold": "Your credits stay here while the card is frozen. You can split them after it is unfrozen.",
+      "reasonShareGift": "Coins you shared",
+      "reasonShareReturned": "Shared coins came back"
     },
     "statement": {
       "title": "Statement",

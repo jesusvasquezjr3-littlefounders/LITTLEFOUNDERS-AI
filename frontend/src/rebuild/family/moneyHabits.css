@@ -1,0 +1,73 @@
+/* S07.4 money-habit surfaces (D.13-D.16). Tokens only; separation by fill, never outline; pockets use the wallet identity hues (Bible 02 §4). */
+.lf-money-habits [data-pocket='save'], .lf-money-habits[data-pocket='save'] { --pocket: var(--mint); --pocket-soft: var(--mint-soft); }
+.lf-money-habits [data-pocket='spend'] { --pocket: var(--sky); --pocket-soft: var(--sky-soft); }
+.lf-money-habits [data-pocket='share'], .lf-money-habits[data-pocket='share'] { --pocket: var(--berry); --pocket-soft: var(--berry-soft); }
+.lf-family-hub .lf-money-habits-pockets { display: grid; gap: var(--spacing-2); }
+.lf-family-hub .lf-money-habits-pockets li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--pocket-soft);
+  color: var(--content);
+}
+.lf-money-habits-swatch { inline-size: 16px; block-size: 16px; border-radius: var(--rounded-full); background: var(--pocket); flex-shrink: 0; }
+.lf-money-habits-pocket-name { flex: 1 1 6rem; font-weight: 800; }
+.lf-money-habits-count { min-inline-size: 3ch; text-align: center; font: 700 1.5rem/1 Fredoka, sans-serif; font-variant-numeric: tabular-nums; }
+.lf-money-habits-pockets .lf-button { min-inline-size: var(--target-base); padding-inline: var(--spacing-3); background: var(--surface); }
+.lf-money-habits input, .lf-money-habits select, .lf-money-habits textarea {
+  min-block-size: var(--target-base);
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  font: inherit;
+}
+.lf-money-habits .lf-money-habits-input { inline-size: 6rem; flex: 0 0 auto; text-align: center; background: var(--surface); }
+.lf-money-habits :is(input, select, textarea):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+.lf-money-habits :is(input, select, textarea)[aria-invalid='true'] { box-shadow: inset 0 0 0 3px var(--error-strong); }
+.lf-money-habits .lf-field { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-money-habits .lf-field label { font-weight: 700; }
+.lf-money-habits-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  color: var(--content);
+  font-size: .875rem;
+  font-weight: 800;
+}
+.lf-family-hub li .lf-money-habits-chip { background: var(--surface); }
+.lf-money-habits-available { font: 700 1.5rem/1.2 Fredoka, sans-serif; }
+/* A secondary control on a list row gets its own fill, so it never reads as plain text in dark mode. */
+.lf-money-habits li .lf-button--secondary { background: var(--sunken); }
+.lf-money-habits-next { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--reward-soft); color: var(--content); }
+.lf-money-habits-next .lf-family-money-milestone { background: var(--surface); }
+.lf-money-habits-next input { background: var(--surface); }
+
+/* D.16: a goal's progress by provenance. Own coins are solid; bonus coins are
+   striped; Tutor coins are dotted; each is also named in the legend, so the
+   difference never rests on colour alone. */
+.lf-goal-progress { display: grid; gap: var(--spacing-2); }
+.lf-goal-progress-bar {
+  display: flex;
+  block-size: 16px;
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  overflow: hidden;
+}
+.lf-goal-progress-part { block-size: 100%; }
+.lf-goal-progress-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-4); align-items: center; }
+.lf-goal-progress-legend > span { display: inline-flex; gap: var(--spacing-2); align-items: center; font-weight: 700; }
+.lf-goal-progress-total { font-family: Fredoka, sans-serif; }
+.lf-goal-progress-key { inline-size: 16px; block-size: 16px; border-radius: var(--rounded-sm); flex-shrink: 0; }
+.lf-goal-progress [data-part='own'] { background: var(--mint-strong); }
+.lf-goal-progress [data-part='bonus'] { background: repeating-linear-gradient(135deg, var(--reward-strong) 0 4px, var(--reward-soft) 4px 8px); }
+.lf-goal-progress [data-part='family'] { background: radial-gradient(circle, var(--sky-strong) 2px, var(--sky-soft) 2.5px) 0 0 / 6px 6px; }

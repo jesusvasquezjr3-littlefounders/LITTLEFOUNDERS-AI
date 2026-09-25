@@ -20,7 +20,6 @@ import {
   getCatalogForParent,
   getCatalogItemById,
   getGoalById,
-  getGoalProgress,
   getGoalsForKid,
   getSpendLimit,
   getSpendUsedThisPeriod,
@@ -40,7 +39,6 @@ import {
   insertGoal,
   insertRedemption,
   insertTask,
-  markGoalReached,
   setCatalogItemActive,
   setTaskEvidence,
   transitionTaskStatus,
@@ -50,6 +48,29 @@ import {
   type TaskRow,
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
+import {
+  archiveShareDestination,
+  createShareDestination,
+  declineNextStep,
+  DESTINATION_KINDS,
+  getGoalBreakdowns,
+  getNextSteps,
+  getShareDestination,
+  getShareGift,
+  listShareDestinations,
+  listShareGifts,
+  markNextStepSeen,
+  pledgeShareGift,
+  readUsualSplit,
+  RECOMMENDED_SPLIT,
+  SHARE_GIFT_MAX_COINS,
+  setUsualSplit,
+  settleShareGift,
+  type DestinationRow,
+  type GiftRow,
+  type GoalProgress,
+  type NextStepRow,
+} from '../services/moneyHabits.js';
 import {
   adjustWalletAsGuardian,
   fulfillRedemptionAsGuardian,
@@ -120,7 +141,15 @@ function hasEvidence(t: Pick<TaskRow, 'evidence_bucket' | 'evidence_hash' | 'evi
   return t.evidence_bucket !== null && t.evidence_hash !== null && t.evidence_ext !== null;
 }
 
-function toWireGoal(g: GoalRow, saved: number) {
+/*
+ * S07.4 (D.16): a goal's progress always travels with its provenance — the
+ * child's own coins, bonus coins and Tutor coins — so no display can show one
+ * mixed number. `saved` stays (the total) for older clients. (D.15) the next
+ * step of a reached goal: whether "what's your next goal?" is still due.
+ */
+const EMPTY_PROGRESS: GoalProgress = { own: 0, bonus: 0, family: 0, total: 0 };
+
+function toWireGoal(g: GoalRow, progress: GoalProgress, nextStep: NextStepRow | null = null) {
   return {
     id: g.id,
     kidUserId: g.kid_user_id,
@@ -130,8 +159,74 @@ function toWireGoal(g: GoalRow, saved: number) {
     status: g.status,
     createdAt: g.created_at,
     reachedAt: g.reached_at,
-    saved,
+    followsGoalId: g.follows_goal_id ?? null,
+    saved: progress.total,
+    progress,
+    nextStep: nextStep ? { state: nextStep.state, nextGoalId: nextStep.next_goal_id } : null,
   };
+}
+
+/** Goals with their provenance and next steps; null = unreadable (refused, never shown as a mixed or empty number). */
+async function goalsWithProgress(goals: GoalRow[]) {
+  const ids = goals.map((g) => g.id);
+  const [breakdowns, steps] = await Promise.all([getGoalBreakdowns(ids), getNextSteps(ids)]);
+  if (breakdowns === null || steps === null) return null;
+  return goals.map((g) => toWireGoal(g, breakdowns.get(g.id) ?? EMPTY_PROGRESS, steps.get(g.id) ?? null));
+}
+
+async function oneGoalWithProgress(g: GoalRow) {
+  const wire = await goalsWithProgress([g]);
+  return wire ? wire[0]! : null;
+}
+
+function toWireDestination(d: DestinationRow) {
+  return { id: d.id, title: d.title, kind: d.kind, chosenBy: d.chosen_by, status: d.status, createdAt: d.created_at };
+}
+
+/** Who settled a gift is shared as the child themself or "a Tutor" only. */
+function toWireGift(g: GiftRow) {
+  return {
+    id: g.id,
+    destinationId: g.destination_id,
+    amount: g.amount,
+    status: g.status,
+    pledgedAt: g.pledged_at,
+    settledAt: g.settled_at,
+    settledBy: g.settled_by === null ? null : g.settled_by === g.holder_user_id ? 'holder' : 'tutor',
+    note: g.note,
+  };
+}
+
+async function shareView(holderId: string) {
+  const [destinations, gifts] = await Promise.all([listShareDestinations(holderId), listShareGifts(holderId)]);
+  if (destinations === null || gifts === null) return null;
+  return { destinations: destinations.map(toWireDestination), gifts: gifts.map(toWireGift) };
+}
+
+/** Database refusals from the S07.4 RPCs, mapped to the API's error envelope. */
+const HABIT_REFUSALS: Record<string, { status: number; message: string }> = {
+  SPLIT_INVALID: { status: 400, message: 'The three parts must add up to 100' },
+  SPLIT_OWNER_ONLY: { status: 403, message: 'Only the wallet holder sets their usual split' },
+  SHARE_DESTINATION_INVALID: { status: 400, message: 'A destination needs a name up to 60 characters and a kind' },
+  SHARE_DESTINATION_LIMIT: { status: 409, message: 'There are already 10 active destinations' },
+  SHARE_DESTINATION_FORBIDDEN: { status: 403, message: 'A Tutor chooses the destinations for a child in a family' },
+  SHARE_DESTINATION_UNAVAILABLE: { status: 409, message: 'That destination is not active' },
+  SHARE_DESTINATION_NOT_FOUND: { status: 404, message: 'No such destination' },
+  SHARE_GIFT_INVALID: { status: 400, message: 'Check the amount and the note' },
+  SHARE_GIFT_NOT_FOUND: { status: 404, message: 'No such gift' },
+  SHARE_GIFT_FORBIDDEN: { status: 403, message: 'Only whoever chose the destination records what happened' },
+  SHARE_GIFT_SETTLED: { status: 409, message: 'This gift was already settled' },
+  SHARE_GIFT_NOTE_REQUIRED: { status: 400, message: 'Say what happened' },
+  INSUFFICIENT_BALANCE: { status: 409, message: 'There are not that many coins in Share' },
+  ACCOUNT_FROZEN: { status: 409, message: 'This account is frozen; the operation is on hold' },
+  WALLET_HOLDER_REQUIRED: { status: 403, message: 'This account holds no wallet' },
+  GOAL_NOT_FOUND: { status: 404, message: 'No such goal' },
+  GOAL_FOLLOWS_INVALID: { status: 409, message: 'A next goal can only follow a goal you reached' },
+};
+
+function habitRefusal(res: Parameters<typeof fail>[0], refused: string, fallback: string) {
+  const mapped = HABIT_REFUSALS[refused];
+  return mapped ? fail(res, mapped.status, refused, mapped.message) : fail(res, 409, CONFLICT, fallback);
 }
 
 function toWireCatalogItem(c: CatalogItemRow) {
@@ -428,8 +523,84 @@ export function tasksRouter(): Router {
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
     const goals = await getGoalsForKid(kidId.data);
     if (goals === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals');
-    const withProgress = await Promise.all(goals.map(async (g) => toWireGoal(g, (await getGoalProgress(g.id)) ?? 0)));
+    const withProgress = await goalsWithProgress(goals);
+    if (withProgress === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal progress');
     return ok(res, { goals: withProgress });
+  });
+
+  /** S07.4 (D.13): the child's usual split, read-only for the Tutor (only the child sets it). */
+  router.get('/:kidId/wallet/split', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const usual = await readUsualSplit(kidId.data);
+    if (!usual) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the usual split');
+    return ok(res, { usual: { save: usual.save, spend: usual.spend, share: usual.share }, custom: usual.custom, recommended: RECOMMENDED_SPLIT });
+  });
+
+  // ── PARENT: the Share destination (D.14) ─────────────────────────────────
+
+  router.get('/:kidId/share', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const view = await shareView(kidId.data);
+    if (!view) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Share destinations');
+    return ok(res, view);
+  });
+
+  const NewDestination = z.object({ title: z.string().trim().min(1).max(60), kind: z.enum(DESTINATION_KINDS) }).strict();
+
+  router.post('/:kidId/share/destinations', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const parsed = NewDestination.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'A name up to 60 characters and a kind are required');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const result = await createShareDestination({ holderId: kidId.data, actorId: parent.id, ...parsed.data });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not add the destination');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The destination was refused');
+    return ok(res, { destinationId: result }, 201);
+  });
+
+  router.post('/:kidId/share/destinations/:destinationId/archive', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    const destinationId = z.string().uuid().safeParse(req.params.destinationId);
+    if (!kidId.success || !destinationId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId and destinationId must be uuids');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const destination = await getShareDestination(destinationId.data);
+    if (destination === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the destination');
+    if (!destination || destination.holder_user_id !== kidId.data) return fail(res, 404, NOT_FOUND, 'No such destination');
+    const result = await archiveShareDestination(destinationId.data, parent.id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not archive the destination');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The archive was refused');
+    return ok(res, { archived: result });
+  });
+
+  const SettleGift = z.object({ outcome: z.enum(['given', 'returned']), note: z.string().trim().min(1).max(240).nullable().optional() }).strict();
+
+  router.post('/:kidId/share/gifts/:giftId/settle', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    const giftId = z.string().uuid().safeParse(req.params.giftId);
+    if (!kidId.success || !giftId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId and giftId must be uuids');
+    const parsed = SettleGift.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'An outcome (given or returned) and a note up to 240 characters are required');
+    // A Tutor always says what happened, or why the coins came back.
+    if (!parsed.data.note) return fail(res, 400, 'SHARE_GIFT_NOTE_REQUIRED', 'Say what happened');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const gift = await getShareGift(giftId.data);
+    if (gift === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the gift');
+    if (!gift || gift.holder_user_id !== kidId.data) return fail(res, 404, NOT_FOUND, 'No such gift');
+    const result = await settleShareGift({ giftId: giftId.data, actorId: parent.id, outcome: parsed.data.outcome, note: parsed.data.note });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the outcome');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The outcome was refused');
+    return ok(res, { outcome: result });
   });
 
   router.get('/:kidId/wallet/ledger', requireRole(['parent']), async (req, res) => {
@@ -507,8 +678,9 @@ export function tasksRouter(): Router {
       const mapped = GUARDIAN_ACTION_REFUSALS[result.refused];
       return mapped ? fail(res, mapped.status, result.refused, mapped.message) : fail(res, 409, CONFLICT, 'The withdrawal was refused');
     }
-    const progress = await getGoalProgress(goalId.data);
-    return ok(res, { actionId: result, goal: toWireGoal(goal, progress ?? 0) }, 201);
+    const fresh = (await getGoalById(goalId.data)) ?? goal;
+    const wire = await oneGoalWithProgress(fresh);
+    return ok(res, { actionId: result, goal: wire }, 201);
   });
 
   // ── PARENT: redemption catalog + decisions ──────────────────────────────
@@ -879,19 +1051,13 @@ export function tasksRouter(): Router {
     if (allocated === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not allocate the reward');
     if (allocated === false) return fail(res, 409, CONFLICT, 'This task is not ready to allocate, or the split is invalid');
 
-    // A goal-reached flip is a display fact derived from money already
-    // safely credited above, not a second money-moving step — a brief delay
-    // between "saved enough" and the status flip is cosmetic, unlike the
-    // credit itself, which is why this runs outside the locked transaction.
-    if (parsed.data.goalId) {
-      const goal = await getGoalById(parsed.data.goalId);
-      const progress = await getGoalProgress(parsed.data.goalId);
-      if (goal && goal.status === 'active' && progress !== null && progress >= goal.target) {
-        await markGoalReached(parsed.data.goalId);
-      }
-    }
-
-    return ok(res, { allocated: true });
+    // S07.4: a goal the Save part covered is marked reached inside the same
+    // transaction (allocate_task_reward), so the goal comes back as it now
+    // is; the child's surface celebrates it once (D.15). A failed read never
+    // turns a completed allocation into an error.
+    const goalRow = parsed.data.goalId ? await getGoalById(parsed.data.goalId) : null;
+    const goal = goalRow ? await oneGoalWithProgress(goalRow) : null;
+    return ok(res, { allocated: true, goal });
   });
 
   // ── KID: wallet ──────────────────────────────────────────────────────────
@@ -919,6 +1085,10 @@ export function tasksRouter(): Router {
       title: z.string().trim().min(1).max(80),
       target: z.number().int().min(1).max(100000),
       icon: z.enum(GOAL_ICONS).default('star'),
+      // S07.4 (D.15): the reached goal this one follows, when started from
+      // the "what's your next goal?" prompt. The database checks it is the
+      // caller's own reached goal and closes that goal's next step.
+      followsGoalId: z.string().uuid().nullable().optional(),
     })
     .strict();
 
@@ -926,17 +1096,52 @@ export function tasksRouter(): Router {
     const kid = authedUser(res);
     const parsed = CreateGoal.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the goal details');
-    const goal = await insertGoal({ kid_user_id: kid.id, title: parsed.data.title, target: parsed.data.target, icon: parsed.data.icon });
+    const follows = parsed.data.followsGoalId ?? null;
+    if (follows) {
+      const previous = await getGoalById(follows);
+      if (!previous || previous.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such goal');
+      if (previous.reached_at === null) return fail(res, 409, 'GOAL_FOLLOWS_INVALID', 'A next goal can only follow a goal you reached');
+    }
+    const goal = await insertGoal({ kid_user_id: kid.id, title: parsed.data.title, target: parsed.data.target, icon: parsed.data.icon, follows_goal_id: follows });
     if (!goal) return fail(res, 502, DATA_UNAVAILABLE, 'Could not create the goal');
-    return ok(res, { goal: toWireGoal(goal, 0) }, 201);
+    return ok(res, { goal: toWireGoal(goal, EMPTY_PROGRESS) }, 201);
   });
 
   router.get('/goals', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const goals = await getGoalsForKid(kid.id);
     if (goals === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goals');
-    const withProgress = await Promise.all(goals.map(async (g) => toWireGoal(g, (await getGoalProgress(g.id)) ?? 0)));
+    const withProgress = await goalsWithProgress(goals);
+    if (withProgress === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal progress');
     return ok(res, { goals: withProgress });
+  });
+
+  /*
+   * S07.4 (D.15): the child's first view of a reached goal. `celebrate` is
+   * true exactly once per goal (the database moves pending -> prompted), so
+   * the OD-7 celebration and the "what's your next goal?" prompt happen at
+   * the same moment and never again.
+   */
+  router.post('/goals/:id/next-step/seen', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const result = await markNextStepSeen(kid.id, id.data);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the prompt');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The prompt was refused');
+    return ok(res, { celebrate: result });
+  });
+
+  router.post('/goals/:id/next-step/decline', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const result = await declineNextStep(kid.id, id.data);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the answer');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The answer was refused');
+    return ok(res, { declined: result });
   });
 
   router.patch('/goals/:id', walletHolder, async (req, res) => {
@@ -947,8 +1152,100 @@ export function tasksRouter(): Router {
     if (!goal || goal.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such goal');
     const archived = await archiveGoal(id.data, kid.id);
     if (!archived) return fail(res, 502, DATA_UNAVAILABLE, 'Could not archive the goal');
-    const progress = (await getGoalProgress(id.data)) ?? 0;
-    return ok(res, { goal: toWireGoal({ ...goal, status: 'archived' }, progress) });
+    const wire = await oneGoalWithProgress({ ...goal, status: 'archived' });
+    if (!wire) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal progress');
+    return ok(res, { goal: wire });
+  });
+
+  // ── WALLET HOLDER: the usual split (D.13) ────────────────────────────────
+  /*
+   * The recommended default split with an easy override. The holder (a child
+   * in a family or a teen) owns their usual split; every payout is offered
+   * pre-split by it and any other split that adds up is accepted.
+   */
+  router.get('/wallet/split', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const usual = await readUsualSplit(kid.id);
+    if (!usual) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the usual split');
+    return ok(res, { usual: { save: usual.save, spend: usual.spend, share: usual.share }, custom: usual.custom, recommended: RECOMMENDED_SPLIT });
+  });
+
+  const Percent = z.number().int().min(0).max(100);
+  const UsualSplitBody = z
+    .object({ save: Percent, spend: Percent, share: Percent })
+    .strict()
+    .refine((v) => v.save + v.spend + v.share === 100, 'The three parts must add up to 100');
+
+  router.put('/wallet/split', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = UsualSplitBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'The three parts must be whole numbers adding up to 100');
+    const result = await setUsualSplit(kid.id, kid.id, parsed.data);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the usual split');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The usual split was refused');
+    return ok(res, { usual: parsed.data, custom: true, recommended: RECOMMENDED_SPLIT });
+  });
+
+  // ── WALLET HOLDER: the Share destination (D.14) ──────────────────────────
+
+  router.get('/share', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const view = await shareView(kid.id);
+    if (!view) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Share destinations');
+    return ok(res, view);
+  });
+
+  // A self-registered teen may choose their own destination (OD-3 Option B);
+  // for a child in a family the database refuses it: a Tutor chooses.
+  router.post('/share/destinations', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = NewDestination.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'A name up to 60 characters and a kind are required');
+    const result = await createShareDestination({ holderId: kid.id, actorId: kid.id, ...parsed.data });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not add the destination');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The destination was refused');
+    return ok(res, { destinationId: result }, 201);
+  });
+
+  router.post('/share/destinations/:id/archive', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const destination = await getShareDestination(id.data);
+    if (destination === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the destination');
+    if (!destination || destination.holder_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such destination');
+    const result = await archiveShareDestination(id.data, kid.id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not archive the destination');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The archive was refused');
+    return ok(res, { archived: result });
+  });
+
+  const PledgeGift = z.object({ destinationId: z.string().uuid(), amount: z.number().int().min(1).max(SHARE_GIFT_MAX_COINS) }).strict();
+
+  router.post('/share/gifts', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = PledgeGift.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'A destination and 1 to 1000 coins are required');
+    const result = await pledgeShareGift(kid.id, parsed.data.destinationId, parsed.data.amount);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the gift');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The gift was refused');
+    return ok(res, { giftId: result }, 201);
+  });
+
+  // The child takes a pledge back ('returned'), or a teen records what happened
+  // with a gift to a destination they chose themself ('given'). The database
+  // decides which the caller may do.
+  router.post('/share/gifts/:id/settle', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const parsed = SettleGift.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'An outcome (given or returned) and an optional note up to 240 characters are required');
+    const result = await settleShareGift({ giftId: id.data, actorId: kid.id, outcome: parsed.data.outcome, note: parsed.data.note ?? null });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the outcome');
+    if (isRefusal(result)) return habitRefusal(res, result.refused, 'The outcome was refused');
+    return ok(res, { outcome: result });
   });
 
   // ── KID: redemption catalog + requests ──────────────────────────────────

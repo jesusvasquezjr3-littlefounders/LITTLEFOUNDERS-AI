@@ -448,6 +448,7 @@ describe('GET /api/v1/banking/statement/:kidId and /statement (kid)', () => {
       earned: 15,
       spent: 8,
       adjusted: 0,
+      given: 0,
       saved: 10,
       entries: expect.any(Array),
     });

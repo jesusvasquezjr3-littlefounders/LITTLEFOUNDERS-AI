@@ -52,10 +52,11 @@ export function fetchBalances(session: Session) {
   });
 }
 
+// S07.4 (D.14): coins directed to a Share destination, and a pledge that came back.
 export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'goal_withdrawal' | 'allowance' | 'savings_bonus'
-  | 'self_income' | 'personal_reward' | 'goal_release';
+  | 'self_income' | 'personal_reward' | 'goal_release' | 'share_gift' | 'share_gift_returned';
 export const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 'manual_adjustment', 'goal_withdrawal', 'allowance', 'savings_bonus',
-  'self_income', 'personal_reward', 'goal_release'];
+  'self_income', 'personal_reward', 'goal_release', 'share_gift', 'share_gift_returned'];
 export type IncomeSource = 'allowance' | 'gift' | 'earned';
 export const INCOME_SOURCES: readonly IncomeSource[] = ['allowance', 'gift', 'earned'];
 

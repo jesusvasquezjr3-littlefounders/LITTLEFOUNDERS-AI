@@ -65,7 +65,7 @@ export interface WalletBalances {
   share: number;
 }
 
-export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment';
+export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'share_gift' | 'share_gift_returned';
 export type LedgerBucket = 'save' | 'spend' | 'share';
 
 export interface WireLedgerEntry {

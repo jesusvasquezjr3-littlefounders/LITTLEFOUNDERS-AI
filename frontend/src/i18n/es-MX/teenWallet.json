@@ -33,7 +33,9 @@
     "invalidAmount": "Escribe de 1 a 1000 monedas.",
     "splitMismatch": "Primero reparte las {n} monedas.",
     "frozen": "Tu cuenta está congelada por ahora.",
-    "failed": "No se pudieron agregar las monedas. Intenta de nuevo."
+    "failed": "No se pudieron agregar las monedas. Intenta de nuevo.",
+    "useUsual": "Usar mi reparto",
+    "usualNote": "Lleno con tu reparto de siempre. Cambia cualquier parte."
   },
   "goals": {
     "open": "Metas",
@@ -94,7 +96,9 @@
     "tutorGoalMove": "El Tutor movió monedas de una meta",
     "familyAllowance": "Domingo familiar",
     "bonus": "Bono de ahorro",
-    "note": "Motivo del Tutor: {note}"
+    "note": "Motivo del Tutor: {note}",
+    "shared": "Monedas que compartiste",
+    "shareBack": "Volvieron monedas compartidas"
   },
   "parents": {
     "open": "Padres",

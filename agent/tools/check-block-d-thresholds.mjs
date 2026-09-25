@@ -56,6 +56,22 @@ export const RULES = [
     sql: ['_savings_bonus_age_framing', ['::int < {v} THEN']] },
   { key: 'savings_bonus.max_rate_bp', core: ['backend/src/services/savingsBonus.ts', 'MAX_BONUS_RATE_BP'],
     sql: ['_banca_digital', ['rate_bp between 0 and {v}']] },
+  // S07.4 (D.13-D.16).
+  { key: 'split.recommended_save_pct', core: ['backend/src/services/moneyHabits.ts', 'RECOMMENDED_SAVE_PCT'], sql: ['_wallet_usual_split', ['{v} AS save_pct']] },
+  { key: 'split.recommended_spend_pct', core: ['backend/src/services/moneyHabits.ts', 'RECOMMENDED_SPEND_PCT'], sql: ['_wallet_usual_split', ['{v} AS spend_pct']] },
+  { key: 'split.recommended_share_pct', core: ['backend/src/services/moneyHabits.ts', 'RECOMMENDED_SHARE_PCT'], sql: ['_wallet_usual_split', ['{v} AS share_pct']] },
+  { key: 'share.destination_limit', sql: ['_share_gift_destinations', ["status = 'active') >= {v} THEN\n            RAISE EXCEPTION 'SHARE_DESTINATION_LIMIT'"]] },
+  { key: 'share.gift_max_coins', core: ['backend/src/services/moneyHabits.ts', 'SHARE_GIFT_MAX_COINS'],
+    sql: ['_share_gift_destinations', ['amount         integer NOT NULL CHECK (amount BETWEEN 1 AND {v})']] },
+  { key: 'share.completion_window_days', core: ['backend/src/services/moneyHabits.ts', 'SHARE_COMPLETION_WINDOW_DAYS'],
+    sql: ['_share_gift_flows', ['p_window_days int DEFAULT {v}']] },
+  { key: 'next_goal.prompt_window_days', sql: ['_family_money_events', ["n.created_at <= r.at + interval '{v} days'"]] },
+  { key: 'post_goal.baseline_days', sql: ['_family_money_events', ["c.created_at > r.at - interval '{v} days' AND c.created_at <= r.at) / {v}.0"]] },
+  { key: 'post_goal.after_days', sql: ['_family_money_events', ["c.created_at <= r.at + interval '{v} days') / {v}.0", "e.created_at <= now() - interval '{v} days'"]] },
+  { key: 'redemption_timing.first_bin_hours', sql: ['_family_money_events', ["(1, '0_24h', 0, {v})", "(2, '24_72h', {v}, 72)"]] },
+  { key: 'redemption_timing.second_bin_hours', sql: ['_family_money_events', ["(2, '24_72h', 24, {v})", "(3, '72_168h', {v}, 168)"]] },
+  { key: 'redemption_timing.third_bin_hours', sql: ['_family_money_events', ["(3, '72_168h', 72, {v})", "(4, '168h_plus', {v}, 1000000)"]] },
+  { key: 'money_events.retention_days', sql: ['_family_money_events', ['p_retain_days int DEFAULT {v}']] },
 ];
 
 /** Pure check over in-memory inputs, so the gate can be tested against known-bad fixtures. */

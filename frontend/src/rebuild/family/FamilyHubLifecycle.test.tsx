@@ -5,6 +5,7 @@ import { WalletCorrections } from './WalletCorrections';
 import { WalletActivity } from './WalletActivity';
 import type { CoGuardian, GuardianAction, KidGoal, LedgerEntry } from './familyHubApi';
 import en from '@/i18n/en-US/familyHub.json';
+import habits from '@/i18n/en-US/moneyHabits.json';
 
 /*
  * S07.1 rebuilt surfaces: each lifecycle state is rendered from server truth,
@@ -114,14 +115,14 @@ describe('GuardianRequests (invited adult)', () => {
   });
 });
 
-const GOAL: KidGoal = { id: '44444444-4444-4444-8444-444444444444', title: 'Bike', target: 10, status: 'reached', saved: 10 };
+const GOAL: KidGoal = { id: '44444444-4444-4444-8444-444444444444', title: 'Bike', target: 10, status: 'reached', saved: 10, progress: { own: 10, bonus: 0, family: 0, total: 10 } };
 const ACTION: GuardianAction = { id: '55555555-5555-4555-8555-555555555555', kind: 'manual_adjustment', bucket: 'spend', goalId: null, amount: -3, reason: 'Lost game fee', byMe: false, createdAt: '2026-09-22T00:00:00Z' };
 
 type WcProps = Parameters<typeof WalletCorrections>[0];
 function renderWc(overrides: Partial<WcProps> = {}) {
   const props: WcProps = {
-    copy: en.walletCorrections, locale: 'en-US', dark: false, kidName: 'Nico', open: true, loading: false, failed: false,
-    goals: [GOAL, { ...GOAL, id: '66666666-6666-4666-8666-666666666666', title: 'Empty', saved: 0 }], rewards: [{ id: '77777777-7777-4777-8777-777777777777', title: 'Movie night', approvedAt: '2026-09-21T00:00:00Z' }],
+    copy: en.walletCorrections, progressCopy: habits.goalProgressTutor, locale: 'en-US', dark: false, kidName: 'Nico', open: true, loading: false, failed: false,
+    goals: [GOAL, { ...GOAL, id: '66666666-6666-4666-8666-666666666666', title: 'Empty', saved: 0, progress: { own: 0, bonus: 0, family: 0, total: 0 } }], rewards: [{ id: '77777777-7777-4777-8777-777777777777', title: 'Movie night', approvedAt: '2026-09-21T00:00:00Z' }],
     history: [ACTION], busy: false, notice: null, onToggle: vi.fn(), onRetry: vi.fn(),
     onAdjust: vi.fn().mockResolvedValue(true), onWithdraw: vi.fn().mockResolvedValue(true), onDeliver: vi.fn(), ...overrides,
   };

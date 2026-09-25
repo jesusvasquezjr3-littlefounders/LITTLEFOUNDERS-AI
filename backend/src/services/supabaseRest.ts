@@ -1829,11 +1829,13 @@ export interface GoalRow {
   status: string;
   created_at: string;
   reached_at: string | null;
+  /** S07.4 (D.15): the reached goal this one follows ("what's your next goal?"). */
+  follows_goal_id?: string | null;
 }
 
-const GOAL_FIELDS = 'id,kid_user_id,title,target,icon,status,created_at,reached_at';
+const GOAL_FIELDS = 'id,kid_user_id,title,target,icon,status,created_at,reached_at,follows_goal_id';
 
-export async function insertGoal(row: { kid_user_id: string; title: string; target: number; icon: string }): Promise<GoalRow | null> {
+export async function insertGoal(row: { kid_user_id: string; title: string; target: number; icon: string; follows_goal_id?: string | null }): Promise<GoalRow | null> {
   const rows = await serviceRest<GoalRow[]>('/savings_goals', {
     method: 'POST',
     headers: { Prefer: 'return=representation' },
@@ -1858,14 +1860,8 @@ export async function getGoalProgress(goalId: string): Promise<number | null> {
   return rows.reduce((sum, r) => sum + r.amount, 0);
 }
 
-export async function markGoalReached(goalId: string): Promise<boolean> {
-  const res = await serviceRest<unknown>(`/savings_goals?id=eq.${eu(goalId)}&status=eq.active`, {
-    method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ status: 'reached', reached_at: new Date().toISOString() }),
-  });
-  return res !== null;
-}
+// S07.4: a goal is marked reached only inside the database transaction that
+// covered it (reach_goal_if_covered, wallet_usual_split), never by Core.
 
 export async function archiveGoal(goalId: string, kidId: string): Promise<boolean> {
   const res = await serviceRest<unknown>(`/savings_goals?id=eq.${eu(goalId)}&kid_user_id=eq.${eu(kidId)}`, {
@@ -2191,6 +2187,8 @@ export async function allocatePendingCredit(input: {
   spend: number;
   share: number;
   createdBy: string;
+  /** S07.4 (D.13): an allowance's Save part may go to an active goal, like a chore reward's. */
+  goalId?: string | null;
 }): Promise<boolean | null> {
   const res = await serviceRest<boolean>('/rpc/allocate_pending_credit', {
     method: 'POST',
@@ -2201,6 +2199,7 @@ export async function allocatePendingCredit(input: {
       p_spend: input.spend,
       p_share: input.share,
       p_created_by: input.createdBy,
+      p_goal_id: input.goalId ?? null,
     }),
   });
   return typeof res === 'boolean' ? res : null;

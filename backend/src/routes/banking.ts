@@ -166,15 +166,19 @@ async function buildStatement(kidId: string, month?: string) {
   let earned = 0;
   let spent = 0;
   let adjusted = 0;
+  let given = 0;
   for (const e of entries) {
     // S07.2: a teen moving coins out of their own goal is a transfer too.
     if (e.reason === 'goal_withdrawal' || e.reason === 'goal_release') continue;
-    if (e.reason === 'manual_adjustment') adjusted += e.amount;
+    // S07.4 (D.14): coins directed to a Share destination are given, never
+    // spent; a returned pledge cancels its gift on the same line.
+    if (e.reason === 'share_gift' || e.reason === 'share_gift_returned') given -= e.amount;
+    else if (e.reason === 'manual_adjustment') adjusted += e.amount;
     else if (e.amount >= 0) earned += e.amount;
     else spent += -e.amount;
   }
   const saved = entries.filter((e) => e.bucket === 'save').reduce((sum, e) => sum + e.amount, 0);
-  return { month: label, earned, spent, adjusted, saved, entries: entries.map((e) => toWireLedgerEntry(e, actions)) };
+  return { month: label, earned, spent, adjusted, given, saved, entries: entries.map((e) => toWireLedgerEntry(e, actions)) };
 }
 
 export function bankingRouter(): Router {
@@ -537,8 +541,15 @@ export function bankingRouter(): Router {
   });
 
   const AllocateCredit = z
-    .object({ save: z.number().int().min(0), spend: z.number().int().min(0), share: z.number().int().min(0) })
+    .object({
+      save: z.number().int().min(0),
+      spend: z.number().int().min(0),
+      share: z.number().int().min(0),
+      // S07.4 (D.13): the Save part may go to one of the child's active goals.
+      goalId: z.string().uuid().nullable().optional(),
+    })
     .strict()
+    .refine((v) => !v.goalId || v.save > 0, 'A goal needs some coins in Save')
     .refine((v) => v.save + v.spend + v.share > 0, 'Split must add up to more than zero');
 
   router.post('/wallet/pending-credits/:id/allocate', familyChild, async (req, res) => {
@@ -551,7 +562,9 @@ export function bankingRouter(): Router {
     if (!credit || credit.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such credit');
 
     if (!await requireUnfrozenBanking(kid.id, res)) return;
-    const allocated = await allocatePendingCredit({ creditId: id.data, kidId: kid.id, save: parsed.data.save, spend: parsed.data.spend, share: parsed.data.share, createdBy: kid.id });
+    const allocated = await allocatePendingCredit({
+      creditId: id.data, kidId: kid.id, save: parsed.data.save, spend: parsed.data.spend, share: parsed.data.share, createdBy: kid.id, goalId: parsed.data.goalId ?? null,
+    });
     if (allocated === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not allocate the credit');
     if (allocated === false) return fail(res, 409, CONFLICT, 'This credit is not ready to allocate, or the split is invalid');
     return ok(res, { allocated: true });

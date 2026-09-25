@@ -15,6 +15,7 @@ import {
   type KidGoal,
 } from '@/rebuild/family/familyHubApi';
 import { hubSession } from './familyHubSession';
+import { moneyHabitsCopy } from './moneyHabitsCopy';
 import en from '@/i18n/en-US/familyHub.json';
 import es from '@/i18n/es-MX/familyHub.json';
 import pt from '@/i18n/pt-BR/familyHub.json';
@@ -112,7 +113,7 @@ function ScopedWalletCorrections({ kidUserId, kidName, token }: { kidUserId: str
     setOpen(true); void load();
   }
 
-  return <WalletCorrections copy={copy} locale={locale} dark={isDark} kidName={kidName} open={open} loading={loading} failed={failed}
+  return <WalletCorrections copy={copy} progressCopy={moneyHabitsCopy(locale).goalProgressTutor} locale={locale} dark={isDark} kidName={kidName} open={open} loading={loading} failed={failed}
     goals={goals} rewards={rewards} history={history} busy={busy} notice={notice}
     onToggle={toggle} onRetry={() => void load()} onAdjust={adjust} onWithdraw={withdraw} onDeliver={(id) => void deliver(id)} />;
 }

@@ -17,6 +17,8 @@ export interface WalletActivityCopy {
   earned: string; allowance: string; bonus: string; spent: string; correction: string; fromGoal: string; note: string;
   /** S07.2: a linked teen's own entries. */
   logged: string; rewardUsed: string; goalMoved: string;
+  /** S07.4 (D.14): coins shared to a destination, and a pledge that came back. */
+  shared: string; shareBack: string;
   rewardsHeading: string; requested: string; approved: string; denied: string; fulfilled: string; rewardUntitled: string;
   save: string; spend: string; share: string;
 }
@@ -33,6 +35,7 @@ export function WalletActivity({ copy, locale, dark, open, loading, failed, entr
     task_approved: copy.earned, allowance: copy.allowance, savings_bonus: copy.bonus, redemption: copy.spent,
     manual_adjustment: copy.correction, goal_withdrawal: copy.fromGoal,
     self_income: copy.logged, personal_reward: copy.rewardUsed, goal_release: copy.goalMoved,
+    share_gift: copy.shared, share_gift_returned: copy.shareBack,
   })[e.reason];
   const status = (s: RedemptionStatus) => ({ requested: copy.requested, approved: copy.approved, denied: copy.denied, fulfilled: copy.fulfilled })[s];
 

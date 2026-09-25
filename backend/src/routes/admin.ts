@@ -77,6 +77,14 @@ import { readBonusComprehension, readChoreTagAdoption } from '../services/saving
 import { choreStreakRestDayUtilization } from '../services/choreStreakData.js';
 import { utcDayOffset } from '../services/choreStreak.js';
 import {
+  readPostGoalMotivation,
+  readRedemptionTiming,
+  readSavePersistence,
+  readShareCompletion,
+  readSplitEngagement,
+  SHARE_COMPLETION_WINDOW_DAYS,
+} from '../services/moneyHabits.js';
+import {
   getAdminOverview,
   getAdminContentSummary,
   getReviewLessonDetail,
@@ -1209,6 +1217,100 @@ export function adminRouter(): Router {
       shown: row.shown,
       completed: row.completed,
       completionRate: row.shown > 0 ? row.completed / row.shown : null,
+    });
+  });
+
+  /*
+   * S07.4 (Appendix H, all Diagnostic, no target; counts and rates only,
+   * never an identity). The behavioural ones read the consent-gated
+   * family_money_events stream, so they cover only children whose analytics
+   * consent (a Tutor's for a child in a family, the teen's own opt-in) was in
+   * effect when the event happened:
+   * - D.13 Allowance-Triggered Redemption Spike: reward requests per 100
+   *   child-days by time since the last allowance and the last earned credit
+   *   to Spend.
+   * - D.13 Split-Ratio Engagement Quality: splits that kept the recommended
+   *   default versus adjusted ones, per payout source.
+   * - D.15 Save-Bucket Contribution Persistence and the Post-Goal Motivation
+   *   Cliff (Save contributions per day before versus after a goal is reached,
+   *   split by whether a next goal was set within 2 days).
+   * - D.14 Share-Bucket Destination Completion Rate: read from the gifts
+   *   themselves (bookkeeping, not behaviour), plus holders with Share coins
+   *   and no destination at all.
+   */
+  router.get('/family/redemption-timing', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readRedemptionTiming(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the redemption-timing metric');
+    const byClass = (cls: 'allowance' | 'earned') => rows.filter((r) => r.credit_class === cls).map((r) => ({
+      bin: r.bin, requests: r.requests, exposureHours: r.exposure_hours, ratePer100ChildDays: r.rate_per_100_child_days,
+    }));
+    return ok(res, { since: since.toISOString(), allowance: byClass('allowance'), earned: byClass('earned') });
+  });
+
+  router.get('/family/split-engagement', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readSplitEngagement(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the split metric');
+    const sources = rows.map((r) => ({
+      source: r.source, allocations: r.allocations, keptDefault: r.kept_default, adjusted: r.adjusted,
+      adjustedShare: r.allocations > 0 ? r.adjusted / r.allocations : null,
+    }));
+    const allocations = sources.reduce((sum, r) => sum + r.allocations, 0);
+    const adjusted = sources.reduce((sum, r) => sum + r.adjusted, 0);
+    return ok(res, { since: since.toISOString(), sources, allocations, adjusted, adjustedShare: allocations > 0 ? adjusted / allocations : null });
+  });
+
+  router.get('/family/save-persistence', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readSavePersistence(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the persistence metric');
+    return ok(res, {
+      since: since.toISOString(),
+      children: row.children,
+      saveContributors: row.save_contributors,
+      saveCoins: row.save_coins,
+      ownCoins: row.own_coins,
+      saveShare: row.own_coins > 0 ? row.save_coins / row.own_coins : null,
+    });
+  });
+
+  router.get('/family/post-goal-motivation', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readPostGoalMotivation(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the post-goal metric');
+    const group = (soon: boolean) => {
+      const r = rows.find((x) => x.next_goal_within_2_days === soon)!;
+      return { goals: r.goals, meanBeforePerDay: r.mean_before_per_day, meanAfterPerDay: r.mean_after_per_day, goalsWithDrop: r.goals_with_drop };
+    };
+    return ok(res, { since: since.toISOString(), nextGoalWithin2Days: group(true), noNextGoalWithin2Days: group(false) });
+  });
+
+  router.get('/family/share-completion', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readShareCompletion(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Share metric');
+    return ok(res, {
+      since: since.toISOString(),
+      windowDays: SHARE_COMPLETION_WINDOW_DAYS,
+      pledged: row.pledged,
+      givenInWindow: row.given_in_window,
+      givenLater: row.given_later,
+      returned: row.returned,
+      waiting: row.waiting,
+      completionRate: row.pledged > 0 ? row.given_in_window / row.pledged : null,
+      holdersWithShare: row.holders_with_share,
+      holdersWithoutDestination: row.holders_without_destination,
     });
   });
 

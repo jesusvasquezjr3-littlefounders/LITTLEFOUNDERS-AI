@@ -114,7 +114,7 @@ describe('GuardianRequestsPanel', () => {
 
 function walletResponses() {
   return (path: string) => {
-    if (path.endsWith('/goals')) return Promise.resolve({ data: { goals: [{ id: GOAL, title: 'Bike', target: 10, status: 'active', saved: 6 }] }, error: null });
+    if (path.endsWith('/goals')) return Promise.resolve({ data: { goals: [{ id: GOAL, title: 'Bike', target: 10, status: 'active', saved: 6, progress: { own: 6, bonus: 0, family: 0, total: 6 } }] }, error: null });
     if (path.startsWith('/tasks/redemptions?kidId=')) return Promise.resolve({ data: { redemptions: [{ id: REDEMPTION, catalogId: CATALOG, status: 'approved', createdAt: T, decidedAt: T, fulfilledAt: null }] }, error: null });
     if (path === '/tasks/catalog') return Promise.resolve({ data: { items: [{ id: CATALOG, title: 'Movie night' }] }, error: null });
     if (path.endsWith('/guardian-actions')) return Promise.resolve({ data: { actions: [] }, error: null });

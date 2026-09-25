@@ -33,7 +33,9 @@
     "invalidAmount": "Digite de 1 a 1000 moedas.",
     "splitMismatch": "Primeiro divida as {n} moedas.",
     "frozen": "Sua conta está congelada por enquanto.",
-    "failed": "Não foi possível adicionar as moedas. Tente de novo."
+    "failed": "Não foi possível adicionar as moedas. Tente de novo.",
+    "useUsual": "Usar minha divisão",
+    "usualNote": "Preenchido com sua divisão de sempre. Mude qualquer parte."
   },
   "goals": {
     "open": "Metas",
@@ -94,7 +96,9 @@
     "tutorGoalMove": "O Tutor moveu moedas de uma meta",
     "familyAllowance": "Mesada da família",
     "bonus": "Bônus de poupança",
-    "note": "Motivo do Tutor: {note}"
+    "note": "Motivo do Tutor: {note}",
+    "shared": "Moedas que você compartilhou",
+    "shareBack": "Moedas compartilhadas voltaram"
   },
   "parents": {
     "open": "Responsáveis",

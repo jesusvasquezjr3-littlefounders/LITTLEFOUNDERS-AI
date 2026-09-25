@@ -27,6 +27,14 @@ const LINKS_UI = 'frontend/src/rebuild/family/CoGuardians.tsx';
 // S07.2 (D.3, OD-3 Option B): the self-registered teen's own wallet.
 const TEEN_UI = 'frontend/src/rebuild/wallet/TeenWallet.tsx';
 const TEEN_FLOWS = SQL('_independent_teen_wallet_flows');
+// S07.4 (D.13-D.16): the Share destination, the usual split and the next goal.
+const SHARE_SQL = SQL('_share_gift_destinations');
+const SHARE_FLOWS = SQL('_share_gift_flows');
+const SPLIT_SQL = SQL('_wallet_usual_split');
+const NEXT_SQL = SQL('_savings_goal_next_step');
+const HABITS_API = 'frontend/src/rebuild/family/moneyHabitsApi.ts';
+const SHARE_UI = 'frontend/src/rebuild/family/ShareGiving.tsx';
+const GOALS_UI = 'frontend/src/rebuild/family/SavingsGoals.tsx';
 
 export const REGISTRY = {
   'tasks.status': {
@@ -49,9 +57,10 @@ export const REGISTRY = {
     },
   },
   'savings_goals.status': {
-    active: { producer: [E(TASKS, 'insertGoal({')], consumer: [E(TASKS, "goal.status === 'active'")] },
-    reached: { producer: [E('backend/src/services/supabaseRest.ts', "status: 'reached'")], consumer: [E('frontend/src/routes/app/tasks/KidTaskBoard.tsx', "goal.status === 'reached'")] },
-    archived: { producer: [E('backend/src/services/supabaseRest.ts', "status: 'archived'")], consumer: [E('frontend/src/routes/app/tasks/KidTaskBoard.tsx', "g.status !== 'archived'")] },
+    active: { producer: [E(TASKS, 'insertGoal({')], consumer: [E('frontend/src/rebuild/family/SplitChooser.tsx', "g.status === 'active'"), E(SPLIT_SQL, "WHERE id = p_goal_id AND status = 'active' FOR UPDATE")] },
+    reached: { producer: [E(SPLIT_SQL, "UPDATE public.savings_goals SET status = 'reached', reached_at = now() WHERE id = p_goal_id"), E(TEEN_FLOWS, "SET status = 'reached', reached_at = now()")],
+      consumer: [E(GOALS_UI, "goal.status === 'reached'"), E(HABITS_API, "g.status === 'reached' && g.nextStep !== null")] },
+    archived: { producer: [E('backend/src/services/supabaseRest.ts', "status: 'archived'")], consumer: [E(GOALS_UI, "g.status !== 'archived'")] },
   },
   'redemptions.status': {
     requested: { producer: [E(TASKS, 'insertRedemption({')], consumer: [E(SQL('_enforce_banking_freeze'), "v_redemption.status <> 'requested'")] },
@@ -69,6 +78,27 @@ export const REGISTRY = {
     self_income: { producer: [E(TEEN_FLOWS, "'self_income', p_goal_id, p_holder, v_action")], consumer: [E(TEEN_UI, 'self_income: e.source'), E(ACTIVITY, 'self_income: copy.logged')] },
     personal_reward: { producer: [E(TEEN_FLOWS, "'personal_reward', p_holder, v_action")], consumer: [E(TEEN_UI, 'personal_reward: copy.history.reward'), E(ACTIVITY, 'personal_reward: copy.rewardUsed')] },
     goal_release: { producer: [E(TEEN_FLOWS, "'goal_release', p_goal_id, p_holder, v_action")], consumer: [E(TEEN_UI, 'goal_release: copy.history.goalMove'), E('backend/src/routes/banking.ts', "e.reason === 'goal_release'")] },
+    // S07.4 (D.14): coins directed to a Share destination, and a pledge that came back.
+    share_gift: { producer: [E(SHARE_FLOWS, "'share', -p_amount, 'share_gift', p_holder, v_gift")], consumer: [E(ACTIVITY, 'share_gift: copy.shared'), E(TEEN_UI, 'share_gift: copy.history.shared'), E('backend/src/routes/banking.ts', "e.reason === 'share_gift'")] },
+    share_gift_returned: { producer: [E(SHARE_FLOWS, "'share', v_gift.amount, 'share_gift_returned', p_actor, p_gift")], consumer: [E(ACTIVITY, 'share_gift_returned: copy.shareBack'), E(TEEN_UI, 'share_gift_returned: copy.history.shareBack')] },
+  },
+  // S07.4 (D.14): a family-chosen (or teen-chosen) place for Share coins.
+  'share_destinations.status': {
+    active: { producer: [E(SHARE_FLOWS, 'INSERT INTO public.share_destinations (holder_user_id, title, kind, chosen_by, created_by)')], consumer: [E(SHARE_SQL, "v_dest.status <> 'active' THEN"), E(SHARE_UI, "d.status === 'active'")] },
+    archived: { producer: [E(SHARE_FLOWS, "SET status = 'archived', archived_at = now() WHERE id = p_destination")], consumer: [E(SHARE_FLOWS, "IF v_dest.status <> 'active' THEN"), E(HABITS_API, "v.status === 'archived'")] },
+  },
+  // S07.4 (D.14): a pledge of Share coins and what really happened with it.
+  'share_gifts.status': {
+    pledged: { producer: [E(SHARE_FLOWS, 'INSERT INTO public.share_gifts (holder_user_id, destination_id, amount)')], consumer: [E(SHARE_FLOWS, "IF v_gift.status <> 'pledged' THEN"), E(SHARE_UI, "g.status === 'pledged'")] },
+    given: { producer: [E(SHARE_FLOWS, "SET status = 'given', settled_at = now()")], consumer: [E(SHARE_UI, "g.status === 'given'"), E('frontend/src/rebuild/family/ShareDestinations.tsx', "g.status === 'given'")] },
+    returned: { producer: [E(SHARE_FLOWS, "SET status = 'returned', settled_at = now()")], consumer: [E(SHARE_SQL, "v_status = 'returned'"), E(SHARE_UI, 'returned: copy.returned')] },
+  },
+  // S07.4 (D.15): "what's your next goal?" after a goal is reached.
+  'goal_next_steps.state': {
+    pending: { producer: [E(NEXT_SQL, 'INSERT INTO public.goal_next_steps (goal_id, holder_user_id, reached_at)')], consumer: [E(NEXT_SQL, "IF v_state <> 'pending' THEN"), E(HABITS_API, "g.nextStep.state === 'pending'")] },
+    prompted: { producer: [E(NEXT_SQL, "SET state = 'prompted', prompted_at = now()")], consumer: [E(NEXT_SQL, "v_state NOT IN ('pending', 'prompted')"), E(HABITS_API, "g.nextStep.state === 'prompted'")] },
+    set: { producer: [E(NEXT_SQL, "SET state = 'set', decided_at = now(), next_goal_id = NEW.id")], consumer: [E(NEXT_SQL, "AND state <> 'set'"), E(HABITS_API, "'set', 'declined'].includes")] },
+    declined: { producer: [E(NEXT_SQL, "SET state = 'declined', decided_at = now()")], consumer: [E(NEXT_SQL, "OLD.state IN ('pending', 'prompted', 'declined') AND NEW.state = 'set'")] },
   },
   'personal_rewards.status': {
     active: { producer: [E(TEEN_FLOWS, 'INSERT INTO public.personal_rewards (holder_user_id, title, cost)')], consumer: [E(TEEN_UI, "r.status === 'active'"), E(TEEN_FLOWS, "v_reward.status <> 'active'")] },

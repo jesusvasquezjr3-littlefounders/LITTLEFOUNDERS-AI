@@ -64,7 +64,6 @@
     "protected": "Essas moedas são de uma meta. Tire-as da meta primeiro.",
     "saveFailed": "Não foi possível salvar. Tente de novo.",
     "goalsHeading": "Moedas em metas",
-    "goalSaved": "{saved} de {target} moedas",
     "moveOut": "Mover moedas",
     "destination": "Mover para",
     "toSpend": "Gastar",
@@ -111,6 +110,8 @@
     "share": "Compartilhar",
     "logged": "Moedas que você registrou",
     "rewardUsed": "Usou seu próprio prêmio",
-    "goalMoved": "Você moveu moedas de uma meta"
+    "goalMoved": "Você moveu moedas de uma meta",
+    "shared": "Moedas que você compartilhou",
+    "shareBack": "Moedas compartilhadas voltaram"
   }
 }

@@ -61,8 +61,14 @@ function stub(opts: Opts = {}) {
     if (rpc) {
       const answer = opts.rpc?.[rpc];
       if (answer) return Promise.resolve(jsonResponse(answer.status, answer.body));
+      // S07.4 (D.16): a goal's progress by provenance, read after a withdrawal.
+      if (rpc === 'goal_progress_breakdown') {
+        const ids = (JSON.parse(String(init?.body)) as { p_goal_ids: string[] }).p_goal_ids;
+        return Promise.resolve(jsonResponse(200, ids.map((goal_id) => ({ goal_id, own: 2, bonus: 0, family: 0, total: 2 }))));
+      }
       return Promise.resolve(jsonResponse(500, { message: 'unstubbed rpc' }));
     }
+    if (url.includes('/rest/v1/goal_next_steps?')) return Promise.resolve(jsonResponse(200, []));
     if (url.includes('/rest/v1/user_roles?user_id=eq.')) {
       const id = url.match(/user_id=eq\.([0-9a-f-]+)/)![1]!;
       return Promise.resolve(jsonResponse(200, (ROLES[id] ?? ['universal']).map((role) => ({ user_id: id, role }))));

@@ -17,6 +17,7 @@ import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
 import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
 import { StreakPausesPanel } from './StreakPausesPanel';
+import { ShareDestinationsPanel } from './ShareDestinationsPanel';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -224,6 +225,8 @@ export function FamilyPage() {
               <CoGuardiansPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} onAccessLost={() => onKidRemoved(kid.userId)} />
               <WalletCorrectionsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               <StreakPausesPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
+              {/* S07.4 (D.14): the real places this child's Share coins go, and what the family did. */}
+              <ShareDestinationsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}

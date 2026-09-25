@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { TeenWallet } from './TeenWallet';
 import type { Session, TransportResult } from './walletApi';
 import en from '@/i18n/en-US/teenWallet.json';
+import habits from '@/i18n/en-US/moneyHabits.json';
 
 /*
  * S07.2 rebuilt surface (D.3, OD-3 Option B): the teen's own wallet renders
@@ -26,7 +27,10 @@ function fakeSession(overrides: Record<string, Answer> = {}) {
   const base: Record<string, Answer> = {
     'GET /wallet/access': { data: { holder: 'teen', familyChild: false }, error: null },
     'GET /tasks/wallet': { data: { balances: { save: 10, spend: 6, share: 4 } }, error: null },
-    'GET /tasks/goals': { data: { goals: [{ id: GOAL, title: 'Headphones', target: 20, status: 'active', saved: 10 }] }, error: null },
+    'GET /tasks/goals': { data: { goals: [{ id: GOAL, title: 'Headphones', target: 20, icon: 'star', status: 'active', reachedAt: null, followsGoalId: null, saved: 10,
+      progress: { own: 10, bonus: 0, family: 0, total: 10 }, nextStep: null }] }, error: null },
+    'GET /tasks/wallet/split': { data: { usual: { save: 50, spend: 40, share: 10 }, custom: false, recommended: { save: 50, spend: 40, share: 10 } }, error: null },
+    'GET /tasks/share': { data: { destinations: [], gifts: [] }, error: null },
     'GET /wallet/rewards': { data: { rewards: [{ id: REWARD, title: 'Movie night', cost: 5, status: 'active', createdAt: '2026-09-24T00:00:00Z', archivedAt: null }] }, error: null },
     'GET /tasks/wallet/ledger': { data: { entries: [
       { id: 2, bucket: 'spend', amount: -5, reason: 'personal_reward', note: null, source: null, rewardTitle: 'Movie night', createdAt: '2026-09-24T00:00:00Z' },
@@ -51,7 +55,7 @@ function fakeSession(overrides: Record<string, Answer> = {}) {
 
 function renderWallet(session: Session, extra: Partial<Parameters<typeof TeenWallet>[0]> = {}) {
   const props = {
-    copy: en, locale: 'en-US', dark: false, session, tasksHref: '/tasks', onOpenTasks: vi.fn(),
+    copy: en, habits, locale: 'en-US', dark: false, session, tasksHref: '/tasks', onOpenTasks: vi.fn(),
     inviteLinkFor: (token: string) => `https://app.test/family?join=${token}`, copyText: vi.fn(async () => true), onAccessChanged: vi.fn(), ...extra,
   };
   return { props, view: render(<TeenWallet {...props} />) };
@@ -114,8 +118,12 @@ describe('TeenWallet', () => {
     await ready();
     fireEvent.click(screen.getByRole('button', { name: en.income.open }));
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '12' } });
-    fireEvent.change(screen.getByLabelText(en.page.save), { target: { value: '5' } });
-    expect(screen.getByText('7 coins left to split')).toBeVisible();
+    // S07.4 (D.13): the amount arrives pre-split by the usual split (50 / 40 / 10 -> 6 / 5 / 1).
+    expect(screen.getByLabelText(en.page.save)).toHaveValue(6);
+    expect(screen.getByLabelText(en.page.spend)).toHaveValue(5);
+    expect(screen.getByLabelText(en.page.share)).toHaveValue(1);
+    fireEvent.change(screen.getByLabelText(en.page.save), { target: { value: '2' } });
+    expect(screen.getByText('4 coins left to split')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.income.submit }));
     expect(screen.getByRole('alert')).toHaveTextContent('Split all 12 coins first.');
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '1001' } });
@@ -130,19 +138,20 @@ describe('TeenWallet', () => {
     await ready();
     fireEvent.click(screen.getByRole('button', { name: en.income.open }));
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '3' } });
-    fireEvent.change(screen.getByLabelText(en.page.spend), { target: { value: '3' } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     expect(screen.getByRole('alert')).toHaveTextContent(en.income.frozen);
     expect(screen.queryByText('Added 3 coins.')).toBeNull();
   });
 
-  it('announces a reached goal as plain status, never a celebration', async () => {
+  it('announces a goal the income reached in the income notice (the celebration belongs to the goal, once)', async () => {
     const { session } = fakeSession({ 'POST /wallet/income': { data: { actionId: ACTION, goal: { id: GOAL, title: 'Headphones', target: 20, status: 'reached', saved: 20 } }, error: null } });
     const { view } = renderWallet(session);
     await ready();
     fireEvent.click(screen.getByRole('button', { name: en.income.open }));
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '10' } });
     fireEvent.change(screen.getByLabelText(en.page.save), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText(en.page.spend), { target: { value: '0' } });
+    fireEvent.change(screen.getByLabelText(en.page.share), { target: { value: '0' } });
     fireEvent.change(screen.getByLabelText(en.income.toGoal), { target: { value: GOAL } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     expect(await screen.findByRole('status')).toHaveTextContent('Goal reached: Headphones.');
@@ -181,7 +190,8 @@ describe('TeenWallet', () => {
     renderWallet(session);
     await ready();
     fireEvent.click(screen.getByRole('button', { name: en.goals.open }));
-    expect(screen.getByRole('progressbar', { name: 'Headphones' })).toHaveAttribute('aria-valuenow', '10');
+    // S07.4 (D.16): the bar names its provenance.
+    expect(screen.getByRole('img', { name: 'Headphones: 10 of 20. All yours' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.goals.move }));
     fireEvent.change(screen.getByLabelText(en.goals.moveAmount), { target: { value: '11' } });
     fireEvent.click(screen.getByRole('button', { name: en.goals.confirmMove }));

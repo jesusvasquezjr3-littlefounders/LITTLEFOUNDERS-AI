@@ -64,7 +64,6 @@
     "protected": "Those coins are saved for a goal. Move them out first.",
     "saveFailed": "Could not save. Try again.",
     "goalsHeading": "Coins in goals",
-    "goalSaved": "{saved} of {target} coins",
     "moveOut": "Move coins",
     "destination": "Move to",
     "toSpend": "Spend",
@@ -111,6 +110,8 @@
     "share": "Share",
     "logged": "Coins you logged",
     "rewardUsed": "Used your own reward",
-    "goalMoved": "You moved goal coins"
+    "goalMoved": "You moved goal coins",
+    "shared": "Coins you shared",
+    "shareBack": "Shared coins came back"
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent } from 'react';
 import { Button, Copy, Field, StatusMark } from '../design/controls';
 import type { Bucket, GuardianAction, KidGoal } from './familyHubApi';
+import { GoalProgress, type GoalProgressCopy } from './GoalProgress';
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyHub.css';
@@ -26,7 +27,7 @@ export interface WalletCorrectionsCopy {
   adjustHeading: string; bucket: string; save: string; spend: string; share: string; direction: string; add: string; remove: string;
   amount: string; reason: string; reasonHint: string; submit: string; saving: string; saved: string; reasonRequired: string; amountInvalid: string;
   insufficient: string; protected: string; saveFailed: string;
-  goalsHeading: string; goalSaved: string; moveOut: string; destination: string; toSpend: string; toSave: string; moved: string; goalShort: string; noGoals: string;
+  goalsHeading: string; moveOut: string; destination: string; toSpend: string; toSave: string; moved: string; goalShort: string; noGoals: string;
   rewardsHeading: string; deliver: string; delivered: string; notApproved: string; noRewards: string; rewardUntitled: string;
   historyHeading: string; noHistory: string; byYou: string; byOther: string; kindAdjust: string; kindGoal: string;
 }
@@ -63,8 +64,11 @@ function ReasonField({ label, hint, value, invalid, onChange, disabled }: {
 const parseAmount = (raw: string) => /^\d{1,4}$/.test(raw.trim()) ? Number(raw.trim()) : NaN;
 const validAmount = (amount: number) => Number.isInteger(amount) && amount >= 1 && amount <= 1000;
 
-export function WalletCorrections({ copy, locale, dark, kidName, open, loading, failed, goals, rewards, history, busy, notice, onToggle, onRetry, onAdjust, onWithdraw, onDeliver }: {
-  copy: WalletCorrectionsCopy; locale: string; dark: boolean; kidName: string; open: boolean; loading: boolean; failed: boolean;
+export function WalletCorrections({ copy, progressCopy, locale, dark, kidName, open, loading, failed, goals, rewards, history, busy, notice, onToggle, onRetry, onAdjust, onWithdraw, onDeliver }: {
+  copy: WalletCorrectionsCopy;
+  /** S07.4 (D.16): each goal shows the child's own coins apart from bonus and Tutor coins. */
+  progressCopy: GoalProgressCopy;
+  locale: string; dark: boolean; kidName: string; open: boolean; loading: boolean; failed: boolean;
   goals: KidGoal[]; rewards: DeliverableReward[]; history: GuardianAction[]; busy: boolean; notice: Notice;
   onToggle: () => void; onRetry: () => void;
   onAdjust: (input: { bucket: Bucket; amount: number; reason: string }) => Promise<boolean>;
@@ -143,8 +147,8 @@ export function WalletCorrections({ copy, locale, dark, kidName, open, loading, 
           {heldGoals.length === 0 ? <Copy role="body">{copy.noGoals}</Copy> : <ul>{heldGoals.map((goal) => <li key={goal.id}>
             <div className="lf-family-hub-row">
               <span data-copy-role="data" className="ugc">{goal.title}</span>
-              <span data-copy-role="data" className="lf-family-hub-amount">{copy.goalSaved.replace('{saved}', String(goal.saved)).replace('{target}', String(goal.target))}</span>
             </div>
+            <GoalProgress copy={progressCopy} title={goal.title} target={goal.target} progress={goal.progress} />
             {goalId === goal.id ? <form onSubmit={(event) => void submitWithdrawal(event)} noValidate aria-label={copy.moveOut}>
               <Options label={copy.destination} value={destination} disabled={busy} onChange={setDestination}
                 options={[{ value: 'spend', label: copy.toSpend }, { value: 'save', label: copy.toSave }]} />

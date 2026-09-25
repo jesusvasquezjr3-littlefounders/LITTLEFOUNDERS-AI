@@ -1,10 +1,18 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Button, Copy, StatusMark } from '../design/controls';
 import {
-  archiveGoal, archiveReward, claimReward, createGoal, createParentInvite, createReward, decideParent, fetchBalances, fetchGoals,
+  archiveGoal, archiveReward, claimReward, createGoal, createParentInvite, createReward, decideParent, fetchBalances,
   fetchHistory, fetchParents, fetchRewards, fetchWalletAccess, logIncome, releaseGoal,
-  type Balances, type Goal, type IncomeSource, type ParentLink, type PersonalReward, type Session, type WalletAccess, type WalletEntry,
+  type Balances, type IncomeSource, type ParentLink, type PersonalReward, type Session, type WalletAccess, type WalletEntry,
 } from './walletApi';
+import {
+  archiveOwnDestination, createHabitGoal, createOwnDestination, declineNextStep, fetchHabitGoals, fetchShare, fetchUsualSplit, markNextStepSeen,
+  nextStepDue, pledgeGift, saveUsualSplit, settleOwnGift, splitCoins, type HabitGoal, type ShareView, type UsualSplit as Usual,
+} from '../family/moneyHabitsApi';
+import { GoalProgress, type GoalProgressCopy } from '../family/GoalProgress';
+import { GoalNextStep, type GoalNextStepCopy } from '../family/GoalNextStep';
+import { ShareGiving, type ShareGivingCopy, type ShareTeenCopy } from '../family/ShareGiving';
+import { UsualSplit, type UsualSplitCopy } from '../family/UsualSplit';
 import '../design/tokens.css';
 import '../design/system.css';
 import './teenWallet.css';
@@ -20,9 +28,14 @@ import './teenWallet.css';
  *
  * Composition: the balance is always visible; every section opens on demand
  * so the first view stays inside the Copy Budget. The coins are labelled as
- * simulated once, in one chip (Bible 06 §5 rule 3). No celebration: a goal
- * reached is an OD-7 milestone but is announced as plain status here; no
- * lives, no streak, no variable reward. Mentor characters do not appear.
+ * simulated once, in one chip (Bible 06 §5 rule 3). No lives, no streak, no
+ * variable reward. Mentor characters do not appear.
+ *
+ * S07.4: income is offered pre-split by the teen's own usual split (D.13; any
+ * other split is accepted), every goal bar shows its provenance (D.16), a
+ * reached goal celebrates once (the OD-7 milestone) with "what's your next
+ * goal?" (D.15), and the Share pocket has real places the teen chooses and
+ * logs (D.14).
  * Client validation mirrors the server's (integers, 1–1000 income, 1–500
  * reward cost, 1–60 character names); Core and the database remain the
  * boundary.
@@ -32,19 +45,29 @@ type Group<K extends string> = Record<K, string>;
 export interface TeenWalletCopy {
   page: Group<'title' | 'sub' | 'simulation' | 'loading' | 'failed' | 'retry' | 'total' | 'save' | 'spend' | 'share' | 'sections' | 'close'>;
   income: Group<'open' | 'heading' | 'amount' | 'source' | 'allowance' | 'gift' | 'earned' | 'split' | 'left' | 'done' | 'toGoal' | 'noGoal'
-    | 'submit' | 'saving' | 'added' | 'goalReached' | 'invalidAmount' | 'splitMismatch' | 'frozen' | 'failed'>;
+    | 'submit' | 'saving' | 'added' | 'goalReached' | 'invalidAmount' | 'splitMismatch' | 'frozen' | 'failed' | 'useUsual' | 'usualNote'>;
   goals: Group<'open' | 'heading' | 'empty' | 'name' | 'target' | 'create' | 'created' | 'invalid' | 'progress' | 'reached' | 'archived' | 'move'
     | 'moveAmount' | 'destination' | 'toSpend' | 'toSave' | 'confirmMove' | 'moved' | 'moveTooMany' | 'archive' | 'archivedNotice' | 'failed'>;
   rewards: Group<'open' | 'heading' | 'empty' | 'name' | 'cost' | 'create' | 'created' | 'invalid' | 'price' | 'use' | 'used' | 'notEnough' | 'limit'
     | 'full' | 'archive' | 'archivedNotice' | 'failed'>;
   history: Group<'open' | 'heading' | 'empty' | 'income' | 'allowance' | 'gift' | 'earned' | 'reward' | 'goalMove' | 'task' | 'familyReward'
-    | 'tutorCorrection' | 'tutorGoalMove' | 'familyAllowance' | 'bonus' | 'note'>;
+    | 'tutorCorrection' | 'tutorGoalMove' | 'familyAllowance' | 'bonus' | 'note' | 'shared' | 'shareBack'>;
   parents: Group<'open' | 'heading' | 'tasksLocked' | 'optional' | 'invite' | 'inviting' | 'linkReady' | 'linkLabel' | 'copy' | 'copied' | 'copyFailed'
     | 'tooMany' | 'waiting' | 'unnamed' | 'confirm' | 'reject' | 'confirmed' | 'rejectedNotice' | 'verified' | 'rejected' | 'revoked' | 'pendingOther'
     | 'tasksOn' | 'openTasks' | 'failed'>;
 }
 
-type Panel = 'income' | 'goals' | 'rewards' | 'history' | 'parents';
+/** S07.4: the shared money-habit copy (moneyHabits.json) the teen wallet reuses. */
+export interface TeenHabitsCopy {
+  usualSplit: Omit<UsualSplitCopy, 'save' | 'spend' | 'share' | 'more' | 'less'>;
+  split: { more: string; less: string };
+  goalProgress: GoalProgressCopy;
+  nextGoal: GoalNextStepCopy & { started: string; later: string };
+  share: ShareGivingCopy & { frozen: string };
+  shareTeen: ShareTeenCopy;
+}
+
+type Panel = 'income' | 'goals' | 'rewards' | 'share' | 'history' | 'parents';
 type Notice = { text: string; error: boolean } | null;
 const fill = (text: string, values: Record<string, string | number>) => text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 const asCount = (raw: string): number | null => (/^\d{1,6}$/.test(raw.trim()) ? Number(raw.trim()) : null);
@@ -96,8 +119,9 @@ function Section({ id, heading, children }: { id: string; heading: string; child
   </section>;
 }
 
-export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks, inviteLinkFor, copyText, onAccessChanged }: {
+export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onOpenTasks, inviteLinkFor, copyText, onAccessChanged }: {
   copy: TeenWalletCopy;
+  habits: TeenHabitsCopy;
   locale: string;
   dark: boolean;
   session: Session;
@@ -108,10 +132,12 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
   /** Called after the teen confirms a parent, so the shell re-reads which sections unlock. */
   onAccessChanged?: () => void;
 }) {
-  const ids = { title: useId(), income: useId(), goals: useId(), rewards: useId(), history: useId(), parents: useId() };
+  const ids = { title: useId(), income: useId(), goals: useId(), rewards: useId(), share: useId(), history: useId(), parents: useId() };
   const [access, setAccess] = useState<WalletAccess | null>(null);
   const [balances, setBalances] = useState<Balances | null>(null);
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goals, setGoals] = useState<HabitGoal[]>([]);
+  const [usual, setUsual] = useState<Usual | null>(null);
+  const [share, setShare] = useState<ShareView | null>(null);
   const [rewards, setRewards] = useState<PersonalReward[]>([]);
   const [history, setHistory] = useState<WalletEntry[]>([]);
   const [parents, setParents] = useState<ParentLink[]>([]);
@@ -124,11 +150,13 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
 
   const load = useCallback(async () => {
     const current = ++generation.current;
-    const [accessRes, balanceRes, goalsRes, rewardsRes, historyRes, parentsRes] = await Promise.all([
-      fetchWalletAccess(session), fetchBalances(session), fetchGoals(session), fetchRewards(session), fetchHistory(session), fetchParents(session),
+    const [accessRes, balanceRes, goalsRes, rewardsRes, historyRes, parentsRes, usualRes, shareRes] = await Promise.all([
+      fetchWalletAccess(session), fetchBalances(session), fetchHabitGoals(session), fetchRewards(session), fetchHistory(session), fetchParents(session),
+      fetchUsualSplit(session), fetchShare(session),
     ]);
     if (current !== generation.current) return;
-    if (!accessRes.ok || !balanceRes.ok || !goalsRes.ok || !rewardsRes.ok || !historyRes.ok || !parentsRes.ok || accessRes.data.holder !== 'teen') {
+    if (!accessRes.ok || !balanceRes.ok || !goalsRes.ok || !rewardsRes.ok || !historyRes.ok || !parentsRes.ok || !usualRes.ok || !shareRes.ok
+      || accessRes.data.holder !== 'teen') {
       setState('failed');
       return;
     }
@@ -138,6 +166,8 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
     setRewards(rewardsRes.data.rewards);
     setHistory(historyRes.data.entries.slice(0, 30));
     setParents(parentsRes.data.guardians);
+    setUsual(usualRes.data);
+    setShare(shareRes.data);
     setState('ready');
   }, [session]);
 
@@ -164,8 +194,22 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
   const [amount, setAmount] = useState('');
   const [source, setSource] = useState<IncomeSource>('allowance');
   const [split, setSplit] = useState({ save: '', spend: '', share: '' });
+  const [splitTouched, setSplitTouched] = useState(false);
   const [goalId, setGoalId] = useState('');
   const total = asCount(amount);
+
+  /** D.13: the amount arrives pre-split by the teen's own usual split; editing a pocket overrides it. */
+  function applyUsualSplit(forAmount: number | null) {
+    if (!usual || forAmount === null || forAmount < 1 || forAmount > 1000) { setSplit({ save: '', spend: '', share: '' }); return; }
+    const coins = splitCoins(forAmount, usual.usual);
+    setSplit({ save: String(coins.save), spend: String(coins.spend), share: String(coins.share) });
+    setSplitTouched(false);
+  }
+
+  function changeAmount(value: string) {
+    setAmount(value);
+    if (!splitTouched) applyUsualSplit(asCount(value));
+  }
   const parts = { save: asCount(split.save || '0'), spend: asCount(split.spend || '0'), share: asCount(split.share || '0') };
   const splitSum = (parts.save ?? 0) + (parts.spend ?? 0) + (parts.share ?? 0);
   const left = total === null ? 0 : total - splitSum;
@@ -186,7 +230,7 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
       return result;
     }, fill(copy.income.added, { n: total }), { ACCOUNT_FROZEN: copy.income.frozen }, copy.income.failed);
     if (ok) {
-      setAmount(''); setSplit({ save: '', spend: '', share: '' }); setGoalId('');
+      setAmount(''); setSplit({ save: '', spend: '', share: '' }); setSplitTouched(false); setGoalId('');
       if (reachedGoal) setNotice({ text: `${fill(copy.income.added, { n: total })} ${fill(copy.income.goalReached, { goal: reachedGoal })}`, error: false });
     }
   }
@@ -206,7 +250,7 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
     if (await act(() => createGoal({ title, target }, session), copy.goals.created, {}, copy.goals.failed)) { setGoalName(''); setGoalTarget(''); }
   }
 
-  async function submitMove(event: FormEvent, goal: Goal) {
+  async function submitMove(event: FormEvent, goal: HabitGoal) {
     event.preventDefault();
     const n = asCount(moveAmount);
     if (n === null || n < 1 || n > Math.min(goal.saved, 1000)) { setNotice({ text: fill(copy.goals.moveTooMany, { n: goal.saved }), error: true }); return; }
@@ -214,6 +258,33 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
       { GOAL_BALANCE_INSUFFICIENT: fill(copy.goals.moveTooMany, { n: goal.saved }), ACCOUNT_FROZEN: copy.income.frozen }, copy.goals.failed)) {
       setMoving(null); setMoveAmount('');
     }
+  }
+
+  // ── Usual split (D.13) ─────────────────────────────────────────────────
+  const [usualOpen, setUsualOpen] = useState(false);
+  const [usualVersion, setUsualVersion] = useState(0);
+  const [usualNotice, setUsualNotice] = useState<Notice>(null);
+
+  async function saveUsual(next: { save: number; spend: number; share: number }) {
+    if (busy) return;
+    setBusy(true); setUsualNotice(null);
+    const result = await saveUsualSplit(next, session);
+    setBusy(false);
+    setUsualNotice(result.ok ? { text: habits.usualSplit.saved, error: false } : { text: habits.usualSplit.failed, error: true });
+    if (result.ok) { setUsual(result.data); setUsualVersion((v) => v + 1); }
+  }
+
+  // ── Goals: the next step of a reached goal (D.15) ──────────────────────
+  const [nextNotice, setNextNotice] = useState<{ goalId: string; text: string; error: boolean } | null>(null);
+
+  async function nextStep(goal: HabitGoal, run: () => Promise<{ ok: true } | { ok: false; code: string }>, success: string) {
+    if (busy) return;
+    setBusy(true); setNextNotice(null); setNotice(null);
+    const result = await run();
+    setBusy(false);
+    if (!result.ok) { setNextNotice({ goalId: goal.id, text: habits.nextGoal.failed, error: true }); return; }
+    setNotice({ text: success, error: false });
+    await load();
   }
 
   // ── Rewards ──────────────────────────────────────────────────────────────
@@ -264,12 +335,14 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
     goal_withdrawal: copy.history.tutorGoalMove,
     allowance: copy.history.familyAllowance,
     savings_bonus: copy.history.bonus,
+    share_gift: copy.history.shared,
+    share_gift_returned: copy.history.shareBack,
   })[e.reason];
   const name = (p: ParentLink) => p.displayName || copy.parents.unnamed;
 
   const panels: { key: Panel; label: string }[] = [
     { key: 'income', label: copy.income.open }, { key: 'goals', label: copy.goals.open }, { key: 'rewards', label: copy.rewards.open },
-    { key: 'history', label: copy.history.open }, { key: 'parents', label: copy.parents.open },
+    { key: 'share', label: habits.share.heading }, { key: 'history', label: copy.history.open }, { key: 'parents', label: copy.parents.open },
   ];
   const balanceTotal = balances ? balances.save + balances.spend + balances.share : 0;
 
@@ -308,23 +381,28 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
 
       {panel === 'income' && <Section id={ids.income} heading={copy.income.heading}>
         <form className="lf-teen-wallet-form" onSubmit={(event) => void submitIncome(event)} noValidate>
-          <CountField label={copy.income.amount} value={amount} max={1000} disabled={busy} onChange={setAmount}
+          <CountField label={copy.income.amount} value={amount} max={1000} disabled={busy} onChange={changeAmount}
             invalid={amount !== '' && (total === null || total < 1 || total > 1000)} />
           <Choices label={copy.income.source} value={source} disabled={busy} onChange={setSource}
             options={[{ value: 'allowance', label: copy.income.allowance }, { value: 'gift', label: copy.income.gift }, { value: 'earned', label: copy.income.earned }]} />
           <fieldset className="lf-teen-wallet-split">
             <legend data-copy-role="body">{copy.income.split}</legend>
+            {total !== null && total > 0 && !splitTouched && <p data-copy-role="body" className="lf-teen-wallet-muted">{copy.income.usualNote}</p>}
             {(['save', 'spend', 'share'] as const).map((bucket) => <div key={bucket} data-pocket={bucket} className="lf-teen-wallet-split-row">
               <span className="lf-teen-wallet-swatch" aria-hidden="true" />
               <CountField label={pocket[bucket]} value={split[bucket]} max={1000} disabled={busy}
-                onChange={(value) => setSplit((current) => ({ ...current, [bucket]: value }))} />
+                onChange={(value) => { setSplitTouched(true); setSplit((current) => ({ ...current, [bucket]: value })); }} />
             </div>)}
+            {splitTouched && <div className="lf-actions"><Button disabled={busy} onClick={() => applyUsualSplit(total)}>{copy.income.useUsual}</Button></div>}
             <p data-copy-role="data" aria-live="polite">{total !== null && left === 0 && total > 0 ? copy.income.done : fill(copy.income.left, { n: Math.max(left, 0) })}</p>
           </fieldset>
           {activeGoals.length > 0 && (parts.save ?? 0) > 0 && <GoalSelect label={copy.income.toGoal} none={copy.income.noGoal} goals={activeGoals}
             value={goalId} onChange={setGoalId} disabled={busy} />}
           <div className="lf-actions"><Button type="submit" variant="success" disabled={busy}>{busy ? copy.income.saving : copy.income.submit}</Button></div>
         </form>
+        <UsualSplit key={usualVersion} copy={{ ...habits.usualSplit, save: copy.page.save, spend: copy.page.spend, share: copy.page.share, more: habits.split.more, less: habits.split.less }}
+          locale={locale} dark={dark} open={usualOpen} loading={false} failed={false} value={usual} busy={busy} notice={usualNotice}
+          onToggle={() => { setUsualOpen((o) => !o); setUsualNotice(null); }} onRetry={() => void load()} onSave={(next) => void saveUsual(next)} />
       </Section>}
 
       {panel === 'goals' && <Section id={ids.goals} heading={copy.goals.heading}>
@@ -334,11 +412,11 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
               <span className="ugc" data-copy-role="data">{goal.title}</span>
               {goal.status !== 'active' && <span className="lf-teen-wallet-chip" data-copy-role="option">{goal.status === 'reached' ? copy.goals.reached : copy.goals.archived}</span>}
             </div>
-            <div className="lf-teen-wallet-progress" role="progressbar" aria-label={goal.title} aria-valuemin={0} aria-valuemax={goal.target}
-              aria-valuenow={Math.min(goal.saved, goal.target)}>
-              <span style={{ inlineSize: `${Math.min(100, Math.round((goal.saved / Math.max(goal.target, 1)) * 100))}%` }} />
-            </div>
-            <span data-copy-role="data">{fill(copy.goals.progress, { saved: goal.saved, target: goal.target })}</span>
+            <GoalProgress copy={habits.goalProgress} title={goal.title} target={goal.target} progress={goal.progress} />
+            {nextStepDue(goal) && <GoalNextStep copy={habits.nextGoal} goal={goal} busy={busy} notice={nextNotice && nextNotice.goalId === goal.id ? nextNotice : null}
+              onSeen={async () => { const res = await markNextStepSeen(goal.id, session); return res.ok && res.data.celebrate; }}
+              onStart={(input) => void nextStep(goal, () => createHabitGoal({ ...input, followsGoalId: goal.id }, session), habits.nextGoal.started)}
+              onNotNow={() => void nextStep(goal, () => declineNextStep(goal.id, session), habits.nextGoal.later)} />}
             <div className="lf-actions">
               {goal.saved > 0 && <Button aria-expanded={moving === goal.id} onClick={() => { setMoving(moving === goal.id ? null : goal.id); setMoveAmount(''); setNotice(null); }}>
                 {copy.goals.move}</Button>}
@@ -380,6 +458,18 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
           <div className="lf-actions"><Button type="submit" disabled={busy}>{copy.rewards.create}</Button></div>
         </form>
       </Section>}
+
+      {panel === 'share' && <div id={ids.share}>
+        <ShareGiving copy={habits.share} teenCopy={habits.shareTeen} locale={locale} dark={dark} available={balances.share} view={share}
+          loading={false} failed={false} busy={busy} notice={null} selfDirected onRetry={() => void load()}
+          onPledge={(destinationId, n) => void act(() => pledgeGift(destinationId, n, session), habits.share.pledged,
+            { INSUFFICIENT_BALANCE: habits.share.notEnough, ACCOUNT_FROZEN: habits.share.frozen }, habits.share.failed)}
+          onTakeBack={(gift) => void act(() => settleOwnGift(gift.id, 'returned', null, session), habits.share.takenBack, { ACCOUNT_FROZEN: habits.share.frozen }, habits.share.failed)}
+          onAddPlace={(input) => void act(() => createOwnDestination(input, session), habits.shareTeen.added, { SHARE_DESTINATION_LIMIT: habits.shareTeen.limit }, habits.share.failed)}
+          onRemovePlace={(destination) => void act(() => archiveOwnDestination(destination.id, session), habits.shareTeen.removed, {}, habits.share.failed)}
+          onMarkGiven={(gift, note) => void act(() => settleOwnGift(gift.id, 'given', note, session), habits.shareTeen.givenNotice,
+            { SHARE_GIFT_NOTE_REQUIRED: habits.shareTeen.noteRequired }, habits.share.failed)} />
+      </div>}
 
       {panel === 'history' && <Section id={ids.history} heading={copy.history.heading}>
         {history.length === 0 ? <Copy role="body">{copy.history.empty}</Copy> : <ul className="lf-teen-wallet-list">
@@ -433,14 +523,14 @@ export function TeenWallet({ copy, locale, dark, session, tasksHref, onOpenTasks
 }
 
 function GoalSelect({ label, none, goals, value, onChange, disabled }: {
-  label: string; none: string; goals: Goal[]; value: string; onChange: (value: string) => void; disabled?: boolean;
+  label: string; none: string; goals: HabitGoal[]; value: string; onChange: (value: string) => void; disabled?: boolean;
 }) {
   const id = useId();
   return <div className="lf-field">
     <label htmlFor={id} data-copy-role="body">{label}</label>
     <select id={id} className="lf-teen-wallet-select" value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)}>
-      <option value="">{none}</option>
-      {goals.map((goal) => <option key={goal.id} value={goal.id}>{goal.title}</option>)}
+      <option value="" data-copy-role="option">{none}</option>
+      {goals.map((goal) => <option key={goal.id} value={goal.id} data-copy-role="data">{goal.title}</option>)}
     </select>
   </div>;
 }

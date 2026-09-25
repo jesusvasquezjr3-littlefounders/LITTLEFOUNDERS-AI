@@ -19,7 +19,7 @@ const OPTIONS = new Set(['save', 'spend', 'share', 'add', 'remove', 'toSpend', '
   // S07.2: a linked teen's own entries on the same history.
   'logged', 'rewardUsed', 'goalMoved']);
 const HEADINGS = new Set(['heading', 'adjustHeading', 'goalsHeading', 'rewardsHeading', 'historyHeading']);
-const DATA = new Set(['goalSaved', 'note']);
+const DATA = new Set(['note']);
 
 function roleOf(group: string, key: string): CopyRole {
   if (DATA.has(key)) return 'data';
@@ -59,8 +59,10 @@ describe('Family Hub lifecycle copy', () => {
   }
 
   it('names coins in every locale where a quantity is shown', () => {
-    expect(en.walletCorrections.goalSaved).toContain('coins');
-    expect(es.walletCorrections.goalSaved).toContain('monedas');
-    expect(pt.walletCorrections.goalSaved).toContain('moedas');
+    // S07.4 (D.16): goal progress is drawn by <GoalProgress> (moneyHabits.json); the
+    // correction form still names coins wherever it shows a quantity.
+    expect(en.walletCorrections.amount).toMatch(/coins/i);
+    expect(es.walletCorrections.amount).toMatch(/monedas/i);
+    expect(pt.walletCorrections.amount).toMatch(/moedas/i);
   });
 });

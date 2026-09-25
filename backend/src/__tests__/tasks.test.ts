@@ -137,6 +137,17 @@ function stub(opts: StubOptions = {}) {
           ? Promise.resolve(jsonResponse(200, true))
           : Promise.resolve(jsonResponse(200, opts.allocateResult));
       }
+      // S07.4 (D.16): a goal's progress by provenance. The stub reports the
+      // ledger total as the child's own coins, as the real function does for
+      // chore rewards.
+      if (url.includes('/rest/v1/rpc/goal_progress_breakdown') && method === 'POST') {
+        const ids = (JSON.parse(String(init?.body)) as { p_goal_ids: string[] }).p_goal_ids;
+        const total = (opts.ledgerRows ?? [{ bucket: 'save', amount: 3 }, { bucket: 'spend', amount: 5 }]).reduce((sum, r) => sum + r.amount, 0);
+        return Promise.resolve(jsonResponse(200, ids.map((goal_id) => ({ goal_id, own: total, bonus: 0, family: 0, total }))));
+      }
+      if (url.includes('/rest/v1/goal_next_steps?') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, []));
+      }
       if (url.includes('/rest/v1/rpc/decide_redemption') && method === 'POST') {
         return opts.decideResult === undefined
           ? Promise.resolve(jsonResponse(200, true))
@@ -533,25 +544,24 @@ describe('POST /api/v1/tasks/:id/allocate (kid)', () => {
     expect(res.status).toBe(404);
   });
 
-  it('flips a goal to reached once its progress meets the target', async () => {
+  // S07.4: the goal-reached flip happens inside allocate_task_reward's own
+  // transaction; Core never writes a goal status, it reports the goal as the
+  // database now has it (with its provenance) so the child's surface can
+  // celebrate it once (D.15).
+  it('returns the goal as the database reached it, with its provenance, and never writes a goal status itself', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
-    // defaultGoal()'s target is 50 — getGoalProgress re-reads the ledger AFTER
-    // the allocate RPC (mocked here as a static total, since this stub can't
-    // simulate the RPC actually writing a new row) at exactly the target.
-    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 50 }] });
+    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 50 }],
+      goal: { ...defaultGoal(), status: 'reached', reached_at: '2026-09-24T10:00:00Z' } });
     const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 10, spend: 0, share: 0, goalId: GOAL_ID });
     expect(res.status).toBe(200);
-    const markReached = writes.find((w) => w.url.includes(`/savings_goals?id=eq.${GOAL_ID}`) && w.method === 'PATCH');
-    expect(markReached).toBeDefined();
-    expect((markReached?.body as Record<string, unknown>).status).toBe('reached');
+    expect(res.body.data.goal).toMatchObject({ id: GOAL_ID, status: 'reached', saved: 50, progress: { own: 50, bonus: 0, family: 0, total: 50 } });
+    expect(writes.some((w) => w.url.includes('/savings_goals') && w.method === 'PATCH')).toBe(false);
   });
 
-  it('does NOT flip a goal that has not yet met its target', async () => {
-    const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 5 }] });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 5, spend: 0, share: 0, goalId: GOAL_ID });
-    expect(res.status).toBe(200);
-    expect(writes.some((w) => w.url.includes(`/savings_goals?id=eq.${GOAL_ID}`) && w.method === 'PATCH')).toBe(false);
+  it('reports no goal when the split named none', async () => {
+    stub({ task: approvedTask, allocateResult: true, roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 5, spend: 3, share: 2 });
+    expect(res.body.data).toEqual({ allocated: true, goal: null });
   });
 });
 
