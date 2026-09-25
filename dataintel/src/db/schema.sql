@@ -144,6 +144,18 @@ CREATE TABLE IF NOT EXISTS agg_daily_users (
   PRIMARY KEY (day, role)
 );
 
+-- Product 10 E.6 account erasure. One row per erased account id (kind
+-- 'user') and per converted pre-signup visitor id (kind 'anon'). The sync
+-- re-applies the deletion after every run, so a batch read from Vault just
+-- before the account was erased cannot bring its rows back. Rows older than
+-- 30 days are dropped by the same pass (the race lasts minutes, and an id
+-- kept forever would itself be a record of the person).
+CREATE TABLE IF NOT EXISTS erased_subjects (
+  subject_id UUID PRIMARY KEY,
+  kind VARCHAR NOT NULL,
+  erased_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Sync freshness is an operational fact, not a transient worker detail: the
 -- admin console needs to distinguish an empty dataset from a stale one.
 CREATE TABLE IF NOT EXISTS dataintel_sync_state (

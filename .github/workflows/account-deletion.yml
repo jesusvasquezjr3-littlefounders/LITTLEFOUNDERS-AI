@@ -1,0 +1,135 @@
+name: Account deletion sweep
+
+# The daily account-deletion sweep (Product 10 E.6;
+# docs/rebuild/policies/ACCOUNT-DELETION.md).
+#
+# A self-service deletion waits out its 14-day grace period as a 'pending'
+# row in account_deletion_requests. Nothing erases it on the due date unless
+# something asks, so this workflow asks Core, daily, to run every due request,
+# re-check every request held by an open E.3 safety review, and resume any
+# erasure whose Oracle, Depot or warehouse step failed on an earlier attempt.
+# Immediate deletions (guests, self-registered under-13 accounts, a Tutor
+# deleting a child, A.1's 90-day purge) run at request time; this sweep is
+# only their retry path.
+#
+# WHY IT CALLS CORE FROM INSIDE CORE — same reasoning as tutor-retention.yml:
+# the sweep route is internal-key-only, and standing inside the container over
+# `railway ssh` and calling 127.0.0.1 uses the INTERNAL_API_KEY already in that
+# process's environment, so no live credential is copied into a secret.
+#
+# IT IS RE-RUNNABLE. Every step is idempotent and a claimed request is
+# exclusive for ten minutes, so an overlapping manual dispatch cannot erase
+# anything twice. Core audits every run (account_deletions.sweep_ran),
+# including a run that found nothing.
+
+on:
+  schedule:
+    - cron: '45 3 * * *' # 03:45 UTC daily, after badge-link-retirement.yml
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Requests per round'
+        required: false
+        default: '50'
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: Run due account deletions
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Sweep due deletions
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          BATCH: ${{ github.event.inputs.limit || '50' }}
+        run: |
+          set -euo pipefail
+
+          case "$BATCH" in
+            ''|*[!0-9]*) echo "limit must be a positive integer, got '$BATCH'" >&2; exit 1 ;;
+          esac
+          if [ "$BATCH" -lt 1 ] || [ "$BATCH" -gt 200 ]; then
+            echo "limit must be between 1 and 200, got '$BATCH'" >&2; exit 1
+          fi
+
+          # Same transport as tutor-retention.yml: the request travels
+          # base64-encoded as ONE argument, and $INTERNAL_API_KEY / $PORT expand
+          # inside the container, never on this runner.
+          remote_sweep() {
+            local script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{\"limit\": ${BATCH}}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/internal/account-deletions/run"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          completed_total=0
+          retrying_total=0
+          held_total=0
+          for round in $(seq 1 10); do
+            body=''
+            for attempt in 1 2 3; do
+              if body=$(remote_sweep); then break; fi
+              echo "round ${round}: attempt ${attempt} failed:" >&2
+              printf '%s\n' "$body" | head -5 >&2
+              body=''
+              sleep 20
+            done
+            if [ -z "$body" ]; then
+              echo "::error::could not reach Core after 3 attempts"
+              exit 1
+            fi
+
+            scanned=$(printf '%s' "$body" | grep -o '"scanned":[0-9]*' | head -1 | cut -d: -f2)
+            completed=$(printf '%s' "$body" | grep -o '"completed":[0-9]*' | head -1 | cut -d: -f2)
+            held=$(printf '%s' "$body" | grep -o '"held":[0-9]*' | head -1 | cut -d: -f2)
+            retrying=$(printf '%s' "$body" | grep -o '"retrying":[0-9]*' | head -1 | cut -d: -f2)
+
+            # An absent count is NOT zero (§1.14): an error envelope or a proxy
+            # page must fail the run, never read as "nothing was due".
+            if [ -z "${scanned:-}" ] || [ -z "${completed:-}" ] || [ -z "${held:-}" ] || [ -z "${retrying:-}" ]; then
+              echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"
+              printf '%s\n' "$body" | head -5 >&2
+              exit 1
+            fi
+
+            completed_total=$((completed_total + completed))
+            retrying_total=$((retrying_total + retrying))
+            held_total=$((held_total + held))
+            echo "round ${round}: scanned ${scanned}, completed ${completed}, held ${held}, retrying ${retrying}"
+
+            # A short page means nothing else is due. A full page with no
+            # completion means only held or failing requests remain: another
+            # round would see the same rows.
+            if [ "$scanned" -lt "$BATCH" ] || [ "$completed" -eq 0 ]; then
+              break
+            fi
+          done
+
+          echo "account-deletion: ${completed_total} completed, ${held_total} held by a safety review, ${retrying_total} retrying"
+          if [ "$retrying_total" -gt 0 ]; then
+            echo "::warning::${retrying_total} erasure(s) have a failed step; tomorrow's run retries them (see account.deletion_step_failed in the audit log)"
+          fi

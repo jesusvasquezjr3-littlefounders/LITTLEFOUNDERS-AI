@@ -71,10 +71,11 @@
       "share": "Compartilhar conquista",
       "sharing": "Preparando…",
       "shared": "Compartilhado!",
-      "copied": "Link copiado",
-      "error": "Não foi possível criar o selo agora",
+      "error": "Não foi possível criar a imagem agora",
       "shareGoal": "Compartilhar \"{{title}}\"",
-      "disclosure": "Isso cria um link que qualquer pessoa com ele pode abrir. Ele expira em 30 dias, você pode revogá-lo no seu painel de Família e ajuda o LittleFounders a crescer."
+      "disclosure": "Você recebe uma imagem com o primeiro nome. Nenhum link é criado.",
+      "saved": "Imagem salva",
+      "disclosureKeep": "Quem receber pode guardá-la. Ela mostra o nome LittleFounders."
     },
     "insightsConsent": {
       "label": "Compartilhar dados de uso",

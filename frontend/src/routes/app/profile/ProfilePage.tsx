@@ -8,6 +8,8 @@ import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from 
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
+import { TeenConnectionsPanel } from './TeenConnectionsPanel';
+import { ProfileSafetyControl } from './SocialTierNotes';
 import { CourseBadgeCollection } from './CourseBadgeCollection';
 import type { CourseBadge } from '@/lib/courseBadges';
 
@@ -33,10 +35,12 @@ interface OwnProfile {
   memberSince: string;
   email: string;
   locale: string;
-  followers: number;
-  following: number;
   learningStats: LearningStats;
   courseBadges?: CourseBadge[];
+  /** E.8: this account's social tier (null when Core could not read it). */
+  social?: { tier: 'guardian' | 'teen' | 'adult' | 'closed' | null; privateProfile: boolean };
+  /** E.13: which of the owner's fields keeps their profile hidden. */
+  profileReview?: { flagged: boolean; fields: ('username' | 'displayName')[] };
 }
 
 export function ProfilePage() {
@@ -217,6 +221,23 @@ export function ProfilePage() {
         </Link>
       </div>
 
+      {/* E.9: the lists stay reachable, with no number, outside the stats block. */}
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link to="/profile/followers">
+          <Button variant="secondary" className="gap-2"><Icon name="group" />{t('profile.stats.followers')}</Button>
+        </Link>
+        <Link to="/profile/following">
+          <Button variant="secondary" className="gap-2"><Icon name="person_search" />{t('profile.stats.following')}</Button>
+        </Link>
+      </div>
+
+      {data.profileReview?.flagged && (data.social?.tier === 'teen' || data.social?.tier === 'guardian') && (
+        <div className="mt-4">
+          <ProfileSafetyControl audience={data.social.tier === 'teen' ? 'self' : 'kidSelf'} fields={data.profileReview.fields} />
+        </div>
+      )}
+      {data.social?.tier === 'teen' && <div className="mt-4"><TeenConnectionsPanel /></div>}
+
       {/*
        * The stats grid was named by a hidden `aria-label` and headed by
        * nothing. The lockup gives it the same name on screen, keyed `accent`
@@ -236,23 +257,11 @@ export function ProfilePage() {
        * for whatever space a caller gives the label, not a substitute for
        * giving it enough).
        */}
-      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
         <StatCard icon={<LottieIcon name="time" value={data.learningStats.minutesLearned} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
-        <Link
-          to="/profile/followers"
-          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
-        >
-          <StatCard icon={<LottieIcon name="followers" value={data.followers} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
-        </Link>
-        <Link
-          to="/profile/following"
-          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
-        >
-          <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
-        </Link>
       </section>
 
       <CourseBadgeCollection badges={data.courseBadges ?? []} isOwn />

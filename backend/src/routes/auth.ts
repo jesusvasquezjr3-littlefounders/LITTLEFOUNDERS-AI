@@ -11,8 +11,10 @@ import * as gotrue from '../services/gotrue.js';
 import { markUnder13Origin } from '../services/ageOrigin.js';
 import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { enforceKidSuspensionAtAdmission } from '../services/guardianLifecycle.js';
+import { readOpenDeletion } from '../services/accountDeletion.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOnboardingResponse, getOwnAdminPermissions, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { projectAvatarOptions, projectCover } from '../services/profileShape.js';
 
 /** Social providers Core is willing to broker (GoTrue must also have each enabled). */
 const OAUTH_PROVIDERS = ['google'] as const;
@@ -515,19 +517,33 @@ export function authRouter(): Router {
      * ever wrong is one event mislabelled between two funnel steps — never a
      * data-loss or access decision.
      */
+    /*
+     * E.6: a self-service deletion scheduled for this account. Signing back in
+     * during the waiting period lands here; the shell shows the deletion
+     * screen (date + "Keep my account") instead of the app. Display-only: an
+     * unreadable state omits the screen rather than failing admission, and
+     * the deletion itself never depends on this read.
+     */
+    const openDeletion = await readOpenDeletion(user.id);
+    const accountDeletion = openDeletion !== 'unavailable' && openDeletion !== null
+      && (openDeletion.status === 'pending' || openDeletion.status === 'held')
+      ? { status: openDeletion.status, scheduledFor: openDeletion.scheduled_for, requestedAt: openDeletion.requested_at }
+      : null;
     const createdAt = profiles[0]?.created_at ? Date.parse(profiles[0].created_at) : NaN;
     const newAccount = Number.isFinite(createdAt) && Date.now() - createdAt < 120_000;
 
     return ok(res, {
       user: { id: user.id, email: user.email },
-      profile: profiles[0] ?? null,
+      // E.12: a legacy cover that is not a preset is never served, not even to its owner.
+      profile: profiles[0] ? { ...profiles[0], cover: projectCover(profiles[0].cover) } : null,
       roles: roleNames,
       adminPermissions: staffPermissions?.map((row) => row.permission) ?? [],
-      avatarOptions: avatars?.[0]?.options ?? {},
+      avatarOptions: projectAvatarOptions(avatars?.[0]?.options),
       analyticsEnabled,
       newAccount,
       isGuest: user.isGuest,
       onboardingComplete,
+      accountDeletion,
     });
   });
 

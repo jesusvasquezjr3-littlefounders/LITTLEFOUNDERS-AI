@@ -46,11 +46,11 @@ export const RECORDABLE_EVENTS = [
   'profile_edit', 'avatar_edit', 'tutor_open',
   // retention / family
   'streak_extend', 'territory_view', 'consent_grant', 'consent_revoke',
-  // parent report + shareable-achievement-badge loop (0072). badge_link_click
-  // is the one value of the four an ANONYMOUS caller may report — see
-  // ANON_EVENTS in routes/events.ts — because it fires on the public badge
-  // landing page, before any account exists.
-  'parent_report_viewed', 'badge_generated', 'badge_shared', 'badge_link_click',
+  // parent report + achievement sharing (0072). badge_link_click is retired
+  // app-side (OD-20: Appendix L counts shares initiated, never viewer reach),
+  // so Core refuses it; the 0072 CHECK still permits it until the dated
+  // removal narrows it (docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
+  'parent_report_viewed', 'badge_generated', 'badge_shared',
 ] as const;
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;

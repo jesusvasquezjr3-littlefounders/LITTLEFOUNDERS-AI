@@ -7,6 +7,8 @@ import { APP_HOME } from '@/routes/app/navConfig';
 import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ConnectionRequestControl } from './ConnectionRequestControl';
+import { PrivateProfileControl } from './PrivateProfileControl';
+import { ManagedConnectionsControl } from './SocialTierNotes';
 import { ProfileHero } from './ProfileHero';
 import { ProfileReportControl } from './ProfileReportControl';
 import { CourseBadgeCollection } from './CourseBadgeCollection';
@@ -15,8 +17,14 @@ import type { CourseBadge } from '@/lib/courseBadges';
 /*
  * /@username — public profile (session required by routing). Shows exactly
  * what Core whitelists: name, @username, avatar, cover, member-since,
- * counts, Tutor badge, and public learning stats. Follow/unfollow and
+ * Tutor badge, and public learning stats. Follow/unfollow and
  * blocking both live here.
+ *
+ * S08.6: Core decides the tier (E.8). A private teen arrives as a card
+ * (visibility 'private': handle, cartoon avatar, cover) and is rendered by the
+ * rebuild PrivateProfile; `connection` says how this viewer may connect. No
+ * follower or following count exists on the wire any more (E.9): the lists
+ * are plain links, outside the stats block.
  *
  * Blocking (Jesús, 2026-07-12): a two-step inline confirm (no modal — this
  * is a rare, deliberate action, not worth a dialog) rather than an
@@ -32,14 +40,25 @@ interface LearningStats {
   lastActiveDate: string | null;
 }
 
+type ConnectionMode = 'follow' | 'guardianRequest' | 'teenRequest' | 'managed' | 'none';
+
+interface PrivateCard {
+  visibility: 'private';
+  username: string;
+  cover: Record<string, unknown>;
+  avatarOptions: Record<string, unknown>;
+  connection: ConnectionMode;
+  requestPending: boolean;
+}
+
 interface PublicProfile {
+  visibility?: 'full';
   displayName: string;
   username: string;
   cover: Record<string, unknown>;
   avatarOptions: Record<string, unknown>;
   memberSince: string;
-  followers: number;
-  following: number;
+  connection?: ConnectionMode;
   isFollowing: boolean;
   requiresGuardianApproval: boolean;
   isSelf: boolean;
@@ -59,6 +78,7 @@ export function PublicProfilePage() {
   const username = handle.startsWith('@') ? handle.slice(1).toLowerCase() : null;
 
   const [data, setData] = useState<PublicProfile | null>(null);
+  const [card, setCard] = useState<PrivateCard | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
@@ -72,10 +92,11 @@ export function PublicProfilePage() {
     let cancelled = false;
     void (async () => {
       const token = await getToken();
-      const res = await api<PublicProfile>(`/profiles/${username}`, { token });
+      const res = await api<PublicProfile | PrivateCard>(`/profiles/${username}`, { token });
       if (cancelled) return;
       if (res.error) setErrorCode(res.error.code);
-      else setData(res.data);
+      else if (res.data.visibility === 'private') { setCard(res.data); setData(null); }
+      else { setData(res.data); setCard(null); }
     })();
     return () => {
       cancelled = true;
@@ -99,7 +120,8 @@ export function PublicProfilePage() {
     );
   }
   if (errorCode) return <ErrorBanner code={errorCode} />;
-  if (!data || data.username !== username) {
+  const target = card?.username === username ? card.username : data?.username === username ? data.username : null;
+  if (!target) {
     return (
       <div aria-busy="true">
         <div className="h-36 animate-pulse rounded-md bg-surface-sunken sm:h-48" />
@@ -121,19 +143,12 @@ export function PublicProfilePage() {
       setErrorCode(res.error.code);
       return;
     }
-    if (data.requiresGuardianApproval && !res.data.following) {
+    // Leaving a child's or a private teen's profile: it is no longer visible to this account.
+    if ((data.requiresGuardianApproval || data.connection === 'teenRequest') && !res.data.following) {
       navigate(APP_HOME, { replace: true });
       return;
     }
-    setData((d) =>
-      d
-        ? {
-            ...d,
-            isFollowing: res.data.following,
-            followers: d.followers + (res.data.following ? 1 : -1),
-          }
-        : d,
-    );
+    setData((d) => (d ? { ...d, isFollowing: res.data.following } : d));
   }
 
   function onBlockClick() {
@@ -146,11 +161,11 @@ export function PublicProfilePage() {
   }
 
   async function block() {
-    if (!data) return;
+    if (!target) return;
     if (confirmTimer.current) clearTimeout(confirmTimer.current);
     setBusy(true);
     const token = await getToken();
-    const { error } = await api(`/profiles/${data.username}/block`, { method: 'POST', token });
+    const { error } = await api(`/profiles/${target}/block`, { method: 'POST', token });
     setBusy(false);
     if (error) {
       setErrorCode(error.code);
@@ -159,9 +174,46 @@ export function PublicProfilePage() {
     navigate(APP_HOME, { replace: true });
   }
 
+  const safetyControls = (
+    <>
+      <Button
+        onClick={onBlockClick}
+        disabled={busy}
+        variant={confirmingBlock ? 'danger' : 'secondary'}
+        aria-label={confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}
+        title={confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}
+        className="gap-2 px-4"
+      >
+        <Icon name={confirmingBlock ? 'report' : 'block'} />
+        <span className="hidden sm:inline">{confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}</span>
+      </Button>
+      <ProfileReportControl username={target} />
+    </>
+  );
+
+  if (card) {
+    // E.8: a private teen. Only the handle this viewer typed, the cartoon avatar and the cover preset.
+    return (
+      <div>
+        <ProfileHero cover={card.cover} avatarOptions={card.avatarOptions} seed={card.username} />
+        <div className="mt-5 flex flex-wrap items-center justify-end gap-2">{safetyControls}</div>
+        <div className="mt-4">
+          <PrivateProfileControl
+            username={card.username}
+            mode={card.connection === 'teenRequest' || card.connection === 'managed' ? card.connection : 'none'}
+            requestPending={card.requestPending}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (!data) return null;
+
   const memberSince = new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'long', year: 'numeric' }).format(
     new Date(data.memberSince),
   );
+  // Older Core answers without `connection`: keep the earlier child-only rule.
+  const connection: ConnectionMode = data.connection ?? (data.requiresGuardianApproval ? 'guardianRequest' : 'follow');
 
   return (
     <div>
@@ -185,7 +237,7 @@ export function PublicProfilePage() {
           </Link>
         ) : (
           <div className="flex flex-wrap items-center gap-2">
-            {(data.isFollowing || data.requiresGuardianApproval === false) && <Button
+            {(data.isFollowing || connection === 'follow') && <Button
               onClick={() => void toggleFollow()}
               disabled={busy}
               variant={data.isFollowing ? 'secondary' : 'primary'}
@@ -194,23 +246,27 @@ export function PublicProfilePage() {
               <Icon name={data.isFollowing ? 'check' : 'person_add'} />
               {data.isFollowing ? t('profile.public.following') : t('profile.public.follow')}
             </Button>}
-            <Button
-              onClick={onBlockClick}
-              disabled={busy}
-              variant={confirmingBlock ? 'danger' : 'secondary'}
-              aria-label={confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}
-              title={confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}
-              className="gap-2 px-4"
-            >
-              <Icon name={confirmingBlock ? 'report' : 'block'} />
-              <span className="hidden sm:inline">{confirmingBlock ? t('profile.public.blockConfirm') : t('profile.public.block')}</span>
-            </Button>
-            <ProfileReportControl username={data.username} />
+            {safetyControls}
           </div>
         )}
       </div>
 
-      {!data.isSelf && !data.isFollowing && data.requiresGuardianApproval !== false && <ConnectionRequestControl username={data.username} />}
+      {/* E.9: the lists stay reachable, with no number, outside the stats block. */}
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link to={`/${handle}/followers`}>
+          <Button variant="secondary" className="gap-2"><Icon name="group" />{t('profile.stats.followers')}</Button>
+        </Link>
+        <Link to={`/${handle}/following`}>
+          <Button variant="secondary" className="gap-2"><Icon name="person_search" />{t('profile.stats.following')}</Button>
+        </Link>
+      </div>
+
+      {!data.isSelf && !data.isFollowing && (connection === 'guardianRequest' || connection === 'teenRequest') && (
+        <ConnectionRequestControl username={data.username} decidedBy={connection === 'teenRequest' ? 'subject' : 'guardian'} />
+      )}
+      {!data.isSelf && connection === 'managed' && (
+        <div className="mt-4"><ManagedConnectionsControl /></div>
+      )}
 
       {/* Gamified stats — same lockup as the owner's view, so one profile
           reads identically wherever it appears (/DESIGN.md §The study's
@@ -218,24 +274,11 @@ export function PublicProfilePage() {
       <SectionHeading id={statsHeadingId} icon="insights" tone="accent" className="mt-8">
         {t('profile.stats.title')}
       </SectionHeading>
-      {/* 2/3/3, not 2/3/6 — same content, same /DESIGN.md exception as ProfilePage.tsx's own stat grid; see its comment. */}
-      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <section aria-labelledby={statsHeadingId} className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
         <StatCard icon={<LottieIcon name="time" value={data.learningStats.minutesLearned} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
-        <Link
-          to={`/${handle}/followers`}
-          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
-        >
-          <StatCard icon={<LottieIcon name="followers" value={data.followers} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
-        </Link>
-        <Link
-          to={`/${handle}/following`}
-          className="lf-press block rounded-md transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
-        >
-          <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
-        </Link>
       </section>
 
       <CourseBadgeCollection badges={data.courseBadges ?? []} isOwn={data.isSelf} />

@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { randomBytes } from 'node:crypto';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
-import { adminDeleteUser, adminRevokeUserSessions } from './gotrue.js';
+import { adminRevokeUserSessions } from './gotrue.js';
+import { eraseNow } from './accountDeletion.js';
 
 /*
  * A.1's two built FAQ promises:
@@ -120,8 +121,12 @@ export async function purgeExpiredKidSuspension(userId: string, suspendedAt: str
   const parsed = z.array(z.object({ id: z.string().uuid() })).safeParse(links);
   if (!parsed.success) return 'unknown';
   if (parsed.data.length > 0) return 'active';
-  const deleted = await adminDeleteUser(userId);
-  return deleted.error === null ? 'deleted' : 'unknown';
+  // E.6: the purge is the same erasure as every other deletion (database,
+  // Mentor sessions, stored files, warehouse), recorded and audited on an
+  // account_deletion_requests row. 'deleted' once the account itself is gone;
+  // any remaining cleanup is resumed by the daily sweep.
+  const erased = await eraseNow({ subjectId: userId, population: 'kid', initiatedBy: 'suspension_expiry', actorId: null });
+  return erased !== 'unavailable' && erased !== 'staff' && erased.accountErased ? 'deleted' : 'unknown';
 }
 
 /**

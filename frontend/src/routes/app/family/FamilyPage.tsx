@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
+import { ProfileSafetyControl } from '@/routes/app/profile/SocialTierNotes';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
@@ -36,6 +37,8 @@ interface Kid {
   pendingApprovalCount: number;
   walletTotal: number | null;
   taskStreakDays: number;
+  /** E.13: which of the child's fields keeps it hidden from approved outside connections. */
+  profileReview?: { flagged: boolean; fields: ('username' | 'displayName')[] };
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; kids: Kid[] };
@@ -98,7 +101,15 @@ export function FamilyPage() {
   function onKidRenamed(userId: string, displayName: string) {
     setState((prev) =>
       prev.status === 'ready'
-        ? { ...prev, kids: prev.kids.map((k) => (k.userId === userId ? { ...k, displayName } : k)) }
+        ? { ...prev, kids: prev.kids.map((k) => (k.userId === userId ? {
+            ...k,
+            displayName,
+            // Core accepted the new name, so it passed the E.13 review; the handle's flag (if any) stays.
+            profileReview: k.profileReview && {
+              flagged: k.profileReview.fields.includes('username'),
+              fields: k.profileReview.fields.filter((field) => field !== 'displayName'),
+            },
+          } : k)) }
         : prev,
     );
   }
@@ -216,6 +227,11 @@ export function FamilyPage() {
               <SocialHistoryPanel kidUserId={kid.userId} token={token} />
               <BadgeSharesPanel kidUserId={kid.userId} token={token} />
               <GuardianInvitePanel kidUserId={kid.userId} token={token} />
+              {kid.profileReview?.flagged && (
+                <div className="border-t border-outline/50 px-4 py-2.5">
+                  <ProfileSafetyControl audience="guardian" fields={kid.profileReview.fields} name={kid.displayName ?? kid.username ?? ''} />
+                </div>
+              )}
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}

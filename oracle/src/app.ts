@@ -2,6 +2,7 @@ import express from 'express';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { requireInternalKey } from './lib/http.js';
 import { runtimeRouter } from './routes/runtime.js';
+import { erasureRouter } from './routes/erasure.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
 import { moderationReadiness } from './safety/moderation.js';
@@ -78,6 +79,7 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
   app.use(express.json({ limit: '256kb' }));
 
   app.use('/api/v1/tutor', runtimeRouter(liveSessions));
+  app.use('/api/v1/tutor', erasureRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });

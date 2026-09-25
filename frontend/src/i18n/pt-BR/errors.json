@@ -46,6 +46,14 @@
     "ACCOUNT_FROZEN": "Esta conta está congelada. Seus créditos ficam guardados até ela ser descongelada.",
     "GUARDIAN_FREEZE": "Seu responsável congelou este cartão. Peça para ele descongelá-lo.",
     "FREEZE_CHANGED": "O congelamento mudou. Confira o cartão atualizado antes de tentar novamente.",
-    "GUARDIAN_APPROVAL_REQUIRED": "Um responsável precisa aprovar a conexão antes de você seguir este perfil."
+    "GUARDIAN_APPROVAL_REQUIRED": "Um Tutor precisa aprovar a conexão antes de você seguir este perfil.",
+    "PROFILE_FIELD_UNSAFE": "Esse nome pode ajudar alguém a achar uma pessoa jovem fora da LittleFounders. Use um nome ou apelido.",
+    "PROFILE_REVIEW_REQUIRED": "Primeiro mude seu nome. Ele pode ajudar estranhos a achar você.",
+    "SUBJECT_CONSENT_REQUIRED": "Esta conta decide quem se conecta. Peça conexão.",
+    "GUARDIAN_MANAGED_CONNECTIONS": "Um Tutor cuida das conexões desta conta.",
+    "SOCIAL_REQUEST_COOLDOWN": "Você poderá pedir de novo depois.",
+    "SOCIAL_REQUEST_LIMIT": "Há muitos pedidos esperando. Tente depois.",
+    "SOCIAL_ALREADY_CONNECTED": "Vocês já estão conectados.",
+    "SOCIAL_UNAVAILABLE": "Conexões não estão disponíveis para esta conta."
   }
 }

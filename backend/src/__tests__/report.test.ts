@@ -53,6 +53,12 @@ function stubReport(opts: ReportStubOpts = {}) {
       if (url.includes('/rpc/submit_social_report')) {
         return Promise.resolve(jsonResponse(opts.reportStatus ?? 200, opts.reportResult === undefined ? REPORT_ID : opts.reportResult));
       }
+      if (url.includes('/rpc/social_tier')) {
+        const id = (JSON.parse(String(init?.body ?? '{}')) as { p_user?: string }).p_user;
+        if (id !== TARGET_ID) return Promise.resolve(jsonResponse(200, 'adult'));
+        if (opts.targetRoles === null) return Promise.resolve(jsonResponse(200, null));
+        return Promise.resolve(jsonResponse(200, (opts.targetRoles ?? ['parent']).includes('kid') ? 'guardian' : 'adult'));
+      }
       if (url.includes('/rpc/has_current_social_approval')) return Promise.resolve(jsonResponse(200, false));
       if (url.includes('/rest/v1/profiles') && url.includes('user_id=in.')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, opts.profileRows ?? [PROFILE_ROW]));

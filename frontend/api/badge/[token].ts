@@ -2,6 +2,14 @@
  * Vercel Edge Function — /badge/:token (rewritten from vercel.json, which
  * maps the PUBLIC path to /api/badge/:token, this file's route).
  *
+ * RETIRING (OD-20, 24 September 2026). New achievement shares are images the
+ * parent sends; no new link is issued. This function serves only legacy
+ * links issued before the cutover, until they expire. From
+ * BADGE_LINK_ROUTE_RETIRES_AT it answers 410 with the private headers and
+ * never asks Core — the dated retirement of the public page. Deleting this
+ * file, its vercel.json rewrite, the landing route and the SEO entry is the
+ * runbook in docs/rebuild/policies/ACHIEVEMENT-SHARING.md.
+ *
  * The ONLY job here is serving correct <head> Open Graph / Twitter tags to
  * an unfurler (WhatsApp, iMessage, Slack, X, …) that reads the raw HTML and
  * never runs JavaScript — build-seo.mjs's static prerender covers every
@@ -25,10 +33,13 @@ export const config = { runtime: 'edge' };
 
 interface BadgePayload {
   firstName: string;
-  achievementKind: 'course_badge' | 'streak';
+  achievementKind: 'course_badge' | 'streak' | 'goal_reached';
   achievementLabel: string;
   imageUrl: string;
 }
+
+/** Mirrors backend/src/services/badgeLinkWindow.ts; `npm run sharing:check` keeps them equal. */
+export const BADGE_LINK_ROUTE_RETIRES_AT = '2026-10-24T00:00:00.000Z';
 
 const TOKEN_RE = /^[A-Za-z0-9_-]{16,64}$/;
 const PRIVATE_HTML_HEADERS = {
@@ -93,6 +104,11 @@ export default async function handler(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const token = url.pathname.split('/').pop() ?? '';
   const shellOrigin = url.origin;
+
+  if (Date.now() >= Date.parse(BADGE_LINK_ROUTE_RETIRES_AT)) {
+    const shell = await fetchShell(shellOrigin);
+    return new Response(shell, { status: 410, headers: PRIVATE_HTML_HEADERS });
+  }
 
   if (!TOKEN_RE.test(token)) {
     const shell = await fetchShell(shellOrigin);

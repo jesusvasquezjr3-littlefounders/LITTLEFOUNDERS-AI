@@ -180,10 +180,12 @@ describe('no analytical query reaches around the views', () => {
   /*
    * Files allowed to touch the physical tables: the writer, the migration, and
    * the one deliberate staff-inspection service that exists so the console can
-   * DISCLOSE how much it filtered (services/staffAudit.ts). Anything else
+   * DISCLOSE how much it filtered (services/staffAudit.ts). The E.6 account
+   * erasure (services/erasure.ts) is a writer too: it must DELETE from the
+   * physical tables, since a view would leave rows behind. Anything else
    * reading a *_raw table is a metric quietly counting the platform team.
    */
-  const ALLOWED = new Set(['db/sync.ts', 'db/duckdb.ts', 'services/staffAudit.ts']);
+  const ALLOWED = new Set(['db/sync.ts', 'db/duckdb.ts', 'services/staffAudit.ts', 'services/erasure.ts']);
 
   function sourceFiles(dir: string, prefix = ''): string[] {
     return readdirSync(dir).flatMap((entry) => {

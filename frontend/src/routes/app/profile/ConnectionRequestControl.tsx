@@ -7,14 +7,16 @@ import { ConnectionRequest } from '@/rebuild/social/ConnectionRequest';
 import en from '@/i18n/en-US/rebuild.json';
 import es from '@/i18n/es-MX/rebuild.json';
 import pt from '@/i18n/pt-BR/rebuild.json';
-export function ConnectionRequestControl({ username }: { username: string }) {
+export function ConnectionRequestControl({ username, decidedBy = 'guardian' }: { username: string; decidedBy?: 'guardian' | 'subject' }) {
   const { session } = useAuth();
-  return <ScopedRequest key={`${session?.user.id}:${username}`} username={username} />;
+  return <ScopedRequest key={`${session?.user.id}:${username}`} username={username} decidedBy={decidedBy} />;
 }
-function ScopedRequest({ username }: { username: string }) {
+function ScopedRequest({ username, decidedBy }: { username: string; decidedBy: 'guardian' | 'subject' }) {
   const { getToken } = useAuth(); const { isDark } = useTheme(); const { i18n } = useTranslation();
   const locale = i18n.resolvedLanguage ?? 'en-US';
-  const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).socialRequest;
+  // E.8: a child's request goes to its guardian; an independent teen decides for themself.
+  const strings = locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en;
+  const copy = decidedBy === 'subject' ? strings.socialRequestTeen : strings.socialRequest;
   const [status, setStatus] = useState<'idle' | 'saving' | 'pending' | 'failed'>('idle');
   const generation = useRef(0); const busy = useRef(false);
   useEffect(() => () => { generation.current++; }, []);

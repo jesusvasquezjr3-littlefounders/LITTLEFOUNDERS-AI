@@ -1,4 +1,5 @@
 import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
+import { AccountDeletionSetting } from './AccountDeletionSetting';
 import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
@@ -516,6 +517,8 @@ export function SettingsPage() {
           {saved ? t('profile.settings.saved') : saving ? t('profile.settings.saving') : t('profile.settings.save')}
         </Button>
       </form>
+
+      <AccountDeletionSetting />
     </div>
   );
 }

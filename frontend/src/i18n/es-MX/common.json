@@ -71,10 +71,11 @@
       "share": "Compartir logro",
       "sharing": "Preparando…",
       "shared": "¡Compartido!",
-      "copied": "Enlace copiado",
-      "error": "No se pudo crear la insignia en este momento",
+      "error": "No se pudo crear la imagen en este momento",
       "shareGoal": "Compartir \"{{title}}\"",
-      "disclosure": "Esto crea un enlace que cualquiera con él puede abrir. Caduca en 30 días, puedes revocarlo desde tu panel de Familia y ayuda a que LittleFounders crezca."
+      "disclosure": "Recibes una imagen con su nombre de pila. No se crea ningún enlace.",
+      "saved": "Imagen guardada",
+      "disclosureKeep": "Quien la reciba puede conservarla. Muestra el nombre LittleFounders."
     },
     "insightsConsent": {
       "label": "Compartir datos de uso",

@@ -1,0 +1,30 @@
+.lf-rebuild.lf-account-deletion { display: grid; gap: var(--spacing-4); align-content: start; }
+.lf-rebuild.lf-account-deletion--card { min-block-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-lg); }
+.lf-rebuild.lf-account-deletion--screen { align-content: center; padding: var(--spacing-8) var(--spacing-4); max-inline-size: 40rem; margin-inline: auto; }
+.lf-account-deletion p { overflow-wrap: anywhere; }
+.lf-account-deletion-children { display: grid; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--warning-soft); color: var(--content); }
+.lf-account-deletion-details { border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-account-deletion-details > summary {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--target-base);
+  padding-inline: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+.lf-account-deletion-details > summary::-webkit-details-marker { display: none; }
+.lf-account-deletion-chevron { flex: none; }
+.lf-account-deletion-details[open] .lf-account-deletion-chevron { transform: rotate(90deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-account-deletion-chevron { transition: transform var(--dur-micro) var(--ease-standard); }
+}
+.lf-account-deletion-details > summary:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+.lf-account-deletion-details-body { display: grid; gap: var(--spacing-2); padding: 0 var(--spacing-4) var(--spacing-4); color: var(--content-muted); }
+.lf-account-deletion-confirm { display: grid; gap: var(--spacing-4); }
+.lf-account-deletion-ack { display: flex; align-items: center; gap: var(--spacing-3); min-block-size: var(--target-base); cursor: pointer; font-weight: 700; }
+.lf-account-deletion-ack input { inline-size: 1.5rem; block-size: 1.5rem; flex: none; margin: 0; accent-color: var(--error-strong); }
+.lf-account-deletion .lf-button[data-destructive='true']:not(:disabled) { background: var(--error); color: var(--on-error); box-shadow: none; }

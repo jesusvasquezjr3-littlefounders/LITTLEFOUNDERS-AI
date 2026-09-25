@@ -1,0 +1,140 @@
+name: Social-graph retention sweep
+
+# The daily social-graph retention sweep (Product 10 E.11;
+# docs/rebuild/policies/SOCIAL-GOVERNANCE.md §3).
+#
+# Nothing deletes an expired connection request, a resolved report's note or a
+# read safety notice unless something asks,
+# so this workflow asks Core, daily, to run public.run_social_graph_retention.
+# One run applies every retention class of the written policy, bounded per
+# class, in one database transaction that also audits the run
+# (social_retention.sweep_ran), including a run that found nothing; nothing is
+# ever deleted from the append-only audit log. The same
+# run removes any follow that exposes a child without a current guardian's
+# approval (a legacy edge from before E.1 and the S08.6 tiers).
+#
+# WHY IT CALLS CORE FROM INSIDE CORE: same reasoning as tutor-retention.yml.
+# The sweep route is internal-key-only, and standing inside the container over
+# `railway ssh` and calling 127.0.0.1 uses the INTERNAL_API_KEY already in that
+# process's environment, so no live credential is copied into a secret.
+#
+# IT IS RE-RUNNABLE. Every class selects only rows already past their window,
+# so a second run the same day finds nothing new. A run whose reply says
+# `"complete":false` filled a page in some class; the loop runs again.
+#
+# ORDER: the database functions come from the migrations
+# social_standing_guardrails (expand) and social_graph_retention (contract,
+# applied by hand). Until both are applied, Core answers 502 and this workflow
+# fails loudly, deleting nothing.
+
+on:
+  schedule:
+    - cron: '15 4 * * *' # 04:15 UTC daily, after account-deletion.yml
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Rows per retention class per round (1-5000)'
+        required: false
+        default: '500'
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: Apply social-graph retention
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Sweep expired social-graph data
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          BATCH: ${{ github.event.inputs.limit || '500' }}
+        run: |
+          set -euo pipefail
+
+          case "$BATCH" in
+            ''|*[!0-9]*) echo "limit must be a positive integer, got '$BATCH'" >&2; exit 1 ;;
+          esac
+          if [ "$BATCH" -lt 1 ] || [ "$BATCH" -gt 5000 ]; then
+            echo "limit must be between 1 and 5000, got '$BATCH'" >&2; exit 1
+          fi
+
+          # Same transport as tutor-retention.yml: the request travels
+          # base64-encoded as ONE argument, and $INTERNAL_API_KEY / $PORT expand
+          # inside the container, never on this runner.
+          remote_sweep() {
+            local script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{\"limit\": ${BATCH}}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/internal/social-retention/run"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          count() { printf '%s' "$1" | grep -o "\"$2\":[0-9]*" | head -1 | cut -d: -f2; }
+
+          edges_total=0
+          expired_total=0
+          for round in $(seq 1 20); do
+            body=''
+            for attempt in 1 2 3; do
+              if body=$(remote_sweep); then break; fi
+              echo "round ${round}: attempt ${attempt} failed:" >&2
+              printf '%s\n' "$body" | head -5 >&2
+              body=''
+              sleep 20
+            done
+            if [ -z "$body" ]; then
+              echo "::error::could not reach Core after 3 attempts"
+              exit 1
+            fi
+
+            complete=$(printf '%s' "$body" | grep -o '"complete":\(true\|false\)' | head -1 | cut -d: -f2)
+            edges=$(count "$body" unconsentedEdgesRemoved)
+            teen=$(count "$body" teenPendingExpired)
+            guardian=$(count "$body" guardianPendingExpired)
+
+            # An absent count is NOT zero (§1.14): an error envelope or a proxy
+            # page must fail the run, never read as "nothing was due".
+            if [ -z "${complete:-}" ] || [ -z "${edges:-}" ] || [ -z "${teen:-}" ] || [ -z "${guardian:-}" ] ; then
+              echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"
+              printf '%s\n' "$body" | head -5 >&2
+              exit 1
+            fi
+
+            edges_total=$((edges_total + edges))
+            expired_total=$((expired_total + teen + guardian))
+            echo "round ${round}: ${teen} teen and ${guardian} guardian requests expired, ${edges} unconsented child edges removed, complete=${complete}"
+
+            if [ "$complete" = "true" ]; then
+              break
+            fi
+          done
+
+          if [ "${complete:-false}" != "true" ]; then
+            echo "::warning::the sweep did not finish in 20 rounds; tomorrow's run continues"
+          fi
+          echo "social-retention: ${expired_total} unanswered requests expired, ${edges_total} unconsented child edges removed"
+          if [ "$edges_total" -gt 0 ]; then
+            echo "::warning::${edges_total} follow(s) exposed a child without a current guardian's approval and were removed (social.retention_removed in the audit log)"
+          fi

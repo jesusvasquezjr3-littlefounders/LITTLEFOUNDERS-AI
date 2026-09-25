@@ -71,10 +71,11 @@
       "share": "Share achievement",
       "sharing": "Preparing…",
       "shared": "Shared!",
-      "copied": "Link copied",
-      "error": "Could not create the badge right now",
+      "error": "Could not make the picture right now",
       "shareGoal": "Share \"{{title}}\"",
-      "disclosure": "This creates a link anyone with it can open. It expires in 30 days, you can revoke it from your Family panel, and it helps LittleFounders grow."
+      "disclosure": "You get a picture with their first name. No link is made.",
+      "saved": "Picture saved",
+      "disclosureKeep": "Anyone you send it to can keep it. It shows LittleFounders."
     },
     "insightsConsent": {
       "label": "Share usage insights",

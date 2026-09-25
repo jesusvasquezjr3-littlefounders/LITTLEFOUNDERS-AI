@@ -102,6 +102,8 @@ describe('public profile badge projection (E.5)', () => {
       'fetch',
       vi.fn((input: RequestInfo | URL) => {
         const url = String(input);
+        // E.8: both parties are screened adults here; the badge rule is what is under test.
+        if (url.includes('/rpc/social_tier')) return Promise.resolve(jsonResponse(200, 'adult'));
         if (url.includes('/rest/v1/user_roles')) {
           const roleMatch = url.match(/role=eq\.([a-z]+)/);
           const requested = roleMatch ? roleMatch[1] : null;

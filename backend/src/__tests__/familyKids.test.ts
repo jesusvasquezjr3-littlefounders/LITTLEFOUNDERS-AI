@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
-import { jsonResponse, mintToken } from './helpers.js';
+import { erasureStubResponse, jsonResponse, mintToken } from './helpers.js';
 
 /*
  * POST /api/v1/family/kids — creating a child account and linking it.
@@ -16,7 +16,7 @@ import { jsonResponse, mintToken } from './helpers.js';
 
 const KID = {
   displayName: 'Sofía',
-  username: 'sofia_2016',
+  username: 'sofia_b',
   passphrase: 'a-passphrase-she-can-remember',
   birthDate: '2016-04-09',
   locale: 'es-MX',
@@ -56,6 +56,8 @@ function stub(opts: StubOptions = {}) {
         opts.writes.push({ url, method, body: JSON.parse(String(init.body)) as unknown });
       }
 
+      const erasure = erasureStubResponse(url);
+      if (erasure) return Promise.resolve(erasure);
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
       }
@@ -154,7 +156,7 @@ describe('POST /api/v1/family/kids', () => {
     const res = await post();
 
     expect(res.status).toBe(201);
-    expect(res.body.data.kid).toMatchObject({ userId: KID_ID, username: 'sofia_2016' });
+    expect(res.body.data.kid).toMatchObject({ userId: KID_ID, username: 'sofia_b' });
 
     // POST only. The per-family cap now READS guardian_links first, and a
     // filter that matched both would put the read where the write belongs.
@@ -179,7 +181,7 @@ describe('POST /api/v1/family/kids', () => {
     const created = writes.find((w) => w.url.includes('admin/users'));
     const body = created?.body as { email: string; email_confirm: boolean };
     // RFC 2606 reserves `.invalid`, so this can never resolve or receive mail.
-    expect(body.email).toBe('sofia_2016@kids.littlefounders.invalid');
+    expect(body.email).toBe('sofia_b@kids.littlefounders.invalid');
     expect(body.email_confirm).toBe(true);
   });
 
@@ -270,11 +272,11 @@ describe('POST /api/v1/family/kids', () => {
     // kind of friction Duolingo does not impose either.
     const writes: { url: string; method: string; body: unknown }[] = [];
     stub({ writes });
-    const res = await post({ ...KID, username: 'Sofia_2016' });
+    const res = await post({ ...KID, username: 'Sofia_B' });
     expect(res.status).toBe(201);
-    expect(res.body.data.kid.username).toBe('sofia_2016');
+    expect(res.body.data.kid.username).toBe('sofia_b');
     const created = writes.find((w) => w.url.includes('admin/users'));
-    expect((created?.body as { email: string }).email).toBe('sofia_2016@kids.littlefounders.invalid');
+    expect((created?.body as { email: string }).email).toBe('sofia_b@kids.littlefounders.invalid');
   });
 
   it('does not write the child’s name or birth date into the audit log', async () => {
@@ -286,7 +288,7 @@ describe('POST /api/v1/family/kids', () => {
     const serialized = JSON.stringify(audit);
     expect(serialized).not.toContain('Sofía');
     expect(serialized).not.toContain('2016-04-09');
-    expect(serialized).not.toContain('sofia_2016');
+    expect(serialized).not.toContain('sofia_b');
   });
 
   it('refuses past the per-family ceiling, before creating anything', async () => {
@@ -298,6 +300,25 @@ describe('POST /api/v1/family/kids', () => {
     // parent session can mint, since every child is a real account the platform
     // then generates and stores content for (§1.0).
     expect(calls.some((c) => c.includes('admin/users'))).toBe(false);
+  });
+});
+
+describe('E.13 profile-content review at child creation', () => {
+  it.each([
+    [{ username: 'ig_sofia' }, ['username']],
+    [{ username: 'sofia_2016' }, ['username']],
+    [{ displayName: 'Sofía de la calle Reforma' }, ['displayName']],
+    [{ username: 'roblox_sofi', displayName: 'Sofi www.sofi.tv' }, ['username', 'displayName']],
+  ])('refuses %o before creating any account (fields %o)', async (fields, flagged) => {
+    const calls: string[] = [];
+    stub({ calls });
+    const res = await request(createApp())
+      .post('/api/v1/family/kids')
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`)
+      .send({ ...KID, ...fields });
+    expect(res.status).toBe(422);
+    expect(res.body.error).toMatchObject({ code: 'PROFILE_FIELD_UNSAFE', fields: flagged });
+    expect(calls.some((c) => c.includes('admin/users') || c.startsWith('POST') || c.startsWith('PATCH'))).toBe(false);
   });
 });
 
@@ -338,6 +359,20 @@ describe('managing an existing child', () => {
     expect((patch?.body as Record<string, unknown>).display_name).toBe('Sofía Ren');
   });
 
+  it('E.13: refuses a display name that would locate the child, before any write', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes });
+    for (const displayName of ['Sofía Escuela Juárez', 'sofia@mail.com', 'Sofía 2016', 'Sofía TikTok']) {
+      const res = await request(createApp())
+        .patch(`/api/v1/family/kids/${KID_ID_2}`)
+        .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`)
+        .send({ displayName });
+      expect(res.status, displayName).toBe(422);
+      expect(res.body.error).toMatchObject({ code: 'PROFILE_FIELD_UNSAFE', fields: ['displayName'] });
+    }
+    expect(writes.some((w) => w.method === 'PATCH')).toBe(false);
+  });
+
   it('rotates the passphrase without ever writing it down', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
     managed({ writes });
@@ -359,7 +394,11 @@ describe('managing an existing child', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`);
     expect(res.status).toBe(200);
     const audits = calls.filter((c) => c.includes('audit_logs'));
-    const del = calls.findIndex((c) => c === `DELETE /auth/v1/admin/users/${KID_ID_2}`);
+    // E.6: the child is erased through the shared lifecycle (one database
+    // transaction plus Mentor, stored-file and warehouse steps).
+    const del = calls.findIndex((c) => c.includes('/rpc/erase_account_data'));
+    expect(res.body.data).toMatchObject({ deleted: true, status: 'completed' });
+    expect(calls.some((c) => c.includes('/rpc/request_account_deletion'))).toBe(true);
     const firstAudit = calls.findIndex((c) => c.includes('audit_logs'));
     expect(audits.length).toBeGreaterThanOrEqual(2);
     // Afterwards there is no row left to name, and a mid-way failure would

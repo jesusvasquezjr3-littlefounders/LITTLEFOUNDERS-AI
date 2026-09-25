@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { INSTRUMENTED_EVENTS, bandOf } from './usageShared';
+import { INSTRUMENTED_EVENTS, RETIRED_EVENTS, bandOf } from './usageShared';
 
 /*
  * The instrumentation card's whole value is that it can name an event that has
@@ -33,7 +33,9 @@ function schemaEvents(): string[] {
 describe('INSTRUMENTED_EVENTS mirrors the database CHECK constraint', () => {
   it('lists exactly the events the schema allows', () => {
     const schema = [...schemaEvents()].sort();
-    const mirrored = [...INSTRUMENTED_EVENTS].sort();
+    // RETIRED_EVENTS are permitted by the CHECK but no longer emitted (OD-20);
+    // they are neither expected to fire nor allowed to drift silently.
+    const mirrored = [...INSTRUMENTED_EVENTS, ...RETIRED_EVENTS].sort();
 
     // Named separately so a failure says WHICH direction drifted: a missing
     // member makes the health card under-report, an extra one makes it
@@ -48,6 +50,10 @@ describe('INSTRUMENTED_EVENTS mirrors the database CHECK constraint', () => {
 
   it('has no duplicates', () => {
     expect(new Set(INSTRUMENTED_EVENTS).size).toBe(INSTRUMENTED_EVENTS.length);
+  });
+
+  it('never expects a retired event to fire', () => {
+    expect(INSTRUMENTED_EVENTS.filter((e) => (RETIRED_EVENTS as readonly string[]).includes(e))).toEqual([]);
   });
 });
 

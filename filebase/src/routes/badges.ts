@@ -1,50 +1,59 @@
-import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { renderBadgePng } from '../lib/badge.js';
-import { objectPath, readMetadata, shardDir, writeMetadataAtomic, type ObjectMetadata } from '../lib/storage.js';
-import { BUCKET_RE } from '../lib/validation.js';
-import { getConfig } from '../config.js';
 
 /*
- * POST /api/v1/badges — composite a shareable achievement badge PNG
- * (1080x1920) and store it content-addressed, same shape/response as
- * POST /api/v1/files (0073's badge_shares, backend "badge issuance").
- * Mounted behind the same INTERNAL_API_KEY gate as /api/v1/files (app.ts).
+ * Achievement images (OD-20, 24 September 2026; Product 10 F.1).
  *
- * Always `visibility: 'public'` — a badge exists to be linked from a
- * stranger's browser, so there is no legitimate 'internal' case, and not
- * exposing the choice removes a footgun rather than adding a branch nobody
- * should take.
+ * POST /api/v1/badges/render renders an achievement PNG (1080x1920) and
+ * returns the BYTES in the response. Nothing is written to storage: the
+ * image has no Depot object, no content-addressed URL and no metadata row,
+ * so there is nothing a stranger could open and nothing a messaging app
+ * could fetch for a link preview. Core hands the bytes to the verified
+ * guardian who asked, and that parent sends the picture themselves.
+ * Mounted behind the same INTERNAL_API_KEY gate as /api/v1/files (app.ts):
+ * only Core calls it, never a browser.
+ *
+ * POST /api/v1/badges (the pre-OD-20 compose-and-store endpoint) is retired.
+ * It stored every badge as a world-readable object behind a public share
+ * link. It now answers 410 and writes nothing, so even an older Core that
+ * still calls it cannot mint a new public image (fail closed). Legacy
+ * images issued before the cutover are removed through the ordinary
+ * DELETE /api/v1/files/:bucket/:file path when their link is revoked or
+ * expires (Core's F.2 purge and sweep).
  */
 
-const BadgeBody = z.object({
-  bucket: z.string().regex(BUCKET_RE, 'bucket must match [a-z0-9-]{3,40}'),
-  kind: z.enum(['course_badge', 'streak', 'goal_reached']),
-  label: z.string().min(1).max(80),
-  firstName: z.string().min(1).max(40),
-  ageBand: z.enum(['6-8', '9-11', '12-14']).optional(),
-});
-
-function buildUrl(bucket: string, hash: string, ext: string): string {
-  const { PUBLIC_BASE_URL } = getConfig();
-  const path = `/files/${bucket}/${hash}.${ext}`;
-  return PUBLIC_BASE_URL ? new URL(path, PUBLIC_BASE_URL).toString() : path;
-}
+// F.6 standing constraint: first name, server-derived label, kind and the
+// image's own language — nothing else. `.strict()` refuses an age band, a
+// surname, a photo reference or any other extra field instead of ignoring it.
+const RenderBody = z
+  .object({
+    kind: z.enum(['course_badge', 'streak', 'goal_reached']),
+    label: z.string().min(1).max(80),
+    firstName: z.string().min(1).max(40),
+    locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
+  })
+  .strict();
 
 export function badgesRouter(): Router {
   const router = Router();
 
-  router.post('/', (req: Request, res: Response, next) => {
-    handleCompose(req, res).catch(next);
+  router.post('/', (_req: Request, res: Response) => {
+    res.status(410).json({
+      data: null,
+      error: { code: 'GONE', message: 'Stored badge images are retired (OD-20); render the image instead' },
+    });
+  });
+
+  router.post('/render', (req: Request, res: Response, next) => {
+    handleRender(req, res).catch(next);
   });
 
   return router;
 }
 
-async function handleCompose(req: Request, res: Response): Promise<void> {
-  const parsed = BadgeBody.safeParse(req.body);
+async function handleRender(req: Request, res: Response): Promise<void> {
+  const parsed = RenderBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({
       data: null,
@@ -52,40 +61,16 @@ async function handleCompose(req: Request, res: Response): Promise<void> {
     });
     return;
   }
-  const { bucket, ...badgeParams } = parsed.data;
-  const ext = 'png';
 
-  const png = await renderBadgePng(badgeParams);
-  const hash = createHash('sha256').update(png).digest('hex');
-
-  const existing = await readMetadata(bucket, hash);
-  if (existing) {
-    res.json({
-      data: { url: buildUrl(bucket, hash, ext), bucket, hash, ext, bytes: existing.bytes, mime: existing.mime, deduplicated: true },
-      error: null,
-    });
-    return;
-  }
-
-  const dir = shardDir(bucket, hash);
-  await mkdir(dir, { recursive: true });
-  await writeFile(objectPath(bucket, hash, ext), png);
-
-  const meta: ObjectMetadata = {
-    id: `${bucket}/${hash}.${ext}`,
-    bucket,
-    hash,
-    ext,
-    mime: 'image/png',
-    bytes: png.byteLength,
-    originalName: `badge-${badgeParams.kind}.png`,
-    visibility: 'public',
-    uploaderService: req.get('x-service-name') ?? 'unknown',
-    createdAt: new Date().toISOString(),
-  };
-  await writeMetadataAtomic(bucket, hash, meta);
-  res.json({
-    data: { url: buildUrl(bucket, hash, ext), bucket, hash, ext, bytes: meta.bytes, mime: meta.mime, deduplicated: false },
-    error: null,
-  });
+  const png = await renderBadgePng(parsed.data);
+  res
+    .status(200)
+    .set({
+      'Content-Type': 'image/png',
+      'Content-Length': String(png.byteLength),
+      // A per-child image: no shared cache, proxy or browser cache may keep it.
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+    })
+    .end(png);
 }

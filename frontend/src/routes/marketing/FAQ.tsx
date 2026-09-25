@@ -60,6 +60,9 @@ const ITEMS: { id: string; category: Category }[] = [
   { id: "dataCollected", category: "privacy" },
   { id: "moderation", category: "privacy" },
   { id: "retention", category: "privacy" },
+  // E.10/E.11 — data-src: docs/rebuild/policies/SOCIAL-GOVERNANCE.md §2.1 and §3.2
+  { id: "noMessaging", category: "privacy" },
+  { id: "socialRetention", category: "privacy" },
   { id: "analyticsToggle", category: "privacy" },
   { id: "coppa", category: "privacy" },
   // support — data-src: Terms c.13, Privacy Notice

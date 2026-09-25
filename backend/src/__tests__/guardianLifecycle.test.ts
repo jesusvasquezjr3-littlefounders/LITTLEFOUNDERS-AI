@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { erasureStubResponse } from './helpers.js';
 import {
   enforceKidSuspensionAtAdmission,
   purgeExpiredKidSuspension,
@@ -33,6 +34,8 @@ function stub(opts: StubOpts = {}) {
       const url = String(input);
       const method = init?.method ?? 'GET';
       calls.push(`${method} ${url}`);
+      const erasure = erasureStubResponse(url, { coreFails: (opts.deleteStatus ?? 200) >= 500, subject: KID_ID });
+      if (erasure) return Promise.resolve(erasure);
       if (url.includes('/rest/v1/profiles')) {
         if (opts.profilesStatus && opts.profilesStatus >= 500) return Promise.resolve(jsonResponse(500, {}));
         return Promise.resolve(jsonResponse(200, opts.suspendedAt === undefined
@@ -73,17 +76,17 @@ describe('purgeExpiredKidSuspension', () => {
     const calls = stub({ links: [] });
     const old = new Date(Date.now() - (KID_SUSPENSION_DELETE_DAYS + 1) * 24 * 60 * 60 * 1000).toISOString();
     await expect(purgeExpiredKidSuspension(KID_ID, old)).resolves.toBe('deleted');
-    expect(calls.some((c) => c.includes(`/admin/users/${KID_ID}`) && c.includes('DELETE'))).toBe(true);
+    expect(calls.some((c) => c.includes('/rpc/erase_account_data'))).toBe(true);
   });
 
   it('never deletes on an ambiguous link read', async () => {
     const calls = stub({ links: null });
     const old = new Date(Date.now() - (KID_SUSPENSION_DELETE_DAYS + 1) * 24 * 60 * 60 * 1000).toISOString();
     await expect(purgeExpiredKidSuspension(KID_ID, old)).resolves.toBe('unknown');
-    expect(calls.some((c) => c.includes(`/admin/users/${KID_ID}`) && c.includes('DELETE'))).toBe(false);
+    expect(calls.some((c) => c.includes('/rpc/erase_account_data') || c.includes('/rpc/request_account_deletion'))).toBe(false);
   });
 
-  it('never deletes when the GoTrue delete itself fails', async () => {
+  it('never reports deleted when the database erasure itself fails', async () => {
     stub({ links: [], deleteStatus: 502 });
     const old = new Date(Date.now() - (KID_SUSPENSION_DELETE_DAYS + 1) * 24 * 60 * 60 * 1000).toISOString();
     await expect(purgeExpiredKidSuspension(KID_ID, old)).resolves.toBe('unknown');

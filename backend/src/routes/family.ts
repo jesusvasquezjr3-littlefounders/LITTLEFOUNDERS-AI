@@ -1,15 +1,16 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
-import { composeBadgeImage, firstNameOnly, generateBadgeToken, badgeShareExpiresAt, purgeBadgeImageIfUnreferenced } from '../services/badges.js';
+import { firstNameOnly, purgeBadgeImageIfUnreferenced, renderAchievementImage } from '../services/badges.js';
 import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
 import { assembleCourseTree } from '../services/courseTree.js';
+import { eraseNow } from '../services/accountDeletion.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
-import { mayDiscoverProfile, visibleSocialUsers } from '../services/socialVisibility.js';
+import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
+import { profileFieldFlags, reviewProfileFields } from '../services/profileFieldSafety.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -44,7 +45,7 @@ import {
   revokeBadgeShare,
   grantRole,
   insertAuditLog,
-  insertBadgeShare,
+  insertAchievementShareInitiation,
   insertVerifiedGuardianLink,
   patchKidProfile,
   patchKidProfileFields,
@@ -91,23 +92,6 @@ const MAX_KIDS_PER_PARENT = 10;
 
 const NOT_FOUND = 'NOT_FOUND';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
-
-/** F.4: the badge_shares age_band vocabulary (6-8 / 9-11 / 12-14) derived
- * from the kid's stored birth date at share time — the field is now
- * populated, never invented. Outside the teaching bands (or no date) it
- * stays NULL rather than guessing. */
-export function shareAgeBand(birthDate: string | null, now: Date = new Date()): '6-8' | '9-11' | '12-14' | null {
-  if (birthDate === null || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return null;
-  const date = new Date(`${birthDate}T00:00:00.000Z`);
-  if (!Number.isFinite(date.getTime())) return null;
-  let age = now.getUTCFullYear() - date.getUTCFullYear();
-  if (now.getUTCMonth() < date.getUTCMonth() ||
-      (now.getUTCMonth() === date.getUTCMonth() && now.getUTCDate() < date.getUTCDate())) age--;
-  if (age >= 6 && age <= 8) return '6-8';
-  if (age >= 9 && age <= 11) return '9-11';
-  if (age >= 12 && age <= 14) return '12-14';
-  return null;
-}
 
 export function familyRouter(): Router {
   const router = Router();
@@ -167,6 +151,12 @@ export function familyRouter(): Router {
           userId: l.kid_user_id,
           displayName: byId.get(l.kid_user_id)?.display_name ?? null,
           username: byId.get(l.kid_user_id)?.username ?? null,
+          // E.13: which of the child's fields keeps the child hidden from
+          // every approved outside connection until the Tutor changes it.
+          profileReview: reviewProfileFields({
+            username: byId.get(l.kid_user_id)?.username ?? null,
+            displayName: byId.get(l.kid_user_id)?.display_name ?? null,
+          }),
           analyticsConsent: consents.get(l.kid_user_id) ?? false,
           pendingApprovalCount: pendingByKid.get(l.kid_user_id) ?? 0,
           walletTotal: balances ? balances.save + balances.spend + balances.share : null,
@@ -223,6 +213,15 @@ export function familyRouter(): Router {
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the child account details');
     const { displayName, username, passphrase, locale } = parsed.data;
     const birthDate = parsed.data.birthDate ?? null;
+
+    // E.13: before anything is written, neither the handle nor the name may
+    // carry what would locate the child off-platform. The database refuses
+    // the same values (profile_fields_guard) from any writer.
+    const unsafe = [
+      ...(profileFieldFlags(username).length > 0 ? ['username'] : []),
+      ...(profileFieldFlags(displayName).length > 0 ? ['displayName'] : []),
+    ];
+    if (unsafe.length > 0) return fail(res, 422, 'PROFILE_FIELD_UNSAFE', 'That name could help someone find the child outside LittleFounders', { fields: unsafe });
 
     // Counted from the VERIFIED links, which is the same source /kids reads, so
     // the cap can never disagree with what the parent sees.
@@ -354,7 +353,10 @@ export function familyRouter(): Router {
     const page = await getPendingSocialRequests(kidId, query.data.offset);
     if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load connection requests');
     const ids = [...new Set(page.requests.map(item => item.requesterId))];
-    const visible = await Promise.all(ids.map(async id => await mayDiscoverProfile(authedUser(res).id, id) ? id : null));
+    // The requester chose to ask this family: a private teen's card is enough
+    // to name them to the deciding guardian (E.8). A hidden or flagged
+    // account stays unnamed.
+    const visible = await Promise.all(ids.map(async id => await profileAccess(authedUser(res).id, id) !== 'none' ? id : null));
     const names = await getSocialDisplayNames(visible.filter((id): id is string => id !== null));
     if (!names) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load request participants');
     const nameById = new Map(names.map(row => [row.user_id, row.display_name]));
@@ -434,6 +436,9 @@ export function familyRouter(): Router {
     if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
     if (parsed.data.birthDate !== undefined) patch.birth_date = parsed.data.birthDate;
     if (Object.keys(patch).length === 0) return fail(res, 400, 'VALIDATION_ERROR', 'Nothing to change');
+    if (patch.display_name !== undefined && profileFieldFlags(patch.display_name).length > 0) {
+      return fail(res, 422, 'PROFILE_FIELD_UNSAFE', 'That name could help someone find the child outside LittleFounders', { fields: ['displayName'] });
+    }
 
     const ok_ = await patchKidProfileFields(kidId, patch);
     if (!ok_) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the child profile');
@@ -461,19 +466,23 @@ export function familyRouter(): Router {
     const kidId = await guardKid(req, res);
     if (!kidId) return res;
 
-    // Audited BEFORE the delete, because afterwards there is no row to name and
+    // Audited BEFORE the erasure, because afterwards there is no row to name and
     // a failure mid-way would otherwise leave no trace that it was attempted.
     await insertAuditLog(authedUser(res).id, 'family.kid_delete.requested', kidId, {});
-    const removed = await adminDeleteUser(kidId);
-    if (removed.error) {
-      return fail(res, removed.error.status >= 500 ? 502 : 400, removed.error.code, removed.error.message);
+    // E.6: the same erasure lifecycle as every other deletion - the child's
+    // database rows (one transaction), their Mentor sessions, stored files
+    // and warehouse rows - immediately, because the verified Tutor decided.
+    const outcome = await eraseNow({ subjectId: kidId, population: 'kid', initiatedBy: 'guardian', actorId: authedUser(res).id });
+    if (outcome === 'unavailable') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not delete the account');
+    if (outcome === 'staff') return fail(res, 403, 'STAFF_ACCOUNT', 'A staff account is removed by a superadmin');
+    if (outcome.status === 'held') {
+      return ok(res, { deleted: false, status: 'held' }, 202);
     }
-    // Hard delete, and the cascade is the point: profiles, user_roles,
-    // guardian_links and the learning rows all reference auth.users ON DELETE
-    // CASCADE, so a guardian asking for their child to be removed gets the
-    // child's data removed rather than hidden behind a flag.
-    await insertAuditLog(authedUser(res).id, 'family.kid_deleted', kidId, {});
-    return ok(res, { deleted: true });
+    if (!outcome.accountErased) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not delete the account');
+    await insertAuditLog(authedUser(res).id, 'family.kid_deleted', kidId, { status: outcome.status });
+    // 'finishing': the account and its database rows are gone; stored files or
+    // warehouse rows are still being cleared by the daily sweep.
+    return ok(res, { deleted: true, status: outcome.status === 'completed' ? 'completed' : 'finishing' });
   });
 
   /*
@@ -586,17 +595,27 @@ export function familyRouter(): Router {
   });
 
   /*
-   * SHAREABLE ACHIEVEMENT BADGE — "Compartir logro" (0072/0073). Issues a
-   * new badge image + share token for a REAL, ALREADY-EARNED achievement.
-   * Every field that reaches Depot's compositor (and therefore a public,
-   * unauthenticated URL) is bounded by the SAME "age band + first name"
-   * ceiling /AGENTS.md §1.9 sets for third-party AI context — no surname
-   * (firstNameOnly), no exact age (age_band not collected here at all), no
-   * school, no real photo. The achievement label is never client-supplied
-   * text: for `course_badge` it comes from the course's own published title
-   * (only after verifying the course is actually in this kid's completed
-   * list — a parent cannot mint a badge for a course never finished), and
-   * for `streak` it is built server-side from the stat itself.
+   * ACHIEVEMENT IMAGE — "Share achievement" (Product 10 F.1 per OD-20).
+   *
+   * The share is a PNG handed to the verified guardian who asked, in THIS
+   * response, for them to send themselves (the device share sheet where it
+   * accepts files, a download otherwise). Nothing about the image is
+   * persisted: no token, no row, no stored Depot object, no public URL — so
+   * no stranger can open it and no messaging app can build a link preview
+   * from a company-hosted page.
+   *
+   * F.6 STANDING CONSTRAINTS, each enforced here and pinned by
+   * __tests__/achievementSharingConstraints.test.ts:
+   *   1. Guardian-only initiation — the family router admits only currently
+   *      ID-verified adult parents, and guardKid re-verifies a VERIFIED
+   *      guardian_links row for THIS kid before anything is read (and again
+   *      before the bytes leave).
+   *   2. Server-side achievement verification — the label is never client
+   *      text: a course title only for a course in the kid's completed list,
+   *      a goal only if it is this kid's and `reached`, a streak built from
+   *      the stored stat and only at MIN_SHAREABLE_STREAK_DAYS or more.
+   *   3. First-name-only minimization — Depot receives exactly kind, label,
+   *      FIRST name and locale; its schema refuses anything else.
    */
   const STREAK_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (days: number) => string> = {
     'en-US': (d) => `${d}-day streak`,
@@ -605,36 +624,57 @@ export function familyRouter(): Router {
   };
   // Below this, a shared badge would read as noise rather than an
   // achievement. A product judgment call, not a technical one — easy to
-  // retune without touching the compositor or the schema.
+  // retune without touching the renderer.
   const MIN_SHAREABLE_STREAK_DAYS = 3;
 
-  // Family Hub (0079) — reuses the SAME badge system for a reached savings
-  // goal, per FAMILY_HUB.md §8's "no new image/compositor work" commitment.
+  // Family Hub (0079) — a reached savings goal uses the same image renderer.
+  // "coins", never money (owner glossary §5).
   const GOAL_REACHED_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (title: string, target: number) => string> = {
-    'en-US': (title, target) => `Saved ${target} LF Coins for "${title}"`,
-    'es-MX': (title, target) => `Ahorró ${target} LF Coins para "${title}"`,
-    'pt-BR': (title, target) => `Guardou ${target} LF Coins para "${title}"`,
+    'en-US': (title, target) => `Saved ${target} coins for "${title}"`,
+    'es-MX': (title, target) => `Ahorró ${target} monedas para "${title}"`,
+    'pt-BR': (title, target) => `Poupou ${target} moedas para "${title}"`,
+  };
+  // F.6 minimization: a goal title is free text a family member typed, and
+  // the picture cannot be recalled once sent. A title that carries a
+  // contact, link, handle, platform, school, place or birth year (the E.13
+  // classifier) is left out and the label names the goal generically.
+  const GOAL_REACHED_GENERIC_LABELS: Record<'en-US' | 'es-MX' | 'pt-BR', (target: number) => string> = {
+    'en-US': (target) => `Saved ${target} coins for a goal`,
+    'es-MX': (target) => `Ahorró ${target} monedas para una meta`,
+    'pt-BR': (target) => `Poupou ${target} moedas para uma meta`,
   };
 
-  const CreateBadge = z.object({
-    kind: z.enum(['course_badge', 'streak', 'goal_reached']),
-    courseSlug: z.string().min(1).max(80).optional(),
-    goalId: z.string().uuid().optional(),
-    locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
-  });
+  const AchievementImageRequest = z
+    .object({
+      kind: z.enum(['course_badge', 'streak', 'goal_reached']),
+      courseSlug: z.string().min(1).max(80).optional(),
+      goalId: z.string().uuid().optional(),
+      locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
+      // What the parent's device offers for the hand-off; counted, never trusted for access.
+      handoff: z.enum(['share_sheet', 'download']),
+    })
+    .strict();
 
-  router.post('/kids/:kidId/badge', async (req, res) => {
+  /*
+   * The pre-OD-20 link issuer. Retired: a new share is never a link. Any
+   * verified parent who reaches it (an outdated client) gets a 410 before
+   * anything is read, rendered or stored.
+   */
+  router.post('/kids/:kidId/badge', (_req, res) =>
+    fail(res, 410, 'SHARE_LINKS_RETIRED', 'Achievement links are retired; share the achievement image instead'),
+  );
+
+  router.post('/kids/:kidId/achievement-image', async (req, res) => {
     const kidId = await guardKid(req, res);
     if (!kidId) return res;
-    const parsed = CreateBadge.safeParse(req.body);
-    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the badge request');
-    const { kind, courseSlug, goalId, locale } = parsed.data;
+    const parsed = AchievementImageRequest.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the achievement request');
+    const { kind, courseSlug, goalId, locale, handoff } = parsed.data;
 
     const profiles = await getKidProfiles([kidId]);
     if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child profile');
-    const displayName = profiles[0]?.display_name;
-    if (!displayName) return fail(res, 502, DATA_UNAVAILABLE, 'Child has no display name to show on a badge');
-    const firstName = firstNameOnly(displayName);
+    const firstName = firstNameOnly(profiles[0]?.display_name ?? '');
+    if (!firstName) return fail(res, 502, DATA_UNAVAILABLE, 'Child has no display name to show on the image');
 
     let label: string;
     if (kind === 'course_badge') {
@@ -653,7 +693,9 @@ export function familyRouter(): Router {
       if (!goal || goal.kid_user_id !== kidId || goal.status !== 'reached') {
         return fail(res, 403, 'FORBIDDEN', 'This goal has not been reached yet');
       }
-      label = GOAL_REACHED_LABELS[locale](goal.title, goal.target);
+      label = profileFieldFlags(goal.title).length > 0
+        ? GOAL_REACHED_GENERIC_LABELS[locale](goal.target)
+        : GOAL_REACHED_LABELS[locale](goal.title, goal.target);
     } else {
       const statsRows = await getKidLearningStats(kidId);
       if (!statsRows) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load learning stats');
@@ -663,30 +705,26 @@ export function familyRouter(): Router {
       }
       label = STREAK_LABELS[locale](streakDays);
     }
+    // Depot's label ceiling; a longer goal title is shortened, never refused.
+    if (label.length > 80) label = `${label.slice(0, 79)}…`;
 
-    const composed = await composeBadgeImage({ kind, label, firstName });
-    if (!composed) return fail(res, 502, DATA_UNAVAILABLE, 'Could not render the badge image');
+    const png = await renderAchievementImage({ kind, label, firstName, locale });
+    if (!png) return fail(res, 502, DATA_UNAVAILABLE, 'Could not render the achievement image');
 
-    const token = generateBadgeToken();
-    const user = authedUser(res);
-    const stored = await insertBadgeShare({
-      token,
-      kid_user_id: kidId,
-      created_by: user.id,
-      achievement_kind: kind,
-      achievement_label: label,
-      first_name: firstName,
-      age_band: shareAgeBand(profiles[0]?.birth_date ?? null),
-      image_bucket: composed.bucket,
-      image_hash: composed.hash,
-      image_ext: composed.ext,
-      image_url: composed.url,
-      expires_at: badgeShareExpiresAt(),
+    // Re-verify the guardian link after the reads, same posture as the
+    // badge-link list below: a link revoked mid-request releases nothing.
+    if (!await guardKid(req, res)) return res;
+
+    // Appendix L (OD-20): one "share initiated" per rendered image, by
+    // hand-off and kind. Never blocks the parent; a failed write is logged
+    // because an unrecorded share is a measurement gap, not a user error.
+    void insertAchievementShareInitiation({ achievement_kind: kind, handoff }).then((stored) => {
+      if (!stored) console.error('[achievement-sharing] share initiation was not recorded');
     });
-    if (!stored) return fail(res, 502, DATA_UNAVAILABLE, 'Badge image was rendered but could not be saved');
 
     // Subject is the PARENT (the caller), same posture as territory_view
     // above — a kid identifier never enters this event.
+    const user = authedUser(res);
     void (async () => {
       const callerRoles = await getRolesForGate(user.id);
       if (!callerRoles || callerRoles.length === 0 || callerRoles.includes('kid')) return;
@@ -695,20 +733,19 @@ export function familyRouter(): Router {
       ]);
     })();
 
-    // utm_campaign=badge-share on the share link itself — not on the /signup
-    // CTA inside the landing page — because captureLandingContext()
-    // (frontend/src/lib/visitor.ts) snapshots UTM params on FIRST script
-    // execution, i.e. on whichever URL the visitor actually lands on. That
-    // is this one; a later internal navigation to /signup has nothing to
-    // capture and "first landing wins" already holds the attribution.
-    const { FRONTEND_URL } = getConfig();
-    const shareUrl = new URL(`/badge/${token}`, FRONTEND_URL);
-    shareUrl.searchParams.set('utm_campaign', 'badge-share');
-    return ok(res, { token, imageUrl: composed.url, shareUrl: shareUrl.toString() }, 201);
+    res.status(200).set({
+      'Content-Type': 'image/png',
+      'Content-Length': String(png.byteLength),
+      'Content-Disposition': 'attachment; filename="littlefounders-achievement.png"',
+      'Cache-Control': 'no-store, private',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    return res.end(png);
   });
 
   /*
-   * BADGE SHARE LIST + PER-SHARE REVOKE (F.2). The list feeds the Family
+   * LEGACY BADGE-LINK LIST + PER-LINK REVOKE (F.2; OD-20 keeps these for
+   * links issued before the cutover, until they expire). The list feeds the Family
    * panel's "revoke this link" control; the revoke kills one link
    * immediately, independent of the underlying achievement record (the
    * badge_shares row is marked, never deleted — the achievement itself is

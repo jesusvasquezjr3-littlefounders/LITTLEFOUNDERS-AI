@@ -1,5 +1,6 @@
 import { query, execute, exec, isReady, withConnection } from './duckdb.js';
 import { getConfig } from '../env.js';
+import { applyErasureTombstones } from '../services/erasure.js';
 
 type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions' | 'attempts' | 'anon_conversions';
 
@@ -673,6 +674,14 @@ export async function syncAll(): Promise<{
     } catch {
       tables[name] = -1;
     }
+  }
+
+  // E.6: a batch read from Vault just before an account was erased must not
+  // bring its rows back (services/erasure.ts).
+  try {
+    tables.erasure_reapplied = await applyErasureTombstones();
+  } catch {
+    tables.erasure_reapplied = -1;
   }
 
   return { tables, elapsed: Date.now() - start };

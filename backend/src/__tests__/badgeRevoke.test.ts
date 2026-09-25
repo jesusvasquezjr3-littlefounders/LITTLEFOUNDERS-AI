@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../app.js';
@@ -19,7 +19,17 @@ const OTHER_KID_ID = randomUUID();
 const TOKEN = 'a'.repeat(32);
 const IMAGE_HASH = 'b'.repeat(64);
 
-afterEach(() => vi.unstubAllGlobals());
+// Pinned inside the legacy window (after the OD-20 cutover, before the
+// 24 October 2026 retirement) so these cases never change meaning with the
+// calendar; the retirement itself is tested explicitly below.
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(new Date('2026-09-24T12:00:00.000Z'));
+});
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
 
 interface ShareRow {
   token: string;
@@ -226,6 +236,8 @@ describe('GET /api/v1/family/kids/:kidId/badges', () => {
     const listUrl = vi.mocked(fetch).mock.calls.map((c) => String(c[0])).find((u) => u.includes('badge_shares?kid_user_id=eq.'));
     expect(listUrl).toContain('revoked_at=is.null');
     expect(listUrl).toContain('expires_at=gt.');
+    // OD-20: only links issued before the cutover can be live.
+    expect(listUrl).toContain('created_at=lt.2026-09-24T00%3A00%3A00.000Z');
     expect(res.body.data.shares).toHaveLength(3);
     const share = res.body.data.shares[0];
     expect(Object.keys(share).sort()).toEqual(['achievementKind', 'achievementLabel', 'createdAt', 'expiresAt', 'token']);
@@ -259,5 +271,32 @@ describe('expiry enforcement on the public page', () => {
     const res = await request(createApp()).get(`/api/v1/badges/${TOKEN}`);
     expect(res.status).toBe(404);
     expect(state.filebaseDeletes).toBe(0);
+  });
+});
+
+describe('OD-20 cutover and dated retirement of legacy links', () => {
+  it('refuses a link issued after the cutover and purges its image', async () => {
+    const state = stub({ share: liveShare({ created_at: '2026-09-24T08:00:00Z', expires_at: '2026-10-24T08:00:00Z' }) });
+    const res = await request(createApp()).get(`/api/v1/badges/${TOKEN}`);
+    expect(res.status).toBe(404);
+    await vi.waitFor(() => expect(state.filebaseDeletes).toBe(1));
+  });
+
+  it('lists no legacy links once retired, without reading the table', async () => {
+    vi.setSystemTime(new Date('2026-10-24T00:00:01.000Z'));
+    const state = stub({ listRows: [liveShare()] });
+    const res = await request(createApp()).get(`/api/v1/family/kids/${KID_ID}/badges`).set(auth());
+    expect(res.status).toBe(200);
+    expect(res.body.data.shares).toEqual([]);
+    expect(state.calls.some((c) => c.url.includes('badge_shares?kid_user_id=eq.'))).toBe(false);
+  });
+
+  it('still lets a guardian revoke (and purge) a legacy link after retirement', async () => {
+    vi.setSystemTime(new Date('2026-10-24T00:00:01.000Z'));
+    const state = stub();
+    const res = await request(createApp()).delete(`/api/v1/family/kids/${KID_ID}/badges/${TOKEN}`).set(auth());
+    expect(res.status).toBe(200);
+    expect(res.body.data.imagePurged).toBe(true);
+    expect(state.filebaseDeletes).toBe(1);
   });
 });

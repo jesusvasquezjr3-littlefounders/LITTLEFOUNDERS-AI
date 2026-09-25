@@ -30,6 +30,8 @@ import {
   readSignupFunnelIntegrity,
   readAnonAcquisition,
 } from '../services/audience.js';
+import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
+import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
 import {
@@ -71,6 +73,7 @@ import {
   revokeExclusion,
 } from '../services/analyticsExclusions.js';
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
+import { readSocialSafetyMetrics } from '../services/socialTier.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -106,6 +109,7 @@ import {
   setCourseStatus,
   setLessonStatus,
 } from '../services/adminData.js';
+import { readSocialGovernanceMetrics, windowsMatchPolicy } from '../services/socialGovernance.js';
 
 /*
  * /api/v1/admin — the staff console's data plane. Admins need a current named
@@ -419,6 +423,77 @@ export function adminRouter(): Router {
   });
 
   /** Web-analytics overview (Plausible): aggregate KPIs + daily timeseries, optionally filtered. */
+  /*
+   * Appendix L achievement-sharing metrics under OD-20 (Product 10 F.1-F.5):
+   * shares initiated by hand-off and kind, the Persistent Public URL Rate
+   * (target zero) and the legacy links' lifecycle. Never viewer reach.
+   * Guarded by the '/analytics' view_analytics mount above.
+   */
+  const AchievementSharingQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/achievement-sharing', async (req, res) => {
+    const parsed = AchievementSharingQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const metrics = await getAchievementSharingMetrics(parsed.data.days);
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load achievement-sharing metrics');
+    return ok(res, metrics);
+  });
+
+  /*
+   * Appendix J social-layer metrics for E.8 and E.13 (policy: SOCIAL-TIERS.md):
+   * accounts by social tier (Age-Tier Differentiation), the Profile-Content
+   * Safety Review Coverage (in scope / reviewed / flagged, and the same for
+   * the guardian tier the metric names) and the teen consent queue. Counts
+   * only; a malformed answer fails the read rather than rendering zeros.
+   */
+  router.get('/analytics/social-safety', async (req, res) => {
+    if (Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No query fields are accepted');
+    const metrics = await readSocialSafetyMetrics();
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load social-safety metrics');
+    const { inScope, reviewed, guardianTierInScope, guardianTierReviewed } = metrics.profileReview;
+    return ok(res, {
+      ...metrics,
+      reviewCoverage: inScope === 0 ? null : reviewed / inScope,
+      guardianTierReviewCoverage: guardianTierInScope === 0 ? null : guardianTierReviewed / guardianTierInScope,
+    });
+  });
+
+  /*
+   * Appendix J metrics for E.10, E.11 and E.12 (policy: SOCIAL-GOVERNANCE.md):
+   * Social-Data Retention-Policy Compliance (rows past each written window,
+   * edges that expose a child without a current guardian's decision, the last
+   * sweep), the live-catalog messaging scan (unreviewed schema objects, target
+   * none) and Avatar/No-Upload Constraint Integrity (off-schema avatars and
+   * covers). `windowsMatchPolicy` says whether the deployed database applies
+   * the written windows. Counts and schema names only; a malformed answer
+   * fails the read.
+   */
+  router.get('/analytics/social-governance', async (req, res) => {
+    if (Object.keys(req.query).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No query fields are accepted');
+    const metrics = await readSocialGovernanceMetrics();
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load social-governance metrics');
+    const overdueTotal = Object.values(metrics.overdue).reduce((sum, n) => sum + n, 0);
+    return ok(res, {
+      ...metrics,
+      windowsMatchPolicy: windowsMatchPolicy(metrics.windows),
+      retentionCompliant: overdueTotal === 0 && metrics.unconsentedChildEdges === 0,
+      messagingSurfaceFree: metrics.messagingSurfaces.length === 0,
+    });
+  });
+
+  /*
+   * Appendix J Deletion-Request Clarity for E.6 (policy: ACCOUNT-DELETION.md):
+   * requests by initiator and population, the stated-timeline rate, the
+   * within-SLA completion rate and the open/overdue queue. Counts only.
+   */
+  const AccountDeletionQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
+  router.get('/analytics/account-deletions', async (req, res) => {
+    const parsed = AccountDeletionQuery.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer from 1 to 366');
+    const metrics = await getAccountDeletionMetrics(parsed.data.days);
+    if (!metrics) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not load account-deletion metrics');
+    return ok(res, metrics);
+  });
+
   router.get('/analytics/overview', async (req, res) => {
     const parsed = PeriodSchema.safeParse(req.query);
     const range = parsed.success ? rangeFromQuery(parsed.data) : null;

@@ -257,6 +257,14 @@
         "question": "How long do you keep AI Tutor conversations?",
         "answer": "Up to 90 days, on a fixed automatic schedule."
       },
+      "noMessaging": {
+        "question": "Can my child message other people?",
+        "answer": "No. There's no chat, messaging or comments between people, and anything like it would stay off for children unless their Tutor turns it on."
+      },
+      "socialRetention": {
+        "question": "How long do you keep who follows whom?",
+        "answer": "Follows and blocks last until removed or the account is deleted. Unanswered requests expire after 30 days, and closed ones go 30 days later."
+      },
       "analyticsToggle": {
         "question": "Can I turn off usage analytics for my child?",
         "answer": "Yes, per child, from your Tutor account — off by default until you turn it on."
@@ -271,7 +279,7 @@
       },
       "deleteAccount": {
         "question": "Can I delete our account?",
-        "answer": "Yes — contact us and we'll process the deletion under the Privacy Notice."
+        "answer": "Yes, in Settings: it's deleted 14 days later unless you sign in and keep it. Guest accounts go at once; a Tutor deletes a child's."
       },
       "cancelTutor": {
         "question": "What happens to my child's account if I cancel mine?",

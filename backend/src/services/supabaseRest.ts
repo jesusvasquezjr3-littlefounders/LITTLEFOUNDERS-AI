@@ -1,6 +1,8 @@
 import { randomInt } from 'node:crypto';
+import { projectAvatarOptions } from './profileShape.js';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
+import { BADGE_LINK_CUTOVER, badgeLinksRetired } from './badgeLinkWindow.js';
 
 const UUID = z.string().uuid();
 const eu = (val: string) => encodeURIComponent(UUID.parse(val).toString());
@@ -352,7 +354,8 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
         userId: id,
         displayName: p.display_name,
         username: p.username,
-        avatarOptions: avatarById.get(id) ?? {},
+        // E.12: a legacy off-schema avatar is served as the default cartoon.
+        avatarOptions: projectAvatarOptions(avatarById.get(id)),
         isTutor: tutorIds.has(id),
       };
     })
@@ -360,6 +363,11 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
 }
 
 const LIST_LIMIT = 60;
+
+/** Whitelisted cards for ids an authorized route already resolved (E.8 teen request queue). */
+export async function getSocialCards(ids: string[]): Promise<ListedUser[] | null> {
+  return hydrateUsers([...new Set(ids)]);
+}
 
 export async function listFollowers(userId: string): Promise<ListedUser[]> {
   const rows = await rest<{ follower_id: string }[]>(
@@ -1482,37 +1490,27 @@ export async function commitCoursePlacement(row: {
   return result === 'created' || result === 'replayed' || result === 'conflict' ? result : null;
 }
 
-// ── Shareable achievement badges (0073) ─────────────────────
+// ── Achievement sharing (0073 legacy links; OD-20 image flow) ─────────────
+//
+// OD-20: new shares are images handed to the parent and persist nothing
+// about the image. badge_shares holds ONLY the legacy links issued before the
+// cutover; the database refuses new rows (migration close_badge_share_links)
+// and Core has no insert path. What remains here reads, revokes and sweeps
+// those legacy rows until the dated removal drops the table.
 
-export interface BadgeShareInsert {
+export interface BadgeShareRow {
+  id: string;
   token: string;
   kid_user_id: string;
   created_by: string;
   achievement_kind: 'course_badge' | 'streak' | 'goal_reached';
   achievement_label: string;
   first_name: string;
-  age_band: '6-8' | '9-11' | '12-14' | null;
   image_bucket: string;
   image_hash: string;
   image_ext: string;
   /** The exact URL Depot returned — NOT reconstructed from bucket/hash/ext (see 0073's column comment). */
   image_url: string;
-  /** F.2 (0109): sent explicitly so a new share always gets the 30-day window, never a DB default drift. */
-  expires_at: string;
-}
-
-/** Service role only — badge_shares has no client INSERT policy (0073). */
-export async function insertBadgeShare(row: BadgeShareInsert): Promise<boolean> {
-  const res = await serviceRest<unknown>('/badge_shares', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(row),
-  });
-  return res !== null;
-}
-
-export interface BadgeShareRow extends BadgeShareInsert {
-  id: string;
   created_at: string;
   /** F.2 (0109): the window end. Enforced by Core on every public read. */
   expires_at: string;
@@ -1521,27 +1519,32 @@ export interface BadgeShareRow extends BadgeShareInsert {
 }
 
 const BADGE_SHARE_FIELDS =
-  'token,kid_user_id,created_by,achievement_kind,achievement_label,first_name,age_band,image_bucket,image_hash,image_ext,image_url,id,created_at,expires_at,revoked_at';
+  'id,token,kid_user_id,created_by,achievement_kind,achievement_label,first_name,image_bucket,image_hash,image_ext,image_url,created_at,expires_at,revoked_at';
+
+/** PostgREST filter for "a legacy link that can still be live": issued before the cutover, un-revoked, inside its window. */
+function liveBadgeShareFilter(): string {
+  return `created_at=lt.${es(BADGE_LINK_CUTOVER)}&revoked_at=is.null&expires_at=gt.${es(new Date().toISOString())}`;
+}
 
 /**
  * Looked up by the PUBLIC badge landing page (routes/badgePublic.ts) — a
  * stranger's request, so this reads ONLY by the opaque token (never by kid
  * or user id) and the route layer whitelists the response down to the four
  * display fields (no kid_user_id/created_by leaves Core on that path).
- * Deliberately does NOT filter on expires_at/revoked_at here: the public
- * route must be able to tell "revoked/expired" apart from "never existed"
- * so it can trigger the lazy image purge.
+ * Deliberately does NOT filter on liveness here: the public route must be
+ * able to tell "dead" apart from "never existed" so it can trigger the lazy
+ * image purge.
  */
 export async function getBadgeShareByToken(token: string): Promise<BadgeShareRow | null> {
   const rows = await serviceRest<BadgeShareRow[]>(`/badge_shares?token=eq.${es(token)}&select=${BADGE_SHARE_FIELDS}&limit=1`);
   return rows?.[0] ?? null;
 }
 
-/** The parent-facing share list (routes/family.ts) — live shares only, newest first. */
-export function listActiveBadgeSharesForKid(kidUserId: string): Promise<BadgeShareRow[] | null> {
+/** The parent-facing legacy link list (routes/family.ts) — live links only, newest first; empty once the route is retired. */
+export async function listActiveBadgeSharesForKid(kidUserId: string): Promise<BadgeShareRow[] | null> {
+  if (badgeLinksRetired()) return [];
   return serviceRest<BadgeShareRow[]>(
-    `/badge_shares?kid_user_id=eq.${eu(kidUserId)}&revoked_at=is.null&expires_at=gt.${es(new Date().toISOString())}` +
-      `&select=${BADGE_SHARE_FIELDS}&order=created_at.desc`,
+    `/badge_shares?kid_user_id=eq.${eu(kidUserId)}&${liveBadgeShareFilter()}&select=${BADGE_SHARE_FIELDS}&order=created_at.desc`,
   );
 }
 
@@ -1567,23 +1570,59 @@ export async function revokeBadgeShare(token: string, kidUserId: string): Promis
 
 /**
  * True if some OTHER LIVE share still references this exact badge image.
- * Depot is content-addressed, so two shares of the same achievement dedupe
- * to one object — before purging a revoked/expired share's image the caller
- * must confirm nothing live still needs it. Returns null on a transport
- * failure: the caller must treat that as "still referenced" and skip the
- * delete (§1.14 — never destroy on an ambiguous read).
+ * Depot was content-addressed, so two shares of the same achievement
+ * deduplicated to one object — before purging a dead share's image the
+ * caller must confirm nothing live still needs it. Once the route is retired
+ * nothing is live. Returns null on a transport failure: the caller must treat
+ * that as "still referenced" and skip the delete (§1.14 — never destroy on an
+ * ambiguous read).
  */
 export async function badgeShareImageStillReferencedElsewhere(
   excludeToken: string,
   bucket: string,
   hash: string,
 ): Promise<boolean | null> {
+  if (badgeLinksRetired()) return false;
   const rows = await serviceRest<{ id: string }[]>(
     `/badge_shares?token=neq.${es(excludeToken)}&image_bucket=eq.${es(bucket)}&image_hash=eq.${es(hash)}` +
-      `&revoked_at=is.null&expires_at=gt.${es(new Date().toISOString())}&select=id&limit=1`,
+      `&${liveBadgeShareFilter()}&select=id&limit=1`,
   );
   if (rows === null) return null;
   return rows.length > 0;
+}
+
+/**
+ * One page of DEAD legacy links for the image sweep — revoked, expired or
+ * issued at/after the cutover; every row once the route is retired. Rows are
+ * never deleted by the sweep (the purge is idempotent: Depot answers 404 for
+ * an image already gone), so paging is by a stable (created_at, id) order.
+ */
+export function listDeadBadgeShares(limit: number, offset: number): Promise<BadgeShareRow[] | null> {
+  const dead = badgeLinksRetired()
+    ? ''
+    : `or=(revoked_at.not.is.null,expires_at.lte.${es(new Date().toISOString())},created_at.gte.${es(BADGE_LINK_CUTOVER)})&`;
+  return serviceRest<BadgeShareRow[]>(
+    `/badge_shares?${dead}select=${BADGE_SHARE_FIELDS}&order=created_at.asc,id.asc&limit=${limit}&offset=${offset}`,
+  );
+}
+
+/**
+ * Appendix L under OD-20 counts shares INITIATED — a verified guardian asked
+ * for the image and it was rendered — split by the hand-off the parent's
+ * device offered (share sheet or download). Never who saw it: there is no
+ * viewer to count, by design. The row carries no user, kid or image
+ * identifier (migration achievement_share_initiations).
+ */
+export async function insertAchievementShareInitiation(row: {
+  achievement_kind: 'course_badge' | 'streak' | 'goal_reached';
+  handoff: 'share_sheet' | 'download';
+}): Promise<boolean> {
+  const res = await serviceRest<unknown>('/achievement_share_initiations', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(row),
+  });
+  return res !== null;
 }
 
 // ── Family Hub: tasks, wallet, goals, redemption catalog ────────────────────
@@ -2000,7 +2039,8 @@ export interface BankingAccountRow {
   frozen: boolean;
   frozen_by: string | null;
   frozen_at: string | null;
-  opened_by: string;
+  /** NULL once the opening adult's account was erased (E.6). */
+  opened_by: string | null;
   opened_at: string;
 }
 
@@ -2070,7 +2110,8 @@ export async function setBankingAccountFrozen(kidId: string, frozen: boolean, fr
 export interface AllowanceRuleRow {
   id: string;
   kid_user_id: string;
-  parent_user_id: string;
+  /** NULL once the adult who set the rule was erased (E.6); the rule stays with the child. */
+  parent_user_id: string | null;
   amount: number;
   frequency: string;
   anchor_day: number;
@@ -2107,7 +2148,8 @@ export async function upsertAllowanceRule(row: {
 
 export interface SavingsBonusRuleRow {
   kid_user_id: string;
-  parent_user_id: string;
+  /** NULL once the adult who set the rule was erased (E.6); the rule stays with the child. */
+  parent_user_id: string | null;
   rate_bp: number;
   active: boolean;
   next_run_at: string;
@@ -2139,7 +2181,8 @@ export async function upsertSavingsBonusRule(row: {
 
 export interface SpendLimitRow {
   kid_user_id: string;
-  parent_user_id: string;
+  /** NULL once the adult who set the rule was erased (E.6); the rule stays with the child. */
+  parent_user_id: string | null;
   period: string;
   cap: number;
   active: boolean;

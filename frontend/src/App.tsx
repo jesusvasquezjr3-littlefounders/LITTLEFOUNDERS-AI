@@ -14,6 +14,7 @@ import { FAQ } from '@/routes/marketing/FAQ';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { BadgeLandingPage } from '@/routes/marketing/BadgeLandingPage';
 import { KidSuspendedPage } from '@/routes/auth/KidSuspended';
+import { AccountDeletionStatus } from '@/routes/auth/AccountDeletionStatus';
 import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
@@ -337,6 +338,11 @@ export function App() {
               already revoked the sessions, so this page must render with no
               session at all. The AuthContext flags pick the wording. */}
           <Route path="account-suspended" element={<KidSuspendedPage />} />
+          {/* E.6 account deletion state — public by design: after a confirmed
+              request the session is gone (signed out everywhere, or erased),
+              and a signed-in account with a scheduled deletion lands here to
+              keep it or sign out (RequireAuth redirects). */}
+          <Route path="account-deletion" element={<AccountDeletionStatus />} />
           {/* Attach a permanent identity to the current guest session in
               place — never /signup, which would mint a second blank identity. */}
           <Route

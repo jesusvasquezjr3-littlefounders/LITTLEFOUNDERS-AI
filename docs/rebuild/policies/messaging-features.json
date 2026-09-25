@@ -1,0 +1,14 @@
+{
+  "$comment": "Product 10 E.10 register of messaging-adjacent features (policy: SOCIAL-GOVERNANCE.md section 2.1). LittleFounders has none. A feature that lets one person send words, reactions or media to another is added here BEFORE it ships, with the defaults E.10 requires and the dates of its Appendix J Stage 0 classification and Stage 3 review; every schema name and route it adds must also be listed in the policy's section 2.2. `npm run guardrails:check` refuses an entry that is missing any of this.",
+  "requiredShape": {
+    "id": "kebab-case identifier",
+    "summary": "what it lets one person send to another",
+    "defaultOn": { "guardian": false, "teen": false, "adult": "true or false", "closed": false },
+    "activation": { "guardian": "guardian_opt_in_per_child", "teen": "teen_opt_in_with_guardian_notice", "closed": "never" },
+    "stage0Classification": "discoverability/safety",
+    "stage0Date": "YYYY-MM-DD",
+    "stage3ReviewDate": "YYYY-MM-DD",
+    "surfaces": ["table:... | column:... | text:... | route:..."]
+  },
+  "features": []
+}

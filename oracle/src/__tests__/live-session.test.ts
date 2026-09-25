@@ -2602,3 +2602,68 @@ describe('a dropped send is never silent', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 });
+
+/*
+ * Product 10 E.6: Core calls POST /api/v1/tutor/erasure before it removes an
+ * account's rows. The learner's live socket closes and a parked session is
+ * dropped WITHOUT the ordinary endings: no close written back to Core, no
+ * post-session review (a paid model call) and nothing that could be resumed.
+ * Another learner's session is untouched.
+ */
+describe('account erasure ends the learner’s Mentor sessions without writing back', () => {
+  async function erase(userId: unknown, key: string | null = process.env.INTERNAL_API_KEY as string): Promise<Response> {
+    const headers: Record<string, string> = { 'content-type': 'application/json' };
+    if (key !== null) headers['x-internal-api-key'] = key;
+    return fetch(`http://127.0.0.1:${oraclePort}/api/v1/tutor/erasure`, { method: 'POST', headers, body: JSON.stringify({ userId }) });
+  }
+
+  it('is internal-key only and takes exactly one uuid', async () => {
+    expect((await erase(USER_ID, null)).status).toBe(401);
+    expect((await erase(USER_ID, 'wrong-key-wrong-key-0000')).status).toBe(401);
+    expect((await erase('not-a-uuid')).status).toBe(400);
+  });
+
+  it('closes the live socket and writes no close, review or transcript afterwards', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    // The greeting's own transcript write is fire-and-forget; let it land first.
+    await new Promise((r) => setTimeout(r, 300));
+    const closesBefore = journal.closes.length;
+    const turnsBefore = journal.turns.length;
+    const response = await erase(USER_ID);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: { live: 1, parked: 0 }, error: null });
+    expect(await closed()).toBe(1000);
+    // Past SESSION_RESUME_GRACE_MS (1.5 s here): a park would have finalized by now.
+    await new Promise((r) => setTimeout(r, 1_900));
+    expect(journal.closes.length).toBe(closesBefore);
+    expect(journal.turns.length).toBe(turnsBefore);
+    expect(modelJournal.bodies).toHaveLength(0);
+    expect(await (await erase(USER_ID)).json()).toMatchObject({ data: { live: 0, parked: 0 } });
+  });
+
+  it('drops a parked session so it can never be resumed or finalized', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.close();
+    await closed();
+    await new Promise((r) => setTimeout(r, 150));
+    const closesBefore = journal.closes.length;
+    expect(await (await erase(USER_ID)).json()).toMatchObject({ data: { live: 0, parked: 1 } });
+    await new Promise((r) => setTimeout(r, 1_900));
+    expect(journal.closes.length).toBe(closesBefore);
+    expect(modelJournal.bodies).toHaveLength(0);
+  });
+
+  it('leaves another learner’s live session alone', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    expect(await (await erase('44444444-4444-4444-8444-444444444444')).json()).toMatchObject({ data: { live: 0, parked: 0 } });
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    await closed();
+  });
+});

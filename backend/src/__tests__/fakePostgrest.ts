@@ -76,6 +76,21 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       }
       return respond(204, null, true);
     }
+    // E.8's social tier (public.social_tier). Like the real function, an
+    // account with no role evidence is closed and a kid role is the guardian
+    // tier; otherwise a seeded age declaration decides, and the fixtures'
+    // role-holding accounts default to screened adults. A test may pin any
+    // tier through db.social_tiers.
+    if (table === 'rpc/social_tier' && method === 'POST') {
+      const { p_user: userId } = JSON.parse(String(init?.body)) as { p_user: string };
+      const pinned = (db.social_tiers ?? []).find((row) => row.user_id === userId);
+      if (pinned) return respond(200, pinned.tier);
+      const roles = (db.user_roles ?? []).filter((row) => row.user_id === userId);
+      if (roles.length === 0) return respond(200, 'closed');
+      if (roles.some((row) => row.role === 'kid')) return respond(200, 'guardian');
+      const band = (db.account_age_declarations ?? []).find((row) => row.user_id === userId)?.declared_age_band;
+      return respond(200, band === '13_to_17' ? 'teen' : band === 'under_13' ? 'closed' : 'adult');
+    }
     // B.2's completed-course set, read through the badge RPC the same way
     // routes/learn.ts does. Tests seed db.completed_course_badges.
     if (table === 'rpc/get_completed_course_badges' && method === 'POST') {

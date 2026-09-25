@@ -1,0 +1,127 @@
+name: Badge link retirement
+
+# The legacy badge-link image sweep (Product 10 F.2 under OD-20;
+# docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
+#
+# OD-20 made an achievement share a picture handed to the parent, so no new
+# public badge link is issued. Links issued before the cutover keep their
+# 30-day expiry and revocation until they end, and F.2 says a dead link is not
+# dead until its IMAGE stops resolving at its own storage URL. Revocation and
+# a visit to a dead link purge the image already; a link that simply expires
+# unvisited did not. This workflow asks Core to sweep every dead legacy link's
+# Depot object, daily, and keeps running after the 24 October 2026 retirement
+# (when every legacy link is dead) until the dated removal deletes it.
+#
+# WHY IT CALLS CORE FROM INSIDE CORE — same reasoning as tutor-retention.yml:
+# the purge route is internal-key-only, and standing inside the container over
+# `railway ssh` and calling 127.0.0.1 uses the INTERNAL_API_KEY already in that
+# process's environment, so no live credential is copied into a secret.
+#
+# IT IS PAGED AND RE-RUNNABLE. Rows are never deleted by the sweep and Depot's
+# delete is idempotent, so the loop walks the dead links by offset until a page
+# comes back short. A page with failures is reported, never swallowed.
+
+on:
+  schedule:
+    - cron: '30 3 * * *' # 03:30 UTC daily, after tutor-retention.yml
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Links per page'
+        required: false
+        default: '500'
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: Purge images of dead legacy badge links
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Sweep dead legacy links
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          BATCH: ${{ github.event.inputs.limit || '500' }}
+        run: |
+          set -euo pipefail
+
+          case "$BATCH" in
+            ''|*[!0-9]*) echo "limit must be a positive integer, got '$BATCH'" >&2; exit 1 ;;
+          esac
+
+          # Same transport as tutor-retention.yml: the request travels
+          # base64-encoded as ONE argument, and $INTERNAL_API_KEY / $PORT expand
+          # inside the container, never on this runner.
+          remote_sweep() {
+            local offset="$1" script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{\"limit\": ${BATCH}, \"offset\": ${offset}}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/internal/badge-links/purge"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          offset=0
+          purged_total=0
+          failed_total=0
+          for round in $(seq 1 20); do
+            body=''
+            for attempt in 1 2 3; do
+              if body=$(remote_sweep "$offset"); then break; fi
+              echo "round ${round}: attempt ${attempt} failed:" >&2
+              printf '%s\n' "$body" | head -5 >&2
+              body=''
+              sleep 20
+            done
+            if [ -z "$body" ]; then
+              echo "::error::could not reach Core after 3 attempts"
+              exit 1
+            fi
+
+            scanned=$(printf '%s' "$body" | grep -o '"scanned":[0-9]*' | head -1 | cut -d: -f2)
+            purged=$(printf '%s' "$body" | grep -o '"purged":[0-9]*' | head -1 | cut -d: -f2)
+            failed=$(printf '%s' "$body" | grep -o '"failed":[0-9]*' | head -1 | cut -d: -f2)
+
+            # An absent count is NOT zero (§1.14): an error envelope or a proxy
+            # page must fail the run, never read as "nothing left to sweep".
+            if [ -z "${scanned:-}" ] || [ -z "${purged:-}" ] || [ -z "${failed:-}" ]; then
+              echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"
+              printf '%s\n' "$body" | head -5 >&2
+              exit 1
+            fi
+
+            purged_total=$((purged_total + purged))
+            failed_total=$((failed_total + failed))
+            echo "round ${round}: scanned ${scanned}, purged ${purged}, failed ${failed} (offset ${offset})"
+
+            if [ "$scanned" -lt "$BATCH" ]; then
+              break
+            fi
+            offset=$((offset + BATCH))
+          done
+
+          echo "badge-link-retirement: ${purged_total} image(s) purged, ${failed_total} failure(s)"
+          if [ "$failed_total" -gt 0 ]; then
+            echo "::warning::${failed_total} legacy badge image(s) could not be purged; tomorrow's run retries them"
+          fi

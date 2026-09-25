@@ -49,6 +49,8 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/user_roles')) {
         return Promise.resolve(jsonResponse(200, roles.map((role) => ({ role }))));
       }
+      // E.8/E.13: the database's social tier for the renamed account (a kid role is the guardian tier).
+      if (url.includes('/rpc/social_tier')) return Promise.resolve(jsonResponse(200, roles.includes('kid') ? 'guardian' : 'adult'));
       if (url.includes('/rest/v1/parent_verifications?')) {
         return Promise.resolve(jsonResponse(200, offset(url) > 0 ? [] : (opts.verificationRows ?? [])));
       }

@@ -2,28 +2,27 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '@/lib/api';
-import { trackInsight } from '@/lib/insights';
-import { hasCookieConsent } from '@/lib/visitor';
 import { Button, Card, LoadingOverlay } from '@/components/ui';
 
 /*
- * /badge/:token — the shareable-achievement-badge loop's public landing
- * page (0072/0073). Opened by STRANGERS: no auth, no app chrome. The
- * <head> OG tags a crawler/unfurler actually reads come from the Vercel
- * function at frontend/api/badge/[token].ts, which injects them into the
- * SAME app-shell before this route ever runs — this component is what a
- * REAL visitor sees once the SPA boots.
+ * /badge/:token — the LEGACY badge-link landing page (0072/0073), retiring
+ * under OD-20: new shares are images the parent sends, so no new link is
+ * issued. Links issued before the cutover render here until they expire
+ * (Core enforces revocation, expiry and the cutover on every read). From
+ * BADGE_LINK_ROUTE_RETIRES_AT every such link has expired, so the page
+ * shows the not-found state without asking Core; removing the route is the
+ * dated runbook in docs/rebuild/policies/ACHIEVEMENT-SHARING.md.
  *
- * Click tracking (badge_link_click) goes through the SAME consent-gated
- * trackInsight()/getAnonId() path every other marketing surface uses
- * (/INSIGHTS.md) — a first-time visitor who has not yet accepted cookies
- * simply is not tracked, exactly like a first visit to "/". Nothing here
- * bypasses that gate to make this funnel's numbers more complete.
+ * No viewer tracking: the badge_link_click event is retired (Appendix L
+ * under OD-20 counts shares initiated, never viewer reach).
  */
+
+/** Mirrors backend/src/services/badgeLinkWindow.ts; `npm run sharing:check` keeps them equal. */
+export const BADGE_LINK_ROUTE_RETIRES_AT = '2026-10-24T00:00:00.000Z';
 
 interface BadgePayload {
   firstName: string;
-  achievementKind: 'course_badge' | 'streak';
+  achievementKind: 'course_badge' | 'streak' | 'goal_reached';
   achievementLabel: string;
   imageUrl: string;
 }
@@ -38,6 +37,10 @@ export function BadgeLandingPage() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
+      if (Date.now() >= Date.parse(BADGE_LINK_ROUTE_RETIRES_AT)) {
+        setState({ status: 'not-found' });
+        return;
+      }
       const { data, error } = await api<BadgePayload>(`/badges/${token}`);
       if (cancelled) return;
       if (error || !data) {
@@ -45,10 +48,6 @@ export function BadgeLandingPage() {
         return;
       }
       setState({ status: 'ready', payload: data });
-      // Consent-gated like every other pre-signup surface — see file header.
-      if (hasCookieConsent()) {
-        trackInsight('badge_link_click', { routeClass: 'marketing' });
-      }
     })();
     return () => {
       cancelled = true;
