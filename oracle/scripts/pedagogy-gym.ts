@@ -18,6 +18,7 @@ import { runPedagogyGym } from '../src/tutor/pedagogyGym.js';
 import { runSessionEndGym } from '../src/tutor/sessionEndGym.js';
 import { runTelemetryGym } from '../src/tutor/telemetryGym.js';
 import { runAllianceGym } from '../src/tutor/allianceGym.js';
+import { runReviewCalibrationGym } from '../src/tutor/reviewCalibrationGym.js';
 
 function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void {
   console.log('== The simulated-student gym: reactive students against the real controller ==');
@@ -56,7 +57,13 @@ function main(): void {
    * same Stage 2 learners (`src/tutor/allianceGym.ts`).
    */
   const alliance = runAllianceGym();
-  const ok = controller.ok && sessionEnd.ok && telemetry.ok && alliance.ok;
+  /*
+   * C.11/C.17: the two-tier spaced-review router (with the controller's
+   * re-check detour) and the age-band dialogue calibration against the same
+   * Stage 2 learners (`src/tutor/reviewCalibrationGym.ts`).
+   */
+  const reviewCalibration = runReviewCalibrationGym();
+  const ok = controller.ok && sessionEnd.ok && telemetry.ok && alliance.ok && reviewCalibration.ok;
 
   if (process.argv.includes('--json')) {
     console.log(
@@ -70,6 +77,7 @@ function main(): void {
             reports: telemetry.reports.map(({ readings: _readings, ...rest }) => rest),
           },
           alliance: alliance.reports,
+          reviewCalibration,
         },
         null,
         2,
@@ -102,17 +110,31 @@ function main(): void {
       for (const problem of report.problems) console.log(`        ↳ ${problem}`);
     }
     console.log('');
+    console.log('== The spaced-review router and the dialogue calibration (C.11/C.17) against the simulated learners ==');
+    console.log('');
+    for (const report of reviewCalibration.review) {
+      console.log(
+        `  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${report.decisions} routing decision(s), ${report.detours} re-check(s)`,
+      );
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    for (const report of reviewCalibration.calibration) {
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${report.why}`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log('');
     const totalProblems =
       reports.reduce((sum, report) => sum + report.problems.length, 0) +
       sessionEnd.reports.reduce((sum, report) => sum + report.problems.length, 0) +
       telemetry.reports.reduce((sum, report) => sum + report.problems.length, 0) +
-      alliance.reports.reduce((sum, report) => sum + report.problems.length, 0);
+      alliance.reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      [...reviewCalibration.review, ...reviewCalibration.calibration].reduce((sum, report) => sum + report.problems.length, 0);
     if (!ok) {
       console.log(`gym:pedagogy FAILED — ${totalProblems} problem(s) across ${reports.length} scenario(s).`);
       console.log('Each of these archetypes is a reactive student; a violation here is a sequence a real session could produce.');
     } else {
       console.log(
-        `gym:pedagogy OK — ${reports.length} reactive student archetype(s), ${sessionEnd.reports.length} session-end persona(s), ${telemetry.reports.length} telemetry persona(s) and ${alliance.reports.length} alliance persona(s), no guardrail violations.`,
+        `gym:pedagogy OK — ${reports.length} reactive student archetype(s), ${sessionEnd.reports.length} session-end persona(s), ${telemetry.reports.length} telemetry persona(s), ${alliance.reports.length} alliance persona(s) and ${reviewCalibration.review.length + reviewCalibration.calibration.length} review/calibration persona(s), no guardrail violations.`,
       );
     }
   }

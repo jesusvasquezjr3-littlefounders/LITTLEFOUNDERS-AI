@@ -52,6 +52,19 @@ import {
   recordDispositionClose,
   toOracleProjection,
 } from '../services/pedagogy/disposition.js';
+import {
+  getSpacedReviewKillSwitch,
+  recordSpacedReviewClose,
+  SpacedReviewReportBody,
+} from '../services/pedagogy/spacedReview.js';
+import {
+  dialogueBandFor,
+  DialogueCalibrationReportBody,
+  getDialogueKillSwitch,
+  recordDialogueCalibrationClose,
+  resolveDialogueCalibration,
+  type DialogueCalibration,
+} from '../services/pedagogy/dialogueCalibration.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
 import {
   ADAPTATIONS,
@@ -652,6 +665,37 @@ function internalRouter(): Router {
         ? decideContinuity(dispositionRow, recentPersonas, session.character as 'dina' | 'liruf' | 'rho' | 'zara', new Date())
         : null;
     const allianceKillSwitch = accepts.has('allianceMode') ? await getAllianceKillSwitch() : null;
+    /*
+     * C.11 Appendix F Stage 7: the spaced-review router's automatic rollback
+     * verdict — evaluated only for an Oracle that can receive it.
+     */
+    const spacedReviewSwitch = accepts.has('spacedReviewMode') ? await getSpacedReviewKillSwitch() : null;
+    /*
+     * C.17: the dialogue register. The band is derived HERE from Core's own
+     * age evidence (the birth date never travels); the variant comes from the
+     * adults-only H.7 experiment or is the SPEC's calibrated default. Anything
+     * unexpected sends null — Oracle then uses the tier fallback, never a
+     * guess about this learner's age.
+     */
+    let dialogueCalibration: DialogueCalibration | null = null;
+    if (accepts.has('dialogueCalibration')) {
+      try {
+        const { band, age } = dialogueBandFor({ birthDate: calibration.birthDate, screening, tier: session.tier });
+        const dialogueSwitch = await getDialogueKillSwitch();
+        dialogueCalibration = await resolveDialogueCalibration({
+          userId: session.user_id,
+          band,
+          age,
+          roles,
+          screening,
+          eligibleBands: getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS,
+          rollback: dialogueSwitch.rollback,
+        });
+      } catch (error) {
+        console.error('[tutor] dialogue calibration could not be decided — the tier fallback applies:', error);
+        dialogueCalibration = null;
+      }
+    }
 
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
@@ -719,6 +763,8 @@ function internalRouter(): Router {
         : {}),
       ...(accepts.has('allianceContinuity') ? { allianceContinuity } : {}),
       ...(allianceKillSwitch !== null ? { allianceMode: allianceKillSwitch.mode } : {}),
+      ...(spacedReviewSwitch !== null ? { spacedReviewMode: spacedReviewSwitch.mode } : {}),
+      ...(accepts.has('dialogueCalibration') ? { dialogueCalibration } : {}),
     });
   });
 
@@ -1638,6 +1684,16 @@ function internalRouter(): Router {
     alliance: AllianceReportBody.optional(),
     selfExplanation: SelfExplanationReportBody.optional(),
     disposition: DispositionObservationBody.optional(),
+    /*
+     * C.11 / C.17 (Appendix F §1.1–1.2): the spaced-review routing decisions
+     * with the inputs the rule read, and the dialogue register the session
+     * ran with its counts. OPTIONAL (an older Oracle, or C.11 switched off);
+     * strict inside, so learner text, an unknown label, a routing that does
+     * not fit its tier or a register that does not fit its variant refuses
+     * the close.
+     */
+    spacedReview: SpacedReviewReportBody.optional(),
+    dialogueCalibration: DialogueCalibrationReportBody.optional(),
   });
 
   router.post('/sessions/:id/close', async (req, res) => {
@@ -1727,6 +1783,30 @@ function internalRouter(): Router {
           selfExplanationFirstPass: seEvents.filter((e) => e.firstQuality === 'concept').length,
         });
         if (!folded) console.warn(`[tutor] disposition profile NOT updated for session ${owner.id}`);
+        /*
+         * C.11: the routing log, and the hand-off of every knowledge component
+         * the session did not retire to the cross-session scheduler. C.17: the
+         * register row. Best-effort: a failed write costs audit rows or one
+         * early review, never the close.
+         */
+        if (parsed.data.spacedReview) {
+          const routed = await recordSpacedReviewClose({
+            sessionId: owner.id,
+            userId: owner.user_id,
+            character: owner.character,
+            report: parsed.data.spacedReview,
+            closedAt: new Date(),
+          });
+          if (!routed.recorded) console.warn(`[tutor] spaced-review routing NOT fully recorded for session ${owner.id}`);
+        }
+        if (parsed.data.dialogueCalibration) {
+          const written = await recordDialogueCalibrationClose({
+            sessionId: owner.id,
+            character: owner.character,
+            report: parsed.data.dialogueCalibration,
+          });
+          if (!written) console.warn(`[tutor] dialogue calibration NOT recorded for session ${owner.id}`);
+        }
       }
     }
 

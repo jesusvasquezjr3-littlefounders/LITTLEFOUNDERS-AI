@@ -102,3 +102,47 @@ export function reviewCard(card: MemoryCard, rating: ReviewRating, now: Date): M
     lastReviewAt: now,
   };
 }
+
+/*
+ * ── C.11: THE TWO TIERS, SEEN FROM THE CROSS-SESSION SCHEDULER ──────────────
+ *
+ * Appendix D §2.4 (Settles & Meeder's Duolingo precedent): within-session
+ * repetition and cross-session spacing are two distinct problems solved by
+ * two distinct mechanisms. This card is the CROSS-SESSION one — an
+ * activation/half-life-style model whose interval widens as successful SPACED
+ * reviews accumulate (`stability` is the days the memory holds at ~90%
+ * recall, i.e. a half-life of stability × ln 2 / ln(1/0.9) ≈ 6.6 × stability).
+ *
+ * Before C.11 every graded attempt was a review here, so a learner who missed
+ * and then answered the same knowledge component correctly three times in one
+ * sitting grew its stability three times in twenty minutes — a session-scoped
+ * illusion of retention, scheduled days out. Now an attempt within
+ * `shortHorizonMs` of the card's last COUNTED review is a within-session
+ * re-exposure (Oracle's `spacedReview.ts` owns that repetition):
+ *
+ *   - a success changes nothing here (not a spaced retrieval);
+ *   - a lapse on a card whose counted review was a success still lapses it —
+ *     forgetting within the hour is real evidence — and becomes the counted
+ *     review; a lapse on a card already lapsed within the window does not
+ *     collapse it again.
+ *
+ * `last_review_at` therefore means "the last counted (spaced) review".
+ */
+export type ReviewTier = 'spaced' | 'short_horizon';
+
+export function reviewCardTwoTier(
+  card: MemoryCard,
+  rating: ReviewRating,
+  now: Date,
+  shortHorizonMs: number,
+): { card: MemoryCard; tier: ReviewTier } {
+  const withinHorizon =
+    shortHorizonMs > 0 &&
+    card.lastReviewAt !== null &&
+    now.getTime() - card.lastReviewAt.getTime() >= 0 &&
+    now.getTime() - card.lastReviewAt.getTime() < shortHorizonMs;
+  if (!withinHorizon) return { card: reviewCard(card, rating, now), tier: 'spaced' };
+  // A lapse after a counted success inside the window is genuine forgetting.
+  if (rating === 'again' && card.state === 'review') return { card: reviewCard(card, rating, now), tier: 'spaced' };
+  return { card: { ...card }, tier: 'short_horizon' };
+}

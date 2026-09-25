@@ -1,0 +1,94 @@
+name: Mentor spaced-review routing audit
+
+# PRODUCT C.11: THE QUARTERLY SPOT CHECK, AS A RUN SOMEBODY SEES.
+#
+# Appendix F §1.1 "Spaced-Review Routing Accuracy": a quarterly spot-check
+# audit comparing within-session versus cross-session routing decisions
+# against the Appendix D §2.4 decision rule, target "no systematic misrouting
+# pattern found". Two halves, both in `tutor:spaced-review-report`
+# (backend/src/scripts/spaced-review-report.ts, policy:
+# docs/rebuild/mentor/SPACED-REVIEW-AND-DIALOGUE-CALIBRATION-POLICY.md):
+#
+#   AUTOMATIC  every routing decision recorded in the quarter is RE-EVALUATED
+#              against the pure rule from its own recorded inputs; a decision
+#              the rule does not reproduce, or within-session routings that
+#              mostly never get their re-check, is a defect (and the same
+#              condition drives Core's Stage 7 rollback on live sessions).
+#   HUMAN      a reproducible, tier-stratified sample (the quarter is the
+#              seed) is drawn into this run's summary for the auditor, who
+#              reads it against the rule and records the result with
+#              `--record-audit=... --seed=... --sampled=N --misroutes=K`.
+#              The NEXT quarterly run is red if that record is missing.
+#
+# READ-ONLY. The report never writes on this path (only the operator's
+# explicit `--record-audit` and `--resolve` flags write, and they are never
+# passed here). No model call; costs nothing (OD-23).
+#
+# A RED RUN MEANS A DEFECT OR AN UNANSWERED READ, never "no data yet":
+# insufficient data is printed as such and exits 0, so the job does not train
+# anyone to ignore it.
+
+on:
+  schedule:
+    # 09:40 UTC on the 1st of January, April, July and October — clear of the
+    # daily pack and of the Monday curation run.
+    - cron: '40 9 1 1,4,7,10 *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  ENVIRONMENT: production
+
+jobs:
+  audit:
+    name: Re-evaluate the quarter's routing and draw the human sample
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      # All six variables: importing anything under backend/src/services pulls
+      # in backend/src/config.ts, whose schema validates the whole env (the
+      # lesson tutor-skill-curation.yml records).
+      - name: Read production credentials and run the report
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          read_var() {
+            railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$1" '.[$k] // ""'
+          }
+          export SUPABASE_URL="$(read_var SUPABASE_URL)"
+          export SUPABASE_ANON_KEY="$(read_var SUPABASE_ANON_KEY)"
+          export SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
+          export SUPABASE_JWT_SECRET="$(read_var SUPABASE_JWT_SECRET)"
+          export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
+          export TUTOR_SESSION_SECRET="$(read_var TUTOR_SESSION_SECRET)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY TUTOR_SESSION_SECRET; do
+            [ -n "${!v}" ] || { echo "::error::backend variable $v is empty"; exit 1; }
+          done
+          npm ci --prefix backend --no-audit --no-fund >/dev/null
+          npm run --prefix backend --silent tutor:spaced-review-report -- --markdown --sample=40 | tee routing-audit.md
+
+      - name: Publish the report and the sample
+        if: always()
+        run: |
+          {
+            echo "### Mentor spaced-review routing audit (C.11)"
+            echo ""
+            echo "Read each sampled decision against Appendix D §2.4, then record the result with the command printed at the end of the sample."
+            echo ""
+            echo '```'
+            cat routing-audit.md 2>/dev/null || echo "The report produced no output — see the step above for why."
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

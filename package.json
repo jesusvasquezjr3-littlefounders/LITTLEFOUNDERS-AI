@@ -24,6 +24,7 @@
     "session-end:check": "node agent/tools/check-session-end-parity.mjs",
     "telemetry:check": "node agent/tools/check-behavioral-telemetry-parity.mjs",
     "alliance:check": "node agent/tools/check-alliance-parity.mjs",
+    "review-calibration:check": "node agent/tools/check-review-calibration-parity.mjs",
     "roleplay-voices:check": "node agent/tools/check-roleplay-voice-parity.mjs",
     "roleplay-voices:generate": "node agent/tools/generate-roleplay-voices.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",

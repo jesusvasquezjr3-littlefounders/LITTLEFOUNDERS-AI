@@ -73,6 +73,8 @@ const ORCHESTRATOR_EXCLUDED: Record<string, string> = {
   pendingDiscardedAudio: 'unsettled Promises; awaitPendingCosts() folds their cost in BEFORE snapshot()',
   dispositionEffects:
     'C.7 derived at construction from the pinned SessionContext.dispositionProfile the park record carries — rebuilt identically on the far side, not session state',
+  dialoguePolicy:
+    'C.17 derived at construction from the pinned SessionContext.dialogueCalibration (or its tier fallback) the park record carries — rebuilt identically on the far side, not session state',
 };
 
 /** The same, for `PedagogicalController`. */
@@ -243,6 +245,7 @@ describe('a snapshot survives a round trip byte for byte', () => {
       masteryRevokedKcIds: ['kc-saving-1'],
       masteryEvidence: [['kc-saving-1', 1]],
       remediationEvidence: [['kc-saving-1', 'mc-unit-confusion', 2]],
+      inSessionReview: { entryIndex: 0, turns: 1 },
     });
   }
 
@@ -314,6 +317,7 @@ describe('a snapshot survives a round trip byte for byte', () => {
       masteryRevokedKcIds: ['kc-a'],
       masteryEvidence: [['kc-a', 3]] as [string, number][],
       remediationEvidence: [['kc-b', null, 1]] as [string, string | null, number][],
+      inSessionReview: { entryIndex: 0, turns: 2 },
     };
     controller.restore(populated);
     expect(controller.snapshot()).toEqual(populated);

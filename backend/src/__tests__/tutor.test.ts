@@ -5820,3 +5820,283 @@ describe('C.15 / C.14 / C.7 — the alliance close record, the bond proxy and th
     }
   });
 });
+
+describe('C.11 / C.17 — the spaced-review routing, the dialogue register and their Stage 7 rollbacks (S06.10/S06.11)', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const KC_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+  const KC_B = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+  const EXP = '44444444-4444-4444-8444-444444444444';
+  const ASSIGN = '/api/v1/intel/runtime/experiments/assignments';
+  const EXPOSE = '/api/v1/intel/runtime/experiments/exposure';
+  const decision = (extra: Record<string, unknown> = {}) => ({
+    observation: 1,
+    kcId: KC_A,
+    tier: 'within_session',
+    reason: 'near_threshold',
+    source: 'first_miss',
+    pBefore: 0.8,
+    pAfter: 0.45,
+    turnsRemaining: 60,
+    msUntilWrap: 600_000,
+    budgetState: 'running',
+    planned: true,
+    reexposuresBefore: 0,
+    queuedBefore: 0,
+    atTurn: 3,
+    outcome: 'retired',
+    successes: 2,
+    failures: 1,
+    ...extra,
+  });
+  const SPACED = {
+    mode: 'act',
+    ruleVersion: 'c11.v1',
+    learnerTurns: 14,
+    detoursOpened: 2,
+    overflow: 0,
+    decisions: [
+      decision(),
+      decision({ observation: 2, kcId: KC_B, tier: 'cross_session', reason: 'time_budget', msUntilWrap: 120_000, outcome: 'handed_off', successes: 0 }),
+    ],
+  };
+  const CALIBRATION = {
+    band: 'young_child',
+    variant: 'calibrated',
+    assignment: 'not_eligible',
+    experimentId: null,
+    ladderRungs: 4,
+    hintRequests: 3,
+    tellRequests: 0,
+    controllingCaught: 0,
+    controllingDelivered: 0,
+    pacingOffers: 0,
+    unilateralStyleChanges: 0,
+  };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 20,
+    segmentCount: 3,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const close = (body: Record<string, unknown>) =>
+    request(createApp()).post(CLOSE_URL).set('x-internal-api-key', process.env.INTERNAL_API_KEY as string).send(body);
+  const posted = (calls: { url: string; method: string; body?: string }[], table: string) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes(`/rest/v1/${table}`))
+      .flatMap((c) => {
+        const body = JSON.parse(String(c.body)) as unknown;
+        return (Array.isArray(body) ? body : [body]) as Record<string, unknown>[];
+      });
+
+  beforeEach(async () => {
+    const { resetSpacedReviewKillSwitchCache } = await import('../services/pedagogy/spacedReview.js');
+    const { resetDialogueKillSwitchCache } = await import('../services/pedagogy/dialogueCalibration.js');
+    const { resetAllianceKillSwitchCache } = await import('../services/pedagogy/alliance.js');
+    resetSpacedReviewKillSwitchCache();
+    resetDialogueKillSwitchCache();
+    resetAllianceKillSwitchCache();
+    resetKillSwitchCache();
+  });
+
+  // ── the close record ──
+
+  it('records every routing decision with its inputs, hands the unretired KC to the scheduler, and writes the register row', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody({ spacedReview: SPACED, dialogueCalibration: CALIBRATION }));
+    expect(response.status).toBe(200);
+    expect(posted(calls, 'tutor_review_routing')).toEqual([
+      expect.objectContaining({ session_id: SESSION, character: 'rho', mode: 'act', observation: 1, kc_id: KC_A, tier: 'within_session', outcome: 'retired', p_before: 0.8 }),
+      expect.objectContaining({ observation: 2, kc_id: KC_B, tier: 'cross_session', reason: 'time_budget', ms_until_wrap: 120_000, outcome: 'handed_off' }),
+    ]);
+    // Only the handed-off KC is brought forward, and only if its card is due LATER.
+    const handoffs = calls.filter((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/memory_card'));
+    expect(handoffs).toHaveLength(1);
+    expect(handoffs[0]!.url).toContain(`user_id=eq.${KID}`);
+    expect(handoffs[0]!.url).toContain(`kc_id=eq.${KC_B}`);
+    expect(handoffs[0]!.url).toMatch(/due_at=gt\./);
+    const due = Date.parse(JSON.parse(String(handoffs[0]!.body)).due_at);
+    expect(due - Date.now()).toBeGreaterThan(11 * 3_600_000);
+    expect(due - Date.now()).toBeLessThanOrEqual(12 * 3_600_000);
+    expect(posted(calls, 'tutor_dialogue_calibration')).toEqual([
+      expect.objectContaining({ session_id: SESSION, band: 'young_child', variant: 'calibrated', assignment: 'not_eligible', ladder_rungs: 4, hint_requests: 3 }),
+    ]);
+    // No row carries a user id, the learner words, a nickname, an age or an emotion label.
+    for (const table of ['tutor_review_routing', 'tutor_dialogue_calibration']) {
+      expect(JSON.stringify(posted(calls, table))).not.toMatch(/user_id|nickname|birth|"age"|frustrat|bored|angry|emotion|mood/i);
+    }
+  });
+
+  it('a shadow router hands nothing off; an older Oracle (neither field) still closes', async () => {
+    const shadow = stub({ session: [SESSION_ROW] });
+    const report = { ...SPACED, mode: 'shadow', detoursOpened: 0, decisions: [SPACED.decisions[1]] };
+    expect((await close(closeBody({ spacedReview: report }))).status).toBe(200);
+    expect(posted(shadow, 'tutor_review_routing')).toHaveLength(1);
+    expect(shadow.some((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/memory_card'))).toBe(false);
+    const older = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody())).status).toBe(200);
+    expect(posted(older, 'tutor_review_routing')).toEqual([]);
+    expect(posted(older, 'tutor_dialogue_calibration')).toEqual([]);
+  });
+
+  it.each([
+    ['learner text in a decision', { spacedReview: { ...SPACED, decisions: [decision({ text: 'no se' })] } }],
+    ['a within-session decision with a budget reason', { spacedReview: { ...SPACED, decisions: [decision({ reason: 'turn_budget' })] } }],
+    ['a cross-session decision that claims a retirement', { spacedReview: { ...SPACED, decisions: [decision({ tier: 'cross_session', reason: 'wrapping' })] } }],
+    ['a shadow router that opened re-checks', { spacedReview: { ...SPACED, mode: 'shadow' } }],
+    ['a KC id outside the catalog', { spacedReview: { ...SPACED, decisions: [decision({ kcId: 'kc-a' })] } }],
+    ['an age in the register', { dialogueCalibration: { ...CALIBRATION, age: 8 } }],
+    ['a control arm with the short ladder', { dialogueCalibration: { ...CALIBRATION, variant: 'control' } }],
+    ['an experiment id on a non-enrolled session', { dialogueCalibration: { ...CALIBRATION, experimentId: EXP } }],
+    ['a teen register that changed the approach unilaterally', { dialogueCalibration: { ...CALIBRATION, band: 'teen', ladderRungs: 5, unilateralStyleChanges: 1 } }],
+  ])('refuses %s with a 400 that closes nothing', async (_name, extra) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody(extra as Record<string, unknown>));
+    expect(response.status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/tutor_sessions'))).toBe(false);
+    expect(posted(calls, 'tutor_review_routing')).toEqual([]);
+  });
+
+  it('a learner cannot post the internal close (no key, a learner token)', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await request(createApp()).post(CLOSE_URL).send(closeBody({ spacedReview: SPACED }))).status).toBe(403);
+    const asLearner = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ spacedReview: SPACED }));
+    expect(asLearner.status).toBe(403);
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_review_routing') || c.url.includes('/rest/v1/memory_card'))).toBe(false);
+  });
+
+  // ── the negotiated context: every population ──
+
+  const FIELDS = 'spacedReviewMode,dialogueCalibration';
+  async function contextFor(
+    opts: Parameters<typeof stub>[0] & { runtime?: { assignments?: unknown; exposure?: unknown }; fields?: string },
+  ) {
+    const { runtime, fields, ...stubOpts } = opts;
+    const calls = stub({
+      ...stubOpts,
+      intercept: (url, method, body) => {
+        if (url.includes(ASSIGN)) {
+          return runtime?.assignments === 'fail'
+            ? new Response(null, { status: 502 })
+            : jsonResponse(200, { data: { assignments: runtime?.assignments ?? [] }, error: null });
+        }
+        if (url.includes(EXPOSE)) return jsonResponse(200, { data: { assignment: runtime?.exposure ?? null }, error: null });
+        return stubOpts.intercept?.(url, method, body) ?? null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', fields ?? FIELDS);
+    return { response, calls };
+  }
+
+  it('the parent-created under-13 kid: the younger-child register from the birth date, never enrolled, no runtime call', async () => {
+    const { response, calls } = await contextFor({ session: [SESSION_ROW] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.spacedReviewMode).toBe('act');
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'young_child', variant: 'calibrated', assignment: 'not_eligible', experimentId: null });
+    expect(calls.some((c) => c.url.includes(ASSIGN))).toBe(false);
+    // The birth date is read inside Core and never travels.
+    expect(JSON.stringify(response.body)).not.toMatch(/2018-03-01|birth/);
+  });
+
+  it('a parent-created 11-year-old is a tween', async () => {
+    const { response } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      profile: { ...KID_PROFILE, birth_date: '2015-01-10' },
+    });
+    expect(response.body.data.dialogueCalibration.band).toBe('tween');
+  });
+
+  it('the independent teen (13-17): the teen register, outside the experiment by OD-23', async () => {
+    const { response, calls } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: '13_to_17',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'universal' }],
+      runtime: { assignments: [{ experimentId: EXP, variant: 'A', surface: 'tutor', target: 'mentor.dialogue-register' }] },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'teen', variant: 'calibrated', assignment: 'not_eligible', experimentId: null });
+    expect(calls.some((c) => c.url.includes(ASSIGN))).toBe(false);
+  });
+
+  it('the adult: enrolled in the running experiment, exposure recorded, the assigned arm sent', async () => {
+    const assignment = { experimentId: EXP, variant: 'A', surface: 'tutor', target: 'mentor.dialogue-register' };
+    const { response, calls } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: 'adult',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'universal' }],
+      runtime: { assignments: [assignment], exposure: assignment },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'adult', variant: 'control', assignment: 'experiment', experimentId: EXP });
+    const exposure = calls.find((c) => c.url.includes(EXPOSE));
+    expect(JSON.parse(String(exposure?.body))).toMatchObject({ surface: 'tutor', target: 'mentor.dialogue-register', experimentId: EXP });
+  });
+
+  it('staff (an adult account) follows the same adult rule; a failed runtime is the calibrated default, never a guess', async () => {
+    const { response } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: 'adult',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'admin' }],
+      runtime: { assignments: 'fail' },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'adult', variant: 'calibrated', assignment: 'runtime_unavailable', experimentId: null });
+  });
+
+  it('an Oracle that did not announce the fields gets neither, and nothing is read for them', async () => {
+    const { response, calls } = await contextFor({ session: [SESSION_ROW], fields: 'opening' });
+    expect(response.body.data).not.toHaveProperty('spacedReviewMode');
+    expect(response.body.data).not.toHaveProperty('dialogueCalibration');
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_review_routing'))).toBe(false);
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_dialogue_calibration'))).toBe(false);
+  });
+
+  // ── Stage 7 ──
+
+  it('C.11 Stage 7: a recorded decision the rule does not reproduce rolls the router back to shadow, with an audit row', async () => {
+    const misrouted = {
+      session_id: SESSION, mode: 'act', rule_version: 'c11.v1', observation: 1, kc_id: KC_A, tier: 'within_session', reason: 'near_threshold',
+      source: 'first_miss', p_before: 0.2, turns_remaining: 60, ms_until_wrap: 600_000, budget_state: 'running', planned: true,
+      reexposures_before: 0, queued_before: 0, outcome: 'retired', created_at: new Date().toISOString(),
+    };
+    const { response, calls } = await contextFor({
+      session: [SESSION_ROW],
+      intercept: (url, method) => (method === 'GET' && url.includes('/rest/v1/tutor_review_routing') ? jsonResponse(200, [misrouted]) : null),
+    });
+    expect(response.body.data.spacedReviewMode).toBe('shadow');
+    const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs')).map((c) => JSON.parse(String(c.body)));
+    expect(audit).toEqual([expect.objectContaining({ actor_id: null, action: 'mentor.kill_switch.spaced_review.triggered' })]);
+    expect(audit[0].detail.causes).toEqual(['rule_mismatch']);
+    expect(JSON.stringify(audit[0].detail)).not.toMatch(/user|nickname|text/i);
+  });
+
+  it('C.17 Stage 7: a calibrated arm significantly worse than control rolls every session back to the control register', async () => {
+    const ids = Array.from({ length: 120 }, (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`);
+    const calibrationRows = ids.map((id, i) => ({
+      session_id: id, band: 'adult', variant: i < 60 ? 'calibrated' : 'control', assignment: 'experiment', controlling_delivered: 0, created_at: new Date().toISOString(),
+    }));
+    const allianceRows = ids.map((id, i) => ({ session_id: id, bond_proxy: i < 60 ? (i % 3 === 0 ? 'partly' : 'no') : (i % 3 === 0 ? 'partly' : 'yes') }));
+    const sessionRows = ids.map((id) => ({ id, closing_script: 'completed' }));
+    const { response, calls } = await contextFor({
+      session: [SESSION_ROW],
+      intercept: (url, method) => {
+        if (method !== 'GET') return null;
+        if (url.includes('/rest/v1/tutor_dialogue_calibration')) return jsonResponse(200, calibrationRows);
+        if (url.includes('/rest/v1/tutor_session_alliance')) return jsonResponse(200, allianceRows);
+        if (url.includes('/rest/v1/tutor_sessions?select=id,closing_script')) return jsonResponse(200, sessionRows);
+        return null;
+      },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'young_child', variant: 'control', assignment: 'rollback', experimentId: null });
+    const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs')).map((c) => JSON.parse(String(c.body)));
+    expect(audit).toEqual([expect.objectContaining({ action: 'mentor.kill_switch.dialogue_calibration.triggered' })]);
+    expect(audit[0].detail.regressions).toEqual([{ band: 'adult', outcome: 'bond_proxy' }]);
+  });
+});

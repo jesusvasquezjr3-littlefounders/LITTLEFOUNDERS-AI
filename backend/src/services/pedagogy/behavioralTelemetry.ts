@@ -43,6 +43,9 @@ export const CONTEXT_OPTIONAL_FIELDS = [
   'dispositionProfile',
   'allianceContinuity',
   'allianceMode',
+  // C.11 / C.17 (S06.10/S06.11): see services/pedagogy/spacedReview.ts and dialogueCalibration.ts.
+  'spacedReviewMode',
+  'dialogueCalibration',
 ] as const;
 
 export const TELEMETRY_CHANNELS = [

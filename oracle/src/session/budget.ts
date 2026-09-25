@@ -130,3 +130,24 @@ export const WRAP_UP_INSTRUCTION = [
   'say goodbye or list what was learned: the system then asks the learner what',
   'clicked for them, and closes the session itself.',
 ].join('\n');
+
+/**
+ * C.11: the budget a within-session spaced re-exposure still has — model
+ * turns before the turn cap and time before the session starts WRAPPING
+ * (after which no new activity is requested, so a re-exposure scheduled past
+ * it could never happen). Pure, from the same inputs as `evaluateBudget`.
+ */
+export function budgetHeadroom(
+  input: BudgetInput,
+  config: Config,
+): { state: BudgetState; turnsRemaining: number; msUntilWrap: number } {
+  const verdict = evaluateBudget(input, config);
+  const softBudgetMs = input.isStaff ? STAFF_SOFT_BUDGET_MS : config.SESSION_SOFT_BUDGET_MS;
+  const maxTurns = input.isStaff ? STAFF_MAX_TURNS : config.SESSION_MAX_TURNS;
+  const elapsed = input.nowMs - input.startedAtMs;
+  return {
+    state: verdict.state,
+    turnsRemaining: Math.max(0, maxTurns - input.turnCount),
+    msUntilWrap: Math.max(0, softBudgetMs - elapsed),
+  };
+}

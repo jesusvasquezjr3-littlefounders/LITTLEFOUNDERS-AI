@@ -52,6 +52,16 @@ const ControllerSnapshotSchema = z
     remediationEvidence: z
       .array(z.tuple([z.string(), z.string().nullable(), z.number().int().min(0)]))
       .default([]),
+    /*
+     * C.11: the in-session review detour (a spaced re-exposure of a plan KC
+     * the within-session tier brought back). Defaulted: a session parked by
+     * the previous build has no detour open, which is exactly its state.
+     */
+    inSessionReview: z
+      .object({ entryIndex: z.number().int().min(0), turns: z.number().int().min(0) })
+      .strict()
+      .nullable()
+      .default(null),
   })
   .strict();
 
@@ -209,7 +219,26 @@ export interface ControllerDecision {
   evidence: DecisionEvidence | null;
   /** C.10: this decision's evidence withdrew a mastery declared earlier this session. */
   masteryRevoked: boolean;
+  /**
+   * C.11: the belief about `kcId` BEFORE this event's evidence — what the
+   * spaced-review router judges "close to the mastery threshold" against.
+   * Null when no KC was active.
+   */
+  pKnownBefore: number | null;
+  /**
+   * C.11: this decision CLOSED an in-session review detour — answered
+   * (correct or wrong), or abandoned after `REVIEW_OPEN_TURNS` learner turns
+   * with no graded answer. Null on every other decision.
+   */
+  review: { kcId: string; objective: string; outcome: 'correct' | 'wrong' | 'abandoned' } | null;
 }
+
+/**
+ * C.11: learner turns an opened in-session review may stay open without a
+ * graded answer before the controller closes it (mirrors the router's
+ * `reviewOpenTurns`; `npm run review-calibration:check` keeps them equal).
+ */
+export const REVIEW_OPEN_TURNS = 3;
 
 export type PedagogyEvent =
   | {
@@ -524,6 +553,17 @@ export class PedagogicalController {
   private readonly corroboration: { min: number; rollbackKcKeys: ReadonlySet<string> };
   /** C.7: the learner's disposition, read beside mastery (constructor-derived from the session context). */
   private readonly disposition: { stuckDegradeAfter: 1 | 2 | 3 };
+  /**
+   * C.11 — THE IN-SESSION REVIEW DETOUR. A spaced re-exposure of a plan KC
+   * the within-session tier (`spacedReview.ts`) brought back after a short
+   * gap. While it is open the active entry is that KC, served and graded as
+   * a review (`reason: 'review_due'`, SPACED), and the plan pointer does NOT
+   * move: the detour answers exactly one graded item and closes, whatever
+   * the answer, so a re-check can never celebrate, advance or open a probe
+   * (`decide`'s review branch). `turns` counts learner turns without a graded
+   * answer; at `REVIEW_OPEN_TURNS` the detour is abandoned.
+   */
+  private inSessionReview: { entryIndex: number; turns: number } | null = null;
 
   constructor(
     private readonly plan: SessionPlanEntry[],
@@ -591,6 +631,7 @@ export class PedagogicalController {
         chain.code,
         chain.count,
       ]),
+      inSessionReview: this.inSessionReview ? { ...this.inSessionReview } : null,
     };
   }
 
@@ -634,6 +675,7 @@ export class PedagogicalController {
     for (const [kcId, code, count] of snapshot.remediationEvidence) {
       this.remediationEvidence.set(kcId, { code, count });
     }
+    this.inSessionReview = snapshot.inSessionReview ? { ...snapshot.inSessionReview } : null;
   }
 
   /**
@@ -661,7 +703,9 @@ export class PedagogicalController {
 
   /** Whether the controller has anything to control. False = v2 behaviour. */
   get active(): boolean {
-    return this.plan.length > 0 && this.entryIndex < this.plan.length;
+    // C.11: a review detour keeps the controller active even after the plan
+    // completed — the re-check of a KC it already moved past is still its job.
+    return this.plan.length > 0 && (this.entryIndex < this.plan.length || this.inSessionReview !== null);
   }
 
   get activeEntry(): SessionPlanEntry | null {
@@ -671,7 +715,52 @@ export class PedagogicalController {
       // requests attach to IT, not to the interrupted KC.
       return this.probeEntry();
     }
+    const review = this.reviewEntry();
+    if (review) return review;
     return this.plan[this.entryIndex] ?? null;
+  }
+
+  /** C.11: the KC an open in-session review detour is re-checking, or null. */
+  get inSessionReviewKcId(): string | null {
+    return this.reviewEntry()?.kcId ?? null;
+  }
+
+  /** C.11: whether a knowledge component has a plan entry a review detour can bring back. */
+  isPlannedKc(kcId: string): boolean {
+    return this.plan.some((entry) => entry.kcId === kcId);
+  }
+
+  /** C.11: the objective text of a planned KC (our catalog), for the review instructions. */
+  objectiveFor(kcId: string): string | null {
+    return this.plan.find((entry) => entry.kcId === kcId)?.objective ?? null;
+  }
+
+  /**
+   * C.11: opens an in-session review detour for a planned KC the
+   * within-session tier says is due. Refused (false) while a probe is open,
+   * while the controller is repairing (REMEDIATE / RESCUE / PROBE — a
+   * re-check must never interrupt a repair), when a detour is already open,
+   * when the KC is the one being taught right now (its ordinary attempts are
+   * its re-exposures), or for a KC with no plan entry.
+   */
+  openInSessionReview(kcId: string, nowMs: number): boolean {
+    if (this.plan.length === 0 || this.inSessionReview !== null || this.probingKcId !== null) return false;
+    if (this.strategy === 'REMEDIATE' || this.strategy === 'RESCUE' || this.strategy === 'PROBE') return false;
+    const index = this.plan.findIndex((entry) => entry.kcId === kcId);
+    if (index < 0) return false;
+    if (this.entryIndex < this.plan.length && this.plan[this.entryIndex]?.kcId === kcId) return false;
+    this.inSessionReview = { entryIndex: index, turns: 0 };
+    if (this.strategy !== 'SPACED') this.strategyChangesAt.push(nowMs);
+    this.strategy = 'SPACED';
+    return true;
+  }
+
+  /** C.11: the review detour's synthetic entry — the plan KC, served as a review. */
+  private reviewEntry(): SessionPlanEntry | null {
+    if (this.inSessionReview === null) return null;
+    const planned = this.plan[this.inSessionReview.entryIndex];
+    if (!planned) return null;
+    return { ...planned, reason: 'review_due' };
   }
 
   get currentStrategy(): Strategy {
@@ -680,6 +769,10 @@ export class PedagogicalController {
 
   /** The difficulty band the next activity should carry. */
   get targetDifficulty(): 1 | 2 | 3 | 4 | 5 {
+    // C.11: a re-check is served at the reviewed KC's own planned band; the
+    // main entry's ratchet is not the reviewed KC's and is left untouched.
+    const review = this.probingKcId === null ? this.reviewEntry() : null;
+    if (review) return band(review.targetDifficulty);
     return this.lastDifficulty;
   }
 
@@ -715,6 +808,8 @@ export class PedagogicalController {
     // first place (`ws/server.ts` sends the model's own asked-for band), so
     // the served value says nothing about a number nothing reads.
     if (!this.active) return;
+    // C.11: a re-check's band is the reviewed KC's, not the main ratchet's.
+    if (this.inSessionReview !== null && this.probingKcId === null) return;
     // `null` is "the segment declared no difficulty" — a real answer, and not
     // one that licenses moving the ratchet anywhere (§1.14).
     if (typeof served !== 'number' || !Number.isInteger(served) || served < 1 || served > 5) return;
@@ -866,6 +961,28 @@ export class PedagogicalController {
    * the guardrails, and returns what this turn should do.
    */
   decide(event: PedagogyEvent, nowMs: number): ControllerDecision {
+    /*
+     * C.11: an open review detour that the learner talks past instead of
+     * answering is abandoned after `REVIEW_OPEN_TURNS` learner turns — the
+     * re-check is not pushed at a learner who is not doing it; the router
+     * hands the KC to the cross-session scheduler instead.
+     */
+    let closedReview: ControllerDecision['review'] = null;
+    if (
+      this.inSessionReview !== null &&
+      this.probingKcId === null &&
+      (event.kind === 'conversation_turn' || event.kind === 'stated_misconception')
+    ) {
+      this.inSessionReview.turns += 1;
+      if (this.inSessionReview.turns >= REVIEW_OPEN_TURNS) {
+        const reviewed = this.reviewEntry();
+        this.inSessionReview = null;
+        if (reviewed) closedReview = { kcId: reviewed.kcId, objective: reviewed.objective, outcome: 'abandoned' };
+        const main = this.plan[this.entryIndex];
+        if (main) this.strategy = this.baseStrategy(main);
+      }
+    }
+
     const entry = this.activeEntry;
     if (!entry) {
       return {
@@ -880,8 +997,11 @@ export class PedagogicalController {
         kcId: null,
         evidence: null,
         masteryRevoked: false,
+        pKnownBefore: null,
+        review: closedReview,
       };
     }
+    const reviewing = this.inSessionReview !== null && this.probingKcId === null;
 
     const required = this.requiredObservationsFor(entry);
     let masteryRevoked = false;
@@ -1090,6 +1210,49 @@ export class PedagogicalController {
       this.questioningWithoutProgress += 1;
     }
 
+    /*
+     * C.11 — THE REVIEW DETOUR ANSWERS EXACTLY ONE GRADED ITEM. The evidence
+     * above already landed on the reviewed KC (its belief, its chains, and —
+     * for a KC celebrated earlier this session — the C.10 revocation, which
+     * makes a failed re-check the Khan-style demotion Appendix D §2.3 asks
+     * for). What it must never do is what the plan rules would do next:
+     * celebrate and ADVANCE the plan pointer, or open a probe from a KC the
+     * session already moved past. So the detour closes here, whatever the
+     * answer: RESCUE still wins (two consecutive misses), otherwise a correct
+     * re-check gets a short FLUENCY beat and a wrong one a single WORKED
+     * example — never a drill; the router decides whether it comes back.
+     */
+    if (reviewing && (event.kind === 'activity_result' || event.kind === 'voice_result')) {
+      const rescueFailures = Math.max(2, required);
+      const rescue = this.consecutiveFailures >= rescueFailures && !this.rescuedSinceProgress;
+      const proposed: Strategy = rescue ? 'RESCUE' : event.correct ? 'FLUENCY' : 'WORKED';
+      const strategy = this.enforceGuardrails(proposed, nowMs);
+      this.inSessionReview = null;
+      this.applyStrategy(strategy, nowMs);
+      const instruction = this.instructionFor(strategy, entry);
+      // The reviewed KC's diagnosis does not follow the learner back to the main entry.
+      this.misconceptionCode = null;
+      this.lastDifficultyFromContent = false;
+      return {
+        strategy,
+        scaffolding: this.scaffoldingFor(strategy),
+        difficulty: this.lastDifficulty,
+        instruction,
+        pKnown: this.pKnown.get(entry.kcId) ?? entry.pKnown,
+        misconceptionCode: null,
+        idleNudgeMs: IDLE_NUDGE_MS[strategy],
+        listenSilenceMs: listenSilenceMsFor(strategy, this.opportunities.get(entry.kcId) ?? 0),
+        kcId: entry.kcId,
+        evidence:
+          strategy === 'RESCUE' && proposed === 'RESCUE'
+            ? { rule: 'rescue', observations: this.consecutiveFailures, required }
+            : null,
+        masteryRevoked,
+        pKnownBefore: pBefore,
+        review: { kcId: entry.kcId, objective: entry.objective, outcome: event.correct ? 'correct' : 'wrong' },
+      };
+    }
+
     const proposal = this.propose(event, entry, failedNow, pBefore, statedRemediation, required);
     const strategy = this.enforceGuardrails(proposal.strategy, nowMs);
     // A guardrail that HELD the previous strategy did not execute the
@@ -1184,6 +1347,8 @@ export class PedagogicalController {
       kcId: entry.kcId,
       evidence: executed ? proposal.evidence : null,
       masteryRevoked,
+      pKnownBefore: pBefore,
+      review: closedReview,
     };
   }
 

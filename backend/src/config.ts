@@ -91,6 +91,32 @@ const Env = z.object({
     .default('true')
     .transform((v) => v !== 'false' && v !== '0' && v !== 'off'),
 
+  // C.11 (Appendix D §2.4): the cross-session scheduler's SHORT HORIZON, in
+  // minutes. A graded attempt within this long of the card's last counted
+  // (spaced) review is a within-session re-exposure: a success does not grow
+  // the card's stability and a second lapse does not collapse it again — the
+  // within-session tier owns that repetition. 0 turns the rule off (every
+  // attempt counts as a spaced review, the pre-C.11 behaviour). Proposed,
+  // pending calibration (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
+  TUTOR_REVIEW_SHORT_HORIZON_MIN: z.coerce.number().int().min(0).max(24 * 60).default(180),
+
+  // C.17: the dialogue bands the age-band calibration A/B experiment may
+  // enrol, comma-separated from young_child,tween,teen,adult. OD-23 / H.7
+  // interim default: ADULTS ONLY until Product and Legal choose wider
+  // experiment ages; every learner outside these bands receives the SPEC's
+  // calibrated register and is never enrolled. Unknown names are ignored.
+  MENTOR_DIALOGUE_EXPERIMENT_BANDS: z
+    .string()
+    .default('adult')
+    .transform((v) =>
+      v
+        .split(',')
+        .map((band) => band.trim())
+        .filter((band): band is 'young_child' | 'tween' | 'teen' | 'adult' =>
+          ['young_child', 'tween', 'teen', 'adult'].includes(band),
+        ),
+    ),
+
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });

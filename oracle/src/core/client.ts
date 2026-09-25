@@ -18,6 +18,8 @@ import type { BehavioralTelemetryReport } from '../tutor/behavioralTelemetry.js'
 import { CONTINUITY_KINDS, type AllianceReport } from '../tutor/allianceController.js';
 import type { SelfExplanationReport } from '../tutor/selfExplanation.js';
 import { DispositionProfileSchema, type DispositionObservation } from '../tutor/dispositionProfile.js';
+import type { SpacedReviewReport } from '../tutor/spacedReview.js';
+import { DialogueCalibrationSchema, type DialogueCalibrationReport } from '../tutor/dialogueCalibration.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -220,6 +222,25 @@ export const SessionContextSchema = z
      * orchestrator applies the STRICTER of this and TUTOR_ALLIANCE_CONTROLLER.
      */
     allianceMode: z.enum(['act', 'shadow']).optional(),
+    /*
+     * C.11 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * spaced-review router (a recorded routing decision the rule does not
+     * reproduce, or in-session re-exposures that systematically never happen
+     * before the session ends). `shadow` keeps every routing decision recorded
+     * and opens no re-exposure detour; the orchestrator applies the STRICTER
+     * of this and TUTOR_SPACED_REVIEW. OPTIONAL: negotiated.
+     */
+    spacedReviewMode: z.enum(['act', 'shadow']).optional(),
+    /*
+     * C.17: this learner's dialogue register — the age band Core derived
+     * from its own age evidence (the birth date never travels), the variant
+     * (`calibrated` or the uniform `control`), how it was assigned (the H.7
+     * experiment enrols adults only, OD-23) and the experiment id. SERVER-SIDE
+     * ONLY: it selects the hint ladder and a fixed register note and is never
+     * a field of the sealed model context. Null when Core could not decide
+     * (the tier fallback applies). OPTIONAL: negotiated.
+     */
+    dialogueCalibration: DialogueCalibrationSchema.nullable().optional(),
   })
   .strict();
 
@@ -239,6 +260,8 @@ export const CONTEXT_OPTIONAL_FIELDS = [
   'dispositionProfile',
   'allianceContinuity',
   'allianceMode',
+  'spacedReviewMode',
+  'dialogueCalibration',
 ] as const;
 
 export type SessionContext = z.infer<typeof SessionContextSchema>;
@@ -446,6 +469,19 @@ export interface CloseSessionInput {
    * and which profile effects were applied. Numbers and closed labels only.
    */
   disposition?: DispositionObservation;
+  /**
+   * C.11: the spaced-review router's record — every routing decision with
+   * the inputs the rule read (so Core can re-evaluate it) and its outcome;
+   * Core applies the cross-session hand-offs to the learner's memory cards.
+   * Ids of our own catalog, labels and numbers only. Absent while off.
+   */
+  spacedReview?: SpacedReviewReport;
+  /**
+   * C.17: the dialogue register this session ran (band, variant, assignment)
+   * and what it did (ladder rungs, hint and tell requests, controlling
+   * language caught and delivered, pacing offers vs unilateral changes).
+   */
+  dialogueCalibration?: DialogueCalibrationReport;
 }
 
 /**

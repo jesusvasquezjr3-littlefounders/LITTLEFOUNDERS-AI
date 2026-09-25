@@ -119,13 +119,35 @@ export function isHintRequest(text: string): boolean {
   return HINT_PHRASES.test(foldRequest(text));
 }
 
+/**
+ * C.17: a ladder's rungs, in order. Every ladder starts with the re-ask and
+ * ends with the tell, keeps Appendix D §3.3's order, and repeats no rung —
+ * a shorter ladder for younger children drops rungs, it never reorders them.
+ */
+export function isValidLadder(rungs: readonly HintLevel[]): boolean {
+  if (rungs.length < 2 || rungs[0] !== 'reask' || rungs[rungs.length - 1] !== 'tell') return false;
+  const order = rungs.map((r) => HINT_LEVELS.indexOf(r));
+  return order.every((v, i) => v >= 0 && (i === 0 || v > order[i - 1]!));
+}
+
 export class HintLadder {
   private levels = new Map<string, number>();
   private told = new Set<string>();
+  /** C.17: this session's rungs (the full ladder unless the dialogue policy shortened it). */
+  private readonly rungs: readonly HintLevel[];
+
+  constructor(rungs: readonly HintLevel[] = HINT_LEVELS) {
+    this.rungs = isValidLadder(rungs) ? [...rungs] : HINT_LEVELS;
+  }
+
+  /** C.17: how many rungs this ladder has (5, or 4 for the younger-child register). */
+  get rungCount(): number {
+    return this.rungs.length;
+  }
 
   /** The level the NEXT hint for this sub-step must use (default: reask). */
   levelFor(stepKey: string): HintLevel {
-    return HINT_LEVELS[this.levels.get(stepKey) ?? 0]!;
+    return this.rungs[Math.min(this.levels.get(stepKey) ?? 0, this.rungs.length - 1)]!;
   }
 
   /** Whether this sub-step has already reached bottom-out. */
@@ -140,15 +162,16 @@ export class HintLadder {
   registerHintRequest(stepKey: string): HintLevel {
     const current = this.levels.get(stepKey) ?? 0;
     if (this.told.has(stepKey)) return 'tell';
-    const next = Math.min(current + 1, HINT_LEVELS.length - 1);
+    const last = this.rungs.length - 1;
+    const next = Math.min(current + 1, last);
     this.levels.set(stepKey, next);
-    if (next === HINT_LEVELS.length - 1) this.told.add(stepKey);
-    return HINT_LEVELS[next]!;
+    if (next === last) this.told.add(stepKey);
+    return this.rungs[next]!;
   }
 
   /** Honors an explicit "just tell me": bottom-out, once, immediately. */
   registerTellRequest(stepKey: string): 'tell' {
-    this.levels.set(stepKey, HINT_LEVELS.length - 1);
+    this.levels.set(stepKey, this.rungs.length - 1);
     this.told.add(stepKey);
     return 'tell';
   }

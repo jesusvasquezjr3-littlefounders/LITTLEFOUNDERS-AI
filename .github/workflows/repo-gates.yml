@@ -116,6 +116,15 @@ jobs:
       - name: Alliance / self-explanation / disposition record agrees across every copy
         run: node agent/tools/check-alliance-parity.mjs
 
+      # Product C.11 + C.17: the spaced-review routing rule (mirrored in Core so
+      # every recorded decision can be re-evaluated), its record, and the
+      # dialogue register are hand-mirrored across Oracle, Core and the
+      # migration. A drift makes Core refuse the close, a CHECK refuse a row, or
+      # the Routing Accuracy audit judge Oracle by a different rule. It also
+      # holds the OD-23 guard: the C.17 experiment stays adults-only by default.
+      - name: Spaced-review routing / dialogue register agree across every copy (OD-23 guard)
+        run: node agent/tools/check-review-calibration-parity.mjs
+
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed. A gate nobody runs is documentation, not enforcement.
       - name: Repo tool self-tests

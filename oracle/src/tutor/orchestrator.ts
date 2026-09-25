@@ -18,7 +18,7 @@ import {
   planState,
   recordDeclinedAdaptation,
   recordGrade,
-  stuckInstruction,
+  stuckMove,
   type LessonPlan,
 } from './plan.js';
 import {
@@ -39,7 +39,7 @@ import {
   ModelUnavailableError,
   type ChatMessage,
 } from '../model/provider.js';
-import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
+import { budgetHeadroom, evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
 import { spendGuard } from '../session/spend-guard.js';
 import {
   buildContextMessage,
@@ -71,7 +71,27 @@ import {
 } from './prompt.js';
 import { instrumentGuidanceFor } from './instrumentSpecs.js';
 import { classifyStatedMisconception } from './statedMisconception.js';
-import { HintLadder, HintLadderSnapshotSchema, HINT_LEVEL_WORDING, isHintRequest, isTellRequest } from './hintLadder.js';
+import { HintLadder, HintLadderSnapshotSchema, isHintRequest, isTellRequest } from './hintLadder.js';
+import {
+  EMPTY_SPACED_REVIEW,
+  reviewLeadInstruction,
+  reviewResultInstruction,
+  SpacedReviewRouter,
+  SpacedReviewSnapshotSchema,
+  strictestSpacedReviewMode,
+  type SpacedReviewReport,
+} from './spacedReview.js';
+import {
+  CONTROLLING_LANGUAGE_CORRECTION,
+  controllingLanguage,
+  DialogueCalibrationRecorder,
+  DialogueCalibrationSnapshotSchema,
+  dialoguePolicy,
+  EMPTY_DIALOGUE_CALIBRATION,
+  resolveCalibration,
+  type DialogueCalibrationReport,
+  type DialoguePolicy,
+} from './dialogueCalibration.js';
 import {
   classifyPraise,
   isSycophantic,
@@ -505,6 +525,15 @@ export const OrchestratorSnapshotSchema = z
     alliance: AllianceSnapshotSchema.default(EMPTY_ALLIANCE),
     selfExplanation: SelfExplanationSnapshotSchema.default(EMPTY_SELF_EXPLANATION),
     dispositionObserver: DispositionObserverSnapshotSchema.default(EMPTY_DISPOSITION_OBSERVER),
+    /*
+     * C.11 / C.17: the spaced-review router (queued re-exposures, hand-offs
+     * and every routing decision) and the dialogue-calibration counts ride
+     * the snapshot — a resume must not forget a shaky answer waiting for its
+     * re-check. The calibration itself is pinned in the session context.
+     * Defaulted for records parked by the previous build.
+     */
+    spacedReview: SpacedReviewSnapshotSchema.default(EMPTY_SPACED_REVIEW),
+    dialogueCalibration: DialogueCalibrationSnapshotSchema.default(EMPTY_DIALOGUE_CALIBRATION),
   })
   .strict();
 
@@ -635,7 +664,13 @@ export class TutorOrchestrator {
    */
   private readonly usedSkillNames = new Set<string>();
   /** C.13: the hint ladder owns hint escalation per sub-step — policy, not per-turn LLM judgment. */
-  private readonly hintLadder = new HintLadder();
+  /** C.13 × C.17: its rungs follow this session's dialogue policy (shorter for the younger-child register). */
+  private readonly hintLadder: HintLadder;
+  /** C.11: the two-tier spaced-review router (`spacedReview.ts`). */
+  private readonly spacedReview: SpacedReviewRouter;
+  /** C.17: this session's dialogue policy (pinned, from the session context) and its record. */
+  private readonly dialoguePolicy: DialoguePolicy;
+  private readonly dialogueCalibration: DialogueCalibrationRecorder;
   /** C.8/C.12: the behavioral-signature session-end signal (`sessionEndSignal.ts`). */
   private readonly sessionEndSignal: SessionEndSignal;
   /** C.16: the closing sequence and the observed facts a completed close names. */
@@ -746,6 +781,20 @@ export class TutorOrchestrator {
     this.selfExplanation = new SelfExplanation(config.TUTOR_SELF_EXPLANATION);
     this.dispositionObserver = new DispositionObserver(session.dispositionProfile != null, this.dispositionEffects);
     this.minorPosture = session.isMinor;
+    /*
+     * C.17: the register Core assigned (band from its own age evidence; the
+     * variant from the adults-only experiment or the SPEC's calibrated
+     * default), or the tier fallback for an older Core. The operator's `off`
+     * forces the uniform control register for everyone.
+     */
+    const calibration = resolveCalibration(session.dialogueCalibration, session.tier, config.TUTOR_DIALOGUE_CALIBRATION);
+    this.dialoguePolicy = dialoguePolicy(calibration.band, calibration.variant);
+    this.dialogueCalibration = new DialogueCalibrationRecorder(calibration, this.dialoguePolicy);
+    this.hintLadder = new HintLadder(this.dialoguePolicy.ladder);
+    // C.11: the stricter of the operator's switch and Core's Stage 7 verdict.
+    this.spacedReview = new SpacedReviewRouter(
+      strictestSpacedReviewMode(config.TUTOR_SPACED_REVIEW, session.spacedReviewMode ?? 'act'),
+    );
   }
 
   /**
@@ -828,6 +877,8 @@ export class TutorOrchestrator {
       alliance: this.alliance.snapshot(),
       selfExplanation: this.selfExplanation.snapshot(),
       dispositionObserver: this.dispositionObserver.snapshot(),
+      spacedReview: this.spacedReview.snapshot(),
+      dialogueCalibration: this.dialogueCalibration.snapshot(),
     };
   }
 
@@ -900,6 +951,8 @@ export class TutorOrchestrator {
     this.alliance.restore(snapshot.alliance);
     this.selfExplanation.restore(snapshot.selfExplanation);
     this.dispositionObserver.restore(snapshot.dispositionObserver);
+    this.spacedReview.restore(snapshot.spacedReview);
+    this.dialogueCalibration.restore(snapshot.dialogueCalibration);
   }
 
   refreshIsMinor(isMinor: boolean): void {
@@ -1380,7 +1433,7 @@ export class TutorOrchestrator {
      * change-the-style line. Inactive controller = exactly the v2 path.
      */
     const hintAssisted = this.consumeLadderStep(correct);
-    const { text: strategyExtra, skillName: strategySkill } = this.strategyInstruction(
+    const { text: strategyExtra, skillName: strategySkill, reviewOpenable } = this.strategyInstruction(
       {
         kind: 'activity_result',
         correct,
@@ -1390,7 +1443,7 @@ export class TutorOrchestrator {
         hintAssisted,
       },
       nowMs,
-      correct ? null : () => stuckInstruction(this.plan, skillKey),
+      correct ? null : () => this.stuckNote(skillKey),
     );
     const signalled = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, pCorrect }, nowMs);
     // C.9/C.19: the telemetry reading of this answer; a fired disengagement
@@ -1414,6 +1467,13 @@ export class TutorOrchestrator {
             scaffolded: this.dispositionEffects.scaffoldedExplanations,
           })
         : false;
+    /*
+     * C.11: with nothing higher owning the turn, a correct answer is the
+     * moment a due within-session re-check can open — the controller then
+     * serves the next activity for THAT knowledge component.
+     */
+    const reviewLead =
+      !checkIn && !renegotiation && !offering && !selfExplain && reviewOpenable ? this.openDueReview(nowMs) : null;
     // The check-in, the renegotiation, the stop-or-continue offer or the
     // self-explanation lead SUPERSEDES this turn's maneuver: each must stand
     // alone, and a remediation question beside it could never be answered.
@@ -1426,8 +1486,10 @@ export class TutorOrchestrator {
           ? SESSION_END_OFFER_INSTRUCTION
           : selfExplain
             ? SELF_EXPLANATION_LEAD_INSTRUCTION
-            : strategyExtra;
-    const skillName = checkIn || renegotiation || offering || selfExplain ? null : strategySkill;
+            : reviewLead !== null
+              ? reviewLead
+              : strategyExtra;
+    const skillName = checkIn || renegotiation || offering || selfExplain || reviewLead !== null ? null : strategySkill;
 
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
@@ -1675,10 +1737,10 @@ export class TutorOrchestrator {
     if (this.openUngradedSegmentId === segmentId) this.openUngradedSegmentId = null;
 
     const hintAssisted = this.consumeLadderStep(result.correct);
-    const { text: strategyExtra, skillName: strategySkill } = this.strategyInstruction(
+    const { text: strategyExtra, skillName: strategySkill, reviewOpenable } = this.strategyInstruction(
       { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode, hintAssisted },
       nowMs,
-      result.correct ? null : () => stuckInstruction(this.plan, skillKey),
+      result.correct ? null : () => this.stuckNote(skillKey),
     );
     // A spoken answer carries no reliable latency (speech timing is not
     // answer timing), so it feeds the surprising-miss half of the signal only.
@@ -1707,14 +1769,18 @@ export class TutorOrchestrator {
     });
     if (checkIn) this.alliance.noteDisengagement();
     const renegotiation = this.renegotiationCarried(checkIn);
+    // C.11: a due within-session re-check, when nothing higher owns the turn.
+    const reviewLead = !checkIn && !renegotiation && !offering && reviewOpenable ? this.openDueReview(nowMs) : null;
     const extra = checkIn
       ? CHECK_IN_LEAD_INSTRUCTION
       : renegotiation
         ? RENEGOTIATION_LEAD_INSTRUCTION
         : offering
           ? SESSION_END_OFFER_INSTRUCTION
-          : strategyExtra;
-    const skillName = checkIn || renegotiation || offering ? null : strategySkill;
+          : reviewLead !== null
+            ? reviewLead
+            : strategyExtra;
+    const skillName = checkIn || renegotiation || offering || reviewLead !== null ? null : strategySkill;
 
     const summary = result.correct
       ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
@@ -1767,13 +1833,60 @@ export class TutorOrchestrator {
     event: PedagogyEvent,
     nowMs: number,
     legacy: (() => string | null) | null,
-  ): { text: string | null; skillName: string | null } {
-    if (!this.controller.active) return { text: legacy ? legacy() : null, skillName: null };
+  ): { text: string | null; skillName: string | null; reviewOpenable: boolean } {
+    // C.11: every learner event is one learner turn for the review gap.
+    this.spacedReview.noteLearnerTurn();
+    if (!this.controller.active) return { text: legacy ? legacy() : null, skillName: null, reviewOpenable: false };
 
     // Captured BEFORE `decide()` mutates it — the trajectory log's own
     // "state the decision was made FROM", not the decision's own result.
     const strategyBefore = this.controller.currentStrategy;
+    const reviewKcBefore = this.controller.inSessionReviewKcId;
     const decision = this.controller.decide(event, nowMs);
+    const graded = event.kind === 'activity_result' || event.kind === 'voice_result';
+    /*
+     * C.11: every graded answer on a knowledge component goes to the
+     * spaced-review router — a miss is routed to its tier by the Appendix D
+     * §2.4 rule (belief BEFORE the miss, budget left), a spaced answer on a
+     * queued KC moves its running count. The router reads ids and numbers,
+     * never the learner's words.
+     */
+    if (graded && decision.kcId !== null && decision.pKnownBefore !== null) {
+      const headroom = this.reviewHeadroom(nowMs);
+      this.spacedReview.observe({
+        kcId: decision.kcId,
+        planned: this.controller.isPlannedKc(decision.kcId),
+        correct: event.correct,
+        pBefore: decision.pKnownBefore,
+        pAfter: decision.pKnown ?? decision.pKnownBefore,
+        turnsRemaining: headroom.turnsRemaining,
+        msUntilWrap: headroom.msUntilWrap,
+        budgetState: headroom.state,
+        fromDetour: reviewKcBefore !== null && reviewKcBefore === decision.kcId,
+      });
+    }
+    if (decision.review?.outcome === 'abandoned') this.spacedReview.noteDetourAbandoned(decision.review.kcId);
+    /*
+     * A re-check may open on the NEXT maneuver only after a turn that did not
+     * need repairing: a conversational turn, or a correct answer on the main
+     * entry. Never right after a miss (the reaction owns that turn) and never
+     * right after a re-check closed.
+     */
+    const reviewOpenable =
+      decision.review === null &&
+      decision.strategy !== 'CELEBRATE' &&
+      decision.strategy !== 'TRANSFER' &&
+      (event.kind === 'conversation_turn' || (graded && event.correct));
+    const reviewNote =
+      decision.review !== null && decision.review.outcome !== 'abandoned'
+        ? reviewResultInstruction(decision.review.outcome === 'correct', decision.review.objective)
+        : null;
+    // C.17: what this register adds to the strategy (ask first; do it together).
+    const overlay = this.dialoguePolicy.strategyOverlay(decision.strategy);
+    const decorate = (text: string | null): string | null => {
+      const parts = [reviewNote, text, overlay].filter((part): part is string => part !== null && part !== '');
+      return parts.length === 0 ? null : parts.join('\n\n');
+    };
     const skill = selectSkill({
       strategy: decision.strategy,
       tier: this.session.tier,
@@ -1782,7 +1895,7 @@ export class TutorOrchestrator {
       usedSkillNames: this.usedSkillNames,
     });
     this.recordTrajectoryStep(event.kind, strategyBefore, decision, skill?.name ?? null);
-    if (skill === null) return { text: decision.instruction, skillName: null };
+    if (skill === null) return { text: decorate(decision.instruction), skillName: null, reviewOpenable };
     /*
      * The catalogued misconception hint still travels with the skill: the
      * skill says HOW to remediate, the hint says WHAT wrong idea this
@@ -1811,7 +1924,50 @@ export class TutorOrchestrator {
      */
     const guidance = instrumentGuidanceFor(skill.instruments);
     const withGuidance = guidance ? `${body}\n\n${guidance}` : body;
-    return { text: hint ? `${withGuidance}\n\n${hint}` : withGuidance, skillName: skill.name };
+    return { text: decorate(hint ? `${withGuidance}\n\n${hint}` : withGuidance), skillName: skill.name, reviewOpenable };
+  }
+
+  /** C.11: the budget a within-session re-exposure still has (turns to the cap, time to wrap-up). */
+  private reviewHeadroom(nowMs: number): ReturnType<typeof budgetHeadroom> {
+    return budgetHeadroom(
+      { startedAtMs: this.startedAtMs, nowMs, turnCount: this.seq, isStaff: this.session.isStaff === true },
+      getConfig(),
+    );
+  }
+
+  /**
+   * C.11: opens the most overdue within-session re-exposure, when one is due
+   * and the controller accepts the detour (never during a repair or a probe,
+   * never for the KC being taught right now). Returns the turn's lead, or
+   * null when nothing opened. The caller only asks when no higher directive
+   * owns the turn and the last decision allows it (`reviewOpenable`).
+   */
+  private openDueReview(nowMs: number): string | null {
+    if (!this.controller.active) return null;
+    /*
+     * Never while an activity is still on screen and ungraded: its grade
+     * would arrive while the detour is open and be filed under the reviewed
+     * KC instead of the one it was served for.
+     */
+    if (this.openUngradedSegmentId !== null) return null;
+    const headroom = this.reviewHeadroom(nowMs);
+    const activeKc = this.controller.inSessionReviewKcId ?? this.controller.activeKcId;
+    const kcId = this.spacedReview.dueKcId(activeKc, headroom.state);
+    if (kcId === null) return null;
+    if (!this.controller.openInSessionReview(kcId, nowMs)) return null;
+    this.spacedReview.noteDetourOpened(kcId);
+    return reviewLeadInstruction(this.controller.objectiveFor(kcId) ?? 'an idea from earlier today');
+  }
+
+  /**
+   * The legacy stuck move (controller dormant), in this session's register:
+   * the ask-first register (C.17: teens, adults) offers an adaptation instead
+   * of changing the approach on its own. Counted for the calibration record.
+   */
+  private stuckNote(skillKey: string): string | null {
+    const move = stuckMove(this.plan, skillKey, { askFirst: this.dialoguePolicy.askBeforePacing });
+    this.dialogueCalibration.noteStuckMove(move.kind);
+    return move.text;
   }
 
   /**
@@ -2202,7 +2358,11 @@ export class TutorOrchestrator {
         : stated !== null
           ? { kind: 'stated_misconception', misconceptionCode: stated }
           : { kind: 'conversation_turn' };
-    const { text: strategyManeuver, skillName: strategySkill } = this.strategyInstruction(pedagogyEvent, nowMs, null);
+    const {
+      text: strategyManeuver,
+      skillName: strategySkill,
+      reviewOpenable,
+    } = this.strategyInstruction(pedagogyEvent, nowMs, null);
     // A verified conversational answer is a graded observation for C.8/C.12
     // too (no latency: typing speed is not answer speed).
     const signalled =
@@ -2307,6 +2467,24 @@ export class TutorOrchestrator {
         verifiedWrong: false,
         scaffolded: this.dispositionEffects.scaffoldedExplanations,
       });
+    /*
+     * C.11: a due within-session re-check opens only on a turn nothing else
+     * owns — no directive above, no explanation reading, no answer to a
+     * renegotiation, no self-explanation lead, no "yes" to a check-in, and
+     * not while the learner is asking for help (the ladder owns that turn).
+     */
+    const reviewLead =
+      !metaReply &&
+      !higher &&
+      explanationDirective === null &&
+      !renegotiationFollow &&
+      !selfExplain &&
+      checkInReply !== 'aligned' &&
+      !hintRequest &&
+      !tellRequest &&
+      reviewOpenable
+        ? this.openDueReview(nowMs)
+        : null;
     const maneuver = repair
       ? repairInstruction(this.plan.declinedAdaptations)
       : checkIn
@@ -2325,11 +2503,20 @@ export class TutorOrchestrator {
                     ? RENEGOTIATION_FOLLOW_INSTRUCTION
                     : selfExplain
                       ? SELF_EXPLANATION_LEAD_INSTRUCTION
-                      : checkInReply === 'aligned'
+                      : reviewLead !== null
+                        ? reviewLead
+                        : checkInReply === 'aligned'
                         ? [strategyManeuver, CHECK_IN_ALIGNED_INSTRUCTION].filter((part) => part !== null).join('\n\n')
                         : strategyManeuver;
     const skillName =
-      repair || checkIn || renegotiation || offering || goalDirective !== null || goalProposal || selfExplain
+      repair ||
+      checkIn ||
+      renegotiation ||
+      offering ||
+      goalDirective !== null ||
+      goalProposal ||
+      selfExplain ||
+      reviewLead !== null
         ? null
         : strategySkill;
     /*
@@ -2408,11 +2595,14 @@ export class TutorOrchestrator {
   private ladderNoteFor(cleaned: string, stepKey: string): string {
     if (isTellRequest(cleaned)) {
       this.hintLadder.registerTellRequest(stepKey);
+      this.dialogueCalibration.noteTellRequest();
       return '\n\nThe learner explicitly asked you to just tell them the answer. Honor it once, plainly, without scolding and without asking again.';
     }
     if (isHintRequest(cleaned)) {
       const level = this.hintLadder.registerHintRequest(stepKey);
-      return `\n\nThe learner asked for help again. This is the next step of the hint ladder: ${HINT_LEVEL_WORDING[level]}. Never repeat a level you already gave.`;
+      this.dialogueCalibration.noteHintRequest();
+      // C.17: the wording of each rung follows this session's register.
+      return `\n\nThe learner asked for help again. This is the next step of the hint ladder: ${this.dialoguePolicy.levelWording[level]}. Never repeat a level you already gave.`;
     }
     return '';
   }
@@ -2710,6 +2900,8 @@ export class TutorOrchestrator {
     alliance?: AllianceReport;
     selfExplanation?: SelfExplanationReport;
     disposition: DispositionObservation;
+    spacedReview?: SpacedReviewReport;
+    dialogueCalibration: DialogueCalibrationReport;
   } {
     return {
       closingScript: closingScriptFor(reason),
@@ -2722,7 +2914,21 @@ export class TutorOrchestrator {
       ...(this.selfExplanation.mode === 'off' ? {} : { selfExplanation: this.selfExplanation.report() }),
       // C.7: what this session contributes to the persistent profile.
       disposition: this.dispositionObserver.report(),
+      // C.11: every routing decision and its outcome (nothing while off).
+      ...(this.spacedReview.mode === 'off' ? {} : { spacedReview: this.spacedReview.report() }),
+      // C.17: the register this session ran and what it did.
+      dialogueCalibration: this.dialogueCalibration.report(),
     };
+  }
+
+  /** C.11: the spaced-review router's record (tests and diagnostics). */
+  get spacedReviewReport(): SpacedReviewReport {
+    return this.spacedReview.report();
+  }
+
+  /** C.17: the dialogue-calibration record (tests and diagnostics). */
+  get dialogueCalibrationReport(): DialogueCalibrationReport {
+    return this.dialogueCalibration.report();
   }
 
   /** C.15: the Alliance Controller's record (tests and diagnostics). */
@@ -2924,7 +3130,13 @@ export class TutorOrchestrator {
      * history — a fixed system sentence, never anything about the learner.
      */
     const continuityNote = this.alliance.continuityNote();
-    const content = continuityNote === '' ? userContent : `${userContent}\n\n${continuityNote}`;
+    /*
+     * C.17: this session's register note — a fixed, band-free style
+     * instruction (never the learner's age), like the continuity note above.
+     * The uniform control register has none.
+     */
+    const registerNote = this.dialoguePolicy.registerNote ?? '';
+    const content = [userContent, continuityNote, registerNote].filter((part) => part !== '').join('\n\n');
     try {
       outcome = await this.produceTurn(content, nowMs, opts);
       return outcome;
@@ -3815,6 +4027,17 @@ export class TutorOrchestrator {
              */
             const falseFamiliarity = this.alliance.requiresFreshStart && claimsSharedHistory(parsed.turn.say);
             /*
+             * C.17: IN THE AUTONOMY-SUPPORTIVE REGISTER (teens, adults) THE
+             * MENTOR NEVER ORDERS. "You need to", "you have to", "you must",
+             * "you should" and their es-MX/pt-BR forms (Reeve & Jang's
+             * controlling-language markers) are caught on every model turn,
+             * across all four personas, and repaired once. A style fault, not a
+             * false verdict: if it survives the retry the turn is delivered and
+             * the survival is counted (`controllingDelivered`), never hidden.
+             */
+            const controlling = this.dialoguePolicy.controllingGate && controllingLanguage(parsed.turn.say) !== null;
+            if (controlling && attempt === 0) this.dialogueCalibration.noteControllingCaught();
+            /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the
              * faults below, each of which is worth one attempt at doing
@@ -3943,6 +4166,9 @@ export class TutorOrchestrator {
             } else if (tooLongToSay && attempt === 0) {
               turnCorrection = `is ${parsed.turn.say.trim().split(/\s+/).filter(Boolean).length} words long, and it is spoken aloud — far past the 60-word ceiling. Do not compress it into denser sentences: CUT it. Say ONE idea and ask your question. The rest is next turn's, and it will be better then because you will know what they answered. A child stops listening halfway through a paragraph, and your question is at the end of it`;
               console.warn(`[oracle] turn is ${parsed.turn.say.trim().split(/\s+/).filter(Boolean).length} words — too long to say aloud, asking again`);
+            } else if (controlling && attempt === 0) {
+              turnCorrection = CONTROLLING_LANGUAGE_CORRECTION;
+              console.warn('[oracle] C.17 turn used controlling language in the autonomy-supportive register — asking again');
             } else if (repeated !== null && attempt === 0) {
               /*
                * A repeated ANNOUNCEMENT gets a sharper correction than a
@@ -4627,6 +4853,10 @@ export class TutorOrchestrator {
     const honesty = this.turnHonesty(turn.say, opts.verdict ?? null, falseAffirmationCaught);
     if (source === 'model' && safety === null) {
       if (turn.offerAdaptation != null) this.alliance.noteOfferDelivered();
+      // C.17: a controlling phrase that survived the retry reached the learner — counted, never hidden.
+      if (this.dialoguePolicy.controllingGate && controllingLanguage(turn.say) !== null) {
+        this.dialogueCalibration.noteControllingDelivered();
+      }
       this.alliance.notePraise(honesty.praise);
     }
 

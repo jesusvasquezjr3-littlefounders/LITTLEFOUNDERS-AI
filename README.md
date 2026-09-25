@@ -130,6 +130,7 @@ In the service(s) you touched, `npm run build` must also pass. Two caveats worth
 | Mentor session end (C.16 closing scripts/openings, C.8/C.12 signal record: Oracle `sessionClosing.ts`/`sessionEndSignal.ts`, Core `sessionEnd.ts`/`CloseBody`, the `*_mentor_session_end_and_closing` CHECKs, the client's `ClosingScript`) | `npm run session-end:check` |
 | Mentor behavioral telemetry (C.9 channels/firing record, C.19 check-in outcomes and frames, the optional context fields: Oracle `behavioralTelemetry.ts`/`client.ts`/`protocol.ts`, Core `services/pedagogy/behavioralTelemetry.ts`, the `*_mentor_behavioral_telemetry` columns and CHECKs, the client's `check_in` frames) | `npm run telemetry:check` |
 | Mentor alliance / self-explanation / disposition (C.15 alliance record and renegotiation outcomes, C.14 events and concept families, C.7 profile labels, projection and observation, the bond-proxy answers, the `goal_check` frames: Oracle `allianceController.ts`/`selfExplanation.ts`/`explanationLexicon.ts`/`dispositionProfile.ts`/`protocol.ts`, Core `services/pedagogy/alliance.ts`/`disposition.ts`, the `*_mentor_alliance_and_disposition` CHECKs, the client's `types.ts` and `rebuild/mentor/allianceApi.ts`) | `npm run alliance:check` |
+| Mentor spaced review / dialogue register (C.11 routing vocabularies, the rule's thresholds Core re-evaluates, `REVIEW_OPEN_TURNS`, the routing record, `kc_attempt.review_tier`; C.17 bands, variants, assignments and the register record; the OD-23 guard on `MENTOR_DIALOGUE_EXPERIMENT_BANDS`: Oracle `spacedReview.ts`/`controller.ts`/`dialogueCalibration.ts`, Core `services/pedagogy/spacedReview.ts`/`dialogueCalibration.ts`/`fsrs.ts`/`config.ts`, the `*_mentor_spaced_review_and_dialogue_calibration` CHECKs) | `npm run review-calibration:check` |
 | Roleplay scenes or their voices | `npm run roleplay-voices:check` |
 | Any UI | Check in-browser at ~375px AND ~1280px — mobile and desktop both ship |
 
@@ -208,6 +209,24 @@ npm --prefix backend run tutor:alliance-report -- [--since=YYYY-MM-DD] [--json] 
                                                # --purge-stale is the C.7 retention job (profiles not updated for 365 days). Switches:
                                                # TUTOR_ALLIANCE_CONTROLLER / TUTOR_SELF_EXPLANATION=act|shadow|off.
                                                # Policy: docs/rebuild/mentor/ALLIANCE-AND-DISPOSITION-POLICY.md
+npm --prefix backend run tutor:spaced-review-report -- [--since=YYYY-MM-DD] [--json] [--markdown] [--sample=N --seed=S]
+                                               # C.11 monitor (read-only except --record-audit/--resolve, no model call): the routing
+                                               # picture, Spaced-Review Routing Accuracy (every recorded decision RE-EVALUATED against the
+                                               # Appendix D §2.4 rule; one misroute is a defect), the systematic re-check delivery check,
+                                               # the Stage 7 log. --sample draws the reproducible quarterly spot-check sample; the auditor
+                                               # then records it: -- --record-audit="finding" --seed=S --sampled=N --misroutes=K (exit 1
+                                               # when overdue, 99 days). mentor-review-routing-audit.yml runs it quarterly. Core rolls the
+                                               # router back to shadow AUTOMATICALLY on a misroute; --resolve="root cause" lifts it.
+                                               # Switches: TUTOR_SPACED_REVIEW=act|shadow|off (Oracle), TUTOR_REVIEW_SHORT_HORIZON_MIN (Core,
+                                               # 180; 0 = pre-C.11 scheduler). Policy: docs/rebuild/mentor/SPACED-REVIEW-AND-DIALOGUE-CALIBRATION-POLICY.md
+npm --prefix backend run tutor:dialogue-calibration-report -- [--since=YYYY-MM-DD] [--json] [--resolve="root cause"]
+                                               # C.17 monitor (read-only except --resolve, no model call): the Age-Band Calibration A/B
+                                               # Outcome per band (bond proxy and completed-close share, calibrated - control with a 95%
+                                               # interval), the UNCONTROLLED view of non-enrolled learners, controlling language delivered
+                                               # (a defect), the assignment mix and the Stage 7 log. The experiment is the H.7 runtime's
+                                               # surface `tutor`, target `mentor.dialogue-register` (variant A = control, B = calibrated),
+                                               # created by staff; Core enrols only MENTOR_DIALOGUE_EXPERIMENT_BANDS (default `adult`, OD-23).
+                                               # Switch: TUTOR_DIALOGUE_CALIBRATION=act|off (Oracle).
 npm --prefix oracle run bias-audit -- [--json | --check | --record --trigger material_change --notes "..." | --judge-plan]
                                                # C.20 dialect/code-switch/child-spelling/ASR bias audit of every lexical component feeding
                                                # C.9, the check-in/stop replies and moderation (fixture-based, free). Oracle's npm test fails

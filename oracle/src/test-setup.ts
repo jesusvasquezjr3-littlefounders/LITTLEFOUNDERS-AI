@@ -24,3 +24,13 @@ process.env.VOICE_PROVIDER ??= 'none';
  */
 process.env.TUTOR_ALLIANCE_CONTROLLER ??= 'off';
 process.env.TUTOR_SELF_EXPLANATION ??= 'off';
+/*
+ * C.11 / C.17 default OFF in the unit suite for the same reason: the review
+ * detour changes which knowledge component a later activity is served for,
+ * and the calibrated register changes the hint ladder and appends a register
+ * note to every model turn — shapes every older test was written before.
+ * `spacedReview.test.ts`, `dialogueCalibration.test.ts`,
+ * `reviewCalibrationSession.test.ts` and the gym set them explicitly.
+ */
+process.env.TUTOR_SPACED_REVIEW ??= 'off';
+process.env.TUTOR_DIALOGUE_CALIBRATION ??= 'off';

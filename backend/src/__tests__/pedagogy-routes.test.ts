@@ -640,3 +640,86 @@ describe('the internal voice-check', () => {
     expect(response.status).toBe(403);
   });
 });
+
+/*
+ * C.11 — the cross-session scheduler counts SPACED reviews only. An attempt
+ * inside the short horizon of the card's last counted review is a
+ * within-session re-exposure: the card is not rewritten, and the attempt row
+ * says which tier it was.
+ */
+describe('C.11 — the short-horizon rule on the grade route', () => {
+  const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
+  const card = (lastReviewMinutesAgo: number, state: 'review' | 'relearning' = 'review') => ({
+    kc_id: KC_CHANGE,
+    state,
+    stability: 3,
+    difficulty: 5,
+    reps: 2,
+    lapses: 0,
+    due_at: new Date(Date.now() + 3 * 86_400_000).toISOString(),
+    last_review_at: minutesAgo(lastReviewMinutesAgo),
+  });
+  const grade = (value: number) =>
+    request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { value }, attemptNumber: 1 });
+  const attemptBody = (writes: { url: string; method: string; body?: string }[]) =>
+    JSON.parse(String(writes.find((w) => w.url.includes('/rest/v1/kc_attempt') && w.method === 'POST')?.body ?? '{}'));
+
+  it('a correct answer 20 minutes after a counted review leaves the card alone and is marked short_horizon', async () => {
+    const existing = card(20);
+    const writes = stub({ cards: [existing] });
+    const response = await grade(3);
+    expect(response.status).toBe(200);
+    expect(writes.some((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST')).toBe(false);
+    expect(attemptBody(writes).review_tier).toBe('short_horizon');
+    // The schedule the learner sees is the unchanged one.
+    expect(response.body.data.pedagogy.reviewDueAt).toBe(existing.due_at);
+  });
+
+  it('the same answer five hours later is a spaced review: the card grows and the row says spaced', async () => {
+    const writes = stub({ cards: [card(5 * 60)] });
+    await grade(3);
+    const upsert = writes.find((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST');
+    expect(upsert).toBeDefined();
+    expect(Number(JSON.parse(String(upsert!.body)).stability)).toBeGreaterThan(3);
+    expect(attemptBody(writes).review_tier).toBe('spaced');
+  });
+
+  it('a lapse inside the horizon after a counted success is real forgetting: the card lapses', async () => {
+    const writes = stub({ cards: [card(20, 'review')] });
+    await grade(17);
+    const upsert = writes.find((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST');
+    expect(JSON.parse(String(upsert!.body)).state).toBe('relearning');
+    expect(attemptBody(writes).review_tier).toBe('spaced');
+  });
+
+  it('a second lapse inside the horizon does not collapse the card again', async () => {
+    const writes = stub({ cards: [card(20, 'relearning')] });
+    await grade(17);
+    expect(writes.some((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST')).toBe(false);
+    expect(attemptBody(writes).review_tier).toBe('short_horizon');
+  });
+
+  it('a schema without the column (Core deployed first) still records the attempt, once more without the tier', async () => {
+    const writes = stub({ cards: [card(20)] });
+    const inner = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/kc_attempt') && init?.method === 'POST' && String(init.body).includes('review_tier')) {
+          writes.push({ url, method: 'POST', body: init.body as string });
+          return Promise.resolve(new Response(JSON.stringify({ message: 'column "review_tier" does not exist' }), { status: 400 }));
+        }
+        return inner(input, init);
+      }),
+    );
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect((await grade(3)).status).toBe(200);
+    const inserts = writes.filter((w) => w.url.includes('/rest/v1/kc_attempt') && w.method === 'POST');
+    expect(inserts).toHaveLength(2);
+    expect(JSON.parse(String(inserts[1]!.body))).not.toHaveProperty('review_tier');
+  });
+});

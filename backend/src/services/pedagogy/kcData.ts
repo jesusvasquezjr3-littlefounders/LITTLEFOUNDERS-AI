@@ -205,6 +205,13 @@ export interface KcAttemptInsert {
   misconception_id: string | null;
   p_known_before: number;
   p_known_after: number;
+  /**
+   * C.11: whether this attempt was a spaced review of the memory card or a
+   * within-session re-exposure inside the short horizon (`fsrs.ts`
+   * `reviewCardTwoTier`). Optional: written by `recordAttempt`, which falls
+   * back to the row without it on a pre-migration schema.
+   */
+  review_tier?: 'spaced' | 'short_horizon';
 }
 
 export async function insertKcAttempt(row: KcAttemptInsert): Promise<boolean> {

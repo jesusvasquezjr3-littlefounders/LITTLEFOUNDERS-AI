@@ -235,19 +235,56 @@ export function planState(plan: LessonPlan): PlanState {
  * told, and told what to do differently, in words the prompt's own adaptation
  * vocabulary already defines.
  */
-export function stuckInstruction(plan: LessonPlan, skillKey: string): string | null {
+export function stuckInstruction(plan: LessonPlan, skillKey: string, options: StuckOptions = {}): string | null {
+  return stuckMove(plan, skillKey, options).text;
+}
+
+export interface StuckOptions {
+  /**
+   * C.17: the autonomy-supportive register (teens, adults) ASKS before it
+   * changes the approach — the unilateral style rotation is skipped and the
+   * accept/decline offer (`offerAdaptation`) is made at the first stuck
+   * point instead of the second (Appendix D §3.6: "a strong bias toward
+   * asking before adjusting pacing rather than unilaterally changing it,
+   * leaning harder into the existing accept/decline mechanic").
+   */
+  askFirst?: boolean;
+}
+
+/** Which kind of move a stuck skill earned — C.17 counts unilateral changes against offers. */
+export type StuckMoveKind = 'none' | 'style_change' | 'offer' | 'no_offer_left';
+
+/** `stuckInstruction` with the kind of move it made, for the dialogue-calibration record. */
+export function stuckMove(
+  plan: LessonPlan,
+  skillKey: string,
+  options: StuckOptions = {},
+): { text: string | null; kind: StuckMoveKind } {
   const failures = plan.failures.get(skillKey) ?? 0;
-  if (failures < STUCK_THRESHOLD) return null;
+  if (failures < STUCK_THRESHOLD) return { text: null, kind: 'none' };
 
   const style = nextStyle(plan);
-  if (style && failures < OFFER_ADAPTATION_THRESHOLD) {
+  if (style && failures < OFFER_ADAPTATION_THRESHOLD && options.askFirst !== true) {
     plan.stylesTried.push(style);
-    return (
-      `The learner has now missed this skill ${failures} times. Do NOT explain it the same way again — ` +
-      `change the approach entirely, in the direction of "${style.replace(/_/g, ' ')}", ` +
-      `with a completely different concrete example. Do not request another activity this turn.`
-    );
+    return {
+      kind: 'style_change',
+      text:
+        `The learner has now missed this skill ${failures} times. Do NOT explain it the same way again — ` +
+        `change the approach entirely, in the direction of "${style.replace(/_/g, ' ')}", ` +
+        `with a completely different concrete example. Do not request another activity this turn.`,
+    };
   }
+  const text = offerInstruction(plan, failures, options.askFirst === true);
+  const offerable = ADAPTATIONS.filter((kind) => !plan.declinedAdaptations.includes(kind));
+  return { text, kind: offerable.length === 0 ? 'no_offer_left' : 'offer' };
+}
+
+function offerInstruction(plan: LessonPlan, failures: number, askFirst: boolean): string {
+  // C.17: the ask-first register gives the reason for the offer and changes nothing until they answer.
+  const why = askFirst
+    ? ' Say in one short sentence why you suggest it, and change nothing until they accept.'
+    : '';
+  const tried = askFirst ? '' : ' and different explanations were tried';
   /*
    * DECLINED ADAPTATIONS MUST NOT BE RE-OFFERED (/ORACLE.md §11, item found by
    * adversarial review, round 67, 2026-08-30). Without this, a learner who
@@ -263,25 +300,25 @@ export function stuckInstruction(plan: LessonPlan, skillKey: string): string | n
   const offerable = ADAPTATIONS.filter((kind) => !declined.includes(kind));
   if (declined.length === 0) {
     return (
-      `The learner has now missed this skill ${failures} times and different explanations were tried. ` +
+      `The learner has now missed this skill ${failures} times${tried}. ` +
       `Reassure them warmly that this one is genuinely tricky, and offer ONE adaptation via offerAdaptation ` +
-      `(pick the one you judge most likely to help). Do not request another activity this turn.`
+      `(pick the one you judge most likely to help).${why} Do not request another activity this turn.`
     );
   }
   const declinedList = declined.map((kind) => kind.replace(/_/g, ' ')).join(', ');
   if (offerable.length === 0) {
     return (
-      `The learner has now missed this skill ${failures} times, different explanations were tried, and they ` +
+      `The learner has now missed this skill ${failures} times${askFirst ? '' : ', different explanations were tried'}, and they ` +
       `already declined every adaptation available (${declinedList}). Do NOT offer another adaptation — ` +
       `reassure them warmly that this one is genuinely tricky and keep teaching directly, patiently, with a ` +
       `fresh concrete example. Do not request another activity this turn.`
     );
   }
   return (
-    `The learner has now missed this skill ${failures} times and different explanations were tried. They already ` +
+    `The learner has now missed this skill ${failures} times${tried}. They already ` +
     `DECLINED this adaptation, so do NOT offer it again: ${declinedList}. Reassure them warmly that this one is ` +
     `genuinely tricky, and offer ONE DIFFERENT adaptation via offerAdaptation (pick the one you judge most likely ` +
-    `to help, never one already declined). Do not request another activity this turn.`
+    `to help, never one already declined).${why} Do not request another activity this turn.`
   );
 }
 

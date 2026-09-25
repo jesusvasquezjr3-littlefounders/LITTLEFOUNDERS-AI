@@ -269,6 +269,30 @@ const Env = z.object({
   TUTOR_SELF_EXPLANATION: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
 
   /**
+   * C.11 switch for the two-tier spaced-review router
+   * (`tutor/spacedReview.ts`). `act` (default): a wrong answer close to the
+   * mastery threshold with budget left is brought back once more in this
+   * session after a short gap (the controller's review detour); every other
+   * wrong answer, and every item still open at close, is handed to Core's
+   * cross-session scheduler. `shadow`: every routing decision is computed and
+   * recorded, no re-exposure detour is opened — the Stage 7 rollback. `off`:
+   * nothing is routed or recorded. Core's automatic verdict
+   * (`spacedReviewMode`) can only make it stricter. An unknown value falls
+   * back to `act`.
+   */
+  TUTOR_SPACED_REVIEW: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
+   * C.17 switch for the age-band dialogue calibration
+   * (`tutor/dialogueCalibration.ts`). `act` (default): the session runs the
+   * variant Core assigned (the SPEC's calibrated register for every learner
+   * outside the adults-only experiment). `off`: every session runs the
+   * uniform pre-C.17 register (`control`, recorded as `operator_off`). An
+   * unknown value falls back to `act`.
+   */
+  TUTOR_DIALOGUE_CALIBRATION: z.enum(['act', 'off']).catch('act').default('act'),
+
+  /**
    * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
    * item is a separate, larger, architecturally-undecided piece of work).
    *

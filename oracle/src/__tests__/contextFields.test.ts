@@ -41,7 +41,7 @@ describe('context optional fields', () => {
     expect(await fetchSessionContext(CONTEXT.sessionId)).not.toBeNull();
     const headers = (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].headers as Record<string, string>;
     expect(headers['x-oracle-context-fields']).toBe(
-      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode',
+      'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode,spacedReviewMode,dialogueCalibration',
     );
     expect(headers['x-internal-api-key']).toBeDefined();
     expect(CONTEXT_OPTIONAL_FIELDS).toEqual([
@@ -50,7 +50,39 @@ describe('context optional fields', () => {
       'dispositionProfile',
       'allianceContinuity',
       'allianceMode',
+      'spacedReviewMode',
+      'dialogueCalibration',
     ]);
+  });
+
+  it('C.11/C.17: parses the spaced-review mode and the dialogue calibration, strictly', async () => {
+    const calibration = {
+      band: 'teen',
+      variant: 'calibrated',
+      assignment: 'not_eligible',
+      experimentId: null,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => coreReplies({ ...CONTEXT, spacedReviewMode: 'shadow', dialogueCalibration: calibration })),
+    );
+    const parsed = await fetchSessionContext(CONTEXT.sessionId);
+    expect(parsed?.spacedReviewMode).toBe('shadow');
+    expect(parsed?.dialogueCalibration).toEqual(calibration);
+    // Null (Core could not decide) parses; the tier fallback then applies.
+    vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, dialogueCalibration: null })));
+    expect((await fetchSessionContext(CONTEXT.sessionId))?.dialogueCalibration).toBeNull();
+    // An unknown band, an age, a louder mode or an extra field refuses the context.
+    for (const bad of [
+      { dialogueCalibration: { ...calibration, band: 'toddler' } },
+      { dialogueCalibration: { ...calibration, age: 15 } },
+      { dialogueCalibration: { ...calibration, variant: 'experimental' } },
+      { dialogueCalibration: { ...calibration, experimentId: 'not-a-uuid' } },
+      { spacedReviewMode: 'off' },
+    ]) {
+      vi.stubGlobal('fetch', vi.fn(async () => coreReplies({ ...CONTEXT, ...bad })));
+      expect(await fetchSessionContext(CONTEXT.sessionId)).toBeNull();
+    }
   });
 
   it('parses the announced fields, and refuses a context carrying a field it never announced', async () => {
