@@ -2,7 +2,7 @@ import { allowsSelfManagedAnalytics } from './analyticsPreference.js';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
-import { serviceRest } from './supabaseRest.js';
+import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { readAgeScreen } from './ageScreen.js';
 
 /*
@@ -373,22 +373,82 @@ export async function readDailyUsers(sinceDays: number): Promise<DailyUsersEntry
   return parsed.success ? parsed.data : null;
 }
 
-const FamilyEngagementRow = z.object({
-  family_id: z.string(),
-  family_created_at: z.string(),
-  members: z.number(),
-  tasks_created: z.number(),
-  tasks_completed: z.number(),
-  last_task_at: z.string().nullable(),
-});
-export type FamilyEngagementEntry = z.infer<typeof FamilyEngagementRow>;
+/*
+ * S07.6 (D.6): the staff family-engagement insight on the per-child shape.
+ * 0074 redefined insights_family_engagement per child, but this reader kept
+ * parsing the earlier per-family shape (family_id, members, tasks_completed),
+ * so every row failed validation and the endpoint answered "Family views
+ * unreachable". The database now answers through family_engagement_insight
+ * (migration family_engagement_insight): population counts over every child
+ * with a verified Tutor, and per-child rows ONLY for children the H.1
+ * analytics gate admits, with no identity. These keys are the wire contract;
+ * agent/tools/check-family-engagement-contract.mjs keeps this parser, that
+ * migration and the console's type equal.
+ */
+export const FAMILY_ENGAGEMENT_SUMMARY_KEYS = ['children', 'children_with_tasks', 'active_children', 'tasks_created', 'tasks_approved', 'active_days', 'listed_children'] as const;
+export const FAMILY_ENGAGEMENT_CHILD_KEYS = ['guardians', 'tasks_created', 'tasks_approved', 'first_link_on', 'last_task_on'] as const;
 
-export async function readFamilyEngagement(limit: number): Promise<FamilyEngagementEntry[] | null> {
-  const rows = await serviceRest<unknown[]>(
-    `/insights_family_engagement?order=last_task_at.desc.nullslast&limit=${limit}&select=*`,
-  );
-  if (rows === null) return null;
-  const parsed = z.array(FamilyEngagementRow).safeParse(rows);
+const count = z.number().int().min(0);
+const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+export const FamilyEngagementInsight = z.object({
+  summary: z.object({
+    children: count, children_with_tasks: count, active_children: count, tasks_created: count, tasks_approved: count,
+    active_days: z.number().int().min(1).max(365), listed_children: count,
+  }).strict(),
+  children: z.array(z.object({
+    guardians: count, tasks_created: count, tasks_approved: count, first_link_on: day, last_task_on: day.nullable(),
+  }).strict()).max(500),
+}).strict();
+export type FamilyEngagementInsight = z.infer<typeof FamilyEngagementInsight>;
+
+/** The window in which a child with a chore counts as active (Block D threshold log). */
+export const ENGAGEMENT_ACTIVE_DAYS = 30;
+
+export type InsightOutcome = 'ok' | 'unavailable' | 'shape_mismatch';
+
+/**
+ * The insight, or why it could not be served: 'unavailable' (the database did
+ * not answer) and 'shape_mismatch' (it answered, but not in the contract's
+ * shape, the D.6 failure mode) are told apart so the uptime record can.
+ */
+export async function readFamilyEngagementInsight(limit: number): Promise<{ ok: true; data: FamilyEngagementInsight } | { ok: false; outcome: Exclude<InsightOutcome, 'ok'> }> {
+  const raw = await serviceRestRaw('/rpc/family_engagement_insight', {
+    method: 'POST', body: JSON.stringify({ p_limit: limit, p_active_days: ENGAGEMENT_ACTIVE_DAYS }),
+  });
+  if (!raw.ok) return { ok: false, outcome: 'unavailable' };
+  const parsed = FamilyEngagementInsight.safeParse(raw.body);
+  return parsed.success ? { ok: true, data: parsed.data } : { ok: false, outcome: 'shape_mismatch' };
+}
+
+/**
+ * Appendix H (Staff Family-Engagement Insight Uptime): every staff request's
+ * outcome is recorded next to the nightly probe's. Best-effort by design: a
+ * failed record never changes what the staff member is served, and a database
+ * that cannot be reached cannot record its own outage (the probe and Core's
+ * own error log cover that window).
+ */
+export async function recordStaffInsightCheck(outcome: InsightOutcome): Promise<void> {
+  try {
+    await serviceRestRaw('/rpc/record_staff_insight_check', {
+      method: 'POST', body: JSON.stringify({ p_insight: 'family_engagement', p_source: 'request', p_outcome: outcome }),
+    });
+  } catch {
+    // Recording is observability, never part of the answer.
+  }
+}
+
+const UptimeRows = z.array(z.object({
+  source: z.enum(['probe', 'request']),
+  checks: z.coerce.number().int().min(0),
+  ok: z.coerce.number().int().min(0),
+  last_outcome: z.enum(['ok', 'unavailable', 'shape_mismatch']).nullable(),
+  last_checked_at: z.string().nullable(),
+}).strict()).length(2);
+
+export async function readStaffInsightUptime(since: Date) {
+  const parsed = UptimeRows.safeParse(await serviceRest<unknown>('/rpc/staff_insight_uptime', {
+    method: 'POST', body: JSON.stringify({ p_insight: 'family_engagement', p_since: since.toISOString() }),
+  }));
   return parsed.success ? parsed.data : null;
 }
 

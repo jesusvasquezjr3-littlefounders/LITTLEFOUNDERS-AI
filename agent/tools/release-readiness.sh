@@ -35,6 +35,8 @@ npm run typecheck:all
 npm run lint:all
 npm run test:all
 bash agent/tools/run-all.sh build
+# S07.7 (D.9): a release cannot ship on an overdue Appendix G recalibration.
+node agent/tools/check-block-d-research.mjs --strict
 
 npm --prefix coursegen run catalog:check -- "curriculum/$COURSE"
 npm --prefix coursegen run graph:check -- "$COURSE"

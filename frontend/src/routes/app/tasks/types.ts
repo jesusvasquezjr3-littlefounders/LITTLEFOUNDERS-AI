@@ -22,6 +22,10 @@ export interface WireTask {
   hasEvidence: boolean;
   requiresEvidence: boolean;
   cancelReason: string | null;
+  /** S07.3 (D.10): an expected family contribution (0-2 coins) or a paid bonus task. */
+  kind: 'contribution' | 'bonus';
+  /** S07.3 (D.2): the child's local day of the completion. */
+  completedOn: string | null;
 }
 
 export interface WireGoal {
@@ -61,7 +65,7 @@ export interface WalletBalances {
   share: number;
 }
 
-export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment';
+export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'share_gift' | 'share_gift_returned';
 export type LedgerBucket = 'save' | 'spend' | 'share';
 
 export interface WireLedgerEntry {

@@ -1,9 +1,10 @@
 /*
  * LEGACY all-or-nothing day streak. Since S05.3e (B.21) the LEARNING streak
  * runs on the lapse-tolerant habit model in habitStreak.ts (and its SQL twin
- * inside complete_lesson). `nextStreak` below survives only for the chore
- * streak (routes/tasks.ts, kid_task_streaks) until D.2 (S07) moves that
- * entity onto the same habit model; do not use it for anything new.
+ * inside complete_lesson), and since the S07 merge the CHORE streak (D.2)
+ * runs on the same model through choreStreak.ts. No product path calls
+ * `nextStreak` any more: it stays as the documented legacy rule the D.2 and
+ * B.21 tests reproduce the defect against; do not use it for anything new.
  * `isCalendarDate` is shared and stays.
  *
  * Original note: pure day-streak computation for POST /learn/lessons/:id/complete.

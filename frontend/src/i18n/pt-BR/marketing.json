@@ -115,15 +115,15 @@
     },
     "tasks": {
       "heading": "Tarefas com uma recompensa real.",
-      "body": "Você define a tarefa e quantas LF Coins ela vale. Quando terminada, seu filho decide como dividir o que ganhou — e você aprova antes de chegar até ele.",
+      "body": "Você define a tarefa e quantas LF Coins ela vale. Você aprova quando ela estiver pronta, e seu filho decide como dividir o que ganhou. Quando ele mostrar que está pronto, você pode deixar as tarefas pequenas contarem sozinhas e revisar depois.",
       "scenario": "Você ganhou 10 LF Coins por terminar sua tarefa. O que você faz?",
       "optionSave": "Guardar",
       "optionSpend": "Gastar",
       "optionShare": "Compartilhar",
       "prompt": "Toque em uma opção. Veja o que muda.",
       "consequenceSave": "10 moedas entram na sua meta. Você fica um pouco mais perto — e seu Tutor também vê o progresso.",
-      "consequenceSpend": "Você pede algo do catálogo que seu Tutor montou. Fica esperando a aprovação dele antes de ser seu.",
-      "consequenceShare": "Você envia algumas moedas para a meta de outra pessoa. Generosidade também conta aqui."
+      "consequenceSpend": "Você pede algo do catálogo que seu Tutor montou e conta por quê. Fica esperando o sim dele, a não ser que seu nível já permita algo desse tamanho.",
+      "consequenceShare": "Suas moedas para compartilhar vão para uma causa ou um presente que seu Tutor escolheu, e ele conta o que aconteceu de verdade. Generosidade também conta aqui."
     },
     "banking": {
       "tag": "Simulação educacional",
@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "Dois responsáveis podem supervisionar o mesmo filho?",
-        "answer": "Sim. Um segundo Tutor verificado — seu parceiro, um avô — pode se vincular à mesma conta de filho por um convite de uso único criado no seu painel de Tutor. O convite funciona uma vez e expira em 7 dias."
+        "answer": "Sim. Um segundo Tutor verificado — seu parceiro, um avô — pode se vincular à mesma conta de filho por um convite de uso único criado no seu painel de Tutor. O convite funciona uma vez e expira em 7 dias, e você confirma o novo Tutor antes que ele possa ver qualquer coisa."
       },
       "howMany": {
         "question": "Quantos filhos posso adicionar?",
@@ -239,7 +239,7 @@
       },
       "chores": {
         "question": "Como funcionam as tarefas e recompensas?",
-        "answer": "Você define a tarefa e quantas LF Coins ela vale. Ao terminar, seu filho decide se guarda, gasta ou compartilha o que ganhou — gastar precisa da sua aprovação antes."
+        "answer": "Você define a tarefa e quantas LF Coins ela vale: uma contribuição da família ou uma tarefa extra paga. Seu filho divide o que ganha entre poupar, gastar e compartilhar. No começo você aprova cada tarefa e cada recompensa; quando ele mostrar que está pronto, você pode deixar as pequenas passarem sozinhas, dentro dos limites que você definir."
       },
       "realMoney": {
         "question": "Meu filho pode gastar dinheiro de verdade?",
@@ -284,6 +284,14 @@
       "cancelTutor": {
         "question": "O que acontece com a conta do meu filho se eu cancelar a minha?",
         "answer": "Ela é suspensa imediatamente — inutilizável até que uma conta Tutor ativa volte a supervisioná-la. Se ninguém a reativar em 90 dias, ela é excluída."
+      },
+      "notTaught": {
+        "question": "Ensina crédito, dívidas ou investimentos?",
+        "answer": "Não. A prática cobre ganhar moedas, dividi-las entre poupar, gastar e compartilhar, poupar para metas e pedir recompensas. Não ensina empréstimos, cartões de crédito, dívidas, juros compostos de verdade, risco, investimentos nem seguros, e o bônus semanal de poupança não é rendimento. São difíceis de ensinar bem, então ficam de fora."
+      },
+      "familyRecords": {
+        "question": "Por quanto tempo vocês guardam tarefas, recompensas e decisões?",
+        "answer": "As fotos de tarefas, 30 dias após sua decisão; tarefas, recompensas, decisões e notas, 400 dias. Moedas, metas e regras ficam enquanto a conta existir. Excluir a conta do seu filho exclui tudo."
       }
     },
     "closing": {

@@ -1,0 +1,53 @@
+/* S07.3 Family Hub money surfaces (D.2, D.10, D.11). Tokens only; separation by fill, never outline. Fields and choices are the shared controls. */
+/* D.10: what each chore kind means, side by side on a wide panel; the chosen kind's card takes the brand well. */
+.lf-family-hub .lf-family-money-kinds { display: grid; gap: var(--spacing-3); margin: 0; }
+@container app (min-width: 640px) { .lf-family-hub .lf-family-money-kinds { grid-template-columns: 1fr 1fr; } }
+.lf-family-money-kind {
+  display: grid;
+  gap: var(--spacing-1);
+  align-content: start;
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+}
+.lf-family-money-kind[data-chosen='true'] { background: var(--primary-soft); }
+.lf-family-money-kind dt { font: 600 1.125rem/1.3 Fredoka, sans-serif; }
+.lf-family-money-kind dd { margin: 0; }
+.lf-family-money-checks { display: grid; gap: var(--spacing-2); }
+.lf-family-money-row { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: flex-end; }
+.lf-family-money-row > .lf-input-field { flex: 1 1 12rem; }
+.lf-family-money-number { font: 700 2.5rem/1 Fredoka, sans-serif; }
+.lf-family-money-streak { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-3); }
+.lf-family-hub .lf-family-money-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-family-hub .lf-family-money-facts li {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  font-weight: 700;
+}
+/* An OD-7 milestone line (streak 7/30/100, a savings goal reached). Its motion is the shared Celebration's (design/motion.css), never local. */
+.lf-family-money-milestone {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--reward-soft);
+  color: var(--content);
+}
+.lf-family-money-milestone > .lf-celebration-pop { display: inline-flex; }
+.lf-family-hub .lf-family-money-groups { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-family-hub .lf-family-money-groups li {
+  display: grid;
+  justify-items: center;
+  min-inline-size: 3.5rem;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--mint-soft);
+  color: var(--content);
+  font-weight: 800;
+}
+.lf-family-hub .lf-family-money-groups li[data-group='rest'] { background: var(--sunken); }
+.lf-family-money-groups small { font-size: .875rem; color: var(--mint-strong); }
+.lf-rebuild[data-theme='dark'] .lf-family-money-groups small { color: var(--content); }

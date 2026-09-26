@@ -8,7 +8,8 @@ import { playPlatformSound } from '@/lib/sound';
 import { Badge, Button, Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
-import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
+import { isUnlocked, lockedTargetFor, navItemsFor, type NavItem, type NavWalletAccess } from './navConfig';
+import { useWalletAccess } from './wallet/useWalletAccess';
 import { visibleAdminSections } from '@/routes/admin/adminNav';
 
 /*
@@ -21,10 +22,10 @@ import { visibleAdminSections } from '@/routes/admin/adminNav';
 
 const COLLAPSE_KEY = 'lf-sidebar-collapsed';
 
-function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[]; collapsed: boolean }) {
+function SidebarItem({ item, roles, collapsed, wallet }: { item: NavItem; roles: string[]; collapsed: boolean; wallet: NavWalletAccess }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const unlocked = isUnlocked(item, roles);
+  const unlocked = isUnlocked(item, roles, wallet);
   const label = t(`dashboard.nav.${item.key}`);
 
   if (!unlocked) {
@@ -36,8 +37,8 @@ function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[
     return (
       <button
         type="button"
-        title={t('dashboard.nav.lockedHint')}
-        onClick={() => navigate('/verify-parent')}
+        title={wallet.holder === 'teen' ? t('dashboard.nav.lockedTeenHint') : t('dashboard.nav.lockedHint')}
+        onClick={() => navigate(lockedTargetFor(wallet))}
         className={cn(
           'flex min-h-12 items-center gap-3 rounded-full text-content-faint transition-colors duration-150',
           'hover:bg-surface-sunken hover:text-content-muted',
@@ -90,10 +91,10 @@ function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[
   );
 }
 
-function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
+function MobileTab({ item, roles, wallet }: { item: NavItem; roles: string[]; wallet: NavWalletAccess }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const unlocked = isUnlocked(item, roles);
+  const unlocked = isUnlocked(item, roles, wallet);
 
   if (!unlocked) {
     // Same tap-to-explain fix as SidebarItem — mobile never had a hover
@@ -101,7 +102,7 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
     return (
       <button
         type="button"
-        onClick={() => navigate('/verify-parent')}
+        onClick={() => navigate(lockedTargetFor(wallet))}
         className="flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-content-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <Icon name="lock" />
@@ -148,6 +149,11 @@ export function AppLayout() {
   const email = session?.user.email ?? '';
   const displayName = profile?.display_name || email.split('@')[0] || '';
   const isParent = roles.includes('parent');
+  // S07.2: the wallet a self-registered teen holds (and whether a parent is
+  // linked) decides the learner shell; UI only, Core admits by age.
+  const walletAccess = useWalletAccess();
+  const wallet: NavWalletAccess = { holder: walletAccess.holder, familyChild: walletAccess.familyChild };
+  const navItems = navItemsFor(wallet);
   // Staff console entry — HIDDEN for non-staff, never locked (DESIGN.md
   // Screen Recipes → Console): admin is not an aspirational upgrade, so the
   // locked-chip grammar doesn't apply and the link simply doesn't exist.
@@ -225,8 +231,8 @@ export function AppLayout() {
           aria-label={t('dashboard.navLabel')}
           className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1 [scrollbar-width:thin]"
         >
-          {NAV_ITEMS.map((item) => (
-            <SidebarItem key={item.key} item={item} roles={roles} collapsed={collapsed} />
+          {navItems.map((item) => (
+            <SidebarItem key={item.key} item={item} roles={roles} collapsed={collapsed} wallet={wallet} />
           ))}
           {isStaff && (
             <div className="mt-2 flex flex-col gap-1.5">
@@ -263,7 +269,7 @@ export function AppLayout() {
         </nav>
 
         <div className="mt-4 flex shrink-0 flex-col gap-4 pt-4">
-          {!isParent && !isStaff && !collapsed && (
+          {!isParent && !isStaff && !collapsed && walletAccess.loaded && walletAccess.holder === null && (
             <div className="rounded-lg bg-accent-soft/60 p-4">
               <div className="flex items-center gap-2 text-content">
                 <Icon name="family_restroom" className="text-accent-strong" />
@@ -383,8 +389,8 @@ export function AppLayout() {
         aria-label={t('dashboard.navLabel')}
         className="lf-glass fixed inset-x-0 bottom-0 z-30 flex items-stretch gap-1 border-x-0 border-b-0 px-2 pb-[env(safe-area-inset-bottom)] lg:hidden"
       >
-        {NAV_ITEMS.map((item) => (
-          <MobileTab key={item.key} item={item} roles={roles} />
+        {navItems.map((item) => (
+          <MobileTab key={item.key} item={item} roles={roles} wallet={wallet} />
         ))}
       </nav>
     </div>

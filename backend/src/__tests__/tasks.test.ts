@@ -54,15 +54,29 @@ interface StubOptions {
   evidenceStillReferenced?: boolean;
   /** captures every DELETE sent to filebase's /api/v1/files/:bucket/:file, so a test can assert cleanup happened (or didn't). */
   deleteCalls?: string[];
-  /** the kid's kid_task_streaks row — omit for "no row yet" (a fresh kid). */
-  taskStreak?: Record<string, unknown> | null;
+  /** S07.3 (D.2): the kid's recorded practised days (chore_streak_days) — omit for none. */
+  streakDays?: string[];
+  /** the legacy best streak (kid_task_streaks.longest_streak_days) — omit for none. */
+  legacyBest?: number;
+  /** false simulates an unreadable streak history. */
+  streakReadable?: boolean;
   /** the kid's spend_limits row (BANKING.md §5.5) — omit for "no limit configured". */
   spendLimit?: Record<string, unknown> | null;
   /** wallet_ledger rows spend_limit checking sums over — omit for "nothing spent yet". */
   spendLedgerRows?: { bucket: string; amount: number }[];
+  /** S07.5: a named database refusal an RPC answers with (P0001), by RPC name. */
+  refusals?: Record<string, string>;
+  /** S07.5 (D.17): whether the child's level self-logs a chore marked done. */
+  selfLogs?: boolean;
+  /** S07.5 (D.17): whether the child's level pre-approves a reward request. */
+  preapproves?: boolean;
 }
 
 function stub(opts: StubOptions = {}) {
+  // S07.5: the task and redemption as the database leaves them after an RPC,
+  // so a route's re-read returns what the flow produced.
+  let task: Record<string, unknown> | null = opts.task === null ? null : { ...(opts.task ?? defaultTask()) };
+  let redemption: Record<string, unknown> | null = opts.redemption === null ? null : { ...(opts.redemption ?? defaultRedemption()) };
   vi.stubGlobal(
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -70,6 +84,36 @@ function stub(opts: StubOptions = {}) {
       const method = init?.method ?? 'GET';
       if (opts.writes && init?.body) {
         opts.writes.push({ url, method, body: JSON.parse(String(init.body)) as unknown });
+      }
+      const rpcName = url.match(/\/rest\/v1\/rpc\/([a-z_]+)/)?.[1];
+      if (rpcName && opts.refusals?.[rpcName]) {
+        return Promise.resolve(jsonResponse(400, { code: 'P0001', message: opts.refusals[rpcName], details: null, hint: null }));
+      }
+      const rpcBody = rpcName && init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+      if (rpcName === 'family_task_mark_done') {
+        const self = opts.selfLogs === true;
+        task = task && { ...task, status: self ? 'approved' : 'done', completed_on: rpcBody.p_completed_on, child_note: rpcBody.p_note };
+        return Promise.resolve(jsonResponse(200, { status: self ? 'approved' : 'done', self_logged: self }));
+      }
+      if (rpcName === 'family_task_self_log') {
+        if (opts.selfLogs === true && task) task = { ...task, status: 'approved' };
+        return Promise.resolve(jsonResponse(200, opts.selfLogs === true));
+      }
+      if (rpcName === 'family_decide_task') {
+        const outcome = rpcBody.p_outcome as string;
+        const status = outcome === 'approved' ? 'approved' : outcome === 'sent_back' ? 'open' : 'cancelled';
+        task = task && { ...task, status, cancel_reason: outcome === 'cancelled' ? rpcBody.p_reason : task.cancel_reason, decided_by: outcome === 'sent_back' ? null : rpcBody.p_actor };
+        return Promise.resolve(jsonResponse(200, status));
+      }
+      if (rpcName === 'family_decide_redemption') {
+        const status = rpcBody.p_approve ? 'approved' : 'denied';
+        redemption = redemption && { ...redemption, status };
+        return Promise.resolve(jsonResponse(200, status));
+      }
+      if (rpcName === 'family_request_redemption') {
+        const pre = opts.preapproves === true;
+        redemption = { ...defaultRedemption(), status: pre ? 'approved' : 'requested', child_reason_kind: rpcBody.p_reason_kind, child_note: rpcBody.p_note };
+        return Promise.resolve(jsonResponse(200, { id: REDEMPTION_ID, status: pre ? 'approved' : 'requested', preapproved: pre }));
       }
 
       if (url.includes('/rest/v1/banking_accounts?') && method === 'GET') {
@@ -99,12 +143,20 @@ function stub(opts: StubOptions = {}) {
       if (url.includes('/rest/v1/tasks?id=neq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, opts.evidenceStillReferenced ? [{ id: OTHER_KID_ID }] : []));
       }
-      if (url.includes('/rest/v1/kid_task_streaks?kid_user_id=eq.') && method === 'GET') {
-        const rows = opts.taskStreak === undefined ? [] : opts.taskStreak === null ? [] : [opts.taskStreak];
+      if (url.includes('/rest/v1/chore_streak_days?') && method === 'GET') {
+        if (opts.streakReadable === false) return Promise.resolve(new Response(null, { status: 500 }));
+        const rows = url.includes('offset=0') ? (opts.streakDays ?? []).map((local_date) => ({ kid_user_id: KID_ID, local_date, completions: 1, legacy: false })) : [];
         return Promise.resolve(jsonResponse(200, rows));
       }
-      if (url.includes('/rest/v1/kid_task_streaks') && method === 'POST') {
-        return Promise.resolve(new Response(null, { status: 201 }));
+      if (url.includes('/rest/v1/chore_streak_pauses?') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, []));
+      }
+      if (url.includes('/rest/v1/kid_task_streaks?') && method === 'GET') {
+        const rows = opts.legacyBest === undefined || !url.includes('offset=0') ? [] : [{ kid_user_id: KID_ID, longest_streak_days: opts.legacyBest }];
+        return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/kid_task_streaks')) {
+        throw new Error('S07.3: Core must never write kid_task_streaks again');
       }
 
       if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
@@ -124,6 +176,17 @@ function stub(opts: StubOptions = {}) {
         return opts.allocateResult === undefined
           ? Promise.resolve(jsonResponse(200, true))
           : Promise.resolve(jsonResponse(200, opts.allocateResult));
+      }
+      // S07.4 (D.16): a goal's progress by provenance. The stub reports the
+      // ledger total as the child's own coins, as the real function does for
+      // chore rewards.
+      if (url.includes('/rest/v1/rpc/goal_progress_breakdown') && method === 'POST') {
+        const ids = (JSON.parse(String(init?.body)) as { p_goal_ids: string[] }).p_goal_ids;
+        const total = (opts.ledgerRows ?? [{ bucket: 'save', amount: 3 }, { bucket: 'spend', amount: 5 }]).reduce((sum, r) => sum + r.amount, 0);
+        return Promise.resolve(jsonResponse(200, ids.map((goal_id) => ({ goal_id, own: total, bonus: 0, family: 0, total }))));
+      }
+      if (url.includes('/rest/v1/goal_next_steps?') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, []));
       }
       if (url.includes('/rest/v1/rpc/decide_redemption') && method === 'POST') {
         return opts.decideResult === undefined
@@ -156,8 +219,7 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(200, [{ ...(opts.task ?? defaultTask()), ...body }]));
       }
       if (url.includes('/rest/v1/tasks?id=eq.') && method === 'GET') {
-        const rows = opts.task === null ? [] : [opts.task ?? defaultTask()];
-        return Promise.resolve(jsonResponse(200, rows));
+        return Promise.resolve(jsonResponse(200, task === null ? [] : [task]));
       }
       if (url.includes('/rest/v1/tasks?assigned_to') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, opts.task === null ? [] : [opts.task ?? defaultTask()]));
@@ -212,8 +274,7 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(201, [{ id: REDEMPTION_ID, catalog_id: CATALOG_ID, kid_user_id: KID_ID, status: 'requested', created_at: new Date().toISOString(), decided_at: null, decided_by: null }]));
       }
       if (url.includes('/rest/v1/redemptions?id=eq.') && method === 'GET') {
-        const rows = opts.redemption === null ? [] : [opts.redemption ?? defaultRedemption()];
-        return Promise.resolve(jsonResponse(200, rows));
+        return Promise.resolve(jsonResponse(200, redemption === null ? [] : [redemption]));
       }
       if (url.includes('/rest/v1/redemptions?kid_user_id') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, [defaultRedemption()]));
@@ -242,6 +303,8 @@ function defaultTask(): Record<string, unknown> {
     evidence_uploaded_at: null,
     cancel_reason: null,
     requires_evidence: false,
+    kind: 'bonus',
+    completed_on: null,
   };
 }
 function defaultGoal(): Record<string, unknown> {
@@ -310,10 +373,11 @@ describe('POST /api/v1/tasks/:id/complete (kid)', () => {
     expect(res.status).toBe(404);
   });
 
-  it('409s a task that is not open (already done/approved)', async () => {
-    stub({ task: defaultTask(), taskPatchSucceeds: false, roles: ['kid'] });
+  it('409s a task that is not open (already done/approved): the database flow refuses it', async () => {
+    stub({ task: defaultTask(), refusals: { family_task_mark_done: 'TASK_NOT_OPEN' }, roles: ['kid'] });
     const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, {});
     expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('TASK_NOT_OPEN');
   });
 
   it('marks an open task done', async () => {
@@ -329,95 +393,112 @@ describe('POST /api/v1/tasks/:id/complete (kid)', () => {
     expect(res.status).toBe(400);
   });
 
-  it('starts a streak at 1 on a first-ever completion', async () => {
+  // S07.3 (D.2): Core never writes a streak. It sends the child's local day
+  // (bounded to the server day +/- 1) as completed_on; the database records
+  // the practised day from the task. The response carries the lapse-tolerant
+  // streak and, only on the day's first chore that reaches 7/30/100, the milestone.
+  const today = () => new Date().toISOString().slice(0, 10);
+  const shift = (day: string, n: number) => new Date(Date.parse(`${day}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+
+  it('sends the local day as completed_on and never writes kid_task_streaks', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({ task: defaultTask(), roles: ['kid'], writes, taskStreak: null });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    stub({ task: defaultTask(), roles: ['kid'], writes });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: today() });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect(write).toBeDefined();
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(1);
-    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(1);
+    // S07.5: one database flow marks it done (the caller as the child, never a body field).
+    const call = writes.find((w) => w.url.includes('/rest/v1/rpc/family_task_mark_done'));
+    expect(call?.body).toEqual({ p_task: TASK_ID, p_kid: KID_ID, p_completed_on: today(), p_note: null });
+    expect(writes.some((w) => w.url.includes('/rest/v1/tasks?id=eq.') && w.method === 'PATCH')).toBe(false);
+    expect(writes.some((w) => w.url.includes('kid_task_streaks'))).toBe(false);
+    expect(res.body.data.streak).toMatchObject({ status: 'practised_today', current: 1, best: 1, totalDays: 1, restDaysPerWeek: 2 });
+    expect(res.body.data.milestone).toBeNull();
   });
 
-  it('does not double-count a second completion on the same day', async () => {
+  it('replaces a local day more than one day from the server day with the server day', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({
-      task: defaultTask(),
-      roles: ['kid'],
-      writes,
-      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 5, last_completed_date: '2026-09-08' },
-    });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+    stub({ task: defaultTask(), roles: ['kid'], writes });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: shift(today(), -3) });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(3);
+    const call = writes.find((w) => w.url.includes('/rest/v1/rpc/family_task_mark_done'));
+    expect((call?.body as { p_completed_on: string }).p_completed_on).toBe(today());
   });
 
-  it('extends the streak on the very next calendar day', async () => {
-    const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({
-      task: defaultTask(),
-      roles: ['kid'],
-      writes,
-      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 5, last_completed_date: '2026-09-07' },
-    });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+  it('keeps the streak through one missed day (the D.2 defect no longer reproduces)', async () => {
+    const t = today();
+    stub({ task: defaultTask(), roles: ['kid'], streakDays: [shift(t, -4), shift(t, -3), shift(t, -2)] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: t });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(4);
-    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(5);
+    expect(res.body.data.streak.current).toBe(4);
   });
 
-  it('restarts the streak at 1 after a gap day, but keeps the longest-ever mark', async () => {
-    const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({
-      task: defaultTask(),
-      roles: ['kid'],
-      writes,
-      taskStreak: { kid_user_id: KID_ID, current_streak_days: 3, longest_streak_days: 7, last_completed_date: '2026-09-05' },
-    });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: '2026-09-08' });
+  it('celebrates the day\'s first chore that reaches 7, and never a second chore that day', async () => {
+    const t = today();
+    const six = [1, 2, 3, 4, 5, 6].map((n) => shift(t, -n));
+    stub({ task: defaultTask(), roles: ['kid'], streakDays: six });
+    const first = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: t });
+    expect(first.body.data).toMatchObject({ milestone: 'streak-7', streak: { current: 7 } });
+    stub({ task: defaultTask(), roles: ['kid'], streakDays: [...six, t] });
+    const second = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: t });
+    expect(second.body.data).toMatchObject({ milestone: null, streak: { current: 7 } });
+  });
+
+  it('still reports the completed chore when the streak history cannot be read', async () => {
+    stub({ task: defaultTask(), roles: ['kid'], streakReadable: false });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/complete`, { localDate: today() });
     expect(res.status).toBe(200);
-    const write = writes.find((w) => w.url.includes('/kid_task_streaks'));
-    expect((write?.body as Record<string, unknown>).current_streak_days).toBe(1);
-    expect((write?.body as Record<string, unknown>).longest_streak_days).toBe(7);
+    expect(res.body.data).toMatchObject({ task: { status: 'done' }, streak: null, milestone: null });
   });
 });
 
 describe('GET /api/v1/tasks/streak (kid)', () => {
-  it('reports zero for a kid with no streak row yet', async () => {
-    stub({ roles: ['kid'], taskStreak: null });
+  it('reports none for a kid with no practised day yet', async () => {
+    stub({ roles: ['kid'] });
     const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ currentStreak: 0, longestStreak: 0 });
+    expect(res.body.data.streak).toMatchObject({ status: 'none', current: 0, best: 0, totalDays: 0, pausedUntil: null });
   });
 
-  it("reports the kid's own current and longest streak", async () => {
-    stub({ roles: ['kid'], taskStreak: { kid_user_id: KID_ID, current_streak_days: 4, longest_streak_days: 9, last_completed_date: '2026-09-08' } });
-    const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+  it('shows a resting streak with the best still visible, and a legacy best as the floor', async () => {
+    const t = new Date().toISOString().slice(0, 10);
+    const back = (n: number) => new Date(Date.parse(`${t}T00:00:00Z`) - n * 86_400_000).toISOString().slice(0, 10);
+    stub({ roles: ['kid'], streakDays: [back(12), back(11), back(10)], legacyBest: 9 });
+    const res = await request(createApp()).get(`/api/v1/tasks/streak?today=${t}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ currentStreak: 4, longestStreak: 9 });
+    expect(res.body.data.streak).toMatchObject({ status: 'resting', current: 0, best: 9, totalDays: 3 });
+  });
+
+  it('502s an unreadable history instead of showing no streak', async () => {
+    stub({ roles: ['kid'], streakReadable: false });
+    const res = await request(createApp()).get('/api/v1/tasks/streak').set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
+    expect(res.status).toBe(502);
   });
 });
 
 describe('POST /api/v1/tasks/:id/approve (parent)', () => {
   it('404s approving a task belonging to a child not verified under this parent', async () => {
     stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [OTHER_KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(404);
   });
 
   it('approves a done task', async () => {
     stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(200);
     expect(res.body.data.task.status).toBe('approved');
   });
 
+  it('records the deciding guardian through the decision flow so the database can re-check it (D.4, D.18)', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [KID_ID], writes });
+    await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
+    const call = writes.find((w) => w.url.includes('/rest/v1/rpc/family_decide_task'));
+    expect(call?.body).toEqual({ p_task: TASK_ID, p_actor: PARENT_ID, p_outcome: 'approved', p_reason_code: null, p_reason: null });
+  });
+
   it('409s approving a task that requires a photo but has none attached yet', async () => {
     stub({ task: { ...defaultTask(), status: 'done', requires_evidence: true }, parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(409);
   });
 
@@ -426,45 +507,48 @@ describe('POST /api/v1/tasks/:id/approve (parent)', () => {
       task: { ...defaultTask(), status: 'done', requires_evidence: true, evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' },
       parentsKids: [KID_ID],
     });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(200);
   });
 });
 
 describe('POST /api/v1/tasks/:id/cancel (parent)', () => {
+  const REASON = { reasonCode: 'not_finished', reason: 'The bed still needs the pillows on top', reflection: 'skipped' };
+
   it('404s cancelling a task belonging to a child not verified under this parent', async () => {
     stub({ task: defaultTask(), parentsKids: [OTHER_KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, REASON);
     expect(res.status).toBe(404);
   });
 
-  it('409s cancelling a task that is already decided (approved/cancelled)', async () => {
-    stub({ task: { ...defaultTask(), status: 'approved' }, parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
+  it('409s cancelling a task that is already decided (approved/cancelled): the decision flow refuses it', async () => {
+    stub({ task: { ...defaultTask(), status: 'approved' }, parentsKids: [KID_ID], refusals: { family_decide_task: 'DECISION_OUTCOME_INVALID' } });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, REASON);
     expect(res.status).toBe(409);
   });
 
-  it('cancels an open task with no reason given', async () => {
-    stub({ task: defaultTask(), parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
-    expect(res.status).toBe(200);
-    expect(res.body.data.task.status).toBe('cancelled');
-    expect(res.body.data.task.cancelReason).toBeNull();
+  it('refuses a cancellation with no reason before any write (D.18: no "not yet" without a reason)', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ task: defaultTask(), parentsKids: [KID_ID], writes });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reflection: 'skipped' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('DECISION_REASON_REQUIRED');
+    expect(writes.some((w) => w.url.includes('/rpc/'))).toBe(false);
   });
 
   it("cancels a task with a reason, and returns it on the wire so the kid can see why", async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
     stub({ task: defaultTask(), parentsKids: [KID_ID], writes });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'The bed still needs the pillows' });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, REASON);
     expect(res.status).toBe(200);
-    expect(res.body.data.task.cancelReason).toBe('The bed still needs the pillows');
-    const patch = writes.find((w) => w.url.includes(`/tasks?id=eq.${TASK_ID}&status=eq.open`));
-    expect((patch?.body as Record<string, unknown>).cancel_reason).toBe('The bed still needs the pillows');
+    expect(res.body.data.task.cancelReason).toBe(REASON.reason);
+    const call = writes.find((w) => w.url.includes('/rest/v1/rpc/family_decide_task'));
+    expect(call?.body).toEqual({ p_task: TASK_ID, p_actor: PARENT_ID, p_outcome: 'cancelled', p_reason_code: 'not_finished', p_reason: REASON.reason });
   });
 
   it('rejects a reason over 240 characters', async () => {
     stub({ task: defaultTask(), parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'x'.repeat(241) });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'x'.repeat(241), reflection: 'skipped' });
     expect(res.status).toBe(400);
   });
 });
@@ -503,25 +587,24 @@ describe('POST /api/v1/tasks/:id/allocate (kid)', () => {
     expect(res.status).toBe(404);
   });
 
-  it('flips a goal to reached once its progress meets the target', async () => {
+  // S07.4: the goal-reached flip happens inside allocate_task_reward's own
+  // transaction; Core never writes a goal status, it reports the goal as the
+  // database now has it (with its provenance) so the child's surface can
+  // celebrate it once (D.15).
+  it('returns the goal as the database reached it, with its provenance, and never writes a goal status itself', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
-    // defaultGoal()'s target is 50 — getGoalProgress re-reads the ledger AFTER
-    // the allocate RPC (mocked here as a static total, since this stub can't
-    // simulate the RPC actually writing a new row) at exactly the target.
-    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 50 }] });
+    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 50 }],
+      goal: { ...defaultGoal(), status: 'reached', reached_at: '2026-09-24T10:00:00Z' } });
     const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 10, spend: 0, share: 0, goalId: GOAL_ID });
     expect(res.status).toBe(200);
-    const markReached = writes.find((w) => w.url.includes(`/savings_goals?id=eq.${GOAL_ID}`) && w.method === 'PATCH');
-    expect(markReached).toBeDefined();
-    expect((markReached?.body as Record<string, unknown>).status).toBe('reached');
+    expect(res.body.data.goal).toMatchObject({ id: GOAL_ID, status: 'reached', saved: 50, progress: { own: 50, bonus: 0, family: 0, total: 50 } });
+    expect(writes.some((w) => w.url.includes('/savings_goals') && w.method === 'PATCH')).toBe(false);
   });
 
-  it('does NOT flip a goal that has not yet met its target', async () => {
-    const writes: { url: string; method: string; body: unknown }[] = [];
-    stub({ task: approvedTask, allocateResult: true, roles: ['kid'], writes, ledgerRows: [{ bucket: 'save', amount: 5 }] });
-    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 5, spend: 0, share: 0, goalId: GOAL_ID });
-    expect(res.status).toBe(200);
-    expect(writes.some((w) => w.url.includes(`/savings_goals?id=eq.${GOAL_ID}`) && w.method === 'PATCH')).toBe(false);
+  it('reports no goal when the split named none', async () => {
+    stub({ task: approvedTask, allocateResult: true, roles: ['kid'] });
+    const res = await postAsKid(`/api/v1/tasks/${TASK_ID}/allocate`, { save: 5, spend: 3, share: 2 });
+    expect(res.body.data).toEqual({ allocated: true, goal: null });
   });
 });
 
@@ -602,19 +685,19 @@ describe('PATCH /api/v1/tasks/catalog/:id (parent toggles a reward)', () => {
 describe('POST /api/v1/tasks/redemptions/:id/decide (parent)', () => {
   it("404s deciding a redemption for a kid not verified under this parent", async () => {
     stub({ redemption: defaultRedemption(), parentsKids: [OTHER_KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true });
+    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true, reflection: 'skipped' });
     expect(res.status).toBe(404);
   });
 
   it('409s approving when the balance no longer covers the cost', async () => {
-    stub({ redemption: defaultRedemption(), parentsKids: [KID_ID], decideResult: false });
-    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true });
+    stub({ redemption: defaultRedemption(), parentsKids: [KID_ID], refusals: { family_decide_redemption: 'INSUFFICIENT_BALANCE' } });
+    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true, reflection: 'skipped' });
     expect(res.status).toBe(409);
   });
 
   it('approves a redemption', async () => {
     stub({ redemption: defaultRedemption(), parentsKids: [KID_ID], decideResult: true });
-    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true });
+    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true, reflection: 'skipped' });
     expect(res.status).toBe(200);
     expect(res.body.data.decided).toBe(true);
   });
@@ -632,14 +715,27 @@ describe('GET /api/v1/tasks/catalog/available (kid)', () => {
 describe('POST /api/v1/tasks/redemptions (kid)', () => {
   it("404s requesting a reward that belongs to someone who is not this kid's guardian", async () => {
     stub({ catalogItem: defaultCatalogItem(), kidsParents: [OTHER_KID_ID], roles: ['kid'] });
-    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID, reasonKind: 'saved_for_it' });
     expect(res.status).toBe(404);
   });
 
-  it('requests a redemption against a verified guardian catalog item', async () => {
-    stub({ catalogItem: defaultCatalogItem(), kidsParents: [PARENT_ID], roles: ['kid'] });
-    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+  it('requests a redemption against a verified guardian catalog item, with the child\'s reason', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ catalogItem: defaultCatalogItem(), kidsParents: [PARENT_ID], roles: ['kid'], writes });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID, reasonKind: 'saved_for_it' });
     expect(res.status).toBe(201);
+    expect(res.body.data).toMatchObject({ preapproved: false, redemption: { status: 'requested', childReasonKind: 'saved_for_it' } });
+    const call = writes.find((w) => w.url.includes('/rest/v1/rpc/family_request_redemption'));
+    expect(call?.body).toEqual({ p_kid: KID_ID, p_catalog: CATALOG_ID, p_reason_kind: 'saved_for_it', p_note: null });
+  });
+
+  it('refuses a request without the child\'s reason before any write (D.18)', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    stub({ catalogItem: defaultCatalogItem(), kidsParents: [PARENT_ID], roles: ['kid'], writes });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('REDEMPTION_REASON_REQUIRED');
+    expect(writes.some((w) => w.url.includes('/rpc/'))).toBe(false);
   });
 
   // BANKING.md §5.5/§6.3 — enforced at REQUEST time, before this ever
@@ -652,7 +748,7 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
       spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 10, active: true, created_at: new Date().toISOString() },
       spendLedgerRows: [{ bucket: 'spend', amount: -8 }], // 8 already used, +5 more would exceed a cap of 10
     });
-    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID, reasonKind: 'saved_for_it' });
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('SPEND_LIMIT_REACHED');
   });
@@ -665,7 +761,7 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
       spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 10, active: true, created_at: new Date().toISOString() },
       spendLedgerRows: [{ bucket: 'spend', amount: -3 }],
     });
-    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID, reasonKind: 'saved_for_it' });
     expect(res.status).toBe(201);
   });
 
@@ -677,7 +773,7 @@ describe('POST /api/v1/tasks/redemptions (kid)', () => {
       spendLimit: { kid_user_id: KID_ID, parent_user_id: PARENT_ID, period: 'weekly', cap: 1, active: false, created_at: new Date().toISOString() },
       spendLedgerRows: [{ bucket: 'spend', amount: -100 }],
     });
-    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    const res = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID, reasonKind: 'saved_for_it' });
     expect(res.status).toBe(201);
   });
 });
@@ -837,7 +933,7 @@ describe('GET /api/v1/tasks/:id/evidence', () => {
 describe('D.1 frozen movement admission', () => {
   it.each([true, null])('refuses redemption requests when freeze state is %s', async bankingFrozen => {
     stub({ roles: ['kid'], bankingFrozen });
-    const response = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID });
+    const response = await postAsKid('/api/v1/tasks/redemptions', { catalogId: CATALOG_ID, reasonKind: 'saved_for_it' });
     expect(response.status).toBe(bankingFrozen === null ? 502 : 409);
     expect(vi.mocked(fetch).mock.calls.some(([url, init]) => String(url).includes('/rest/v1/redemptions') && init?.method === 'POST')).toBe(false);
   });

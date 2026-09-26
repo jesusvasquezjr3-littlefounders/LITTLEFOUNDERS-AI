@@ -1,0 +1,33 @@
+{
+  "usualSplit": {
+    "young": {
+      "body": "De cada 10 moedas que você ganha:",
+      "tenths": "{count} de 10"
+    },
+    "transition": {
+      "body": "De cada 10 moedas que você ganha:",
+      "tenths": "{count} de 10",
+      "scale": "ou {pct} de 100"
+    },
+    "teen": {
+      "body": "Sua divisão de sempre para moedas novas:",
+      "tenths": "{pct}%"
+    }
+  },
+  "goalProgress": {
+    "young": {
+      "of": "{saved} de {target}"
+    },
+    "transition": {
+      "of": "{saved} de {target}, faltam {left}"
+    },
+    "teen": {
+      "of": "{saved} de {target} ({pct}%)"
+    }
+  },
+  "bonus": {
+    "transition": {
+      "scaffold": "1 a cada 10 é como 10 a cada 100."
+    }
+  }
+}

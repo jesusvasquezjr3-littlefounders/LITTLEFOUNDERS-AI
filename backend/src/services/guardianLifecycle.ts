@@ -49,7 +49,7 @@ export async function createGuardianInvite(kidUserId: string, createdBy: string)
 }
 
 /** The joining parent's preview: kid display fields only — never contact data, never other guardians. */
-export async function getGuardianInvitePreview(token: string): Promise<{ kidUserId: string; displayName: string | null; username: string | null; expiresAt: string } | null> {
+export async function getGuardianInvitePreview(token: string): Promise<{ kidUserId: string; displayName: string | null; username: string | null; expiresAt: string; selfIssued: boolean } | null> {
   const invites = await serviceRest<unknown[]>(
     `/guardian_invites?token=eq.${encodeURIComponent(token)}&accepted_at=is.null&expires_at=gt.${encodeURIComponent(new Date().toISOString())}` +
       `&select=token,kid_user_id,created_by,expires_at,accepted_at&limit=1`,
@@ -70,6 +70,8 @@ export async function getGuardianInvitePreview(token: string): Promise<{ kidUser
     displayName: profile.data[0]!.display_name,
     username: profile.data[0]!.username,
     expiresAt: invite.expires_at,
+    // S07.2: a teen issued this invite for their own account.
+    selfIssued: invite.created_by === invite.kid_user_id,
   };
 }
 

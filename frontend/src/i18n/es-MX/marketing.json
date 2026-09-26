@@ -115,15 +115,15 @@
     },
     "tasks": {
       "heading": "Tareas con una recompensa real.",
-      "body": "Tú asignas la tarea y cuántas LF Coins vale. Cuando está lista, tu hija decide cómo repartir lo que ganó — y tú lo apruebas antes de que llegue.",
+      "body": "Tú asignas la tarea y cuántas LF Coins vale. La apruebas cuando está lista, y tu hija decide cómo repartir lo que ganó. Cuando muestre que está lista, puedes dejar que las tareas pequeñas cuenten solas y revisarlas después.",
       "scenario": "Ganaste 10 LF Coins por terminar tu tarea. ¿Qué haces?",
       "optionSave": "Ahorrarlas",
       "optionSpend": "Gastarlas",
       "optionShare": "Compartirlas",
       "prompt": "Toca una opción. Mira qué cambia.",
       "consequenceSave": "10 monedas se suman a tu meta. Estás un poco más cerca — y tu Tutor también ve el progreso.",
-      "consequenceSpend": "Pides algo del catálogo que armó tu Tutor. Queda esperando su aprobación antes de ser tuyo.",
-      "consequenceShare": "Envías algunas monedas a la meta de alguien más. Aquí la generosidad también cuenta."
+      "consequenceSpend": "Pides algo del catálogo que armó tu Tutor y cuentas por qué. Espera su sí, a menos que tu nivel ya permita algo así de pequeño.",
+      "consequenceShare": "Tus monedas para compartir van a una causa o un regalo que eligió tu Tutor, y te cuenta qué pasó de verdad. Aquí la generosidad también cuenta."
     },
     "banking": {
       "tag": "Simulación educativa",
@@ -199,7 +199,7 @@
       },
       "twoParents": {
         "question": "¿Pueden dos adultos supervisar al mismo hijo?",
-        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo mediante una invitación de un solo uso creada desde tu panel de Tutor. La invitación funciona una vez y caduca en 7 días."
+        "answer": "Sí. Otro Tutor verificado — tu pareja, un abuelo — puede vincularse a la misma cuenta de hijo mediante una invitación de un solo uso creada desde tu panel de Tutor. La invitación funciona una vez y caduca en 7 días, y tú confirmas al nuevo Tutor antes de que pueda ver algo."
       },
       "howMany": {
         "question": "¿Cuántos hijos puedo agregar?",
@@ -239,7 +239,7 @@
       },
       "chores": {
         "question": "¿Cómo funcionan las tareas y recompensas?",
-        "answer": "Tú asignas una tarea y cuántos LF Coins vale. Al terminarla, tu hijo decide si ahorra, gasta o comparte lo que ganó — gastar necesita tu aprobación primero."
+        "answer": "Tú asignas una tarea y cuántos LF Coins vale: un aporte a la familia o una tarea extra pagada. Tu hijo reparte lo que gana entre ahorrar, gastar y compartir. Al principio tú apruebas cada tarea y cada recompensa; cuando muestre que está listo, puedes dejar pasar las pequeñas por su cuenta, dentro de los límites que tú fijes."
       },
       "realMoney": {
         "question": "¿Puede mi hijo gastar dinero real?",
@@ -284,6 +284,14 @@
       "cancelTutor": {
         "question": "¿Qué pasa con la cuenta de mi hijo si cancelo la mía?",
         "answer": "Queda suspendida de inmediato — no usable hasta que haya una cuenta Tutor activa supervisándola de nuevo. Si nadie la reactiva en 90 días, se elimina."
+      },
+      "notTaught": {
+        "question": "¿Enseña crédito, deudas o inversión?",
+        "answer": "No. La práctica cubre ganar monedas, repartirlas entre ahorrar, gastar y compartir, ahorrar para metas y pedir recompensas. No enseña préstamos, tarjetas de crédito, deudas, interés compuesto real, riesgo, inversiones ni seguros, y el bono semanal de ahorro no es interés. Es difícil enseñarlos bien, así que los dejamos fuera."
+      },
+      "familyRecords": {
+        "question": "¿Cuánto tiempo guardan las tareas, recompensas y decisiones?",
+        "answer": "Las fotos de tareas, 30 días después de tu decisión; las tareas, recompensas, decisiones y notas, 400 días. Las monedas, metas y reglas se guardan mientras exista la cuenta. Al borrar la cuenta de tu hijo se borra todo."
       }
     },
     "closing": {

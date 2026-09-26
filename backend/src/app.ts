@@ -19,6 +19,8 @@ import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { tasksRouter } from './routes/tasks.js';
 import { tutorRouter } from './routes/tutor.js';
 import { verificationRouter } from './routes/verification.js';
+import { walletRouter } from './routes/wallet.js';
+import { familyGovernanceRouter } from './routes/familyGovernance.js';
 
 export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
@@ -85,6 +87,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/tasks', tasksRouter());
   app.use('/api/v1/banking', bankingRouter());
+  app.use('/api/v1/wallet', walletRouter());
+  app.use('/api/v1/family-hub', familyGovernanceRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
   app.use('/api/v1/admin', adminRouter());

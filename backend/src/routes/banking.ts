@@ -1,4 +1,5 @@
 import { requireUnfrozenBanking } from '../middleware/bankingFreeze.js';
+import { requireWalletAccess } from '../middleware/walletAccess.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
@@ -13,6 +14,7 @@ import {
   getSpendLimit,
   getSpendUsedThisPeriod,
   getVerifiedKidLinks,
+  getWalletBalances,
   getWalletLedgerInRange,
   insertAuditLog,
   insertBankingAccount,
@@ -20,7 +22,6 @@ import {
   setBankingAccountFrozen,
   updateBankingAccount,
   upsertAllowanceRule,
-  upsertSavingsBonusRule,
   upsertSpendLimit,
   type AllowanceRuleRow,
   type BankingAccountRow,
@@ -29,6 +30,26 @@ import {
   type SpendLimitRow,
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
+import { getGuardianActionsByIds, isRefusal, UNAVAILABLE, type GuardianActionRow } from '../services/familyLifecycle.js';
+import {
+  BONUS_PER_TEN_COINS,
+  BONUS_PER_TEN_RATE_BP,
+  BONUS_PER_TEN_UNIT,
+  MAX_BONUS_RATE_BP,
+  nextBonus,
+  readBonusFraming,
+  readExampleProgress,
+  recordExample,
+  saveBonusRule,
+  type BonusFraming,
+} from '../services/savingsBonus.js';
+import {
+  FREEZE_HOLDS,
+  freezeAuthor,
+  presentSpendLimit,
+  presentStatement,
+  readMoneyRegister,
+} from '../services/moneyPresentation.js';
 
 /*
  * /api/v1/banking — BANKING.md's presentation-and-mechanics layer over
@@ -51,7 +72,6 @@ const CONFLICT = 'CONFLICT';
 
 const CARD_DESIGNS = ['indigo', 'emerald', 'violet', 'amber', 'sunrise', 'ocean'] as const;
 const MAX_ALLOWANCE_AMOUNT = 1000;
-const MAX_BONUS_RATE_BP = 2000; // 20%
 
 /**
  * The next occurrence of `anchorDay` at/after `from` (UTC calendar days —
@@ -90,20 +110,56 @@ function toWireAccount(a: BankingAccountRow) {
   };
 }
 
+/*
+ * S07.6 (D.7): the rebuilt account card. It is always declared a simulation,
+ * carries no card number (a number laid out like a card's implies a real
+ * card), and lists only what a freeze really holds (FREEZE_HOLDS, pinned to
+ * the database by docs/operations/block-d-controls.json), whether or not the
+ * account is frozen, so the explanation before a freeze is as honest as the
+ * one during it. `by` is relative to the reader.
+ */
+function presentAccount(a: BankingAccountRow, readerId: string, childId: string) {
+  const by = freezeAuthor(a.frozen, a.frozen_by, readerId, childId);
+  const readerIsChild = readerId === childId;
+  return {
+    nickname: a.nickname,
+    design: a.card_design,
+    simulated: true as const,
+    freeze: {
+      frozen: a.frozen,
+      by,
+      since: a.frozen ? a.frozen_at : null,
+      holds: [...FREEZE_HOLDS],
+      // A child lifts only a freeze they set themselves (D.1); a Tutor always may.
+      canChange: readerIsChild ? !a.frozen || by === 'you' : true,
+    },
+  };
+}
+
 function toWireAllowanceRule(r: AllowanceRuleRow) {
   return { amount: r.amount, frequency: r.frequency, anchorDay: r.anchor_day, active: r.active, nextRunAt: r.next_run_at };
 }
 
 function toWireSavingsBonusRule(r: SavingsBonusRuleRow) {
-  return { rateBp: r.rate_bp, active: r.active, nextRunAt: r.next_run_at };
+  // reframedFromRateBp (S07.3, D.11): the rate this rule had before it moved to
+  // its child's age framing, until the Tutor's next save. The Tutor is told.
+  return { rateBp: r.rate_bp, active: r.active, nextRunAt: r.next_run_at, reframedFromRateBp: r.reframed_from_rate_bp ?? null };
+}
+
+/** S07.3 (D.11): the framing and its fixed numbers, so a surface never re-derives the ratio. */
+function toWireFraming(framing: BonusFraming) {
+  return framing === 'per_ten'
+    ? { framing, perTen: { unit: BONUS_PER_TEN_UNIT, coins: BONUS_PER_TEN_COINS }, maxRateBp: null }
+    : { framing, perTen: null, maxRateBp: MAX_BONUS_RATE_BP };
 }
 
 function toWirePendingCredit(c: PendingCreditRow) {
   return { id: c.id, amount: c.amount, source: c.source, createdAt: c.created_at };
 }
 
-function toWireLedgerEntry(e: WalletLedgerRow) {
-  return { id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, taskId: e.task_id, goalId: e.goal_id, createdAt: e.created_at };
+function toWireLedgerEntry(e: WalletLedgerRow, actions: Map<string, GuardianActionRow>) {
+  const note = e.guardian_action_id ? actions.get(e.guardian_action_id)?.reason ?? null : null;
+  return { id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, taskId: e.task_id, goalId: e.goal_id, note, createdAt: e.created_at };
 }
 
 async function spendLimitStatus(kidId: string, limit: SpendLimitRow | null) {
@@ -135,14 +191,27 @@ async function buildStatement(kidId: string, month?: string) {
   const { fromISO, toISO, label } = monthRange(month);
   const entries = await getWalletLedgerInRange(kidId, fromISO, toISO);
   if (entries === null) return null;
+  const actions = await getGuardianActionsByIds(entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : [])));
+  if (actions === null) return null;
+  // S07.1: a goal withdrawal is a transfer between the child's own buckets,
+  // never income or spending; a guardian correction is reported on its own
+  // line ("adjusted") so it can never pass for coins the child earned or spent.
   let earned = 0;
   let spent = 0;
+  let adjusted = 0;
+  let given = 0;
   for (const e of entries) {
-    if (e.amount >= 0) earned += e.amount;
+    // S07.2: a teen moving coins out of their own goal is a transfer too.
+    if (e.reason === 'goal_withdrawal' || e.reason === 'goal_release') continue;
+    // S07.4 (D.14): coins directed to a Share destination are given, never
+    // spent; a returned pledge cancels its gift on the same line.
+    if (e.reason === 'share_gift' || e.reason === 'share_gift_returned') given -= e.amount;
+    else if (e.reason === 'manual_adjustment') adjusted += e.amount;
+    else if (e.amount >= 0) earned += e.amount;
     else spent += -e.amount;
   }
   const saved = entries.filter((e) => e.bucket === 'save').reduce((sum, e) => sum + e.amount, 0);
-  return { month: label, earned, spent, saved, entries: entries.map(toWireLedgerEntry) };
+  return { month: label, earned, spent, adjusted, given, saved, entries: entries.map((e) => toWireLedgerEntry(e, actions)) };
 }
 
 export function bankingRouter(): Router {
@@ -238,6 +307,22 @@ export function bankingRouter(): Router {
     return ok(res, { account: toWireAccount(account) });
   });
 
+  /*
+   * S07.6 (D.7, D.12): the Tutor's rebuilt freeze card. What a freeze holds
+   * comes from the server, never from copy; the child's register lets the
+   * Tutor see which presentation their child reads.
+   */
+  router.get('/accounts/:kidId/freeze', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const [account, register] = await Promise.all([getBankingAccount(kidId.data), readMoneyRegister(kidId.data)]);
+    if (account === undefined || register === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    if (register === null) return fail(res, 409, 'WALLET_HOLDER_REQUIRED', 'This account has no wallet');
+    return ok(res, { register, account: account ? presentAccount(account, parent.id, kidId.data) : null });
+  });
+
   // ── PARENT: allowance / spend limit / savings bonus config ─────────────
 
   const SetAllowance = z
@@ -318,16 +403,31 @@ export function bankingRouter(): Router {
     return ok(res, { status: status ?? { configured: true, period: limit.period, cap: limit.cap, used: 0, remaining: limit.cap } });
   });
 
-  const SetSavingsBonus = z.object({ rateBp: z.number().int().min(0).max(MAX_BONUS_RATE_BP), active: z.boolean().default(true) }).strict();
+  /*
+   * S07.3 (D.11): the bonus is framed by the child's age, never role. Under 13
+   * (or no known birth date) it is "1 coin for every 10 saved, each week" and
+   * the Tutor only switches it on or off; 13-17 it is the Tutor's 0-20% rate.
+   * The database decides the framing, refuses a percentage for a younger
+   * child on every write and credits by the framing at credit time.
+   */
+  const SetSavingsBonus = z
+    .object({ rateBp: z.number().int().min(0).max(MAX_BONUS_RATE_BP).optional(), active: z.boolean().default(true) })
+    .strict();
+  const BONUS_REFUSALS: Record<string, { status: number; message: string }> = {
+    SAVINGS_BONUS_FIXED_FOR_AGE: { status: 409, message: 'Under 13 the bonus is 1 coin for every 10 coins saved' },
+    NOT_A_GUARDIAN: { status: 404, message: 'No such child for this account' },
+    WALLET_HOLDER_REQUIRED: { status: 409, message: 'This account has no wallet' },
+  };
 
   router.get('/savings-bonus/:kidId', requireRole(['parent']), async (req, res) => {
     const parent = authedUser(res);
     const kidId = z.string().uuid().safeParse(req.params.kidId);
     if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
-    const rule = await getSavingsBonusRule(kidId.data);
-    if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
-    return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null });
+    const [rule, framing] = await Promise.all([getSavingsBonusRule(kidId.data), readBonusFraming(kidId.data)]);
+    if (rule === undefined || framing === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
+    if (framing === null) return fail(res, 409, 'WALLET_HOLDER_REQUIRED', 'This account has no wallet');
+    return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null, ...toWireFraming(framing) });
   });
 
   router.put('/savings-bonus/:kidId', requireRole(['parent']), async (req, res) => {
@@ -337,16 +437,33 @@ export function bankingRouter(): Router {
     const parsed = SetSavingsBonus.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the savings bonus rate');
     if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const framing = await readBonusFraming(kidId.data);
+    if (framing === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the child\'s bonus framing');
+    if (framing === null) return fail(res, 409, 'WALLET_HOLDER_REQUIRED', 'This account has no wallet');
+    let rateBp: number;
+    if (framing === 'per_ten') {
+      if (parsed.data.rateBp !== undefined && parsed.data.rateBp !== BONUS_PER_TEN_RATE_BP) {
+        return fail(res, 409, 'SAVINGS_BONUS_FIXED_FOR_AGE', BONUS_REFUSALS.SAVINGS_BONUS_FIXED_FOR_AGE!.message);
+      }
+      rateBp = BONUS_PER_TEN_RATE_BP;
+    } else {
+      if (parsed.data.rateBp === undefined) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a weekly rate from 0% to 20%');
+      rateBp = parsed.data.rateBp;
+    }
     const account = await getBankingAccount(kidId.data);
     if (account === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the account');
     if (account === null) return fail(res, 409, CONFLICT, 'Open the account before setting a savings bonus');
 
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const rule = await upsertSavingsBonusRule({ kid_user_id: kidId.data, parent_user_id: parent.id, rate_bp: parsed.data.rateBp, active: parsed.data.active, next_run_at: nextWeek.toISOString() });
-    if (!rule) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the savings bonus rule');
-    await insertAuditLog(parent.id, 'banking.savings_bonus_set', kidId.data, { rateBp: parsed.data.rateBp });
-    return ok(res, { rule: toWireSavingsBonusRule(rule) });
+    const rule = await saveBonusRule({ kid_user_id: kidId.data, parent_user_id: parent.id, rate_bp: rateBp, active: parsed.data.active, next_run_at: nextWeek.toISOString() });
+    if (rule === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the savings bonus rule');
+    if (isRefusal(rule)) {
+      const mapped = BONUS_REFUSALS[rule.refused];
+      return mapped ? fail(res, mapped.status, rule.refused, mapped.message) : fail(res, 409, CONFLICT, 'The savings bonus was refused');
+    }
+    await insertAuditLog(parent.id, 'banking.savings_bonus_set', kidId.data, { framing, rateBp, active: parsed.data.active });
+    return ok(res, { rule: toWireSavingsBonusRule(rule), ...toWireFraming(framing) });
   });
 
   router.get('/statement/:kidId', requireRole(['parent']), async (req, res) => {
@@ -361,9 +478,16 @@ export function bankingRouter(): Router {
     return ok(res, { statement });
   });
 
-  // ── KID: own account ─────────────────────────────────────────────────────
+  // ── CHILD IN A FAMILY: own account ──────────────────────────────────────
+  // S07.2 (D.3): a parent-created child, or a teen who linked a verified
+  // parent (the account, allowance, bonus and limit are guardian-set, so an
+  // unlinked teen has none). The monthly statement is admitted for every
+  // wallet holder, the independent teen included.
+  const familyChild = requireWalletAccess('familyChild');
+  const walletHolder = requireWalletAccess('holder');
 
-  router.get('/account', requireRole(['kid']), async (req, res) => {
+
+  router.get('/account', familyChild, async (req, res) => {
     const kid = authedUser(res);
     await runDueScheduledCredits(kid.id); // best-effort catch-up, same as the parent read above
     const account = await getBankingAccount(kid.id);
@@ -371,7 +495,36 @@ export function bankingRouter(): Router {
     return ok(res, { account: account ? toWireAccount(account) : null });
   });
 
-  router.patch('/account', requireRole(['kid']), async (req, res) => {
+  /*
+   * S07.6 (D.7, D.12): the rebuilt coin account, in one read, shaped by the
+   * child's age register at the server: the card (a declared simulation, no
+   * card number), what a freeze really holds, the pockets, the spending limit
+   * and this month, each with only the numbers that register's reader is
+   * given. A failed read is 502, never a guessed register.
+   */
+  router.get('/overview', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    await runDueScheduledCredits(kid.id); // best-effort catch-up, same as GET /account
+    const [register, account, balances, limit, credits] = await Promise.all([
+      readMoneyRegister(kid.id), getBankingAccount(kid.id), getWalletBalances(kid.id), getSpendLimit(kid.id), getPendingCreditsForKid(kid.id),
+    ]);
+    if (register === UNAVAILABLE || account === undefined || balances === null || limit === undefined || credits === null) {
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    }
+    if (register === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    const [status, statement] = await Promise.all([spendLimitStatus(kid.id, limit), buildStatement(kid.id)]);
+    if (status === null || statement === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the account');
+    return ok(res, {
+      register,
+      account: account ? presentAccount(account, kid.id, kid.id) : null,
+      pockets: { save: balances.save, spend: balances.spend, share: balances.share },
+      pendingCredits: credits.length,
+      spendLimit: presentSpendLimit(register, status),
+      statement: presentStatement(register, statement),
+    });
+  });
+
+  router.patch('/account', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = UpdateAccount.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the account details');
@@ -380,7 +533,7 @@ export function bankingRouter(): Router {
     return ok(res, { account: toWireAccount(account) });
   });
 
-  router.post('/account/freeze', requireRole(['kid']), async (req, res) => {
+  router.post('/account/freeze', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const parsed = SetFrozen.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'frozen must be a boolean');
@@ -396,14 +549,14 @@ export function bankingRouter(): Router {
     return ok(res, { account: toWireAccount(account) });
   });
 
-  router.get('/allowance', requireRole(['kid']), async (req, res) => {
+  router.get('/allowance', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const rule = await getAllowanceRule(kid.id);
     if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the allowance rule');
     return ok(res, { rule: rule ? toWireAllowanceRule(rule) : null });
   });
 
-  router.get('/spend-limit', requireRole(['kid']), async (req, res) => {
+  router.get('/spend-limit', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const limit = await getSpendLimit(kid.id);
     if (limit === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the spend limit');
@@ -412,14 +565,53 @@ export function bankingRouter(): Router {
     return ok(res, { status });
   });
 
-  router.get('/savings-bonus', requireRole(['kid']), async (req, res) => {
+  /*
+   * S07.3 (D.11): the child's own bonus in their framing, with their own
+   * numbers: what they have in Save now and what next week's bonus would add
+   * (the same arithmetic the database's weekly credit uses). A 13-17 child
+   * with a percentage bonus also gets the worked-example progress.
+   */
+  router.get('/savings-bonus', familyChild, async (req, res) => {
     const kid = authedUser(res);
-    const rule = await getSavingsBonusRule(kid.id);
-    if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
-    return ok(res, { rule: rule ? toWireSavingsBonusRule(rule) : null });
+    const [rule, framing, balances] = await Promise.all([getSavingsBonusRule(kid.id), readBonusFraming(kid.id), getWalletBalances(kid.id)]);
+    if (rule === undefined || framing === UNAVAILABLE || balances === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
+    if (framing === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    const active = rule !== null && rule.active && (framing === 'per_ten' || rule.rate_bp > 0);
+    let example = null;
+    if (framing === 'percent' && active) {
+      example = await readExampleProgress(kid.id);
+      if (example === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the savings bonus rule');
+    }
+    return ok(res, {
+      rule: rule ? { rateBp: rule.rate_bp, active: rule.active, nextRunAt: rule.next_run_at } : null,
+      ...toWireFraming(framing),
+      saved: balances.save,
+      nextBonus: active && rule ? nextBonus(framing, balances.save, rule.rate_bp) : 0,
+      example,
+    });
   });
 
-  router.get('/wallet/pending-credits', requireRole(['kid']), async (req, res) => {
+  const ExampleStep = z.discriminatedUnion('step', [
+    z.object({ step: z.literal('shown') }).strict(),
+    z.object({ step: z.literal('answered'), exampleSaved: z.number().int().min(10).max(10000), answer: z.number().int().min(0).max(10000) }).strict(),
+  ]);
+
+  /** S07.3 (D.11): the 13-17 worked example. The answer is checked by the database at the child's current rate. */
+  router.post('/savings-bonus/example', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = ExampleStep.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Send shown, or an answer for 10 to 10000 saved coins');
+    const result = await recordExample(kid.id, parsed.data);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the example');
+    if (isRefusal(result)) {
+      return result.refused === 'EXAMPLE_NOT_APPLICABLE'
+        ? fail(res, 409, 'EXAMPLE_NOT_APPLICABLE', 'The worked example goes with a percentage bonus')
+        : fail(res, 400, 'VALIDATION_ERROR', 'Send shown, or an answer for 10 to 10000 saved coins');
+    }
+    return ok(res, parsed.data.step === 'answered' ? { correct: result } : { shown: true });
+  });
+
+  router.get('/wallet/pending-credits', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const credits = await getPendingCreditsForKid(kid.id);
     if (credits === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load pending credits');
@@ -427,11 +619,18 @@ export function bankingRouter(): Router {
   });
 
   const AllocateCredit = z
-    .object({ save: z.number().int().min(0), spend: z.number().int().min(0), share: z.number().int().min(0) })
+    .object({
+      save: z.number().int().min(0),
+      spend: z.number().int().min(0),
+      share: z.number().int().min(0),
+      // S07.4 (D.13): the Save part may go to one of the child's active goals.
+      goalId: z.string().uuid().nullable().optional(),
+    })
     .strict()
+    .refine((v) => !v.goalId || v.save > 0, 'A goal needs some coins in Save')
     .refine((v) => v.save + v.spend + v.share > 0, 'Split must add up to more than zero');
 
-  router.post('/wallet/pending-credits/:id/allocate', requireRole(['kid']), async (req, res) => {
+  router.post('/wallet/pending-credits/:id/allocate', familyChild, async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -441,13 +640,28 @@ export function bankingRouter(): Router {
     if (!credit || credit.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such credit');
 
     if (!await requireUnfrozenBanking(kid.id, res)) return;
-    const allocated = await allocatePendingCredit({ creditId: id.data, kidId: kid.id, save: parsed.data.save, spend: parsed.data.spend, share: parsed.data.share, createdBy: kid.id });
+    const allocated = await allocatePendingCredit({
+      creditId: id.data, kidId: kid.id, save: parsed.data.save, spend: parsed.data.spend, share: parsed.data.share, createdBy: kid.id, goalId: parsed.data.goalId ?? null,
+    });
     if (allocated === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not allocate the credit');
     if (allocated === false) return fail(res, 409, CONFLICT, 'This credit is not ready to allocate, or the split is invalid');
     return ok(res, { allocated: true });
   });
 
-  router.get('/statement', requireRole(['kid']), async (req, res) => {
+  /**
+   * S07.6 (D.12): the caller's own age register, for every wallet holder (an
+   * independent teen included), so every rebuilt money surface is presented
+   * in it. Decided by the database from age evidence; never chosen by a client.
+   */
+  router.get('/register', walletHolder, async (req, res) => {
+    const holder = authedUser(res);
+    const register = await readMoneyRegister(holder.id);
+    if (register === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the register');
+    if (register === null) return fail(res, 403, 'WALLET_UNAVAILABLE', 'This account has no wallet');
+    return ok(res, { register });
+  });
+
+  router.get('/statement', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const q = MonthQuery.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'month must be YYYY-MM');

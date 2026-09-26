@@ -4,10 +4,14 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-import { Button, Card, Checkbox, ConfirmButton, Dropdown, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
+import { Button, Card, Field, Icon, LoadingOverlay, SectionHeading, StatCard } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
+import { ChoreComposerPanel } from './ChoreComposerPanel';
+import { DecisionQueuePanel } from './DecisionQueuePanel';
+import { CoachingTipPanel } from '../family/GovernancePanels';
+import { choreKindLine } from '../family/familyMoneyCopy';
 
 /*
  * The parent's half of FAMILY_HUB.md's loop: assign a task, approve it once
@@ -47,13 +51,7 @@ export function ParentTaskBoard() {
   }, []);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
-  const [busyTask, setBusyTask] = useState<string | null>(null);
-  const [busyRedemption, setBusyRedemption] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [taskActionError, setTaskActionError] = useState<{ id: string; code: string } | null>(null);
-  const [redemptionActionError, setRedemptionActionError] = useState<{ id: string; code: string } | null>(null);
-  const [liveMessage, setLiveMessage] = useState('');
-  const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,66 +85,15 @@ export function ParentTaskBoard() {
     };
   }, [getToken, reloadKey]);
 
-  function announce(message: string) {
-    setLiveMessage(message);
-    liveRegionRef.current?.focus();
-  }
-
   const kidName = useMemo(() => {
     const byId = new Map((state.status === 'ready' ? state.kids : []).map((k) => [k.userId, k.displayName ?? k.username ?? '?']));
     return (id: string) => byId.get(id) ?? '?';
   }, [state]);
 
-  async function onApprove(taskId: string, title: string) {
-    if (!token || busyTask) return;
-    setBusyTask(taskId);
-    setTaskActionError(null);
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/approve`, { method: 'POST', token });
-    setBusyTask(null);
-    if (res.error) {
-      setTaskActionError({ id: taskId, code: res.error.code });
-      return;
-    }
-    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
-    announce(t('tasks.parent.approvedAnnounce', { title }));
-  }
-
-  async function onCancel(taskId: string, reason: string) {
-    if (!token || busyTask) return;
-    setBusyTask(taskId);
-    setTaskActionError(null);
-    const res = await api<{ task: WireTask }>(`/tasks/${taskId}/cancel`, { method: 'POST', token, body: { reason: reason.trim() || null } });
-    setBusyTask(null);
-    if (res.error) {
-      setTaskActionError({ id: taskId, code: res.error.code });
-      return;
-    }
-    setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: prev.tasks.map((tt) => (tt.id === taskId ? res.data.task : tt)) } : prev));
-    announce(t('tasks.parent.cancelledAnnounce', { title: res.data.task.title }));
-  }
-
   async function onToggleCatalog(item: WireCatalogItem) {
     if (!token) return;
     const res = await api<{ item: WireCatalogItem }>(`/tasks/catalog/${item.id}`, { method: 'PATCH', token, body: { active: !item.active } });
     if (res.data) setState((prev) => (prev.status === 'ready' ? { ...prev, catalog: prev.catalog.map((c) => (c.id === item.id ? res.data.item : c)) } : prev));
-  }
-
-  async function onDecideRedemption(redemptionId: string, approve: boolean) {
-    if (!token || busyRedemption) return;
-    setBusyRedemption(redemptionId);
-    setRedemptionActionError(null);
-    const res = await api<{ decided: boolean }>(`/tasks/redemptions/${redemptionId}/decide`, { method: 'POST', token, body: { approve } });
-    setBusyRedemption(null);
-    if (res.error) {
-      setRedemptionActionError({ id: redemptionId, code: res.error.code });
-      return;
-    }
-    setState((prev) =>
-      prev.status === 'ready'
-        ? { ...prev, redemptions: prev.redemptions.map((r) => (r.id === redemptionId ? { ...r, status: approve ? 'approved' : 'denied' } : r)) }
-        : prev,
-    );
-    announce(approve ? t('tasks.parent.redemptionApprovedAnnounce') : t('tasks.parent.redemptionDeniedAnnounce'));
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('tasks.loading')} />;
@@ -160,16 +107,19 @@ export function ParentTaskBoard() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      <div ref={liveRegionRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
-        {liveMessage}
-      </div>
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="lf-display-lg text-content">{t('tasks.title')}</h1>
           <p className="lf-body text-content-muted">{t('tasks.parent.subtitle')}</p>
         </div>
-        {state.kids.length > 0 && <CreateTaskButton kids={state.kids} token={token} onCreated={(task) => setState((prev) => (prev.status === 'ready' ? { ...prev, tasks: [task, ...prev.tasks] } : prev))} />}
       </header>
+
+      {/* S07.5 (D.17, D.18): everything waiting for a Tutor, with the child's own words; every "not yet" carries a reason. */}
+      {state.kids.length > 0 && <CoachingTipPanel token={token} />}
+      {state.kids.length > 0 && <DecisionQueuePanel token={token} kids={state.kids} refreshKey={reloadKey} onChanged={() => setReloadKey((k) => k + 1)} />}
+
+      {/* S07.3 (D.10): every chore is tagged as a family contribution or a bonus task. */}
+      {state.kids.length > 0 && <ChoreComposerPanel kids={state.kids} token={token} onCreated={() => setReloadKey((k) => k + 1)} />}
 
       {state.kids.length === 0 && (
         <Card className="flex flex-col items-center gap-2 p-8 text-center">
@@ -206,16 +156,7 @@ export function ParentTaskBoard() {
           ) : (
             <ul className="flex flex-col gap-2">
               {[...awaitingApproval, ...open].map((task) => (
-                <TaskRow
-                  key={task.id}
-                  task={task}
-                  kidName={kidName(task.assignedTo)}
-                  token={token}
-                  busy={busyTask === task.id}
-                  errorCode={taskActionError?.id === task.id ? taskActionError.code : null}
-                  onApprove={task.status === 'done' ? () => void onApprove(task.id, task.title) : undefined}
-                  onCancel={(reason) => void onCancel(task.id, reason)}
-                />
+                <TaskRow key={task.id} task={task} kidName={kidName(task.assignedTo)} token={token} busy={false} />
               ))}
             </ul>
           )}
@@ -257,50 +198,6 @@ export function ParentTaskBoard() {
             )}
             <AddCatalogItemCard token={token} onCreated={(item) => setState((prev) => (prev.status === 'ready' ? { ...prev, catalog: [item, ...prev.catalog] } : prev))} />
           </section>
-
-          <section aria-labelledby="parent-redemptions-heading">
-            <SectionHeading id="parent-redemptions-heading" icon="pending_actions" tone="warning">
-              {t('tasks.parent.redemptionsTitle')}
-            </SectionHeading>
-            {pendingRedemptions.length === 0 ? (
-              <p className="lf-caption text-content-muted">{t('tasks.parent.redemptionsEmpty')}</p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {pendingRedemptions.map((r) => {
-                  const item = state.catalog.find((c) => c.id === r.catalogId);
-                  return (
-                    <li key={r.id} className="flex flex-col gap-2 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
-                      <span className="min-w-0">
-                        <span className="lf-label block truncate text-content">
-                          {kidName(r.kidUserId)} — {item?.title ?? '?'}
-                        </span>
-                        <span className="lf-caption block text-content-faint">{t('tasks.parent.redemptionStatusRequested')}</span>
-                      </span>
-                      {redemptionActionError?.id === r.id && (
-                        <span className="lf-caption text-error-strong">
-                          {t(`errors.api.${redemptionActionError.code}`, { defaultValue: t('errors.api.INTERNAL') })}
-                        </span>
-                      )}
-                      <div className="flex gap-2">
-                        <ConfirmButton
-                          variant="secondary"
-                          className="min-h-8 flex-1 px-2.5 lf-caption"
-                          disabled={busyRedemption === r.id}
-                          confirmQuestion={t('tasks.parent.denyConfirmQuestion')}
-                          onConfirm={() => void onDecideRedemption(r.id, false)}
-                        >
-                          {t('tasks.parent.redemptionDeny')}
-                        </ConfirmButton>
-                        <Button type="button" variant="success" className="min-h-8 flex-1 px-2.5 lf-caption" disabled={busyRedemption === r.id} onClick={() => void onDecideRedemption(r.id, true)}>
-                          {t('tasks.parent.redemptionApprove')}
-                        </Button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
         </div>
       </div>
     </div>
@@ -324,7 +221,7 @@ function TaskRow({
   onApprove?: () => void;
   onCancel?: (reason: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [cancelling, setCancelling] = useState(false);
   const [reason, setReason] = useState('');
   const statusKey = { open: 'statusOpen', done: 'statusDone', approved: 'statusApproved', cancelled: 'statusCancelled' }[task.status];
@@ -348,7 +245,7 @@ function TaskRow({
           )}
         </span>
         <span className="lf-caption block text-content-faint">
-          {t(`tasks.parent.${statusKey}`)} · {t('tasks.parent.rewardLabel', { count: task.rewardCoins })}
+          {t(`tasks.parent.${statusKey}`)} · {choreKindLine(i18n.resolvedLanguage, task.kind, task.rewardCoins)}
         </span>
         {task.status === 'cancelled' && task.cancelReason && <span className="lf-caption block italic text-content-faint">“{task.cancelReason}”</span>}
         {errorCode && <span className="lf-caption block text-error-strong">{t(`errors.api.${errorCode}`, { defaultValue: t('errors.api.INTERNAL') })}</span>}
@@ -397,92 +294,6 @@ function TaskRow({
         </div>
       )}
     </li>
-  );
-}
-
-function CreateTaskButton({ kids, token, onCreated }: { kids: Kid[]; token: string | null; onCreated: (task: WireTask) => void }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const [assignedTo, setAssignedTo] = useState(kids[0]?.userId ?? '');
-  const [title, setTitle] = useState('');
-  const [rewardCoins, setRewardCoins] = useState(5);
-  const [recurrence, setRecurrence] = useState<'once' | 'weekly'>('once');
-  const [requiresEvidence, setRequiresEvidence] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-
-  const ready = assignedTo.length > 0 && title.trim().length > 0 && rewardCoins >= 1 && rewardCoins <= MAX_REWARD_COINS;
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!ready || submitting || !token) return;
-    setSubmitting(true);
-    setErrorCode(null);
-    const res = await api<{ task: WireTask }>('/tasks', { method: 'POST', token, body: { assignedTo, title: title.trim(), rewardCoins, recurrence, requiresEvidence } });
-    setSubmitting(false);
-    if (res.error) {
-      setErrorCode(res.error.code);
-      return;
-    }
-    onCreated(res.data.task);
-    setTitle('');
-    setRewardCoins(5);
-    setRequiresEvidence(false);
-    setOpen(false);
-  }
-
-  if (!open) {
-    return (
-      <Button type="button" variant="primary" onClick={() => setOpen(true)}>
-        <Icon name="add_task" className="mr-1.5 text-[18px]" aria-hidden />
-        {t('tasks.parent.createCta')}
-      </Button>
-    );
-  }
-
-  return (
-    <Card className="flex w-full flex-col gap-4 p-5">
-      <h2 className="lf-title text-content">{t('tasks.parent.createTitle')}</h2>
-      <form onSubmit={(e) => void onSubmit(e)} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <span className="lf-label text-content">{t('tasks.parent.assignTo')}</span>
-          <Dropdown value={assignedTo} options={kids.map((k) => ({ value: k.userId, label: k.displayName ?? k.username ?? '?' }))} onChange={setAssignedTo} ariaLabel={t('tasks.parent.assignTo')} />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <span className="lf-label text-content">{t('tasks.parent.recurrence')}</span>
-          <Dropdown
-            value={recurrence}
-            options={[
-              { value: 'once', label: t('tasks.parent.recurrenceOnce') },
-              { value: 'weekly', label: t('tasks.parent.recurrenceWeekly') },
-            ]}
-            onChange={(v) => setRecurrence(v as 'once' | 'weekly')}
-            ariaLabel={t('tasks.parent.recurrence')}
-          />
-        </div>
-        <Field className="sm:col-span-2" label={t('tasks.parent.taskTitle')} hint={t('tasks.parent.taskTitleHint')} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
-        <Field label={t('tasks.parent.reward')} type="number" min={1} max={MAX_REWARD_COINS} value={rewardCoins} onChange={(e) => setRewardCoins(Number(e.target.value))} />
-        <Checkbox
-          className="sm:col-span-2"
-          label={t('tasks.parent.requiresEvidenceToggle')}
-          checked={requiresEvidence}
-          onChange={(e) => setRequiresEvidence(e.target.checked)}
-        />
-        {errorCode && (
-          <div className="sm:col-span-2">
-            <ErrorBanner code={errorCode} />
-          </div>
-        )}
-        <div className="flex gap-2 sm:col-span-2">
-          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-            {t('tasks.parent.cancel')}
-          </Button>
-          <Button type="submit" variant="primary" disabled={!ready || submitting}>
-            {submitting ? t('tasks.parent.submitting') : t('tasks.parent.submit')}
-          </Button>
-        </div>
-      </form>
-    </Card>
   );
 }
 

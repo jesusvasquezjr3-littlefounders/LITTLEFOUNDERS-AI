@@ -1,0 +1,44 @@
+/* S07.5 (D.17, D.18): the independence ladder and the decision surfaces.
+   Tokens only; separation by fill, never outline; nothing celebrates here
+   (OD-7: a new level is not on the milestone list). Fields, choices, the
+   -/+ control and notices are the shared S03 controls, which bring their own
+   layout, focus ring and tones. */
+.lf-autonomy .lf-button { min-block-size: var(--target-base); }
+.lf-autonomy li .lf-button--secondary { background: var(--sunken); }
+
+/* A "not yet" form sits on its own fill; its fields sit on the surface. Its
+   notices keep the shared tones: a missing answer is a retry, never the error hue. */
+.lf-autonomy-not-yet { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); min-inline-size: 0; }
+.lf-rebuild .lf-autonomy-not-yet .lf-input { background: var(--surface); }
+.lf-autonomy .lf-autonomy-not-yet .lf-button--secondary { background: var(--surface); }
+
+/* The level card: the level number is the anchor, its name and what it lets
+   the child do follow. Three levels, one hue each from the reward family. */
+.lf-autonomy-level { display: grid; gap: var(--spacing-2); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--content); }
+.lf-autonomy-level-name { font: 600 1.375rem/1.2 Fredoka, sans-serif; text-wrap: balance; }
+.lf-autonomy-steps { display: flex; gap: var(--spacing-2); }
+.lf-autonomy-step { inline-size: 100%; max-inline-size: 4rem; block-size: 8px; border-radius: var(--rounded-full); background: var(--surface); }
+.lf-autonomy-step[data-reached='true'] { background: var(--primary-strong); }
+
+/* The rule for the next level: each condition is named with its own
+   numbers, and met or not met is a glyph plus words, never colour alone. */
+.lf-autonomy-rule { display: grid; gap: var(--spacing-2); }
+.lf-family-hub .lf-autonomy-rule li { display: flex; align-items: center; gap: var(--spacing-2); padding: var(--spacing-2) var(--spacing-3); background: var(--sunken); }
+.lf-autonomy-rule li[data-met='true'] { background: var(--success-soft); }
+.lf-autonomy-rule .lf-system-glyph { inline-size: 20px; block-size: 20px; flex-shrink: 0; }
+
+/* The child's own words next to a request, set apart by fill. */
+.lf-autonomy-voice { padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--sky-soft); color: var(--content); }
+.lf-autonomy-reason { padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--warning-soft); color: var(--content); }
+.lf-autonomy-talk { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--berry-soft); color: var(--content); }
+.lf-autonomy .lf-autonomy-talk .lf-button--secondary { background: var(--surface); }
+
+.lf-autonomy-chip { display: inline-flex; align-items: center; justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--sunken); color: var(--content); font-size: .875rem; font-weight: 800; }
+.lf-family-hub li .lf-autonomy-chip { background: var(--sunken); }
+
+/* Inline surfaces (marking a chore done, asking for a reward) sit inside a
+   host row: no second padding or fill of their own. */
+.lf-rebuild.lf-family-hub.lf-autonomy-inline { padding: 0; background: transparent; }
+.lf-autonomy-inline form { padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild .lf-autonomy-inline form .lf-input { background: var(--surface); }
+.lf-autonomy .lf-autonomy-inline form .lf-button--secondary, .lf-autonomy.lf-autonomy-inline form .lf-button--secondary { background: var(--surface); }

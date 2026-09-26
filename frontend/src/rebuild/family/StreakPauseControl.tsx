@@ -27,7 +27,7 @@ type Copy = {
 
 export const streakPauseCopy: Record<Locale, Copy> = {
   'en-US': {
-    title: 'Holiday pause', intro: 'Pause the streak for a trip or an illness.', rule: 'Up to 21 days. Paused days never count as missed.',
+    title: 'Lesson streak pause', intro: 'Pause the streak for a trip or an illness.', rule: 'Up to 21 days. Paused days never count as missed.',
     from: 'First day', to: 'Last day', save: 'Pause streak', end: 'End pause',
     active: (a, b) => `Paused from ${a} to ${b}.`,
     summary: (c, b, resting) => (resting ? `Streak resting. Best: ${b}.` : `Streak: ${c} days. Best: ${b}.`),
@@ -35,7 +35,7 @@ export const streakPauseCopy: Record<Locale, Copy> = {
     failed: 'Could not save. Try again.', noAccess: 'This child is no longer linked to you.', loadFailed: 'Could not load the streak.', retry: 'Try again', loading: 'Loading the streak',
   },
   'es-MX': {
-    title: 'Pausa por vacaciones', intro: 'Pausa la racha por un viaje o una enfermedad.', rule: 'Hasta 21 días. Los días en pausa nunca cuentan como faltas.',
+    title: 'Pausa de la racha de lecciones', intro: 'Pausa la racha por un viaje o una enfermedad.', rule: 'Hasta 21 días. Los días en pausa nunca cuentan como faltas.',
     from: 'Primer día', to: 'Último día', save: 'Pausar racha', end: 'Terminar pausa',
     active: (a, b) => `En pausa del ${a} al ${b}.`,
     summary: (c, b, resting) => (resting ? `Racha en descanso. Mejor: ${b}.` : `Racha: ${c} días. Mejor: ${b}.`),
@@ -43,7 +43,7 @@ export const streakPauseCopy: Record<Locale, Copy> = {
     failed: 'No se pudo guardar. Inténtalo de nuevo.', noAccess: 'Este niño ya no está vinculado contigo.', loadFailed: 'No se pudo cargar la racha.', retry: 'Reintentar', loading: 'Cargando la racha',
   },
   'pt-BR': {
-    title: 'Pausa para férias', intro: 'Pause a sequência para uma viagem ou doença.', rule: 'Até 21 dias. Dias em pausa nunca contam como falta.',
+    title: 'Pausa da sequência de lições', intro: 'Pause a sequência para uma viagem ou doença.', rule: 'Até 21 dias. Dias em pausa nunca contam como falta.',
     from: 'Primeiro dia', to: 'Último dia', save: 'Pausar sequência', end: 'Encerrar pausa',
     active: (a, b) => `Pausada de ${a} a ${b}.`,
     summary: (c, b, resting) => (resting ? `Sequência em descanso. Recorde: ${b}.` : `Sequência: ${c} dias. Recorde: ${b}.`),

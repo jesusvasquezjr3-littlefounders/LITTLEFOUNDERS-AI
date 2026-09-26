@@ -1,0 +1,62 @@
+{
+  "about": "S07.7 (D.21): the machine-readable registry of the Block D retention and deletion policy. docs/operations/FAMILY-DATA-RETENTION.md is the written policy; agent/tools/check-block-d-retention.mjs keeps this file, the migration family_data_retention, Core's constants (backend/src/services/familyRetention.ts), the family-facing copy and the nightly jobs equal, and fails when a Block D table exists without a class here.",
+  "version": 1,
+  "classes": {
+    "evidence": { "days": 30, "coreConstant": "RETENTION_EVIDENCE_DAYS", "anchor": "the Tutor's decision on the chore", "action": "the photo is deleted from Depot, then the chore's pointer is cleared" },
+    "records": { "days": 400, "coreConstant": "RETENTION_RECORDS_DAYS", "anchor": "the named timestamp of each row", "action": "the whole row is deleted" },
+    "invites": { "days": 30, "coreConstant": "RETENTION_INVITES_DAYS", "anchor": "the invitation's use or expiry", "action": "the whole row (and its token) is deleted" },
+    "research": { "days": 1100, "coreConstant": "RETENTION_RESEARCH_DAYS", "anchor": "the snapshot's month", "action": "the snapshot is deleted; every snapshot is deleted at once on a no" },
+    "account": { "days": null, "anchor": "the account", "action": "kept while the account exists and deleted with it" }
+  },
+  "publicAnswers": [
+    { "id": "familyRecords", "why": "S07.8: D.21 asks for the policy to be published; the marketing FAQ states the photo and record periods to anyone, and must never drift from the periods the nightly job enforces.",
+      "list": "frontend/src/routes/marketing/FAQ.tsx", "namespace": "marketing", "copyKey": "faq.items.familyRecords.answer", "periods": ["evidence", "records"] }
+  ],
+  "domainPrefixes": [
+    "tasks", "wallet_", "banking_", "banca_", "family_", "chore_", "savings_", "share_", "spend_", "allowance_", "pending_credits", "redemption",
+    "personal_rewards", "goal_next_steps", "guardian_", "kid_task_streaks", "money_bridge_", "parent_coaching_", "staff_insight_checks"
+  ],
+  "tables": {
+    "tasks": { "class": "records", "rule": "an approved or cancelled chore, 400 days after the decision, once its photo is gone", "photo": "evidence", "erasedVia": "auth.users", "personal": true },
+    "family_decisions": { "class": "records", "rule": "every decision and its reason, 400 days after it was made", "erasedVia": "auth.users", "personal": true },
+    "redemptions": { "class": "records", "rule": "a denied reward request 400 days after the decision; a fulfilled one 400 days after it was given", "erasedVia": "auth.users", "personal": true },
+    "family_autonomy_requests": { "class": "records", "rule": "an answered level request, 400 days after the answer", "erasedVia": "auth.users", "personal": true },
+    "family_autonomy_changes": { "class": "records", "rule": "a level change and its reason, 400 days after it", "erasedVia": "auth.users", "personal": true },
+    "family_autonomy_eligibility_log": { "class": "records", "rule": "400 days after the first eligible day", "erasedVia": "auth.users", "personal": true },
+    "family_talk_nudges": { "class": "records", "rule": "a closed nudge, 400 days after it closed", "erasedVia": "auth.users", "personal": true },
+    "family_denial_reason_scores": { "class": "records", "rule": "a human score of a reason, 400 days after scoring", "erasedVia": "family_decisions", "personal": true },
+    "family_state_audit": { "class": "records", "rule": "a state transition, 400 days after it", "erasedVia": "none", "personal": false, "note": "Opaque ids and states only (no name, note or amount); an erasure clears the acting adult's id (ON DELETE SET NULL, migration s07_merge_reconciliation), any other id it holds resolves to nothing, and the row is deleted within 400 days." },
+    "share_gifts": { "class": "records", "rule": "a settled Share gift and its note, 400 days after it was settled", "erasedVia": "auth.users", "personal": true },
+    "wallet_guardian_actions": { "class": "records", "rule": "a Tutor's coin correction and its reason, 400 days after it (the ledger line stays)", "erasedVia": "auth.users", "personal": true },
+    "goal_next_steps": { "class": "records", "rule": "an answered next-goal prompt, 400 days after the answer", "erasedVia": "auth.users", "personal": true },
+    "parent_coaching_deliveries": { "class": "records", "rule": "a delivered tip, 400 days after its month", "erasedVia": "auth.users", "personal": true },
+    "family_decision_reflections": { "class": "records", "rule": "whether the reflective prompt was answered, 400 days after the decision (no text is ever stored)", "erasedVia": "family_decisions", "personal": true },
+    "family_money_events": { "class": "records", "rule": "a consent-gated behaviour event, 400 days after it", "erasedVia": "auth.users", "personal": true },
+    "staff_insight_checks": { "class": "records", "rule": "a staff insight health check, 400 days after it", "erasedVia": "none", "personal": false, "note": "Closed vocabularies and times only; no identity." },
+    "family_retention_runs": { "class": "records", "rule": "a retention run's counts, 400 days after it ran", "erasedVia": "none", "personal": false, "note": "Counts only; no identity." },
+    "guardian_invites": { "class": "invites", "rule": "an invitation 30 days after it was used or expired", "erasedVia": "auth.users", "personal": true },
+    "family_research_snapshots": { "class": "research", "rule": "a monthly snapshot 1,100 days after its month; all of a participant's at once on a no", "erasedVia": "family_research_participants", "personal": true },
+    "wallet_ledger": { "class": "account", "rule": "the coin record the balances are computed from", "erasedVia": "auth.users", "personal": true },
+    "wallet_self_actions": { "class": "account", "rule": "a teen's logged income and marked rewards (part of the coin record)", "erasedVia": "auth.users", "personal": true },
+    "wallet_split_preferences": { "class": "account", "rule": "the holder's usual split", "erasedVia": "auth.users", "personal": true },
+    "pending_credits": { "class": "account", "rule": "coins waiting to be split", "erasedVia": "auth.users", "personal": true },
+    "banking_accounts": { "class": "account", "rule": "the practice card, its name and its freeze", "erasedVia": "auth.users", "personal": true },
+    "savings_goals": { "class": "account", "rule": "the holder's goals", "erasedVia": "auth.users", "personal": true },
+    "savings_bonus_rules": { "class": "account", "rule": "the Tutor's savings bonus setting", "erasedVia": "auth.users", "personal": true },
+    "savings_bonus_explanations": { "class": "account", "rule": "whether the teen's worked example was answered", "erasedVia": "auth.users", "personal": true },
+    "allowance_rules": { "class": "account", "rule": "the Tutor's allowance setting", "erasedVia": "auth.users", "personal": true },
+    "spend_limits": { "class": "account", "rule": "the Tutor's spending limit", "erasedVia": "auth.users", "personal": true },
+    "redemption_catalog": { "class": "account", "rule": "the Tutor's reward list (deleted with the Tutor who wrote it)", "erasedVia": "auth.users", "personal": true },
+    "personal_rewards": { "class": "account", "rule": "a teen's own reward list", "erasedVia": "auth.users", "personal": true },
+    "share_destinations": { "class": "account", "rule": "the places Share coins go", "erasedVia": "auth.users", "personal": true },
+    "chore_streak_days": { "class": "account", "rule": "practised days, kept so the best streak and total are never erased (D.2)", "erasedVia": "auth.users", "personal": true },
+    "chore_streak_pauses": { "class": "account", "rule": "holiday pauses, kept because past streaks are computed with them (D.2)", "erasedVia": "auth.users", "personal": true },
+    "kid_task_streaks": { "class": "account", "rule": "the legacy streak summary", "erasedVia": "auth.users", "personal": true },
+    "family_autonomy_levels": { "class": "account", "rule": "the child's current independence level", "erasedVia": "auth.users", "personal": true },
+    "guardian_links": { "class": "account", "rule": "the family link and its lifecycle (pending, verified, rejected, revoked)", "erasedVia": "auth.users", "personal": true },
+    "money_bridge_progress": { "class": "account", "rule": "the teen's own bridge checklist (no amount, bank or account detail)", "erasedVia": "auth.users", "personal": true },
+    "family_research_consents": { "class": "account", "rule": "every research yes and no, the record of consent", "erasedVia": "auth.users", "personal": true },
+    "family_research_participants": { "class": "account", "rule": "the random research id, deleted on a no together with every snapshot", "erasedVia": "auth.users", "personal": true }
+  },
+  "outOfScope": {}
+}

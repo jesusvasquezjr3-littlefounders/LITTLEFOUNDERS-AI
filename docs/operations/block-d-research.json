@@ -1,0 +1,191 @@
+{
+  "about": "S07.7 (D.9): the traceability of every Block D design choice to Appendix G, with the honest strength of its evidence, the metric that lets the product's own data test it, and the recalibration log. docs/operations/BLOCK-D-RESEARCH-FOUNDATION.md is the written foundation; agent/tools/check-block-d-research.mjs enforces this registry, screens parent-facing copy for claims of proof (Block D Part 4 governance boundary) and keeps experiments off Block D tables (OD-23).",
+  "version": 1,
+  "appendix": "docs/littlefounders-spec/product/10-APPENDIX-G-FAMILY-HUB-BANKING-RESEARCH-FRAMEWORK.md",
+  "strengths": {
+    "supported": "consistent evidence for this design implication, though never a test of this exact mechanic",
+    "contested": "a live scientific disagreement the product must not treat as settled either way",
+    "extrapolation": "plausible from adjacent research, untested for a structured family money mechanic",
+    "vacuum": "no controlled evidence either way; defensible as a communication device",
+    "open": "a question the product's own longitudinal data may one day answer",
+    "regulatory": "a legal and regulatory basis rather than a behavioural finding"
+  },
+  "requirements": {
+    "D.10": {
+      "sections": [
+        "1.2",
+        "2.4"
+      ],
+      "strength": "extrapolation",
+      "implementedIn": "S07.3",
+      "metric": "Chore-Tag Adoption Rate"
+    },
+    "D.11": {
+      "sections": [
+        "1.5",
+        "2.4"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.3",
+      "metric": "Age-Tier Bonus Comprehension Proxy"
+    },
+    "D.12": {
+      "sections": [
+        "1.5"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.6",
+      "metric": "Register distribution (threshold log)"
+    },
+    "D.13": {
+      "sections": [
+        "1.4",
+        "2.1"
+      ],
+      "strength": "extrapolation",
+      "implementedIn": "S07.4",
+      "metric": "Allowance-Triggered Redemption Spike; Split-Ratio Engagement Quality"
+    },
+    "D.14": {
+      "sections": [
+        "1.3",
+        "1.4"
+      ],
+      "strength": "vacuum",
+      "implementedIn": "S07.4",
+      "metric": "Share-Bucket Destination Completion Rate"
+    },
+    "D.15": {
+      "sections": [
+        "2.3"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.4",
+      "metric": "Post-Goal Motivation Cliff; Save-Bucket Contribution Persistence"
+    },
+    "D.16": {
+      "sections": [
+        "2.3"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.4",
+      "metric": "Goal progress by provenance (static release gate)"
+    },
+    "D.17": {
+      "sections": [
+        "2.5",
+        "4.1",
+        "4.3"
+      ],
+      "strength": "extrapolation",
+      "implementedIn": "S07.5",
+      "metric": "Independence-Tier Progression Rate"
+    },
+    "D.18": {
+      "sections": [
+        "4.2",
+        "4.5"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.5",
+      "metric": "Denial-Reason Actionability Rate; Repeated-Denial Communication-Nudge Trigger Rate"
+    },
+    "D.19": {
+      "sections": [
+        "3.1",
+        "3.3"
+      ],
+      "strength": "contested",
+      "implementedIn": "S07.7",
+      "metric": "Real-World Bridge Engagement Rate"
+    },
+    "D.20": {
+      "sections": [
+        "3.5"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.7",
+      "metric": "Scope-Disclosure Presence & Accuracy Audit"
+    },
+    "D.21": {
+      "sections": [
+        "4.6"
+      ],
+      "strength": "regulatory",
+      "implementedIn": "S07.7",
+      "metric": "Retention-Policy Compliance Audit"
+    },
+    "D.22": {
+      "sections": [
+        "3.6"
+      ],
+      "strength": "open",
+      "implementedIn": "S07.7",
+      "metric": "Longitudinal-Hypothesis Data Completeness"
+    },
+    "D.23": {
+      "sections": [
+        "1.1",
+        "4.2"
+      ],
+      "strength": "supported",
+      "implementedIn": "S07.7",
+      "metric": "Parent-Coaching-Tip Delivery & Engagement Rate"
+    }
+  },
+  "recalibration": {
+    "cadence": "quarterly for the first year after release, then yearly (the same cadence as Appendices B and D and the Block D threshold log)",
+    "owner": "Pedagogical Lead, with Product",
+    "log": [
+      {
+        "date": "2026-09-24",
+        "scope": "Adoption of Appendix G as the authoritative basis for D.10-D.23; traceability and evidence strengths recorded",
+        "decision": "Adopted by Engineering on the SPEC's mandate; awaiting the Pedagogical Lead's first review. No evidence in Appendix G has been superseded yet.",
+        "by": "Engineering (S07 lane)",
+        "nextDue": "2027-01-15"
+      }
+    ]
+  },
+  "claims": {
+    "namespaces": [
+      "marketing",
+      "common",
+      "familyHub",
+      "familyMoney",
+      "moneyHabits",
+      "familyAutonomy",
+      "teenWallet",
+      "coinAccount",
+      "moneyRegister",
+      "familyGovernance"
+    ],
+    "patterns": {
+      "en-US": [
+        "scientifically",
+        "(?:is|are|been) proven",
+        "proven to",
+        "research (?:shows|proves|confirms)",
+        "studies (?:show|prove|confirm)",
+        "clinically"
+      ],
+      "es-MX": [
+        "científicamente",
+        "(?:está|están) (?:probad[oa]s?|comprobad[oa]s?|demostrad[oa]s?)",
+        "estudios (?:demuestran|muestran|prueban|confirman)",
+        "investigación (?:demuestra|muestra|prueba|confirma)"
+      ],
+      "pt-BR": [
+        "cientificamente",
+        "(?:está|estão|é|são) (?:comprovad[oa]s?|provad[oa]s?)",
+        "estudos (?:mostram|comprovam|provam|confirmam)",
+        "pesquisa (?:mostra|comprova|prova|confirma)"
+      ]
+    },
+    "exceptions": []
+  },
+  "experiments": {
+    "rule": "OD-23: experiments run on adults (18+) only until Product and Legal choose wider ages (H.7); a minor's Block D data is only ever observed, through the consent-gated streams. No Block D table may carry an experiment assignment.",
+    "columnPattern": "(^|_)(experiment|experiments|variant|variants|treatment|arm|ab|cohort_assignment|bucket_assignment)(_|$)",
+    "allowed": {}
+  }
+}

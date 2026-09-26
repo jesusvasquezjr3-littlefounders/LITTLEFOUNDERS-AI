@@ -328,9 +328,6 @@ describe('GET /api/v1/admin/insights/*', () => {
       { day: '2026-07-28', role: '', users: 6, sessions: 6 },
       { day: '2026-07-28', role: 'kid', users: 6, sessions: 6 },
     ];
-    db.insights_family_engagement = [
-      { family_id: '55555555-5555-4555-8555-555555555555', family_created_at: '2026-07-01T00:00:00Z', members: 3, tasks_created: 9, tasks_completed: 7, last_task_at: '2026-07-28T00:00:00Z' },
-    ];
     db.analytics_consents = [{ kid_user_id: KID_ID, granted_by: PARENT_ID, granted_at: '2026-07-29T00:00:00Z', revoked_at: null }];
   });
 
@@ -350,11 +347,33 @@ describe('GET /api/v1/admin/insights/*', () => {
     expect(bad.status).toBe(400);
   });
 
-  it('families bundles engagement + consent coverage', async () => {
+  it('families bundles the per-child engagement insight + consent coverage (S07.6, D.6)', async () => {
+    // The insight is one RPC (family_engagement_insight); the rest of the
+    // request runs on the in-memory PostgREST. Full adversarial coverage lives
+    // in moneyPresentation.test.ts.
+    const fake = createFakeFetch(db);
+    const recorded: unknown[] = [];
+    vi.stubGlobal('fetch', (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('/rest/v1/rpc/family_engagement_insight')) {
+        return new Response(JSON.stringify({
+          summary: { children: 4, children_with_tasks: 3, active_children: 2, tasks_created: 9, tasks_approved: 7, active_days: 30, listed_children: 1 },
+          children: [{ guardians: 1, tasks_created: 9, tasks_approved: 7, first_link_on: '2026-07-01', last_task_on: '2026-07-28' }],
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      if (url.includes('/rest/v1/rpc/record_staff_insight_check')) {
+        recorded.push(JSON.parse(String(init?.body)));
+        return new Response(null, { status: 204 });
+      }
+      return fake(input, init);
+    }) as typeof fetch);
     const res = await as(ADULT_ID)(request(createApp()).get('/api/v1/admin/insights/families'));
     expect(res.status).toBe(200);
-    expect(res.body.data.families).toHaveLength(1);
+    expect(res.body.data.summary.children).toBe(4);
+    expect(res.body.data.children).toHaveLength(1);
+    expect(res.body.data).not.toHaveProperty('families');
     expect(res.body.data.consent).toEqual({ kidsTotal: 1, kidsConsented: 1 });
+    expect(recorded).toEqual([{ p_insight: 'family_engagement', p_source: 'request', p_outcome: 'ok' }]);
   });
 
   it('403s a non-staff caller', async () => {

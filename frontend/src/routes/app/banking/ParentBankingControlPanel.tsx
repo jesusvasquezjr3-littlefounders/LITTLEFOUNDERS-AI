@@ -5,8 +5,11 @@ import { api } from '@/lib/api';
 import { Button, Card, Dropdown, Field, Icon, ProgressBar, SectionHeading } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
-import type { WireRedemption } from '../tasks/types';
-import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBankingAccount, type WireSavingsBonusRule, type WireSpendLimitStatus } from './types';
+import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesign, type SpendLimitPeriod, type WireAllowanceRule, type WireBankingAccount, type WireSpendLimitStatus } from './types';
+import { SavingsBonusSettingsPanel } from './SavingsBonusSettingsPanel';
+import { TutorFreezePanel } from './TutorFreezePanel';
+import { DecisionQueuePanel } from '../tasks/DecisionQueuePanel';
+import { LimitCoachingPanel, ScopeStatementPanel } from '../family/GovernancePanels';
 
 /*
  * The parent's half of BANKING.md §7.2: open the account, then
@@ -14,6 +17,12 @@ import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesig
  * each a `.lf-config-row` toggle + fields, exactly the shape AdminRolesPage
  * and PersonalizeInWorld already use for the same grammar — plus the
  * redemption decisions already awaiting a parent's answer.
+ *
+ * S07.6 (D.7): the freeze switch and the card-number line are replaced by the
+ * rebuilt freeze card (what a freeze really holds, who set it, which age view
+ * the child reads). The legacy approve/deny buttons are replaced by the
+ * rebuilt decision queue: since S07.5 a denial needs an actionable reason
+ * (D.18), so the legacy bare "Deny" was a button the server always refused.
  */
 
 interface Kid {
@@ -39,8 +48,6 @@ type KidDataState =
       account: WireBankingAccount | null;
       allowance: WireAllowanceRule | null;
       spendLimit: WireSpendLimitStatus;
-      savingsBonus: WireSavingsBonusRule | null;
-      redemptions: WireRedemption[];
     };
 
 export function ParentBankingControlPanel() {
@@ -53,10 +60,6 @@ export function ParentBankingControlPanel() {
   const [kidData, setKidData] = useState<KidDataState>({ status: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const [liveMessage, setLiveMessage] = useState('');
-  const [freezeBusy, setFreezeBusy] = useState(false);
-  const [freezeError, setFreezeError] = useState<string | null>(null);
-  const viewVersion = useRef(0);
-  const freezePending = useRef(false);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,28 +83,18 @@ export function ParentBankingControlPanel() {
   }, [getToken]);
 
   useEffect(() => {
-    viewVersion.current += 1;
-    freezePending.current = false;
-    setFreezeBusy(false);
-    setFreezeError(null);
-    return () => { viewVersion.current += 1; };
-  }, [token, selectedKidId]);
-
-  useEffect(() => {
     if (!token || !selectedKidId) return;
     let cancelled = false;
     setKidData({ status: 'loading' });
     void (async () => {
-      const [accountRes, allowanceRes, spendLimitRes, bonusRes, redemptionsRes] = await Promise.all([
+      const [accountRes, allowanceRes, spendLimitRes] = await Promise.all([
         api<{ account: WireBankingAccount | null }>(`/banking/accounts/${selectedKidId}`, { token }),
         api<{ rule: WireAllowanceRule | null }>(`/banking/allowance/${selectedKidId}`, { token }),
         api<{ status: WireSpendLimitStatus }>(`/banking/spend-limit/${selectedKidId}`, { token }),
-        api<{ rule: WireSavingsBonusRule | null }>(`/banking/savings-bonus/${selectedKidId}`, { token }),
-        api<{ redemptions: WireRedemption[] }>(`/tasks/redemptions?kidId=${selectedKidId}`, { token }),
       ]);
       if (cancelled) return;
-      if (accountRes.error || allowanceRes.error || spendLimitRes.error || bonusRes.error || redemptionsRes.error) {
-        const code = (accountRes.error ?? allowanceRes.error ?? spendLimitRes.error ?? bonusRes.error ?? redemptionsRes.error)?.code ?? 'INTERNAL';
+      if (accountRes.error || allowanceRes.error || spendLimitRes.error) {
+        const code = (accountRes.error ?? allowanceRes.error ?? spendLimitRes.error)?.code ?? 'INTERNAL';
         setKidData({ status: 'error', code });
         return;
       }
@@ -110,8 +103,6 @@ export function ParentBankingControlPanel() {
         account: accountRes.data.account,
         allowance: allowanceRes.data.rule,
         spendLimit: spendLimitRes.data.status,
-        savingsBonus: bonusRes.data.rule,
-        redemptions: redemptionsRes.data.redemptions.filter((r) => r.status === 'requested'),
       });
     })();
     return () => {
@@ -130,34 +121,6 @@ export function ParentBankingControlPanel() {
     if (res.data) {
       setKidData((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
       announce(t('banking.parent.accountOpenedAnnounce'));
-    }
-  }
-
-  async function onToggleFreeze(next: boolean) {
-    if (!token || !selectedKidId || freezePending.current) return;
-    const version = viewVersion.current;
-    const kidId = selectedKidId;
-    freezePending.current = true;
-    setFreezeBusy(true);
-    setFreezeError(null);
-    const res = await api<{ account: WireBankingAccount }>(`/banking/accounts/${kidId}/freeze`, { method: 'POST', token, body: { frozen: next } });
-    if (version !== viewVersion.current) return;
-    freezePending.current = false;
-    setFreezeBusy(false);
-    if (res.error) {
-      setFreezeError(res.error?.code ?? 'DATA_UNAVAILABLE');
-      return;
-    }
-    setKidData((prev) => (prev.status === 'ready' ? { ...prev, account: res.data.account } : prev));
-    announce(next ? t('banking.kid.frozenAnnounce') : t('banking.kid.unfrozenAnnounce'));
-  }
-
-  async function onDecideRedemption(id: string, approve: boolean) {
-    if (!token) return;
-    const res = await api(`/tasks/redemptions/${id}/decide`, { method: 'POST', token, body: { approve } });
-    if (!res.error) {
-      setKidData((prev) => (prev.status === 'ready' ? { ...prev, redemptions: prev.redemptions.filter((r) => r.id !== id) } : prev));
-      announce(approve ? t('tasks.parent.redemptionApprovedAnnounce') : t('tasks.parent.redemptionDeniedAnnounce'));
     }
   }
 
@@ -207,7 +170,6 @@ export function ParentBankingControlPanel() {
         </div>
       )}
 
-      {freezeError && <ErrorBanner code={freezeError} />}
       {kidData.status === 'loading' && <p className="lf-body p-4 text-content-muted">{t('banking.loading')}</p>}
       {kidData.status === 'error' && <ErrorBanner code={kidData.code} onRetry={() => setReloadKey((k) => k + 1)} />}
 
@@ -215,70 +177,32 @@ export function ParentBankingControlPanel() {
         <OpenAccountCard onOpen={onOpenAccount} />
       )}
 
-      {kidData.status === 'ready' && kidData.account && (
-        <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span className={cn('h-11 w-11 shrink-0 rounded-full bg-gradient-to-br', CARD_GRADIENT[kidData.account.cardDesign])} aria-hidden />
-            <div>
-              <span className="lf-label block text-content">{kidData.account.nickname}</span>
-              <span className="lf-caption block font-mono text-content-faint">{kidData.account.displayNumber}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="lf-caption text-content-muted">{kidData.account.frozen ? t('banking.kid.frozenBadge') : t('banking.kid.freezeToggle')}</span>
-            <button
-              type="button"
-              role="switch"
-              aria-label={t('banking.kid.freezeToggle')}
-              disabled={freezeBusy}
-              aria-checked={kidData.account.frozen}
-              onClick={() => onToggleFreeze(!(kidData.status === 'ready' && kidData.account?.frozen))}
-              className={cn('lf-switch', kidData.account.frozen && 'lf-switch-on')}
-            >
-              <span className="lf-switch-knob" />
-            </button>
-          </div>
-        </Card>
+      {kidData.status === 'ready' && kidData.account && selectedKidId && (
+        <TutorFreezePanel key={selectedKidId} token={token} kidId={selectedKidId}
+          name={kids?.find((k) => k.userId === selectedKidId)?.displayName ?? kids?.find((k) => k.userId === selectedKidId)?.username ?? ''}
+          onChanged={() => setReloadKey((k) => k + 1)} />
       )}
 
       {kidData.status === 'ready' && kidData.account && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="flex flex-col gap-6">
             <AllowanceSection token={token} kidId={selectedKidId as string} rule={kidData.allowance} onSaved={(rule) => setKidData((prev) => (prev.status === 'ready' ? { ...prev, allowance: rule } : prev))} />
+            {/* S07.7 (D.23): the limit as structure with a reason, next to the form. */}
+            <LimitCoachingPanel />
             <SpendLimitSection
               token={token}
               kidId={selectedKidId as string}
               status={kidData.spendLimit}
               onSaved={(status) => setKidData((prev) => (prev.status === 'ready' ? { ...prev, spendLimit: status } : prev))}
             />
-            <SavingsBonusSection token={token} kidId={selectedKidId as string} rule={kidData.savingsBonus} onSaved={(rule) => setKidData((prev) => (prev.status === 'ready' ? { ...prev, savingsBonus: rule } : prev))} />
+            {/* S07.3 (D.11): the bonus in the framing the child's age calls for. */}
+            <SavingsBonusSettingsPanel kidUserId={selectedKidId as string} kidName={kids?.find((k) => k.userId === selectedKidId)?.displayName ?? kids?.find((k) => k.userId === selectedKidId)?.username ?? ''} token={token} />
           </div>
 
           <div className="flex flex-col gap-6">
-            <section aria-labelledby="banking-decisions-heading">
-              <SectionHeading id="banking-decisions-heading" icon="pending_actions" tone="warning" meta={kidData.redemptions.length > 0 ? String(kidData.redemptions.length) : undefined}>
-                {t('banking.parent.decisionsHeading')}
-              </SectionHeading>
-              {kidData.redemptions.length === 0 ? (
-                <p className="lf-caption text-content-muted">{t('tasks.parent.redemptionsEmpty')}</p>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {kidData.redemptions.map((r) => (
-                    <li key={r.id} className="flex flex-col gap-2 rounded-lg border border-outline/70 bg-surface p-3.5">
-                      <span className="lf-caption text-content-muted">{t('tasks.parent.redemptionStatusRequested')}</span>
-                      <div className="flex gap-2">
-                        <Button type="button" variant="success" className="min-h-8 flex-1 px-3 lf-caption" onClick={() => void onDecideRedemption(r.id, true)}>
-                          {t('tasks.parent.redemptionApprove')}
-                        </Button>
-                        <Button type="button" variant="secondary" className="min-h-8 flex-1 px-3 lf-caption" onClick={() => void onDecideRedemption(r.id, false)}>
-                          {t('tasks.parent.redemptionDeny')}
-                        </Button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+            {/* S07.7 (D.20): what the practice covers and does not. */}
+            <ScopeStatementPanel />
+            {kids && kids.length > 0 && <DecisionQueuePanel token={token} kids={kids} refreshKey={reloadKey} onChanged={() => setReloadKey((k) => k + 1)} />}
           </div>
         </div>
       )}
@@ -449,8 +373,9 @@ function SpendLimitSection({ token, kidId, status, onSaved }: { token: string | 
               <Dropdown
                 value={period}
                 options={[
-                  { value: 'weekly', label: t('banking.parent.frequencyWeekly') },
-                  { value: 'monthly', label: t('banking.parent.frequencyMonthly') },
+                  // S07.6 (D.7): the database counts a rolling window, it never "resets".
+                  { value: 'weekly', label: t('banking.parent.spendLimitWindowWeekly') },
+                  { value: 'monthly', label: t('banking.parent.spendLimitWindowMonthly') },
                 ]}
                 onChange={(v) => setPeriod(v as SpendLimitPeriod)}
                 ariaLabel={t('banking.parent.spendLimitPeriod')}
@@ -459,55 +384,13 @@ function SpendLimitSection({ token, kidId, status, onSaved }: { token: string | 
             <Field label={t('banking.parent.spendLimitCap')} type="number" min={1} value={cap} onChange={(e) => setCap(Number(e.target.value))} />
           </div>
         )}
+        <p className="lf-caption text-content-muted">{t('banking.parent.spendLimitHint')}</p>
         {status.configured && (
           <div className="flex flex-col gap-1.5">
             <span className="lf-caption text-content-muted">{t('banking.kid.spendLimitUsed', { used: status.used, cap: status.cap })}</span>
             <ProgressBar value={(status.used / status.cap) * 100} label={t('banking.parent.spendLimitHeading')} tone="accent" />
           </div>
         )}
-        {errorCode && <ErrorBanner code={errorCode} />}
-        <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
-          {saving ? t('banking.parent.saving') : t('banking.parent.save')}
-        </Button>
-      </Card>
-    </section>
-  );
-}
-
-function SavingsBonusSection({ token, kidId, rule, onSaved }: { token: string | null; kidId: string; rule: WireSavingsBonusRule | null; onSaved: (rule: WireSavingsBonusRule) => void }) {
-  const { t } = useTranslation();
-  const [active, setActive] = useState(rule?.active ?? false);
-  const [ratePercent, setRatePercent] = useState(rule ? rule.rateBp / 100 : 5);
-  const [saving, setSaving] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-
-  async function onSave() {
-    if (!token || saving) return;
-    setSaving(true);
-    setErrorCode(null);
-    const res = await api<{ rule: WireSavingsBonusRule }>(`/banking/savings-bonus/${kidId}`, { method: 'PUT', token, body: { rateBp: Math.round(ratePercent * 100), active } });
-    setSaving(false);
-    if (res.error) {
-      setErrorCode(res.error.code);
-      return;
-    }
-    onSaved(res.data.rule);
-  }
-
-  return (
-    <section aria-labelledby="banking-bonus-heading">
-      <SectionHeading id="banking-bonus-heading" icon="savings" tone="success">
-        {t('banking.parent.bonusHeading')}
-      </SectionHeading>
-      <Card className="flex flex-col gap-4 p-5">
-        <div className="lf-config-row flex items-center justify-between gap-3 p-3.5">
-          <span className="lf-label text-content">{t('banking.parent.bonusActive')}</span>
-          <button type="button" role="switch" aria-checked={active} onClick={() => setActive(!active)} className={cn('lf-switch', active && 'lf-switch-on')}>
-            <span className="lf-switch-knob" />
-          </button>
-        </div>
-        {active && <Field label={t('banking.parent.bonusRate')} type="number" min={0} max={20} value={ratePercent} onChange={(e) => setRatePercent(Number(e.target.value))} />}
-        <p className="lf-caption text-content-muted">{t('banking.parent.bonusHint')}</p>
         {errorCode && <ErrorBanner code={errorCode} />}
         <Button type="button" variant="primary" className="self-start" disabled={saving} onClick={() => void onSave()}>
           {saving ? t('banking.parent.saving') : t('banking.parent.save')}

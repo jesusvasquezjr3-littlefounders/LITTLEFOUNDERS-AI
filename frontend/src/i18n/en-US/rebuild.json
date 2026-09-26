@@ -227,7 +227,11 @@
     "accepting": "Accepting…",
     "accepted": "You are now linked as a second Tutor.",
     "acceptFailed": "Could not accept the invite. Try again.",
-    "expired": "This invite is no longer valid."
+    "pending": "Accepted. The child's Tutor will confirm you next.",
+    "expired": "This invite is no longer valid.",
+    "pendingTeen": "Accepted. {name} will confirm you next.",
+    "acceptTitleTeen": "Become a Tutor",
+    "acceptBodyTeen": "{name} invited you to link as their Tutor. They confirm you next."
   },
   "memorySelfReview": {
     "title": "What your Mentor remembers",

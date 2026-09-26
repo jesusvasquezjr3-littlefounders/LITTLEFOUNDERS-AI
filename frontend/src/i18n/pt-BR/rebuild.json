@@ -227,7 +227,11 @@
     "accepting": "Aceitando…",
     "accepted": "Agora você está conectado como segundo Tutor.",
     "acceptFailed": "Não foi possível aceitar o convite. Tente novamente.",
-    "expired": "Este convite não é mais válido."
+    "pending": "Aceito. O Tutor atual vai confirmar você.",
+    "expired": "Este convite não é mais válido.",
+    "pendingTeen": "Aceito. {name} vai confirmar você.",
+    "acceptTitleTeen": "Tornar-se Tutor",
+    "acceptBodyTeen": "{name} convidou você para ser o Tutor. Depois confirma você."
   },
   "memorySelfReview": {
     "title": "O que seu Mentor lembra",

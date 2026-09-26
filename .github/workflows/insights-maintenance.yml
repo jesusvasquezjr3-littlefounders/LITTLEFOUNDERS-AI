@@ -121,6 +121,27 @@ jobs:
 
           run_sql 'SELECT refresh_insights_rollups();' 'rollup'
           run_sql 'CALL prune_learning_events(400);' 'prune'
+          # S07.4 (D.13, D.15; the D.21 bound): the consent-gated Block D
+          # behaviour stream keeps 400 days, like learning_events. Guarded so
+          # it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$prune\$ BEGIN IF to_regprocedure('public.prune_family_money_events(integer)') IS NOT NULL THEN PERFORM public.prune_family_money_events(400); END IF; END \$prune\$;" 'prune_family_money'
+          # S07.5 (D.17): a birthday can open a child's next independence level
+          # without any decision; the nightly sweep records the first eligible
+          # day for Appendix H's Independence-Tier Progression Rate. Guarded so
+          # it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$sweep\$ BEGIN IF to_regprocedure('public.record_family_autonomy_eligibility_all()') IS NOT NULL THEN PERFORM public.record_family_autonomy_eligibility_all(); END IF; END \$sweep\$;" 'autonomy_eligibility'
+          # S07.6 (D.6): Appendix H's Staff Family-Engagement Insight Uptime is
+          # measured every night, not only when someone opens the console. The
+          # probe calls the same function the staff endpoint serves, records
+          # ok / unavailable / shape_mismatch, and keeps 400 days of checks.
+          # Guarded so it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$probe\$ BEGIN IF to_regprocedure('public.probe_family_engagement_insight(integer)') IS NOT NULL THEN PERFORM public.probe_family_engagement_insight(400); END IF; END \$probe\$;" 'engagement_probe'
+          # S07.7 (D.22): the research instrumentation's monthly snapshot for the
+          # previous complete month, only for participants whose research
+          # consent stands (observational; OD-23: no experiment on a minor).
+          # Idempotent, so running it every night fills a month once. Guarded
+          # so it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$snap\$ BEGIN IF to_regprocedure('public.record_family_research_snapshots(date)') IS NOT NULL THEN PERFORM public.record_family_research_snapshots(); END IF; END \$snap\$;" 'research_snapshots'
           run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'
           # S05.3c (B.13): closed family-bridge prompts leave after the same 400-day window.

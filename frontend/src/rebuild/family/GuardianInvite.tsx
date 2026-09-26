@@ -10,7 +10,8 @@ import './guardianInvite.css';
  *    link for one kid and copies it out of band to the second parent.
  *  - "accept": the joining verified parent previews the kid (display name
  *    only — the data plane never returns contact data) and accepts; Core's
- *    one-shot exchange writes the verified link and reactivates the kid.
+ *    one-shot exchange writes a PENDING link that the child's current Tutor
+ *    confirms (S07.1, OD-21), or a verified link when no Tutor remains.
  * No transport here — the routes wrapper owns every call, including the
  * clipboard write behind the copy button.
  */
@@ -31,6 +32,12 @@ export interface GuardianInviteCopy {
   accepting: string;
   accepted: string;
   acceptFailed: string;
+  /** S07.1: an accepted invite waits for the child's current Tutor to confirm. */
+  pending: string;
+  /** S07.2: a teen's own invite: the teen confirms the new Tutor. */
+  pendingTeen: string;
+  acceptTitleTeen: string;
+  acceptBodyTeen: string;
   expired: string;
 }
 
@@ -67,21 +74,27 @@ export function GuardianInviteMint({ copy, locale, dark, open, creating, link, c
   </section>;
 }
 
-export function GuardianInviteAccept({ copy, locale, dark, kidName, accepting, accepted, failed, expired, onAccept }: {
+export function GuardianInviteAccept({ copy, locale, dark, kidName, accepting, accepted, pending = false, selfIssued = false, failed, expired, onAccept }: {
   copy: GuardianInviteCopy;
   locale: string;
   dark: boolean;
   kidName: string | null;
   accepting: boolean;
   accepted: boolean;
+  /** true when the database holds a PENDING link awaiting the current Tutor's confirmation. */
+  pending?: boolean;
+  /** S07.2: a teen issued this invite for their own account, and confirms the new Tutor themself. */
+  selfIssued?: boolean;
   failed: boolean;
   expired: boolean;
   onAccept: () => void;
 }) {
-  return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.acceptTitle}>
-    <Copy role="heading" as="h2">{copy.acceptTitle}</Copy>
-    {accepted ? <InlineNotice tone="success" live>{copy.accepted}</InlineNotice> : expired ? <InlineNotice tone="error" live>{copy.expired}</InlineNotice> : <>
-      <Copy role="body">{copy.acceptBody.replace('{name}', kidName ?? '…')}</Copy>
+  const title = selfIssued ? copy.acceptTitleTeen : copy.acceptTitle;
+  const pendingText = selfIssued ? copy.pendingTeen.replace('{name}', kidName ?? '…') : copy.pending;
+  return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={title}>
+    <Copy role="heading" as="h2">{title}</Copy>
+    {accepted ? <InlineNotice tone={pending ? 'info' : 'success'} live>{pending ? pendingText : copy.accepted}</InlineNotice> : expired ? <InlineNotice tone="error" live>{copy.expired}</InlineNotice> : <>
+      <Copy role="body">{(selfIssued ? copy.acceptBodyTeen : copy.acceptBody).replace('{name}', kidName ?? '…')}</Copy>
       {failed && <InlineNotice tone="error" live>{copy.acceptFailed}</InlineNotice>}
       <Button onClick={onAccept} disabled={accepting || kidName === null}>{accepting ? copy.accepting : copy.accept}</Button>
     </>}

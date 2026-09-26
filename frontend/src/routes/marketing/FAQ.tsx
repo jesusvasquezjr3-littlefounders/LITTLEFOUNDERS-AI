@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
  * this — the FAQ just says it in plain language instead of inventing a
  * softer claim.
  *
- * Categories over search: 27 questions is short enough that a search box
+ * Categories over search: 29 questions is short enough that a search box
  * would be solving a problem the page doesn't have yet. A single-open
  * Accordion (components/ui/Accordion.tsx) keeps a long list scannable
  * without every answer stacked open.
@@ -51,18 +51,25 @@ const ITEMS: { id: string; category: Category }[] = [
   { id: "remember", category: "tutor" },
   { id: "mentors", category: "tutor" },
   { id: "canBeWrong", category: "tutor" },
-  // money — data-src: banking.ts language rule, tasks.ts earn/allocate
+  // money — data-src: banking.ts language rule, tasks.ts earn/allocate, the
+  // independence levels (docs/operations/FAMILY-INDEPENDENCE-AND-DECISIONS.md)
+  // and, for notTaught, the D.20 scope statement (block-d-scope.json, whose
+  // gate keeps this answer naming every exclusion in three locales)
   { id: "realBank", category: "money" },
   { id: "lfCoins", category: "money" },
   { id: "chores", category: "money" },
   { id: "realMoney", category: "money" },
-  // privacy — data-src: Privacy Notice §2, tutor-retention.yml, analyticsConsent toggle
+  { id: "notTaught", category: "money" },
+  // privacy — data-src: Privacy Notice §2, tutor-retention.yml, analyticsConsent toggle;
+  // familyRecords: the D.21 policy (block-d-retention.json, whose gate keeps
+  // the periods in this answer equal to the ones the nightly job enforces)
   { id: "dataCollected", category: "privacy" },
   { id: "moderation", category: "privacy" },
   { id: "retention", category: "privacy" },
   // E.10/E.11 — data-src: docs/rebuild/policies/SOCIAL-GOVERNANCE.md §2.1 and §3.2
   { id: "noMessaging", category: "privacy" },
   { id: "socialRetention", category: "privacy" },
+  { id: "familyRecords", category: "privacy" },
   { id: "analyticsToggle", category: "privacy" },
   { id: "coppa", category: "privacy" },
   // support — data-src: Terms c.13, Privacy Notice

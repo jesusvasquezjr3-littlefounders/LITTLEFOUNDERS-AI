@@ -28,7 +28,8 @@ interface StubOptions {
   allowanceRule?: Record<string, unknown> | null;
   savingsBonusRule?: Record<string, unknown> | null;
   spendLimit?: Record<string, unknown> | null;
-  ledgerRows?: { bucket: string; amount: number; created_at?: string }[];
+  ledgerRows?: { bucket: string; amount: number; created_at?: string; reason?: string; guardian_action_id?: string | null }[];
+  guardianActions?: unknown[];
   pendingCredit?: Record<string, unknown> | null;
   allocateResult?: boolean | null;
   scheduledCreditsResult?: number | null;
@@ -105,6 +106,10 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(201, [{ id: randomUUID(), created_at: new Date().toISOString(), ...body }]));
       }
 
+      // S07.3 (D.11): the database's age framing; these legacy cases are a 13-17 child.
+      if (url.includes('/rest/v1/rpc/savings_bonus_framing') && method === 'POST') {
+        return Promise.resolve(jsonResponse(200, 'percent'));
+      }
       if (url.includes('/rest/v1/savings_bonus_rules?kid_user_id=eq.') && method === 'GET') {
         const rows = opts.savingsBonusRule === null ? [] : [opts.savingsBonusRule ?? null].filter(Boolean);
         return Promise.resolve(jsonResponse(200, rows));
@@ -123,6 +128,9 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(201, [{ created_at: new Date().toISOString(), ...body }]));
       }
 
+      if (url.includes('/rest/v1/wallet_guardian_actions') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, opts.guardianActions ?? []));
+      }
       if (url.includes('/rest/v1/wallet_ledger') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, opts.ledgerRows ?? [{ bucket: 'save', amount: 5, created_at: new Date().toISOString() }]));
       }
@@ -439,9 +447,42 @@ describe('GET /api/v1/banking/statement/:kidId and /statement (kid)', () => {
       month: '2026-09',
       earned: 15,
       spent: 8,
+      adjusted: 0,
+      given: 0,
       saved: 10,
       entries: expect.any(Array),
     });
+  });
+
+  it('never counts a goal withdrawal as income or spending, and reports a guardian correction on its own line with its reason', async () => {
+    const action = '99999999-9999-4999-8999-999999999999';
+    const now = new Date().toISOString();
+    stub({
+      roles: ['kid'],
+      ledgerRows: [
+        { bucket: 'save', amount: 10, created_at: now, reason: 'task_approved' },
+        { bucket: 'save', amount: -4, created_at: now, reason: 'goal_withdrawal', guardian_action_id: action },
+        { bucket: 'spend', amount: 4, created_at: now, reason: 'goal_withdrawal', guardian_action_id: action },
+        { bucket: 'spend', amount: -3, created_at: now, reason: 'manual_adjustment', guardian_action_id: '88888888-8888-4888-8888-888888888888' },
+      ],
+      guardianActions: [
+        { id: action, kind: 'goal_withdrawal', kid_user_id: KID_ID, actor_user_id: null, bucket: 'spend', goal_id: null, amount: 4, reason: 'Bought the bike', created_at: now },
+        { id: '88888888-8888-4888-8888-888888888888', kind: 'manual_adjustment', kid_user_id: KID_ID, actor_user_id: null, bucket: 'spend', goal_id: null, amount: -3, reason: 'Lost game fee', created_at: now },
+      ],
+    });
+    const res = await asKid('/api/v1/banking/statement?month=2026-09');
+    expect(res.status).toBe(200);
+    expect(res.body.data.statement).toMatchObject({ earned: 10, spent: 0, adjusted: -3, saved: 6 });
+    expect(res.body.data.statement.entries.map((e: { note: string | null }) => e.note)).toEqual([null, 'Bought the bike', 'Bought the bike', 'Lost game fee']);
+  });
+
+  it('refuses a statement whose guardian reasons cannot be read', async () => {
+    stub({
+      roles: ['kid'],
+      ledgerRows: [{ bucket: 'spend', amount: 5, created_at: new Date().toISOString(), reason: 'manual_adjustment', guardian_action_id: '88888888-8888-4888-8888-888888888888' }],
+      guardianActions: [{ broken: true }],
+    });
+    expect((await asKid('/api/v1/banking/statement?month=2026-09')).status).toBe(502);
   });
 });
 

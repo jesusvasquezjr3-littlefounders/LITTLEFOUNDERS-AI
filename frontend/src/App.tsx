@@ -47,6 +47,8 @@ import {
 } from '@/routes/app/learn/paths';
 import { TasksPage } from '@/routes/app/tasks/TasksPage';
 import { BankingPage } from '@/routes/app/banking/BankingPage';
+import { RequireWalletAccess } from '@/routes/app/wallet/RequireWalletAccess';
+import { TeenWalletPage } from '@/routes/app/wallet/TeenWalletPage';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
 import { AvatarEditorPage } from '@/routes/app/profile/AvatarEditorPage';
 import { SettingsPage } from '@/routes/app/profile/SettingsPage';
@@ -393,17 +395,25 @@ export function App() {
             <Route
               path="tasks"
               element={
-                <RequireRole role={['parent', 'kid']}>
+                <RequireWalletAccess mode="familyMoney">
                   <TasksPage />
-                </RequireRole>
+                </RequireWalletAccess>
               }
             />
             <Route
               path="banking"
               element={
-                <RequireRole role={['parent', 'kid']}>
+                <RequireWalletAccess mode="familyMoney">
                   <BankingPage />
-                </RequireRole>
+                </RequireWalletAccess>
+              }
+            />
+            <Route
+              path="wallet"
+              element={
+                <RequireWalletAccess mode="teen">
+                  <TeenWalletPage />
+                </RequireWalletAccess>
               }
             />
             <Route

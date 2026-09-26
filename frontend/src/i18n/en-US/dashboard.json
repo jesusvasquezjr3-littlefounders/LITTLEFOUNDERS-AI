@@ -12,7 +12,9 @@
     "lockedBadge": "Tutor",
     "lockedHint": "Verify your identity to unlock this as a Tutor — tap to start",
     "profile": "Profile",
-    "family": "Family"
+    "family": "Family",
+    "wallet": "Wallet",
+    "lockedTeenHint": "Tasks need a linked parent. Tap to open your wallet."
   },
   "upgrade": {
     "title": "Family plan",

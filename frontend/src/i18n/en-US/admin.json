@@ -1149,12 +1149,12 @@
       "colSize": "Size",
       "colWeek": "Week {{n}}",
       "questTitle": "Quest Completion",
-      "questSubtitle": "Assigned tasks per family and how many were actually finished.",
+      "questSubtitle": "Chores per child with a Tutor, and how many were approved. Only children with analytics consent are listed.",
       "questEmpty": "No family task data available yet.",
       "kpiQuestCompletion": "Quest Completion Rate",
-      "colMembers": "Members",
+      "colMembers": "Tutors",
       "colTasksAssigned": "Assigned",
-      "colTasksCompleted": "Completed",
+      "colTasksCompleted": "Approved",
       "colLastActivity": "Last Activity"
     },
     "segments": {

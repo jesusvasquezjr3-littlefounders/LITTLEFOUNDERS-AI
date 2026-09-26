@@ -74,7 +74,7 @@ describe('new preview copy', () => {
         expect(checkCopy(text.replace('{email}', 'informame@littlefounders.ai'), role, { locale: locale as Locale, ageBand: '6-9', surface: 'app' }), `kidSuspended.${key}`).toEqual([]);
       }
       for (const [key, text] of Object.entries(strings.guardianInvite)) {
-        const role = key === 'title' || key === 'acceptTitle' ? 'heading'
+        const role = key === 'title' || key === 'acceptTitle' || key === 'acceptTitleTeen' ? 'heading'
           : ['close', 'invite', 'copy', 'accept'].includes(key) ? 'action' : 'body';
         expect(checkCopy(text.replace('{name}', 'Ana'), role, { locale: locale as Locale, ageBand: '13-17', surface: 'app' }), `guardianInvite.${key}`).toEqual([]);
       }

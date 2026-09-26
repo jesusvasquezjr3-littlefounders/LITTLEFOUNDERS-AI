@@ -33,6 +33,8 @@ interface StubOptions {
   /** Kids this parent already has, for the per-family cap. */
   existingKids?: number;
   linkedKidId?: string;
+  /** Roles of the linked account itself (default: a parent-created child). */
+  linkedKidRoles?: string[];
   linkFails?: boolean;
   profilePatchFails?: boolean;
   ageWriteFails?: boolean;
@@ -58,6 +60,10 @@ function stub(opts: StubOptions = {}) {
 
       const erasure = erasureStubResponse(url);
       if (erasure) return Promise.resolve(erasure);
+      if (opts.linkedKidId && url.includes(`/rest/v1/user_roles?user_id=eq.${opts.linkedKidId}`) && method === 'GET') {
+        // S07.2: the linked account's own roles (a parent-created child holds `kid`).
+        return Promise.resolve(jsonResponse(200, (opts.linkedKidRoles ?? ['kid']).map((role) => ({ role }))));
+      }
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
       }
@@ -342,6 +348,43 @@ describe('managing an existing child', () => {
       // whether that child exists.
       expect(res.status).toBe(404);
     }
+  });
+
+  it('refuses every account-holder control for a self-registered teen who linked this parent (S07.2, D.3)', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    const calls = managed({ writes, linkedKidRoles: ['universal'] });
+    const bearer = `Bearer ${mintToken({ sub: randomUUID() })}`;
+    for (const req of [
+      request(createApp()).patch(`/api/v1/family/kids/${KID_ID_2}`).send({ displayName: 'X', birthDate: '2010-01-01' }),
+      request(createApp()).post(`/api/v1/family/kids/${KID_ID_2}/passphrase`).send({ passphrase: 'longenough1' }),
+      request(createApp()).delete(`/api/v1/family/kids/${KID_ID_2}`),
+      request(createApp()).post(`/api/v1/family/kids/${KID_ID_2}/analytics-consent`),
+      request(createApp()).delete(`/api/v1/family/kids/${KID_ID_2}/analytics-consent`),
+      request(createApp()).post(`/api/v1/family/kids/${KID_ID_2}/guardian-invite`),
+    ]) {
+      const res = await req.set('Authorization', bearer);
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe('ACCOUNT_SELF_MANAGED');
+    }
+    // Nothing reached GoTrue, the profile, the consent table or the invite table.
+    expect(calls.some((c) => c.includes('/auth/v1/admin/users'))).toBe(false);
+    expect(writes.filter((w) => /profiles|analytics_consents|guardian_invites/.test(w.url))).toEqual([]);
+  });
+
+  it('answers 502, never a change, when the linked account type cannot be read', async () => {
+    const calls = managed({ linkedKidRoles: undefined });
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes(`/rest/v1/user_roles?user_id=eq.${KID_ID_2}`)) return Promise.resolve(jsonResponse(500, { message: 'down' }));
+      if (url.includes('/rest/v1/user_roles?user_id=eq.')) return Promise.resolve(jsonResponse(200, [{ role: 'parent' }]));
+      if (url.includes('/rest/v1/parent_verifications?')) return Promise.resolve(jsonResponse(200, [{ status: 'verified', method: 'local-ocr', birth_date: '1990-01-01' }]));
+      if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.')) return Promise.resolve(jsonResponse(200, [{ parent_user_id: 'p', kid_user_id: KID_ID_2, verification_status: 'verified' }]));
+      calls.push(`${init?.method ?? 'GET'} ${url}`);
+      return Promise.resolve(jsonResponse(200, {}));
+    }));
+    const res = await request(createApp()).delete(`/api/v1/family/kids/${KID_ID_2}`).set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`);
+    expect(res.status).toBe(502);
+    expect(calls.some((c) => c.includes('/auth/v1/admin/users'))).toBe(false);
   });
 
   it('renames a child but REFUSES to rename their username', async () => {

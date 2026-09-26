@@ -10,7 +10,9 @@ import {
   readDailyActivity,
   readDailyUsers,
   readEventExport,
-  readFamilyEngagement,
+  readFamilyEngagementInsight,
+  readStaffInsightUptime,
+  recordStaffInsightCheck,
   readFeatureAdoption,
   readLearningVelocity,
   readLessonDropoff,
@@ -32,6 +34,7 @@ import {
 } from '../services/audience.js';
 import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
 import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
+import { readRegisterDistribution } from '../services/moneyPresentation.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import { getTutorRetentionStatus, listTutorReviewQueue } from '../services/tutorData.js';
 import {
@@ -103,6 +106,39 @@ import {
   setPracticeBand,
   syncPracticeReviews,
 } from '../services/learningQuality.js';
+import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
+import { readRetentionCompliance } from '../services/familyRetention.js';
+import { readCoachingDelivery, readReflectionRate } from '../services/parentCoaching.js';
+import { readBridgeEngagement } from '../services/moneyBridge.js';
+import { readResearchCompleteness, RESEARCH_COMPLETENESS_MONTHS, RESEARCH_MIN_TENURE_MONTHS } from '../services/familyResearch.js';
+import { getTeenWalletAdoption } from '../services/teenWallet.js';
+import { readBonusComprehension, readChoreTagAdoption } from '../services/savingsBonus.js';
+import { choreStreakRestDayUtilization } from '../services/choreStreakData.js';
+import { utcDayOffset } from '../services/choreStreak.js';
+import {
+  readPostGoalMotivation,
+  readRedemptionTiming,
+  readSavePersistence,
+  readShareCompletion,
+  readSplitEngagement,
+  SHARE_COMPLETION_WINDOW_DAYS,
+} from '../services/moneyHabits.js';
+import {
+  AUTONOMY_PROGRESSION_WINDOW_DAYS,
+  isRefusal as isAutonomyRefusal,
+  listAutonomyChanges,
+  readAutonomyProgression,
+  readAutonomyStatus,
+  readDenialActionability,
+  readDenialReasonSample,
+  readTalkNudgeRate,
+  reasonActionable,
+  scoreDenialReason,
+  staffLowerAutonomy,
+  toWireAutonomy,
+  toWireChange,
+  UNAVAILABLE as AUTONOMY_UNAVAILABLE,
+} from '../services/familyAutonomy.js';
 import {
   getAdminOverview,
   getAdminContentSummary,
@@ -438,6 +474,12 @@ export function adminRouter(): Router {
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
   // E.3 report escalation queue: support-adjacent tooling per G.1's mapping.
   router.use('/reports', requireAdminPermission('manage_support'));
+  // D.4's Appendix H metric: a read-only integrity count, analytics-grade.
+  router.use('/family', requireAdminPermission('view_analytics'));
+  // S07.5 (D.17, Appendix H DoD (d)): lowering a child's independence level
+  // after a support review changes a family's state, so it needs the
+  // support grant, never the read-only analytics grant.
+  router.use('/family-autonomy', requireAdminPermission('manage_support'));
   // IP exclusions and non-read intelligence operations change operational
   // state. A read-only analytics grant cannot authorize those changes.
   router.use('/analytics/exclusions', requireAdminPermission('manage_support'));
@@ -1211,6 +1253,405 @@ export function adminRouter(): Router {
     ok(res, { users });
   });
 
+  /*
+   * D.4 (Appendix H, "Unauthorized State-Transition Rate"): every accepted
+   * chore/goal/redemption/guardian-link/freeze transition is recorded by the
+   * database with the request role that caused it. outsideService counts the
+   * ones that did not come through Core's service role; the target is zero.
+   */
+  const FamilyIntegrityQuery = z.object({ days: z.coerce.number().int().min(1).max(365).default(30) }).strict();
+
+  router.get('/family/state-integrity', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await getFamilyStateIntegrity(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the integrity metric');
+    const tables = rows.map((r) => ({ table: r.table_name, transitions: r.transitions, outsideService: r.outside_service }));
+    return ok(res, {
+      since: since.toISOString(),
+      tables,
+      transitions: tables.reduce((sum, t) => sum + t.transitions, 0),
+      outsideService: tables.reduce((sum, t) => sum + t.outsideService, 0),
+    });
+  });
+
+  /*
+   * D.3 (Appendix H, "Teen Independent-Mode Adoption", Diagnostic, no
+   * target): eligible self-registered teens today, how many used their
+   * personal wallet, split by whether a parent is linked now, and how many
+   * first used it inside the window. Counts only, never an identity.
+   */
+  router.get('/family/teen-wallet-adoption', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await getTeenWalletAdoption(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the adoption metric');
+    return ok(res, {
+      since: since.toISOString(),
+      eligibleTeens: row.eligible_teens,
+      adopters: row.adopters,
+      independentAdopters: row.independent_adopters,
+      linkedAdopters: row.linked_adopters,
+      newAdopters: row.new_adopters,
+      adoptionRate: row.eligible_teens > 0 ? row.adopters / row.eligible_teens : null,
+    });
+  });
+
+  /*
+   * S07.3 (Appendix H, all Diagnostic, no target; counts only, never an
+   * identity):
+   * - D.10 Chore-Tag Adoption Rate: chores created per kind, and the Tutors
+   *   who tagged at least one chore as an expected contribution.
+   * - D.2 Chore Streak rest-day utilization: missed days a rest day covered
+   *   versus missed days that ended a run (the Appendix's "Chore
+   *   Streak-Freeze Utilization Rate"; the product never says "freeze",
+   *   owner log §5).
+   * - D.11 Age-Tier Bonus Comprehension Proxy: 13-17 children shown the
+   *   percentage worked example, and how many completed it.
+   */
+  router.get('/family/chore-tag-adoption', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readChoreTagAdoption(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the chore-tag metric');
+    const total = row.contribution_tasks + row.bonus_tasks;
+    return ok(res, {
+      since: since.toISOString(),
+      contributionTasks: row.contribution_tasks,
+      bonusTasks: row.bonus_tasks,
+      contributionShare: total > 0 ? row.contribution_tasks / total : null,
+      tutors: row.tutors,
+      tutorsUsingContribution: row.tutors_using_contribution,
+    });
+  });
+
+  router.get('/family/chore-streak-rest-days', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const today = new Date().toISOString().slice(0, 10);
+    const sinceDay = utcDayOffset(-q.data.days);
+    const row = await choreStreakRestDayUtilization(sinceDay, today);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the rest-day metric');
+    const lapses = row.restDayCovered + row.runsEnded;
+    return ok(res, {
+      since: sinceDay,
+      children: row.children,
+      restDayCovered: row.restDayCovered,
+      runsEnded: row.runsEnded,
+      coveredShare: lapses > 0 ? row.restDayCovered / lapses : null,
+    });
+  });
+
+  router.get('/family/savings-bonus-comprehension', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readBonusComprehension(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the comprehension metric');
+    return ok(res, {
+      since: since.toISOString(),
+      eligible: row.eligible,
+      shown: row.shown,
+      completed: row.completed,
+      completionRate: row.shown > 0 ? row.completed / row.shown : null,
+    });
+  });
+
+  /*
+   * S07.4 (Appendix H, all Diagnostic, no target; counts and rates only,
+   * never an identity). The behavioural ones read the consent-gated
+   * family_money_events stream, so they cover only children whose analytics
+   * consent (a Tutor's for a child in a family, the teen's own opt-in) was in
+   * effect when the event happened:
+   * - D.13 Allowance-Triggered Redemption Spike: reward requests per 100
+   *   child-days by time since the last allowance and the last earned credit
+   *   to Spend.
+   * - D.13 Split-Ratio Engagement Quality: splits that kept the recommended
+   *   default versus adjusted ones, per payout source.
+   * - D.15 Save-Bucket Contribution Persistence and the Post-Goal Motivation
+   *   Cliff (Save contributions per day before versus after a goal is reached,
+   *   split by whether a next goal was set within 2 days).
+   * - D.14 Share-Bucket Destination Completion Rate: read from the gifts
+   *   themselves (bookkeeping, not behaviour), plus holders with Share coins
+   *   and no destination at all.
+   */
+  /*
+   * S07.6 (D.6) Appendix H: Staff Family-Engagement Insight Uptime (target
+   * 100% once D.6 ships). Per source (the nightly probe and staff requests),
+   * the checks in the window and how many returned real data. An empty window
+   * is reported as no checks, never as 100%.
+   */
+  router.get('/family/engagement-uptime', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readStaffInsightUptime(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the uptime metric');
+    const bySource = (source: 'probe' | 'request') => {
+      const r = rows.find((row) => row.source === source)!;
+      return { checks: r.checks, ok: r.ok, uptime: r.checks > 0 ? r.ok / r.checks : null, lastOutcome: r.last_outcome, lastCheckedAt: r.last_checked_at };
+    };
+    return ok(res, { since: since.toISOString(), target: 1, probe: bySource('probe'), requests: bySource('request') });
+  });
+
+  /*
+   * S07.6 (D.12) Appendix H (Threshold Recalibration Log): wallet holders per
+   * age register, counts only. The first review of the 10- and 13-year
+   * cutoffs reads this next to the D.11 comprehension proxy.
+   */
+  /*
+   * S07.7 (D.19, D.21, D.22, D.23): the governance metrics, counts only.
+   *   retention-compliance   Appendix H Retention-Policy Compliance Audit, pass
+   *                          every release: rows past their period (target 0)
+   *   coaching-delivery      Parent-Coaching-Tip Delivery & Engagement Rate
+   *   coaching-reflections   the reflective prompt fired on every Tutor decision
+   *   bridge-engagement      Real-World Bridge Engagement Rate (Diagnostic)
+   *   research-completeness  Longitudinal-Hypothesis Data Completeness (Diagnostic)
+   */
+  router.get('/family/retention-compliance', async (_req, res) => {
+    const audit = await readRetentionCompliance();
+    if (audit === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the retention audit');
+    return ok(res, audit);
+  });
+
+  const CoachingPeriod = z.object({ period: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional() }).strict();
+  router.get('/family/coaching-delivery', async (req, res) => {
+    const q = CoachingPeriod.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'period must be YYYY-MM');
+    const metric = await readCoachingDelivery(q.data.period ?? new Date().toISOString().slice(0, 7));
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the coaching delivery metric');
+    return ok(res, metric);
+  });
+
+  router.get('/family/coaching-reflections', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const metric = await readReflectionRate(new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000));
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the reflection metric');
+    return ok(res, metric);
+  });
+
+  router.get('/family/bridge-engagement', async (_req, res) => {
+    const metric = await readBridgeEngagement();
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the bridge engagement metric');
+    return ok(res, metric);
+  });
+
+  const CompletenessQuery = z.object({
+    months: z.coerce.number().int().min(1).max(24).default(RESEARCH_COMPLETENESS_MONTHS),
+    tenure: z.coerce.number().int().min(0).max(120).default(RESEARCH_MIN_TENURE_MONTHS),
+  }).strict();
+  router.get('/family/research-completeness', async (req, res) => {
+    const q = CompletenessQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'months must be 1 to 24 and tenure 0 to 120');
+    const metric = await readResearchCompleteness(q.data.months, q.data.tenure);
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the completeness metric');
+    return ok(res, metric);
+  });
+
+  router.get('/family/register-distribution', async (_req, res) => {
+    const rows = await readRegisterDistribution();
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the register distribution');
+    const total = rows.reduce((sum, r) => sum + r.holders, 0);
+    return ok(res, { total, registers: rows.map((r) => ({ register: r.register, holders: r.holders, share: total > 0 ? r.holders / total : null })) });
+  });
+
+  router.get('/family/redemption-timing', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readRedemptionTiming(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the redemption-timing metric');
+    const byClass = (cls: 'allowance' | 'earned') => rows.filter((r) => r.credit_class === cls).map((r) => ({
+      bin: r.bin, requests: r.requests, exposureHours: r.exposure_hours, ratePer100ChildDays: r.rate_per_100_child_days,
+    }));
+    return ok(res, { since: since.toISOString(), allowance: byClass('allowance'), earned: byClass('earned') });
+  });
+
+  router.get('/family/split-engagement', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readSplitEngagement(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the split metric');
+    const sources = rows.map((r) => ({
+      source: r.source, allocations: r.allocations, keptDefault: r.kept_default, adjusted: r.adjusted,
+      adjustedShare: r.allocations > 0 ? r.adjusted / r.allocations : null,
+    }));
+    const allocations = sources.reduce((sum, r) => sum + r.allocations, 0);
+    const adjusted = sources.reduce((sum, r) => sum + r.adjusted, 0);
+    return ok(res, { since: since.toISOString(), sources, allocations, adjusted, adjustedShare: allocations > 0 ? adjusted / allocations : null });
+  });
+
+  router.get('/family/save-persistence', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readSavePersistence(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the persistence metric');
+    return ok(res, {
+      since: since.toISOString(),
+      children: row.children,
+      saveContributors: row.save_contributors,
+      saveCoins: row.save_coins,
+      ownCoins: row.own_coins,
+      saveShare: row.own_coins > 0 ? row.save_coins / row.own_coins : null,
+    });
+  });
+
+  router.get('/family/post-goal-motivation', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readPostGoalMotivation(since);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the post-goal metric');
+    const group = (soon: boolean) => {
+      const r = rows.find((x) => x.next_goal_within_2_days === soon)!;
+      return { goals: r.goals, meanBeforePerDay: r.mean_before_per_day, meanAfterPerDay: r.mean_after_per_day, goalsWithDrop: r.goals_with_drop };
+    };
+    return ok(res, { since: since.toISOString(), nextGoalWithin2Days: group(true), noNextGoalWithin2Days: group(false) });
+  });
+
+  router.get('/family/share-completion', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readShareCompletion(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Share metric');
+    return ok(res, {
+      since: since.toISOString(),
+      windowDays: SHARE_COMPLETION_WINDOW_DAYS,
+      pledged: row.pledged,
+      givenInWindow: row.given_in_window,
+      givenLater: row.given_later,
+      returned: row.returned,
+      waiting: row.waiting,
+      completionRate: row.pledged > 0 ? row.given_in_window / row.pledged : null,
+      holdersWithShare: row.holders_with_share,
+      holdersWithoutDestination: row.holders_without_destination,
+    });
+  });
+
+  // ── S07.5 (D.17, D.18): Appendix H metrics ───────────────────────────────
+  /*
+   * Independence-Tier Progression Rate (Diagnostic): of the children who
+   * first met the rule for a level, how many reached it within the window;
+   * plus the rollback path in use (levels lowered, by who).
+   */
+  router.get('/family/autonomy-progression', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const data = await readAutonomyProgression(since);
+    if (data === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the progression metric');
+    return ok(res, {
+      since: since.toISOString(),
+      windowDays: AUTONOMY_PROGRESSION_WINDOW_DAYS,
+      levels: data.levels.map((l) => ({ level: l.level, judged: l.judged, progressed: l.progressed, waiting: l.waiting, progressionRate: l.judged > 0 ? l.progressed / l.judged : null })),
+      stepDowns: Object.fromEntries(data.stepDowns.map((d) => [d.actor_kind, d.step_downs])),
+    });
+  });
+
+  /** Repeated-Denial Communication-Nudge Trigger Rate (Diagnostic): patterns recomputed from the decisions against nudges opened. */
+  router.get('/family/talk-nudges', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readTalkNudgeRate(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the nudge metric');
+    return ok(res, {
+      since: since.toISOString(),
+      patterns: row.patterns, nudged: row.nudged, triggerRate: row.patterns > 0 ? row.nudged / row.patterns : null,
+      childAsks: row.child_asks, talked: row.talked, dismissed: row.dismissed, stillOpen: row.still_open,
+    });
+  });
+
+  /** Denial-Reason Actionability Rate: human scores over a consent-gated sample, plus the structural compliance of every "not yet". */
+  router.get('/family/denial-actionability', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const row = await readDenialActionability(since);
+    if (row === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the actionability metric');
+    return ok(res, {
+      since: since.toISOString(),
+      denials: row.denials, structured: row.structured, structuredRate: row.denials > 0 ? row.structured / row.denials : null,
+      admitted: row.admitted, scored: row.scored, actionable: row.actionable, actionabilityRate: row.scored > 0 ? row.actionable / row.scored : null,
+    });
+  });
+
+  const DenialSampleQuery = z.object({
+    days: z.coerce.number().int().min(1).max(365).default(30),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+  }).strict();
+
+  /*
+   * The sample staff score. The reason text and its code only: no child,
+   * family or decision identity beyond an opaque id, and only children the
+   * H.1 analytics gate admits (the database filters).
+   */
+  router.get('/family/denial-reasons/sample', async (req, res) => {
+    const q = DenialSampleQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365 and limit 1-50');
+    const since = new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000);
+    const rows = await readDenialReasonSample(since, q.data.limit);
+    if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the sample');
+    return ok(res, {
+      since: since.toISOString(),
+      reasons: rows.map((r) => ({ id: r.decision_id, subject: r.subject, outcome: r.outcome, reasonCode: r.reason_code, reason: r.reason, passesStructuralCheck: reasonActionable(r.reason) })),
+    });
+  });
+
+  const ScoreBody = z.object({ actionable: z.boolean() }).strict();
+
+  router.post('/family/denial-reasons/:id/score', async (req, res) => {
+    const id = z.string().uuid().safeParse(req.params.id);
+    if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+    const body = ScoreBody.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'actionable must be a boolean');
+    const result = await scoreDenialReason(id.data, authedUser(res).id, body.data.actionable);
+    if (result === AUTONOMY_UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the score');
+    if (isAutonomyRefusal(result)) {
+      return result.refused === 'DENIAL_SCORE_FORBIDDEN'
+        ? fail(res, 403, 'FORBIDDEN', 'You do not have permission to score reasons')
+        : fail(res, 404, 'NOT_FOUND', 'No such reason in the sample');
+    }
+    return ok(res, { scored: result });
+  });
+
+  // ── S07.5 (D.17): the product-team rollback of an independence level ────
+  router.get('/family-autonomy/:kidId', async (req, res) => {
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const [status, changes] = await Promise.all([readAutonomyStatus(kidId.data), listAutonomyChanges(kidId.data, 20)]);
+    if (!status || changes === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the level');
+    if (!status.in_family) return fail(res, 404, 'NOT_FOUND', 'No child in a family with this id');
+    return ok(res, { autonomy: toWireAutonomy(status), changes: changes.map((c) => toWireChange(c, authedUser(res).id)) });
+  });
+
+  const LowerLevel = z.object({ level: z.number().int().min(1).max(2), reason: z.string().max(240) }).strict();
+
+  router.post('/family-autonomy/:kidId/lower', async (req, res) => {
+    const actor = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const body = LowerLevel.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'A lower level and a reason are required');
+    if (!reasonActionable(body.data.reason)) return fail(res, 400, 'AUTONOMY_REASON_REQUIRED', 'Say what the family can do next, in a few words');
+    // The reason exists in the audit trail even if the write fails.
+    await insertAuditLog(actor.id, 'family_autonomy.staff_lower', kidId.data, { level: body.data.level });
+    const result = await staffLowerAutonomy(kidId.data, actor.id, body.data.level, body.data.reason.trim());
+    if (result === AUTONOMY_UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not lower the level');
+    if (isAutonomyRefusal(result)) {
+      const status = result.refused === 'AUTONOMY_STAFF_FORBIDDEN' ? 403 : result.refused === 'AUTONOMY_NOT_IN_FAMILY' ? 404 : result.refused === 'AUTONOMY_REASON_REQUIRED' ? 400 : 409;
+      return fail(res, status, result.refused, 'The change was refused');
+    }
+    return ok(res, { level: result });
+  });
+
   router.get('/users/timeline', async (req, res) => {
     const q = TimelineQuerySchema.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 7 and 365');
@@ -1959,9 +2400,13 @@ export function adminRouter(): Router {
   router.get('/insights/families', async (req, res) => {
     const q = InsightsFamiliesQuerySchema.safeParse(req.query);
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
-    const [families, consent] = await Promise.all([readFamilyEngagement(q.data.limit), readConsentCoverage()]);
-    if (families === null || consent === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Family views unreachable');
-    ok(res, { families, consent });
+    // S07.6 (D.6): the per-child shape. Every outcome is recorded for the
+    // Staff Family-Engagement Insight Uptime metric; the consent coverage is a
+    // separate count and does not decide whether the insight was served.
+    const [insight, consent] = await Promise.all([readFamilyEngagementInsight(q.data.limit), readConsentCoverage()]);
+    await recordStaffInsightCheck(insight.ok ? 'ok' : insight.outcome);
+    if (!insight.ok || consent === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Family views unreachable');
+    ok(res, { summary: insight.data.summary, children: insight.data.children, consent });
   });
 
 

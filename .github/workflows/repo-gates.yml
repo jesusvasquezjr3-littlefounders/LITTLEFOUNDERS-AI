@@ -39,6 +39,68 @@ jobs:
       - name: i18n 3-locale key parity + hardcoded-string scan
         run: bash agent/tools/check-i18n.sh
 
+      # OD-21 / D.5: every declared Family Hub lifecycle state keeps a
+      # producing and a consuming flow. Its evidence spans backend, frontend
+      # and migrations, so it runs here, unfiltered, not only in database CI.
+      - name: Family Hub lifecycle states each have a producer and a consumer
+        run: node database/scripts/check-family-lifecycle.mjs
+
+      # Appendix H (Block D threshold log): every threshold in
+      # docs/operations/BLOCK-D-THRESHOLD-LOG.md equals the Core constant and
+      # the migration that enforce it. The three live in different packages,
+      # so a doc-only or migration-only change is checked here, unfiltered.
+      - name: Block D thresholds agree across the log, Core and the migrations
+        run: node agent/tools/check-block-d-thresholds.mjs
+
+      # S07.6 (D.7): no control a family sees may imply a guarantee the system
+      # does not enforce. docs/operations/block-d-controls.json names each
+      # control's enforcing SQL and its adversarial proof; the gate fails when
+      # the latest definition of an enforcing function drops its guard, when
+      # the freeze holds the UI lists differ from Core's or the registry's, or
+      # when a payment SDK appears. Evidence spans database, backend, frontend
+      # and docs, so it runs here, unfiltered.
+      - name: No Family Hub or banking control implies an unbacked guarantee
+        run: node agent/tools/check-no-unbacked-guarantee.mjs
+
+      # S07.6 (D.8): speak like a mentor, never like a bank. Every Family Hub
+      # and banking string in three locales against the bank-register,
+      # guarantee, glossary and shouting lexicon; prints Appendix H's
+      # Tone-Gate Pass Rate. A locale file can change alone, hence unfiltered.
+      - name: Family Hub and banking copy passes the tone gate
+        run: node agent/tools/check-family-copy-tone.mjs
+
+      # S07.6 (D.6): the staff family-engagement insight's keys are written in
+      # four places (the database function, its probe, Core, the console);
+      # D.6 was exactly those drifting apart.
+      - name: Family-engagement insight keys agree across the database, Core and the console
+        run: node agent/tools/check-family-engagement-contract.mjs
+
+      # S07.7 (D.9): every Block D choice traced to Appendix G with its evidence
+      # strength and metric; no parent-facing string (app or marketing, three
+      # locales) claims proof (Block D Part 4); no experiment column on a Block
+      # D table (OD-23). An overdue recalibration only warns here; release
+      # readiness runs it with --strict.
+      - name: Block D research foundation, claims boundary and experiment rule hold
+        run: node agent/tools/check-block-d-research.mjs
+
+      # S07.7 (D.20): the scope statement names credit, debt, compound interest
+      # and risk as not taught, every "practises" line keeps its backing code,
+      # it stays mounted, and no lending or interest mechanic enters the schema
+      # without the statement changing first.
+      - name: Block D scope statement stays true
+        run: node agent/tools/check-block-d-scope.mjs
+
+      # S07.7 (D.21): every Block D table has a retention class, and the
+      # periods agree across the policy, the migration, Core, the copy and the
+      # nightly jobs; no Block D field reaches the Mentor's context.
+      - name: Block D retention policy agrees with what the system does
+        run: node agent/tools/check-block-d-retention.mjs
+
+      # S07.7 (D.23): a monthly tip reaches a Tutor only after the Pedagogical
+      # Lead's review, bound to its exact copy in three locales.
+      - name: Parent coaching tips are sent only after review
+        run: node agent/tools/check-parent-coaching-tips.mjs
+
       # The acquisition surface is declared in frontend/ AND backend/ (no
       # workspaces, so no shared import). Either file can change alone, which
       # is why this belongs in the unfiltered job rather than either CI.

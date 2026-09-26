@@ -1,0 +1,41 @@
+{
+  "about": "S07.7 (D.20): what the Family Hub and Digital Banking practice teaches and, explicitly, what it does not attempt. docs/operations/BLOCK-D-SCOPE-STATEMENT.md explains the statement, its quarterly human audit and the audit log; agent/tools/check-block-d-scope.mjs fails when a line loses its backing or its copy, a required exclusion or a mount disappears, or a borrowing, interest, insurance or investing mechanic appears in the schema without this statement changing.",
+  "version": 1,
+  "copyNamespace": "familyGovernance",
+  "component": "frontend/src/rebuild/family/ScopeStatement.tsx",
+  "teaches": [
+    { "id": "earning", "copyKey": "scope.earning", "requirement": "D.10", "backedBy": [
+      { "file": "backend/src/routes/tasks.ts", "contains": "kind: z.enum(['contribution', 'bonus'])" } ] },
+    { "id": "splitting", "copyKey": "scope.splitting", "requirement": "D.13", "backedBy": [
+      { "file": "backend/src/services/moneyHabits.ts", "contains": "export const RECOMMENDED_SAVE_PCT" } ] },
+    { "id": "goals", "copyKey": "scope.goals", "requirement": "D.15", "backedBy": [
+      { "file": "backend/src/routes/tasks.ts", "contains": "router.post('/goals', walletHolder" } ] },
+    { "id": "asking", "copyKey": "scope.asking", "requirement": "D.18", "backedBy": [
+      { "file": "backend/src/routes/tasks.ts", "contains": "reasonKind: z.enum(CHILD_REWARD_REASONS)" },
+      { "file": "backend/src/routes/tasks.ts", "contains": "const problem = notYetProblem(raw, REWARD_REASON_CODES);" } ] }
+  ],
+  "notAttempted": [
+    { "id": "credit", "concept": "credit", "copyKey": "scope.credit", "basis": "Appendix G §3.5: borrowing behaviour is more resistant to change than saving; programmes that move saving show null or adverse effects on credit (Bruhn et al. 2016)." },
+    { "id": "debt", "concept": "debt", "copyKey": "scope.debt", "basis": "Appendix G §3.2, §3.5: the Brazil RCT raised both saving and borrowing, attributed to inadequate coverage of credit risk." },
+    { "id": "compounding", "concept": "compound_interest", "copyKey": "scope.compounding", "basis": "Appendix G §2.4, §3.5: exponential-growth bias persists in adults (Stango & Zinman 2009); the weekly savings bonus is a family reward, not interest (D.11)." },
+    { "id": "risk", "concept": "risk_insurance", "copyKey": "scope.risk", "basis": "Appendix G §3.5: the simulation is debt-free and risk-free; it models no risk, insurance or investing." }
+  ],
+  "requiredConcepts": ["credit", "debt", "compound_interest", "risk_insurance"],
+  "publicAnswers": [
+    { "id": "notTaught", "why": "S07.8: D.20 asks for the statement in parent-facing material, and a parent weighing the product reads the marketing FAQ before any in-app screen.",
+      "list": "frontend/src/routes/marketing/FAQ.tsx", "namespace": "marketing", "copyKey": "faq.items.notTaught.answer",
+      "mustName": {
+        "en-US": ["credit", "debt", "compound interest", "risk", "insurance", "not interest"],
+        "es-MX": ["crédito", "deudas", "interés compuesto", "riesgo", "seguros", "no es interés"],
+        "pt-BR": ["crédito", "dívidas", "juros compostos", "risco", "seguros", "não é rendimento"]
+      } }
+  ],
+  "mounts": [
+    "frontend/src/routes/app/family/FamilyPage.tsx",
+    "frontend/src/routes/app/banking/ParentBankingControlPanel.tsx",
+    "frontend/src/routes/app/wallet/TeenWalletPage.tsx"
+  ],
+  "mechanicWords": ["loan", "loans", "debt", "debts", "borrow", "borrowed", "borrowing", "lend", "lends", "lending", "lender", "interest", "apr", "overdraft", "insurance", "insured", "premium", "premiums", "invest", "invested", "investing", "investment", "investments", "stock", "stocks"],
+  "mechanicPairs": ["credit_limit", "credit_line", "credit_score"],
+  "acknowledged": {}
+}

@@ -1,0 +1,33 @@
+{
+  "usualSplit": {
+    "young": {
+      "body": "Out of every 10 coins you get:",
+      "tenths": "{count} of 10"
+    },
+    "transition": {
+      "body": "Out of every 10 coins you get:",
+      "tenths": "{count} of 10",
+      "scale": "so {pct} of 100"
+    },
+    "teen": {
+      "body": "Your usual split of new coins:",
+      "tenths": "{pct}%"
+    }
+  },
+  "goalProgress": {
+    "young": {
+      "of": "{saved} of {target}"
+    },
+    "transition": {
+      "of": "{saved} of {target}, {left} to go"
+    },
+    "teen": {
+      "of": "{saved} of {target} ({pct}%)"
+    }
+  },
+  "bonus": {
+    "transition": {
+      "scaffold": "1 for every 10 is like 10 for every 100."
+    }
+  }
+}

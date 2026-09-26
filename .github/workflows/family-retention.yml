@@ -1,0 +1,109 @@
+name: Family Hub retention
+
+# S07.7 (D.21): the Block D retention and deletion policy, run every night.
+# docs/operations/FAMILY-DATA-RETENTION.md is the written policy; the numbers
+# live in the family_data_retention migration and are served to families from
+# the same values. Core's internal route does the whole job in one call:
+#
+#  1. family_retention_sweep()   deletes decisions, decided chores, answered
+#                                requests, nudges, audits, corrections, Share
+#                                gifts, coaching records and research
+#                                snapshots past their period, and records a run
+#  2. the photos                 a decided chore's photo lives in Depot, outside
+#                                PostgreSQL: Core deletes each object first and
+#                                only then clears the chore's pointer, so a
+#                                failed call is retried the next night and a
+#                                photo is never orphaned
+#
+# Appendix H's Retention-Policy Compliance Audit reads the result
+# (GET /api/v1/admin/family/retention-compliance, zero overdue rows is a pass).
+#
+# Mechanics are tutor-retention.yml's, including its measured lessons: the
+# request travels base64-encoded as ONE argument with no inner quotes, the
+# internal key and port expand inside the container and never on the runner,
+# and every failed attempt prints why.
+
+on:
+  schedule:
+    - cron: '15 3 * * *' # 03:15 UTC daily, after the tutor retention sweep
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Photos per batch'
+        required: false
+        default: '200'
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: Delete Family Hub data past its retention period
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Sweep and purge photos
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          BATCH: ${{ github.event.inputs.limit || '200' }}
+        run: |
+          set -euo pipefail
+
+          case "$BATCH" in
+            ''|*[!0-9]*) echo "limit must be a positive integer, got '$BATCH'" >&2; exit 1 ;;
+          esac
+
+          remote_run() {
+            local script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{\"limit\": ${BATCH}}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/family-hub/internal/retention/run"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          body=''
+          for attempt in 1 2 3; do
+            if body=$(remote_run); then break; fi
+            echo "attempt ${attempt} failed:" >&2
+            printf '%s\n' "$body" | head -5 >&2
+            body=''
+            sleep 20
+          done
+          if [ -z "$body" ]; then
+            echo "::error::could not reach Core after 3 attempts; nothing was swept tonight"
+            exit 1
+          fi
+
+          # An absent run id is NOT a run: Core answering an error envelope or
+          # an HTML page must fail the job, never read as "nothing was due".
+          run_id=$(printf '%s' "$body" | grep -o '"runId":[0-9]*' | head -1 | cut -d: -f2)
+          failed=$(printf '%s' "$body" | grep -o '"failed":[0-9]*' | head -1 | cut -d: -f2)
+          if [ -z "$run_id" ]; then
+            echo "::error::Core did not report a retention run. Its answer:"
+            printf '%s\n' "$body" | head -20
+            exit 1
+          fi
+          echo "family retention run ${run_id}: $body"
+          if [ "${failed:-0}" != "0" ]; then
+            echo "::warning::${failed} photo(s) could not be deleted tonight; their pointers stay and the next run retries them"
+          fi

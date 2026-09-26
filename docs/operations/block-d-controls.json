@@ -1,0 +1,231 @@
+{
+  "about": "S07.6 (D.7): every control a family sees in Digital Banking and the Family Hub, what the product may say it does, where the system enforces it and which adversarial test proves it. agent/tools/check-no-unbacked-guarantee.mjs fails CI when an enforcement or a proof is missing, when the latest definition of an enforcing SQL function no longer carries its guard, when a surface declares a data-control that is not listed here, or when Core's or the client's freeze holds differ from the holds listed here. Rationale: docs/operations/NO-UNBACKED-GUARANTEE.md.",
+  "version": 1,
+  "forbiddenDependencies": ["stripe", "@stripe/stripe-js", "@stripe/react-stripe-js", "paypal", "@paypal/checkout-server-sdk", "@paypal/react-paypal-js", "braintree", "@adyen/api-library", "@adyen/adyen-web", "plaid", "react-plaid-link", "marqeta", "square", "checkout-sdk-node", "mercadopago", "@mercadopago/sdk-react", "pagarme", "unit-finance", "synctera", "galileo"],
+  "retiredClaims": [
+    {
+      "namespace": "marketing",
+      "why": "D.17 lets a Tutor pre-approve small rewards and self-logged chores, so not every reward or chore waits for a tap (control approval); D.14 sends Share coins to a place a Tutor chose, never to another person's goal (control share_destination). Retired in S07.8.",
+      "phrases": {
+        "en-US": ["spending needs your approval first", "you approve it before it lands", "waiting for their approval before it's yours", "someone else's goal"],
+        "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],
+        "pt-BR": ["gastar precisa da sua aprovação antes", "aprova antes de chegar até ele", "esperando a aprovação dele antes de ser seu", "a meta de outra pessoa"]
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "simulation",
+      "claim": "The account is a practice card: coins stay in the app. There is no bank, card number, card network or payment behind it.",
+      "enforcedBy": [
+        { "file": "backend/src/routes/banking.ts", "contains": "simulated: true as const" },
+        { "file": "frontend/src/rebuild/banking/bankingApi.ts", "contains": "value.simulated === true" }
+      ],
+      "provedBy": [
+        { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "serves the account as a declared simulation with no card number and every real freeze hold" },
+        { "file": "frontend/src/rebuild/banking/CoinAccount.test.tsx", "contains": "refuses a card that is not a declared simulation, carries a number, or claims a hold nobody enforces" }
+      ],
+      "ui": ["coinAccount:young.practice", "coinAccount:young.coinsOnly", "coinAccount:transition.practice", "coinAccount:transition.coinsOnly", "coinAccount:teen.practice", "coinAccount:teen.coinsOnly", "coinAccount:tutor.practice", "familyGovernance:scope.intro"]
+    },
+    {
+      "id": "freeze",
+      "claim": "A freeze is real: while it holds, the four holds below are refused by the database for every writer, and nothing already in a pocket moves.",
+      "enforcedBy": [
+        { "fn": "banking_movement_allowed", "contains": "FOR UPDATE" },
+        { "file": "backend/src/middleware/bankingFreeze.ts", "contains": "'ACCOUNT_FROZEN'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "raise AssertionError('Frozen request was accepted')" },
+        { "file": "frontend/src/routes/app/banking/__tests__/KidBankingFreeze.test.tsx", "contains": "preserves the pending credit and explains the hold" }
+      ],
+      "ui": ["coinAccount:young.whileFrozen", "coinAccount:young.nothingLost", "coinAccount:transition.whileFrozen", "coinAccount:transition.nothingLost", "coinAccount:teen.whileFrozen", "coinAccount:teen.nothingLost", "coinAccount:tutor.whileFrozen", "coinAccount:tutor.nothingLost", "coinAccount:tutor.noCoinsMoved"]
+    },
+    {
+      "id": "freeze.rewards",
+      "hold": "rewards",
+      "claim": "While frozen, a new reward request, a Tutor's approval and a level's pre-approval are all refused.",
+      "enforcedBy": [
+        { "fn": "guard_frozen_redemption_request", "contains": "banking_movement_allowed(NEW.kid_user_id)" },
+        { "fn": "decide_redemption", "contains": "banking_movement_allowed(v_kid_user_id)" },
+        { "fn": "guard_redemption_state", "contains": "banking_movement_allowed(NEW.kid_user_id)" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "INSERT INTO redemptions(kid_user_id,catalog_id)" },
+        { "file": "backend/src/__tests__/banking.test.ts", "contains": "toBe('ACCOUNT_FROZEN')" }
+      ],
+      "ui": ["coinAccount:young.holdRewards", "coinAccount:transition.holdRewards", "coinAccount:teen.holdRewards", "coinAccount:tutor.holdRewards"]
+    },
+    {
+      "id": "freeze.splits",
+      "hold": "splits",
+      "claim": "While frozen, an approved chore's coins and an allowance wait to be split; they are not lost.",
+      "enforcedBy": [
+        { "fn": "allocate_task_reward", "contains": "banking_movement_allowed(p_kid_user_id)" },
+        { "fn": "allocate_pending_credit", "contains": "banking_movement_allowed(p_kid_user_id)" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "assert allocate()=='f'" },
+        { "file": "frontend/src/routes/app/banking/__tests__/KidBankingFreeze.test.tsx", "contains": "resumes the split only after the child's own freeze is lifted and re-read" }
+      ],
+      "ui": ["coinAccount:young.holdSplits", "coinAccount:transition.holdSplits", "coinAccount:teen.holdSplits", "coinAccount:tutor.holdSplits", "coinAccount:young.waitingFrozen", "coinAccount:transition.waitingFrozen", "coinAccount:teen.waitingFrozen"]
+    },
+    {
+      "id": "freeze.credits",
+      "hold": "credits",
+      "claim": "While frozen, the scheduled allowance and savings bonus are not posted; they catch up after the freeze is lifted.",
+      "enforcedBy": [
+        { "fn": "run_due_scheduled_credits", "contains": "banking_movement_allowed(p_kid_user_id)" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-freeze-postgres.py", "contains": "run_due_scheduled_credits('{kid}');\")=='0'" },
+        { "file": "backend/src/__tests__/banking.test.ts", "contains": "D.1 does not advance scheduled allowances while the account is frozen" }
+      ],
+      "ui": ["coinAccount:young.holdCredits", "coinAccount:transition.holdCredits", "coinAccount:teen.holdCredits", "coinAccount:tutor.holdCredits"]
+    },
+    {
+      "id": "freeze.share",
+      "hold": "share",
+      "claim": "While frozen, the child can neither give Share coins to a place nor take a gift back.",
+      "enforcedBy": [
+        { "fn": "guard_share_gift", "contains": "'ACCOUNT_FROZEN'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "share and the freeze (D.1)" }
+      ],
+      "ui": ["coinAccount:young.holdShare", "coinAccount:transition.holdShare", "coinAccount:teen.holdShare", "coinAccount:tutor.holdShare"]
+    },
+    {
+      "id": "freeze.owner",
+      "claim": "A child lifts only a freeze they set; a Tutor's freeze is lifted only by a Tutor.",
+      "enforcedBy": [
+        { "fn": "guard_banking_account_state", "contains": "'FREEZE_OWNED_BY_GUARDIAN'" },
+        { "file": "backend/src/routes/banking.ts", "contains": "'GUARDIAN_FREEZE'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-family-state-machine-postgres.py", "contains": "'FREEZE_OWNED_BY_GUARDIAN')" },
+        { "file": "backend/src/__tests__/banking.test.ts", "contains": "toBe('GUARDIAN_FREEZE')" },
+        { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "a child may lift only a freeze they set" }
+      ],
+      "ui": ["coinAccount:young.onlyTutor", "coinAccount:transition.onlyTutor", "coinAccount:teen.onlyTutor", "coinAccount:young.byTutor", "coinAccount:tutor.byChild"]
+    },
+    {
+      "id": "spend_limit",
+      "claim": "A reward request that would go over the Tutor's limit (the last 7 or 30 days of spending) is refused when it is asked for, whoever writes it.",
+      "enforcedBy": [
+        { "fn": "guard_redemption_state", "contains": "'SPEND_LIMIT_REACHED'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-family-state-machine-postgres.py", "contains": "'SPEND_LIMIT_REACHED')" },
+        { "file": "backend/src/__tests__/tasks.test.ts", "contains": "toBe('SPEND_LIMIT_REACHED')" }
+      ],
+      "ui": ["coinAccount:young.limitWeekly", "coinAccount:young.limitWhen", "coinAccount:transition.limitWeekly", "coinAccount:transition.limitMonthly", "coinAccount:transition.limitWhen", "coinAccount:teen.limitWeekly", "coinAccount:teen.limitMonthly", "coinAccount:teen.limitWhen"]
+    },
+    {
+      "id": "approval",
+      "claim": "A chore counts and a reward is given only after a Tutor's yes, or inside the independence level a Tutor granted (a self-logged chore or a pre-approved reward the Tutor reviews afterwards), and never past the freeze or the limit. The marketing site says exactly this, not that every reward waits for a tap (S07.8).",
+      "enforcedBy": [
+        { "fn": "guard_task_state", "contains": "'TASK_SELF_LOG_FORBIDDEN'" },
+        { "fn": "guard_redemption_state", "contains": "'REDEMPTION_PREAPPROVAL_FORBIDDEN'" },
+        { "fn": "family_request_redemption", "contains": "'preapproved', p_kid, 'child'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-autonomy-decisions-postgres.py", "contains": "'TASK_SELF_LOG_FORBIDDEN')" },
+        { "file": "database/scripts/verify-autonomy-decisions-postgres.py", "contains": "'REDEMPTION_PREAPPROVAL_FORBIDDEN')" },
+        { "file": "backend/src/__tests__/familyAutonomy.test.ts", "contains": "reports a pre-approved reward as the database decided, and never approves one itself" }
+      ],
+      "ui": ["familyAutonomy:levelsTutor.unlock1", "familyAutonomy:levelsTutor.preapproved", "marketing:faq.items.chores.answer", "marketing:families.tasks.body", "marketing:families.tasks.consequenceSpend"]
+    },
+    {
+      "id": "share_destination",
+      "claim": "Share coins go only to a place a Tutor (or a self-registered teen) chose, and only whoever chose it records what really happened, with a note the child reads. The marketing site describes this destination, not a transfer to someone else's goal (S07.8).",
+      "enforcedBy": [
+        { "fn": "guard_share_gift", "contains": "'SHARE_DESTINATION_UNAVAILABLE'" },
+        { "fn": "guard_share_gift", "contains": "'SHARE_GIFT_FORBIDDEN'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "'SHARE_DESTINATION_UNAVAILABLE')" },
+        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "'SHARE_GIFT_FORBIDDEN')" }
+      ],
+      "ui": ["marketing:families.tasks.consequenceShare"]
+    },
+    {
+      "id": "savings_bonus.framing",
+      "claim": "Under 13 (or with no known birth date) the bonus is 1 coin for every 10 saved and no percentage reaches the child, whoever writes the rule.",
+      "enforcedBy": [
+        { "fn": "guard_savings_bonus_rule", "contains": "'SAVINGS_BONUS_FIXED_FOR_AGE'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-chore-streak-bonus-postgres.py", "contains": "'SAVINGS_BONUS_FIXED_FOR_AGE')" }
+      ],
+      "ui": ["familyMoney:bonusYoung.rule", "moneyRegister:bonus.transition.scaffold"]
+    },
+    {
+      "id": "register",
+      "claim": "The presentation register follows age evidence, never role, and the teen register is exactly the percentage bonus framing.",
+      "enforcedBy": [
+        { "fn": "family_money_register", "contains": "public.savings_bonus_framing(p_user) = 'percent'" },
+        { "file": "backend/src/services/moneyPresentation.ts", "contains": "export function presentSpendLimit" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-money-presentation-postgres.py", "contains": "D.12 and D.11 are one design" },
+        { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "young: the limit is what is left and the month is three totals" }
+      ],
+      "ui": ["moneyRegister:usualSplit.young.tenths", "moneyRegister:usualSplit.transition.tenths", "moneyRegister:usualSplit.teen.tenths"]
+    },
+    {
+      "id": "research_consent",
+      "claim": "A child's research data is recorded only while a verified Tutor's yes stands (an adult's own yes for an adult), never as an experiment, and a no, including the child's own, deletes every snapshot at once.",
+      "enforcedBy": [
+        { "fn": "family_research_admitted", "contains": "public.family_is_verified_guardian(v_consent.granted_by, p_subject)" },
+        { "fn": "family_research_set_consent", "contains": "DELETE FROM public.family_research_participants WHERE subject_user_id = p_subject" },
+        { "fn": "record_family_research_snapshots", "contains": "WHERE public.family_research_admitted(p.subject_user_id)" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-family-governance-postgres.py", "contains": "saying no deletes" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "lets %s read their own participation and say no, as the caller" }
+      ],
+      "ui": ["familyGovernance:research.never", "familyGovernance:research.stop", "familyGovernance:myResearch.stop"]
+    },
+    {
+      "id": "data_retention",
+      "claim": "Each period the family reads (photos, records, usage insights, research) is the one the nightly retention job enforces, and deleting an account deletes all of it.",
+      "enforcedBy": [
+        { "fn": "family_retention_sweep", "contains": "public.family_retention_days('records')" },
+        { "fn": "family_evidence_cleared", "contains": "public.family_retention_days('evidence')" },
+        { "file": "backend/src/services/familyRetention.ts", "contains": "{ id: 'photos', days: RETENTION_EVIDENCE_DAYS }" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-family-governance-postgres.py", "contains": "the sweep deletes what is past its period and nothing else" },
+        { "file": "database/scripts/verify-family-governance-postgres.py", "contains": "erasure removes every Block D row about them" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "the retention periods the family reads are the ones family_retention_days() enforces" }
+      ],
+      "ui": ["familyGovernance:dataPolicy.photos", "familyGovernance:dataPolicy.records", "familyGovernance:dataPolicy.erasure", "familyGovernance:dataPolicy.sharing"]
+    },
+    {
+      "id": "reflection_private",
+      "claim": "What a Tutor writes in the reflective prompt stays in their browser unless they send it as the note or the reason; only whether it was written, shared or skipped is sent.",
+      "enforcedBy": [
+        { "file": "frontend/src/rebuild/family/ReflectionStep.tsx", "contains": "onContinue(written ? 'written' : 'skipped', null)" },
+        { "file": "backend/src/routes/tasks.ts", "contains": "const ReflectionField = z.enum(REFLECTIONS);" }
+      ],
+      "provedBy": [
+        { "file": "frontend/src/rebuild/family/FamilyGovernance.test.tsx", "contains": "words here unless they choose to send them" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "a reflection text field is refused" }
+      ],
+      "ui": ["familyGovernance:reflection.hint"]
+    },
+    {
+      "id": "bridge_split_local",
+      "claim": "The bridge's split tool applies the teen's usual split to a real amount in the browser and sends nothing; no amount, bank or account detail is ever stored.",
+      "enforcedBy": [
+        { "file": "frontend/src/rebuild/family/governanceApi.ts", "contains": "export function splitAmount(" },
+        { "fn": "money_bridge_mark", "contains": "INSERT INTO public.money_bridge_progress (holder_user_id, milestone, step)" }
+      ],
+      "provedBy": [
+        { "file": "frontend/src/rebuild/family/FamilyGovernance.test.tsx", "contains": "applies the usual split to a real amount without sending anything" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "ticks one entry as the caller; no holder, amount or bank field is accepted" }
+      ],
+      "ui": ["familyGovernance:bridge.splitNote"]
+    }
+  ]
+}

@@ -89,9 +89,11 @@ function apiDefault(path: string) {
   }
   if (path.startsWith('/admin/insights/families')) {
     return apiOk({
-      families: [
-        { family_id: 'fam-1', family_created_at: '2026-06-01T00:00:00.000Z', members: 3, tasks_created: 10, tasks_completed: 6, last_task_at: '2026-08-01T00:00:00.000Z' },
-        { family_id: 'fam-2', family_created_at: '2026-06-15T00:00:00.000Z', members: 2, tasks_created: 4, tasks_completed: 4, last_task_at: null },
+      // S07.6 (D.6): the per-child shape. The summary covers every child; the
+      // listed rows only consented children (here one of the three).
+      summary: { children: 3, children_with_tasks: 3, active_children: 2, tasks_created: 14, tasks_approved: 10, active_days: 30, listed_children: 1 },
+      children: [
+        { guardians: 2, tasks_created: 10, tasks_approved: 6, first_link_on: '2026-06-01', last_task_on: '2026-08-01' },
       ],
       consent: { kidsTotal: 5, kidsConsented: 3 },
     });
@@ -284,8 +286,9 @@ describe('AdminIntelPage — tab switching', () => {
     await flushPromises();
     fireEvent.click(screen.getByText('admin.intel.tabs.retention'));
     expect(screen.getByText('admin.intel.retention.questTitle')).toBeInTheDocument();
-    // (6 + 4) completed / (10 + 4) created across the two mocked families = 71.4%.
+    // 10 approved / 14 created across EVERY child (the summary), not the one listed row (6 / 10 = 60%).
     expect(screen.getByText('71.4%')).toBeInTheDocument();
+    expect(screen.queryByText('60%')).toBeNull();
   });
 
   it('switches to the learning evidence tab on click', async () => {

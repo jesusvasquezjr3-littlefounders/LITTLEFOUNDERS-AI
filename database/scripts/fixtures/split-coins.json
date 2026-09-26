@@ -1,0 +1,2605 @@
+{
+ "description": "D.13 split parity: wallet_split_coins() (database/migrations/*_wallet_usual_split.sql), splitCoins() in backend/src/services/moneyHabits.ts and splitCoins() in frontend/src/rebuild/family/moneyHabitsApi.ts must all give these coins. Floor of each share; the one or two coins left go to the largest remainders, ties Save, Spend, Share.",
+ "cases": [
+  {
+   "amount": 1,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 2,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 3,
+    "spend": 2,
+    "share": 0
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 1
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 4,
+    "spend": 4,
+    "share": 1
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 5,
+    "spend": 4,
+    "share": 1
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 6,
+    "spend": 4,
+    "share": 1
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 7,
+    "spend": 5,
+    "share": 1
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 8,
+    "spend": 7,
+    "share": 2
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 13,
+    "spend": 10,
+    "share": 2
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 17,
+    "spend": 13,
+    "share": 3
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 49,
+    "spend": 40,
+    "share": 10
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 51,
+    "spend": 40,
+    "share": 10
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 125,
+    "spend": 100,
+    "share": 25
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 167,
+    "spend": 133,
+    "share": 33
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 250,
+    "spend": 200,
+    "share": 50
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 499,
+    "spend": 400,
+    "share": 100
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 50,
+    "spend": 40,
+    "share": 10
+   },
+   "coins": {
+    "save": 500,
+    "spend": 400,
+    "share": 100
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 1
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 2,
+    "spend": 2,
+    "share": 1
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 3,
+    "spend": 2,
+    "share": 2
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 3
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 4,
+    "spend": 3,
+    "share": 3
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 4,
+    "spend": 4,
+    "share": 3
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 5,
+    "spend": 4,
+    "share": 4
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 6,
+    "spend": 6,
+    "share": 5
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 9,
+    "spend": 8,
+    "share": 8
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 11,
+    "spend": 11,
+    "share": 11
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 33,
+    "spend": 33,
+    "share": 33
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 35,
+    "spend": 33,
+    "share": 33
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 85,
+    "spend": 83,
+    "share": 82
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 113,
+    "spend": 110,
+    "share": 110
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 170,
+    "spend": 165,
+    "share": 165
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 339,
+    "spend": 330,
+    "share": 330
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 34,
+    "spend": 33,
+    "share": 33
+   },
+   "coins": {
+    "save": 340,
+    "spend": 330,
+    "share": 330
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 2,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 3,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 5,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 7,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 9,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 10,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 11,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 13,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 17,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 25,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 33,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 99,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 101,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 250,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 333,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 500,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 999,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 100,
+    "spend": 0,
+    "share": 0
+   },
+   "coins": {
+    "save": 1000,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 2,
+    "share": 0
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 3,
+    "share": 0
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 5,
+    "share": 0
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 7,
+    "share": 0
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 9,
+    "share": 0
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 10,
+    "share": 0
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 11,
+    "share": 0
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 13,
+    "share": 0
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 17,
+    "share": 0
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 25,
+    "share": 0
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 33,
+    "share": 0
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 99,
+    "share": 0
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 101,
+    "share": 0
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 250,
+    "share": 0
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 333,
+    "share": 0
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 500,
+    "share": 0
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 999,
+    "share": 0
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 0,
+    "spend": 100,
+    "share": 0
+   },
+   "coins": {
+    "save": 0,
+    "spend": 1000,
+    "share": 0
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 1
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 2
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 3
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 5
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 7
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 9
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 10
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 11
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 13
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 17
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 25
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 33
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 99
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 101
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 250
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 333
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 500
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 999
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 0,
+    "spend": 0,
+    "share": 100
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 1000
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 2,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 3,
+    "spend": 2,
+    "share": 0
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 4,
+    "spend": 2,
+    "share": 1
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 5,
+    "spend": 3,
+    "share": 1
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 6,
+    "spend": 3,
+    "share": 1
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 7,
+    "spend": 3,
+    "share": 1
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 8,
+    "spend": 4,
+    "share": 1
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 10,
+    "spend": 5,
+    "share": 2
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 15,
+    "spend": 8,
+    "share": 2
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 20,
+    "spend": 10,
+    "share": 3
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 59,
+    "spend": 30,
+    "share": 10
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 61,
+    "spend": 30,
+    "share": 10
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 150,
+    "spend": 75,
+    "share": 25
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 200,
+    "spend": 100,
+    "share": 33
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 300,
+    "spend": 150,
+    "share": 50
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 599,
+    "spend": 300,
+    "share": 100
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 60,
+    "spend": 30,
+    "share": 10
+   },
+   "coins": {
+    "save": 600,
+    "spend": 300,
+    "share": 100
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 1
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 1
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 1
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 2,
+    "spend": 1,
+    "share": 2
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 2,
+    "spend": 2,
+    "share": 3
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 3
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 4
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 4,
+    "spend": 3,
+    "share": 4
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 4,
+    "spend": 4,
+    "share": 5
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 6,
+    "spend": 5,
+    "share": 6
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 8,
+    "spend": 8,
+    "share": 9
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 11,
+    "spend": 11,
+    "share": 11
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 33,
+    "spend": 33,
+    "share": 33
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 33,
+    "spend": 33,
+    "share": 35
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 83,
+    "spend": 82,
+    "share": 85
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 110,
+    "spend": 110,
+    "share": 113
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 165,
+    "spend": 165,
+    "share": 170
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 330,
+    "spend": 330,
+    "share": 339
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 33,
+    "spend": 33,
+    "share": 34
+   },
+   "coins": {
+    "save": 330,
+    "spend": 330,
+    "share": 340
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 2,
+    "spend": 0,
+    "share": 0
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 2,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 4,
+    "spend": 1,
+    "share": 0
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 5,
+    "spend": 1,
+    "share": 1
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 6,
+    "spend": 2,
+    "share": 1
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 7,
+    "spend": 2,
+    "share": 1
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 8,
+    "spend": 2,
+    "share": 1
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 9,
+    "spend": 3,
+    "share": 1
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 12,
+    "spend": 3,
+    "share": 2
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 18,
+    "spend": 5,
+    "share": 2
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 23,
+    "spend": 7,
+    "share": 3
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 69,
+    "spend": 20,
+    "share": 10
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 71,
+    "spend": 20,
+    "share": 10
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 175,
+    "spend": 50,
+    "share": 25
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 233,
+    "spend": 67,
+    "share": 33
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 350,
+    "spend": 100,
+    "share": 50
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 699,
+    "spend": 200,
+    "share": 100
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 70,
+    "spend": 20,
+    "share": 10
+   },
+   "coins": {
+    "save": 700,
+    "spend": 200,
+    "share": 100
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 1
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 1,
+    "spend": 0,
+    "share": 1
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 1
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 3
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 2,
+    "spend": 2,
+    "share": 3
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 2,
+    "spend": 2,
+    "share": 5
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 3,
+    "spend": 2,
+    "share": 5
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 5
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 7
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 4,
+    "spend": 4,
+    "share": 9
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 6,
+    "spend": 6,
+    "share": 13
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 8,
+    "spend": 8,
+    "share": 17
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 25,
+    "spend": 25,
+    "share": 49
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 25,
+    "spend": 25,
+    "share": 51
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 63,
+    "spend": 62,
+    "share": 125
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 83,
+    "spend": 83,
+    "share": 167
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 125,
+    "spend": 125,
+    "share": 250
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 250,
+    "spend": 250,
+    "share": 499
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 25,
+    "spend": 25,
+    "share": 50
+   },
+   "coins": {
+    "save": 250,
+    "spend": 250,
+    "share": 500
+   }
+  },
+  {
+   "amount": 1,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 1
+   }
+  },
+  {
+   "amount": 2,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 2
+   }
+  },
+  {
+   "amount": 3,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 3
+   }
+  },
+  {
+   "amount": 5,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 5
+   }
+  },
+  {
+   "amount": 7,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 7
+   }
+  },
+  {
+   "amount": 9,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 9
+   }
+  },
+  {
+   "amount": 10,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 10
+   }
+  },
+  {
+   "amount": 11,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 11
+   }
+  },
+  {
+   "amount": 13,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 13
+   }
+  },
+  {
+   "amount": 17,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 17
+   }
+  },
+  {
+   "amount": 25,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 25
+   }
+  },
+  {
+   "amount": 33,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 0,
+    "spend": 0,
+    "share": 33
+   }
+  },
+  {
+   "amount": 99,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 97
+   }
+  },
+  {
+   "amount": 100,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   }
+  },
+  {
+   "amount": 101,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 1,
+    "spend": 1,
+    "share": 99
+   }
+  },
+  {
+   "amount": 250,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 3,
+    "spend": 2,
+    "share": 245
+   }
+  },
+  {
+   "amount": 333,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 3,
+    "spend": 3,
+    "share": 327
+   }
+  },
+  {
+   "amount": 500,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 5,
+    "spend": 5,
+    "share": 490
+   }
+  },
+  {
+   "amount": 999,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 10,
+    "spend": 10,
+    "share": 979
+   }
+  },
+  {
+   "amount": 1000,
+   "pct": {
+    "save": 1,
+    "spend": 1,
+    "share": 98
+   },
+   "coins": {
+    "save": 10,
+    "spend": 10,
+    "share": 980
+   }
+  }
+ ]
+}

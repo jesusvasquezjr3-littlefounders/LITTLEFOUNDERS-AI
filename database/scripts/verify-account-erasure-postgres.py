@@ -122,8 +122,14 @@ try:
     INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{STAFF}', 'superadmin', NULL);
     """)
 
-    # Family Hub provenance P1 left behind on both children.
+    # Family Hub provenance P1 left behind on both children. Seeded as history
+    # (triggers off, as the S07 verifiers seed their fixtures): since S07.1 a
+    # ledger adjustment needs its guardian action and a reward is born
+    # pending, and this verifier tests the erasure of those rows, not how they
+    # were written. The S07.7 WHEN-clause guards are exercised by the erasure
+    # below, which clears P1 from every one of them.
     run(f"""
+    SET session_replication_role = replica;
     INSERT INTO wallet_ledger (kid_user_id, bucket, amount, reason, created_by) VALUES
         ('{K1}', 'save', 5, 'manual_adjustment', '{P1}'), ('{K2}', 'spend', 3, 'manual_adjustment', '{P1}');
     INSERT INTO allowance_rules (kid_user_id, parent_user_id, amount, frequency, anchor_day, next_run_at)
@@ -138,6 +144,9 @@ try:
     INSERT INTO tutor_voice_consent (user_id, granted_by, consent_text, locale) VALUES ('{K2}', '{P1}', 'I agree', 'en-US');
     INSERT INTO tasks (assigned_by, assigned_to, title, reward_coins, evidence_bucket, evidence_hash, evidence_ext)
         VALUES ('{P1}', '{K1}', 'Tidy up', 5, 'task-evidence', '{'e' * 64}', 'jpg');
+    INSERT INTO family_state_audit (table_name, row_id, from_state, to_state, actor_user_id, request_role, db_role)
+        VALUES ('redemptions', 'r1', 'requested', 'approved', '{P1}', 'service_role', 'postgres');
+    SET session_replication_role = origin;
     """)
     # A legacy badge share (the table refuses new rows since OD-20; seed as the owner).
     run(f"""
@@ -235,6 +244,8 @@ try:
     assert run(f"SELECT opened_by IS NULL AND frozen_by IS NULL AND frozen FROM banking_accounts WHERE kid_user_id = '{K2}'") == 't'
     assert run(f"SELECT (SELECT count(*) FROM allowance_rules WHERE parent_user_id IS NULL) + (SELECT count(*) FROM savings_bonus_rules WHERE parent_user_id IS NULL) + (SELECT count(*) FROM spend_limits WHERE parent_user_id IS NULL AND active)") == '3'
     assert run(f"SELECT decided_by IS NULL FROM redemptions WHERE kid_user_id = '{K2}'") == 't'
+    # S07 merge: the Family Hub transition audit keeps the row and loses the erased actor (s07_merge_reconciliation).
+    assert run(f"SELECT count(*) FILTER (WHERE actor_user_id IS NULL) || '/' || count(*) FROM family_state_audit WHERE row_id = 'r1'") == '1/1'
     assert run(f"SELECT revoked_at IS NOT NULL AND granted_by IS NULL FROM tutor_voice_consent WHERE user_id = '{K2}'") == 't'
     assert run(f"SELECT count(*) FROM tasks WHERE assigned_by = '{P1}'") == '0'
     assert run(f"SELECT count(*) FROM badge_shares WHERE created_by = '{P1}'") == '0'
@@ -249,7 +260,7 @@ try:
     assert sorted(row['depot_paths']) == sorted([f"badges/{'b' * 64}.png", f"task-evidence/{'e' * 64}.jpg"]), row['depot_paths']
     assert row['anon_ids'] == [ANON], row['anon_ids']
     check('erasing a last-Tutor parent deletes the account and its sessions, suspends the child it supervised alone (A.1), leaves the co-supervised child active')
-    check('child records survive with the departed adult cleared (ledger, account open/freeze, allowance, bonus, spend limit still active, redemption decision); the voice consent it granted ends')
+    check('child records survive with the departed adult cleared (ledger, account open/freeze, allowance, bonus, spend limit still active, redemption decision, Family Hub transition audit); the voice consent it granted ends')
     check('non-cascading rows are removed (converted visitor and its events, mail by id and by address case-insensitively, GoTrue audit entries); audit actor ids are cleared while subjects remain')
     check('the Depot and warehouse inventory (evidence, legacy badge image, anonymous ids) is stored on the request in the same transaction')
 

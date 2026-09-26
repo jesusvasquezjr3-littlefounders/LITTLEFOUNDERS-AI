@@ -84,18 +84,28 @@ A table, view, column, function or route whose name carries a messaging word, an
 | `text:badge_shares.image_url` | Legacy share: the image address, retired with the table |
 | `text:banking_accounts.display_number` | System-generated practice account number |
 | `text:banking_accounts.nickname` | Account nickname, set by the guardian or the owner, shown only in the family |
+| `text:family_autonomy_changes.reason` | A verified Tutor's (or staff's) reason for changing their own child's independence level (D.17), shown inside the family |
+| `text:family_decisions.prior_status` | The state a chore or reward was in before the decision; a system-written status code |
+| `text:family_decisions.reason` | A verified Tutor's mandatory reason for their own decision on their own child's chore or reward (D.18), inside the family |
 | `text:guardian_invites.token` | Single-use invite secret |
 | `text:learner_memory_proposals.expected_before` | Mentor memory note under guardian review (C.4) |
 | `text:learner_memory_proposals.proposed` | Mentor memory note under guardian review (C.4) |
+| `text:mentor_quality_flag.dedup_key` | A staff dashboard flag's system-built de-duplication key (C.24) |
+| `text:mentor_quality_flag.resolution_note` | A staff lead's note on resolving a Mentor-quality flag (C.24); never shown to a learner or family |
+| `text:redemptions.child_note` | The child's own stated reason on their reward request, read by their own verified Tutor at decision time (D.18); 140 characters, inside the family |
+| `text:share_destinations.title` | The name of a real Share destination (a charity, a gift, a community cause) chosen by the child's verified Tutor, or by a self-registered teen for themself (D.14); shown only to that holder and their Tutors |
+| `text:share_gifts.note` | What really happened with the holder's Share coins, recorded by their verified Tutor or by a self-registered teen for themself (D.14); shown only to that holder and their Tutors |
 | `text:social_reports.note` | A report to staff (E.3), never shown to the reported account; cleared after 90 days (§3.2) |
 | `text:tasks.cancel_reason` | A guardian's reason for cancelling a task, inside the family |
+| `text:tasks.child_note` | The child's own stated reason on their chore, read by their own verified Tutor at decision time (D.18); 140 characters, inside the family |
 | `text:tasks.evidence_bucket` | Storage location of task evidence |
 | `text:tasks.evidence_hash` | Content hash of task evidence |
 | `text:tasks.title` | A task title a guardian writes for their own child, inside the family |
 | `text:tutor_voice_consent.consent_text` | The consent text a guardian accepted |
 | `text:tutor_voice_consent.scope` | The consent's scope |
+| `text:wallet_guardian_actions.reason` | A verified Tutor's reason for correcting their own child's coins (D.5), inside the family |
 
-Adding a row here is a Stage 3 decision. A row that is a real person-to-person channel also needs its `messaging-features.json` entry (§2.1).
+Adding a row here is a Stage 3 decision. The ten rows for `family_*`, `mentor_quality_flag`, `redemptions.child_note`, `share_*`, `tasks.child_note` and `wallet_guardian_actions` were added at the S07 merge (migration `s07_merge_reconciliation`), when the live scan first saw the S06 and S07 schemas; their Stage 3 review is open with the rest of this list. A row that is a real person-to-person channel also needs its `messaging-features.json` entry (§2.1).
 
 ### 2.3 Enforcement
 

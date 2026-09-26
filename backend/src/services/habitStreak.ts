@@ -32,8 +32,10 @@
  *     another timezone) changes nothing. The legacy rule restarted the run,
  *     which punished the learner for their device clock.
  *
- * The legacy all-or-nothing rule (`nextStreak` in streak.ts) stays only for
- * the chore streak until D.2 moves it onto this model.
+ * The chore streak (D.2) runs on this model since the S07 merge:
+ * choreStreak.ts folds a child's recorded chore days through
+ * `advanceHabitStreak`, reads them with `readHabitStreak` and lists its
+ * rest-day lapses with `habitStreakLapses`. Nothing chore-specific lives here.
  */
 
 export const HABIT_STREAK_MODEL = 'rest-days-v1' as const;
@@ -232,6 +234,39 @@ export function habitStateFromStats(row: {
     restDaysUsed: Math.min(REST_DAYS_PER_WEEK, Math.max(0, row.rest_days_used ?? 0)),
     daysPracticed: Math.max(0, row.days_practiced ?? 0),
   };
+}
+
+/**
+ * The missed (not paused) days strictly between the last practised day and
+ * `until`, in order: each one covered by a free rest day, and the last one
+ * the day that ended the run when a week ran out of rest days. Exactly the
+ * walk `advanceHabitStreak` and `readHabitStreak` make; it only names the
+ * days, for the chore streak's rest-day utilization metric (D.2, Appendix H).
+ */
+export function habitStreakLapses(
+  state: HabitStreakState,
+  until: string,
+  paused: ReadonlySet<number> = new Set(),
+): Array<{ day: string; covered: boolean }> {
+  if (!state.lastActiveDate || state.current <= 0) return [];
+  const lastDay = toDay(state.lastActiveDate);
+  const endDay = toDay(until);
+  const out: Array<{ day: string; covered: boolean }> = [];
+  let week = isoWeekStart(lastDay);
+  let count = Math.min(Math.max(state.restDaysUsed, 0), REST_DAYS_PER_WEEK);
+  for (let day = lastDay + 1; day < endDay; day += 1) {
+    if (paused.has(day)) continue;
+    const dayWeek = isoWeekStart(day);
+    if (dayWeek !== week) {
+      week = dayWeek;
+      count = 0;
+    }
+    count += 1;
+    const covered = count <= REST_DAYS_PER_WEEK;
+    out.push({ day: fromDay(day), covered });
+    if (!covered) break;
+  }
+  return out;
 }
 
 /** Whether a guardian's pause range is one the policy accepts, relative to the guardian's `today`. */

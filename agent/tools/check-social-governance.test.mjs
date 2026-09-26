@@ -1,6 +1,6 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -91,7 +91,12 @@ test('E.10: vocabulary or reviewed-list drift fails', () => {
   expectFailure([['backend/src/services/socialGovernance.ts', "'greeting', 'greetings',", "'greeting',"]], /E\.10 vocabulary drift/);
   expectFailure([['docs/rebuild/policies/SOCIAL-GOVERNANCE.md', '| `text:tasks.title` | A task title a guardian writes for their own child, inside the family |\n', '']], /reviewed-name drift/);
   expectFailure([['docs/rebuild/policies/SOCIAL-GOVERNANCE.md', '| `text:tasks.title` |', '| `text:tasks.title` | x |\n| `text:tasks.ghost_note` |']], /text:tasks\.ghost_note names a column no migration creates|reviewed-name drift/);
-  expectFailure([['database/migrations/0121_social_standing_guardrails.sql', "AND con.confrelid IN ('auth.users'::regclass, 'public.profiles'::regclass)", "AND false"]], /structure rule/);
+  // The gate reads the LATEST definition of the scan (0121 first, redefined by
+  // later migrations such as the S07 merge's reconciliation), so the mutation
+  // targets whichever migration defines it last.
+  const latestScan = readdirSync(resolve(repo, 'database/migrations')).filter((f) => f.endsWith('.sql')).sort()
+    .filter((f) => readFileSync(resolve(repo, 'database/migrations', f), 'utf8').includes('FUNCTION public.social_messaging_surfaces(')).at(-1);
+  expectFailure([[`database/migrations/${latestScan}`, "AND con.confrelid IN ('auth.users'::regclass, 'public.profiles'::regclass)", "AND false"]], /structure rule/);
 });
 
 test('E.10: the register refuses a feature that is on by default, lacks the opt-ins, the reviews or reviewed surfaces', () => {

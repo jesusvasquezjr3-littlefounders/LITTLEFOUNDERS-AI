@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { ParentTaskBoard } from './ParentTaskBoard';
 import { KidTaskBoard } from './KidTaskBoard';
+import { useWalletAccess } from '../wallet/useWalletAccess';
 
 /*
  * /tasks — FAMILY_HUB.md's earn (chores) -> allocate (Save/Spend/Share) ->
@@ -17,9 +18,13 @@ import { KidTaskBoard } from './KidTaskBoard';
 export function TasksPage() {
   const { t } = useTranslation();
   const { roles } = useAuth();
+  const wallet = useWalletAccess();
 
   if (roles.includes('parent')) return <ParentTaskBoard />;
   if (roles.includes('kid')) return <KidTaskBoard />;
+  // S07.2 (D.3): a self-registered teen who linked a verified parent gets the
+  // child's side of the family mechanics, on their own wallet.
+  if (wallet.familyChild) return <KidTaskBoard />;
 
   // Reachable only mid-flight while roles are still loading (RequireRole
   // already redirects anyone without either role away from this route).

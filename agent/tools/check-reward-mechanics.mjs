@@ -44,6 +44,7 @@ export const RANDOMNESS_ALLOWLIST = {
   'backend/src/routes/tutor.ts': 'staff live-review sampling of Mentor sessions (quality assurance, no learner-facing outcome)',
   'backend/src/services/supabaseRest.ts': 'the simulated card\'s display number (an identifier, not a value)',
   'coursegen/src/providers/retry.ts': 'provider retry jitter',
+  'database/migrations/0170_family_talk_nudges.sql': 'staff scoring sample of the written denial reasons Tutors gave (Appendix H Denial-Reason Actionability; quality assurance, no child- or family-facing outcome)',
 };
 
 /**
