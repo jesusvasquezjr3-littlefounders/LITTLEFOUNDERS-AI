@@ -92,20 +92,21 @@ export function checkAccountDeletion(root) {
   if (!Number.isInteger(sla) || !policy.includes(`within ${sla} hours`)) failures.push(`docs/rebuild/policies/ACCOUNT-DELETION.md: must state the ${sla}-hour completion SLA Core measures`);
   if (!/Standing constraint/i.test(policy)) failures.push('docs/rebuild/policies/ACCOUNT-DELETION.md: must record self-service deletion as a standing constraint');
   for (const locale of ['en-US', 'es-MX', 'pt-BR']) {
-    const faq = JSON.parse(read(root, `frontend/src/i18n/${locale}/marketing.json`));
-    const answer = String(findKey(faq, 'deleteAccount')?.answer ?? '');
-    if (!answer.includes(String(grace))) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ must state the ${grace}-day timeline`);
-    if (/contact us|nos escribes|nos escreve/i.test(answer)) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ still sends people to "contact us"`);
+    // The public FAQ is the rebuilt site's (W2 Lane 1): rebuild-site.json, faq.items.deleteAccount.
+    const faq = JSON.parse(read(root, `frontend/src/i18n/${locale}/rebuild-site.json`));
+    const answer = String(faq.faq?.items?.deleteAccount?.answer ?? '');
+    if (!answer.includes(String(grace))) failures.push(`frontend/src/i18n/${locale}/rebuild-site.json: the deletion FAQ must state the ${grace}-day timeline`);
+    if (/contact us|nos escribes|nos escreve/i.test(answer)) failures.push(`frontend/src/i18n/${locale}/rebuild-site.json: the deletion FAQ still sends people to "contact us"`);
     // Signing in alone keeps nothing: it opens the deletion screen, and only
     // "Keep account" cancels. The public answer must name that step.
     const keep = { 'en-US': /\bkeep\b/i, 'es-MX': /\bconserv/i, 'pt-BR': /\bmant(?:enha|er)\b/i }[locale];
-    if (!keep.test(answer)) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ must say the account is kept only by choosing to keep it, not by signing in`);
+    if (!keep.test(answer)) failures.push(`frontend/src/i18n/${locale}/rebuild-site.json: the deletion FAQ must say the account is kept only by choosing to keep it, not by signing in`);
     // The marketing Copy Budget the FAQ audit applies: at most 25 words and
     // two sentences (x1.25 words for es-MX and pt-BR).
     const words = (answer.match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) ?? []).length;
     const sentences = (answer.match(/[.!?](\s|$)/g) ?? []).length;
     const limit = Math.floor(25 * (locale === 'en-US' ? 1 : 1.25));
-    if (words > limit || sentences > 2) failures.push(`frontend/src/i18n/${locale}/marketing.json: the deletion FAQ answer is over the Copy Budget (${words}/${limit} words, ${sentences}/2 sentences)`);
+    if (words > limit || sentences > 2) failures.push(`frontend/src/i18n/${locale}/rebuild-site.json: the deletion FAQ answer is over the Copy Budget (${words}/${limit} words, ${sentences}/2 sentences)`);
   }
 
   // 5. The sweep runs.
@@ -179,15 +180,6 @@ export function accountForeignKeyFailures(root) {
   return failures;
 }
 
-function findKey(value, key) {
-  if (!value || typeof value !== 'object') return null;
-  if (key in value) return value[key];
-  for (const child of Object.values(value)) {
-    const found = findKey(child, key);
-    if (found) return found;
-  }
-  return null;
-}
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const root = fileURLToPath(new URL('../../', import.meta.url));

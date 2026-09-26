@@ -18,6 +18,7 @@ export { AuthShell, BrandMark, CONSOLE_TAB_LIMIT, ConsoleShell, DashboardLayout,
   STAFF_PERMISSIONS, StaffShell, TutorShell, useDocumentMeta, useRouteFocus,
   type ConsoleShellProps, type LearnerShellProps, type ShellCommonProps, type ShellLinkAction, type ShellNavItem, type SingleStateHue, type SiteShellProps,
   type StaffGrants, type StaffNavItem, type StaffPermission, type TableColumn } from './shells';
+export { Disclosure } from './disclosure';
 export { Checkbox, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextAreaField, TextField, type ChoiceOption, type SelectOption, type StepLabels, type TextFieldProps } from './fields';
 export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, ReplyChip, RewardChip, Skeleton,
   type CardTone, type NoticeTone, type PillTone, type StatusTone } from './display';

@@ -108,17 +108,17 @@ test('catches the published FAQ answer drifting from the enforced periods (S07.8
     registry: { ...live.registry, classes: { ...live.registry.classes, records: { ...live.registry.classes.records, days: 365 } } },
     locales: (locale, ns) => {
       const json = live.locales(locale, ns);
-      if (locale !== 'pt-BR' || ns !== 'marketing') return json;
+      if (locale !== 'pt-BR' || ns !== 'rebuild-site') return json;
       const copy = structuredClone(json);
       copy.faq.items.familyRecords.answer = copy.faq.items.familyRecords.answer.replace('30 dias', '60 dias');
       return copy;
     },
   }));
-  assert.ok(failures.includes('familyRecords: marketing:faq.items.familyRecords.answer (en-US) does not state the records period (365 days)'), failures.join('\n'));
-  assert.ok(failures.includes('familyRecords: marketing:faq.items.familyRecords.answer (en-US) states 400, which is no period of evidence or records'), failures.join('\n'));
-  assert.ok(failures.includes('familyRecords: marketing:faq.items.familyRecords.answer (pt-BR) states 60, which is no period of evidence or records'), failures.join('\n'));
+  assert.ok(failures.includes('familyRecords: rebuild-site:faq.items.familyRecords.answer (en-US) does not state the records period (365 days)'), failures.join('\n'));
+  assert.ok(failures.includes('familyRecords: rebuild-site:faq.items.familyRecords.answer (en-US) states 400, which is no period of evidence or records'), failures.join('\n'));
+  assert.ok(failures.includes('familyRecords: rebuild-site:faq.items.familyRecords.answer (pt-BR) states 60, which is no period of evidence or records'), failures.join('\n'));
   const unlisted = mutate((live) => ({
-    readFile: (path) => (path.endsWith('FAQ.tsx') ? live.readFile(path).replace('{ id: "familyRecords", category: "privacy" },', '') : live.readFile(path)),
+    readFile: (path) => (path.endsWith('faqItems.ts') ? live.readFile(path).replace('{ id: "familyRecords", category: "privacy" },', '') : live.readFile(path)),
   }));
-  assert.deepEqual(unlisted, ['frontend/src/routes/marketing/FAQ.tsx: no longer lists the "familyRecords" answer']);
+  assert.deepEqual(unlisted, ['frontend/src/rebuild/site/faqItems.ts: no longer lists the "familyRecords" answer']);
 });

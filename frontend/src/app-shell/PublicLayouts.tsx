@@ -81,7 +81,8 @@ export function SiteLayout() {
       secondaryAction={session ? undefined : { label: copy.login, href: '/login' }} primaryAction={primary}
       stickyAction={DOCKED_CTA.has(pathname) ? primary : undefined}
       labels={{ skip: shell.skip, navigation: shell.navigation, menu: shell.menu, close: shell.close }} footer={<SiteFooter />}>
-      <LegacyBody frame="site" routeKey={pathname}><Outlet /></LegacyBody>
+      {/* The public pages are rebuilt (W2 Lane 1): no legacy body wrapper. */}
+      <Outlet />
     </SiteShell>
   </ShellRoot>;
 }

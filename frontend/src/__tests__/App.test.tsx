@@ -3,6 +3,9 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from '@/App';
 import i18n from '@/i18n';
+import site from '@/i18n/en-US/rebuild-site.json';
+import siteEs from '@/i18n/es-MX/rebuild-site.json';
+import { FAQ_ITEMS } from '@/rebuild/site/faqItems';
 
 function renderApp(path = '/') {
   return render(
@@ -33,25 +36,15 @@ describe('Marketing site', () => {
   it('renders the landing page with its marketing narrative and CTA', () => {
     renderApp();
     /*
-     * Asserted against the BUNDLE, not against pinned prose. The headline is
-     * marketing copy and it gets rewritten; a literal here fails on the rewrite
-     * and says "the landing page is broken" when what actually happened is that
-     * somebody improved a sentence. What has to hold is that the h1 is wired to
-     * `marketing.hero.*` and renders both halves of it.
+     * Asserted against the BUNDLE, not against pinned prose: the rebuilt landing
+     * (W2 Lane 1) reads `rebuild-site.json` `landing.*`, whose headline is the
+     * brand narrative's short form. What has to hold is the wiring and the beats
+     * (the Mentors, the sourced statistic) and the guest-first call to action.
      */
-    const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent(i18n.t('marketing.hero.titleLead'));
-    expect(heading).toHaveTextContent(i18n.t('marketing.hero.titleHighlight'));
-    // The interactive concept atlas replaced the old static "experience" cards.
-    expect(screen.getByRole('img', { name: 'Interactive map of learning concepts and relationships' })).toBeInTheDocument();
-    // Same reasoning as the h1: these two are the narrative beats the page
-    // promises (the mentors section and the sourced statistic), and the beats
-    // are what the test is guarding — not the sentences they are written in.
-    expect(screen.getByText(i18n.t('marketing.journey.heading'))).toBeInTheDocument();
-    expect(screen.getByText(i18n.t('marketing.fact.source'))).toBeInTheDocument();
-    // Guest-first: the primary CTA starts a guest session (a button), not a
-    // plain /signup link — see Landing's startAsGuest.
-    expect(screen.getAllByRole('button', { name: /Start free/ }).length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(site.landing.title);
+    expect(screen.getByRole('heading', { name: site.landing.mentorsTitle })).toBeInTheDocument();
+    expect(screen.getByText(site.landing.factSource)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: site.site.startFree }).length).toBeGreaterThan(0);
   });
 
   /*
@@ -59,58 +52,26 @@ describe('Marketing site', () => {
    * reason as the landing tests above: this copy is expected to change, and a
    * literal here fails on the rewrite while claiming the page is broken.
    */
-  it('renders the how-it-works page: title, the three explanation blocks, and the closing invitation', () => {
+  it('renders the how-it-works page: title, the explanation blocks, and the closing invitation', () => {
     renderApp('/how-it-works');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      i18n.t('marketing.howItWorks.title'),
-    );
-    for (const block of ['decisions', 'mentors', 'account'] as const) {
-      expect(
-        screen.getByText(i18n.t(`marketing.howItWorks.${block}.heading`)),
-      ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(site.howItWorks.title);
+    for (const heading of [site.howItWorks.demoTitle, site.howItWorks.mentorsTitle, site.howItWorks.guestTitle, site.howItWorks.closingTitle]) {
+      expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
     }
-    expect(screen.getByText(i18n.t('marketing.howItWorks.closing.title'))).toBeInTheDocument();
-    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
+    // The four Mentors are named from the manifest, never a raw key.
+    for (const name of ['Dr. Rho', 'Zara', 'Liruf', 'Dina']) expect(screen.getByText(name)).toBeInTheDocument();
   });
 
   /*
-   * `npm run i18n:check` says so itself: it verifies key-set parity but cannot
-   * follow a key built at runtime. This page builds two families of them -
-   * `tutor.character.<who>.<field>` for the mentor grid and
-   * `marketing.howItWorks.account.<what>` for the reward labels - so a rename
-   * on either side would ship raw key strings to a visitor with every gate
-   * still green. This is the test that would catch it.
-   */
-  it('resolves every dynamically built key on the how-it-works page', () => {
-    renderApp('/how-it-works');
-    for (const who of ['zara', 'rho', 'liruf', 'dina'] as const) {
-      for (const field of ['name', 'blurb'] as const) {
-        const key = `tutor.character.${who}.${field}`;
-        const value = i18n.t(key);
-        expect(value).not.toBe(key);
-        expect(screen.getByText(value)).toBeInTheDocument();
-      }
-    }
-    for (const what of ['streak', 'lessons', 'coins'] as const) {
-      const key = `marketing.howItWorks.account.${what}`;
-      const value = i18n.t(key);
-      expect(value).not.toBe(key);
-      expect(screen.getByText(value)).toBeInTheDocument();
-    }
-  });
-
-  /*
-   * §1.13, on the page that now promises "start without an account" three
-   * blocks above its own button: that button must open a guest session rather
-   * than send the visitor to /signup for one.
+   * §1.13, on the page that promises "start without an account": its button
+   * must open a guest session rather than send the visitor to /signup for one.
    */
   it('the how-it-works CTA starts a guest session rather than demanding an account', () => {
     renderApp('/how-it-works');
-    const cta = screen.getByRole('button', {
-      name: new RegExp(i18n.t('marketing.howItWorks.cta')),
-    });
-    expect(cta).not.toHaveAttribute('href');
-    expect(cta).toHaveAttribute('data-cta', 'how-it-works-primary');
+    for (const cta of screen.getAllByRole('button', { name: site.site.startFree })) {
+      expect(cta).not.toHaveAttribute('href');
+      expect(cta).toHaveAttribute('data-cta', 'start-free');
+    }
   });
 
   it('the primary CTA is a guest-start button (never a plain /signup link), and login/signup stay reachable as secondary options', () => {
@@ -162,41 +123,29 @@ describe('Marketing site', () => {
 
   it('renders the FAQ page with real content, not the coming-soon placeholder', () => {
     renderApp('/faq');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      i18n.t('marketing.faq.hero.title'),
-    );
-    // One item per category, spot-checked rather than all 29 — this pins the
-    // rendering path, not the full content list.
-    for (const item of ['whatIs', 'whatIsTutor', 'talksToAI', 'realBank', 'dataCollected', 'contact']) {
-      expect(screen.getByText(i18n.t(`marketing.faq.items.${item}.question`))).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(site.faq.title);
+    for (const { id } of FAQ_ITEMS) {
+      expect(screen.getByRole('button', { name: site.faq.items[id as keyof typeof site.faq.items].question })).toBeInTheDocument();
     }
     expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 
-  it('the FAQ accordion opens one answer at a time, and the category filter narrows the list', () => {
+  it('the FAQ opens answers as disclosures, and the category filter narrows the list', () => {
     renderApp('/faq');
-    const isFreeQuestion = i18n.t('marketing.faq.items.isFree.question');
-    const isFreeAnswer = i18n.t('marketing.faq.items.isFree.answer');
-    const whatIsTutorQuestion = i18n.t('marketing.faq.items.whatIsTutor.question');
+    const isFree = screen.getByRole('button', { name: site.faq.items.isFree.question });
+    expect(screen.getByText(site.faq.items.isFree.answer)).not.toBeVisible();
+    fireEvent.click(isFree);
+    expect(screen.getByText(site.faq.items.isFree.answer)).toBeVisible();
 
-    expect(screen.queryByText(isFreeAnswer)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: isFreeQuestion }));
-    expect(screen.getByText(isFreeAnswer)).toBeInTheDocument();
-    // A second item opening closes the first — single-open, not an
-    // every-answer-stacked-open list.
-    fireEvent.click(screen.getByRole('button', { name: whatIsTutorQuestion }));
-    expect(screen.queryByText(isFreeAnswer)).not.toBeInTheDocument();
-
-    // Filtering to a category the open item isn't in removes it from the DOM.
-    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.categories.money') }));
-    expect(screen.queryByRole('button', { name: whatIsTutorQuestion })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: i18n.t('marketing.faq.items.realBank.question') })).toBeInTheDocument();
+    // Filtering to a category the item is not in removes it from the DOM.
+    fireEvent.click(screen.getByRole('button', { name: site.faq.categories.money }));
+    expect(screen.queryByRole('button', { name: site.faq.items.whatIsTutor.question })).not.toBeInTheDocument();
     // S07.8 (D.20): what the practice does not teach is answered before sign-up.
-    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.items.notTaught.question') }));
-    expect(screen.getByText(i18n.t('marketing.faq.items.notTaught.answer'))).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: site.faq.items.notTaught.question }));
+    expect(screen.getByText(site.faq.items.notTaught.answer)).toBeVisible();
     // S07.8 (D.21): the Family Hub periods are published with the privacy answers.
-    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.categories.privacy') }));
-    expect(screen.getByRole('button', { name: i18n.t('marketing.faq.items.familyRecords.question') })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: site.faq.categories.privacy }));
+    expect(screen.getByRole('button', { name: site.faq.items.familyRecords.question })).toBeInTheDocument();
   });
 
   it('renders the privacy notice with cookie controls', () => {
@@ -247,74 +196,46 @@ describe('Marketing site', () => {
   });
 
   /*
-   * The interactive decision block (DecisionExercise.tsx) replaced a static
-   * card that always showed the same "the story changes" line regardless of
-   * which option was tapped. This pins the actual behavior: each option
-   * reveals ITS OWN consequence, and picking the other one swaps it in place
-   * rather than requiring a reset.
+   * The decision block pins the actual behaviour: each option reveals ITS OWN
+   * consequence, and picking the other one swaps it in place.
    */
   it('the how-it-works decision card reveals a different consequence per option, in place', () => {
     renderApp('/how-it-works');
-    expect(screen.getByText(i18n.t('marketing.howItWorks.decisions.prompt'))).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.howItWorks.decisions.optionA') }));
-    expect(screen.getByText(i18n.t('marketing.howItWorks.decisions.consequenceA'))).toBeInTheDocument();
-    expect(screen.queryByText(i18n.t('marketing.howItWorks.decisions.consequenceB'))).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.howItWorks.decisions.optionB') }));
-    expect(screen.getByText(i18n.t('marketing.howItWorks.decisions.consequenceB'))).toBeInTheDocument();
-    expect(screen.queryByText(i18n.t('marketing.howItWorks.decisions.consequenceA'))).not.toBeInTheDocument();
+    expect(screen.getByText(site.site.pickOne)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: site.howItWorks.optionCandy }));
+    expect(screen.getByText(site.howItWorks.consequenceCandy)).toBeInTheDocument();
+    expect(screen.queryByText(site.howItWorks.consequenceBike)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: site.howItWorks.optionBike }));
+    expect(screen.getByText(site.howItWorks.consequenceBike)).toBeInTheDocument();
+    expect(screen.queryByText(site.howItWorks.consequenceCandy)).not.toBeInTheDocument();
   });
 
   it('renders the families page with its real content, not the coming-soon placeholder', () => {
     renderApp('/families');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      i18n.t('marketing.families.hero.title'),
-    );
-    for (const block of ['tutor', 'tasks', 'banking', 'territory', 'privacy'] as const) {
-      expect(screen.getByText(i18n.t(`marketing.families.${block}.heading`))).toBeInTheDocument();
+    const f = site.families;
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(f.title);
+    for (const heading of [f.visibilityTitle, f.choresTitle, f.bankingTitle, f.mapTitle, f.privacyTitle, f.stepsTitle]) {
+      expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
     }
-    expect(screen.getByText(i18n.t('marketing.families.steps.heading'))).toBeInTheDocument();
-    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
-    // A guest gets the account-creation CTA, never the guest-start button this
-    // page deliberately does not use (see FamiliesHeroCta in Families.tsx).
-    expect(
-      screen.getAllByRole('link', { name: i18n.t('marketing.families.hero.ctaCreate') }).length,
-    ).toBeGreaterThan(0);
+    // A visitor gets the Tutor sign-up (the brand line), never the guest start.
+    for (const link of screen.getAllByRole('link', { name: site.site.becomeTutor })) expect(link).toHaveAttribute('href', '/signup?intent=tutor');
+    expect(screen.queryByRole('button', { name: site.site.startFree })).not.toBeInTheDocument();
   });
 
-  it('the families family-panel preview lets a visitor approve a pending request and toggle insights consent', () => {
+  it('the families Mentor-visibility example shows an exchange and a memory approval', () => {
     renderApp('/families');
-    const pendingChip = screen.getByRole('button', { name: i18n.t('marketing.families.panel.pendingChip') });
-    fireEvent.click(pendingChip);
-    expect(screen.getByText(i18n.t('marketing.families.panel.pendingDetail'))).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.families.panel.approve') }));
-    expect(screen.getByText(i18n.t('marketing.families.panel.pendingApproved'))).toBeInTheDocument();
-
-    const consentSwitch = screen.getAllByRole('switch', { name: i18n.t('marketing.families.panel.consentLabel') })[0]!;
-    expect(consentSwitch).toHaveAttribute('aria-checked', 'false');
-    fireEvent.click(consentSwitch);
-    expect(consentSwitch).toHaveAttribute('aria-checked', 'true');
-  });
-
-  it('the families Tutor-visibility demo reveals a sample exchange and a memory approval', () => {
-    renderApp('/families');
-    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.families.tutor.reveal') }));
-    expect(screen.getByText(i18n.t('marketing.families.tutor.kidLine'))).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.families.tutor.approveMemory') }));
-    expect(screen.getByText(i18n.t('marketing.families.tutor.memoryApproved'))).toBeInTheDocument();
+    expect(screen.getByText(site.families.childLine)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: site.families.approve }));
+    expect(screen.getByText(site.families.approved)).toBeInTheDocument();
   });
 
   it('the families earn/allocate exercise reveals a different consequence per option', () => {
     renderApp('/families');
-    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.families.tasks.optionSave') }));
-    expect(screen.getByText(i18n.t('marketing.families.tasks.consequenceSave'))).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('radio', { name: i18n.t('marketing.families.tasks.optionShare') }));
-    expect(screen.getByText(i18n.t('marketing.families.tasks.consequenceShare'))).toBeInTheDocument();
-    expect(screen.queryByText(i18n.t('marketing.families.tasks.consequenceSave'))).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: site.families.save }));
+    expect(screen.getByText(site.families.consequenceSave)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: site.families.share }));
+    expect(screen.getByText(site.families.consequenceShare)).toBeInTheDocument();
+    expect(screen.queryByText(site.families.consequenceSave)).not.toBeInTheDocument();
   });
 
   /*
@@ -339,9 +260,6 @@ describe('Marketing site', () => {
     // Again the bundle rather than a literal: what this test is for is that the
     // switch actually re-renders in the chosen locale, not what the Spanish
     // headline happens to say this quarter.
-    const inSpanish = i18n.getFixedT('es-MX');
-    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
-      inSpanish('marketing.hero.titleLead'),
-    );
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(siteEs.landing.title);
   });
 });

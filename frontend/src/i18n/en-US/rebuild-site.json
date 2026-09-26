@@ -19,5 +19,283 @@
     "deletedBody": "This account was removed after 90 days paused.",
     "help": "Ask a parent to email {email}.",
     "supportEmail": "informame@littlefounders.ai"
+  },
+  "site": {
+    "startFree": "Start free",
+    "starting": "Starting…",
+    "startError": "We could not start. Try again.",
+    "continue": "Continue",
+    "login": "Log in",
+    "becomeTutor": "Become your child's Tutor",
+    "openFamily": "Open your family",
+    "openApp": "Open app",
+    "pickOne": "Pick one to see what changes.",
+    "mentorsLabel": "The four Mentors"
+  },
+  "landing": {
+    "title": "The money pattern in your family ends with you.",
+    "lead": "We'll show you how. You have to show up.",
+    "note": "Free to start. Try it as a guest, no account needed.",
+    "factValue": "67%",
+    "factBody": "of adults never learned to manage money in time.",
+    "factSource": "Source: S&P Global FinLit Survey",
+    "decideTitle": "Kids learn money by deciding, not by watching.",
+    "decideBody": "Every lesson puts your child inside a choice with a consequence. They learn because they decided.",
+    "decideAction": "How it works",
+    "mentorsTitle": "Your child picks a Mentor",
+    "mentorsBody": "Four Mentors explain, ask questions and answer back. Your child chooses who guides them.",
+    "familyTitle": "Become your child's Tutor",
+    "familyBody": "Verify yourself, add your child and see what they learn, including every Mentor conversation.",
+    "familyAction": "For families",
+    "closingTitle": "Start the conversation you never had",
+    "closingBody": "Free to start. Your child plays the lessons, and you talk about them at home."
+  },
+  "howItWorks": {
+    "title": "From curiosity to financial confidence",
+    "lead": "We do not give lessons. We give decisions.",
+    "demoTitle": "Try one decision",
+    "demoQuestion": "You earned 10 coins. What do you do?",
+    "optionCandy": "Buy candy today",
+    "optionBike": "Save for the bike",
+    "consequenceCandy": "Sweet for 5 minutes, then gone. The bike is just as far away.",
+    "consequenceBike": "No candy today. The bike is 10 coins closer.",
+    "mentorsTitle": "Four Mentors who answer back",
+    "mentorsBody": "They guide the lessons. Your child asks, and the Mentor answers.",
+    "guestTitle": "Start without an account",
+    "guestBody": "Try it now as a guest. Create an account when you want to keep your progress.",
+    "closingTitle": "Make it yours",
+    "closingBody": "One step. A lifetime of ideas."
+  },
+  "families": {
+    "title": "Here, you decide.",
+    "lead": "You open the account, link your child and see what they learn.",
+    "visibilityTitle": "Every Mentor conversation, in full",
+    "visibilityBody": "Read every exchange, turn by turn, not a summary. If the Mentor wants to remember something, you approve it first.",
+    "exampleShow": "See an example",
+    "exampleHide": "Hide the example",
+    "exampleLabel": "Example",
+    "childLabel": "Your child asks",
+    "childLine": "Why do stores want my money so much?",
+    "mentorLine": "Stores are built to make you want things. What made you notice?",
+    "memoryPrompt": "The Mentor wants to remember:",
+    "memoryNote": "Curious about how ads persuade people.",
+    "approve": "Approve",
+    "notNow": "Not now",
+    "approved": "Remembered, with your approval.",
+    "declined": "Not remembered.",
+    "micNote": "Your child's microphone is off by default. It turns on only with your consent.",
+    "choresTitle": "Chores with a real reward",
+    "choresBody": "You set the chore and its coins, then approve it or let small ones through at the level you choose.",
+    "choresQuestion": "You earned 10 coins for a chore. What do you do?",
+    "save": "Save it",
+    "spend": "Spend it",
+    "share": "Share it",
+    "consequenceSave": "10 coins move toward your goal. Your Tutor sees your progress too.",
+    "consequenceSpend": "You ask for a reward and say why. It waits for your Tutor's yes, unless it fits your level.",
+    "consequenceShare": "Your share coins go to a cause your Tutor chose. You hear what really happened.",
+    "simulation": "Simulation",
+    "bankingTitle": "Practice banking, not a bank account",
+    "bankingBody": "Allowance, savings bonus and spending limits, all in coins. None of it is real money.",
+    "mapTitle": "Their own map, in your view",
+    "mapBody": "See the map your child explores: lessons finished, streak and their last visit. Never compared to another child.",
+    "privacyTitle": "Built private",
+    "privacyBody": "Usage analytics stay off for each child until you turn them on. Mentor replies are checked before your child sees them.",
+    "stepsTitle": "Set up your family in 4 steps",
+    "step1Title": "Create your account",
+    "step1Body": "Email and password. Choose to become a Tutor.",
+    "step2Title": "Verify your identity",
+    "step2Body": "Your name, birth date and a photo of your ID. The photo is never stored.",
+    "step3Title": "Add your child",
+    "step3Body": "A name, a username and a passphrase you choose. Your child needs no email.",
+    "step4Title": "You're linked",
+    "step4Body": "A verified link joins your accounts. Another verified adult can join with a single-use invite.",
+    "closingTitle": "Open the account that's yours",
+    "closingBody": "Free to start. Your child's account comes right after."
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "lead": "Short answers to what families ask before they start.",
+    "filterLabel": "Topics",
+    "all": "All",
+    "categories": {
+      "start": "Getting started",
+      "family": "Tutor and family",
+      "mentor": "The Mentor",
+      "money": "Coins and rewards",
+      "privacy": "Privacy and safety",
+      "support": "Support"
+    },
+    "items": {
+      "whatIs": {
+        "question": "What is LittleFounders?",
+        "answer": "A family platform where kids and teens learn about money by making decisions in guided stories, with a Mentor at their side."
+      },
+      "isFree": {
+        "question": "Is LittleFounders free?",
+        "answer": "It is free to start. There is no paid plan today, and a Tutor account never asks for payment details."
+      },
+      "tryWithoutAccount": {
+        "question": "Can my child try it without an account?",
+        "answer": "Yes. Tap Start free to try it as a guest; progress stays in that browser."
+      },
+      "languages": {
+        "question": "What languages does it support?",
+        "answer": "English, Spanish and Portuguese. Switch at any time from the language menu."
+      },
+      "ages": {
+        "question": "What ages is this for?",
+        "answer": "Kids and teens, about 6 to 17. Under 13, a Tutor creates the account; teens can also sign up on their own."
+      },
+      "whatIsTutor": {
+        "question": "What is a Tutor account?",
+        "answer": "The account of a verified parent. You confirm your identity, and every child linked to you is yours to see and supervise."
+      },
+      "addChild": {
+        "question": "How do I add my child?",
+        "answer": "From your Tutor account: a name, a username and a passphrase you choose. Your child needs no email."
+      },
+      "twoParents": {
+        "question": "Can both parents supervise the same child?",
+        "answer": "Yes. A second verified Tutor can join through a single-use invite from your panel that expires in 7 days, and you confirm them first."
+      },
+      "howMany": {
+        "question": "How many children can I add?",
+        "answer": "Up to 10 per Tutor account."
+      },
+      "ownDevice": {
+        "question": "Does my child need their own device?",
+        "answer": "No. Child accounts work on a shared device, and each login is separate from yours."
+      },
+      "talksToAI": {
+        "question": "Does my child talk to an AI?",
+        "answer": "Yes, with a Mentor character who answers in text. Voice is off for minors by default and needs your consent."
+      },
+      "privateFromYou": {
+        "question": "Is what my child tells the Mentor private?",
+        "answer": "From other users, yes. From you, no: you can read every exchange in full, not a summary."
+      },
+      "remember": {
+        "question": "Can the Mentor remember things about my child?",
+        "answer": "Only with your approval. You see each proposed note beside the old one and approve or decline it."
+      },
+      "mentors": {
+        "question": "Who are the Mentors?",
+        "answer": "Your child chooses one of 4 characters, each with their own personality: Dina, Liruf, Dr. Rho or Zara."
+      },
+      "canBeWrong": {
+        "question": "Can the Mentor be wrong?",
+        "answer": "Yes, it is an AI and can explain something imprecisely. Its replies to children are checked first and never replace your judgment."
+      },
+      "realBank": {
+        "question": "Is this a real bank account?",
+        "answer": "No. It is practice in coins, a simulation that never uses real money."
+      },
+      "lfCoins": {
+        "question": "What are the coins?",
+        "answer": "The app's practice currency. Kids earn them from tasks and lessons to practice saving, spending and sharing; they have no value outside the app."
+      },
+      "chores": {
+        "question": "How do chores and rewards work?",
+        "answer": "You set a chore and its coins; your child splits them into save, spend and share. You approve each one, or let small ones through."
+      },
+      "realMoney": {
+        "question": "Can my child spend real money?",
+        "answer": "No, nowhere in the product. LittleFounders never asks a child for payment details or moves real money."
+      },
+      "notTaught": {
+        "question": "Does it teach credit, debt or investing?",
+        "answer": "The practice covers earning, splitting, saving and rewards. It skips credit, debt, compound interest, risk, investing and insurance, and the savings bonus is not interest."
+      },
+      "dataCollected": {
+        "question": "What data do you collect about my child?",
+        "answer": "Only what the product needs: for a child account, a nickname and an age band. No full name, address or contact details."
+      },
+      "moderation": {
+        "question": "Is everything the Mentor says checked first?",
+        "answer": "Yes. For a child account, the Mentor's replies are checked before they are shown or spoken."
+      },
+      "retention": {
+        "question": "How long do you keep Mentor conversations?",
+        "answer": "Up to 90 days, on a fixed automatic schedule."
+      },
+      "noMessaging": {
+        "question": "Can my child message other people?",
+        "answer": "No. There is no chat, messaging or comments between people, and anything like it would stay off for children unless their Tutor turns it on."
+      },
+      "socialRetention": {
+        "question": "How long do you keep who follows whom?",
+        "answer": "Follows and blocks last until removed or the account is deleted. Unanswered requests expire after 30 days, and closed ones go 30 days later."
+      },
+      "familyRecords": {
+        "question": "How long do you keep chore records?",
+        "answer": "Chore photos for 30 days after you decide; chores, rewards, decisions and notes for 400 days. Deleting your child's account deletes all of it."
+      },
+      "analyticsToggle": {
+        "question": "Can I turn off my child's usage analytics?",
+        "answer": "Yes, for each child, from your Tutor account. They stay off until you turn them on."
+      },
+      "coppa": {
+        "question": "Do you follow children's privacy laws?",
+        "answer": "Our Privacy Notice follows COPPA and LGPD standards for data minimization and parental consent. The full legal detail is there."
+      },
+      "contact": {
+        "question": "How do I contact support?",
+        "answer": "Email informame@littlefounders.ai, or report a profile in the app: Report sits beside Block on every profile."
+      },
+      "deleteAccount": {
+        "question": "Can I delete our account?",
+        "answer": "Yes, in Settings: it is deleted 14 days later unless you keep it. Guest accounts go at once; a Tutor deletes a child's."
+      },
+      "cancelTutor": {
+        "question": "What if I cancel my account?",
+        "answer": "Your child's account is paused at once, until an active Tutor supervises it again. If nobody does within 90 days, it is deleted."
+      }
+    },
+    "closingTitle": "Still have a question?",
+    "closingBody": "Write to us. A person reads every message.",
+    "emailUs": "Email us"
+  },
+  "legalPage": {
+    "official": "Official document",
+    "documents": "Legal documents",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contents": "Contents",
+    "search": "Search this document",
+    "noResults": "No clause matches your search.",
+    "cookieSettings": "Cookie preferences"
+  },
+  "cookies": {
+    "region": "Cookie choice",
+    "title": "Your cookie choice",
+    "body": "We use necessary cookies to run the site. With your OK, we also count visits and which link brought you.",
+    "accept": "Accept optional",
+    "reject": "Reject optional",
+    "preferences": "Preferences",
+    "sheetTitle": "Cookie preferences",
+    "sheetIntro": "Optional cookies stay off until you accept them. Change this any time from the page footer.",
+    "necessaryTitle": "Necessary",
+    "necessaryBody": "Keep you signed in and remember choices like language and mode.",
+    "attributionTitle": "Where you came from",
+    "attributionBody": "Records which link or campaign brought you here.",
+    "measurementTitle": "Visit measurement",
+    "measurementBody": "Counts visits and pages so we can improve the site.",
+    "alwaysOn": "Always on",
+    "optional": "Optional",
+    "together": "Both optional kinds are accepted or rejected together.",
+    "currentGranted": "Your choice: optional cookies accepted.",
+    "currentDenied": "Your choice: optional cookies rejected.",
+    "currentUnset": "No choice yet. Optional cookies are off.",
+    "privacyLink": "Privacy Notice",
+    "close": "Close"
+  },
+  "routeError": {
+    "title": "This screen ran into a problem",
+    "body": "Something went wrong loading this part. It is not something you did.",
+    "staleTitle": "There is a new version",
+    "staleBody": "The app updated while this tab was open. Reload to get it.",
+    "reload": "Reload",
+    "home": "Home",
+    "learn": "My lessons"
   }
 }

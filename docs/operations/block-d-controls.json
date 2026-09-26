@@ -11,6 +11,15 @@
         "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],
         "pt-BR": ["gastar precisa da sua aprovação antes", "aprova antes de chegar até ele", "esperando a aprovação dele antes de ser seu", "a meta de outra pessoa"]
       }
+    },
+    {
+      "namespace": "rebuild-site",
+      "why": "The same retired claims, held out of the rebuilt public site (W2 Lane 1), which replaced the marketing namespace's pages; the chore and share wording there follows the approval and share_destination controls.",
+      "phrases": {
+        "en-US": ["spending needs your approval first", "you approve it before it lands", "waiting for their approval before it's yours", "someone else's goal"],
+        "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],
+        "pt-BR": ["gastar precisa da sua aprovação antes", "aprova antes de chegar até ele", "esperando a aprovação dele antes de ser seu", "a meta de outra pessoa"]
+      }
     }
   ],
   "controls": [
@@ -133,7 +142,7 @@
         { "file": "database/scripts/verify-autonomy-decisions-postgres.py", "contains": "'REDEMPTION_PREAPPROVAL_FORBIDDEN')" },
         { "file": "backend/src/__tests__/familyAutonomy.test.ts", "contains": "reports a pre-approved reward as the database decided, and never approves one itself" }
       ],
-      "ui": ["familyAutonomy:levelsTutor.unlock1", "familyAutonomy:levelsTutor.preapproved", "marketing:faq.items.chores.answer", "marketing:families.tasks.body", "marketing:families.tasks.consequenceSpend"]
+      "ui": ["familyAutonomy:levelsTutor.unlock1", "familyAutonomy:levelsTutor.preapproved", "rebuild-site:faq.items.chores.answer", "rebuild-site:families.choresBody", "rebuild-site:families.consequenceSpend"]
     },
     {
       "id": "share_destination",
@@ -146,7 +155,7 @@
         { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "'SHARE_DESTINATION_UNAVAILABLE')" },
         { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "'SHARE_GIFT_FORBIDDEN')" }
       ],
-      "ui": ["marketing:families.tasks.consequenceShare"]
+      "ui": ["rebuild-site:families.consequenceShare"]
     },
     {
       "id": "savings_bonus.framing",

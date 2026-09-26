@@ -1,0 +1,11 @@
+/* Disclosure: a neutral surface separated by a soft elevation (02 §4.4), a 56 px summary row, the panel below it. */
+.lf-rebuild .lf-disclosure { border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); box-shadow: var(--elevation-card); }
+.lf-rebuild[data-theme='dark'] .lf-disclosure { background: var(--raised); }
+.lf-rebuild .lf-disclosure-heading { margin: 0; font: var(--type-title); }
+.lf-rebuild .lf-disclosure-summary {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-3);
+  inline-size: 100%; min-block-size: var(--target-base); padding: var(--spacing-4) var(--spacing-5);
+  border: 0; border-radius: var(--rounded-lg); background: none; color: inherit; font: inherit; text-align: start; cursor: pointer;
+}
+.lf-rebuild .lf-disclosure-label { min-inline-size: 0; overflow-wrap: break-word; }
+.lf-rebuild .lf-disclosure-panel { padding: 0 var(--spacing-5) var(--spacing-5); }

@@ -1,0 +1,144 @@
+/*
+ * The public site's pages (W2 Lane 1): tokens only, the 4 px spacing scale
+ * (03 §3.1), the named type steps (03 §3.2), layouts by the `app` container
+ * width (02 §7 rule 9), no borders on filled shapes (02 §4.4), light and dark
+ * from the same tokens. Text never truncates: every row wraps (02 §7).
+ */
+
+/* ---- Page and sections ---- */
+.lf-rebuild .lf-site-page { display: grid; gap: var(--spacing-8); inline-size: 100%; max-inline-size: 1120px; margin-inline: auto; min-inline-size: 0; }
+.lf-rebuild .lf-site-page :is(ul, ol) { margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-site-page h3, .lf-rebuild .lf-consent-sheet h3 { margin: 0; font: var(--type-title); text-wrap: balance; }
+.lf-rebuild .lf-site-page p { overflow-wrap: break-word; }
+
+.lf-rebuild .lf-site-section { display: grid; gap: var(--spacing-4); align-content: start; min-inline-size: 0; }
+.lf-rebuild .lf-site-section--loose { padding-block: var(--spacing-8); }
+.lf-rebuild .lf-site-section--default { padding-block: var(--spacing-4); }
+.lf-rebuild .lf-site-section--tight { padding-block: 0; }
+.lf-rebuild .lf-site-section--soft { padding: var(--spacing-6) var(--spacing-5); border-radius: var(--rounded-lg); background: var(--primary-soft); color: var(--content); }
+/* The one full-colour block per page (03 §3.3; 02 `hero-band`). */
+.lf-rebuild .lf-site-section--band { padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-site-section--band :is(a, button):focus-visible { outline-color: var(--on-primary); }
+.lf-rebuild .lf-site-section > * { min-inline-size: 0; }
+/* A link or button placed directly in a section keeps its own width (a pill, not a bar). */
+.lf-rebuild :is(.lf-site-section, .lf-site-split-copy) > .lf-button { justify-self: start; }
+.lf-rebuild .lf-site-split-copy { display: grid; gap: var(--spacing-4); align-content: start; min-inline-size: 0; }
+
+.lf-rebuild .lf-site-lead { font: var(--type-body-lg); }
+.lf-rebuild .lf-site-note { color: var(--content-muted); }
+.lf-rebuild .lf-site-cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-rebuild .lf-site-cta-row > .lf-button { flex: 0 1 auto; }
+.lf-rebuild .lf-site-cta-row > .lf-notice { flex: 1 1 100%; }
+
+/* ---- Hero: 7:5 from 840 px, art first below 400 px ---- */
+.lf-rebuild .lf-site-hero { display: grid; gap: var(--spacing-6); padding-block: var(--spacing-6) var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-site-hero-copy { display: grid; gap: var(--spacing-5); align-content: center; min-inline-size: 0; }
+.lf-rebuild .lf-site-hero-art { display: grid; place-items: center; min-inline-size: 0; }
+.lf-rebuild .lf-site-hero--solo { padding-block-end: 0; }
+@container app (max-width: 399px) {
+  .lf-rebuild .lf-site-hero-art { order: -1; }
+}
+
+/* ---- The four Mentors (real-model renders) ---- */
+.lf-rebuild .lf-site-cast { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-4); inline-size: 100%; }
+.lf-rebuild .lf-site-cast-member { display: grid; justify-items: center; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-lg); background: var(--primary-soft); color: var(--content); font: var(--type-label); text-align: center; }
+.lf-rebuild .lf-site-section .lf-site-cast { grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); }
+
+/* ---- The landing page's sourced fact ---- */
+.lf-rebuild .lf-site-fact { gap: var(--spacing-3); }
+.lf-rebuild .lf-site-fact-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-2) var(--spacing-4); }
+.lf-rebuild .lf-site-fact-value { font: var(--type-numeral-xl); letter-spacing: var(--type-numeral-xl-tracking); color: var(--primary-strong); }
+.lf-rebuild .lf-site-fact-body { flex: 1 1 16em; font: var(--type-body-lg); }
+.lf-rebuild .lf-site-source { color: var(--content-muted); font: var(--type-caption); }
+
+/* ---- A decision with consequences ---- */
+.lf-rebuild .lf-site-decision { display: grid; gap: var(--spacing-4); min-inline-size: 0; padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-rebuild[data-theme='dark'] .lf-site-decision { background: var(--raised); }
+.lf-rebuild .lf-site-consequence { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); min-block-size: var(--target-lg); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild .lf-site-consequence > p { flex: 1 1 12em; }
+
+/* ---- Steps: one column, a staircase from 840 px (03 §3.3) ---- */
+.lf-rebuild .lf-site-steps { display: grid; gap: var(--spacing-4); counter-reset: none; }
+.lf-rebuild .lf-site-step { display: grid; gap: var(--spacing-2); align-content: start; min-inline-size: 0; padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-rebuild[data-theme='dark'] .lf-site-step { background: var(--raised); }
+.lf-rebuild .lf-site-step-number { display: inline-grid; place-items: center; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--primary); color: var(--on-primary); font: var(--type-numeral); }
+
+/* ---- The example Mentor exchange ---- */
+.lf-rebuild .lf-site-exchange { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-site-exchange:not(.lf-site-exchange--mentor) { display: grid; gap: var(--spacing-1); }
+.lf-rebuild .lf-site-exchange--mentor { align-items: center; }
+.lf-rebuild .lf-site-exchange-text { display: grid; flex: 1 1 12em; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-site-exchange-label { color: var(--content-muted); font: var(--type-caption); }
+.lf-rebuild .lf-site-memory { display: grid; gap: var(--spacing-2); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+
+.lf-rebuild .lf-site-pair { display: grid; gap: var(--spacing-4); }
+.lf-rebuild .lf-site-closing { justify-items: start; }
+
+/* ---- FAQ: a topic filter and disclosures ---- */
+.lf-rebuild .lf-faq { gap: var(--spacing-5); }
+.lf-rebuild .lf-faq-list { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-faq-item { scroll-margin-block-start: calc(var(--target-min) + var(--spacing-8)); }
+
+/* ---- Legal documents ---- */
+.lf-rebuild .lf-legal { align-content: start; }
+.lf-rebuild .lf-legal-switch { padding-block-start: var(--spacing-2); }
+.lf-rebuild .lf-legal-cookies, .lf-rebuild .lf-legal-contact { justify-items: start; }
+.lf-rebuild .lf-legal-head { display: grid; gap: var(--spacing-3); padding-block: var(--spacing-6) 0; }
+.lf-rebuild .lf-legal-head h1 { overflow-wrap: break-word; }
+.lf-rebuild .lf-legal-meta { color: var(--content-muted); font: var(--type-caption); }
+.lf-rebuild .lf-legal-layout { display: grid; gap: var(--spacing-8); min-inline-size: 0; }
+.lf-rebuild .lf-legal-contents { display: grid; gap: var(--spacing-4); align-content: start; min-inline-size: 0; padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-rebuild[data-theme='dark'] .lf-legal-contents { background: var(--raised); }
+.lf-rebuild .lf-legal-contents h2 { font: var(--type-title); }
+.lf-rebuild .lf-legal-toc { display: grid; gap: var(--spacing-1); }
+.lf-rebuild .lf-legal-toc a {
+  display: flex; align-items: center; min-block-size: var(--target-min); padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-md); color: var(--content); font: var(--type-body); text-decoration: none; overflow-wrap: break-word;
+}
+.lf-rebuild .lf-legal-toc a:hover { background: var(--sunken); }
+.lf-rebuild .lf-legal-toc a:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: 0; }
+.lf-rebuild .lf-legal-body { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-rebuild .lf-legal-clause { display: grid; gap: var(--spacing-3); scroll-margin-block-start: calc(var(--target-min) + var(--spacing-8)); }
+.lf-rebuild .lf-legal-clause h2 { font: var(--type-title); }
+.lf-rebuild :is(.lf-legal-body, .lf-legal-head) p { white-space: pre-line; overflow-wrap: anywhere; }
+.lf-rebuild .lf-legal-preamble { font: var(--type-body-lg); }
+
+/* ---- Cookie choice (M8): a docked, non-modal region above the page's own bars ---- */
+.lf-rebuild .lf-consent {
+  position: fixed; inset-inline: 0; inset-block-end: 0; z-index: var(--layer-sheet);
+  padding-block: var(--spacing-4) max(var(--spacing-4), env(safe-area-inset-bottom));
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+  border-radius: var(--rounded-xl) var(--rounded-xl) 0 0; background: var(--surface); color: var(--content); box-shadow: var(--elevation-float);
+}
+.lf-rebuild[data-theme='dark'] .lf-consent, .lf-rebuild[data-theme='dark'].lf-layer-root .lf-consent { background: var(--raised); }
+.lf-rebuild .lf-consent-inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-4); max-inline-size: 1120px; margin-inline: auto; }
+.lf-rebuild .lf-consent-text { display: grid; flex: 1 1 20em; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-consent-text h2 { font: var(--type-title); }
+.lf-rebuild .lf-consent-actions { display: flex; flex: 1 1 auto; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-rebuild .lf-consent-actions > .lf-button { flex: 1 1 auto; }
+.lf-rebuild .lf-consent-sheet { display: grid; gap: var(--spacing-4); }
+.lf-rebuild .lf-consent-kinds { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-consent-kind { display: grid; gap: var(--spacing-2); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+
+/* ---- X2: a screen that failed to load ---- */
+.lf-rebuild .lf-route-error { display: grid; gap: var(--spacing-4); align-content: start; }
+.lf-rebuild.lf-route-error-root { min-block-size: 0; background: none; }
+
+/* ---- Wider containers ---- */
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-site-section--band, .lf-rebuild .lf-site-section--soft { padding: var(--spacing-8); }
+  .lf-rebuild .lf-site-section--loose { padding-block: var(--spacing-10); }
+}
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-site-page { gap: var(--spacing-10); }
+  .lf-rebuild .lf-site-hero[data-layout='hero'] { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: var(--spacing-10); }
+  .lf-rebuild .lf-site-hero-art .lf-avatar--lg { inline-size: var(--spacing-32); block-size: var(--spacing-32); }
+  .lf-rebuild .lf-site-section--split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--spacing-10); align-items: start; }
+  .lf-rebuild .lf-site-section--split-end { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .lf-rebuild .lf-site-section--split > h2 { grid-column: 1 / -1; }
+  .lf-rebuild .lf-site-pair { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .lf-rebuild .lf-site-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; }
+  .lf-rebuild .lf-site-step:nth-child(even) { margin-block-start: var(--spacing-8); }
+  .lf-rebuild .lf-legal-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: start; }
+  .lf-rebuild .lf-legal-contents { position: sticky; inset-block-start: calc(var(--target-min) + var(--spacing-8)); max-block-size: calc(100dvh - var(--target-min) - var(--spacing-12)); overflow-y: auto; }
+}

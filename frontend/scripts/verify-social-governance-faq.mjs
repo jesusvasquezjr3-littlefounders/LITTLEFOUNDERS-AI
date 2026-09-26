@@ -7,8 +7,8 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
  * S08.7's Product 10 E.10 "no messaging" and E.11 "how long we keep who
  * follows whom" (policy docs/rebuild/policies/SOCIAL-GOVERNANCE.md), and
  * S08.5's E.6 "can I delete our account" (ACCOUNT-DELETION.md), added to the
- * audit in S08.8. The FAQ is a legacy marketing page (not restyled here), so
- * this checks those three entries only: 3 locales x 2 themes x
+ * audit in S08.8. The FAQ is the rebuilt public FAQ (W2 Lane 1,
+ * rebuild/site/Faq.tsx); this checks those three entries: 3 locales x 2 themes x
  * 320/375/768/1280 px x 1.0/1.4 text scale.
  *
  * Each configuration opens /faq, presses each entry's category filter and
@@ -40,7 +40,7 @@ const SCALES = [1, 1.4];
 const SHOTS = new Set(['es-MX|dark|375|1', 'en-US|light|1280|1', 'pt-BR|dark|320|1.4']);
 const strings = {};
 for (const locale of LOCALES) {
-  const { default: copy } = await import(`../src/i18n/${locale}/marketing.json`, { with: { type: 'json' } });
+  const { default: copy } = await import(`../src/i18n/${locale}/rebuild-site.json`, { with: { type: 'json' } });
   strings[locale] = copy.faq;
 }
 
@@ -82,6 +82,8 @@ for (const locale of LOCALES) {
         const key = `${locale}|${theme}|${width}|${scale}`;
         await page.send('Emulation.setDeviceMetricsOverride', { width, height: 740, deviceScaleFactor: 1, mobile: width < 768 });
         await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
+        // A visitor who has already made the cookie choice: the docked banner would otherwise cover the lower questions.
+        await page.send('Network.setCookie', { name: 'lf_cc', value: 'denied', url: origin });
         await page.send('Page.navigate', { url: `${origin}/faq?lng=${locale}` });
         const loaded = await until(`!!(${byText(faq.categories.privacy)})`);
         if (!loaded) { findings.push({ key, issue: 'faq-not-loaded' }); continue; }
