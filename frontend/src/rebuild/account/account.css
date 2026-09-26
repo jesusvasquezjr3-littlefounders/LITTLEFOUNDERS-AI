@@ -1,0 +1,199 @@
+/*
+ * The profile lane's screens (W2): own profile (P1), the look editor (P2) and
+ * Settings (P3). A neutral dashboard page with cards (02 §4.5); tokens only;
+ * spacing on the 4 px scale (03 §3.1); layouts by container width, never by
+ * the viewport (02 §6, §7 rule 9); separation by fill and soft elevation,
+ * never an outline (02 §4.4).
+ */
+.lf-rebuild.lf-account-screen {
+  /* A screen inside the shell's content area, not a page root. */
+  min-block-size: 0;
+  background: transparent;
+  display: grid;
+  gap: var(--spacing-6);
+  align-content: start;
+  min-inline-size: 0;
+}
+.lf-account-muted { color: var(--content-muted); }
+.lf-account-slot { display: grid; min-inline-size: 0; }
+/* A rebuilt panel embedded as a card of this screen: the screen's grid gap spaces it, not its own margin. */
+.lf-rebuild :is(.lf-account-slot, .lf-account-panels) > .lf-rebuild { margin-block-start: 0; min-block-size: 0; max-inline-size: none; }
+.lf-account-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: center; }
+.lf-account-live { display: grid; min-inline-size: 0; }
+.lf-account-live:empty { display: none; }
+.lf-account-state { display: grid; gap: var(--spacing-6); }
+
+/* Back to the page a screen belongs to: a text link with the back glyph, 48 px tall. */
+.lf-rebuild .lf-account-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  justify-self: start;
+  min-block-size: var(--target-min);
+  padding-inline: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--rounded-full);
+  color: var(--primary-strong);
+  font: var(--type-label);
+  text-decoration: none;
+}
+.lf-rebuild .lf-account-back:hover { background: var(--primary-soft); }
+.lf-rebuild .lf-account-back .lf-system-glyph { inline-size: var(--spacing-6); block-size: var(--spacing-6); }
+.lf-account-header { display: grid; gap: var(--spacing-2); justify-items: start; min-inline-size: 0; }
+.lf-rebuild .lf-account-header h1 { font: var(--type-display-lg); letter-spacing: var(--type-display-lg-tracking); }
+
+/* ---------------------------------------------------------------- P1 */
+.lf-profile-hero {
+  display: grid;
+  min-inline-size: 0;
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+.lf-profile-cover {
+  block-size: var(--spacing-24);
+  border-start-start-radius: var(--rounded-lg);
+  border-start-end-radius: var(--rounded-lg);
+  overflow: hidden;
+}
+.lf-profile-identity {
+  display: grid;
+  gap: var(--spacing-4);
+  padding: 0 var(--spacing-5) var(--spacing-5);
+  min-inline-size: 0;
+}
+.lf-profile-avatar { margin-block-start: calc(var(--spacing-16) * -1); line-height: 0; }
+.lf-profile-names { display: grid; gap: var(--spacing-1); justify-items: start; min-inline-size: 0; }
+.lf-rebuild .lf-profile-names h1 { font: var(--type-display-lg); letter-spacing: var(--type-display-lg-tracking); overflow-wrap: anywhere; }
+.lf-profile-handle { color: var(--primary-strong); font: var(--type-label); overflow-wrap: anywhere; }
+.lf-profile-actions > * { flex: 1 1 auto; }
+
+@container app (min-width: 640px) {
+  .lf-profile-cover { block-size: var(--spacing-32); }
+  .lf-profile-identity { grid-template-columns: auto minmax(0, 1fr); align-items: end; column-gap: var(--spacing-5); }
+  .lf-profile-names { padding-block-start: var(--spacing-4); }
+  .lf-profile-actions { grid-column: 1 / -1; }
+  .lf-profile-actions > * { flex: 0 1 auto; }
+}
+@container app (min-width: 1120px) {
+  .lf-profile-identity { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .lf-profile-actions { grid-column: auto; align-self: end; }
+}
+
+.lf-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+  gap: var(--spacing-3);
+  margin: 0;
+}
+.lf-profile-stat {
+  /* The number reads first and every number sits on the same line, whatever its label's length; dt stays first in the DOM. */
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-1);
+  min-inline-size: 0;
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-profile-stat { background: var(--raised); }
+.lf-profile-stat dt { grid-row: 2; font: var(--type-caption); color: var(--content-muted); overflow-wrap: anywhere; }
+.lf-profile-stat dd { grid-row: 1; margin: 0; font: var(--type-numeral); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+/* 02 §4.2: gold is for coins, XP and the streak, so those two numbers carry it (with their word, never alone). */
+.lf-profile-stat--streak dd, .lf-profile-stat--xp dd { color: var(--reward-strong); }
+
+.lf-profile-badges { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  min-inline-size: 0;
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-profile-badge { background: var(--raised); }
+.lf-rebuild .lf-profile-badge .lf-art { object-fit: contain; }
+.lf-profile-badge-text { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-profile-badge-title { font: var(--type-label); overflow-wrap: anywhere; }
+.lf-profile-link { font: var(--type-label); color: var(--primary-strong); overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------- P2 */
+.lf-look-layout { display: grid; gap: var(--spacing-6); min-inline-size: 0; align-items: start; }
+.lf-look-preview {
+  display: grid;
+  gap: var(--spacing-4);
+  justify-items: center;
+  min-inline-size: 0;
+  padding-block-end: var(--spacing-5);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+.lf-look-preview-cover {
+  inline-size: 100%;
+  block-size: var(--spacing-24);
+  border-start-start-radius: var(--rounded-lg);
+  border-start-end-radius: var(--rounded-lg);
+  overflow: hidden;
+}
+.lf-look-preview-avatar { margin-block-start: calc(var(--spacing-20) * -1); line-height: 0; }
+.lf-look-preview-actions { display: grid; gap: var(--spacing-3); inline-size: 100%; padding-inline: var(--spacing-5); min-inline-size: 0; }
+.lf-look-preview-actions > .lf-button { inline-size: 100%; }
+.lf-look-parts { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+.lf-look-part {
+  display: grid;
+  min-inline-size: 0;
+  padding: var(--spacing-5);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+/* A cover preset is a wide picture: its thumbnail keeps the cover's own proportion. */
+.lf-look-cover-thumb { display: block; inline-size: var(--spacing-20); block-size: var(--spacing-12); border-radius: var(--rounded-sm); overflow: hidden; }
+
+@container app (min-width: 840px) {
+  .lf-look-layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .lf-look-preview { position: sticky; inset-block-start: var(--spacing-6); }
+}
+
+/* ---------------------------------------------------------------- P3 */
+.lf-settings-column { display: grid; gap: var(--spacing-6); min-inline-size: 0; max-inline-size: 44rem; }
+.lf-account-panels { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-settings-form { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+.lf-settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-settings-row { background: var(--raised); }
+.lf-settings-row-text { display: grid; gap: var(--spacing-1); min-inline-size: 0; flex: 1 1 14rem; }
+.lf-settings-row-label { font: var(--type-label); }
+.lf-settings-row-value { font: var(--type-body); color: var(--content-muted); overflow-wrap: anywhere; }
+.lf-settings-blocked { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+
+/*
+ * The rebuilt panels this page composes (analytics choice, memory review, how
+ * the Mentor adapts, mode and sign-out, deletion) read as the same cards as the
+ * page's own: one heading size and one inset for every card on the page.
+ */
+.lf-rebuild :is(.lf-account-panels, .lf-account-slot) > .lf-rebuild { padding: var(--spacing-5); border-radius: var(--rounded-lg); }
+.lf-rebuild :is(.lf-account-panels, .lf-account-slot) .lf-rebuild h2 { font: var(--type-title); }
+
+/*
+ * Dark mode has no elevation (02 §5), so a secondary button (surface fill) on a
+ * surface card would have no edge at all: it steps up to the raised surface on a
+ * card, and down to the page's base inside a raised row. Recorded for Lane 0 as
+ * a design-system item; applied here to this lane's screens.
+ */
+.lf-account-screen[data-theme='dark'] :where(.lf-card, .lf-profile-hero, .lf-look-preview, .lf-account-panels > .lf-rebuild) .lf-button--secondary:not(:disabled) { background: var(--raised); }
+.lf-account-screen[data-theme='dark'] :where(.lf-settings-row, .lf-social-tier-list > li, .lf-memory-note) .lf-button--secondary:not(:disabled) { background: var(--base); }
+
+/* The development-only preview page around a screen: the shell's content area, without the shell. */
+.lf-account-preview-page { display: grid; min-inline-size: 0; max-inline-size: 70rem; margin-inline: auto; padding: var(--spacing-6) var(--spacing-4) var(--spacing-10); }
+@container app (min-width: 640px) { .lf-account-preview-page { padding-inline: var(--spacing-8); } }

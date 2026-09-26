@@ -149,6 +149,7 @@ test('E.12: an image key, a pattern or preset drift, a dropped guard or an unpro
   expectFailure([['backend/src/services/profileShape.ts', "'clothesColor', 'accessories'] as const;", "'clothesColor', 'accessories', 'imageUrl'] as const;"]], /avatar key drift/);
   expectFailure([['backend/src/services/profileShape.ts', 'export const AVATAR_VALUE_PATTERN = /^[A-Za-z0-9]{1,40}$/;', 'export const AVATAR_VALUE_PATTERN = /^.{1,400}$/;']], /avatar pattern drift/);
   expectFailure([['frontend/src/lib/coverPresets.ts', "{ id: 'dawn'", "{ id: 'photo'"]], /cover preset drift/);
+  expectFailure([['frontend/src/rebuild/account/avatar/avatarKit.ts', "'grape', 'dawn'] as const;", "'grape', 'photo'] as const;"]], /cover preset drift/);
   expectFailure([[NEXT, null, '-- @phase: contract\nDROP TRIGGER IF EXISTS avatar_shape_guard ON public.avatars;\n']], /avatar_shape_guard is missing or dropped/);
   expectFailure([['backend/src/routes/profile.ts', 'cover: projectCover(profile.cover),\n        avatarOptions: projectAvatarOptions(avatarOptions),\n        isSelf: false,', 'cover: profile.cover,\n        avatarOptions,\n        isSelf: false,']], /served without projectCover/);
   expectFailure([['backend/src/services/supabaseRest.ts', 'avatarOptions: projectAvatarOptions(avatarById.get(id)),', 'avatarOptions: avatarById.get(id) ?? {},']], /social cards must project/);
@@ -157,7 +158,7 @@ test('E.12: an image key, a pattern or preset drift, a dropped guard or an unpro
 
 test('E.12: a new upload surface fails, a reviewed one passes', () => {
   expectFailure([['backend/src/routes/profile.ts', "import { Router } from 'express';", "import multer from 'multer';\nimport { Router } from 'express';"]], /profile\.ts: an upload parser outside the reviewed upload surfaces/);
-  expectFailure([['frontend/src/routes/app/profile/ProfilePage.tsx', 'return (', 'const picker = <input type="file" accept="image/*" />;\n  return (']], /ProfilePage\.tsx: a file input outside the reviewed upload surfaces/);
+  expectFailure([['frontend/src/rebuild/account/LookEditor.tsx', '  const header = <header', '  const picker = <input type="file" accept="image/*" />;\n  const header = <header']], /LookEditor\.tsx: a file input outside the reviewed upload surfaces/);
 });
 
 test('E.12: the brand position must stay written', () => {

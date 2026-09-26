@@ -3,6 +3,9 @@
   margin-block-start: 1.5rem;
   padding: 1.5rem;
   border-radius: var(--rounded-lg);
+  /* A card on a neutral page: surface fill and a soft elevation, never an outline (02 §4.4). */
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
   display: grid;
   gap: .75rem;
 }

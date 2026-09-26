@@ -60,7 +60,8 @@ export function checkSocialTiers(root) {
   const route = read(root, 'backend/src/routes/profile.ts');
   if (/getFollowCounts/.test(route)) failures.push('backend/src/routes/profile.ts: reads follower/following counts (E.9 removed them from every profile surface)');
   if (/\bfollowers:\s*counts\b|\bfollowing:\s*counts\b/.test(route)) failures.push('backend/src/routes/profile.ts: emits a follower/following count');
-  for (const page of ['frontend/src/routes/app/profile/ProfilePage.tsx', 'frontend/src/routes/app/profile/PublicProfilePage.tsx']) {
+  // The own profile is the rebuilt screen and its route (W2P.1); the public profile is still the legacy page.
+  for (const page of ['frontend/src/rebuild/account/OwnProfile.tsx', 'frontend/src/routes/app/profile/OwnProfileRoute.tsx', 'frontend/src/routes/app/profile/PublicProfilePage.tsx']) {
     const source = read(root, page);
     if (/(?<!\.)\bdata\.follow(?:ers|ing)\b|name="followers"|name="following"/.test(source)) failures.push(`${page}: renders a follower/following count (E.9)`);
   }

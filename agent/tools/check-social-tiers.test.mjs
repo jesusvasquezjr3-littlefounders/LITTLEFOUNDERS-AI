@@ -17,7 +17,8 @@ const FILES = [
   'backend/src/routes/profile.ts',
   'backend/src/services/socialVisibility.ts',
   'backend/src/services/profileFieldSafety.ts',
-  'frontend/src/routes/app/profile/ProfilePage.tsx',
+  'frontend/src/rebuild/account/OwnProfile.tsx',
+  'frontend/src/routes/app/profile/OwnProfileRoute.tsx',
   'frontend/src/routes/app/profile/PublicProfilePage.tsx',
   'database/scripts/fixtures/profile-field-safety-cases.json',
   'docs/rebuild/policies/SOCIAL-TIERS.md',
@@ -66,6 +67,11 @@ test('E.9: a count read back into the profile route fails', () => {
 test('E.9: a count rendered on the public page fails', () => {
   withFixture((root) => edit(root, 'frontend/src/routes/app/profile/PublicProfilePage.tsx',
     "{t('profile.stats.followers')}</Button>", "{t('profile.stats.followers')} {data.followers}</Button>"), /renders a follower\/following count/);
+});
+
+test('E.9: a count rendered on the rebuilt own profile fails', () => {
+  withFixture((root) => edit(root, 'frontend/src/rebuild/account/OwnProfile.tsx',
+    '{copy.followers}</AppLink>', '{copy.followers} {data.followers}</AppLink>'), /OwnProfile\.tsx: renders a follower\/following count/);
 });
 
 test('E.8: a later migration that drops teen consent from the follow trigger fails', () => {

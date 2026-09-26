@@ -158,7 +158,8 @@ const TYPES = new Set(['svg', 'webp', 'png', 'lottie', 'render']);
 const MODES = new Set(['both', 'light', 'dark']);
 const REVIEW = new Set(['draft', 'approved', 'retired']);
 // 07 §7 item 2: the families whose first asset needs the owner's style approval.
-const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion']);
+// W2 profile lane: the cartoon avatar parts and the profile covers (E.12) are two more families of our own, each with its first-asset style review.
+const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers']);
 const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150 };
 const MENTORS = ['rho', 'zara', 'liruf', 'dina'];
 const AVATAR_SLOT = 'mentor.avatar';

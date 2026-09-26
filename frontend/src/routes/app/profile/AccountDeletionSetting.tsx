@@ -117,13 +117,11 @@ function ScopedAccountDeletion() {
     navigate('/login', { replace: true, state: { from: '/profile/settings' } });
   };
 
-  return <div className="mt-8">
-    <AccountDeletion copy={copy} locale={locale} dark={isDark} view={view}
+  return <AccountDeletion copy={copy} locale={locale} dark={isDark} view={view}
       onStart={() => setReady({ step: 'confirm', error: null })}
       onBack={() => setReady({ step: 'intro', error: null })}
       onConfirm={(input) => void confirm(input)}
       onKeep={() => void keep()}
       onRetry={() => setAttempt((value) => value + 1)}
-      onSignIn={() => void signInAgain()} />
-  </div>;
+      onSignIn={() => void signInAgain()} />;
 }

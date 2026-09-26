@@ -121,7 +121,7 @@ function respond(core, path, request, unknownRequests) {
   if (path === '/auth/me') return ok({
     profile: { display_name: 'Synthetic', ...(spec.username ? { username: spec.username } : {}), locale, theme, cover: {} }, roles: spec.roles ?? ['universal'],
     adminPermissions: spec.adminPermissions ?? [], avatarOptions: {},
-    analyticsEnabled: false, isGuest: spec.guest, newAccount: false, onboardingComplete: !spec.guest,
+    analyticsEnabled: false, isGuest: spec.guest, newAccount: false, onboardingComplete: spec.onboarded ?? !spec.guest,
   });
   if (path === '/auth/age-screen') return ok(spec.ageBand
     ? { required: false, ageBand: AGE_BANDS[spec.ageBand], protectedOrigin: spec.ageBand !== 'adult' && spec.ageBand !== '13-17' }
@@ -129,10 +129,11 @@ function respond(core, path, request, unknownRequests) {
   if (path === '/auth/analytics-preference') return ok({ canManage: spec.ageBand === '13-17', enabled: false, disclosed: true });
   if (path === '/analytics/tracking-decision') return ok({ excluded: false, degraded: false });
   if (path === '/events') return ok({ accepted: 0 });
-  if (path === '/profile') return ok({ displayName: 'Synthetic', username: 'synthetic', locale, birthDate: null, cover: {}, avatarOptions: {},
+  // A scenario may add to (or override) the default own profile and blocked list: `profile`, `blocked` (the profile lane's P1-P3 states).
+  if (path === '/profile' && request.method === 'GET') return ok({ displayName: 'Synthetic', username: 'synthetic', locale, birthDate: null, cover: {}, avatarOptions: {},
     memberSince: '2026-01-10T00:00:00Z', email: 'synthetic@example.test',
-    learningStats: { xpPoints: 0, minutesLearned: 0, lessonsCompleted: 0, streakDays: 0, lastActiveDate: null } });
-  if (path === '/profile/blocked') return ok({ users: [] });
+    learningStats: { xpPoints: 0, minutesLearned: 0, lessonsCompleted: 0, streakDays: 0, lastActiveDate: null }, ...(spec.profile ?? {}) });
+  if (path === '/profile/blocked') return ok({ users: spec.blocked ?? [] });
   for (const lane of LANES) {
     const answer = lane.respond({ core, spec, scenario, locale, theme, fixtures, path, request, ok });
     if (answer !== undefined) return answer;

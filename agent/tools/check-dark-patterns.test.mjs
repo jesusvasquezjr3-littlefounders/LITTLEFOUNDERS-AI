@@ -59,6 +59,9 @@ test('structure red team: timers, autoplay, timed navigation, unclosable dialogs
   assert.deepEqual(tsx('const host = useModal(open, "scrim", undefined, panel);\nreturn <section role="dialog" aria-modal="true" />;'), ['DP-03']);
   assert.deepEqual(tsx('<Leaderboard />'), ['DP-05']);
   assert.deepEqual(tsx('<span>{state.hearts}</span>'), ['DP-07']);
+  // The avatar's eye shape named 'hearts' is a closed drawing option, not a counter; anything else named hearts still fails.
+  assert.deepEqual(tsx("export const AVATAR_PARTS = { eyes: ['default', 'happy', 'hearts'], mouth: ['smile'] };"), []);
+  assert.deepEqual(tsx("export const AVATAR_PARTS = { eyes: ['default', 'hearts'] };\nconst hearts = 3;"), ['DP-07']);
   assert.deepEqual(tsx('<Stage emotion="sad" />'), ['SH-02']);
   const css = (code) => structuralFindings('frontend/src/rebuild/x/sample.css', code).map((finding) => finding.item);
   assert.deepEqual(css('.lf-answer--wrong { background: var(--error-soft); }'), ['SH-02']);

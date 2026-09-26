@@ -6,10 +6,11 @@
   padding: var(--spacing-4);
   border-radius: var(--rounded-lg);
   background: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--edge);
+  /* 02 §4.4: a neutral card separates by a soft elevation, never an outline drawn around it. */
+  box-shadow: var(--elevation-card);
 }
 .lf-rebuild.lf-social-tier-card > .lf-button { justify-self: start; }
-.lf-rebuild.lf-social-tier-notice { background: var(--warning-soft); box-shadow: inset 0 0 0 1px var(--warning-ridge); }
+.lf-rebuild.lf-social-tier-notice { background: var(--warning-soft); box-shadow: none; }
 .lf-social-tier-handle { color: var(--content-muted); font-weight: 700; }
 .lf-social-tier-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--spacing-3); }
 .lf-social-tier-list > li {
