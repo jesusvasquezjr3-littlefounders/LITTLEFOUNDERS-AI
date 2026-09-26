@@ -136,5 +136,11 @@ jobs:
           # ok / unavailable / shape_mismatch, and keeps 400 days of checks.
           # Guarded so it is a no-op until the migration that creates it is applied.
           run_sql "DO \$probe\$ BEGIN IF to_regprocedure('public.probe_family_engagement_insight(integer)') IS NOT NULL THEN PERFORM public.probe_family_engagement_insight(400); END IF; END \$probe\$;" 'engagement_probe'
+          # S07.7 (D.22): the research instrumentation's monthly snapshot for the
+          # previous complete month, only for participants whose research
+          # consent stands (observational; OD-23: no experiment on a minor).
+          # Idempotent, so running it every night fills a month once. Guarded
+          # so it is a no-op until the migration that creates it is applied.
+          run_sql "DO \$snap\$ BEGIN IF to_regprocedure('public.record_family_research_snapshots(date)') IS NOT NULL THEN PERFORM public.record_family_research_snapshots(); END IF; END \$snap\$;" 'research_snapshots'
           run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'

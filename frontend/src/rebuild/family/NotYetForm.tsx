@@ -19,18 +19,20 @@ export interface NotYetCopy {
   not_finished: string; redo: string; save_more: string; later_date: string; not_suitable: string; talk_first: string; practice_more: string;
 }
 
-export function NotYetForm({ copy, codes, busy, heading, onSubmit, onCancel }: {
+export function NotYetForm({ copy, codes, busy, heading, initialReason, onSubmit, onCancel }: {
   copy: NotYetCopy;
   codes: readonly ReasonCode[];
   busy: boolean;
   /** A short line naming what is being answered (the chore or reward title). */
   heading?: string;
+  /** S07.7 (D.23): the Tutor's own reflection, when they chose to use it as the reason. */
+  initialReason?: string;
   onSubmit: (notYet: NotYet) => void;
   onCancel: () => void;
 }) {
   const ids = { legend: useId(), reason: useId(), hint: useId(), date: useId() };
   const [code, setCode] = useState<ReasonCode | null>(null);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState(initialReason ?? '');
   const [date, setDate] = useState('');
   const [problem, setProblem] = useState<'code' | 'vague' | 'date' | null>(null);
 

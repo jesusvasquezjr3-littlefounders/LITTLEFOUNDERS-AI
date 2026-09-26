@@ -10,6 +10,7 @@ import { EvidenceThumbnail } from './EvidencePhoto';
 import type { WireCatalogItem, WireRedemption, WireTask } from './types';
 import { ChoreComposerPanel } from './ChoreComposerPanel';
 import { DecisionQueuePanel } from './DecisionQueuePanel';
+import { CoachingTipPanel } from '../family/GovernancePanels';
 import { choreKindLine } from '../family/familyMoneyCopy';
 
 /*
@@ -114,6 +115,7 @@ export function ParentTaskBoard() {
       </header>
 
       {/* S07.5 (D.17, D.18): everything waiting for a Tutor, with the child's own words; every "not yet" carries a reason. */}
+      {state.kids.length > 0 && <CoachingTipPanel token={token} />}
       {state.kids.length > 0 && <DecisionQueuePanel token={token} kids={state.kids} refreshKey={reloadKey} onChanged={() => setReloadKey((k) => k + 1)} />}
 
       {/* S07.3 (D.10): every chore is tagged as a family contribution or a bonus task. */}

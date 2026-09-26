@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import en from '../../i18n/en-US/familyAutonomy.json';
+import governance from '../../i18n/en-US/familyGovernance.json';
 import { AutonomyLadder } from './AutonomyLadder';
 import { ChoreDone } from './ChoreDone';
 import { DecisionNotes } from './DecisionNotes';
@@ -101,13 +102,13 @@ describe('the API layer refuses what the server did not say', () => {
 
   it('sends the exact bodies and rejects a surprising answer', async () => {
     const send = session(() => ({ data: { task: { id: TASK, status: 'open' } }, error: null }));
-    expect((await sendBackChore(TASK, { reasonCode: 'redo', reason: GOOD }, send.s)).ok).toBe(true);
-    expect(send.calls[0]).toEqual({ path: `/tasks/${TASK}/send-back`, method: 'POST', body: { reasonCode: 'redo', reason: GOOD } });
+    expect((await sendBackChore(TASK, { reasonCode: 'redo', reason: GOOD, reflection: 'written' }, send.s)).ok).toBe(true);
+    expect(send.calls[0]).toEqual({ path: `/tasks/${TASK}/send-back`, method: 'POST', body: { reasonCode: 'redo', reason: GOOD, reflection: 'written' } });
     const wrong = session(() => ({ data: { task: { id: TASK, status: 'approved' } }, error: null }));
-    expect(await sendBackChore(TASK, { reasonCode: 'redo', reason: GOOD }, wrong.s)).toEqual({ ok: false, code: 'INVALID_RESPONSE' });
+    expect(await sendBackChore(TASK, { reasonCode: 'redo', reason: GOOD, reflection: 'skipped' }, wrong.s)).toEqual({ ok: false, code: 'INVALID_RESPONSE' });
     const deny = session(() => ({ data: { decided: true, status: 'denied' }, error: null }));
-    await decideReward(RED, { approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test.', revisitOn: '2026-10-01' }, deny.s);
-    expect(deny.calls[0]!.body).toEqual({ approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test.', revisitOn: '2026-10-01' });
+    await decideReward(RED, { approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test.', revisitOn: '2026-10-01', reflection: 'skipped' }, deny.s);
+    expect(deny.calls[0]!.body).toEqual({ approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test.', revisitOn: '2026-10-01', reflection: 'skipped' });
     const done = session(() => ({ data: { task: { status: 'approved' }, selfLogged: true }, error: null }));
     expect((await markChoreDone(TASK, { localDate: '2026-09-24', note: 'Dried them' }, done.s)).ok).toBe(true);
     expect(done.calls[0]!.body).toEqual({ localDate: '2026-09-24', note: 'Dried them' });
@@ -149,10 +150,10 @@ describe('NotYetForm (D.18)', () => {
 
 describe('DecisionQueue (D.18, D.17)', () => {
   const names = { 1: en.levels.name1, 2: en.levels.name2, 3: en.levels.name3 } as const;
-  const draw = (q: Queue, onAction = vi.fn()) => render(<DecisionQueue copy={en.queue} notYetCopy={en.notYet} levelNames={names} kidName={() => 'Ana'} locale="en-US"
+  const draw = (q: Queue, onAction = vi.fn()) => render(<DecisionQueue copy={en.queue} notYetCopy={en.notYet} reflectionCopy={governance.reflection} levelNames={names} kidName={() => 'Ana'} locale="en-US"
     dark={false} queue={q} loading={false} failed={false} busy={false} notice={null} onRetry={vi.fn()} onAction={onAction} />);
 
-  it("shows the child's own words next to each request, and a yes is one tap", () => {
+  it("shows the child's own words next to each request, and a yes follows the reflective prompt (D.23)", () => {
     const onAction = vi.fn();
     const { container } = draw(queue(), onAction);
     const chores = container.querySelector('[data-queue="chores"]') as HTMLElement;
@@ -161,8 +162,11 @@ describe('DecisionQueue (D.18, D.17)', () => {
     expect(within(rewards).getByText('Ana: Saved for it')).toBeTruthy();
     expect(within(rewards).getByText('Ana says: Three weeks of saving')).toBeTruthy();
     fireEvent.click(within(chores).getByRole('button', { name: en.queue.approve }));
-    expect(onAction).toHaveBeenCalledWith({ kind: 'approveChore', chore: queue().chores[0] });
+    expect(onAction).not.toHaveBeenCalled();
+    expect(within(chores).getByLabelText('What would you tell Ana about this?')).toBeTruthy();
     everyTextHasARole(container);
+    fireEvent.click(within(chores).getByRole('button', { name: governance.reflection.continue }));
+    expect(onAction).toHaveBeenCalledWith({ kind: 'approveChore', chore: queue().chores[0], reflection: 'skipped', note: null });
   });
 
   it('opens the reason form for every "not yet" and sends it only with a reason', () => {
@@ -170,14 +174,18 @@ describe('DecisionQueue (D.18, D.17)', () => {
     const { container } = draw(queue(), onAction);
     const chores = container.querySelector('[data-queue="chores"]') as HTMLElement;
     fireEvent.click(within(chores).getByRole('button', { name: en.queue.sendBack }));
+    expect(chores.querySelector('[data-not-yet="form"]')).toBeNull();
+    fireEvent.change(within(chores).getByLabelText('What would you tell Ana about this?'), { target: { value: 'She tried hard today' } });
+    fireEvent.click(within(chores).getByRole('button', { name: governance.reflection.continue }));
     const form = chores.querySelector('[data-not-yet="form"]') as HTMLElement;
+    expect((within(form).getByLabelText(en.notYet.reason) as HTMLTextAreaElement).value).toBe('');
     expect([...form.querySelectorAll('[data-reason-code]')].map((b) => b.getAttribute('data-reason-code'))).toEqual([...TASK_REASON_CODES]);
     fireEvent.click(within(form).getByRole('button', { name: en.notYet.send }));
     expect(onAction).not.toHaveBeenCalled();
     fireEvent.click(within(form).getByRole('button', { name: en.notYet.redo }));
     fireEvent.change(within(form).getByLabelText(en.notYet.reason), { target: { value: GOOD } });
     fireEvent.click(within(form).getByRole('button', { name: en.notYet.send }));
-    expect(onAction).toHaveBeenCalledWith({ kind: 'sendBack', chore: queue().chores[0], notYet: { reasonCode: 'redo', reason: GOOD, revisitOn: null } });
+    expect(onAction).toHaveBeenCalledWith({ kind: 'sendBack', chore: queue().chores[0], notYet: { reasonCode: 'redo', reason: GOOD, revisitOn: null }, reflection: 'written' });
   });
 
   it('keeps a photo-required chore from a yes until the photo is in', () => {
@@ -199,7 +207,8 @@ describe('DecisionQueue (D.18, D.17)', () => {
     fireEvent.click(screen.getByRole('button', { name: en.queue.talked }));
     expect(onAction).toHaveBeenCalledWith({ kind: 'closeNudge', nudgeId: NUDGE, outcome: 'talked' });
     fireEvent.click(screen.getByRole('button', { name: en.queue.looksGood }));
-    expect(onAction).toHaveBeenLastCalledWith(expect.objectContaining({ kind: 'confirm' }));
+    fireEvent.click(screen.getByRole('button', { name: governance.reflection.continue }));
+    expect(onAction).toHaveBeenLastCalledWith(expect.objectContaining({ kind: 'confirm', reflection: 'skipped' }));
     everyTextHasARole(container);
   });
 });

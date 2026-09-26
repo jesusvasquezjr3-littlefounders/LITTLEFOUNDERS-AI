@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,7 @@ import { AllocationPanel } from '../tasks/AllocationPanel';
 import { SavingsGoalsPanel } from '../tasks/SavingsGoalsPanel';
 import { UsualSplitPanel } from '../tasks/UsualSplitPanel';
 import { CoinAccountPanel } from './CoinAccountPanel';
+import { MoneyBridgePanel, MyResearchPanel, tokenSession } from '../family/GovernancePanels';
 
 /*
  * The kid's half of BANKING.md §7.1: the account/card, the wallet
@@ -53,6 +54,7 @@ export function KidBankingHome() {
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
+  const governanceSession = useMemo(() => (token ? tokenSession(token) : null), [token]);
   const [reloadKey, setReloadKey] = useState(0);
   // S07.4: goals and the allowance split chooser are rebuilt panels; a landed
   // payout bumps them so a goal it reached celebrates at once.
@@ -177,6 +179,9 @@ export function KidBankingHome() {
         the child's age register at Core, and re-reads after every change.
       */}
       <CoinAccountPanel token={token} refreshKey={moneyVersion} onChanged={() => { void refreshAccount(); void refreshWalletAndCredits(); }} />
+      {/* S07.7 (D.19, D.22): "Beyond the app" from 15, and the child's own research no. */}
+      {governanceSession && <MoneyBridgePanel session={governanceSession} />}
+      {governanceSession && <MyResearchPanel session={governanceSession} />}
       <button type="button" onClick={() => setCardDialogOpen(true)} className="lf-press flex items-center gap-1.5 self-start rounded-full px-3 py-1.5 lf-caption font-bold text-primary">
         <Icon name="tune" className="text-[16px]" aria-hidden />
         {t('banking.kid.cardDetails')}

@@ -477,13 +477,13 @@ describe('GET /api/v1/tasks/streak (kid)', () => {
 describe('POST /api/v1/tasks/:id/approve (parent)', () => {
   it('404s approving a task belonging to a child not verified under this parent', async () => {
     stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [OTHER_KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(404);
   });
 
   it('approves a done task', async () => {
     stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(200);
     expect(res.body.data.task.status).toBe('approved');
   });
@@ -491,14 +491,14 @@ describe('POST /api/v1/tasks/:id/approve (parent)', () => {
   it('records the deciding guardian through the decision flow so the database can re-check it (D.4, D.18)', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
     stub({ task: { ...defaultTask(), status: 'done' }, parentsKids: [KID_ID], writes });
-    await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     const call = writes.find((w) => w.url.includes('/rest/v1/rpc/family_decide_task'));
     expect(call?.body).toEqual({ p_task: TASK_ID, p_actor: PARENT_ID, p_outcome: 'approved', p_reason_code: null, p_reason: null });
   });
 
   it('409s approving a task that requires a photo but has none attached yet', async () => {
     stub({ task: { ...defaultTask(), status: 'done', requires_evidence: true }, parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(409);
   });
 
@@ -507,13 +507,13 @@ describe('POST /api/v1/tasks/:id/approve (parent)', () => {
       task: { ...defaultTask(), status: 'done', requires_evidence: true, evidence_bucket: 'task-evidence', evidence_hash: 'aa11bb22', evidence_ext: 'jpg' },
       parentsKids: [KID_ID],
     });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/approve`, { reflection: 'skipped' });
     expect(res.status).toBe(200);
   });
 });
 
 describe('POST /api/v1/tasks/:id/cancel (parent)', () => {
-  const REASON = { reasonCode: 'not_finished', reason: 'The bed still needs the pillows on top' };
+  const REASON = { reasonCode: 'not_finished', reason: 'The bed still needs the pillows on top', reflection: 'skipped' };
 
   it('404s cancelling a task belonging to a child not verified under this parent', async () => {
     stub({ task: defaultTask(), parentsKids: [OTHER_KID_ID] });
@@ -530,7 +530,7 @@ describe('POST /api/v1/tasks/:id/cancel (parent)', () => {
   it('refuses a cancellation with no reason before any write (D.18: no "not yet" without a reason)', async () => {
     const writes: { url: string; method: string; body: unknown }[] = [];
     stub({ task: defaultTask(), parentsKids: [KID_ID], writes });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, {});
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reflection: 'skipped' });
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('DECISION_REASON_REQUIRED');
     expect(writes.some((w) => w.url.includes('/rpc/'))).toBe(false);
@@ -548,7 +548,7 @@ describe('POST /api/v1/tasks/:id/cancel (parent)', () => {
 
   it('rejects a reason over 240 characters', async () => {
     stub({ task: defaultTask(), parentsKids: [KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'x'.repeat(241) });
+    const res = await postAsParent(`/api/v1/tasks/${TASK_ID}/cancel`, { reason: 'x'.repeat(241), reflection: 'skipped' });
     expect(res.status).toBe(400);
   });
 });
@@ -685,19 +685,19 @@ describe('PATCH /api/v1/tasks/catalog/:id (parent toggles a reward)', () => {
 describe('POST /api/v1/tasks/redemptions/:id/decide (parent)', () => {
   it("404s deciding a redemption for a kid not verified under this parent", async () => {
     stub({ redemption: defaultRedemption(), parentsKids: [OTHER_KID_ID] });
-    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true });
+    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true, reflection: 'skipped' });
     expect(res.status).toBe(404);
   });
 
   it('409s approving when the balance no longer covers the cost', async () => {
     stub({ redemption: defaultRedemption(), parentsKids: [KID_ID], refusals: { family_decide_redemption: 'INSUFFICIENT_BALANCE' } });
-    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true });
+    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true, reflection: 'skipped' });
     expect(res.status).toBe(409);
   });
 
   it('approves a redemption', async () => {
     stub({ redemption: defaultRedemption(), parentsKids: [KID_ID], decideResult: true });
-    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true });
+    const res = await postAsParent(`/api/v1/tasks/redemptions/${REDEMPTION_ID}/decide`, { approve: true, reflection: 'skipped' });
     expect(res.status).toBe(200);
     expect(res.body.data.decided).toBe(true);
   });

@@ -1,0 +1,177 @@
+{
+  "coaching": {
+    "label": "Dica do mês",
+    "why": "Por que ajuda",
+    "whyNote": "Vem de estudos sobre famílias. É uma descoberta, não uma promessa.",
+    "dismiss": "Ocultar dica",
+    "failed": "A dica não carregou."
+  },
+  "tips": {
+    "contribution-vs-bonus": {
+      "title": "Ajudar em casa é coisa de família",
+      "body": "Não pague a ajuda do dia a dia. Dê moedas só por tarefas extras.",
+      "why": "Pagar por tudo pode tirar a vontade de ajudar."
+    },
+    "price-by-effort": {
+      "title": "Pague tarefas extras pelo esforço",
+      "body": "Pague mais por tarefas longas ou difíceis. Mantenha os preços estáveis.",
+      "why": "Preços estáveis dão às moedas um valor para planejar."
+    },
+    "keep-promises": {
+      "title": "Cumpra o prometido no prazo",
+      "body": "Responda rápido aos pedidos e dê as recompensas prometidas.",
+      "why": "Crianças esperam mais quando esperar sempre vale a pena."
+    },
+    "explain-the-no": {
+      "title": "Dê um motivo a cada não",
+      "body": "Diga por que e o que seu filho pode fazer depois.",
+      "why": "Um não sem explicação faz as crianças contarem menos aos pais."
+    },
+    "ask-their-view": {
+      "title": "Pergunte primeiro o que ele pensa",
+      "body": "Antes de decidir, pergunte ao seu filho por que ele quer.",
+      "why": "Conversas de mão dupla preparam melhor que só dar instruções."
+    },
+    "money-talk-at-home": {
+      "title": "Deixe que vejam suas escolhas",
+      "body": "Explique em voz alta como você decide uma compra.",
+      "why": "Crianças aprendem com o que você faz, não só com regras."
+    },
+    "after-a-goal": {
+      "title": "Depois de uma meta, pergunte o próximo passo",
+      "body": "Quando uma meta for alcançada, ajude a planejar a próxima.",
+      "why": "A poupança costuma cair logo após uma meta. Uma nova ajuda."
+    },
+    "limits-with-reasons": {
+      "title": "Explique os limites que você define",
+      "body": "Conte o motivo de um limite e revisem juntos.",
+      "why": "Regras com motivo são seguidas com mais vontade."
+    },
+    "grow-their-say": {
+      "title": "Dê mais voz, passo a passo",
+      "body": "Quando seu filho mostrar cuidado, suba o nível de independência dele.",
+      "why": "Independência gradual funciona melhor que tudo de uma vez."
+    },
+    "spending-is-not-failing": {
+      "title": "Gastar também é uma escolha",
+      "body": "Se as moedas acabam rápido, pergunte o que seu filho aprendeu.",
+      "why": "Gastar agora pode fazer sentido quando esperar não valeu a pena."
+    },
+    "share-for-real": {
+      "title": "Torne o compartilhar real",
+      "body": "Escolham juntos para onde vão as moedas de Compartilhar e façam.",
+      "why": "Doar parece real quando chega a um lugar real."
+    },
+    "bonus-is-not-interest": {
+      "title": "O bônus não é rendimento",
+      "body": "Explique que o bônus é um prêmio da família, não rendimento do banco.",
+      "why": "Até adultos erram como os juros crescem. Mantenha simples."
+    }
+  },
+  "reflection": {
+    "prompt": "O que você diria a {name} sobre isso?",
+    "hint": "Só você vê isto. Não é salvo.",
+    "continue": "Continuar",
+    "share": "Enviar como nota",
+    "useAsReason": "Usar como motivo",
+    "back": "Voltar"
+  },
+  "pricing": {
+    "open": "Dicas de preço",
+    "close": "Ocultar dicas",
+    "contribution": "Ajuda do dia a dia: sem pagamento, ou uma ou duas moedas.",
+    "bonus": "Tarefas extras: pague por esforço e tempo. Mantenha os preços estáveis.",
+    "promise": "Pague o que prometeu, quando prometeu."
+  },
+  "limitNote": {
+    "open": "Ao definir um limite",
+    "reason": "Diga ao seu filho por que o limite existe.",
+    "review": "Revisem juntos à medida que ele cresce."
+  },
+  "scope": {
+    "heading": "O que esta prática cobre",
+    "intro": "Pratica com moedas que ficam no app. Nenhum dinheiro real se move.",
+    "open": "O que cobre",
+    "close": "Ocultar",
+    "teachesHeading": "Pratica",
+    "earning": "Ganhar moedas por tarefas e ajudar em casa.",
+    "splitting": "Dividir moedas entre poupar, gastar e compartilhar.",
+    "goals": "Poupar para metas e esperar por elas.",
+    "asking": "Pedir recompensas e ouvir o motivo.",
+    "notHeading": "Não ensina",
+    "credit": "Pegar emprestado, empréstimos ou cartões de crédito.",
+    "debt": "Dívidas, nem pagá-las com juros.",
+    "compounding": "Juros compostos de verdade. O bônus semanal não é rendimento.",
+    "risk": "Risco, investimentos ou seguros.",
+    "why": "São difíceis de ensinar bem, então ficam de fora."
+  },
+  "dataPolicy": {
+    "heading": "Dados da sua família",
+    "lead": "Por quanto tempo guardamos cada tipo.",
+    "open": "Ver",
+    "close": "Ocultar",
+    "photos": "Fotos de tarefas: {days} dias após sua decisão.",
+    "records": "Tarefas, recompensas, decisões e notas: {days} dias.",
+    "coins": "Moedas, metas e regras: enquanto a conta existir.",
+    "insights": "Dados de uso: {days} dias, só com sua permissão.",
+    "research": "Pesquisa: só se você disser sim, até {days} dias.",
+    "erasure": "Excluir uma conta exclui tudo.",
+    "sharing": "Nunca compartilhados com anunciantes nem com a IA do Mentor.",
+    "failed": "Isto não carregou."
+  },
+  "research": {
+    "open": "Sobre a pesquisa",
+    "close": "Ocultar",
+    "heading": "Ajude-nos a aprender",
+    "what": "Queremos saber se praticar aqui ajuda mais tarde na vida.",
+    "how": "Guardamos totais mensais, nunca nomes, notas ou títulos.",
+    "never": "Sem experimentos com crianças. Nada muda para {name}.",
+    "stop": "Pare quando quiser e nós apagamos tudo.",
+    "yes": "Incluir {name}",
+    "on": "Participa desde {date}.",
+    "months": "Meses registrados: {count}.",
+    "paused": "Pausado. Nada é registrado agora.",
+    "stopButton": "Parar e apagar",
+    "confirm": "Apagar os dados de pesquisa de {name}?",
+    "confirmYes": "Apagar",
+    "confirmNo": "Manter",
+    "saved": "Salvo.",
+    "deleted": "Parado e apagado.",
+    "failed": "Não foi salvo. Tente de novo.",
+    "loading": "Carregando…"
+  },
+  "myResearch": {
+    "heading": "Pesquisa",
+    "body": "Seu Tutor deixa a gente aprender com seus totais de moedas.",
+    "stop": "Você pode parar quando quiser.",
+    "button": "Parar",
+    "confirm": "Parar e apagar?",
+    "yes": "Sim, parar",
+    "no": "Manter",
+    "stopped": "Parado. Foi apagado.",
+    "failed": "Não foi salvo."
+  },
+  "bridge": {
+    "heading": "Além do app",
+    "intro": "Pratique aqui e depois tente de verdade quando estiver pronto.",
+    "first_pay": "Meu primeiro salário real",
+    "first_account": "Minha primeira conta em um banco",
+    "first_budget": "Meu primeiro orçamento real",
+    "arrived": "Aconteceu",
+    "undo": "Desfazer",
+    "first_pay1": "Veja quanto recebeu depois dos descontos.",
+    "first_pay2": "Teste sua divisão de sempre nele.",
+    "first_pay3": "Guarde o holerite.",
+    "first_account1": "Pergunte sobre tarifas antes de abrir.",
+    "first_account2": "Confira toda semana, como suas moedas.",
+    "first_account3": "Nunca compartilhe sua senha nem seu PIN.",
+    "first_budget1": "Anote o que precisa pagar todo mês.",
+    "first_budget2": "Poupe primeiro, depois gaste.",
+    "first_budget3": "Veja como foi no fim do mês.",
+    "splitHeading": "Teste sua divisão",
+    "amount": "Valor",
+    "splitResult": "Poupar {save}, gastar {spend}, compartilhar {share}",
+    "splitNote": "Só você vê isto. Não é salvo.",
+    "failed": "Não foi salvo."
+  }
+}

@@ -19,6 +19,7 @@ import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
 import { StreakPausesPanel } from './StreakPausesPanel';
 import { ShareDestinationsPanel } from './ShareDestinationsPanel';
 import { AutonomyLadderPanel } from './AutonomyLadderPanel';
+import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -127,6 +128,11 @@ export function FamilyPage() {
         <p className="lf-body text-content-muted">{t('family.subtitle')}</p>
       </header>
 
+      {/* S07.7 (D.23, D.20, D.21): this month's tip, what the practice covers, and how long the family's data is kept. */}
+      {state.kids.length > 0 && <CoachingTipPanel token={token} />}
+      <ScopeStatementPanel />
+      <DataPolicyPanel token={token} />
+
       {state.kids.length === 0 ? (
         <Card className="flex flex-col items-center gap-3 p-8 text-center">
           <Icon name="family_restroom" className="text-[40px] text-content-faint" aria-hidden />
@@ -230,6 +236,8 @@ export function FamilyPage() {
               <ShareDestinationsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               {/* S07.5 (D.17): the child's independence level, set by the Tutor within the documented rule. */}
               <AutonomyLadderPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
+              {/* S07.7 (D.22): research participation, the Tutor's own answer for this child. */}
+              <ResearchConsentPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
               <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}

@@ -88,6 +88,14 @@ export function revisitInRange(date: string, today = new Date()): boolean {
 
 export interface NotYet { reasonCode: ReasonCode; reason: string; revisitOn: string | null }
 
+/**
+ * S07.7 (D.23): the outcome of the reflective prompt that comes before every
+ * Tutor decision. Core requires it; only the kind is ever sent (the Tutor's
+ * own words stay in the browser unless sent as the note or the reason).
+ */
+export const REFLECTIONS = ['written', 'shared', 'skipped'] as const;
+export type Reflection = (typeof REFLECTIONS)[number];
+
 // ── D.17: the ladder ────────────────────────────────────────────────────────
 export type Level = 1 | 2 | 3;
 const isLevel = (v: unknown): v is Level => v === 1 || v === 2 || v === 3;
@@ -156,7 +164,7 @@ export function setKidAutonomy(kidId: string, input: { level: Level; preapproved
     (d): d is { level: Level } => isObject(d) && d.level === input.level, { method: 'PUT', body: input });
 }
 
-export function decideLevelRequest(requestId: string, input: { grant: true; preapprovedLimit: number } | ({ grant: false } & NotYet), session: Session) {
+export function decideLevelRequest(requestId: string, input: ({ grant: true; preapprovedLimit: number } | ({ grant: false } & NotYet)) & { reflection: Reflection }, session: Session) {
   return call(`/tasks/autonomy/requests/${encodeURIComponent(requestId)}/decide`, session,
     (d): d is { status: 'granted' | 'declined' } => isObject(d) && d.status === (input.grant ? 'granted' : 'declined'), { method: 'POST', body: input });
 }
@@ -204,25 +212,28 @@ export function fetchDecisionQueue(session: Session, kidId?: string) {
 
 const isTaskAnswer = (status: string) => (d: unknown): d is { task: { id: string; status: string } } => isObject(d) && isObject(d.task) && d.task.status === status;
 
-export function approveChore(taskId: string, session: Session) {
-  return call(`/tasks/${encodeURIComponent(taskId)}/approve`, session, isTaskAnswer('approved'), { method: 'POST', body: {} });
+export function approveChore(taskId: string, input: { reflection: Reflection; note?: string | null }, session: Session) {
+  return call(`/tasks/${encodeURIComponent(taskId)}/approve`, session, isTaskAnswer('approved'),
+    { method: 'POST', body: { reflection: input.reflection, ...(input.note ? { note: input.note } : {}) } });
 }
 
-export function sendBackChore(taskId: string, notYet: Pick<NotYet, 'reasonCode' | 'reason'>, session: Session) {
-  return call(`/tasks/${encodeURIComponent(taskId)}/send-back`, session, isTaskAnswer('open'), { method: 'POST', body: { reasonCode: notYet.reasonCode, reason: notYet.reason } });
+export function sendBackChore(taskId: string, notYet: Pick<NotYet, 'reasonCode' | 'reason'> & { reflection: Reflection }, session: Session) {
+  return call(`/tasks/${encodeURIComponent(taskId)}/send-back`, session, isTaskAnswer('open'),
+    { method: 'POST', body: { reasonCode: notYet.reasonCode, reason: notYet.reason, reflection: notYet.reflection } });
 }
 
-export function removeChore(taskId: string, notYet: Pick<NotYet, 'reasonCode' | 'reason'>, session: Session) {
-  return call(`/tasks/${encodeURIComponent(taskId)}/cancel`, session, isTaskAnswer('cancelled'), { method: 'POST', body: { reasonCode: notYet.reasonCode, reason: notYet.reason } });
+export function removeChore(taskId: string, notYet: Pick<NotYet, 'reasonCode' | 'reason'> & { reflection: Reflection }, session: Session) {
+  return call(`/tasks/${encodeURIComponent(taskId)}/cancel`, session, isTaskAnswer('cancelled'),
+    { method: 'POST', body: { reasonCode: notYet.reasonCode, reason: notYet.reason, reflection: notYet.reflection } });
 }
 
-export function decideReward(redemptionId: string, input: { approve: true } | ({ approve: false } & NotYet), session: Session) {
+export function decideReward(redemptionId: string, input: ({ approve: true; note?: string | null } | ({ approve: false } & NotYet)) & { reflection: Reflection }, session: Session) {
   return call(`/tasks/redemptions/${encodeURIComponent(redemptionId)}/decide`, session,
     (d): d is { decided: true; status: 'approved' | 'denied' } => isObject(d) && d.decided === true && d.status === (input.approve ? 'approved' : 'denied'),
     { method: 'POST', body: input });
 }
 
-export function reviewSelfDirected(decisionId: string, input: { outcome: 'confirmed' } | ({ outcome: 'questioned' } & Pick<NotYet, 'reasonCode' | 'reason'>), session: Session) {
+export function reviewSelfDirected(decisionId: string, input: ({ outcome: 'confirmed' } | ({ outcome: 'questioned' } & Pick<NotYet, 'reasonCode' | 'reason'>)) & { reflection: Reflection }, session: Session) {
   return call(`/tasks/decisions/${encodeURIComponent(decisionId)}/review`, session,
     (d): d is { outcome: string } => isObject(d) && d.outcome === input.outcome, { method: 'POST', body: input });
 }

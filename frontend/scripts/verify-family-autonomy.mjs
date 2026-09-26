@@ -1,7 +1,9 @@
 // S07.5 (D.17, D.18) browser matrix: the actual Tasks and Family routes in
 // local Chrome, real pointer + keyboard input, synthetic Core responses.
 //
-// Tutor journey (/tasks): the decision queue.
+// Tutor journey (/tasks): the decision queue (since S07.7 every decision
+// starts with the D.23 reflective prompt; it is skipped here and its outcome
+// travels in each body).
 //   - the child's own words sit next to each request (their note on a chore,
 //     their reason and note on a reward);
 //   - "Send back" opens the reason form: sending with no reason code, then
@@ -209,6 +211,8 @@ try {
   const axeSource = readFileSync(resolve('node_modules/axe-core/axe.min.js'), 'utf8');
   for (locale of ['en-US', 'es-MX', 'pt-BR']) for (theme of ['light', 'dark']) for (const width of [375, 1280]) {
     const c = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/familyAutonomy.json`), 'utf8'));
+    // S07.7 (D.23): every Tutor decision now starts with the reflective prompt.
+    const reflection = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/familyGovernance.json`), 'utf8')).reflection;
     await page.send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
     reset(); role = 'parent';
     const geometry = {};
@@ -221,6 +225,7 @@ try {
     geometry.queue = await audit('queue');
     await shot(`${width}-tutor-queue`, 'queue');
     await click('queue', c.queue.sendBack, { scope: '[data-queue=chores]' });
+    await click('queue', reflection.continue, { scope: '[data-queue=chores]' });
     await click('queue', c.notYet.send, { scope: '[data-queue=chores]' });
     await has('queue', c.notYet.pickCode);
     await click('queue', c.notYet.redo, { scope: '[data-queue=chores]' });
@@ -233,20 +238,22 @@ try {
     await type('queue', c.notYet.reason, GOOD);
     await click('queue', c.notYet.send, { scope: '[data-queue=chores]' });
     await has('queue', c.queue.done);
-    assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/${choreId}/send-back`, body: { reasonCode: 'redo', reason: GOOD } });
+    assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/${choreId}/send-back`, body: { reasonCode: 'redo', reason: GOOD, reflection: 'skipped' } });
     await click('queue', c.queue.deny, { scope: '[data-queue=rewards]' });
+    await click('queue', reflection.continue, { scope: '[data-queue=rewards]' });
     await click('queue', c.notYet.later_date, { scope: '[data-queue=rewards]' });
     await type('queue', c.notYet.reason, 'Let us wait until after your test on Friday.');
     await pickDate('queue', c.notYet.revisit, day(5));
     await click('queue', c.notYet.send, { scope: '[data-queue=rewards]' });
     await wait(`!${inPanel('queue')}.querySelector('[data-queue=rewards]')`);
-    assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/redemptions/${redId}/decide`, body: { approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: day(5) } });
+    assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/redemptions/${redId}/decide`, body: { approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: day(5), reflection: 'skipped' } });
     await click('queue', c.queue.talked);
     await wait(`!${inPanel('queue')}.querySelector('[data-queue=talk]')`);
     assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/nudges/${nudgeId}/close`, body: { outcome: 'talked' } });
     await click('queue', c.queue.looksGood);
+    await click('queue', reflection.continue, { scope: '[data-queue=reviews]' });
     await wait(`!${inPanel('queue')}.querySelector('[data-queue=reviews]')`);
-    assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/decisions/${selfDecisionId}/review`, body: { outcome: 'confirmed' } });
+    assert.deepEqual(state.posts.at(-1), { method: 'POST', path: `/tasks/decisions/${selfDecisionId}/review`, body: { outcome: 'confirmed', reflection: 'skipped' } });
 
     // ── Tutor: the ladder (D.17) ──
     await load('/family', parentId); await ready('ladder'); await page.evaluate(axeSource);

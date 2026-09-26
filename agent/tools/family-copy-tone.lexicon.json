@@ -9,7 +9,8 @@
       "familyAutonomy",
       "teenWallet",
       "coinAccount",
-      "moneyRegister"
+      "moneyRegister",
+      "familyGovernance"
     ],
     "subtrees": [
       "common:tasks",
@@ -251,6 +252,31 @@
       "key": "familyHub:coGuardians.reject",
       "category": "bank_register",
       "why": "A Tutor refusing an adult who asked to join the child's account, a safety decision about a person, not a money transaction."
+    },
+    {
+      "key": "familyGovernance:scope.intro",
+      "category": "guarantee",
+      "why": "The D.20 scope statement says no real money moves, which the D.7 control registry backs: coins never leave the app, and the gate fails on any payment, card or bank-linking SDK."
+    },
+    {
+      "key": "familyGovernance:scope.intro",
+      "category": "glossary",
+      "why": "Names real money only to say that none moves; the coins themselves are never called money."
+    },
+    {
+      "key": "familyGovernance:scope.credit",
+      "category": "bank_register",
+      "why": "The D.20 scope statement names credit cards as a topic the practice does not teach (Appendix G §3.5)."
+    },
+    {
+      "key": "familyGovernance:scope.risk",
+      "category": "guarantee",
+      "why": "In es-MX and pt-BR \"seguros\" means insurance, named as a topic the practice does not teach; it promises no safety."
+    },
+    {
+      "key": "familyGovernance:bridge.first_account1",
+      "category": "bank_register",
+      "why": "The D.19 bridge advises a teen about a real bank account outside the app (ask about its fees first); it describes no in-app transaction."
     }
   ]
 }

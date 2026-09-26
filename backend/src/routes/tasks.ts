@@ -7,6 +7,7 @@ import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
 import { requireWalletAccess } from '../middleware/walletAccess.js';
 import { getSelfActionDetails } from '../services/teenWallet.js';
+import { recordReflection, REFLECTIONS, type Reflection } from '../services/parentCoaching.js';
 import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
 import { isCalendarDate } from '../services/streak.js';
 import { dayDifference, evaluateStreak, milestoneReached, REST_DAYS_PER_WEEK, resolveLocalToday, utcDayOffset, type StreakState } from '../services/choreStreak.js';
@@ -377,6 +378,21 @@ function daysAhead(date: string) {
   return Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`)) / 86_400_000);
 }
 
+/*
+ * S07.7 (D.23): the reflective prompt fires before every Tutor decision. The
+ * rebuilt surface asks "what would you tell them about this?" first, and every
+ * Tutor decision route requires the outcome of that step. Only the kind is
+ * sent (the Tutor's words stay in their browser unless sent as the note).
+ */
+const ReflectionField = z.enum(REFLECTIONS);
+function reflectionOf(body: Record<string, unknown>): Reflection | null {
+  const parsed = ReflectionField.safeParse(body.reflection);
+  return parsed.success ? parsed.data : null;
+}
+function reflectionRequired(res: Parameters<typeof fail>[0]) {
+  return fail(res, 400, 'REFLECTION_REQUIRED', 'Say whether the reflection step was written, shared or skipped');
+}
+
 /** Why a "not yet" body is unusable, or null when the database may judge it. */
 function notYetProblem(body: Record<string, unknown>, codes: readonly string[]) {
   const code = typeof body.reasonCode === 'string' ? body.reasonCode : null;
@@ -603,8 +619,8 @@ export function tasksRouter(): Router {
    * note; sending a chore back to finish and cancelling it each need a reason
    * code and a reason the child can act on.
    */
-  const ApproveTask = z.object({ note: ReasonText.nullable().optional() }).strict();
-  const NotYetTask = z.object({ reasonCode: z.enum(TASK_REASON_CODES), reason: ReasonText }).strict();
+  const ApproveTask = z.object({ note: ReasonText.nullable().optional(), reflection: ReflectionField }).strict();
+  const NotYetTask = z.object({ reasonCode: z.enum(TASK_REASON_CODES), reason: ReasonText, reflection: ReflectionField }).strict();
 
   async function decideChore(req: Parameters<RequestHandler>[0], res: Parameters<typeof fail>[0], outcome: 'approved' | 'sent_back' | 'cancelled') {
     const parent = authedUser(res);
@@ -612,6 +628,8 @@ export function tasksRouter(): Router {
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
     let reasonCode: string | null = null;
     let reason: string | null = null;
+    const reflection = reflectionOf((req.body ?? {}) as Record<string, unknown>);
+    if (!reflection) return reflectionRequired(res);
     if (outcome === 'approved') {
       const body = ApproveTask.safeParse(req.body ?? {});
       if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'A note is up to 240 characters');
@@ -634,6 +652,7 @@ export function tasksRouter(): Router {
     const result = await decideTask({ taskId: id.data, actorId: parent.id, outcome, reasonCode, reason });
     if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
     if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The decision was refused');
+    await recordReflection(parent.id, 'task', id.data, reflection);
     await insertAuditLog(parent.id, `tasks.${outcome === 'approved' ? 'approved' : outcome}`, id.data, { reasonCode });
     const updated = await getTaskById(id.data);
     if (!updated) return fail(res, 502, DATA_UNAVAILABLE, 'The decision was recorded; reload to see it');
@@ -895,6 +914,7 @@ export function tasksRouter(): Router {
       reason: ReasonText.nullable().optional(),
       revisitOn: RevisitOn.nullable().optional(),
       note: ReasonText.nullable().optional(),
+      reflection: ReflectionField,
     })
     .strict();
 
@@ -903,6 +923,8 @@ export function tasksRouter(): Router {
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
     const raw = (req.body ?? {}) as Record<string, unknown>;
+    const reflection = reflectionOf(raw);
+    if (!reflection) return reflectionRequired(res);
     if (raw.approve === false) {
       const problem = notYetProblem(raw, REWARD_REASON_CODES);
       if (problem) return decisionRefusal(res, problem, 'Check the reason');
@@ -924,6 +946,7 @@ export function tasksRouter(): Router {
     });
     if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the decision');
     if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The decision was refused');
+    await recordReflection(parent.id, 'redemption', id.data, reflection);
     await insertAuditLog(parent.id, approve ? 'tasks.redemption_approved' : 'tasks.redemption_denied', id.data, { reasonCode: parsed.data.reasonCode ?? null });
     return ok(res, { decided: true, status: result });
   });
@@ -1551,7 +1574,10 @@ export function tasksRouter(): Router {
   });
 
   const ReviewBody = z
-    .object({ outcome: z.enum(['confirmed', 'questioned']), reasonCode: z.enum(TASK_REASON_CODES).or(z.enum(REWARD_REASON_CODES)).nullable().optional(), reason: ReasonText.nullable().optional() })
+    .object({
+      outcome: z.enum(['confirmed', 'questioned']), reasonCode: z.enum(TASK_REASON_CODES).or(z.enum(REWARD_REASON_CODES)).nullable().optional(),
+      reason: ReasonText.nullable().optional(), reflection: ReflectionField,
+    })
     .strict();
 
   router.post('/decisions/:id/review', requireRole(['parent']), async (req, res) => {
@@ -1559,6 +1585,8 @@ export function tasksRouter(): Router {
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
     const raw = (req.body ?? {}) as Record<string, unknown>;
+    const reflection = reflectionOf(raw);
+    if (!reflection) return reflectionRequired(res);
     const reviewed = await getDecision(id.data);
     if (reviewed === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the decision');
     if (!reviewed || !['self_logged', 'preapproved'].includes(reviewed.outcome)) return fail(res, 404, NOT_FOUND, 'No such decision');
@@ -1576,6 +1604,8 @@ export function tasksRouter(): Router {
     });
     if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
     if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The review was refused');
+    const subjectId = reviewed.subject === 'task' ? reviewed.task_id : reviewed.redemption_id;
+    if (subjectId) await recordReflection(parent.id, reviewed.subject === 'task' ? 'task' : 'redemption', subjectId, reflection);
     await insertAuditLog(parent.id, `tasks.self_directed_${result}`, id.data, {});
     return ok(res, { outcome: result });
   });
@@ -1717,6 +1747,7 @@ export function tasksRouter(): Router {
       reasonCode: z.enum(LEVEL_REQUEST_REASON_CODES).nullable().optional(),
       reason: ReasonText.nullable().optional(),
       revisitOn: RevisitOn.nullable().optional(),
+      reflection: ReflectionField,
     })
     .strict();
 
@@ -1725,6 +1756,8 @@ export function tasksRouter(): Router {
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
     const raw = (req.body ?? {}) as Record<string, unknown>;
+    const reflection = reflectionOf(raw);
+    if (!reflection) return reflectionRequired(res);
     if (raw.grant === false) {
       const problem = notYetProblem(raw, LEVEL_REQUEST_REASON_CODES);
       if (problem) return decisionRefusal(res, problem, 'Check the reason');
@@ -1744,6 +1777,7 @@ export function tasksRouter(): Router {
     });
     if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the answer');
     if (isRefusal(result)) return decisionRefusal(res, result.refused, 'The answer was refused');
+    await recordReflection(parent.id, 'level_request', id.data, reflection);
     await insertAuditLog(parent.id, `tasks.autonomy_request_${result}`, id.data, {});
     return ok(res, { status: result });
   });

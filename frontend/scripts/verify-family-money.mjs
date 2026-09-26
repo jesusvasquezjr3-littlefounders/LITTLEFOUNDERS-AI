@@ -88,7 +88,7 @@ page.ws.addEventListener('message', async ({ data }) => {
       else if (p === `/banking/savings-bonus/${kidId}` && method === 'PUT') { state.bonusActive = sent.active; state.reframed = null; body.data = { framing: 'per_ten', perTen: { unit: 10, coins: 1 }, maxRateBp: null, rule: { rateBp: 1000, active: sent.active, nextRunAt: T, reframedFromRateBp: null } }; }
       // Child: tasks.
       else if (p === '/tasks/mine') body.data = { tasks: [task()] };
-      else if (p === `/tasks/${taskId}/complete`) { state.taskDone = true; body.data = { task: task(), streak: streak(), milestone: 'streak-7' }; }
+      else if (p === `/tasks/${taskId}/complete`) { state.taskDone = true; body.data = { task: task(), streak: streak(), milestone: 'streak-7', selfLogged: false }; }
       else if (p === '/tasks/streak') body.data = { streak: streak() };
       else if (p === '/tasks/wallet') body.data = { balances: { save: 57, spend: 11, share: 1 } };
       else if (p === '/tasks/goals') body.data = { goals: [] };
@@ -239,7 +239,8 @@ try {
     await wait(`document.body.innerText.includes(${JSON.stringify(kindLine)})`);
     assert.equal(await page.evaluate(`!!${inPanel('chore-streak')}.querySelector('[data-milestone]')`), false, 'An ordinary day celebrated');
     geometry.streak = await audit('chore-streak');
-    const doneLabel = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/common.json`), 'utf8')).tasks.kid.complete;
+    // Since S07.5 (D.18) the child marks a chore done through the rebuilt ChoreDone control.
+    const doneLabel = JSON.parse(readFileSync(resolve(`src/i18n/${locale}/familyAutonomy.json`), 'utf8')).choreDone.markDone;
     const doneLookup = `[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(doneLabel)})`;
     await wait(`!!(${doneLookup})`);
     await press(await page.evaluate(`(() => { const e=${doneLookup}; e.scrollIntoView({block:'center',behavior:'instant'}); const r=e.getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2}; })()`));

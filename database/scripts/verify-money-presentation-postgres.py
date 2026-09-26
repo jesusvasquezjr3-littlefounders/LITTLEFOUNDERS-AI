@@ -89,8 +89,16 @@ def fresh(upto):
     return database
 
 
+# LF_PG_FULL_CHAIN=1 applies every later migration after these parts, so each
+# check also runs over the WHOLE chain (a later checkpoint that redefines a
+# guard or a trigger must keep these checks true).
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+LATER = [m for m in MIGRATIONS if m.name > PARTS[-1].name] if FULL_CHAIN else []
+TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
+
+
 def apply_parts(database):
-    for part in PARTS:
+    for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
 
 
@@ -315,7 +323,7 @@ service(db, "SELECT public.record_staff_insight_check('family_engagement', 'requ
 service(db, "SELECT public.record_staff_insight_check('family_engagement', 'request', 'shape_mismatch')")
 assert service(db, 'SELECT public.probe_family_engagement_insight(400)') == 'ok'
 
-probe_db = fresh(PARTS[-1])
+probe_db = fresh(TARGET)
 assert service(probe_db, 'SELECT public.probe_family_engagement_insight(400)') == 'ok'
 sql("""CREATE OR REPLACE FUNCTION public.family_engagement_insight(p_limit int DEFAULT 100, p_active_days int DEFAULT 30)
 RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT jsonb_build_object('families', '[]'::jsonb) $$;""", probe_db)

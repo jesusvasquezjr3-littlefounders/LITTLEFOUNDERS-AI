@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { TeenWallet } from '@/rebuild/wallet/TeenWallet';
+import { MoneyBridgePanel, MyResearchPanel, ScopeStatementPanel } from '../family/GovernancePanels';
 import { invalidateWalletAccess } from './useWalletAccess';
 import { moneyHabitsInRegister } from '../family/coinAccountCopy';
 import type { Session, Transport } from '@/rebuild/wallet/walletApi';
@@ -36,12 +37,18 @@ export function TeenWalletPage() {
 
   // S07.6 (D.12): only a self-registered teen reaches /wallet (Core admission
   // by age), and the database gives every such teen the 'teen' register.
-  return <TeenWallet copy={copy} habits={moneyHabitsInRegister(locale, 'teen')} locale={locale} dark={isDark} session={session} tasksHref="/tasks" onOpenTasks={() => navigate('/tasks')}
+  // S07.7 (D.19, D.20, D.22): "Beyond the app" from 15, what the practice covers, and a research no.
+  return <>
+    <TeenWallet copy={copy} habits={moneyHabitsInRegister(locale, 'teen')} locale={locale} dark={isDark} session={session} tasksHref="/tasks" onOpenTasks={() => navigate('/tasks')}
     onAccessChanged={invalidateWalletAccess}
     inviteLinkFor={(token) => `${window.location.origin}/family?join=${encodeURIComponent(token)}`}
     copyText={async (text) => {
       try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
-    }} />;
+    }} />
+    <MoneyBridgePanel session={session} />
+    <ScopeStatementPanel />
+    <MyResearchPanel session={session} />
+  </>;
 }
 
 export default TeenWalletPage;

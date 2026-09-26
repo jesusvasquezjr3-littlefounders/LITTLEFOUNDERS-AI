@@ -83,5 +83,13 @@ export const REGISTER_POLICY: Record<string, { policy: 'register' | 'neutral' | 
   SavingsBonusSettings: { policy: 'tutor', why: 'the Tutor\'s bonus settings' },
   ShareDestinations: { policy: 'tutor', why: 'the Tutor\'s Share places' },
   StreakPauses: { policy: 'tutor', why: 'the Tutor\'s holiday pauses' },
-  WalletCorrections: { policy: 'tutor', why: 'the Tutor\'s coin corrections' },
+  WalletCorrections: { policy: 'tutor', why: 'the Tutor\'s coin corrections' },  // S07.7 (D.19-D.23).
+  MoneyBridge: { policy: 'register', why: 'opens at 15 by age evidence, so always the teen register; the split tool shows whole units, never a percentage' },
+  MyResearch: { policy: 'neutral', why: 'the child\'s own research note and no: no numbers, written to the youngest band' },
+  CoachingNote: { policy: 'tutor', why: 'the Tutor\'s pricing and limit guidance' },
+  CoachingTip: { policy: 'tutor', why: 'the Tutor\'s monthly tip' },
+  DataPolicy: { policy: 'tutor', why: 'the retention periods the Tutor reads' },
+  ReflectionStep: { policy: 'tutor', why: 'the Tutor\'s reflective prompt before a decision' },
+  ResearchConsent: { policy: 'tutor', why: 'the Tutor\'s research answer for a child' },
+  ScopeStatement: { policy: 'tutor', why: 'the parent-facing scope statement, adult copy; a self-registered teen reads the same text as the account holder' },
 };

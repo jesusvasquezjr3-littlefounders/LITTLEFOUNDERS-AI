@@ -87,8 +87,16 @@ def fresh(upto):
     return database
 
 
+# LF_PG_FULL_CHAIN=1 applies every later migration after these parts, so each
+# check also runs over the WHOLE chain (a later checkpoint that redefines a
+# guard or a trigger must keep these checks true).
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+LATER = [m for m in MIGRATIONS if m.name > PARTS[-1].name] if FULL_CHAIN else []
+TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
+
+
 def apply_parts(database):
-    for part in PARTS:
+    for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
 
 
@@ -526,7 +534,7 @@ refused(lambda: service(db, f"SELECT public.share_gift_settle('{gift}', '{pa}', 
 check(f'replay: re-applying the five S07.4 migrations preserves every row (events/gifts/places/steps/splits/ledger = {before_replay}) and the refusals')
 
 # ── 12. The Appendix H diagnostics against a crafted, backdated timeline ────
-m = fresh(PARTS[-1])
+m = fresh(TARGET)
 q = people(m)
 who = q['teen']
 now = "now()"

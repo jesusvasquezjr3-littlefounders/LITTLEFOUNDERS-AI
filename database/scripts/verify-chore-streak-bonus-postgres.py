@@ -88,8 +88,16 @@ def fresh(upto):
     return database
 
 
+# LF_PG_FULL_CHAIN=1 applies every later migration after these parts, so each
+# check also runs over the WHOLE chain (a later checkpoint that redefines a
+# guard or a trigger must keep these checks true).
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+LATER = [m for m in MIGRATIONS if m.name > PARTS[-1].name] if FULL_CHAIN else []
+TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
+
+
 def apply_parts(database):
-    for part in PARTS:
+    for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
 
 
@@ -176,7 +184,18 @@ def done(db, tid, day=None):
 
 
 def approve(db, tid, parent):
+    if FULL_CHAIN:
+        # Since S07.5 (D.18) every Tutor decision goes through the decision flow.
+        service(db, f"SELECT public.family_decide_task('{tid}', '{parent}', 'approved', NULL, NULL)")
+        return
     service(db, f"UPDATE public.tasks SET status = 'approved', decided_by = '{parent}', decided_at = now() WHERE id = '{tid}'")
+
+
+def cancel(db, tid, parent):
+    if FULL_CHAIN:
+        service(db, f"SELECT public.family_decide_task('{tid}', '{parent}', 'cancelled', 'not_suitable', 'Not done this week, we try again')")
+        return
+    service(db, f"UPDATE public.tasks SET status = 'cancelled', decided_by = '{parent}', decided_at = now(), cancel_reason = 'Not done' WHERE id = '{tid}'")
 
 
 def save_coins(db, kid, parent, amount):
@@ -231,7 +250,7 @@ t2 = task(db, pa, kid9, 5)
 done(db, t2, "(now() AT TIME ZONE 'utc')::date")
 today_row = lambda kid: service(db, f"SELECT coalesce((SELECT completions::text FROM public.chore_streak_days WHERE kid_user_id = '{kid}' AND local_date = (now() AT TIME ZONE 'utc')::date), 'none')")
 assert today_row(kid9) == '2'
-service(db, f"UPDATE public.tasks SET status = 'cancelled', decided_by = '{pa}', decided_at = now(), cancel_reason = 'Not done' WHERE id = '{t2}'")
+cancel(db, t2, pa)
 assert today_row(kid9) == '1'
 approve(db, t1, pa)
 assert today_row(kid9) == '1'

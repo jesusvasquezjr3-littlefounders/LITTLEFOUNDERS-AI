@@ -8,6 +8,9 @@ import { MAX_CONTRIBUTION_COINS, PAUSE_MAX_BACKDATE_DAYS, PAUSE_MAX_DAYS, PAUSE_
 import * as autonomy from '../services/familyAutonomy.js';
 import { REGISTER_TEEN_MIN_AGE, REGISTER_TRANSITION_MIN_AGE, TEEN_STATEMENT_LINES } from '../services/moneyPresentation.js';
 import { ENGAGEMENT_ACTIVE_DAYS } from '../services/insights.js';
+import { MONEY_BRIDGE_MIN_AGE } from '../services/moneyBridge.js';
+import { COACHING_REFLECTION_WINDOW_MINUTES } from '../services/parentCoaching.js';
+import { RESEARCH_COMPLETENESS_MONTHS, RESEARCH_MIN_TENURE_MONTHS } from '../services/familyResearch.js';
 import { RECOMMENDED_SAVE_PCT, RECOMMENDED_SHARE_PCT, RECOMMENDED_SPEND_PCT, RECOMMENDED_SPLIT, SHARE_COMPLETION_WINDOW_DAYS, SHARE_GIFT_MAX_COINS } from '../services/moneyHabits.js';
 
 /*
@@ -54,6 +57,7 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'autonomy.level3_self_log_max_coins',
       'autonomy.progression_window_days',
       'autonomy.record_window_days',
+      'bridge.min_age',
       'chore.contribution_max_coins',
       'chore_streak.completion_day_tolerance_days',
       'chore_streak.milestones',
@@ -62,6 +66,7 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'chore_streak.pause_max_days',
       'chore_streak.pause_max_lead_days',
       'chore_streak.rest_days_per_week',
+      'coaching.reflection_window_minutes',
       'decisions.child_note_max_chars',
       'decisions.reason_min_chars',
       'decisions.reason_min_words',
@@ -77,6 +82,8 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
       'register.teen_min_age',
       'register.teen_statement_lines',
       'register.transition_min_age',
+      'research.completeness_months',
+      'research.min_tenure_months',
       'savings_bonus.max_rate_bp',
       'savings_bonus.per_ten_coins',
       'savings_bonus.per_ten_unit',
@@ -197,6 +204,18 @@ describe('Block D threshold log (Appendix H Part 1.4)', () => {
     expect(num('engagement.active_days')).toBe(ENGAGEMENT_ACTIVE_DAYS);
     expect(migration('_family_engagement_insight')).toContain(`p_active_days int DEFAULT ${ENGAGEMENT_ACTIVE_DAYS}`);
     expect(migration('_family_engagement_insight')).toContain(`p_retain_days int DEFAULT ${num('staff_insight.retention_days')}`);
+  });
+
+  it('matches the S07.7 bridge age, reflection window and research windows in Core and in the database', () => {
+    expect(num('bridge.min_age')).toBe(MONEY_BRIDGE_MIN_AGE);
+    expect(migration('_money_bridge')).toContain(`, 0) >= ${MONEY_BRIDGE_MIN_AGE};`);
+    expect(num('coaching.reflection_window_minutes')).toBe(COACHING_REFLECTION_WINDOW_MINUTES);
+    expect(migration('_parent_coaching')).toContain(`d.created_at > now() - interval '${COACHING_REFLECTION_WINDOW_MINUTES} minutes'`);
+    expect(num('research.completeness_months')).toBe(RESEARCH_COMPLETENESS_MONTHS);
+    expect(num('research.min_tenure_months')).toBe(RESEARCH_MIN_TENURE_MONTHS);
+    const research = migration('_family_research_instrumentation');
+    expect(research).toContain(`p_months int DEFAULT ${RESEARCH_COMPLETENESS_MONTHS}`);
+    expect(research).toContain(`p_min_tenure_months int DEFAULT ${RESEARCH_MIN_TENURE_MONTHS}`);
   });
 
   it('keeps a review history with a dated first entry', () => {

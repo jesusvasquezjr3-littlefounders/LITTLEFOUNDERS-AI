@@ -9,6 +9,7 @@ import { CARD_DESIGNS, DAY_OF_WEEK_KEYS, type AllowanceFrequency, type CardDesig
 import { SavingsBonusSettingsPanel } from './SavingsBonusSettingsPanel';
 import { TutorFreezePanel } from './TutorFreezePanel';
 import { DecisionQueuePanel } from '../tasks/DecisionQueuePanel';
+import { LimitCoachingPanel, ScopeStatementPanel } from '../family/GovernancePanels';
 
 /*
  * The parent's half of BANKING.md §7.2: open the account, then
@@ -186,6 +187,8 @@ export function ParentBankingControlPanel() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="flex flex-col gap-6">
             <AllowanceSection token={token} kidId={selectedKidId as string} rule={kidData.allowance} onSaved={(rule) => setKidData((prev) => (prev.status === 'ready' ? { ...prev, allowance: rule } : prev))} />
+            {/* S07.7 (D.23): the limit as structure with a reason, next to the form. */}
+            <LimitCoachingPanel />
             <SpendLimitSection
               token={token}
               kidId={selectedKidId as string}
@@ -197,6 +200,8 @@ export function ParentBankingControlPanel() {
           </div>
 
           <div className="flex flex-col gap-6">
+            {/* S07.7 (D.20): what the practice covers and does not. */}
+            <ScopeStatementPanel />
             {kids && kids.length > 0 && <DecisionQueuePanel token={token} kids={kids} refreshKey={reloadKey} onChanged={() => setReloadKey((k) => k + 1)} />}
           </div>
         </div>

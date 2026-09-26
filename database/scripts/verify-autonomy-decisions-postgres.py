@@ -89,8 +89,16 @@ def fresh(upto):
     return database
 
 
+# LF_PG_FULL_CHAIN=1 applies every later migration after these parts, so each
+# check also runs over the WHOLE chain (a later checkpoint that redefines a
+# guard or a trigger must keep these checks true).
+FULL_CHAIN = os.environ.get('LF_PG_FULL_CHAIN') == '1'
+LATER = [m for m in MIGRATIONS if m.name > PARTS[-1].name] if FULL_CHAIN else []
+TARGET = MIGRATIONS[-1] if FULL_CHAIN else PARTS[-1]
+
+
 def apply_parts(database):
-    for part in PARTS:
+    for part in [*PARTS, *LATER]:
         sql(part.read_text(encoding='utf-8'), database)
 
 
@@ -642,7 +650,7 @@ check(f'replay: re-applying the six S07.5 migrations preserves every decision, c
       'and every refusal; the nightly eligibility sweep runs')
 
 # ── 15. Appendix H metrics on a crafted, backdated timeline ─────────────────
-m = fresh(PARTS[-1])
+m = fresh(TARGET)
 mp = people(m)
 mk7, mk9, mk13, mkn = mp['kid7'], mp['kid9'], mp['kid13'], mp['kid_nodob']
 mpa, man, madmin = mp['parent_a'], mp['analyst'], mp['admin0']

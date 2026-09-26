@@ -1,6 +1,6 @@
 # S07: Family Hub and independent teen wallet
 
-Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5 and S07.6 recorded 24 September 2026 (the lane's verification date). Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5, S07.6 and S07.7 recorded 24 September 2026 (the lane's verification date). Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
@@ -22,6 +22,7 @@ Risk classification: **structural/safety (money-adjacent state and family trust)
 | S07.4 | D.13 recommended default split with an easy override and redemption timing, D.14 a real destination for the Share pocket, D.15 the next-goal prompt at the celebration, D.16 goal progress by provenance | Every holder owns a usual split (the recommended 50 / 40 / 10 until changed; only the holder sets it); every payout arrives pre-split by it, one tap keeps it and any split that places every coin is accepted; an allowance's Save part may go to a goal; Share coins go to a place a Tutor (or a self-registered teen) chose, and whoever chose it records what really happened with a required note, enforced for every writer; a goal is reached in the transaction that covered it and opens a next step whose first view is the one celebration, with a next goal that follows it; every goal carries its provenance (own, bonus, Tutor), a read without it is refused, and one component draws every goal bar; a consent-gated behaviour stream (the H.1 gate, fail-closed, never blocking, 400-day retention) feeds five Appendix H diagnostics served to analytics staff; new thresholds in the Block D log | Rebuilt split chooser, usual split, goals with provenance and the next-goal card, Share giving and the Tutor's Share places (`frontend/src/rebuild/family/`) in three locales, light/dark, 375/1280 px, mounted in the Tasks, Banking, Family and Wallet routes; a static D.16 release gate | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a hand-computed diagnostic timeline, the S07.1/S07.2 checks re-run over the whole chain, 57 new Core tests, 49 new component/copy/gate/data-plane tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, copy/native review, production baselines, family usability testing and Product acceptance pending |
 | S07.5 | D.17 a graduated-autonomy ladder inside the parent-managed system, D.18 a rationale requirement and communication scaffolding for approval and denial | Three independence levels for every child in a family (by age and record, never role): Level 1 is the old flat model, Level 2 self-logs family contributions and pre-approves rewards up to a Tutor-set amount (at most 20 coins), Level 3 self-logs chores up to 100 coins and pre-approves up to 100; the spending limit and the hold apply at every level; a documented age-and-track-record rule per level shown with the child's own numbers; a Tutor moves up only when eligible and down only with an actionable reason, the child asks and may step down, support staff and the evidence-based system step-down lower a level; every decision is one immutable record, and no "not yet" (sent back, cancelled, denied, declined, questioned) exists without a subject reason code and an actionable reason (a "later" with a date), for every writer; the child's own words reach the Tutor at decision time; three "not yet"s in 14 days open a "talk about it" nudge and the child can ask to talk; the rule is in `docs/operations/FAMILY-INDEPENDENCE-AND-DECISIONS.md` and 20 thresholds in the Block D log; three Appendix H diagnostics (progression, nudge trigger rate, human-scored actionability) served to analytics staff | Rebuilt decision queue and reason form (Tutor Tasks), independence ladder (Family, per child), the child's level, decision notes, mark-done-with-a-note and ask-for-a-reward-with-a-reason (child Tasks) in `frontend/src/rebuild/family/`, three locales, light/dark, 375/1280 px; the legacy approve/cancel/deny buttons replaced; nothing celebrates | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a crafted metric timeline and real concurrency, the S07.1 and S07.2 checks re-run over the whole chain, 48 new adversarial Core tests, 30 new component/copy/parity tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, Product/Safety review of every threshold, production baselines, the first human-scored sample, family usability testing, native copy review and Product acceptance pending |
 | S07.6 | D.6 the family-engagement staff insight on the per-child shape, D.7 honest simulation visuals and no unbacked guarantee, D.8 a tone gate for Family Hub and banking copy, D.12 age-differentiated presentation | One database function serves the staff insight per child: counts over every child with a verified Tutor, and per-child rows only for H.1-admitted children, with no identity. Request outcomes and a nightly probe feed Appendix H's Staff Family-Engagement Insight Uptime, and a gate keeps the key contract equal across the database, its probe, Core and the console. Every control a family sees is registered with its enforcing SQL and adversarial proof, and a gate fails when an enforcing function loses its guard, when the UI's freeze holds differ from the database's, or when a payment SDK appears. The written principle and the quarterly audit are in `docs/operations/NO-UNBACKED-GUARANTEE.md`. A tone gate (bank register, guarantee, glossary, shouting; reviewed exceptions; no raw Core message on a family surface) reports the Tone-Gate Pass Rate. The database decides the age register (young, transition, teen) from age evidence as one design with D.11, and Core shapes the child's numbers by it. The register cutoffs are in the Block D log, and the register distribution is served to analytics staff | Rebuilt coin account and Tutor freeze card (`frontend/src/rebuild/banking/`) in three locales and three registers, light/dark, 375/1280 px, mounted in the Banking route in place of the legacy card, freeze switch, banner, meter and statement summary. The usual split, goal progress and bonus explainer are presented per register. The Banking page's dead bare "Deny" is replaced by the reason-carrying queue. The legacy staff console reads the per-child contract | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain with the S07.1-S07.5 checks re-run, 54 new Core tests, 41 new component and copy tests, 35 new gate self-tests, 12 real-Chrome configurations). Full Supabase stack run, types regeneration, the first human No-Unbacked-Guarantee Audit and Stage 4 spot-check, family usability testing, native copy review, production baselines and Product acceptance pending |
+| S07.7 | D.9 the research foundation, D.19 the older-teen graduation initiative, D.20 what the practice does not teach, D.21 retention, deletion and consent for this Block's data, D.22 long-horizon research instrumentation, D.23 coaching for the Tutor | Appendix G adopted and traced: every D.10-D.23 choice cites its sections with an honest evidence strength and the metric that tests it, recalibrated on Appendices B and D's cadence (release readiness fails when overdue); no parent-facing string in app or marketing copy claims proof; no experiment column on a Block D table (OD-23). The initiative "Beyond the app" is scoped with four milestones and milestone 1 ships: from 15 by age evidence, three real-world moments with just-in-time checklists and a split tool that sends nothing; engagement and a 15+ research cohort served to analytics staff. A scope statement names credit, debt, real compound interest and risk as not taught, each "practises" line backed by code, mounted for Tutors and teens, a gate refusing a lending or interest mechanic without the statement changing, and a quarterly human audit. All 40 Block D tables classed (photos 30 days after the decision, records 400, invitations 30, research 1,100, the coin record for the account's life); a nightly job deletes what is past its period and each photo from Depot first; the compliance audit served to analytics staff; the Tutor reads the enforced periods; an adult's erasure keeps the child's record and a child's removes every row (the merged S08/S07.1 erasure defect fixed). A four-phase research plan and phase 1: separate research consent (a verified Tutor for a child, an adult for themselves, lapsing at 18, a child's no deletes), pseudonymous monthly snapshots with no free text, completeness served to analytics staff. Pricing and limit coaching inside the controls; a reflective prompt before every Tutor decision whose words never leave the browser unless sent, required and recorded by kind; twelve Appendix G tips delivered monthly only after the Pedagogical Lead's review bound to their exact copy | Rebuilt coaching tip, reflective prompt, pricing and limit notes, scope statement, data policy, research answer, the child's own research no and "Beyond the app" (`frontend/src/rebuild/family/`, `rebuild/wallet/MoneyBridge.tsx`) in three locales, light/dark, 375/1280 px, mounted on the Family, Tasks, Banking and wallet routes; the decision queue goes through the prompt; nothing celebrates | In progress: implementation and local verification recorded (native PostgreSQL with 21 new check groups and every S07.1-S07.6 verifier re-run over the whole chain, 56 new Core tests, 33 new component and copy tests, 32 new gate self-tests, 12 real-Chrome configurations plus four earlier matrices re-run). Full Supabase stack run, types regeneration, the owner naming the D.19 and D.22 owners, Legal review of the periods and the research disclosure, the Pedagogical Lead's tip review and first recalibration, the first scope audit, production data, family usability testing, native copy review and Product acceptance pending |
 
 ## Current state found (verified against the code, 24 September 2026)
 
@@ -1142,3 +1143,312 @@ Captures inspected in this session:
 - Product/Safety review of the twelve proposals above.
 
 D.6, D.7, D.8 and D.12 are not accepted.
+
+## S07.7: current state found (verified against the code, 24 September 2026)
+
+The SPEC's "Current State" was accurate for D.9, D.19, D.20, D.21 and D.22 and partly stale for D.23. The code held one further defect the SPEC did not name.
+
+- **D.9 confirmed as a governance gap.** Appendix G exists, but nothing in the code or the docs traced a Block D choice to it, recorded how strong its evidence is, or scheduled a recalibration. Nothing stopped copy from calling a mechanic "proven".
+- **D.19 confirmed.** Coins never convert, and nothing in the product speaks to a teen's first real pay, account or budget.
+- **D.20 confirmed.** No surface says what the practice does not teach. `marketing.json` makes no credit, debt or investing claim (its only mentions of credit and loans are the Terms' statement that LittleFounders grants none).
+- **D.21 confirmed.** Of the 33 Block D tables before S07.7, only two had a retention bound (`family_money_events` and `staff_insight_checks`, 400 days). A chore's photo, every decision reason and child's note, every coin correction's reason and every invitation token were kept forever. **Not in the SPEC:** deleting any Tutor who had used the Family Hub failed on a NO ACTION key (`wallet_ledger_created_by_fkey`). The S08 lane relaxes those keys to ON DELETE SET NULL on the integration branch, and once both lanes are merged the S07.1 ledger guard refuses the cascade's own update with `LEDGER_APPEND_ONLY`. The S07.7 verifier reproduces both on the chain before S07.7.
+- **D.22 confirmed.** No instrumentation, no research consent, no plan.
+- **D.23 partly stale.** S07.5 (D.18) already made every "not yet" carry an actionable reason and put the child's own words next to each request, and S07.3 (D.10) makes the Tutor choose between a family contribution and a bonus task with a one-line hint. There was no pricing guidance, no reflective prompt for the Tutor and no coaching tip.
+
+## S07.7 implementation and rationale (D.9, D.19, D.20, D.21, D.22, D.23)
+
+Five expand migrations, in this order after the S07.6 migrations (descriptive names; the orchestrator assigns the final numbers at merge):
+1. `family_erasure_provenance` (D.21);
+2. `parent_coaching` (D.23);
+3. `money_bridge` (D.19);
+4. `family_research_instrumentation` (D.22);
+5. `family_data_retention` (D.21).
+
+They go with, never ahead of, the S07.7 Core release: Core requires `reflection` on every Tutor decision and calls the new functions. `database/types/database.ts` was not hand-edited.
+
+### D.9: Appendix G adopted, traced and recalibrated
+
+- **The foundation.** `docs/operations/BLOCK-D-RESEARCH-FOUNDATION.md` and its registry `block-d-research.json` trace D.10 to D.23 to the Appendix G sections each rests on, with the honest strength of that evidence and the Appendix H metric through which the product's own data can test it. Strengths use a closed vocabulary: supported (D.11, D.12, D.15, D.16, D.18, D.20, D.23), extrapolation (D.10, D.13, D.17), vacuum (D.14), contested (D.19), open (D.22), regulatory (D.21). The weakest rows carry a note so nobody reads them as stronger than they are.
+- **Recalibration.** The same cadence as Appendices B and D and the threshold log: quarterly for the first year after release, then yearly, owned by the Pedagogical Lead. The first log entry is Engineering's adoption; the next review is due 2027-01-15.
+- **Enforced** by `agent/tools/check-block-d-research.mjs` (unfiltered repo gates). It fails when:
+  - a requirement loses its entry, cites a section Appendix G does not have, or names no metric;
+  - the written foundation drops a row or understates a strength;
+  - the log has no complete dated entry;
+  - any parent-facing string claims proof ("scientifically", "is proven", "studies show" and their es-MX and pt-BR equivalents) in the app's Block D namespaces, the shared strings or the marketing site (Block D Part 4);
+  - a Block D table gains an experiment, variant or treatment column (OD-23).
+
+  `--strict`, added to `npm run release:readiness`, also fails when the recalibration is overdue; the repo gate only warns, so an overdue review blocks a release, not every push.
+
+### D.19: the older-teen graduation initiative and its first milestone
+
+- **Scope.** `docs/operations/OLDER-TEEN-GRADUATION-INITIATIVE.md` names the initiative ("Beyond the app") with four milestones: the bridge (built), a graduation curriculum in Forge (S05 lane), graduation at 18 (needs owner decisions), and optional real-world linkage (explicitly out of scope until an owner decision, Legal review and a D.7 control entry). The owner must still name its Product owner.
+- **Milestone 1, enforced by the database.** `money_bridge_eligible()`: a wallet holder whose stored birth date makes them 15 or older; no birth date, no bridge; never role. `money_bridge_progress` stores only which moment the teen said arrived (step 0) and which steps they ticked (1 to 3); a step waits for its moment; unticking a moment clears it. No amount, bank or account detail can be stored: the split tool that applies the teen's usual split to a real amount runs in the browser (`splitAmount`, whole units by largest remainder) and sends nothing.
+- **Surfaces.** `MoneyBridge` on the teen wallet and the child's Banking page, teen register, three moments with three just-in-time steps each ("Check what you got after any deductions", "Ask about fees before you open it", "Save first, then spend"...).
+- **Measured.** Real-World Bridge Engagement Rate (`GET /api/v1/admin/family/bridge-engagement`, Diagnostic). Appendix H's Definition of Done (c) is met by the 15+ `bridge_age` cohort in D.22's completeness metric.
+
+### D.20: what the practice does not teach
+
+- **The statement** (`ScopeStatement`): "Practice with coins that stay in the app. No real money moves." It practises earning, splitting, saving toward goals and asking with a reason; it does not teach borrowing, loans or credit cards, debt, real compound interest ("the weekly bonus is not interest"), risk, investing or insurance. "These are hard to teach well, so we leave them out." It is mounted on the Tutor's Family and Banking screens and in the self-registered teen's wallet, in three locales.
+- **Kept true** by `check-block-d-scope.mjs` and its registry `block-d-scope.json`. It fails when:
+  - one of the four required exclusions is dropped;
+  - a line loses its copy in any locale;
+  - a "practises" line loses the code that backs it;
+  - a mount disappears;
+  - a table or column for borrowing, lending, interest, insurance or investing enters the schema without the statement changing first. The gate reads every table and column name the migrations define (588 today, none matching).
+- **Human audit.** The quarterly Scope-Disclosure Presence & Accuracy Audit (Appendix H Part 1.3), with its checklist and an Engineering pre-audit entry, is in `docs/operations/BLOCK-D-SCOPE-STATEMENT.md`. "No real money moves" is added to the D.7 `simulation` control.
+
+### D.21: retention, deletion and consent, enforced
+
+- **The policy** (`docs/operations/FAMILY-DATA-RETENTION.md`, registry `block-d-retention.json`) classes all 40 live Block D tables:
+  - photos, 30 days after the Tutor's decision;
+  - records, 400 days (decisions and reasons, decided chores, answered reward and level requests, level changes, nudges, human scores, the transition audit, settled Share gifts, coin corrections, answered next-goal prompts, coaching records, behaviour events, health checks, retention runs);
+  - invitations, 30 days after use or expiry;
+  - research snapshots, 1,100 days;
+  - the coin record (ledger, pockets, goals, rules, the streak's practised days and pauses, the bridge checklist, consents), for the account's life.
+- **The sweep.** `family_retention_sweep()` deletes whole rows past their period; every reference to a deleted row is an ON DELETE SET NULL or CASCADE the S07.1-S07.6 guards already accept, so no balance can move. A decided chore is deleted only once its photo is gone.
+- **The photos.** They live in Depot. `family_evidence_due()` lists them (flagging an object another, not-yet-due chore still shares); Core deletes each object and only then calls `family_evidence_cleared()`. The task guard's UPDATE trigger now skips exactly that clear (the four evidence columns to NULL on a chore decided more than 30 days ago) and nothing else. A failed Depot call leaves the pointer for the next night.
+- **The job.** `POST /api/v1/family-hub/internal/retention/run` (internal key) runs it and records the run; `.github/workflows/family-retention.yml` calls it nightly at 03:15 UTC and fails loudly when Core reports no run.
+- **Measured.** Appendix H's Retention-Policy Compliance Audit (`family_retention_compliance()`, `GET /api/v1/admin/family/retention-compliance`): rows held past their period plus a two-day grace, per class and table. Zero is a pass, and the policy makes it a release check.
+- **Families read it.** "Your family's data" on the Family screen shows the periods from `GET /api/v1/family-hub/data-policy`, which serves Core's constants, locale-formatted.
+- **Erasure.** `family_erasure_provenance` carries the S08 lane's provenance-key statements verbatim (identical constraint names, safe in either order) and splits four guarded tables' triggers (ledger, redemptions, banking accounts, savings bonus rules) into an unconditional INSERT trigger and an UPDATE trigger whose WHEN clause skips only the cascade's own change (the provenance column set to NULL, nothing else). The guard functions are not redefined, so the D.7 registry's guard checks still read the same bodies. An adult's erasure keeps the child's record; a child's erasure removes every Block D row about them.
+- **Enforced** by `check-block-d-retention.mjs`. It follows every CREATE, RENAME and DROP in the chain and fails when:
+  - a Block D table has no class;
+  - a period differs between the registry, the migration, Core and the copy;
+  - a table with a period is missing from the sweep or the audit, or the coin record is swept;
+  - a table's erasure cascade is not in its schema;
+  - the policy stops naming a table or a period;
+  - a nightly job stops calling the work;
+  - a Block D field reaches the Mentor's context schema, or a Family Hub surface imports the third-party analytics module (the policy tells families neither happens).
+
+### D.22: the long-horizon research plan and its first phase
+
+- **The plan** (`docs/operations/BLOCK-D-LONGITUDINAL-RESEARCH-PLAN.md`) frames the central hypothesis as an open question and sets a four-phase timeline: instrument, baseline, adult outcomes with the young adult's own yes, external review. It also says what would count against the hypothesis.
+- **Observe, never assign (OD-23).** No experiment runs on a minor, and the D.9 gate refuses an assignment column on any Block D table.
+- **Consent is separate and specific** (`family_research_consents`, `family_research_set_consent()`, `family_research_admitted()`, disclosure version 1):
+  - a verified Tutor may say yes for a child under 18 or of unknown age, and only while still that child's Tutor;
+  - an adult may say yes only for themselves; a Tutor's yes lapses at 18;
+  - a self-registered teen without a Tutor cannot be enrolled in this phase;
+  - a no from the Tutor or from the participant (a child's own no counts) ends the consent and deletes every snapshot at once.
+- **The snapshot.** One per participant per complete month that began after the consent, keyed by a random research id: age in whole years, register, tenure, level, coins received, saved, spent and given, goals reached, next goals set, chores approved, rewards asked for and not approved yet, practised days, whether the usual split changed, bridge entries. No name, note, title or free text. Recorded nightly by `insights-maintenance.yml` (guarded, idempotent); kept 1,100 days by the D.21 sweep.
+- **Measured.** Longitudinal-Hypothesis Data Completeness (`GET /api/v1/admin/family/research-completeness`, Diagnostic), overall and for the 15+ cohort, with coverage (enrolled of the long-tenure population) and completeness (a snapshot for each of the last 3 months among those enrolled for the whole window). The windows are in the threshold log.
+- **Surfaces.** `ResearchConsent` per child on the Family screen (the whole disclosure before a yes; "Stop and delete" asked once) and `MyResearch` for the participant on the child's Banking page and the teen wallet.
+
+### D.23: coaching for the Tutor
+
+- **(a) Inside the controls.** `CoachingNote` puts pricing and contribution-versus-bonus guidance in the chore composer ("Pricing tips") and a structure-with-a-reason note beside the Tutor's spending limit ("Setting a limit").
+- **(b) The reflective prompt.** Every Tutor decision in the rebuilt queue (a chore's approval, send-back or removal; a reward's yes or "not yet"; a level request; a self-directed item) starts with `ReflectionStep`: "What would you tell {name} about this?", before and apart from the reason the child reads.
+  - The Tutor's words stay in the browser. They may be sent as the note on a yes, or used as the "not yet" reason (the reason form still demands it be actionable).
+  - Core requires `reflection` (`written`, `shared` or `skipped`) on every Tutor decision route (`REFLECTION_REQUIRED` before any write) and records it after the decision through `record_decision_reflection()`, matched to the decision that Tutor just made on that subject. `family_decision_reflections` has no text column, and a request carrying the words is refused.
+  - The fired rate is served at `GET /api/v1/admin/family/coaching-reflections`.
+- **(c) The monthly tip.** Twelve tips drafted from Appendix G (`docs/operations/parent-coaching-tips.json`, each with its section and finding). `parent_coaching_deliver()` gives each Tutor one tip a month on the Family and Tasks screens, never the same one twice until all have been shown, and only from the list Core passes.
+  - Core passes a tip only when `COACHING_TIPS` marks it reviewed. `check-parent-coaching-tips.mjs` allows that only when the registry records a Pedagogical Lead approval whose hash matches the tip's exact copy in three locales. No tip is reviewed yet, so none is sent: that is the SPEC's "reviewed before send".
+  - The "why" behind each tip says "A finding, not a promise".
+  - Parent-Coaching-Tip Delivery & Engagement Rate: `GET /api/v1/admin/family/coaching-delivery?period=YYYY-MM`. It also reports how many tips are reviewed, so "nothing delivered" and "nothing reviewed" stay distinct.
+
+### Registered, measured and documented
+
+- **D.7 registry.** Four new controls with their enforcing SQL or code and adversarial proofs: `research_consent`, `data_retention`, `reflection_private` and `bridge_split_local`.
+- **Threshold log.** Four new keys (`bridge.min_age`, `coaching.reflection_window_minutes`, `research.completeness_months`, `research.min_tenure_months`), checked by the threshold gate and Core's test.
+- **Tone gate.** The new namespace is in scope, with five reviewed exceptions (the scope statement naming real money, credit cards and insurance; the bridge's advice about a real bank's fees).
+- **Register policies.** Declared for the eight new components.
+- **README.** The S07.7 migrations, jobs, gates, metrics and matrix.
+
+## S07.7 decisions taken on the SPEC's conservative default (proposals for owner review)
+
+1. **The retention periods:** photos 30 days after the decision; records 400 days (the bound the behaviour stream already uses); invitations 30 days; research snapshots 1,100 days; the coin record for the account's life. They need Product and Legal review (OD-10).
+2. **The streak's practised days and pauses are kept for the account's life,** because D.2 promises the best streak and total are never erased.
+3. **An adult's erasure keeps the child's record** with the adult's id cleared; a rule the adult set keeps running. The chores and reward list that adult created go with them (the existing cascade the S08 erasure also assumes); the coins those chores earned stay.
+4. **`family_state_audit` keeps opaque ids** of an erased account until its 400 days pass.
+5. **The bridge opens at 15,** by birth date only.
+6. **Research consent is separate from analytics consent:** a Tutor's yes lapses at 18, a child's own no deletes, and a self-registered teen without a Tutor cannot be enrolled in this phase.
+7. **The research snapshot's measures** are habit-formation proxies with no free text.
+8. **The reflective prompt stores no text,** and the Tutor may send their words as the note or reason.
+9. **Tips are delivered in the app only;** an email channel needs an owner decision and consent design.
+10. **The claims boundary screens proof claims only;** guarantee language stays with the D.7 and D.8 gates.
+11. **The recalibration's overdue check fails release readiness,** not every push.
+
+## S07.7 verification log
+
+Executed 24 September 2026 (the lane's verification date) in the S07 worktree, first-hand, on the tree being committed. Commands are relative to the named directory. Local results only, not CI or production observations.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Physical PostgreSQL, S07.7 | Lane cluster (PostgreSQL 17.6, `.lane-cache/pg`, port 15507); root: `python database/scripts/verify-family-governance-postgres.py` with `LF_PG_BIN/PORT/USER/DATA`; the cluster was stopped with `pg_ctl stop -m fast` afterwards | Passed, 21 check groups. Report: `audit-results/s07-family-governance-postgres.json`. Details below this table |
+| Physical PostgreSQL, S07.1-S07.6 over the whole chain | Root, same cluster, `LF_PG_FULL_CHAIN=1` for `verify-family-state-machine-postgres.py`, `verify-teen-wallet-postgres.py` and, new in S07.7, `verify-chore-streak-bonus-postgres.py`, `verify-money-habits-postgres.py`, `verify-autonomy-decisions-postgres.py`, `verify-money-presentation-postgres.py` | All passed: 14, 17, 11, 14, 16 and 12 check groups, each with every S07.7 migration applied after its own parts. The S07.7 trigger splits change no earlier check |
+| Core adversarial | `backend/`: `npx vitest run src/__tests__/familyGovernance.test.ts src/__tests__/blockDThresholds.test.ts src/__tests__/tasks.test.ts src/__tests__/familyAutonomy.test.ts` | 56 new tests (`familyGovernance.test.ts`) and one new threshold test; the S07.5 decision tests send the reflection. Coverage below this table |
+| Core regression | `backend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 79 files (+1 skipped), 1,909 tests + 1 documented skip |
+| Frontend regression | `frontend/`: `npm run type-check`, `npm run lint`, `npm test` (3 threads) | Passed; 230 files, 2,462 tests. 33 new: `FamilyGovernance.test.tsx` 20 and `familyGovernanceCopy.test.ts` 13. The S07.5 queue tests go through the reflective prompt; `FamilyPage.test.tsx` mocks the new panels like the others |
+| Real Chrome matrix, S07.7 | `frontend/`: `FAMILY_GOVERNANCE_URL=http://localhost:5340 node scripts/verify-family-governance.mjs` (dev server with `VITE_CACHE_DIR` in the lane cache, stopped afterwards) | 12 of 12 configurations (EN/es-MX/pt-BR × light/dark × 375/1280). 120 captures and `report.json` in `audit-results/family-governance/`. Journey steps below this table |
+| Real Chrome regressions | `frontend/`: `verify-family-autonomy.mjs` (S07.5, updated for the reflective prompt), `verify-coin-account.mjs` (S07.6), `verify-money-habits.mjs` (S07.4), `verify-family-money.mjs` (S07.3, updated to the S07.5 child contract) | 12 of 12 configurations each: S07.5 (the reflection in every body), S07.6, S07.4 (re-run on a quiet machine after one load timeout) and S07.3 (after its two stale points were fixed) |
+| Static migration gates | `database/`: `npm test`; `node scripts/railway-migrate.test.mjs` re-run on its own | Passed. 142 files pass the numbering, RLS and phase checks (108 expand, 34 contract, 23 contract pending); the lifecycle gate covers 55 states across 13 columns; 28 of 28 node tests pass. The operator transport passes its 12 scenarios with the five S07.7 files (`railway-migrate integration OK`), re-run on its own with no time limit (see failures below) |
+| Repository gates | Root: `npm run spec:check`, `npm run secrets:check` (after staging), `bash agent/tools/check-i18n.sh` (Git Bash), `npm run tools:test`, and each Block D gate: `check-block-d-thresholds.mjs`, `check-no-unbacked-guarantee.mjs`, `check-family-copy-tone.mjs`, `check-family-engagement-contract.mjs`, `database/scripts/check-family-lifecycle.mjs`, and the four new ones `check-block-d-research.mjs` (also `--strict`), `check-block-d-scope.mjs`, `check-block-d-retention.mjs`, `check-parent-coaching-tips.mjs` | Passed: spec authority, tokens and assets OK; no credential patterns; i18n file and key parity, no hardcoded strings, every static key present; 129 of 129 tool tests (32 new); 54 thresholds agree (4 new); 14 controls enforced and proved (4 new) across 76 rebuilt surfaces; 3,873 strings pass the tone gate (100%); the insight keys agree; 55 lifecycle states keep a producer and a consumer; 14 requirements traced, 5,439 parent-facing strings free of proof claims, no experiment column, recalibration not overdue; the scope statement's 4 practised lines and 4 exclusions true and mounted on 3 pages; 40 Block D tables classified; 12 tips drafted, none reviewed or sent |
+
+**PostgreSQL S07.7 check groups (21):**
+- **D.21 reproduced** on the chain before S07.7:
+  - deleting a Tutor who used the Family Hub fails on `wallet_ledger_created_by_fkey`;
+  - with the S08 lane's SET NULL statements applied (the merged tree), the S07.1 ledger guard refuses the cascade with `LEDGER_APPEND_ONLY`;
+  - no Block D retention job exists.
+- **Erasure keeps the child's record.** A Tutor is deleted while a co-Tutor remains, and the child's coins are unchanged. The ledger lines, the reward decision, the account (still frozen, now the Tutors' freeze), the allowance, the limit and the bonus rule keep their rows with the id cleared. The chores that Tutor created go with them.
+- **Rules keep running.** A frozen account credits nothing; once the co-Tutor lifts the freeze, the allowance and bonus credit again.
+- **The guards still refuse everything else:**
+  - re-assigning a ledger line;
+  - changing an amount while clearing its author;
+  - re-assigning a reward decision;
+  - a percentage for a 9-year-old;
+  - clearing a rule's Tutor together with another change (`NOT_A_GUARDIAN`);
+  - a child lifting a Tutor's freeze.
+- **A child's erasure** removes every Block D row about a 15-year-old across 19 tables (21 rows before, none after).
+- **The sweep** deletes 2 decisions and a decided chore older than 400 days, a transition-audit row, an invitation 30 days past expiry and a behaviour event older than 400 days. It keeps the decided chore whose photo is still stored, and records the run.
+- **The coin record survives.** A ledger line and a practised day from 500 days ago survive the sweep, and young chores, an open chore and their decisions stay.
+- **Photos:**
+  - due 30 days after the decision;
+  - shared with a chore that is not due yet: flagged, pointer only;
+  - cleared only for the matching object on an old decided chore; an open chore's and a young chore's photo stay locked, and nothing else changes in the same update;
+  - the purge result is recorded once per run; the next sweep removes the chore; the compliance audit reads zero afterwards.
+- **No browser or anon session** calls any retention function, and the service role cannot write the run record.
+- **The reflective prompt's record:**
+  - one per Tutor decision, matched to that Tutor's decision on that subject;
+  - a second record, another adult, an unknown value and a decision older than ten minutes are all refused;
+  - no text column, no direct write;
+  - the fired-rate numbers are recorded in the report.
+- **The monthly tip:**
+  - nothing is delivered with no reviewed tip;
+  - one row per Tutor per month;
+  - a tip no longer reviewed is not returned;
+  - the next month brings the next unseen tip;
+  - a child, a teen, an adult and a guest are refused (`COACHING_NOT_ELIGIBLE`);
+  - an invalid id is refused by its CHECK; only the Tutor marks their delivery; the row cannot be rewritten;
+  - Delivery & Engagement reads 1/1/1.
+- **No browser session** calls the delivery, the reflection or a metric.
+- **The bridge by age evidence:**
+  - 15, 17, 18 in a family and an independent 16 are eligible;
+  - 14, 9, no birth date, an adult, a guest and a Tutor are not;
+  - a 15th birthday opens it.
+- **The checklist:**
+  - a step waits for its moment; a 14-year-old and an unknown moment are refused;
+  - unticking a moment clears it; a teen reads only their own rows; nobody writes the table directly;
+  - Engagement reads `all=4/1/1/1`.
+- **Research consent:**
+  - a Tutor for a child under 18 or of unknown age, and an 18-year-old for themselves, are admitted;
+  - a Tutor for an 18-year-old, a teen or child for themselves, an unrelated parent, an adult with no wallet, a guest and a Tutor for themselves are refused;
+  - an older disclosure is refused.
+- **The snapshot:**
+  - only complete months after the consent, once per month; the current month is refused;
+  - the hand-computed month reads `10/6/3/2/17/teen/1`;
+  - no identity, note, title or reason column.
+- **Completeness** with a one-month window reads `all=1/1/1/1, bridge_age=1/1/1/1`.
+- **A child's own no** withdraws the consent and deletes every snapshot. A Tutor's yes lapses at 18 and nothing more is recorded.
+- **A snapshot older than 1,100 days** is deleted by the sweep.
+- **Research access.** No browser session calls a research function or reads a research table; the service role reads consents only.
+- **Replay** of the five parts keeps every delivery, bridge entry, consent and run, and every guard.
+
+**Core coverage (56 new tests):**
+- **Constants agree with the SQL:** the four retention periods, the bridge age, the reflection window and the disclosure version. Every tip id is unique and cites Appendix G; `reviewedTipIds` passes only reviewed tips.
+- **The reflective prompt**, on six Tutor decision routes (approve, send back, cancel, a reward yes and no, a level request) and on the review of a self-logged chore:
+  - a missing or unknown reflection is refused before any write;
+  - each of the three kinds is recorded as the caller, after the decision;
+  - a request carrying the Tutor's words is refused;
+  - a failed record never undoes the decision.
+- **The monthly tip:**
+  - asked as the caller with only reviewed tips;
+  - served by id and month;
+  - a malformed or unreachable answer is a 502;
+  - "not a Tutor" is mapped;
+  - opened and dismissed are recorded as the caller, and another Tutor's delivery is a 404;
+  - refused before any read to a child, a linked and an unlinked teen, an adult, a guest and staff.
+- **The data policy** serves the enforced periods to a Tutor, a child and a teen, and needs a session.
+- **The retention run:**
+  - refused without the internal key before any call;
+  - each photo is deleted from Depot before its pointer is cleared, and a shared object is kept;
+  - a Depot failure keeps the pointer;
+  - an unreachable or malformed sweep is a 502, never a report.
+- **Research:**
+  - the Tutor reads and answers for their own child as the caller; a yes needs the version;
+  - an unrelated parent gets a 404 before any call; a body naming someone else is refused;
+  - not-allowed and stale refusals are mapped; a state claiming recording without a yes is a 502;
+  - a child, a linked teen and an unlinked teen read their own state and say no as the caller;
+  - an adult learner, a guest, a parent and staff are refused.
+- **The bridge:**
+  - read as the caller;
+  - a too-young holder sees nothing, and a checklist claimed for them is a 502;
+  - one entry is ticked as the caller, and holder, amount, bank, unknown moment and step 4 fields are refused;
+  - "too young" and "moment first" are mapped;
+  - four non-holders are refused before any call.
+- **Metrics:** served to analytics staff with no rate for an empty population, refused to support staff, a parent and a child before any read, and a 502 when unreadable.
+
+**Browser matrix journey (each configuration):**
+1. **Tutor, `/family`.**
+   - The reviewed tip: "Why it helps" shows its finding and "not a promise", and records the opening (exact request).
+   - "What this practice covers": four practised lines and credit, debt, real compound interest and risk as not taught.
+   - "Your family's data": 30, 400 and 1,100 days, locale-formatted.
+   - Research: the whole disclosure before a yes, the yes naming disclosure version 1 (exact body), then "Stop and delete" asked once and sent (exact body).
+2. **Tutor, `/tasks`.**
+   - Approve opens the reflective prompt with no request sent; the Tutor's words go only as the note they chose (exact body `{ reflection: 'shared', note }`).
+   - "Not yet" on a reward: the prompt is skipped, then the reason form (exact body with `reflection: 'skipped'`).
+   - "Pricing tips" inside the chore composer.
+3. **Tutor, `/banking`.** "Setting a limit" beside the spending limit, and the scope statement.
+4. **Child, 15, `/banking`.**
+   - "Beyond the app": a moment is marked (exact body), its checklist opens, a step is ticked (exact body), and 250 is split into 125, 100 and 25 with no request sent and no percentage shown.
+   - The child's research note and their own no (exact body).
+
+Every configuration had:
+- zero axe violations;
+- no panel overflow or page scroll;
+- 48 px targets (checkbox rows included);
+- a copy role on every text node;
+- no celebration element;
+- zero browser errors.
+
+Captures inspected in this session:
+- en-US light 375: the tip, the reflective prompt, the pricing tips, the limit note, the child's research no;
+- es-MX dark 375: the bridge with the split tool, the research disclosure;
+- pt-BR dark 1280: the scope statement and the data policy (before the fixes below).
+
+**Failures and their resolution:**
+- **Real findings from looking at the captures:**
+  - the data policy printed "1100 dias" in pt-BR and "1100 days" in en-US; the periods are now locale-formatted (1.100, 1,100), with the test and the matrix updated;
+  - the "does not teach" rows used the panel's own fill and read as bare text; they now sit on the surface like the practised rows, told apart by the mark and the heading.
+- **Real findings from the gates on the new copy:**
+  - the tone gate's first run flagged "Recusas" in a pt-BR tip (rewritten) and "reais" meaning "real" in the pt-BR compound-interest line (rewritten);
+  - it also flagged five lines that name real money, credit cards, insurance and a real bank's fees on purpose (reviewed exceptions with reasons);
+  - the claims gate's first draft flagged "no garantiza que" in the legal Terms, a disclaimer and not a proof claim, so guarantee language stays with the D.7 and D.8 gates;
+  - the copy budget failed the research disclosure's first view by one word (41 of 40) and a pt-BR tip body by one word; both were shortened.
+- **A state with no consumer, removed.** The first draft of research consent carried a `revoked_reason` vocabulary nothing consumed. OD-21 forbids declaring such a state, so it was removed: an ended consent keeps its date and who ended it.
+- **Consequences of the new design, caught by existing tests:**
+  - the existing decision-route calls in `tasks.test.ts` and `familyAutonomy.test.ts` now send the reflection, and the table-driven "not yet" refusals send it so they still test the reason rule;
+  - the S07.5 component tests go through the prompt;
+  - `FamilyPage.test.tsx` counted the new panels' requests until they were mocked like the other panels;
+  - the D.12 register-policy test required a policy for each of the eight new components.
+- **Stale regression tooling, fixed:**
+  - the S07.5 browser matrix now goes through the prompt;
+  - the S07.3 matrix had not followed S07.5's child contract: its `/complete` stub lacked `selfLogged`, and it pressed the legacy done label, which the rebuilt ChoreDone control replaced (the two labels differ in es-MX and pt-BR). It would have failed before S07.7 too;
+  - the S07.3 verifier's new full-chain mode sends its Tutor decisions through the S07.5 decision flow, because its direct cancel is exactly what S07.5 forbids.
+- **Test and gate mistakes of my own:**
+  - PL/pgSQL fixtures violating CHECKs (a Share place kind, an unbalanced gift, an identity column), booleans read as `t` where text concatenation gives `true`, and the expected shared-photo scenario;
+  - a stray empty paragraph in the prompt component;
+  - an unused variable the linter caught;
+  - JSON registry text-matching on escaped apostrophes, and a whole-file reformat of the controls registry that was reverted and re-applied textually.
+- **Two disturbed transport runs, neither counted.** Editing a migration while the first `database/` test run was in its operator-transport step made it report "migration drift detected". A second run, capped at 28 minutes, was killed mid-scenario (exit 124), which surfaced as a failed assertion. The untimed run on the final files passed (row above).
+- **Load.** The first S07.4 matrix regression timed out in its second configuration while six PostgreSQL verifiers, the transport test and a vitest run shared the machine; it was re-run on a quiet machine (row above).
+
+**Cross-lane findings (not changed here):**
+- **S08 (E.6).** The integration branch's `account_deletion_guards` relaxes the Block D provenance keys, and merged with S07.1 the ledger guard would refuse every Tutor erasure. `family_erasure_provenance` carries the identical statements and the guard exceptions; apply it with or after S08's file (either order is safe). S08's `erase_account_data` deletes `guardian_links` while a request is processing; its interaction with S07.1's lifecycle guard needs one full-stack run after the merge.
+- **H.1 / A.2.** The same finding as S07.4-S07.6: the H.1 gate excludes a parent-created child under 13 even with consent. D.22's research consent is deliberately separate, so it does not inherit this.
+- **Block H.** Parent product surfaces send Umami pageviews whose paths include the child's id (`/family/<kidId>/territory`); first-party and consented, but a path is not minimal.
+- **Block G.** The metrics are served by the API only; a console surface belongs to the console rebuild.
+- **S05 (B.6).** The D.19 graduation curriculum (milestone 2) belongs to Forge and the shared knowledge-component graph.
+- **Legacy nav.** Still reads "AI Tutor" (glossary: Mentor).
+
+**Remaining limitations:**
+- No full Supabase (PostgREST/GoTrue) stack run of the new routes and functions.
+- `database.ts` has not been regenerated: seven new tables and the new functions.
+- No production data yet for any of the five new metrics, and the first compliance run.
+- The Pedagogical Lead's review of the twelve tips: until then no tip is sent, by design.
+- The owner still has to name the Product owner of D.19 and the Product/Research owner of D.22. Legal has not reviewed the retention periods or the research disclosure (no family may be asked before that).
+- The first human scope audit and the first Appendix G recalibration review have not been done.
+- Appendix H Stage 5 family usability testing: the reflective prompt, the bridge and the research disclosure.
+- Native review of `familyGovernance.json` in three locales.
+- The browser matrix uses a synthetic Core.
+- Product/Safety/Legal review of the eleven proposals above.
+
+D.9, D.19, D.20, D.21, D.22 and D.23 are not accepted.

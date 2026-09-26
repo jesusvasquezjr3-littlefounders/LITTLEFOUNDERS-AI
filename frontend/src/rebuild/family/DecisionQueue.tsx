@@ -1,9 +1,10 @@
 import { useId, useState } from 'react';
 import { Button, Copy, StatusMark } from '../design/controls';
 import { NotYetForm, type NotYetCopy } from './NotYetForm';
+import { ReflectionStep, type ReflectionCopy } from './ReflectionStep';
 import {
   LEVEL_REQUEST_REASON_CODES, REVIEW_REWARD_REASON_CODES, REWARD_REASON_CODES, TASK_REASON_CODES,
-  type ChildRewardReason, type Decision, type Level, type NotYet, type Queue, type QueueChore, type QueueReward,
+  type ChildRewardReason, type Decision, type Level, type NotYet, type Queue, type QueueChore, type QueueReward, type Reflection,
 } from './familyAutonomyApi';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -19,6 +20,10 @@ import './familyAutonomy.css';
  * child's level let through are listed to look at afterwards (D.17), and a
  * pattern of "not yet"s, or the child asking, opens a "talk about it" card.
  * Adult band copy.
+ *
+ * S07.7 (D.23): every decision starts with the reflective prompt (what would
+ * you tell them about this?), before and apart from the reason the child
+ * reads. A yes becomes two taps; a "not yet" goes prompt, then reason form.
  */
 
 export interface QueueCopy {
@@ -29,28 +34,43 @@ export interface QueueCopy {
   saved_for_it: string; treat: string; need_it: string; for_someone: string; other: string;
 }
 
-type Answering =
+type NotYetTarget =
   | { kind: 'sendBack' | 'remove'; chore: QueueChore }
   | { kind: 'deny'; reward: QueueReward }
   | { kind: 'question'; review: Decision }
   | { kind: 'decline'; requestId: string };
+type YesTarget =
+  | { kind: 'approveChore'; chore: QueueChore }
+  | { kind: 'approveReward'; reward: QueueReward }
+  | { kind: 'confirm'; review: Decision }
+  | { kind: 'grant'; requestId: string; level: Level };
+
+/** First the reflective prompt, then (for a "not yet") the reason form. */
+type Answering =
+  | { stage: 'reflect'; target: NotYetTarget | YesTarget; name: string }
+  | { stage: 'reason'; target: NotYetTarget; reflection: Reflection; words: string | null };
 
 export type QueueAction =
-  | { kind: 'approveChore'; chore: QueueChore }
-  | { kind: 'sendBack' | 'remove'; chore: QueueChore; notYet: NotYet }
-  | { kind: 'approveReward'; reward: QueueReward }
-  | { kind: 'deny'; reward: QueueReward; notYet: NotYet }
-  | { kind: 'confirm'; review: Decision }
-  | { kind: 'question'; review: Decision; notYet: NotYet }
-  | { kind: 'grant'; requestId: string; level: Level }
-  | { kind: 'decline'; requestId: string; notYet: NotYet }
+  | { kind: 'approveChore'; chore: QueueChore; reflection: Reflection; note: string | null }
+  | { kind: 'sendBack' | 'remove'; chore: QueueChore; notYet: NotYet; reflection: Reflection }
+  | { kind: 'approveReward'; reward: QueueReward; reflection: Reflection; note: string | null }
+  | { kind: 'deny'; reward: QueueReward; notYet: NotYet; reflection: Reflection }
+  | { kind: 'confirm'; review: Decision; reflection: Reflection }
+  | { kind: 'question'; review: Decision; notYet: NotYet; reflection: Reflection }
+  | { kind: 'grant'; requestId: string; level: Level; reflection: Reflection }
+  | { kind: 'decline'; requestId: string; notYet: NotYet; reflection: Reflection }
   | { kind: 'closeNudge'; nudgeId: string; outcome: 'talked' | 'dismissed' };
+
+const NOT_YET_KINDS: readonly string[] = ['sendBack', 'remove', 'deny', 'question', 'decline'];
+const targetId = (t: NotYetTarget | YesTarget) => ('chore' in t ? t.chore.id : 'reward' in t ? t.reward.id : 'review' in t ? t.review.id : t.requestId);
+const targetTitle = (t: NotYetTarget | YesTarget) => ('chore' in t ? t.chore.title : 'reward' in t ? t.reward.title : 'review' in t ? t.review.title : null);
 
 const fill = (text: string, values: Record<string, string | number>) => text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 
-export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, dark, queue, loading, failed, busy, notice, onRetry, onAction }: {
+export function DecisionQueue({ copy, notYetCopy, reflectionCopy, levelNames, kidName, locale, dark, queue, loading, failed, busy, notice, onRetry, onAction }: {
   copy: QueueCopy;
   notYetCopy: NotYetCopy;
+  reflectionCopy: ReflectionCopy;
   levelNames: Record<Level, string>;
   kidName: (id: string) => string;
   locale: string;
@@ -67,11 +87,41 @@ export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, d
   const [answering, setAnswering] = useState<Answering | null>(null);
   const reasonText: Record<ChildRewardReason, string> = { saved_for_it: copy.saved_for_it, treat: copy.treat, need_it: copy.need_it, for_someone: copy.for_someone, other: copy.other };
   const empty = queue !== null && queue.chores.length + queue.rewards.length + queue.reviews.length + queue.nudges.length + queue.levelRequests.length + queue.openChores.length === 0;
-  const same = (a: Answering | null, kind: Answering['kind'], id: string) => a !== null && a.kind === kind
-    && ('chore' in a ? a.chore.id : 'reward' in a ? a.reward.id : 'review' in a ? a.review.id : a.requestId) === id;
-  const form = (codes: Parameters<typeof NotYetForm>[0]['codes'], title: string | null, done: (notYet: NotYet) => void) =>
-    <NotYetForm copy={notYetCopy} codes={codes} busy={busy} heading={title ?? undefined} onCancel={() => setAnswering(null)}
-      onSubmit={(notYet) => { done(notYet); setAnswering(null); }} />;
+  const open = (id: string, kinds: readonly string[]) => answering !== null && targetId(answering.target) === id && kinds.includes(answering.target.kind);
+  const reflect = (target: NotYetTarget | YesTarget, childId: string | null) => setAnswering({ stage: 'reflect', target, name: childId ? kidName(childId) : '' });
+
+  /** The prompt, then either the yes itself or the reason form. */
+  function decide(codes: Parameters<typeof NotYetForm>[0]['codes']) {
+    if (!answering) return null;
+    if (answering.stage === 'reflect') {
+      const target = answering.target;
+      const notYet = NOT_YET_KINDS.includes(target.kind);
+      const noteAllowed = target.kind === 'approveChore' || target.kind === 'approveReward';
+      return <ReflectionStep copy={reflectionCopy} name={answering.name} heading={targetTitle(target)} notYet={notYet} noteAllowed={noteAllowed} busy={busy}
+        onBack={() => setAnswering(null)}
+        onContinue={(reflection, words) => {
+          if (notYet) { setAnswering({ stage: 'reason', target: target as NotYetTarget, reflection, words }); return; }
+          const note = reflection === 'shared' ? words : null;
+          const yes = target as YesTarget;
+          setAnswering(null);
+          if (yes.kind === 'approveChore') onAction({ kind: 'approveChore', chore: yes.chore, reflection, note });
+          else if (yes.kind === 'approveReward') onAction({ kind: 'approveReward', reward: yes.reward, reflection, note });
+          else if (yes.kind === 'confirm') onAction({ kind: 'confirm', review: yes.review, reflection });
+          else onAction({ kind: 'grant', requestId: yes.requestId, level: yes.level, reflection });
+        }} />;
+    }
+    const { reflection, words } = answering;
+    const t = answering.target;
+    return <NotYetForm copy={notYetCopy} codes={codes} busy={busy} heading={targetTitle(t) ?? undefined}
+      initialReason={reflection === 'shared' ? words ?? undefined : undefined} onCancel={() => setAnswering(null)}
+      onSubmit={(notYet) => {
+        setAnswering(null);
+        if ('chore' in t) onAction({ kind: t.kind, chore: t.chore, notYet, reflection });
+        else if ('reward' in t) onAction({ kind: 'deny', reward: t.reward, notYet, reflection });
+        else if ('review' in t) onAction({ kind: 'question', review: t.review, notYet, reflection });
+        else onAction({ kind: 'decline', requestId: t.requestId, notYet, reflection });
+      }} />;
+  }
 
   return <section className="lf-rebuild lf-family-hub lf-autonomy" data-autonomy="queue" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-labelledby={heading}>
     <h2 id={heading} data-copy-role="heading">{copy.heading}</h2>
@@ -106,12 +156,12 @@ export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, d
           </div>
           {c.childNote && <span className="ugc lf-autonomy-voice" data-copy-role="data" data-child-voice="note">{fill(copy.says, { name: kidName(c.assignedTo), note: c.childNote })}</span>}
           {c.requiresEvidence && <span className="lf-family-hub-muted" data-copy-role="data">{c.hasEvidence ? copy.photo : copy.needsPhoto}</span>}
-          {same(answering, 'sendBack', c.id) || same(answering, 'remove', c.id)
-            ? form(TASK_REASON_CODES, c.title, (notYet) => onAction({ kind: answering!.kind as 'sendBack' | 'remove', chore: c, notYet }))
+          {open(c.id, ['approveChore', 'sendBack', 'remove'])
+            ? decide(TASK_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy || (c.requiresEvidence && !c.hasEvidence)} onClick={() => onAction({ kind: 'approveChore', chore: c })}>{copy.approve}</Button>
-              <Button disabled={busy} onClick={() => setAnswering({ kind: 'sendBack', chore: c })}>{copy.sendBack}</Button>
-              <Button disabled={busy} onClick={() => setAnswering({ kind: 'remove', chore: c })}>{copy.remove}</Button>
+              <Button variant="success" disabled={busy || (c.requiresEvidence && !c.hasEvidence)} onClick={() => reflect({ kind: 'approveChore', chore: c }, c.assignedTo)}>{copy.approve}</Button>
+              <Button disabled={busy} onClick={() => reflect({ kind: 'sendBack', chore: c }, c.assignedTo)}>{copy.sendBack}</Button>
+              <Button disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button>
             </div>}
         </li>)}</ul>
       </section>}
@@ -126,11 +176,11 @@ export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, d
           {r.childReasonKind && <span className="lf-autonomy-voice" data-copy-role="data" data-child-voice="reason">
             {fill(copy.wants, { name: kidName(r.kidUserId), reason: reasonText[r.childReasonKind] })}</span>}
           {r.childNote && <span className="ugc lf-autonomy-voice" data-copy-role="data" data-child-voice="note">{fill(copy.says, { name: kidName(r.kidUserId), note: r.childNote })}</span>}
-          {same(answering, 'deny', r.id)
-            ? form(REWARD_REASON_CODES, r.title, (notYet) => onAction({ kind: 'deny', reward: r, notYet }))
+          {open(r.id, ['approveReward', 'deny'])
+            ? decide(REWARD_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy} onClick={() => onAction({ kind: 'approveReward', reward: r })}>{copy.approve}</Button>
-              <Button disabled={busy} onClick={() => setAnswering({ kind: 'deny', reward: r })}>{copy.deny}</Button>
+              <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'approveReward', reward: r }, r.kidUserId)}>{copy.approve}</Button>
+              <Button disabled={busy} onClick={() => reflect({ kind: 'deny', reward: r }, r.kidUserId)}>{copy.deny}</Button>
             </div>}
         </li>)}</ul>
       </section>}
@@ -140,11 +190,11 @@ export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, d
         <ul>{queue.levelRequests.map((q) => <li key={q.id} data-level-request={q.id}>
           <span data-copy-role="data">{fill(copy.levelAsk, { name: kidName(q.kidUserId), level: levelNames[q.level] })}</span>
           {q.note && <span className="ugc lf-autonomy-voice" data-copy-role="data" data-child-voice="note">{fill(copy.says, { name: kidName(q.kidUserId), note: q.note })}</span>}
-          {same(answering, 'decline', q.id)
-            ? form(LEVEL_REQUEST_REASON_CODES, null, (notYet) => onAction({ kind: 'decline', requestId: q.id, notYet }))
+          {open(q.id, ['grant', 'decline'])
+            ? decide(LEVEL_REQUEST_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy} onClick={() => onAction({ kind: 'grant', requestId: q.id, level: q.level })}>{copy.grant}</Button>
-              <Button disabled={busy} onClick={() => setAnswering({ kind: 'decline', requestId: q.id })}>{copy.deny}</Button>
+              <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'grant', requestId: q.id, level: q.level }, q.kidUserId)}>{copy.grant}</Button>
+              <Button disabled={busy} onClick={() => reflect({ kind: 'decline', requestId: q.id }, q.kidUserId)}>{copy.deny}</Button>
             </div>}
         </li>)}</ul>
       </section>}
@@ -154,11 +204,11 @@ export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, d
         <Copy role="body">{copy.reviewsBody}</Copy>
         <ul>{queue.reviews.map((d) => <li key={d.id} data-review={d.id} data-outcome={d.outcome}>
           <span className="ugc" data-copy-role="data">{fill(d.outcome === 'self_logged' ? copy.selfLogged : copy.preapproved, { name: kidName(d.kidUserId), title: d.title ?? '' })}</span>
-          {same(answering, 'question', d.id)
-            ? form(d.subject === 'task' ? TASK_REASON_CODES : REVIEW_REWARD_REASON_CODES, d.title, (notYet) => onAction({ kind: 'question', review: d, notYet }))
+          {open(d.id, ['confirm', 'question'])
+            ? decide(d.subject === 'task' ? TASK_REASON_CODES : REVIEW_REWARD_REASON_CODES)
             : <div className="lf-family-hub-actions">
-              <Button variant="success" disabled={busy} onClick={() => onAction({ kind: 'confirm', review: d })}>{copy.looksGood}</Button>
-              <Button disabled={busy} onClick={() => setAnswering({ kind: 'question', review: d })}>{copy.question}</Button>
+              <Button variant="success" disabled={busy} onClick={() => reflect({ kind: 'confirm', review: d }, d.kidUserId)}>{copy.looksGood}</Button>
+              <Button disabled={busy} onClick={() => reflect({ kind: 'question', review: d }, d.kidUserId)}>{copy.question}</Button>
             </div>}
         </li>)}</ul>
       </section>}
@@ -170,9 +220,9 @@ export function DecisionQueue({ copy, notYetCopy, levelNames, kidName, locale, d
             <span className="ugc" data-copy-role="data">{c.title}</span>
             <span className="lf-autonomy-chip" data-copy-role="data">{kidName(c.assignedTo)}</span>
           </div>
-          {same(answering, 'remove', c.id)
-            ? form(TASK_REASON_CODES, c.title, (notYet) => onAction({ kind: 'remove', chore: c, notYet }))
-            : <div className="lf-family-hub-actions"><Button disabled={busy} onClick={() => setAnswering({ kind: 'remove', chore: c })}>{copy.remove}</Button></div>}
+          {open(c.id, ['remove'])
+            ? decide(TASK_REASON_CODES)
+            : <div className="lf-family-hub-actions"><Button disabled={busy} onClick={() => reflect({ kind: 'remove', chore: c }, c.assignedTo)}>{copy.remove}</Button></div>}
         </li>)}</ul>
       </section>}
     </>}

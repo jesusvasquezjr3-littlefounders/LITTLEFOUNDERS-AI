@@ -303,7 +303,7 @@ describe("the child's request carries their own words (D.18) and the level decid
 describe("the Tutor's decisions carry an actionable reason (D.18)", () => {
   it('sends a chore back only with a task reason code and an actionable reason, as the caller', async () => {
     const calls = stub({ rpc: { family_decide_task: { status: 200, body: 'open' } } });
-    const res = await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reasonCode: 'redo', reason: GOOD });
+    const res = await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', reasonCode: 'redo', reason: GOOD });
     expect(res.status).toBe(200);
     expect(rpcCalls(calls, 'family_decide_task')[0]!.body).toEqual({ p_task: TASK, p_actor: PARENT, p_outcome: 'sent_back', p_reason_code: 'redo', p_reason: GOOD });
   });
@@ -323,7 +323,7 @@ describe("the Tutor's decisions carry an actionable reason (D.18)", () => {
     it(`refuses sending back or cancelling a chore with ${label}, before any write`, async () => {
       const calls = stub();
       for (const path of ['send-back', 'cancel']) {
-        const res = await app().post(`/api/v1/tasks/${TASK}/${path}`).set('Authorization', as(PARENT)).send(body);
+        const res = await app().post(`/api/v1/tasks/${TASK}/${path}`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', ...body });
         expect(res.status, `${path}`).toBe(400);
         expect(res.body.error.code).toBe(code);
       }
@@ -335,12 +335,12 @@ describe("the Tutor's decisions carry an actionable reason (D.18)", () => {
     const day = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
     let calls = stub();
     for (const [body, code] of [
-      [{ approve: false }, 'DECISION_REASON_REQUIRED'],
-      [{ approve: false, reasonCode: 'redo', reason: GOOD }, 'DECISION_REASON_REQUIRED'],
-      [{ approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.' }, 'DECISION_REVISIT_INVALID'],
-      [{ approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: day(0) }, 'DECISION_REVISIT_INVALID'],
-      [{ approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: day(95) }, 'DECISION_REVISIT_INVALID'],
-      [{ approve: false, reasonCode: 'save_more', reason: 'Mais tarde' }, 'DECISION_REASON_NOT_ACTIONABLE'],
+      [{ reflection: 'skipped', approve: false }, 'DECISION_REASON_REQUIRED'],
+      [{ reflection: 'skipped', approve: false, reasonCode: 'redo', reason: GOOD }, 'DECISION_REASON_REQUIRED'],
+      [{ reflection: 'skipped', approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.' }, 'DECISION_REVISIT_INVALID'],
+      [{ reflection: 'skipped', approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: day(0) }, 'DECISION_REVISIT_INVALID'],
+      [{ reflection: 'skipped', approve: false, reasonCode: 'later_date', reason: 'Let us wait until after your test on Friday.', revisitOn: day(95) }, 'DECISION_REVISIT_INVALID'],
+      [{ reflection: 'skipped', approve: false, reasonCode: 'save_more', reason: 'Mais tarde' }, 'DECISION_REASON_NOT_ACTIONABLE'],
     ] as const) {
       const res = await app().post(`/api/v1/tasks/redemptions/${REDEMPTION}/decide`).set('Authorization', as(PARENT)).send(body);
       expect(res.body.error?.code, JSON.stringify(body)).toBe(code);
@@ -348,20 +348,20 @@ describe("the Tutor's decisions carry an actionable reason (D.18)", () => {
     expect(writes(calls)).toHaveLength(0);
     calls = stub({ rpc: { family_decide_redemption: { status: 200, body: 'denied' } } });
     const reason = 'Let us wait until after your test on Friday.';
-    const res = await app().post(`/api/v1/tasks/redemptions/${REDEMPTION}/decide`).set('Authorization', as(PARENT)).send({ approve: false, reasonCode: 'later_date', reason, revisitOn: day(3) });
+    const res = await app().post(`/api/v1/tasks/redemptions/${REDEMPTION}/decide`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', approve: false, reasonCode: 'later_date', reason, revisitOn: day(3) });
     expect(res.status).toBe(200);
     expect(rpcCalls(calls, 'family_decide_redemption')[0]!.body).toEqual({ p_redemption: REDEMPTION, p_actor: PARENT, p_approve: false, p_reason_code: 'later_date', p_reason: reason, p_revisit_on: day(3) });
   });
 
   it('never reports a decision the database did not confirm', async () => {
     stub({ rpc: { family_decide_task: { status: 503, body: null } } });
-    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reasonCode: 'redo', reason: GOOD })).status).toBe(502);
+    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', reasonCode: 'redo', reason: GOOD })).status).toBe(502);
     stub({ rpc: { family_decide_task: { status: 200, body: 'approved' } } });
-    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reasonCode: 'redo', reason: GOOD })).status).toBe(200);
+    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', reasonCode: 'redo', reason: GOOD })).status).toBe(200);
     stub({ rpc: { family_decide_task: { status: 200, body: 'surprise' } } });
-    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reasonCode: 'redo', reason: GOOD })).status).toBe(502);
+    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', reasonCode: 'redo', reason: GOOD })).status).toBe(502);
     stub({ rpc: { family_decide_task: refusal('DECISION_REASON_NOT_ACTIONABLE') } });
-    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reasonCode: 'redo', reason: GOOD })).body.error.code).toBe('DECISION_REASON_NOT_ACTIONABLE');
+    expect((await app().post(`/api/v1/tasks/${TASK}/send-back`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', reasonCode: 'redo', reason: GOOD })).body.error.code).toBe('DECISION_REASON_NOT_ACTIONABLE');
   });
 
   it("builds the queue with the child's own words next to each request, and leaves out what was already reviewed", async () => {
@@ -394,13 +394,13 @@ describe("the Tutor's decisions carry an actionable reason (D.18)", () => {
   it('reviews a self-directed item: "looks good", or a question with a reason; never a Tutor\'s own approval', async () => {
     const selfLogged = decisionRow({ outcome: 'self_logged', actor_user_id: KID, actor_kind: 'child', reason_code: null, reason: null });
     let calls = stub({ decision: selfLogged, rpc: { family_review_decision: { status: 200, body: 'questioned' } } });
-    expect((await app().post(`/api/v1/tasks/decisions/${DECISION}/review`).set('Authorization', as(PARENT)).send({ outcome: 'questioned' })).body.error.code).toBe('DECISION_REASON_REQUIRED');
+    expect((await app().post(`/api/v1/tasks/decisions/${DECISION}/review`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', outcome: 'questioned' })).body.error.code).toBe('DECISION_REASON_REQUIRED');
     expect(writes(calls)).toHaveLength(0);
-    const res = await app().post(`/api/v1/tasks/decisions/${DECISION}/review`).set('Authorization', as(PARENT)).send({ outcome: 'questioned', reasonCode: 'redo', reason: GOOD });
+    const res = await app().post(`/api/v1/tasks/decisions/${DECISION}/review`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', outcome: 'questioned', reasonCode: 'redo', reason: GOOD });
     expect(res.status).toBe(200);
     expect(rpcCalls(calls, 'family_review_decision')[0]!.body).toEqual({ p_decision: DECISION, p_actor: PARENT, p_outcome: 'questioned', p_reason_code: 'redo', p_reason: GOOD });
     calls = stub({ decision: decisionRow({ outcome: 'approved' }) });
-    expect((await app().post(`/api/v1/tasks/decisions/${DECISION}/review`).set('Authorization', as(PARENT)).send({ outcome: 'confirmed' })).status).toBe(404);
+    expect((await app().post(`/api/v1/tasks/decisions/${DECISION}/review`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', outcome: 'confirmed' })).status).toBe(404);
     expect(writes(calls)).toHaveLength(0);
   });
 
@@ -414,14 +414,14 @@ describe("the Tutor's decisions carry an actionable reason (D.18)", () => {
   const TUTOR_ROUTES: [string, string, Record<string, unknown>][] = [
     ['get', `/api/v1/tasks/${KID}/autonomy`, {}],
     ['put', `/api/v1/tasks/${KID}/autonomy`, { level: 2, preapprovedLimit: 10 }],
-    ['post', `/api/v1/tasks/autonomy/requests/${REQUEST}/decide`, { grant: true, preapprovedLimit: 0 }],
+    ['post', `/api/v1/tasks/autonomy/requests/${REQUEST}/decide`, { reflection: 'skipped', grant: true, preapprovedLimit: 0 }],
     ['get', '/api/v1/tasks/decisions/queue', {}],
-    ['post', `/api/v1/tasks/decisions/${DECISION}/review`, { outcome: 'confirmed' }],
+    ['post', `/api/v1/tasks/decisions/${DECISION}/review`, { reflection: 'skipped', outcome: 'confirmed' }],
     ['post', `/api/v1/tasks/nudges/${NUDGE}/close`, { outcome: 'talked' }],
-    ['post', `/api/v1/tasks/${TASK}/send-back`, { reasonCode: 'redo', reason: GOOD }],
-    ['post', `/api/v1/tasks/${TASK}/cancel`, { reasonCode: 'redo', reason: GOOD }],
-    ['post', `/api/v1/tasks/${TASK}/approve`, {}],
-    ['post', `/api/v1/tasks/redemptions/${REDEMPTION}/decide`, { approve: false, reasonCode: 'save_more', reason: GOOD }],
+    ['post', `/api/v1/tasks/${TASK}/send-back`, { reflection: 'skipped', reasonCode: 'redo', reason: GOOD }],
+    ['post', `/api/v1/tasks/${TASK}/cancel`, { reflection: 'skipped', reasonCode: 'redo', reason: GOOD }],
+    ['post', `/api/v1/tasks/${TASK}/approve`, { reflection: 'skipped' }],
+    ['post', `/api/v1/tasks/redemptions/${REDEMPTION}/decide`, { reflection: 'skipped', approve: false, reasonCode: 'save_more', reason: GOOD }],
   ];
   for (const [label, who, extra] of NON_PARENTS) {
     it(`refuses ${label} every Tutor route before any write`, async () => {
@@ -473,10 +473,10 @@ describe('the Tutor moves a level within the documented rule (D.17)', () => {
 
   it('answers the child\'s ask: grant as the caller, or "not yet" only with a level code and an actionable reason', async () => {
     let calls = stub({ rpc: { family_autonomy_decide_request: { status: 200, body: 'granted' } } });
-    expect((await app().post(`/api/v1/tasks/autonomy/requests/${REQUEST}/decide`).set('Authorization', as(PARENT)).send({ grant: true, preapprovedLimit: 5 })).status).toBe(200);
+    expect((await app().post(`/api/v1/tasks/autonomy/requests/${REQUEST}/decide`).set('Authorization', as(PARENT)).send({ reflection: 'skipped', grant: true, preapprovedLimit: 5 })).status).toBe(200);
     expect(rpcCalls(calls, 'family_autonomy_decide_request')[0]!.body).toEqual({ p_request: REQUEST, p_actor: PARENT, p_grant: true, p_limit: 5, p_reason_code: null, p_reason: null, p_revisit_on: null });
     calls = stub();
-    for (const body of [{ grant: false }, { grant: false, reasonCode: 'redo', reason: GOOD }, { grant: false, reasonCode: 'talk_first', reason: 'Not now' }]) {
+    for (const body of [{ reflection: 'skipped', grant: false }, { reflection: 'skipped', grant: false, reasonCode: 'redo', reason: GOOD }, { reflection: 'skipped', grant: false, reasonCode: 'talk_first', reason: 'Not now' }]) {
       expect((await app().post(`/api/v1/tasks/autonomy/requests/${REQUEST}/decide`).set('Authorization', as(PARENT)).send(body)).status).toBe(400);
     }
     expect(writes(calls)).toHaveLength(0);

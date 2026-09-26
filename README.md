@@ -115,6 +115,27 @@ Appendix H metrics for analytics staff: `GET /api/v1/admin/family/engagement-upt
 
 Browser matrix: with the frontend dev server running, `COIN_ACCOUNT_URL=http://localhost:<port> node scripts/verify-coin-account.mjs` (run from `frontend/`; captures land in `audit-results/coin-account/`).
 
+**S07.7: Family Hub governance (D.9, D.19, D.20, D.21, D.22, D.23).** Five expand migrations, applied in this order after the S07.6 migrations and with, never ahead of, the S07.7 Core release (Core requires `reflection` on every Tutor decision and calls the new functions):
+- `family_erasure_provenance` (D.21): deleting a Tutor keeps the child's record and clears the Tutor's id from it. It carries the same provenance-key statements as the S08 lane's `account_deletion_guards` (identical text, safe in either order) and lets the S07.1 guards accept that one cascade update.
+- `parent_coaching` (D.23): the reflective prompt's record (no text) and the monthly tip's delivery.
+- `money_bridge` (D.19): the older-teen "Beyond the app" checklist, from 15 by age evidence.
+- `family_research_instrumentation` (D.22): research consent, the pseudonymous monthly snapshot and the completeness metric.
+- `family_data_retention` (D.21): the retention periods, the sweep, the photo purge functions and the compliance audit.
+
+Nightly jobs: `.github/workflows/family-retention.yml` (03:15 UTC) calls Core's `POST /api/v1/family-hub/internal/retention/run` (the sweep, then each due photo deleted from Depot before its pointer is cleared); `insights-maintenance.yml` records the previous month's research snapshots (`record_family_research_snapshots`, guarded). Verify on a native PostgreSQL 17 cluster you own with `python database/scripts/verify-family-governance-postgres.py` (same `LF_PG_*` variables as above).
+
+Four gates run in the unfiltered repo gates, each with self-tests in `npm run tools:test`:
+- `node agent/tools/check-block-d-research.mjs [--strict]` (D.9): Appendix G traceability, the claims boundary (no "proven" in app or marketing copy) and OD-23's no-experiment-column rule; `--strict`, run by `npm run release:readiness`, fails on an overdue recalibration;
+- `node agent/tools/check-block-d-scope.mjs` (D.20): the scope statement stays true and mounted;
+- `node agent/tools/check-block-d-retention.mjs` (D.21): every Block D table has a retention class and the periods agree everywhere;
+- `node agent/tools/check-parent-coaching-tips.mjs [--hash <id>]` (D.23): a tip is sent only after the Pedagogical Lead's review, bound to its copy by the hash `--hash` prints.
+
+The written policies and plans are `docs/operations/BLOCK-D-RESEARCH-FOUNDATION.md`, `BLOCK-D-SCOPE-STATEMENT.md` (with the quarterly audit log), `FAMILY-DATA-RETENTION.md`, `BLOCK-D-LONGITUDINAL-RESEARCH-PLAN.md`, `OLDER-TEEN-GRADUATION-INITIATIVE.md` and `PARENT-COACHING.md`.
+
+Appendix H metrics for analytics staff: `GET /api/v1/admin/family/retention-compliance` (pass every release), `/coaching-delivery?period=YYYY-MM`, `/coaching-reflections?days=N`, `/bridge-engagement` and `/research-completeness?months=N&tenure=N`.
+
+Browser matrix: with the frontend dev server running, `FAMILY_GOVERNANCE_URL=http://localhost:<port> node scripts/verify-family-governance.mjs` (run from `frontend/`; captures land in `audit-results/family-governance/`).
+
 Placement requires migrations **0091** (method vocabulary) and **0092** (atomic commit) before the updated Core is deployed. The service-only RPC writes the placement and its credits together; identical retries succeed without duplicate credit. Migration 0091 preserves historical values but requires operator review under the conservative CHECK-replacement gate. `database/scripts/verify-placement-postgres.py` supplies isolated native PostgreSQL evidence; it does not replace full Supabase or browser acceptance.
 
 Lesson completion requires migration **0083** before the updated Core is deployed. Its service-only `complete_lesson` RPC commits progress, statistics and a run receipt together. Clients must reuse the same `run_id` when retrying a completion; a new play-through gets a new ID. Validate rollback, response-loss retries and execution permissions with `database/scripts/test-lesson-completion.sql` using `psql -v ON_ERROR_STOP=1 -f` against an **isolated, fully migrated test database with a synthetic seeded lesson**. The script rolls its fixtures back; it is not a production diagnostic or a replacement for the two reset/type-generation gates. Core's fake-PostgREST tests alone do not validate SQL transactions or concurrent locking.

@@ -99,6 +99,14 @@ export const RULES = [
   { key: 'register.teen_statement_lines', core: ['backend/src/services/moneyPresentation.ts', 'TEEN_STATEMENT_LINES'] },
   { key: 'engagement.active_days', core: ['backend/src/services/insights.ts', 'ENGAGEMENT_ACTIVE_DAYS'], sql: ['_family_engagement_insight', ['p_active_days int DEFAULT {v}']] },
   { key: 'staff_insight.retention_days', sql: ['_family_engagement_insight', ['p_retain_days int DEFAULT {v}']] },
+  // S07.7 (D.19, D.22, D.23): the bridge age, the reflection window and the research windows.
+  { key: 'bridge.min_age', core: ['backend/src/services/moneyBridge.ts', 'MONEY_BRIDGE_MIN_AGE'], sql: ['_money_bridge', [', 0) >= {v};']] },
+  { key: 'coaching.reflection_window_minutes', core: ['backend/src/services/parentCoaching.ts', 'COACHING_REFLECTION_WINDOW_MINUTES'],
+    sql: ['_parent_coaching', ["d.created_at > now() - interval '{v} minutes'"]] },
+  { key: 'research.completeness_months', core: ['backend/src/services/familyResearch.ts', 'RESEARCH_COMPLETENESS_MONTHS'],
+    sql: ['_family_research_instrumentation', ['p_months int DEFAULT {v}']] },
+  { key: 'research.min_tenure_months', core: ['backend/src/services/familyResearch.ts', 'RESEARCH_MIN_TENURE_MONTHS'],
+    sql: ['_family_research_instrumentation', ['p_min_tenure_months int DEFAULT {v}']] },
 ];
 
 /** Pure check over in-memory inputs, so the gate can be tested against known-bad fixtures. */

@@ -2,6 +2,7 @@ import { useId, useState, type FormEvent } from 'react';
 import { Button, Copy, StatusMark } from '../design/controls';
 import type { Session } from './familyHubApi';
 import { BONUS_MAX_COINS, createChore, isValidChore, type ChoreKind, type CreatedChore } from './familyMoneyApi';
+import { CoachingNote } from './CoachingNote';
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyHub.css';
@@ -15,7 +16,7 @@ import './familyMoney.css';
  * scientifically mandated ratio" (Appendix G §1.2), so the composer says so
  * in one line and makes the Tutor pick. Client validation mirrors the server;
  * Core and the database remain the boundary. No celebration (not an OD-7
- * milestone).
+ * milestone). S07.7 (D.23): pricing guidance sits in the composer itself.
  */
 
 export interface ChoreComposerCopy {
@@ -26,8 +27,10 @@ export interface ChoreComposerCopy {
 
 type Notice = { text: string; error: boolean } | null;
 
-export function ChoreComposer({ copy, locale, dark, kids, session, onCreated }: {
+export function ChoreComposer({ copy, pricing, locale, dark, kids, session, onCreated }: {
   copy: ChoreComposerCopy;
+  /** S07.7 (D.23): how to price a chore and choose its kind, one tap away. */
+  pricing?: { open: string; close: string; lines: string[] };
   locale: string;
   dark: boolean;
   kids: { id: string; name: string }[];
@@ -99,6 +102,7 @@ export function ChoreComposer({ copy, locale, dark, kids, session, onCreated }: 
           </button>)}
         </div>
       </fieldset>
+      {pricing && <CoachingNote embedded name="pricing" label={pricing.open} close={pricing.close} lines={pricing.lines} locale={locale} dark={dark} />}
       {kind === 'contribution' && <fieldset>
         <legend data-copy-role="body">{copy.tokenCoins}</legend>
         <div className="lf-family-hub-options" role="group">

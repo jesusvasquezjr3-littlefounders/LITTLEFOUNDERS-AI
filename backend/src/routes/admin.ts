@@ -75,6 +75,10 @@ import {
 } from '../services/analyticsExclusions.js';
 import { getOwnAdminPermissions, insertAuditLog } from '../services/supabaseRest.js';
 import { getFamilyStateIntegrity } from '../services/familyLifecycle.js';
+import { readRetentionCompliance } from '../services/familyRetention.js';
+import { readCoachingDelivery, readReflectionRate } from '../services/parentCoaching.js';
+import { readBridgeEngagement } from '../services/moneyBridge.js';
+import { readResearchCompleteness, RESEARCH_COMPLETENESS_MONTHS, RESEARCH_MIN_TENURE_MONTHS } from '../services/familyResearch.js';
 import { getTeenWalletAdoption } from '../services/teenWallet.js';
 import { readBonusComprehension, readChoreTagAdoption } from '../services/savingsBonus.js';
 import { choreStreakRestDayUtilization } from '../services/choreStreakData.js';
@@ -1285,6 +1289,56 @@ export function adminRouter(): Router {
    * age register, counts only. The first review of the 10- and 13-year
    * cutoffs reads this next to the D.11 comprehension proxy.
    */
+  /*
+   * S07.7 (D.19, D.21, D.22, D.23): the governance metrics, counts only.
+   *   retention-compliance   Appendix H Retention-Policy Compliance Audit, pass
+   *                          every release: rows past their period (target 0)
+   *   coaching-delivery      Parent-Coaching-Tip Delivery & Engagement Rate
+   *   coaching-reflections   the reflective prompt fired on every Tutor decision
+   *   bridge-engagement      Real-World Bridge Engagement Rate (Diagnostic)
+   *   research-completeness  Longitudinal-Hypothesis Data Completeness (Diagnostic)
+   */
+  router.get('/family/retention-compliance', async (_req, res) => {
+    const audit = await readRetentionCompliance();
+    if (audit === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the retention audit');
+    return ok(res, audit);
+  });
+
+  const CoachingPeriod = z.object({ period: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional() }).strict();
+  router.get('/family/coaching-delivery', async (req, res) => {
+    const q = CoachingPeriod.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'period must be YYYY-MM');
+    const metric = await readCoachingDelivery(q.data.period ?? new Date().toISOString().slice(0, 7));
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the coaching delivery metric');
+    return ok(res, metric);
+  });
+
+  router.get('/family/coaching-reflections', async (req, res) => {
+    const q = FamilyIntegrityQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 1 and 365');
+    const metric = await readReflectionRate(new Date(Date.now() - q.data.days * 24 * 60 * 60 * 1000));
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the reflection metric');
+    return ok(res, metric);
+  });
+
+  router.get('/family/bridge-engagement', async (_req, res) => {
+    const metric = await readBridgeEngagement();
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the bridge engagement metric');
+    return ok(res, metric);
+  });
+
+  const CompletenessQuery = z.object({
+    months: z.coerce.number().int().min(1).max(24).default(RESEARCH_COMPLETENESS_MONTHS),
+    tenure: z.coerce.number().int().min(0).max(120).default(RESEARCH_MIN_TENURE_MONTHS),
+  }).strict();
+  router.get('/family/research-completeness', async (req, res) => {
+    const q = CompletenessQuery.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'months must be 1 to 24 and tenure 0 to 120');
+    const metric = await readResearchCompleteness(q.data.months, q.data.tenure);
+    if (metric === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the completeness metric');
+    return ok(res, metric);
+  });
+
   router.get('/family/register-distribution', async (_req, res) => {
     const rows = await readRegisterDistribution();
     if (rows === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the register distribution');

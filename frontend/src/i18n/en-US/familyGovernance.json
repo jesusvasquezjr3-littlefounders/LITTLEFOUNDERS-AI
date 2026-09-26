@@ -1,0 +1,177 @@
+{
+  "coaching": {
+    "label": "This month's tip",
+    "why": "Why it helps",
+    "whyNote": "From research on families. A finding, not a promise.",
+    "dismiss": "Hide tip",
+    "failed": "The tip did not load."
+  },
+  "tips": {
+    "contribution-vs-bonus": {
+      "title": "Everyday help is family work",
+      "body": "Keep daily help unpaid. Pay coins for extra tasks only.",
+      "why": "Paying for everything can crowd out wanting to help."
+    },
+    "price-by-effort": {
+      "title": "Price bonus tasks by effort",
+      "body": "Pay more for longer, harder tasks. Keep prices steady.",
+      "why": "Steady prices give coins a value your child can plan with."
+    },
+    "keep-promises": {
+      "title": "Keep reward promises on time",
+      "body": "Answer requests quickly and give rewards as promised.",
+      "why": "Children wait longer when waiting reliably pays off."
+    },
+    "explain-the-no": {
+      "title": "Give every no a reason",
+      "body": "Say why, and what your child can do next.",
+      "why": "Unexplained refusals make children share less with parents."
+    },
+    "ask-their-view": {
+      "title": "Ask what they think first",
+      "body": "Before you decide, ask your child why they want it.",
+      "why": "Two-way talks prepare children better than instructions alone."
+    },
+    "money-talk-at-home": {
+      "title": "Let them see your choices",
+      "body": "Say out loud how you decide on a purchase.",
+      "why": "Children learn from what you do, not only from rules."
+    },
+    "after-a-goal": {
+      "title": "After a goal, ask what's next",
+      "body": "When a goal is reached, help plan the next one.",
+      "why": "Saving often slows right after a goal. A new one helps."
+    },
+    "limits-with-reasons": {
+      "title": "Explain the limits you set",
+      "body": "Share the reason for a limit and review it together.",
+      "why": "Rules with reasons are followed more willingly."
+    },
+    "grow-their-say": {
+      "title": "Give more say, step by step",
+      "body": "As your child shows care, raise their independence level.",
+      "why": "Gradual independence works better than all at once."
+    },
+    "spending-is-not-failing": {
+      "title": "Spending is a choice too",
+      "body": "When coins go fast, ask what your child learned.",
+      "why": "Spending now can be sensible when waiting has not paid off."
+    },
+    "share-for-real": {
+      "title": "Make sharing real",
+      "body": "Choose together where Share coins go, then do it.",
+      "why": "Giving feels real when it reaches a real place."
+    },
+    "bonus-is-not-interest": {
+      "title": "The bonus is not interest",
+      "body": "Tell your child the bonus is a family reward, not bank interest.",
+      "why": "Even adults misjudge how interest grows. Keep it simple."
+    }
+  },
+  "reflection": {
+    "prompt": "What would you tell {name} about this?",
+    "hint": "Only you see this. It is not saved.",
+    "continue": "Continue",
+    "share": "Send as note",
+    "useAsReason": "Use as reason",
+    "back": "Back"
+  },
+  "pricing": {
+    "open": "Pricing tips",
+    "close": "Hide tips",
+    "contribution": "Everyday family help: unpaid, or a coin or two.",
+    "bonus": "Bonus tasks: pay by effort and time. Keep prices steady.",
+    "promise": "Pay what you promised, when you promised it."
+  },
+  "limitNote": {
+    "open": "Setting a limit",
+    "reason": "Tell your child why the limit exists.",
+    "review": "Look at it together as they grow."
+  },
+  "scope": {
+    "heading": "What this practice covers",
+    "intro": "Practice with coins that stay in the app. No real money moves.",
+    "open": "What it covers",
+    "close": "Hide",
+    "teachesHeading": "It practises",
+    "earning": "Earning coins for tasks, and helping at home.",
+    "splitting": "Splitting coins into save, spend and share.",
+    "goals": "Saving toward goals and waiting for them.",
+    "asking": "Asking for rewards and hearing the reason.",
+    "notHeading": "It does not teach",
+    "credit": "Borrowing, loans or credit cards.",
+    "debt": "Debt, or paying it back with interest.",
+    "compounding": "Real compound interest. The weekly bonus is not interest.",
+    "risk": "Risk, investing or insurance.",
+    "why": "These are hard to teach well, so we leave them out."
+  },
+  "dataPolicy": {
+    "heading": "Your family's data",
+    "lead": "How long we keep each kind.",
+    "open": "Show",
+    "close": "Hide",
+    "photos": "Chore photos: {days} days after your decision.",
+    "records": "Chores, rewards, decisions and notes: {days} days.",
+    "coins": "Coins, goals and rules: while the account exists.",
+    "insights": "Usage insights: {days} days, only with your consent.",
+    "research": "Research: only if you say yes, up to {days} days.",
+    "erasure": "Deleting an account deletes all of it.",
+    "sharing": "Never shared with advertisers or the Mentor's AI.",
+    "failed": "This did not load."
+  },
+  "research": {
+    "open": "About research",
+    "close": "Hide",
+    "heading": "Help us learn",
+    "what": "We study if practice here helps later in life.",
+    "how": "We keep monthly totals, never names, notes or titles.",
+    "never": "No experiments on children. Nothing changes for {name}.",
+    "stop": "Stop any time, and we delete it.",
+    "yes": "Include {name}",
+    "on": "Taking part since {date}.",
+    "months": "Months recorded: {count}.",
+    "paused": "Paused. Nothing is recorded now.",
+    "stopButton": "Stop and delete",
+    "confirm": "Delete {name}'s research data?",
+    "confirmYes": "Delete it",
+    "confirmNo": "Keep it",
+    "saved": "Saved.",
+    "deleted": "Stopped and deleted.",
+    "failed": "This did not save. Try again.",
+    "loading": "Loading…"
+  },
+  "myResearch": {
+    "heading": "Research",
+    "body": "Your Tutor lets us learn from your coin totals.",
+    "stop": "You can stop it any time.",
+    "button": "Stop it",
+    "confirm": "Stop it and delete it?",
+    "yes": "Yes, stop",
+    "no": "Keep it",
+    "stopped": "Stopped. It is deleted.",
+    "failed": "This did not save."
+  },
+  "bridge": {
+    "heading": "Beyond the app",
+    "intro": "Practice here, then try it for real when you are ready.",
+    "first_pay": "My first real pay",
+    "first_account": "My first account at a bank",
+    "first_budget": "My first real budget",
+    "arrived": "It happened",
+    "undo": "Undo",
+    "first_pay1": "Check what you got after any deductions.",
+    "first_pay2": "Try your usual split on it.",
+    "first_pay3": "Keep the pay slip.",
+    "first_account1": "Ask about fees before you open it.",
+    "first_account2": "Check it every week, like your coins.",
+    "first_account3": "Never share your PIN or password.",
+    "first_budget1": "List what you must pay each month.",
+    "first_budget2": "Save first, then spend.",
+    "first_budget3": "Look back at the end of the month.",
+    "splitHeading": "Try your split",
+    "amount": "Amount",
+    "splitResult": "Save {save}, spend {spend}, share {share}",
+    "splitNote": "Only you see this. It is not saved.",
+    "failed": "This did not save."
+  }
+}

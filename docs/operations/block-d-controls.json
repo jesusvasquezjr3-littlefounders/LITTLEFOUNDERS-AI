@@ -14,7 +14,7 @@
         { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "serves the account as a declared simulation with no card number and every real freeze hold" },
         { "file": "frontend/src/rebuild/banking/CoinAccount.test.tsx", "contains": "refuses a card that is not a declared simulation, carries a number, or claims a hold nobody enforces" }
       ],
-      "ui": ["coinAccount:young.practice", "coinAccount:young.coinsOnly", "coinAccount:transition.practice", "coinAccount:transition.coinsOnly", "coinAccount:teen.practice", "coinAccount:teen.coinsOnly", "coinAccount:tutor.practice"]
+      "ui": ["coinAccount:young.practice", "coinAccount:young.coinsOnly", "coinAccount:transition.practice", "coinAccount:transition.coinsOnly", "coinAccount:teen.practice", "coinAccount:teen.coinsOnly", "coinAccount:tutor.practice", "familyGovernance:scope.intro"]
     },
     {
       "id": "freeze",
@@ -132,6 +132,61 @@
         { "file": "backend/src/__tests__/moneyPresentation.test.ts", "contains": "young: the limit is what is left and the month is three totals" }
       ],
       "ui": ["moneyRegister:usualSplit.young.tenths", "moneyRegister:usualSplit.transition.tenths", "moneyRegister:usualSplit.teen.tenths"]
+    },
+    {
+      "id": "research_consent",
+      "claim": "A child's research data is recorded only while a verified Tutor's yes stands (an adult's own yes for an adult), never as an experiment, and a no, including the child's own, deletes every snapshot at once.",
+      "enforcedBy": [
+        { "fn": "family_research_admitted", "contains": "public.family_is_verified_guardian(v_consent.granted_by, p_subject)" },
+        { "fn": "family_research_set_consent", "contains": "DELETE FROM public.family_research_participants WHERE subject_user_id = p_subject" },
+        { "fn": "record_family_research_snapshots", "contains": "WHERE public.family_research_admitted(p.subject_user_id)" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-family-governance-postgres.py", "contains": "saying no deletes" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "lets %s read their own participation and say no, as the caller" }
+      ],
+      "ui": ["familyGovernance:research.never", "familyGovernance:research.stop", "familyGovernance:myResearch.stop"]
+    },
+    {
+      "id": "data_retention",
+      "claim": "Each period the family reads (photos, records, usage insights, research) is the one the nightly retention job enforces, and deleting an account deletes all of it.",
+      "enforcedBy": [
+        { "fn": "family_retention_sweep", "contains": "public.family_retention_days('records')" },
+        { "fn": "family_evidence_cleared", "contains": "public.family_retention_days('evidence')" },
+        { "file": "backend/src/services/familyRetention.ts", "contains": "{ id: 'photos', days: RETENTION_EVIDENCE_DAYS }" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-family-governance-postgres.py", "contains": "the sweep deletes what is past its period and nothing else" },
+        { "file": "database/scripts/verify-family-governance-postgres.py", "contains": "erasure removes every Block D row about them" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "the retention periods the family reads are the ones family_retention_days() enforces" }
+      ],
+      "ui": ["familyGovernance:dataPolicy.photos", "familyGovernance:dataPolicy.records", "familyGovernance:dataPolicy.erasure", "familyGovernance:dataPolicy.sharing"]
+    },
+    {
+      "id": "reflection_private",
+      "claim": "What a Tutor writes in the reflective prompt stays in their browser unless they send it as the note or the reason; only whether it was written, shared or skipped is sent.",
+      "enforcedBy": [
+        { "file": "frontend/src/rebuild/family/ReflectionStep.tsx", "contains": "onContinue(written ? 'written' : 'skipped', null)" },
+        { "file": "backend/src/routes/tasks.ts", "contains": "const ReflectionField = z.enum(REFLECTIONS);" }
+      ],
+      "provedBy": [
+        { "file": "frontend/src/rebuild/family/FamilyGovernance.test.tsx", "contains": "words here unless they choose to send them" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "a reflection text field is refused" }
+      ],
+      "ui": ["familyGovernance:reflection.hint"]
+    },
+    {
+      "id": "bridge_split_local",
+      "claim": "The bridge's split tool applies the teen's usual split to a real amount in the browser and sends nothing; no amount, bank or account detail is ever stored.",
+      "enforcedBy": [
+        { "file": "frontend/src/rebuild/family/governanceApi.ts", "contains": "export function splitAmount(" },
+        { "fn": "money_bridge_mark", "contains": "INSERT INTO public.money_bridge_progress (holder_user_id, milestone, step)" }
+      ],
+      "provedBy": [
+        { "file": "frontend/src/rebuild/family/FamilyGovernance.test.tsx", "contains": "applies the usual split to a real amount without sending anything" },
+        { "file": "backend/src/__tests__/familyGovernance.test.ts", "contains": "ticks one entry as the caller; no holder, amount or bank field is accepted" }
+      ],
+      "ui": ["familyGovernance:bridge.splitNote"]
     }
   ]
 }

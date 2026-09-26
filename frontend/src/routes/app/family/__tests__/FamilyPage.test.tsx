@@ -47,6 +47,7 @@ vi.mock('../WalletCorrectionsPanel', () => ({ WalletCorrectionsPanel: () => null
 vi.mock('../StreakPausesPanel', () => ({ StreakPausesPanel: () => null }));
 vi.mock('../ShareDestinationsPanel', () => ({ ShareDestinationsPanel: () => null }));
 vi.mock('../AutonomyLadderPanel', () => ({ AutonomyLadderPanel: () => null }));
+vi.mock('../GovernancePanels', () => ({ CoachingTipPanel: () => null, DataPolicyPanel: () => null, ResearchConsentPanel: () => null, ScopeStatementPanel: () => null }));
 vi.mock('../GuardianInvitePanel', () => ({ GuardianInvitePanel: () => null, GuardianInviteJoin: () => null }));
 vi.mock('../ManageKidPanel', () => ({ ManageKidPanel: () => null }));
 vi.mock('../SocialGraphPanel', () => ({ SocialGraphPanel: () => null }));
