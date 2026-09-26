@@ -90,7 +90,7 @@
 .lf-rebuild .lf-legal-contents { display: grid; gap: var(--spacing-4); align-content: start; min-inline-size: 0; padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
 .lf-rebuild[data-theme='dark'] .lf-legal-contents { background: var(--raised); }
 .lf-rebuild .lf-legal-contents h2 { font: var(--type-title); }
-.lf-rebuild .lf-legal-toc { display: grid; gap: var(--spacing-1); }
+.lf-rebuild .lf-legal-toc { display: grid; gap: var(--spacing-2); }
 .lf-rebuild .lf-legal-toc a {
   display: flex; align-items: center; min-block-size: var(--target-min); padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--rounded-md); color: var(--content); font: var(--type-body); text-decoration: none; overflow-wrap: break-word;
@@ -119,6 +119,11 @@
 .lf-rebuild .lf-consent-sheet { display: grid; gap: var(--spacing-4); }
 .lf-rebuild .lf-consent-kinds { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
 .lf-rebuild .lf-consent-kind { display: grid; gap: var(--spacing-2); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+
+/* A notice keeps the reading measure of the text around it (03 §3.2: 30em). */
+.lf-rebuild :is(.lf-site-page, .lf-route-error) .lf-notice { max-inline-size: 30em; }
+/* Until the visitor chooses, the cookie choice holds the thumb zone: the docked call to action (03 §3.4) waits beneath it. */
+body:has([data-consent-banner]) .lf-rebuild .lf-sticky-action { visibility: hidden; }
 
 /* ---- X2: a screen that failed to load ---- */
 .lf-rebuild .lf-route-error { display: grid; gap: var(--spacing-4); align-content: start; }

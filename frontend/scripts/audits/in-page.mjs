@@ -219,8 +219,12 @@ export function installAudit() {
     // Content behind a modal is inert: it cannot be pressed, so it has no neighbour to be pressed by mistake.
     const targets = els.filter((e) => e.matches('button,a[href],select,input:not([type=checkbox]):not([type=radio]),[role=button],[role=switch]') && !e.closest('[inert]'));
     const rects = targets.map((e) => e.getBoundingClientRect());
+    const layerOf = (e) => { for (let n = e; n; n = n.parentElement) { if (n.matches?.('.lf-tabbar, [data-dock]') || ['fixed', 'sticky'].includes(getComputedStyle(n).position)) return n; } return null; };
+    const layers = targets.map(layerOf);
     for (let i = 0; i < targets.length; i++) for (let j = i + 1; j < targets.length; j++) {
-      if (targets[i].closest('.lf-tabbar') !== targets[j].closest('.lf-tabbar')) continue;
+      // A floating layer (the tab bar, a docked call to action, the cookie choice, a sticky header: fixed or sticky)
+      // moves over the page as it scrolls; its targets are spaced among themselves, never against the content beneath.
+      if (layers[i] !== layers[j]) continue;
       if (targets[i].contains(targets[j]) || targets[j].contains(targets[i])) continue;
       const a = rects[i], b = rects[j];
       const v = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top), h = Math.min(a.right, b.right) - Math.max(a.left, b.left);

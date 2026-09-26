@@ -53,7 +53,7 @@ export function CookieConsent({ locale, bannerVisible, choice, preferencesOpen, 
   </>;
   const current = choice === 'granted' ? copy.currentGranted : choice === 'denied' ? copy.currentDenied : copy.currentUnset;
   return <>
-    {host && bannerVisible && !preferencesOpen ? createPortal(<section className="lf-consent" aria-labelledby={headingId} data-surface="site" data-consent-banner>
+    {host && bannerVisible && !preferencesOpen ? createPortal(<section className="lf-consent" aria-labelledby={headingId} data-surface="site" data-consent-banner data-dock>
       <div className="lf-consent-inner">
         <div className="lf-consent-text">
           <h2 id={headingId} data-copy-role="heading">{copy.title}</h2>

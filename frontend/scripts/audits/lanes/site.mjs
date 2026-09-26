@@ -27,9 +27,12 @@ export const states = [
   site('/families@chore-picked', '/families', '[data-screen="families"] [data-decision]',
     { open: ['[data-decision="families-chore"] .lf-radio-option:nth-child(3)', '[data-example="approve"]'] }),
   site('/families@families-tutor', '/families', '[data-screen="families"] a[href="/family"]', { scenario: 'site-tutor' }),
-  site('/faq@faq', '/faq', '[data-screen="faq"] [data-faq-item]'),
+  // The FAQ as it first loads is Lane 0's '/faq@shell-site' state (the same markup); these reach its other states.
+  site('/faq@faq-privacy', '/faq', '[data-screen="faq"] [data-faq-item]', { open: ['[data-screen="faq"] .lf-choice-chip:nth-child(6)'] }),
   site('/faq@faq-open', '/faq', '[data-screen="faq"] [data-faq-item]',
-    { open: ['[data-faq-item="twoParents"] button', '[data-faq-item="deleteAccount"] button', '[data-faq-item="notTaught"] button'] }),
+    // The first answers, opened where the page loads: a press deeper down scrolls the list under the sticky
+    // site header, and the spacing rule would then measure the scroll position rather than the layout.
+    { open: ['[data-faq-item="whatIs"] button', '[data-faq-item="isFree"] button', '[data-faq-item="tryWithoutAccount"] button'] }),
   site('/legal/terms@terms', '/legal/terms', '[data-screen="legal-terms"] #c20'),
   site('/legal/privacy@privacy', '/legal/privacy', '[data-screen="legal-privacy"] [data-open="cookie-preferences"]'),
   // X2: a lazily loaded screen that failed; standalone, as the lesson player shows it.

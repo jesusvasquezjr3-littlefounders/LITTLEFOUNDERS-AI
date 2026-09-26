@@ -85,7 +85,7 @@ for (const locale of LOCALES) {
         // A visitor who has already made the cookie choice: the docked banner would otherwise cover the lower questions.
         await page.send('Network.setCookie', { name: 'lf_cc', value: 'denied', url: origin });
         await page.send('Page.navigate', { url: `${origin}/faq?lng=${locale}` });
-        const loaded = await until(`!!(${byText(faq.categories.privacy)})`);
+        const loaded = await until(`!!(${byText(faq.categories.privacy)})`, 1800); // a cold page on a loaded shared machine can take over a minute
         if (!loaded) { findings.push({ key, issue: 'faq-not-loaded' }); continue; }
         await page.evaluate(`localStorage.setItem('lf-theme', '${theme}'); document.documentElement.classList.toggle('dark', ${theme === 'dark'}); document.documentElement.style.fontSize='${16 * scale}px'`);
         await page.evaluate('document.fonts.ready');

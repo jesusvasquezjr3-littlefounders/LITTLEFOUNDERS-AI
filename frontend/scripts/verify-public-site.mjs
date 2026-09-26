@@ -123,7 +123,7 @@ try {
       await page.evaluate(spec ? sessionStorageScript({ guest: spec.guest, locale, theme }) : signedOutStorageScript({ locale, theme }));
       const url = new URL(entry.path, origin); url.searchParams.set('lng', locale);
       await page.send('Page.navigate', { url: url.toString() });
-      await waitFor(page, `document.querySelector('[data-shell="site"] [data-screen]') && document.documentElement.lang === ${JSON.stringify(locale)}`, `${where}: page`);
+      await waitFor(page, `document.querySelector('[data-shell="site"] [data-screen]') && document.documentElement.lang === ${JSON.stringify(locale)}`, `${where}: page`, 2400);
       if (text !== 100) await page.evaluate(`document.documentElement.style.fontSize = '${text}%'`);
       await page.evaluate('document.fonts.ready');
       await waitFor(page, "!document.documentElement.classList.contains('theme-transitioning')", `${where}: theme settled`);
