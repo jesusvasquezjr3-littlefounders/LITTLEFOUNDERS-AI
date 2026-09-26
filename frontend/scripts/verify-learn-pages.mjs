@@ -81,11 +81,14 @@ const CASES = [
     expect: `[ !!document.querySelector('.lf-state--error button') || 'retry offered' ]` },
   { id: 'course-linear', path: '/learn/financial-education', scenario: 'learn-home-child', band: '6-9',
     ready: '[data-screen="course-path"][data-engine="linear"] .lf-course-path-chapter-toggle',
-    expect: `(() => {
+    expect: `(async () => {
       const toggle = document.querySelector('.lf-course-path-chapter-toggle button');
       const closed = toggle?.getAttribute('aria-expanded') === 'false' && !document.querySelector('.lf-course-path-lessons');
       toggle?.click();
+      // React commits the opened chapter after the event; wait for it (at most 2 s).
+      for (let n = 0; n < 40 && !document.querySelector('.lf-course-path-lessons'); n++) await new Promise((done) => setTimeout(done, 50));
       return [
+        toggle?.getAttribute('aria-expanded') === 'true' || 'the toggle says the chapter is open',
         document.querySelector('.lf-course-path-hero a.lf-button--accent')?.getAttribute('href') === '/learn/lesson/l-needs-1' || 'hero opens the next lesson',
         closed || 'chapters start closed',
         document.querySelectorAll('.lf-course-path-lessons .lf-list-row--pressable').length === 3 || 'passed and current lessons open, the locked one does not',
