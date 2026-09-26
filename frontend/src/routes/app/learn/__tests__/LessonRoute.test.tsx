@@ -60,6 +60,11 @@ vi.mock('@/lesson-engine/player/LessonPlayer', () => ({
     </div>
   ),
 }));
+/* The Mentor stage renders its live 3D only where the renderer's device probe finds WebGL (Bible 08 §7). */
+vi.mock('@/tutor-scene/quality', () => ({
+  getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
+  pickInitialTier: () => 'medium',
+}));
 vi.mock('@/tutor-scene/TutorStage', () => ({
   TutorStage: (props: { scene?: string; character?: string }) => (
     <div data-testid="tutor-stage" data-scene={props.scene} data-character={props.character} />
@@ -237,7 +242,7 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
     await screen.findByRole('button', { name: 'Save: Add' });
-    expect(document.querySelector('.lf-mentor-band')?.getAttribute('aria-label')).toBe('zara');
+    expect(document.querySelector('.lf-mentor-band')?.getAttribute('data-mentor-character')).toBe('zara');
     expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-a');
   });
 

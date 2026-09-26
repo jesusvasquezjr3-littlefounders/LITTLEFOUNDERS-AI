@@ -111,6 +111,34 @@ export const ACTION_SECONDS: Record<CharacterAction, number> = {
 export const LOOPING_ACTIONS: ReadonlySet<CharacterAction> = new Set(['celebrate', 'dance', 'think']);
 
 /*
+ * REDUCED MOTION HOLDS A POSE; IT DOES NOT PLAY ONE (Frontend Bible 04 §3,
+ * 08 §7: "the character switches poses with a short cross-fade instead of
+ * animating. The idle loop stops. Every state stays visible").
+ *
+ * Dropping the action altogether would satisfy "no motion" and fail "every
+ * state stays visible": a thinking Mentor and a listening one would be the same
+ * picture. So a held action is shown at ONE representative frame and kept
+ * there: the peak of a gesture's arc for the one-shots and the loops, and the
+ * rest frame for the two actions that are travel (a jump held at its peak
+ * would leave the character hanging in the air). The caller also holds the
+ * clock, so the emotion posture and the authored clips stop too.
+ */
+export const HELD_ACTION_PROGRESS: Record<CharacterAction, number> = {
+  idle: 0,
+  jump: 0,
+  hop: 0,
+  wave: 0.5,
+  point: 0.5,
+  celebrate: 0.5,
+  nod: 0.5,
+  shake: 0.25,
+  think: 0.5,
+  dance: 0.25,
+  peek: 0.5,
+  bow: 0.5,
+};
+
+/*
  * Biped drivers. `p` is 0..1 through the action, `t` is absolute seconds.
  * Each returns the vertical lift it wants applied to the whole character,
  * because a jump is root motion and cannot be expressed as a bone rotation.

@@ -431,7 +431,7 @@ const SOURCES = {
   wire: 'oracle/src/ws/protocol.ts',
   coreBody: 'backend/src/routes/tutor.ts',
   coreRow: 'backend/src/services/tutorData.ts',
-  frontendWire: 'frontend/src/tutor/types.ts',
+  frontendWire: 'frontend/src/rebuild/mentor/session/types.ts',
 };
 
 /**
@@ -570,7 +570,7 @@ export function zodNestedKeys(source, name, field) {
  * The member of a TypeScript discriminated union whose `kind` is `kind`.
  *
  * Used for the two copies that are TYPES rather than schemas —
- * `frontend/src/tutor/types.ts`'s `TutorWhiteboardWire`, and (for the
+ * `frontend/src/rebuild/mentor/session/types.ts`'s `TutorWhiteboardWire`, and (for the
  * server-computed half only) `oracle/src/ws/protocol.ts`'s `WireWhiteboard`.
  */
 export function unionMemberKeys(source, typeName, kind) {
@@ -745,7 +745,7 @@ function main() {
     for (const p of problems) console.error(`  ✗ ${p}`);
     console.error(
       '\nEvery kind is written out by hand in oracle/turnSchema.ts, oracle/ws/protocol.ts,\n' +
-        'backend/routes/tutor.ts, backend/services/tutorData.ts and frontend/tutor/types.ts.\n' +
+        'backend/routes/tutor.ts, backend/services/tutorData.ts and frontend/rebuild/mentor/session/types.ts.\n' +
         'A missing copy does not throw: it loses the board silently on replay (Core rejects\n' +
         'the persist) or 400s the whole turn (the body union has no fallback member).\n' +
         'Deploy order for a NEW kind is Core BEFORE Oracle.',

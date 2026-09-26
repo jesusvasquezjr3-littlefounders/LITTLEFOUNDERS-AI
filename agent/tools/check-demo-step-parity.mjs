@@ -14,7 +14,7 @@
  * `TutorTurnDemonstrateStep` AND its OWN separate read-time revalidator
  * `DemonstrateStepRowSchema` (both in services/tutorData.ts — two copies in
  * ONE file, which can drift from each other as easily as from anywhere
- * else), and the frontend's wire type `TrayDemoStep` (tutor/types.ts). A verb
+ * else), and the frontend's wire type `TrayDemoStep` (rebuild/mentor/session/types.ts). A verb
  * or field added on one side and missed on another degrades SILENTLY: a step
  * naming an unknown field is dropped by whichever `.strict()` schema meets it
  * first, and a step naming a `kind` the frontend adapter does not recognise
@@ -44,7 +44,7 @@ const SITES = [
   { file: 'backend/src/routes/tutor.ts', anchor: 'const DemonstrateBody' },
   { file: 'backend/src/services/tutorData.ts', anchor: 'export interface TutorTurnDemonstrateStep' },
   { file: 'backend/src/services/tutorData.ts', anchor: 'const DemonstrateStepRowSchema' },
-  { file: 'frontend/src/tutor/types.ts', anchor: 'export interface TrayDemoStep' },
+  { file: 'frontend/src/rebuild/mentor/session/types.ts', anchor: 'export interface TrayDemoStep' },
 ];
 
 /**

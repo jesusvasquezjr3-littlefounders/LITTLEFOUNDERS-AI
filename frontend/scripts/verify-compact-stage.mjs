@@ -41,16 +41,17 @@ try {
       await page.send('Emulation.setDeviceMetricsOverride', { width: scenario.width, height: scenario.height, deviceScaleFactor: 1, mobile: scenario.width < 768 });
       await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scenario.dark ? 'dark' : 'light' }, { name: 'prefers-reduced-motion', value: scenario.reduced ? 'reduce' : 'no-preference' }] });
       await page.send('Page.navigate', { url: `${process.env.REBUILD_URL ?? 'http://127.0.0.1:5190'}/rebuild.html?locale=es-MX&theme=${scenario.dark ? 'dark' : 'light'}&screen=lesson&age=${scenario.age}&stage=1${scenario.lowPower ? '&lowPower=1' : ''}` });
-      for (let n = 0; n < 200; n++) {
+      for (let n = 0; n < 1200; n++) {
         if (page.errors.length) break;
-        if (await page.evaluate(scenario.reduced || scenario.lowPower ? "document.querySelector('.lf-mentor-band')?.dataset.renderMode === 'still' && !!document.querySelector('.lf-mentor-band-still')?.complete" : "!!document.querySelector('.lf-mentor-band canvas') && !document.querySelector('.lf-mentor-band-still')")) break;
+        // Low power: the still. Reduced motion: the same 3D with its poses held (Bible 08 §7). Otherwise: live 3D.
+        if (await page.evaluate(scenario.lowPower ? "document.querySelector('.lf-mentor-band')?.dataset.renderMode === 'still' && !!document.querySelector('.lf-mentor-band .lf-mentor-stage-still')?.complete" : "(!!document.querySelector('.lf-mentor-band canvas') && !document.querySelector('.lf-mentor-band .lf-mentor-stage-still')) || (document.querySelector('.lf-mentor-band')?.dataset.fallback === 'frame-rate' && document.querySelector('.lf-mentor-band .lf-mentor-stage-still')?.naturalWidth > 0)")) break;
         await new Promise((done) => setTimeout(done, 50));
       }
       await new Promise((done) => setTimeout(done, 800));
       const state = await page.evaluate(`(() => {
         const rect = (selector) => { const node = document.querySelector(selector); if (!node) return null; const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, bottom: r.bottom }; };
         const clippedLabels = [...document.querySelectorAll('.lf-learning-control .lf-stepper > *, .lf-learning-control .lf-stepper-value')].filter((node) => node.scrollWidth > node.clientWidth + 1).map((node) => node.textContent);
-        return { main: !!document.querySelector('.lf-learning'), canvas: !!document.querySelector('.lf-mentor-band canvas'), renderMode: document.querySelector('.lf-mentor-band')?.dataset.renderMode, stillLoaded: !!document.querySelector('.lf-mentor-band-still')?.naturalWidth, ready: !document.querySelector('.lf-mentor-band-still'), band: rect('.lf-mentor-band'), question: rect('.lf-learning-intro'), firstAnswer: rect('.lf-learning-control'), horizontalOverflow: document.documentElement.scrollWidth > innerWidth, clippedLabels, errors: window.__stageErrors ?? [] };
+        return { main: !!document.querySelector('.lf-learning'), canvas: !!document.querySelector('.lf-mentor-band canvas'), renderMode: document.querySelector('.lf-mentor-band')?.dataset.renderMode, fallback: document.querySelector('.lf-mentor-band')?.dataset.fallback ?? null, stillLoaded: !!document.querySelector('.lf-mentor-band .lf-mentor-stage-still')?.naturalWidth, ready: !document.querySelector('.lf-mentor-band .lf-mentor-stage-still'), band: rect('.lf-mentor-band'), question: rect('.lf-learning-intro'), firstAnswer: rect('.lf-learning-control'), horizontalOverflow: document.documentElement.scrollWidth > innerWidth, clippedLabels, errors: window.__stageErrors ?? [] };
       })()`);
       const shot = await page.send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(join(output, `${scenario.name}.png`), Buffer.from(shot.data, 'base64'));
@@ -58,7 +59,10 @@ try {
         const clip = await page.send('Page.captureScreenshot', { format: 'png', clip: { x: state.band.x, y: state.band.y, width: state.band.width, height: state.band.height, scale: 1 }, captureBeyondViewport: false });
         writeFileSync(join(output, `${scenario.name}-stage.png`), Buffer.from(clip.data, 'base64'));
       }
-      const rendered = scenario.reduced || scenario.lowPower ? state.renderMode === 'still' && !state.canvas && state.stillLoaded : state.renderMode === '3d' && state.canvas && state.ready;
+      const rendered = scenario.lowPower ? state.renderMode === 'still' && !state.canvas && state.stillLoaded
+        : (state.renderMode === (scenario.reduced ? 'held' : 'live') && state.canvas && state.ready)
+          // A software renderer under load cannot hold 30 fps: the stage then takes its still, as designed (08 §7).
+          || (state.renderMode === 'still' && state.fallback === 'frame-rate' && state.stillLoaded);
       const ok = state.main && rendered && state.band && state.firstAnswer && !state.horizontalOverflow && !state.clippedLabels.length
         && (scenario.width < 640 ? state.firstAnswer.y < scenario.height && state.band.height <= scenario.height * (scenario.age === '13-17' ? .15 : .3) : state.band.x < state.question.x)
         && !state.errors.length && !page.errors.length && !page.failedRequests.length;
@@ -68,7 +72,8 @@ try {
         for (let i = 0; i < 4; i++) await click('button[aria-label="Guardar: Añadir"]');
         for (let i = 0; i < 8; i++) await click('button[aria-label="Gastar: Añadir"]');
         await click('.lf-learning-actions .lf-button--accent');
-        if (!await page.evaluate("document.querySelector('.lf-mentor-band')?.dataset.mentorState === 'happy'")) failures++;
+        // A met answer: the neutral acknowledgment of 08 §11 (a quiet, happy pose), never a celebration.
+        if (!await page.evaluate("document.querySelector('.lf-mentor-band')?.dataset.mentorState === 'acknowledging' && document.querySelector('.lf-mentor-band')?.dataset.mentorEmotion === 'happy'")) failures++;
         await click('.lf-learning-actions .lf-button--accent');
         for (let i = 0; i < 12; i++) await click('button[aria-label="Gastar: Añadir"]');
         await click('.lf-learning-actions .lf-button--accent');

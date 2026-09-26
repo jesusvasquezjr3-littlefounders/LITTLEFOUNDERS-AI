@@ -6,7 +6,7 @@ import { expectBudgetedGroups, expectFits, flatten, namespaceCopy } from './budg
 describe('rebuild-mentor copy budget', () => {
   for (const [locale, strings] of namespaceCopy('mentor')) {
     it(`fits its budgets in ${locale}`, () => {
-      expectBudgetedGroups(strings, ['mentorCalibration', 'mentorSessionEnd', 'mentorCheckIn', 'mentorGoalCheck', 'mentorAllianceCheck', 'mentorProfile']);
+      expectBudgetedGroups(strings, ['mentorCalibration', 'mentorSessionEnd', 'mentorCheckIn', 'mentorGoalCheck', 'mentorAllianceCheck', 'mentorProfile', 'mentorStage']);
       for (const [key, text] of Object.entries(strings.mentorCalibration as Record<string, string>)) {
         const role = key === 'question' ? 'prompt' : ['youngest', 'middle', 'older', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `mentorCalibration.${key}`);
@@ -29,6 +29,11 @@ describe('rebuild-mentor copy budget', () => {
       for (const [key, text] of Object.entries(strings.mentorAllianceCheck as Record<string, string>)) {
         const role = key === 'question' ? 'prompt' : ['yes', 'partly', 'no'].includes(key) ? 'option' : key === 'retry' ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `mentorAllianceCheck.${key}`);
+      }
+      // Bible 08 §3/§7: the stage's accessible name, the character's name and what it is doing, for the youngest band.
+      const stage = strings.mentorStage as { label: string; states: Record<string, string> };
+      for (const [state, text] of Object.entries(stage.states)) {
+        expectFits(stage.label.replace('{name}', 'Dr. Rho').replace('{state}', text), 'body', locale, '6-9', `mentorStage.states.${state}`);
       }
       // C.7: the profile is read by a teen, an adult or a verified Tutor (13-17 budget, the stricter of the two).
       for (const [path, text] of flatten(strings.mentorProfile!)) {

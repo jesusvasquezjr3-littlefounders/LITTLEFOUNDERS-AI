@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { shotForPhase, STAGE_PHASES, type StagePhase } from '../phases';
-import { SHOT_IDS } from '@/tutor-scene/shots';
+import { MENTOR_SHOTS as SHOT_IDS } from '../vocabulary';
 
 /*
  * The phase-to-shot mapping, tested headless.

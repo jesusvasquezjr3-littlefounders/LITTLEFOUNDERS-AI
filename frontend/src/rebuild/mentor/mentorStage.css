@@ -1,0 +1,81 @@
+/*
+ * The Mentor stage (Frontend Bible 08). A full-bleed scene, never boxed in a
+ * card: no border, no radius, no shadow. The full size fills the area the
+ * screen gives it (08 §2, §6); the compact size is the lesson band, whose phone
+ * height comes from the register policy (B.23: 110, 96 or 80 px for 6-9, 10-12
+ * and 13+) and whose wide placement is the lesson layout's (learning/mentorStage.css).
+ */
+.lf-mentor-stage {
+  container: lf-mentor-stage / inline-size;
+  position: relative;
+  inline-size: 100%;
+  overflow: hidden;
+  background: var(--sky-soft);
+}
+.lf-mentor-stage--full { block-size: 100%; min-block-size: 0; }
+.lf-mentor-stage--compact { block-size: var(--lf-mentor-band-size, 96px); background: var(--primary); }
+
+.lf-mentor-stage-scene { position: absolute; inset: 0; }
+.lf-mentor-stage-live { position: absolute; inset: 0; opacity: 0; }
+.lf-mentor-stage-live[data-visible='true'] { opacity: 1; }
+.lf-mentor-stage-canvas { position: absolute !important; inset: 0; inline-size: 100%; block-size: 100%; overflow: hidden; }
+
+.lf-mentor-stage-still { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+.lf-mentor-stage-still--cover { object-fit: cover; object-position: center 38%; }
+/* A transparent avatar render stands on the scene colour, feet toward the floor of the stage. */
+.lf-mentor-stage-still--contain { object-fit: contain; object-position: center bottom; }
+.lf-mentor-stage-still[data-leaving='true'] { opacity: 0; }
+
+/*
+ * The board (08 §2 layer 4, §6): on a stage narrower than the desktop split it
+ * slides up over the lower stage. The scene then renders in the part of the
+ * stage the board leaves free, so the camera frames the whole character there
+ * (cropping the scene instead would cut off the head). The screen sets how much
+ * of the stage its board covers (`--lf-mentor-board-cover`). On the desktop
+ * split the board sits beside the stage and nothing changes.
+ */
+@container lf-mentor-stage (max-width: 1023px) {
+  .lf-mentor-stage--full[data-board='open'] > .lf-mentor-stage-scene { inset-block-end: var(--lf-mentor-board-cover, 40%); }
+}
+
+/* Only the 3D fading in over its still travels. */
+@media (prefers-reduced-motion: no-preference) {
+  .lf-mentor-stage-live, .lf-mentor-stage-still { transition: opacity var(--dur-component) var(--ease-standard); }
+}
+
+/*
+ * Reduced motion (08 §7): the character does not animate between poses; the
+ * scene fades down, the held pose changes, and it fades back up (a short
+ * cross-fade, no travel). The live 3D appearing over its still is the same
+ * brief cross-fade.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .lf-mentor-stage-live, .lf-mentor-stage-still, .lf-mentor-stage-scene { transition: opacity var(--dur-micro) linear; }
+  .lf-mentor-stage-scene[data-swap='out'] { opacity: 0.2; }
+}
+
+/*
+ * The Mentor screen's regions by width (08 §6): the stage is the dominant area
+ * and never smaller than the response area. Phone: stacked, the stage about
+ * 58% of the height. Tablet (600-1023 px): the stage keeps about half. Desktop
+ * (1024 px and up): the stage takes the left 7 of 12 columns, the speech plate,
+ * board and response area the right 5: an asymmetric split, never 50/50.
+ */
+.lf-mentor-layout {
+  display: grid;
+  grid-template-rows: minmax(0, 58fr) minmax(0, 42fr);
+  block-size: 100dvh;
+  background: var(--base);
+}
+.lf-mentor-layout-stage { min-block-size: 0; }
+.lf-mentor-layout-panel { min-block-size: 0; display: flex; flex-direction: column; gap: var(--spacing-2); padding: var(--spacing-6); background: var(--surface); color: var(--content); }
+.lf-mentor-layout-panel h1 { font: var(--type-headline); letter-spacing: var(--type-headline-tracking); }
+.lf-mentor-layout-panel p { font: var(--type-body); letter-spacing: var(--type-body-tracking); color: var(--content-muted); }
+@container app (min-width: 600px) {
+  .lf-mentor-layout { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@container app (min-width: 1024px) {
+  .lf-mentor-layout { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); }
+  .lf-mentor-layout-stage { grid-column: 1 / 8; }
+  .lf-mentor-layout-panel { grid-column: 8 / -1; }
+}

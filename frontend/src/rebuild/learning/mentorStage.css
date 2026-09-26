@@ -1,7 +1,9 @@
-/* The phone band height comes from the register policy (B.23): 110, 96 or 80 px for 6-9, 10-12 and 13+. */
-.lf-mentor-band { position: relative; inline-size: 100%; block-size: var(--lf-mentor-band-size, 96px); overflow: hidden; background: var(--primary); }
-.lf-mentor-band-still { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: center 38%; }
-.lf-mentor-band-canvas { position: absolute !important; inset: 0; inline-size: 100%; block-size: 100%; overflow: hidden; }
+/*
+ * The lesson layout's placement of the compact Mentor stage (Bible 08 §11). The
+ * stage's own look and phone band height live with the stage
+ * (mentor/mentorStage.css); on a wide container the band becomes the side
+ * column of 4 of 12 columns, left of the question.
+ */
 @container app (min-width: 640px) {
   .lf-learning--with-stage .lf-learning-inner { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--spacing-6); align-items: start; }
   .lf-learning--with-stage .lf-learning-top { grid-column: 1 / -1; }

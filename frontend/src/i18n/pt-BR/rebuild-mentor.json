@@ -97,5 +97,19 @@
     "resetting": "Redefinindo",
     "resetDone": "Perfil redefinido.",
     "resetFailed": "Não redefiniu. Tente de novo."
+  },
+  "mentorStage": {
+    "label": "{name}, {state}",
+    "states": {
+      "idle": "esperando",
+      "listening": "ouvindo",
+      "thinking": "pensando",
+      "speaking": "falando",
+      "demonstrating": "mostrando para você",
+      "encouraging": "te animando",
+      "celebrating": "comemorando",
+      "closing": "se despedindo",
+      "acknowledging": "sorrindo"
+    }
   }
 }

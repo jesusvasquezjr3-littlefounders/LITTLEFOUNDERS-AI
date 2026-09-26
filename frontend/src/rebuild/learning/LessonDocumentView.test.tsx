@@ -21,6 +21,11 @@ import { functionMachinePilotDocument } from './FunctionMachineBoard';
 import { cpaFadingPilotDocument } from './CpaFadingBoard';
 import { PREVIEW_MENTOR_STAGE } from '../preview/Preview';
 
+/* The Mentor stage renders its live 3D only where the renderer's device probe finds WebGL (Bible 08 §7). */
+vi.mock('../../tutor-scene/quality', () => ({
+  getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
+  pickInitialTier: () => 'medium',
+}));
 vi.mock('../../tutor-scene/TutorStage', () => ({
   TutorStage: (props: { scene?: string; character?: string }) => (
     <div data-testid="tutor-stage" data-scene={props.scene} data-character={props.character} />
@@ -661,7 +666,8 @@ describe('compact Mentor stage projection', () => {
       mentorStage={{ character: 'zara', scene: 'diorama-b' }} />);
     const band = document.querySelector('.lf-mentor-band');
     expect(band).toBeTruthy();
-    expect(band!.getAttribute('aria-label')).toBe('zara');
+    // Decorative in a lesson (the prompt label carries the Mentor's name): no accessible name of its own.
+    expect(band!.getAttribute('aria-hidden')).toBe('true');
     expect(band!.getAttribute('data-mentor-character')).toBe('zara');
     expect(band!.getAttribute('data-mentor-scene')).toBe('diorama-b');
     expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-character', 'zara');

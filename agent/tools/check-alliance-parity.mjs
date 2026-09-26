@@ -19,7 +19,7 @@
  *   Core     backend/src/services/pedagogy/alliance.ts     the same, as zod bodies
  *            backend/src/services/pedagogy/disposition.ts  the profile vocabularies and projection
  *   DB       database/migrations/*_mentor_alliance_and_disposition.sql  CHECKs
- *   Client   frontend/src/tutor/types.ts               the two socket frames
+ *   Client   frontend/src/rebuild/mentor/session/types.ts               the two socket frames
  *            frontend/src/rebuild/mentor/allianceApi.ts the bond-proxy answers and profile labels
  *
  * A drift fails in the worst direction: Core's strict body refuses the close
@@ -44,7 +44,7 @@ export const FILES = {
   oracleProtocol: 'oracle/src/ws/protocol.ts',
   coreAlliance: 'backend/src/services/pedagogy/alliance.ts',
   coreDisposition: 'backend/src/services/pedagogy/disposition.ts',
-  clientTypes: 'frontend/src/tutor/types.ts',
+  clientTypes: 'frontend/src/rebuild/mentor/session/types.ts',
   clientApi: 'frontend/src/rebuild/mentor/allianceApi.ts',
 };
 

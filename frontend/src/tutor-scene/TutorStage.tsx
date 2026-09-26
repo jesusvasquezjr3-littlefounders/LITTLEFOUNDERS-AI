@@ -139,6 +139,13 @@ export interface TutorStageProps {
    */
   onQuality?: TutorSceneProps['onQuality'];
   /**
+   * The renderer's live counters (frame rate, tier, draw calls), about once a
+   * second. Forwarded verbatim to `TutorScene`. The rebuilt Mentor stage reads
+   * the frame rate to keep its 30 fps floor (Frontend Bible 08 §7): a device
+   * that cannot hold it at the lowest tier gets the still fallback.
+   */
+  onStats?: TutorSceneProps['onStats'];
+  /**
    * Fires when the browser REFUSES to play a line, and again when it stops
    * refusing.
    *
@@ -191,6 +198,7 @@ export function TutorStage({
   audition = null,
   onReady,
   onQuality,
+  onStats,
   onSpeechBlocked,
   onAudioElementReady,
 }: TutorStageProps) {
@@ -318,6 +326,7 @@ export function TutorStage({
         audition={audition}
         onReady={onReady}
         onQuality={onQuality}
+        onStats={onStats}
       />
     </>
   );

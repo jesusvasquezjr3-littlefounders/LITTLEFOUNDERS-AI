@@ -4,11 +4,12 @@ import { GoalCheckChoice } from '../../mentor/GoalCheck';
 import { AllianceCheck } from '../../mentor/AllianceCheck';
 import { DispositionSummary } from '../../mentor/DispositionSummary';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
-import { framed, type PreviewRegistry } from './types';
+import { MentorStagePreview } from '../../mentor/MentorStagePreview';
+import { framed, standalone, type PreviewRegistry } from './types';
 
 /*
- * Lane 3 (mentor): the Mentor's session surfaces. The Mentor stage itself
- * (Bible 08) registers here when it is built.
+ * Lane 3 (mentor): the Mentor stage (Bible 08) and the Mentor's session
+ * surfaces.
  */
 
 /** C.7 preview fixture: a profile with every row populated (closed labels only). */
@@ -29,6 +30,8 @@ const PREVIEW_PROFILE: DispositionSummaryData = {
 const SCRIPTS = ['completed', 'interrupted', 'learner_left', 'safety_stop'];
 
 export const mentorPreviewScreens: PreviewRegistry = {
+  /* W2M.1: the one Mentor stage at full size, in the Mentor screen's stage region (08 §6, §7); see MentorStagePreview. */
+  'mentor-stage': standalone(({ locale, theme, ageBand, params }) => <MentorStagePreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
   'mentor-session-end': framed(({ t, locale, theme, params, go }) => <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
     data-screen="mentor-session-end"><div className="lf-preview-content">
     {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}

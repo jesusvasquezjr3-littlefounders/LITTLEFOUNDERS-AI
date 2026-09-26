@@ -159,7 +159,10 @@ export function structuralFindings(path, text) {
     if (/role=["']dialog["']|aria-modal/.test(code) && !ownEscape && !sharedEscape) {
       findings.push({ item: 'DP-03', where: path, message: 'a dialog without Escape and a close handler' });
     }
-    if (/\bleaderboards?\b|\branking\b/i.test(code)) findings.push({ item: 'DP-05', where: path, message: 'a leaderboard or ranking in rebuilt UI' });
+    // The Mentor whiteboard's `ranking` instrument (the wire types, ported from tutor/types.ts in W2M.1) orders the
+    // items of a money problem, which is the skill practised: it ranks no person. Only that one literal is exempt.
+    const people = code.replace(/\bkind:\s*['"]ranking['"]/g, '');
+    if (/\bleaderboards?\b|\branking\b/i.test(people)) findings.push({ item: 'DP-05', where: path, message: 'a leaderboard or ranking in rebuilt UI' });
     if (/\b(hearts|livesLeft|lives_left|heartCount)\b/.test(code)) findings.push({ item: 'DP-07', where: path, message: 'a lives or hearts counter in rebuilt UI' });
     if (SAD_EMOTION.test(code)) findings.push({ item: 'SH-02', where: path, message: 'a sad or disappointed character state' });
   }

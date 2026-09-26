@@ -97,5 +97,19 @@
     "resetting": "Resetting",
     "resetDone": "Profile reset.",
     "resetFailed": "That did not reset. Try again."
+  },
+  "mentorStage": {
+    "label": "{name}, {state}",
+    "states": {
+      "idle": "waiting",
+      "listening": "listening",
+      "thinking": "thinking",
+      "speaking": "talking",
+      "demonstrating": "showing you",
+      "encouraging": "cheering you on",
+      "celebrating": "celebrating",
+      "closing": "saying goodbye",
+      "acknowledging": "smiling"
+    }
   }
 }

@@ -13,7 +13,7 @@
  *   Core     backend/src/services/pedagogy/behavioralTelemetry.ts  the same, as zod
  *                                                     bodies, plus CONTEXT_OPTIONAL_FIELDS
  *   DB       database/migrations/*_mentor_behavioral_telemetry.sql  columns and CHECKs
- *   Client   frontend/src/tutor/types.ts             the two socket frames
+ *   Client   frontend/src/rebuild/mentor/session/types.ts             the two socket frames
  *
  * A drift fails in the worst direction for these metrics: Core's strict body
  * refuses the close (a 400 — the session row stays open), a firing lands in a
@@ -34,7 +34,7 @@ export const FILES = {
   oracleClient: 'oracle/src/core/client.ts',
   oracleProtocol: 'oracle/src/ws/protocol.ts',
   core: 'backend/src/services/pedagogy/behavioralTelemetry.ts',
-  clientTypes: 'frontend/src/tutor/types.ts',
+  clientTypes: 'frontend/src/rebuild/mentor/session/types.ts',
 };
 
 const quoted = (text) => [...text.matchAll(/'([A-Za-z_]+)'/g)].map((m) => m[1]);

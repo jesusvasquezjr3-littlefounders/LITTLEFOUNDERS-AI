@@ -97,5 +97,19 @@
     "resetting": "Reiniciando",
     "resetDone": "Perfil reiniciado.",
     "resetFailed": "No se reinició. Intenta de nuevo."
+  },
+  "mentorStage": {
+    "label": "{name}, {state}",
+    "states": {
+      "idle": "esperando",
+      "listening": "escuchando",
+      "thinking": "pensando",
+      "speaking": "hablando",
+      "demonstrating": "mostrándote",
+      "encouraging": "animándote",
+      "celebrating": "celebrando",
+      "closing": "despidiéndose",
+      "acknowledging": "sonriendo"
+    }
   }
 }

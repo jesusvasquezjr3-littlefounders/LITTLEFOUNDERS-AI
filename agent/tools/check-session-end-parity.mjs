@@ -13,7 +13,7 @@
  *                                                  SessionEndEventBody and CLOSE_REASONS
  *            backend/src/routes/tutor.ts          CloseBody.closeReason
  *   DB       database/migrations/*_mentor_session_end_and_closing.sql  the CHECKs
- *   Client   frontend/src/tutor/types.ts, frontend/src/rebuild/mentor/SessionEnd.tsx
+ *   Client   frontend/src/rebuild/mentor/session/types.ts, frontend/src/rebuild/mentor/SessionEnd.tsx
  *
  * A drift fails in the worst direction for these metrics: Core's validator
  * refuses the close's new fields (the close is REFUSED — a 400), or the
@@ -33,7 +33,7 @@ export const FILES = {
   oracleClient: 'oracle/src/core/client.ts',
   core: 'backend/src/services/pedagogy/sessionEnd.ts',
   coreRoute: 'backend/src/routes/tutor.ts',
-  clientTypes: 'frontend/src/tutor/types.ts',
+  clientTypes: 'frontend/src/rebuild/mentor/session/types.ts',
   clientRebuild: 'frontend/src/rebuild/mentor/SessionEnd.tsx',
 };
 
