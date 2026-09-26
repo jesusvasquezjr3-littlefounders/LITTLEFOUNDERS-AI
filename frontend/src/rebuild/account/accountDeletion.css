@@ -1,6 +1,7 @@
 .lf-rebuild.lf-account-deletion { display: grid; gap: var(--spacing-4); align-content: start; }
 .lf-rebuild.lf-account-deletion--card { min-block-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-lg); }
 .lf-rebuild.lf-account-deletion--screen { align-content: center; padding: var(--spacing-8) var(--spacing-4); max-inline-size: 40rem; margin-inline: auto; }
+.lf-account-deletion--state { display: grid; gap: var(--spacing-4); }
 .lf-account-deletion p { overflow-wrap: anywhere; }
 .lf-account-deletion-children { display: grid; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--warning-soft); color: var(--content); }
 .lf-account-deletion-details { border-radius: var(--rounded-md); background: var(--sunken); }

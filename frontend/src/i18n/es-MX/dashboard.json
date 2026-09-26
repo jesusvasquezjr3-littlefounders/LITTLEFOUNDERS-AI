@@ -1,24 +1,16 @@
 {
-  "navLabel": "Secciones de la app",
   "openCta": "Mi tablero",
   "continueCta": "Continúa donde lo dejaste",
-  "logout": "Cerrar sesión",
   "tutorBadge": "Tutor",
   "nav": {
     "learn": "Aprende",
-    "tutor": "Tutor IA",
     "tasks": "Tareas",
     "banking": "Banca Digital",
-    "lockedBadge": "Tutor",
-    "lockedHint": "Verifica tu identidad para desbloquear esto como Tutor — toca para empezar",
     "profile": "Perfil",
     "family": "Familia",
-    "wallet": "Cartera",
-    "lockedTeenHint": "Las tareas necesitan a tu mamá o papá vinculado. Toca para abrir tu cartera."
+    "wallet": "Cartera"
   },
   "upgrade": {
-    "title": "Plan familiar",
-    "body": "Verifica tu identidad para convertirte en Tutor: administra a tu familia y asigna tareas con recompensas.",
     "cta": "Convertirme en Tutor"
   },
   "learn": {
@@ -48,9 +40,5 @@
       "title": "Tareas y recompensas",
       "body": "Asigna tareas del mundo real a tus hijos y recompénsalos cuando las cumplan. Este espacio está en construcción."
     }
-  },
-  "sidebar": {
-    "collapse": "Contraer menú",
-    "expand": "Expandir menú"
   }
 }

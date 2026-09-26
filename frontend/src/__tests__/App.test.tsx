@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from '@/App';
 import i18n from '@/i18n';
@@ -19,13 +19,15 @@ beforeEach(async () => {
 });
 
 describe('Marketing site', () => {
-  it('gives the mobile header CTA one named link without nested interactive controls', () => {
+  it('gives the header CTA one named link without nested interactive controls', () => {
     renderApp('/faq');
     const header = screen.getByRole('banner');
-    const mobileCta = header.querySelector('a.md\\:hidden[aria-label]');
-    expect(mobileCta).not.toBeNull();
-    expect(mobileCta).toHaveAccessibleName();
-    expect(mobileCta?.querySelector('button')).toBeNull();
+    const cta = within(header).getByRole('link', { name: 'Sign up' });
+    expect(cta).toHaveAttribute('href', '/signup');
+    expect(cta.querySelector('button, a')).toBeNull();
+    // The rebuilt site shell (W2), not the legacy marketing header.
+    expect(header.closest('[data-shell="site"]')).not.toBeNull();
+    expect(document.querySelector('.lf-marketing-header, img[src*="logo-main"]')).toBeNull();
   });
 
   it('renders the landing page with its marketing narrative and CTA', () => {
@@ -135,12 +137,14 @@ describe('Marketing site', () => {
 
   it('top nav links to the three marketing pages', () => {
     renderApp();
-    for (const name of ['How it works', 'Families', 'FAQ']) {
-      expect(screen.getAllByRole('link', { name }).length).toBeGreaterThan(0);
+    for (const [name, href] of [['How it works', '/how-it-works'], ['For families', '/families'], ['FAQ', '/faq']]) {
+      const links = within(screen.getByRole('banner')).getAllByRole('link', { name });
+      expect(links.length).toBeGreaterThan(0);
+      for (const link of links) expect(link).toHaveAttribute('href', href);
     }
   });
 
-  it('footer has legal links, a big logo, and the contact email', () => {
+  it('footer has legal links, the cookie preferences and the contact email', () => {
     renderApp();
     expect(screen.getByRole('link', { name: 'Terms & Conditions' })).toHaveAttribute(
       'href',
@@ -207,13 +211,14 @@ describe('Marketing site', () => {
     expect(screen.queryByText('Courses are coming soon!')).not.toBeInTheDocument();
   });
 
-  it('theme toggle offers auto/light/dark and switches to dark', () => {
+  it('theme choice offers auto/light/dark and switches to dark, on the page and on the rebuilt shell', () => {
     renderApp();
     expect(document.documentElement.classList.contains('dark')).toBe(false);
-    fireEvent.click(screen.getAllByRole('button', { name: 'Dark' })[0]!);
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
     expect(document.documentElement.classList.contains('dark')).toBe(true);
-    expect(screen.getAllByRole('button', { name: 'Match system' }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('button', { name: 'Light' }).length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-shell="site"]')?.closest('[data-theme]')).toHaveAttribute('data-theme', 'dark');
+    expect(screen.getByRole('radio', { name: 'Match system' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Light' })).toBeInTheDocument();
   });
 
   /*
@@ -325,13 +330,11 @@ describe('Marketing site', () => {
     expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('language switcher is a custom dropdown (no native select) and switches locale', async () => {
+  it('the language choice names each language in itself and switches locale', async () => {
     renderApp();
-    expect(document.querySelector('select')).not.toBeInTheDocument();
-
-    const trigger = screen.getByRole('button', { name: /Language:/ });
-    fireEvent.click(trigger);
-    fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
+    const language = screen.getByRole('combobox', { name: 'Language' });
+    expect(within(language).getAllByRole('option').map((option) => option.textContent)).toEqual(['English', 'Español', 'Português']);
+    fireEvent.change(language, { target: { value: 'es-MX' } });
 
     // Again the bundle rather than a literal: what this test is for is that the
     // switch actually re-renders in the chosen locale, not what the Spanish

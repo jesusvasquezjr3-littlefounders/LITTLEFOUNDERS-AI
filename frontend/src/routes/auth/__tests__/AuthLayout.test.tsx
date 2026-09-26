@@ -47,26 +47,26 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     expect(screen.queryByRole('link', { name: 'Terms & Conditions' })).not.toBeInTheDocument();
   });
 
-  it('has a way back to home (the logo links to /)', () => {
+  it('has a way back to home (the wordmark and the Home link go to /)', () => {
     renderApp('/login');
     expect(screen.getByRole('link', { name: 'LittleFounders' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
   });
 
-  it('offers the language switcher and switches locale', async () => {
+  it('offers the language switcher in the sign-in shell footer and switches locale', async () => {
     renderApp('/login');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Language: English' }));
-    fireEvent.click(await screen.findByRole('option', { name: 'Spanish' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Language' }), { target: { value: 'es-MX' } });
 
     expect(await screen.findByRole('heading', { name: 'Hola de nuevo' })).toBeInTheDocument();
   });
 
-  it('offers the theme toggle and applies the stored theme on load', () => {
+  it('offers the theme choice at every width and applies the stored theme on load', () => {
     localStorage.setItem('lf-theme', 'dark');
     renderApp('/login');
 
     expect(document.documentElement.classList.contains('dark')).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Light' }));
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 });

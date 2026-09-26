@@ -1,24 +1,16 @@
 {
-  "navLabel": "App sections",
   "openCta": "My dashboard",
   "continueCta": "Continue where you left off",
-  "logout": "Sign out",
   "tutorBadge": "Tutor",
   "nav": {
     "learn": "Learn",
-    "tutor": "AI Tutor",
     "tasks": "Tasks",
     "banking": "Banking",
-    "lockedBadge": "Tutor",
-    "lockedHint": "Verify your identity to unlock this as a Tutor — tap to start",
     "profile": "Profile",
     "family": "Family",
-    "wallet": "Wallet",
-    "lockedTeenHint": "Tasks need a linked parent. Tap to open your wallet."
+    "wallet": "Wallet"
   },
   "upgrade": {
-    "title": "Family plan",
-    "body": "Verify your identity to become a Tutor: manage your family and assign tasks with rewards.",
     "cta": "Become a Tutor"
   },
   "learn": {
@@ -48,9 +40,5 @@
       "title": "Tasks & rewards",
       "body": "Assign real-world tasks to your kids and reward them when they deliver. This space is being built."
     }
-  },
-  "sidebar": {
-    "collapse": "Collapse menu",
-    "expand": "Expand menu"
   }
 }

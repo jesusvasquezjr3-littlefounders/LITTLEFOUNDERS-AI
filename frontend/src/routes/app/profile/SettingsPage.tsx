@@ -1,4 +1,5 @@
 import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
+import { SessionPreferencesSetting } from '@/app-shell/SessionPreferencesSetting';
 import { AccountDeletionSetting } from './AccountDeletionSetting';
 import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { useEffect, useId, useState, type FormEvent } from 'react';
@@ -125,7 +126,7 @@ export function SettingsPage() {
       setErrorCode(error.code);
       return;
     }
-    await refreshMe(); // AppLayout re-syncs i18n to the stored locale
+    await refreshMe(); // the app shell (app-shell/AppLayouts) re-syncs i18n to the stored locale
     void i18n.changeLanguage(locale);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -225,6 +226,8 @@ export function SettingsPage() {
 
       <TeenAnalyticsSetting />
       <TeenMemoryReviewSetting />
+      {/* The mode and sign-out, moved here from the legacy app shell (W2 Lane 0); keep them when Settings is rebuilt. */}
+      <SessionPreferencesSetting />
 
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 grid gap-6 lg:grid-cols-2">
         {errorCode && <div className="lg:col-span-2"><ErrorBanner code={errorCode} /></div>}

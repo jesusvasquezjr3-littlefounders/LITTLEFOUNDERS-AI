@@ -33,12 +33,18 @@ body { margin: 0; }
 }
 .lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: none; }
 .lf-rebuild *, .lf-rebuild *::before, .lf-rebuild *::after { box-sizing: border-box; }
-.lf-rebuild h1, .lf-rebuild h2, .lf-rebuild p { margin: 0; }
-.lf-rebuild h1 { font: 700 1.75rem/1.12 Fredoka, sans-serif; letter-spacing: -.005em; text-wrap: balance; }
-.lf-rebuild h2 { font: 600 1.5rem/1.25 Fredoka, sans-serif; text-wrap: balance; }
-.lf-rebuild p { max-inline-size: 30em; hyphens: auto; overflow-wrap: break-word; text-wrap: pretty; }
-.lf-rebuild button, .lf-rebuild input, .lf-rebuild select { font: inherit; }
-.lf-rebuild :is(button, input, select):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
+/*
+ * Element rules. Each skips a legacy page body mounted inside a rebuilt shell
+ * (`[data-legacy-body]`, see the bridge section at the end) and applies again
+ * to a rebuilt root nested inside that body. `:where()` keeps each selector's
+ * specificity exactly what `.lf-rebuild h1` had.
+ */
+.lf-rebuild :is(h1, h2, p):not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild :is(h1, h2, p) { margin: 0; }
+.lf-rebuild h1:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild h1 { font: 700 1.75rem/1.12 Fredoka, sans-serif; letter-spacing: -.005em; text-wrap: balance; }
+.lf-rebuild h2:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild h2 { font: 600 1.5rem/1.25 Fredoka, sans-serif; text-wrap: balance; }
+.lf-rebuild p:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild p { max-inline-size: 30em; hyphens: auto; overflow-wrap: break-word; text-wrap: pretty; }
+.lf-rebuild :is(button, input, select):not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild :is(button, input, select) { font: inherit; }
+.lf-rebuild :is(button, input, select):focus-visible:not(:where([data-legacy-body] *)), :where([data-legacy-body]) .lf-rebuild :is(button, input, select):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
 .lf-button {
   display: inline-flex;
   align-items: center;
@@ -128,3 +134,21 @@ body { margin: 0; }
   .lf-button { transition: none; }
 }
 .lf-rebuild .ugc { overflow-wrap: anywhere; hyphens: none; min-inline-size: 0; }
+
+/*
+ * Bridge (W2 Lane 0, transitional): a legacy page body mounted inside a
+ * rebuilt shell on a real route (app-shell/ShellRoot.tsx `LegacyBody`,
+ * `[data-legacy-body]`) until its wave-2 lane rebuilds it (OD-15). The element
+ * rules above skip that subtree; here it gets back the legacy body's own
+ * weight, line height and tracking (its family and colour come from its
+ * utility classes), and the shell hands it the whole content area, because
+ * the body carries the padding and container width the legacy layouts gave
+ * it. Delete this section with the last legacy body.
+ */
+.lf-rebuild [data-legacy-body] { font-weight: 400; line-height: 1.5; letter-spacing: normal; }
+.lf-rebuild .lf-shell-main:has(> [data-legacy-body]) { gap: 0; padding: 0; }
+.lf-rebuild .lf-auth-column:has(> [data-legacy-body]) { max-inline-size: none; padding: 0; background: none; box-shadow: none; }
+
+/* The mounted shells' footers: the legal links, the cookie preferences, a visitor's language and mode. */
+.lf-rebuild [data-shell-footer-links] { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-5); }
+.lf-rebuild [data-shell-preferences] { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacing-4) var(--spacing-6); }

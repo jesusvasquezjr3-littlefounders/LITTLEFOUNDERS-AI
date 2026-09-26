@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 import { Button, Icon, SectionHeading } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';

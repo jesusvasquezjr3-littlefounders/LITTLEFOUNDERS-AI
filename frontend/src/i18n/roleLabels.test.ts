@@ -50,7 +50,7 @@ import esDashboard from './es-MX/dashboard.json';
 import ptDashboard from './pt-BR/dashboard.json';
 
 type AdminBundle = { analytics: { usage: { surfaces: { tutor: string } } }; insights: { surfaces: { tutor: string } } };
-type DashboardBundle = { nav: { tutor: string } };
+type DashboardBundle = { nav: Record<string, string> };
 type CommonBundle = { roles: { parent: string } };
 
 const LOCALES: Record<string, { common: CommonBundle; admin: AdminBundle; dashboard: DashboardBundle }> = {
@@ -70,9 +70,9 @@ describe('the parent role label vs. the AI-Tutor feature label', () => {
     expect(common.roles.parent).not.toBe(admin.insights.surfaces.tutor);
   });
 
-  it.each(Object.keys(LOCALES))('%s: roles.parent does not equal the main app nav AI-Tutor label', (locale) => {
-    const { common, dashboard } = LOCALES[locale]!;
-    expect(common.roles.parent).not.toBe(dashboard.nav.tutor);
+  it.each(Object.keys(LOCALES))('%s: the main app nav has no AI-Tutor label any more (W2: the learner shell names the chosen Mentor, OD-6)', (locale) => {
+    const { dashboard } = LOCALES[locale]!;
+    expect(dashboard.nav).not.toHaveProperty('tutor');
   });
 
   /*

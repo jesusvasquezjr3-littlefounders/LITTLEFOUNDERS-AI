@@ -56,12 +56,16 @@ describe('Auth screen recipe', () => {
     expect(shell).not.toMatch(/auth-bg/);
   });
 
-  it('the utility row carries the theme control at EVERY width', () => {
-    const layout = readFileSync(join(AUTH_DIR, 'AuthLayout.tsx'), 'utf8');
-    expect(layout).toMatch(/<ThemeToggle\s*\/>/);
-    // It shipped `hidden sm:inline-flex`, so a phone lost the only theme
-    // control the rest of the product offers everywhere.
-    expect(layout).not.toMatch(/ThemeToggle[^/]*hidden/);
+  it('the sign-in shell carries the theme control at EVERY width', () => {
+    // W2: the auth chrome is the rebuilt AuthShell (app-shell/PublicLayouts.tsx); its footer holds the
+    // language and theme choices. The legacy row shipped `hidden sm:inline-flex`, so a phone lost the only
+    // theme control the rest of the product offers everywhere: nothing here may hide it by width.
+    const layout = readFileSync(join(process.cwd(), 'src', 'app-shell', 'PublicLayouts.tsx'), 'utf8');
+    const authLayout = layout.slice(layout.indexOf('export function AuthLayout'));
+    expect(authLayout).toMatch(/footer=\{<Preferences \/>\}/);
+    const preferences = layout.slice(layout.indexOf('function Preferences'), layout.indexOf('function SiteFooter'));
+    expect(preferences).toMatch(/<SegmentedControl<ThemeChoice>/);
+    expect(preferences).not.toMatch(/hidden/);
     expect(layout).not.toMatch(/auth-bg/);
   });
 });

@@ -197,5 +197,82 @@
     "roleLearner": "Estudante",
     "statusActive": "Ativo",
     "statusInvited": "Convidado"
+  },
+  "appShell": {
+    "skip": "Ir para o conteúdo",
+    "navigation": "Principal",
+    "menu": "Menu",
+    "close": "Fechar",
+    "dismiss": "Fechar aviso",
+    "mentor": "Mentor",
+    "tutorRole": "Tutor",
+    "staffRole": "Equipe",
+    "nav": {
+      "learn": "Aprender",
+      "tasks": "Tarefas",
+      "wallet": "Carteira",
+      "familyCoins": "Moedas da família",
+      "coins": "Moedas",
+      "profile": "Perfil",
+      "family": "Família",
+      "becomeTutor": "Seja Tutor",
+      "staff": "Equipe",
+      "backToApp": "Voltar ao app"
+    },
+    "staff": {
+      "overview": "Visão geral",
+      "content": "Conteúdo",
+      "users": "Usuários",
+      "emails": "E-mails",
+      "analytics": "Analytics e Saúde",
+      "intel": "Inteligência de aprendizagem",
+      "generation": "Geração",
+      "audit": "Registro de auditoria",
+      "reports": "Denúncias",
+      "roles": "Papéis e acesso"
+    }
+  },
+  "siteShell": {
+    "howItWorks": "Como funciona",
+    "families": "Para famílias",
+    "faq": "Perguntas frequentes",
+    "login": "Entrar",
+    "signup": "Cadastre-se",
+    "openApp": "Abrir o app",
+    "home": "Início",
+    "legal": "Legal",
+    "terms": "Termos e Condições",
+    "privacy": "Aviso de Privacidade",
+    "cookies": "Preferências de cookies",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themeAuto": "Igual ao sistema",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "rights": "Todos os direitos reservados.",
+    "pageTitle": {
+      "login": "Entrar",
+      "signup": "Criar conta",
+      "forgotPassword": "Recupere sua senha",
+      "resetPassword": "Escolha uma nova senha",
+      "verifyParent": "Seja Tutor",
+      "callback": "Entrando"
+    }
+  },
+  "notFound": {
+    "title": "Não encontramos essa página",
+    "body": "O link pode estar velho ou errado. Não é culpa sua.",
+    "backToLearn": "Minhas lições",
+    "backHome": "Página inicial",
+    "goBack": "Voltar"
+  },
+  "sessionPreferences": {
+    "title": "Neste dispositivo",
+    "theme": "Tema",
+    "themeAuto": "Igual ao sistema",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "signOut": "Sair",
+    "signingOut": "Saindo"
   }
 }

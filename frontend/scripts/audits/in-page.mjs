@@ -6,8 +6,10 @@
  * Port notes (reference → rebuilt app):
  *   - Scope: every `.lf-rebuild` root on the page (the surface root and each
  *     body-level overlay host), instead of the mockup's `#app`. On a route of
- *     the real application this skips the legacy chrome around the rebuilt
- *     surface, which is not ours to audit here.
+ *     the real application whose shell is rebuilt (W2), the legacy page body
+ *     inside the shell (`[data-legacy-body]`) is skipped until its lane
+ *     rebuilds it; a rebuilt root nested inside that body is measured again.
+ *     Page-level horizontal scroll is still read for the whole document.
  *   - Text fit (text-fit-audit.reference.mjs): the same per-element checks —
  *     ellipsis, line-clamp, text clipped by `overflow`, text outside the
  *     viewport, a word wider than its box (canvas-measured), targets under
@@ -26,6 +28,8 @@
  */
 export function installAudit() {
   const ROOTS = () => [...document.querySelectorAll('.lf-rebuild')].filter((root) => !root.parentElement?.closest('.lf-rebuild'));
+  // Inside a legacy page body, unless a rebuilt root nested in that body is nearer.
+  const legacy = (el) => { const mark = el?.closest?.('[data-legacy-body], .lf-rebuild'); return !!mark && mark.hasAttribute('data-legacy-body'); };
   let hiddenCache = new WeakMap();
   const fresh = () => { hiddenCache = new WeakMap(); };
   const isHidden = (el) => {
@@ -46,7 +50,7 @@ export function installAudit() {
     return `${cls} "${(el.textContent || '').trim().slice(0, 32)}"`;
   };
   const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-  const all = () => ROOTS().flatMap((root) => [root, ...root.querySelectorAll('*')]).filter((el) => !el.closest('svg') || el.tagName.toLowerCase() === 'svg');
+  const all = () => ROOTS().flatMap((root) => [root, ...root.querySelectorAll('*')]).filter((el) => (!el.closest('svg') || el.tagName.toLowerCase() === 'svg') && !legacy(el));
   const words = (t) => (t.trim().match(/[\p{L}\p{N}][\p{L}\p{N}'’.,%$-]*/gu) || []).length;
   const sentences = (t) => t.replace(/\b(Dr|Mr|Mrs|Ms|Sr|Sra|Srta|St)\./g, '$1').trim()
     .split(/(?<=[\p{L}\p{N}]{2}[.!?…]|[.!?…]["”])\s+(?=[\p{Lu}¿¡"“])/u).filter((s) => words(s) > 0).length;
@@ -85,7 +89,7 @@ export function installAudit() {
     }
     for (const root of ROOTS()) for (const b of root.querySelectorAll('button,a[href],input,select,textarea,[role=button],[role=switch],[role=tab],[role=menuitem],[role=option]')) {
       const target = b.matches('input[type=checkbox],input[type=radio]') ? (b.closest('label') ?? b) : b;
-      if (!visible(target)) continue;
+      if (legacy(target) || !visible(target)) continue;
       const r = target.getBoundingClientRect();
       if (r.width < 47.5 || r.height < 47.5) out.push(['tap-target<48', `${label(target)} ${r.width.toFixed(0)}x${r.height.toFixed(0)}`]);
     }
@@ -101,7 +105,7 @@ export function installAudit() {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
         const value = node.nodeValue;
-        if (!value.trim() || /^[\s\d.,:;%$+\-–−/×·()]+$/.test(value) || node.parentElement?.closest('script,style,svg')) continue;
+        if (!value.trim() || /^[\s\d.,:;%$+\-–−/×·()]+$/.test(value) || node.parentElement?.closest('script,style,svg') || legacy(node.parentElement)) continue;
         const parts = value.trim().split(/\s+/), extra = parts.slice(0, Math.max(1, Math.ceil(parts.length * 0.4))).join(' ');
         stressed.push([node, value]);
         node.nodeValue = `${value} ${extra}`;
@@ -113,7 +117,8 @@ export function installAudit() {
   function spacing(on) {
     let style = document.getElementById('lf-audit-spacing');
     if (!style) { style = document.createElement('style'); style.id = 'lf-audit-spacing'; document.head.append(style); }
-    style.textContent = on ? '.lf-rebuild, .lf-rebuild * { letter-spacing: .12em !important; word-spacing: .16em !important; line-height: 1.5 !important; } .lf-rebuild p { margin-bottom: 2em !important; }' : '';
+    // A legacy page body inside a rebuilt shell keeps its own spacing; a rebuilt root nested in it gets the override.
+    style.textContent = on ? ':is(.lf-rebuild, .lf-rebuild *):not([data-legacy-body], [data-legacy-body] *), [data-legacy-body] .lf-rebuild, [data-legacy-body] .lf-rebuild * { letter-spacing: .12em !important; word-spacing: .16em !important; line-height: 1.5 !important; } .lf-rebuild p:not([data-legacy-body] p), [data-legacy-body] .lf-rebuild p { margin-bottom: 2em !important; }' : '';
   }
 
   /* -------------------------------------------------------- proportion */
@@ -182,7 +187,7 @@ export function installAudit() {
     }
     const cv = document.createElement('canvas').getContext('2d');
     for (const root of ROOTS()) for (const e of root.querySelectorAll('p,li')) {
-      if (!visible(e) || (e.tagName === 'LI' && e.querySelector('p,h1,h2,h3,div'))) continue;
+      if (legacy(e) || !visible(e) || (e.tagName === 'LI' && e.querySelector('p,h1,h2,h3,div'))) continue;
       const t = e.textContent.trim(); if (t.length < 60) continue;
       const cs = getComputedStyle(e); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
       const avg = cv.measureText(t).width / t.length, w = e.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -234,7 +239,8 @@ export function installAudit() {
     // Idle motion (02 §9.4): at most three looping things per screen, each one a claimed slot (`data-idle-motion`),
     // and one breathing call to action. CSS loops are read from the running animations; the Mentor's WebGL idle
     // loop is not a CSS animation, so its claimed element counts instead.
-    const loops = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity);
+    // A legacy page body inside a rebuilt shell is not measured (its lane replaces it), like every rule above.
+    const loops = document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && !legacy(a.effect?.target));
     const loopTargets = new Set(loops.map((a) => a.effect?.target).filter(Boolean));
     const claimed = [...document.querySelectorAll('[data-idle-motion]')];
     const idleThings = new Set([...claimed, ...[...loopTargets].map((t) => t.closest('[data-idle-motion]') ?? t)]);
@@ -290,7 +296,7 @@ export function installAudit() {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
         const host = node.parentElement;
-        if (!node.nodeValue.includes('—') || !host || !visible(host) || host.closest('[aria-hidden="true"],script,style')) continue;
+        if (!node.nodeValue.includes('—') || !host || legacy(host) || !visible(host) || host.closest('[aria-hidden="true"],script,style')) continue;
         dashes.push(node.nodeValue.replace(/\s+/g, ' ').trim().slice(0, 120));
       }
     }

@@ -13,7 +13,7 @@ import { useStageAnnouncement } from './useStageAnnouncement';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/ui';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 import { TutorStage, type TutorStageProps } from '@/tutor-scene/TutorStage';
 import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
 import { SafeAreaProvider, useSafeArea } from '@/tutor-scene/SafeAreaContext';

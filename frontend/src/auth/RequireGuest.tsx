@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 
 /**
  * Route guard: a visitor with a REAL (non-guest) session is sent to

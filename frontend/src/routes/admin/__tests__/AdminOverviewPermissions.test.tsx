@@ -41,7 +41,8 @@ describe('Overview permission projection', () => {
     const container = renderOverview();
     await waitFor(() => expect(mockApi).toHaveBeenCalledWith('/admin/overview', { token: 'synthetic-token' }));
     expect(container.querySelector('a[href="/admin/emails"]')).toBeInTheDocument();
-    expect(container.querySelector('a[href="/admin/audit"]')).toBeInTheDocument();
+    // The Audit destination was the legacy page's own sub-navigation; the console's section
+    // navigation is now the staff shell's, projected by grant in app-shell/__tests__/navigation.test.ts.
     expect(container.querySelector('a[href="/admin/content"]')).not.toBeInTheDocument();
     expect(container.querySelector('a[href="/admin/users"]')).not.toBeInTheDocument();
     expect(container.querySelector('a[href="/admin/analytics"]')).not.toBeInTheDocument();

@@ -3,7 +3,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { PublicProfilePage } from '../PublicProfilePage';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 const { mockApi, getToken } = vi.hoisted(() => ({ mockApi: vi.fn(), getToken: vi.fn() }));
 vi.mock('@/lib/api', () => ({ api: mockApi }));
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken }) }));

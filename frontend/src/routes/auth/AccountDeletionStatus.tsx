@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/theme/useTheme';
 import { useAuth } from '@/auth/AuthContext';
 import { BASE_URL } from '@/lib/api';
 import { AccountDeletion, type AccountDeletionView } from '@/rebuild/account/AccountDeletion';
 import { cancelAccountDeletion } from '@/rebuild/account/deletionClient';
+import { StandaloneState } from '@/app-shell/StandaloneState';
+import { useShellLocale } from '@/app-shell/ShellRoot';
 import en from '@/i18n/en-US/rebuild-profile.json';
 import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
@@ -20,6 +20,8 @@ import pt from '@/i18n/pt-BR/rebuild-profile.json';
  *    router state): the stated date and how to keep the account, or the
  *    confirmation that it is deleted.
  *  - Anything else (a direct visit): back to the app or to sign-in.
+ *
+ * It renders on the standalone single-state screen (app-shell/StandaloneState).
  *
  * Deliberately NOT named *Page.tsx: the AuthRecipe gate scans that suffix
  * for the login/signup trust-surface recipe, which this state screen is not.
@@ -38,15 +40,13 @@ function readHandoff(state: unknown): AccountDeletionView | null {
 }
 
 export function AccountDeletionStatus() {
-  const { i18n } = useTranslation();
-  const { isDark } = useTheme();
+  const locale = useShellLocale();
   const { session, accountDeletion, getToken, logout, refreshMe } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [keeping, setKeeping] = useState(false);
   const [keepFailed, setKeepFailed] = useState(false);
   const [kept, setKept] = useState(false);
-  const locale = i18n.resolvedLanguage ?? 'en-US';
   const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).accountDeletion;
 
   if (session === undefined) return null;
@@ -73,9 +73,10 @@ export function AccountDeletionStatus() {
     await refreshMe();
   };
 
-  return <AccountDeletion copy={copy} locale={locale} dark={isDark} view={view} layout="screen"
+  const heading = view.kind === 'scheduled' ? copy.scheduledTitle : view.kind === 'deleted' ? copy.deletedTitle : copy.title;
+  return <StandaloneState pageTitle={heading}><AccountDeletion copy={copy} locale={locale} dark={false} view={view} layout="state"
     onKeep={() => void keep()}
     onSignOut={() => void logout().then(() => navigate('/login', { replace: true }))}
     onSignIn={() => navigate('/login', { replace: true })}
-    onContinue={() => navigate('/', { replace: true })} />;
+    onContinue={() => navigate('/', { replace: true })} /></StandaloneState>;
 }

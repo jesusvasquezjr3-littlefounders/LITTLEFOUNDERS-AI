@@ -115,10 +115,15 @@ export function AccountDeletion({ copy, locale, dark, view, layout = 'card', ...
   locale: string;
   dark: boolean;
   view: AccountDeletionView;
-  layout?: 'card' | 'screen';
+  /** card: a Settings panel; screen: its own page; state: the content of the standalone single-state screen (the route owns the root). */
+  layout?: 'card' | 'screen' | 'state';
 } & AccountDeletionHandlers) {
   const Root = layout === 'screen' ? 'main' : 'section';
   const heading = view.kind === 'scheduled' ? copy.scheduledTitle : view.kind === 'deleted' ? copy.deletedTitle : copy.title;
+  if (layout === 'state') return <div className="lf-account-deletion lf-account-deletion--state" data-deletion-audit={view.kind}>
+    <Copy role="heading" as="h1">{heading}</Copy>
+    <Body copy={copy} locale={locale} view={view} {...handlers} />
+  </div>;
   return <Root className={`lf-rebuild lf-account-deletion lf-account-deletion--${layout}`} data-theme={dark ? 'dark' : 'light'}
     data-deletion-audit={view.kind} lang={locale} aria-label={layout === 'card' ? heading : undefined}>
     <Copy role="heading" as={layout === 'screen' ? 'h1' : 'h2'}>{heading}</Copy>

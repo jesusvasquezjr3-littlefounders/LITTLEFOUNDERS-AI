@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { playPlatformSound } from '@/lib/sound';
 import { AuthShell } from './AuthShell';

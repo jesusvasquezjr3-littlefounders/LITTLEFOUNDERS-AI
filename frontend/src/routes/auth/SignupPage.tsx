@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 import type { Locale } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { Button, DateField, Icon, SectionHeading } from '@/components/ui';

@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -65,6 +66,12 @@ describe('frame: skip link, main, title, language and route focus', () => {
     expect(document.title).toBe('Aprender · LittleFounders');
     expect(document.documentElement.lang).toBe('pt-BR');
     expect(document.querySelector('.lf-shell')).toHaveAttribute('lang', 'pt-BR');
+  });
+
+  it('does not treat the first load as a route change, even when StrictMode runs the effects twice (W2 real routes)', () => {
+    render(<StrictMode><Learner page="learn" /></StrictMode>);
+    expect(scrollTo).not.toHaveBeenCalled();
+    expect(document.activeElement).toBe(document.body);
   });
 
   it('on a route change scrolls to the top and focuses the new heading; a re-render of the same route does neither', () => {

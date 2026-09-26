@@ -197,5 +197,82 @@
     "roleLearner": "Estudiante",
     "statusActive": "Activo",
     "statusInvited": "Invitado"
+  },
+  "appShell": {
+    "skip": "Ir al contenido",
+    "navigation": "Principal",
+    "menu": "Menú",
+    "close": "Cerrar",
+    "dismiss": "Cerrar aviso",
+    "mentor": "Mentor",
+    "tutorRole": "Tutor",
+    "staffRole": "Equipo",
+    "nav": {
+      "learn": "Aprender",
+      "tasks": "Tareas",
+      "wallet": "Cartera",
+      "familyCoins": "Monedas de familia",
+      "coins": "Monedas",
+      "profile": "Perfil",
+      "family": "Familia",
+      "becomeTutor": "Hazte Tutor",
+      "staff": "Equipo",
+      "backToApp": "Volver a la app"
+    },
+    "staff": {
+      "overview": "Resumen",
+      "content": "Contenido",
+      "users": "Usuarios",
+      "emails": "Correos",
+      "analytics": "Analíticas y Salud",
+      "intel": "Inteligencia de aprendizaje",
+      "generation": "Generación",
+      "audit": "Registro de auditoría",
+      "reports": "Reportes",
+      "roles": "Roles y acceso"
+    }
+  },
+  "siteShell": {
+    "howItWorks": "Cómo funciona",
+    "families": "Para familias",
+    "faq": "Preguntas frecuentes",
+    "login": "Iniciar sesión",
+    "signup": "Regístrate",
+    "openApp": "Abrir la app",
+    "home": "Inicio",
+    "legal": "Legal",
+    "terms": "Términos y Condiciones",
+    "privacy": "Aviso de Privacidad",
+    "cookies": "Preferencias de cookies",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themeAuto": "Igual que el sistema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "rights": "Todos los derechos reservados.",
+    "pageTitle": {
+      "login": "Iniciar sesión",
+      "signup": "Crear cuenta",
+      "forgotPassword": "Recupera tu contraseña",
+      "resetPassword": "Elige una contraseña nueva",
+      "verifyParent": "Hazte Tutor",
+      "callback": "Iniciando sesión"
+    }
+  },
+  "notFound": {
+    "title": "No encontramos esa página",
+    "body": "Puede que el enlace sea viejo o esté mal. No es tu culpa.",
+    "backToLearn": "Mis lecciones",
+    "backHome": "Página de inicio",
+    "goBack": "Volver"
+  },
+  "sessionPreferences": {
+    "title": "En este dispositivo",
+    "theme": "Tema",
+    "themeAuto": "Igual que el sistema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "signOut": "Cerrar sesión",
+    "signingOut": "Cerrando sesión"
   }
 }

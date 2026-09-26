@@ -4,13 +4,12 @@ import { AuthProvider } from '@/auth/AuthContext';
 import { AnalyticsScripts } from '@/lib/analytics';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
-import { AuthLayout } from '@/routes/auth/AuthLayout';
-import { AppLayout } from '@/routes/app/AppLayout';
 import { useInsightsBeacon } from '@/lib/useInsightsBeacon';
 import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { releaseBootVeil } from '@/lib/boot';
+import { AppShellLayout, StaffShellLayout } from '@/app-shell/AppLayouts';
+import { AuthLayout, SiteLayout } from '@/app-shell/PublicLayouts';
 import { devRoutes, notFoundRoute, standaloneStateRoutes } from '@/app-routes/core';
 import { siteAccountRoutes, siteAuthRoutes, sitePageRoutes, siteStandaloneRoutes } from '@/app-routes/site';
 import { learnShellRoutes, learnStandaloneRoutes } from '@/app-routes/learn';
@@ -22,16 +21,26 @@ import { staffShellRoutes } from '@/app-routes/staff';
 import { useEffect, useState } from 'react';
 
 /*
- * The route table, composed. Each wave-2 lane owns one module under
- * src/app-routes/ (site, learn, mentor, family, profile, staff) that exports
- * its child routes with their guards; core.tsx (Lane 0) holds the dev
+ * The route table, composed (W2 Lane 0). Each wave-2 lane owns one module
+ * under src/app-routes/ (site, learn, mentor, family, profile, staff) that
+ * exports its child routes with their guards; core.tsx (Lane 0) holds the dev
  * harnesses, the standalone states and the route of last resort. This file
- * (Lane 0) only decides which layout each group renders in.
+ * only decides which rebuilt shell (src/app-shell/) each group renders in:
+ *
+ *   SiteShell         the public pages
+ *   AuthShell         sign-in, sign-up, recovery, verification, OAuth landing
+ *   LearnerShell /    every signed-in page but the console: the learner app, or
+ *   TutorShell        the Tutor console for a verified parent (OD-6)
+ *   StaffShell        /admin, items filtered by the staff grants
+ *   single-state      not found, a suspended account, account deletion
+ *   (none)            the full-screen layers: onboarding, account upgrade,
+ *                     placement, the lesson player, the Mentor stage and the
+ *                     public badge page
  */
 
 /*
- * First-party usage beacon (/INSIGHTS.md), mounted ONCE above BOTH route
- * groups — the lesson player lives OUTSIDE AppLayout, so a layout-level
+ * First-party usage beacon (/INSIGHTS.md), mounted ONCE above every route
+ * group — the lesson player lives OUTSIDE the app shell, so a layout-level
  * beacon died on every lesson entry, silently discarding lesson events.
  * Renders nothing; transmits nothing without a session + analyticsEnabled.
  */
@@ -69,23 +78,20 @@ export function App() {
         <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
         <Routes>
           {devRoutes}
-          {/* Marketing (marketing chrome) */}
-          <Route element={<MarketingLayout />}>
-            {sitePageRoutes}
+          <Route element={<SiteLayout />}>{sitePageRoutes}</Route>
+          <Route element={<AuthLayout />}>
+            {siteAuthRoutes}
             {siteAccountRoutes}
           </Route>
-          {/* Auth (login/signup) — bare trust surface, no marketing chrome. */}
-          <Route element={<AuthLayout />}>{siteAuthRoutes}</Route>
           {siteStandaloneRoutes}
           {standaloneStateRoutes}
           {learnStandaloneRoutes}
           {mentorStandaloneRoutes}
-          {/* App (dashboard chrome) */}
           <Route
             element={
               <RequireAuth>
                 <RequireOnboarded>
-                  <AppLayout />
+                  <AppShellLayout />
                 </RequireOnboarded>
               </RequireAuth>
             }
@@ -93,9 +99,19 @@ export function App() {
             {learnShellRoutes}
             {familyShellRoutes}
             {profileShellRoutes}
+          </Route>
+          <Route
+            element={
+              <RequireAuth>
+                <RequireOnboarded>
+                  <StaffShellLayout />
+                </RequireOnboarded>
+              </RequireAuth>
+            }
+          >
             {staffShellRoutes}
           </Route>
-          {/* Must be LAST. */}
+          {/* The route of last resort: must stay LAST. */}
           {notFoundRoute}
         </Routes>
       </AuthProvider>

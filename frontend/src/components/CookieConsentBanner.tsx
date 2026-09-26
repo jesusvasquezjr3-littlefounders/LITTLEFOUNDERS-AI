@@ -8,6 +8,11 @@ import { getCookieConsent, isMarketingRoute, setCookieConsent } from '@/lib/visi
 
 const OPEN_PREFERENCES_EVENT = 'lf:open-cookie-preferences';
 
+/** Reopens the cookie preferences (the rebuilt site footer's control uses this; no UI component crosses over). */
+export function openCookiePreferences() {
+  window.dispatchEvent(new Event(OPEN_PREFERENCES_EVENT));
+}
+
 /*
  * Public cookie choices are deliberately separate from guardian analytics
  * consent. This surface governs guest marketing technologies; a child's

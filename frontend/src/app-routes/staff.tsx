@@ -2,10 +2,12 @@ import { lazy, type ReactNode } from 'react';
 import { Route } from 'react-router-dom';
 import { RequireRole, RequireStaffPermission } from '@/auth/RequireRole';
 import { LazyRoute } from './LazyRoute';
+import { STAFF_ROUTE_GRANTS, type StaffRouteGrant } from './staffGrants';
 
 /*
  * Lane 6 (staff): the staff console. App.tsx (Lane 0) mounts these inside the
- * staff shell (RequireAuth + RequireOnboarded).
+ * staff shell (RequireAuth + RequireOnboarded); ./staffGrants.ts says which
+ * grant opens each page.
  *
  * The console is off the first-load path: every learner used to download the
  * whole admin console before /learn could paint, and it is reachable only
@@ -28,46 +30,34 @@ const AdminGenerationPage = lazy(() => import('@/routes/admin/AdminGenerationPag
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 export const STAFF_ROLES = ['admin', 'superadmin'];
 
-export type StaffGrant = 'manage_users' | 'manage_content' | 'view_analytics' | 'manage_support';
-
-export interface StaffRoute {
-  /** The console section (the staff navigation's slot id). */
-  id: string;
-  path: string;
-  /** The named permissions any one of which opens the page, or `superadmin` for the superadmin-only page. */
-  grant: StaffGrant | readonly StaffGrant[] | 'superadmin';
-  page: ReactNode;
-}
+/** The page of each console section (./staffGrants.ts ids). */
+export const STAFF_PAGES: Readonly<Record<string, ReactNode>> = {
+  overview: <AdminOverviewPage />,
+  content: <AdminContentPage />,
+  users: <AdminUsersPage />,
+  emails: <AdminEmailDashboard />,
+  insights: <AdminInsightsPage />,
+  intel: <AdminIntelPage />,
+  analytics: <AnalyticsHealthPage />,
+  generation: <AdminGenerationPage />,
+  audit: <AdminAuditPage />,
+  reports: <AdminReportsPage />,
+  roles: <AdminRolesPage />,
+};
 
 /*
  * Staff routes use both role and named-permission guards. The server checks
  * the same grants before platform reads or writes. Roles & Access remains
- * Superadmin-only. The staff navigation (app-shell/navigation.ts) is tested
- * against this table, so a page and its menu entry cannot disagree.
+ * Superadmin-only.
  */
-export const STAFF_ROUTES: readonly StaffRoute[] = [
-  { id: 'overview', path: 'admin', grant: ['manage_users', 'manage_content', 'view_analytics', 'manage_support'], page: <AdminOverviewPage /> },
-  { id: 'content', path: 'admin/content', grant: 'manage_content', page: <AdminContentPage /> },
-  { id: 'users', path: 'admin/users', grant: 'manage_users', page: <AdminUsersPage /> },
-  { id: 'emails', path: 'admin/emails', grant: 'manage_support', page: <AdminEmailDashboard /> },
-  { id: 'insights', path: 'admin/insights', grant: 'view_analytics', page: <AdminInsightsPage /> },
-  { id: 'intel', path: 'admin/intel', grant: 'view_analytics', page: <AdminIntelPage /> },
-  { id: 'analytics', path: 'admin/analytics', grant: 'view_analytics', page: <AnalyticsHealthPage /> },
-  { id: 'generation', path: 'admin/generation', grant: 'manage_content', page: <AdminGenerationPage /> },
-  { id: 'audit', path: 'admin/audit', grant: 'manage_support', page: <AdminAuditPage /> },
-  { id: 'reports', path: 'admin/reports', grant: 'manage_support', page: <AdminReportsPage /> },
-  { id: 'roles', path: 'admin/roles', grant: 'superadmin', page: <AdminRolesPage /> },
-];
-
-function guarded({ grant, page }: StaffRoute) {
-  if (grant === 'superadmin') return <RequireRole role="superadmin"><LazyRoute>{page}</LazyRoute></RequireRole>;
+function guarded({ id, grant }: StaffRouteGrant) {
+  const page = <LazyRoute>{STAFF_PAGES[id]}</LazyRoute>;
+  if (grant === 'superadmin') return <RequireRole role="superadmin">{page}</RequireRole>;
   return (
     <RequireRole role={STAFF_ROLES}>
-      <RequireStaffPermission permission={typeof grant === 'string' ? grant : [...grant]}>
-        <LazyRoute>{page}</LazyRoute>
-      </RequireStaffPermission>
+      <RequireStaffPermission permission={typeof grant === 'string' ? grant : [...grant]}>{page}</RequireStaffPermission>
     </RequireRole>
   );
 }
 
-export const staffShellRoutes = <>{STAFF_ROUTES.map((route) => <Route key={route.path} path={route.path} element={guarded(route)} />)}</>;
+export const staffShellRoutes = <>{STAFF_ROUTE_GRANTS.map((route) => <Route key={route.path} path={route.path} element={guarded(route)} />)}</>;

@@ -57,9 +57,13 @@ export function useDocumentMeta(pageTitle: string, appName: string, locale: Loca
  * new content instead of on the link they pressed (02 rule 13).
  */
 export function useRouteFocus(routeKey: string, main: React.RefObject<HTMLElement>) {
-  const first = useRef(true);
+  // The key the page last settled on, not a "first render" flag: React's development StrictMode runs every
+  // effect twice on mount, and a flag let the second run treat the first load as a route change (W2: found
+  // on the real routes, where the first Tab then skipped the skip link).
+  const settled = useRef(routeKey);
   useEffect(() => {
-    if (first.current) { first.current = false; return; }
+    if (settled.current === routeKey) return;
+    settled.current = routeKey;
     window.scrollTo(0, 0);
     const target = main.current?.querySelector<HTMLElement>('h1') ?? main.current;
     if (!target) return;

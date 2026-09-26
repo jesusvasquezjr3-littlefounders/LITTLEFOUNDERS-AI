@@ -35,6 +35,7 @@
     "verify:cpa-fading": "node scripts/verify-rebuild-cpa-fading.mjs",
     "verify:controls": "node scripts/verify-rebuild-controls.mjs",
     "verify:shells": "node scripts/verify-rebuild-shells.mjs",
+    "verify:app-shells": "node scripts/verify-app-shells.mjs",
     "audit:text-fit": "node scripts/audit-rebuild.mjs text-fit",
     "audit:proportion": "node scripts/audit-rebuild.mjs proportion",
     "audit:copy-budget": "node scripts/audit-rebuild.mjs copy-budget",

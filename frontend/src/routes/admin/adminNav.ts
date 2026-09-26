@@ -1,10 +1,10 @@
 /*
- * Staff-console section registry. The admin experience is INTEGRATED into the
- * app shell (same sidebar/chrome as Learn/Profile) — these render as a "Staff"
- * group in the sidebar (desktop) and a horizontal sub-nav on the admin pages
- * (mobile). Gating: every section needs admin OR superadmin; `superadminOnly`
- * items (Roles & Access) render only for superadmin (§1.4). Never shown to
- * non-staff — hidden, not locked (admin is not an aspirational upgrade).
+ * Staff-console sections, as the legacy Overview page uses them to decide
+ * which of its cards to show. The console NAVIGATION is no longer built from
+ * this list: the staff shell (app-shell/navigation.ts, W2) reads
+ * app-routes/staffGrants.ts, the same table the route guards use. Gating:
+ * every section needs admin OR superadmin; `superadminOnly` items (Roles &
+ * Access) are superadmin-only (§1.4). Replaced with the staff lane's rebuild.
  */
 
 export interface AdminSection {

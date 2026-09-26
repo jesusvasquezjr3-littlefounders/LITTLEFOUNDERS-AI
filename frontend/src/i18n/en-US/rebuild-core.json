@@ -197,5 +197,82 @@
     "roleLearner": "Learner",
     "statusActive": "Active",
     "statusInvited": "Invited"
+  },
+  "appShell": {
+    "skip": "Skip to content",
+    "navigation": "Main",
+    "menu": "Menu",
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "mentor": "Mentor",
+    "tutorRole": "Tutor",
+    "staffRole": "Staff",
+    "nav": {
+      "learn": "Learn",
+      "tasks": "Tasks",
+      "wallet": "Wallet",
+      "familyCoins": "Family coins",
+      "coins": "Coins",
+      "profile": "Profile",
+      "family": "Family",
+      "becomeTutor": "Become a Tutor",
+      "staff": "Staff",
+      "backToApp": "Back to app"
+    },
+    "staff": {
+      "overview": "Overview",
+      "content": "Content",
+      "users": "Users",
+      "emails": "Emails",
+      "analytics": "Analytics & Health",
+      "intel": "Learning intel",
+      "generation": "Generation",
+      "audit": "Audit log",
+      "reports": "Reports",
+      "roles": "Roles & Access"
+    }
+  },
+  "siteShell": {
+    "howItWorks": "How it works",
+    "families": "For families",
+    "faq": "FAQ",
+    "login": "Log in",
+    "signup": "Sign up",
+    "openApp": "Open app",
+    "home": "Home",
+    "legal": "Legal",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Notice",
+    "cookies": "Cookie preferences",
+    "language": "Language",
+    "theme": "Theme",
+    "themeAuto": "Match system",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "rights": "All rights reserved.",
+    "pageTitle": {
+      "login": "Log in",
+      "signup": "Sign up",
+      "forgotPassword": "Reset your password",
+      "resetPassword": "Choose a new password",
+      "verifyParent": "Become a Tutor",
+      "callback": "Signing you in"
+    }
+  },
+  "notFound": {
+    "title": "We couldn't find that page",
+    "body": "The link may be old or wrong. It is not your fault.",
+    "backToLearn": "My lessons",
+    "backHome": "Home page",
+    "goBack": "Back"
+  },
+  "sessionPreferences": {
+    "title": "On this device",
+    "theme": "Theme",
+    "themeAuto": "Match system",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "signOut": "Sign out",
+    "signingOut": "Signing out"
   }
 }

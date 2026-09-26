@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api, type ApiResult } from '@/lib/api';
 import { Badge, Card, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { visibleAdminSections } from './adminNav';
 
 /*
  * Shared building blocks for the staff console. Every admin page renders
@@ -229,34 +227,7 @@ export function AdminEmpty({ icon, message }: { icon: string; message: string })
   );
 }
 
-/** Horizontal section pills — the admin nav on mobile (the desktop sidebar
- * already carries the Staff group, so this is `lg:hidden`). */
-function AdminSubnav() {
-  const { t } = useTranslation();
-  const { roles, adminPermissions } = useAuth();
-  return (
-    <nav className="-mx-1 flex gap-1.5 overflow-x-auto pb-1 lg:hidden" aria-label={t('admin.title')}>
-      {visibleAdminSections(roles, adminPermissions).map((s) => (
-        <NavLink
-          key={s.key}
-          to={s.path}
-          end={s.path === '/admin'}
-          className={({ isActive }) =>
-            cn(
-              'flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 transition-colors duration-150',
-              isActive ? 'bg-primary-soft font-bold text-primary' : 'bg-surface-sunken text-content-muted',
-            )
-          }
-        >
-          <Icon name={s.icon} className="!text-[18px]" />
-          <span className="lf-caption font-bold">{t(`admin.nav.${s.key}`)}</span>
-        </NavLink>
-      ))}
-    </nav>
-  );
-}
-
-/** Every admin page: mobile sub-nav + title row with the role chip + content. */
+/** Every admin page: title row with the role chip + content. The section navigation is the staff shell's (app-shell, W2). */
 export function AdminPage({
   titleKey,
   subtitleKey,
@@ -273,7 +244,6 @@ export function AdminPage({
   const tier = roles.includes('superadmin') ? 'superadmin' : 'admin';
   return (
     <div className="flex flex-col gap-6">
-      <AdminSubnav />
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">

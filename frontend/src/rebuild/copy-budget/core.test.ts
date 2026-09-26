@@ -1,12 +1,26 @@
 import { describe, it } from 'vitest';
 import type { CopyRole } from '../design/copyBudget';
-import { expectBudgetedGroups, expectFits, namespaceCopy } from './budget';
+import { expectBudgetedGroups, expectFits, flatten, namespaceCopy } from './budget';
 
 /*
  * `rebuild-core.json` (Lane 0): the preview index, the S03.1 control catalogue,
  * the S03.2 overlay and shell gallery. Everything is measured at the youngest
- * (6–9) budget except the gallery's public-site pair.
+ * (6–9) budget except the gallery's public-site pair; the W2 shells on real
+ * routes (appShell, siteShell) and the not-found state are budgeted by who
+ * reads them.
  */
+
+/** W2 app shells: the learner's navigation at the youngest budget, the staff console's at the adult one. */
+function appShellRole(path: string): CopyRole {
+  return ['navigation', 'tutorRole', 'staffRole'].includes(path) ? 'body' : 'action';
+}
+/** W2 public site and sign-in shells (adult readers, the app budget: the stricter of the two). */
+function siteShellRole(path: string): CopyRole {
+  if (path.startsWith('pageTitle.')) return 'heading';
+  if (['legal', 'language', 'theme', 'rights'].includes(path)) return 'body';
+  if (path.startsWith('theme')) return 'option';
+  return 'action';
+}
 
 const flat: Record<string, CopyRole> = {
   preview: 'body', heading: 'heading', intro: 'body', practice: 'action', controls: 'action',
@@ -37,7 +51,7 @@ const designGalleryRoles: Record<string, CopyRole> = {
 describe('rebuild-core copy budget', () => {
   for (const [locale, strings] of namespaceCopy('core')) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expectBudgetedGroups(strings, [...Object.keys(flat), 'designSystem', 'designGallery']);
+      expectBudgetedGroups(strings, [...Object.keys(flat), 'designSystem', 'designGallery', 'appShell', 'siteShell', 'notFound', 'sessionPreferences']);
       for (const [key, role] of Object.entries(flat)) expectFits(strings[key] as string, role, locale, '6-9', key);
       for (const [key, text] of Object.entries(strings.designSystem as Record<string, string>)) {
         expectFits(text.replace('{n}', '40'), designSystemRole(key), locale, '6-9', `designSystem.${key}`);
@@ -47,6 +61,19 @@ describe('rebuild-core copy budget', () => {
       for (const [key, text] of Object.entries(gallery)) {
         const site = key === 'siteHeading' || key === 'siteBody';
         expectFits(text, designGalleryRoles[key] ?? 'body', locale, site ? 'adult' : '6-9', `designGallery.${key}`, site ? 'site' : 'app');
+      }
+      for (const [path, text] of flatten(strings.appShell!)) {
+        expectFits(text, appShellRole(path), locale, path.startsWith('staff.') ? 'adult' : '6-9', `appShell.${path}`);
+      }
+      for (const [path, text] of flatten(strings.siteShell!)) expectFits(text, siteShellRole(path), locale, 'adult', `siteShell.${path}`);
+      // Settings' mode and sign-out, read by every signed-in account from 6 years old.
+      for (const [key, text] of Object.entries(strings.sessionPreferences as Record<string, string>)) {
+        const role = key === 'title' ? 'heading' : key === 'theme' ? 'body' : key.startsWith('theme') ? 'option' : 'action';
+        expectFits(text, role, locale, '6-9', `sessionPreferences.${key}`);
+      }
+      // A child can land on a broken link: the youngest budget.
+      for (const [key, text] of Object.entries(strings.notFound as Record<string, string>)) {
+        expectFits(text, key === 'title' ? 'heading' : key === 'body' ? 'body' : 'action', locale, '6-9', `notFound.${key}`);
       }
     });
   }

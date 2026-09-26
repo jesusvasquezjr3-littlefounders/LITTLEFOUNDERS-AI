@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/auth/AuthContext";
 import { trackMarketingGoal } from "@/lib/analytics";
-import { APP_HOME } from "@/routes/app/navConfig";
+import { APP_HOME } from "@/app-shell/home";
 import { Button, Icon } from "@/components/ui";
 
 /*

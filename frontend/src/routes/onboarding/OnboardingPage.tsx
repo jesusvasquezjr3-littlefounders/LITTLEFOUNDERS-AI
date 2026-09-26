@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 import { api } from '@/lib/api';
 import { Button, Field, OptionGroup, SectionHeading, type OptionGroupOption } from '@/components/ui';
 import { GuidedStage } from '@/guided-voice/GuidedStage';

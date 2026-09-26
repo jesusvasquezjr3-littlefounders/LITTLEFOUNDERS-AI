@@ -1,0 +1,12 @@
+/* Settings: the mode and signing out, on the rebuilt design system inside the legacy Settings page (W2 Lane 0). */
+.lf-rebuild.lf-session-preferences {
+  display: grid;
+  gap: var(--spacing-4);
+  min-block-size: 0;
+  margin-block-start: var(--spacing-6);
+  padding: var(--spacing-6);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+}
+.lf-session-preferences-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }

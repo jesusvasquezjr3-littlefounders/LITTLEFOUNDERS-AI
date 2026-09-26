@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { APP_HOME } from '@/routes/app/navConfig';
+import { APP_HOME } from '@/app-shell/home';
 import { Badge, Button, Card, Icon, SectionHeading, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ConnectionRequestControl } from './ConnectionRequestControl';
