@@ -49,7 +49,7 @@ export function AchievementShare({ copy, locale, dark, variant = 'achievement', 
         : null;
   const tone: NoticeTone = status === 'preparing' ? 'info' : 'success';
   return <section className="lf-rebuild lf-achievement-share" data-share-audit="achievement" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={label}>
-    <Button variant="accent" aria-describedby={disclosureId} disabled={status === 'preparing'} aria-busy={status === 'preparing'} onClick={onShare}>{label}</Button>
+    <Button variant="berry" aria-describedby={disclosureId} disabled={status === 'preparing'} aria-busy={status === 'preparing'} onClick={onShare}>{label}</Button>
     <div id={disclosureId} className="lf-achievement-share-disclosure">
       <Copy role="body">{copy.disclosure}</Copy>
       <Copy role="body">{copy.keepNote}</Copy>

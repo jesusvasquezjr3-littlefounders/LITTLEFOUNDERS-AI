@@ -24,6 +24,7 @@ const FILES = [
   'docs/product-audit/COSMIC_NARRATIVE.md',
   'docs/rebuild/policies/ACHIEVEMENT-SHARING.md',
   'frontend/src/routes/app/family/KidTerritoryPage.tsx',
+  'frontend/src/rebuild/family/console/ChildProgress.tsx',
   'frontend/src/rebuild/family/AchievementShare.tsx',
   'frontend/src/rebuild/family/achievementImage.ts',
   'frontend/src/i18n/en-US/common.json',
@@ -102,16 +103,25 @@ test('fails when the brand position or the policy loses its substance', () => {
 });
 
 test('fails when a share button loses its disclosure or its description', () => {
-  const page = 'frontend/src/routes/app/family/KidTerritoryPage.tsx';
-  const keepLine = "className=\"lf-caption max-w-md text-content-muted\">{t('family.badge.disclosureKeep')}</p>";
-  withFixture((root) => {
-    const path = join(root, page);
-    const source = readFileSync(path, 'utf8');
-    const at = source.lastIndexOf(keepLine);
-    assert.ok(at > 0, 'fixture lacks the goal disclosure line');
-    writeFileSync(path, source.slice(0, source.lastIndexOf('<p', at)) + source.slice(at + keepLine.length));
-  }, /2 share button\(s\) but 1 full disclosure/);
-  withFixture((root) => edit(root, page, 'aria-describedby={`${goalDisclosureId}-made ${goalDisclosureId}-keep`}', ''), /2 share button\(s\) but 1 aria-describedby/);
+  // A screen that calls the image transport and draws its own buttons (the pre-W2 shape) needs both lines and a description per button.
+  const page = 'frontend/src/routes/app/family/LegacySharePage.tsx';
+  const legacy = [
+    "import { shareAchievementImage } from '@/rebuild/family/achievementImage';",
+    'export function P() { void shareAchievementImage(request); return <>',
+    "<Button aria-describedby={`${a}-made ${a}-keep`}>{t('family.badge.share')}</Button>",
+    "<p id={`${a}-made`}>{t('family.badge.disclosure')}</p><p id={`${a}-keep`}>{t('family.badge.disclosureKeep')}</p>",
+    "<Button aria-describedby={`${b}-made ${b}-keep`}>{t('family.badge.shareGoal', { title })}</Button>",
+    "<p id={`${b}-made`}>{t('family.badge.disclosure')}</p><p id={`${b}-keep`}>{t('family.badge.disclosureKeep')}</p>",
+    '</>; }',
+  ].join('\n');
+  const write = (root, source) => writeFileSync(join(root, page), source);
+  withFixture((root) => write(root, legacy.replace("<p id={`${b}-keep`}>{t('family.badge.disclosureKeep')}</p>", '')), /2 share button\(s\) but 1 full disclosure/);
+  withFixture((root) => write(root, legacy.replace('aria-describedby={`${b}-made ${b}-keep`}', '')), /2 share button\(s\) but 1 aria-describedby/);
+  // W2F.1: the route adapter hands the result to the rebuilt screen, which must use AchievementShare for every share action.
+  const adapter = 'frontend/src/routes/app/family/KidTerritoryPage.tsx';
+  withFixture((root) => edit(root, adapter, "import { ChildProgress } from '@/rebuild/family/console/ChildProgress';", ''), /starts a share but no share button label/);
+  withFixture((root) => edit(root, 'frontend/src/rebuild/family/console/ChildProgress.tsx', '<AchievementShare copy={shareCopy}', '<ShareButton copy={shareCopy}'),
+    /ChildProgress\.tsx: 3 share handler\(s\) but 2 AchievementShare/);
   withFixture((root) => edit(root, 'frontend/src/rebuild/family/AchievementShare.tsx', ' aria-describedby={disclosureId}', ''), /AchievementShare\.tsx: the share button must be described/);
   withFixture((root) => {
     const path = join(root, 'frontend/src/i18n/pt-BR/common.json');

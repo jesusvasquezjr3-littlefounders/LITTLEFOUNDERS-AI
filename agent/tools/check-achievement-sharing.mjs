@@ -125,6 +125,13 @@ export function checkAchievementSharing(root) {
  * The rebuilt AchievementShare component binds its own; a screen that calls
  * the transport directly must render both keys and bind them once per
  * button. Both disclosure lines must exist in every locale.
+ *
+ * W2F.1: a route adapter may call the transport for a rebuilt screen instead
+ * of rendering a button itself (the rebuild imports nothing outside it, so it
+ * cannot call Core's image endpoint). Such an adapter renders no legacy label
+ * and must import a rebuilt screen that renders only AchievementShare for its
+ * share actions: every place that screen receives a share result
+ * (`onShare=`) is an AchievementShare, and it draws no share button of its own.
  */
 export function disclosureFailures(root) {
   const failures = [];
@@ -142,6 +149,17 @@ export function disclosureFailures(root) {
       continue;
     }
     if (!/\bshareAchievementImage\(/.test(source)) continue;
+    const rebuilt = [...source.matchAll(/from '@\/(rebuild\/[^']+)'/g)].map((m) => resolve(root, 'frontend/src', `${m[1]}.tsx`))
+      .filter((path) => { try { return /<AchievementShare\b/.test(readFileSync(path, 'utf8')); } catch { return false; } });
+    if (rebuilt.length > 0 && !/t\('family\.badge\.share/.test(source)) {
+      for (const path of rebuilt) {
+        const screen = readFileSync(path, 'utf8');
+        const shares = (screen.match(/<AchievementShare\b/g) ?? []).length;
+        const handlers = (screen.match(/\bonShare=/g) ?? []).length;
+        if (handlers !== shares) failures.push(`${relative(root, path).replaceAll('\\', '/')}: ${handlers} share handler(s) but ${shares} AchievementShare; every share action must be an AchievementShare (F.3)`);
+      }
+      continue;
+    }
     const buttons = (source.match(/t\('family\.badge\.share(?:Goal)?'(?:,\s*\{[^}]*\})?\)\}/g) ?? []).length;
     const made = (source.match(/t\('family\.badge\.disclosure'\)/g) ?? []).length;
     const keep = (source.match(/t\('family\.badge\.disclosureKeep'\)/g) ?? []).length;

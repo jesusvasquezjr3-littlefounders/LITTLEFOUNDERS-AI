@@ -72,8 +72,9 @@ export function respond({ spec, path, request, ok }) {
     character: spec.mentor ?? 'rho', companion: null, diorama: 'diorama-a', backdrop: 'day', nickname: null, adaptations: [],
     personalized: Boolean(spec.mentor), catalog: { characters: ['rho', 'zara', 'liruf', 'dina'], dioramas: [], backdrops: [], adaptations: [], articulates: ['rho', 'zara'] },
   });
-  if (path === '/learn/courses') return ok({ courses: [] });
-  if (path === '/family/kids') return ok({ kids: [] });
+  // A family-lane scenario (`spec.family`) answers these from lanes/family.mjs with the children and courses it declares.
+  if (path === '/learn/courses' && !spec.family) return ok({ courses: [] });
+  if (path === '/family/kids' && !spec.family) return ok({ kids: [] });
   if (spec.adminUnavailable && path.startsWith('/admin/')) return { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Synthetic: not available' } } };
   return undefined;
 }

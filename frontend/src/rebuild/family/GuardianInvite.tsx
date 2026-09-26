@@ -18,6 +18,8 @@ import './guardianInvite.css';
 
 export interface GuardianInviteCopy {
   title: string;
+  /** W2F.1: the closed panel's button (the title, as a heading, is over the action budget). */
+  open: string;
   close: string;
   invite: string;
   inviting: string;
@@ -57,7 +59,7 @@ export function GuardianInviteMint({ copy, locale, dark, open, creating, link, c
   onCopy: () => void;
 }) {
   return <section className="lf-rebuild lf-guardian-invite" data-theme={dark ? 'dark' : 'light'} lang={locale} aria-label={copy.title}>
-    <Button aria-expanded={open} onClick={open ? onClose : onOpen}>{open ? copy.close : copy.title}</Button>
+    <Button aria-expanded={open} onClick={open ? onClose : onOpen}>{open ? copy.close : copy.open}</Button>
     {open && <>
       <Copy role="heading" as="h2">{copy.title}</Copy>
       {notice && <InlineNotice tone={noticeIsError ? 'error' : 'info'} live>{notice}</InlineNotice>}
