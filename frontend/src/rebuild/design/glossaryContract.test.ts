@@ -99,9 +99,16 @@ describe('rebuilt source: no em dash written into a component (02 rule 16)', () 
 describe('rebuilt source: no lives mechanic can be built (D9, 02 rule 18, OD-1)', () => {
   it('no component, prop, state or class names a life or heart counter', () => {
     const pattern = /(?<![A-Za-z])(?:lives|livesLeft|livesRemaining|hearts|heartsLeft|heartCount|lifeCount|lf-lives?|lf-hearts?)(?![A-Za-z])/i;
+    // B.26 (S05.3f): the register policy mirrored from Core names the lives language it DETECTS, as `word('...')`
+    // lexicon entries. Those detector patterns are not a counter; everything else in that file is still scanned.
+    const DETECTOR_LEXICON = 'learnerRegisterPolicy.generated.ts';
+    const scanned = (file: string, text: string) => {
+      const code = withoutComments(text);
+      return file.endsWith(DETECTOR_LEXICON) ? code.replace(/\bword\('(?:[^'\\]|\\.)*'\)/g, "word('')") : code;
+    };
     const found = sources(join(root, 'src/rebuild'))
-      .filter(({ text }) => pattern.test(withoutComments(text)))
-      .map(({ file, text }) => `${file}: ${withoutComments(text).match(pattern)![0]}`);
+      .filter(({ file, text }) => pattern.test(scanned(file, text)))
+      .map(({ file, text }) => `${file}: ${scanned(file, text).match(pattern)![0]}`);
     expect(found).toEqual([]);
   });
 });

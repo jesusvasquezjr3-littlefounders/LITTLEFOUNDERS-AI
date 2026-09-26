@@ -13,10 +13,6 @@
     "correct": "Respuesta correcta",
     "notThis": "Esta no era"
   },
-  "chips": {
-    "hearts_one": "Queda {{count}} corazón",
-    "hearts_other": "Quedan {{count}} corazones"
-  },
   "intro": {
     "start": "Empezar lección",
     "minutes_one": "{{count}} minuto",
@@ -54,24 +50,24 @@
     "score": "Puntaje: {{score}} de 100",
     "xp": "XP ganados",
     "bestStreak": "Mejor racha",
-    "passedBody": "Estás un paso más cerca de ser un gran founder.",
+    "passedBody": "Un paso más en tu camino de founder.",
     "failedBody": "Todo founder practica. ¡Juégala otra vez y mira crecer tu puntaje!",
     "done": "Terminar",
     "time": "Tiempo",
     "dayStreak": "Racha de días",
-    "glowTitle": "Tu superpoder de hoy",
+    "glowTitle": "Lo que hiciste bien",
     "growTitle": "Tu próxima misión",
     "glow": {
       "effort": "Terminaste toda la lección: cada intento te hace más fuerte.",
       "family": {
-        "story": "Las historias no tienen secretos para ti.",
-        "choice": "Tomas decisiones como todo un founder.",
-        "input": "Tus cuentas salieron perfectas.",
-        "arrange": "Poner las cosas en orden es lo tuyo.",
-        "money": "Manejas el dinero como experto.",
-        "analyze": "Tienes ojo de detective.",
-        "storyplay": "Vives cada aventura al máximo.",
-        "maker": "Eres constructor de primera."
+        "story": "Seguiste cada historia hasta el final.",
+        "choice": "Pensaste las opciones antes de elegir.",
+        "input": "Tus cuentas salieron bien.",
+        "arrange": "Pusiste cada paso en orden.",
+        "money": "Contaste el dinero con cuidado.",
+        "analyze": "Encontraste las pistas en los datos.",
+        "storyplay": "Jugaste cada aventura completa.",
+        "maker": "Lo construiste pieza por pieza."
       }
     },
     "grow": {
@@ -90,6 +86,8 @@
     "runTitle": "Tu partida",
     "progressTitle": "Lo que te llevas",
     "yourBest": "Tu mejor",
+    "savedBestStill": "Tu mejor marca sigue en {{best}}. Fue práctica.",
+    "workedOut": "Resolviste: {{skill}}.",
     "newBest": "¡Nuevo récord!",
     "today": "Hoy"
   },
@@ -123,8 +121,6 @@
   "lab": {
     "title": "Laboratorio de Lecciones",
     "subtitle": "{{types}} tipos de segmento · {{graded}} calificables",
-    "heartsOn": "Corazones: sí",
-    "heartsOff": "Corazones: no",
     "showcase": "Jugar showcase",
     "playFamily": "Jugar familia"
   },

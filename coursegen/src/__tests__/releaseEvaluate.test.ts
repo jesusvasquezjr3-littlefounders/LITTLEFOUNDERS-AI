@@ -60,7 +60,7 @@ describe('the release-gate manifest', () => {
   it('names every Forge document gate once, except generation-only gates with a stated reason', () => {
     const gates = FORGE_RELEASE_CHECKS.filter((c) => c.gate !== undefined).map((c) => c.gate);
     expect(new Set(gates).size).toBe(gates.length);
-    for (let gate = 1; gate <= 16; gate++) {
+    for (let gate = 1; gate <= 19; gate++) {
       const wired = gates.includes(gate as never);
       const generationOnly = GENERATION_ONLY_GATES[gate as keyof typeof GENERATION_ONLY_GATES];
       expect(wired !== !!generationOnly).toBe(true);

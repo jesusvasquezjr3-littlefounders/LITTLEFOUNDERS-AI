@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { growthComparison } from './v2GrowthComparison.js';
-import { scoreV2Visual, type V2VisualKind } from './v2VisualScorer.js';
+import { scoreV2Judgment, scoreV2Visual, type V2JudgmentQuality, type V2VisualKind } from './v2VisualScorer.js';
 
 /*
  * Core's independently authored copy of the public v2 lesson contract.
@@ -177,7 +177,26 @@ const cpaCount = z.object({
     .refine((value) => value.left + value.right <= 30, 'Invalid CPA count'),
 }).strict();
 
-const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount]);
+/**
+ * B.12 (Law 4): decide, then say why. The decision is graded like any other
+ * v2 answer; the reason is graded separately against a private rubric into a
+ * judgment quality that never changes the score. Choices and reasons are
+ * public labels only: which choice is acceptable and how each reason is
+ * judged stay in the answer key.
+ */
+const reasoningOption = z.object({ id, label: z.string().trim().min(1).max(80) }).strict();
+const decideJustify = z.object({
+  ...base, type: z.literal('reasoning.decide-justify.v2'), grading: z.literal('server'),
+  visual: z.object({ type: z.literal('decision-reasons') }).strict(),
+  payload: z.object({
+    choices: z.array(reasoningOption).min(2).max(4),
+    reasonPrompt: z.string().trim().min(1).max(200),
+    reasons: z.array(reasoningOption).min(3).max(5),
+  }).strict().refine((value) => new Set([...value.choices, ...value.reasons].map((option) => option.id)).size
+    === value.choices.length + value.reasons.length, 'Invalid decision reasons'),
+}).strict();
+
+const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify]);
 const capabilities = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
   'visual.savings-line.v2': ['visual.line.v1', 'operation.parameter-slider.v1'],
@@ -200,6 +219,7 @@ const capabilities = {
   'math.worked-example.v2': ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1'],
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
+  'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
 } as const;
 
 const representationProgression = z.object({
@@ -316,11 +336,15 @@ const rubricByKind = {
   'math.function-machine.v2': z.object({ multiplier: positive.max(12), offset: nonnegative.max(100), heldOutInputs: z.array(nonnegative.max(24)).min(2).max(4) }).strict()
     .refine((value) => new Set(value.heldOutInputs).size === value.heldOutInputs.length, 'Duplicate held-out input'),
   'math.cpa-count.v2': z.object({ target: positive.max(30) }).strict(),
+  'reasoning.decide-justify.v2': z.object({
+    acceptableChoiceIds: z.array(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/)).min(1).max(3),
+    reasonQuality: z.record(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/), z.enum(['sound', 'partial', 'unsupported'])),
+  }).strict(),
 } as const;
 
 export type V2PublicLesson = z.infer<typeof v2PublicLessonSchema>;
 type V2Segment = z.infer<typeof segment>;
-export type V2GradeResult = { score: 0 | 100; correct: boolean; document: V2PublicLesson; segmentId: string };
+export type V2GradeResult = { score: 0 | 100; correct: boolean; document: V2PublicLesson; segmentId: string; judgment?: V2JudgmentQuality };
 
 /** The canonical scorer accepts only the semantic fields, never renderer metadata. */
 function scorerPayload(item: Extract<V2Segment, { grading: 'server' }>): Record<string, unknown> {
@@ -339,6 +363,8 @@ function scorerPayload(item: Extract<V2Segment, { grading: 'server' }>): Record<
                 exampleInputs: item.payload.examples.map((example) => example.input) }
               : item.type === 'math.cpa-count.v2'
                 ? { left: item.payload.left, right: item.payload.right }
+              : item.type === 'reasoning.decide-justify.v2'
+                ? { choiceIds: item.payload.choices.map((option) => option.id), reasonIds: item.payload.reasons.map((option) => option.id) }
           : (item.type === 'math.schema-diagram.structure.v2' || item.type === 'math.schema-diagram.slots.v2' || item.type === 'math.schema-diagram.answer.v2')
             ? { income: item.payload.income, spending: item.payload.spending }
           : { whole: item.payload.whole, difference: item.payload.difference };
@@ -369,6 +395,7 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
                   : item.type === 'math.worked-example.v2' ? { values: Object.fromEntries(item.payload.response_step_ids.map((stepId) => [stepId, '0'])) }
                   : item.type === 'math.function-machine.v2' ? { multiplier: '1', offset: '0' }
                   : item.type === 'math.cpa-count.v2' ? { value: '0' }
+                  : item.type === 'reasoning.decide-justify.v2' ? { choice: item.payload.choices[0]!.id, reason: item.payload.reasons[0]!.id }
                   : { value: '0' };
     if (!rubric.success || scoreV2Visual(item.type as V2VisualKind, scorerPayload(item), sample, rubric.data) === 'invalid') return null;
   }
@@ -383,7 +410,11 @@ export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<strin
   if (!rubric.success) return null;
   const verdict = scoreV2Visual(segment.type as V2VisualKind, scorerPayload(segment), response, rubric.data);
   if (verdict === 'invalid' || verdict === 'valid') return null;
-  return { score: verdict === 'met' ? 100 : 0, correct: verdict === 'met', document, segmentId };
+  const graded: V2GradeResult = { score: verdict === 'met' ? 100 : 0, correct: verdict === 'met', document, segmentId };
+  if (segment.type !== 'reasoning.decide-justify.v2') return graded;
+  // B.12: the same signed response yields a judgment, never folded into the score.
+  const judgment = scoreV2Judgment(segment.type, scorerPayload(segment), response, rubric.data);
+  return judgment === 'invalid' ? null : { ...graded, judgment };
 }
 
 /** M7 arithmetic cannot be submitted until Core has recorded the preceding structure receipt. */

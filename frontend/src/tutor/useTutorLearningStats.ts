@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { crossedStreakMilestone } from '@/rebuild/design/milestones';
 
 interface ProfileLearningStats {
   xpPoints: number;
@@ -41,8 +42,9 @@ export interface TutorLearningStats {
  * a value two layers show is computed once above them rather than
  * rediscovered in each.
  *
- * THE ONLY CELEBRATION TRIGGER IS THE STREAK GOING UP SINCE THE LAST TIME
- * THIS LEARNER OPENED THE TUTOR, compared against a per-user localStorage
+ * THE ONLY CELEBRATION TRIGGER IS THE STREAK CROSSING A MILESTONE (7, 30 OR
+ * 100 DAYS, OD-7) SINCE THE LAST TIME THIS LEARNER OPENED THE TUTOR, compared
+ * against a per-user localStorage
  * mark (`lf.tutor.lastSeenStreak.<userId>`, same shape as
  * `SESSION_LIMIT_KEY_PREFIX` in TutorExperience.tsx). Not XP: XP grows on
  * almost every turn, so celebrating it here would fire every session and
@@ -92,7 +94,10 @@ export function useTutorLearningStats(
       setStreakDays(stats.streakDays);
 
       const lastSeen = readLastSeenStreak(userId);
-      if (lastSeen !== null && stats.streakDays > lastSeen) {
+      // B.20 / OD-7 (S05.3e): only crossing the 7-, 30- or 100-day mark since
+      // the learner last opened the Mentor celebrates. Any other increase is
+      // an ordinary practised day and shows as the number alone.
+      if (crossedStreakMilestone(lastSeen, stats.streakDays) !== null) {
         setStreakJustAdvanced(true);
       }
       rememberSeenStreak(userId, stats.streakDays);

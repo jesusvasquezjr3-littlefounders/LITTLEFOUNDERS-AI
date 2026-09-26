@@ -40,7 +40,10 @@ export type InsightEvent =
   | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke'
   // parent report + achievement sharing (0072). All require a signed-in
   // caller. badge_link_click (viewer reach) is retired under OD-20.
-  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared';
+  | 'parent_report_viewed' | 'badge_generated' | 'badge_shared'
+  // B.5 (S05.3d): the result screen showed "your saved best is still X". Its
+  // denominator, replay_below_best, is written by Core only and is not listed.
+  | 'replay_notice_view';
 
 export type InsightRouteClass =
   | 'learn'

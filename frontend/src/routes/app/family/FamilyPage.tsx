@@ -9,6 +9,7 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
+import { LearningBridgesPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
 import { ManageKidPanel } from './ManageKidPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
@@ -222,6 +223,11 @@ export function FamilyPage() {
                 token={token}
                 kidName={kid.displayName ?? kid.username ?? ''}
               />
+              {/* S05.3c: B.13's optional real-world prompts, then B.10's course-learning narrative. */}
+              <LearningBridgesPanel kidUserId={kid.userId} token={token} />
+              <LearningNarrativePanel kidUserId={kid.userId} token={token} />
+              {/* S05.3e: B.21's holiday pause for the child's learning streak. */}
+              <StreakPausePanel kidUserId={kid.userId} token={token} />
               <SocialRequestsPanel kidUserId={kid.userId} token={token} />
               <SocialGraphPanel kidUserId={kid.userId} token={token} />
               <SocialHistoryPanel kidUserId={kid.userId} token={token} />

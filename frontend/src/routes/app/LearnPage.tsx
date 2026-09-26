@@ -7,6 +7,8 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { CourseCarousel, type CarouselCourse } from '@/routes/app/learn/CourseCarousel';
 import { ChapterLessons } from '@/routes/app/learn/ChapterLessons';
+import { LearnerNarrativePanel } from '@/routes/app/learn/LearnerNarrativePanel';
+import { RegisterGraduationPanel } from '@/routes/app/learn/RegisterGraduationPanel';
 import { readCoursesCache, writeCoursesCache } from '@/routes/app/learn/coursesCache';
 import { findCurrentChapter, type CourseTree, type CurrentChapter } from '@/routes/app/learn/types';
 
@@ -196,6 +198,8 @@ export function LearnPage() {
       <h1 className="lf-headline -mb-2 text-content-muted">
         {firstName ? t('dashboard.learn.greeting', { name: firstName }) : t('dashboard.learn.greetingAnon')}
       </h1>
+      {/* S05.3f (B.23): the one-time graduation into an older register, when Core says one is owed. */}
+      <RegisterGraduationPanel />
 
       {showFilters && (
         <div>
@@ -284,6 +288,9 @@ export function LearnPage() {
           />
         </Reveal>
       )}
+
+      {/* S05.3c (B.9, B.13): the learner's decision journal, and an independent teen's "try it for real" prompts. */}
+      {state.status === 'ready' && <LearnerNarrativePanel />}
     </div>
   );
 }

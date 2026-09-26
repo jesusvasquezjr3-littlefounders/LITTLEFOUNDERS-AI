@@ -3,7 +3,9 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { loadCourseTree } from './learn.js';
+import { loadCourseTree, loadLearnerCourse, settleCourseBadges, type LearnerCourseTree } from './learn.js';
+import type { AgeScreenState } from '../services/ageScreen.js';
+import { commitCoursePathwayPlacement } from '../services/pathway/pathwayData.js';
 import {
   courseOutline,
   flattenTopicsForPlacement,
@@ -22,6 +24,7 @@ import {
   type PlacementTopic,
 } from '../services/placementAlgorithm.js';
 import { ageBandForIntake, runPlacementIntake } from '../services/placementIntake.js';
+import { placementFrame } from '../services/placementFraming.js';
 import {
   getFullOwnProfile,
   getPublishedCourseBySlug,
@@ -120,13 +123,21 @@ function signalsFrom(
   body: z.infer<typeof SignalsBody>,
   knownBirthDate: string | null | undefined,
   now: Date,
+  tree: LearnerCourseTree,
 ): PlacementSignals {
   return {
     claimedLevel: body.claimedLevel as ClaimedLevel | undefined,
     educationLevel: body.educationLevel as EducationLevel | undefined,
     ageYears: ageYearsFrom(body.birthDate ?? knownBirthDate, now),
     aiPriorFraction: body.aiPriorFraction,
+    // B.6 P6: Mentor mastery and skills shown in another stage, server-computed, never client-supplied.
+    graphPriorFraction: tree.pathway?.graphPriorFraction ?? undefined,
   };
+}
+
+/** B.6 P4: a course with no chapter open to this learner has nothing to place into. */
+function ageRestricted(tree: LearnerCourseTree): boolean {
+  return tree.pathway?.basis === 'unavailable';
 }
 
 /** The shape the client renders a finished placement with. */
@@ -140,6 +151,8 @@ function describeResult(done: DoneStep, topics: readonly PlacementTopic[]) {
     totalTopicCount: topics.length,
     method: done.method,
     cappedByPrerequisite: done.cappedByPrerequisite,
+    // B.15: a closed frame the client turns into growth-oriented, non-comparative copy.
+    framing: placementFrame(done),
   };
 }
 
@@ -188,11 +201,12 @@ export function placementRouter(): Router {
     if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
 
     const [tree, profiles] = await Promise.all([
-      loadCourseTree(user.accessToken, user.id, course),
+      loadCourseTree(user.accessToken, user.id, course, res.locals.ageScreen as AgeScreenState),
       getFullOwnProfile(user.accessToken, user.id),
     ]);
     if (!tree) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (!profiles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
+    if (ageRestricted(tree)) return fail(res, 403, 'COURSE_AGE_RESTRICTED', 'This course is not available for this age yet');
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
     /*
@@ -289,16 +303,17 @@ export function placementRouter(): Router {
     if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
 
     const [tree, profiles] = await Promise.all([
-      loadCourseTree(user.accessToken, user.id, course),
+      loadCourseTree(user.accessToken, user.id, course, res.locals.ageScreen as AgeScreenState),
       getFullOwnProfile(user.accessToken, user.id),
     ]);
     if (!tree) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (!profiles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
+    if (ageRestricted(tree)) return fail(res, 403, 'COURSE_AGE_RESTRICTED', 'This course is not available for this age yet');
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
     const topics = flattenTopicsForPlacement(tree);
     const graded = gradeQuizAnswers(listPlacementProbesForGrading(tree, locale), parsed.data.answers);
-    const signals = signalsFrom(parsed.data.signals, profiles[0]?.birth_date, new Date());
+    const signals = signalsFrom(parsed.data.signals, profiles[0]?.birth_date, new Date(), tree);
     const step = nextPlacementStep(topics, signals, graded);
 
     if (step.kind === 'done') {
@@ -335,16 +350,17 @@ export function placementRouter(): Router {
     if (!course) return fail(res, 404, NOT_FOUND, 'No such course');
 
     const [tree, profiles] = await Promise.all([
-      loadCourseTree(user.accessToken, user.id, course),
+      loadCourseTree(user.accessToken, user.id, course, res.locals.ageScreen as AgeScreenState),
       getFullOwnProfile(user.accessToken, user.id),
     ]);
     if (!tree) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     if (!profiles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
+    if (ageRestricted(tree)) return fail(res, 403, 'COURSE_AGE_RESTRICTED', 'This course is not available for this age yet');
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
     const topics = flattenTopicsForPlacement(tree);
     const graded = gradeQuizAnswers(listPlacementProbesForGrading(tree, locale), parsed.data.answers);
-    const signals = signalsFrom(parsed.data.signals, profiles[0]?.birth_date, new Date());
+    const signals = signalsFrom(parsed.data.signals, profiles[0]?.birth_date, new Date(), tree);
 
     // What the answers earned. Recomputed here rather than trusted from /step —
     // /step is a read and this is the write, and the write does not take the
@@ -363,7 +379,7 @@ export function placementRouter(): Router {
       if (clamped !== earned.frontier) placement = placeAtLearnerChoice(topics, clamped, 'learner_adjusted');
     }
 
-    const recorded = await commitCoursePlacement({
+    const legacyRow = {
       user_id: user.id,
       course_id: course.id,
       claimed_level: parsed.data.signals.claimedLevel ?? 'some',
@@ -372,7 +388,22 @@ export function placementRouter(): Router {
       start_topic_id: placement.startTopicId,
       start_lesson_id: placement.startLessonId,
       method: placement.method,
-    }, placement.creditedLessonIds);
+    };
+    /*
+     * B.6 P6 (pathway mode): the entry placement of the learner's pathway
+     * STAGE, through B.1's atomic pipeline extended per stage. The database
+     * refuses a credit outside that stage's chapters, so even a Core defect
+     * cannot credit another stage's pathway. A learner who reaches a new stage
+     * places again for it; earlier placements and credits stay (T2/T3).
+     */
+    const pathwayStage = tree.pathway?.pathwayStage ?? null;
+    const recorded = tree.pathway && pathwayStage
+      ? await commitCoursePathwayPlacement({
+        ...legacyRow,
+        pathway_stage: pathwayStage,
+        credited_topics: placement.creditedTopicCount,
+      }, placement.creditedLessonIds)
+      : await commitCoursePlacement(legacyRow, placement.creditedLessonIds);
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record placement');
     if (recorded === 'conflict') return fail(res, 409, 'PLACEMENT_ALREADY_COMPLETE', 'Placement was already completed for this course');
 
@@ -380,6 +411,12 @@ export function placementRouter(): Router {
     // never overwrite an existing birth_date.
     if (parsed.data.signals.birthDate !== undefined && !profiles[0]?.birth_date) {
       await patchOwnProfile(user.accessToken, user.id, { birth_date: parsed.data.signals.birthDate });
+    }
+
+    // Placement credits can complete a pathway: settle its badge now (B4), not on the next read.
+    if (tree.pathway) {
+      const refreshed = await loadLearnerCourse(user.accessToken, user.id, course, res.locals.ageScreen as AgeScreenState);
+      if (refreshed) await settleCourseBadges(user.id, course, refreshed);
     }
 
     return ok(res, describeResult(placement, topics), 201);

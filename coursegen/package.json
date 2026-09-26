@@ -27,6 +27,7 @@
     "author:publish": "tsx --env-file-if-exists=.env.production src/scripts/author-publish.ts",
     "catalog:check": "tsx src/catalog/check.ts",
     "graph:check": "tsx src/catalog/graphCheck.ts",
+    "kc:map": "tsx src/scripts/kc-topic-map.ts",
     "contract:check": "tsx src/contract/check.ts",
     "content:gates": "tsx src/contentGates/cli.ts",
     "v2:emit": "tsx src/v2/cli.ts",

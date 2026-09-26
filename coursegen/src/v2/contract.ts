@@ -34,6 +34,8 @@ export const V2_SEGMENT_CAPABILITIES = {
   'math.worked-example.v2': ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1'],
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
+  // B.12 (S05.3d): decide, then say why. Core's private rubric grades the choice and, separately, the reason.
+  'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
 } as const;
 
 export type V2SegmentType = keyof typeof V2_SEGMENT_CAPABILITIES;

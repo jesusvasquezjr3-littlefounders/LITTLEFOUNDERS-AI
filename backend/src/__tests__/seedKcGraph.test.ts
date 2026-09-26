@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { SeedSchema, assertAcyclic, assertTierOrder } from '../scripts/seed-kc-graph.js';
+import { KC_STRANDS, SeedSchema, assertAcyclic, assertDraftsDoNotGateActive, assertTierOrder } from '../scripts/seed-kc-graph.js';
 
 /*
  * Found by adversarial review, round 52 (2026-08-30, HIGH): the real seed
@@ -30,6 +30,15 @@ describe('the real seed file has no tier inversion and no cycle', () => {
 
   it('has no prerequisite that requires a HIGHER tier than the KC it unlocks', () => {
     expect(() => assertTierOrder(seed.kcs, seed.edges)).not.toThrow();
+  });
+
+  it('never lets a draft (S05.3a) KC gate an active one, so activation cannot re-gate learners', () => {
+    expect(() => assertDraftsDoNotGateActive(seed.kcs, seed.edges)).not.toThrow();
+  });
+
+  it('uses only the four declared strands, and the original 28 KCs keep their 0052 strands', () => {
+    for (const kc of seed.kcs) expect(KC_STRANDS).toContain(kc.strand);
+    for (const kc of seed.kcs.filter((k) => k.status === 'active')) expect(['money_math', 'entrepreneurship']).toContain(kc.strand);
   });
 
   it('every edge references a real KC in both directions', () => {
@@ -63,5 +72,29 @@ describe('assertTierOrder', () => {
       { key: 'b', tier_min: 2 },
     ];
     expect(() => assertTierOrder(kcs, [['a', 'b']])).not.toThrow();
+  });
+});
+
+describe('assertDraftsDoNotGateActive', () => {
+  it('refuses a draft prerequisite of an active KC', () => {
+    const kcs = [
+      { key: 'new', status: 'draft' as const },
+      { key: 'old', status: 'active' as const },
+    ];
+    expect(() => assertDraftsDoNotGateActive(kcs, [['new', 'old']])).toThrow(/would gate active KC/);
+  });
+
+  it('allows active→draft and draft→draft edges', () => {
+    const kcs = [
+      { key: 'a', status: 'active' as const },
+      { key: 'b', status: 'draft' as const },
+      { key: 'c', status: 'draft' as const },
+    ];
+    expect(() => assertDraftsDoNotGateActive(kcs, [['a', 'b'], ['b', 'c']])).not.toThrow();
+  });
+
+  it('defaults a KC without a status to active, as every 0052 row was', () => {
+    const parsed = SeedSchema.parse({ version: 1, kcs: [{ key: 'abc', strand: 'money_math', tier_min: 1, p_l0: 0.2, p_t: 0.1, p_g: 0.2, p_s: 0.1, title: { 'en-US': 'x', 'es-MX': 'x', 'pt-BR': 'x' }, objective: { 'en-US': 'x', 'es-MX': 'x', 'pt-BR': 'x' } }], edges: [], misconceptions: [] });
+    expect(parsed.kcs[0]!.status).toBe('active');
   });
 });

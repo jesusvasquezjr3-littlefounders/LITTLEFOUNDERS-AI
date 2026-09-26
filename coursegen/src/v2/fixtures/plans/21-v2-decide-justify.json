@@ -1,0 +1,98 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "saving-choices",
+  "lesson_id": "v2-decide-justify",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-saving-plan"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf tiene 12 monedas y un papalote cuesta 20: decide si guarda o gasta, y explica por qué.",
+  "title": {
+    "en-US": "Decide and say why",
+    "es-MX": "Decide y di por qué",
+    "pt-BR": "Decida e diga por quê"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          { "id": "save-first" },
+          { "id": "spend-all" }
+        ],
+        "reasons": [
+          { "id": "reason-goal" },
+          { "id": "reason-feel" },
+          { "id": "reason-lucky" }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "save-first"
+        ],
+        "reasonQuality": {
+          "reason-goal": "sound",
+          "reason-feel": "partial",
+          "reason-lucky": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have 12 coins. A kite costs 20.",
+          "choices": [
+            { "label": "Save 4 coins" },
+            { "label": "Spend all now" }
+          ],
+          "reasonPrompt": "Why is that a good choice?",
+          "reasons": [
+            { "label": "It gets me closer" },
+            { "label": "It feels good now" },
+            { "label": "I just picked one" }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tienes 12 monedas. Un papalote cuesta 20.",
+          "choices": [
+            { "label": "Guardar 4 monedas" },
+            { "label": "Gastar todo ahora" }
+          ],
+          "reasonPrompt": "¿Por qué es buena decisión?",
+          "reasons": [
+            { "label": "Me acerca a la meta" },
+            { "label": "Se siente bien ahora" },
+            { "label": "Solo elegí una" }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você tem 12 moedas. Uma pipa custa 20.",
+          "choices": [
+            { "label": "Guardar 4 moedas" },
+            { "label": "Gastar tudo agora" }
+          ],
+          "reasonPrompt": "Por que é uma boa escolha?",
+          "reasons": [
+            { "label": "Me deixa mais perto" },
+            { "label": "É bom agora" },
+            { "label": "Só escolhi uma" }
+          ]
+        }
+      }
+    }
+  ]
+}

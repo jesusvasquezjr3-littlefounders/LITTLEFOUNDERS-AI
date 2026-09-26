@@ -60,7 +60,8 @@ export interface SessionPlanResult {
 
 const MAX_REVIEW = 2;
 const MAX_FRONTIER = 4;
-const ZPD_TARGET = 0.75;
+/** The Mentor aims its next item at this predicted success (B.19 pins it inside the practice band). */
+export const ZPD_TARGET = 0.75;
 
 function pickLocale(text: Localized, locale: string): string {
   return text[locale as keyof Localized] ?? text['es-MX'] ?? Object.values(text)[0] ?? '';

@@ -33,7 +33,7 @@
     "preheader": "Your LittleFounders sign-in link.",
     "heading": "Sign in to LittleFounders",
     "body": "Tap the button to sign in. No password needed.",
-    "note": "The link works once and expires soon.",
+    "note": "The link works once. If it stops working, ask again.",
     "action": "Sign in",
     "safety": "Didn't try to sign in? You can ignore this email."
   },
@@ -42,7 +42,7 @@
     "preheader": "Reset your LittleFounders password.",
     "heading": "Reset your password",
     "body": "Tap the button to choose a new password.",
-    "note": "The link works once and expires soon.",
+    "note": "The link works once. If it stops working, ask again.",
     "action": "Reset password",
     "safety": "Didn't ask for this? Ignore this email; your password stays the same."
   }

@@ -20,7 +20,7 @@ import { readAgeScreen } from './ageScreen.js';
  *    third-party API.
  */
 
-/** Mirrors the 0028/0072 CHECK exactly. Closed by design (§1.9 rule 2). */
+/** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events) CHECK exactly. Closed by design (§1.9 rule 2). */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -51,7 +51,19 @@ export const RECORDABLE_EVENTS = [
   // so Core refuses it; the 0072 CHECK still permits it until the dated
   // removal narrows it (docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
   'parent_report_viewed', 'badge_generated', 'badge_shared',
+  // B.5 replay-notice display rate (S05.3d). replay_below_best is written by
+  // Core only (SERVER_ONLY_EVENTS); replay_notice_view by the result screen.
+  'replay_below_best', 'replay_notice_view',
+  // B.21 / B.24 motivation metrics (S05.3e, *_motivation_events.sql). All
+  // three are written by Core only (SERVER_ONLY_EVENTS).
+  'streak_rest_day', 'streak_restart', 'path_choice',
 ] as const;
+
+/**
+ * Events only Core may write. The client ingest drops them: a forged
+ * denominator would move a metric that must stay trustworthy.
+ */
+export const SERVER_ONLY_EVENTS: ReadonlySet<string> = new Set(['replay_below_best', 'streak_rest_day', 'streak_restart', 'path_choice']);
 
 export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 export const DEVICES = ['mobile', 'tablet', 'desktop'] as const;
@@ -143,6 +155,16 @@ export async function insertLearningEvents(rows: LearningEventInsert[]): Promise
  * but current beacon events always carry their own idempotency key. */
 export function serverEventId(): string {
   return randomUUID();
+}
+
+/**
+ * A stable idempotency key for a server event that may be observed more than
+ * once (S05.3e: a path choice is recorded when a lesson opens, and a reload
+ * opens it again). Same key, same uuid; the unique index drops the repeat.
+ */
+export function deterministicEventId(key: string): string {
+  const hex = createHash('sha256').update(key).digest('hex');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${((parseInt(hex.slice(16, 18), 16) & 0x3f) | 0x80).toString(16)}${hex.slice(18, 20)}-${hex.slice(20, 32)}`;
 }
 
 // ── Consent ─────────────────────────────────────────────────

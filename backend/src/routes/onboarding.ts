@@ -2,13 +2,12 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { nextStreak } from '../services/streak.js';
+import { isCalendarDate } from '../services/streak.js';
 import {
-  getLearningStatsForUpdate,
   getOnboardingResponse,
   insertOnboardingResponse,
-  patchLearningStats,
   patchOwnProfile,
+  recordLearningPracticeDay,
 } from '../services/supabaseRest.js';
 
 /*
@@ -16,13 +15,16 @@ import {
  * (required), an optional discovery-channel survey, and the
  * create-account-now-or-later offer. On completion, day-1 streak activates
  * (Duolingo-style: the platform gives an early win before the first lesson).
+ * Since S05.3e (B.21) the day is recorded by record_learning_practice_day:
+ * the habit streak model (rest days, never a reset over one missed day)
+ * advanced atomically under the stats row lock, touching no other stat.
  *
  * Write order is idempotency-load-bearing: profile, then learning_stats,
  * then the onboarding_responses row LAST. That row is the completion marker
  * (checked first, 409s a retry) — inserting it last means a mid-flight
  * failure after the profile/stats writes leaves the caller safely retryable
  * without double-counting the streak or re-patching the profile from stale
- * data (both writes are idempotent overwrites, not deltas).
+ * data (a same-day practice day is idempotent in the streak model).
  */
 
 const DISCOVERY_CHANNELS = ['friend', 'social_media', 'search', 'app_store', 'school', 'ad', 'other'] as const;
@@ -32,10 +34,7 @@ const OnboardingCompleteBody = z.object({
   discoveryChannel: z.enum(DISCOVERY_CHANNELS).optional(),
   accountOfferChoice: z.enum(['created_now', 'later']),
   /** Learner's local calendar date (YYYY-MM-DD) — same convention as POST /learn/lessons/:id/complete. */
-  localDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  localDate: z.string().refine(isCalendarDate, 'localDate must be YYYY-MM-DD').optional(),
 }).strict();
 
 export function onboardingRouter(): Router {
@@ -57,23 +56,9 @@ export function onboardingRouter(): Router {
     const profileOutcome = await patchOwnProfile(user.accessToken, user.id, profilePatch);
     if (profileOutcome !== 'ok') return fail(res, 502, 'INTERNAL', 'Could not save your profile');
 
-    // Read-modify-write, service role: null means Vault did not answer, never
-    // "this learner has zero stats" — the PATCH below is a blind overwrite
-    // and must not compute from assumed zeros (backend/AGENTS.md).
-    const stats = await getLearningStatsForUpdate(user.id);
-    if (!stats) return fail(res, 502, 'INTERNAL', 'Profile saved, but learning stats could not be updated');
     const todayLocal = parsed.data.localDate ?? new Date().toISOString().slice(0, 10);
-    const newStreak = nextStreak(stats.last_active_date, stats.streak_days, todayLocal);
-    const newLongestStreak = Math.max(stats.longest_streak ?? 0, newStreak);
-    const statsUpdated = await patchLearningStats(user.id, {
-      xp_points: stats.xp_points,
-      minutes_learned: stats.minutes_learned,
-      lessons_completed: stats.lessons_completed,
-      streak_days: newStreak,
-      longest_streak: newLongestStreak,
-      last_active_date: todayLocal,
-    });
-    if (!statsUpdated) return fail(res, 502, 'INTERNAL', 'Profile saved, but learning stats could not be updated');
+    const streak = await recordLearningPracticeDay(user.id, todayLocal);
+    if (!streak) return fail(res, 502, 'INTERNAL', 'Profile saved, but learning stats could not be updated');
 
     const recorded = await insertOnboardingResponse({
       user_id: user.id,
@@ -82,7 +67,7 @@ export function onboardingRouter(): Router {
     });
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record onboarding completion');
 
-    return ok(res, { streakDays: newStreak }, 201);
+    return ok(res, { streakDays: streak.current }, 201);
   });
 
   return router;

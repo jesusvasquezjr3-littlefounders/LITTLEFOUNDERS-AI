@@ -36,7 +36,7 @@ export interface ReleaseCheckDefinition {
    * check. Only the legacy gates 1-9 may be excused: Appendix C Stage 1 gives
    * no gate exemption to any draft, and B.17 says an over-ceiling lesson is
    * "split, not shipped as authored". The content and lesson-policy gates
-   * (11-16) are never exemptable.
+   * (11-16) and the reward and wellbeing gates (17-19) are never exemptable.
    */
   exemptable: boolean;
 }
@@ -71,6 +71,9 @@ export const FORGE_RELEASE_CHECKS: readonly ReleaseCheckDefinition[] = [
   { id: 'forge.gate.14.concept-cap', gate: 14, spec: ['B.17'], scope: 'document', exemptable: false, description: 'Gate 14: concept cap' },
   { id: 'forge.gate.15.mentor-misjudgment', gate: 15, spec: ['B.11'], scope: 'document', exemptable: false, description: 'Gate 15: mentor misjudgment episode' },
   { id: 'forge.gate.16.regional-adaptation', gate: 16, spec: ['B.16'], scope: 'document', exemptable: false, description: 'Gate 16: regional adaptation' },
+  { id: 'forge.gate.17.reward-mechanics', gate: 17, spec: ['B.22'], scope: 'document', exemptable: false, description: 'Gate 17: rewards are fixed and predictable' },
+  { id: 'forge.gate.18.wellbeing-language', gate: 18, spec: ['B.25', 'B.26', 'B.27'], scope: 'document', exemptable: false, description: 'Gate 18: shame, family-finance and manipulation language' },
+  { id: 'forge.gate.19.age-register', gate: 19, spec: ['B.23'], scope: 'document', exemptable: false, description: 'Gate 19: age register' },
   // ---- course release ---------------------------------------------------------
   { id: 'forge.release.lessons-complete', spec: ['G.2'], scope: 'course', exemptable: false, description: 'Every blueprint produced a release-ready lesson' },
   { id: 'forge.release.locales-complete', spec: ['G.2'], scope: 'course', exemptable: false, description: 'Every release-ready lesson has all three locales' },

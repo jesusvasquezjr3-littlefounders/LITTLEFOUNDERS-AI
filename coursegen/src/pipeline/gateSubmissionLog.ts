@@ -75,13 +75,15 @@ export interface GatePassRate {
   rate: number | null;
 }
 
-const ALL_GATES: readonly GateNumber[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+const ALL_GATES: readonly GateNumber[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
 /**
  * Per-gate first-submission pass rate. Only the FIRST entry per slot and
  * locale counts: a resumed run that writes the slot again is not a first
- * submission. Gate 1 (the contract) runs on every submission; gates 2-16 only
- * on submissions that parsed.
+ * submission. Gate 1 (the contract) runs on every submission; gates 2-19 are
+ * counted only on submissions that parsed (17-19 read the raw document, but the
+ * write stage runs them only once the draft parses, so an unparsed draft never
+ * counts as a pass for them).
  */
 export function firstSubmissionPassRates(entries: readonly GateSubmissionEntry[]): GatePassRate[] {
   const first = new Map<string, GateSubmissionEntry>();

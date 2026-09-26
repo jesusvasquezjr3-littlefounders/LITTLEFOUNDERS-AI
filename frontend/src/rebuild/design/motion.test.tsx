@@ -159,7 +159,11 @@ describe('milestone-only celebration (D7, OD-7, 07 §5)', () => {
 
   it('celebrates lesson complete on the result screen, and its continue action is the one breathing call to action', () => {
     const receipt = { schema_version: 2, completion_id: 'completion-3', lesson_id: 'lesson-1', version_id: 'rev-1', locale: 'en-US', first_try_correct: 3,
-      graded_count: 4, awarded_xp: 30, duration_seconds: 95, previous_best_percent: 50 };
+      graded_count: 4, awarded_xp: 30, duration_seconds: 95, previous_best_percent: 50, celebrations: ['lesson-complete'] };
+    // B.20 (S05.3e): the screen celebrates only what Core named; without Core's list nothing plays.
+    const plain = render(<LessonResultView rawReceipt={{ ...receipt, completion_id: 'completion-4', celebrations: undefined }} locale="en-US" onContinue={vi.fn()} />);
+    expect(plain.container.querySelector('.lf-celebration, [class*="lf-celebration-"]')).toBeNull();
+    plain.unmount();
     render(<LessonResultView rawReceipt={receipt} locale="en-US" onContinue={vi.fn()} />);
     const root = document.querySelector('.lf-celebration')!;
     expect(root).toHaveAttribute('data-milestone', 'lesson-complete');

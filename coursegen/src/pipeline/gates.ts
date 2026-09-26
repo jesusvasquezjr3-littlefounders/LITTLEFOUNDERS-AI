@@ -21,12 +21,20 @@ import { runLessonContentGates } from '../contentGates/lessonGates.js';
 import { audienceForTier } from '../contentGates/budgets.js';
 import { runLessonPolicyGates, type LessonPolicy } from '../contentGates/policyGates.js';
 import type { MarketInventory } from '../contentGates/regional.js';
+import { runRewardMechanicGate } from './rewardMechanicGate.js';
+import { runAgeRegisterGate, runWellbeingLanguageGate } from './wellbeingGates.js';
 
 // 11-13 are the Forge content gates (src/contentGates): 11 redundancy (B.18),
 // 12 Law 2 tone (B.14), 13 Copy Budget (OD-13). 14-16 are the lesson-policy
 // gates (src/contentGates/policyGates.ts): 14 concept cap (B.17), 15 mentor
 // misjudgment (B.11), 16 regional adaptation (B.16).
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
+// 17: the reward-mechanic structural gate (Appendix C Stage 2 gate 7, B.22,
+// S05.3e; rewardMechanicGate.ts). Numbered clear of the content gates
+// (11-16) so the lists merge without renumbering.
+// 18: shame, family-finance and manipulation language (Appendix C Stage 2
+// gate 4, B.26, B.27, B.25). 19: the age register (B.23). Both S05.3f
+// (wellbeingGates.ts), numbered after 17 for the same reason.
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -38,6 +46,8 @@ export interface GateReport {
   ok: boolean;
   problems: GateProblem[];
   document?: LessonDocumentParsed;
+  /** Flags for the Stage 3 pedagogical reviewer that do not block (B.22 mystery-reward language). */
+  review?: GateProblem[];
 }
 
 // ---- Gate 1: contract Zod parse ---------------------------------------------
@@ -2592,9 +2602,26 @@ export function runPlanFidelityGate(
 }
 
 export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport {
+  // Gate 17 reads the raw document, so a randomized reward is named for what
+  // it is even when the contract gate also refuses the document.
+  const reward = runRewardMechanicGate(rawDocument);
+  const rewardProblems: GateProblem[] = reward.blocking.map((finding) => ({ gate: 17, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` }));
+  const review: GateProblem[] = reward.review.map((finding) => ({ gate: 17, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` }));
+  // Gates 18 and 19 also read the raw document: a lives field or a shaming
+  // line is named even when the contract gate refuses the document too.
+  const wellbeing = runWellbeingLanguageGate(rawDocument, NON_VISIBLE_KEYS);
+  const register = runAgeRegisterGate(rawDocument, NON_VISIBLE_KEYS, ctx.taxonomy?.age_tiers?.[ctx.tier]?.ages);
+  const wellbeingProblems: GateProblem[] = [
+    ...wellbeing.blocking.map((finding) => ({ gate: 18 as const, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` })),
+    ...register.blocking.map((finding) => ({ gate: 19 as const, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` })),
+  ];
+  review.push(
+    ...wellbeing.review.map((finding) => ({ gate: 18 as const, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` })),
+    ...register.review.map((finding) => ({ gate: 19 as const, segmentId: finding.segmentId, message: `${finding.path}: ${finding.message}` })),
+  );
   const gate1 = runContractGate(rawDocument);
   if (!gate1.ok || !gate1.document) {
-    return { ok: false, problems: gate1.problems };
+    return { ok: false, problems: [...rewardProblems, ...wellbeingProblems, ...gate1.problems], ...(review.length ? { review } : {}) };
   }
   const document = gate1.document;
   const problems: GateProblem[] = [
@@ -2614,6 +2641,8 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     ...runLessonContentGates(document, audienceForTier(ctx.taxonomy, ctx.tier, ctx.register ?? 'kid')).problems,
     // Gates 14-16 (S05.4b): concept cap B.17, mentor misjudgment B.11, regional adaptation B.16.
     ...runLessonPolicyGates(document, ctx.lessonPolicy, ctx.markets).problems,
+    ...rewardProblems,
+    ...wellbeingProblems,
   ];
-  return { ok: problems.length === 0, problems, document };
+  return { ok: problems.length === 0, problems, document, ...(review.length ? { review } : {}) };
 }

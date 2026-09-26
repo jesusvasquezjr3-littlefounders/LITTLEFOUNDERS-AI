@@ -25,7 +25,8 @@ export type SfxName =
 export const SFX_VOLUME = 0.075
 
 // v1 context mapping (SoundContext SOUND_MAP + LessonRunner/activities usage):
-// correct answers played edu_success, wrong answers edu_error, lesson
+// correct answers played edu_success, wrong answers edu_error (replaced by
+// the neutral tap in S05.3f, B.26), lesson
 // completion edu_complete, and EVERY in-activity interaction (select, drag,
 // drop, flip) played ui_tap. v1's lesson engine had no streak moment; its
 // games used the combo asset for perfect streaks, so streak maps there.
@@ -33,7 +34,10 @@ export const SFX_VOLUME = 0.075
 export const SFX_SRC: Record<SfxName, string> = {
   correct: '/sounds/edu/success.mp3',
   perfect: '/sounds/edu/success.mp3',
-  tryagain: '/sounds/edu/error.mp3',
+  // B.26 (S05.3f): a miss is not an error. The v1 "edu_error" buzzer encoded a
+  // wrong answer as a failure sound; a not-yet answer now gets the neutral
+  // interaction tap, and the cross and the hint banner carry the information.
+  tryagain: '/sounds/ui/tap.mp3',
   celebration: '/sounds/edu/lesson_complete.mp3',
   streak: '/sounds/edu/combo.mp3',
   flip: '/sounds/ui/tap.mp3',

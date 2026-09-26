@@ -43,7 +43,7 @@ beforeAll(async () => {
 });
 
 describe('getExperimentResults — statistical correctness', () => {
-  it('reports a clear, correctly-signed winner for an obviously different "events" metric', async () => {
+  it('reports a clear, correctly-signed difference for an "events" metric, and never names it a winner (B.28)', async () => {
     const variantAUsers = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
     const variantBUsers = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
 
@@ -72,7 +72,10 @@ describe('getExperimentResults — statistical correctness', () => {
     // With the normCDF inversion, this would report ~0.95-1.0 and significant:false.
     expect(results!.pValue).toBeLessThan(0.05);
     expect(results!.significant).toBe(true);
-    expect(results!.winner).toBe('B');
+    // B.28: engagement volume is diagnosed, never won on.
+    expect(results!.higher).toBe('B');
+    expect(results!.engagementVolume).toBe(true);
+    expect(results!.winner).toBeNull();
   });
 
   it('does not collapse "users" metric samples to a constant across variants', async () => {

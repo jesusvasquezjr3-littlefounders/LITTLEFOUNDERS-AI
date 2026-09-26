@@ -33,7 +33,7 @@
     "preheader": "Tu enlace para entrar a LittleFounders.",
     "heading": "Entra a LittleFounders",
     "body": "Toca el botón para entrar. No necesitas contraseña.",
-    "note": "El enlace funciona una vez y vence pronto.",
+    "note": "El enlace funciona una vez. Si deja de funcionar, pide otro.",
     "action": "Iniciar sesión",
     "safety": "¿No intentaste entrar? Puedes ignorar este correo."
   },
@@ -42,7 +42,7 @@
     "preheader": "Restablece tu contraseña de LittleFounders.",
     "heading": "Restablece tu contraseña",
     "body": "Toca el botón para elegir una contraseña nueva.",
-    "note": "El enlace funciona una vez y vence pronto.",
+    "note": "El enlace funciona una vez. Si deja de funcionar, pide otro.",
     "action": "Restablecer contraseña",
     "safety": "¿No lo pediste? Ignora este correo; tu contraseña no cambia."
   }

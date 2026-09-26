@@ -1,6 +1,6 @@
 import type { Locale } from '../design/copyBudget';
 import { RebuildRoot } from '../design/controls';
-import { LessonDocumentView, type OnGrade, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeWorkedExample } from './LessonDocumentView';
+import { LessonDocumentView, type OnGrade, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeReasoning, type OnGradeWorkedExample } from './LessonDocumentView';
 import { loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
 
 const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
@@ -15,7 +15,7 @@ const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
  * the design system's root itself (tokens, `app` container, theme, language),
  * because the route that renders it belongs to the legacy application.
  */
-export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onComplete, metSegmentIds, attemptedSegmentIds }: {
+export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds, attemptedSegmentIds }: {
   raw: unknown;
   responseLocale: string;
   mentorStage?: unknown;
@@ -28,6 +28,7 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   onGradeBarModel?: OnGradeBarModel;
   onGradeSchemaDiagram?: OnGradeSchemaDiagram;
   onGradeWorkedExample?: OnGradeWorkedExample;
+  onGradeReasoning?: OnGradeReasoning;
   onComplete?: () => Promise<boolean>;
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
@@ -39,6 +40,6 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   const ageBand = loaded.status === 'ready' ? loaded.document.age_band : '6-9';
   return <RebuildRoot theme={theme} locale={locale} ageBand={loaded.status === 'ready' ? ageBand : undefined}>
     <LessonDocumentView raw={raw} locale={locale} ageBand={ageBand} theme={theme} onBack={onBack} onGrade={onGrade}
-      onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={stage} />
+      onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={stage} />
   </RebuildRoot>;
 }

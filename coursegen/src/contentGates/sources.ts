@@ -335,9 +335,13 @@ export function loadUiSourceLiterals(sourceRoot: string): Array<Omit<UiString, '
   const literal = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g;
   for (const file of listSourceFiles(sourceRoot)) {
     const source = readFileSync(file, 'utf8');
+    // The learner register policy (B.23/B.25/B.26, mirrored from Core) lists the phrases its detectors REFUSE as
+    // `word('...')` regular expressions; those patterns are never shown to anyone, so they are not UI copy.
+    const detectorLexicon = /learnerRegisterPolicy\.generated\.ts$/.test(file);
     let match: RegExpExecArray | null;
     while ((match = literal.exec(source)) !== null) {
       const text = match[1] ?? match[2] ?? match[3] ?? '';
+      if (detectorLexicon && source.slice(Math.max(0, match.index - 5), match.index) === 'word(') continue;
       if (!/[\p{L}]{2,}\s+[\p{L}]{2,}/u.test(text)) continue; // prose only; identifiers, paths and class names have no spaced words
       const line = source.slice(0, match.index).split('\n').length;
       out.push({ file: path.relative(path.dirname(sourceRoot), file).replace(/\\/g, '/'), key: `line ${line}`, text });

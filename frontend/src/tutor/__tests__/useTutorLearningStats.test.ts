@@ -43,7 +43,19 @@ describe('useTutorLearningStats — the Tutor reads real /profile numbers', () =
     expect(result.current.streakJustAdvanced).toBe(false);
   });
 
-  it('celebrates once the streak is longer than the last time this learner opened the Tutor', async () => {
+  it('celebrates once the streak crossed a milestone (7, 30, 100) since the learner last opened the Tutor', async () => {
+    window.localStorage.setItem('lf.tutor.lastSeenStreak.kid-1', '6');
+    mockApi.mockResolvedValue({
+      data: { learningStats: { xpPoints: 250, streakDays: 7 } },
+      error: null,
+    });
+    const { result } = renderHook(() => useTutorLearningStats('tok', 'kid-1'));
+
+    await waitFor(() => expect(result.current.streakJustAdvanced).toBe(true));
+    expect(window.localStorage.getItem('lf.tutor.lastSeenStreak.kid-1')).toBe('7');
+  });
+
+  it('B.20 / OD-7 (S05.3e): an ordinary increase that crosses no milestone does not celebrate', async () => {
     window.localStorage.setItem('lf.tutor.lastSeenStreak.kid-1', '11');
     mockApi.mockResolvedValue({
       data: { learningStats: { xpPoints: 250, streakDays: 12 } },
@@ -51,7 +63,8 @@ describe('useTutorLearningStats — the Tutor reads real /profile numbers', () =
     });
     const { result } = renderHook(() => useTutorLearningStats('tok', 'kid-1'));
 
-    await waitFor(() => expect(result.current.streakJustAdvanced).toBe(true));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.streakJustAdvanced).toBe(false);
     expect(window.localStorage.getItem('lf.tutor.lastSeenStreak.kid-1')).toBe('12');
   });
 
@@ -68,9 +81,9 @@ describe('useTutorLearningStats — the Tutor reads real /profile numbers', () =
   });
 
   it('dismissStreakCelebration clears the flag on demand', async () => {
-    window.localStorage.setItem('lf.tutor.lastSeenStreak.kid-1', '11');
+    window.localStorage.setItem('lf.tutor.lastSeenStreak.kid-1', '28');
     mockApi.mockResolvedValue({
-      data: { learningStats: { xpPoints: 250, streakDays: 12 } },
+      data: { learningStats: { xpPoints: 250, streakDays: 31 } },
       error: null,
     });
     const { result } = renderHook(() => useTutorLearningStats('tok', 'kid-1'));

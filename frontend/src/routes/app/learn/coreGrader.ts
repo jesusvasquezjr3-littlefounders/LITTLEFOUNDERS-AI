@@ -1,5 +1,6 @@
 import { api } from '@/lib/api';
 import type { GradeMeta, Grader, Verdict } from '@/lesson-engine/core/types';
+import { guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 
 /*
  * Production Grader (LESSON_ENGINE.md §6-§7) — POSTs each segment attempt to
@@ -24,6 +25,12 @@ export function createCoreGrader(
   lessonId: string,
   getToken: () => Promise<string | null>,
   runId?: string,
+  /**
+   * B.26 / OD-1 (S05.3f): after consecutive misses on one skill Core's grade
+   * response carries the Mentor's guided-review offer. It rides beside the
+   * verdict (never inside it), so the verdict contract is unchanged.
+   */
+  options: { onGuidedReview?: (offer: GuidedReviewOfferValue) => void } = {},
 ): Grader {
   return {
     async grade(segmentId: string, answer: unknown, meta: GradeMeta): Promise<Verdict> {
@@ -32,12 +39,14 @@ export function createCoreGrader(
       if (runId) body.run_id = runId;
       if (typeof meta.hints_used === 'number') body.hints_used = meta.hints_used;
       if (typeof meta.time_spent_seconds === 'number') body.time_spent_seconds = meta.time_spent_seconds;
-      const { data, error } = await api<{ verdict: Verdict }>(`/learn/lessons/${lessonId}/grade`, {
+      const { data, error } = await api<{ verdict: Verdict; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
         method: 'POST',
         token,
         body,
       });
       if (error) throw new Error(error.code);
+      const offer = guidedReviewOfferSchema.safeParse(data.guided_review);
+      if (offer.success) options.onGuidedReview?.(offer.data);
       return data.verdict;
     },
   };

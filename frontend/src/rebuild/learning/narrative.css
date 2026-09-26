@@ -1,0 +1,64 @@
+/* B.9 / S05.3c. Tokens only; separation by fill, never by outline (Bible 02 §4.4). */
+
+/* The recall is a single-state moment: one dominant hue, full bleed (rule 15). */
+.lf-recall { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--primary); color: var(--on-primary); display: grid; align-items: center; }
+.lf-recall-inner { display: grid; gap: var(--spacing-5); inline-size: 100%; max-inline-size: 640px; margin-inline: auto; }
+.lf-recall-inner > * { min-inline-size: 0; }
+.lf-recall h1 { font-size: 2rem; }
+.lf-recall-source { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--on-primary); color: var(--primary-ridge); font-weight: 800; }
+.lf-recall-situation { font-size: 1.25rem; font-weight: 700; line-height: 1.35; }
+.lf-recall-card { display: grid; gap: var(--spacing-2); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--primary-ridge); color: var(--on-primary); }
+.lf-recall-card--quiet { background: transparent; padding-inline: 0; padding-block: 0; }
+.lf-recall-inner > .lf-button { justify-self: start; }
+.lf-recall-label { font-size: .875rem; font-weight: 800; }
+.lf-recall-choice { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.5rem; line-height: 1.25; }
+.lf-recall-first { font-weight: 700; }
+.lf-recall-reflect { font-weight: 800; font-size: 1.125rem; }
+.lf-recall .lf-actions { max-inline-size: 420px; }
+.lf-recall .lf-button { min-block-size: var(--target-lg); font-size: 1.125rem; }
+.lf-recall :is(button):focus-visible { outline-color: var(--on-primary); }
+
+/* The journal is a dashboard: a neutral page with coloured cards (rule 15). */
+.lf-journal { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
+.lf-journal-inner { display: grid; gap: var(--spacing-6); max-inline-size: 760px; margin-inline: auto; }
+.lf-journal-inner > * { min-inline-size: 0; }
+.lf-journal-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-journal-section { display: grid; gap: var(--spacing-3); }
+.lf-journal-section h2 { font-size: 1.25rem; }
+.lf-journal-list { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-journal-entry { display: grid; gap: var(--spacing-3); padding: var(--spacing-2); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--shadow-control); }
+.lf-journal-entry { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.lf-journal-entry > .lf-journal-meta, .lf-journal-entry > .lf-journal-details { grid-column: 1 / -1; }
+.lf-journal-entry > .lf-journal-toggle { margin-inline-end: var(--spacing-2); }
+.lf-journal-toggle[aria-expanded='true'] .lf-system-glyph { rotate: 90deg; }
+.lf-journal-meta { display: flex; padding: var(--spacing-2) var(--spacing-3) 0; flex-wrap: wrap; gap: var(--spacing-1) var(--spacing-3); color: var(--content-muted); font-size: .875rem; font-weight: 800; overflow-wrap: anywhere; }
+.lf-journal-details { display: grid; gap: var(--spacing-2); padding: 0 var(--spacing-3) var(--spacing-3); }
+.lf-journal-situation { font-weight: 700; }
+.lf-journal-choice { display: grid; gap: var(--spacing-1); margin-inline: var(--spacing-3); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--content); }
+.lf-journal-choice > span:first-child { color: var(--primary-strong); font-weight: 800; font-size: .875rem; }
+.lf-journal-choice > span:nth-child(2) { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.125rem; line-height: 1.3; overflow-wrap: break-word; }
+.lf-journal-outcome { color: var(--content); }
+.lf-journal-outcome > span:first-child, .lf-journal-first > span:first-child { font-weight: 800; }
+.lf-journal-note { color: var(--content-muted); font-weight: 700; }
+.lf-journal-state { min-block-size: min(50dvh, 360px); display: grid; align-content: center; gap: var(--spacing-3); }
+.lf-journal-clear { display: grid; gap: var(--spacing-3); padding: var(--spacing-4) var(--spacing-5); border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-journal-clear .lf-actions { max-inline-size: 480px; }
+.lf-journal .lf-journal-section > .lf-button, .lf-journal-top > .lf-button { justify-self: start; }
+
+/* Self-directed bridge (Option B): an identity card, never a status or a reward. */
+.lf-bridge-self { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--mint-soft); color: var(--content); }
+.lf-bridge-self-skill { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--mint); color: var(--on-mint); font-weight: 800; overflow-wrap: anywhere; }
+.lf-bridge-self p { font-weight: 700; }
+
+
+@container app (min-width: 640px) {
+  .lf-recall, .lf-journal { padding: var(--spacing-8); }
+  .lf-recall h1 { font-size: 2.5rem; }
+}
+
+/* The learner shortcut (S05.3c): transparent, so it sits on its host page's own surface. */
+.lf-learner-shortcut { display: grid; align-content: start; gap: var(--spacing-4); background: transparent; color: var(--content); }
+.lf-learner-shortcut .lf-journal-section { align-content: start; }
+.lf-learner-shortcut .lf-journal-section h2 { font-size: 1.5rem; }
+.lf-learner-shortcut > * { min-inline-size: 0; }
+.lf-learner-shortcut-link { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }

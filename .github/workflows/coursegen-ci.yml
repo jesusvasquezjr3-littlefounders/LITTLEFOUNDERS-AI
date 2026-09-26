@@ -6,11 +6,13 @@ on:
     paths:
       - 'coursegen/**'
       - 'database/types/**'
+      - 'database/seeds/**'
       - '.github/workflows/coursegen-ci.yml'
   pull_request:
     paths:
       - 'coursegen/**'
       - 'database/types/**'
+      - 'database/seeds/**'
       - '.github/workflows/coursegen-ci.yml'
 
 jobs:

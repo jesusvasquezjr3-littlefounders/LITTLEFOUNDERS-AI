@@ -1,0 +1,11 @@
+/* B.21 / S05.3e. A Family Hub section: a neutral page with a coloured card
+   (Bible 02 rule 15). Tokens only; separation by fill, never by outline (4.4). */
+.lf-streak-pause { min-block-size: 0; display: grid; gap: var(--spacing-4); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--base); color: var(--content); }
+.lf-streak-pause > * { min-inline-size: 0; }
+.lf-streak-pause h2 { font-size: 1.5rem; }
+.lf-streak-pause-summary { justify-self: start; padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-full); background: var(--reward-soft); color: var(--content); font-weight: 800; }
+.lf-streak-pause-form, .lf-streak-pause-active { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--shadow-control); }
+.lf-streak-pause-rule { color: var(--content-muted); font-weight: 700; }
+.lf-streak-pause-dates { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--spacing-3); }
+.lf-streak-pause-form > .lf-button, .lf-streak-pause-active > .lf-button { justify-self: start; }
+.lf-streak-pause-notice { min-inline-size: 0; }

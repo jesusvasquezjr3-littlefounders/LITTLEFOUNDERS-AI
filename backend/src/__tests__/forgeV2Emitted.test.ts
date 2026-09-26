@@ -27,7 +27,8 @@ const rowOf = (lesson: string, locale = 'es-MX') => clone(rows.find((row) => row
 describe('Forge-emitted v2 rows under Core\'s strict contract', () => {
   it('accepts every committed row: all segment kinds, all three markets', () => {
     expect(rows.length).toBeGreaterThanOrEqual(60);
-    expect(new Set(rows.flatMap((row) => row.document.segments.map((segment) => segment.type))).size).toBe(21);
+    // Every v2 segment kind: the 21 of S05.2 plus B.12's decide-and-justify (S05.3d).
+    expect(new Set(rows.flatMap((row) => row.document.segments.map((segment) => segment.type))).size).toBe(22);
     expect(checkForgeV2Rows(rows)).toEqual([]);
   });
 

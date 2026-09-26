@@ -6,8 +6,10 @@ import { firstNameOnly, purgeBadgeImageIfUnreferenced, renderAchievementImage } 
 import { acceptGuardianInvite, createGuardianInvite, getGuardianInvitePreview } from '../services/guardianLifecycle.js';
 import { assembleCourseTree } from '../services/courseTree.js';
 import { eraseNow } from '../services/accountDeletion.js';
+import { applyCoursePathway } from '../services/pathway/coursePathway.js';
+import { courseEngine, coursePathwayInputs, loadLearnerPathwayContext, loadPathwayContent, readLearnerPlacementState } from '../services/pathway/pathwayData.js';
 import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
-import { declaredBandForDate, recordAgeScreen } from '../services/ageScreen.js';
+import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
 import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
 import { profileFieldFlags, reviewProfileFields } from '../services/profileFieldSafety.js';
@@ -577,7 +579,24 @@ export function familyRouter(): Router {
       if (storedEvent === null) console.warn('[backend] territory_view event dropped (Vault unavailable)');
     })();
 
-    const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, progress);
+    /*
+     * The SAME tree the kid sees, so the kid's placement credits count here as
+     * they do on the kid's own map (0043: credited lessons count as passed).
+     * In pathway mode (B.6, S05.3b) the kid's own pathway is applied: the
+     * KID's age evidence, Mentor mastery and badges — read with the service
+     * role after the verified-link guard above — never the parent's.
+     */
+    const placementState = await readLearnerPlacementState(kidId, course.id);
+    if (!placementState) return fail(res, 502, DATA_UNAVAILABLE, 'Progress unreachable');
+    const linearTree = assembleCourseTree(course, adventures, sagas, topics, lessons, progress, placementState.creditedLessonIds, placementState.hasLegacyPlacement);
+    let tree = linearTree;
+    if (courseEngine() === 'pathway') {
+      const kidScreen = await readAgeScreen(kidId);
+      const ctx = kidScreen ? await loadLearnerPathwayContext(kidId, kidScreen) : null;
+      const content = ctx ? await loadPathwayContent(adventures.map((a) => a.id), topics.map((t) => t.id), ctx.kcKeyById) : null;
+      if (!ctx || !content) return fail(res, 502, DATA_UNAVAILABLE, 'Progress unreachable');
+      tree = applyCoursePathway(linearTree, coursePathwayInputs(course, adventures.map((a) => a.id), content, ctx, placementState.hasLegacyPlacement));
+    }
     const stats = statsRows[0] ?? null;
 
     return ok(res, {

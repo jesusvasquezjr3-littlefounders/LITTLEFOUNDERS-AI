@@ -212,12 +212,27 @@ function readPng(bytes) {
   return { width, height, colourType, channels, pixels };
 }
 
+// A translation key is copy, not an asset id: `lesson.results.saving` is the `results.saving` entry of the
+// en-US `lesson` namespace file. Legacy surfaces that import a rebuilt module (so their text is scanned)
+// carry such keys (plural forms included); a key that resolves in the namespace bundles is never read as an asset reference.
+const i18nRoot = resolve(root, 'src/i18n/en-US');
+const namespaces = Object.fromEntries(readdirSync(i18nRoot).filter((name) => name.endsWith('.json'))
+  .map((name) => [name.slice(0, -5), JSON.parse(readFileSync(resolve(i18nRoot, name), 'utf8'))]));
+const isTranslationKey = (literal) => {
+  const stem = literal.split('${')[0].replace(/\.$/, '');
+  const node = lookup(namespaces, stem);
+  if (literal.includes('${')) return node !== null && typeof node === 'object';
+  // i18next plurals: `lesson.intro.minutes` resolves through `minutes_one` / `minutes_other`.
+  return node !== undefined || lookup(namespaces, `${stem}_other`) !== undefined;
+};
 // Every literal (or template) under /rebuild/ in the app, as a pattern: `${…}` matches any segment text.
 const pattern = (literal) => new RegExp(`^${literal.split(/\$\{[^}]*\}/).map((part) => part.replace(/[.*+?^()|[\]\\/]/g, '\\$&')).join('[^/]*')}$`);
 const pathRefs = [], idRefs = [];
 for (const [file, text] of sources) {
   for (const m of text.matchAll(/['"`](\/rebuild\/[^'"`\s]+?\.(?:png|webp|svg|json|lottie))['"`]/g)) pathRefs.push({ file, literal: m[1], re: pattern(m[1]) });
-  for (const m of text.matchAll(/['"`]((?:lesson|mentor|badge|course|pocket|empty|scene|task|coin|celebration)\.[a-z0-9.${}-]+)['"`]/g)) idRefs.push({ file, literal: m[1], re: pattern(m[1]) });
+  for (const m of text.matchAll(/['"`]((?:lesson|mentor|badge|course|pocket|empty|scene|task|coin|celebration)\.[a-z0-9.${}-]+)['"`]/g)) {
+    if (!isTranslationKey(m[1])) idRefs.push({ file, literal: m[1], re: pattern(m[1]) });
+  }
 }
 
 const classB = manifest.filter((row) => row.class !== 'A');

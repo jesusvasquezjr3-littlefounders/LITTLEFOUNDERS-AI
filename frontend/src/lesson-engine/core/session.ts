@@ -26,7 +26,6 @@ export interface SessionState {
   seg: Record<string, SegmentState>
   streak: number
   bestStreak: number
-  hearts: number | null
   outcome: 'passed' | 'failed' | null
 }
 
@@ -54,7 +53,7 @@ export function isGraded(segment: SegmentBase): boolean {
   return segment.xp > 0
 }
 
-export function initialSession(doc: LessonDocument): SessionState {
+export function initialSession(_doc: LessonDocument): SessionState {
   return {
     phase: 'intro',
     stepPhase: 'answer',
@@ -62,7 +61,9 @@ export function initialSession(doc: LessonDocument): SessionState {
     seg: {},
     streak: 0,
     bestStreak: 0,
-    hearts: doc.scoring.hearts,
+    // OD-1 and B.26 (S05.3f): no lives. A wrong answer never spends anything
+    // and never ends a lesson early; the legacy `scoring.hearts` field of a
+    // migrated document (OD-9) is ignored, never read.
     outcome: null,
   }
 }
@@ -79,7 +80,7 @@ export function createSessionReducer(doc: LessonDocument) {
     return {
       ...state,
       phase: 'results',
-      outcome: state.hearts === 0 ? 'failed' : score >= pass_threshold ? 'passed' : 'failed',
+      outcome: score >= pass_threshold ? 'passed' : 'failed',
     }
   }
 
@@ -109,15 +110,11 @@ export function createSessionReducer(doc: LessonDocument) {
         if (firstTryCorrect) streak = state.streak + 1
         else if (done && !action.verdict.correct) streak = 0
 
-        let hearts = state.hearts
-        if (hearts !== null && done && !action.verdict.correct) hearts = Math.max(0, hearts - 1)
-
         return {
           ...state,
           stepPhase: 'feedback',
           streak,
           bestStreak: Math.max(state.bestStreak, streak),
-          hearts,
           seg: {
             ...state.seg,
             [action.segmentId]: {
@@ -174,7 +171,6 @@ export function createSessionReducer(doc: LessonDocument) {
 
       case 'NEXT': {
         if (state.phase !== 'playing') return state
-        if (state.hearts === 0) return finish(state)
         const nextIndex = state.index + 1
         if (nextIndex >= doc.segments.length) return finish(state)
         return { ...state, index: nextIndex, stepPhase: 'answer' }

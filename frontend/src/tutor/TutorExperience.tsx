@@ -59,6 +59,7 @@ import { useMicrophone, type Microphone } from './useMicrophone';
 import { useTutorSocket } from './useTutorSocket';
 import type { SessionSummary, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
 import type { CharacterCue } from '@/lesson-engine/core/types';
+import { guidedReviewSkillFrom } from '@/routes/app/learn/paths';
 
 /*
  * The Tutor, as the learner meets it (/ORACLE.md §1).
@@ -800,6 +801,24 @@ export function TutorExperience() {
     // memoized function, not a dependency that could ever loop back into it.
     [token, offers, calibration],
   );
+
+  /*
+   * B.26 / OD-1 (S05.3f): THE GUIDED REVIEW THE LEARNER ACCEPTED. After
+   * consecutive misses on one skill, the lesson offered a review with this
+   * Mentor and the learner said yes; the link carries that skill's key. The
+   * weak-skill session starts once, as soon as the offers are in and the day
+   * allows a session, exactly as if the learner had picked that chip. A link
+   * that is not a skill key does nothing; a refusal (the day's limit) shows
+   * the usual state and never retries on its own.
+   */
+  const guidedReviewSkill = useMemo(() => guidedReviewSkillFrom(window.location.search), []);
+  const guidedReviewStarted = useRef(false);
+  useEffect(() => {
+    if (!guidedReviewSkill || guidedReviewStarted.current || session) return;
+    if (phase !== 'introducing' || !offers?.canStart || starting || !token || !calibration || calibration.required) return;
+    guidedReviewStarted.current = true;
+    begin({ intent: 'weak_skill', skillKey: guidedReviewSkill, wantsVoice: false });
+  }, [guidedReviewSkill, phase, offers, starting, token, calibration, session, begin]);
 
   /*
    * OPEN A SAVED CONVERSATION, ON THE ISLAND IT HAPPENED ON.

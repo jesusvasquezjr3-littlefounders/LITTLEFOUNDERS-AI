@@ -20,8 +20,11 @@ test('the shipped Forge gates, release manifest and release_course requirements 
 });
 
 test('RED when Forge gains a gate that the release manifest does not record', () => {
-  const problems = checkReleaseGateParity({ ...real, gatesSource: gatesSource.replace('| 15 | 16;', '| 15 | 16 | 17;') });
-  assert.ok(problems.some((p) => p.includes('Forge gate 17') && p.includes('reach release unchecked')));
+  // The union's last member is the newest gate; a gate after it with no release check must turn the parity red.
+  const grown = gatesSource.replace('| 17 | 18 | 19;', '| 17 | 18 | 19 | 20;');
+  assert.notEqual(grown, gatesSource);
+  const problems = checkReleaseGateParity({ ...real, gatesSource: grown });
+  assert.ok(problems.some((p) => p.includes('Forge gate 20') && p.includes('reach release unchecked')));
 });
 
 test('RED when the manifest records a check the database does not require', () => {

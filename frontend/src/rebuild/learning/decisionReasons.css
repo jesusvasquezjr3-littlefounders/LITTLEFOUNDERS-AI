@@ -1,0 +1,11 @@
+/* B.12 (S05.3d): decide, then say why. Tokens only; 48 px targets. */
+.lf-learning--reasoning { overflow-x: clip; }
+.lf-reasoning-board { gap: var(--spacing-3); }
+.lf-reasoning-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--spacing-2); }
+/* The options are the shared AnswerChoice (02 §9.2 feedback grammar); the verdict is the shared feedback row.
+   AnswerChoice defaults to the on-primary practice screen; on the neutral board it takes the sunken well and
+   content ink, and the selected option the primary soft fill with its strong ring. */
+.lf-reasoning-options .lf-choice { background: var(--sunken); color: var(--content); }
+.lf-reasoning-options .lf-choice[aria-pressed='true'] { background: var(--primary-soft); color: var(--primary-strong); outline-color: var(--primary-strong); }
+.lf-reasoning-options .lf-choice:disabled:not([aria-pressed='true']) { color: var(--content-muted); }
+.lf-reasoning-judgment { min-inline-size: 0; }

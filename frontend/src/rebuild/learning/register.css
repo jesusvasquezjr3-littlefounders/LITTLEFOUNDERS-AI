@@ -1,0 +1,29 @@
+/* B.23 and B.26 (S05.3f). Tokens only; separation by fill, never by outline (Bible 02 §4.4). */
+
+/* The graduation card: information on a soft identity fill. No motion (not an OD-7 milestone). */
+/* Embedded in a host page: never the full-viewport height every .lf-rebuild root has by default. */
+.lf-rebuild.lf-graduation { min-block-size: 0; display: grid; align-content: start; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--primary-soft); color: var(--content); }
+.lf-graduation > * { min-inline-size: 0; }
+.lf-graduation h2 { font-size: 1.5rem; }
+.lf-graduation-changes { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-graduation-changes li { padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); font-weight: 700; overflow-wrap: break-word; }
+.lf-graduation .lf-button { justify-self: start; }
+.lf-graduation-failed { min-inline-size: 0; }
+
+/* The guided-review offer (B.26): an offer on the neutral surface, never the error hue, never a lock. */
+/* The host is the fixed bottom band and the `app` container; the sheet inside it is what the learner sees. */
+.lf-rebuild.lf-guided-review-host { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: var(--layer-sheet); min-block-size: 0; background: transparent; pointer-events: none; }
+.lf-guided-review { pointer-events: auto; max-block-size: 100dvh; overflow-y: auto; display: grid; align-content: start; gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-4) calc(var(--spacing-4) + env(safe-area-inset-bottom, 0px));
+  border-start-start-radius: var(--rounded-lg); border-start-end-radius: var(--rounded-lg);
+  background: var(--surface); color: var(--content); box-shadow: var(--shadow-control); }
+.lf-guided-review > * { min-inline-size: 0; }
+.lf-guided-review-inner { display: grid; gap: var(--spacing-3); max-inline-size: 640px; inline-size: 100%; margin-inline: auto; }
+.lf-guided-review h2 { font-size: 1.5rem; }
+.lf-guided-review-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }
+/* The secondary action would be surface on surface: it takes the sunken well, so it reads as a control in both modes. */
+.lf-guided-review .lf-button--secondary { background: var(--sunken); }
+/* Wide: a card at the end edge of the host band, clear of the lesson's own actions. */
+@container app (min-width: 640px) {
+  .lf-guided-review { inline-size: min(420px, calc(100% - 2 * var(--spacing-5))); margin-inline-start: auto; margin-inline-end: var(--spacing-5); margin-block-end: var(--spacing-5); max-block-size: calc(100dvh - 2 * var(--spacing-5)); border-radius: var(--rounded-lg); }
+}

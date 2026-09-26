@@ -16,11 +16,18 @@ import type { SessionState } from '@/lesson-engine/core/session';
 import { useTheme } from '@/theme/useTheme';
 import { RebuildRoot } from '@/rebuild/design/controls';
 import { AuthenticatedLessonDocument } from '@/rebuild/learning/AuthenticatedLessonDocument';
-import type { OnGrade, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeSchemaDiagram, OnGradeWorkedExample } from '@/rebuild/learning/LessonDocumentView';
+import type { OnGrade, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeReasoning, OnGradeSchemaDiagram, OnGradeWorkedExample } from '@/rebuild/learning/LessonDocumentView';
+import { LessonResultView } from '@/rebuild/learning/LessonResultView';
+import type { JudgmentQuality } from '@/rebuild/learning/DecisionReasonsBoard';
 import { LessonEligibilityStateView, type LessonEligibilityState } from '@/rebuild/learning/LessonEligibilityStateView';
 import { LessonTransportStateView } from '@/rebuild/learning/LessonTransportStateView';
+import { NarrativeRecallView } from '@/rebuild/learning/NarrativeRecallView';
+import { parseNarrativeRecall, type NarrativeRecall } from '@/rebuild/learning/narrative';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
+import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
+import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
+import { guidedReviewPath } from './paths';
 
 /*
  * /learn/lesson/:lessonId — the fullscreen Lesson Player wired to Core
@@ -45,12 +52,14 @@ interface LessonResponse {
   document: unknown;
   audio: AudioManifest;
   mentor_stage?: unknown;
+  /** B.9 (S05.3c): an earlier, relevant story decision Core resurfaced for this lesson. */
+  narrative_recall?: unknown;
 }
 
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; mentorStage: unknown; v2Attempt: V2Attempt | null };
+  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; mentorStage: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -98,6 +107,10 @@ function LessonRouteSession() {
   const saved = useRef(false);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [loadRevision, setLoadRevision] = useState(0);
+  // B.5 (S05.3d): Core's authenticated completion receipt for a v2 lesson.
+  const [v2Receipt, setV2Receipt] = useState<unknown>(null);
+  // B.9: the recall shows once, before the lesson, and never over a lesson resumed mid-way.
+  const [recallDone, setRecallDone] = useState(() => (initialCheckpoint.state?.index ?? 0) > 0);
   const active = useRef(true);
   useEffect(() => {
     active.current = true;
@@ -122,7 +135,28 @@ function LessonRouteSession() {
   }, [lessonId]);
   // Keep the run across reloads; Finish discards it so deliberate replay starts fresh.
   const runId = checkpoint.current.runId;
-  const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId), [lessonId, getToken, runId]);
+  // B.26 / OD-1 (S05.3f): a miss costs nothing; consecutive misses on one
+  // skill bring the learner's Mentor's offer to review it (never a lock).
+  const [guidedReview, setGuidedReview] = useState<GuidedReviewOfferValue | null>(null);
+  // B.23: the learner's register, which Core resolves from its own age
+  // evidence. It words the guided-review offer and (S05.3g) sets the live
+  // player's cast presence and milestone motion. Read once per lesson; until it
+  // answers, and if it fails, the youngest register is the reading.
+  const [register, setRegister] = useState<RegisterState>({ status: 'loading' });
+  const registerRequested = useRef(false);
+  useEffect(() => {
+    if (registerRequested.current) return;
+    registerRequested.current = true;
+    void fetchLearnerRegister(async (path, init) => {
+      const token = await getToken();
+      if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
+      return api<unknown>(path, { token, method: init?.method, body: init?.body });
+    }).then((next) => { if (active.current) setRegister(next); });
+  }, [getToken]);
+  const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId, { onGuidedReview: setGuidedReview }), [lessonId, getToken, runId]);
+  const withOffer = (node: JSX.Element) => guidedReview ? <>{node}<GuidedReviewOffer offer={guidedReview} register={registerOf(register)}
+    locale={localeFromI18n(i18n.language)} dark={isDark} onDecline={() => setGuidedReview(null)}
+    onReview={(skillKey) => navigate(guidedReviewPath(skillKey))} /></> : node;
 
   useEffect(() => {
     let cancelled = false;
@@ -143,14 +177,14 @@ function LessonRouteSession() {
         // Never restore segment indices/verdicts into a revised or translated document.
         if (invalidSnapshot || (checkpoint.current.document && checkpoint.current.document !== signature)) checkpoint.current = newCheckpoint();
         checkpoint.current.document = signature;
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null });
+        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null, recall: parseNarrativeRecall(data.narrative_recall) });
         return;
       }
       const clientDocument = loadLessonClientDocument(data.document);
       // Ungraded visual lessons remain presentation-only until the separate
       // version-pinned completion design exists; there is no token to request.
       if (clientDocument.status !== 'ready' || !clientDocument.document.segments.some(segment => segment.grading === 'server')) {
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null });
+        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null, recall: parseNarrativeRecall(data.narrative_recall) });
         return;
       }
       const resumeRunId = checkpoint.current.document?.startsWith('v2:') ? checkpoint.current.runId : undefined;
@@ -162,31 +196,37 @@ function LessonRouteSession() {
         checkpoint.current.document = `v2:${attempt.versionId}`;
         if (storageKey) writeCheckpoint(storageKey, checkpoint.current);
       }
-      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: attempt });
+      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: attempt, recall: parseNarrativeRecall(data.narrative_recall) });
     })();
     return () => {
       cancelled = true;
     };
   }, [lessonId, getToken, loadRevision]);
 
-  const submitV2Grade = useCallback(async (answer: unknown, segmentId: string, document: LessonClientDocument) => {
+  const submitV2GradeDetailed = useCallback(async (answer: unknown, segmentId: string, document: LessonClientDocument) => {
     const attempt = state.status === 'ready' ? state.v2Attempt : null;
     if (!attempt || attempt.versionId !== document.version_id) throw new Error('No matching lesson attempt');
     const attemptToken = attempt.tokens[segmentId];
     const token = await getToken();
     if (!attemptToken || !token) throw new Error('No lesson attempt token');
-    const { data, error } = await api<{ verdict: { correct: boolean; score: number }; replayed: boolean; retry_attempt_token?: string }>(`/learn/lessons/${lessonId}/grade`, {
+    const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown } }; replayed: boolean; retry_attempt_token?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
       method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken },
     });
     if (error || !data || (data.verdict.score !== 0 && data.verdict.score !== 100)) throw new Error('Could not grade v2 segment');
+    const offer = guidedReviewOfferSchema.safeParse(data.guided_review);
+    if (offer.success) setGuidedReview(offer.data);
     if (!data.verdict.correct && !data.replayed) {
       if (typeof data.retry_attempt_token !== 'string' || data.retry_attempt_token.length === 0) throw new Error('Could not renew v2 lesson attempt');
       setState((current) => current.status === 'ready' && current.v2Attempt?.runId === attempt.runId
         ? { ...current, v2Attempt: { ...current.v2Attempt, tokens: { ...current.v2Attempt.tokens, [segmentId]: data.retry_attempt_token! } } }
         : current);
     }
-    return data.verdict.correct ? 'met' : 'review';
+    const quality = data.verdict.judgment?.quality;
+    const judgment: JudgmentQuality | undefined = quality === 'sound' || quality === 'partial' || quality === 'unsupported' ? quality : undefined;
+    return { verdict: data.verdict.correct ? 'met' as const : 'review' as const, judgment };
   }, [getToken, lessonId, state]);
+  const submitV2Grade = useCallback(async (answer: unknown, segmentId: string, document: LessonClientDocument) =>
+    (await submitV2GradeDetailed(answer, segmentId, document)).verdict, [submitV2GradeDetailed]);
 
   const gradeV2: OnGrade = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
   const gradeV2NumberLine: OnGradeNumberLine = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
@@ -194,15 +234,20 @@ function LessonRouteSession() {
   const gradeV2BarModel: OnGradeBarModel = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
   const gradeV2SchemaDiagram: OnGradeSchemaDiagram = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
   const gradeV2WorkedExample: OnGradeWorkedExample = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
+  const gradeV2Reasoning: OnGradeReasoning = useCallback((answer, segmentId, document) => submitV2GradeDetailed(answer, segmentId, document), [submitV2GradeDetailed]);
   const completeV2 = useCallback(async () => {
     const attempt = state.status === 'ready' ? state.v2Attempt : null;
     const token = await getToken();
     if (!attempt || !token) return false;
     const d = new Date();
-    const { error } = await api<ServerCompletion>(`/learn/lessons/${lessonId}/complete`, {
+    const { data, error } = await api<ServerCompletion & { receipt?: unknown }>(`/learn/lessons/${lessonId}/complete`, {
       method: 'POST', token, body: { run_id: attempt.runId, seconds_spent: Math.min(7200, Math.max(1, Math.round((Date.now() - v2EnteredAt.current) / 1000))), local_date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` },
     });
-    if (!error) { completedRef.current = true; clearCoursesCache(); }
+    if (!error) {
+      completedRef.current = true; clearCoursesCache();
+      // The result screen validates the receipt itself and shows its own unavailable state otherwise.
+      if (data?.receipt) setV2Receipt(data.receipt);
+    }
     return !error;
   }, [getToken, lessonId, state]);
 
@@ -287,16 +332,31 @@ function LessonRouteSession() {
       onRetry={() => setLoadRevision((revision) => revision + 1)} />);
   }
 
+  if (state.recall && !recallDone) {
+    return <NarrativeRecallView recall={state.recall} locale={localeFromI18n(i18n.language)} dark={isDark} onContinue={() => setRecallDone(true)} />;
+  }
+
+  if (v2Receipt) {
+    // The receipt is written in the lesson's own locale, which is the response locale.
+    const receiptLocale = state.status === 'ready' && ['en-US', 'es-MX', 'pt-BR'].includes(state.locale) ? state.locale as Locale : localeFromI18n(i18n.language);
+    // B.23: a v2 lesson declares its audience band, and Core admits only learners inside it (S05.2a).
+    const band = state.status === 'ready' ? (state.document as { age_band?: unknown }).age_band : undefined;
+    const resultRegister = band === '6-9' || band === '10-12' || band === '13-17' || band === 'adult' ? registerForBand(band) : registerOf(register);
+    return <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack} register={resultRegister}
+      onNoticeShown={() => trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })} />;
+  }
+
   if (!isLegacyLessonDocument(state.document)) {
-    return <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} theme={theme} onBack={goBack}
+    return withOffer(<AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} theme={theme} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
       onGradeFractionArea={state.v2Attempt ? gradeV2FractionArea : undefined} onGradeBarModel={state.v2Attempt ? gradeV2BarModel : undefined}
       onGradeSchemaDiagram={state.v2Attempt ? gradeV2SchemaDiagram : undefined} onGradeWorkedExample={state.v2Attempt ? gradeV2WorkedExample : undefined}
+      onGradeReasoning={state.v2Attempt ? gradeV2Reasoning : undefined}
       onComplete={state.v2Attempt ? completeV2 : undefined} metSegmentIds={state.v2Attempt?.metSegmentIds}
-      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} />;
+      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} />);
   }
 
-  return (
+  return withOffer(
     <LessonPlayer
       document={state.document}
       lessonId={lessonId}
@@ -306,6 +366,7 @@ function LessonRouteSession() {
       onCheckpoint={saveCheckpoint}
       onExit={goBack}
       onComplete={(result) => persistCompletion(result.seconds_spent)}
+      register={registerOf(register)}
     />
   );
 }

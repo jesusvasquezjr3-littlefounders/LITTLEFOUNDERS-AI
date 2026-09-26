@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { COMBO_FLOOR, COMBO_MILESTONE, comboBeat } from './combo'
+import { COMBO_FLOOR, comboBeat } from './combo'
 
 describe('comboBeat', () => {
   it('says nothing about a single right answer', () => {
     // One correct answer is an answer. Calling it a run devalues the word.
-    expect(comboBeat(1, true)).toEqual({ show: false, burst: false })
+    expect(comboBeat(1, true)).toEqual({ show: false })
   })
 
   it('names the run from the floor up', () => {
@@ -21,28 +21,15 @@ describe('comboBeat', () => {
      * must never mock.
      */
     for (const streak of [0, 1, 2, 3, 7, 12]) {
-      expect(comboBeat(streak, false), `streak ${streak}`).toEqual({ show: false, burst: false })
+      expect(comboBeat(streak, false), `streak ${streak}`).toEqual({ show: false })
     }
   })
 
-  it('bursts on every milestone and only on milestones', () => {
-    const bursts = []
-    for (let streak = 1; streak <= 12; streak += 1) {
-      if (comboBeat(streak, true).burst) bursts.push(streak)
+  it('B.20 / OD-7 (S05.3e): a run of right answers never schedules a celebration effect', () => {
+    // The old "burst every third answer" VFX was a celebration on correct
+    // answers, which the closed milestone list forbids. The beat carries words only.
+    for (let streak = 0; streak <= 30; streak += 1) {
+      expect(Object.keys(comboBeat(streak, true))).toEqual(['show'])
     }
-    expect(bursts).toEqual([3, 6, 9, 12])
-  })
-
-  it('never bursts below the floor, even on a multiple of the milestone', () => {
-    // Guards the ordering: `0 % 3 === 0` is true, and a burst at zero would be
-    // the engine celebrating nothing.
-    expect(comboBeat(0, true)).toEqual({ show: false, burst: false })
-  })
-
-  it('keeps the milestone rarer than the callout', () => {
-    // If these ever met, every named run would also burst and the extra beat
-    // would stop meaning anything.
-    expect(COMBO_MILESTONE).toBeGreaterThan(COMBO_FLOOR - 1)
-    expect(COMBO_MILESTONE).toBeGreaterThan(1)
   })
 })

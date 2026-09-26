@@ -96,7 +96,7 @@ describe('PlacementPage — the adaptive quiz', () => {
     await screen.findByText('Question about topic 25');
     fireEvent.click(screen.getByRole('radio', { name: 'Wrong' }));
 
-    await screen.findByText("You're starting further in");
+    await screen.findByText('Your path starts further in');
 
     // Stateless by design: every /step carries the full history, so a refresh or
     // a dropped connection costs nothing.
@@ -157,7 +157,7 @@ describe('PlacementPage — the adaptive quiz', () => {
     renderPage();
     await start();
 
-    await screen.findByText("You're starting from the beginning");
+    await screen.findByText('Your path starts at the beginning');
     expect(mockedApi.mock.calls.some(([path]) => path.endsWith('/commit'))).toBe(false);
 
     mockedApi.mockResolvedValueOnce({ data: { startLessonId: 'lesson-1' }, error: null });
@@ -191,8 +191,8 @@ describe('PlacementPage — the learner gets the last word', () => {
     renderPage();
     await start();
 
-    await screen.findByText("You're starting further in");
-    clickButton('This feels too advanced');
+    await screen.findByText('Your path starts further in');
+    clickButton("I'd rather start earlier");
 
     await screen.findByText('Where would you rather start?');
     mockedApi.mockResolvedValueOnce({ data: { startLessonId: 'lesson-1' }, error: null });
@@ -210,8 +210,8 @@ describe('PlacementPage — the learner gets the last word', () => {
     renderPage();
     await start();
 
-    await screen.findByText("You're starting from the beginning");
-    expect(screen.queryByRole('button', { name: 'This feels too advanced' })).not.toBeInTheDocument();
+    await screen.findByText('Your path starts at the beginning');
+    expect(screen.queryByRole('button', { name: "I'd rather start earlier" })).not.toBeInTheDocument();
   });
 
   it('tells the learner when a prerequisite is what stopped them', async () => {

@@ -3586,5 +3586,245 @@
         "target": 7
       }
     }
+  },
+  {
+    "lesson_id": "v2-decide-justify",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-choices",
+      "lesson_id": "v2-decide-justify",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-plan"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Decide and say why",
+      "required_capabilities": [
+        "visual.decision-card.v1",
+        "operation.choose-option.v1",
+        "operation.justify-choice.v1"
+      ],
+      "segments": [
+        {
+          "id": "decide-01",
+          "type": "reasoning.decide-justify.v2",
+          "grading": "server",
+          "prompt": "You have 12 coins. A kite costs 20.",
+          "visual": {
+            "type": "decision-reasons"
+          },
+          "payload": {
+            "choices": [
+              {
+                "id": "save-first",
+                "label": "Save 4 coins"
+              },
+              {
+                "id": "spend-all",
+                "label": "Spend all now"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "reason-goal",
+                "label": "It gets me closer"
+              },
+              {
+                "id": "reason-feel",
+                "label": "It feels good now"
+              },
+              {
+                "id": "reason-lucky",
+                "label": "I just picked one"
+              }
+            ],
+            "reasonPrompt": "Why is that a good choice?"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "decide-01": {
+        "acceptableChoiceIds": [
+          "save-first"
+        ],
+        "reasonQuality": {
+          "reason-goal": "sound",
+          "reason-feel": "partial",
+          "reason-lucky": "unsupported"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-decide-justify",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-choices",
+      "lesson_id": "v2-decide-justify",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-plan"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Decide y di por qué",
+      "required_capabilities": [
+        "visual.decision-card.v1",
+        "operation.choose-option.v1",
+        "operation.justify-choice.v1"
+      ],
+      "segments": [
+        {
+          "id": "decide-01",
+          "type": "reasoning.decide-justify.v2",
+          "grading": "server",
+          "prompt": "Tienes 12 monedas. Un papalote cuesta 20.",
+          "visual": {
+            "type": "decision-reasons"
+          },
+          "payload": {
+            "choices": [
+              {
+                "id": "save-first",
+                "label": "Guardar 4 monedas"
+              },
+              {
+                "id": "spend-all",
+                "label": "Gastar todo ahora"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "reason-goal",
+                "label": "Me acerca a la meta"
+              },
+              {
+                "id": "reason-feel",
+                "label": "Se siente bien ahora"
+              },
+              {
+                "id": "reason-lucky",
+                "label": "Solo elegí una"
+              }
+            ],
+            "reasonPrompt": "¿Por qué es buena decisión?"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "decide-01": {
+        "acceptableChoiceIds": [
+          "save-first"
+        ],
+        "reasonQuality": {
+          "reason-goal": "sound",
+          "reason-feel": "partial",
+          "reason-lucky": "unsupported"
+        }
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-decide-justify",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-10-12",
+      "chapter_id": "saving-choices",
+      "lesson_id": "v2-decide-justify",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "10-12",
+      "eligibility": {
+        "minimum_age": 10,
+        "maximum_age": 12
+      },
+      "knowledge_component_ids": [
+        "kc-saving-plan"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Decida e diga por quê",
+      "required_capabilities": [
+        "visual.decision-card.v1",
+        "operation.choose-option.v1",
+        "operation.justify-choice.v1"
+      ],
+      "segments": [
+        {
+          "id": "decide-01",
+          "type": "reasoning.decide-justify.v2",
+          "grading": "server",
+          "prompt": "Você tem 12 moedas. Uma pipa custa 20.",
+          "visual": {
+            "type": "decision-reasons"
+          },
+          "payload": {
+            "choices": [
+              {
+                "id": "save-first",
+                "label": "Guardar 4 moedas"
+              },
+              {
+                "id": "spend-all",
+                "label": "Gastar tudo agora"
+              }
+            ],
+            "reasons": [
+              {
+                "id": "reason-goal",
+                "label": "Me deixa mais perto"
+              },
+              {
+                "id": "reason-feel",
+                "label": "É bom agora"
+              },
+              {
+                "id": "reason-lucky",
+                "label": "Só escolhi uma"
+              }
+            ],
+            "reasonPrompt": "Por que é uma boa escolha?"
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "decide-01": {
+        "acceptableChoiceIds": [
+          "save-first"
+        ],
+        "reasonQuality": {
+          "reason-goal": "sound",
+          "reason-feel": "partial",
+          "reason-lucky": "unsupported"
+        }
+      }
+    }
   }
 ]

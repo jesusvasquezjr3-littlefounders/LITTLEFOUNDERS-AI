@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
-import { Button, CountUp, Icon, LottieIcon, SectionHeading } from '@/components/ui'
+import { Button, Icon, LottieIcon, SectionHeading } from '@/components/ui'
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
@@ -29,7 +29,9 @@ import MarkdownLite from '../core/MarkdownLite'
 import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
 import { StreakCelebration } from './StreakCelebration'
 import { playSfx, playLessonBgm, stopLessonBgm } from './sfx'
-import { formatDuration, useCountUp, type ServerCompletion } from './completion'
+import { formatDuration, streakCelebrationFor, useCountUp, type ServerCompletion } from './completion'
+import { mayCelebrate } from '@/rebuild/design/milestones'
+import { REGISTERS, type LearnerRegister } from '@/rebuild/design/learnerRegisterPolicy.generated'
 import type { LessonCheckpoint } from './checkpoint'
 import type { SessionState } from '../core/session'
 
@@ -50,6 +52,13 @@ export interface LessonPlayerProps {
   previewStartLabel?: string
   previewNextLabel?: string
   onExit: () => void
+  /**
+   * B.23 (S05.3g): the learner's register as Core resolved it. It sets the
+   * cast's presence (calm for teens and adults) and whether the completed
+   * lesson's milestone plays its motion. Absent (preview, lab, or before Core
+   * answers) reads as the youngest register, the most protective one.
+   */
+  register?: LearnerRegister
   recovery?: Pick<LessonCheckpoint, 'state' | 'elapsedMs'>
   onCheckpoint?: (state: SessionState, elapsedMs: number) => void
   /**
@@ -71,7 +80,7 @@ interface Reaction extends CharacterReaction {
   key: number
 }
 
-export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint }: LessonPlayerProps) {
+export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint, register }: LessonPlayerProps) {
   return (
     <NarrationProvider manifest={audio}>
       <LessonPlayerInner
@@ -85,12 +94,13 @@ export function LessonPlayer({ document: doc, lessonId, grader, audio, preview =
         onComplete={onComplete}
         recovery={recovery}
         onCheckpoint={onCheckpoint}
+        register={register}
       />
     </NarrationProvider>
   )
 }
 
-function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint }: Omit<LessonPlayerProps, 'audio'>) {
+function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete, recovery, onCheckpoint, register = 'young' }: Omit<LessonPlayerProps, 'audio'>) {
   const { t } = useTranslation()
   const reducer = useMemo(() => createSessionReducer(doc), [doc])
   const [state, dispatch] = useReducer(reducer, doc, (document) => preview ? initialSession(document) : recovery?.state ?? initialSession(document))
@@ -99,7 +109,8 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
   const [gradeError, setGradeError] = useState(false)
   const { server, status: saveStatus, save, retry: retrySave } = useCompletion()
   const [celebrationDone, setCelebrationDone] = useState(false)
-  const director = useMemo(() => createDirector(doc.meta.cast), [doc])
+  const calm = REGISTERS[register].mentor.animation === 'calm'
+  const director = useMemo(() => createDirector(doc.meta.cast, { calm }), [doc, calm])
   const narration = useNarration()
   const segStartRef = useRef<number>(Date.now())
   const lessonStartRef = useRef<number>(Date.now() - (recovery?.elapsedMs ?? 0))
@@ -170,8 +181,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
       secondsSpentRef.current = Math.max(1, Math.round((Date.now() - lessonStartRef.current) / 1000))
       // lesson_complete is emitted SERVER-SIDE only (backend/src/routes/learn.ts,
       // 0072) as of the NSM hardening pass — the results screen is reached on
-      // BOTH outcomes (hearts exhausted or a score below threshold also finish
-      // the run) after the same POST /complete round trip the server event
+      // BOTH outcomes (a score below threshold also finishes the run) after the same POST /complete round trip the server event
       // rides on, so a client-side copy here would double-count every passing
       // completion (client_event_id dedup only collapses RETRIES of the same
       // beacon, not two independently-generated events for one completion).
@@ -262,10 +272,11 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
   }
 
   if (state.phase === 'results') {
-    // v1 flow: the cinematic streak overlay runs FIRST (once per day, when
-    // this pass extended the day streak), then reveals the results summary.
-    const showStreakCelebration =
-      !celebrationDone && server !== null && server.streak_extended && server.first_today && server.streak_days > 0
+    // The streak overlay runs FIRST, then reveals the results summary. B.20 /
+    // OD-7 (S05.3e): only a streak MILESTONE (7, 30 or 100 days) that Core
+    // named in `celebrations` gets it; an ordinary practised day updates the
+    // number on the results screen without a takeover.
+    const showStreakCelebration = !celebrationDone && server !== null && streakCelebrationFor(server) !== null
     if (showStreakCelebration) {
       return <StreakCelebration streakDays={server.streak_days} onContinue={() => setCelebrationDone(true)} />
     }
@@ -278,7 +289,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             <Button onClick={() => void retrySave()}>{t('lesson.retry')}</Button>
           </div>
         )}
-        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} />
+        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} pendingSave={Boolean(onComplete) && saveStatus !== 'saved'} lessonId={preview ? undefined : lessonId} register={register} />
       </Shell>
     )
   }
@@ -322,12 +333,9 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
       {/* Sticky glass header */}
       <header className="lf-glass sticky top-0 z-30 shadow-glass-sm">
         {/*
-          * Close, then the bar, then the score. The three counters used to be
-          * three different objects — a bare icon+number for hearts, a pill for
-          * the streak, a pill for XP — which read as three unrelated pieces of
-          * information rather than as one score. They are now one chip shape
-          * (§Tactile), and the difference between them is tone, which is what
-          * distinguishes them anyway.
+          * Close, then the bar, then the score. The counters are one chip
+          * shape (§Tactile). The lives counter is gone (OD-1): a wrong answer
+          * costs nothing, so nothing counts it.
           *
           * `max-w-board` and not 720: at 1440 a lesson header pinned to 720px
           * leaves the counters floating in the middle of the screen while the
@@ -359,20 +367,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
               <div className="lf-track-fill" style={{ width: `${progressPct(doc, state)}%` }} />
             </div>
           </div>
-          {state.hearts !== null ? (
-            /*
-             * One line, deliberately. `answerSurfaces.test.tsx` exempts a red
-             * HEART from P3's "no red wrong" by matching /hearts|favorite/ on
-             * the same source line as the colour — so splitting the className
-             * onto its own line silently drops the exemption and the guard
-             * reports a life counter as a mistake painted red. The guard is
-             * right about the rule; the formatting is what has to give.
-             */
-            <span className="lf-chip lf-chip-error lf-label" aria-label={t('lesson.chips.hearts', { count: state.hearts })}>
-              <Icon name="favorite" fill className="text-[18px]" />
-              <span className="lf-number">{state.hearts}</span>
-            </span>
-          ) : null}
+          {/* OD-1 and B.26 (S05.3f): no lives. A wrong answer spends nothing, so nothing here counts it. */}
           {state.streak >= 2 ? (
             /*
              * `key` on the streak replays the pop on EVERY increment. Without
@@ -387,15 +382,17 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
               key={state.streak}
               className="lf-pop lf-chip lf-chip-warning lf-label relative"
             >
-              {comboBeat(state.streak, true).burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               <span className="lf-number">{state.streak}</span>
             </span>
           ) : null}
-          <span className="lf-chip lf-chip-accent lf-label">
-            <Icon name="bolt" fill className="text-[18px]" />
-            <CountUp value={earnedXp(doc, state)} className="lf-number" />
-          </span>
+          {/*
+           * B.20 (S05.3e): no live XP counter here. Rewards earned during a
+           * lesson are tallied on the results screen, never announced per
+           * answer; a number that ticks up on every right answer is exactly
+           * the "payment per output" framing the overjustification research
+           * warns about (Appendix B §2.5).
+           */}
         </div>
       </header>
 
@@ -879,8 +876,9 @@ function FeedbackBanner({
     almost: 'bg-warning-soft',
     tryAgain: 'bg-warning-soft',
   }[verdict.tier]
+  // A check mark, never a party glyph: a right answer is information (B.20, OD-7).
   const tierIcon = {
-    perfect: 'celebration',
+    perfect: 'task_alt',
     great: 'check_circle',
     almost: 'trending_up',
     tryAgain: 'psychology_alt',
@@ -976,7 +974,6 @@ function FeedbackBanner({
               key={streak}
               className="lf-pop relative inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1 lf-label text-warning-strong"
             >
-              {beat.burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               {t('lesson.combo', { count: streak })}
             </p>
@@ -1048,13 +1045,16 @@ function FeedbackBanner({
   )
 }
 
-function ResultsScreen({
+/** Exported for tests only (B.5 replay notice). */
+export function ResultsScreen({
   doc,
   state,
   server,
   secondsSpent,
   onExit,
   pendingSave,
+  lessonId,
+  register = 'young',
 }: {
   doc: LessonDocument
   state: ReturnType<typeof initialSession>
@@ -1062,6 +1062,9 @@ function ResultsScreen({
   secondsSpent: number
   pendingSave: boolean
   onExit: () => void
+  /** Undefined in preview: a preview never reports the replay notice. */
+  lessonId?: string
+  register?: LearnerRegister
 }) {
   const { t } = useTranslation()
   // Server truth wins once /complete responds; the client's own numbers are
@@ -1075,12 +1078,21 @@ function ResultsScreen({
   const streakShown = useCountUp(streakDays, 800)
   const runId = useId()
 
-  // One celebratory fanfare as the summary reveals (after the streak overlay,
-  // which plays its own 'streak' sound). Passing only — a failed run exits quiet.
+  /*
+   * B.20 / OD-7 and B.23 (S05.3g): the completed lesson is a milestone, so it
+   * may play its fanfare and the cast's celebrate action, but only when Core
+   * named it in `celebrations` (a preview, a failed run or an older Core
+   * celebrate nothing: fail closed) and only in a register whose result shows
+   * the medal (the teen and adult registers present the result as data). It
+   * used to fire on the client's own `passed`, before Core had answered.
+   */
+  const lessonCelebrates = mayCelebrate(server?.celebrations, 'lesson-complete') && REGISTERS[register].reward.medal
+  const fanfarePlayed = useRef(false)
   useEffect(() => {
-    if (passed) playSfx('celebration')
-    // mount-once by design: the fanfare fires as the summary first reveals
-  }, [])
+    if (!lessonCelebrates || fanfarePlayed.current) return
+    fanfarePlayed.current = true
+    playSfx('celebration')
+  }, [lessonCelebrates])
 
   /*
    * "Today vs your best" — a fact the payload has ALWAYS carried and the
@@ -1090,6 +1102,19 @@ function ResultsScreen({
    */
   const best = server?.best_score ?? null
   const beatBest = best !== null && score > best
+  /*
+   * B.5 (S05.3d): Core says, in the completion receipt, when this run scored
+   * below the kept best. The screen then states that the saved best is
+   * unaffected and reports that it did (the numerator of Appendix C's
+   * replay-notice display rate; Core records the denominator itself).
+   */
+  const keptBest = server?.replay?.notice === 'best_kept'
+  const noticeReported = useRef(false)
+  useEffect(() => {
+    if (!keptBest || !lessonId || noticeReported.current) return
+    noticeReported.current = true
+    trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })
+  }, [keptBest, lessonId])
 
   /*
    * `justify-center` is not decoration: this column is `flex-1` inside a
@@ -1107,8 +1132,8 @@ function ResultsScreen({
             key={c}
             character={c}
             emotion={passed ? 'proud' : 'encouraging'}
-            action={passed ? 'celebrate' : 'wave'}
-            loop={passed}
+            action={lessonCelebrates ? 'celebrate' : passed ? 'nod' : 'wave'}
+            loop={lessonCelebrates}
             presence="cast"
           />
         ))}
@@ -1154,6 +1179,10 @@ function ResultsScreen({
           <p className="lf-body text-content-muted">
             {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
           </p>
+          {/* B.20 (S05.3e): the XP below is paired with what was figured out, named by Core. */}
+          {passed && server?.recognition?.skills[0] ? (
+            <p className="lf-body font-bold text-content">{t('lesson.results.workedOut', { skill: server.recognition.skills[0] })}</p>
+          ) : null}
           {best !== null && (
             <span
               className={cn(
@@ -1169,7 +1198,9 @@ function ResultsScreen({
               />
               {beatBest
                 ? t('lesson.results.newBest')
-                : `${t('lesson.results.yourBest')} ${best}`}
+                : keptBest
+                  ? t('lesson.results.savedBestStill', { best: server?.replay?.previous_best_score ?? best })
+                  : `${t('lesson.results.yourBest')} ${best}`}
             </span>
           )}
         </div>

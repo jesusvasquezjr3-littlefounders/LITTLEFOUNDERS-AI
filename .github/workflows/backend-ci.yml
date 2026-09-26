@@ -23,12 +23,17 @@ name: backend CI
 # backend/src/__tests__/ciPathFilters.test.ts derives them and fails if a new
 # cross-package read is added without a matching filter.
 
+# database/seeds/ holds the Mentor KC graph and the B.6 topic map; backend tests
+# (seedKcGraph, services/pathway) and coursegen's kc:map gate validate them,
+# so an edit there alone must still run both CIs.
+
 on:
   push:
     branches: [main, littlefounders_v2]
     paths:
       - 'backend/**'
       - 'database/types/**'
+      - 'database/seeds/**'
       - 'frontend/src/lesson-engine/**'
       - 'coursegen/src/v2/**'
       - '.github/workflows/backend-ci.yml'
@@ -36,6 +41,7 @@ on:
     paths:
       - 'backend/**'
       - 'database/types/**'
+      - 'database/seeds/**'
       - 'frontend/src/lesson-engine/**'
       - 'coursegen/src/v2/**'
       - '.github/workflows/backend-ci.yml'

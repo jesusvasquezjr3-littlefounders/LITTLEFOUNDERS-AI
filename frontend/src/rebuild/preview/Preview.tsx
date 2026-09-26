@@ -27,7 +27,21 @@ import { schemaDiagramPilotDocument } from '../learning/SchemaDiagramBoard';
 import { workedExamplePilotDocument } from '../learning/WorkedExampleBoard';
 import { functionMachinePilotDocument } from '../learning/FunctionMachineBoard';
 import { cpaFadingPilotDocument } from '../learning/CpaFadingBoard';
+import { DECIDE_JUSTIFY_PILOT_RUBRIC, decideJustifyPilotDocument } from '../learning/DecisionReasonsBoard';
+import { scoreV2Judgment } from '../learning/v2VisualScorer.generated';
+import { PlacementOutcomeView } from '../learning/PlacementOutcomeView';
+import { LearningQualityPanel } from '../learning/LearningQualityPanel';
+import { learningQualityFixture } from '../learning/learningQualityFixtures';
 import { LessonTransportStateView } from '../learning/LessonTransportStateView';
+import { CoursePathView } from '../learning/CoursePathView';
+import { coursePathPreviewStates } from '../learning/coursePathFixtures';
+import { NarrativeRecallView } from '../learning/NarrativeRecallView';
+import { DecisionJournalView } from '../learning/DecisionJournalView';
+import { LearnerNarrativeShortcut } from '../learning/LearnerNarrativeShortcut';
+import { journalPreviewStates, recallFixture, selfBridgesFixture } from '../learning/narrativeFixtures';
+import { LearningNarrative } from '../family/LearningNarrative';
+import { LearningBridges } from '../family/LearningBridges';
+import { bridgesFixture, narrativePreviewStates } from '../family/familyLearningFixtures';
 import type { LessonMentorStage } from '../learning/lessonDocument';
 import { AchievementSharePreview } from '../family/AchievementSharePreview';
 import { AccountDeletionPreview } from '../account/AccountDeletionPreview';
@@ -36,6 +50,12 @@ import { SystemGallery } from './SystemGallery';
 import { RebuildProvider } from '../design/controls';
 import { OverlayGallery } from './OverlayGallery';
 import { GalleryIndex, SHELL_KINDS, ShellGallery, type ShellKind } from './ShellGallery';
+import { LearningRhythmView } from '../learning/LearningRhythmView';
+import { StreakPauseControl } from '../family/StreakPauseControl';
+import { milestoneReceipt, rhythmPreviewStates, streak as streakFixture, streakPausePreviewStates } from '../learning/motivationFixtures';
+import { RegisterGraduationView } from '../learning/RegisterGraduationView';
+import { GuidedReviewOffer } from '../learning/GuidedReviewOffer';
+import type { LearnerRegister } from '../design/learnerRegisterPolicy.generated';
 
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
@@ -52,6 +72,8 @@ export function Preview() {
   const [locale, setLocale] = useState<Locale>(initialLocale === 'es-MX' || initialLocale === 'pt-BR' ? initialLocale : 'en-US');
   const [theme, setTheme] = useState(params.get('theme') === 'dark' ? 'dark' : 'light');
   const [screen, setScreen] = useState(params.get('screen') ?? 'home');
+  // S05.3f (B.23): the learner register a register-aware screen reads in.
+  const previewRegister: LearnerRegister = (['young', 'transition', 'teen', 'adult'] as const).find((value) => value === params.get('register')) ?? 'young';
   const [ageBand, setAgeBand] = useState<AgeBand>(['6-9', '10-12', '13-17', 'adult'].includes(params.get('age') ?? '') ? params.get('age') as AgeBand : '6-9');
   const [answer, setAnswer] = useState<'save' | 'spend' | null>(null);
   const [checked, setChecked] = useState(false);
@@ -129,10 +151,85 @@ export function Preview() {
           return result === 'met' || result === 'review' ? result : 'invalid';
         }} />
       : screen === 'system' ? <SystemGallery key={locale} t={t.designSystem} theme={theme === 'dark' ? 'dark' : 'light'} onBack={() => go('home')} />
+      : screen === 'coursepath' ? <CoursePathView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'}
+        state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
+        missingTitles={['Entrepreneurship']} onOpenLesson={() => go('lesson')} onPlacement={() => go('home')} onBack={() => go('home')} onRetry={() => go('coursepath')} />
+      : screen === 'recall' ? <NarrativeRecallView key={`recall:${locale}`} fixture locale={locale} dark={theme === 'dark'}
+        recall={recallFixture(locale, params.get('changed') !== '0')} onContinue={() => go('home')} />
+      : screen === 'journal' ? <DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'}
+        state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
+        onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
+        onClear={async () => true} onBridge={async () => 'done'} />
+      : screen === 'learnershortcut' ? <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
+        <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
+          bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}
+          onOpenJournal={() => go('journal')} onOpenRhythm={() => go('rhythm')} onBridge={async () => 'done'} />
+      </main>
+      : screen === 'familylearning' ? <main className="lf-family-preview" data-surface="app" data-screen="family-learning-preview">
+        <LearningBridges key={`bridges:${locale}`} fixture locale={locale} dark={theme === 'dark'}
+          state={params.get('bridges') === '0' ? { status: 'ready', prompts: [] } : bridgesFixture(locale)}
+          onAct={async () => 'created'} onDismiss={async () => 'dismissed'} onRetry={() => {}} />
+        <LearningNarrative key={`narrative:${locale}`} fixture locale={locale} dark={theme === 'dark'} open={params.get('open') !== '0'}
+          state={narrativePreviewStates(locale)[params.get('narrative') ?? 'ready'] ?? narrativePreviewStates(locale).ready!}
+          onToggle={() => {}} onRetry={() => {}} onMore={() => {}} />
+      </main>
+      : screen === 'reasoning' ? <LessonDocumentView key={`reasoning:${locale}:${ageBand}`} raw={decideJustifyPilotDocument(locale, ageBand)}
+        locale={locale} ageBand={ageBand} onBack={() => go('home')} onGradeReasoning={(answer) => {
+          // Preview only: the private rubric stays in Core for real lessons.
+          const payload = { choiceIds: ['save-first', 'spend-all'], reasonIds: ['reason-goal', 'reason-feel', 'reason-lucky'] };
+          const verdict = scoreV2Visual('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
+          const judgment = scoreV2Judgment('reasoning.decide-justify.v2', payload, answer, DECIDE_JUSTIFY_PILOT_RUBRIC);
+          return { verdict: verdict === 'met' || verdict === 'review' ? verdict : 'invalid', ...(judgment === 'invalid' ? {} : { judgment }) };
+        }} />
+      : screen === 'rhythm' ? <LearningRhythmView key={`rhythm:${locale}:${params.get('rhythm')}`} fixture locale={locale} dark={theme === 'dark'}
+        state={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
+        onBack={() => go('home')} onRetry={() => {}} onOpenPath={() => {}} onOpenMentor={() => {}}
+        onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} />
+      : screen === 'streakpause' ? <main className="lf-family-preview" data-surface="app" data-screen="streak-pause-host">
+        <StreakPauseControl key={`pause:${locale}:${params.get('pause')}`} fixture locale={locale} dark={theme === 'dark'} today="2026-09-24"
+          state={streakPausePreviewStates[params.get('pause') ?? 'ready'] ?? streakPausePreviewStates.ready!}
+          onPause={async (startsOn, endsOn) => ({ status: 'saved', streak: streakFixture({ status: 'paused', pause: { startsOn, endsOn } }) })}
+          onEnd={async () => ({ status: 'ended', streak: streakFixture({}) })} onRetry={() => {}} />
+      </main>
+      : screen === 'resultmilestone' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={milestoneReceipt(locale)} />
+      : screen === 'resultregister' ? <LessonResultView key={`resultregister:${previewRegister}`} locale={locale} onContinue={() => go('home')} fixture
+        register={previewRegister} rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete'], streak: undefined, pace: undefined }} />
+      : screen === 'graduation' ? <main className="lf-family-preview" data-surface="app" data-screen="graduation-host">
+        <RegisterGraduationView key={`graduation:${locale}:${params.get('into')}`} fixture locale={locale} dark={theme === 'dark'}
+          into={params.get('into') === 'teen' ? 'teen' : 'transition'} onAcknowledge={async () => params.get('save') !== 'fail'} />
+      </main>
+      : screen === 'guidedreview' ? <main className="lf-family-preview" data-surface="app" data-screen="guided-review-host">
+        <GuidedReviewOffer key={`guided:${locale}:${previewRegister}`} fixture locale={locale} dark={theme === 'dark'} register={previewRegister}
+          offer={{ skill_key: 'financial-education/saving-goal', misses: 3, character: 'dina',
+            skill: params.get('skill') === '0' ? null : { 'en-US': 'Saving toward a goal', 'es-MX': 'Ahorrar para una meta', 'pt-BR': 'Poupar para uma meta' }[locale] }}
+          onReview={() => go('home')} onDecline={() => go('home')} />
+      </main>
+      : screen === 'resultkept' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
+        schema_version: 2, completion_id: 'sample-completion-2', lesson_id: 'pilot-decide-justify', version_id: 'rev-001', locale,
+        first_try_correct: 1, graded_count: 2, awarded_xp: 0, duration_seconds: 95, previous_best_percent: 100,
+        replay: { kind: 'replay', notice: 'best_kept', best_score_kept: true, xp_policy: 'improvement_only' },
+        judgment: { assessed: 2, sound: 1, partial: 1, unsupported: 0 },
+      }} />
+      : screen === 'placementoutcome' ? <PlacementOutcomeView key={`placement:${locale}:${params.get('start')}:${params.get('path')}`} fixture locale={locale}
+        dark={theme === 'dark'} onStart={() => go('home')} onEarlier={() => go('home')} rawFrame={{
+          path: params.get('path') ?? 'adaptive_quiz', start: params.get('start') === 'further_in' ? 'further_in' : 'beginning', basis: 'prior_exposure',
+          learner_chosen: params.get('path') === 'learner_chose_start' || params.get('path') === 'learner_adjusted',
+        }} />
+      : screen === 'learningquality' ? <main className="lf-family-preview" data-surface="app" data-screen="learning-quality-host">
+        <LearningQualityPanel key={`quality:${locale}:${params.get('quality')}`} fixture locale={locale} dark={theme === 'dark'}
+          state={params.get('quality') === 'error' ? { status: 'error' } : params.get('quality') === 'loading' ? { status: 'loading' }
+            : params.get('quality') === 'empty' ? { status: 'ready', report: { ...learningQualityFixture(), lessons: [], reviews: [], judgment: [],
+              replayNotice: { below_best: 0, shown: 0, display_rate: null, target: 1, belowTarget: false } } }
+            : { status: 'ready', report: learningQualityFixture() }}
+          onRetry={() => {}} onSync={async () => true} onResolve={async () => 'resolved'} />
+      </main>
       : screen === 'result' || screen === 'replay' ? <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={{
         schema_version: 2, completion_id: 'sample-completion-1', lesson_id: 'pilot-savings-sequence', version_id: 'rev-1', locale,
         first_try_correct: screen === 'replay' ? 2 : 3, graded_count: 4, awarded_xp: 40, duration_seconds: 200,
         previous_best_percent: screen === 'replay' ? 90 : 60,
+        // What Core sends for a passed first completion (backend celebrationBudget.ts): the one milestone this screen
+        // celebrates. The replay fixture keeps its saved best and shows no celebration.
+        ...(screen === 'result' ? { celebrations: ['lesson-complete'] } : {}),
       }} />
       : screen === 'goal' ? <LessonDocumentView key={`goal:${locale}:${ageBand}`} raw={goalBulletPilotDocument(locale, ageBand)}
         locale={locale} ageBand={ageBand} onBack={() => go('home')} />

@@ -20,6 +20,22 @@ export interface Experiment {
   concludedAt?: string;
 }
 
+/**
+ * B.28 (S05.3f): engagement volume is never a success metric. Counting more
+ * events or more sessions after a treatment rewards whatever keeps a learner
+ * busy longest, which is the flow-as-stickiness trap Appendix B §2.6 names.
+ * A new experiment may not declare these as its metric, and a legacy one
+ * still reports its numbers (and which arm is higher, for diagnosis) but
+ * never names a winner. Retention ('dau', 'users': did the learner come back
+ * at all) is a binary return signal, not volume, and stays allowed.
+ * Policy: docs/rebuild/LEARNER-REGISTER-AND-WELLBEING-POLICY.md §5.
+ */
+export const ENGAGEMENT_VOLUME_METRICS: ReadonlySet<string> = new Set(['events', 'sessions']);
+
+export function isEngagementVolumeMetric(metric: string): boolean {
+  return ENGAGEMENT_VOLUME_METRICS.has(metric);
+}
+
 export interface ExperimentResults {
   experiment: Experiment;
   variantA: { users: number; mean: number; stddev: number };
@@ -27,6 +43,10 @@ export interface ExperimentResults {
   pValue: number;
   confidence: number;
   winner: 'A' | 'B' | null;
+  /** B.28: true when the metric counts volume; `winner` is then always null. */
+  engagementVolume: boolean;
+  /** The arm with the higher mean when significant, for diagnosis only. */
+  higher: 'A' | 'B' | null;
   significant: boolean;
   exposedUsers: number;
   sampleRatioMismatch: boolean;
@@ -463,11 +483,9 @@ export async function getExperimentResults(
 
     const confidence = round2((1 - pValue) * 100);
     const significant = pValue < 0.05;
-    let winner: 'A' | 'B' | null = null;
-
-    if (significant) {
-      winner = statsB.mean > statsA.mean ? 'B' : 'A';
-    }
+    const higher: 'A' | 'B' | null = significant ? (statsB.mean > statsA.mean ? 'B' : 'A') : null;
+    const engagementVolume = isEngagementVolumeMetric(experiment.metric);
+    const winner: 'A' | 'B' | null = engagementVolume ? null : higher;
 
     return {
       experiment,
@@ -476,6 +494,8 @@ export async function getExperimentResults(
       pValue: round4(pValue),
       confidence,
       winner,
+      engagementVolume,
+      higher,
       significant,
       exposedUsers: assignments.length,
       sampleRatioMismatch: Math.abs(statsA.users - statsB.users) / Math.max(1, statsA.users + statsB.users) > 0.1,

@@ -40,27 +40,61 @@ export interface CharacterReaction {
 /*
  * Pose IDs, in the order they rotate. Two or more per event so the same beat
  * never looks identical twice running, and all of them drawn from the catalog's
- * own `feedback` / `celebration` / `greeting` categories — which is also why a
- * reviewer can SEE what a wrong answer looks like without reading this file.
+ * own categories — which is also why a reviewer can SEE what a wrong answer
+ * looks like without reading this file.
+ *
+ * B.20 / OD-7 (S05.3g): a correct answer gets an INFORMATIONAL reaction (a nod,
+ * a lean-in), never a celebration. The per-answer pools used to include
+ * `celebrate.joy`, `celebrate.perfect` (a dance), `celebrate.first`,
+ * `celebrate.streak` (a jump) and `feedback.correct.proud`, whose `celebrate`
+ * action also plays the celebration sound (Character3D). Celebration poses are
+ * now reserved for the results screen of a completed lesson, which is on the
+ * closed milestone list; `PER_ANSWER_EVENTS` below is pinned by test to
+ * feedback-only, nod/idle/peek/think/point actions.
+ *
+ * B.26 and B.23 (S05.3g): a miss gets an encouraging nod or a pointer to the
+ * hint, never a head-shake, and the Mentor's presence follows the learner's
+ * register (backend/src/services/learnerRegisterPolicy.ts): lively for 0–12,
+ * CALM for teens and adults, where a met answer is a nod and a miss is the
+ * character holding still and listening.
  */
-const POSES: Record<DirectorEvent, readonly string[]> = {
+const LIVELY: Record<DirectorEvent, readonly string[]> = {
   lesson_start: ['greet.hello', 'greet.excited', 'greet.ready'],
-  correct: ['feedback.correct', 'feedback.correct.bright', 'celebrate.joy', 'feedback.correct.quiet'],
-  perfect: ['feedback.correct.proud', 'celebrate.perfect', 'celebrate.first'],
+  correct: ['feedback.correct', 'feedback.correct.quiet'],
+  perfect: ['feedback.correct', 'feedback.impressed'],
   almost: ['feedback.almost', 'feedback.better', 'feedback.retry.gentle'],
-  // NEVER mocking, never disappointed: the catalog's retry poses are the
-  // encouraging ones by construction (LESSON_ENGINE.md P3).
-  wrong: ['feedback.retry', 'feedback.retry.gentle', 'feedback.hint'],
-  streak: ['celebrate.streak', 'celebrate.satisfied', 'feedback.correct.streak'],
+  // NEVER mocking, never disappointed, never a head-shake (B.26).
+  wrong: ['feedback.retry.gentle', 'feedback.hint'],
+  // A run of right answers is information (the banner names it), not a party.
+  streak: ['feedback.impressed', 'feedback.correct'],
   hint: ['feedback.hint', 'think.ponder', 'teach.checkin'],
+  // The only celebration: a completed lesson (OD-7), and only when Core named it.
   results_pass: ['celebrate.lesson', 'celebrate.levelup'],
-  results_fail: ['celebrate.comeback', 'feedback.timeout'],
+  results_fail: ['feedback.retry.gentle', 'ambient.listen'],
   idle: ['ambient.idle', 'ambient.listen'],
 }
 
+/** Teen and adult registers: minimal presence, calm animation (Block B register table). */
+const CALM: Record<DirectorEvent, readonly string[]> = {
+  ...LIVELY,
+  lesson_start: ['greet.nod', 'ambient.attentive'],
+  correct: ['feedback.correct', 'ambient.attentive'],
+  perfect: ['feedback.correct', 'ambient.attentive'],
+  almost: ['feedback.almost', 'think.consider'],
+  wrong: ['ambient.listen', 'think.wait'],
+  streak: ['feedback.correct', 'ambient.attentive'],
+  results_fail: ['ambient.listen', 'think.wait'],
+}
+
+/** Events that fire on a single answer. None of them may ever celebrate (B.20, OD-7). */
+export const PER_ANSWER_EVENTS: readonly DirectorEvent[] = ['correct', 'perfect', 'almost', 'wrong', 'streak', 'hint']
+
+/** The pools, exported for the pinned tests. */
+export const DIRECTOR_POOLS: Readonly<{ lively: typeof LIVELY; calm: typeof CALM }> = { lively: LIVELY, calm: CALM }
+
 /** Every pose the director can ask for — the gate in its test walks this. */
 export const DIRECTOR_POSE_IDS: readonly string[] = Object.freeze(
-  [...new Set(Object.values(POSES).flat())],
+  [...new Set([...Object.values(LIVELY), ...Object.values(CALM)].flat())],
 )
 
 export interface DirectorState {
@@ -68,8 +102,14 @@ export interface DirectorState {
   castCursor: number
 }
 
-export function createDirector(cast: CharacterId[]) {
+export interface DirectorOptions {
+  /** Teen and adult registers (`mentor.animation === 'calm'` in the register policy). */
+  calm?: boolean
+}
+
+export function createDirector(cast: CharacterId[], options: DirectorOptions = {}) {
   const state: DirectorState = { lastIndex: {}, castCursor: 0 }
+  const POSES = options.calm ? CALM : LIVELY
   const safeCast: CharacterId[] = cast.length > 0 ? cast : ['dina']
 
   return {

@@ -847,13 +847,25 @@ describe('POST /api/v1/intel/experiments/:id/conclude', () => {
     expect(res.status).toBe(400);
   });
 
+  it('refuses engagement volume as a success metric (B.28)', async () => {
+    for (const metric of ['events', 'sessions']) {
+      const res = await auth(
+        request(createApp())
+          .post('/api/v1/intel/experiments')
+          .send({ name: 'More taps', metric, variantA: 'Old', variantB: 'New' }),
+      );
+      expect(res.status, metric).toBe(400);
+      expect(res.body.error.code).toBe('ENGAGEMENT_VOLUME_METRIC');
+    }
+  });
+
   it('concludes a started experiment', async () => {
     const createRes = await auth(
       request(createApp())
         .post('/api/v1/intel/experiments')
         .send({
           name: 'Concludable Experiment',
-          metric: 'events',
+          metric: 'dau',
           variantA: 'Old',
           variantB: 'New',
         }),

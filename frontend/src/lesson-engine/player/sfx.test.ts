@@ -42,7 +42,9 @@ describe('v1 volume fidelity', () => {
 describe('v1 context mapping', () => {
   it('lesson outcomes use the v1 edu sounds', () => {
     expect(SFX_SRC.correct).toBe('/sounds/edu/success.mp3')
-    expect(SFX_SRC.tryagain).toBe('/sounds/edu/error.mp3')
+    // B.26: a miss never plays an error sound.
+    expect(SFX_SRC.tryagain).toBe('/sounds/ui/tap.mp3')
+    expect(Object.values(SFX_SRC).some((src) => /error|fail|buzz|wrong/.test(src))).toBe(false)
     expect(SFX_SRC.celebration).toBe('/sounds/edu/lesson_complete.mp3')
   })
 

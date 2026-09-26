@@ -115,7 +115,8 @@
       "aria": "Vistas de contenido",
       "courses": "Cursos",
       "lessons": "Cola de revisión de lecciones",
-      "tutor": "Revisión del Tutor en vivo"
+      "tutor": "Revisión del Tutor en vivo",
+      "quality": "Calidad del aprendizaje"
     }
   },
   "tutorReview": {

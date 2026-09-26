@@ -55,6 +55,14 @@ export const INSTRUMENTED_EVENTS = [
   'parent_report_viewed',
   'badge_generated',
   'badge_shared',
+  // B.5 replay-notice display rate (S05.3d): Core writes replay_below_best,
+  // the result screen writes replay_notice_view.
+  'replay_below_best',
+  'replay_notice_view',
+  // B.21 / B.24 motivation signals (S05.3e): all three written by Core only.
+  'streak_rest_day',
+  'streak_restart',
+  'path_choice',
 ] as const;
 
 /**
