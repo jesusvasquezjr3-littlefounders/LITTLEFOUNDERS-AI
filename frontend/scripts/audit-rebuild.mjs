@@ -46,6 +46,7 @@ const origin = process.env.REBUILD_URL ?? 'http://localhost:5310';
 const list = (name, fallback) => process.env[name]?.split(',').map((v) => v.trim()).filter(Boolean) ?? fallback;
 const locales = list('AUDIT_LOCALES', LOCALES), themes = list('AUDIT_THEMES', THEMES), widths = list('AUDIT_WIDTHS', WIDTHS.map(String)).map(Number);
 const filters = list('AUDIT_STATES', null);
+const readyTries = Number(process.env.AUDIT_READY_TRIES ?? 300);
 const states = [...STATES, ...extraRoutes()].filter((state) => !filters || filters.some((f) => (f.endsWith('*') ? state.id.startsWith(f.slice(0, -1)) : state.id === f)));
 if (!states.length) { console.error('No state matches AUDIT_STATES'); process.exit(2); }
 const output = resolve('../audit-results/rebuild-audits');
@@ -85,7 +86,8 @@ async function load(page, state, locale, theme, width) {
     ? `document.readyState === 'complete' && !!document.querySelector('.lf-rebuild') && document.documentElement.lang === ${JSON.stringify(locale)}${(state.readyAll ?? []).map((selector) => ` && !!document.querySelector(${JSON.stringify(selector)})`).join('')}`
     :`location.href === ${JSON.stringify(url)} && !!document.querySelector('.lf-rebuild main, main.lf-rebuild')`;
   let ok = false;
-  for (let n = 0; n < 300 && !ok; n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
+  // AUDIT_READY_TRIES (x 50 ms, default 300 = 15 s): a machine shared by several lanes' browser runs can take longer to paint.
+  for (let n = 0; n < readyTries && !ok; n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
   if (!ok) throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}`);
   // A hidden page gets no animation frames: every measurement after this would be of a frozen page.
   if (await page.evaluate('document.visibilityState') !== 'visible') throw new Error(`${state.id}: the audit page is hidden`);

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { clearCoursesCache, readCoursesCache, writeCoursesCache } from '../coursesCache';
-import type { Course } from '@/routes/app/LearnPage';
+import type { ShelfCourse as Course } from '@/rebuild/learning/learnHome';
 
 /*
  * /learn had no client cache at all — `@tanstack/react-query` is a dependency

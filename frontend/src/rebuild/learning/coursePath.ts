@@ -9,8 +9,8 @@ import type { Locale } from '../design/copyBudget';
  * first. The client only validates the shape and renders it. It never
  * re-derives a lock, never receives an age or a birth date (only the stage
  * names Core resolved), and treats a malformed payload as unavailable rather
- * than guessing. Transport is injected, so this module imports nothing from
- * the legacy app (Bible 02 rule 23).
+ * than guessing. The fetch (either course engine) lives in course.ts (W2L.1),
+ * so this module imports nothing from the legacy app (Bible 02 rule 23).
  */
 
 const stage = z.enum(['child', 'tween', 'teen', 'adult']);
@@ -46,14 +46,6 @@ export const coursePathSchema = z.object({
 export type CoursePath = z.infer<typeof coursePathSchema>;
 export type CoursePathItem = CoursePath['items'][number];
 
-export type CoursePathState =
-  | { status: 'loading' }
-  | { status: 'ready'; path: CoursePath }
-  | { status: 'age-restricted' }
-  | { status: 'prerequisite'; missing: string[] }
-  | { status: 'disabled' }
-  | { status: 'error' };
-
 /** Shape validation only; an invalid payload is unavailable, never partially shown. */
 export function parseCoursePath(raw: unknown): CoursePath | null {
   const parsed = coursePathSchema.safeParse(raw);
@@ -64,28 +56,4 @@ export function parseCoursePath(raw: unknown): CoursePath | null {
 export function localizedText(value: Record<string, unknown>, locale: Locale): string {
   const pick = (key: string): string | null => (typeof value[key] === 'string' && (value[key] as string).trim() ? value[key] as string : null);
   return pick(locale) ?? pick('es-MX') ?? pick('en-US') ?? Object.values(value).find((v): v is string => typeof v === 'string' && v.trim().length > 0) ?? '';
-}
-
-export interface CoursePathTransport {
-  (path: string): Promise<{ data: unknown; error: { code: string; missingPrerequisites?: string[] } | null }>;
-}
-
-/** Fetch and map one course path. Every refusal Core can give has its own state. */
-export async function fetchCoursePath(slug: string, request: CoursePathTransport): Promise<CoursePathState> {
-  let response: Awaited<ReturnType<CoursePathTransport>>;
-  try {
-    response = await request(`/learn/courses/${encodeURIComponent(slug)}/path`);
-  } catch {
-    return { status: 'error' };
-  }
-  if (response.error) {
-    switch (response.error.code) {
-      case 'COURSE_AGE_RESTRICTED': return { status: 'age-restricted' };
-      case 'COURSE_PREREQUISITE_REQUIRED': return { status: 'prerequisite', missing: response.error.missingPrerequisites ?? [] };
-      case 'PATHWAY_ENGINE_DISABLED': return { status: 'disabled' };
-      default: return { status: 'error' };
-    }
-  }
-  const path = parseCoursePath(response.data);
-  return path ? { status: 'ready', path } : { status: 'error' };
 }

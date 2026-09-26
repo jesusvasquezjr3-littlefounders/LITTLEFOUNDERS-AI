@@ -1,9 +1,10 @@
-import type { CoursePath, CoursePathState } from './coursePath';
+import type { CoursePath } from './coursePath';
+import type { CourseState } from './course';
 
 /*
  * Preview and test fixtures for the course path, one per server population.
  * They are shaped exactly like GET /learn/courses/:slug/path (the schema
- * parses them in CoursePathView.test.tsx) and stand in for Core only in the
+ * parses them in CourseView.test.tsx) and stand in for Core only in the
  * preview; the authenticated route always renders Core's own answer.
  */
 
@@ -113,12 +114,15 @@ export function bridgePathFixture(): CoursePath {
   return { ...base, pathway: { ...base.pathway, learnerStage: 'tween', basis: 'younger-bridge', badge: { ...base.pathway.badge, contentGap: true } } };
 }
 
-export const coursePathPreviewStates: Record<string, CoursePathState> = {
-  child: { status: 'ready', path: childPathFixture() },
-  adult: { status: 'ready', path: adultPathFixture() },
-  placement: { status: 'ready', path: placementPathFixture() },
-  complete: { status: 'ready', path: completePathFixture() },
-  bridge: { status: 'ready', path: bridgePathFixture() },
+const ready = (path: CoursePath): CourseState => ({ status: 'ready', detail: { engine: 'pathway', path } });
+
+/** The course screen under the pathway engine, one state per server population (W2L.1: the one course screen). */
+export const coursePathPreviewStates: Record<string, CourseState> = {
+  child: ready(childPathFixture()),
+  adult: ready(adultPathFixture()),
+  placement: ready(placementPathFixture()),
+  complete: ready(completePathFixture()),
+  bridge: ready(bridgePathFixture()),
   age: { status: 'age-restricted' },
   prerequisite: { status: 'prerequisite', missing: ['entrepreneurship'] },
   error: { status: 'error' },

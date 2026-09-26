@@ -72,7 +72,8 @@ export function respond({ spec, path, request, ok }) {
     character: spec.mentor ?? 'rho', companion: null, diorama: 'diorama-a', backdrop: 'day', nickname: null, adaptations: [],
     personalized: Boolean(spec.mentor), catalog: { characters: ['rho', 'zara', 'liruf', 'dina'], dioramas: [], backdrops: [], adaptations: [], articulates: ['rho', 'zara'] },
   });
-  if (path === '/learn/courses') return ok({ courses: [] });
+  // A scenario that declares its own shelf (the learn lane's, W2L.1) is answered by that lane.
+  if (path === '/learn/courses' && !spec.shelf) return ok({ courses: [] });
   if (path === '/family/kids') return ok({ kids: [] });
   if (spec.adminUnavailable && path.startsWith('/admin/')) return { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Synthetic: not available' } } };
   return undefined;

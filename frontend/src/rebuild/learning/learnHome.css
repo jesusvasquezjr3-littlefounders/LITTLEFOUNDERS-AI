@@ -1,0 +1,74 @@
+/*
+ * W2L.1 — the learner home (L1). A dashboard: a neutral page with coloured
+ * cards (Bible 02 rule 15). Tokens only; separation by fill or a soft
+ * elevation, never an outline (02 §4.4). Layout changes by container width,
+ * never by the viewport (02 §7 rule 9).
+ */
+
+.lf-learn-home { color: var(--content); }
+.lf-learn-home-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3) var(--spacing-4); }
+.lf-learn-home-top > h1 { min-inline-size: 0; font: var(--type-headline); overflow-wrap: break-word; }
+.lf-learn-flame-chip { display: inline-flex; }
+.lf-learn-flame-chip .lf-art, .lf-learn-flame .lf-art { inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+
+/* The next step: the hero band (02 `hero-band`), one dominant object with the page's one call to action. */
+.lf-learn-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  border-radius: var(--rounded-xl);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.lf-learn-hero-body { display: grid; justify-items: start; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-learn-hero-body > * { max-inline-size: 100%; }
+.lf-learn-hero h2 { font: var(--type-headline); overflow-wrap: break-word; }
+.lf-learn-hero-art { display: none; }
+.lf-learn-hero-action { display: flex; flex-wrap: wrap; gap: var(--spacing-3); padding-block-start: var(--spacing-2); }
+.lf-learn-hero :is(a, button):focus-visible { outline-color: var(--on-primary); }
+
+/* A progress capsule on a coloured fill: the track is a tint of the text colour, the fill is the text colour. */
+.lf-learn-progress { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--spacing-3); inline-size: 100%; }
+.lf-learn-progress > span { font: var(--type-label); font-variant-numeric: tabular-nums; }
+.lf-rebuild :is(.lf-learn-hero, .lf-card:not(.lf-card--neutral)) .lf-progress-track { background: color-mix(in srgb, currentColor 24%, transparent); }
+.lf-rebuild :is(.lf-learn-hero, .lf-card:not(.lf-card--neutral)) .lf-progress-fill { background: currentColor; }
+
+/* The shelf: a card per course. A column never gets narrower than its longest title word (K39): it reflows first. */
+.lf-learn-shelf { display: grid; gap: var(--spacing-4); }
+.lf-learn-shelf > h2 { font: var(--type-title); }
+.lf-learn-courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: var(--spacing-4); margin: 0; padding: 0; list-style: none; }
+.lf-learn-courses > li { display: grid; min-inline-size: 0; }
+.lf-learn-course { display: grid; }
+.lf-learn-course > .lf-card { align-content: start; grid-template-rows: auto; }
+.lf-learn-course .lf-card-heading { overflow-wrap: break-word; }
+.lf-learn-course-art { order: -1; display: inline-grid; place-items: center; justify-self: start; inline-size: var(--spacing-14); block-size: var(--spacing-14); border-radius: var(--rounded-full); background: color-mix(in srgb, currentColor 16%, transparent); }
+.lf-learn-course-art .lf-art { inline-size: var(--spacing-10); block-size: var(--spacing-10); }
+.lf-learn-course p { font: var(--type-label); }
+.lf-learn-course[data-closed] .lf-card { background: var(--sunken); box-shadow: none; }
+.lf-learn-course[data-closed] p { color: var(--content-muted); }
+.lf-learn-course-action { display: flex; flex-wrap: wrap; padding-block-start: var(--spacing-2); }
+.lf-learn-course-action > .lf-button { flex: 1 1 auto; }
+.lf-learn-course :is(a, button):focus-visible { outline-color: currentColor; }
+
+/* The streak: the reward hue (coins, XP, stars, streak; 02 §4.2), as a soft well with ink text. */
+.lf-learn-streak, .lf-learn-story { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); }
+.lf-learn-streak { background: var(--reward-soft); color: var(--content); }
+.lf-learn-story { background: var(--surface); color: var(--content); box-shadow: var(--elevation-card); }
+.lf-rebuild[data-theme='dark'] .lf-learn-story { background: var(--raised); }
+.lf-learn-streak h2, .lf-learn-story h2 { font: var(--type-title); }
+.lf-learn-streak p, .lf-learn-story p { font: var(--type-label); }
+.lf-learn-streak-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
+.lf-learn-streak-count strong { font: var(--type-numeral); font-variant-numeric: tabular-nums; color: var(--reward-strong); }
+.lf-learn-flame .lf-art { inline-size: var(--spacing-8); block-size: var(--spacing-8); }
+.lf-learn-card-action { display: flex; flex-wrap: wrap; }
+.lf-learn-card-action > .lf-button { flex: 0 1 auto; }
+
+@container app (min-width: 480px) {
+  .lf-learn-hero { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .lf-learn-hero-art { display: grid; place-items: center; inline-size: var(--spacing-24); block-size: var(--spacing-24); border-radius: var(--rounded-full); background: color-mix(in srgb, var(--on-primary) 16%, transparent); }
+}
+@container app (min-width: 640px) {
+  .lf-learn-hero { padding: var(--spacing-8); }
+  .lf-learn-hero h2 { font: var(--type-display-lg); letter-spacing: var(--type-display-lg-tracking); }
+}

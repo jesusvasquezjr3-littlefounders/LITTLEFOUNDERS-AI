@@ -2,10 +2,9 @@ import { lazy } from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { LearnPage } from '@/routes/app/LearnPage';
-import { CoursePage } from '@/routes/app/learn/CoursePage';
+import { LearnHomeRoute } from '@/routes/app/learn/LearnHomeRoute';
+import { CoursePathRedirect, CourseRoute } from '@/routes/app/learn/CourseRoute';
 import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
-import { CoursePathRoute } from '@/routes/app/learn/CoursePathRoute';
 import { DecisionJournalRoute } from '@/routes/app/learn/DecisionJournalRoute';
 import { LearningRhythmRoute } from '@/routes/app/learn/LearningRhythmRoute';
 import { PlacementPage } from '@/routes/app/learn/PlacementPage';
@@ -36,10 +35,12 @@ const LessonRoute = lazy(() => import('@/routes/app/learn/LessonRoute'));
 /** Pages inside the signed-in app shell (App.tsx wraps them in RequireAuth + RequireOnboarded). */
 export const learnShellRoutes = (
   <>
-    <Route path="learn" element={<LearnPage />} />
-    <Route path={COURSE_ROUTE_PATH} element={<CoursePage />} />
+    {/* W2L.1: the rebuilt learner home (L1) and the one course screen (L2, both course engines). */}
+    <Route path="learn" element={<LearnHomeRoute />} />
+    <Route path={COURSE_ROUTE_PATH} element={<CourseRoute />} />
     <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryPage />} />
-    <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRoute />} />
+    {/* The S05.3b course path became the course screen; its old address redirects. */}
+    <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRedirect />} />
     <Route path={DECISION_JOURNAL_ROUTE_PATH} element={<DecisionJournalRoute />} />
     <Route path={LEARNING_RHYTHM_ROUTE_PATH} element={<LearningRhythmRoute />} />
   </>

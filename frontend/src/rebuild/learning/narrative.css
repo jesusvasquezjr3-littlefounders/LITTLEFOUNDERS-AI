@@ -40,7 +40,7 @@
 .lf-journal-outcome { color: var(--content); }
 .lf-journal-outcome > span:first-child, .lf-journal-first > span:first-child { font-weight: 800; }
 .lf-journal-note { color: var(--content-muted); font-weight: 700; }
-.lf-journal-state { min-block-size: min(50dvh, 360px); display: grid; align-content: center; gap: var(--spacing-3); }
+.lf-journal-state { align-content: start; }
 .lf-journal-clear { display: grid; gap: var(--spacing-3); padding: var(--spacing-4) var(--spacing-5); border-radius: var(--rounded-lg); background: var(--sunken); }
 .lf-journal-clear .lf-actions { max-inline-size: 480px; }
 .lf-journal .lf-journal-section > .lf-button, .lf-journal-top > .lf-button { justify-self: start; }

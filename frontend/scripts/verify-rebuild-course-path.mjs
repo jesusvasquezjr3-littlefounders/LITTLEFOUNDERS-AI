@@ -4,7 +4,9 @@ import { launchBrowser, openPage } from './lesson-engine/browser.mjs';
 
 /*
  * B.6 / S05.3b — real-Chrome matrix for the rebuilt course path (preview
- * fixtures; the authenticated route renders Core's own answer). Every state
+ * fixtures; the authenticated route renders Core's own answer). Since W2L.1
+ * the path is the pathway-engine side of the one course screen (CourseView);
+ * scripts/verify-learn-pages.mjs covers the real route in the learner shell. Every state
  * the server can produce, in 3 locales x 2 themes x 320/375/768/1280 px, at
  * 100% and 140% text, with WCAG 1.4.12 spacing at 375 px. Checks: one h1, no
  * horizontal scroll, the Copy Budget per role (youngest band for child
@@ -73,7 +75,7 @@ const audit = ({ locale, width, scale, spacing, band }) => `(() => {
     if(r.top<740&&r.bottom>0&&!['data','brand','legal'].includes(role)&&!e.parentElement.closest('[data-copy-role]')) fold+=words(text);
   }
   if(${width}===375&&${scale}===1&&!${spacing}&&fold>Math.ceil((young?25:40)*factor)) issues.push('first-view:'+fold);
-  for(const e of main.querySelectorAll('button')){const r=e.getBoundingClientRect();if(r.width<48||r.height<48) issues.push('touch-target:'+e.textContent.trim());}
+  for(const e of main.querySelectorAll('button, a[href]')){const r=e.getBoundingClientRect();if(r.width<48||r.height<48) issues.push('touch-target:'+e.textContent.trim());}
   const walker=document.createTreeWalker(main,NodeFilter.SHOW_TEXT);
   for(let n=walker.nextNode();n;n=walker.nextNode()){ if(n.textContent.trim()&&!n.parentElement.closest('[data-copy-role]')) issues.push('no-copy-role:'+n.textContent.trim()); }
   if(/\\bTutor\\b/.test(main.textContent)) issues.push('glossary:Tutor');
@@ -99,7 +101,8 @@ try {
   for (let n = 0; n < 12 && !reached; n++) {
     await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
     await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
-    reached = await page.evaluate("document.activeElement?.closest('.lf-course-path-hero') !== null && document.activeElement?.tagName === 'BUTTON'");
+    // W2L.1: the recommendation is a link now (it goes to the lesson), a button before.
+    reached = await page.evaluate("document.activeElement?.closest('.lf-course-path-hero') !== null && ['A', 'BUTTON'].includes(document.activeElement?.tagName)");
   }
   if (!reached) findings.push({ interaction: 'keyboard-cannot-reach-recommendation' });
   else {

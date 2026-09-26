@@ -1,5 +1,4 @@
-// Type-only, so the cycle with LearnPage is erased at compile time.
-import type { Course } from '@/routes/app/LearnPage';
+import type { ShelfCourse } from '@/rebuild/learning/learnHome';
 
 /*
  * The shelf a learner already saw, kept for the next time they open /learn.
@@ -30,18 +29,18 @@ import type { Course } from '@/routes/app/LearnPage';
 
 interface Entry {
   userId: string;
-  courses: Course[];
+  courses: ShelfCourse[];
 }
 
 let entry: Entry | null = null;
 
 /** The cached shelf for this user, or null — never another user's. */
-export function readCoursesCache(userId: string | null | undefined): Course[] | null {
+export function readCoursesCache(userId: string | null | undefined): ShelfCourse[] | null {
   if (!userId || !entry || entry.userId !== userId) return null;
   return entry.courses;
 }
 
-export function writeCoursesCache(userId: string | null | undefined, courses: Course[]): void {
+export function writeCoursesCache(userId: string | null | undefined, courses: ShelfCourse[]): void {
   if (!userId) return;
   entry = { userId, courses };
 }

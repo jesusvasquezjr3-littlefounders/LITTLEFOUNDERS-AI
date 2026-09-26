@@ -3,6 +3,7 @@ import type { Locale } from '../design/copyBudget';
 import { Button, IconButton, InlineNotice } from '../design/controls';
 import '../design/tokens.css';
 import '../design/system.css';
+import './learnerPage.css';
 import './narrative.css';
 import { localizedText } from './coursePath';
 import type { BridgeOutcome, JournalEntry, JournalState, SelfBridge } from './narrative';
@@ -120,26 +121,32 @@ export function DecisionJournalView({ state, locale, dark, onBack, onRetry, onMo
 }) {
   const t = decisionJournalCopy[locale];
   const theme = dark ? 'dark' : 'light';
-  if (state.status !== 'ready') {
-    return <main className="lf-rebuild lf-journal" data-theme={theme} lang={locale} data-surface="app" data-screen={`journal-${state.status}`} aria-busy={state.status === 'loading'}>
-      <div className="lf-journal-inner lf-journal-state">
-        <h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : t.errorTitle}</h1>
-        {state.status === 'error' ? <p data-copy-role="body">{t.errorBody}</p> : null}
-        <div className="lf-actions">
-          {state.status === 'error' && onRetry ? <Button variant="accent" onClick={onRetry}>{t.retry}</Button> : null}
-          <Button onClick={onBack}>{t.back}</Button>
-        </div>
+  /*
+   * W2L.1: one root, top row and <h1> in every state. On the learner shell the
+   * page's <h1> takes focus on arrival while the journal is still loading;
+   * that heading must survive the answer instead of being replaced under it.
+   */
+  return <div className="lf-rebuild lf-learner-page lf-journal" data-theme={theme} lang={locale} data-surface="app"
+    data-screen={state.status === 'ready' ? (fixture ? 'journal-preview' : 'journal') : `journal-${state.status}`} aria-busy={state.status === 'loading'}>
+    <div className={`lf-journal-inner${state.status === 'ready' ? '' : ' lf-journal-state'}`}>
+      <div className="lf-journal-top">
+        <Button onClick={onBack}>{t.back}</Button>
       </div>
-    </main>;
-  }
-  return <ReadyJournal key={state.entries.length === 0 ? 'empty' : 'list'} state={state} locale={locale} theme={theme} t={t}
-    onBack={onBack} onMore={onMore} onClear={onClear} onBridge={onBridge} loadingMore={loadingMore} fixture={fixture} />;
+      <h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : state.status === 'error' ? t.errorTitle : t.title}</h1>
+      {state.status === 'ready'
+        ? <ReadyJournal key={state.entries.length === 0 ? 'empty' : 'list'} state={state} locale={locale} t={t}
+          onMore={onMore} onClear={onClear} onBridge={onBridge} loadingMore={loadingMore} />
+        : state.status === 'error' ? <>
+          <p data-copy-role="body">{t.errorBody}</p>
+          {onRetry ? <div className="lf-actions"><Button variant="accent" onClick={onRetry}>{t.retry}</Button></div> : null}
+        </> : null}
+    </div>
+  </div>;
 }
 
-function ReadyJournal({ state, locale, theme, t, onBack, onMore, onClear, onBridge, loadingMore, fixture }: {
-  state: Extract<JournalState, { status: 'ready' }>; locale: Locale; theme: 'light' | 'dark'; t: Copy;
-  onBack: () => void; onMore?: () => void; onClear: () => Promise<boolean>;
-  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>; loadingMore: boolean; fixture: boolean;
+function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, loadingMore }: {
+  state: Extract<JournalState, { status: 'ready' }>; locale: Locale; t: Copy; onMore?: () => void; onClear: () => Promise<boolean>;
+  onBridge: (id: string, answer: 'act' | 'dismiss') => Promise<BridgeOutcome>; loadingMore: boolean;
 }) {
   const emptyId = useId();
   const [confirming, setConfirming] = useState(false);
@@ -156,13 +163,7 @@ function ReadyJournal({ state, locale, theme, t, onBack, onMore, onClear, onBrid
     setClearNotice(ok ? 'cleared' : 'failed');
   }
 
-  return <main className="lf-rebuild lf-journal" data-theme={theme} lang={locale} data-surface="app" data-screen={fixture ? 'journal-preview' : 'journal'}>
-    <div className="lf-journal-inner">
-      <div className="lf-journal-top">
-        <Button onClick={onBack}>{t.back}</Button>
-      </div>
-      <h1 data-copy-role="heading">{t.title}</h1>
-
+  return <>
       <SelfBridgeList bridges={state.bridges} locale={locale} onBridge={onBridge} />
 
       {entries.length === 0 ? <section className="lf-journal-section" aria-labelledby={emptyId}>
@@ -185,8 +186,7 @@ function ReadyJournal({ state, locale, theme, t, onBack, onMore, onClear, onBrid
           </div>
         </> : <div className="lf-actions"><Button onClick={() => { setClearNotice(null); setConfirming(true); }}>{t.clear}</Button></div>}
       </section> : null}
-    </div>
-  </main>;
+  </>;
 }
 
 function JournalCard({ entry, locale, t }: { entry: JournalEntry; locale: Locale; t: Copy }) {

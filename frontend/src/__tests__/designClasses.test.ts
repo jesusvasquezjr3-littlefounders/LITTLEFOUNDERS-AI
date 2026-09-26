@@ -185,8 +185,6 @@ describe('design classes', () => {
       'lf-coin',
       'lf-slot',
       'lf-summary',
-      'lf-now',
-      'lf-live-dot',
       'lf-eyebrow',
       'lf-stage-pill',
       'lf-live-emerald',

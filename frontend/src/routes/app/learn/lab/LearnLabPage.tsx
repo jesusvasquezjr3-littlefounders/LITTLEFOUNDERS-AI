@@ -18,8 +18,8 @@
 import { useState } from 'react'
 import { AuthProvider } from '@/auth/AuthContext'
 import { ThemeToggle } from '@/components/ui'
-import { LearnPage } from '@/routes/app/LearnPage'
-import { CoursePage } from '../CoursePage'
+import { LearnHomeRoute } from '../LearnHomeRoute'
+import { CourseRoute } from '../CourseRoute'
 import { TerritoryPage } from '../TerritoryPage'
 import { PlacementPage } from '../PlacementPage'
 import {
@@ -93,7 +93,15 @@ function installStub(): void {
   const real = window.fetch.bind(window)
   window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
-    const data = fixtureFor(new URL(url, window.location.origin).pathname, (init?.method ?? 'GET').toUpperCase())
+    const pathname = new URL(url, window.location.origin).pathname
+    // The lab runs the linear course engine: the course screen reads the tree after this refusal (W2L.1).
+    if (pathname.includes('/learn/courses/') && pathname.endsWith('/path')) {
+      return new Response(JSON.stringify({ data: null, error: { code: 'PATHWAY_ENGINE_DISABLED', message: 'lab' } }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+    const data = fixtureFor(pathname, (init?.method ?? 'GET').toUpperCase())
     if (data === undefined) return real(input as RequestInfo, init)
     return new Response(JSON.stringify({ data, error: null }), {
       status: 200,
@@ -142,8 +150,8 @@ export function LearnLabPage() {
       ) : (
         <main className="px-5 pb-24 pt-6 md:px-8 lg:pb-10 lg:pt-10">
           <div className="mx-auto max-w-container">
-            {view === 'home' && <LearnPage />}
-            {view === 'course' && <CoursePage />}
+            {view === 'home' && <LearnHomeRoute />}
+            {view === 'course' && <CourseRoute />}
             {view === 'territory' && <TerritoryPage />}
           </div>
         </main>

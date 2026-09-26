@@ -1,0 +1,34 @@
+/*
+ * W2L: a rebuilt learner page mounted in the learner shell (Lane 0's
+ * LearnerShell on the real routes). The page is its own design-system root
+ * (`.lf-rebuild.lf-learner-page`), nested inside the shell's page slot, which
+ * still wraps every route in the legacy body box (`[data-legacy-body]`,
+ * app-shell/ShellRoot.tsx) until the last legacy page is gone. That box is the
+ * legacy layout's padding and width; a rebuilt page brings the shell's own
+ * content padding instead (shells.css `.lf-shell-main`: 24/16 px on a phone,
+ * 32 px from a 640 px container, 32/40 px block from 840 px), so the rule
+ * below hands it the whole slot. Tokens only.
+ */
+.lf-rebuild [data-legacy-body]:has(> .lf-learner-page) { max-inline-size: none; margin: 0; padding: 0; }
+
+.lf-rebuild.lf-learner-page {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-6);
+  min-block-size: 0;
+  padding-block: var(--spacing-6) var(--spacing-8);
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+  background: transparent;
+}
+.lf-rebuild.lf-learner-page > * { min-inline-size: 0; inline-size: 100%; }
+
+@container app (min-width: 640px) {
+  .lf-rebuild.lf-learner-page { padding-inline: var(--spacing-8); }
+}
+@container app (min-width: 840px) {
+  .lf-rebuild.lf-learner-page { gap: var(--spacing-8); padding-block: var(--spacing-8) var(--spacing-10); }
+}
+
+/* The development preview's stand-in for the learner shell's <main> (preview/registry/learn.tsx). */
+/* It is at least the viewport tall, as the shell's frame is, so the preview's settings panel stays below the first view. */
+.lf-learn-preview-host { display: block; min-inline-size: 0; min-block-size: 100dvh; }
