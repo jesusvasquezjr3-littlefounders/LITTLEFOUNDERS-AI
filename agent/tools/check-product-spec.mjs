@@ -39,28 +39,51 @@ export function checkRepository(root) {
   const ids = [...product.matchAll(/^### ([A-H]\.\d+) /gm)].map((m) => m[1]);
   const ledger = readFileSync(resolve(root, 'docs/rebuild/REQUIREMENTS.md'), 'utf8');
   for (const id of ids) if (!ledger.includes(`| ${id} |`)) failures.push(`Untracked requirement: ${id}`);
-  // The new UI may use its own components and localized resources, never the legacy UI.
-  // OD-15/B.8 explicitly reuse the real 3D renderer, its quality probe and its theme context.
-  // Confine that bridge to one lesson-stage adapter; it grants no legacy UI component imports.
-  const stageBridge = resolve(root, 'frontend/src/rebuild/learning/CompactMentorStage.tsx');
-  const stageBridgeTargets = new Set([
-    resolve(root, 'frontend/src/tutor-scene/TutorStage'),
-    resolve(root, 'frontend/src/tutor-scene/quality'),
-    resolve(root, 'frontend/src/theme/useTheme'),
-  ]);
   for (const file of walk(resolve(root, 'frontend/src/rebuild')).filter((p) => /\.tsx?$/.test(p))) {
-    const source = readFileSync(file, 'utf8');
-    for (const match of source.matchAll(/(?:from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g)) {
-      const name = match[1];
-      if (!name.startsWith('.') && !name.startsWith('@/')) continue;
-      const target = name.startsWith('@/') ? resolve(root, 'frontend/src', name.slice(2)) : resolve(dirname(file), name);
-      if (![resolve(root, 'frontend/src/rebuild') + sep, resolve(root, 'frontend/src/i18n') + sep].some((prefix) => target.startsWith(prefix))
-        && !(file === stageBridge && stageBridgeTargets.has(target))) {
-        failures.push(`Legacy dependency in new frontend: ${relative(root, file)} -> ${name}`);
-      }
-    }
+    failures.push(...boundaryFailures(root, file, readFileSync(file, 'utf8')));
   }
   return { failures, requirementHeadings: ids.length };
+}
+
+/*
+ * The new UI may use its own components and localized resources, never the
+ * legacy UI. OD-15/B.8 explicitly reuse the real 3D renderer, its quality
+ * probe and its theme context. That bridge is confined to NAMED stage files,
+ * never a directory, and it grants no legacy UI component imports:
+ *
+ *   - rebuild/learning/CompactMentorStage.tsx: the compact Mentor stage inside
+ *     a lesson (Bible 08 §11, B.8).
+ *   - rebuild/mentor/MentorStage.tsx: the Mentor screen's stage, the one
+ *     isolated component with a documented interface that Bible 08 §7 asks for
+ *     (W2: reserved for the Mentor lane; it may not exist yet). The Mentor
+ *     screen's other files import the stage, not the 3D engine, and the tutor/
+ *     session hooks stay out of reach until that lane rebuilds them.
+ */
+export const STAGE_BRIDGES = [
+  'frontend/src/rebuild/learning/CompactMentorStage.tsx',
+  'frontend/src/rebuild/mentor/MentorStage.tsx',
+];
+export const STAGE_BRIDGE_TARGETS = [
+  'frontend/src/tutor-scene/TutorStage',
+  'frontend/src/tutor-scene/quality',
+  'frontend/src/theme/useTheme',
+];
+
+/** Imports of one rebuilt file that reach outside src/rebuild and src/i18n, except a stage bridge's named targets. */
+export function boundaryFailures(root, file, source) {
+  const failures = [];
+  const bridge = STAGE_BRIDGES.some((path) => resolve(root, path) === resolve(file));
+  const targets = new Set(STAGE_BRIDGE_TARGETS.map((path) => resolve(root, path)));
+  for (const match of source.matchAll(/(?:from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g)) {
+    const name = match[1];
+    if (!name.startsWith('.') && !name.startsWith('@/')) continue;
+    const target = name.startsWith('@/') ? resolve(root, 'frontend/src', name.slice(2)) : resolve(dirname(file), name);
+    if (![resolve(root, 'frontend/src/rebuild') + sep, resolve(root, 'frontend/src/i18n') + sep].some((prefix) => target.startsWith(prefix))
+      && !(bridge && targets.has(target))) {
+      failures.push(`Legacy dependency in new frontend: ${relative(root, file)} -> ${name}`);
+    }
+  }
+  return failures;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
