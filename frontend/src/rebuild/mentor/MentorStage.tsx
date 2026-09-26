@@ -209,6 +209,29 @@ export function MentorStage({
   }, [mode, pose.id, beat]);
   const played = mode === 'held' ? heldPose : pose;
 
+  /*
+   * In the still fallback there is no renderer to own the voice, so the stage
+   * plays the clip itself: a learner on a low-power phone still hears the
+   * Mentor, and a blocked autoplay is reported like the renderer reports it.
+   */
+  const speechEnd = useRef(onSpeechEnd);
+  speechEnd.current = onSpeechEnd;
+  const speechBlocked = useRef(onSpeechBlocked);
+  speechBlocked.current = onSpeechBlocked;
+  useEffect(() => {
+    if (mode !== 'still' || !speechUrl || typeof Audio === 'undefined') return undefined;
+    const audio = new Audio(speechUrl);
+    let current = true;
+    audio.onended = () => { if (current) speechEnd.current?.(); };
+    try {
+      const played = audio.play() as Promise<void> | undefined;
+      if (played && typeof played.then === 'function') {
+        played.then(() => { if (current) speechBlocked.current?.(false); }, () => { if (current) speechBlocked.current?.(true); });
+      }
+    } catch { speechBlocked.current?.(true); }
+    return () => { current = false; audio.pause(); audio.removeAttribute('src'); };
+  }, [mode, speechUrl, audioKey]);
+
   const showStill = !!stills && (mode === 'still' || !stillGone);
   const stillVisible = showStill && (mode === 'still' || !liveReady);
   const compact = size === 'compact';

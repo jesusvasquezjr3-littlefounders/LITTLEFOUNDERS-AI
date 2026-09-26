@@ -1,0 +1,226 @@
+/*
+ * The Mentor screen (Frontend Bible 08 §2, §6). The stage is the dominant area
+ * on every width and never boxed in a card; the speech plate, the board and the
+ * response area are surfaces beside or below it. Separation is fill, never an
+ * outline (02 §4.4). Layout follows the screen's own width (02 §7 rule 9):
+ *
+ *   phone (< 600 px)      stacked: the stage at least 55% of the height, the
+ *                         speech plate on its lower edge, the board sliding up
+ *                         over the lower stage, the response area at the bottom;
+ *   tablet (600-1023 px)  the stage keeps about half of the height;
+ *   desktop (>= 1024 px)  the stage in the left 7 of 12 columns, the plate, the
+ *                         board and the response area in the right 5 (never 50/50).
+ */
+.lf-mentor-screen {
+  container: lf-mentor-screen / inline-size;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  block-size: 100dvh;
+  inline-size: 100%;
+  overflow: hidden;
+  background: var(--base);
+  color: var(--content);
+}
+
+.lf-mentor-top {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-inline-size: 0;
+  padding: var(--spacing-2) var(--spacing-4);
+  padding-block-start: max(var(--spacing-2), env(safe-area-inset-top));
+  background: var(--surface);
+  box-shadow: var(--elevation-control);
+  position: relative;
+  z-index: 2;
+}
+.lf-mentor-title {
+  flex: 1;
+  min-inline-size: 0;
+  margin: 0;
+  font: var(--type-headline);
+  letter-spacing: var(--type-headline-tracking);
+  overflow-wrap: anywhere;
+}
+
+.lf-mentor-main {
+  display: grid;
+  grid-template-rows: minmax(max(55dvh, var(--lf-mentor-response-block, 0px)), 1fr) auto;
+  min-block-size: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.lf-mentor-main:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: calc(-1 * var(--focus-width)); }
+
+.lf-mentor-stage-region {
+  position: relative;
+  min-block-size: 0;
+  --lf-mentor-board-cover: 60%;
+}
+.lf-mentor-stage-empty { position: absolute; inset: 0; background: var(--sky-soft); }
+
+/* The speech plate: the current turn only, a caption on the stage's lower edge (08 §2 layer 3). */
+.lf-mentor-plate-slot {
+  position: absolute;
+  inset-inline: var(--spacing-4);
+  inset-block-end: var(--spacing-4);
+  z-index: 1;
+  display: grid;
+}
+.lf-mentor-plate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-2) var(--spacing-3);
+  min-inline-size: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-lg);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-float);
+}
+[data-theme='dark'] .lf-mentor-plate { box-shadow: none; background: var(--raised); }
+.lf-mentor-plate-text {
+  /* The caption keeps a readable measure; the Next button wraps under it before a word is squeezed (02 §7). */
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+  margin: 0;
+  font: var(--type-body-lg);
+  letter-spacing: var(--type-body-lg-tracking);
+  overflow-wrap: anywhere;
+}
+.lf-mentor-plate[data-plate='status'] .lf-mentor-plate-text { color: var(--content-muted); }
+.lf-mentor-plate-next { margin-inline-start: auto; }
+
+/* The board on demand (08 §2 layer 4): over the lower stage on a stacked screen, beside the character on a split one. */
+/* The shared Pizarrón frame is the board's own surface: nothing is drawn around it. */
+.lf-mentor-board {
+  position: relative;
+  display: grid;
+  gap: var(--spacing-2);
+  min-inline-size: 0;
+  border-radius: var(--rounded-lg);
+}
+.lf-mentor-stage-region > .lf-mentor-board {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 1;
+  max-block-size: var(--lf-mentor-board-cover);
+  overflow-y: auto;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+.lf-mentor-board-hide { position: absolute; inset-block-start: var(--spacing-4); inset-inline-end: var(--spacing-4); z-index: 1; }
+.lf-mentor-board .lf-learning-board-heading { min-block-size: var(--target-min); padding-inline-end: calc(var(--target-min) + var(--spacing-2)); }
+.lf-mentor-board-frame { min-inline-size: 0; }
+.lf-mentor-activity { padding: var(--spacing-4); background: var(--surface); box-shadow: var(--elevation-card); }
+[data-theme='dark'] .lf-mentor-activity { box-shadow: none; background: var(--raised); }
+.lf-mentor-activity h2 { margin: 0; font: var(--type-title); letter-spacing: var(--type-title-tracking); }
+.lf-mentor-activity p { margin: 0; overflow-wrap: anywhere; }
+
+.lf-mentor-board-bars { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-mentor-board-bar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--spacing-1) var(--spacing-3);
+  align-items: baseline;
+}
+.lf-mentor-board-bar-label, .lf-mentor-board-bar-value { font: var(--type-body); letter-spacing: var(--type-body-tracking); overflow-wrap: anywhere; }
+.lf-mentor-board-bar-value { font-variant-numeric: tabular-nums; text-align: end; }
+.lf-mentor-board-bar-row[data-marked='true'] :is(.lf-mentor-board-bar-label, .lf-mentor-board-bar-value) { font-weight: 800; }
+.lf-mentor-board-bar-track {
+  grid-column: 1 / -1;
+  display: block;
+  block-size: var(--spacing-3);
+  border-radius: var(--rounded-full);
+  background: var(--sunken);
+  overflow: hidden;
+}
+.lf-mentor-board-bar-fill { display: block; block-size: 100%; border-radius: var(--rounded-full); }
+.lf-mentor-board-bar-fill--primary { background: var(--primary); }
+.lf-mentor-board-bar-fill--sky { background: var(--sky); }
+.lf-mentor-board-bar-fill--mint { background: var(--mint); }
+.lf-mentor-board-bar-fill--berry { background: var(--berry); }
+.lf-mentor-board-bar-fill--accent { background: var(--accent); }
+
+.lf-mentor-board-list { display: grid; gap: var(--spacing-2); margin: 0; }
+.lf-mentor-board-list-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--spacing-3); }
+.lf-mentor-board-list-row dt, .lf-mentor-board-list-row dd { margin: 0; font: var(--type-body); letter-spacing: var(--type-body-tracking); overflow-wrap: anywhere; }
+.lf-mentor-board-list-row[data-marked='true'] :is(dt, dd) { font-weight: 800; }
+.lf-mentor-board-controls { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-mentor-board-note { margin: 0; overflow-wrap: anywhere; }
+.lf-mentor-board-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+
+/* The panel: plate (when not on the stage), board, closing and the response area. */
+.lf-mentor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  padding-block-end: max(var(--spacing-3), env(safe-area-inset-bottom));
+}
+.lf-mentor-closing { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+
+/* The response area (08 §2 layer 5; §9: chips lead for 6-12, the field for 13 and older, in DOM order). */
+.lf-mentor-response { display: flex; flex-direction: column; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-mentor-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-chips > .lf-button { flex: 1 1 auto; }
+/* Chips share a row where their words fit (a 16 px side inset instead of the 24 px of a call to action). */
+.lf-mentor-chips > .lf-reply-chip { padding-inline: var(--spacing-4); }
+.lf-mentor-offer { display: grid; gap: var(--spacing-2); }
+.lf-mentor-offer-question { margin: 0; font: var(--type-body-lg); letter-spacing: var(--type-body-lg-tracking); overflow-wrap: anywhere; }
+.lf-mentor-compose { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-compose-actions { display: flex; gap: var(--spacing-2); align-items: center; padding-block-end: var(--spacing-1); }
+/* The wave-1 panels were drawn for a floating layer; here they are rows of the response area, full width. */
+.lf-mentor-response .lf-rebuild:is(.lf-mentor-calibration, .lf-session-end-choice, .lf-check-in, .lf-alliance-panel) {
+  position: static;
+  inline-size: 100%;
+  max-inline-size: none;
+  margin-inline: 0;
+}
+
+/* The microphone's level (08 §3: in the response area, never on the character). */
+.lf-mentor-level { display: flex; align-items: center; gap: var(--spacing-3); font: var(--type-body); letter-spacing: var(--type-body-tracking); }
+.lf-mentor-level-track { flex: 1; block-size: var(--spacing-2); border-radius: var(--rounded-full); background: var(--sunken); overflow: hidden; }
+.lf-mentor-level-fill { display: block; block-size: 100%; inline-size: 100%; background: var(--primary); transform-origin: left center; transform: scaleX(var(--lf-mentor-level, 0.04)); }
+[dir='rtl'] .lf-mentor-level-fill { transform-origin: right center; }
+
+/* The transcript, a secondary sheet in reading order (08 §2). */
+.lf-mentor-transcript { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-mentor-transcript li { display: grid; gap: var(--spacing-1); }
+.lf-mentor-transcript p { margin: 0; overflow-wrap: anywhere; }
+.lf-mentor-transcript-speaker { font: var(--type-label); letter-spacing: var(--type-label-tracking); color: var(--content-muted); }
+
+.lf-mentor-route-loading { display: grid; place-items: center; block-size: 100dvh; padding: var(--spacing-4); background: var(--base); }
+
+@container app (min-width: 600px) {
+  .lf-mentor-main { grid-template-rows: minmax(max(50dvh, var(--lf-mentor-response-block, 0px)), 1fr) auto; }
+  .lf-mentor-panel { padding-inline: var(--spacing-6); }
+}
+
+@container app (min-width: 1024px) {
+  .lf-mentor-main {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+  }
+  .lf-mentor-stage-region { grid-column: 1 / 8; }
+  .lf-mentor-panel {
+    grid-column: 8 / -1;
+    min-block-size: 0;
+    overflow-y: auto;
+    padding: var(--spacing-6);
+  }
+  /* The panel's content sits at the bottom, beside the character's feet, and still scrolls from its top. */
+  .lf-mentor-panel > :first-child { margin-block-start: auto; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lf-mentor-stage-region > .lf-mentor-board { animation: lf-mentor-board-in var(--dur-component) var(--ease-enter); }
+}
+@keyframes lf-mentor-board-in {
+  from { transform: translateY(var(--spacing-8)); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}

@@ -164,6 +164,35 @@ describe('MentorStage: stills fallback (08 §7)', () => {
     expect(stage().dataset.ready).toBe('true');
   });
 
+  it('still speaks in the still fallback: it plays the clip itself and reports its end and a blocked autoplay', async () => {
+    harness.probe = { ...harness.probe, webgl: 'none' };
+    const played: { src: string; audio: HTMLAudioElement }[] = [];
+    let block = false;
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function (this: HTMLMediaElement) {
+      played.push({ src: this.src, audio: this as HTMLAudioElement });
+      return block ? Promise.reject(new Error('NotAllowedError')) : Promise.resolve();
+    });
+    const pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
+    try {
+      const onSpeechEnd = vi.fn();
+      const onSpeechBlocked = vi.fn();
+      const { rerender } = render(<MentorStage character="dina" state="speaking" ageBand="6-9" theme="light"
+        speechUrl="https://depot.test/turn-1.mp3" audioKey={1} onSpeechEnd={onSpeechEnd} onSpeechBlocked={onSpeechBlocked} />);
+      expect(played.map((p) => p.src)).toEqual(['https://depot.test/turn-1.mp3']);
+      await act(async () => { played[0]!.audio.onended?.(new Event('ended')); });
+      expect(onSpeechEnd).toHaveBeenCalledTimes(1);
+      block = true;
+      rerender(<MentorStage character="dina" state="speaking" ageBand="6-9" theme="light"
+        speechUrl="https://depot.test/turn-2.mp3" audioKey={2} onSpeechEnd={onSpeechEnd} onSpeechBlocked={onSpeechBlocked} />);
+      await act(async () => { await Promise.resolve(); });
+      expect(onSpeechBlocked).toHaveBeenLastCalledWith(true);
+      expect(pause).toHaveBeenCalled();
+    } finally {
+      play.mockRestore();
+      pause.mockRestore();
+    }
+  });
+
   it('falls back on a low-power device', () => {
     harness.tier = 'low';
     render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);

@@ -2,12 +2,18 @@ import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireOnboarded } from '@/auth/RequireOnboarded';
-import { TutorChunkFallback } from './LazyRoute';
+import { useShellLocale } from '@/app-shell/ShellRoot';
+import { useTheme } from '@/theme/useTheme';
+import { LoadingState, RebuildRoot } from '@/rebuild/design/controls';
+import en from '@/i18n/en-US/rebuild-mentor.json';
+import es from '@/i18n/es-MX/rebuild-mentor.json';
+import pt from '@/i18n/pt-BR/rebuild-mentor.json';
+import '@/rebuild/mentor/screen/mentorScreen.css';
 
 /*
- * Lane 3 (mentor): the Mentor stage (Bible 08). The route path stays `/tutor`
- * until the Mentor lane renames it (a path change is its decision, with a
- * redirect); the label a learner sees is the character's name (OD-6).
+ * Lane 3 (mentor): the Mentor screen (Frontend Bible 08). The route path stays
+ * `/tutor` (a path change is a later decision, with a redirect: lessons link a
+ * guided review here); the label a learner sees is the character's name (OD-6).
  */
 
 /* The Mentor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus
@@ -17,12 +23,30 @@ import { TutorChunkFallback } from './LazyRoute';
 const TutorPage = lazy(() => import('@/routes/app/TutorPage'));
 
 /*
+ * While the screen's chunk downloads: the rebuilt loading state, in the
+ * learner's language. A bare design-system root, not `ShellRoot`: the shell
+ * root moves focus on the first mount after a route change, and that mount
+ * must be the Mentor screen's, not this placeholder's (found by the real-route
+ * focus check, W2M.2).
+ */
+function MentorChunkLoading() {
+  const locale = useShellLocale();
+  const { isDark } = useTheme();
+  const copy = (locale === 'es-MX' ? es : locale === 'pt-BR' ? pt : en).mentorScreen;
+  return <RebuildRoot theme={isDark ? 'dark' : 'light'} locale={locale}>
+    <div className="lf-mentor-route-loading">
+      <LoadingState label={copy.loading} lines={2} />
+    </div>
+  </RebuildRoot>;
+}
+
+/*
  * The second full-screen layer, and the list is closed at two (lesson and
- * Mentor; adding a third is an owner decision). It sits outside the app shell
- * because the `fixed inset-0` stage cannot hide it on its own: the navigation
- * would still be in the DOM underneath, so a keyboard user would tab into
- * links they cannot see. The onboarding gate is kept, because an un-onboarded
- * learner has no nickname and no preferences for the island to be built from.
+ * Mentor; adding a third is an owner decision). It sits outside the app shell:
+ * the Mentor screen has its own top bar with the way out (08 §2), and the app
+ * navigation underneath would be a keyboard trap of links nobody can see. The
+ * onboarding gate is kept, because an un-onboarded learner has no preferences
+ * for the Mentor to be built from.
  */
 export const mentorStandaloneRoutes = (
   <Route
@@ -30,7 +54,7 @@ export const mentorStandaloneRoutes = (
     element={
       <RequireAuth>
         <RequireOnboarded>
-          <Suspense fallback={<TutorChunkFallback />}>
+          <Suspense fallback={<MentorChunkLoading />}>
             <TutorPage />
           </Suspense>
         </RequireOnboarded>

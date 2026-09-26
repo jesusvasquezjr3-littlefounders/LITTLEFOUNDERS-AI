@@ -5,6 +5,7 @@ import { AllianceCheck } from '../../mentor/AllianceCheck';
 import { DispositionSummary } from '../../mentor/DispositionSummary';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { MentorStagePreview } from '../../mentor/MentorStagePreview';
+import { MentorScreenPreview } from '../../mentor/screen/MentorScreenPreview';
 import { framed, standalone, type PreviewRegistry } from './types';
 
 /*
@@ -32,6 +33,8 @@ const SCRIPTS = ['completed', 'interrupted', 'learner_left', 'safety_stop'];
 export const mentorPreviewScreens: PreviewRegistry = {
   /* W2M.1: the one Mentor stage at full size, in the Mentor screen's stage region (08 §6, §7); see MentorStagePreview. */
   'mentor-stage': standalone(({ locale, theme, ageBand, params }) => <MentorStagePreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
+  /* W2M.2: the Mentor screen (08 §2-§6) in every state from fixtures; see MentorScreenPreview. */
+  'mentor-screen': standalone(({ locale, theme, ageBand, params }) => <MentorScreenPreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
   'mentor-session-end': framed(({ t, locale, theme, params, go }) => <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
     data-screen="mentor-session-end"><div className="lf-preview-content">
     {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}

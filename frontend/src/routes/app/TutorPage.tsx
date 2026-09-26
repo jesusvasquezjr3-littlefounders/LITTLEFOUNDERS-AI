@@ -1,93 +1,74 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { TutorExperience } from '@/tutor/TutorExperience';
+import { Component, useCallback, useEffect, useMemo, useRef, type ErrorInfo, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { useTheme } from '@/theme/useTheme';
+import { trackInsight } from '@/lib/insights';
 import { APP_HOME } from '@/app-shell/home';
+import { ShellRoot, useShellLocale } from '@/app-shell/ShellRoot';
+import { StandaloneState } from '@/app-shell/StandaloneState';
+import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
+import { guidedReviewSkillFrom } from '@/routes/app/learn/paths';
+import { ButtonLink } from '@/rebuild/design/controls';
+import { MentorRoute, mentorCopy } from '@/rebuild/mentor/screen/MentorRoute';
 
 /*
- * The Tutor product surface.
+ * `/tutor`: the Mentor screen (Frontend Bible 08, W2M.2). The legacy chat-era
+ * experience is no longer mounted here (OD-15); this route supplies only what
+ * the application knows and the rebuilt screen must not reach for itself:
  *
- * This route is deliberately thin: an error boundary and the experience.
- * Everything else lives in `@/tutor/` — the phases, the socket, the
- * personalization — because the route is also what App.tsx lazy-loads, and
- * `three` must only ever be reached through a lazy route (/TUTOR_3D.md §6).
- * Any 3D preview added anywhere in the product has to live inside THIS chunk
- * for that to keep holding.
+ *   - the signed-in account and its token (Core is the only data source; the
+ *     Oracle socket URL still comes from Core's session start);
+ *   - the language and mode the learner chose;
+ *   - whether a guardian link exists (a child in a family, Core's
+ *     `/wallet/access` answer): only then does the menu say what the grown-up
+ *     sees (08 §4); a teen without a parent and an adult never see that line;
+ *   - the guided review a lesson offered (`?review=<skill>`), validated here;
+ *   - navigation: close goes back to the learner's home, the closing state's
+ *     one action goes back to the learning path.
  *
- * THERE IS NO HEADING AND NO READING COLUMN HERE, and that is the point. The
- * stage is the page (/DESIGN.md → Screen Recipes → Tutor): `StageShell` takes
- * the whole viewport as its own layer, so the route renders a boundary and gets
- * out of the way. The `mx-auto max-w-container px-5 py-6` wrapper and the `<h1>`
- * that used to be here are what turned a 3D place into a picture of one inside
- * a dashboard, and the route sits OUTSIDE the app shell in App.tsx for the same
- * reason the Lesson Player does.
- *
- * The 3D stage is shown to EVERY user (owner decision, 2026-08-15) — never
- * gated by role or device class. Device capability is handled by the adaptive
- * quality tiers inside the scene, not by withholding the feature.
+ * `three` is still reached only through this lazy route (the stage bridge
+ * `rebuild/mentor/MentorStage.tsx`), and `tutor_open` is still recorded once
+ * per visit for the acquisition funnel (H.3), consent-gated like every event.
  */
 
-/**
- * A failed asset load, or a thrown render anywhere in the experience, must not
- * take the page down.
- *
- * The .glb files are served from Depot in deployed environments, so a bad
- * `VITE_SCENE_ASSET_BASE`, a Depot outage, or a device that runs out of memory
- * decoding them are all real, reachable states. Without a boundary, the throw
- * inside Suspense unmounts the whole route and the user gets a blank screen
- * with no explanation.
- */
-class TutorBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+class MentorBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
+  static getDerivedStateFromError() { return { failed: true }; }
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Kept as a console error on purpose: this is a real failure worth seeing
-    // in the browser, and the Tutor's telemetry vocabulary is closed
-    // (/ORACLE.md §13) — adding an event here would bypass the migration and
-    // consent gate that vocabulary exists to enforce.
-    console.error('[tutor] failed to render', error, info.componentStack);
+    // A real failure worth seeing in the browser; the event vocabulary is closed, so no new event is invented for it.
+    console.error('[mentor] failed to render', error, info.componentStack);
   }
-
-  render() {
-    return this.state.failed ? this.props.fallback : this.props.children;
-  }
+  render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
 
-/**
- * What is left when the scene itself threw.
- *
- * It keeps the shell's own layer rather than dropping back into the app's
- * reading column, because the route no longer HAS a reading column to drop back
- * into — a grey card here would render at the top-left of an empty viewport.
- * The island cannot be drawn (drawing it is what failed), so this is the honest
- * floor: the stage's own ground colour, one sentence, and a way out. The way out
- * matters more here than anywhere else in the product: the app chrome is gone,
- * so without it the only exit is the browser's back button.
- */
-function StageFailure() {
-  const { t } = useTranslation();
-
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-base px-5 text-center">
-      <p className="lf-body max-w-[46ch] text-content-muted">{t('tutor.scene.loadFailed')}</p>
-      <Link
-        to={APP_HOME}
-        className="lf-press lf-glass lf-label flex min-h-11 items-center rounded-full px-5 text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-      >
-        {t('tutor.stage.leave')}
-      </Link>
-    </div>
-  );
+function MentorFailure() {
+  const copy = mentorCopy(useShellLocale()).mentorScreen;
+  return <StandaloneState pageTitle={copy.documentTitle} hue="sky"
+    actions={<ButtonLink href={APP_HOME} variant="accent">{copy.close}</ButtonLink>}>
+    <h1 data-copy-role="heading">{copy.documentTitle}</h1>
+    <p data-copy-role="body">{copy.unavailable}</p>
+  </StandaloneState>;
 }
 
 export default function TutorPage() {
-  return (
-    <TutorBoundary fallback={<StageFailure />}>
-      <TutorExperience />
-    </TutorBoundary>
-  );
+  const { getToken, session } = useAuth();
+  const { isDark } = useTheme();
+  const locale = useShellLocale();
+  const wallet = useWalletAccess();
+  const navigate = useNavigate();
+  const reviewSkill = useMemo(() => guidedReviewSkillFrom(window.location.search), []);
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current) return;
+    opened.current = true;
+    trackInsight('tutor_open', { routeClass: 'tutor' });
+  }, []);
+  const leave = useCallback(() => navigate(APP_HOME), [navigate]);
+  const path = useCallback(() => navigate('/learn'), [navigate]);
+  return <MentorBoundary fallback={<MentorFailure />}>
+    <ShellRoot>
+      <MentorRoute getToken={getToken} userId={session?.user?.id ?? null} locale={locale} theme={isDark ? 'dark' : 'light'}
+        guardianLink={wallet.familyChild} reviewSkill={reviewSkill} onLeave={leave} onPath={path} />
+    </ShellRoot>
+  </MentorBoundary>;
 }
