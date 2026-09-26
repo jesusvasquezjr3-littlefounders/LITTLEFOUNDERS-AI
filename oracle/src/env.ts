@@ -207,8 +207,14 @@ const Env = z.object({
    * 2, "proposed, pending data-driven validation" (Threshold Recalibration
    * Log, docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). Changing it is
    * a Tier 1 governance change (C.22), never a tuning knob.
+   *
+   * The floor is 2, not 1: "no mastery or remediation decision executes on a
+   * single observation" is a non-negotiable Block C constraint, so an
+   * environment value cannot switch C.10 off globally (S06.15 lane review).
+   * A value below 2 refuses to boot rather than weakening the rule. The only
+   * sanctioned single-observation path is the per-KC Stage 7 rollback below.
    */
-  TUTOR_CORROBORATION_MIN_OBSERVATIONS: z.coerce.number().int().min(1).max(5).default(2),
+  TUTOR_CORROBORATION_MIN_OBSERVATIONS: z.coerce.number().int().min(2).max(5).default(2),
   /**
    * Appendix F Part 3 Stage 7 — the Extended Mastery Engine kill switch:
    * comma-separated `kc.key`s reverted to the pre-C.10 single-observation

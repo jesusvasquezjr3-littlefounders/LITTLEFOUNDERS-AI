@@ -137,11 +137,13 @@
         "backend/src/services/pedagogy/dialogueCalibration.ts",
         "backend/src/services/pedagogy/spacedReview.ts",
         "backend/src/services/pedagogy/sessionEnd.ts",
-        "backend/src/services/pedagogy/disposition.ts"
+        "backend/src/services/pedagogy/disposition.ts",
+        "oracle/src/env.ts"
       ],
       "examples": [
         "Lowering the Default-to-Inaction kill-switch floor",
-        "Widening the answer-reveal ceiling or the disparity rule"
+        "Widening the answer-reveal ceiling or the disparity rule",
+        "Changing a Mentor kill-switch default or the C.10 corroboration floor in the Oracle configuration (oracle/src/env.ts)"
       ],
       "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
     },

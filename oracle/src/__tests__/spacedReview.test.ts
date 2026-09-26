@@ -313,6 +313,27 @@ describe('PedagogicalController — the in-session review detour', () => {
     expect(probing.openInSessionReview(A, 1)).toBe(false);
   });
 
+  it('never adds decision velocity: refused while the 3-per-minute strategy-change ceiling is spent, opened once it clears', () => {
+    const controller = pastA();
+    const spent = controller.snapshot();
+    controller.restore({ ...spent, strategyChangesAt: [190_000, 195_000, 199_000] });
+    expect(controller.openInSessionReview(A, 200_000)).toBe(false);
+    expect(controller.inSessionReviewKcId).toBeNull();
+    expect(controller.currentStrategy).toBe(spent.strategy);
+    // A minute later the ceiling has cleared and the (still due) detour opens, counted as a change.
+    expect(controller.openInSessionReview(A, 260_000)).toBe(true);
+    expect(controller.snapshot().strategyChangesAt).toEqual([260_000]);
+  });
+
+  it('leaving an abandoned detour counts as a strategy change', () => {
+    const controller = pastA();
+    controller.openInSessionReview(A, 200_000);
+    for (let i = 1; i < REVIEW_OPEN_TURNS; i += 1) controller.decide({ kind: 'conversation_turn' }, 200_000 + i * 1_000);
+    controller.decide({ kind: 'conversation_turn' }, 210_000);
+    expect(controller.inSessionReviewKcId).toBeNull();
+    expect(controller.snapshot().strategyChangesAt).toContain(210_000);
+  });
+
   it('a correct re-check closes the detour with a short FLUENCY beat — no celebration, no advance', () => {
     const controller = pastA();
     controller.openInSessionReview(A, 200_000);

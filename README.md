@@ -210,7 +210,8 @@ npm --prefix backend run tutor:alliance-report -- [--since=YYYY-MM-DD] [--json] 
                                                # Alliance Bond Proxy Score per persona, Self-Explanation Pass Rate, Disposition-Profile
                                                # Completeness and the Alliance Controller's Stage 7 log. Core rolls renegotiation and persona
                                                # continuity back to shadow AUTOMATICALLY on a bond-proxy drop; --resolve lifts it.
-                                               # --purge-stale is the C.7 retention job (profiles not updated for 365 days). Switches:
+                                               # --purge-stale runs the C.7 retention by hand (profiles not updated for 365 days); the
+                                               # nightly tutor-retention.yml sweep runs it on schedule and reports dispositionProfilesPurged. Switches:
                                                # TUTOR_ALLIANCE_CONTROLLER / TUTOR_SELF_EXPLANATION=act|shadow|off.
                                                # Policy: docs/rebuild/mentor/ALLIANCE-AND-DISPOSITION-POLICY.md
 npm --prefix backend run tutor:spaced-review-report -- [--since=YYYY-MM-DD] [--json] [--markdown] [--sample=N --seed=S]

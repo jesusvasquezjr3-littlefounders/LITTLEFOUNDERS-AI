@@ -1364,7 +1364,8 @@ describe('C.10: two consecutive qualifying observations before a consequential m
     });
 
     it('ignores an out-of-range value rather than weakening the rule', () => {
-      for (const bad of [0, -1, 1.5, 9, Number.NaN]) {
+      // 1 included: a global single-observation setting would switch C.10 off.
+      for (const bad of [0, -1, 1, 1.5, 9, Number.NaN]) {
         const c = returning({ corroborationMinObservations: bad });
         expect(c.decide(right(), NOW).strategy, String(bad)).not.toBe('CELEBRATE');
       }

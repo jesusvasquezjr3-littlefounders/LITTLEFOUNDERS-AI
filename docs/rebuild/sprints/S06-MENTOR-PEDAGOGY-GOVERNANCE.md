@@ -28,6 +28,7 @@ Risk classification: **child-facing AI safety and pedagogy**. The Oracle's orche
 | S06.12 | C.5 dynamic judge-sampling rate + C.6 curated activity-pack tier | Implemented and locally verified (the orchestrator's wave label S06.7); physical-PostgreSQL, the human panel's seed-set ratings and the owner-run live judge calibration (OD-23), loading and human release of the 21 seed packs, native-speaker and pedagogical review, production data, staff-console composition (wave 2) and Tier 1 review pending |
 | S06.13 | C.21 transcript scoring + anomaly flags + dashboard; C.24 consolidated monitoring | Implemented and locally verified (the orchestrator's wave label S06.8); physical-PostgreSQL, naming the owners, production data and threshold calibration, sign-off of rubric v1, the calibrated transcript judge (C.23), staff-console composition (wave 2) and Tier 3 review pending |
 | S06.14 | C.22 tiered governance + C.23 judge calibration process | Implemented and locally verified (the orchestrator's wave label S06.9); physical-PostgreSQL, the two leads' sign-offs (adoption decision and 8 baseline rows), the human panel's ratings and the owner-run live judge calibrations (OD-23), branch protection on main, and Tier 1 review pending |
+| S06.15 | Lane review of every S06 commit since `337c9f0e` against C.5–C.24 | Reviewed, 4 gaps fixed and locally verified (the orchestrator's wave label S06.10): the C.10 floor held against configuration, the C.11 detour held to the strategy-change ceiling, the C.7 retention scheduled, and the Mentor configuration governed (C.22). Every requirement stays In progress; no acceptance is claimed |
 
 ## S06.1 implementation and rationale
 
@@ -53,7 +54,7 @@ The orchestrator assigned C.18 and C.10 to one wave, recorded here as checkpoint
 - Rule 5 (CELEBRATE/TRANSFER) now also needs `masteryEvidence ≥ required`. A misconception code reaches `misconceptionCode`, REMEDIATE, the model's hint and the repair catalogue only once its chain is corroborated. A correct probe remediates only a corroborated original KC; otherwise the probe closes, the learner returns to ordinary teaching, and difficulty is held as before. RESCUE keeps its existing multi-observation floors, which rise, and never fall, with the requirement.
 - Every decision carries `kcId` (the KC it was about), `evidence` (`rule`, `observations`, `required`; null when a guardrail held the strategy) and `masteryRevoked`.
 - The hint-request signal is wired: `HintLadder.assisted()` is read before each graded or voice verdict. A correct answer closes that ladder sub-step, which completes the S06.1 reset that was built but never called.
-- **Configuration:** `TUTOR_CORROBORATION_MIN_OBSERVATIONS` (default 2, range 1–5; out-of-range values fall back to 2, never weaker) and `TUTOR_CORROBORATION_ROLLBACK_KC_KEYS`, the per-KC kill switch from Appendix F Stage 7. The controller's `corroboration` field is constructor configuration, declared in the snapshot-fence exclusion list with its reason. The two chains ride the park snapshot, defaulted for records from the previous build.
+- **Configuration:** `TUTOR_CORROBORATION_MIN_OBSERVATIONS` (default 2, range 2–5 since the S06.15 lane review: a value below 2 refuses to boot, and the controller ignores an out-of-range option; never weaker) and `TUTOR_CORROBORATION_ROLLBACK_KC_KEYS`, the per-KC kill switch from Appendix F Stage 7. The controller's `corroboration` field is constructor configuration, declared in the snapshot-fence exclusion list with its reason. The two chains ride the park snapshot, defaulted for records from the previous build.
 - **Event log:** trajectory steps carry `evidenceRule`, `evidenceObservations`, `evidenceRequired` and `masteryRevoked`. The trajectory `kcId` now names the decided KC; it used to be the next KC after a CELEBRATE, which would have broken the reversal-rate join.
 - **Core:** `tutorMap.deriveNodeState` requires the latest `kc_attempt` rows to end in at least `MASTERY_CORROBORATION_MIN` (2) consecutive correct answers. The node exposes `consecutiveCorrect` as evidence a parent can read. The planner keeps an uncorroborated KC on the frontier. A failed streak read fails the map or plan and never silently demotes (§1.14).
 - **Migrations:** `*_mentor_integrity_evidence.sql` (expand) adds the evidence columns, with a unit CHECK so the three travel together. `*_trajectory_stated_misconception_kind.sql` (contract) widens the event-kind CHECK; the classifier treats any re-added CHECK as a contraction, so it needs operator review.
@@ -888,3 +889,190 @@ Remaining acceptance boundaries (C.22 and C.23 stay In progress):
 - **Enforcement the owner controls.** Branch protection on `main` (requiring the `mentor-governance` job), and runtime clamping of Tier 2 environment overrides, are proposals.
 - **The pipeline itself.** No proposal has gone through it yet, and no automated proposal generator exists. The canary infrastructure is the H.7 experiment console. The first real Tier 2 change will be the pipeline's own acceptance test.
 - **Thresholds.** Every new threshold (kappas, verbosity gap, strata sizes, canary minimum, Tier 2 bounds) still needs calibration.
+
+## S06.15 lane review
+
+The orchestrator's wave label for this checkpoint is S06.10. It is an adversarial review of the eight S06 commits since `337c9f0e` (`8e884ea8` … `a66b05e0`: 231 files, about 51,000 added lines) against the acceptance criteria of C.5–C.24. C.8 and C.12 are one requirement. C.13 was built in S06.1 and was reviewed again here. The worktree was clean at `a66b05e0`, so there was no draft to resume.
+
+### Method
+
+For each requirement I read the SPEC's mandated requirement, the Block C standard (the three components, the six non-negotiable constraints and the governance boundary), the Block C summary, and the relevant Appendix D/E/F sections and owner-log entries (OD-18, OD-23, H.7). I then checked the enforcing code rather than the sprint record's description of it. I hunted for:
+
+- shrunk mandates
+- authorization that exists only in the UI
+- populations without a test
+- missing failure-path tests
+- untranslated or over-budget copy
+- legacy imports in rebuilt UI
+- CRLF damage
+- behavior with no documentation
+- doc claims the code does not support
+
+Mechanical sweeps covered all 231 changed files:
+
+- **Line endings.** `git ls-files --eol` shows all 231 files are `i/lf w/lf`.
+- **Legacy imports.** The rebuilt `.tsx` files under `frontend/src/rebuild/{mentor,staff}` and `Preview.tsx` import only React, `../design/*`, sibling rebuilt modules and CSS. None imports a legacy component.
+- **Copy roles.** Every rebuilt component declares `data-copy-role`.
+- **Hardcoded migration numbers.** None appear in code or tests. The only mentions are the renumber-at-merge notes in this record.
+- **Glossary.** A scan of the lane's `rebuild.json` additions in 3 locales found no "Tutor" used for the AI, no "money" used for coins, no streak freeze and no lives. The one "streak" string is the staff-facing name of an Appendix C metric.
+- **Staff routes.** Every new admin route sits under a `requireAdminPermission` prefix: `manage_content` for the live-content and pack routes, `view_analytics` for mentor-quality, and `manage_users` for mentor-quality owners.
+- **Learner routes.** Every learner route checks ownership or verified guardianship on the server. Each has population tests: under-13 kid, guest, teen, adult, verified parent Tutor, stranger, staff, unauthenticated and internal key.
+- **Migrations.** Every new table has RLS. The three SECURITY DEFINER functions pin `search_path` and are granted to `service_role` only. `learner_disposition_profile` has a select-own-or-verified-guardian policy and no client write.
+- **Privacy boundary.** The model-facing context is still the 14 pinned fields. The lane's context additions are session-level fields that are negotiated and never sent to the model.
+
+### Gaps found and fixed
+
+1. **C.10: the corroboration floor could be switched off by configuration.** `TUTOR_CORROBORATION_MIN_OBSERVATIONS` accepted 1 (`min(1)`), and the controller accepted 1 as an option. So one Railway variable could make every mastery and remediation decision run on a single observation. That breaks the Block C non-negotiable constraint, and the owner log says the two-observation value "applies as written". The integrity policy said "never lower it globally", but no code enforced that.
+   - **Fix.** Oracle now refuses to boot below 2. The controller ignores an option below `CORROBORATION_MIN_OBSERVATIONS`. The only single-observation path left is the per-KC Stage 7 rollback, which names its KCs and is logged.
+   - **Tests.** `corroborationFloor.test.ts` (5 tests), plus 1 added to the controller's out-of-range list.
+2. **C.11: the in-session review detour bypassed the strategy-change ceiling.** The Block C standard keeps the controller's 3-changes-per-minute ceiling as the governing constraint: new signals choose which strategy runs and never add decision velocity. `openInSessionReview` switched to SPACED even when the ceiling was spent, and leaving an abandoned detour changed strategy without counting it.
+   - **Fix.** The detour is now refused while the ceiling is spent. The KC stays due and opens on a later turn. Leaving the detour counts as a change. The pruning and hold logic moved into one helper, `strategyCeilingReached`, which `enforceGuardrails` uses too.
+   - **Tests.** 2 tests in `spacedReview.test.ts`: refused and then opened a minute later, and the exit counted.
+   - **The end-to-end suite had hidden the gap.** `reviewCalibrationSession.test.ts` fired every learner turn in the same millisecond, a learner no one could be. After the fix it went red (5 tests), because every turn now spent the ceiling. It now uses a learner clock of 25 seconds per turn, and every test passes on that clock. One changed: in "two spaced successes retire it", the learner is stuck on B and the controller changes strategy on every turn, so the second re-check now opens one turn later. The test asserts that wait explicitly.
+3. **C.7: the 365-day retention of the disposition profile had no schedule.** `purgeStaleDispositionProfiles` existed, but only an operator command (`tutor:alliance-report -- --purge-stale`) ran it. A retention promise that depends on someone remembering a command is not enforced.
+   - **Fix.** The nightly sweep (`POST /api/v1/tutor/internal/retention/purge`, `tutor-retention.yml`) now runs the purge. It reports `dispositionProfilesPurged` in the reply and in the `tutor.retention.swept` audit row.
+   - **Failure handling.** A purge that could not run returns `null` and logs loudly, and the workflow turns that into a warning. It never reads as zero, and it never fails the session sweep, which has already committed.
+   - **Tests.** 2 tests in `tutor-retention.test.ts`: a filtered delete at 365 days with the count in the reply and audit, and null plus a log on failure.
+4. **C.22: the Mentor's configuration was ungoverned, and the policy overstated a gap.** `oracle/src/env.ts` holds every Stage 7 kill-switch default and the C.10 floor, but it was in no registry component. A commit changing a kill switch's default to `off` would have passed `governance:check` with no Tier 1 record. Separately, policy §9 said "most Tier 2 environment values are not bounded at runtime", and §10 proposed clamping them. In fact the seven registered Tier 2 parameters have no environment override at all: they are code constants whose bounds the gate already checks.
+   - **Fix, part 1.** `oracle/src/env.ts` is now a Tier 1 file in `measurement.stage7_and_thresholds`, with an example, and the change is recorded in the Tier 1 change record with sign-offs pending.
+   - **Fix, part 2.** Core's `config.ts` is shared by every lane, so it is not in the registry. Its governed defaults are pinned by tests instead: the C.17 experiment enrols adults only (OD-23/H.7), an unknown band name enrols nobody extra, and the C.5 sampling baselines sit at or above the Appendix E floors.
+   - **Fix, part 3.** Oracle's kill-switch defaults are pinned as active, and an unknown value falls back to the active mode.
+   - **Fix, part 4.** Policy §9 now lists what an environment variable can reach. §10 item 5 is closed, with the rule that any future override of a Tier 2 parameter must clamp in the same change.
+   - **Tests.** `mentorGovernedDefaults.test.ts` in Oracle (2 tests) and Core (3 tests).
+
+5. **Test hygiene on this host: the Oracle boot test left servers running.** `oracle/src/__tests__/boot-skills.test.ts` stops each booted Oracle with `process.kill(-pid)`, a POSIX process-group kill. On Windows that throws, and the `catch` swallowed it. As a result, every run left the `tsx` wrapper and its loader child running as orphan Oracle servers. I found and stopped 15 of them (30 processes) from earlier runs in this worktree, dating back to 24 September. This is not a SPEC gap, but it breaks the shared-machine rule and slowly starves the other lanes.
+   - **Fix.** On Windows the test now kills the whole tree with `taskkill /T /F`. After a run, no `boot-test` process is left.
+   - **Other checkouts.** The same file exists in every other checkout, so they carry the defect until the merge brings this fix.
+
+### Per-requirement review
+
+| Requirement | SPEC mandate | What the code enforces (checked here) | Review result |
+|---|---|---|---|
+| C.5 | Dynamic sampling (5 clean batches), floors of 15% standard and 50% sensitive, judge calibrated before any approval is trusted | Core decides the risk category (union with Oracle, never lower). Systematic sampling through a credit lock. Elevation on the first rejection, restored only after 5 clean batches of 20. The judge is read from the C.23 registry, and live generation stays suspended while it is uncalibrated | Holds. The default baselines are now pinned against the floors (fix 4). Panel ratings and the owner-run calibration stay open (OD-23) |
+| C.6 | Populate the curated tier for the highest-frequency patterns, to reduce live volume | `tutor-pack.v1` contract, a release gate (staff, 422 on a contract failure), a ladder that serves packs before live generation, 21 seed packs for the 4 KCs with no published topic, and demand ranking in the report | Holds. The packs still need loading and human release, which is an owner step |
+| C.7 | A persistent cross-session disposition profile, populated by C.9 and C.15, read by the controller beside mastery | The fold at close, a controller effect (`stuckDegradeAfter`) and orchestrator effects. Readable by the learner and a verified Tutor. Reset follows OD-18 | Gap fixed (fix 3). Legal review of the 365-day retention stays open |
+| C.8/C.12 | A behavioral-signature signal feeding the offer, firing before the hard cap, never replacing it, with its own instrumentation | Latency spread plus surprising misses against the opening baseline. A two-equal-choice offer. `tutor_session_end_signal` | Holds. The spoken-answer latency is still not an input (carried from S06.6) |
+| C.9 | Telemetry layer, signal strength only, never an emotion label | 8 channels, two must agree to fire, and the no-emotion-label check in the gym and the rubric. Stage 7 is both manual and automatic | Holds. The kill-switch defaults are now pinned and governed (fix 4) |
+| C.10 | Two consecutive observations before mastery or remediation; re-testable mastery | The controller's chains, Core's `MASTERY_CORROBORATION_MIN`, and revocation on a wrong re-check | Gap fixed (fix 1) |
+| C.11 | Two tiers, with an explicit routing rule by proximity to mastery and remaining budget | `routeWrongAnswer` (mirrored in Core), the detour, the FSRS hand-off, and the routing audit | Gap fixed (fix 2) |
+| C.13 | Ladder object, never repeat a level, "just tell me" | Unchanged since S06.1 and S06.6 | Holds |
+| C.14 | A named move after decision points, with a quality check and a targeted follow-up | `selfExplanation.ts`, the lexicon quality check, and one follow-up | Holds |
+| C.15 | Alliance Controller, goal agreement at open, renegotiation on repeated declines, re-establishment on a new persona or a memory gap | `allianceController.ts`, `tutor_session_alliance`, and the bond proxy (own session only) | Holds |
+| C.16 | Four closing scripts; a safety stop is never cheerful | `sessionClosing.ts`, and the rebuilt `SessionClosing` (a safety stop gets no topic and no praise) | Holds |
+| C.17 | Age-band defaults; no controlling language for teens; A/B instrumented | The band is derived in Core and never reaches the model. The registers, the controlling-language check, and an adults-only experiment | Holds. The adults-only default is now pinned (fix 4). Widening it is the Product and Legal decision under H.7 |
+| C.18 | Praise tied to actions, never endorse unsound decisions, answer-reveal rate per session and persona | Deterministic repair, `tutor_turn_honesty`, and the report | Holds |
+| C.19 | A fired signal always produces a humble check-in | A system-written check-in on every act-mode firing; chips or words; repair on "not really"; Repair Initiation Rate 100% | Holds, with a recorded question (below) |
+| C.20 | Audit before release, with a recurring re-audit | The fixture audit, the hash-drift test and the monthly workflow | Holds. No audited file changed in this review |
+| C.21 | Continuous scoring, anomaly flags (reveal spikes, bond drops, persona disparities), dashboard | The hourly loop, the rule scorer, and the flags with owners | Holds |
+| C.22 | Three tiers before any automation; no promotion without a decision | The registry, change record, gate, fence and release audit | Gap fixed (fix 4) |
+| C.23 | Panel calibration to a defined threshold before any judge gates a release, re-run on a cadence | The registry with CHECK floors, the recording function and the monthly cadence | Holds. The panels and the live runs stay open (OD-23) |
+| C.24 | One dashboard with regression thresholds that trigger a named owner's review | 46 signals, flags per owner role, and owner-only acknowledgement | Holds. Naming the owners is a staff step |
+
+**The C.19 check-in cap.** The layer stops firing after `maxCheckIns` (2) act-mode check-ins in a session, so a third fused signal is not counted as "fired". This is the Default-to-Inaction design in the behavioral telemetry policy, and it keeps the "always a check-in" invariant true by construction. Whether the capped evaluations should also be counted for review is a proposal for the Pedagogical Reviewer. It is not implemented here, because it would change a bias-audited file and the close wire shape.
+
+**A design-system note, not a gap.** The rebuilt panels write the Bible 02 card elevation (`0 1px 3px rgba(17,19,42,.08), 0 1px 2px rgba(17,19,42,.06)`) as a literal, because `tokens.css` does not expose a card-shadow token yet. The S03 lane owns that token, and the wave-2 composition should swap the literal for it. Dark mode already removes the shadow.
+
+### Proposals and questions recorded for owner and pedagogy review
+
+- **The C.19 check-in cap.** Should evaluations that reach the firing bar after the cap be counted and reported, so the review can see how often the cap holds the Mentor back?
+- **Experiment ages.** Widening `MENTOR_DIALOGUE_EXPERIMENT_BANDS` beyond adults is the Product and Legal decision under H.7. Now that the default is pinned by a test, changing it is a visible code change.
+- **Sign-off.** This review adds three rows to the Tier 1 change record (`mentor.non_negotiables`, `measurement.stage7_and_thresholds`, `governance.model`), with sign-offs pending. As with the S06.14 baseline, the release audit fails until both leads sign.
+
+### Deploy order (integration step for the orchestrator)
+
+- **No migration was added.** The retention change reads the existing `learner_disposition_profile` table from the alliance-and-disposition migration. Until that migration is applied, the nightly sweep reports `dispositionProfilesPurged: null` and warns. The session sweep is unaffected.
+- **Deploy caution.** An Oracle whose environment sets `TUTOR_CORROBORATION_MIN_OBSERVATIONS=1` now refuses to boot, by design. Check the Railway variable before deploying Oracle.
+- **Merge integration.** Any lane that changed `oracle/src/env.ts`, `oracle/src/tutor/controller.ts` or the registry turns `governance:check` red until `npm run governance:check -- --record --change="<what>"` is run on the merged tree. That is the C.22 rule working as designed. No bias-audited file changed.
+
+### S06.15 verification log (25 September 2026)
+
+Executed 25 September 2026 in the lane worktree (`/c/lf-wt/s06`) with `VITEST_MAX_THREADS=3` and `VITEST_MAX_FORKS=3`. Five other lanes were running on the machine at the time. These are local results only: no real database, no CI run, no live model or judge call, and no production observation.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Line endings, imports, copy roles, migration numbers, glossary | `git ls-files --eol` over the 231 changed files; greps for imports, `data-copy-role`, migration numbers and glossary terms | Pass on every check. All files LF. No legacy import. Every rebuilt component declares a copy role. No hardcoded migration number in code or tests. No glossary violation |
+| C.10 floor | `oracle/`: `npx vitest run src/__tests__/corroborationFloor.test.ts src/__tests__/controller.test.ts` | 5 + 92 pass. A value of 1, 0 or -1 refuses to boot; the default is 2; 3 is accepted; the controller ignores 1 |
+| C.11 ceiling | `oracle/`: `npx vitest run src/__tests__/spacedReview.test.ts src/__tests__/reviewCalibrationSession.test.ts` | 26 + 18 pass. The first full run had 5 red tests in `reviewCalibrationSession.test.ts`, caused by turns sent in the same millisecond. Fixed with a 25-second learner clock (see fix 2) |
+| C.7 retention | `backend/`: `npx vitest run src/__tests__/tutor-retention.test.ts` | 23 pass (+2). A filtered delete at 365 days is reported in the reply and the audit row. On failure the count is null and logged, and the session sweep still returns 200 |
+| Governed defaults | `oracle/` and `backend/`: `npx vitest run src/__tests__/mentorGovernedDefaults.test.ts` | 2 + 3 pass |
+| Governance gate | `npm run governance:check`, then `-- --record --change="S06.15 lane review: …"`, then `-- --base=HEAD --range=337c9f0e..HEAD`; `npm run judge-calibration:check` | The first run was red, as designed: `mentor.non_negotiables`, `measurement.stage7_and_thresholds` and `governance.model` had changed without a record. After `--record`: 12 components, 78 governed files, 8 recorded components, 8 lane commits checked, OK. The judge-calibration guard passed |
+| Root type-check | `npm run typecheck:all` | Pass, all services |
+| Root lint | `npm run lint:all` | Pass, all services |
+| Root tests | `npm run test:all` | Every service passed except Oracle, which had the 5 red tests from fix 2 (rerun below). audiogen 168; backend 84 files, 1,914 passed + 1 skipped (1,909 before, +5); coursegen 662; database (see below); dataintel 194; email-server 35; filebase 34; frontend 218 files, 2,246; parent-id-check 26; picturegen 103 |
+| Oracle full, after the fix | `oracle/`: `npx vitest run`, `npm run type-check`, `npm run lint`, `npm run verify:tutor`, `npm run verify:pedagogy`, `npm run gym:pedagogy`, `npm run bias-audit -- --check` | 64 files, 1,683 tests pass (1,674 before, +9). The privacy boundary is sealed. `verify:pedagogy` reports no thrash, no repeated rescue and no endless questioning. The gym passes every persona family (4 + 7 + 8 + 8 + 9) with no guardrail violations. Bias audit: 0 failures, 1 known gap; no audited file changed |
+| Orphaned servers | Process listing before the fix, and again after an Oracle run with the fix | Before: 30 `node` processes (15 Oracle servers) from `oracle/.boot-test-*`, dating back to 24 September; all were stopped. After the fix: none left behind |
+| Database | `database/`: `npm test` (inside `test:all`) | Pass: 120 migration files, sequential numbering, RLS covered; 99 expand and 21 contract, and every declaration agrees with its SQL; 21 node checks; railway-migrate integration OK (12 transport scenarios plus the static cross-checks) |
+| Tool tests | `npm run tools:test` | 141 pass, 0 fail |
+| Repo gates | `npm run secrets:check`, `npm run spec:check`, and the i18n check (`bash agent/tools/check-i18n.sh` in Git Bash) | Pass. No copy changed in this review |
+| UI | None changed | No Chrome matrix was needed: this review changed no rebuilt component, CSS or string |
+
+### Lane summary (C.5–C.24, S06.1–S06.15)
+
+Every lane requirement now has:
+
+- a code path at its enforcing boundary (Oracle, Core, database), with adversarial tests;
+- a written policy under `docs/rebuild/mentor/`;
+- a report command;
+- a kill switch or rollback where Appendix F asks for one.
+
+None is Accepted. Each is **In progress: implemented and locally verified**, with the owner, panel, data or review items listed below still open. The open items that apply across the lane:
+
+1. **Physical PostgreSQL.** Nine lane migrations have only static-gate evidence:
+   - integrity evidence
+   - stated-misconception kind
+   - session end and closing
+   - behavioral telemetry
+   - alliance and disposition
+   - spaced review and dialogue calibration
+   - live-content governance and curated packs
+   - evaluation loop and quality dashboard
+   - judge-calibration registry
+
+   Each must be applied to a physical PostgreSQL, and `database/types/database.ts` regenerated afterwards. Core uses narrow local types until then.
+2. **Merge integration.**
+   - Renumber the lane migrations if they collide. Code, tests and gates use only the descriptive suffixes.
+   - Run `governance:check -- --record` again for any Tier 1 file another lane changed.
+   - Run `npm --prefix oracle run bias-audit -- --record --trigger material_change` if another lane changed an audited Oracle file.
+   - Classify any new Mentor file in the registry.
+3. **Tier 1 sign-offs.** The Pedagogical Reviewer and the Safety/Trust Lead must sign the adoption decision, the 8 baseline rows, the 3 rows from this review, and rubric v1. Until they do, `release:readiness` fails, by design.
+4. **Owner-run steps under OD-23.**
+   - Panel ratings of both seed sets.
+   - The live calibrations of the content judge and the transcript judge (44 + 47 paid calls).
+   - The live bias-audit judge run.
+   - The one-time pre-generation of the scripted audio clips.
+5. **Owner and staff steps.**
+   - Load and release the 21 seed packs.
+   - Name the dashboard owners.
+   - Create the C.17 experiment in the H.7 console (adults only).
+   - Turn on branch protection on `main`.
+   - Legal review of the 365-day disposition retention.
+6. **Production and canary data.** Every Appendix F "Measured" value, and calibration of every threshold in the Threshold Recalibration Log.
+7. **Human review of content.** Native-speaker review of every es-MX and pt-BR lexicon and fixture, and pedagogy review of the seed packs and the gold set.
+8. **Wave 2.**
+   - Compose the rebuilt surfaces on the Mentor stage, in the Family Hub and in the staff console.
+   - Run the `frontend/verification-tools` text-fit, proportion and copy-budget audits against the real app driver.
+   - Replace the literal card shadow with the S03 token.
+
+Status of each requirement after this review:
+
+| Requirement | Final status |
+|---|---|
+| C.5 | In progress: S06.12 — implemented and locally verified. S06.14 moved it onto the C.23 registry; S06.15 pinned the default sampling baselines at or above the floors. Pending: panel ratings, owner-run calibration, pack release, production data, Tier 1 review |
+| C.6 | In progress: S06.12 — implemented and locally verified. Pending: loading and human release of the 21 packs, pedagogy and native-speaker review, production data, staff-console composition |
+| C.7 | In progress: S06.9 — implemented and locally verified. S06.15 scheduled the 365-day retention. Pending: physical PostgreSQL, production baseline, Family Hub composition, legal review of the retention, Tier 1 review |
+| C.8/C.12 | In progress: S06.5 — implemented and locally verified. Pending: spoken-answer latency, physical PostgreSQL, live evidence, production data, calibration, Tier 1 review |
+| C.9 | In progress: S06.6 — implemented and locally verified. S06.15 pinned the kill-switch defaults and put them under governance. Pending: physical PostgreSQL, live evidence, calibration, per-band weights, Tier 1 review |
+| C.10 | In progress: S06.3 — implemented and locally verified. S06.15 stopped configuration from setting the floor below 2. Pending: physical PostgreSQL, production data, the parent-facing evidence surface, Tier 1 review |
+| C.11 | In progress: S06.10 — implemented and locally verified. S06.15 held the review detour to the strategy-change ceiling. Pending: physical PostgreSQL, routing data, the first quarterly spot check, calibration, Tier 1 review |
+| C.13 | In progress: S06.1 — implemented and locally verified. Pending: live evidence, human review |
+| C.14 | In progress: S06.8 — implemented and locally verified. Pending: live evidence, pre-generated audio, native-speaker review, production data, Tier 1 review |
+| C.15 | In progress: S06.9 — implemented and locally verified. Pending: live bond-proxy evidence, stage composition, audio, calibration, Tier 1 review |
+| C.16 | In progress: S06.4 — implemented and locally verified. Pending: live evidence, pre-generated audio, stage composition, Tier 1 review |
+| C.17 | In progress: S06.11 — implemented and locally verified. S06.15 pinned the adults-only default. Pending: the H.7 experiment and its data, the Product and Legal decision on ages, native-speaker review, Tier 1 review |
+| C.18 | In progress: S06.2 — implemented and locally verified. Pending: physical PostgreSQL, live evidence, calibrated-judge baseline, Tier 1 review |
+| C.19 | In progress: S06.7 — implemented and locally verified. Pending: the check-in-cap question, live evidence, audio, stage composition, Tier 1 review |
+| C.20 | In progress: S06.6 — implemented and locally verified. Pending: the live judge audit (OD-23), native-speaker fixture review, accuracy on real transcripts, Tier 1 review |
+| C.21 | In progress: S06.13 — implemented and locally verified. Pending: a calibrated transcript judge, rubric sign-off, production data, named owners, staff-console composition |
+| C.22 | In progress: S06.14 — implemented and locally verified. S06.15 put the Oracle configuration under governance and corrected the policy. Pending: sign-offs, branch protection, the first real proposal through the pipeline |
+| C.23 | In progress: S06.14 — implemented and locally verified. Pending: panel ratings, owner-run live calibrations, gold-set review, threshold calibration, Tier 1 review |
+| C.24 | In progress: S06.13 — implemented and locally verified. Pending: named owners, production data, threshold calibration, staff-console composition, Tier 3 review |

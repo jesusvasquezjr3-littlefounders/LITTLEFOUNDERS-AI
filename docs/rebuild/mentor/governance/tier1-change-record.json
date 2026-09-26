@@ -81,6 +81,36 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "8d0a76c636634ed919ed1c453f30f9b5c8b1ade0e05ad2700995ecb8105b0d67",
+      "files": 9,
+      "date": "2026-09-25",
+      "change": "S06.15 lane review: the C.10 corroboration floor cannot be lowered below 2 by configuration (Oracle env and controller option); the C.11 review detour respects the 3-per-minute strategy-change ceiling; oracle/src/env.ts (kill-switch defaults and the C.10 floor) is now a Tier 1 file in measurement.stage7_and_thresholds",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "f41edfe46c9c5e0fac0a0e0f23cf2c3fbc7577aeec9b463072829d70afa1e8bb",
+      "files": 9,
+      "date": "2026-09-25",
+      "change": "S06.15 lane review: the C.10 corroboration floor cannot be lowered below 2 by configuration (Oracle env and controller option); the C.11 review detour respects the 3-per-minute strategy-change ceiling; oracle/src/env.ts (kill-switch defaults and the C.10 floor) is now a Tier 1 file in measurement.stage7_and_thresholds",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "component": "governance.model",
+      "hash": "98402d78953c3a96712fbf8b4efa729ee21d9685b2abea23e8858f11889799f2",
+      "files": 3,
+      "date": "2026-09-25",
+      "change": "S06.15 lane review: the C.10 corroboration floor cannot be lowered below 2 by configuration (Oracle env and controller option); the C.11 review detour respects the 3-per-minute strategy-change ceiling; oracle/src/env.ts (kill-switch defaults and the C.10 floor) is now a Tier 1 file in measurement.stage7_and_thresholds",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

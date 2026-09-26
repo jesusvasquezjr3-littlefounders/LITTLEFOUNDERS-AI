@@ -147,6 +147,16 @@ jobs:
               exit 1
             fi
             failed=${failed:-0}
+            # C.7: the disposition-profile retention rides the same call. A
+            # null count means the delete could not run (e.g. the migration is
+            # not applied yet): warned, never read as zero.
+            if printf '%s' "$body" | grep -q '"dispositionProfilesPurged":null'; then
+              echo "::warning::the disposition-profile retention (365 days) could not run — see Core logs"
+            fi
+            profiles=$(printf '%s' "$body" | grep -o '"dispositionProfilesPurged":[0-9]*' | head -1 | cut -d: -f2)
+            if [ -n "${profiles:-}" ] && [ "$profiles" -gt 0 ]; then
+              echo "round ${round}: ${profiles} stale disposition profile(s) deleted"
+            fi
 
             total=$((total + deleted))
             echo "round ${round}: ${deleted} session(s) deleted, ${failed} audio file(s) failed"

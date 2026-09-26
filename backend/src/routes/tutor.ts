@@ -48,6 +48,7 @@ import {
   explainProfile,
   getDispositionProfile,
   listRecentPersonaSessions,
+  purgeStaleDispositionProfiles,
   recordDispositionBondProxy,
   recordDispositionClose,
   toOracleProjection,
@@ -1989,6 +1990,18 @@ function internalRouter(): Router {
       );
     }
     /*
+     * C.7 (S06.15 lane review): the learner disposition profile's retention
+     * (a profile not updated for 365 days is deleted) rides this nightly
+     * sweep, so the promise has a scheduled job and not only an operator
+     * command. It is reported, never swallowed: `null` means the delete could
+     * not run (the workflow warns), which is different from "nothing due".
+     * It does not fail the session sweep, which has already committed.
+     */
+    const dispositionProfilesPurged = await purgeStaleDispositionProfiles();
+    if (dispositionProfilesPurged === null) {
+      console.error('[tutor-retention] disposition-profile retention FAILED — stale profiles were not deleted this run');
+    }
+    /*
      * ORACLE.md §15.2 item 4 (closed 2026-08-31): the sweep's own monitoring.
      * Written on every reply that reaches here — INCLUDING a batch that
      * deletes zero sessions — because "ran and found nothing due" and "never
@@ -2002,6 +2015,7 @@ function internalRouter(): Router {
       audioDeleted: result.audioDeleted,
       audioFailed: result.audioFailed,
       audioRetained: result.audioRetained,
+      dispositionProfilesPurged,
     });
     if (!audited) {
       // The purge already committed, so this must not become a caller-facing
@@ -2009,7 +2023,7 @@ function internalRouter(): Router {
       // staleness check this exists to feed. audit_logs is the only record.
       console.error('[tutor-retention] audit write FAILED — the sweep ran but will not show as having run');
     }
-    return ok(res, result);
+    return ok(res, { ...result, dispositionProfilesPurged });
   });
 
   const SegmentRequestBody = z.object({

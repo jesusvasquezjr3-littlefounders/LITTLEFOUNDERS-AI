@@ -105,7 +105,11 @@ const SURPRISING_CORRECT_BELOW = 0.5;
 
 /** Operator configuration for the C.10 rule — see `CORROBORATION_MIN_OBSERVATIONS`. */
 export interface ControllerOptions {
-  /** Integer in [1, 5]; out-of-range or non-integer values fall back to the default. */
+  /**
+   * Integer in [2, 5]; out-of-range or non-integer values fall back to the
+   * default. Never 1: a single observation is exactly what C.10 forbids, and
+   * the per-KC rollback below is the only sanctioned way back to it.
+   */
   corroborationMinObservations?: number;
   /**
    * `kcKey`s rolled back to the pre-C.10 single-observation baseline by the
@@ -583,7 +587,7 @@ export class PedagogicalController {
     const requested = options.corroborationMinObservations;
     this.corroboration = {
       min:
-        typeof requested === 'number' && Number.isInteger(requested) && requested >= 1 && requested <= 5
+        typeof requested === 'number' && Number.isInteger(requested) && requested >= CORROBORATION_MIN_OBSERVATIONS && requested <= 5
           ? requested
           : CORROBORATION_MIN_OBSERVATIONS,
       rollbackKcKeys: new Set(options.corroborationRollbackKcKeys ?? []),
@@ -742,6 +746,12 @@ export class PedagogicalController {
    * re-check must never interrupt a repair), when a detour is already open,
    * when the KC is the one being taught right now (its ordinary attempts are
    * its re-exposures), or for a KC with no plan entry.
+   *
+   * Also refused while the strategy-change ceiling (3 per minute) is spent:
+   * the Block C standard keeps that ceiling as the governing constraint, and
+   * the new signals choose WHICH strategy runs within it, never add decision
+   * velocity (S06.15 lane review). The KC stays due, so the detour opens on a
+   * later turn once the ceiling allows it.
    */
   openInSessionReview(kcId: string, nowMs: number): boolean {
     if (this.plan.length === 0 || this.inSessionReview !== null || this.probingKcId !== null) return false;
@@ -749,6 +759,7 @@ export class PedagogicalController {
     const index = this.plan.findIndex((entry) => entry.kcId === kcId);
     if (index < 0) return false;
     if (this.entryIndex < this.plan.length && this.plan[this.entryIndex]?.kcId === kcId) return false;
+    if (this.strategy !== 'SPACED' && this.strategyCeilingReached(nowMs)) return false;
     this.inSessionReview = { entryIndex: index, turns: 0 };
     if (this.strategy !== 'SPACED') this.strategyChangesAt.push(nowMs);
     this.strategy = 'SPACED';
@@ -979,7 +990,12 @@ export class PedagogicalController {
         this.inSessionReview = null;
         if (reviewed) closedReview = { kcId: reviewed.kcId, objective: reviewed.objective, outcome: 'abandoned' };
         const main = this.plan[this.entryIndex];
-        if (main) this.strategy = this.baseStrategy(main);
+        if (main) {
+          // Leaving the detour is a strategy change too, and counts against the ceiling.
+          const back = this.baseStrategy(main);
+          if (back !== this.strategy) this.strategyChangesAt.push(nowMs);
+          this.strategy = back;
+        }
       }
     }
 
@@ -1580,12 +1596,16 @@ export class PedagogicalController {
 
     // Cap strategy churn: more than 3 changes in 60s reads as erratic to a
     // child, so past the cap the controller HOLDS its current strategy.
+    const ceilingReached = this.strategyCeilingReached(nowMs);
+    if (proposed !== this.strategy && ceilingReached) return this.strategy;
+    return proposed;
+  }
+
+  /** Whether the 3-changes-per-minute ceiling is spent (prunes changes older than 60 s). */
+  private strategyCeilingReached(nowMs: number): boolean {
     const cutoff = nowMs - 60_000;
     this.strategyChangesAt = this.strategyChangesAt.filter((t) => t > cutoff);
-    if (proposed !== this.strategy && this.strategyChangesAt.length >= MAX_STRATEGY_CHANGES_PER_MINUTE) {
-      return this.strategy;
-    }
-    return proposed;
+    return this.strategyChangesAt.length >= MAX_STRATEGY_CHANGES_PER_MINUTE;
   }
 
   private applyStrategy(strategy: Strategy, nowMs: number): void {

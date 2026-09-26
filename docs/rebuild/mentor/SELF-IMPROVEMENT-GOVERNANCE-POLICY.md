@@ -148,7 +148,12 @@ It writes a JSON report with the per-section violations, the sign-off count, the
 
 ## 9. What this does not claim
 
-- **The gate governs the repository.** Operators can still change environment variables in Railway, such as a telemetry mode, a sampling baseline or a kill switch. Those are human actions outside git. Core ignores a live-content sampling baseline below its floor (S06.12), but most Tier 2 environment values are not bounded at runtime. Bounding them is a proposal (§10).
+- **The gate governs the repository.** Operators can still change environment variables in Railway, such as a telemetry mode, a sampling baseline or a kill switch. Those are human actions outside git. The lane review (S06.15) checked what those variables can reach:
+  - The seven registered Tier 2 parameters have **no environment override**. They are code constants, so they change only through a commit, and this gate checks their bounds.
+  - The mode variables (`TUTOR_BEHAVIORAL_TELEMETRY`, `TUTOR_ALLIANCE_CONTROLLER`, `TUTOR_SELF_EXPLANATION`, `TUTOR_SPACED_REVIEW`, `TUTOR_DIALOGUE_CALIBRATION`, `TUTOR_SESSION_END_SIGNAL`) are Stage 7 kill switches. They can only make the Mentor do less, and an unknown value falls back to the active mode, never to a silent off.
+  - Core ignores a live-content sampling baseline below its floor (S06.12).
+  - `TUTOR_CORROBORATION_MIN_OBSERVATIONS` now refuses to boot below 2. The C.10 floor is a non-negotiable constraint, so the only single-observation path is the per-KC Stage 7 rollback.
+  - `TUTOR_REVIEW_SHORT_HORIZON_MIN` (C.11) and `MENTOR_DIALOGUE_EXPERIMENT_BANDS` (C.17, adults only by default under OD-23) are schema-bounded operator values. Widening the experiment bands is a Product and Legal decision (H.7), which the owner records outside git.
 - **The two sign-offs are names in a file.** The gate proves that a named human signed and that the record was not rewritten. It cannot prove who typed the name. Branch protection and review on `main` remain the owner's control.
 - **No canary infrastructure beyond the H.7 experiment console exists.** A Stage 5 canary is an experiment arm: surface `tutor`, a small share, adults only (OD-23). The record names it.
 
@@ -158,4 +163,4 @@ It writes a JSON report with the per-section violations, the sign-off count, the
 2. **The component boundaries.** In particular, `controller.ts` and `orchestrator.ts` are Tier 1 as mixed files, and Core's kill-switch modules are Tier 1.
 3. **The approved Tier 2 bounds** in the registry.
 4. **Branch protection** on `main`, requiring the `mentor-governance` job and a review for any change under the governed roots. This is repository configuration, which only the owner changes.
-5. **Runtime bounds.** Clamp the Tier 2 environment overrides (telemetry, alliance, self-explanation) to the registry's approved bounds in the Oracle config parser. This touches bias-audited files, so it needs a re-audit.
+5. **Runtime bounds.** Closed by the S06.15 lane review. The registered Tier 2 parameters have no environment override to clamp (see §9), and the one numeric value that could have weakened a Tier 1 constraint (`TUTOR_CORROBORATION_MIN_OBSERVATIONS`) now refuses to boot below 2. If a future change adds an environment override for a registered Tier 2 parameter, it must clamp to the registry's bounds in the same change.

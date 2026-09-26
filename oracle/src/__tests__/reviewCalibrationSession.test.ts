@@ -87,8 +87,18 @@ const uniqueTurn = (extra: Record<string, unknown> = {}) => {
 };
 const silent = async (): Promise<SpeechResult> => ({ url: null, source: 'unavailable', billedChars: 0, wordTimings: null });
 
+/*
+ * A learner's clock: every turn is 25 seconds after the previous one. The
+ * controller's 3-changes-per-minute strategy ceiling (Block C standard) reads
+ * these timestamps, so a suite that fired every turn in the same millisecond
+ * would be testing a learner no one could be (S06.15 lane review).
+ */
+let clock = 0;
+const tick = () => (clock += 25_000);
+
 let fetchMock: ReturnType<typeof vi.fn>;
 beforeEach(async () => {
+  clock = Date.now();
   process.env.MODEL_API_KEY = 'test-model-key-0123';
   process.env.TUTOR_SPACED_REVIEW = 'act';
   process.env.TUTOR_DIALOGUE_CALIBRATION = 'act';
@@ -116,12 +126,12 @@ async function answer(o: TutorOrchestrator, skillKey: string, correct: boolean):
   seg += 1;
   const id = `seg-${seg}`;
   o.noteSegmentServed(id, skillKey, 'sort_buckets', 'Sort these into the right boxes.');
-  await o.handleSegmentResult(id, correct ? 100 : 20, correct, Date.now());
+  await o.handleSegmentResult(id, correct ? 100 : 20, correct, tick());
 }
 
 describe('C.11 — the within-session tier brings a shaky answer back after a short gap', () => {
   it('a near-threshold miss is queued, re-checked after the plan moved on, and handed off at close if not retired', async () => {
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false); // turn 1: the miss on A (belief 0.9 before it)
     await answer(o, 'skill-a', true); // turn 2: massed, not counted
     await answer(o, 'skill-a', true); // turn 3: corroborated mastery → the plan moves to B
@@ -131,7 +141,7 @@ describe('C.11 — the within-session tier brings a shaky answer back after a sh
     ]);
 
     // Turn 4: a conversational turn with nothing higher owning it — the gap has elapsed.
-    await o.handleLearnerText('ok, what is next', Date.now());
+    await o.handleLearnerText('ok, what is next', tick());
     expect(lastModelBody()).toContain('IN-SESSION REVIEW:');
     expect(lastModelBody()).toContain('Give change by counting up from the price.');
     expect(o.activeKcId).toBe(A);
@@ -151,80 +161,85 @@ describe('C.11 — the within-session tier brings a shaky answer back after a sh
   });
 
   it('two spaced successes retire it', async () => {
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false);
     await answer(o, 'skill-a', true);
     await answer(o, 'skill-a', true);
-    await o.handleLearnerText('ok', Date.now());
+    await o.handleLearnerText('ok', tick());
     await answer(o, 'skill-a', true); // first re-check
-    for (const text of ['sure', 'fine', 'go on']) await o.handleLearnerText(text, Date.now());
-    expect(o.activeKcId).toBe(A); // the second re-check opened after another gap
+    for (const text of ['sure', 'fine', 'go on']) await o.handleLearnerText(text, tick());
+    // The gap has elapsed, but the controller changed strategy on each of the
+    // last turns (the learner is stuck on B), so the 3-per-minute ceiling
+    // holds the re-check back one more turn rather than adding a fourth change.
+    expect(o.activeKcId).toBe(B);
+    await o.handleLearnerText('ok', tick());
+    expect(o.activeKcId).toBe(A); // the second re-check opened once the ceiling allowed it
     await answer(o, 'skill-a', true);
     expect(o.spacedReviewReport.decisions[0]).toMatchObject({ outcome: 'retired', successes: 2 });
     expect(o.spacedReviewReport.detoursOpened).toBe(2);
   });
 
   it('a miss minutes before the wrap-up is handed to the cross-session scheduler — never crammed', async () => {
-    const startedAt = Date.now() - 12 * 60_000; // 3 minutes before the 15-minute wrap-up
+    const startedAt = clock - 12 * 60_000; // 3 minutes before the 15-minute wrap-up
     const o = new TutorOrchestrator(PLANNED, startedAt, silent);
     await answer(o, 'skill-a', false);
     expect(o.spacedReviewReport.decisions).toEqual([
       expect.objectContaining({ tier: 'cross_session', reason: 'time_budget', outcome: 'handed_off' }),
     ]);
-    for (const text of ['ok', 'sure', 'fine', 'go on']) await o.handleLearnerText(text, Date.now());
+    for (const text of ['ok', 'sure', 'fine', 'go on']) await o.handleLearnerText(text, tick());
     expect(bodies().some((b) => b.includes('IN-SESSION REVIEW'))).toBe(false);
   });
 
   it('a miss far below the threshold is teaching, not review: handed off, no detour', async () => {
-    const o = new TutorOrchestrator({ ...PLANNED, sessionPlan: [entry(B, 'skill-b', 0.2, 'Split a budget.')], kcStates: [] }, Date.now(), silent);
+    const o = new TutorOrchestrator({ ...PLANNED, sessionPlan: [entry(B, 'skill-b', 0.2, 'Split a budget.')], kcStates: [] }, clock, silent);
     await answer(o, 'skill-b', false);
     expect(o.spacedReviewReport.decisions[0]).toMatchObject({ tier: 'cross_session', reason: 'far_from_threshold' });
   });
 
   it("Core's shadow verdict records every decision and never opens a re-check", async () => {
-    const o = new TutorOrchestrator({ ...PLANNED, spacedReviewMode: 'shadow' }, Date.now(), silent);
+    const o = new TutorOrchestrator({ ...PLANNED, spacedReviewMode: 'shadow' }, clock, silent);
     await answer(o, 'skill-a', false);
     await answer(o, 'skill-a', true);
     await answer(o, 'skill-a', true);
-    for (const text of ['ok', 'sure', 'fine']) await o.handleLearnerText(text, Date.now());
+    for (const text of ['ok', 'sure', 'fine']) await o.handleLearnerText(text, tick());
     expect(bodies().some((b) => b.includes('IN-SESSION REVIEW'))).toBe(false);
     expect(o.spacedReviewReport).toMatchObject({ mode: 'shadow', detoursOpened: 0 });
     expect(o.spacedReviewReport.decisions[0]).toMatchObject({ tier: 'within_session' });
   });
 
   it('a check-in or other higher directive keeps its turn; the re-check waits', async () => {
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false);
     await answer(o, 'skill-a', true);
     await answer(o, 'skill-a', true);
     // A help request is the ladder's turn, not a re-check's.
-    await o.handleLearnerText('I need help', Date.now());
+    await o.handleLearnerText('I need help', tick());
     expect(lastModelBody()).not.toContain('IN-SESSION REVIEW:');
-    await o.handleLearnerText('ok', Date.now());
+    await o.handleLearnerText('ok', tick());
     expect(lastModelBody()).toContain('IN-SESSION REVIEW:');
   });
 
   it('never opens while an activity for the main KC is still on screen: its grade stays with the KC it was served for', async () => {
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false);
     await answer(o, 'skill-a', true);
     await answer(o, 'skill-a', true);
     o.noteSegmentServed('seg-open-b', 'skill-b', 'sort_buckets', 'Sort these.');
-    await o.handleLearnerText('ok', Date.now());
+    await o.handleLearnerText('ok', tick());
     expect(lastModelBody()).not.toContain('IN-SESSION REVIEW:');
     expect(o.activeKcId).toBe(B);
-    await o.handleSegmentResult('seg-open-b', 100, true, Date.now());
+    await o.handleSegmentResult('seg-open-b', 100, true, tick());
     // The graded activity was B's; the re-check opens on the turn after it.
     expect(o.trajectorySteps.at(-1)?.kcId).toBe(B);
     expect(lastModelBody()).toContain('IN-SESSION REVIEW:');
   });
 
   it('the queue and the open detour survive a cross-replica resume', async () => {
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false);
     await answer(o, 'skill-a', true);
     await answer(o, 'skill-a', true);
-    await o.handleLearnerText('ok', Date.now());
+    await o.handleLearnerText('ok', tick());
     const snapshot = OrchestratorSnapshotSchema.parse(JSON.parse(JSON.stringify(o.snapshot())));
     const restored = TutorOrchestrator.restore(snapshot, PLANNED, o.startedAt, silent);
     expect(restored.activeKcId).toBe(A);
@@ -237,9 +252,9 @@ describe('C.11 — the within-session tier brings a shaky answer back after a sh
   });
 
   it('the close record carries ids, labels and numbers only — never the learner’s words', async () => {
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false);
-    await o.handleLearnerText('my secret word is banana', Date.now());
+    await o.handleLearnerText('my secret word is banana', tick());
     const text = JSON.stringify(o.closeRecord('completed').spacedReview);
     expect(text).not.toContain('banana');
     expect(text).not.toMatch(/nickname|Robi|user/i);
@@ -248,10 +263,10 @@ describe('C.11 — the within-session tier brings a shaky answer back after a sh
 
 describe('C.17 — the register follows the band, and the band never reaches the model context', () => {
   it('the teen register: autonomy-supportive note on every turn, controlling language repaired once', async () => {
-    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, Date.now(), silent);
+    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, clock, silent);
     fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You have to divide the money into four parts.' }));
     fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You could try splitting the money into four parts. Want to?' }));
-    const outcome = (await o.handleLearnerText('how do I split my allowance', Date.now()))!;
+    const outcome = (await o.handleLearnerText('how do I split my allowance', tick()))!;
     expect(outcome.emission.turn.say).toBe('You could try splitting the money into four parts. Want to?');
     const [first, retry] = bodies();
     expect(first).toContain('autonomy-supportive');
@@ -262,19 +277,19 @@ describe('C.17 — the register follows the band, and the band never reaches the
   });
 
   it('a controlling phrase that survives the retry is delivered and COUNTED, never hidden', async () => {
-    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, Date.now(), silent);
+    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, clock, silent);
     fetchMock.mockImplementation(async () => modelReplies({ ...TURN, say: 'Tienes que dividirlo en cuatro partes.' }));
-    await o.handleLearnerText('how do I split my allowance', Date.now());
+    await o.handleLearnerText('how do I split my allowance', tick());
     expect(o.dialogueCalibrationReport).toMatchObject({ controllingCaught: 1, controllingDelivered: 1 });
   });
 
   it('the younger-child register: the shorter ladder and "together" wording on each hint request', async () => {
-    const o = new TutorOrchestrator({ ...BASE, tier: 1, dialogueCalibration: calibrated('young_child') }, Date.now(), silent);
-    await o.handleLearnerText('I need help', Date.now());
+    const o = new TutorOrchestrator({ ...BASE, tier: 1, dialogueCalibration: calibrated('young_child') }, clock, silent);
+    await o.handleLearnerText('I need help', tick());
     expect(lastModelBody()).toContain('show with one small, concrete example why it does not work');
-    await o.handleLearnerText('I need help', Date.now());
+    await o.handleLearnerText('I need help', tick());
     expect(lastModelBody()).toContain('let them say only the missing piece');
-    await o.handleLearnerText('I need help', Date.now());
+    await o.handleLearnerText('I need help', tick());
     expect(lastModelBody()).toContain('show the answer once, plainly, doing it together');
     expect(lastModelBody()).toContain("let's do this one together");
     expect(o.dialogueCalibrationReport).toMatchObject({ ladderRungs: 4, hintRequests: 3 });
@@ -287,23 +302,23 @@ describe('C.17 — the register follows the band, and the band never reaches the
       silent,
     );
     fetchMock.mockImplementationOnce(async () => modelReplies({ ...TURN, say: 'You have to divide the money into four parts.' }));
-    const outcome = (await o.handleLearnerText('how do I split it', Date.now()))!;
+    const outcome = (await o.handleLearnerText('how do I split it', tick()))!;
     expect(outcome.emission.turn.say).toBe('You have to divide the money into four parts.');
     expect(lastModelBody()).not.toContain('Dialogue register');
-    await o.handleLearnerText('I need help', Date.now());
+    await o.handleLearnerText('I need help', tick());
     expect(lastModelBody()).toContain('give an indirect hint that points at the idea without naming it');
     expect(o.dialogueCalibrationReport).toMatchObject({ variant: 'control', ladderRungs: 5, controllingCaught: 0 });
   });
 
   it('the ask-first register offers an adaptation instead of changing the approach on its own', async () => {
-    const teen = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, Date.now(), silent);
+    const teen = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, clock, silent);
     await answer(teen, 'skill-x', false);
     await answer(teen, 'skill-x', false);
     expect(lastModelBody()).toContain('offer ONE adaptation via offerAdaptation');
     expect(lastModelBody()).not.toContain('change the approach entirely');
     expect(teen.dialogueCalibrationReport).toMatchObject({ pacingOffers: 1, unilateralStyleChanges: 0 });
 
-    const control = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen', { variant: 'control' }) }, Date.now(), silent);
+    const control = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen', { variant: 'control' }) }, clock, silent);
     await answer(control, 'skill-x', false);
     await answer(control, 'skill-x', false);
     expect(lastModelBody()).toContain('change the approach entirely');
@@ -311,14 +326,14 @@ describe('C.17 — the register follows the band, and the band never reaches the
   });
 
   it('an older Core: the tier decides the band (tier 3 → tween, never teen)', async () => {
-    const o = new TutorOrchestrator(BASE, Date.now(), silent);
-    await o.handleLearnerText('hello', Date.now());
+    const o = new TutorOrchestrator(BASE, clock, silent);
+    await o.handleLearnerText('hello', tick());
     expect(lastModelBody()).toContain('offer them the choice of approach');
     expect(o.dialogueCalibrationReport).toMatchObject({ band: 'tween', assignment: 'tier_fallback' });
   });
 
   it('the close record carries the register and its counts', () => {
-    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('adult') }, Date.now(), silent);
+    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('adult') }, clock, silent);
     expect(o.closeRecord('completed').dialogueCalibration).toEqual({
       band: 'adult',
       variant: 'calibrated',
@@ -340,8 +355,8 @@ describe('the operator switches', () => {
     process.env.TUTOR_DIALOGUE_CALIBRATION = 'off';
     const { resetConfigCache } = await import('../env.js');
     resetConfigCache();
-    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, Date.now(), silent);
-    await o.handleLearnerText('hello', Date.now());
+    const o = new TutorOrchestrator({ ...BASE, dialogueCalibration: calibrated('teen') }, clock, silent);
+    await o.handleLearnerText('hello', tick());
     expect(lastModelBody()).not.toContain('Dialogue register');
     expect(o.dialogueCalibrationReport).toMatchObject({ band: 'teen', variant: 'control', assignment: 'operator_off' });
   });
@@ -350,7 +365,7 @@ describe('the operator switches', () => {
     process.env.TUTOR_SPACED_REVIEW = 'off';
     const { resetConfigCache } = await import('../env.js');
     resetConfigCache();
-    const o = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    const o = new TutorOrchestrator(PLANNED, clock, silent);
     await answer(o, 'skill-a', false);
     expect(o.closeRecord('completed').spacedReview).toBeUndefined();
   });
