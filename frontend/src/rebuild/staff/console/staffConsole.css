@@ -1,0 +1,100 @@
+/* The rebuilt staff console (W2T.1). A dashboard page (02 §4.5): neutral page, cards that separate by
+   elevation in light and by surface step in dark, no outlines. Tokens only, logical properties only,
+   layout by container width (02 §7 rule 9), no motion of its own (a staff surface; reduced motion
+   needs no override). Text never truncates: ids, names and addresses wrap anywhere (.ugc). */
+
+.lf-rebuild .lf-staff-page { container: lf-staff-page / inline-size; display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-rebuild .lf-staff-page h2 { font: var(--type-title); }
+.lf-rebuild .lf-staff-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--spacing-4); }
+.lf-rebuild .lf-staff-head-text { display: grid; flex: 1 1 18em; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-staff-head-text p { color: var(--content-muted); }
+.lf-rebuild .lf-staff-head-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+
+/* Headline numbers: balanced rows by the space their own container has (no orphan tile), never narrower than a label's longest word. */
+.lf-rebuild .lf-staff-metrics-wrap { container: lf-staff-metrics / inline-size; min-inline-size: 0; }
+.lf-rebuild .lf-staff-metrics { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); margin: 0; }
+/* Two across only when a tile keeps room for its longest label word with WCAG 1.4.12 spacing (found at 320 px in Spanish). */
+@container lf-staff-metrics (min-width: 300px) {
+  .lf-rebuild .lf-staff-metrics:not([data-count='1']) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container lf-staff-metrics (min-width: 480px) {
+  .lf-rebuild .lf-staff-metrics:is([data-count='3'], [data-count='5'], [data-count='6']) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container lf-staff-metrics (min-width: 640px) {
+  .lf-rebuild .lf-staff-metrics[data-count='4'] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@container lf-staff-metrics (min-width: 960px) {
+  .lf-rebuild .lf-staff-metrics[data-count='5'] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .lf-rebuild .lf-staff-metrics[data-count='6'] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+.lf-rebuild .lf-staff-metric {
+  display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-1); min-inline-size: 0;
+  padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card);
+}
+.lf-rebuild .lf-staff-metric dt { font: var(--type-label); color: var(--content-muted); overflow-wrap: break-word; }
+.lf-rebuild .lf-staff-metric dd { margin: 0; font: var(--type-numeral); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* Label / value pairs (details sheets, the funnel). */
+.lf-rebuild .lf-staff-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--spacing-3) var(--spacing-5); margin: 0; }
+.lf-rebuild .lf-staff-fact { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-staff-fact dt { font: var(--type-label); color: var(--content-muted); }
+.lf-rebuild .lf-staff-fact dd { margin: 0; font: var(--type-body); min-inline-size: 0; }
+
+.lf-rebuild .lf-staff-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-staff-sheet { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+/* A notice in a wide sheet keeps a readable measure (03 §3: at most 75 characters a line). */
+.lf-rebuild .lf-staff-sheet > .lf-notice { max-inline-size: 34rem; }
+.lf-rebuild .lf-staff-subheading { margin: 0; font: var(--type-label); }
+.lf-rebuild .lf-staff-muted { color: var(--content-muted); }
+.lf-rebuild .lf-staff-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-staff-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); }
+/* A neutral button inside a card separates by fill (02 §4.4): the card is the surface, so the button takes the sunken step. */
+.lf-rebuild .lf-staff-page .lf-card .lf-button--secondary { background: var(--sunken); }
+.lf-rebuild .lf-staff-copy { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-switches { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-result-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
+
+/* Filters: one column on a narrow page, then as many as fit side by side. */
+.lf-rebuild .lf-staff-filters { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+@container lf-staff-page (min-width: 640px) {
+  .lf-rebuild .lf-staff-filters { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); align-items: end; }
+}
+
+.lf-rebuild .lf-staff-bars { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-failure { display: grid; }
+
+/* The overview's section list: real links, a 56 px row each. */
+.lf-rebuild .lf-staff-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-link {
+  display: grid; gap: var(--spacing-1); min-block-size: var(--target-base); padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-md); background: var(--sunken); color: var(--content); text-decoration: none;
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-link { background: var(--raised); }
+.lf-rebuild .lf-staff-link:hover { background: var(--primary-soft); }
+.lf-rebuild .lf-staff-link-title { font: var(--type-label); color: var(--primary-strong); }
+.lf-rebuild .lf-staff-link-body { font: var(--type-caption); color: var(--content-muted); }
+
+/* Report records inside a case. */
+.lf-rebuild .lf-staff-reports { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-reports > li { display: grid; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild[data-theme='dark'] .lf-staff-reports > li { background: var(--raised); }
+.lf-rebuild .lf-staff-report-category { font: var(--type-label); }
+
+/* Machine detail (an audit row's or an email's JSON): wraps, never scrolls sideways. */
+.lf-rebuild .lf-staff-code {
+  margin: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); color: var(--content);
+  font: var(--type-caption); font-family: ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-code { background: var(--raised); }
+
+/* The daily chart: one hue, thin bars, a recessive base, the average as a dashed rule. */
+.lf-rebuild .lf-staff-chart { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-staff-chart-controls { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-staff-plot { display: grid; gap: var(--spacing-2); margin: 0; }
+.lf-rebuild .lf-staff-plot-svg { display: block; inline-size: 100%; block-size: calc(var(--spacing-32) + var(--spacing-12)); touch-action: pan-y; }
+.lf-rebuild .lf-staff-plot-bar { fill: var(--primary); }
+.lf-rebuild .lf-staff-plot-bar[data-active='true'] { fill: var(--primary-strong); }
+.lf-rebuild .lf-staff-plot-base { stroke: var(--outline); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-plot-average { stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-plot-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--spacing-1) var(--spacing-3); font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-staff-plot-readout { font: var(--type-label); font-variant-numeric: tabular-nums; }

@@ -2,7 +2,21 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { RequireStaffPermission } from '@/auth/RequireRole';
-import { visibleAdminSections } from '../adminNav';
+import { staffNav } from '@/app-shell/navigation';
+import { permittedStaffItems, STAFF_PERMISSIONS, type StaffNavItem, type StaffPermission } from '@/rebuild/design/controls';
+
+/*
+ * The console sections a person sees: the staff shell's navigation (app-shell/navigation.ts, read from
+ * app-routes/staffGrants.ts) filtered by the grants exactly as StaffShellLayout does. The legacy console's
+ * own section list (adminNav.ts) was retired with the W2T.1 rebuild; the guard assertions below are unchanged.
+ */
+function visibleAdminSections(roles: string[], permissions: string[] = []): { key: string }[] {
+  if (!roles.includes('admin') && !roles.includes('superadmin')) return [];
+  const grants = { superadmin: roles.includes('superadmin'), permissions: STAFF_PERMISSIONS.filter((grant) => roles.includes('admin') && permissions.includes(grant)) };
+  const items: StaffNavItem[] = staffNav({ roles, adminPermissions: permissions }).filter(({ slot }) => slot.id !== 'backToApp')
+    .map(({ slot, grant }) => ({ id: slot.id, label: slot.id, href: slot.path, ...(grant ? { permission: grant as StaffPermission | readonly StaffPermission[] } : {}) }));
+  return permittedStaffItems(items, grants).map((item) => ({ key: item.id }));
+}
 
 const auth = vi.hoisted(() => ({
   session: {} as object,

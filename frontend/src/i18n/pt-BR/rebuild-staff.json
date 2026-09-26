@@ -206,5 +206,408 @@
         "parent_time_to_value": "Tempo do responsável até o resumo semanal"
       }
     }
+  },
+  "staffConsole": {
+    "common": {
+      "action": {
+        "retry": "Tentar de novo",
+        "retrying": "Tentando de novo",
+        "open": "Abrir",
+        "close": "Fechar",
+        "copyId": "Copiar ID",
+        "clearFilters": "Limpar filtros",
+        "previous": "Anterior",
+        "next": "Próxima",
+        "refresh": "Atualizar",
+        "cancel": "Cancelar"
+      },
+      "heading": {
+        "loadFailed": "Isto não carregou",
+        "refused": "Sem acesso a isto",
+        "offline": "Você está sem conexão"
+      },
+      "body": {
+        "loading": "Carregando.",
+        "loadFailed": "O Core não respondeu.",
+        "refused": "Seu acesso de equipe mudou. Fale com um superadmin.",
+        "offline": "Reconecte para ver os dados atuais.",
+        "offlineNotice": "Você está sem conexão. Estes números podem estar desatualizados.",
+        "notAvailable": "Não disponível",
+        "system": "Sistema",
+        "copied": "Copiado.",
+        "copyFailed": "Não foi possível copiar. Selecione o texto.",
+        "noMatch": "Nada corresponde a estes filtros.",
+        "pageRange": "{start} a {end} de {total}",
+        "actionFailed": "Não foi salvo. Tente de novo.",
+        "details": "Detalhes",
+        "years": "{n} anos"
+      }
+    },
+    "roleNames": {
+      "option": {
+        "superadmin": "Superadmin",
+        "admin": "Admin",
+        "bigfounder": "Bigfounder",
+        "parent": "Tutor",
+        "kid": "Criança",
+        "universal": "Universal",
+        "all": "Todos os papéis"
+      }
+    },
+    "permissions": {
+      "option": {
+        "manage_users": "Gerenciar usuários",
+        "manage_content": "Gerenciar conteúdo",
+        "view_analytics": "Ver analytics",
+        "manage_support": "Gerenciar suporte"
+      },
+      "body": {
+        "manage_users": "Usuários e responsáveis pela qualidade do Mentor.",
+        "manage_content": "Conteúdo, geração e filas de revisão.",
+        "view_analytics": "Analytics, inteligência de aprendizagem e saúde do serviço.",
+        "manage_support": "E-mails, registro de auditoria e denúncias."
+      }
+    },
+    "chart": {
+      "option": {
+        "daily": "Por dia",
+        "cumulative": "Acumulado",
+        "7d": "7 dias",
+        "30d": "30 dias",
+        "90d": "90 dias",
+        "1y": "1 ano",
+        "all": "Tudo"
+      },
+      "body": {
+        "metric": "Mostrar",
+        "period": "Período",
+        "average": "Média diária",
+        "peak": "Dia de pico",
+        "change": "Do primeiro ao último dia",
+        "range": "{from} a {to}",
+        "point": "{date}: {n}",
+        "empty": "Sem dados neste período.",
+        "averageLine": "Média"
+      }
+    },
+    "overview": {
+      "heading": {
+        "people": "Pessoas",
+        "content": "Conteúdo",
+        "support": "Suporte",
+        "health": "Saúde do serviço",
+        "retention": "O que os alunos lembram",
+        "sections": "Suas seções",
+        "roles": "Contas por papel"
+      },
+      "body": {
+        "intro": "O que seu acesso abre hoje.",
+        "accounts": "Contas",
+        "staff": "Equipe",
+        "coursesLive": "Cursos publicados",
+        "lessonsReview": "Lições em revisão",
+        "lessonsLive": "Lições publicadas",
+        "auditEvents": "Eventos de auditoria",
+        "courses": "Cursos",
+        "lessons": "Lições",
+        "reviewQueue": "{n} lições aguardam revisão.",
+        "noRoles": "Ainda não há contas.",
+        "allUp": "Todos os serviços respondem.",
+        "someDown": "{n} serviços não respondem.",
+        "healthUnconfigured": "O monitoramento de saúde não está configurado aqui.",
+        "healthFailed": "A saúde do serviço não carregou.",
+        "retentionIntro": "Acertos na primeira tentativa em revisões, por dias desde a prática.",
+        "retentionBucket": "{bucket} dias depois",
+        "retentionTries": "{n} tentativas",
+        "weakest": "Temas mais fracos",
+        "retentionEmpty": "Ainda não há tentativas de revisão.",
+        "retentionFailed": "A retenção não carregou.",
+        "up": "Respondendo",
+        "down": "Sem resposta",
+        "noMonitors": "Nenhum serviço é monitorado ainda.",
+        "content": "Cursos, lições e a fila de revisão.",
+        "users": "Contas, verificação e cadastros.",
+        "emails": "Histórico de envios e falhas.",
+        "analytics": "Uso, saúde e exportações.",
+        "intel": "Sinais de aprendizagem e de produto.",
+        "generation": "Execuções de geração de cursos.",
+        "audit": "Cada ação privilegiada, em ordem.",
+        "reports": "Denúncias e casos automáticos por padrão.",
+        "roles": "Papéis e acesso de equipe."
+      },
+      "option": {
+        "published": "Publicado",
+        "review": "Em revisão",
+        "draft": "Rascunho",
+        "archived": "Arquivado"
+      },
+      "action": {
+        "review": "Revisar lições",
+        "manageRoles": "Gerenciar papéis",
+        "details": "Detalhes de saúde"
+      }
+    },
+    "users": {
+      "heading": {
+        "byRole": "Por papel",
+        "byLanguage": "Por idioma",
+        "byAge": "Por idade",
+        "funnel": "Visitantes que criaram conta",
+        "signups": "Contas novas",
+        "people": "Pessoas",
+        "verification": "Verificação de responsável",
+        "revoke": "Revogar verificação",
+        "confirm": "Revogar esta verificação?"
+      },
+      "body": {
+        "intro": "Cada conta, seu papel e sua verificação.",
+        "total": "Contas",
+        "children": "Crianças",
+        "tutors": "Tutores",
+        "staff": "Equipe",
+        "funnelWindow": "Últimos {n} dias.",
+        "visitors": "Visitantes",
+        "registered": "Contas",
+        "rate": "Contas por visitante",
+        "funnelAgree": "As contagens do servidor e do navegador batem.",
+        "funnelGap": "O analytics do navegador não viu {n} destas contas.",
+        "funnelBar": "{accounts} contas de {visitors} visitantes",
+        "noAges": "Ainda não há datas de nascimento.",
+        "count": "{shown} de {total} contas",
+        "empty": "Ainda não há contas.",
+        "search": "Busque por nome, usuário ou ID",
+        "role": "Papel",
+        "name": "Nome",
+        "username": "Usuário",
+        "roles": "Papéis",
+        "language": "Idioma",
+        "verificationCol": "Verificação",
+        "joined": "Cadastro",
+        "unnamed": "Conta sem nome",
+        "userId": "ID do usuário",
+        "age": "Idade",
+        "birthDate": "Data de nascimento",
+        "readOnly": "Abrir os detalhes não muda nada.",
+        "signups": "Cadastros",
+        "reasonLabel": "Motivo",
+        "reasonHelp": "De 10 a 300 caracteres. Vai para o registro de auditoria.",
+        "consequence": "{name} perde o status verificado. O motivo fica auditado.",
+        "revoked": "Verificação revogada.",
+        "revokeFailed": "Não foi possível revogar. Tente de novo.",
+        "noVerification": "Esta conta não tem verificação de responsável."
+      },
+      "option": {
+        "id-verified": "Verificado por documento",
+        "staff-granted": "Concedido pela equipe",
+        "revoked": "Revogado",
+        "none": "Nenhuma",
+        "en-US": "Inglês",
+        "es-MX": "Espanhol",
+        "pt-BR": "Português",
+        "lt6": "Menos de 6",
+        "6-8": "6 a 8",
+        "9-10": "9 a 10",
+        "11-12": "11 a 12",
+        "13-17": "13 a 17",
+        "18+": "18 ou mais"
+      },
+      "action": {
+        "revoke": "Revogar verificação",
+        "keep": "Manter",
+        "revoking": "Revogando"
+      }
+    },
+    "access": {
+      "heading": {
+        "distribution": "Atribuições por papel",
+        "review": "Revisão de acessos",
+        "grant": "Atribuir um papel",
+        "holders": "Pessoas com papel",
+        "find": "Encontrar uma pessoa",
+        "roles": "Papéis",
+        "permissions": "Acesso de equipe",
+        "history": "Histórico de atribuições",
+        "confirm": "Remover este papel?"
+      },
+      "body": {
+        "intro": "Atribua papéis e acesso de equipe. Cada mudança fica auditada.",
+        "holdersCount": "Pessoas com papel",
+        "assignments": "Papéis atribuídos",
+        "superadmins": "Superadmins",
+        "permissionGrants": "Acessos de equipe",
+        "lastChange": "Última mudança: {date}",
+        "reviewDue": "{n} atribuições têm mais de 90 dias. Confirme cada uma.",
+        "reviewNone": "Nenhuma atribuição tem mais de 90 dias.",
+        "reviewRow": "{role}, atribuído em {date}",
+        "userId": "ID do usuário",
+        "userIdHelp": "Cole um ID ou encontre a pessoa.",
+        "userIdInvalid": "Digite um ID de usuário completo.",
+        "role": "Papel",
+        "justification": "Justificativa",
+        "justificationHelp": "Obrigatória para Tutor: de 10 a 200 caracteres. Fica auditada.",
+        "granted": "Papel {role} atribuído.",
+        "rejected": "O banco de dados recusou esta mudança.",
+        "grantFailed": "Não foi possível atribuir o papel. Tente de novo.",
+        "searchPeople": "Nome ou usuário",
+        "searchHelp": "Digite pelo menos 2 caracteres.",
+        "noPeople": "Ninguém corresponde.",
+        "searching": "Buscando.",
+        "search": "Busque pessoas com papel",
+        "count": "{n} pessoas",
+        "empty": "Ninguém tem papel ainda.",
+        "name": "Nome",
+        "username": "Usuário",
+        "rolesCol": "Papéis",
+        "access": "Acesso de equipe",
+        "changed": "Última mudança",
+        "grants": "{n} acessos",
+        "noGrants": "Sem acessos",
+        "superadminAll": "Superadmins abrem todas as seções.",
+        "on": "Sim",
+        "off": "Não",
+        "accessSaved": "Acesso de equipe atualizado.",
+        "grantedBy": "Atribuído por {id}",
+        "systemGrant": "Atribuído pelo sistema",
+        "removed": "Papel {role} removido.",
+        "removeConsequence": "{name} perde o papel {role} agora.",
+        "staffOnly": "O acesso de equipe vale só para admins."
+      },
+      "action": {
+        "find": "Encontrar pessoa",
+        "grant": "Atribuir papel",
+        "granting": "Atribuindo",
+        "choose": "Escolher",
+        "manage": "Gerenciar",
+        "remove": "Remover {role}",
+        "keep": "Manter papel",
+        "confirmRemove": "Remover papel",
+        "removing": "Removendo"
+      }
+    },
+    "audit": {
+      "heading": {
+        "filters": "Filtros",
+        "events": "Eventos",
+        "event": "Evento de auditoria"
+      },
+      "body": {
+        "intro": "Cada ação privilegiada. Os registros nunca mudam.",
+        "total": "Eventos",
+        "onPage": "Nesta página",
+        "actors": "Pessoas nesta página",
+        "latest": "Último evento",
+        "search": "Busque nesta página",
+        "action": "Ação",
+        "actor": "ID de quem agiu",
+        "actorInvalid": "Digite um ID de usuário completo.",
+        "subject": "Objeto",
+        "from": "De",
+        "to": "Até",
+        "dateInvalid": "De precisa vir antes de Até.",
+        "when": "Quando",
+        "empty": "Ainda não há eventos.",
+        "immutable": "Este registro não pode ser alterado.",
+        "eventId": "ID do evento",
+        "detail": "Detalhe",
+        "noDetail": "Sem detalhe.",
+        "activeFilters": "{n} filtros ativos."
+      },
+      "option": {
+        "all": "Todas as ações"
+      },
+      "action": {
+        "apply": "Aplicar filtros",
+        "copyActor": "Copiar ID",
+        "filters": "Filtros"
+      }
+    },
+    "reports": {
+      "heading": {
+        "cases": "Casos",
+        "case": "Caso de denúncia",
+        "confirm": "Resolver este caso?"
+      },
+      "body": {
+        "intro": "Denúncias e casos automáticos por padrão. Cada um precisa de uma decisão.",
+        "open": "Casos abertos",
+        "pattern": "Casos por padrão",
+        "openReports": "Denúncias abertas",
+        "status": "Status",
+        "account": "Conta",
+        "origin": "Origem",
+        "reports": "Denúncias abertas",
+        "lastSeen": "Última denúncia",
+        "empty": "Nenhuma denúncia para revisar.",
+        "counts": "{open} abertas de {total} denúncias",
+        "reporter": "Denunciante {id}",
+        "noReports": "Este caso não tem denúncias.",
+        "patternHelp": "Aberto automaticamente após denúncias de 3 crianças em 30 dias.",
+        "consequence": "O caso fecha. Sua decisão vai para o registro de auditoria.",
+        "resolved": "Caso resolvido.",
+        "resolveFailed": "Não foi possível resolver. Tente de novo."
+      },
+      "option": {
+        "all": "Todos os casos",
+        "open": "Aberto",
+        "resolved": "Resolvido",
+        "report": "Denúncia",
+        "pattern": "Padrão",
+        "unwanted_contact": "Contato indesejado",
+        "harassment": "Assédio",
+        "inappropriate_content": "Conteúdo impróprio",
+        "impersonation": "Falsidade ideológica",
+        "other": "Outro"
+      },
+      "action": {
+        "resolve": "Resolver caso",
+        "keep": "Manter aberto",
+        "resolving": "Resolvendo"
+      }
+    },
+    "emails": {
+      "heading": {
+        "trend": "E-mails por dia",
+        "statuses": "Por status",
+        "templates": "Por modelo",
+        "languages": "Por idioma",
+        "history": "Histórico",
+        "email": "E-mail"
+      },
+      "body": {
+        "intro": "Envio de e-mails transacionais, os mais recentes primeiro.",
+        "total": "Enviados",
+        "success": "Envios com sucesso",
+        "failed": "Com falha",
+        "failureRate": "Taxa de falha",
+        "pending": "Pendentes",
+        "templates": "Modelos",
+        "window": "Últimos 365 dias.",
+        "emails": "E-mails",
+        "search": "Busque destinatário ou assunto",
+        "status": "Status",
+        "template": "Modelo",
+        "logsFailed": "O histórico não carregou.",
+        "summaryFailed": "Os totais não carregaram.",
+        "to": "Para",
+        "subject": "Assunto",
+        "language": "Idioma",
+        "sent": "Enviado",
+        "messageId": "ID da mensagem",
+        "userId": "ID do usuário",
+        "detail": "Detalhe",
+        "noSubject": "Sem assunto",
+        "empty": "Nenhum e-mail enviado ainda.",
+        "trendUnavailable": "A tendência diária não está disponível.",
+        "share": "{n} · {share}"
+      },
+      "option": {
+        "allStatuses": "Todos os status",
+        "allTemplates": "Todos os modelos",
+        "queued": "Na fila",
+        "relayed": "Retransmitido",
+        "delivered": "Entregue",
+        "failed": "Com falha"
+      }
+    }
   }
 }

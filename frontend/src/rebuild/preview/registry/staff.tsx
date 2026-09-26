@@ -1,10 +1,19 @@
+import { useMemo } from 'react';
 import { LiveContentStatusPanel, LiveReviewDecision, PackRelease } from '../../mentor/LiveContentGovernance';
 import type { LiveContentStatus, TutorPackSummary } from '../../mentor/liveContentApi';
 import { MentorQualityDashboard } from '../../staff/MentorQualityDashboard';
 import { previewMentorQuality } from '../../staff/mentorQualityFixtures';
 import { LearningQualityPanel } from '../../learning/LearningQualityPanel';
 import { learningQualityFixture } from '../../learning/learningQualityFixtures';
-import { framed, type PreviewRegistry } from './types';
+import { StaffOverview } from '../../staff/console/StaffOverview';
+import { StaffUsers } from '../../staff/console/StaffUsers';
+import { StaffAccess } from '../../staff/console/StaffAccess';
+import { StaffAudit } from '../../staff/console/StaffAudit';
+import { StaffReports } from '../../staff/console/StaffReports';
+import { StaffEmails } from '../../staff/console/StaffEmails';
+import { fixtureApi, type FixtureState } from '../../staff/console/staffConsoleFixtures';
+import { staffViewer } from '../../staff/console/staffConsoleApi';
+import { framed, type PreviewContext, type PreviewRegistry } from './types';
 
 /*
  * Lane 6 (staff): the staff console's rebuilt panels.
@@ -45,6 +54,26 @@ const PREVIEW_REVIEW_ITEM = {
   'pt-BR': 'Um caderno custa 7 moedas. Quantas moedas custam 3 cadernos?',
 } as const;
 
+/*
+ * W2T.1 console screens on fixtures: ?state=ready|loading|error|refused|empty,
+ * ?grants=a,b (an admin's named grants; default superadmin), ?write=failed|rejected.
+ */
+type ConsoleRender = (props: { api: ReturnType<typeof fixtureApi>; viewer: ReturnType<typeof staffViewer> }) => JSX.Element;
+/** One fixture api per mount (a new api object per render would re-run every read). */
+function ConsoleFixture({ id, params, render }: { id: string; params: URLSearchParams; render: ConsoleRender }) {
+  const state = (params.get('state') ?? 'ready') as FixtureState;
+  const write = (params.get('write') ?? 'ok') as 'ok' | 'failed' | 'rejected';
+  const grants = params.get('grants');
+  const api = useMemo(() => fixtureApi(state, write), [state, write]);
+  const viewer = useMemo(() => (grants === null ? staffViewer(['superadmin'], []) : staffViewer(['admin'], grants.split(','))), [grants]);
+  return <main className="lf-preview" data-surface="app" data-screen={`${id}-host`}>
+    <div className="lf-preview-content">{render({ api, viewer })}</div>
+  </main>;
+}
+function consoleScreen(id: string, render: ConsoleRender) {
+  return framed(({ params }: PreviewContext) => <ConsoleFixture id={id} params={params} render={render} />);
+}
+
 export const staffPreviewScreens: PreviewRegistry = {
   learningquality: framed(({ locale, theme, params }) => <main className="lf-family-preview" data-surface="app" data-screen="learning-quality-host">
     <LearningQualityPanel key={`quality:${locale}:${params.get('quality')}`} fixture locale={locale} dark={theme === 'dark'}
@@ -78,4 +107,10 @@ export const staffPreviewScreens: PreviewRegistry = {
       onResolve={async () => (params.get('act') === 'failed' ? 'failed' : params.get('act') === 'changed' ? 'changed' : 'done')}
       onReview={async () => (params.get('review') === 'already' ? 'already' : params.get('review') === 'failed' ? 'failed' : 'done')} />
   </div></main>),
+  'staff-console-overview': consoleScreen('staff-console-overview', ({ api, viewer }) => <StaffOverview api={api} viewer={viewer} onNavigate={() => {}} />),
+  'staff-console-users': consoleScreen('staff-console-users', ({ api, viewer }) => <StaffUsers api={api} viewer={viewer} />),
+  'staff-console-roles': consoleScreen('staff-console-roles', ({ api }) => <StaffAccess api={api} />),
+  'staff-console-audit': consoleScreen('staff-console-audit', ({ api }) => <StaffAudit api={api} />),
+  'staff-console-reports': consoleScreen('staff-console-reports', ({ api }) => <StaffReports api={api} />),
+  'staff-console-emails': consoleScreen('staff-console-emails', ({ api }) => <StaffEmails api={api} />),
 };

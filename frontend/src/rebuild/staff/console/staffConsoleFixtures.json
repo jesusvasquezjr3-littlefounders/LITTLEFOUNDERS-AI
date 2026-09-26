@@ -1,0 +1,1469 @@
+{
+  "overview": {
+    "users": {
+      "total": 1284,
+      "staff": 4,
+      "byRole": {
+        "superadmin": 1,
+        "admin": 3,
+        "parent": 212,
+        "kid": 340,
+        "universal": 728
+      }
+    },
+    "content": {
+      "courses": {
+        "published": 12,
+        "review": 2,
+        "draft": 5,
+        "archived": 1
+      },
+      "lessons": {
+        "published": 164,
+        "review": 7,
+        "draft": 23
+      },
+      "reviewQueue": 7
+    },
+    "audit": {
+      "total": 5311
+    }
+  },
+  "health": {
+    "summary": {
+      "total": 4,
+      "down": 1
+    },
+    "monitors": [
+      {
+        "id": 1,
+        "name": "Core API",
+        "status": 1
+      },
+      {
+        "id": 2,
+        "name": "Oracle",
+        "status": 1
+      },
+      {
+        "id": 3,
+        "name": "Courier email",
+        "status": 0
+      },
+      {
+        "id": 4,
+        "name": "Depot",
+        "status": 1
+      }
+    ]
+  },
+  "retention": {
+    "buckets": [
+      {
+        "bucket": "1",
+        "n": 412,
+        "avg_first_attempt_score": 86
+      },
+      {
+        "bucket": "7",
+        "n": 233,
+        "avg_first_attempt_score": 74
+      },
+      {
+        "bucket": "30",
+        "n": 98,
+        "avg_first_attempt_score": 61
+      }
+    ],
+    "byTopic": [
+      {
+        "slug": "compound-interest",
+        "title": "Compound interest",
+        "n": 41,
+        "avgFirstAttemptScore": 52
+      },
+      {
+        "slug": "percent-discounts",
+        "title": "Percent discounts",
+        "n": 66,
+        "avgFirstAttemptScore": 58
+      },
+      {
+        "slug": "needs-and-wants",
+        "title": "Needs and wants",
+        "n": 90,
+        "avgFirstAttemptScore": 71
+      }
+    ]
+  },
+  "users": [
+    {
+      "userId": "11111111-1111-4111-8111-111111111111",
+      "displayName": "Alessandro_Bartolomeo_Villanueva_Rodriguez_2014",
+      "username": "alessandro_bartolomeo_2014",
+      "locale": "es-MX",
+      "createdAt": "2026-07-12T15:04:00Z",
+      "birthDate": "2014-03-08",
+      "roles": [
+        "kid"
+      ],
+      "verification": null
+    },
+    {
+      "userId": "22222222-2222-4222-8222-222222222222",
+      "displayName": "Paula Mendes",
+      "username": "paula_m",
+      "locale": "pt-BR",
+      "createdAt": "2026-06-02T09:30:00Z",
+      "birthDate": "1988-11-21",
+      "roles": [
+        "parent",
+        "universal"
+      ],
+      "verification": "id-verified"
+    },
+    {
+      "userId": "33333333-3333-4333-8333-333333333333",
+      "displayName": "Grace Okafor",
+      "username": "grace",
+      "locale": "en-US",
+      "createdAt": "2026-06-18T18:10:00Z",
+      "birthDate": null,
+      "roles": [
+        "parent"
+      ],
+      "verification": "staff-granted"
+    },
+    {
+      "userId": "44444444-4444-4444-8444-444444444444",
+      "displayName": "Tomás Ruiz",
+      "username": "tomas_r",
+      "locale": "es-MX",
+      "createdAt": "2026-05-30T11:00:00Z",
+      "birthDate": "1979-02-14",
+      "roles": [
+        "parent"
+      ],
+      "verification": "revoked"
+    },
+    {
+      "userId": "55555555-5555-4555-8555-555555555555",
+      "displayName": "Sofía",
+      "username": "sofi_10",
+      "locale": "es-MX",
+      "createdAt": "2026-08-01T16:45:00Z",
+      "birthDate": "2016-01-20",
+      "roles": [
+        "kid"
+      ],
+      "verification": null
+    },
+    {
+      "userId": "66666666-6666-4666-8666-666666666666",
+      "displayName": "Staff Lima",
+      "username": "lima",
+      "locale": "en-US",
+      "createdAt": "2026-01-05T08:00:00Z",
+      "birthDate": null,
+      "roles": [
+        "admin",
+        "universal"
+      ],
+      "verification": null
+    },
+    {
+      "userId": "77777777-7777-4777-8777-777777777777",
+      "displayName": "",
+      "username": null,
+      "locale": "en-US",
+      "createdAt": "2026-09-20T07:15:00Z",
+      "birthDate": "2010-06-30",
+      "roles": [
+        "universal"
+      ],
+      "verification": null
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2026-05-30",
+      "count": 3
+    },
+    {
+      "date": "2026-05-31",
+      "count": 1
+    },
+    {
+      "date": "2026-06-01",
+      "count": 8
+    },
+    {
+      "date": "2026-06-02",
+      "count": 6
+    },
+    {
+      "date": "2026-06-03",
+      "count": 4
+    },
+    {
+      "date": "2026-06-04",
+      "count": 2
+    },
+    {
+      "date": "2026-06-05",
+      "count": 0
+    },
+    {
+      "date": "2026-06-06",
+      "count": 7
+    },
+    {
+      "date": "2026-06-07",
+      "count": 5
+    },
+    {
+      "date": "2026-06-08",
+      "count": 3
+    },
+    {
+      "date": "2026-06-09",
+      "count": 1
+    },
+    {
+      "date": "2026-06-10",
+      "count": 8
+    },
+    {
+      "date": "2026-06-11",
+      "count": 6
+    },
+    {
+      "date": "2026-06-12",
+      "count": 4
+    },
+    {
+      "date": "2026-06-13",
+      "count": 2
+    },
+    {
+      "date": "2026-06-14",
+      "count": 0
+    },
+    {
+      "date": "2026-06-15",
+      "count": 7
+    },
+    {
+      "date": "2026-06-16",
+      "count": 5
+    },
+    {
+      "date": "2026-06-17",
+      "count": 3
+    },
+    {
+      "date": "2026-06-18",
+      "count": 1
+    },
+    {
+      "date": "2026-06-19",
+      "count": 9
+    },
+    {
+      "date": "2026-06-20",
+      "count": 7
+    },
+    {
+      "date": "2026-06-21",
+      "count": 5
+    },
+    {
+      "date": "2026-06-22",
+      "count": 3
+    },
+    {
+      "date": "2026-06-23",
+      "count": 1
+    },
+    {
+      "date": "2026-06-24",
+      "count": 8
+    },
+    {
+      "date": "2026-06-25",
+      "count": 6
+    },
+    {
+      "date": "2026-06-26",
+      "count": 4
+    },
+    {
+      "date": "2026-06-27",
+      "count": 2
+    },
+    {
+      "date": "2026-06-28",
+      "count": 9
+    },
+    {
+      "date": "2026-06-29",
+      "count": 7
+    },
+    {
+      "date": "2026-06-30",
+      "count": 5
+    },
+    {
+      "date": "2026-07-01",
+      "count": 3
+    },
+    {
+      "date": "2026-07-02",
+      "count": 1
+    },
+    {
+      "date": "2026-07-03",
+      "count": 8
+    },
+    {
+      "date": "2026-07-04",
+      "count": 6
+    },
+    {
+      "date": "2026-07-05",
+      "count": 4
+    },
+    {
+      "date": "2026-07-06",
+      "count": 2
+    },
+    {
+      "date": "2026-07-07",
+      "count": 9
+    },
+    {
+      "date": "2026-07-08",
+      "count": 7
+    },
+    {
+      "date": "2026-07-09",
+      "count": 6
+    },
+    {
+      "date": "2026-07-10",
+      "count": 4
+    },
+    {
+      "date": "2026-07-11",
+      "count": 2
+    },
+    {
+      "date": "2026-07-12",
+      "count": 9
+    },
+    {
+      "date": "2026-07-13",
+      "count": 7
+    },
+    {
+      "date": "2026-07-14",
+      "count": 5
+    },
+    {
+      "date": "2026-07-15",
+      "count": 3
+    },
+    {
+      "date": "2026-07-16",
+      "count": 10
+    },
+    {
+      "date": "2026-07-17",
+      "count": 8
+    },
+    {
+      "date": "2026-07-18",
+      "count": 6
+    },
+    {
+      "date": "2026-07-19",
+      "count": 4
+    },
+    {
+      "date": "2026-07-20",
+      "count": 2
+    },
+    {
+      "date": "2026-07-21",
+      "count": 9
+    },
+    {
+      "date": "2026-07-22",
+      "count": 7
+    },
+    {
+      "date": "2026-07-23",
+      "count": 5
+    },
+    {
+      "date": "2026-07-24",
+      "count": 3
+    },
+    {
+      "date": "2026-07-25",
+      "count": 10
+    },
+    {
+      "date": "2026-07-26",
+      "count": 8
+    },
+    {
+      "date": "2026-07-27",
+      "count": 6
+    },
+    {
+      "date": "2026-07-28",
+      "count": 4
+    },
+    {
+      "date": "2026-07-29",
+      "count": 3
+    },
+    {
+      "date": "2026-07-30",
+      "count": 10
+    },
+    {
+      "date": "2026-07-31",
+      "count": 8
+    },
+    {
+      "date": "2026-08-01",
+      "count": 6
+    },
+    {
+      "date": "2026-08-02",
+      "count": 4
+    },
+    {
+      "date": "2026-08-03",
+      "count": 11
+    },
+    {
+      "date": "2026-08-04",
+      "count": 9
+    },
+    {
+      "date": "2026-08-05",
+      "count": 7
+    },
+    {
+      "date": "2026-08-06",
+      "count": 5
+    },
+    {
+      "date": "2026-08-07",
+      "count": 3
+    },
+    {
+      "date": "2026-08-08",
+      "count": 10
+    },
+    {
+      "date": "2026-08-09",
+      "count": 8
+    },
+    {
+      "date": "2026-08-10",
+      "count": 6
+    },
+    {
+      "date": "2026-08-11",
+      "count": 4
+    },
+    {
+      "date": "2026-08-12",
+      "count": 11
+    },
+    {
+      "date": "2026-08-13",
+      "count": 9
+    },
+    {
+      "date": "2026-08-14",
+      "count": 7
+    },
+    {
+      "date": "2026-08-15",
+      "count": 5
+    },
+    {
+      "date": "2026-08-16",
+      "count": 3
+    },
+    {
+      "date": "2026-08-17",
+      "count": 10
+    },
+    {
+      "date": "2026-08-18",
+      "count": 9
+    },
+    {
+      "date": "2026-08-19",
+      "count": 7
+    },
+    {
+      "date": "2026-08-20",
+      "count": 5
+    },
+    {
+      "date": "2026-08-21",
+      "count": 12
+    },
+    {
+      "date": "2026-08-22",
+      "count": 10
+    },
+    {
+      "date": "2026-08-23",
+      "count": 8
+    },
+    {
+      "date": "2026-08-24",
+      "count": 6
+    },
+    {
+      "date": "2026-08-25",
+      "count": 4
+    },
+    {
+      "date": "2026-08-26",
+      "count": 11
+    },
+    {
+      "date": "2026-08-27",
+      "count": 9
+    },
+    {
+      "date": "2026-08-28",
+      "count": 7
+    },
+    {
+      "date": "2026-08-29",
+      "count": 5
+    },
+    {
+      "date": "2026-08-30",
+      "count": 12
+    },
+    {
+      "date": "2026-08-31",
+      "count": 10
+    },
+    {
+      "date": "2026-09-01",
+      "count": 8
+    },
+    {
+      "date": "2026-09-02",
+      "count": 6
+    },
+    {
+      "date": "2026-09-03",
+      "count": 4
+    },
+    {
+      "date": "2026-09-04",
+      "count": 11
+    },
+    {
+      "date": "2026-09-05",
+      "count": 9
+    },
+    {
+      "date": "2026-09-06",
+      "count": 7
+    },
+    {
+      "date": "2026-09-07",
+      "count": 6
+    },
+    {
+      "date": "2026-09-08",
+      "count": 13
+    },
+    {
+      "date": "2026-09-09",
+      "count": 11
+    },
+    {
+      "date": "2026-09-10",
+      "count": 9
+    },
+    {
+      "date": "2026-09-11",
+      "count": 7
+    },
+    {
+      "date": "2026-09-12",
+      "count": 5
+    },
+    {
+      "date": "2026-09-13",
+      "count": 12
+    },
+    {
+      "date": "2026-09-14",
+      "count": 10
+    },
+    {
+      "date": "2026-09-15",
+      "count": 8
+    },
+    {
+      "date": "2026-09-16",
+      "count": 6
+    },
+    {
+      "date": "2026-09-17",
+      "count": 13
+    },
+    {
+      "date": "2026-09-18",
+      "count": 11
+    },
+    {
+      "date": "2026-09-19",
+      "count": 9
+    },
+    {
+      "date": "2026-09-20",
+      "count": 7
+    },
+    {
+      "date": "2026-09-21",
+      "count": 5
+    },
+    {
+      "date": "2026-09-22",
+      "count": 12
+    },
+    {
+      "date": "2026-09-23",
+      "count": 10
+    },
+    {
+      "date": "2026-09-24",
+      "count": 8
+    },
+    {
+      "date": "2026-09-25",
+      "count": 6
+    },
+    {
+      "date": "2026-09-26",
+      "count": 13
+    }
+  ],
+  "acquisition": {
+    "visitors": 5120
+  },
+  "funnelIntegrity": {
+    "accountsCreated": 212,
+    "unobserved": 37
+  },
+  "registrations": {
+    "entries": [
+      {
+        "role": "universal",
+        "registrations": 150
+      },
+      {
+        "role": "parent",
+        "registrations": 40
+      },
+      {
+        "role": "kid",
+        "registrations": 22
+      }
+    ]
+  },
+  "roles": {
+    "holders": [
+      {
+        "userId": "66666666-6666-4666-8666-666666666666",
+        "displayName": "Staff Lima",
+        "username": "lima",
+        "roles": [
+          "admin"
+        ],
+        "permissions": [
+          "manage_users",
+          "manage_support"
+        ],
+        "roleAssignments": [
+          {
+            "role": "admin",
+            "grantedAt": "2026-01-05T08:00:00Z",
+            "grantedBy": "22222222-2222-4222-8222-222222222222"
+          }
+        ],
+        "permissionAssignments": [
+          {
+            "permission": "manage_users",
+            "grantedAt": "2026-01-05T08:05:00Z",
+            "grantedBy": "22222222-2222-4222-8222-222222222222"
+          },
+          {
+            "permission": "manage_support",
+            "grantedAt": "2026-09-01T10:00:00Z",
+            "grantedBy": "22222222-2222-4222-8222-222222222222"
+          }
+        ],
+        "lastChangedAt": "2026-09-01T10:00:00Z"
+      },
+      {
+        "userId": "22222222-2222-4222-8222-222222222222",
+        "displayName": "Paula Mendes",
+        "username": "paula_m",
+        "roles": [
+          "superadmin",
+          "parent"
+        ],
+        "permissions": [],
+        "roleAssignments": [
+          {
+            "role": "superadmin",
+            "grantedAt": "2025-11-10T12:00:00Z",
+            "grantedBy": null
+          },
+          {
+            "role": "parent",
+            "grantedAt": "2026-06-02T09:40:00Z",
+            "grantedBy": null
+          }
+        ],
+        "permissionAssignments": [],
+        "lastChangedAt": "2026-06-02T09:40:00Z"
+      },
+      {
+        "userId": "33333333-3333-4333-8333-333333333333",
+        "displayName": "Grace Okafor",
+        "username": "grace",
+        "roles": [
+          "parent"
+        ],
+        "permissions": [],
+        "roleAssignments": [
+          {
+            "role": "parent",
+            "grantedAt": "2026-09-18T18:12:00Z",
+            "grantedBy": "22222222-2222-4222-8222-222222222222"
+          }
+        ],
+        "permissionAssignments": [],
+        "lastChangedAt": "2026-09-18T18:12:00Z"
+      },
+      {
+        "userId": "11111111-1111-4111-8111-111111111111",
+        "displayName": "Alessandro_Bartolomeo_Villanueva_Rodriguez_2014",
+        "username": "alessandro_bartolomeo_2014",
+        "roles": [
+          "kid"
+        ],
+        "permissions": [],
+        "roleAssignments": [
+          {
+            "role": "kid",
+            "grantedAt": "2026-07-12T15:04:00Z",
+            "grantedBy": "33333333-3333-4333-8333-333333333333"
+          }
+        ],
+        "permissionAssignments": [],
+        "lastChangedAt": "2026-07-12T15:04:00Z"
+      }
+    ],
+    "summary": {
+      "totalHolders": 4,
+      "totalRoleAssignments": 5,
+      "totalPermissionAssignments": 2,
+      "roleCounts": {
+        "admin": 1,
+        "superadmin": 1,
+        "parent": 2,
+        "kid": 1
+      },
+      "permissionCounts": {
+        "manage_users": 1,
+        "manage_support": 1
+      },
+      "lastChangedAt": "2026-09-18T18:12:00Z"
+    }
+  },
+  "candidates": [
+    {
+      "userId": "55555555-5555-4555-8555-555555555555",
+      "displayName": "Sofía",
+      "username": "sofi_10",
+      "roles": [
+        "kid"
+      ]
+    },
+    {
+      "userId": "77777777-7777-4777-8777-777777777777",
+      "displayName": "Sam Ortega",
+      "username": "sam_o",
+      "roles": []
+    }
+  ],
+  "audit": [
+    {
+      "id": 5311,
+      "actorId": "66666666-6666-4666-8666-666666666666",
+      "action": "admin.tutor_activity.review",
+      "subject": "segment-7f3a",
+      "detail": {
+        "status": "approved"
+      },
+      "createdAt": "2026-09-25T17:40:00Z"
+    },
+    {
+      "id": 5310,
+      "actorId": "22222222-2222-4222-8222-222222222222",
+      "action": "admin.parent_role_justification",
+      "subject": "33333333-3333-4333-8333-333333333333",
+      "detail": {
+        "justification": "Verified in a video call with the family; ID check unavailable in region."
+      },
+      "createdAt": "2026-09-18T18:12:00Z"
+    },
+    {
+      "id": 5309,
+      "actorId": "66666666-6666-4666-8666-666666666666",
+      "action": "admin.parent_verification.revoked",
+      "subject": "44444444-4444-4444-8444-444444444444",
+      "detail": {
+        "reason": "Fraud report 2026-044 confirmed by support."
+      },
+      "createdAt": "2026-09-10T09:02:00Z"
+    },
+    {
+      "id": 5308,
+      "actorId": null,
+      "action": "social.pattern_case.opened",
+      "subject": "77777777-7777-4777-8777-777777777777",
+      "detail": {},
+      "createdAt": "2026-09-09T22:30:00Z"
+    },
+    {
+      "id": 5307,
+      "actorId": "22222222-2222-4222-8222-222222222222",
+      "action": "admin.roles.permission_grant",
+      "subject": "66666666-6666-4666-8666-666666666666",
+      "detail": {
+        "permission": "manage_support"
+      },
+      "createdAt": "2026-09-01T10:00:00Z"
+    }
+  ],
+  "cases": [
+    {
+      "subjectId": "77777777-7777-4777-8777-777777777777",
+      "origin": "pattern",
+      "status": "open",
+      "firstSeenAt": "2026-09-02T10:00:00Z",
+      "lastSeenAt": "2026-09-09T22:30:00Z",
+      "resolvedAt": null,
+      "reportCount": 4,
+      "openReportCount": 4
+    },
+    {
+      "subjectId": "44444444-4444-4444-8444-444444444444",
+      "origin": "report",
+      "status": "open",
+      "firstSeenAt": "2026-09-20T13:00:00Z",
+      "lastSeenAt": "2026-09-20T13:00:00Z",
+      "resolvedAt": null,
+      "reportCount": 1,
+      "openReportCount": 1
+    },
+    {
+      "subjectId": "33333333-3333-4333-8333-333333333333",
+      "origin": "report",
+      "status": "resolved",
+      "firstSeenAt": "2026-08-01T10:00:00Z",
+      "lastSeenAt": "2026-08-03T10:00:00Z",
+      "resolvedAt": "2026-08-04T09:00:00Z",
+      "reportCount": 2,
+      "openReportCount": 0
+    }
+  ],
+  "caseReports": [
+    {
+      "id": "r-1",
+      "reporterId": "55555555-5555-4555-8555-555555555555",
+      "category": "unwanted_contact",
+      "note": "Keeps asking where I live.",
+      "status": "open",
+      "createdAt": "2026-09-02T10:00:00Z"
+    },
+    {
+      "id": "r-2",
+      "reporterId": "11111111-1111-4111-8111-111111111111",
+      "category": "harassment",
+      "note": null,
+      "status": "open",
+      "createdAt": "2026-09-05T15:20:00Z"
+    },
+    {
+      "id": "r-3",
+      "reporterId": "22222222-2222-4222-8222-222222222222",
+      "category": "inappropriate_content",
+      "note": "Avatar name is rude.",
+      "status": "open",
+      "createdAt": "2026-09-09T22:30:00Z"
+    }
+  ],
+  "emailLogs": [
+    {
+      "id": "log-3",
+      "messageId": "msg-0003-a8f2",
+      "to": "alessandro.bartolomeo.villanueva.rodriguez@example-family-domain.test",
+      "subject": "Tu hijo terminó una lección",
+      "status": "relayed",
+      "templateType": "lesson_complete",
+      "locale": "es-MX",
+      "userId": "22222222-2222-4222-8222-222222222222",
+      "detail": {
+        "provider": "courier"
+      },
+      "createdAt": "2026-09-25T18:00:00Z"
+    },
+    {
+      "id": "log-2",
+      "messageId": "msg-0002-77c1",
+      "to": "grace@example.test",
+      "subject": "Verify your email",
+      "status": "failed",
+      "templateType": "auth_confirm",
+      "locale": "en-US",
+      "detail": {
+        "error": "mailbox unavailable"
+      },
+      "createdAt": "2026-09-24T08:12:00Z"
+    },
+    {
+      "id": "log-1",
+      "to": "paula@example.test",
+      "subject": "Convite de responsável",
+      "status": "queued",
+      "templateType": "guardian_invite",
+      "locale": "pt-BR",
+      "detail": {},
+      "createdAt": "2026-09-23T21:40:00Z"
+    }
+  ],
+  "emailSummary": {
+    "total": 948,
+    "statuses": {
+      "relayed": 880,
+      "delivered": 31,
+      "failed": 22,
+      "queued": 15
+    },
+    "templates": {
+      "auth_confirm": 402,
+      "lesson_complete": 300,
+      "guardian_invite": 146,
+      "weekly_story": 100
+    },
+    "locales": {
+      "en-US": 420,
+      "es-MX": 380,
+      "pt-BR": 148
+    },
+    "trend": [
+      {
+        "date": "2026-05-30",
+        "count": 3
+      },
+      {
+        "date": "2026-05-31",
+        "count": 8
+      },
+      {
+        "date": "2026-06-01",
+        "count": 2
+      },
+      {
+        "date": "2026-06-02",
+        "count": 7
+      },
+      {
+        "date": "2026-06-03",
+        "count": 12
+      },
+      {
+        "date": "2026-06-04",
+        "count": 6
+      },
+      {
+        "date": "2026-06-05",
+        "count": 11
+      },
+      {
+        "date": "2026-06-06",
+        "count": 5
+      },
+      {
+        "date": "2026-06-07",
+        "count": 10
+      },
+      {
+        "date": "2026-06-08",
+        "count": 4
+      },
+      {
+        "date": "2026-06-09",
+        "count": 9
+      },
+      {
+        "date": "2026-06-10",
+        "count": 3
+      },
+      {
+        "date": "2026-06-11",
+        "count": 8
+      },
+      {
+        "date": "2026-06-12",
+        "count": 2
+      },
+      {
+        "date": "2026-06-13",
+        "count": 7
+      },
+      {
+        "date": "2026-06-14",
+        "count": 12
+      },
+      {
+        "date": "2026-06-15",
+        "count": 6
+      },
+      {
+        "date": "2026-06-16",
+        "count": 11
+      },
+      {
+        "date": "2026-06-17",
+        "count": 5
+      },
+      {
+        "date": "2026-06-18",
+        "count": 10
+      },
+      {
+        "date": "2026-06-19",
+        "count": 4
+      },
+      {
+        "date": "2026-06-20",
+        "count": 9
+      },
+      {
+        "date": "2026-06-21",
+        "count": 3
+      },
+      {
+        "date": "2026-06-22",
+        "count": 8
+      },
+      {
+        "date": "2026-06-23",
+        "count": 2
+      },
+      {
+        "date": "2026-06-24",
+        "count": 7
+      },
+      {
+        "date": "2026-06-25",
+        "count": 12
+      },
+      {
+        "date": "2026-06-26",
+        "count": 6
+      },
+      {
+        "date": "2026-06-27",
+        "count": 11
+      },
+      {
+        "date": "2026-06-28",
+        "count": 5
+      },
+      {
+        "date": "2026-06-29",
+        "count": 10
+      },
+      {
+        "date": "2026-06-30",
+        "count": 4
+      },
+      {
+        "date": "2026-07-01",
+        "count": 9
+      },
+      {
+        "date": "2026-07-02",
+        "count": 3
+      },
+      {
+        "date": "2026-07-03",
+        "count": 8
+      },
+      {
+        "date": "2026-07-04",
+        "count": 2
+      },
+      {
+        "date": "2026-07-05",
+        "count": 7
+      },
+      {
+        "date": "2026-07-06",
+        "count": 12
+      },
+      {
+        "date": "2026-07-07",
+        "count": 6
+      },
+      {
+        "date": "2026-07-08",
+        "count": 11
+      },
+      {
+        "date": "2026-07-09",
+        "count": 5
+      },
+      {
+        "date": "2026-07-10",
+        "count": 10
+      },
+      {
+        "date": "2026-07-11",
+        "count": 4
+      },
+      {
+        "date": "2026-07-12",
+        "count": 9
+      },
+      {
+        "date": "2026-07-13",
+        "count": 3
+      },
+      {
+        "date": "2026-07-14",
+        "count": 8
+      },
+      {
+        "date": "2026-07-15",
+        "count": 2
+      },
+      {
+        "date": "2026-07-16",
+        "count": 7
+      },
+      {
+        "date": "2026-07-17",
+        "count": 12
+      },
+      {
+        "date": "2026-07-18",
+        "count": 6
+      },
+      {
+        "date": "2026-07-19",
+        "count": 11
+      },
+      {
+        "date": "2026-07-20",
+        "count": 5
+      },
+      {
+        "date": "2026-07-21",
+        "count": 10
+      },
+      {
+        "date": "2026-07-22",
+        "count": 4
+      },
+      {
+        "date": "2026-07-23",
+        "count": 9
+      },
+      {
+        "date": "2026-07-24",
+        "count": 3
+      },
+      {
+        "date": "2026-07-25",
+        "count": 8
+      },
+      {
+        "date": "2026-07-26",
+        "count": 2
+      },
+      {
+        "date": "2026-07-27",
+        "count": 7
+      },
+      {
+        "date": "2026-07-28",
+        "count": 12
+      },
+      {
+        "date": "2026-07-29",
+        "count": 6
+      },
+      {
+        "date": "2026-07-30",
+        "count": 11
+      },
+      {
+        "date": "2026-07-31",
+        "count": 5
+      },
+      {
+        "date": "2026-08-01",
+        "count": 10
+      },
+      {
+        "date": "2026-08-02",
+        "count": 4
+      },
+      {
+        "date": "2026-08-03",
+        "count": 9
+      },
+      {
+        "date": "2026-08-04",
+        "count": 3
+      },
+      {
+        "date": "2026-08-05",
+        "count": 8
+      },
+      {
+        "date": "2026-08-06",
+        "count": 2
+      },
+      {
+        "date": "2026-08-07",
+        "count": 7
+      },
+      {
+        "date": "2026-08-08",
+        "count": 12
+      },
+      {
+        "date": "2026-08-09",
+        "count": 6
+      },
+      {
+        "date": "2026-08-10",
+        "count": 11
+      },
+      {
+        "date": "2026-08-11",
+        "count": 5
+      },
+      {
+        "date": "2026-08-12",
+        "count": 10
+      },
+      {
+        "date": "2026-08-13",
+        "count": 4
+      },
+      {
+        "date": "2026-08-14",
+        "count": 9
+      },
+      {
+        "date": "2026-08-15",
+        "count": 3
+      },
+      {
+        "date": "2026-08-16",
+        "count": 8
+      },
+      {
+        "date": "2026-08-17",
+        "count": 2
+      },
+      {
+        "date": "2026-08-18",
+        "count": 7
+      },
+      {
+        "date": "2026-08-19",
+        "count": 12
+      },
+      {
+        "date": "2026-08-20",
+        "count": 6
+      },
+      {
+        "date": "2026-08-21",
+        "count": 11
+      },
+      {
+        "date": "2026-08-22",
+        "count": 5
+      },
+      {
+        "date": "2026-08-23",
+        "count": 10
+      },
+      {
+        "date": "2026-08-24",
+        "count": 4
+      },
+      {
+        "date": "2026-08-25",
+        "count": 9
+      },
+      {
+        "date": "2026-08-26",
+        "count": 3
+      },
+      {
+        "date": "2026-08-27",
+        "count": 8
+      },
+      {
+        "date": "2026-08-28",
+        "count": 2
+      },
+      {
+        "date": "2026-08-29",
+        "count": 7
+      },
+      {
+        "date": "2026-08-30",
+        "count": 12
+      },
+      {
+        "date": "2026-08-31",
+        "count": 6
+      },
+      {
+        "date": "2026-09-01",
+        "count": 11
+      },
+      {
+        "date": "2026-09-02",
+        "count": 5
+      },
+      {
+        "date": "2026-09-03",
+        "count": 10
+      },
+      {
+        "date": "2026-09-04",
+        "count": 4
+      },
+      {
+        "date": "2026-09-05",
+        "count": 9
+      },
+      {
+        "date": "2026-09-06",
+        "count": 3
+      },
+      {
+        "date": "2026-09-07",
+        "count": 8
+      },
+      {
+        "date": "2026-09-08",
+        "count": 2
+      },
+      {
+        "date": "2026-09-09",
+        "count": 7
+      },
+      {
+        "date": "2026-09-10",
+        "count": 12
+      },
+      {
+        "date": "2026-09-11",
+        "count": 6
+      },
+      {
+        "date": "2026-09-12",
+        "count": 11
+      },
+      {
+        "date": "2026-09-13",
+        "count": 5
+      },
+      {
+        "date": "2026-09-14",
+        "count": 10
+      },
+      {
+        "date": "2026-09-15",
+        "count": 4
+      },
+      {
+        "date": "2026-09-16",
+        "count": 9
+      },
+      {
+        "date": "2026-09-17",
+        "count": 3
+      },
+      {
+        "date": "2026-09-18",
+        "count": 8
+      },
+      {
+        "date": "2026-09-19",
+        "count": 2
+      },
+      {
+        "date": "2026-09-20",
+        "count": 7
+      },
+      {
+        "date": "2026-09-21",
+        "count": 12
+      },
+      {
+        "date": "2026-09-22",
+        "count": 6
+      },
+      {
+        "date": "2026-09-23",
+        "count": 11
+      },
+      {
+        "date": "2026-09-24",
+        "count": 5
+      },
+      {
+        "date": "2026-09-25",
+        "count": 10
+      },
+      {
+        "date": "2026-09-26",
+        "count": 4
+      }
+    ]
+  }
+}

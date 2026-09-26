@@ -15,15 +15,21 @@ import { STAFF_ROUTE_GRANTS, type StaffRouteGrant } from './staffGrants';
  * (RouteErrorBoundary), because a lazy chunk can fail to arrive right after a
  * deploy, and an unhandled rejection inside Suspense is a blank page.
  */
-const AdminOverviewPage = lazy(() => import('@/routes/admin/AdminOverviewPage').then((m) => ({ default: m.AdminOverviewPage })));
+/*
+ * W2T.1: Overview, Users, Emails, Audit log, Reports and Roles & Access are
+ * the rebuilt console screens (./staffConsole.tsx hosts them); the other
+ * sections are still legacy page bodies until this lane rebuilds them.
+ */
+const loadConsole = () => import('./staffConsole');
+const StaffOverviewRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffOverviewRoute })));
+const StaffUsersRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffUsersRoute })));
+const StaffEmailsRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffEmailsRoute })));
+const StaffAuditRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffAuditRoute })));
+const StaffReportsRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffReportsRoute })));
+const StaffRolesRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffRolesRoute })));
 const AdminContentPage = lazy(() => import('@/routes/admin/AdminContentPage').then((m) => ({ default: m.AdminContentPage })));
-const AdminEmailDashboard = lazy(() => import('@/routes/admin/AdminEmailDashboard').then((m) => ({ default: m.AdminEmailDashboard })));
 const AdminInsightsPage = lazy(() => import('@/routes/admin/AdminInsightsPage').then((m) => ({ default: m.AdminInsightsPage })));
 const AdminIntelPage = lazy(() => import('@/routes/admin/AdminIntelPage').then((m) => ({ default: m.AdminIntelPage })));
-const AdminUsersPage = lazy(() => import('@/routes/admin/AdminUsersPage').then((m) => ({ default: m.AdminUsersPage })));
-const AdminAuditPage = lazy(() => import('@/routes/admin/AdminAuditPage').then((m) => ({ default: m.AdminAuditPage })));
-const AdminReportsPage = lazy(() => import('@/routes/admin/AdminReportsPage').then((m) => ({ default: m.AdminReportsPage })));
-const AdminRolesPage = lazy(() => import('@/routes/admin/AdminRolesPage').then((m) => ({ default: m.AdminRolesPage })));
 const AnalyticsHealthPage = lazy(() => import('@/routes/admin/AnalyticsHealthPage').then((m) => ({ default: m.AnalyticsHealthPage })));
 const AdminGenerationPage = lazy(() => import('@/routes/admin/AdminGenerationPage').then((m) => ({ default: m.AdminGenerationPage })));
 
@@ -32,17 +38,17 @@ export const STAFF_ROLES = ['admin', 'superadmin'];
 
 /** The page of each console section (./staffGrants.ts ids). */
 export const STAFF_PAGES: Readonly<Record<string, ReactNode>> = {
-  overview: <AdminOverviewPage />,
+  overview: <StaffOverviewRoute />,
   content: <AdminContentPage />,
-  users: <AdminUsersPage />,
-  emails: <AdminEmailDashboard />,
+  users: <StaffUsersRoute />,
+  emails: <StaffEmailsRoute />,
   insights: <AdminInsightsPage />,
   intel: <AdminIntelPage />,
   analytics: <AnalyticsHealthPage />,
   generation: <AdminGenerationPage />,
-  audit: <AdminAuditPage />,
-  reports: <AdminReportsPage />,
-  roles: <AdminRolesPage />,
+  audit: <StaffAuditRoute />,
+  reports: <StaffReportsRoute />,
+  roles: <StaffRolesRoute />,
 };
 
 /*

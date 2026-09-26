@@ -206,5 +206,408 @@
         "parent_time_to_value": "Parent time to the weekly story"
       }
     }
+  },
+  "staffConsole": {
+    "common": {
+      "action": {
+        "retry": "Try again",
+        "retrying": "Trying again",
+        "open": "Open",
+        "close": "Close",
+        "copyId": "Copy ID",
+        "clearFilters": "Clear filters",
+        "previous": "Previous",
+        "next": "Next",
+        "refresh": "Refresh",
+        "cancel": "Cancel"
+      },
+      "heading": {
+        "loadFailed": "This did not load",
+        "refused": "No access to this",
+        "offline": "You are offline"
+      },
+      "body": {
+        "loading": "Loading.",
+        "loadFailed": "Core did not answer.",
+        "refused": "Your staff access changed. Ask a superadmin.",
+        "offline": "Reconnect to see current data.",
+        "offlineNotice": "You are offline. These numbers may be out of date.",
+        "notAvailable": "Not available",
+        "system": "System",
+        "copied": "Copied.",
+        "copyFailed": "Could not copy. Select the text instead.",
+        "noMatch": "Nothing matches these filters.",
+        "pageRange": "{start} to {end} of {total}",
+        "actionFailed": "That did not save. Try again.",
+        "details": "Details",
+        "years": "{n} years"
+      }
+    },
+    "roleNames": {
+      "option": {
+        "superadmin": "Superadmin",
+        "admin": "Admin",
+        "bigfounder": "Bigfounder",
+        "parent": "Tutor",
+        "kid": "Child",
+        "universal": "Universal",
+        "all": "All roles"
+      }
+    },
+    "permissions": {
+      "option": {
+        "manage_users": "Manage users",
+        "manage_content": "Manage content",
+        "view_analytics": "View analytics",
+        "manage_support": "Manage support"
+      },
+      "body": {
+        "manage_users": "Users and the Mentor-quality owners.",
+        "manage_content": "Content, generation and review queues.",
+        "view_analytics": "Analytics, learning intel and service health.",
+        "manage_support": "Emails, the audit log and reports."
+      }
+    },
+    "chart": {
+      "option": {
+        "daily": "Daily",
+        "cumulative": "Cumulative",
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days",
+        "1y": "1 year",
+        "all": "All"
+      },
+      "body": {
+        "metric": "Show",
+        "period": "Period",
+        "average": "Daily average",
+        "peak": "Peak day",
+        "change": "First to last day",
+        "range": "{from} to {to}",
+        "point": "{date}: {n}",
+        "empty": "No data for this period.",
+        "averageLine": "Average"
+      }
+    },
+    "overview": {
+      "heading": {
+        "people": "People",
+        "content": "Content",
+        "support": "Support",
+        "health": "Service health",
+        "retention": "What learners remember",
+        "sections": "Your sections",
+        "roles": "Accounts by role"
+      },
+      "body": {
+        "intro": "What your access opens today.",
+        "accounts": "Accounts",
+        "staff": "Staff",
+        "coursesLive": "Courses live",
+        "lessonsReview": "Lessons in review",
+        "lessonsLive": "Lessons live",
+        "auditEvents": "Audit events",
+        "courses": "Courses",
+        "lessons": "Lessons",
+        "reviewQueue": "{n} lessons wait for review.",
+        "noRoles": "No accounts yet.",
+        "allUp": "Every service answers.",
+        "someDown": "{n} services are not answering.",
+        "healthUnconfigured": "Health monitoring is not set up here.",
+        "healthFailed": "Service health did not load.",
+        "retentionIntro": "First-try scores on review lessons, by days since practice.",
+        "retentionBucket": "{bucket} days later",
+        "retentionTries": "{n} tries",
+        "weakest": "Weakest topics",
+        "retentionEmpty": "No review attempts yet.",
+        "retentionFailed": "Retention did not load.",
+        "up": "Answering",
+        "down": "Not answering",
+        "noMonitors": "No services are monitored yet.",
+        "content": "Courses, lessons and the review queue.",
+        "users": "Accounts, verification and signups.",
+        "emails": "Delivery history and failures.",
+        "analytics": "Usage, health and exports.",
+        "intel": "Learning and product signals.",
+        "generation": "Course generation runs.",
+        "audit": "Every privileged action, in order.",
+        "reports": "Reports and automatic pattern cases.",
+        "roles": "Roles and staff access."
+      },
+      "option": {
+        "published": "Published",
+        "review": "In review",
+        "draft": "Draft",
+        "archived": "Archived"
+      },
+      "action": {
+        "review": "Review lessons",
+        "manageRoles": "Manage roles",
+        "details": "Health details"
+      }
+    },
+    "users": {
+      "heading": {
+        "byRole": "By role",
+        "byLanguage": "By language",
+        "byAge": "By age",
+        "funnel": "Visitors who became accounts",
+        "signups": "New accounts",
+        "people": "People",
+        "verification": "Parent verification",
+        "revoke": "Revoke verification",
+        "confirm": "Revoke this verification?"
+      },
+      "body": {
+        "intro": "Every account, its role and its verification.",
+        "total": "Accounts",
+        "children": "Children",
+        "tutors": "Tutors",
+        "staff": "Staff",
+        "funnelWindow": "Last {n} days.",
+        "visitors": "Visitors",
+        "registered": "Accounts",
+        "rate": "Accounts per visitor",
+        "funnelAgree": "Server and browser counts agree.",
+        "funnelGap": "Browser analytics missed {n} of these accounts.",
+        "funnelBar": "{accounts} accounts from {visitors} visitors",
+        "noAges": "No birth dates yet.",
+        "count": "{shown} of {total} accounts",
+        "empty": "No accounts yet.",
+        "search": "Search by name, username or ID",
+        "role": "Role",
+        "name": "Name",
+        "username": "Username",
+        "roles": "Roles",
+        "language": "Language",
+        "verificationCol": "Verification",
+        "joined": "Joined",
+        "unnamed": "Unnamed account",
+        "userId": "User ID",
+        "age": "Age",
+        "birthDate": "Birth date",
+        "readOnly": "Opening details changes nothing.",
+        "signups": "Signups",
+        "reasonLabel": "Reason",
+        "reasonHelp": "10 to 300 characters. It goes to the audit log.",
+        "consequence": "{name} loses verified status. The reason is audited.",
+        "revoked": "Verification revoked.",
+        "revokeFailed": "Could not revoke. Try again.",
+        "noVerification": "This account has no parent verification."
+      },
+      "option": {
+        "id-verified": "ID-verified",
+        "staff-granted": "Staff-granted",
+        "revoked": "Revoked",
+        "none": "None",
+        "en-US": "English",
+        "es-MX": "Spanish",
+        "pt-BR": "Portuguese",
+        "lt6": "Under 6",
+        "6-8": "6 to 8",
+        "9-10": "9 to 10",
+        "11-12": "11 to 12",
+        "13-17": "13 to 17",
+        "18+": "18 and over"
+      },
+      "action": {
+        "revoke": "Revoke verification",
+        "keep": "Keep it",
+        "revoking": "Revoking"
+      }
+    },
+    "access": {
+      "heading": {
+        "distribution": "Grants by role",
+        "review": "Access review",
+        "grant": "Grant a role",
+        "holders": "Role holders",
+        "find": "Find a person",
+        "roles": "Roles",
+        "permissions": "Staff access",
+        "history": "Grant history",
+        "confirm": "Remove this role?"
+      },
+      "body": {
+        "intro": "Grant roles and staff access. Every change is audited.",
+        "holdersCount": "People with roles",
+        "assignments": "Role grants",
+        "superadmins": "Superadmins",
+        "permissionGrants": "Staff access grants",
+        "lastChange": "Last change: {date}",
+        "reviewDue": "{n} grants are over 90 days old. Confirm each one.",
+        "reviewNone": "No grant is older than 90 days.",
+        "reviewRow": "{role}, granted {date}",
+        "userId": "User ID",
+        "userIdHelp": "Paste an ID or find the person.",
+        "userIdInvalid": "Enter a full user ID.",
+        "role": "Role",
+        "justification": "Justification",
+        "justificationHelp": "Required for Tutor: 10 to 200 characters. It is audited.",
+        "granted": "{role} granted.",
+        "rejected": "The database refused this change.",
+        "grantFailed": "Could not grant the role. Try again.",
+        "searchPeople": "Name or username",
+        "searchHelp": "Type at least 2 characters.",
+        "noPeople": "No one matches.",
+        "searching": "Searching.",
+        "search": "Search role holders",
+        "count": "{n} people",
+        "empty": "No one holds a role yet.",
+        "name": "Name",
+        "username": "Username",
+        "rolesCol": "Roles",
+        "access": "Staff access",
+        "changed": "Last change",
+        "grants": "{n} grants",
+        "noGrants": "No grants",
+        "superadminAll": "Superadmins open every section.",
+        "on": "On",
+        "off": "Off",
+        "accessSaved": "Staff access updated.",
+        "grantedBy": "Granted by {id}",
+        "systemGrant": "Granted by the system",
+        "removed": "{role} removed.",
+        "removeConsequence": "{name} loses the {role} role now.",
+        "staffOnly": "Staff access applies to admins only."
+      },
+      "action": {
+        "find": "Find a person",
+        "grant": "Grant role",
+        "granting": "Granting",
+        "choose": "Choose",
+        "manage": "Manage",
+        "remove": "Remove {role}",
+        "keep": "Keep role",
+        "confirmRemove": "Remove role",
+        "removing": "Removing"
+      }
+    },
+    "audit": {
+      "heading": {
+        "filters": "Filters",
+        "events": "Events",
+        "event": "Audit event"
+      },
+      "body": {
+        "intro": "Every privileged action. Records never change.",
+        "total": "Events",
+        "onPage": "On this page",
+        "actors": "People on this page",
+        "latest": "Latest event",
+        "search": "Search this page",
+        "action": "Action",
+        "actor": "Actor ID",
+        "actorInvalid": "Enter a full user ID.",
+        "subject": "Subject",
+        "from": "From",
+        "to": "To",
+        "dateInvalid": "From must come before To.",
+        "when": "When",
+        "empty": "No events yet.",
+        "immutable": "This record cannot be changed.",
+        "eventId": "Event ID",
+        "detail": "Detail",
+        "noDetail": "No detail.",
+        "activeFilters": "{n} filters on."
+      },
+      "option": {
+        "all": "All actions"
+      },
+      "action": {
+        "apply": "Apply filters",
+        "copyActor": "Copy actor ID",
+        "filters": "Filters"
+      }
+    },
+    "reports": {
+      "heading": {
+        "cases": "Cases",
+        "case": "Report case",
+        "confirm": "Resolve this case?"
+      },
+      "body": {
+        "intro": "Reports and automatic pattern cases. Each needs a decision.",
+        "open": "Open cases",
+        "pattern": "Pattern cases",
+        "openReports": "Open reports",
+        "status": "Status",
+        "account": "Account",
+        "origin": "Origin",
+        "reports": "Open reports",
+        "lastSeen": "Last report",
+        "empty": "No reports to review.",
+        "counts": "{open} open of {total} reports",
+        "reporter": "Reporter {id}",
+        "noReports": "No reports on this case.",
+        "patternHelp": "Opened automatically after reports from 3 children in 30 days.",
+        "consequence": "The case closes. Your decision goes to the audit log.",
+        "resolved": "Case resolved.",
+        "resolveFailed": "Could not resolve. Try again."
+      },
+      "option": {
+        "all": "All cases",
+        "open": "Open",
+        "resolved": "Resolved",
+        "report": "Report",
+        "pattern": "Pattern",
+        "unwanted_contact": "Unwanted contact",
+        "harassment": "Harassment",
+        "inappropriate_content": "Inappropriate content",
+        "impersonation": "Impersonation",
+        "other": "Other"
+      },
+      "action": {
+        "resolve": "Resolve case",
+        "keep": "Keep open",
+        "resolving": "Resolving"
+      }
+    },
+    "emails": {
+      "heading": {
+        "trend": "Emails per day",
+        "statuses": "By status",
+        "templates": "By template",
+        "languages": "By language",
+        "history": "History",
+        "email": "Email"
+      },
+      "body": {
+        "intro": "Transactional email delivery, newest first.",
+        "total": "Sent",
+        "success": "Relayed or delivered",
+        "failed": "Failed",
+        "failureRate": "Failure rate",
+        "pending": "Pending",
+        "templates": "Templates",
+        "window": "Last 365 days.",
+        "emails": "Emails",
+        "search": "Search recipient or subject",
+        "status": "Status",
+        "template": "Template",
+        "logsFailed": "The history did not load.",
+        "summaryFailed": "The totals did not load.",
+        "to": "To",
+        "subject": "Subject",
+        "language": "Language",
+        "sent": "Sent",
+        "messageId": "Message ID",
+        "userId": "User ID",
+        "detail": "Detail",
+        "noSubject": "No subject",
+        "empty": "No emails sent yet.",
+        "trendUnavailable": "The daily trend is not available.",
+        "share": "{n} · {share}"
+      },
+      "option": {
+        "allStatuses": "All statuses",
+        "allTemplates": "All templates",
+        "queued": "Queued",
+        "relayed": "Relayed",
+        "delivered": "Delivered",
+        "failed": "Failed"
+      }
+    }
   }
 }
