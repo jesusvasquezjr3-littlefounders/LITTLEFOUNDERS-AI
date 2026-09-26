@@ -4,7 +4,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writ
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkSocialTiers } from './check-social-tiers.mjs';
+import { SOCIAL_SCREENS, checkSocialTiers } from './check-social-tiers.mjs';
 
 /*
  * The E.8/E.9/E.13 guardrail must pass on the real tree and fail on each
@@ -17,9 +17,7 @@ const FILES = [
   'backend/src/routes/profile.ts',
   'backend/src/services/socialVisibility.ts',
   'backend/src/services/profileFieldSafety.ts',
-  'frontend/src/rebuild/account/OwnProfile.tsx',
-  'frontend/src/routes/app/profile/OwnProfileRoute.tsx',
-  'frontend/src/routes/app/profile/PublicProfilePage.tsx',
+  ...SOCIAL_SCREENS,
   'database/scripts/fixtures/profile-field-safety-cases.json',
   'docs/rebuild/policies/SOCIAL-TIERS.md',
 ];
@@ -64,9 +62,14 @@ test('E.9: a count read back into the profile route fails', () => {
   withFixture((root) => edit(root, 'backend/src/routes/profile.ts', '  getFullOwnProfile,\n', '  getFollowCounts,\n  getFullOwnProfile,\n'), /reads follower\/following counts/);
 });
 
-test('E.9: a count rendered on the public page fails', () => {
-  withFixture((root) => edit(root, 'frontend/src/routes/app/profile/PublicProfilePage.tsx',
-    "{t('profile.stats.followers')}</Button>", "{t('profile.stats.followers')} {data.followers}</Button>"), /renders a follower\/following count/);
+test('E.9: a count rendered on the public profile fails', () => {
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/PublicProfile.tsx',
+    '{copy.followers}</AppLink>', '{copy.followers} {person.followers}</AppLink>'), /PublicProfile\.tsx: renders a follower\/following count/);
+});
+
+test('E.9: a count rendered on a people list fails', () => {
+  withFixture((root) => edit(root, 'frontend/src/rebuild/social/PeopleList.tsx',
+    '<h1 data-copy-role="heading">{title}</h1>', '<h1 data-copy-role="heading">{title} {view.followersCount}</h1>'), /PeopleList\.tsx: renders a follower\/following count/);
 });
 
 test('E.9: a count rendered on the rebuilt own profile fails', () => {

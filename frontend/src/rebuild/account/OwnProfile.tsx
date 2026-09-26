@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Art, Button, Card, DashboardLayout, ErrorState, InlineNotice, LoadingState, Pill } from '../design/controls';
 import { CartoonAvatar, CoverArt } from './avatar/CartoonAvatar';
 import type { AvatarLook, CoverId } from './avatar/avatarKit';
 import { AppLink } from './navLink';
+import { useCarryHeadingFocus } from '../social/headingFocus';
 import '../design/tokens.css';
 import '../design/system.css';
 import './account.css';
@@ -88,7 +89,10 @@ export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite =
   onRetry: () => void;
   onCopyInvite: (text: string) => void;
 }) {
-  return <div className="lf-rebuild lf-account-screen" data-screen="own-profile" data-theme={dark ? 'dark' : 'light'} lang={locale}
+  const root = useRef<HTMLDivElement>(null);
+  // The loading heading gives way to the person's name: route focus follows it (W2P.2).
+  useCarryHeadingFocus(root, view.kind);
+  return <div ref={root} className="lf-rebuild lf-account-screen" data-screen="own-profile" data-theme={dark ? 'dark' : 'light'} lang={locale}
     data-age-band={ageBand} aria-busy={view.kind === 'loading'}>
     {view.kind === 'loading' ? <>
       <header className="lf-account-header"><h1 data-copy-role="heading">{copy.title}</h1></header>

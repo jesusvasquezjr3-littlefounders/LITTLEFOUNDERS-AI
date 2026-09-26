@@ -4,7 +4,8 @@ import { app, preview } from './helpers.mjs';
  * Lane 5 (profile): profile, social, settings and the account.
  *
  * W2P.1: the rebuilt own profile (P1), look editor (P2) and Settings (P3) on
- * their real routes, for every population they serve (every minor safeguard
+ * their real routes; W2P.2: other people's profiles (P6) and the four people
+ * lists (P4, P5, P7, P8), for every population they serve (every minor safeguard
  * follows age, not role): an adult, a verified parent (the Tutor console), an
  * independent teen (OD-3 Option B, E.8) with an E.13-flagged handle, a
  * parent-created child aged 6-9 (A.6, the youngest copy budget) and a guest.
@@ -32,10 +33,34 @@ export const states = [
   app('/profile/settings@kid-6-9', '/profile/settings', 'profile-kid', '[data-screen="settings"][data-age-band="6-9"] [data-field="username"]',
     { readyAlso: ['.lf-disposition dl', '.lf-account-deletion'] }),
   app('/profile/settings@guest', '/profile/settings', 'profile-guest', '[data-screen="settings"] .lf-card--primary', { readyAlso: ['.lf-account-deletion'] }),
+  // W2P.2, P6 /@username: another person's profile, as each population sees it (Core decides the tier and the connection mode).
+  app('/@marta@adult', '/@marta', 'profile-adult', '[data-screen="public-profile"] .lf-profile-stats', { readyAlso: '[data-screen="public-profile"] .lf-profile-badge' }),
+  app('/@marta@tutor', '/@marta', 'profile-tutor', '[data-screen="public-profile"] .lf-profile-names .lf-pill'),
+  app('/@marta@kid-6-9', '/@marta', 'profile-kid', '[data-screen="public-profile"][data-age-band="6-9"] .lf-profile-connect-note'),
+  app('/@rio_montes@adult', '/@rio_montes', 'profile-adult', '[data-screen="public-profile"] .lf-profile-connect .lf-button--accent'),
+  app('/@rio_montes@kid-6-9', '/@rio_montes', 'profile-kid', '[data-screen="public-profile"][data-age-band="6-9"] .lf-profile-connect-note'),
+  app('/@maria_fernanda_22@self', '/@maria_fernanda_22', 'profile-adult', '[data-screen="public-profile"] .lf-profile-actions a[href="/profile"]'),
+  app('/@vanished@adult', '/@vanished', 'profile-adult', '[data-screen="public-profile"] .lf-account-state a'),
+  // P4, P5, P7, P8: the people lists.
+  app('/profile/followers@adult', '/profile/followers', 'profile-adult', '[data-screen="people-list"] .lf-people-row'),
+  app('/profile/followers@teen', '/profile/followers', 'profile-teen', '[data-screen="people-list"] .lf-people-row button'),
+  app('/profile/followers@kid-6-9', '/profile/followers', 'profile-kid', '[data-screen="people-list"][data-age-band="6-9"] .lf-people-row'),
+  app('/profile/following@adult', '/profile/following', 'profile-adult', '[data-screen="people-list"] .lf-people-row button'),
+  app('/profile/following@guest', '/profile/following', 'profile-guest', '[data-screen="people-list"] .lf-state'),
+  app('/@marta/followers@adult', '/@marta/followers', 'profile-adult', '[data-screen="people-list"][data-owner="other"] .lf-people-row'),
+  app('/@marta/following@kid-6-9', '/@marta/following', 'profile-kid', '[data-screen="people-list"][data-owner="other"] .lf-people-row'),
   // States only a failure reaches, from fixtures.
   ...['loading', 'failed', 'offline', 'noUsername', 'noBadges', 'copied'].map((state) => preview(`own-profile@${state}`, { screen: 'own-profile', state })),
   ...['saving', 'failed', 'loadFailed', 'offline'].map((state) => preview(`look-editor@${state}`, { screen: 'look-editor', state })),
   ...['editing', 'errors', 'loading', 'failed'].map((state) => preview(`account-settings@${state}`, { screen: 'account-settings', state })),
+  ...['childSubject', 'asked', 'privateAsked', 'followFailed', 'askFailed', 'reported', 'blockFailed', 'noBadges', 'loading', 'failed', 'offline']
+    .map((state) => preview(`public-profile@${state}`, { screen: 'public-profile', state })),
+  // The three dialogs of P6: the report, the block confirmation and the confirmation before leaving a child's or a private teen's profile.
+  preview('public-profile@report-dialog', { screen: 'public-profile', state: 'adult' }, { open: ['[data-screen="public-profile"] .lf-card button[aria-haspopup="dialog"]:not(.lf-button--danger)'] }),
+  preview('public-profile@block-dialog', { screen: 'public-profile', state: 'adult' }, { open: ['[data-screen="public-profile"] .lf-button--danger'] }),
+  preview('public-profile@leave-dialog', { screen: 'public-profile', state: 'childFollowed' }, { open: ['[data-screen="public-profile"] .lf-profile-actions .lf-button--secondary'] }),
+  ...['unfollowed', 'unfollowFailed', 'emptyOwn', 'emptyPublic', 'unavailable', 'loading', 'failed', 'offline']
+    .map((state) => preview(`people-list@${state}`, { screen: 'people-list', state })),
 ];
 
 const BADGES = [
@@ -72,6 +97,30 @@ export const scenarios = {
       social: { tier: 'closed', privateProfile: true }, avatarOptions: {} }), deletion: 'guest' },
 };
 
+const PEOPLE = [
+  { userId: '71111111-1111-4111-8111-111111111111', displayName: 'Bartolomeo Alessandro Rodríguez Villanueva', username: 'bartolomeo_villa', avatarOptions: LOOK, isTutor: false },
+  { userId: '72222222-2222-4222-8222-222222222222', displayName: 'Jesús Vásquez', username: 'jesus_v', avatarOptions: {}, isTutor: true },
+  { userId: '73333333-3333-4333-8333-333333333333', displayName: 'Luz', username: 'luz', avatarOptions: { top: ['bun'], hairColor: ['c93305'] }, isTutor: false },
+];
+const publicShape = (profile) => ({ displayName: profile.displayName, username: profile.username, cover: profile.cover, avatarOptions: profile.avatarOptions,
+  memberSince: '2026-01-10T00:00:00Z', learningStats: { ...profile.learningStats, lastActiveDate: null }, courseBadges: profile.courseBadges });
+/*
+ * The other people a viewer may open. `marta` is an adult, a verified parent whose Tutor pill Core shows only inside an
+ * established relationship (E.5: here, the Tutor viewer's mutual follow); `rio_montes` an independent teen who has not
+ * accepted the viewer (E.8's private card).
+ */
+const SUBJECTS = {
+  marta: (tier, spec) => {
+    const tutorViewer = (spec.roles ?? []).includes('parent');
+    return { visibility: 'full', ...publicShape({ displayName: 'Marta Solís Echeverría', username: 'marta', cover: { preset: 'sunset' },
+      avatarOptions: { skinColor: ['ae5d29'], top: ['bob'], hairColor: ['2c1b18'], clothing: ['blazerAndShirt'], clothesColor: ['25557c'] },
+      learningStats: { xpPoints: 3120, minutesLearned: 410, lessonsCompleted: 22, streakDays: 5 }, courseBadges: BADGES.slice(0, 1) }),
+    isFollowing: tutorViewer, requiresGuardianApproval: false, connection: tier === 'guardian' ? 'managed' : 'follow', isSelf: false, isTutor: tutorViewer };
+  },
+  rio_montes: (tier) => ({ visibility: 'private', username: 'rio_montes', cover: { preset: 'grape' }, avatarOptions: { top: ['shortCurly'], clothing: ['hoodie'] },
+    isSelf: false, isFollowing: false, requiresGuardianApproval: false, connection: tier === 'guardian' ? 'managed' : 'teenRequest', requestPending: false }),
+};
+
 const MEMORY_NOTE = { 'en-US': 'Saving for a bike.', 'es-MX': 'Ahorra para una bici.', 'pt-BR': 'Poupa para uma bicicleta.' };
 const refuse = (status, code) => ({ status, body: { data: null, error: { code, message: 'Synthetic refusal' } } });
 
@@ -96,7 +145,22 @@ export function respond({ spec, locale, path, request, ok }) {
   }
   if (path === '/profile/connection-requests' && request.method === 'GET') return ok({ nextOffset: null, requests: spec.teenRequests
     ? [{ requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', requester: { username: 'omar_valdes_rios', displayName: 'Omar Alejandro Valdés' } }] : [] });
-  if (path === '/profile/followers' && request.method === 'GET') return ok({ users: [] });
+  // W2P.2: the people lists and other people's profiles, answered by the viewer's tier as Core would (E.1, E.5, E.8, E.9).
+  const viewerTier = spec.profile?.social?.tier ?? 'adult';
+  if ((path === '/profile/followers' || path === '/profile/following') && request.method === 'GET') {
+    if (viewerTier === 'closed') return ok({ users: [] });
+    return ok({ users: path.endsWith('followers') ? PEOPLE : PEOPLE.slice(0, 2) });
+  }
+  const profileMatch = /^\/profiles\/([a-z0-9_]+)(?:\/(followers|following))?$/.exec(path);
+  if (profileMatch && request.method === 'GET') {
+    const [, handle, list] = profileMatch;
+    const self = handle === spec.profile?.username;
+    // A guest has no social layer, and a vanished handle is one NOT_FOUND, never saying why.
+    if (viewerTier === 'closed' || !(self || handle in SUBJECTS)) return refuse(404, 'NOT_FOUND');
+    if (list) return handle === 'rio_montes' ? refuse(404, 'NOT_FOUND') : ok({ users: list === 'followers' ? PEOPLE : PEOPLE.slice(1) });
+    if (self) return ok({ visibility: 'full', ...publicShape(spec.profile), isFollowing: false, requiresGuardianApproval: false, connection: 'none', isSelf: true, isTutor: false });
+    return ok(SUBJECTS[handle](viewerTier, spec));
+  }
   if (path === '/profile' && request.method === 'PATCH') return ok({ updated: true });
   if ((path === '/profile/avatar' || path === '/profile/cover') && request.method === 'PUT') return ok({ updated: true });
   return undefined;

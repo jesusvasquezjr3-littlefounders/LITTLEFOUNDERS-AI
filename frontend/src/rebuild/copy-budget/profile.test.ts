@@ -7,16 +7,10 @@ describe('rebuild-profile copy budget', () => {
   for (const [locale, strings] of namespaceCopy('profile')) {
     const group = (name: string) => Object.entries(strings[name] as Record<string, string>);
     it(`fits its budgets in ${locale}`, () => {
-      expectBudgetedGroups(strings, ['analyticsChoice', 'socialRequest', 'socialRequestTeen', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings']);
+      expectBudgetedGroups(strings, ['analyticsChoice', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings', 'publicProfile', 'report', 'peopleList']);
       for (const [key, text] of group('analyticsChoice')) {
         const role = key === 'title' ? 'heading' : key === 'label' ? 'option' : ['on', 'off', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '13-17', `analyticsChoice.${key}`);
-      }
-      for (const [key, text] of group('socialRequest')) {
-        expectFits(text, key === 'action' || key === 'saving' ? 'action' : 'body', locale, '13-17', `socialRequest.${key}`);
-      }
-      for (const [key, text] of group('socialRequestTeen')) {
-        expectFits(text, key === 'action' || key === 'saving' ? 'action' : 'body', locale, '13-17', `socialRequestTeen.${key}`);
       }
       // E.8: a child can land on a private teen's card, so it is budgeted for the youngest band.
       for (const [key, text] of group('privateProfile')) {
@@ -64,6 +58,23 @@ describe('rebuild-profile copy budget', () => {
             'showPassword', 'hidePassword', 'unblock', 'unblocking'].includes(path) ? 'action'
             : path.startsWith('languages.') ? 'option' : 'body';
         expectFits(text.replace('{email}', 'ana@example.com'), role, locale, '6-9', `settings.${path}`);
+      }
+      // W2P.2 (P4-P8): a child opens other people's profiles, its own lists and the report, so the youngest band applies.
+      for (const [key, text] of group('publicProfile')) {
+        const role = ['title', 'unavailableTitle', 'failedTitle', 'offlineTitle', 'leaveTitle', 'privateTitle', 'peopleTitle', 'progressTitle', 'badgesTitle',
+          'safetyTitle', 'blockTitle'].includes(key) ? 'heading'
+          : ['home', 'retry', 'retrying', 'editMine', 'follow', 'unfollow', 'saving', 'leaveKeep', 'leaveConfirm', 'ask', 'asking', 'followers', 'following',
+            'report', 'block', 'blockKeep', 'blockConfirm', 'blocking'].includes(key) ? 'action' : 'body';
+        expectFits(text.replace('{date}', 'September 2026'), role, locale, '6-9', `publicProfile.${key}`);
+      }
+      for (const [path, text] of flatten(strings.report!)) {
+        const role = path === 'title' ? 'heading' : ['send', 'sending', 'cancel'].includes(path) ? 'action' : path.startsWith('categories.') ? 'option' : 'body';
+        expectFits(text, role, locale, '6-9', `report.${path}`);
+      }
+      for (const [key, text] of group('peopleList')) {
+        const role = ['followersTitle', 'followingTitle', 'failedTitle', 'offlineTitle', 'unavailableTitle', 'emptyFollowers', 'emptyFollowing', 'emptyPublic', 'closedTitle'].includes(key) ? 'heading'
+          : ['back', 'retry', 'retrying', 'unfollow', 'unfollowing', 'remove', 'removing'].includes(key) ? 'action' : 'body';
+        expectFits(text, role, locale, '6-9', `peopleList.${key}`);
       }
     });
   }

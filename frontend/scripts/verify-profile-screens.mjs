@@ -6,8 +6,9 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
 import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/synthetic-core.mjs';
 
 /*
- * W2P.1 (profile lane): the rebuilt own profile (P1), look editor (P2) and
- * Settings (P3) on their REAL routes, in real Chrome, for every population
+ * W2P.1 and W2P.2 (profile lane): the rebuilt own profile (P1), look editor
+ * (P2), Settings (P3), people lists (P4, P5, P7, P8) and other people's
+ * profiles (P6) on their REAL routes, in real Chrome, for every population
  * each screen serves, signed in with a synthetic session and answered by the
  * synthetic Core (scripts/audits/synthetic-core.mjs and the lane's
  * scripts/audits/lanes/profile.mjs; nothing leaves the machine).
@@ -29,10 +30,21 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
  *     sign-in rows for a guest, H.1/OD-18 panels for the independent teen;
  *   - the keyboard path: from the skip link, Tab reaches the screen's first
  *     control and the focused control shows a visible focus ring;
+ *   - W2P.2: E.9 on P6 (no digit in the followers-and-following card, which is
+ *     not inside the progress card) and on the lists (no number outside the
+ *     handles); E.5 (the Tutor pill exactly where Core's fixture says); E.8
+ *     (the private teen's card with one ask, the child viewer's Tutor line and
+ *     no way to connect); E.3 (Report and Block on every profile but one's
+ *     own); E.10 (no message or chat control anywhere); the list actions by
+ *     population (P5 unfollow, the teen's remove, none on another person's
+ *     lists); a guest's lists and a stranger's profile are not available;
  *   - no axe-core violation inside the screen (normal text only);
  *
- * and once per locale and mode at 375 px, a real press on the profile's
- * "Settings" link moves to /profile/settings and focuses its <h1>.
+ * and once per locale and mode at 375 px, real presses: the profile's
+ * "Settings" link moves to /profile/settings and focuses its <h1>; P6's
+ * "Followers" link reaches P7 with focus on its <h1>; P4's back link reaches
+ * P1 and focus follows the loading heading to the person's name; P6's Report
+ * opens a dialog that holds focus, and Escape closes it back onto Report.
  *
  * Reports and screenshots: audit-results/profile-screens/.
  */
@@ -62,6 +74,28 @@ const CASES = [
     expect: { changeEmail: false, kidRows: true, reset: false, deletion: 'refused', young: true } },
   { id: 'p3-guest', path: '/profile/settings', scenario: 'profile-guest', screen: 'settings', ready: '.lf-card--primary', readyAlso: ['.lf-account-deletion'],
     expect: { guest: true, deletion: 'allowed' } },
+  // W2P.2: other people's profiles (P6), by viewer.
+  { id: 'p6-adult', path: '/@marta', scenario: 'profile-adult', screen: 'public-profile', ready: '.lf-profile-badge',
+    expect: { kind: 'full', connect: 'follow', safety: true, tutorPill: false } },
+  { id: 'p6-tutor', path: '/@marta', scenario: 'profile-tutor', screen: 'public-profile', ready: '.lf-profile-names .lf-pill',
+    expect: { kind: 'full', connect: 'following', safety: true, tutorPill: true } },
+  { id: 'p6-kid', path: '/@marta', scenario: 'profile-kid', screen: 'public-profile', ready: '.lf-profile-connect-note',
+    expect: { kind: 'full', connect: 'managed', safety: true, tutorPill: false, young: true } },
+  { id: 'p6-private', path: '/@rio_montes', scenario: 'profile-adult', screen: 'public-profile', ready: '.lf-profile-connect .lf-button--accent',
+    expect: { kind: 'private', connect: 'ask', safety: true, tutorPill: false } },
+  { id: 'p6-private-kid', path: '/@rio_montes', scenario: 'profile-kid', screen: 'public-profile', ready: '.lf-profile-connect-note',
+    expect: { kind: 'private', connect: 'managed', safety: true, tutorPill: false, young: true } },
+  { id: 'p6-self', path: '/@maria_fernanda_22', scenario: 'profile-adult', screen: 'public-profile', ready: '.lf-profile-actions a[href="/profile"]',
+    expect: { kind: 'full', connect: 'self', safety: false, tutorPill: false } },
+  { id: 'p6-guest', path: '/@marta', scenario: 'profile-guest', screen: 'public-profile', ready: '.lf-account-state a', expect: { kind: 'unavailable', safety: false } },
+  // W2P.2: the people lists (P4, P5, P7, P8), by viewer.
+  { id: 'p4-adult', path: '/profile/followers', scenario: 'profile-adult', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 3, actions: 0 } },
+  { id: 'p4-teen', path: '/profile/followers', scenario: 'profile-teen', screen: 'people-list', ready: '.lf-people-row button', expect: { rows: 3, actions: 3 } },
+  { id: 'p4-kid', path: '/profile/followers', scenario: 'profile-kid', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 3, actions: 0, managed: true, young: true } },
+  { id: 'p5-adult', path: '/profile/following', scenario: 'profile-adult', screen: 'people-list', ready: '.lf-people-row button', expect: { rows: 2, actions: 2 } },
+  { id: 'p5-guest', path: '/profile/following', scenario: 'profile-guest', screen: 'people-list', ready: '.lf-state', expect: { rows: 0, actions: 0, closed: true } },
+  { id: 'p7-adult', path: '/@marta/followers', scenario: 'profile-adult', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 3, actions: 0, other: true } },
+  { id: 'p8-kid', path: '/@marta/following', scenario: 'profile-kid', screen: 'people-list', ready: '.lf-people-row', expect: { rows: 2, actions: 0, other: true, young: true } },
 ];
 
 const filter = process.env.PROFILE_CASES?.split(',');
@@ -81,7 +115,8 @@ async function waitFor(page, expression, what, tries = 900) {
 }
 
 async function key(page, name, code, keyCode, modifiers = 0) {
-  await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: name, code, windowsVirtualKeyCode: keyCode, modifiers });
+  // Enter carries its text, so a focused button is activated the way a real key press activates it.
+  await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: name, code, windowsVirtualKeyCode: keyCode, modifiers, ...(name === 'Enter' ? { text: String.fromCharCode(13) } : {}) });
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: name, code, windowsVirtualKeyCode: keyCode, modifiers });
 }
 
@@ -144,6 +179,20 @@ const MEASURE = (screen) => `(() => {
     deletionStart: !!root.querySelector('.lf-account-deletion button'),
     guestCard: !!root.querySelector('.lf-card--primary a[href="/upgrade-account"]'), signInCard: root.querySelectorAll('.lf-settings-row').length > 0 && !!root.querySelector('input[type=password], .lf-settings-row button'),
     analytics: !!root.querySelector('.lf-analytics-choice [role="switch"]'), memory: !!root.querySelector('.lf-memory-self-review .lf-memory-note'),
+    peopleCard: (() => { const card = [...root.querySelectorAll('.lf-card')].find((c) => c.querySelector('a[href$="/followers"]'));
+      const stats = root.querySelector('.lf-profile-stats')?.closest('.lf-card') ?? null;
+      return card ? { digits: /\\d/.test(card.textContent), insideProgress: !!stats && stats.contains(card) } : null; })(),
+    heroPill: !!root.querySelector('.lf-profile-hero .lf-profile-names .lf-pill'),
+    kind: root.querySelector('.lf-profile-stats') ? 'full' : root.querySelector('.lf-profile-hero') ? 'private' : root.querySelector('.lf-account-state a') ? 'unavailable' : 'other',
+    connect: root.querySelector('.lf-profile-connect-note') ? 'managed' : root.querySelector('.lf-profile-actions a[href="/profile"]') ? 'self'
+      : root.querySelector('.lf-profile-actions .lf-pill') ? 'following' : root.querySelector('.lf-profile-connect .lf-button--accent')
+        ? (root.querySelector('.lf-profile-stats') ? 'follow' : 'ask') : 'none',
+    safetyActions: !!root.querySelector('.lf-button--danger') && [...root.querySelectorAll('.lf-card button[aria-haspopup="dialog"]')].length === 2,
+    messaging: [...root.querySelectorAll('a, button, input, textarea')].some((el) => /message|mensaje|mensagem|chat|say hi/i.test(el.textContent + ' ' + (el.getAttribute('aria-label') ?? '') + ' ' + (el.getAttribute('placeholder') ?? ''))),
+    listRows: root.querySelectorAll('.lf-people-row').length, listActions: root.querySelectorAll('.lf-people-row button').length,
+    listDigits: /\\d/.test((root.querySelector('.lf-people-column')?.textContent ?? '').replace(/@[a-z0-9_]+/g, '')) || /\\d/.test(root.querySelector('h1')?.textContent ?? ''),
+    listManaged: !!root.querySelector('.lf-people-column > p.lf-account-muted'), listClosed: !!root.querySelector('.lf-people-column .lf-state'),
+    listOwner: root.getAttribute('data-owner'),
     radios: root.querySelectorAll('.lf-picture-input').length, unnamedRadios: [...root.querySelectorAll('.lf-picture-input')].filter((r) => !(r.getAttribute('aria-label') || r.closest('label')?.textContent.trim())).length,
   };
 })()`;
@@ -206,6 +255,23 @@ try {
         assert.equal(m.safety, !!e.safety, 'E.13 notice');
         assert.equal(m.teenPanel, !!e.teenPanel, 'E.8 teen connections');
       }
+      if (entry.screen === 'public-profile') {
+        assert.equal(m.kind, e.kind, 'what Core lets this viewer see (E.1, E.8)');
+        if (e.connect) assert.equal(m.connect, e.connect, 'the one way this viewer may connect (E.1, E.8)');
+        assert.equal(m.safetyActions, e.safety, 'E.3: Report and Block on every profile but one\'s own');
+        assert.equal(m.heroPill, !!e.tutorPill, 'E.5: the Tutor pill exactly as Core decides');
+        if (m.kind === 'full') { assert.ok(m.peopleCard, 'the lists are reachable'); assert.equal(m.peopleCard.digits, false, 'E.9: no number in the lists card'); assert.equal(m.peopleCard.insideProgress, false, 'E.9: not in the progress block'); }
+        assert.equal(m.messaging, false, 'E.10: no way to write to anyone');
+      }
+      if (entry.screen === 'people-list') {
+        assert.equal(m.listRows, e.rows, 'the people Core listed');
+        assert.equal(m.listActions, e.actions, 'the row actions this viewer has');
+        assert.equal(m.listDigits, false, 'E.9: no number on a list');
+        assert.equal(m.listManaged, !!e.managed, 'a child\'s lists say who approves its connections');
+        assert.equal(m.listClosed, !!e.closed, 'a guest has no connections');
+        assert.equal(m.listOwner, e.other ? 'other' : 'self', 'whose list it is');
+        assert.equal(m.messaging, false, 'E.10: no way to write to anyone');
+      }
       if (entry.screen === 'look-editor') {
         assert.equal(m.radios, 16 + 6 + 8 + 8 + 6 + 6 + 6 + 9 + 10 + 7 + 10, 'every option of every part, and the cover presets');
         assert.equal(m.unnamedRadios, 0, 'every option has a name');
@@ -248,6 +314,24 @@ try {
         await waitFor(page, "location.pathname === '/profile/settings' && document.querySelector('[data-screen=\"settings\"] h1')", `${where}: navigates to Settings`);
         await waitFor(page, "document.activeElement?.tagName === 'H1' && document.activeElement.closest('[data-screen=\"settings\"]')", `${where}: focus on the Settings heading`);
         routeFocus = 'h1';
+      }
+      if (entry.id === 'p6-adult' && width === 375) {
+        // E.3's report dialog by keyboard: it opens holding focus, and Escape closes it back onto Report.
+        await page.evaluate(`document.querySelector(${JSON.stringify(`${root} .lf-card button[aria-haspopup="dialog"]:not(.lf-button--danger)`)}).focus()`);
+        await key(page, 'Enter', 'Enter', 13);
+        await waitFor(page, "document.querySelector('[role=dialog]') && document.querySelector('[role=dialog]').contains(document.activeElement)", `${where}: report dialog holds focus`);
+        await key(page, 'Escape', 'Escape', 27);
+        await waitFor(page, `!document.querySelector('[role=dialog]') && document.activeElement?.matches(${JSON.stringify('button[aria-haspopup="dialog"]:not(.lf-button--danger)')})`, `${where}: Escape returns focus to Report`);
+        await press(page, `${root} a[href="/@marta/followers"]`);
+        await waitFor(page, "location.pathname === '/@marta/followers' && document.querySelector('[data-screen=\"people-list\"] .lf-people-row')", `${where}: navigates to P7`);
+        await waitFor(page, "document.activeElement?.tagName === 'H1' && document.activeElement.closest('[data-screen=\"people-list\"]')", `${where}: focus on P7's heading`);
+        routeFocus = 'h1 (P7), report dialog by keyboard';
+      }
+      if (entry.id === 'p4-adult' && width === 375) {
+        await press(page, `${root} a.lf-account-back`);
+        await waitFor(page, "location.pathname === '/profile' && document.querySelector('[data-screen=\"own-profile\"] .lf-profile-names h1')", `${where}: navigates to P1`);
+        await waitFor(page, "document.activeElement?.tagName === 'H1' && document.activeElement.closest('.lf-profile-names')", `${where}: focus follows to the person's name`);
+        routeFocus = 'h1 (P1, carried past the loading heading)';
       }
       assert.deepEqual(page.errors.filter((error) => !/Failed to load resource|net::ERR|synthetic core/i.test(error)), [], 'JS errors');
       evidence.push({ case: entry.id, population: spec.population, locale, theme, width, textScales: ['100%', '140%'], axe: 0, routeFocus, keyboard: 'skip link, main, first control with a ring' });

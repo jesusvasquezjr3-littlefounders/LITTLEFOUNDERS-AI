@@ -1,0 +1,55 @@
+/*
+ * The profile lane's social screens (W2P.2): another person's profile (P6) and
+ * the four people lists (P4, P5, P7, P8). The profile reuses the own
+ * profile's header and cards (account.css); this file adds the connect area
+ * and the people rows. Tokens only; spacing on the 4 px scale (03 §3.1);
+ * layouts by container width (02 §6); separation by fill, never an outline
+ * (02 §4.4).
+ */
+
+/* P6: the connect action and what happened to it, in the header card. */
+.lf-profile-connect { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-profile-connect-note { color: var(--content-muted); font: var(--type-body); overflow-wrap: anywhere; }
+/* Beside the avatar, the connect area lines up under the name it belongs to (not under the avatar). */
+@container app (min-width: 640px) {
+  :is(.lf-profile-connect, .lf-profile-connect-note) { grid-column: 2; }
+}
+@container app (min-width: 1120px) {
+  :is(.lf-profile-connect, .lf-profile-connect-note) { grid-column: auto; align-self: end; justify-items: end; }
+}
+
+/* The report form inside its dialog. */
+.lf-report-form { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+
+/* P4, P5, P7, P8: one reading column of people. */
+.lf-people-column { display: grid; gap: var(--spacing-5); min-inline-size: 0; max-inline-size: 38rem; }
+.lf-people-list { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-people-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-inline-size: 0;
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-people-row { background: var(--raised); }
+.lf-people-person {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex: 1 1 14rem;
+  min-inline-size: 0;
+  min-block-size: var(--target-min);
+  border-radius: var(--rounded-md);
+  color: var(--content);
+  text-decoration: none;
+}
+.lf-people-link:hover .lf-people-name { color: var(--primary-strong); }
+.lf-people-text { display: grid; gap: var(--spacing-1); justify-items: start; min-inline-size: 0; }
+.lf-people-name { font: var(--type-label); overflow-wrap: anywhere; }
+.lf-people-handle { font: var(--type-caption); color: var(--content-muted); overflow-wrap: anywhere; }
+
+/* Dark mode has no elevation: a secondary button inside a raised row steps down to the page's base (as on the own profile). */
+.lf-account-screen[data-theme='dark'] .lf-people-row .lf-button--secondary:not(:disabled) { background: var(--base); }
