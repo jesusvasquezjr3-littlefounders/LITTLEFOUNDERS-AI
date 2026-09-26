@@ -1,6 +1,6 @@
 # S07: Family Hub and independent teen wallet
 
-Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5, S07.6 and S07.7 recorded 24 September 2026 (the lane's verification date). Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
+Status: in progress. Started 24 September 2026; S07.2, S07.3 and S07.4 recorded 25 September 2026; S07.5, S07.6, S07.7 and the S07.8 lane review recorded 24 September 2026 (the lane's verification date). The lane summary is at the end of this record. Owner: Engineering for implementation; Product, Safety/Trust and the Block D Engineering Lead (Appendix H Stage 0 pairing) for the reviews named by the SPEC. No release approval is recorded.
 
 ## Binding acceptance sources
 
@@ -23,6 +23,7 @@ Risk classification: **structural/safety (money-adjacent state and family trust)
 | S07.5 | D.17 a graduated-autonomy ladder inside the parent-managed system, D.18 a rationale requirement and communication scaffolding for approval and denial | Three independence levels for every child in a family (by age and record, never role): Level 1 is the old flat model, Level 2 self-logs family contributions and pre-approves rewards up to a Tutor-set amount (at most 20 coins), Level 3 self-logs chores up to 100 coins and pre-approves up to 100; the spending limit and the hold apply at every level; a documented age-and-track-record rule per level shown with the child's own numbers; a Tutor moves up only when eligible and down only with an actionable reason, the child asks and may step down, support staff and the evidence-based system step-down lower a level; every decision is one immutable record, and no "not yet" (sent back, cancelled, denied, declined, questioned) exists without a subject reason code and an actionable reason (a "later" with a date), for every writer; the child's own words reach the Tutor at decision time; three "not yet"s in 14 days open a "talk about it" nudge and the child can ask to talk; the rule is in `docs/operations/FAMILY-INDEPENDENCE-AND-DECISIONS.md` and 20 thresholds in the Block D log; three Appendix H diagnostics (progression, nudge trigger rate, human-scored actionability) served to analytics staff | Rebuilt decision queue and reason form (Tutor Tasks), independence ladder (Family, per child), the child's level, decision notes, mark-done-with-a-note and ask-for-a-reward-with-a-reason (child Tasks) in `frontend/src/rebuild/family/`, three locales, light/dark, 375/1280 px; the legacy approve/cancel/deny buttons replaced; nothing celebrates | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain including a crafted metric timeline and real concurrency, the S07.1 and S07.2 checks re-run over the whole chain, 48 new adversarial Core tests, 30 new component/copy/parity tests, 12 real-Chrome configurations); full Supabase stack run, types regeneration, Product/Safety review of every threshold, production baselines, the first human-scored sample, family usability testing, native copy review and Product acceptance pending |
 | S07.6 | D.6 the family-engagement staff insight on the per-child shape, D.7 honest simulation visuals and no unbacked guarantee, D.8 a tone gate for Family Hub and banking copy, D.12 age-differentiated presentation | One database function serves the staff insight per child: counts over every child with a verified Tutor, and per-child rows only for H.1-admitted children, with no identity. Request outcomes and a nightly probe feed Appendix H's Staff Family-Engagement Insight Uptime, and a gate keeps the key contract equal across the database, its probe, Core and the console. Every control a family sees is registered with its enforcing SQL and adversarial proof, and a gate fails when an enforcing function loses its guard, when the UI's freeze holds differ from the database's, or when a payment SDK appears. The written principle and the quarterly audit are in `docs/operations/NO-UNBACKED-GUARANTEE.md`. A tone gate (bank register, guarantee, glossary, shouting; reviewed exceptions; no raw Core message on a family surface) reports the Tone-Gate Pass Rate. The database decides the age register (young, transition, teen) from age evidence as one design with D.11, and Core shapes the child's numbers by it. The register cutoffs are in the Block D log, and the register distribution is served to analytics staff | Rebuilt coin account and Tutor freeze card (`frontend/src/rebuild/banking/`) in three locales and three registers, light/dark, 375/1280 px, mounted in the Banking route in place of the legacy card, freeze switch, banner, meter and statement summary. The usual split, goal progress and bonus explainer are presented per register. The Banking page's dead bare "Deny" is replaced by the reason-carrying queue. The legacy staff console reads the per-child contract | In progress: implementation and local verification recorded (native PostgreSQL over the actual migration chain with the S07.1-S07.5 checks re-run, 54 new Core tests, 41 new component and copy tests, 35 new gate self-tests, 12 real-Chrome configurations). Full Supabase stack run, types regeneration, the first human No-Unbacked-Guarantee Audit and Stage 4 spot-check, family usability testing, native copy review, production baselines and Product acceptance pending |
 | S07.7 | D.9 the research foundation, D.19 the older-teen graduation initiative, D.20 what the practice does not teach, D.21 retention, deletion and consent for this Block's data, D.22 long-horizon research instrumentation, D.23 coaching for the Tutor | Appendix G adopted and traced: every D.10-D.23 choice cites its sections with an honest evidence strength and the metric that tests it, recalibrated on Appendices B and D's cadence (release readiness fails when overdue); no parent-facing string in app or marketing copy claims proof; no experiment column on a Block D table (OD-23). The initiative "Beyond the app" is scoped with four milestones and milestone 1 ships: from 15 by age evidence, three real-world moments with just-in-time checklists and a split tool that sends nothing; engagement and a 15+ research cohort served to analytics staff. A scope statement names credit, debt, real compound interest and risk as not taught, each "practises" line backed by code, mounted for Tutors and teens, a gate refusing a lending or interest mechanic without the statement changing, and a quarterly human audit. All 40 Block D tables classed (photos 30 days after the decision, records 400, invitations 30, research 1,100, the coin record for the account's life); a nightly job deletes what is past its period and each photo from Depot first; the compliance audit served to analytics staff; the Tutor reads the enforced periods; an adult's erasure keeps the child's record and a child's removes every row (the merged S08/S07.1 erasure defect fixed). A four-phase research plan and phase 1: separate research consent (a verified Tutor for a child, an adult for themselves, lapsing at 18, a child's no deletes), pseudonymous monthly snapshots with no free text, completeness served to analytics staff. Pricing and limit coaching inside the controls; a reflective prompt before every Tutor decision whose words never leave the browser unless sent, required and recorded by kind; twelve Appendix G tips delivered monthly only after the Pedagogical Lead's review bound to their exact copy | Rebuilt coaching tip, reflective prompt, pricing and limit notes, scope statement, data policy, research answer, the child's own research no and "Beyond the app" (`frontend/src/rebuild/family/`, `rebuild/wallet/MoneyBridge.tsx`) in three locales, light/dark, 375/1280 px, mounted on the Family, Tasks, Banking and wallet routes; the decision queue goes through the prompt; nothing celebrates | In progress: implementation and local verification recorded (native PostgreSQL with 21 new check groups and every S07.1-S07.6 verifier re-run over the whole chain, 56 new Core tests, 33 new component and copy tests, 32 new gate self-tests, 12 real-Chrome configurations plus four earlier matrices re-run). Full Supabase stack run, types regeneration, the owner naming the D.19 and D.22 owners, Legal review of the periods and the research disclosure, the Pedagogical Lead's tip review and first recalibration, the first scope audit, production data, family usability testing, native copy review and Product acceptance pending |
+| S07.8 | Lane review of S07.1-S07.7 against D.2-D.23 | Every requirement's SPEC mandate compared with what the code enforces, for every population and path; each gap found fixed, tested and documented (marketing claims overstating the D.17 approval model and inventing a D.14 Share flow, now registered controls with a retired-claims guard; the D.20 statement and the D.21 periods published in the public FAQ and pinned by their gates; an untested D.17 staff route); the complete root gates green | The public FAQ and Families copy in three locales, light/dark, 375/1280 px (real Chrome); no rebuilt surface changed | In progress: review done and locally verified; nothing Accepted; the open items in the lane summary remain |
 
 ## Current state found (verified against the code, 24 September 2026)
 
@@ -1452,3 +1453,172 @@ Captures inspected in this session:
 - Product/Safety/Legal review of the eleven proposals above.
 
 D.9, D.19, D.20, D.21, D.22 and D.23 are not accepted.
+
+## S07.8: lane review (24 September 2026)
+
+An adversarial review of every commit on `codex/spec-s07` since `337c9f0e` (seven commits, S07.1 to S07.7, 286 files) against the SPEC acceptance criteria of D.2 to D.23 (D.1 belongs to S02), Appendix H's Definition of Done and its Stage 2 bypass rule, and the owner decision log. For each requirement the review compared what the SPEC mandates with what the code enforces, and hunted for mandates skipped or shrunk, authorization held only by the UI, uncovered populations (a parent-created child under 13, a guest, an independent teen 13-17, an adult, a verified parent Tutor, staff by permission), untested failure paths, untranslated or over-budget copy, legacy imports in rebuilt UI, CRLF damage, undocumented behaviour and claims the code does not support.
+
+### How the review was done
+
+- **Enforcement boundary, mechanically.** All 165 SQL functions the lane defines are revoked from `PUBLIC`, and none is granted to `anon` or `authenticated`. The lane's 17 browser policies are all `FOR SELECT`, scoped to the holder or a verified guardian. So no Block D write exists outside the service layer, and every Core route is re-checked by a database guard. Every function that writes `wallet_ledger` was listed from the latest migration that defines it. Each one either checks the freeze itself, or writes through a table whose trigger does: teen income, release and reward claims (`wallet_self_actions`), and Share pledges and take-backs (`share_gifts`). The exceptions are the Tutor's own coin corrections and goal withdrawals, which by D.1 are not child movements. The level-2 and level-3 pre-approval still passes the spending limit and the freeze in `guard_redemption_state`.
+- **Routes against tests.** A scan listed every lane Core route that no test names. Only one lane route was untested: `GET /api/v1/admin/family-autonomy/:kidId`. The other hits are legacy routes that the tests call through template strings.
+- **Rebuilt UI.** The review checked every import in `frontend/src/rebuild/{family,banking,wallet}`: only the design system, the lane's own modules, i18n and React. Every lane component declares `data-copy-role`, through the `Copy` control or directly. No lane component has a hardcoded label. The i18n key and placeholder sets are identical across the three locales in all 14 touched namespaces. The only strings equal to English are brand terms and `{name}: {reason}`.
+- **Line endings.** All 286 lane files are `i/lf w/lf`, with no carriage return in any of them.
+- **Claims.** Every string in `marketing.json` about approvals, the split, Share, goals, limits, the bonus and the streak was read against the controls as S07.1-S07.7 built them.
+
+### Requirement by requirement
+
+| ID | SPEC mandate | What the code enforces | Review verdict |
+|---|---|---|---|
+| D.2 | B.21's lapse-tolerant model on the chore streak | Pure model (two rest days a week, a permanent best and total, a Tutor's pause), practised days recorded only by the database trigger, rest-day utilization served to analytics staff | Holds. B.21 (S05) must adopt `choreStreak.ts` for the learning streak: a cross-lane merge point |
+| D.3 | An independent teen wallet (OD-3 Option B) that layers onto family mechanics | Eligibility by stored age for every writer, guardian-only tasks, a teen-confirmed parent link, the adoption metric | Holds |
+| D.4 | Every state transition only through the service layer | Browser write paths removed, triggers for every writer, the Unauthorized State-Transition Rate served | Holds. Re-confirmed mechanically for the S07.2-S07.7 tables |
+| D.5 | Every declared state built or removed | 55 states across 13 columns, each with a producer and a consumer, enforced by the lifecycle gate | Holds |
+| D.6 | The staff insight on the per-child shape | One database function, a nightly probe, uptime served, a contract gate | Holds |
+| D.7 | No visual or copy implies a guarantee the system does not enforce, re-verified as controls change | Control registry and gate for the in-app surfaces | **Gap found and fixed:** the marketing site overstated the controls built in S07.4 and S07.5 (below) |
+| D.8 | A tone gate for all Family Hub and banking system copy | 3,873 strings in three locales, reviewed exceptions, no raw Core message; there are no Family Hub emails or notifications to cover | Holds |
+| D.9 | Appendix G authoritative, recalibrated on its cadence | Traceability registry and gate; release readiness fails when a recalibration is overdue | Holds. Human recalibration is open |
+| D.10 | Contribution versus bonus tagging, as a family choice | Kind and range enforced for every writer; no preselected kind | Holds |
+| D.11 | A fixed bonus for younger children, a percentage with a worked example for 13-17 | Framing by age at rule and credit time; the example is checked by the database | Holds |
+| D.12 | B.23's three registers on this Block | Register from age evidence; Core shapes the numbers | Holds. The B.23 "graduation" moment is cross-lane |
+| D.13 | Instrument redemption timing; a default split with an easy override | Usual split per holder, any full split accepted, time since the allowance and since earned coins both recorded | Holds |
+| D.14 | A real destination for Share | Places chosen by a Tutor or a self-registered teen, a pledge debit, a settlement with a required note | Holds in the product. **Gap found and fixed** in the marketing copy ("someone else's goal") |
+| D.15 | A next-goal prompt at the celebration; the post-goal rate instrumented | The next step opened in the covering transaction; the cliff metric served | Holds |
+| D.16 | Bonus credit visually distinct in every goal display | Provenance on every read; one component; a release gate. The review found no goal progress drawn anywhere outside the gate's scopes | Holds |
+| D.17 | Tiers by age and track record, fading pre-approval, child voice, rollback | Three levels in the database, eligibility logged, staff and system rollback | **Test gap found and fixed:** the support-staff read of a level before a rollback. Marketing approval claims corrected (D.7) |
+| D.18 | Mandatory actionable reasons; the child's reasoning at decision time; a talk nudge | Every writer is refused a "not yet" without a code and an actionable reason; child notes in the queue; nudge after three in 14 days | Holds |
+| D.19 | A scoped, age-gated bridge with a first milestone | Milestone 1 from age 15, by age evidence; engagement and the research cohort served | Holds. Milestones 2-4 and the named owner are open |
+| D.20 | A plain scope statement in parent-facing material | Mounted for Tutors and teens; a gate against lending or interest mechanics | **Gap found and fixed:** the statement was only in the signed-in app; it is now in the public FAQ too |
+| D.21 | A published retention and deletion policy | Enforced periods, a nightly sweep, erasure paths, the compliance audit | **Gap found and fixed:** the periods were only in the signed-in app and the repository; they are now published in the public FAQ, pinned to the enforced numbers |
+| D.22 | A long-horizon research plan and its first phase | Separate consent, pseudonymous snapshots, completeness served; no experiment on a minor | Holds. The named owner is open |
+| D.23 | Coaching in the controls, a reflective prompt, monthly reviewed tips | Guidance in the composer and the limit; the prompt before every decision; tips gated on the Pedagogical Lead's review | Holds. No tip is reviewed yet, so none is delivered: honest, and the delivery metric reads zero until then |
+
+### Gaps found and fixed in S07.8
+
+1. **The marketing site promised control the product no longer keeps (D.7, D.17).**
+   - The FAQ answer "spending needs your approval first" and the Families page lines "you approve it before it lands" and "It's waiting for their approval before it's yours" were true before S07.5. They are false for a child whose Tutor raised them to Level 2 or 3, where small rewards are pre-approved and chores are self-logged and reviewed afterwards.
+   - Rewritten in three locales: every child starts with the Tutor approving each chore and reward, and small ones can go through on their own within limits the Tutor sets.
+   - Registered as the control `approval`, with its enforcing SQL (`guard_task_state`, `guard_redemption_state`, `family_request_redemption`) and its adversarial proofs.
+2. **The marketing site described a Share flow that never existed (D.7, D.14).** "You send a few coins toward someone else's goal." Share coins go to a place a Tutor chose, and whoever chose it records what happened. Rewritten, and registered as the control `share_destination`.
+3. **A regression guard for both.** `block-d-controls.json` gains `retiredClaims`. `check-no-unbacked-guarantee.mjs` now fails when any retired phrase comes back in any string of its namespace, in any locale. There is a new self-test, and `NO-UNBACKED-GUARANTEE.md` records the three findings in its audit log.
+4. **D.20 was only in the signed-in app.** A parent weighing the product reads the marketing site, where "financial literacy" framing lives. The FAQ now answers "Does it teach credit, debt or investing?" (`faq.items.notTaught`) with the statement's lines. `check-block-d-scope.mjs` fails when the answer leaves the FAQ or stops naming credit, debt, compound interest, risk, insurance and "not interest" in any locale (`publicAnswers`), and it has a new self-test.
+5. **D.21 asks for a published policy.** The FAQ now answers "How long do you keep chores, rewards and decisions?" (`faq.items.familyRecords`): photos 30 days after the decision, records 400 days, the coin record while the account exists, and a child's account deletion deleting all of it. `check-block-d-retention.mjs` fails when the answer leaves the FAQ, or states a number that is not an enforced period, in any locale. It has a new self-test. `FAMILY-DATA-RETENTION.md` adds the FAQ to the one-change rule for a period.
+6. **An untested staff route (D.17).** `GET /api/v1/admin/family-autonomy/:kidId` had no test. A new Core test covers:
+   - support staff are served the level and its history, with no actor id;
+   - a bad id gets a 400, a child outside a family a 404 and an unreadable history a 502;
+   - analytics-only and ungranted staff, a Tutor, a child, a linked and an unlinked teen, an adult and a guest are refused before any read.
+
+The FAQ lists 29 questions (the component's comment and `App.test.tsx` were updated), and the FAQ test now opens both new answers.
+
+### Found, not changed here (cross-lane, recorded for the orchestrator)
+
+- **Glossary in the marketing FAQ (S04/S06).** The tutor category calls the AI "the Tutor", for example "Is everything the Tutor says checked first?". The es-MX and pt-BR `retention` questions call AI conversations "conversaciones con el Tutor" and "conversas com o Tutor", and the en-US one says "AI Tutor". Owner log §5 reserves "Tutor" for the verified parent. These strings belong to the acquisition and Mentor lanes and are left to them, like the legacy nav finding in S07.6.
+- **Marketing header at 375 px (S04).** Once the page is scrolled, the header's right-hand controls and the cookie banner reach 384-385 px in a 375 px viewport, so the marketing pages scroll sideways by a few pixels (S07.8 verification log). This is layout the lane did not touch.
+- **`GuardianInvite.tsx` (S04).** It carries a hardcoded English `aria-label="invite link"`. S07.1 changed the component but not that label.
+- **Unchanged cross-lane items from earlier checkpoints:** B.21 adopting the chore-streak model; the H.1/A.2 gate excluding a parent-created child under 13; the S08 erasure-merge ordering; the B.23 graduation moment; the Block G console surface for the metrics.
+
+## S07.8 verification log
+
+Executed 24 September 2026 (the lane's verification date) in the S07 worktree, first-hand, on the tree being committed. Commands run from the worktree root unless a directory is named, with `VITEST_MAX_THREADS=3 VITEST_MIN_THREADS=1 VITEST_MAX_FORKS=3 VITEST_MIN_FORKS=1`. These are local results only, not CI or production observations.
+
+| Boundary | Command / evidence | Result |
+|---|---|---|
+| Root type-check | `npm run typecheck:all` (once at the start, again on the final tree) | Passed both times: `run-all type-check OK across all services`. `database/` defines no type-check script and is skipped by design |
+| Root lint | `npm run lint:all` (at the start, and on the final tree) | Passed both times: `run-all lint OK across all services` |
+| Root tests | `npm run test:all` (47 minutes on the shared machine) | Passed across all eleven packages:<br>- audiogen: 17 files, 168 tests<br>- backend: 79 files and 1 skipped, 1,910 tests and 1 documented skip; one new test<br>- coursegen: 45 files, 662 tests<br>- database: the numbering, RLS and phase gates over 142 files (108 expand, 34 contract, 23 contract pending), the lifecycle gate (55 states), 28 of 28 node tests, and the operator transport's 12 scenarios (`railway-migrate integration OK`)<br>- dataintel: 16 files, 194 tests<br>- email-server: 7 files, 35 tests<br>- filebase: 8 files, 34 tests<br>- frontend: 230 files, 2,462 tests<br>- oracle: 41 files, 1,136 tests<br>- parent-id-check: 3 files, 26 tests<br>- picturegen: 10 files, 103 tests |
+| Database gates | `database/`: `npm test`, run inside `test:all` above | Passed, see the row above |
+| Secrets | `npm run secrets:check` (after staging) | `secrets:check OK — no credential patterns in tracked files` |
+| Spec authority | `npm run spec:check` | Passed: spec authority, V2 parity, tokens and assets OK (7 assets, 7 awaiting review) |
+| Tool self-tests | `npm run tools:test` | 133 of 133. Four are new: a retired claim, flattened copy, the public scope answer and the published periods |
+| Block D gates | `node` on each of: `check-block-d-thresholds.mjs`, `check-no-unbacked-guarantee.mjs`, `check-family-copy-tone.mjs`, `check-family-engagement-contract.mjs`, `database/scripts/check-family-lifecycle.mjs`, `check-block-d-research.mjs` (also `--strict`), `check-block-d-scope.mjs`, `check-block-d-retention.mjs`, `check-parent-coaching-tips.mjs` | All passed:<br>- 54 thresholds agree;<br>- 16 controls (2 new) enforced and proved, and no retired claim present;<br>- 3,873 family strings pass the tone gate (100%);<br>- the insight keys agree;<br>- 55 lifecycle states;<br>- 14 requirements traced, and 5,451 parent-facing strings (the new FAQ answers included) free of proof claims;<br>- the scope statement mounted on 3 pages plus the public FAQ answer;<br>- 40 tables classified, with the published periods equal to the enforced ones;<br>- 12 tips drafted, none sent |
+| i18n | `bash agent/tools/check-i18n.sh` (Git Bash) | File and key sets identical in three locales, no hardcoded strings, every static key present |
+| Focused Core | `backend/`: `npx vitest run src/__tests__/familyAutonomy.test.ts -t "support staff a child"` | The new staff-read test passes |
+| Focused frontend | `frontend/`: `npx vitest run src/__tests__/App.test.tsx` | 21 of 21, including both new FAQ answers opened |
+| Real Chrome, public copy | `frontend/`: `node ../.lane-cache/s078-faq-matrix.mjs` against the dev server (`VITE_CACHE_DIR` in the lane cache, port 5340, stopped afterwards). A one-off lane matrix that fails every `/api/v1` request | 12 of 12 configurations (EN, es-MX and pt-BR × light and dark × 375 and 1280 px). In each one:<br>- the FAQ shows the new `notTaught` and `familyRecords` answers and the rewritten `chores` answer, word for word;<br>- the Families page shows the new body, Spend and Share lines;<br>- nothing inside `main` is wider than the viewport;<br>- zero console errors.<br>36 captures and `report.json` are in `.lane-cache/s078-faq/`. Captures inspected in this session: en-US light 375 (the FAQ money answer), es-MX dark 375 (the privacy answer) and pt-BR dark 375 (the Families Share line) |
+| Line endings | `git ls-files --eol` over the 286 lane files and the staged files; a carriage-return search | All `i/lf w/lf`; no carriage return |
+
+**Failures and their resolution:**
+- **Matrix harness mistakes of my own, not product defects:**
+  - the first run looked FAQ buttons up by their whole text, which includes the accordion's icon ligature (`add`);
+  - the second looked up the Families radios the same way, and read the Spend line before React had rendered it.
+  - Fixed by matching the label span and the text, and by waiting for the line. A stale `report.json` from the first run was read once and discarded.
+- **A 9 to 10 px overflow at 375 px, pre-existing and not changed here.** At 375 px, once the marketing page is scrolled, the header's right-hand controls reach 384 px and the cookie banner 385 px. So the page scrolls sideways by a few pixels in every locale and theme. The same probe with the page at rest reports no overflow. Nothing inside `main` (the lane's copy) overflows. The header and banner belong to the marketing lane (S04) and were not touched by S07. The matrix records these elements as `chromeOverflow` for that lane, rather than counting them as a failure of this copy.
+- **Load.** The first matrix run warmed up in 71 seconds while `test:all` shared the machine; nothing timed out.
+
+**Remaining limitations:** the lane summary below lists them.
+
+## Lane summary (S07.1 to S07.8)
+
+**Scope delivered.** D.2 to D.23 in eight checkpoints (D.1 is S02's). Every requirement is implemented at its enforcing boundary: the database for every writer, Core re-checking as the caller, and the rebuilt surfaces showing only what the database enforces. Each one has been verified locally with adversarial tests and real-Chrome matrices, and reviewed once more as a lane in S07.8. **No requirement is Accepted.** Appendix H's Definition of Done still needs, for each of them: production data for its metric (Measured), the named human reviews (Reviewed), and for new mechanics, Stage 5 family usability testing.
+
+**Final status per requirement:**
+
+| ID | Status |
+|---|---|
+| D.2 | In progress: implemented and locally verified (S07.3, re-reviewed S07.8); B.21 adoption, production baseline, human review pending |
+| D.3 | In progress: implemented and locally verified (S07.2, re-reviewed S07.8); full-stack run, production metric, Product acceptance pending |
+| D.4 | In progress: implemented and locally verified (S07.1a, re-reviewed S07.8); full-stack run, production metric (target zero), human review pending |
+| D.5 | In progress: implemented and locally verified (S07.1b, re-reviewed S07.8); full-stack run, human review pending |
+| D.6 | In progress: implemented and locally verified (S07.6, re-reviewed S07.8); production uptime baseline, console surface (Block G) pending |
+| D.7 | In progress: implemented and locally verified (S07.6, marketing gap fixed S07.8); first human quarterly audit pending |
+| D.8 | In progress: implemented and locally verified (S07.6, re-reviewed S07.8); Stage 4 human spot-check, B.14 merge pending |
+| D.9 | In progress: implemented and locally verified (S07.7, re-reviewed S07.8); first recalibration review pending |
+| D.10 | In progress: implemented and locally verified (S07.3, re-reviewed S07.8); production baseline, Product review of the cap pending |
+| D.11 | In progress: implemented and locally verified (S07.3, re-reviewed S07.8); threshold review, production baseline pending |
+| D.12 | In progress: implemented and locally verified (S07.6, re-reviewed S07.8); B.23 graduation moment (cross-lane), usability testing pending |
+| D.13 | In progress: implemented and locally verified (S07.4, re-reviewed S07.8); production baselines, usability testing pending |
+| D.14 | In progress: implemented and locally verified (S07.4, marketing gap fixed S07.8); completion baseline, usability testing pending |
+| D.15 | In progress: implemented and locally verified (S07.4, re-reviewed S07.8); cliff baseline over successive releases pending |
+| D.16 | In progress: implemented and locally verified (S07.4, re-reviewed S07.8); per-release compliance in production pending |
+| D.17 | In progress: implemented and locally verified (S07.5, test gap fixed S07.8); progression baseline, threshold review, usability testing pending |
+| D.18 | In progress: implemented and locally verified (S07.5, re-reviewed S07.8); first human-scored sample, usability testing pending |
+| D.19 | In progress: first milestone implemented and locally verified (S07.7, re-reviewed S07.8); owner naming, milestones 2-4 pending |
+| D.20 | In progress: implemented and locally verified (S07.7, public FAQ added S07.8); first quarterly scope audit pending |
+| D.21 | In progress: implemented and locally verified (S07.7, published in the FAQ S07.8); Legal review, first compliance run pending |
+| D.22 | In progress: scope document and phase 1 implemented and locally verified (S07.7, re-reviewed S07.8); owner naming, Legal review of the disclosure pending |
+| D.23 | In progress: implemented and locally verified (S07.7, re-reviewed S07.8); Pedagogical Lead tip review, delivery baseline pending |
+
+**Commits on `codex/spec-s07`:** `84887636` (S07.1), `72c9552c` (S07.2), `954a59dd` (S07.3), `992e5044` (S07.4), `18cb1add` (S07.5), `940656a3` (S07.6), `85eb02f2` (S07.7) and the S07.8 review commit.
+
+**Migrations.** There are 31, numbered 0112 to 0142 in this worktree; the orchestrator renumbers them at merge, so they are named here by suffix. Apply them in this order, each group together with (never ahead of) its Core release:
+- **S07.1:** family_hub_state_machine, family_hub_transition_guards, family_hub_wallet_integrity, family_hub_guardian_link_lifecycle, family_hub_lifecycle_flows.
+- **S07.2:** independent_teen_wallet_schema, independent_teen_wallet_guards, independent_teen_wallet_ledger, independent_teen_wallet_flows, independent_teen_guardian_link.
+- **S07.3:** chore_streak_rest_days, family_task_contribution_kind, savings_bonus_age_framing.
+- **S07.4:** family_money_events, share_gift_destinations, share_gift_flows, wallet_usual_split, savings_goal_next_step.
+- **S07.5:** family_autonomy_ladder, family_autonomy_rules, family_autonomy_flows, family_decision_guards, family_decision_flows, family_talk_nudges.
+- **S07.6:** family_money_register, family_engagement_insight.
+- **S07.7:** family_erasure_provenance, parent_coaching, money_bridge, family_research_instrumentation, family_data_retention.
+
+Fourteen are `contract`, which `gate-auto-apply.mjs` refuses to apply on its own, so an operator applies them: the five S07.1 parts, four of the five S07.2 parts (all except independent_teen_wallet_flows), family_task_contribution_kind, savings_bonus_age_framing, share_gift_destinations, family_decision_guards and family_decision_flows. S07.8 adds no migration.
+
+**Enforcing mechanisms in CI (`repo-gates.yml`, unfiltered):**
+- the lifecycle gate;
+- the threshold log gate;
+- the no-unbacked-guarantee gate (now with retired claims);
+- the family copy tone gate;
+- the engagement-contract gate;
+- the research, scope (now with the public FAQ answer), retention (now with the published periods) and coaching-tip gates.
+
+Operator jobs: `family-retention.yml` nightly, plus three guarded calls in `insights-maintenance.yml`.
+
+**Open for the lane (carried to integration):**
+- A full Supabase (PostgREST/GoTrue) stack run of every lane migration, route and policy; so far only native PostgreSQL with a role and auth shim has been used.
+- Regenerating `database/types/database.ts` with `db:types`.
+- Production baselines for every Appendix H diagnostic, and a per-release production check of the zero and 100% targets.
+- Human reviews:
+  - Product/Safety review of the proposals recorded in each checkpoint;
+  - the Pedagogical Lead's tip review and the first Appendix G recalibration;
+  - the first quarterly No-Unbacked-Guarantee and Scope-Disclosure audits;
+  - the first human-scored denial-reason sample;
+  - Legal review of the retention periods, the research disclosure and the Privacy Notice wording;
+  - native copy review of the lane namespaces and the new FAQ answers in es-MX and pt-BR.
+- Appendix H Stage 5 family usability testing of the new mechanics.
+- The owner naming the D.19 and D.22 owners.
+- Cross-lane merge points:
+  - B.21 learning streak;
+  - H.1/A.2 under-13 gate;
+  - S08 erasure ordering;
+  - B.23 graduation moment;
+  - Block G console;
+  - the marketing and nav glossary ("Tutor" for the AI).
+- Every browser matrix used a synthetic Core.

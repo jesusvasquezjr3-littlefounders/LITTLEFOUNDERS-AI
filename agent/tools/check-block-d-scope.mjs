@@ -15,6 +15,8 @@
 //   - a table or column for borrowing, lending, interest, insurance or
 //     investing appears in the schema without the statement acknowledging it
 //     (the statement would then be false in the other direction);
+//   - the public FAQ answer (S07.8) leaves its page or stops naming an
+//     exclusion in any locale;
 //   - the quarterly human audit log has no dated entry.
 // It runs in the unfiltered repo gates.
 
@@ -87,6 +89,19 @@ export function checkScope({ registry, readFile, locales, migrations }) {
     const text = readFile(file);
     if (text === null || !/<ScopeStatement(Panel)?\b/.test(text)) failures.push(`${file}: no longer shows the scope statement`);
   }
+  // S07.8: the statement also stands in public parent-facing material (the
+  // marketing FAQ), listed on its page and naming every exclusion per locale.
+  for (const answer of registry.publicAnswers ?? []) {
+    const list = readFile(answer.list);
+    if (list === null || !list.includes(`id: "${answer.id}"`)) failures.push(`${answer.list}: no longer lists the "${answer.id}" answer`);
+    for (const locale of LOCALES) {
+      const text = lookup(locales(locale, answer.namespace), answer.copyKey);
+      if (typeof text !== 'string' || text.trim() === '') { failures.push(`${answer.id}: copy ${answer.namespace}:${answer.copyKey} is missing in ${locale}`); continue; }
+      for (const word of answer.mustName?.[locale] ?? []) {
+        if (!text.toLowerCase().includes(word.toLowerCase())) failures.push(`${answer.id}: ${answer.namespace}:${answer.copyKey} (${locale}) no longer names "${word}"`);
+      }
+    }
+  }
   const found = mechanics(schemaIdentifiers(migrations), registry.mechanicWords, registry.mechanicPairs);
   for (const id of found) {
     if (!registry.acknowledged?.[id]) failures.push(`schema: "${id}" looks like a borrowing, interest, insurance or investing mechanic; update the scope statement (and acknowledge it in ${REGISTRY}) before shipping it`);
@@ -121,5 +136,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     for (const failure of failures) console.error(`FAIL: ${failure}`);
     process.exit(1);
   }
-  console.log(`block-d-scope OK — ${inputs.registry.teaches.length} practised lines backed by code, ${inputs.registry.notAttempted.length} exclusions (${inputs.registry.requiredConcepts.join(', ')}) in three locales; mounted on ${inputs.registry.mounts.length} pages; no lending, interest, insurance or investing mechanic in the schema`);
+  console.log(`block-d-scope OK — ${inputs.registry.teaches.length} practised lines backed by code, ${inputs.registry.notAttempted.length} exclusions (${inputs.registry.requiredConcepts.join(', ')}) in three locales; mounted on ${inputs.registry.mounts.length} pages and ${(inputs.registry.publicAnswers ?? []).length} public FAQ answer; no lending, interest, insurance or investing mechanic in the schema`);
 }

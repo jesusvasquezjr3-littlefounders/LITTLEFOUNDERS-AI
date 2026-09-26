@@ -6,7 +6,7 @@
 
 ## The statement
 
-Shown as "What this practice covers" on the Tutor's Family screen and Banking screen and in the self-registered teen's wallet (`frontend/src/rebuild/family/ScopeStatement.tsx`), in three locales:
+Shown as "What this practice covers" on the Tutor's Family screen and Banking screen and in the self-registered teen's wallet (`frontend/src/rebuild/family/ScopeStatement.tsx`), in three locales. Since S07.8 the marketing FAQ answers "Does it teach credit, debt or investing?" with the same lines (`faq.items.notTaught`), so a parent reads the scope before signing up:
 
 > Practice with coins that stay in the app. No real money moves.
 
@@ -38,6 +38,7 @@ It does not teach:
 - Every line has copy in en-US, es-MX and pt-BR, and the component shows exactly the registry's lines, in order.
 - Every "it practises" line keeps the code that backs it.
 - The statement stays mounted on the three pages above.
+- The FAQ answer stays on the FAQ page and names credit, debt, compound interest, risk, insurance and "not interest" in each locale (`publicAnswers` in the registry).
 - No table or column for borrowing, lending, interest, insurance or investing enters the schema without the statement changing first: the gate reads every table and column the migrations define. Adding such a mechanic means rewriting this statement, adding the identifier to `acknowledged` in the registry with the review that approved it, and re-running the audit below.
 
 ## Quarterly Scope-Disclosure Presence & Accuracy Audit (Appendix H Part 1.3)

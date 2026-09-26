@@ -73,3 +73,20 @@ test('catches an audit log with no dated entry', () => {
   }));
   assert.deepEqual(failures, ['docs/operations/BLOCK-D-SCOPE-STATEMENT.md: the audit log has no dated entry']);
 });
+
+test('catches the public FAQ answer dropping an exclusion in one locale, or leaving the page (S07.8)', () => {
+  const dropped = mutate((live) => ({
+    locales: (locale, ns) => {
+      const json = live.locales(locale, ns);
+      if (locale !== 'es-MX' || ns !== 'marketing') return json;
+      const copy = structuredClone(json);
+      copy.faq.items.notTaught.answer = copy.faq.items.notTaught.answer.replace('deudas, ', '');
+      return copy;
+    },
+  }));
+  assert.deepEqual(dropped, ['notTaught: marketing:faq.items.notTaught.answer (es-MX) no longer names "deudas"']);
+  const unlisted = mutate((live) => ({
+    readFile: (path) => (path.endsWith('FAQ.tsx') ? live.readFile(path).replace('{ id: "notTaught", category: "money" },', '') : live.readFile(path)),
+  }));
+  assert.deepEqual(unlisted, ['frontend/src/routes/marketing/FAQ.tsx: no longer lists the "notTaught" answer']);
+});

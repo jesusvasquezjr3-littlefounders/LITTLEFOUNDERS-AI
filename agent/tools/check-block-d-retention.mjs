@@ -18,6 +18,8 @@
 //     row) is not in its CREATE TABLE statement;
 //   - the written policy stops naming a table or a period, the copy loses a
 //     period placeholder, or a nightly job stops calling the retention work;
+//   - the published FAQ answer (S07.8) leaves its page or states a period
+//     other than the enforced ones, in any locale;
 //   - the Mentor's context schema gains a Block D field, or a Family Hub
 //     surface imports the third-party analytics module (the policy tells
 //     families neither happens).
@@ -136,6 +138,24 @@ export function checkRetention({ registry, migrations, readFile, locales, surfac
     if (!copy) { failures.push(`familyGovernance.json (${locale}): no dataPolicy copy`); continue; }
     for (const id of PERIODIC_COPY) if (!String(copy[id] ?? '').includes('{days}')) failures.push(`familyGovernance.json (${locale}): dataPolicy.${id} must show the served period ({days})`);
     for (const id of PLAIN_COPY) if (!copy[id] || /\{days\}|\d/.test(copy[id])) failures.push(`familyGovernance.json (${locale}): dataPolicy.${id} must state its rule without a number`);
+  }
+
+  // S07.8: the published answer (the marketing FAQ) states the same periods
+  // as numbers; a period changed in the registry must change it too.
+  for (const answer of registry.publicAnswers ?? []) {
+    const list = readFile(answer.list);
+    if (list === null || !list.includes(`id: "${answer.id}"`)) failures.push(`${answer.list}: no longer lists the "${answer.id}" answer`);
+    for (const locale of LOCALES) {
+      const text = String(answer.copyKey.split('.').reduce((n, k) => (n && typeof n === 'object' ? n[k] : undefined), locales(locale, answer.namespace)) ?? '');
+      if (text.trim() === '') { failures.push(`${answer.id}: copy ${answer.namespace}:${answer.copyKey} is missing in ${locale}`); continue; }
+      const numbers = new Set([...text.matchAll(/\d[\d.,]*/g)].map((m) => Number(m[0].replace(/[.,]/g, ''))));
+      for (const cls of answer.periods ?? []) {
+        const days = registry.classes[cls]?.days;
+        if (!numbers.has(days)) failures.push(`${answer.id}: ${answer.namespace}:${answer.copyKey} (${locale}) does not state the ${cls} period (${days} days)`);
+      }
+      const allowed = new Set((answer.periods ?? []).map((cls) => registry.classes[cls]?.days));
+      for (const n of numbers) if (!allowed.has(n)) failures.push(`${answer.id}: ${answer.namespace}:${answer.copyKey} (${locale}) states ${n}, which is no period of ${(answer.periods ?? []).join(' or ')}`);
+    }
   }
 
   const nightly = readFile('.github/workflows/family-retention.yml') ?? '';

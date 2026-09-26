@@ -11,6 +11,7 @@
 3. **An erasure removes the person.** Deleting a child's account deletes every Block D row about them. Deleting an adult's account removes their identity from the child's record and keeps the child's record (see Erasure).
 4. **Nothing leaves.** Block D data is not shared with advertisers or with the Mentor's AI providers, and no Block D field is part of the Mentor's context. Behaviour analytics are consent-gated.
 5. **What the family reads is what happens.** The Tutor reads these periods on the Family screen ("Your family's data"). Core serves them from the same constants the database enforces, and a gate keeps the two equal.
+6. **Published before sign-up.** Since S07.8 the marketing FAQ answers "How long do you keep chores, rewards and decisions?" with the photo and record periods in three locales (`faq.items.familyRecords`); the gate fails if its numbers differ from the enforced periods or it leaves the page.
 
 ## Periods
 
@@ -88,7 +89,7 @@ Before every release that touches Block D: `GET /api/v1/admin/family/retention-c
 
 ## Changing a period
 
-A period changes only with Product and Legal review, in one change: `block-d-retention.json`, `family_retention_days()` (a new migration), the Core constant, this file, and the family-facing copy if its wording depends on it. The gate fails on any partial change. Record the review in the Block D threshold log's history.
+A period changes only with Product and Legal review, in one change: `block-d-retention.json`, `family_retention_days()` (a new migration), the Core constant, this file, the published FAQ answer, and the family-facing copy if its wording depends on it. The gate fails on any partial change. Record the review in the Block D threshold log's history.
 
 ## Open
 

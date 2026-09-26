@@ -21,6 +21,15 @@
     { "id": "risk", "concept": "risk_insurance", "copyKey": "scope.risk", "basis": "Appendix G §3.5: the simulation is debt-free and risk-free; it models no risk, insurance or investing." }
   ],
   "requiredConcepts": ["credit", "debt", "compound_interest", "risk_insurance"],
+  "publicAnswers": [
+    { "id": "notTaught", "why": "S07.8: D.20 asks for the statement in parent-facing material, and a parent weighing the product reads the marketing FAQ before any in-app screen.",
+      "list": "frontend/src/routes/marketing/FAQ.tsx", "namespace": "marketing", "copyKey": "faq.items.notTaught.answer",
+      "mustName": {
+        "en-US": ["credit", "debt", "compound interest", "risk", "insurance", "not interest"],
+        "es-MX": ["crédito", "deudas", "interés compuesto", "riesgo", "seguros", "no es interés"],
+        "pt-BR": ["crédito", "dívidas", "juros compostos", "risco", "seguros", "não é rendimento"]
+      } }
+  ],
   "mounts": [
     "frontend/src/routes/app/family/FamilyPage.tsx",
     "frontend/src/routes/app/banking/ParentBankingControlPanel.tsx",

@@ -102,3 +102,23 @@ test('catches Block D data reaching the Mentor or third-party analytics', () => 
   assert.ok(failures.some((f) => f.includes("a Block D field reaches the Mentor's context")), failures.join('\n'));
   assert.ok(failures.includes('frontend/src/routes/app/family/Fake.tsx: a Family Hub surface imports the third-party analytics module'), failures.join('\n'));
 });
+
+test('catches the published FAQ answer drifting from the enforced periods (S07.8)', () => {
+  const failures = mutate((live) => ({
+    registry: { ...live.registry, classes: { ...live.registry.classes, records: { ...live.registry.classes.records, days: 365 } } },
+    locales: (locale, ns) => {
+      const json = live.locales(locale, ns);
+      if (locale !== 'pt-BR' || ns !== 'marketing') return json;
+      const copy = structuredClone(json);
+      copy.faq.items.familyRecords.answer = copy.faq.items.familyRecords.answer.replace('30 dias', '60 dias');
+      return copy;
+    },
+  }));
+  assert.ok(failures.includes('familyRecords: marketing:faq.items.familyRecords.answer (en-US) does not state the records period (365 days)'), failures.join('\n'));
+  assert.ok(failures.includes('familyRecords: marketing:faq.items.familyRecords.answer (en-US) states 400, which is no period of evidence or records'), failures.join('\n'));
+  assert.ok(failures.includes('familyRecords: marketing:faq.items.familyRecords.answer (pt-BR) states 60, which is no period of evidence or records'), failures.join('\n'));
+  const unlisted = mutate((live) => ({
+    readFile: (path) => (path.endsWith('FAQ.tsx') ? live.readFile(path).replace('{ id: "familyRecords", category: "privacy" },', '') : live.readFile(path)),
+  }));
+  assert.deepEqual(unlisted, ['frontend/src/routes/marketing/FAQ.tsx: no longer lists the "familyRecords" answer']);
+});

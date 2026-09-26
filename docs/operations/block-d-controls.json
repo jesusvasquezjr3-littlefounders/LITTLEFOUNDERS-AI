@@ -2,6 +2,17 @@
   "about": "S07.6 (D.7): every control a family sees in Digital Banking and the Family Hub, what the product may say it does, where the system enforces it and which adversarial test proves it. agent/tools/check-no-unbacked-guarantee.mjs fails CI when an enforcement or a proof is missing, when the latest definition of an enforcing SQL function no longer carries its guard, when a surface declares a data-control that is not listed here, or when Core's or the client's freeze holds differ from the holds listed here. Rationale: docs/operations/NO-UNBACKED-GUARANTEE.md.",
   "version": 1,
   "forbiddenDependencies": ["stripe", "@stripe/stripe-js", "@stripe/react-stripe-js", "paypal", "@paypal/checkout-server-sdk", "@paypal/react-paypal-js", "braintree", "@adyen/api-library", "@adyen/adyen-web", "plaid", "react-plaid-link", "marqeta", "square", "checkout-sdk-node", "mercadopago", "@mercadopago/sdk-react", "pagarme", "unit-finance", "synctera", "galileo"],
+  "retiredClaims": [
+    {
+      "namespace": "marketing",
+      "why": "D.17 lets a Tutor pre-approve small rewards and self-logged chores, so not every reward or chore waits for a tap (control approval); D.14 sends Share coins to a place a Tutor chose, never to another person's goal (control share_destination). Retired in S07.8.",
+      "phrases": {
+        "en-US": ["spending needs your approval first", "you approve it before it lands", "waiting for their approval before it's yours", "someone else's goal"],
+        "es-MX": ["gastar necesita tu aprobación primero", "lo apruebas antes de que llegue", "esperando su aprobación antes de ser tuyo", "la meta de alguien más"],
+        "pt-BR": ["gastar precisa da sua aprovação antes", "aprova antes de chegar até ele", "esperando a aprovação dele antes de ser seu", "a meta de outra pessoa"]
+      }
+    }
+  ],
   "controls": [
     {
       "id": "simulation",
@@ -108,6 +119,34 @@
         { "file": "backend/src/__tests__/tasks.test.ts", "contains": "toBe('SPEND_LIMIT_REACHED')" }
       ],
       "ui": ["coinAccount:young.limitWeekly", "coinAccount:young.limitWhen", "coinAccount:transition.limitWeekly", "coinAccount:transition.limitMonthly", "coinAccount:transition.limitWhen", "coinAccount:teen.limitWeekly", "coinAccount:teen.limitMonthly", "coinAccount:teen.limitWhen"]
+    },
+    {
+      "id": "approval",
+      "claim": "A chore counts and a reward is given only after a Tutor's yes, or inside the independence level a Tutor granted (a self-logged chore or a pre-approved reward the Tutor reviews afterwards), and never past the freeze or the limit. The marketing site says exactly this, not that every reward waits for a tap (S07.8).",
+      "enforcedBy": [
+        { "fn": "guard_task_state", "contains": "'TASK_SELF_LOG_FORBIDDEN'" },
+        { "fn": "guard_redemption_state", "contains": "'REDEMPTION_PREAPPROVAL_FORBIDDEN'" },
+        { "fn": "family_request_redemption", "contains": "'preapproved', p_kid, 'child'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-autonomy-decisions-postgres.py", "contains": "'TASK_SELF_LOG_FORBIDDEN')" },
+        { "file": "database/scripts/verify-autonomy-decisions-postgres.py", "contains": "'REDEMPTION_PREAPPROVAL_FORBIDDEN')" },
+        { "file": "backend/src/__tests__/familyAutonomy.test.ts", "contains": "reports a pre-approved reward as the database decided, and never approves one itself" }
+      ],
+      "ui": ["familyAutonomy:levelsTutor.unlock1", "familyAutonomy:levelsTutor.preapproved", "marketing:faq.items.chores.answer", "marketing:families.tasks.body", "marketing:families.tasks.consequenceSpend"]
+    },
+    {
+      "id": "share_destination",
+      "claim": "Share coins go only to a place a Tutor (or a self-registered teen) chose, and only whoever chose it records what really happened, with a note the child reads. The marketing site describes this destination, not a transfer to someone else's goal (S07.8).",
+      "enforcedBy": [
+        { "fn": "guard_share_gift", "contains": "'SHARE_DESTINATION_UNAVAILABLE'" },
+        { "fn": "guard_share_gift", "contains": "'SHARE_GIFT_FORBIDDEN'" }
+      ],
+      "provedBy": [
+        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "'SHARE_DESTINATION_UNAVAILABLE')" },
+        { "file": "database/scripts/verify-money-habits-postgres.py", "contains": "'SHARE_GIFT_FORBIDDEN')" }
+      ],
+      "ui": ["marketing:families.tasks.consequenceShare"]
     },
     {
       "id": "savings_bonus.framing",

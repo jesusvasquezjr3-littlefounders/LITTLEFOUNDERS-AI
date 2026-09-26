@@ -16,6 +16,9 @@
 //     the database refuses);
 //   - a rebuilt surface declares a data-control the registry does not know;
 //   - a copy key the registry names is missing in any locale;
+//   - a retired claim (a promise the product stopped backing, such as "every
+//     reward waits for your approval" once D.17 pre-approves small ones)
+//     reappears anywhere in its namespace, in any locale;
 //   - any package depends on a payment, card-issuing or bank-linking SDK
 //     (the simulation claim, "no bank or card behind it", would stop being true).
 // It runs in the unfiltered repo gates: the evidence spans database/,
@@ -61,6 +64,13 @@ export function declaredControls(source) {
   const literal = [...source.matchAll(/data-control="([a-z_.]+)"/g)].map((m) => m[1]);
   const template = [...source.matchAll(/data-control=\{`([a-z_]+)\.\$\{/g)].map((m) => `${m[1]}.*`);
   return [...literal, ...template];
+}
+
+/** Every string leaf of a copy file as [dotted key, text]. */
+export function flatStrings(node, prefix = '') {
+  if (typeof node === 'string') return [[prefix, node]];
+  if (!node || typeof node !== 'object') return [];
+  return Object.entries(node).flatMap(([key, value]) => flatStrings(value, prefix ? `${prefix}.${key}` : key));
 }
 
 function lookup(json, path) {
@@ -111,6 +121,19 @@ export function checkControls({ registry, readFile, migrations, rebuiltSources, 
         const prefix = control.slice(0, -1);
         if (![...ids].some((i) => i.startsWith(prefix))) failures.push(`${file}: data-control ${control} matches no registered control`);
       } else if (!ids.has(control)) failures.push(`${file}: data-control="${control}" is not in ${REGISTRY}`);
+    }
+  }
+  // S07.8: a claim the product stopped backing (every reward waits for a tap
+  // once D.17 pre-approves small ones; Share coins "toward someone else's
+  // goal" that no flow ever produced) may not come back in any string of the
+  // namespace, in any locale.
+  for (const retired of registry.retiredClaims ?? []) {
+    for (const locale of LOCALES) {
+      const strings = flatStrings(locales(locale, retired.namespace));
+      for (const phrase of retired.phrases?.[locale] ?? []) {
+        const hit = strings.find(([, text]) => text.toLowerCase().includes(phrase.toLowerCase()));
+        if (hit) failures.push(`${retired.namespace}:${hit[0]} (${locale}) says "${phrase}", a claim the product no longer backs: ${retired.why}`);
+      }
     }
   }
   const forbidden = new Set(registry.forbiddenDependencies ?? []);

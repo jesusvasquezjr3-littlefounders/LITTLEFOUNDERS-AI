@@ -161,7 +161,7 @@ describe('Marketing site', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       i18n.t('marketing.faq.hero.title'),
     );
-    // One item per category, spot-checked rather than all 27 — this pins the
+    // One item per category, spot-checked rather than all 29 — this pins the
     // rendering path, not the full content list.
     for (const item of ['whatIs', 'whatIsTutor', 'talksToAI', 'realBank', 'dataCollected', 'contact']) {
       expect(screen.getByText(i18n.t(`marketing.faq.items.${item}.question`))).toBeInTheDocument();
@@ -187,6 +187,12 @@ describe('Marketing site', () => {
     fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.categories.money') }));
     expect(screen.queryByRole('button', { name: whatIsTutorQuestion })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: i18n.t('marketing.faq.items.realBank.question') })).toBeInTheDocument();
+    // S07.8 (D.20): what the practice does not teach is answered before sign-up.
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.items.notTaught.question') }));
+    expect(screen.getByText(i18n.t('marketing.faq.items.notTaught.answer'))).toBeInTheDocument();
+    // S07.8 (D.21): the Family Hub periods are published with the privacy answers.
+    fireEvent.click(screen.getByRole('button', { name: i18n.t('marketing.faq.categories.privacy') }));
+    expect(screen.getByRole('button', { name: i18n.t('marketing.faq.items.familyRecords.question') })).toBeInTheDocument();
   });
 
   it('renders the privacy notice with cookie controls', () => {

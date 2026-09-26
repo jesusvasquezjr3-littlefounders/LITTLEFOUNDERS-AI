@@ -115,15 +115,15 @@
     },
     "tasks": {
       "heading": "Chores with a real reward.",
-      "body": "You assign the task and the LF Coins it's worth. Once it's done, your child decides how to split what they earned — and you approve it before it lands.",
+      "body": "You assign the task and the LF Coins it's worth. You approve it once it's done, and your child decides how to split what they earned. As they show they're ready, you can let small chores count on their own and check them afterwards.",
       "scenario": "You earned 10 LF Coins for finishing your chore. What do you do?",
       "optionSave": "Save it",
       "optionSpend": "Spend it",
       "optionShare": "Share it",
       "prompt": "Tap one. Watch what changes.",
       "consequenceSave": "10 coins move into your goal. You're a little closer — and your Tutor can see the progress too.",
-      "consequenceSpend": "You ask for something from the catalog your Tutor built. It's waiting for their approval before it's yours.",
-      "consequenceShare": "You send a few coins toward someone else's goal. Generosity counts here too."
+      "consequenceSpend": "You ask for something from the catalog your Tutor built, and say why. It waits for their yes, unless it's small enough for the level they gave you.",
+      "consequenceShare": "Your Share coins go to a cause or a gift your Tutor picked, and you hear what really happened. Generosity counts here too."
     },
     "banking": {
       "tag": "Educational simulation",
@@ -239,11 +239,15 @@
       },
       "chores": {
         "question": "How do chores and rewards work?",
-        "answer": "You assign a task and the LF Coins it's worth. Once it's done, your child chooses to save, spend or share what they earned — spending needs your approval first."
+        "answer": "You assign a task and the LF Coins it's worth: a family contribution or a paid bonus task. Your child splits what they earn into save, spend and share. Every child starts with you approving each chore and reward; as they show they're ready, you can let small ones through on their own, within limits you set."
       },
       "realMoney": {
         "question": "Can my child spend real money?",
         "answer": "No, anywhere in the product. LittleFounders never asks a child for payment details or moves real money."
+      },
+      "notTaught": {
+        "question": "Does it teach credit, debt or investing?",
+        "answer": "No. The practice covers earning coins, splitting them into save, spend and share, saving toward goals and asking for rewards. It does not teach borrowing, credit cards, debt, real compound interest, risk, investing or insurance, and the weekly savings bonus is not interest. These are hard to teach well, so we leave them out."
       },
       "dataCollected": {
         "question": "What data do you collect about my child?",
@@ -256,6 +260,10 @@
       "retention": {
         "question": "How long do you keep AI Tutor conversations?",
         "answer": "Up to 90 days, on a fixed automatic schedule."
+      },
+      "familyRecords": {
+        "question": "How long do you keep chores, rewards and decisions?",
+        "answer": "Chore photos for 30 days after you decide, and chores, rewards, decisions and notes for 400 days. Coins, goals and rules stay while the account exists. Deleting your child's account deletes all of it."
       },
       "analyticsToggle": {
         "question": "Can I turn off usage analytics for my child?",

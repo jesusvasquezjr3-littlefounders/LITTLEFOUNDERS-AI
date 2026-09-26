@@ -29,6 +29,7 @@ A surface marks the element with `data-control="<id>"`. `node agent/tools/check-
 - Core's or the client's freeze holds differ from the registry;
 - a surface declares an unregistered control;
 - a copy key is missing in a locale;
+- a retired claim (`retiredClaims` in the registry: a promise the product stopped backing) reappears in any string of its namespace, in any locale;
 - any package depends on a payment, card-issuing or bank-linking SDK.
 
 ## The quarterly audit (human)
@@ -47,6 +48,7 @@ Checklist, on the running product in all three locales, light and dark, at 375 a
 | Date | Scope | By | Result |
 |---|---|---|---|
 | 2026-09-24 | Engineering pre-audit at S07.6 of the legacy and rebuilt Banking pages. This is **not** the human audit Appendix H asks for; that is still open. | Engineering (S07 lane) | 8 findings. All fixed in S07.6 except the unrendered legacy `display_number` column (below) |
+| 2026-09-24 | Engineering lane review at S07.8 of the marketing site's Family Hub claims (`marketing.json`, three locales) against the controls as built in S07.1-S07.7. Also **not** the human audit. | Engineering (S07 lane) | 3 findings, all fixed in S07.8 (below the first list) |
 
 Findings of the 2026-09-24 pre-audit:
 
@@ -62,7 +64,15 @@ Findings of the 2026-09-24 pre-audit:
 7. **"Your own account, card and savings"** in the child's subtitle, and "a named account and a card" in the Tutor's. *Fixed:* "a practice card, pockets and goals", and "a named practice card".
 8. **"Digital Banking" as the section name.** *Reviewed, kept.* It is the SPEC's name for the section, and the page now states that it is practice with coins that stay in the app.
 
-## Enforcing mechanisms (S07.6)
+Findings of the 2026-09-24 S07.8 lane review (the marketing site):
+
+1. **"Spending needs your approval first"** (FAQ, chores) and **"It's waiting for their approval before it's yours"** (Families page). Since S07.5 a Tutor can raise a child to Level 2 or 3, where rewards up to an amount the Tutor sets are pre-approved and chores are self-logged and reviewed afterwards (D.17). The claim promised more control than the product keeps once the Tutor chooses a level. *Fixed:* both now say every child starts with the Tutor approving each chore and reward, and that small ones can go through on their own within limits the Tutor sets. Registered as control `approval`.
+2. **"You approve it before it lands"** (Families page, chores). The same promise, for self-logged chores. *Fixed:* the Tutor approves it once it is done, and can let small chores count on their own and check them afterwards.
+3. **"You send a few coins toward someone else's goal"** (Families page, Share). No flow ever sent Share coins to another person's goal; since S07.4 they go to a place a Tutor chose, and whoever chose it records what really happened (D.14). *Fixed:* the copy describes that destination. Registered as control `share_destination`.
+
+The three retired phrasings are listed under `retiredClaims`, so the gate fails if any of them comes back in any marketing string. The same review published the D.20 scope statement and the D.21 periods in the marketing FAQ (`notTaught`, `familyRecords`), each pinned by its own gate.
+
+## Enforcing mechanisms (S07.6, extended in S07.8)
 
 | Mechanism | Where |
 |---|---|

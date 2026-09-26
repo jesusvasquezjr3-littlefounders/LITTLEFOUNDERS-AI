@@ -505,6 +505,38 @@ describe('staff: the product-team rollback (D.17 DoD (d)) and the Appendix H met
     expect((await app().post(`/api/v1/admin/family-autonomy/${KID}/lower`).set('Authorization', as(STAFF)).send({ level: 2, reason })).status).toBe(409);
   });
 
+  it('shows support staff a child\'s level and its history before a rollback; everyone else is refused before any read (S07.8)', async () => {
+    const change = {
+      id: DECISION, from_level: 2, to_level: 1, from_limit: 10, to_limit: 0, actor_user_id: STAFF, actor_kind: 'staff',
+      reason_code: 'support_review', reason: 'Support review found the level was reached by mistake.', created_at: '2026-09-21T10:00:00Z',
+    };
+    let calls = stub({ staffGrants: ['manage_support'], changes: [change] });
+    const res = await app().get(`/api/v1/admin/family-autonomy/${KID}`).set('Authorization', as(STAFF));
+    expect(res.status).toBe(200);
+    expect(res.body.data.autonomy).toMatchObject({ inFamily: true, level: 1 });
+    expect(res.body.data.changes).toEqual([expect.objectContaining({ fromLevel: 2, toLevel: 1, by: 'staff', byMe: true, reasonCode: 'support_review' })]);
+    expect(res.body.data.changes[0]).not.toHaveProperty('actor_user_id');
+    expect(rpcCalls(calls, 'family_autonomy_status')[0]!.body).toEqual({ p_kid: KID });
+    expect((await app().get('/api/v1/admin/family-autonomy/not-a-uuid').set('Authorization', as(STAFF))).status).toBe(400);
+    stub({ staffGrants: ['manage_support'], rpc: { family_autonomy_status: { status: 200, body: { ...STATUS, in_family: false } } } });
+    expect((await app().get(`/api/v1/admin/family-autonomy/${TEEN}`).set('Authorization', as(STAFF))).status).toBe(404);
+    stub({ staffGrants: ['manage_support'], down: ['family_autonomy_changes'] });
+    expect((await app().get(`/api/v1/admin/family-autonomy/${KID}`).set('Authorization', as(STAFF))).status).toBe(502);
+    for (const grants of [['view_analytics'], []]) {
+      calls = stub({ staffGrants: grants });
+      expect((await app().get(`/api/v1/admin/family-autonomy/${KID}`).set('Authorization', as(STAFF))).status).toBe(403);
+      expect(rpcCalls(calls, 'family_autonomy_status')).toHaveLength(0);
+    }
+    for (const who of [PARENT, KID, LINKED_TEEN, TEEN, ADULT]) {
+      calls = stub({ staffGrants: ['manage_support'] });
+      expect((await app().get(`/api/v1/admin/family-autonomy/${KID}`).set('Authorization', as(who))).status).toBe(403);
+      expect(rpcCalls(calls, 'family_autonomy_status')).toHaveLength(0);
+    }
+    calls = stub({ staffGrants: ['manage_support'] });
+    expect((await app().get(`/api/v1/admin/family-autonomy/${KID}`).set('Authorization', as(GUEST, { is_anonymous: true }))).status).toBe(403);
+    expect(rpcCalls(calls, 'family_autonomy_status')).toHaveLength(0);
+  });
+
   it('serves the progression, nudge and actionability metrics to analytics staff only, with null rates for empty populations', async () => {
     stub({
       staffGrants: ['view_analytics'],

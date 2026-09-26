@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkControls, declaredControls, holdsIn, latestFunctionBody, liveInputs } from './check-no-unbacked-guarantee.mjs';
+import { checkControls, declaredControls, flatStrings, holdsIn, latestFunctionBody, liveInputs } from './check-no-unbacked-guarantee.mjs';
 
 /*
  * D.7's gate must see every way a control becomes cosmetic: a later migration
@@ -73,4 +73,18 @@ test('catches a claim\'s copy missing in one locale', () => {
 test('catches a payment or bank-linking SDK', () => {
   const failures = mutate((live) => ({ packages: [...live.packages, ['backend/package.json', { dependencies: { stripe: '^1.0.0' } }]] }));
   assert.deepEqual(failures, ['backend/package.json: depends on stripe, a payment or bank-linking SDK; the simulation claim would no longer be true']);
+});
+
+test('catches a retired claim coming back in any string of its namespace (S07.8)', () => {
+  const failures = mutate((live) => ({
+    locales: (locale, ns) => (locale === 'pt-BR' && ns === 'marketing'
+      ? { ...live.locales(locale, ns), extra: { note: 'Gastar precisa da sua aprovação antes, sempre.' } }
+      : live.locales(locale, ns)),
+  }));
+  assert.equal(failures.length, 1, failures.join('\n'));
+  assert.match(failures[0], /^marketing:extra\.note \(pt-BR\) says "gastar precisa da sua aprovação antes"/);
+});
+
+test('flattens copy to dotted keys', () => {
+  assert.deepEqual(flatStrings({ a: { b: 'x', c: ['y'] }, d: 1 }), [['a.b', 'x'], ['a.c.0', 'y']]);
 });
