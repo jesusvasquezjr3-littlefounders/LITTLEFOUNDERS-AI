@@ -32,7 +32,12 @@ import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
-import { OrchestratorSnapshotSchema, TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
+import {
+  OrchestratorSnapshotSchema,
+  TutorOrchestrator,
+  type LearnerInputMeta,
+  type TurnOutcome,
+} from '../tutor/orchestrator.js';
 import {
   CLOSE_CODES,
   ClientMessageSchema,
@@ -158,7 +163,8 @@ interface Live {
     * below. Decoding on arrival makes the concatenation a byte operation, which
     * is the only kind that is correct.
     */
-  assembly: { mimeType: string; parts: Buffer[]; bytes: number; chars: number } | null;
+  /** `beganAtMs`: when the learner pressed the microphone (C.9 reply latency). */
+  assembly: { mimeType: string; parts: Buffer[]; bytes: number; chars: number; beganAtMs: number } | null;
   microphone: boolean;
   closing: boolean;
   /**
@@ -926,6 +932,9 @@ async function finalizeParkedOnce(
   void closeSession({
     sessionId,
     closeReason,
+    // C.16: a parked close is a silent dropout (or a shutdown's abandon):
+    // the learner_left script, whose re-engagement Core queues for return.
+    ...entry.orchestrator.closeRecord(closeReason),
     // The transcript's own row count, not the model-turn count — see
     // `CloseSessionInput.turnCount`'s comment.
     turnCount: entry.transcriptSeq,
@@ -2047,7 +2056,12 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   // The opening line. Deliberately after `ready`: the client waits for the 3D
   // stage's own onReady before it plays anything, and handing over speech
   // while the assets resolve plays audio at a blank canvas (/TUTOR_3D.md §7b).
-  await deliver(live, await live.orchestrator.greet(Date.now()));
+  //
+  // C.16: a learner returning after a silent dropout or a budget interruption
+  // hears the re-engagement message that ending queued (Core decides it from
+  // their previous closed session), never an opening that pretends nothing
+  // happened. A Core that predates the field sends nothing: the greeting.
+  await deliver(live, await live.orchestrator.greet(Date.now(), live.session.opening ?? 'greeting'));
 }
 
 async function onMessage(live: Live, raw: string): Promise<void> {
@@ -2113,6 +2127,104 @@ async function onMessage(live: Live, raw: string): Promise<void> {
        */
       await attemptEndSession(live);
       return;
+
+    case 'session_end_response': {
+      /*
+       * C.8/C.12: the learner's choice on the stop-or-continue offer. Refused
+       * unless an offer is actually open — a replayed or hand-crafted frame
+       * steers nothing — and checked BEFORE the claim, like an unknown
+       * segment: a refusal this cheap should not spend the turn slot.
+       * Accepting starts the completed close (the recap question, scripted);
+       * declining continues the lesson (a model turn).
+       */
+      if (!live.orchestrator.sessionEndOfferOpen) {
+        send(live.socket, {
+          type: 'error',
+          code: 'NO_SESSION_END_OFFER',
+          message: 'There is no open choice to answer.',
+        });
+        return;
+      }
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.respondToSessionEndOffer(message.data.accepted, Date.now(), live.abort.signal),
+        );
+      } finally {
+        live.abort = null;
+        releaseTurn(live);
+      }
+      return;
+    }
+
+    case 'check_in_response': {
+      /*
+       * C.19: the learner's answer to the system's check-in ("are we on the
+       * same page?") on the two reply chips. Refused unless a check-in is
+       * actually open — a replayed or hand-crafted frame steers nothing —
+       * and checked BEFORE the claim, like `session_end_response`. "Yes"
+       * continues the plan; "not really" is the repair (a model turn that
+       * offers an adaptation).
+       */
+      if (!live.orchestrator.checkInOpen) {
+        send(live.socket, {
+          type: 'error',
+          code: 'NO_CHECK_IN',
+          message: 'There is no open question to answer.',
+        });
+        return;
+      }
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.respondToCheckIn(message.data.aligned, Date.now(), live.abort.signal),
+        );
+      } finally {
+        live.abort = null;
+        releaseTurn(live);
+      }
+      return;
+    }
+
+    case 'goal_response': {
+      /*
+       * C.15: the learner's answer to the goal restatement on the two equal
+       * chips. Refused unless the goal check is actually open — a replayed or
+       * hand-crafted frame steers nothing — and checked BEFORE the claim.
+       * "Yes" starts the lesson on the agreed goal; "something else" asks
+       * what they would like instead (a model turn either way).
+       */
+      if (!live.orchestrator.goalCheckOpen) {
+        send(live.socket, {
+          type: 'error',
+          code: 'NO_GOAL_CHECK',
+          message: 'There is no open question to answer.',
+        });
+        return;
+      }
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.respondToGoalCheck(message.data.agreed, Date.now(), live.abort.signal),
+        );
+      } finally {
+        live.abort = null;
+        releaseTurn(live);
+      }
+      return;
+    }
 
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
@@ -2194,13 +2306,16 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'learner_text':
     case 'learner_edit': {
-      const claim = claimTurn(live, Date.now());
+      // C.9: a typed reply's onset is when it arrived.
+      const arrivedAtMs = Date.now();
+      const claim = claimTurn(live, arrivedAtMs);
       if (claim !== 'ok') return refuseTurn(live, claim);
       live.abort = new AbortController();
       send(live.socket, { type: 'thinking' });
       try {
         await handleLearnerTurn(live, message.data.text, live.abort.signal, {
           edit: message.data.type === 'learner_edit',
+          input: { source: 'typed', onsetAtMs: arrivedAtMs },
         });
       } finally {
         live.abort = null;
@@ -2229,7 +2344,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
-      live.assembly = { mimeType: message.data.mimeType, parts: [], bytes: 0, chars: 0 };
+      live.assembly = { mimeType: message.data.mimeType, parts: [], bytes: 0, chars: 0, beganAtMs: Date.now() };
       return;
 
     case 'learner_audio_chunk': {
@@ -2291,7 +2406,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         * browser, since streaming was introduced. Concatenating the decoded
         * buffers is the whole fix.
         */
-      await handleAudioClip(live, assembleClip(assembly.parts), assembly.mimeType);
+      await handleAudioClip(live, assembleClip(assembly.parts), assembly.mimeType, assembly.beganAtMs);
       return;
     }
   }
@@ -2356,7 +2471,12 @@ async function refreshMicConsent(live: Live): Promise<boolean> {
   return true;
 }
 
-async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Promise<void> {
+/**
+ * `onsetAtMs`: when the learner started speaking (the microphone press of a
+ * streamed clip), for the C.9 reply latency; null for a single-frame clip,
+ * whose start is not known.
+ */
+async function handleAudioClip(live: Live, audio: Buffer, mimeType: string, onsetAtMs: number | null = null): Promise<void> {
   if (!live.microphone) {
     send(live.socket, {
       type: 'error',
@@ -2404,6 +2524,7 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Pro
     await handleLearnerTurn(live, text, live.abort.signal, {
       viaMicrophone: true,
       micConsentAlreadyChecked: true,
+      input: { source: 'spoken', onsetAtMs },
     });
   } finally {
     live.abort = null;
@@ -2415,8 +2536,15 @@ async function handleLearnerTurn(
   live: Live,
   text: string,
   signal?: AbortSignal,
-  opts: { viaMicrophone?: boolean; edit?: boolean; micConsentAlreadyChecked?: boolean } = {},
+  opts: {
+    viaMicrophone?: boolean;
+    edit?: boolean;
+    micConsentAlreadyChecked?: boolean;
+    /** C.9: how the words arrived and when the learner started answering. */
+    input?: LearnerInputMeta;
+  } = {},
 ): Promise<void> {
+  const input: LearnerInputMeta = opts.input ?? { source: opts.viaMicrophone ? 'spoken' : 'typed', onsetAtMs: null };
   // The floor and the single-flight slot are the CALLER's, claimed before any
   // paid work — including the transcription that precedes an audio turn. This
   // function must not re-check the floor: `claimTurn` has already stamped
@@ -2552,6 +2680,7 @@ async function handleLearnerTurn(
           text,
           Date.now(),
           signal,
+          input,
         ),
         learnerTurnSeq,
       );
@@ -2565,8 +2694,8 @@ async function handleLearnerTurn(
   await deliver(
     live,
     opts.edit
-      ? await live.orchestrator.handleLearnerEdit(text, Date.now(), signal)
-      : await live.orchestrator.handleLearnerText(text, Date.now(), signal),
+      ? await live.orchestrator.handleLearnerEdit(text, Date.now(), signal, input)
+      : await live.orchestrator.handleLearnerText(text, Date.now(), signal, input),
     learnerTurnSeq,
   );
 }
@@ -2602,6 +2731,20 @@ async function deliver(
    */
   segmentAttempt = 0,
 ): Promise<void> {
+  /*
+   * C.16: A SCRIPTED LINE FOLLOWS THIS TURN (`TurnOutcome.after`) — the
+   * closing line after the Mentor's last turn, or the recap question after
+   * it wrapped up. This turn goes out first, its voice is awaited so the
+   * clip is not cut by the close, then the line, which carries the close.
+   */
+  if (outcome?.after) {
+    const { after, ...first } = outcome;
+    await deliver(live, first, learnerTurnSeq, segmentAttempt);
+    await first.emission.audio;
+    await deliver(live, after);
+    return;
+  }
+
   if (outcome === null) {
     // An interrupted production. Nothing to say — but the client's thinking
     // state must end on a server frame, not on a guess, so the budget frame
@@ -2715,6 +2858,9 @@ async function deliver(
       savePlan: emission.turn.savePlan,
       roleplayScene: emission.turn.roleplayScene ?? null,
       pointAt: emission.turn.pointAt ?? null,
+      // C.18: the honesty facts ride the transcript row — Core scores the
+      // reveal against the real key it alone holds (tutor_turn_honesty).
+      honesty: emission.honesty ?? null,
     }).then((recorded) => notePersist(live, recorded));
   });
 
@@ -2769,6 +2915,20 @@ async function deliver(
   if (emission.turn.offerAdaptation) {
     send(live.socket, { type: 'adaptation_offer', adaptation: emission.turn.offerAdaptation });
   }
+
+  // C.8/C.12: this turn asked "stop here, or one more?" — the stage shows two
+  // equal choices (Frontend Bible 08 §4). Never a default-accepted path: the
+  // choice arrives as `session_end_response` or in the learner's own words.
+  if (emission.sessionEndOffer === true) send(live.socket, { type: 'session_end_offer' });
+
+  // C.19: this turn is the system's check-in — the stage shows the two reply
+  // chips (Frontend Bible 08 §4: "a turn with chips, not a modal"). The
+  // answer arrives as `check_in_response` or in the learner's own words.
+  if (emission.checkIn === true) send(live.socket, { type: 'check_in' });
+
+  // C.15: this turn restated the session goal — the stage shows two equal
+  // chips. The answer arrives as `goal_response` or in the learner's words.
+  if (emission.goalCheck === true) send(live.socket, { type: 'goal_check' });
 
   if (emission.turn.next === 'segment' && emission.turn.segmentRequest) {
     if (segmentAttempt > MAX_SEGMENT_RETRIES) {
@@ -2882,6 +3042,13 @@ async function serveSegment(
     ...(kcId ? { kcId } : {}),
     ...(strategy ? { strategy } : {}),
   });
+
+  if (served !== null && 'liveSuspended' in served) {
+    // C.5: live generation is suspended for this content-risk category. No
+    // paid author or judge call is made for an item Core would refuse.
+    console.warn(`[oracle] live generation suspended by Core (${served.reason}); no activity authored`);
+    served = null;
+  }
 
   if (served !== null && 'needsGeneration' in served) {
     const candidate = await generateSegment({
@@ -3041,6 +3208,9 @@ async function finish(
   const closeOutcome = await closeSession({
     sessionId: live.session.sessionId,
     closeReason: reason,
+    // C.16 / C.8 / C.12: which closing script this ending used, the opening
+    // the session began with, and the session-end signal's record.
+    ...live.orchestrator.closeRecord(reason),
     // The transcript's own row count (both speakers), not the model-turn
     // count — see `CloseSessionInput.turnCount`'s comment (found by
     // adversarial review, 2026-08-30, HIGH).
@@ -3141,6 +3311,12 @@ async function finish(
     console.warn('[oracle] trajectory emission crashed:', error instanceof Error ? error.message : error),
   );
 
+  /*
+   * C.16: what the closing state shows (Frontend Bible 08 §3–4) — which
+   * script ended the session, the act the completed close named, and the
+   * lesson it will pick up from. Our own catalog text only.
+   */
+  send(live.socket, { type: 'session_closing', ...live.orchestrator.closingSummary(reason) });
   send(live.socket, { type: 'closed', reason });
   live.socket.close(reason === 'completed' ? CLOSE_CODES.NORMAL : CLOSE_CODES.BUDGET_EXHAUSTED, reason);
 }

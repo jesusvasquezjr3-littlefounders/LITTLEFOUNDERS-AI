@@ -93,6 +93,24 @@ const RULES: Rule[] = [
       /\bnadie\s+me\s+(extra[ñn]e|extra[ñn]ar[íi]a)\b/i,
       /\bquero\s+desaparecer\b/i,
       /\bningu[ée]m\s+(sentiria|sente)\s+(minha\s+)?falta\b/i,
+      /*
+       * C.20 BIAS AUDIT, first run (2026-09-25): the same meaning must be
+       * caught however a child says or spells it. The audit found "I wanna
+       * die", "I just want to die" and "i wana die" passing while "I want to
+       * die" was caught; "me kiero morir" / "ya no kiero vivir" (child
+       * spelling) passing while the standard spelling was caught; and NO
+       * Portuguese pattern at all for "eu quero morrer", while the Spanish
+       * "quiero morir" has been caught since the first build. Each is the
+       * dialect / spelling / language gap C.20 exists to find, on the
+       * highest-severity category, so they are closed here rather than
+       * recorded as known gaps. Same loose policy as the rest of the rule.
+       */
+      /\bi\s+(just\s+|really\s+|only\s+)?(want|wanna|wana|wanted)\s+(to\s+)?die\b/i,
+      /\b(quiero|kiero|qiero)\s+morir(me)?\b/i,
+      /\bno\s+(quiero|kiero|qiero)\s+(vivir|seguir)\b/i,
+      /\b(quero|qero|kero)\s+morrer\b/i,
+      /\b(t[ôo]|tou|estou)\s+querendo\s+morrer\b/i,
+      /\b(n[ãa]o|num|naum)\s+(quero|qero|kero)\s+(mais\s+)?viver\b/i,
     ],
   },
   {
@@ -106,6 +124,17 @@ const RULES: Rule[] = [
       /\btengo\s+miedo\s+de\s+mi\s+(pap[áa]|mam[áa]|t[íi]o|t[íi]a|hermano|hermana)\b/i,
       /\bme\s+(bate|bateu|machuca|machucou|toca|tocou)\b/i,
       /\btenho\s+medo\s+d[oa]\s+meu?\b/i,
+      /*
+       * C.20 BIAS AUDIT, first run (2026-09-25): a child who NAMES the person
+       * ("my stepdad hits me", "my dad be hitting me") was not caught in
+       * English — only "he/she/someone hits me" was. Mexican "me madrea" and
+       * Brazilian "me espanca", and the child spelling "me bati", were not
+       * caught while "me pega" / "me bate" were. Closed here for the same
+       * reason as the self-harm gaps above.
+       */
+      /\bmy\s+[a-z'-]+(\s+[a-z'-]+)?\s+(be\s+|keeps\s+|always\s+)?(hits|hit|hitting|beats|beat|beating|touches|touched|touching)\s+me\b/i,
+      /\bme\s+(madrea|madre[óo]|madreaba|cachetea|cachete[óo]|pegaba|golpeaba)\b/i,
+      /\bme\s+(bati|batia|espanca|espancou|espancava)\b/i,
     ],
   },
   {
@@ -146,6 +175,17 @@ const RULES: Rule[] = [
       /\bmy\s+(address|phone\s?number|school)\s+is\b/i,
       /\bmi\s+(direcci[óo]n|tel[ée]fono|escuela)\s+es\b/i,
       /\bmeu\s+(endere[çc]o|telefone|col[ée]gio|escola)\s+[ée]\b/i,
+      /*
+       * C.20 BIAS AUDIT, first run (2026-09-25): the street pattern above
+       * only knew the English order (number, then street). In Mexico and
+       * Brazil the number FOLLOWS the name ("calle Hidalgo 45", "rua das
+       * Flores 12"), so a Spanish- or Portuguese-speaking child's address
+       * passed while an English-speaking child's was blocked. Also the
+       * code-switched "my address es" and the child spelling "direcion".
+       */
+      /\b(calle|avenida|av|rua|street|cerrada|privada|travessa)\.?\s+[A-Za-zÀ-ÿ]+(\s+[A-Za-zÀ-ÿ]+){0,2}\s+(n[úu]m(ero)?\.?\s*|#\s*|n[º°o]\.?\s*)?\d{1,5}\b/i,
+      /\bmy\s+(address|phone\s?number|school)\s+(es|é|e)\b/i,
+      /\bmi\s+(direcc?i[óo]n|tel[ée]fono|escuela)\s+(es|is)\b/i,
     ],
   },
   {

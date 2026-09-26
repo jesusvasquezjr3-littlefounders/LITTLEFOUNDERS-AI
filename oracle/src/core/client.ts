@@ -11,6 +11,15 @@ import {
   type Locale,
 } from '../context/schema.js';
 import type { WireDemoStep, WireWhiteboard } from '../ws/protocol.js';
+import type { TurnHonesty } from '../tutor/feedbackHonesty.js';
+import { SESSION_OPENINGS, type ClosingScript, type SessionOpening } from '../tutor/sessionClosing.js';
+import type { SessionEndSignalReport } from '../tutor/sessionEndSignal.js';
+import type { BehavioralTelemetryReport } from '../tutor/behavioralTelemetry.js';
+import { CONTINUITY_KINDS, type AllianceReport } from '../tutor/allianceController.js';
+import type { SelfExplanationReport } from '../tutor/selfExplanation.js';
+import { DispositionProfileSchema, type DispositionObservation } from '../tutor/dispositionProfile.js';
+import type { SpacedReviewReport } from '../tutor/spacedReview.js';
+import { DialogueCalibrationSchema, type DialogueCalibrationReport } from '../tutor/dialogueCalibration.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -167,8 +176,93 @@ export const SessionContextSchema = z
     voiceConsent: z.boolean(),
     /** Whether personalization could actually be read (§14: failure != empty). */
     intelDegraded: z.boolean(),
+    /**
+     * C.16: the opening this session begins with — the character's greeting,
+     * or the re-engagement message a silent dropout / a budget interruption
+     * in the learner's PREVIOUS session queued for their return. Decided by
+     * Core from its own rows (never from transcript text). OPTIONAL on the
+     * wire: a Core that predates it means the greeting. Never part of the
+     * model context — it selects a scripted line, nothing more.
+     */
+    opening: z.enum(SESSION_OPENINGS).optional(),
+    /**
+     * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * Behavioral Telemetry Layer's kill-switch condition over its trailing
+     * window (Default-to-Inaction Rate below the floor, or a check-in that a
+     * fired signal never produced). `shadow` means the layer keeps measuring
+     * but must not act; the orchestrator applies the STRICTER of this and
+     * TUTOR_BEHAVIORAL_TELEMETRY. OPTIONAL: a Core that predates it means
+     * `act`, i.e. the env switch alone decides.
+     */
+    behavioralTelemetryMode: z.enum(['act', 'shadow']).optional(),
+    /*
+     * C.7: the derived projection of this learner's persistent disposition
+     * profile (help-seeking style, persistence, explanation style, adaptations
+     * turned down across sessions, typical reply pace). SERVER-SIDE ONLY: it
+     * steers the controller's strategy selection and which written line the
+     * system uses, and is never a field of the sealed model context. Null
+     * when the learner has no profile yet or Core could not read it (a failed
+     * read is not a profile: nothing is changed). OPTIONAL: negotiated.
+     */
+    dispositionProfile: DispositionProfileSchema.nullable().optional(),
+    /*
+     * C.15: whether THIS persona has worked with this learner before, decided
+     * by Core from the persistent persona-rapport history: first_meeting,
+     * persona_switch, memory_gap or continuing. Null when Core could not say
+     * (the ordinary opening, no continuity move). Selects a written line and
+     * one fixed instruction; never part of the model context. OPTIONAL.
+     */
+    allianceContinuity: z.enum(CONTINUITY_KINDS).nullable().optional(),
+    /*
+     * C.15 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * Alliance Controller's kill-switch condition (a persona's bond proxy
+     * dropping more than 15% below its baseline, or renegotiations that do not
+     * improve sessions). `shadow` suspends the renegotiation trigger and the
+     * continuity re-establishment and keeps the passive tracking; the
+     * orchestrator applies the STRICTER of this and TUTOR_ALLIANCE_CONTROLLER.
+     */
+    allianceMode: z.enum(['act', 'shadow']).optional(),
+    /*
+     * C.11 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * spaced-review router (a recorded routing decision the rule does not
+     * reproduce, or in-session re-exposures that systematically never happen
+     * before the session ends). `shadow` keeps every routing decision recorded
+     * and opens no re-exposure detour; the orchestrator applies the STRICTER
+     * of this and TUTOR_SPACED_REVIEW. OPTIONAL: negotiated.
+     */
+    spacedReviewMode: z.enum(['act', 'shadow']).optional(),
+    /*
+     * C.17: this learner's dialogue register — the age band Core derived
+     * from its own age evidence (the birth date never travels), the variant
+     * (`calibrated` or the uniform `control`), how it was assigned (the H.7
+     * experiment enrols adults only, OD-23) and the experiment id. SERVER-SIDE
+     * ONLY: it selects the hint ladder and a fixed register note and is never
+     * a field of the sealed model context. Null when Core could not decide
+     * (the tier fallback applies). OPTIONAL: negotiated.
+     */
+    dialogueCalibration: DialogueCalibrationSchema.nullable().optional(),
   })
   .strict();
+
+/*
+ * The optional context fields THIS Oracle can parse, announced to Core on
+ * every context read. The schema above is `.strict()`, so a Core that sent a
+ * field an older Oracle does not know would make that Oracle refuse every
+ * session. Core therefore sends an optional field only when it is named here,
+ * which makes the deploy order of the two services irrelevant (found while
+ * building C.9, 2026-09-25: C.16's `opening` had been sent unconditionally,
+ * so deploying Core before Oracle would have refused every session in the
+ * gap). Kept identical to Core's list by `npm run telemetry:check`.
+ */
+export const CONTEXT_OPTIONAL_FIELDS = [
+  'opening',
+  'behavioralTelemetryMode',
+  'dispositionProfile',
+  'allianceContinuity',
+  'allianceMode',
+  'spacedReviewMode',
+  'dialogueCalibration',
+] as const;
 
 export type SessionContext = z.infer<typeof SessionContextSchema>;
 
@@ -207,7 +301,9 @@ async function coreFetch(path: string, init: RequestInit = {}): Promise<unknown>
  */
 export async function fetchSessionContext(sessionId: string): Promise<SessionContext | null> {
   try {
-    const body = await coreFetch(`/tutor/internal/sessions/${encodeURIComponent(sessionId)}`);
+    const body = await coreFetch(`/tutor/internal/sessions/${encodeURIComponent(sessionId)}`, {
+      headers: { 'x-oracle-context-fields': CONTEXT_OPTIONAL_FIELDS.join(',') },
+    });
     const parsed = Envelope(SessionContextSchema).safeParse(body);
     if (!parsed.success || parsed.data.error || !parsed.data.data) return null;
     return parsed.data.data;
@@ -226,6 +322,13 @@ export interface PersistTurnInput {
   audioPath?: string | null;
   source: 'model' | 'scripted' | 'stt';
   moderation?: Record<string, unknown>;
+  /**
+   * C.18: the turn's honesty facts (`tutor/feedbackHonesty.ts`), stored by
+   * Core in `tutor_turn_honesty` together with its own key-based reveal check
+   * against `openSegmentId`'s answer key. Tutor turns only; optional so a
+   * Core that predates it simply ignores it (its TurnBody is not strict).
+   */
+  honesty?: TurnHonesty | null;
   /**
    * V4's live sequence board, when this tutor turn drew one — the SAME
    * object sent over the wire (see `WireWhiteboard`'s own comment), never
@@ -325,6 +428,60 @@ export interface CloseSessionInput {
   turnCount: number;
   segmentCount: number;
   costUsd: number;
+  /**
+   * C.16: the closing script this ending used — the Session-Closing Script
+   * Accuracy metric (Appendix F §1.2) compares it with `closeReason`.
+   */
+  closingScript: ClosingScript;
+  /** C.16: the opening this session began with (greeting or a queued re-engagement). */
+  opening: SessionOpening;
+  /**
+   * C.8/C.12: the session-end signal's record — whether it was evaluated at
+   * all, and every firing with its measured deltas, mode and outcome
+   * (Early-Warning Signal Trigger Rate). Signal strength only, never an
+   * emotional label, and nothing the learner wrote.
+   */
+  endSignal: SessionEndSignalReport;
+  /**
+   * C.9/C.19: the Behavioral Telemetry Layer's record — turns evaluated,
+   * turns acted on (Default-to-Inaction Rate) and every firing with its
+   * channel strengths and the check-in's outcome (Disengagement-Repair
+   * Initiation Rate). Signal strength only, never an emotional label, and
+   * nothing the learner wrote. Absent while the layer is switched off.
+   */
+  behavioralTelemetry?: BehavioralTelemetryReport;
+  /**
+   * C.15: the Alliance Controller's record — the continuity move, the goal
+   * agreement, adaptation offers/accepts/declines, bond references and every
+   * renegotiation with its outcome and whether the session improved after
+   * it. Labels and counts only. Absent while the controller is off.
+   */
+  alliance?: AllianceReport;
+  /**
+   * C.14: the self-explanation move's record — each prompt's decision
+   * source, concept family, variant and quality labels. Never what the
+   * learner said. Absent while the move is off.
+   */
+  selfExplanation?: SelfExplanationReport;
+  /**
+   * C.7: what this session contributes to the persistent disposition profile
+   * (help requests, typical reply pace, adaptations taken or turned down)
+   * and which profile effects were applied. Numbers and closed labels only.
+   */
+  disposition?: DispositionObservation;
+  /**
+   * C.11: the spaced-review router's record — every routing decision with
+   * the inputs the rule read (so Core can re-evaluate it) and its outcome;
+   * Core applies the cross-session hand-offs to the learner's memory cards.
+   * Ids of our own catalog, labels and numbers only. Absent while off.
+   */
+  spacedReview?: SpacedReviewReport;
+  /**
+   * C.17: the dialogue register this session ran (band, variant, assignment)
+   * and what it did (ladder rungs, hint and tell requests, controlling
+   * language caught and delivered, pacing offers vs unilateral changes).
+   */
+  dialogueCalibration?: DialogueCalibrationReport;
 }
 
 /**
@@ -434,10 +591,31 @@ const NeedsGenerationSchema = z
   })
   .strict();
 
+/**
+ * C.5 / Appendix E §3.1.1(b): Core could not serve from the human-approved
+ * tiers, AND live generation is suspended for this request's content-risk
+ * category (the judge is uncalibrated or its calibration is stale, its
+ * approval concordance with staff fell below the floor, or staff review fell
+ * below the sampling floor). Oracle must not author anything — the call
+ * would cost money for an item Core will refuse — and the Mentor carries on
+ * in conversation exactly as when no activity is available.
+ *
+ * An OLDER Oracle facing a Core that sends this fails the strict union parse
+ * and treats it as "no activity", which is the same safe outcome.
+ */
+const LiveSuspendedSchema = z
+  .object({
+    needsGeneration: z.literal(false),
+    liveSuspended: z.literal(true),
+    reason: z.string().max(64),
+  })
+  .strict();
+
 export type ServedSegment = z.infer<typeof ServedSegmentSchema>;
 export type NeedsGeneration = z.infer<typeof NeedsGenerationSchema>;
+export type LiveSuspended = z.infer<typeof LiveSuspendedSchema>;
 
-const SegmentResponseSchema = z.union([ServedSegmentSchema, NeedsGenerationSchema]);
+const SegmentResponseSchema = z.union([ServedSegmentSchema, NeedsGenerationSchema, LiveSuspendedSchema]);
 
 /** Core rejected a generated candidate, with the specific reasons. */
 const RejectedSchema = z
@@ -476,7 +654,7 @@ export interface RequestSegmentInput {
  */
 export async function requestSegment(
   input: RequestSegmentInput,
-): Promise<ServedSegment | NeedsGeneration | null> {
+): Promise<ServedSegment | NeedsGeneration | LiveSuspended | null> {
   try {
     const body = await coreFetch('/tutor/internal/segments', {
       method: 'POST',
@@ -694,6 +872,14 @@ export interface TrajectoryStepInput {
   misconceptionCode: string | null;
   kcId: string | null;
   kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
+  /** C.10: the rule a consequential decision's evidence satisfied, or null. */
+  evidenceRule: 'mastery' | 'remediation' | 'rescue' | null;
+  /** C.10: consecutive qualifying observations behind it, or null. */
+  evidenceObservations: number | null;
+  /** C.10: the corroboration requirement in force for that KC, or null. */
+  evidenceRequired: number | null;
+  /** C.10: this decision withdrew a mastery declared earlier in the session. */
+  masteryRevoked: boolean;
 }
 
 /**

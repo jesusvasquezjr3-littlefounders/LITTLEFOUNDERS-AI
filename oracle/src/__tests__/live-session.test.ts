@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { CONTEXT_OPTIONAL_FIELDS } from '../core/client.js';
 
 /*
  * A REAL session, end to end.
@@ -44,7 +45,15 @@ interface CoreJournal {
   /* `costUsd` is on the wire body and therefore in this journal already
    * (it is a raw `JSON.parse` of the POST); it was simply never declared,
    * so no test could assert on the ledger half of a close. */
-  closes: { closeReason: string; turnCount: number; costUsd: number }[];
+  closes: {
+    closeReason: string;
+    turnCount: number;
+    costUsd: number;
+    /* C.16 / C.8 / C.12: what the close records beside the reason. */
+    closingScript?: string;
+    opening?: string;
+    endSignal?: { evaluated: boolean; events: unknown[] };
+  }[];
   segmentRequests: number;
 }
 
@@ -110,7 +119,7 @@ let segmentFailuresLeft = 0;
  * land in the same `serveSegment` branch, and the bound has to hold for the
  * expensive one or it is not a cost bound at all.
  */
-let segmentFailureShape: 'empty' | 'needs_generation' = 'empty';
+let segmentFailureShape: 'empty' | 'needs_generation' | 'live_suspended' = 'empty';
 /**
  * A session plan for the fake Core's session response, so the v3 brain is
  * ACTIVE. Off by default: every other test in this file describes an open
@@ -129,6 +138,17 @@ let servedSessionPlan: unknown[] | null = null;
  * so making IT slow would test the wrong thing.
  */
 let slowTurnDelayMs = 1_500;
+/**
+ * C.16: the opening the fake Core queues for this session. `null` omits the
+ * field, the shape an older Core sends (the greeting).
+ */
+let servedOpening: string | null = null;
+/** C.9: what the last context read announced it can parse (`x-oracle-context-fields`). */
+let announcedContextFields: string | null = null;
+/** C.9: the Stage 7 rollback verdict the fake Core serves; `null` omits the field (an older Core). */
+let servedTelemetryMode: 'act' | 'shadow' | null = null;
+/** C.7/C.15: extra optional context fields the fake Core serves (the disposition projection, continuity, mode). */
+let servedAllianceFields: Record<string, unknown> | null = null;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -166,6 +186,7 @@ function startFakeCore(): Promise<Server> {
         return json(res, { closed: true, alreadyClosed });
       }
       if (url.includes(`/tutor/internal/sessions/${SESSION_ID}`)) {
+        announcedContextFields = String(req.headers['x-oracle-context-fields'] ?? '');
         return json(res, {
           sessionId: SESSION_ID,
           userId: USER_ID,
@@ -183,6 +204,9 @@ function startFakeCore(): Promise<Server> {
           voiceConsent: sessionConsent,
           intelDegraded: false,
           ...(servedSessionPlan ? { sessionPlan: servedSessionPlan } : {}),
+          ...(servedOpening ? { opening: servedOpening } : {}),
+          ...(servedTelemetryMode ? { behavioralTelemetryMode: servedTelemetryMode } : {}),
+          ...(servedAllianceFields ?? {}),
         });
       }
       if (url.includes('/tutor/internal/turns')) {
@@ -207,6 +231,11 @@ function startFakeCore(): Promise<Server> {
         journal.segmentRequests += 1;
         if (segmentFailuresLeft > 0) {
           segmentFailuresLeft -= 1;
+          if (segmentFailureShape === 'live_suspended') {
+            // C.5: live generation suspended for this category (e.g. the
+            // judge is uncalibrated). Oracle must not author anything.
+            return json(res, { needsGeneration: false, liveSuspended: true, reason: 'uncalibrated' });
+          }
           if (segmentFailureShape === 'needs_generation') {
             return json(res, {
               needsGeneration: true,
@@ -673,7 +702,164 @@ describe('a real live session over a real websocket', () => {
     expect(closing.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
 
+    // C.16: the closing state reaches the client just before `closed` — the
+    // completed script, naming the act the server observed (the learner
+    // talked the idea through; nothing was graded).
+    const summary = closing.find((m) => m.type === 'session_closing');
+    expect(summary).toMatchObject({ type: 'session_closing', script: 'completed', effort: 'talked_through' });
+    expect(closing.findIndex((m) => m.type === 'session_closing')).toBeLessThan(
+      closing.findIndex((m) => m.type === 'closed'),
+    );
+    // …and the close records the script, the opening and the end-signal record.
+    expect(journal.closes.at(-1)).toMatchObject({
+      closingScript: 'completed',
+      opening: 'greeting',
+      endSignal: { evaluated: false, events: [] },
+    });
+
     await closed();
+  });
+
+  it('C.16: opens with the re-engagement line Core queued after a silent dropout', async () => {
+    freshJournal();
+    servedOpening = 'reengage_left_fresh';
+    try {
+      const { socket } = open(await socketUrl());
+      const opening = await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      const greeting = opening.find((m) => m.type === 'turn');
+      const { openingResponse } = await import('../tutor/scripted.js');
+      expect(greeting?.say).toBe(openingResponse('rho', 'es-MX', 'reengage_left_fresh').say);
+      // Still written, not generated.
+      expect(modelJournal.bodies).toHaveLength(0);
+      socket.close();
+    } finally {
+      servedOpening = null;
+    }
+  });
+
+  it('C.8/C.12: refuses a forged stop-or-continue answer when no offer is open, without a model call', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'session_end_response', accepted: true }));
+    expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'NO_SESSION_END_OFFER' });
+    expect(modelJournal.bodies).toHaveLength(0);
+    expect(journal.closes).toHaveLength(0);
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    // A malformed answer is refused by the schema like any other frame.
+    const invalid = collect(socket, (m) => m.filter((x) => x.type === 'error').length >= 1);
+    socket.send(JSON.stringify({ type: 'session_end_response', accepted: 'yes' }));
+    expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+
+    socket.close();
+  });
+
+  it('C.19: refuses a forged check-in answer when no check-in is open, without a model call', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'check_in_response', aligned: false }));
+    expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'NO_CHECK_IN' });
+    expect(modelJournal.bodies).toHaveLength(0);
+    expect(journal.closes).toHaveLength(0);
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    const invalid = collect(socket, (m) => m.filter((x) => x.type === 'error').length >= 1);
+    socket.send(JSON.stringify({ type: 'check_in_response', aligned: 'not really' }));
+    expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+    socket.close();
+  });
+
+  it('C.15/C.14/C.7 over a real websocket: honest introduction, goal chips, a forged goal answer refused, and the close record', async () => {
+    freshJournal();
+    const { resetConfigCache } = await import('../env.js');
+    process.env.TUTOR_ALLIANCE_CONTROLLER = 'act';
+    process.env.TUTOR_SELF_EXPLANATION = 'act';
+    resetConfigCache();
+    servedAllianceFields = {
+      allianceContinuity: 'persona_switch',
+      dispositionProfile: {
+        sessionsObserved: 5,
+        helpStyle: 'independent',
+        persistence: 'persists',
+        explanation: 'explains',
+        persistentlyDeclined: ['less_text'],
+        typicalTypedReplyMs: null,
+        typicalSpokenReplyMs: null,
+      },
+    };
+    let socket: WebSocket | null = null;
+    try {
+      socket = open(await socketUrl()).socket;
+      const opening = await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      const { continuityOpeningResponse } = await import('../tutor/scripted.js');
+      expect(opening.find((m) => m.type === 'turn')?.say).toBe(continuityOpeningResponse('rho', 'es-MX', 'introduce').say);
+
+      // A forged goal answer before any goal was proposed: refused, no model call.
+      const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
+      socket.send(JSON.stringify({ type: 'goal_response', agreed: true }));
+      expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'NO_GOAL_CHECK' });
+      expect(modelJournal.bodies).toHaveLength(0);
+      const invalid = collect(socket, (m) => m.filter((x) => x.type === 'error').length >= 1);
+      socket.send(JSON.stringify({ type: 'goal_response', agreed: 'sure' }));
+      expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+
+      // The first learner message: the restatement arrives with the goal chips.
+      const proposed = collect(socket, (m) => m.some((x) => x.type === 'goal_check'));
+      socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+      const frames = await proposed;
+      expect(frames.findIndex((m) => m.type === 'turn')).toBeLessThan(frames.findIndex((m) => m.type === 'goal_check'));
+      // (The last body is the moderation judge's: this is a minor's session.)
+      expect(modelJournal.bodies.some((body) => body.includes('GOAL AGREEMENT'))).toBe(true);
+      // The disposition projection never reaches the model.
+      for (const body of modelJournal.bodies) expect(body).not.toMatch(/persistentlyDeclined|sessionsObserved|helpStyle/);
+
+      // Past the per-learner turn-rate floor (MIN_TURN_INTERVAL_MS).
+      await new Promise((r) => setTimeout(r, 750));
+      const answered = collect(socket, (m) => m.filter((x) => x.type === 'turn').length >= 1);
+      socket.send(JSON.stringify({ type: 'goal_response', agreed: true }));
+      await answered;
+      expect(modelJournal.bodies.some((body) => body.includes('confirmed the goal'))).toBe(true);
+
+      const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+      socket.send(JSON.stringify({ type: 'end_session' }));
+      await ending;
+      const close = journal.closes.at(-1) as Record<string, unknown>;
+      expect(close).toMatchObject({
+        alliance: { mode: 'act', continuity: 'persona_switch', continuityMove: 'delivered', goalAgreement: 'agreed' },
+        selfExplanation: { mode: 'act', prompts: 0, events: [] },
+        disposition: { profileReceived: true, applied: ['seeded_declines'] },
+      });
+      expect(JSON.stringify(close)).not.toContain('bici');
+    } finally {
+      if (socket !== null && socket.readyState === WebSocket.OPEN) socket.close();
+      servedAllianceFields = null;
+      process.env.TUTOR_ALLIANCE_CONTROLLER = 'off';
+      process.env.TUTOR_SELF_EXPLANATION = 'off';
+      resetConfigCache();
+    }
+  });
+
+  it("C.9: announces the optional context fields it parses, and accepts Core's rollback verdict", async () => {
+    freshJournal();
+    servedTelemetryMode = 'shadow';
+    try {
+      const { socket } = open(await socketUrl());
+      await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      expect(announcedContextFields).toBe(CONTEXT_OPTIONAL_FIELDS.join(','));
+      const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+      socket.send(JSON.stringify({ type: 'end_session' }));
+      await ending;
+      // The session ran (the context parsed) and the layer reported in shadow.
+      expect(journal.closes.at(-1)).toMatchObject({ behavioralTelemetry: { mode: 'shadow', actionTurns: 0 } });
+    } finally {
+      servedTelemetryMode = null;
+    }
   });
 
   /*
@@ -1129,6 +1315,35 @@ describe('a real live session over a real websocket', () => {
       .slice(modelCallsBefore)
       .filter((b) => !b.includes('child-safety reviewer'));
     expect(authored).toHaveLength(7);
+
+    socket.close();
+  }, 30_000);
+
+  /*
+   * C.5 (S06.12): when Core answers that live generation is SUSPENDED for
+   * this content-risk category, Oracle makes no author or judge call at all
+   * (the item would be refused, and the call would cost money), and the
+   * Mentor carries on in conversation exactly as when nothing is available.
+   */
+  it('makes no paid author call when Core suspends live generation', async () => {
+    freshJournal();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    segmentFailuresLeft = Number.POSITIVE_INFINITY;
+    segmentFailureShape = 'live_suspended';
+
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const modelCallsBefore = modelJournal.bodies.length;
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const frames = await untilQuiet(socket);
+
+    expect(journal.segmentRequests).toBe(2);
+    expect(frames.filter((f) => f.type === 'error' && f.code === 'NO_SEGMENT').length).toBeGreaterThanOrEqual(1);
+    // Only turn completions: not one activity-author or content-judge call.
+    const authored = modelJournal.bodies.slice(modelCallsBefore).filter((b) => b.includes('You author ONE practice activity'));
+    expect(authored).toHaveLength(0);
+    expect(modelJournal.bodies.slice(modelCallsBefore).some((b) => b.includes('You review ONE practice activity'))).toBe(false);
 
     socket.close();
   }, 30_000);

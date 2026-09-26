@@ -111,15 +111,43 @@ export function evaluateBudget(input: BudgetInput, config: Config): BudgetVerdic
  * The instruction appended to the model's context once wrapping starts.
  *
  * Appended rather than swapped in: the tutor must keep everything it knows
- * about the learner while it says goodbye, or the farewell reads as a
- * different character walking in.
+ * about the learner while it wraps up, or the close reads as a different
+ * character walking in.
+ *
+ * C.16 (Appendix D §3.5): the model no longer writes the goodbye or a
+ * unilateral "what we did" summary. It finishes the thread and sets
+ * `next: "close"`; the SYSTEM then asks the co-constructed recap question
+ * ("what is one thing that clicked for you today?") and closes with a line
+ * naming an act it actually observed (`tutor/sessionClosing.ts`).
  */
 export const WRAP_UP_INSTRUCTION = [
   '',
   '## Time',
   '',
   'This session is nearly over. Begin wrapping up now, in character: finish the',
-  'thread you are on, say briefly what the learner did well and what they',
-  'learned, and invite them back. Do not start a new topic and do not request a',
-  'new activity. When you have said goodbye, set "next" to "close".',
+  'thread you are on. Do not start a new topic and do not request a new',
+  'activity. When the thread is finished, set "next" to "close" — and do NOT',
+  'say goodbye or list what was learned: the system then asks the learner what',
+  'clicked for them, and closes the session itself.',
 ].join('\n');
+
+/**
+ * C.11: the budget a within-session spaced re-exposure still has — model
+ * turns before the turn cap and time before the session starts WRAPPING
+ * (after which no new activity is requested, so a re-exposure scheduled past
+ * it could never happen). Pure, from the same inputs as `evaluateBudget`.
+ */
+export function budgetHeadroom(
+  input: BudgetInput,
+  config: Config,
+): { state: BudgetState; turnsRemaining: number; msUntilWrap: number } {
+  const verdict = evaluateBudget(input, config);
+  const softBudgetMs = input.isStaff ? STAFF_SOFT_BUDGET_MS : config.SESSION_SOFT_BUDGET_MS;
+  const maxTurns = input.isStaff ? STAFF_MAX_TURNS : config.SESSION_MAX_TURNS;
+  const elapsed = input.nowMs - input.startedAtMs;
+  return {
+    state: verdict.state,
+    turnsRemaining: Math.max(0, maxTurns - input.turnCount),
+    msUntilWrap: Math.max(0, softBudgetMs - elapsed),
+  };
+}

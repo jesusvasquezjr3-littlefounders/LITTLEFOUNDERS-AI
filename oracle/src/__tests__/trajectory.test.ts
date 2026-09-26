@@ -32,7 +32,10 @@ describe('emitTutorTrajectory', () => {
     pKnown: 0.3,
     misconceptionCode: null,
     kcId: '55555555-5555-4555-8555-555555555555',
-    kcMode: 'new',
+    kcMode: 'new',    evidenceRule: null,
+    evidenceObservations: null,
+    evidenceRequired: null,
+    masteryRevoked: false,
   };
 
   function coreSays(recorded: boolean): Response {

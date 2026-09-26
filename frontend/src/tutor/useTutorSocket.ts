@@ -4,6 +4,7 @@ import type {
   BudgetState,
   ClientMessage,
   ServerMessage,
+  SessionClosingSummary,
   TutorWhiteboardWire,
   WordTiming,
 } from './types';
@@ -173,6 +174,14 @@ export interface TutorSocket {
   micRevoked: boolean;
   intelDegraded: boolean;
   adaptationOffer: Adaptation | null;
+  /** C.8/C.12: the Mentor's last turn asked "stop here, or one more?" and is waiting for the choice. */
+  sessionEndOffer: boolean;
+  /** C.16: how the session ended (the closing script), once the server says so. */
+  closingSummary: SessionClosingSummary | null;
+  /** C.19: the Mentor's last turn was the check-in ("are we on the same page?") and waits for an answer. */
+  checkInOpen: boolean;
+  /** C.15: the Mentor's last turn restated the session goal and waits for "yes" or "something else". */
+  goalCheckOpen: boolean;
   closedReason: string | null;
   error: { code: string; message: string } | null;
   /**
@@ -209,6 +218,12 @@ export interface TutorSocket {
     pedagogy?: { echo: string; attemptNumber: number },
   ) => void;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
+  /** C.8/C.12: answer the stop-or-continue offer. Never sent unless an offer is open. */
+  answerSessionEnd: (accepted: boolean) => void;
+  /** C.19: answer the check-in on its chips. Never sent unless a check-in is open. */
+  answerCheckIn: (aligned: boolean) => void;
+  /** C.15: answer the goal restatement on its chips. Never sent unless the goal check is open. */
+  answerGoal: (agreed: boolean) => void;
   endSession: () => void;
 }
 
@@ -263,6 +278,10 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [micRevoked, setMicRevoked] = useState(false);
   const [intelDegraded, setIntelDegraded] = useState(false);
   const [adaptationOffer, setAdaptationOffer] = useState<Adaptation | null>(null);
+  const [sessionEndOffer, setSessionEndOffer] = useState(false);
+  const [closingSummary, setClosingSummary] = useState<SessionClosingSummary | null>(null);
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [goalCheckOpen, setGoalCheckOpen] = useState(false);
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [error, setError] = useState<TutorSocket['error']>(null);
   /** V4: the lesson thread the last turn carried; null in open chat. */
@@ -302,6 +321,10 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     setMicrophone(false);
     setIntelDegraded(false);
     setAdaptationOffer(null);
+    setSessionEndOffer(false);
+    setClosingSummary(null);
+    setCheckInOpen(false);
+    setGoalCheckOpen(false);
     setClosedReason(null);
     setError(null);
     setThinking(false);
@@ -452,6 +475,15 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
              * turn arrives right after and re-sets it via its own case below.
              */
             setAdaptationOffer(null);
+            // C.8/C.12: the same rule for the stop-or-continue offer — the
+            // server sends `session_end_offer` right AFTER the turn that asks
+            // it, so a new turn without one means the question has moved on.
+            setSessionEndOffer(false);
+            // C.19: likewise the check-in — `check_in` follows the turn
+            // that asks it, so any new turn closes the chips first.
+            setCheckInOpen(false);
+            // C.15: and the goal chips — `goal_check` follows its own turn.
+            setGoalCheckOpen(false);
             break;
           case 'turn_audio':
             // The voice catching up with its own turn. A stale seq is a clip for
@@ -487,6 +519,21 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             break;
           case 'adaptation_offer':
             setAdaptationOffer(message.adaptation);
+            break;
+          case 'session_end_offer':
+            setSessionEndOffer(true);
+            break;
+          case 'check_in':
+            setCheckInOpen(true);
+            break;
+          case 'goal_check':
+            setGoalCheckOpen(true);
+            break;
+          case 'session_closing':
+            setClosingSummary({ script: message.script, effort: message.effort, topic: message.topic });
+            setSessionEndOffer(false);
+            setCheckInOpen(false);
+            setGoalCheckOpen(false);
             break;
           case 'state':
             setBudget(message.budget);
@@ -727,6 +774,36 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     [send],
   );
 
+  const answerSessionEnd = useCallback(
+    (accepted: boolean) => {
+      // Cleared at once so a double tap cannot send two answers; the server
+      // refuses an answer to an offer that is no longer open anyway.
+      setSessionEndOffer(false);
+      send({ type: 'session_end_response', accepted });
+    },
+    [send],
+  );
+
+  const answerCheckIn = useCallback(
+    (aligned: boolean) => {
+      // Cleared at once so a double tap cannot send two answers; the server
+      // refuses an answer to a check-in that is no longer open anyway.
+      setCheckInOpen(false);
+      send({ type: 'check_in_response', aligned });
+    },
+    [send],
+  );
+
+  const answerGoal = useCallback(
+    (agreed: boolean) => {
+      // Cleared at once so a double tap cannot send two answers; the server
+      // refuses an answer to a goal check that is no longer open anyway.
+      setGoalCheckOpen(false);
+      send({ type: 'goal_response', agreed });
+    },
+    [send],
+  );
+
   const endSession = useCallback(() => send({ type: 'end_session' }), [send]);
 
   return {
@@ -741,6 +818,10 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     micRevoked,
     intelDegraded,
     adaptationOffer,
+    sessionEndOffer,
+    closingSummary,
+    checkInOpen,
+    goalCheckOpen,
     closedReason,
     error,
     thinking,
@@ -753,6 +834,9 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     editLast,
     reportGrade,
     answerAdaptation,
+    answerSessionEnd,
+    answerCheckIn,
+    answerGoal,
     endSession,
   };
 }

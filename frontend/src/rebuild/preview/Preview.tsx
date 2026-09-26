@@ -57,6 +57,67 @@ import { RegisterGraduationView } from '../learning/RegisterGraduationView';
 import { GuidedReviewOffer } from '../learning/GuidedReviewOffer';
 import type { LearnerRegister } from '../design/learnerRegisterPolicy.generated';
 
+import { SessionClosing, SessionEndChoice, type ClosingScript, type EffortAct } from '../mentor/SessionEnd';
+import { CheckInChoice } from '../mentor/CheckIn';
+import { GoalCheckChoice } from '../mentor/GoalCheck';
+import { AllianceCheck } from '../mentor/AllianceCheck';
+import { DispositionSummary } from '../mentor/DispositionSummary';
+import type { DispositionSummaryData } from '../mentor/allianceApi';
+import { LiveContentStatusPanel, LiveReviewDecision, PackRelease } from '../mentor/LiveContentGovernance';
+import type { LiveContentStatus, TutorPackSummary } from '../mentor/liveContentApi';
+import { MentorQualityDashboard } from '../staff/MentorQualityDashboard';
+import { previewMentorQuality } from '../staff/mentorQualityFixtures';
+
+/** C.7 preview fixture: a profile with every row populated (closed labels only). */
+const PREVIEW_PROFILE: DispositionSummaryData = {
+  exists: true,
+  current: true,
+  sessionsObserved: 7,
+  helpStyle: 'tell_early',
+  persistence: 'persists',
+  explanation: 'needs_scaffold',
+  persistentlyDeclined: ['less_text', 'more_visual'],
+  typicalReplySeconds: 12,
+  personas: [{ character: 'dina', sessions: 5 }, { character: 'rho', sessions: 2 }],
+  effects: ['stuck_degrade_early', 'scaffolded_explanation', 'seeded_declines', 'idle_nudge_paced'],
+  updatedAt: '2026-09-24T12:00:00Z',
+};
+
+/*
+ * C.5 / C.6 preview fixtures for the staff surfaces. Default: everyday topics
+ * open but RAISED after an issue, sensitive topics PAUSED by a Stage 7 trip.
+ * `?judge=uncalibrated` shows the state production starts in until the owner
+ * runs the calibration (OD-23).
+ */
+const PREVIEW_LIVE_STATUS = (judge: string | null): LiveContentStatus => ({
+  calibration: judge === 'uncalibrated'
+    ? { state: 'uncalibrated', ageDays: null, judgeModel: null, recordedAt: null, maxAgeDays: 35 }
+    : { state: 'passed', ageDays: 12, judgeModel: 'qwen3-max', recordedAt: '2026-09-12T00:00:00Z', maxAgeDays: 35 },
+  categories: judge === 'uncalibrated'
+    ? [
+      { category: 'standard', suspended: true, reasons: ['uncalibrated'], rate: 0.15, baseline: 0.15, floor: 0.15, elevated: false, decisionsToRestore: 0, pending: 0, overdue: 0 },
+      { category: 'sensitive', suspended: true, reasons: ['uncalibrated'], rate: 0.5, baseline: 0.5, floor: 0.5, elevated: false, decisionsToRestore: 0, pending: 0, overdue: 0 },
+    ]
+    : [
+      { category: 'standard', suspended: false, reasons: [], rate: 0.5, baseline: 0.15, floor: 0.15, elevated: true, decisionsToRestore: 64, pending: 3, overdue: 0 },
+      { category: 'sensitive', suspended: true, reasons: ['concordance_below_floor'], rate: 1, baseline: 0.5, floor: 0.5, elevated: true, decisionsToRestore: 100, pending: 5, overdue: 2 },
+    ],
+  reviewSlaDays: 7,
+});
+const PREVIEW_PACKS: TutorPackSummary[] = [
+  { id: 'pack-preview-1', skill_key: 'kc:money.percent-intro', kc_key: 'money.percent-intro', tier: 3, locale: 'es-MX', status: 'review', pack_version: 1,
+    risk_category: 'standard', source: 'hand_authored', demand_pattern: 'kc_without_catalog_content',
+    pack: { segments: [{ id: 'a', type: 'number_input' }, { id: 'b', type: 'number_input' }, { id: 'c', type: 'quiz_mcq' }, { id: 'd', type: 'number_input' }] } },
+  { id: 'pack-preview-2', skill_key: 'kc:biz.goods-vs-services', kc_key: 'biz.goods-vs-services', tier: 1, locale: 'pt-BR', status: 'review', pack_version: 2,
+    risk_category: 'standard', source: 'hand_authored', demand_pattern: 'kc_without_catalog_content',
+    pack: { segments: [{ id: 'a', type: 'quiz_mcq' }, { id: 'b', type: 'true_false' }, { id: 'c', type: 'sort_buckets' }, { id: 'd', type: 'quiz_mcq' }] } },
+];
+const PREVIEW_REVIEW_ITEM = {
+  'en-US': 'A notebook costs 7 coins. How many coins do 3 notebooks cost?',
+  'es-MX': 'Un cuaderno cuesta 7 monedas. ¿Cuántas monedas cuestan 3 cuadernos?',
+  'pt-BR': 'Um caderno custa 7 moedas. Quantas moedas custam 3 cadernos?',
+} as const;
+
 const translations = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 const params = new URLSearchParams(location.search);
 const initialLocale = params.get('locale');
@@ -274,6 +335,67 @@ export function Preview() {
           if (!segment || segment.type !== 'math.cpa-count.v2') return 'invalid';
           const result = scoreV2Visual('math.cpa-count.v2', { left: segment.payload.left, right: segment.payload.right }, answer,
             { target: segment.payload.left + segment.payload.right }); return result === 'met' || result === 'review' ? result : 'invalid'; }} />
+      : screen === 'mentor-session-end' ? <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
+        data-screen="mentor-session-end"><div className="lf-preview-content">
+        {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}
+        <SessionEndChoice copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'} onChoose={() => undefined} />
+        <SessionClosing copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'}
+          script={(['completed', 'interrupted', 'learner_left', 'safety_stop'].includes(params.get('script') ?? '')
+            ? params.get('script') : 'completed') as ClosingScript}
+          effort={(params.get('effort') ?? 'recovered') as EffortAct}
+          topic={params.get('topic') === 'none' ? null : t.mentorSessionEnd.previewTopic} onBack={() => go('home')} />
+      </div></main>
+      : screen === 'mentor-check-in' ? <main className="lf-preview lf-preview--mentor-check-in" data-surface="app"
+        data-screen="mentor-check-in"><div className="lf-preview-content">
+        {/* C.19 fixture: the two reply chips the stage shows under the Mentor's check-in turn. */}
+        <CheckInChoice copy={t.mentorCheckIn} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
+      </div></main>
+      : screen === 'mentor-goal-check' ? <main className="lf-preview lf-preview--mentor-goal-check" data-surface="app"
+        data-screen="mentor-goal-check"><div className="lf-preview-content">
+        {/* C.15 fixture: the two chips under the Mentor's goal restatement. */}
+        <GoalCheckChoice copy={t.mentorGoalCheck} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
+      </div></main>
+      : screen === 'mentor-alliance-check' ? <main className="lf-preview lf-preview--mentor-alliance-check" data-surface="app"
+        data-screen="mentor-alliance-check"><div className="lf-preview-content">
+        {/* C.15 fixture: the end-of-session bond proxy for ?script=; ?result=failed shows the retry. */}
+        <AllianceCheck copy={t.mentorAllianceCheck} locale={locale} dark={theme === 'dark'}
+          script={(['completed', 'interrupted', 'learner_left', 'safety_stop'].includes(params.get('script') ?? '')
+            ? params.get('script') : 'completed') as 'completed' | 'interrupted' | 'learner_left' | 'safety_stop'}
+          onAnswer={async () => (params.get('result') === 'failed' ? 'failed' : 'recorded')} />
+      </div></main>
+      : screen === 'staff-live-content' ? <main className="lf-preview lf-preview--staff-live-content" data-surface="app"
+        data-screen="staff-live-content"><div className="lf-preview-content">
+        {/* C.5 / C.6 staff fixtures: ?state=ready|loading|failed, ?judge=uncalibrated, ?decide=failed|already, ?pack=refused|failed. */}
+        <LiveContentStatusPanel copy={t.staffLiveContent} locale={locale} dark={theme === 'dark'}
+          phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
+          status={PREVIEW_LIVE_STATUS(params.get('judge'))} />
+        <LiveReviewDecision copy={t.staffLiveContent} locale={locale} dark={theme === 'dark'}
+          item={{ id: 'segment-preview', category: 'standard', prompt: PREVIEW_REVIEW_ITEM[locale] }}
+          onDecide={async () => (params.get('decide') === 'failed' ? 'failed' : params.get('decide') === 'already' ? 'already' : 'recorded')} />
+        <PackRelease copy={t.staffLiveContent} locale={locale} dark={theme === 'dark'} packs={PREVIEW_PACKS}
+          onStatus={async () => (params.get('pack') === 'refused'
+            ? { ok: false, failures: ['segment pack-x-1: the key names an option that does not exist exactly once', 'tier 2 is below the knowledge component\'s tier_min 3'] }
+            : params.get('pack') === 'failed' ? { ok: false } : { ok: true })} />
+      </div></main>
+      : screen === 'staff-mentor-quality' ? <main className="lf-preview lf-preview--staff-mentor-quality" data-surface="app"
+        data-screen="staff-mentor-quality"><div className="lf-preview-content">
+        {/* C.24 staff fixtures: ?state=ready|loading|failed, ?fresh=stale|never, ?viewer=none, ?flags=empty, ?act=failed|not_owner|changed, ?review=already|failed. */}
+        <MentorQualityDashboard copy={t.staffMentorQuality} locale={locale} dark={theme === 'dark'}
+          phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
+          data={previewMentorQuality({ fresh: params.get('fresh'), viewer: params.get('viewer'), empty: params.get('flags') === 'empty' })}
+          onAcknowledge={async () => (params.get('act') === 'failed' ? 'failed' : params.get('act') === 'not_owner' ? 'not_owner' : params.get('act') === 'changed' ? 'changed' : 'done')}
+          onResolve={async () => (params.get('act') === 'failed' ? 'failed' : params.get('act') === 'changed' ? 'changed' : 'done')}
+          onReview={async () => (params.get('review') === 'already' ? 'already' : params.get('review') === 'failed' ? 'failed' : 'done')} />
+      </div></main>
+      : screen === 'mentor-profile' ? <main className="lf-preview lf-preview--mentor-profile" data-surface="app"
+        data-screen="mentor-profile"><div className="lf-preview-content">
+        {/* C.7 fixture: ?audience=own|child and ?state=ready|empty|loading|failed. */}
+        <DispositionSummary copy={t.mentorProfile} locale={locale} dark={theme === 'dark'}
+          audience={params.get('audience') === 'own' ? 'own' : 'child'}
+          phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
+          data={params.get('state') === 'empty' ? { ...PREVIEW_PROFILE, exists: false } : PREVIEW_PROFILE}
+          canReset onReset={() => undefined} />
+      </div></main>
       : <main className={`lf-preview lf-preview--${screen}`} data-surface="app" data-screen={screen}>
       <div className="lf-preview-content">
       {screen === 'home' ? <>

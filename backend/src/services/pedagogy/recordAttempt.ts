@@ -17,7 +17,7 @@ import { getConfig } from '../../config.js';
 import type { SegmentBase } from '../../lesson-contract/core/types.js';
 import { bktUpdate } from './bkt.js';
 import { checkAttempt, type CheckedAttempt, type MisconceptionDef } from './checkAnswer.js';
-import { newCard, ratingFromScore, reviewCard, type MemoryCard } from './fsrs.js';
+import { newCard, ratingFromScore, reviewCardTwoTier, type MemoryCard } from './fsrs.js';
 import {
   getLearnerMastery,
   getMemoryCards,
@@ -221,10 +221,17 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
   const pBefore = masteryRow?.p_known ?? kc.p_l0;
   const pAfter = bktUpdate(pBefore, correct, params);
 
-  const card = reviewCard(
+  /*
+   * C.11: the cross-session scheduler counts SPACED reviews only. An attempt
+   * inside the short horizon of the card's last counted review is a
+   * within-session re-exposure: the card is left as it is (see
+   * `reviewCardTwoTier`), and the attempt row records which tier it was.
+   */
+  const { card, tier: reviewTier } = reviewCardTwoTier(
     cardFromRow(cardRows.find((r) => r.kc_id === kc.id), now),
     ratingFromScore(input.score, input.attemptNumber),
     now,
+    getConfig().TUTOR_REVIEW_SHORT_HORIZON_MIN * 60_000,
   );
 
   const [masteryOk, cardOk] = await Promise.all([
@@ -234,16 +241,19 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
       correct: (masteryRow?.correct ?? 0) + (correct ? 1 : 0),
       last_attempt_at: now.toISOString(),
     }),
-    upsertMemoryCard(input.userId, kc.id, {
-      kc_id: kc.id,
-      state: card.state,
-      stability: round3(card.stability),
-      difficulty: round3(card.difficulty),
-      reps: card.reps,
-      lapses: card.lapses,
-      due_at: card.dueAt.toISOString(),
-      last_review_at: now.toISOString(),
-    }),
+    // A short-horizon re-exposure leaves the card untouched: nothing to write.
+    reviewTier === 'short_horizon'
+      ? Promise.resolve(true)
+      : upsertMemoryCard(input.userId, kc.id, {
+          kc_id: kc.id,
+          state: card.state,
+          stability: round3(card.stability),
+          difficulty: round3(card.difficulty),
+          reps: card.reps,
+          lapses: card.lapses,
+          due_at: card.dueAt.toISOString(),
+          last_review_at: now.toISOString(),
+        }),
   ]);
   if (!masteryOk || !cardOk) {
     console.error('[pedagogy] recordAttempt: persist failed — posterior may be stale');
@@ -256,7 +266,7 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
     await Promise.all(catalog.map((m) => resolveLearnerMisconception(input.userId, m.id)));
   }
 
-  await insertKcAttempt({
+  const attemptRow = {
     user_id: input.userId,
     kc_id: kc.id,
     session_id: input.sessionId,
@@ -268,7 +278,17 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
     misconception_id: misconceptionId,
     p_known_before: round5(pBefore),
     p_known_after: round5(pAfter),
-  });
+  };
+  /*
+   * C.11: the attempt row carries its review tier. On a schema without the
+   * column (Core deployed before `*_mentor_spaced_review_and_dialogue_calibration.sql`)
+   * PostgREST refuses the unknown field, so the row is written once more
+   * without it: the evidence log must never be lost to a deploy order.
+   */
+  if (!(await insertKcAttempt({ ...attemptRow, review_tier: reviewTier }))) {
+    const landed = await insertKcAttempt(attemptRow);
+    if (landed) console.warn('[pedagogy] kc_attempt.review_tier not accepted — apply the C.11 migration');
+  }
 
   return {
     kcId: kc.id,

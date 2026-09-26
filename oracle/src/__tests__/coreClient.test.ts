@@ -201,7 +201,10 @@ describe('persistTutorTrajectory', () => {
     pKnown: 0.4,
     misconceptionCode: null,
     kcId: null,
-    kcMode: 'new',
+    kcMode: 'new',    evidenceRule: null,
+    evidenceObservations: null,
+    evidenceRequired: null,
+    masteryRevoked: false,
   };
 
   function coreSays(recorded: boolean): Response {

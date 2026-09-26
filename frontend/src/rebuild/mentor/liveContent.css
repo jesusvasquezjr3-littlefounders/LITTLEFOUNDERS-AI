@@ -1,0 +1,54 @@
+/* C.5 / C.6 staff panels (the live-content status, one review decision, the
+   curated-pack release). They reuse the alliance panel's surface and equal
+   chips (alliance.css) and the profile's label / value rows; this file only
+   lays out what is new. Tokens only; no animation of its own. */
+.lf-generated-content h2,
+.lf-generated-content h3 { margin: 0; overflow-wrap: anywhere; }
+.lf-generated-content p { margin: 0; overflow-wrap: anywhere; }
+
+.lf-generated-categories,
+.lf-generated-packs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-3);
+}
+/* One card per category; side by side where both fit. */
+.lf-generated-categories { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.lf-generated-category,
+.lf-generated-pack {
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  min-inline-size: 0;
+}
+/* A paused category states it in words first; the weight only reinforces. */
+.lf-generated-category[data-suspended='true'] .lf-generated-state { font-weight: 600; }
+
+.lf-generated-tag { color: var(--content-muted); }
+.lf-generated-item {
+  margin: 0;
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  overflow-wrap: anywhere;
+}
+/* The three decisions are equal controls; on the sunken-free panel they keep
+   the chip fill from alliance.css. */
+.lf-generated-decision { font-weight: 600; }
+
+.lf-generated-pack-key { font-weight: 600; }
+.lf-generated-pack-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--spacing-3);
+}
+.lf-generated-pack-actions .lf-button { inline-size: 100%; min-block-size: var(--target-base); }
+/* The release gate's reasons, listed under the refusal inside the shared banner. */
+.lf-generated-refusal { margin: var(--spacing-2) 0 0; padding-inline-start: var(--spacing-4); display: grid; gap: var(--spacing-1); }
+.lf-generated-refusal li { overflow-wrap: anywhere; }
+
+.lf-preview--staff-live-content .lf-preview-content { gap: var(--spacing-6); }

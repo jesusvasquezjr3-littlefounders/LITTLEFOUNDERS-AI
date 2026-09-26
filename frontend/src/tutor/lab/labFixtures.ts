@@ -2289,6 +2289,14 @@ export function useLabSocket(
     micRevoked: false,
     intelDegraded: false,
     adaptationOffer,
+    // C.8/C.12 and C.16 have no lab scene yet: no offer is ever open and no
+    // closing summary arrives, exactly the state of a live session between them.
+    sessionEndOffer: false,
+    closingSummary: null,
+    // C.19 has no lab scene yet either: no check-in is open.
+    checkInOpen: false,
+    // Nor C.15: no goal restatement is waiting for its chips.
+    goalCheckOpen: false,
     closedReason,
     error: null,
     sendText: (text: string) => {
@@ -2318,6 +2326,9 @@ export function useLabSocket(
     thinking: false,
     reportGrade: () => setSegment(null),
     answerAdaptation: () => setAdaptationOffer(null),
+    answerSessionEnd: () => {},
+    answerCheckIn: () => {},
+    answerGoal: () => {},
     endSession: () => setClosedReason('learner_ended'),
   };
 }

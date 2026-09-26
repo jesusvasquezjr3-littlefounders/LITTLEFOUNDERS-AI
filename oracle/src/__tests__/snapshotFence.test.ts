@@ -71,12 +71,20 @@ const ORCHESTRATOR_EXCLUDED: Record<string, string> = {
   startedAtMs: 'carried by the park record and passed to restore() — the budget clock must not restart',
   synthesize: 'a closure over one socket’s SpeechScope; rebuilt on the far side, cannot travel',
   pendingDiscardedAudio: 'unsettled Promises; awaitPendingCosts() folds their cost in BEFORE snapshot()',
+  dispositionEffects:
+    'C.7 derived at construction from the pinned SessionContext.dispositionProfile the park record carries — rebuilt identically on the far side, not session state',
+  dialoguePolicy:
+    'C.17 derived at construction from the pinned SessionContext.dialogueCalibration (or its tier fallback) the park record carries — rebuilt identically on the far side, not session state',
 };
 
 /** The same, for `PedagogicalController`. */
 const CONTROLLER_EXCLUDED: Record<string, string> = {
   plan: 'a constructor argument, rebuilt on the far side from the park record’s own SessionContext',
   kcStates: 'a constructor argument, rebuilt on the far side from the park record’s own SessionContext',
+  corroboration:
+    'C.10 operator configuration derived from env at construction (TUTOR_CORROBORATION_*), rebuilt identically on the far side — config, not session state',
+  disposition:
+    'C.7 derived at construction from the pinned SessionContext.dispositionProfile the park record carries, rebuilt identically on the far side — not session state',
 };
 
 describe('the park snapshot covers every field either class actually has', () => {
@@ -181,6 +189,10 @@ describe('a snapshot survives a round trip byte for byte', () => {
       misconceptionCode: 'mc-unit-confusion',
       kcId: 'kc-saving-1',
       kcMode: 'remediation',
+      evidenceRule: 'rescue',
+      evidenceObservations: 2,
+      evidenceRequired: 2,
+      masteryRevoked: true,
     });
     (o.skillStates as unknown[]).push({
       skillKey: 'saving-basics',
@@ -231,6 +243,9 @@ describe('a snapshot survives a round trip byte for byte', () => {
       probingKcId: 'kc-prereq-9',
       celebratedKcIds: ['kc-saving-1'],
       masteryRevokedKcIds: ['kc-saving-1'],
+      masteryEvidence: [['kc-saving-1', 1]],
+      remediationEvidence: [['kc-saving-1', 'mc-unit-confusion', 2]],
+      inSessionReview: { entryIndex: 0, turns: 1 },
     });
   }
 
@@ -300,6 +315,9 @@ describe('a snapshot survives a round trip byte for byte', () => {
       probingKcId: 'kc-b',
       celebratedKcIds: ['kc-a'],
       masteryRevokedKcIds: ['kc-a'],
+      masteryEvidence: [['kc-a', 3]] as [string, number][],
+      remediationEvidence: [['kc-b', null, 1]] as [string, string | null, number][],
+      inSessionReview: { entryIndex: 0, turns: 2 },
     };
     controller.restore(populated);
     expect(controller.snapshot()).toEqual(populated);

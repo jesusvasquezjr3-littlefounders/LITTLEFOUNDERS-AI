@@ -1,0 +1,60 @@
+/* C.24 staff panels (the Mentor-quality dashboard). They reuse the alliance
+   panel's surface (alliance.css) and the profile's label / value rows; this
+   file only lays out what is new. Tokens only; no animation of its own, so
+   reduced motion needs no override. */
+.lf-quality-stack { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-rebuild.lf-alliance-panel.lf-quality { max-inline-size: 56rem; }
+.lf-quality h2,
+.lf-quality h3 { margin: 0; overflow-wrap: anywhere; }
+.lf-quality p { margin: 0; overflow-wrap: anywhere; }
+
+.lf-quality-facts { display: grid; gap: var(--spacing-2); }
+/* Out-of-date numbers say so in words first; weight only reinforces. */
+.lf-quality-fresh[data-stale='true'],
+.lf-quality-gap { font-weight: 600; }
+
+.lf-quality-muted { color: var(--content-muted); }
+.lf-quality-data { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+.lf-quality-flags,
+.lf-quality-reviews {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-3);
+}
+.lf-quality-flag {
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  min-inline-size: 0;
+}
+.lf-quality-flag h3 { font-size: inherit; }
+.lf-quality-severity { font-weight: 800; }
+.lf-quality-flag[data-severity='urgent'] .lf-quality-severity { color: var(--error-strong); }
+
+.lf-quality-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--spacing-3);
+}
+.lf-quality-actions .lf-button { inline-size: 100%; min-block-size: var(--target-base); background: var(--surface); }
+.lf-quality-actions .lf-button:disabled { background: var(--surface); }
+.lf-quality-resolve { display: grid; gap: var(--spacing-3); }
+/* The shared multi-line field sits on the sunken flag card, so it takes the surface fill to keep its boundary. */
+.lf-rebuild .lf-quality-resolve .lf-textarea { background: var(--surface); }
+
+.lf-quality-category { display: grid; gap: var(--spacing-2); }
+.lf-quality-signal dd { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-3); }
+.lf-quality-status { display: inline-flex; align-items: center; gap: var(--spacing-1); font-weight: 600; }
+.lf-quality-status .lf-system-glyph { inline-size: 1.25em; block-size: 1.25em; flex: none; }
+.lf-quality-signal[data-status='breach'] .lf-quality-status { color: var(--error-strong); }
+.lf-quality-signal[data-status='ok'] .lf-quality-status { color: var(--success-strong); }
+
+.lf-quality-reviews li { display: grid; gap: var(--spacing-2); justify-items: start; }
+.lf-quality-reviews .lf-button { min-block-size: var(--target-base); }
+
+.lf-preview--staff-mentor-quality .lf-preview-content { max-inline-size: 56rem; gap: var(--spacing-6); }

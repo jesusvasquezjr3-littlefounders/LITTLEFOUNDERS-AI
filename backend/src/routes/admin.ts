@@ -33,7 +33,28 @@ import {
 import { getAchievementSharingMetrics } from '../services/achievementSharingMetrics.js';
 import { getAccountDeletionMetrics } from '../services/accountDeletionMetrics.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
-import { getTutorRetentionStatus, listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
+import { getTutorRetentionStatus, listTutorReviewQueue } from '../services/tutorData.js';
+import {
+  getLiveContentGate,
+  LIVE_CONTENT_FLOORS,
+  LIVE_CONTENT_THRESHOLDS,
+  liveReviewBacklog,
+  recordLiveReview,
+  resetLiveContentGateCache,
+  RISK_CATEGORIES,
+} from '../services/pedagogy/liveContentGovernance.js';
+import { JUDGE_REGISTRY } from '../services/pedagogy/judgeCalibration.js';
+import { listTutorPacks, PACK_STATUSES, setTutorPackStatus } from '../services/tutorPacks.js';
+import {
+  acknowledgeFlag,
+  getMentorQualityDashboard,
+  OWNER_ROLES,
+  recordOwnerReview,
+  resolveFlag,
+  RESOLUTION_NOTE_MAX,
+  RESOLUTION_NOTE_MIN,
+  setOwner,
+} from '../services/pedagogy/mentorQualityDashboard.js';
 import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
@@ -397,12 +418,21 @@ export function adminRouter(): Router {
   router.use('/generation', requireAdminPermission('manage_content'));
   router.use('/moderation', requireAdminPermission('manage_content'));
   router.use('/tutor/review-queue', requireAdminPermission('manage_content'));
+  // C.5/C.6: the live-content governance status and the curated-pack release
+  // gate are content decisions, like the review queue.
+  router.use('/tutor/live-content', requireAdminPermission('manage_content'));
+  router.use('/tutor/packs', requireAdminPermission('manage_content'));
   router.use('/analytics', requireAdminPermission('view_analytics'));
   router.use('/insights', requireAdminPermission('view_analytics'));
   router.use('/intel', requireAdminPermission('view_analytics'));
   router.use(/^\/intel-export\.(?:csv|xlsx)$/, requireAdminPermission('view_analytics'));
   router.use('/health/services', requireAdminPermission('view_analytics'));
   router.use('/learning/retention', requireAdminPermission('view_analytics'));
+  // C.24: the Mentor-quality dashboard is read with the analytics grant. The
+  // named-owner rule for acknowledging, resolving and reviewing is enforced in
+  // the service; naming an owner also needs manage_users.
+  router.use('/mentor-quality', requireAdminPermission('view_analytics'));
+  router.use('/mentor-quality/owners', requireAdminPermission('manage_users'));
   router.use('/emails', requireAdminPermission('manage_support'));
   router.use('/audit', requireAdminPermission('manage_support'));
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
@@ -1369,21 +1399,182 @@ export function adminRouter(): Router {
     ok(res, { segments, total: segments.length });
   });
 
+  /*
+   * C.5: a staff verdict is also the INPUT of the dynamic sampling rate and
+   * of the judge's concordance. A rejection is a real quality or safety
+   * issue: it raises that content-risk category's sampling rate at once, and
+   * too many of them suspend live generation for the category (Stage 7).
+   * `issue` classifies a rejection (quality | safety); an older console that
+   * sends none still records a rejection, counted as an issue of unstated
+   * class. The segment status and the governance log move in ONE transaction
+   * (`record_tutor_live_review`), and only on a row still pending.
+   */
+  const ReviewDecisionBody = z
+    .object({
+      status: z.enum(['approved', 'rejected']),
+      issue: z.enum(['quality', 'safety']).optional(),
+    })
+    .strict()
+    .refine((b) => b.issue === undefined || b.status === 'rejected', 'issue accompanies a rejection only');
+
   router.post('/tutor/review-queue/:segmentId/status', async (req, res) => {
     const segmentId = z.string().uuid().safeParse(req.params.segmentId);
-    const status = z.enum(['approved', 'rejected']).safeParse((req.body as { status?: unknown })?.status);
-    if (!segmentId.success || !status.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'segmentId must be a uuid and status approved|rejected');
+    const body = ReviewDecisionBody.safeParse(req.body);
+    if (!segmentId.success || !body.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'segmentId must be a uuid, status approved|rejected, issue quality|safety on a rejection only');
     }
     const actor = authedUser(res);
-    const done = await setTutorReviewStatus(segmentId.data, status.data);
-    if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+    const outcome = await recordLiveReview({
+      segmentId: segmentId.data,
+      verdict: body.data.status,
+      issue: body.data.issue ?? null,
+      reviewerId: actor.id,
+    });
+    if (outcome === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+    if (outcome === 'not_pending') return fail(res, 409, 'ALREADY_DECIDED', 'This activity was already reviewed');
     // G.3: the moderation decision must ALSO land in the central audit log
     // (the activity row keeps the status; the log keeps the searchable,
     // staff-wide trail of WHO approved/rejected WHAT — the same treatment
     // course/lesson status changes already receive).
-    await insertAuditLog(actor.id, 'admin.tutor_activity.review', segmentId.data, { status: status.data });
-    ok(res, { id: segmentId.data, status: status.data });
+    await insertAuditLog(actor.id, 'admin.tutor_activity.review', segmentId.data, {
+      status: body.data.status,
+      issue: body.data.issue ?? null,
+      governed: outcome === 'recorded',
+    });
+    ok(res, { id: segmentId.data, status: body.data.status, issue: body.data.issue ?? null });
+  });
+
+  /*
+   * C.5: what staff need to see to act — per content-risk category, the
+   * current sampling rate (baseline or elevated, and how many clean
+   * decisions restore the baseline), whether live generation is suspended
+   * and why, the pending review backlog past the SLA, and the judge's
+   * calibration. Read-only.
+   */
+  router.get('/tutor/live-content/status', async (_req, res) => {
+    const now = new Date();
+    resetLiveContentGateCache();
+    const gate = await getLiveContentGate(now);
+    const backlog = await liveReviewBacklog(now);
+    if (gate.degraded || backlog === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the live-content status');
+    ok(res, {
+      calibration: {
+        state: gate.calibration.state,
+        ageDays: gate.calibration.ageDays,
+        judgeModel: gate.calibration.row?.judge_model ?? null,
+        recordedAt: gate.calibration.row?.created_at ?? null,
+        maxAgeDays: JUDGE_REGISTRY.live_content_judge.standard.maxAgeDays,
+      },
+      categories: RISK_CATEGORIES.map((category) => {
+        const entry = gate.categories[category];
+        return {
+          category,
+          suspended: entry.suspended,
+          reasons: entry.reasons,
+          rate: entry.sampling.rate,
+          baseline: entry.sampling.baseline,
+          floor: LIVE_CONTENT_FLOORS[category],
+          elevated: entry.sampling.elevated,
+          decisionsToRestore: entry.sampling.decisionsToRestore,
+          pending: backlog[category].pending,
+          overdue: backlog[category].overdue,
+        };
+      }),
+      reviewSlaDays: LIVE_CONTENT_THRESHOLDS.reviewSlaDays,
+    });
+  });
+
+  // ── C.6: the curated activity-pack release gate ────────────────────────────
+  router.get('/tutor/packs', async (req, res) => {
+    const status = z.enum(PACK_STATUSES).optional().safeParse(req.query.status);
+    if (!status.success) return fail(res, 400, 'VALIDATION_ERROR', 'status must be review|published|archived');
+    const packs = await listTutorPacks(status.data ?? null);
+    if (!packs) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the activity packs');
+    ok(res, { packs, total: packs.length });
+  });
+
+  router.post('/tutor/packs/:packId/status', async (req, res) => {
+    const packId = z.string().uuid().safeParse(req.params.packId);
+    const body = z.object({ status: z.enum(PACK_STATUSES) }).strict().safeParse(req.body);
+    if (!packId.success || !body.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'packId must be a uuid and status review|published|archived');
+    }
+    const result = await setTutorPackStatus({ packId: packId.data, status: body.data.status, actorId: authedUser(res).id });
+    if (result.ok) {
+      // The staff answer is the release record; the pack body stays in the list read.
+      const summary: Partial<typeof result.row> = { ...result.row };
+      delete summary.pack;
+      return ok(res, summary);
+    }
+    if (result.code === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such pack');
+    if (result.code === 'unchanged') return fail(res, 409, 'ALREADY_DECIDED', 'The pack is already in that state, or changed meanwhile');
+    if (result.code === 'invalid') {
+      return fail(res, 422, 'PACK_CONTRACT_FAILED', 'The pack does not meet the tutor-pack.v1 contract', {
+        failures: result.failures ?? [],
+      });
+    }
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the pack');
+  });
+
+  // ── C.24: the consolidated Mentor-quality and engagement-health dashboard ──
+  /*
+   * One read for the product/pedagogy team: every consolidated signal from
+   * the evaluation loop's latest snapshot (with the ones not instrumented yet
+   * listed as such), the active flags with their owner roles, the named
+   * owners, and the weekly review record. A failed read is a 502, never an
+   * empty, calm dashboard (§1.14).
+   */
+  router.get('/mentor-quality', async (_req, res) => {
+    const dashboard = await getMentorQualityDashboard(new Date(), authedUser(res).id);
+    if (!dashboard) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the Mentor-quality dashboard');
+    ok(res, dashboard);
+  });
+
+  const flagOutcome = (res: Response, result: Awaited<ReturnType<typeof acknowledgeFlag>>, id: string, status: string) => {
+    if (result === 'done') return ok(res, { id, status });
+    if (result === 'not_found') return fail(res, 404, 'NOT_FOUND', 'No such flag');
+    if (result === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this flag\'s role can act on it');
+    if (result === 'conflict') return fail(res, 409, 'ALREADY_DECIDED', 'This flag changed meanwhile');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the flag');
+  };
+
+  router.post('/mentor-quality/flags/:flagId/acknowledge', async (req, res) => {
+    const flagId = z.string().uuid().safeParse(req.params.flagId);
+    const body = z.object({}).strict().safeParse(req.body ?? {});
+    if (!flagId.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'flagId must be a uuid and the body empty');
+    return flagOutcome(res, await acknowledgeFlag(flagId.data, authedUser(res).id), flagId.data, 'acknowledged');
+  });
+
+  const FlagResolveBody = z.object({ note: z.string().trim().min(RESOLUTION_NOTE_MIN).max(RESOLUTION_NOTE_MAX) }).strict();
+  router.post('/mentor-quality/flags/:flagId/resolve', async (req, res) => {
+    const flagId = z.string().uuid().safeParse(req.params.flagId);
+    const body = FlagResolveBody.safeParse(req.body);
+    if (!flagId.success || !body.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', `flagId must be a uuid and note the root cause in ${RESOLUTION_NOTE_MIN}-${RESOLUTION_NOTE_MAX} characters`);
+    }
+    return flagOutcome(res, await resolveFlag(flagId.data, authedUser(res).id, body.data.note), flagId.data, 'resolved');
+  });
+
+  const ReviewBody = z.object({ role: z.enum(OWNER_ROLES), note: z.string().trim().max(RESOLUTION_NOTE_MAX).optional() }).strict();
+  router.post('/mentor-quality/reviews', async (req, res) => {
+    const body = ReviewBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', `role must be one of ${OWNER_ROLES.join(', ')}`);
+    const result = await recordOwnerReview(authedUser(res).id, body.data.role, body.data.note || null);
+    if (result.ok) return ok(res, { role: body.data.role, week: result.week });
+    if (result.code === 'not_owner') return fail(res, 403, 'NOT_NAMED_OWNER', 'Only a named owner of this role can sign its review');
+    if (result.code === 'already') return fail(res, 409, 'ALREADY_REVIEWED', 'This week\'s review is already signed');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+  });
+
+  const OwnerBody = z.object({ role: z.enum(OWNER_ROLES), userId: z.string().uuid(), action: z.enum(['add', 'remove']) }).strict();
+  router.post('/mentor-quality/owners', async (req, res) => {
+    const body = OwnerBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'role, userId (uuid) and action add|remove are required');
+    const result = await setOwner({ ...body.data, actorId: authedUser(res).id });
+    if (result === 'done') return ok(res, body.data);
+    if (result === 'not_staff') return fail(res, 422, 'NOT_ELIGIBLE_OWNER', 'A named owner must be staff who can read analytics');
+    if (result === 'unchanged') return fail(res, 409, 'UNCHANGED', 'Nothing to change');
+    return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the owners');
   });
 
   // ── Tutor retention sweep health (/ORACLE.md §15.2 item 4, closed 2026-08-31) ─

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  ControllerSnapshotSchema,
+  CORROBORATION_MIN_OBSERVATIONS,
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
   listenSilenceMsFor,
@@ -61,13 +63,34 @@ describe('PedagogicalController', () => {
     expect(c.state()?.mode).toBe('review');
   });
 
-  it('a diagnosed misconception routes to REMEDIATE with the catalogued hint', () => {
+  /*
+   * C.10: a diagnosis is acted on only once CORROBORATED — two consecutive
+   * observations agreeing on it. Here the learner states the wrong idea and
+   * then applies it on a graded item: two observations, one failure (so the
+   * rescue guardrail stays out of the way), and REMEDIATE opens.
+   */
+  const statedIdea = { kind: 'stated_misconception', misconceptionCode: 'adds-instead-of-counts-up' } as const;
+
+  it('a SINGLE diagnosed miss is held, not remediated (C.10)', () => {
     const c = new PedagogicalController([entry()]);
     const decision = c.decide(
       { kind: 'activity_result', correct: false, misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 },
       NOW,
     );
+    expect(decision.strategy).not.toBe('REMEDIATE');
+    expect(decision.misconceptionCode).toBeNull();
+    expect(c.state()?.misconceptionHint).toBeNull();
+  });
+
+  it('a CORROBORATED misconception routes to REMEDIATE with the catalogued hint', () => {
+    const c = new PedagogicalController([entry()]);
+    c.decide(statedIdea, NOW);
+    const decision = c.decide(
+      { kind: 'activity_result', correct: false, misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 },
+      NOW + 1_000,
+    );
     expect(decision.strategy).toBe('REMEDIATE');
+    expect(decision.evidence).toEqual({ rule: 'remediation', observations: 2, required: 2 });
     expect(decision.instruction).toContain('Cuenta hacia arriba desde el precio.');
     expect(c.state()?.misconceptionHint).toBe('Cuenta hacia arriba desde el precio.');
     expect(c.state()?.mode).toBe('remediation');
@@ -87,6 +110,7 @@ describe('PedagogicalController', () => {
    */
   it('clears the misconception hint the moment the strategy leaves REMEDIATE via ordinary chat', () => {
     const c = new PedagogicalController([entry({ pKnown: 0.9 })]);
+    c.decide(statedIdea, NOW - 1_000);
     c.decide(
       { kind: 'activity_result', correct: false, misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 },
       NOW,
@@ -110,6 +134,7 @@ describe('PedagogicalController', () => {
     // an unrelated conversational aside mid-remediation must not erase a
     // diagnosis that is still the active one.
     const c = new PedagogicalController([entry({ pKnown: 0.9, targetDifficulty: 1 })]);
+    c.decide(statedIdea, NOW - 1_000);
     c.decide(
       { kind: 'activity_result', correct: false, misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 },
       NOW,
@@ -254,7 +279,7 @@ describe('PedagogicalController', () => {
       expect(c.revokedMasteryKcIds).toEqual([KC_A]);
     });
 
-    it('a revoked KC must EARN mastery again — one qualifying answer, not zero', () => {
+    it('a revoked KC must EARN mastery again — two consecutive qualifying answers (C.10), not zero', () => {
       const c = new PedagogicalController([
         entry({ kcId: KC_A, pKnown: 0.9 }),
         entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
@@ -263,10 +288,13 @@ describe('PedagogicalController', () => {
         c.decide(fastCorrect(1_500), NOW + i * 1_000);
       }
       c.decide(fastCorrect(9_000), NOW + 10_000); // revokes
-      // Back at their own pace: this re-qualifies, and because the KC WAS
-      // celebrated before, it comes back as TRANSFER rather than CELEBRATE.
-      const regained = c.decide(fastCorrect(1_500), NOW + 11_000);
+      // Back at their own pace. ONE such answer is a single observation and
+      // must not re-declare mastery (C.10); the second corroborates it, and
+      // because the KC WAS celebrated before, it comes back as TRANSFER.
+      expect(c.decide(fastCorrect(1_500), NOW + 11_000).strategy).not.toBe('TRANSFER');
+      const regained = c.decide(fastCorrect(1_500), NOW + 12_000);
       expect(regained.strategy).toBe('TRANSFER');
+      expect(regained.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2 });
     });
 
     it('a WRONG answer on a celebrated KC revokes it too — not only a slow one', () => {
@@ -483,7 +511,7 @@ describe('PedagogicalController', () => {
     expect(again.difficulty).toBeLessThanOrEqual(after.difficulty);
   });
 
-  it('an unexpected failure PROBEs the prerequisite, and a correct probe returns to REMEDIATE', () => {
+  it('an unexpected failure PROBEs the prerequisite; a correct probe on ONE miss returns to ordinary teaching (C.10)', () => {
     const c = new PedagogicalController([entry({ pKnown: 0.7 })]);
     const probe = c.decide(
       { kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 },
@@ -498,7 +526,31 @@ describe('PedagogicalController', () => {
       { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
       NOW + 5_000,
     );
+    // Pre-C.10 this remediated the original KC on the single miss that
+    // opened the probe. The probe still closes and the learner is back on
+    // the original KC — taught, not remediated, until a second observation.
+    expect(back.strategy).not.toBe('REMEDIATE');
+    expect(back.evidence).toBeNull();
+    expect(c.activeKcId).toBe(KC_A);
+    expect(c.state()?.mode).not.toBe('probe');
+  });
+
+  it('a correct probe remediates the original KC once its own misses are corroborated', () => {
+    // Below the 0.55 "unexpected" bar the first miss does not probe; the
+    // second trips rescue; the third probes (two consecutive failures). The
+    // original KC now carries three agreeing misses, so a correct probe
+    // remediates it — with that evidence on the decision.
+    const c = new PedagogicalController([entry({ pKnown: 0.5, misconceptions: [] })]);
+    const miss = { kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 } as const;
+    expect(c.decide(miss, NOW).strategy).not.toBe('PROBE');
+    expect(c.decide(miss, NOW + 90_000).strategy).toBe('RESCUE');
+    expect(c.decide(miss, NOW + 180_000).strategy).toBe('PROBE');
+    const back = c.decide(
+      { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
+      NOW + 270_000,
+    );
     expect(back.strategy).toBe('REMEDIATE');
+    expect(back.evidence).toEqual({ rule: 'remediation', observations: 3, required: 2 });
     expect(c.activeKcId).toBe(KC_A);
   });
 
@@ -616,8 +668,13 @@ describe('PedagogicalController', () => {
       return c;
     };
 
+    const stated = { kind: 'stated_misconception', misconceptionCode: 'adds-instead-of-counts-up' } as const;
+
     it('does not remediate an idea the child never had', () => {
       const c = paced();
+      // Even with the idea stated once already: a guess is not the second
+      // observation that would corroborate it (C.10 — a guess is neutral).
+      c.decide(stated, NOW + 60_000);
       const decision = c.decide(wrong(600), NOW + 80_000);
       expect(decision.strategy).not.toBe('REMEDIATE');
       expect(decision.instruction).toContain('disengagement');
@@ -625,8 +682,10 @@ describe('PedagogicalController', () => {
 
     it('still remediates a real attempt that went wrong', () => {
       // The same wrong answer, thought about. This is the case the catalogued
-      // hint exists for, and it must survive the guess detector intact.
+      // hint exists for, and it must survive the guess detector intact. C.10:
+      // corroborated by the learner having stated the same idea first.
       const c = paced();
+      c.decide(stated, NOW + 60_000);
       const decision = c.decide(wrong(11_000), NOW + 80_000);
       expect(decision.strategy).toBe('REMEDIATE');
       expect(decision.instruction).not.toContain('disengagement');
@@ -634,6 +693,7 @@ describe('PedagogicalController', () => {
 
     it('refuses to call anything a guess without a measurement', () => {
       const c = paced();
+      c.decide(stated, NOW + 60_000);
       expect(c.decide(wrong(null), NOW + 80_000).strategy).toBe('REMEDIATE');
     });
 
@@ -686,6 +746,9 @@ describe('PedagogicalController', () => {
       // baselines disagree on this exact input on purpose, so this proves
       // which one the controller is actually using rather than merely being
       // consistent with either.
+      // C.10: the stated idea is the first observation; the probe is the
+      // second only if it is NOT read as a guess — which is the question.
+      c.decide(stated, tick());
       const decision = c.decide(wrong(5_000), tick());
       expect(decision.strategy).toBe('REMEDIATE');
       expect(decision.instruction).not.toContain('disengagement');
@@ -705,8 +768,11 @@ describe('PedagogicalController', () => {
       // ...and the third, four times slower, is a learner working it out rather
       // than knowing it. Confidence and opportunity count both say promote.
       expect(c.decide(right(16_000), NOW + 80_000).strategy).not.toBe('CELEBRATE');
-      // A fluent answer afterwards promotes, so this holds rather than blocks.
-      expect(c.decide(right(4_500), NOW + 120_000).strategy).toBe('CELEBRATE');
+      // The laboured answer broke the C.10 chain: the next fluent answer is
+      // one observation, and the one after it corroborates — so this HOLDS
+      // rather than blocks.
+      expect(c.decide(right(4_500), NOW + 120_000).strategy).not.toBe('CELEBRATE');
+      expect(c.decide(right(4_500), NOW + 160_000).strategy).toBe('CELEBRATE');
     });
 
     it('promotes a learner who is simply consistent, however slow', () => {
@@ -729,19 +795,24 @@ describe('PedagogicalController', () => {
     });
   });
 
-  it('credits the evidence a returning learner already produced', () => {
+  it('credits the evidence a returning learner already produced — but not as today’s corroboration', () => {
     // The opportunity count is about how much we have SEEN of a learner, and
     // previous sessions are things we saw. A child coming back to a KC they
-    // have already been asked about must not re-earn it from zero.
+    // have already been asked about must not re-earn it from zero: two
+    // answers today suffice, not three.
+    //
+    // C.10: before, ONE correct answer today declared mastery on the strength
+    // of old attempts — exactly the single-observation declaration the SPEC
+    // forbids. Today's two consecutive answers are the corroboration.
     const c = new PedagogicalController(
       [entry({ pKnown: 0.8, prereqKcIds: [] })],
       [{ kcId: KC_A, kcKey: 'money.make-change-counting-up', pKnown: 0.8, attempts: 4 }],
     );
-    const decision = c.decide(
-      { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
-      NOW,
-    );
+    const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+    expect(c.decide(right, NOW).strategy).not.toBe('CELEBRATE');
+    const decision = c.decide(right, NOW + 40_000);
     expect(decision.strategy).toBe('CELEBRATE');
+    expect(decision.evidence).toEqual({ rule: 'mastery', observations: 2, required: 2 });
   });
 
   it('holds its strategy past three changes per minute — never erratic', () => {
@@ -1117,5 +1188,197 @@ describe('the ratchet is reconciled to the band that actually reached the screen
     new PedagogicalController([HARD()]).reconcileServedDifficulty(2);
     expect(warn).toHaveBeenCalledTimes(1);
     expect(String(warn.mock.calls[0]?.[0])).toContain('served difficulty 2');
+  });
+});
+
+/*
+ * C.10 — THE CORROBORATING-EVIDENCE RULE (Product C.10, Appendix D §2.6).
+ *
+ * No mastery declaration and no remediation/rescue trigger on a single
+ * observation; the observations must be consecutive and QUALIFYING — weighted
+ * by response latency and by the hint-request pattern. Each test below names
+ * one way a single, possibly-unrepresentative response used to be enough.
+ */
+describe('C.10: two consecutive qualifying observations before a consequential move', () => {
+  const right = (extra: Partial<{ latencyMs: number | null; hintAssisted: boolean }> = {}) =>
+    ({ kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1, ...extra }) as const;
+  const wrongWith = (code: string | null) =>
+    ({ kind: 'activity_result', correct: false, misconceptionCode: code, attemptNumber: 1 }) as const;
+  const returning = (options?: ConstructorParameters<typeof PedagogicalController>[2]) =>
+    new PedagogicalController(
+      [entry({ pKnown: 0.8, prereqKcIds: [] })],
+      [{ kcId: KC_A, kcKey: 'money.make-change-counting-up', pKnown: 0.8, attempts: 6 }],
+      options,
+    );
+
+  it('exposes the SPEC value as the default requirement', () => {
+    expect(CORROBORATION_MIN_OBSERVATIONS).toBe(2);
+  });
+
+  it('a hint-assisted correct answer is not independent evidence — it RESETS the chain', () => {
+    const c = returning();
+    c.decide(right(), NOW);
+    // Two correct in a row, but the second was scaffolded by the hint ladder.
+    expect(c.decide(right({ hintAssisted: true }), NOW + 40_000).strategy).not.toBe('CELEBRATE');
+    // One unassisted answer after it is again only ONE observation.
+    expect(c.decide(right(), NOW + 80_000).strategy).not.toBe('CELEBRATE');
+    expect(c.decide(right(), NOW + 120_000).strategy).toBe('CELEBRATE');
+  });
+
+  it('a SURPRISING correct that arrived too fast to read is a possible guess — neutral', () => {
+    // A learner the controller believes does NOT know this (p < 0.5).
+    const c = new PedagogicalController([entry({ pKnown: 0.2, prereqKcIds: [] })]);
+    const miss = { ...wrongWith(null), latencyMs: 9_000 } as const;
+    // Establish a pace baseline from careful answers, misses in between so
+    // the belief stays low.
+    c.decide(right({ latencyMs: 9_000 }), NOW);
+    c.decide(miss, NOW + 40_000);
+    c.decide(right({ latencyMs: 9_000 }), NOW + 80_000);
+    c.decide(miss, NOW + 120_000);
+    const before = new Map(c.snapshot().masteryEvidence).get(KC_A) ?? 0;
+    // 600 ms against a 9 s median, from a low belief: a lucky tap.
+    c.decide(right({ latencyMs: 600 }), NOW + 160_000);
+    expect(new Map(c.snapshot().masteryEvidence).get(KC_A) ?? 0).toBe(before);
+  });
+
+  it('a FAST correct from a learner already believed to know it DOES count — fluency is not a cage', () => {
+    const c = returning();
+    c.decide(right({ latencyMs: 9_000 }), NOW);
+    c.decide(right({ latencyMs: 9_000 }), NOW + 40_000);
+    // Declared on the two answers above (returning learner): the plan is done.
+    expect(c.active).toBe(false);
+  });
+
+  it('a wrong answer breaks the mastery chain — the two must be CONSECUTIVE', () => {
+    const c = returning();
+    c.decide(right(), NOW);
+    c.decide(wrongWith(null), NOW + 40_000);
+    expect(c.decide(right(), NOW + 80_000).strategy).not.toBe('CELEBRATE');
+  });
+
+  it('a conversational turn between two correct answers is not an observation and does not break them', () => {
+    const c = returning();
+    c.decide(right(), NOW);
+    c.decide({ kind: 'conversation_turn' }, NOW + 40_000);
+    expect(c.decide(right(), NOW + 80_000).strategy).toBe('CELEBRATE');
+  });
+
+  it('two misses with DIFFERENT diagnoses do not corroborate either one', () => {
+    const c = new PedagogicalController([entry({ pKnown: 0.4, prereqKcIds: [] })]);
+    c.decide({ kind: 'stated_misconception', misconceptionCode: 'some-other-idea' }, NOW);
+    const d = c.decide(wrongWith('adds-instead-of-counts-up'), NOW + 40_000);
+    expect(d.strategy).not.toBe('REMEDIATE');
+    expect(d.misconceptionCode).toBeNull();
+  });
+
+  it('a stated wrong idea said TWICE is corroborated — without any graded failure', () => {
+    const c = new PedagogicalController([entry({ pKnown: 0.4, prereqKcIds: [] })]);
+    const stated = { kind: 'stated_misconception', misconceptionCode: 'adds-instead-of-counts-up' } as const;
+    expect(c.decide(stated, NOW).strategy).not.toBe('REMEDIATE');
+    const d = c.decide(stated, NOW + 40_000);
+    expect(d.strategy).toBe('REMEDIATE');
+    expect(d.evidence).toEqual({ rule: 'remediation', observations: 2, required: 2 });
+  });
+
+  it('RESCUE carries its evidence: two consecutive graded failures', () => {
+    const c = new PedagogicalController([entry({ pKnown: 0.4, prereqKcIds: [], misconceptions: [] })]);
+    expect(c.decide(wrongWith(null), NOW).evidence).toBeNull();
+    const d = c.decide(wrongWith(null), NOW + 40_000);
+    expect(d.strategy).toBe('RESCUE');
+    expect(d.evidence).toEqual({ rule: 'rescue', observations: 2, required: 2 });
+  });
+
+  it('a decision a guardrail HELD carries no evidence — it executed nothing', () => {
+    // The churn cap already spent (three strategy changes this minute), and
+    // a remediation chain one observation short. The next stated idea
+    // corroborates it — REMEDIATE is proposed — but the cap HOLDS the current
+    // strategy, so nothing consequential executed and no evidence is claimed.
+    const c = new PedagogicalController([entry({ pKnown: 0.4, prereqKcIds: [] })]);
+    c.restore({
+      ...c.snapshot(),
+      strategy: 'WORKED',
+      strategyChangesAt: [NOW - 3_000, NOW - 2_000, NOW - 1_000],
+      remediationEvidence: [[KC_A, 'adds-instead-of-counts-up', 1]],
+    });
+    const held = c.decide({ kind: 'stated_misconception', misconceptionCode: 'adds-instead-of-counts-up' }, NOW);
+    expect(held.strategy).toBe('WORKED');
+    expect(held.evidence).toBeNull();
+  });
+
+  it('files a mastery declaration under the KC it declared, not the next one', () => {
+    const KC_B = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+    const c = new PedagogicalController(
+      [entry({ pKnown: 0.8, prereqKcIds: [] }), entry({ kcId: KC_B, pKnown: 0.2, prereqKcIds: [] })],
+      [{ kcId: KC_A, kcKey: 'money.make-change-counting-up', pKnown: 0.8, attempts: 6 }],
+    );
+    c.decide(right(), NOW);
+    const d = c.decide(right(), NOW + 40_000);
+    expect(d.strategy).toBe('CELEBRATE');
+    expect(d.kcId).toBe(KC_A);
+    expect(c.activeKcId).toBe(KC_B);
+  });
+
+  it('reports a revocation on the decision that made it', () => {
+    const c = new PedagogicalController([
+      entry({ kcId: KC_A, pKnown: 0.9 }),
+      entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+    ]);
+    for (let i = 0; i < 3; i += 1) c.decide(right({ latencyMs: 1_500 }), NOW + i * 1_000);
+    const d = c.decide(wrongWith(null), NOW + 10_000);
+    expect(d.masteryRevoked).toBe(true);
+    expect(c.decide({ kind: 'conversation_turn' }, NOW + 11_000).masteryRevoked).toBe(false);
+  });
+
+  describe('operator configuration (Appendix F Stage 7 kill switch, Tier 1 threshold)', () => {
+    it('rolls ONE knowledge component back to the single-observation baseline', () => {
+      const c = returning({ corroborationRollbackKcKeys: ['money.make-change-counting-up'] });
+      const d = c.decide(right(), NOW);
+      expect(d.strategy).toBe('CELEBRATE');
+      expect(d.evidence).toEqual({ rule: 'mastery', observations: 1, required: 1 });
+    });
+
+    it("judges a probe's remediation against the ORIGINAL KC's requirement", () => {
+      // The original KC is rolled back (requirement 1); the probe entry is a
+      // different key (`#prereq`) still on the rule. The remediation rests on
+      // the original KC's chain, so its evidence must carry that KC's
+      // requirement — otherwise a compliant decision reads as a violation.
+      const c = new PedagogicalController([entry({ pKnown: 0.7 })], [], {
+        corroborationRollbackKcKeys: ['money.make-change-counting-up'],
+      });
+      expect(c.decide(wrongWith(null), NOW).strategy).toBe('PROBE');
+      const back = c.decide(right(), NOW + 5_000);
+      expect(back.strategy).toBe('REMEDIATE');
+      expect(back.evidence).toEqual({ rule: 'remediation', observations: 1, required: 1 });
+    });
+
+    it('leaves every other knowledge component on the rule', () => {
+      const c = returning({ corroborationRollbackKcKeys: ['some.other-kc'] });
+      expect(c.decide(right(), NOW).strategy).not.toBe('CELEBRATE');
+    });
+
+    it('can RAISE the requirement', () => {
+      const c = returning({ corroborationMinObservations: 3 });
+      c.decide(right(), NOW);
+      expect(c.decide(right(), NOW + 40_000).strategy).not.toBe('CELEBRATE');
+      expect(c.decide(right(), NOW + 80_000).evidence).toEqual({ rule: 'mastery', observations: 3, required: 3 });
+    });
+
+    it('ignores an out-of-range value rather than weakening the rule', () => {
+      // 1 included: a global single-observation setting would switch C.10 off.
+      for (const bad of [0, -1, 1, 1.5, 9, Number.NaN]) {
+        const c = returning({ corroborationMinObservations: bad });
+        expect(c.decide(right(), NOW).strategy, String(bad)).not.toBe('CELEBRATE');
+      }
+    });
+  });
+
+  it('restores a park record from the previous build (no chains) as empty chains', () => {
+    const c = new PedagogicalController([entry()]);
+    const legacy = { ...c.snapshot() } as Record<string, unknown>;
+    delete legacy.masteryEvidence;
+    delete legacy.remediationEvidence;
+    const parsed = ControllerSnapshotSchema.parse(legacy);
+    expect(parsed.masteryEvidence).toEqual([]);
+    expect(parsed.remediationEvidence).toEqual([]);
   });
 });

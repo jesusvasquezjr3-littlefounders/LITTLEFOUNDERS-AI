@@ -1,0 +1,313 @@
+{
+  "kind": "mentor-governance-registry",
+  "version": 1,
+  "about": "C.22 tiered governance (Appendix E §3.1, §3.1.1; Appendix F Part 3). Every Mentor source file in a governed root belongs to exactly one component, and the component's tier says what automation may do to it. Read with docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md. Enforced by `npm run governance:check`. This file is itself Tier 1 (component governance.model).",
+  "tiers": {
+    "tier_1": "Never automate. Full human review and explicit sign-off by the Pedagogical Reviewer and the Safety/Trust Lead; never enters an automated path; every change needs a Tier 1 change-record row.",
+    "live_content_judging": "Appendix E §3.1.1: live per-item content judging, its own axis beside the proposal tiers. Treated like Tier 1 for change control: floors may be tightened by a human, never loosened without full review; never changed by an automated pipeline.",
+    "tier_2": "Gated automate. Micro-variants within approved bounds may be proposed automatically; release needs Stage 0, Stage 2 (simulated students), Stage 3 (a calibrated judge, C.23) or Stage 4 (human review), and Stage 5 (canary with a human reading real transcripts).",
+    "tier_3": "Fully automate. Measurement and reporting whose output is information for a human; Stage 0 and instrumentation only."
+  },
+  "governedRoots": [
+    "oracle/src/tutor/",
+    "oracle/src/safety/",
+    "oracle/src/content/",
+    "oracle/src/evaluation/",
+    "oracle/src/context/",
+    "backend/src/services/pedagogy/"
+  ],
+  "ignore": ["**/*.test.ts", "**/__tests__/**"],
+  "components": [
+    {
+      "id": "safety.judge",
+      "tier": "tier_1",
+      "title": "The safety judge and the privacy boundary: whatever decides a conversation must be refused, paused, escalated or shown to a guardian, and what reaches the model about a child.",
+      "requirements": ["C.2", "C.3", "C.4"],
+      "owner": "safety_trust_lead",
+      "policy": "docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md",
+      "paths": [
+        "oracle/src/safety/moderation.ts",
+        "oracle/src/safety/classifier.ts",
+        "oracle/src/safety/canary.ts",
+        "oracle/src/safety/untrusted.ts",
+        "oracle/src/session/review.ts",
+        "oracle/src/session/memoryRevision.ts",
+        "oracle/src/context/**"
+      ],
+      "examples": [
+        "Changing what the moderation judge refuses, or when it may be skipped",
+        "Changing the guardian review of memory notes",
+        "Adding a field the model sees about a child (the 14-field context contract)"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "evaluation.rubric_and_judges",
+      "tier": "tier_1",
+      "title": "The core evaluation rubric, its deterministic scorer and fixtures, every judge's instructions, the calibration standard and the seed and gold sets.",
+      "requirements": ["C.21", "C.23"],
+      "owner": "pedagogical_lead",
+      "policy": "docs/rebuild/mentor/JUDGE-CALIBRATION-POLICY.md",
+      "paths": [
+        "backend/src/services/pedagogy/transcriptRubric.ts",
+        "backend/src/services/pedagogy/transcriptScoring.ts",
+        "backend/src/services/pedagogy/transcriptFixtures.ts",
+        "backend/src/services/pedagogy/transcriptGoldSet.ts",
+        "backend/src/services/pedagogy/judgeCalibration.ts",
+        "oracle/src/evaluation/**",
+        "oracle/src/content/judgeCalibration/**"
+      ],
+      "examples": [
+        "Adding, removing or retargeting a rubric criterion",
+        "Editing the transcript judge's system prompt or a judge question",
+        "Lowering an agreement threshold, or editing the gold set's labels"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "evaluation.stage2_and_bias_audit",
+      "tier": "tier_1",
+      "title": "The simulated-student suites that gate every change (Appendix F Stage 2) and the dialect/ASR bias audit (C.20). Weakening a gate is how an automated loop would hide a regression.",
+      "requirements": ["C.20", "C.21"],
+      "owner": "safety_trust_lead",
+      "policy": "docs/rebuild/mentor/BIAS-AUDIT-POLICY.md",
+      "paths": ["oracle/src/tutor/*Gym.ts", "oracle/src/safety/biasAudit/**"],
+      "hashExclude": ["oracle/src/safety/biasAudit/audit-log.json"],
+      "examples": [
+        "Removing a simulated persona or relaxing what it must see",
+        "Changing a bias-audit fixture's expected outcome"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "mentor.non_negotiables",
+      "tier": "tier_1",
+      "title": "The Block C non-negotiable constraints: no declared emotions, the hint ladder never repeats and honours 'just tell me', no mastery or remediation on one observation, the end-reason closing scripts, praise tied to a verifiable action, the check-in after a fired signal; and the controller and orchestrator that wire them.",
+      "requirements": ["C.9", "C.10", "C.13", "C.16", "C.18", "C.19"],
+      "owner": "pedagogical_lead",
+      "policy": "docs/rebuild/mentor/MENTOR-INTEGRITY-POLICY.md",
+      "paths": [
+        "oracle/src/tutor/hintLadder.ts",
+        "oracle/src/tutor/feedbackHonesty.ts",
+        "oracle/src/tutor/affectClaims.ts",
+        "oracle/src/tutor/checkIn.ts",
+        "oracle/src/tutor/sessionClosing.ts",
+        "oracle/src/tutor/controller.ts",
+        "oracle/src/tutor/orchestrator.ts",
+        "backend/src/services/pedagogy/bkt.ts",
+        "backend/src/services/pedagogy/kcData.ts"
+      ],
+      "examples": [
+        "Letting mastery be declared on one observation",
+        "Changing the strategy-change ceiling (3 per minute)",
+        "Using the standard positive closing for a safety stop"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "mentor.monetization_adjacent",
+      "tier": "tier_1",
+      "title": "Anything that could lengthen sessions or raise engagement as a side effect: the session budget and caps, the early-close signal, the paid-spend guard.",
+      "requirements": ["C.8", "C.12"],
+      "owner": "safety_trust_lead",
+      "policy": "docs/rebuild/mentor/SESSION-END-POLICY.md",
+      "paths": [
+        "oracle/src/session/budget.ts",
+        "oracle/src/session/spend-guard.ts",
+        "oracle/src/tutor/sessionEndSignal.ts"
+      ],
+      "examples": [
+        "Raising a session's soft or hard cap",
+        "Making the behavioural early-close signal fire later"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "measurement.stage7_and_thresholds",
+      "tier": "tier_1",
+      "title": "The Stage 7 automatic rollbacks and the dashboard's regression thresholds (Tier-1-adjacent: tightened by a human at any time, never loosened without full review).",
+      "requirements": ["C.9", "C.10", "C.11", "C.15", "C.17", "C.18", "C.24"],
+      "owner": "pedagogical_lead",
+      "policy": "docs/rebuild/mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md",
+      "paths": [
+        "backend/src/services/pedagogy/mentorIntegrity.ts",
+        "backend/src/services/pedagogy/mentorQuality.ts",
+        "backend/src/services/pedagogy/behavioralTelemetry.ts",
+        "backend/src/services/pedagogy/alliance.ts",
+        "backend/src/services/pedagogy/dialogueCalibration.ts",
+        "backend/src/services/pedagogy/spacedReview.ts",
+        "backend/src/services/pedagogy/sessionEnd.ts",
+        "backend/src/services/pedagogy/disposition.ts",
+        "oracle/src/env.ts"
+      ],
+      "examples": [
+        "Lowering the Default-to-Inaction kill-switch floor",
+        "Widening the answer-reveal ceiling or the disparity rule",
+        "Changing a Mentor kill-switch default or the C.10 corroboration floor in the Oracle configuration (oracle/src/env.ts)"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "governance.model",
+      "tier": "tier_1",
+      "title": "This registry and the gates that enforce the tiers and the judge-calibration floors.",
+      "requirements": ["C.22", "C.23"],
+      "owner": "safety_trust_lead",
+      "policy": "docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md",
+      "paths": [
+        "docs/rebuild/mentor/governance/registry.json",
+        "agent/tools/check-mentor-governance.mjs",
+        "agent/tools/check-judge-calibration-parity.mjs"
+      ],
+      "examples": [
+        "Moving a component to a more autonomous tier",
+        "Widening a Tier 2 parameter's approved bounds",
+        "Declaring a new automated pipeline"
+      ],
+      "tierHistory": [{ "tier": "tier_1", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "live_content.judge_and_packs",
+      "tier": "live_content_judging",
+      "title": "The live-content author and judge, the content-risk lexicon, the sampling floors and suspension rules, and the curated-pack release contract (C.5, C.6).",
+      "requirements": ["C.5", "C.6"],
+      "owner": "safety_trust_lead",
+      "policy": "docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md",
+      "paths": [
+        "oracle/src/content/generate.ts",
+        "oracle/src/content/contentRisk.ts",
+        "backend/src/services/pedagogy/contentRisk.ts",
+        "backend/src/services/pedagogy/liveContentGovernance.ts",
+        "backend/src/services/tutorPacks.ts"
+      ],
+      "examples": [
+        "Editing the content judge's prompt (it also un-trusts the judge until recalibrated)",
+        "Lowering a sampling floor or the concordance floor"
+      ],
+      "tierHistory": [{ "tier": "live_content_judging", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "mentor.dialogue_and_persona",
+      "tier": "tier_2",
+      "title": "Prompt micro-variants, scripted and persona phrasing, hint and explanation wording, within the approved bounds.",
+      "requirements": ["C.14", "C.15", "C.17"],
+      "owner": "pedagogical_lead",
+      "policy": "docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md",
+      "paths": [
+        "oracle/src/tutor/prompt.ts",
+        "oracle/src/tutor/scripted.ts",
+        "oracle/src/tutor/roleplayScenes.ts",
+        "oracle/src/tutor/placementIntake.ts",
+        "oracle/src/tutor/statedMisconception.ts",
+        "oracle/src/tutor/selfExplanation.ts",
+        "oracle/src/tutor/explanationLexicon.ts"
+      ],
+      "examples": [
+        "Rewording a scripted check-in line in one locale",
+        "A persona tone micro-variant tested in a canary"
+      ],
+      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "mentor.pacing_and_signals",
+      "tier": "tier_2",
+      "title": "Pacing thresholds and signal weights the governance boundary names as proposable: telemetry weights, spaced-review horizons, dialogue calibration, alliance and disposition tuning, practice scheduling.",
+      "requirements": ["C.7", "C.9", "C.11", "C.15", "C.17"],
+      "owner": "pedagogical_lead",
+      "policy": "docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md",
+      "paths": [
+        "oracle/src/tutor/behavioralTelemetry.ts",
+        "oracle/src/tutor/telemetryLexicon.ts",
+        "oracle/src/tutor/spacedReview.ts",
+        "oracle/src/tutor/dialogueCalibration.ts",
+        "oracle/src/tutor/allianceController.ts",
+        "oracle/src/tutor/dispositionProfile.ts",
+        "oracle/src/tutor/plan.ts",
+        "backend/src/services/pedagogy/fsrs.ts",
+        "backend/src/services/pedagogy/bktCalibration.ts",
+        "backend/src/services/pedagogy/sessionPlan.ts",
+        "backend/src/services/pedagogy/tutorCurator.ts",
+        "backend/src/services/pedagogy/tutorMap.ts"
+      ],
+      "examples": [
+        "Moving the telemetry latency z-score from 1.5 to 1.7",
+        "Renegotiating after 3 declines instead of 2"
+      ],
+      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "mentor.runtime",
+      "tier": "tier_2",
+      "title": "Runtime behaviour code with no governance rule of its own: grading, whiteboard, instruments, the turn schema, practice records.",
+      "requirements": ["C.21"],
+      "owner": "engineering_lead",
+      "policy": "docs/rebuild/mentor/SELF-IMPROVEMENT-GOVERNANCE-POLICY.md",
+      "paths": [
+        "oracle/src/tutor/arithmetic.ts",
+        "oracle/src/tutor/whiteboard.ts",
+        "oracle/src/tutor/instrumentSpecs.ts",
+        "oracle/src/tutor/skills.ts",
+        "oracle/src/tutor/turnSchema.ts",
+        "backend/src/services/pedagogy/checkAnswer.ts",
+        "backend/src/services/pedagogy/normalizeSpoken.ts",
+        "backend/src/services/pedagogy/recordAttempt.ts",
+        "backend/src/services/pedagogy/sessionNarrative.ts"
+      ],
+      "examples": ["A whiteboard layout adjustment", "A grading tolerance for spoken numbers"],
+      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }]
+    },
+    {
+      "id": "measurement.reporting",
+      "tier": "tier_3",
+      "title": "Measurement and reporting plumbing whose output is information for a human: the evaluation loop, the dashboard routes' data layer, the honesty-ledger records.",
+      "requirements": ["C.21", "C.24"],
+      "owner": "engineering_lead",
+      "policy": "docs/rebuild/mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md",
+      "paths": [
+        "backend/src/services/pedagogy/evaluationLoop.ts",
+        "backend/src/services/pedagogy/mentorQualityDashboard.ts",
+        "backend/src/services/pedagogy/answerReveal.ts",
+        "backend/src/services/pedagogy/turnHonesty.ts"
+      ],
+      "examples": ["Adding a breakdown to a report", "Batching the evaluation pass differently"],
+      "tierHistory": [{ "tier": "tier_3", "decision": "D-2026-09-25-adoption" }]
+    }
+  ],
+  "tier2Parameters": [
+    { "id": "telemetry.latencyZ", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "latencyZ", "bounds": [1.0, 2.5] },
+    { "id": "telemetry.minChannels", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "minChannels", "bounds": [2, 3] },
+    { "id": "telemetry.maxCheckIns", "file": "oracle/src/tutor/behavioralTelemetry.ts", "object": "TELEMETRY_DEFAULTS", "field": "maxCheckIns", "bounds": [1, 3] },
+    { "id": "alliance.renegotiateAfterDeclines", "file": "oracle/src/tutor/allianceController.ts", "object": "ALLIANCE_DEFAULTS", "field": "renegotiateAfterDeclines", "bounds": [2, 4] },
+    { "id": "alliance.maxRenegotiations", "file": "oracle/src/tutor/allianceController.ts", "object": "ALLIANCE_DEFAULTS", "field": "maxRenegotiations", "bounds": [1, 3] },
+    { "id": "selfExplanation.maxPerSession", "file": "oracle/src/tutor/selfExplanation.ts", "object": "SELF_EXPLANATION_DEFAULTS", "field": "maxPerSession", "bounds": [1, 6] },
+    { "id": "selfExplanation.minSpacingTurns", "file": "oracle/src/tutor/selfExplanation.ts", "object": "SELF_EXPLANATION_DEFAULTS", "field": "minSpacingTurns", "bounds": [2, 6] }
+  ],
+  "automationPolicyDocs": {
+    "C.5": "docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md",
+    "C.21": "docs/rebuild/mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md",
+    "C.23": "docs/rebuild/mentor/JUDGE-CALIBRATION-POLICY.md",
+    "C.24": "docs/rebuild/mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md"
+  },
+  "automatedPipelines": [
+    {
+      "workflow": ".github/workflows/pulse-dependabot-automerge.yml",
+      "purpose": "Merges Dependabot's patch-level Pulse image bumps after pulse CI passes.",
+      "scope": ["pulse/**"],
+      "maxTier": "tier_3"
+    }
+  ],
+  "automatedProposalGenerators": [],
+  "stage2Personas": ["frustrated", "disengaging", "gaming", "reactant_teen", "masking"],
+  "canaryMinTranscriptsRead": 20,
+  "decisions": [
+    {
+      "id": "D-2026-09-25-adoption",
+      "date": "2026-09-25",
+      "kind": "adoption",
+      "components": ["*"],
+      "summary": "Adopts the three-tier model and the live-content axis (C.22) before any automated proposal-generation capability exists, with the initial classification above. Proposed in S06.14; binding on engineering from adoption, awaiting the two sign-offs.",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    }
+  ]
+}

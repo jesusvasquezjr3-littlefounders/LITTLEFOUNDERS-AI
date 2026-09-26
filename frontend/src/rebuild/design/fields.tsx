@@ -1,4 +1,4 @@
-import { useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react';
+import { useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { Glyph } from './glyphs';
 
 /*
@@ -52,6 +52,25 @@ export function TextField({ label, help, error, errorLive = false, type = 'text'
       </button> : null}
     </div>
     <FieldMessages helpId={helpId} errorId={errorId} error={error} errorLive={errorLive} />
+  </div>;
+}
+
+/**
+ * A multi-line text field, for free text of more than one sentence (a staff
+ * member's resolution note). The same label, help, error and fill as
+ * TextField; the box grows downward only, never sideways.
+ */
+export function TextAreaField({ label, help, error, rows = 3, ...props }: Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id' | 'className' | 'children'> & {
+  label: string; help?: string; error?: string;
+}) {
+  const id = useId();
+  const helpId = `${id}-help`, errorId = `${id}-error`;
+  return <div className="lf-input-field">
+    <label htmlFor={id} className="lf-input-label" data-copy-role="body">{label}</label>
+    <FieldMessages helpId={helpId} help={help} errorId={errorId} />
+    <textarea {...props} id={id} rows={rows} className="lf-input lf-textarea" aria-invalid={error ? true : undefined}
+      aria-describedby={describedBy(help && helpId, error && errorId, props['aria-describedby'])} />
+    <FieldMessages helpId={helpId} errorId={errorId} error={error} />
   </div>;
 }
 

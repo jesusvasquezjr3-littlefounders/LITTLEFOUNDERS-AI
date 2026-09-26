@@ -26,15 +26,25 @@ export async function readMentorAgeCalibration(userId: string): Promise<{ tier: 
   return result.success ? { tier: result.data[0]?.tier ?? null } : null;
 }
 
-/** Internal socket admission resolves evidence again; a legacy session tier is not age evidence. */
-export async function resolveInternalMentorAge(userId: string, state: AgeScreenState): Promise<{ tier: MentorAgeTier | null } | null> {
+/**
+ * Internal socket admission resolves evidence again; a legacy session tier is
+ * not age evidence. The birth date read here travels no further than Core
+ * (C.17 derives the dialogue band from it; Oracle only ever sees the band).
+ */
+export async function resolveInternalMentorAge(
+  userId: string,
+  state: AgeScreenState,
+): Promise<{ tier: MentorAgeTier | null; birthDate: string | null } | null> {
   if (!z.uuid().safeParse(userId).success) return null;
   const profiles = z.array(z.object({ birth_date: z.string().nullable() })).length(1).safeParse(
     await serviceRest<unknown>(`/profiles?user_id=eq.${encodeURIComponent(userId)}&select=birth_date&limit=1`),
   );
   if (!profiles.success) return null;
-  const known = knownMentorAgeTier(profiles.data[0]!.birth_date, state);
-  return known === null ? readMentorAgeCalibration(userId) : { tier: known };
+  const birthDate = profiles.data[0]!.birth_date;
+  const known = knownMentorAgeTier(birthDate, state);
+  if (known !== null) return { tier: known, birthDate };
+  const calibrated = await readMentorAgeCalibration(userId);
+  return calibrated === null ? null : { tier: calibrated.tier, birthDate };
 }
 
 /** First-write wins. A replay can return the earlier tier, never an upgrade. */

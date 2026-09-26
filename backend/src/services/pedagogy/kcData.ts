@@ -208,6 +208,13 @@ export interface KcAttemptInsert {
   misconception_id: string | null;
   p_known_before: number;
   p_known_after: number;
+  /**
+   * C.11: whether this attempt was a spaced review of the memory card or a
+   * within-session re-exposure inside the short horizon (`fsrs.ts`
+   * `reviewCardTwoTier`). Optional: written by `recordAttempt`, which falls
+   * back to the row without it on a pre-migration schema.
+   */
+  review_tier?: 'spaced' | 'short_horizon';
 }
 
 export async function insertKcAttempt(row: KcAttemptInsert): Promise<boolean> {
@@ -353,6 +360,45 @@ export interface KcAttemptCalibrationRow {
  * most-recent-first so a caller with a tighter limit still sees the
  * freshest evidence rather than an arbitrary early slice.
  */
+/**
+ * C.10: how many CONSECUTIVE correct answers each KC's most recent attempts
+ * end in, per learner — the corroborating-evidence half of "mastered".
+ * Rows must be newest first; a KC whose latest attempt is wrong has 0. Pure.
+ */
+export function trailingCorrectStreaks(
+  rowsNewestFirst: ReadonlyArray<{ kc_id: string; correct: boolean }>,
+): Map<string, number> {
+  const streaks = new Map<string, number>();
+  const closed = new Set<string>();
+  for (const row of rowsNewestFirst) {
+    if (closed.has(row.kc_id)) continue;
+    if (row.correct) {
+      streaks.set(row.kc_id, (streaks.get(row.kc_id) ?? 0) + 1);
+    } else {
+      if (!streaks.has(row.kc_id)) streaks.set(row.kc_id, 0);
+      closed.add(row.kc_id);
+    }
+  }
+  return streaks;
+}
+
+/**
+ * C.10: the learner's trailing correct streak per KC, from `kc_attempt`
+ * (the evidence ledger every graded and voice-checked answer writes). Null on
+ * a failed read — never an empty map (§1.14): "no corroboration" and "could
+ * not look" must not collapse, or a failed read would silently demote every
+ * mastered KC. 2,000 most recent rows is far past what a streak of 2 needs
+ * for any KC practised in the learner's recent history; a KC whose latest
+ * attempt is older than that reads as 0 (not corroborated), the conservative
+ * direction.
+ */
+export async function getCorrectStreaks(userId: string): Promise<Map<string, number> | null> {
+  const rows = await serviceRest<Array<{ kc_id: string; correct: boolean }>>(
+    `/kc_attempt?user_id=eq.${eu(userId)}&select=kc_id,correct&order=created_at.desc&limit=2000`,
+  );
+  return rows === null ? null : trailingCorrectStreaks(rows);
+}
+
 export async function getKcAttemptsForCalibration(limit = 5000): Promise<KcAttemptCalibrationRow[] | null> {
   const rows = await serviceRest<KcAttemptCalibrationRow[]>(
     `/kc_attempt?select=kc_id,user_id,correct,p_known_before&order=created_at.desc&limit=${limit}`,

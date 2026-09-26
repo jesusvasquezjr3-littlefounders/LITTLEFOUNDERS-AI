@@ -8,13 +8,45 @@ import { startOfLocalDayIso } from '../routes/tutor.js';
 import { knownMentorAgeTier } from '../services/mentorAgeCalibration.js';
 import { getLearnerMemory } from '../services/tutorData.js';
 import { GRADERS } from '../lesson-contract/registry.js';
+import { resetKillSwitchCache } from '../services/pedagogy/behavioralTelemetry.js';
+import { resetLiveContentGateCache } from '../services/pedagogy/liveContentGovernance.js';
 
 // Each scenario is an independent learner journey; hundreds of tests must not
 // consume one shared loopback client's rate budget across unrelated scenarios.
 beforeEach(() => {
   globalRateLimiter.resetKey(ipKeyGenerator('::ffff:127.0.0.1'));
   globalRateLimiter.resetKey('127.0.0.1');
+  // C.5: the live-content gate is cached per process; each scenario states its own.
+  resetLiveContentGateCache();
 });
+
+/*
+ * C.5: a PASSED, current calibration of the live-content judge. Without one
+ * (the default: no row) live generation is suspended for every category, so
+ * a test that expects the ladder to invite generation, or to serve a
+ * generated candidate, states this explicitly.
+ */
+const JUDGE_HASH = 'a'.repeat(64);
+const PASSED_CALIBRATION = {
+  id: '99999999-9999-4999-8999-999999999999',
+  judge_id: 'live_content_judge',
+  kind: 'calibration',
+  verifies_calibration_id: null,
+  scope: ['approve'],
+  judge_model: 'qwen3-max',
+  judge_prompt_hash: JUDGE_HASH,
+  seed_set_version: 'seed.v1',
+  seed_set_hash: 'b'.repeat(64),
+  raters: 3,
+  items_standard: 22,
+  items_sensitive: 22,
+  agreement_standard: 0.95,
+  agreement_sensitive: 0.95,
+  inter_rater_agreement: 0.9,
+  verdict: 'passed',
+  created_at: new Date(Date.now() - 86_400_000).toISOString(),
+};
+const JUDGED = { judge_model: 'qwen3-max', judge_prompt_hash: JUDGE_HASH };
 
 /*
  * The Tutor's Core surface (/ORACLE.md).
@@ -163,6 +195,18 @@ interface StubOpts {
    * count fixture).
    */
   sessionsToday?: number;
+  /** S06.5: answers a request before every other branch when it returns a Response (the C.7/C.15 tables). */
+  intercept?: (url: string, method: string, body?: string) => Response | null;
+  /** C.5: `mentor_judge_calibration` rows (newest first). Absent = never calibrated. */
+  judgeCalibration?: unknown[];
+  /** C.5: `tutor_live_content_log` rows for every gate read. Absent = no history. */
+  liveLog?: unknown[];
+  /** C.5: the latest staff rejection read (`review_verdict=eq.rejected`). */
+  liveLatestIssue?: unknown[];
+  /** C.5: `audit_logs` rows for the kill-switch read. */
+  auditRows?: unknown[];
+  /** The session's `tutor_safety_flags` rows (C.5 reads them as a sensitive-context signal). */
+  safetyFlags?: unknown[];
 }
 
 function stub(opts: StubOpts = {}) {
@@ -177,6 +221,8 @@ function stub(opts: StubOpts = {}) {
       for (const fragment of opts.restFailures ?? []) {
         if (url.includes(fragment)) return Promise.resolve(new Response(null, { status: 500 }));
       }
+      const intercepted = opts.intercept?.(url, method, init?.body as string | undefined);
+      if (intercepted) return Promise.resolve(intercepted);
 
       if (url.includes('/api/v1/tutor/preflight')) {
         return Promise.resolve(
@@ -415,7 +461,23 @@ function stub(opts: StubOpts = {}) {
         return Promise.resolve(jsonResponse(200, opts.awardedXp ?? requested));
       }
       if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, opts.turns ?? []));
-      if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, opts.safetyFlags ?? []));
+      // C.5 / C.6 governance tables.
+      if (url.includes('/rest/v1/mentor_judge_calibration')) return Promise.resolve(jsonResponse(200, opts.judgeCalibration ?? []));
+      if (url.includes('/rest/v1/tutor_live_content_log')) {
+        if (url.includes('review_verdict=eq.rejected')) return Promise.resolve(jsonResponse(200, opts.liveLatestIssue ?? []));
+        return Promise.resolve(jsonResponse(200, opts.liveLog ?? []));
+      }
+      if (url.includes('/rest/v1/tutor_content_ladder_events')) return Promise.resolve(new Response(null, { status: 201 }));
+      if (url.includes('/rest/v1/audit_logs') && method === 'GET' && url.includes('live_content')) {
+        return Promise.resolve(jsonResponse(200, opts.auditRows ?? []));
+      }
+      if (url.includes('/rpc/insert_tutor_live_segment_checked')) {
+        if (opts.segmentInsertResponses && opts.segmentInsertResponses.length > 0) {
+          return Promise.resolve(jsonResponse(200, opts.segmentInsertResponses.shift()));
+        }
+        return Promise.resolve(jsonResponse(200, opts.segment ?? []));
+      }
       // Class V (migration 0069). write_tutor_plan RETURNS void — PostgREST
       // answers a genuine call with an EMPTY 200 body, not a JSON `null`
       // literal, and `rest()`'s own "empty body on 2xx = success" branch is
@@ -2342,6 +2404,7 @@ describe('the internal surface', () => {
 
   it('accepts and persists a well-formed generated segment, stripped', async () => {
     stub({
+      judgeCalibration: [PASSED_CALIBRATION],
       segment: [
         {
           id: SEGMENT,
@@ -2360,7 +2423,7 @@ describe('the internal surface', () => {
       .send({
         sessionId: SESSION,
         segment: { ...MCQ_SEGMENT, answer: { correct_option_id: 'a' } },
-        provenance: { model: 'test' },
+        provenance: { model: 'test', ...JUDGED },
       });
 
     expect(response.status).toBe(200);
@@ -3563,6 +3626,111 @@ describe('POST /api/v1/tutor/internal/turns — savePlan persists the drawn boar
   });
 });
 
+/*
+ * C.18 — every Mentor turn's honesty facts land in tutor_turn_honesty, with
+ * CORE's key-based reveal check: only Core holds the answer key, so only
+ * Core can say whether the turn stated the open activity's answer.
+ */
+describe('POST /api/v1/tutor/internal/turns — C.18 honesty row with the key-based reveal check', () => {
+  /** "Cuesta 7 y pagas con 20" — the change is 13, which the learner was never shown. */
+  const OPEN_SEGMENT = {
+    id: SEGMENT,
+    session_id: SESSION,
+    seq: 0,
+    origin: 'catalog',
+    lesson_id: null,
+    segment_type: 'number_input',
+    payload: {
+      id: 'seg-change',
+      type: 'number_input',
+      prompt_md: 'Cuesta 7 y pagas con 20. ¿Cuánto cambio te dan?',
+      difficulty: 2,
+      xp: 20,
+      payload: { price: 7, paid: 20 },
+    },
+    answer: { value: 13, tolerance: 0 },
+    key_verified: true,
+    score: null,
+    xp_awarded: 0,
+    attempts: 0,
+    provenance: {},
+    review_status: null,
+    created_at: '2026-09-24T10:00:00Z',
+    voice_checked_at: null,
+  };
+  const honesty = {
+    sequenceKind: 'hint_ladder',
+    hintLevel: 'indirect',
+    revealSanctioned: false,
+    revealSelfAnswered: false,
+    revealPhrase: false,
+    openSegmentId: SEGMENT,
+    verdictContext: null,
+    falseAffirmationCaught: false,
+    falseAffirmationDelivered: false,
+    praise: null,
+  };
+  const post = (body: Record<string, unknown>) =>
+    request(createApp())
+      .post('/api/v1/tutor/internal/turns')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ sessionId: SESSION, seq: 5, speaker: 'tutor', source: 'model', ...body });
+  const honestyRows = (calls: { url: string; method: string; body?: string }[]) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_turn_honesty'))
+      .map((c) => JSON.parse(String(c.body)) as Record<string, unknown>);
+
+  it('records a turn that STATES the key while the learner is still working as a key-matched reveal', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT] });
+    const response = await post({ text: 'Te dan 13 pesos de cambio.', honesty });
+    expect(response.status).toBe(200);
+    const [row] = honestyRows(calls);
+    expect(row).toMatchObject({
+      session_id: SESSION,
+      character: 'rho',
+      turn_seq: 5,
+      sequence_kind: 'hint_ladder',
+      hint_level: 'indirect',
+      reveal_sanctioned: false,
+      reveal_key_match: true,
+    });
+    // No child identifier and no text is stored with the metric.
+    expect(row).not.toHaveProperty('user_id');
+    expect(row).not.toHaveProperty('text');
+  });
+
+  it('scores a scaffolding turn (only the givens) as NOT a reveal', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT] });
+    await post({ text: 'Empieza en 7 y cuenta hasta llegar a 20. ¿Cuántos saltos das?', honesty });
+    expect(honestyRows(calls)[0]).toMatchObject({ reveal_key_match: false });
+  });
+
+  it('never scores against another session’s activity', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [{ ...OPEN_SEGMENT, session_id: '99999999-9999-4999-8999-999999999999' }] });
+    await post({ text: 'Te dan 13 pesos de cambio.', honesty });
+    expect(honestyRows(calls)[0]).toMatchObject({ reveal_key_match: null });
+  });
+
+  it('writes nothing for a learner turn, even if a caller attaches honesty to it', async () => {
+    const calls = stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT] });
+    await post({ speaker: 'learner', source: 'stt', text: '13', honesty });
+    expect(honestyRows(calls)).toHaveLength(0);
+  });
+
+  it('refuses an honesty object with an unknown field (closed vocabulary)', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await post({ text: 'hola', honesty: { ...honesty, mood: 'happy' } });
+    expect(response.status).toBe(400);
+  });
+
+  it('a failed honesty write never turns a landed turn into a reported failure', async () => {
+    stub({ session: [SESSION_ROW], segment: [OPEN_SEGMENT], restFailures: ['/rest/v1/tutor_turn_honesty'] });
+    const response = await post({ text: 'Te dan 13 pesos.', honesty });
+    expect(response.status).toBe(200);
+    expect(response.body.data.recorded).toBe(true);
+  });
+});
+
 describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (trajectory emission)', () => {
   const oneStep = {
     turnSeq: 1,
@@ -3650,8 +3818,63 @@ describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (traject
       misconception_code: null,
       kc_id: '55555555-5555-4555-8555-555555555555',
       kc_mode: 'new',
+      // C.10 evidence columns, defaulted for a batch from an Oracle build that predates them.
+      evidence_rule: null,
+      evidence_observations: null,
+      evidence_required: null,
+      mastery_revoked: false,
     });
     expect(rows[1]).toMatchObject({ turn_seq: 2, strategy_before: 'DIRECT', strategy: 'CELEBRATE', kc_mode: null });
+  });
+
+  it('C.10: persists a consequential decision WITH its corroborating evidence', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        steps: [
+          {
+            ...oneStep,
+            strategy: 'CELEBRATE',
+            evidenceRule: 'mastery',
+            evidenceObservations: 2,
+            evidenceRequired: 2,
+            masteryRevoked: false,
+          },
+        ],
+      });
+    expect(response.status).toBe(200);
+    const write = calls.find((c) => c.url.includes('/rest/v1/tutor_trajectory_step'))!;
+    expect(JSON.parse(String(write.body))[0]).toMatchObject({
+      strategy: 'CELEBRATE',
+      evidence_rule: 'mastery',
+      evidence_observations: 2,
+      evidence_required: 2,
+      mastery_revoked: false,
+    });
+  });
+
+  it('C.10: refuses evidence that does not travel as a unit', async () => {
+    stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [{ ...oneStep, evidenceRule: 'mastery', evidenceObservations: null, evidenceRequired: 2 }] });
+    expect(response.status).toBe(400);
+  });
+
+  it('accepts a stated_misconception step — Oracle always emitted it, and the whole batch used to be refused', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [{ ...oneStep, eventKind: 'stated_misconception' }] });
+    expect(response.status).toBe(200);
+    const write = calls.find((c) => c.url.includes('/rest/v1/tutor_trajectory_step'))!;
+    expect(JSON.parse(String(write.body))[0]).toMatchObject({ event_kind: 'stated_misconception' });
   });
 
   it('a write failure is reported, never thrown — this is best-effort backstage tooling, not a live-turn dependency', async () => {
@@ -4171,7 +4394,7 @@ describe('serving an activity for a knowledge component nothing teaches', () => 
   });
 
   it('still asks for generation when no prerequisite has content either', async () => {
-    stub({ ...catalog, kcs: [{ id: UNMAPPED, key: 'biz.goods-vs-services', skill_key: null }], kcEdges: [] });
+    stub({ ...catalog, kcs: [{ id: UNMAPPED, key: 'biz.goods-vs-services', skill_key: null }], kcEdges: [], judgeCalibration: [PASSED_CALIBRATION] });
 
     const response = await request(createApp())
       .post('/api/v1/tutor/internal/segments')
@@ -4791,5 +5014,1390 @@ describe('POST /api/v1/tutor/internal/segments — a claimed candidate is never 
     // Settles at EXACTLY one winner per candidate — never the same segment
     // served to both, and never neither served at all.
     expect([a.body.data.segment?.id, b.body.data.segment?.id].sort()).toEqual(['seg-a', 'seg-b']);
+  });
+});
+
+/*
+ * C.16 and C.8/C.12 — the close records which closing script ended the
+ * session, the opening it began with and the session-end signal's firings,
+ * and the NEXT session's context carries the re-engagement a silent dropout
+ * or a budget interruption queued. Internal surface only: the same
+ * x-internal-api-key gate every Oracle call goes through.
+ */
+describe('C.16 / C.8 / C.12 — the session-close record and the queued re-engagement', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const EVENT = {
+    observation: 10,
+    elapsedMs: 480_000,
+    remainingMs: 1_020_000,
+    latencySdBaseline: 0.02,
+    latencySdWindow: 1.3,
+    surpriseRateBaseline: 0,
+    surpriseRateWindow: 0.667,
+    mode: 'offer',
+    outcome: 'accepted',
+    confirmed: true,
+  };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 12,
+    segmentCount: 3,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const patchOf = (calls: { url: string; method: string; body?: string }[]) =>
+    JSON.parse(
+      calls.find((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions') && c.url.includes('ended_at=is.null'))
+        ?.body ?? '{}',
+    ) as Record<string, unknown>;
+  const signalRows = (calls: { url: string; method: string; body?: string }[]) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_session_end_signal'))
+      .flatMap((c) => JSON.parse(String(c.body)) as Record<string, unknown>[]);
+
+  it('records the closing script, the opening and whether the signal was evaluated, beside the reason', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody({ closingScript: 'completed', opening: 'reengage_left_resume', endSignal: { evaluated: true, events: [EVENT] } }));
+    expect(response.status).toBe(200);
+    expect(patchOf(calls)).toMatchObject({
+      close_reason: 'completed',
+      closing_script: 'completed',
+      opening: 'reengage_left_resume',
+      end_signal_evaluated: true,
+    });
+    const rows = signalRows(calls);
+    expect(rows).toHaveLength(1);
+    // Signal strength and the persona — no user id, no text, no emotion label.
+    expect(rows[0]).toEqual({
+      session_id: SESSION,
+      character: 'rho',
+      observation: 10,
+      elapsed_ms: 480_000,
+      remaining_ms: 1_020_000,
+      latency_sd_baseline: 0.02,
+      latency_sd_window: 1.3,
+      surprise_rate_baseline: 0,
+      surprise_rate_window: 0.667,
+      mode: 'offer',
+      outcome: 'accepted',
+      confirmed: true,
+    });
+  });
+
+  it('still closes a session for an Oracle that predates the fields, naming none of the new columns', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody());
+    expect(response.status).toBe(200);
+    const patch = patchOf(calls);
+    expect(patch.close_reason).toBe('completed');
+    expect(patch).not.toHaveProperty('closing_script');
+    expect(patch).not.toHaveProperty('opening');
+    expect(patch).not.toHaveProperty('end_signal_evaluated');
+    expect(signalRows(calls)).toEqual([]);
+  });
+
+  it.each([
+    ['an unknown closing script', { closingScript: 'cheerful' }],
+    ['an unknown opening', { opening: 'welcome_back_champ' }],
+    ['an emotion label smuggled into a firing', { endSignal: { evaluated: true, events: [{ ...EVENT, emotion: 'tired' }] } }],
+    ['a pending (unreported) outcome', { endSignal: { evaluated: true, events: [{ ...EVENT, outcome: 'pending' }] } }],
+    ['a rate outside 0-1', { endSignal: { evaluated: true, events: [{ ...EVENT, surpriseRateWindow: 1.5 }] } }],
+    [
+      'more than ten firings',
+      { endSignal: { evaluated: true, events: Array.from({ length: 11 }, (_, i) => ({ ...EVENT, observation: i + 1 })) } },
+    ],
+  ])('refuses %s with a 400 and closes nothing', async (_label, extra) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody(extra));
+    expect(response.status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+    expect(signalRows(calls)).toEqual([]);
+  });
+
+  it('writes no firings when another close already landed (first close wins)', async () => {
+    const calls = stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:00:05Z', close_reason: 'learner_left' }] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody({ closingScript: 'completed', endSignal: { evaluated: true, events: [EVENT] } }));
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: true });
+    expect(signalRows(calls)).toEqual([]);
+  });
+
+  it('a failed firing write never fails the close', async () => {
+    const calls = stub({ session: [SESSION_ROW], restFailures: ['/rest/v1/tutor_session_end_signal'] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(closeBody({ closingScript: 'completed', endSignal: { evaluated: true, events: [EVENT] } }));
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: false });
+    expect(patchOf(calls).closing_script).toBe('completed');
+  });
+
+  it('is not reachable with a learner session, even the session owner', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ closingScript: 'completed' }));
+    expect(response.status).toBe(403);
+  });
+
+  // The Oracle that reads `opening` announces it (the context field negotiation).
+  const context = () =>
+    request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', 'opening');
+  const previous = (row: Record<string, unknown>) => ({
+    close_reason: 'learner_left',
+    ended_at: new Date(Date.now() - 86_400_000).toISOString(),
+    intent: 'weak_skill',
+    course_id: null,
+    topic_id: null,
+    skill_key: 'money.saving',
+    ...row,
+  });
+
+  it('queues the re-engagement after a silent dropout, resuming the same skill', async () => {
+    stub({ session: [{ ...SESSION_ROW, skill_key: 'money.saving' }], sessions: [previous({})] });
+    const response = await context();
+    expect(response.status).toBe(200);
+    expect(response.body.data.opening).toBe('reengage_left_resume');
+  });
+
+  it('names the interruption after a budget end, fresh when the learner chose something else', async () => {
+    stub({ session: [SESSION_ROW], sessions: [previous({ close_reason: 'hard_budget' })] });
+    expect((await context()).body.data.opening).toBe('reengage_interrupted_fresh');
+  });
+
+  it.each([['safety_stop'], ['consent_revoked'], ['completed']])(
+    'opens with the plain greeting after a %s close',
+    async (reason) => {
+      stub({ session: [SESSION_ROW], sessions: [previous({ close_reason: reason })] });
+      expect((await context()).body.data.opening).toBe('greeting');
+    },
+  );
+
+  it('opens with the plain greeting when the previous-session read fails (never a guess)', async () => {
+    // The read of the previous session is the only one with `id=neq.`.
+    stub({ session: [SESSION_ROW], restFailures: ['id=neq.'] });
+    const response = await context();
+    expect(response.status).toBe(200);
+    expect(response.body.data.opening).toBe('greeting');
+  });
+
+  it('opens with the plain greeting for a first session', async () => {
+    stub({ session: [SESSION_ROW], sessions: [] });
+    expect((await context()).body.data.opening).toBe('greeting');
+  });
+
+  it('never sends `opening` to an Oracle that did not announce it (its strict schema would refuse the session)', async () => {
+    stub({ session: [{ ...SESSION_ROW, skill_key: 'money.saving' }], sessions: [previous({})] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect(response.status).toBe(200);
+    expect(response.body.data).not.toHaveProperty('opening');
+    expect(response.body.data).not.toHaveProperty('behavioralTelemetryMode');
+  });
+});
+
+describe('C.9 / C.19 — the Behavioral Telemetry Layer close record and the Stage 7 automatic rollback', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const FIRING = {
+    observation: 9,
+    latencyShift: 1,
+    rapidResponse: 0,
+    verbosityDrop: 1,
+    repeatedAnswer: 0.5,
+    hedging: 0,
+    offTopic: 1,
+    hintAbuse: 0,
+    fastKnownMiss: 0,
+    channels: 3,
+    mode: 'act',
+    outcome: 'misaligned',
+    repairOffered: true,
+  };
+  const REPORT = { mode: 'act', evaluatedTurns: 14, actionTurns: 1, events: [FIRING] };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 18,
+    segmentCount: 2,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const close = (body: Record<string, unknown>) =>
+    request(createApp()).post(CLOSE_URL).set('x-internal-api-key', process.env.INTERNAL_API_KEY as string).send(body);
+  const patchOf = (calls: { url: string; method: string; body?: string }[]) =>
+    JSON.parse(
+      calls.find((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions') && c.url.includes('ended_at=is.null'))
+        ?.body ?? '{}',
+    ) as Record<string, unknown>;
+  const firingRows = (calls: { url: string; method: string; body?: string }[]) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_telemetry_firing'))
+      .flatMap((c) => JSON.parse(String(c.body)) as Record<string, unknown>[]);
+
+  beforeEach(() => resetKillSwitchCache());
+
+  it('records the counts beside the close and each firing as channel strengths only', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.status).toBe(200);
+    expect(patchOf(calls)).toMatchObject({
+      close_reason: 'completed',
+      telemetry_mode: 'act',
+      telemetry_evaluated_turns: 14,
+      telemetry_action_turns: 1,
+    });
+    // The persona, the numbers and the outcome — no user id, no text, no label.
+    expect(firingRows(calls)).toEqual([
+      {
+        session_id: SESSION,
+        character: 'rho',
+        observation: 9,
+        latency_shift: 1,
+        rapid_response: 0,
+        verbosity_drop: 1,
+        repeated_answer: 0.5,
+        hedging: 0,
+        off_topic: 1,
+        hint_abuse: 0,
+        fast_known_miss: 0,
+        channels: 3,
+        mode: 'act',
+        outcome: 'misaligned',
+        repair_offered: true,
+      },
+    ]);
+  });
+
+  it('an Oracle without the layer (older build, or switched off) names none of the telemetry columns', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody())).status).toBe(200);
+    const patch = patchOf(calls);
+    expect(patch).not.toHaveProperty('telemetry_mode');
+    expect(patch).not.toHaveProperty('telemetry_evaluated_turns');
+    expect(firingRows(calls)).toEqual([]);
+  });
+
+  it.each([
+    ['an emotion label smuggled into a firing', { ...REPORT, events: [{ ...FIRING, emotion: 'frustrated' }] }],
+    ['a label beside the counts', { ...REPORT, learnerState: 'bored' }],
+    ['the internal pending outcome', { ...REPORT, events: [{ ...FIRING, outcome: 'pending' }] }],
+    ['an open (unreported) check-in', { ...REPORT, events: [{ ...FIRING, outcome: 'open' }] }],
+    ['a strength above 1', { ...REPORT, events: [{ ...FIRING, hedging: 1.2 }] }],
+    ['more action turns than evaluated turns', { ...REPORT, evaluatedTurns: 1, actionTurns: 2 }],
+    ['a shadow layer that claims it acted', { ...REPORT, mode: 'shadow', actionTurns: 1 }],
+    ['an unknown mode', { ...REPORT, mode: 'loud' }],
+    ['more than ten firings', { ...REPORT, events: Array.from({ length: 11 }, (_, i) => ({ ...FIRING, observation: i + 1 })) }],
+  ])('refuses %s with a 400 and closes nothing', async (_label, behavioralTelemetry) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody({ behavioralTelemetry }))).status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+    expect(firingRows(calls)).toEqual([]);
+  });
+
+  it('writes no firings when another close already landed (first close wins)', async () => {
+    const calls = stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:00:05Z', close_reason: 'learner_left' }] });
+    const response = await close(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: true });
+    expect(firingRows(calls)).toEqual([]);
+  });
+
+  it('a failed firing write never fails the close', async () => {
+    const calls = stub({ session: [SESSION_ROW], restFailures: ['/rest/v1/tutor_telemetry_firing'] });
+    const response = await close(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: false });
+    expect(patchOf(calls).telemetry_mode).toBe('act');
+  });
+
+  it('is not reachable with a learner session, even the session owner', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ behavioralTelemetry: REPORT }));
+    expect(response.status).toBe(403);
+  });
+
+  /** The context read, with the audit-log and firing reads answered by the test. */
+  async function contextWith(opts: {
+    sessions?: Record<string, unknown>[];
+    audit?: Record<string, unknown>[];
+    firings?: Record<string, unknown>[];
+    failing?: string[];
+    fields?: string | null;
+  }) {
+    const calls = stub({ session: [SESSION_ROW], sessions: opts.sessions ?? [], restFailures: opts.failing ?? [] });
+    const inner = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        const failing = (opts.failing ?? []).some((f) => url.includes(f));
+        if (!failing && method === 'GET' && url.includes('/rest/v1/audit_logs')) {
+          calls.push({ url, method });
+          return Promise.resolve(jsonResponse(200, opts.audit ?? []));
+        }
+        if (!failing && method === 'GET' && url.includes('/rest/v1/tutor_telemetry_firing')) {
+          calls.push({ url, method });
+          return Promise.resolve(jsonResponse(200, opts.firings ?? []));
+        }
+        return inner(input, init);
+      }),
+    );
+    let req = request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    if (opts.fields !== null) req = req.set('x-oracle-context-fields', opts.fields ?? 'opening,behavioralTelemetryMode');
+    const response = await req;
+    const audits = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'));
+    return { response, calls, audits };
+  }
+  const actSession = (evaluated: number, action: number) => ({
+    id: '99999999-9999-4999-8999-999999999999',
+    character: 'rho',
+    close_reason: 'completed',
+    ended_at: new Date(Date.now() - 3_600_000).toISOString(),
+    intent: 'weak_skill',
+    course_id: null,
+    topic_id: null,
+    skill_key: null,
+    telemetry_mode: 'act',
+    telemetry_evaluated_turns: evaluated,
+    telemetry_action_turns: action,
+  });
+  const firing = (outcome: string) => ({
+    session_id: null,
+    character: 'rho',
+    mode: 'act',
+    outcome,
+    repair_offered: null,
+    latency_shift: 1,
+    rapid_response: 0,
+    verbosity_drop: 1,
+    repeated_answer: 0,
+    hedging: 0,
+    off_topic: 0,
+    hint_abuse: 0,
+    fast_known_miss: 0,
+  });
+
+  it('acts on a healthy window: high default-to-inaction and every firing carried', async () => {
+    const { response, audits } = await contextWith({ sessions: [actSession(400, 20)], firings: [firing('aligned')] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    expect(audits).toEqual([]);
+  });
+
+  it('rolls back to shadow when default-to-inaction drops below 85%, and logs the trip', async () => {
+    const { response, audits } = await contextWith({ sessions: [actSession(400, 100)] });
+    expect(response.body.data.behavioralTelemetryMode).toBe('shadow');
+    expect(audits).toHaveLength(1);
+    const row = JSON.parse(String(audits[0]!.body));
+    expect(row).toMatchObject({ actor_id: null, action: 'mentor.kill_switch.behavioral_telemetry.triggered' });
+    expect(row.detail.causes).toEqual(['default_to_inaction_below_floor']);
+    expect(JSON.stringify(row.detail)).not.toMatch(/user|nickname|text/i);
+  });
+
+  it('rolls back on ONE fired signal that never produced its check-in (repair initiation below 100%)', async () => {
+    const { response, audits } = await contextWith({
+      sessions: [actSession(400, 10)],
+      firings: [firing('aligned'), firing('undelivered')],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('shadow');
+    expect(JSON.parse(String(audits[0]!.body)).detail.causes).toEqual(['repair_initiation_below_target']);
+  });
+
+  it('a thin sample never trips the floor; superseded and session-ended firings are not misses', async () => {
+    const { response } = await contextWith({
+      sessions: [actSession(40, 20)],
+      firings: [firing('superseded'), firing('session_ended'), firing('misaligned')],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+  });
+
+  it('a trip holds until an operator resolves it, whatever the window now says', async () => {
+    const { response, calls } = await contextWith({
+      sessions: [],
+      audit: [
+        {
+          action: 'mentor.kill_switch.behavioral_telemetry.triggered',
+          created_at: new Date(Date.now() - 30 * 86_400_000).toISOString(),
+          detail: { causes: ['default_to_inaction_below_floor'] },
+        },
+      ],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('shadow');
+    // Held from the log alone: the window is not even read.
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_telemetry_firing'))).toBe(false);
+  });
+
+  it('after a resolution, only data since the resolution counts', async () => {
+    const resolvedAt = new Date(Date.now() - 86_400_000).toISOString();
+    const { response, calls } = await contextWith({
+      sessions: [actSession(400, 10)],
+      audit: [{ action: 'mentor.kill_switch.behavioral_telemetry.resolved', created_at: resolvedAt, detail: {} }],
+    });
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    const read = calls.find((c) => c.url.includes('/rest/v1/tutor_telemetry_firing'))!;
+    expect(decodeURIComponent(read.url)).toContain(`created_at=gte.${resolvedAt}`);
+  });
+
+  it('a failed read is not evidence: the layer keeps acting and nothing is logged (§1.14)', async () => {
+    const { response, audits } = await contextWith({ failing: ['/rest/v1/audit_logs'] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    expect(audits).toEqual([]);
+  });
+
+  it('an Oracle that did not announce the field gets neither the mode nor the kill-switch reads', async () => {
+    const { response, calls } = await contextWith({ sessions: [actSession(400, 100)], fields: null });
+    expect(response.body.data).not.toHaveProperty('behavioralTelemetryMode');
+    expect(calls.some((c) => c.url.includes('/rest/v1/audit_logs'))).toBe(false);
+  });
+
+  it('ignores field names it does not know in the announcement', async () => {
+    const { response } = await contextWith({ fields: 'opening, somethingElse ,behavioralTelemetryMode' });
+    expect(response.body.data.behavioralTelemetryMode).toBe('act');
+    expect(response.body.data).not.toHaveProperty('somethingElse');
+  });
+});
+
+describe('C.15 / C.14 / C.7 — the alliance close record, the bond proxy and the disposition profile (S06.5)', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const OTHER = '55555555-5555-4555-8555-555555555555';
+  const ALLIANCE_ID = '66666666-6666-4666-8666-666666666666';
+  const ALLIANCE = {
+    mode: 'act',
+    continuity: 'persona_switch',
+    continuityMove: 'delivered',
+    goalAgreement: 'agreed',
+    goalSettledAtTurn: 2,
+    learnerTurns: 9,
+    adaptationOffers: 2,
+    adaptationAccepts: 0,
+    adaptationDeclines: 2,
+    bondSpecificTurns: 2,
+    bondGenericTurns: 1,
+    renegotiations: [{ observation: 1, atTurn: 5, mode: 'act', outcome: 'answered', improved: true }],
+  };
+  const SELF_EXPLANATION = {
+    mode: 'act',
+    prompts: 2,
+    events: [
+      { observation: 1, source: 'activity', family: 'saving', variant: 'why', mode: 'act', firstQuality: 'concept', followupQuality: null, outcome: 'passed_first' },
+      { observation: 2, source: 'conversation', family: 'needs_wants', variant: 'why', mode: 'act', firstQuality: 'filler', followupQuality: 'filler', outcome: 'explained_by_mentor' },
+    ],
+  };
+  const DISPOSITION = {
+    learnerTurns: 9,
+    hintRequests: 2,
+    tellRequests: 1,
+    typedReplyMs: 6000,
+    spokenReplyMs: null,
+    acceptedAdaptations: [],
+    declinedAdaptations: ['slower_pacing', 'more_examples'],
+    profileReceived: true,
+    applied: ['seeded_declines'],
+  };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 18,
+    segmentCount: 2,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const close = (body: Record<string, unknown>) =>
+    request(createApp()).post(CLOSE_URL).set('x-internal-api-key', process.env.INTERNAL_API_KEY as string).send(body);
+  const posted = (calls: { url: string; method: string; body?: string }[], table: string) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes(`/rest/v1/${table}`))
+      .flatMap((c) => {
+        const body = JSON.parse(String(c.body)) as unknown;
+        return (Array.isArray(body) ? body : [body]) as Record<string, unknown>[];
+      });
+
+  beforeEach(async () => {
+    const { resetAllianceKillSwitchCache } = await import('../services/pedagogy/alliance.js');
+    resetAllianceKillSwitchCache();
+  });
+
+  it('records the alliance state, the renegotiation and self-explanation ledgers, and folds the disposition profile', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody({ alliance: ALLIANCE, selfExplanation: SELF_EXPLANATION, disposition: DISPOSITION }));
+    expect(response.status).toBe(200);
+    expect(posted(calls, 'tutor_session_alliance')[0]).toMatchObject({
+      session_id: SESSION,
+      character: 'rho',
+      mode: 'act',
+      continuity: 'persona_switch',
+      continuity_move: 'delivered',
+      goal_agreement: 'agreed',
+      goal_settled_at_turn: 2,
+      adaptation_declines: 2,
+      bond_specific_turns: 2,
+      self_explanation_mode: 'act',
+      self_explanation_prompts: 2,
+    });
+    expect(posted(calls, 'tutor_alliance_renegotiation')).toEqual([
+      expect.objectContaining({ session_id: SESSION, observation: 1, outcome: 'answered', improved: true }),
+    ]);
+    expect(posted(calls, 'tutor_self_explanation_event').map((r) => r.outcome)).toEqual(['passed_first', 'explained_by_mentor']);
+    const profile = posted(calls, 'learner_disposition_profile')[0]!;
+    expect(profile).toMatchObject({ user_id: KID, sessions_observed: 1, behavior_sessions: 1, typed_answer_ms: 6000 });
+    expect(profile.adaptation_history).toEqual({ slower_pacing: { accepted: 0, declined: 1 }, more_examples: { accepted: 0, declined: 1 } });
+    // No ledger row carries a user id, the learner's words, a nickname or an emotion label.
+    for (const table of ['tutor_session_alliance', 'tutor_alliance_renegotiation', 'tutor_self_explanation_event']) {
+      const text = JSON.stringify(posted(calls, table));
+      expect(text).not.toMatch(/user_id|nickname|frustrat|bored|angry|sad|anxious|emotion|mood/i);
+    }
+  });
+
+  it('an older Oracle (no alliance, no disposition) still closes and only the rapport and end facts move', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody())).status).toBe(200);
+    expect(posted(calls, 'tutor_session_alliance')).toEqual([]);
+    const profile = posted(calls, 'learner_disposition_profile')[0]!;
+    expect(profile).toMatchObject({ sessions_observed: 1, behavior_sessions: 1, hint_rate: null });
+    expect(profile.persona_rapport).toMatchObject({ rho: { sessions: 1 } });
+  });
+
+  it('a safety stop never enters the behavioural profile: only the persona-rapport count moves', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody({ closeReason: 'safety_stop', disposition: DISPOSITION }))).status).toBe(200);
+    const profile = posted(calls, 'learner_disposition_profile')[0]!;
+    expect(profile).toMatchObject({ sessions_observed: 1, behavior_sessions: 0, hint_rate: null, left_rate: null, typed_answer_ms: null });
+    expect(profile.adaptation_history).toEqual({});
+    expect(profile.persona_rapport).toMatchObject({ rho: { sessions: 1 } });
+  });
+
+  it.each([
+    ['an emotion label in the alliance record', { alliance: { ...ALLIANCE, mood: 'frustrated' } }],
+    ['learner text in a self-explanation event', { selfExplanation: { ...SELF_EXPLANATION, events: [{ ...SELF_EXPLANATION.events[0], text: 'porque si' }] } }],
+    ['an unknown renegotiation outcome', { alliance: { ...ALLIANCE, renegotiations: [{ ...ALLIANCE.renegotiations[0], outcome: 'pending' }] } }],
+    ['a settled goal without its turn', { alliance: { ...ALLIANCE, goalSettledAtTurn: null } }],
+    ['more answers than offers', { alliance: { ...ALLIANCE, adaptationDeclines: 5 } }],
+    ['a shadow controller that renegotiated', { alliance: { ...ALLIANCE, mode: 'shadow' } }],
+    ['a shadow move that prompted', { selfExplanation: { ...SELF_EXPLANATION, mode: 'shadow' } }],
+    ['an unknown concept family', { selfExplanation: { ...SELF_EXPLANATION, events: [{ ...SELF_EXPLANATION.events[0], family: 'crypto' }] } }],
+    ['more help requests than learner turns', { disposition: { ...DISPOSITION, hintRequests: 20 } }],
+    ['a free-text field in the disposition observation', { disposition: { ...DISPOSITION, note: 'shy kid' } }],
+  ])('%s is a 400 that closes nothing', async (_label, extra) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody(extra as Record<string, unknown>));
+    expect(response.status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+    expect(posted(calls, 'learner_disposition_profile')).toEqual([]);
+  });
+
+  it('a lost first-close race writes nothing; a failed ledger or profile write never fails the close', async () => {
+    const lost = stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:20:00Z' }] });
+    expect((await close(closeBody({ alliance: ALLIANCE, disposition: DISPOSITION }))).status).toBe(200);
+    expect(posted(lost, 'tutor_session_alliance')).toEqual([]);
+    expect(posted(lost, 'learner_disposition_profile')).toEqual([]);
+    stub({ session: [SESSION_ROW], restFailures: ['/rest/v1/tutor_session_alliance', '/rest/v1/learner_disposition_profile'] });
+    const response = await close(closeBody({ alliance: ALLIANCE, disposition: DISPOSITION }));
+    expect(response.status).toBe(200);
+    expect(response.body.data.closed).toBe(true);
+  });
+
+  it('a failed profile READ is not an empty profile: nothing is written over real history', async () => {
+    const calls = stub({
+      session: [SESSION_ROW],
+      intercept: (url, method) =>
+        method === 'GET' && url.includes('/rest/v1/learner_disposition_profile') ? new Response(null, { status: 500 }) : null,
+    });
+    expect((await close(closeBody({ disposition: DISPOSITION }))).status).toBe(200);
+    expect(posted(calls, 'learner_disposition_profile')).toEqual([]);
+  });
+
+  it('a learner session (even the owner) cannot post the internal close', async () => {
+    stub({ session: [SESSION_ROW] });
+    const response = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ alliance: ALLIANCE }));
+    expect(response.status).toBe(403);
+  });
+
+  // ── the session context ──
+
+  const PROFILE_ROW = {
+    user_id: KID,
+    sessions_observed: 6,
+    behavior_sessions: 6,
+    hint_rate: '0.100',
+    tell_rate: '0.200',
+    typed_answer_ms: 12000,
+    spoken_answer_ms: null,
+    disengagement_rate: '0.100',
+    misaligned_rate: null,
+    left_rate: '0.500',
+    se_prompts: '5.000',
+    se_first_pass: '1.000',
+    adaptation_history: { less_text: { accepted: 0, declined: 2.5 } },
+    persona_rapport: { liruf: { sessions: 4, lastAt: new Date(Date.now() - 86_400_000).toISOString(), bondYes: 3, bondAnswered: 4 } },
+    help_style: 'tell_early',
+    persistence: 'disengages_early',
+    explanation: 'needs_scaffold',
+    last_session_at: new Date(Date.now() - 86_400_000).toISOString(),
+    updated_at: new Date(Date.now() - 86_400_000).toISOString(),
+  };
+  const ALL_FIELDS = 'opening,behavioralTelemetryMode,dispositionProfile,allianceContinuity,allianceMode';
+  async function contextFor(opts: { profile?: unknown[] | 'fail'; fields?: string; sessions?: unknown[] }) {
+    const calls = stub({
+      session: [SESSION_ROW],
+      sessions: opts.sessions ?? [],
+      intercept: (url, method) => {
+        if (method === 'GET' && url.includes('/rest/v1/learner_disposition_profile')) {
+          return opts.profile === 'fail' ? new Response(null, { status: 500 }) : jsonResponse(200, opts.profile ?? []);
+        }
+        if (method === 'GET' && url.includes('/rest/v1/audit_logs')) return jsonResponse(200, []);
+        return null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', opts.fields ?? ALL_FIELDS);
+    return { response, calls };
+  }
+
+  it('sends the disposition projection, the continuity and the alliance mode to an Oracle that asked', async () => {
+    const { response } = await contextFor({ profile: [PROFILE_ROW] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.dispositionProfile).toEqual({
+      sessionsObserved: 6,
+      helpStyle: 'tell_early',
+      persistence: 'disengages_early',
+      explanation: 'needs_scaffold',
+      persistentlyDeclined: ['less_text'],
+      typicalTypedReplyMs: 12000,
+      typicalSpokenReplyMs: null,
+    });
+    // This session is with Doctor Rho; the learner has only ever worked with Liruf.
+    expect(response.body.data.allianceContinuity).toBe('persona_switch');
+    expect(response.body.data.allianceMode).toBe('act');
+  });
+
+  it('continuity: a first meeting, continuing, a memory gap, and from the session rows for older learners', async () => {
+    expect((await contextFor({ profile: [] })).response.body.data.allianceContinuity).toBe('first_meeting');
+    const recent = new Date(Date.now() - 3 * 86_400_000).toISOString();
+    const old = new Date(Date.now() - 45 * 86_400_000).toISOString();
+    const withRho = (lastAt: string) => ({ ...PROFILE_ROW, persona_rapport: { rho: { sessions: 2, lastAt, bondYes: 0, bondAnswered: 0 } } });
+    expect((await contextFor({ profile: [withRho(recent)] })).response.body.data.allianceContinuity).toBe('continuing');
+    expect((await contextFor({ profile: [withRho(old)] })).response.body.data.allianceContinuity).toBe('memory_gap');
+    const fromRows = await contextFor({ profile: [], sessions: [{ character: 'rho', ended_at: recent }] });
+    expect(fromRows.response.body.data.allianceContinuity).toBe('continuing');
+  });
+
+  it('a failed profile read sends no guess: a null projection and a null continuity', async () => {
+    const { response } = await contextFor({ profile: 'fail' });
+    expect(response.status).toBe(200);
+    expect(response.body.data.dispositionProfile).toBeNull();
+    expect(response.body.data.allianceContinuity).toBeNull();
+  });
+
+  it('an Oracle that did not announce the fields gets none of them, and no profile read happens', async () => {
+    const { response, calls } = await contextFor({ profile: [PROFILE_ROW], fields: 'opening,behavioralTelemetryMode' });
+    expect(response.body.data).not.toHaveProperty('dispositionProfile');
+    expect(response.body.data).not.toHaveProperty('allianceContinuity');
+    expect(response.body.data).not.toHaveProperty('allianceMode');
+    expect(calls.some((c) => c.url.includes('/rest/v1/learner_disposition_profile'))).toBe(false);
+  });
+
+  it('Stage 7: a persona whose bond proxy fell more than 15% below its baseline rolls the controller back to shadow', async () => {
+    const now = Date.now();
+    const answers = [
+      ...Array.from({ length: 60 }, (_, i) => ({ character: 'liruf', bond_proxy: 'yes', bond_proxy_at: new Date(now - (30 + (i % 40)) * 86_400_000).toISOString() })),
+      ...Array.from({ length: 40 }, (_, i) => ({ character: 'liruf', bond_proxy: i % 2 === 0 ? 'no' : 'partly', bond_proxy_at: new Date(now - (1 + (i % 10)) * 86_400_000).toISOString() })),
+    ];
+    const calls = stub({
+      session: [SESSION_ROW],
+      intercept: (url, method) => {
+        if (method === 'GET' && url.includes('/rest/v1/tutor_session_alliance')) return jsonResponse(200, answers);
+        if (method === 'GET' && url.includes('/rest/v1/tutor_alliance_renegotiation')) return jsonResponse(200, []);
+        if (method === 'GET' && url.includes('/rest/v1/audit_logs')) return jsonResponse(200, []);
+        return null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', 'allianceMode');
+    expect(response.body.data.allianceMode).toBe('shadow');
+    const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'));
+    expect(audit).toHaveLength(1);
+    const row = JSON.parse(String(audit[0]!.body));
+    expect(row).toMatchObject({ actor_id: null, action: 'mentor.kill_switch.alliance.triggered' });
+    expect(row.detail.causes).toEqual(['bond_proxy_drop']);
+    expect(JSON.stringify(row.detail)).not.toMatch(/user|nickname|text/i);
+  });
+
+  // ── the bond proxy (learner surface) ──
+
+  const closedSession = (extra: Record<string, unknown> = {}) => ({
+    ...SESSION_ROW,
+    ended_at: new Date(Date.now() - 3_600_000).toISOString(),
+    close_reason: 'completed',
+    ...extra,
+  });
+  const allianceIntercept =
+    (row: unknown[] | 'fail' = [{ id: ALLIANCE_ID, character: 'rho', bond_proxy: null }], patched: unknown[] = [{ id: ALLIANCE_ID }]) =>
+    (url: string, method: string): Response | null => {
+      if (!url.includes('/rest/v1/tutor_session_alliance')) return null;
+      if (method === 'PATCH') return jsonResponse(200, patched);
+      return row === 'fail' ? new Response(null, { status: 500 }) : jsonResponse(200, row);
+    };
+  const answer = (token: string, body: object = { answer: 'yes' }) =>
+    request(createApp()).post(`/api/v1/tutor/sessions/${SESSION}/alliance-check`).set('Authorization', `Bearer ${token}`).send(body);
+
+  it('the learner (a parent-created under-13 kid) answers once for their own closed session', async () => {
+    const calls = stub({ session: [closedSession()], intercept: allianceIntercept() });
+    const response = await answer(mintToken({ sub: KID }), { answer: 'partly' });
+    expect(response.status).toBe(200);
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/tutor_session_alliance'))!;
+    expect(decodeURIComponent(patch.url)).toContain('bond_proxy=is.null');
+    expect(JSON.parse(String(patch.body))).toMatchObject({ bond_proxy: 'partly' });
+    expect(posted(calls, 'learner_disposition_profile')[0]!.persona_rapport).toMatchObject({ rho: { bondAnswered: 1, bondYes: 0.5 } });
+  });
+
+  it.each([
+    ['an independent teen', { declaredAgeBand: '13_to_17' as const, roles: [{ role: 'universal' }] }],
+    ['an adult', { declaredAgeBand: 'adult' as const, roles: [{ role: 'universal' }] }],
+  ])('%s answers their own session too', async (_label, extra) => {
+    stub({ session: [closedSession()], intercept: allianceIntercept(), ...extra });
+    expect((await answer(mintToken({ sub: KID }))).status).toBe(200);
+  });
+
+  it('refuses every other population and every wrong moment', async () => {
+    // The verified parent Tutor cannot answer for the child.
+    stub({ session: [closedSession()], intercept: allianceIntercept(), guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }] });
+    expect((await answer(mintToken({ sub: PARENT }))).status).toBe(403);
+    // Another learner, a guest, staff: not their session.
+    stub({ session: [closedSession()], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: OTHER }))).status).toBe(403);
+    expect((await answer(mintToken({ sub: OTHER, is_anonymous: true }))).status).toBe(403);
+    stub({ session: [closedSession()], intercept: allianceIntercept(), roles: [{ role: 'admin' }] });
+    expect((await answer(mintToken({ sub: OTHER }))).status).toBe(403);
+    // Unauthenticated, and the internal key is not a learner.
+    stub({ session: [closedSession()], intercept: allianceIntercept() });
+    expect((await request(createApp()).post(`/api/v1/tutor/sessions/${SESSION}/alliance-check`).send({ answer: 'yes' })).status).toBe(401);
+    const internal = await request(createApp())
+      .post(`/api/v1/tutor/sessions/${SESSION}/alliance-check`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ answer: 'yes' });
+    expect(internal.status).toBe(401);
+    // An open session, a safety stop, a day late, already answered, a lost race, never tracked, a failed read.
+    stub({ session: [SESSION_ROW], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('SESSION_OPEN');
+    stub({ session: [closedSession({ close_reason: 'safety_stop' })], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('NOT_ASKED');
+    stub({ session: [closedSession({ ended_at: new Date(Date.now() - 30 * 3_600_000).toISOString() })], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('TOO_LATE');
+    stub({ session: [closedSession()], intercept: allianceIntercept([{ id: ALLIANCE_ID, character: 'rho', bond_proxy: 'yes' }]) });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('ALREADY_ANSWERED');
+    stub({ session: [closedSession()], intercept: allianceIntercept(undefined, []) });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('ALREADY_ANSWERED');
+    stub({ session: [closedSession()], intercept: allianceIntercept([]) });
+    expect((await answer(mintToken({ sub: KID }))).body.error.code).toBe('NOT_TRACKED');
+    stub({ session: [closedSession()], intercept: allianceIntercept('fail') });
+    expect((await answer(mintToken({ sub: KID }))).status).toBe(502);
+    // A free-text answer or an extra field is refused by the schema.
+    stub({ session: [closedSession()], intercept: allianceIntercept() });
+    expect((await answer(mintToken({ sub: KID }), { answer: 'it was boring' })).status).toBe(400);
+    expect((await answer(mintToken({ sub: KID }), { answer: 'yes', why: 'fun' })).status).toBe(400);
+  });
+
+  // ── the profile, readable and resettable ──
+
+  const profileRead = (url: string, method: string) =>
+    method === 'GET' && url.includes('/learner_disposition_profile') ? jsonResponse(200, [PROFILE_ROW]) : null;
+
+  it('the learner reads their own profile as closed labels; a verified guardian reads their child’s; nobody else', async () => {
+    stub({ intercept: profileRead });
+    const own = await request(createApp()).get('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(own.status).toBe(200);
+    expect(own.body.data).toMatchObject({ exists: true, current: true, helpStyle: 'tell_early', persistentlyDeclined: ['less_text'], typicalReplySeconds: 12 });
+    expect(own.body.data.effects).toEqual(expect.arrayContaining(['stuck_degrade_early', 'scaffolded_explanation', 'seeded_declines']));
+    expect(JSON.stringify(own.body.data)).not.toMatch(/frustrat|bored|angry|sad|anxious|emotion|mood/i);
+
+    stub({ guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }], intercept: profileRead });
+    const guardian = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(guardian.status).toBe(200);
+    stub({ guardianLinks: [], intercept: profileRead });
+    const stranger = await request(createApp()).get(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: OTHER })}`);
+    expect(stranger.status).toBe(403);
+    stub({ restFailures: ['/rest/v1/learner_disposition_profile'] });
+    expect((await request(createApp()).get('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`)).status).toBe(502);
+  });
+
+  it('reset follows the memory-review rule: a child cannot, their verified guardian can; a teen without a guardian and an adult can', async () => {
+    const deletes = (calls: { url: string; method: string }[]) =>
+      calls.filter((c) => c.method === 'DELETE' && c.url.includes('/learner_disposition_profile'));
+    let calls = stub({ roles: [{ role: 'kid' }] });
+    const child = await request(createApp()).delete('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(child.status).toBe(403);
+    expect(child.body.error.code).toBe('GUARDIAN_MANAGED');
+    expect(deletes(calls)).toEqual([]);
+
+    calls = stub({ guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }] });
+    const byGuardian = await request(createApp()).delete(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(byGuardian.status).toBe(200);
+    expect(deletes(calls)).toHaveLength(1);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs'))).toBe(true);
+
+    calls = stub({ guardianLinks: [] });
+    expect((await request(createApp()).delete(`/api/v1/tutor/kids/${KID}/disposition`).set('Authorization', `Bearer ${mintToken({ sub: OTHER })}`)).status).toBe(403);
+    expect(deletes(calls)).toEqual([]);
+
+    for (const band of ['13_to_17', 'adult'] as const) {
+      calls = stub({ declaredAgeBand: band, roles: [{ role: 'universal' }], guardianLinks: [] });
+      const own = await request(createApp()).delete('/api/v1/tutor/disposition').set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+      expect(own.status, band).toBe(200);
+      expect(deletes(calls), band).toHaveLength(1);
+    }
+  });
+});
+
+describe('C.11 / C.17 — the spaced-review routing, the dialogue register and their Stage 7 rollbacks (S06.10/S06.11)', () => {
+  const CLOSE_URL = `/api/v1/tutor/internal/sessions/${SESSION}/close`;
+  const KC_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+  const KC_B = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+  const EXP = '44444444-4444-4444-8444-444444444444';
+  const ASSIGN = '/api/v1/intel/runtime/experiments/assignments';
+  const EXPOSE = '/api/v1/intel/runtime/experiments/exposure';
+  const decision = (extra: Record<string, unknown> = {}) => ({
+    observation: 1,
+    kcId: KC_A,
+    tier: 'within_session',
+    reason: 'near_threshold',
+    source: 'first_miss',
+    pBefore: 0.8,
+    pAfter: 0.45,
+    turnsRemaining: 60,
+    msUntilWrap: 600_000,
+    budgetState: 'running',
+    planned: true,
+    reexposuresBefore: 0,
+    queuedBefore: 0,
+    atTurn: 3,
+    outcome: 'retired',
+    successes: 2,
+    failures: 1,
+    ...extra,
+  });
+  const SPACED = {
+    mode: 'act',
+    ruleVersion: 'c11.v1',
+    learnerTurns: 14,
+    detoursOpened: 2,
+    overflow: 0,
+    decisions: [
+      decision(),
+      decision({ observation: 2, kcId: KC_B, tier: 'cross_session', reason: 'time_budget', msUntilWrap: 120_000, outcome: 'handed_off', successes: 0 }),
+    ],
+  };
+  const CALIBRATION = {
+    band: 'young_child',
+    variant: 'calibrated',
+    assignment: 'not_eligible',
+    experimentId: null,
+    ladderRungs: 4,
+    hintRequests: 3,
+    tellRequests: 0,
+    controllingCaught: 0,
+    controllingDelivered: 0,
+    pacingOffers: 0,
+    unilateralStyleChanges: 0,
+  };
+  const closeBody = (extra: Record<string, unknown> = {}) => ({
+    sessionId: SESSION,
+    closeReason: 'completed',
+    turnCount: 20,
+    segmentCount: 3,
+    costUsd: 0.01,
+    ...extra,
+  });
+  const close = (body: Record<string, unknown>) =>
+    request(createApp()).post(CLOSE_URL).set('x-internal-api-key', process.env.INTERNAL_API_KEY as string).send(body);
+  const posted = (calls: { url: string; method: string; body?: string }[], table: string) =>
+    calls
+      .filter((c) => c.method === 'POST' && c.url.includes(`/rest/v1/${table}`))
+      .flatMap((c) => {
+        const body = JSON.parse(String(c.body)) as unknown;
+        return (Array.isArray(body) ? body : [body]) as Record<string, unknown>[];
+      });
+
+  beforeEach(async () => {
+    const { resetSpacedReviewKillSwitchCache } = await import('../services/pedagogy/spacedReview.js');
+    const { resetDialogueKillSwitchCache } = await import('../services/pedagogy/dialogueCalibration.js');
+    const { resetAllianceKillSwitchCache } = await import('../services/pedagogy/alliance.js');
+    resetSpacedReviewKillSwitchCache();
+    resetDialogueKillSwitchCache();
+    resetAllianceKillSwitchCache();
+    resetKillSwitchCache();
+  });
+
+  // ── the close record ──
+
+  it('records every routing decision with its inputs, hands the unretired KC to the scheduler, and writes the register row', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody({ spacedReview: SPACED, dialogueCalibration: CALIBRATION }));
+    expect(response.status).toBe(200);
+    expect(posted(calls, 'tutor_review_routing')).toEqual([
+      expect.objectContaining({ session_id: SESSION, character: 'rho', mode: 'act', observation: 1, kc_id: KC_A, tier: 'within_session', outcome: 'retired', p_before: 0.8 }),
+      expect.objectContaining({ observation: 2, kc_id: KC_B, tier: 'cross_session', reason: 'time_budget', ms_until_wrap: 120_000, outcome: 'handed_off' }),
+    ]);
+    // Only the handed-off KC is brought forward, and only if its card is due LATER.
+    const handoffs = calls.filter((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/memory_card'));
+    expect(handoffs).toHaveLength(1);
+    expect(handoffs[0]!.url).toContain(`user_id=eq.${KID}`);
+    expect(handoffs[0]!.url).toContain(`kc_id=eq.${KC_B}`);
+    expect(handoffs[0]!.url).toMatch(/due_at=gt\./);
+    const due = Date.parse(JSON.parse(String(handoffs[0]!.body)).due_at);
+    expect(due - Date.now()).toBeGreaterThan(11 * 3_600_000);
+    expect(due - Date.now()).toBeLessThanOrEqual(12 * 3_600_000);
+    expect(posted(calls, 'tutor_dialogue_calibration')).toEqual([
+      expect.objectContaining({ session_id: SESSION, band: 'young_child', variant: 'calibrated', assignment: 'not_eligible', ladder_rungs: 4, hint_requests: 3 }),
+    ]);
+    // No row carries a user id, the learner words, a nickname, an age or an emotion label.
+    for (const table of ['tutor_review_routing', 'tutor_dialogue_calibration']) {
+      expect(JSON.stringify(posted(calls, table))).not.toMatch(/user_id|nickname|birth|"age"|frustrat|bored|angry|emotion|mood/i);
+    }
+  });
+
+  it('a shadow router hands nothing off; an older Oracle (neither field) still closes', async () => {
+    const shadow = stub({ session: [SESSION_ROW] });
+    const report = { ...SPACED, mode: 'shadow', detoursOpened: 0, decisions: [SPACED.decisions[1]] };
+    expect((await close(closeBody({ spacedReview: report }))).status).toBe(200);
+    expect(posted(shadow, 'tutor_review_routing')).toHaveLength(1);
+    expect(shadow.some((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/memory_card'))).toBe(false);
+    const older = stub({ session: [SESSION_ROW] });
+    expect((await close(closeBody())).status).toBe(200);
+    expect(posted(older, 'tutor_review_routing')).toEqual([]);
+    expect(posted(older, 'tutor_dialogue_calibration')).toEqual([]);
+  });
+
+  it.each([
+    ['learner text in a decision', { spacedReview: { ...SPACED, decisions: [decision({ text: 'no se' })] } }],
+    ['a within-session decision with a budget reason', { spacedReview: { ...SPACED, decisions: [decision({ reason: 'turn_budget' })] } }],
+    ['a cross-session decision that claims a retirement', { spacedReview: { ...SPACED, decisions: [decision({ tier: 'cross_session', reason: 'wrapping' })] } }],
+    ['a shadow router that opened re-checks', { spacedReview: { ...SPACED, mode: 'shadow' } }],
+    ['a KC id outside the catalog', { spacedReview: { ...SPACED, decisions: [decision({ kcId: 'kc-a' })] } }],
+    ['an age in the register', { dialogueCalibration: { ...CALIBRATION, age: 8 } }],
+    ['a control arm with the short ladder', { dialogueCalibration: { ...CALIBRATION, variant: 'control' } }],
+    ['an experiment id on a non-enrolled session', { dialogueCalibration: { ...CALIBRATION, experimentId: EXP } }],
+    ['a teen register that changed the approach unilaterally', { dialogueCalibration: { ...CALIBRATION, band: 'teen', ladderRungs: 5, unilateralStyleChanges: 1 } }],
+  ])('refuses %s with a 400 that closes nothing', async (_name, extra) => {
+    const calls = stub({ session: [SESSION_ROW] });
+    const response = await close(closeBody(extra as Record<string, unknown>));
+    expect(response.status).toBe(400);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/rest/v1/tutor_sessions'))).toBe(false);
+    expect(posted(calls, 'tutor_review_routing')).toEqual([]);
+  });
+
+  it('a learner cannot post the internal close (no key, a learner token)', async () => {
+    const calls = stub({ session: [SESSION_ROW] });
+    expect((await request(createApp()).post(CLOSE_URL).send(closeBody({ spacedReview: SPACED }))).status).toBe(403);
+    const asLearner = await request(createApp())
+      .post(CLOSE_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(closeBody({ spacedReview: SPACED }));
+    expect(asLearner.status).toBe(403);
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_review_routing') || c.url.includes('/rest/v1/memory_card'))).toBe(false);
+  });
+
+  // ── the negotiated context: every population ──
+
+  const FIELDS = 'spacedReviewMode,dialogueCalibration';
+  async function contextFor(
+    opts: Parameters<typeof stub>[0] & { runtime?: { assignments?: unknown; exposure?: unknown }; fields?: string },
+  ) {
+    const { runtime, fields, ...stubOpts } = opts;
+    const calls = stub({
+      ...stubOpts,
+      intercept: (url, method, body) => {
+        if (url.includes(ASSIGN)) {
+          return runtime?.assignments === 'fail'
+            ? new Response(null, { status: 502 })
+            : jsonResponse(200, { data: { assignments: runtime?.assignments ?? [] }, error: null });
+        }
+        if (url.includes(EXPOSE)) return jsonResponse(200, { data: { assignment: runtime?.exposure ?? null }, error: null });
+        return stubOpts.intercept?.(url, method, body) ?? null;
+      },
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .set('x-oracle-context-fields', fields ?? FIELDS);
+    return { response, calls };
+  }
+
+  it('the parent-created under-13 kid: the younger-child register from the birth date, never enrolled, no runtime call', async () => {
+    const { response, calls } = await contextFor({ session: [SESSION_ROW] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.spacedReviewMode).toBe('act');
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'young_child', variant: 'calibrated', assignment: 'not_eligible', experimentId: null });
+    expect(calls.some((c) => c.url.includes(ASSIGN))).toBe(false);
+    // The birth date is read inside Core and never travels.
+    expect(JSON.stringify(response.body)).not.toMatch(/2018-03-01|birth/);
+  });
+
+  it('a parent-created 11-year-old is a tween', async () => {
+    const { response } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      profile: { ...KID_PROFILE, birth_date: '2015-01-10' },
+    });
+    expect(response.body.data.dialogueCalibration.band).toBe('tween');
+  });
+
+  it('the independent teen (13-17): the teen register, outside the experiment by OD-23', async () => {
+    const { response, calls } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: '13_to_17',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'universal' }],
+      runtime: { assignments: [{ experimentId: EXP, variant: 'A', surface: 'tutor', target: 'mentor.dialogue-register' }] },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'teen', variant: 'calibrated', assignment: 'not_eligible', experimentId: null });
+    expect(calls.some((c) => c.url.includes(ASSIGN))).toBe(false);
+  });
+
+  it('the adult: enrolled in the running experiment, exposure recorded, the assigned arm sent', async () => {
+    const assignment = { experimentId: EXP, variant: 'A', surface: 'tutor', target: 'mentor.dialogue-register' };
+    const { response, calls } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: 'adult',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'universal' }],
+      runtime: { assignments: [assignment], exposure: assignment },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'adult', variant: 'control', assignment: 'experiment', experimentId: EXP });
+    const exposure = calls.find((c) => c.url.includes(EXPOSE));
+    expect(JSON.parse(String(exposure?.body))).toMatchObject({ surface: 'tutor', target: 'mentor.dialogue-register', experimentId: EXP });
+  });
+
+  it('staff (an adult account) follows the same adult rule; a failed runtime is the calibrated default, never a guess', async () => {
+    const { response } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: 'adult',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'admin' }],
+      runtime: { assignments: 'fail' },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'adult', variant: 'calibrated', assignment: 'runtime_unavailable', experimentId: null });
+  });
+
+  it('an Oracle that did not announce the fields gets neither, and nothing is read for them', async () => {
+    const { response, calls } = await contextFor({ session: [SESSION_ROW], fields: 'opening' });
+    expect(response.body.data).not.toHaveProperty('spacedReviewMode');
+    expect(response.body.data).not.toHaveProperty('dialogueCalibration');
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_review_routing'))).toBe(false);
+    expect(calls.some((c) => c.url.includes('/rest/v1/tutor_dialogue_calibration'))).toBe(false);
+  });
+
+  // ── Stage 7 ──
+
+  it('C.11 Stage 7: a recorded decision the rule does not reproduce rolls the router back to shadow, with an audit row', async () => {
+    const misrouted = {
+      session_id: SESSION, mode: 'act', rule_version: 'c11.v1', observation: 1, kc_id: KC_A, tier: 'within_session', reason: 'near_threshold',
+      source: 'first_miss', p_before: 0.2, turns_remaining: 60, ms_until_wrap: 600_000, budget_state: 'running', planned: true,
+      reexposures_before: 0, queued_before: 0, outcome: 'retired', created_at: new Date().toISOString(),
+    };
+    const { response, calls } = await contextFor({
+      session: [SESSION_ROW],
+      intercept: (url, method) => (method === 'GET' && url.includes('/rest/v1/tutor_review_routing') ? jsonResponse(200, [misrouted]) : null),
+    });
+    expect(response.body.data.spacedReviewMode).toBe('shadow');
+    const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs')).map((c) => JSON.parse(String(c.body)));
+    expect(audit).toEqual([expect.objectContaining({ actor_id: null, action: 'mentor.kill_switch.spaced_review.triggered' })]);
+    expect(audit[0].detail.causes).toEqual(['rule_mismatch']);
+    expect(JSON.stringify(audit[0].detail)).not.toMatch(/user|nickname|text/i);
+  });
+
+  it('C.17 Stage 7: a calibrated arm significantly worse than control rolls every session back to the control register', async () => {
+    const ids = Array.from({ length: 120 }, (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`);
+    const calibrationRows = ids.map((id, i) => ({
+      session_id: id, band: 'adult', variant: i < 60 ? 'calibrated' : 'control', assignment: 'experiment', controlling_delivered: 0, created_at: new Date().toISOString(),
+    }));
+    const allianceRows = ids.map((id, i) => ({ session_id: id, bond_proxy: i < 60 ? (i % 3 === 0 ? 'partly' : 'no') : (i % 3 === 0 ? 'partly' : 'yes') }));
+    const sessionRows = ids.map((id) => ({ id, closing_script: 'completed' }));
+    const { response, calls } = await contextFor({
+      session: [SESSION_ROW],
+      intercept: (url, method) => {
+        if (method !== 'GET') return null;
+        if (url.includes('/rest/v1/tutor_dialogue_calibration')) return jsonResponse(200, calibrationRows);
+        if (url.includes('/rest/v1/tutor_session_alliance')) return jsonResponse(200, allianceRows);
+        if (url.includes('/rest/v1/tutor_sessions?select=id,closing_script')) return jsonResponse(200, sessionRows);
+        return null;
+      },
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'young_child', variant: 'control', assignment: 'rollback', experimentId: null });
+    const audit = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/audit_logs')).map((c) => JSON.parse(String(c.body)));
+    expect(audit).toEqual([expect.objectContaining({ action: 'mentor.kill_switch.dialogue_calibration.triggered' })]);
+    expect(audit[0].detail.regressions).toEqual([{ band: 'adult', outcome: 'bond_proxy' }]);
+  });
+});
+
+/*
+ * S06.12 — C.5 (the governed live-generation tier) and C.6 (the curated
+ * activity-pack tier) at Core's internal boundary. Oracle is the only caller
+ * (x-internal-api-key); a learner, a guardian or staff with a user token
+ * cannot reach either route at all.
+ */
+describe('S06.12 C.5/C.6 — the governed content ladder', () => {
+  const PERCENT_KC = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1';
+  const FRACTION_KC = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee0';
+  const SERVED = [{ id: SEGMENT, session_id: SESSION, seq: 0, origin: 'live', payload: MCQ_SEGMENT, key_verified: true }];
+  const segmentsBody = {
+    sessionId: SESSION,
+    skillKey: 'unknown',
+    difficulty: 2,
+    framing: 'Vamos a practicar.',
+    rationale: 'the learner asked for an exercise',
+  };
+  const verifyBody = (
+    provenance: Record<string, unknown>,
+    segment: Record<string, unknown> = { ...MCQ_SEGMENT, answer: { correct_option_id: 'a' } },
+  ) => ({ sessionId: SESSION, segment, provenance });
+  const PACK_ROW = {
+    id: 'ffffffff-ffff-4fff-8fff-fffffffffff1',
+    skill_key: 'kc:money.percent-intro',
+    tier: 2,
+    locale: 'es-MX',
+    status: 'published',
+    pack_version: 3,
+    content_hash: 'c'.repeat(64),
+    source: 'hand_authored',
+    pack: {
+      contract: 'tutor-pack.v1',
+      segments: [
+        { id: 'pack-percent-intro-t3-es-1', type: 'number_input', difficulty: 2, prompt_md: '¿Cuánto es el 10% de 80 monedas?', payload: { unit: 'monedas' } },
+      ],
+      answers: { 'pack-percent-intro-t3-es-1': { value: 8, tolerance: 0 } },
+    },
+  };
+  const post = (path: string, body: object) =>
+    request(createApp())
+      .post(`/api/v1/tutor/internal/${path}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+  const liveClaim = (calls: { url: string; body?: string }[]) => {
+    const call = calls.find((c) => c.url.includes('/rpc/insert_tutor_live_segment_checked'));
+    return call ? (JSON.parse(call.body ?? '{}') as Record<string, unknown>) : null;
+  };
+
+  it('refuses both internal routes to anyone without the internal key (no key, a learner token)', async () => {
+    stub({ judgeCalibration: [PASSED_CALIBRATION] });
+    for (const route of ['segments', 'segments/verify']) {
+      const anonymous = await request(createApp()).post(`/api/v1/tutor/internal/${route}`).send(segmentsBody);
+      expect([401, 403]).toContain(anonymous.status);
+      const learner = await request(createApp())
+        .post(`/api/v1/tutor/internal/${route}`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send(segmentsBody);
+      expect([401, 403]).toContain(learner.status);
+    }
+  });
+
+  it('C.5: an uncalibrated judge SUSPENDS live generation, and Oracle is told not to author', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls });
+    const response = await post('segments', segmentsBody);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ needsGeneration: false, liveSuspended: true, reason: 'uncalibrated' });
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'live_suspended', reason: 'uncalibrated' });
+  });
+
+  it('C.5: a stale calibration suspends it too', async () => {
+    stub({ judgeCalibration: [{ ...PASSED_CALIBRATION, created_at: new Date(Date.now() - 40 * 86_400_000).toISOString() }] });
+    const response = await post('segments', segmentsBody);
+    expect(response.body.data).toMatchObject({ liveSuspended: true, reason: 'calibration_stale' });
+  });
+
+  it('C.5: with a calibrated judge the ladder invites generation and records the demand', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], calls });
+    const response = await post('segments', segmentsBody);
+    expect(response.body.data.needsGeneration).toBe(true);
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'needs_generation', risk_category: 'standard' });
+  });
+
+  it('C.5: an open Stage 7 trip suspends only the category it names', async () => {
+    const trip = {
+      action: 'mentor.kill_switch.live_content.triggered',
+      created_at: new Date(Date.now() - 3_600_000).toISOString(),
+      detail: { category: 'sensitive', cause: 'concordance_below_floor' },
+    };
+    stub({ judgeCalibration: [PASSED_CALIBRATION], auditRows: [trip] });
+    const standard = await post('segments', segmentsBody);
+    expect(standard.body.data.needsGeneration).toBe(true);
+    resetLiveContentGateCache();
+    stub({ judgeCalibration: [PASSED_CALIBRATION], auditRows: [trip] });
+    const sensitive = await post('segments', { ...segmentsBody, framing: 'Tus papás se separaron y no alcanza el dinero para comer.' });
+    expect(sensitive.body.data).toMatchObject({ liveSuspended: true, reason: 'concordance_below_floor' });
+  });
+
+  it('C.5: refuses a candidate while the judge is uncalibrated, and never claims a segment', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ segment: SERVED, calls });
+    const response = await post('segments/verify', verifyBody(JUDGED));
+    expect(response.body.data).toEqual({ accepted: false, failures: ['live generation is not admitted: uncalibrated'] });
+    expect(calls.some((c) => c.url.includes('insert_tutor'))).toBe(false);
+  });
+
+  it('C.5: refuses a candidate approved by a judge other than the calibrated one', async () => {
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED });
+    const other = await post('segments/verify', verifyBody({ judge_model: 'qwen3-max', judge_prompt_hash: 'd'.repeat(64) }));
+    expect(other.body.data.failures).toEqual(['live generation is not admitted: judge_not_calibrated']);
+    const missing = await post('segments/verify', verifyBody({ model: 'test' }));
+    expect(missing.body.data.accepted).toBe(false);
+  });
+
+  it('C.5: serves a standard candidate through the governed claim at the 15% floor', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, calls });
+    const response = await post('segments/verify', verifyBody({ ...JUDGED, risk_signals: [] }));
+    expect(response.status).toBe(200);
+    expect(response.body.data.keyVerified).toBe(true);
+    const claim = liveClaim(calls)!;
+    expect(claim).toMatchObject({
+      p_risk_category: 'standard',
+      p_risk_signals: [],
+      p_sample_rate: 0.15,
+      p_elevated: false,
+      p_calibration_id: PASSED_CALIBRATION.id,
+      p_judge_prompt_hash: JUDGE_HASH,
+      p_locale: 'es-MX',
+    });
+    expect((claim.p_provenance as Record<string, unknown>).sampling).toEqual({ rate: 0.15, elevated: false });
+    // The ungoverned claim is never used for a live item.
+    expect(calls.some((c) => c.url.includes('/rpc/insert_tutor_segment_checked'))).toBe(false);
+  });
+
+  it('C.5: Core reads the item itself: a divorce story Oracle called standard is sampled as SENSITIVE (50%)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, calls });
+    const segment = {
+      ...MCQ_SEGMENT,
+      prompt_md: 'Los papás de Ana están divorciados. ¿Cuánto juntas si ahorras 25 cada semana durante 4 semanas?',
+      answer: { correct_option_id: 'a' },
+    };
+    await post('segments/verify', verifyBody({ ...JUDGED, risk_category: 'standard', risk_signals: [] }, segment));
+    expect(liveClaim(calls)).toMatchObject({ p_risk_category: 'sensitive', p_risk_signals: ['family_conflict'], p_sample_rate: 0.5 });
+  });
+
+  it('C.5: an Oracle-reported signal, an unknown code, or a safety flag in the session each raise the category', async () => {
+    const cases: [Record<string, unknown>, unknown[], string[]][] = [
+      [{ ...JUDGED, risk_signals: ['learner_classifier_match'] }, [], ['learner_classifier_match']],
+      [{ ...JUDGED, risk_signals: ['something_new'] }, [], ['unrecognized_signal']],
+      [{ ...JUDGED, risk_signals: [] }, [{ id: 'flag' }], ['session_safety_event']],
+    ];
+    for (const [provenance, flags, signals] of cases) {
+      resetLiveContentGateCache();
+      const calls: { url: string; method: string; body?: string }[] = [];
+      stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, calls, safetyFlags: flags });
+      await post('segments/verify', verifyBody(provenance));
+      expect(liveClaim(calls)).toMatchObject({ p_risk_category: 'sensitive', p_risk_signals: signals, p_sample_rate: 0.5 });
+    }
+  });
+
+  it('C.5: after a staff rejection the category runs ELEVATED (standard 50%)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({
+      judgeCalibration: [PASSED_CALIBRATION],
+      segment: SERVED,
+      calls,
+      liveLatestIssue: [{ reviewed_at: new Date(Date.now() - 3_600_000).toISOString() }],
+    });
+    await post('segments/verify', verifyBody(JUDGED));
+    expect(liveClaim(calls)).toMatchObject({ p_risk_category: 'standard', p_sample_rate: 0.5, p_elevated: true });
+  });
+
+  it('C.5: a failed read of the gate refuses the candidate (fail closed)', async () => {
+    stub({ judgeCalibration: [PASSED_CALIBRATION], segment: SERVED, restFailures: ['/mentor_judge_calibration'] });
+    const response = await post('segments/verify', verifyBody(JUDGED));
+    expect(response.body.data.failures).toEqual(['live generation is not admitted: gate_unavailable']);
+  });
+
+  it('C.5: a candidate that fails the deterministic gates is refused before the governance gate, and logged', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ judgeCalibration: [PASSED_CALIBRATION], calls });
+    await post('segments/verify', verifyBody(JUDGED, { ...MCQ_SEGMENT, answer: { correct_option_id: 'nope' } }));
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'live_refused', reason: 'verification_failed' });
+  });
+
+  it('C.6: serves the curated pack for a KC no published topic teaches, BEFORE any generation', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({
+      calls,
+      segment: [{ id: SEGMENT, seq: 0 }],
+      kcs: [{ id: PERCENT_KC, key: 'money.percent-intro', skill_key: null }],
+      kcEdges: [],
+      packs: [PACK_ROW],
+    });
+    const response = await post('segments', { ...segmentsBody, skillKey: 'financial-education/nothing', kcId: PERCENT_KC });
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({ origin: 'bank', segmentId: SEGMENT });
+    expect(JSON.stringify(response.body.data.segment)).not.toContain('tolerance');
+    const claim = calls.find((c) => c.url.includes('/rpc/insert_tutor_segment_checked'));
+    const provenance = JSON.parse(claim?.body ?? '{}').p_provenance as Record<string, unknown>;
+    expect(provenance).toMatchObject({
+      tier: 2,
+      pack_id: PACK_ROW.id,
+      skill_key: 'kc:money.percent-intro',
+      pack_version: 3,
+      content_hash: 'c'.repeat(64),
+      pack_source: 'hand_authored',
+    });
+    const event = calls.find((c) => c.url.includes('/tutor_content_ladder_events'));
+    expect(JSON.parse(event?.body ?? '{}')).toMatchObject({ outcome: 'bank', route: 'kc_pack', skill_key: 'kc:money.percent-intro' });
+    // The live gate was never consulted: the curated tier answered.
+    expect(calls.some((c) => c.url.includes('mentor_judge_calibration'))).toBe(false);
+  });
+
+  it('C.6: reads only PUBLISHED packs (a pack in review is never served)', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({ calls, kcs: [{ id: PERCENT_KC, key: 'money.percent-intro', skill_key: null }], kcEdges: [], packs: [] });
+    await post('segments', { ...segmentsBody, kcId: PERCENT_KC });
+    const packRead = calls.find((c) => c.url.includes('/rest/v1/tutor_packs') && decodeURIComponent(c.url).includes('kc:money.percent-intro'));
+    expect(packRead?.url).toContain('status=eq.published');
+  });
+
+  it('C.6: a prerequisite KC with no topic is served from ITS curated pack', async () => {
+    stub({
+      segment: [{ id: SEGMENT, seq: 0 }],
+      kcs: [
+        { id: PERCENT_KC, key: 'money.percent-intro', skill_key: null },
+        { id: FRACTION_KC, key: 'money.fraction-of-amount', skill_key: null },
+      ],
+      kcEdges: [{ prerequisite_kc_id: FRACTION_KC, dependent_kc_id: PERCENT_KC }],
+      packs: [{ ...PACK_ROW, skill_key: 'kc:money.fraction-of-amount' }],
+    });
+    const response = await post('segments', { ...segmentsBody, kcId: PERCENT_KC });
+    expect(response.body.data).toMatchObject({ origin: 'bank' });
   });
 });

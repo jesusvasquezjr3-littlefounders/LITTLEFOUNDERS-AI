@@ -29,7 +29,7 @@
 
 import process from 'node:process';
 import { PedagogicalController } from '../src/tutor/controller.js';
-import type { PedagogyEvent } from '../src/tutor/controller.js';
+import type { ControllerDecision, PedagogyEvent } from '../src/tutor/controller.js';
 import { selectSkill } from '../src/tutor/skills.js';
 import type { SessionPlanEntry } from '../src/core/client.js';
 
@@ -58,6 +58,7 @@ const WRONG: PedagogyEvent = {
   attemptNumber: 1,
 };
 const RIGHT: PedagogyEvent = { ...WRONG, correct: true };
+const DIAGNOSED: PedagogyEvent = { ...WRONG, misconceptionCode: 'adds-instead-of-counts-up' };
 const SHRUG: PedagogyEvent = { kind: 'conversation_turn' };
 
 /**
@@ -71,6 +72,15 @@ interface Profile {
   /** What the learner does, turn by turn. */
   turns: PedagogyEvent[];
   plan: SessionPlanEntry[];
+  /**
+   * Strategies the sequence MUST contain. A rule that makes a strategy
+   * unreachable reads like protection and is dead code — this file's own
+   * founding lesson — so a new gate on a strategy (C.10) is paired with a
+   * profile proving the gated strategy still fires when it should.
+   */
+  mustReach?: string[];
+  /** Strategies the sequence must NOT contain (a gate that must hold). */
+  mustNotReach?: string[];
 }
 
 const TURN_GAP_MS = 40_000;
@@ -114,6 +124,28 @@ const PROFILES: Profile[] = [
       RIGHT,
     ],
     plan: [entry({ pKnown: 0.7 })],
+    // C.10: ONE diagnosed miss is a single observation; the later misses
+    // carry no diagnosis, so nothing ever corroborates it.
+    mustNotReach: ['REMEDIATE'],
+  },
+  {
+    name: 'a learner applying the SAME wrong idea again and again (C.10)',
+    turns: [...repeat(DIAGNOSED, 3), RIGHT, RIGHT],
+    plan: [entry({ pKnown: 0.4 })],
+    // Held, rescued, then remediated once corroborated — never on the first miss.
+    mustReach: ['RESCUE', 'REMEDIATE'],
+  },
+  {
+    name: 'a learner who states a wrong idea and then applies it (C.10)',
+    turns: [{ kind: 'stated_misconception', misconceptionCode: 'adds-instead-of-counts-up' }, DIAGNOSED, RIGHT],
+    plan: [entry({ pKnown: 0.4 })],
+    mustReach: ['REMEDIATE'],
+  },
+  {
+    name: 'a lucky right answer between misses is not mastery (C.10)',
+    turns: [WRONG, RIGHT, WRONG, RIGHT, WRONG, RIGHT],
+    plan: [entry({ pKnown: 0.8 })],
+    mustNotReach: ['CELEBRATE', 'TRANSFER'],
   },
 ];
 
@@ -153,26 +185,97 @@ const QUESTIONING = new Set(['SOCRATIC', 'FLUENCY', 'PROBE']);
  * So the run stops where the product stops. A completed plan is an outcome, not
  * a sequence of turns.
  */
-function run(profile: Profile): { seq: string[]; difficulties: number[]; events: PedagogyEvent[] } {
+function run(profile: Profile): {
+  seq: string[];
+  difficulties: number[];
+  events: PedagogyEvent[];
+  decisions: ControllerDecision[];
+} {
   const controller = new PedagogicalController(profile.plan);
   const seq: string[] = [];
   const difficulties: number[] = [];
   const events: PedagogyEvent[] = [];
+  const decisions: ControllerDecision[] = [];
   for (const [i, event] of profile.turns.entries()) {
     if (!controller.active) break;
     const decision = controller.decide(event, START + i * TURN_GAP_MS);
     seq.push(decision.strategy);
     difficulties.push(decision.difficulty);
     events.push(event);
+    decisions.push(decision);
   }
-  return { seq, difficulties, events };
+  return { seq, difficulties, events, decisions };
+}
+
+const graded = (e: PedagogyEvent): boolean => e.kind === 'activity_result' || e.kind === 'voice_result';
+
+/**
+ * C.10, recomputed INDEPENDENTLY of the controller's own bookkeeping: how
+ * many consecutive observations of one kind end at turn `i`. Conversation
+ * turns are not observations and are skipped, exactly as the rule reads.
+ */
+function trailing(events: PedagogyEvent[], i: number, counts: (e: PedagogyEvent) => boolean | null): number {
+  let n = 0;
+  for (let j = i; j >= 0; j -= 1) {
+    const verdict = counts(events[j]!);
+    if (verdict === null) continue; // not an observation of this kind
+    if (!verdict) break;
+    n += 1;
+  }
+  return n;
 }
 
 function check(profile: Profile): Problem[] {
-  const { seq, difficulties, events } = run(profile);
+  const { seq, difficulties, events, decisions } = run(profile);
 
   const problems: Problem[] = [];
   const push = (detail: string): void => void problems.push({ profile: profile.name, detail });
+
+  /*
+   * C.10 — NO CONSEQUENTIAL MOVE ON A SINGLE OBSERVATION. Checked two ways:
+   * the decision must carry evidence meeting its own requirement, and the
+   * event script itself must show at least two consecutive observations of
+   * the right kind ending on that turn (recomputed here, not trusted).
+   */
+  decisions.forEach((d, i) => {
+    const previous = i === 0 ? null : seq[i - 1];
+    const consequential =
+      d.strategy === 'CELEBRATE' ||
+      d.strategy === 'TRANSFER' ||
+      ((d.strategy === 'REMEDIATE' || d.strategy === 'RESCUE') && previous !== d.strategy);
+    if (!consequential) return;
+    if (d.evidence === null || d.evidence.observations < d.evidence.required) {
+      push(`${d.strategy} executed without corroborating evidence (turn ${i + 1})`);
+      return;
+    }
+    const seen =
+      d.strategy === 'CELEBRATE' || d.strategy === 'TRANSFER'
+        ? trailing(events, i, (e) => (graded(e) ? (e as { correct: boolean }).correct : null))
+        : d.strategy === 'REMEDIATE'
+          ? Math.max(
+              trailing(events, i, (e) =>
+                e.kind === 'stated_misconception' ? true : graded(e) ? !(e as { correct: boolean }).correct : null,
+              ),
+              // A correct PROBE answer remediates the original KC on ITS misses.
+              trailing(events, Math.max(0, i - 1), (e) =>
+                graded(e) ? !(e as { correct: boolean }).correct : null,
+              ),
+            )
+          : Math.max(
+              trailing(events, i, (e) => (graded(e) ? !(e as { correct: boolean }).correct : null)),
+              // Rule 1b: turns that went nowhere — graded misses AND conversation.
+              trailing(events, i, (e) =>
+                graded(e) ? !(e as { correct: boolean }).correct : e.kind === 'conversation_turn' ? true : null,
+              ),
+            );
+    if (seen < 2) push(`${d.strategy} on ${seen} observation(s) — the script shows no corroboration (turn ${i + 1})`);
+  });
+  for (const strategy of profile.mustReach ?? []) {
+    if (!seq.includes(strategy)) push(`never reached ${strategy} — the gate made it unreachable`);
+  }
+  for (const strategy of profile.mustNotReach ?? []) {
+    if (seq.includes(strategy)) push(`reached ${strategy}, which this profile must never produce`);
+  }
 
   /*
    * V4: every decision must resolve to a real didactic maneuver. The fallback

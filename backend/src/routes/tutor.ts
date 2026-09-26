@@ -17,6 +17,55 @@ import {
   type FullProfileRow,
 } from '../services/supabaseRest.js';
 import { getOwnLearnerIntelligence } from '../services/learningIntel.js';
+import {
+  CLOSING_SCRIPTS,
+  decideOpening,
+  getPreviousClosedSession,
+  recordSessionEndSignal,
+  SESSION_OPENINGS,
+  SessionEndReportBody,
+} from '../services/pedagogy/sessionEnd.js';
+import {
+  BehavioralTelemetryReportBody,
+  CONTEXT_OPTIONAL_FIELDS,
+  getTelemetryKillSwitch,
+  recordTelemetryFirings,
+} from '../services/pedagogy/behavioralTelemetry.js';
+import {
+  AllianceReportBody,
+  BOND_PROXY_ANSWERS,
+  getAllianceKillSwitch,
+  getAllianceRow,
+  recordAllianceClose,
+  SelfExplanationReportBody,
+  writeBondProxy,
+  ALLIANCE_THRESHOLDS,
+} from '../services/pedagogy/alliance.js';
+import {
+  decideContinuity,
+  deleteDispositionProfile,
+  DispositionObservationBody,
+  explainProfile,
+  getDispositionProfile,
+  listRecentPersonaSessions,
+  purgeStaleDispositionProfiles,
+  recordDispositionBondProxy,
+  recordDispositionClose,
+  toOracleProjection,
+} from '../services/pedagogy/disposition.js';
+import {
+  getSpacedReviewKillSwitch,
+  recordSpacedReviewClose,
+  SpacedReviewReportBody,
+} from '../services/pedagogy/spacedReview.js';
+import {
+  dialogueBandFor,
+  DialogueCalibrationReportBody,
+  getDialogueKillSwitch,
+  recordDialogueCalibrationClose,
+  resolveDialogueCalibration,
+  type DialogueCalibration,
+} from '../services/pedagogy/dialogueCalibration.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
 import {
   ADAPTATIONS,
@@ -68,6 +117,7 @@ import {
   type TutorSessionRow,
 } from '../services/tutorData.js';
 import {
+  collectSegmentProse,
   LIVE_TYPE_ALLOWLIST,
   resolveSkill,
   serveFromBank,
@@ -76,6 +126,16 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
+import { classifyLiveContent, type ContentRiskCategory } from '../services/pedagogy/contentRisk.js';
+import {
+  admitLiveCandidate,
+  getLiveContentGate,
+  insertLiveSegmentChecked,
+  liveGenerationOpen,
+  recordLadderEvent,
+  sessionSafetyFlagCount,
+  type LadderRoute,
+} from '../services/pedagogy/liveContentGovernance.js';
 import {
   getActiveKcs,
   getKcEdges,
@@ -88,12 +148,14 @@ import {
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
+import { recordTurnHonesty } from '../services/pedagogy/turnHonesty.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
 import { buildSessionNarrative, type SessionNarrative } from '../services/pedagogy/sessionNarrative.js';
 import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
+import { runEvaluationPass } from '../services/pedagogy/evaluationLoop.js';
 
 /*
  * The Tutor's API (/ORACLE.md). Two surfaces in one router file, and the split
@@ -562,6 +624,92 @@ function internalRouter(): Router {
       ? await buildSessionPlan(session.user_id, session.tier, session.locale)
       : null;
 
+    /*
+     * C.16: the re-engagement a silent dropout or a budget interruption in the
+     * learner's PREVIOUS session queued for this return. Decided here from
+     * Core's own rows; a failed read opens with the plain greeting, never
+     * with a guess about what happened last time.
+     */
+    const previousClose = await getPreviousClosedSession(session.user_id, session.id);
+    const opening =
+      previousClose === undefined
+        ? 'greeting'
+        : decideOpening(previousClose, {
+            course_id: session.course_id,
+            topic_id: session.topic_id,
+            skill_key: session.skill_key,
+          });
+
+    /*
+     * The optional context fields the CALLING Oracle can parse (it names them
+     * in `x-oracle-context-fields`). Oracle's context schema is `.strict()`,
+     * so a field an older Oracle does not know would make it refuse every
+     * session: an optional field is sent only when it was announced, which
+     * makes the Core/Oracle deploy order irrelevant. Kept identical to
+     * Oracle's CONTEXT_OPTIONAL_FIELDS by `npm run telemetry:check`.
+     */
+    const accepts = new Set(
+      String(req.get('x-oracle-context-fields') ?? '')
+        .split(',')
+        .map((f) => f.trim())
+        .filter((f) => (CONTEXT_OPTIONAL_FIELDS as readonly string[]).includes(f)),
+    );
+    /*
+     * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: while the Behavioral
+     * Telemetry Layer's kill-switch condition holds (or a trip is unresolved),
+     * Oracle runs it in shadow — measuring, never acting. Evaluated only for
+     * an Oracle that can receive it.
+     */
+    const killSwitch = accepts.has('behavioralTelemetryMode') ? await getTelemetryKillSwitch() : null;
+    /*
+     * C.7 / C.15: the learner's disposition projection, this persona's
+     * continuity and the Alliance Controller's Stage 7 verdict — each only
+     * for an Oracle that announced it can parse it. SERVER-SIDE ONLY: Oracle
+     * keeps them out of the sealed model context. A FAILED read is not an
+     * empty profile (§1.14): the projection travels as null (nothing is
+     * changed) and the continuity as null (the ordinary opening), never as a
+     * guess about this learner.
+     */
+    const wantsDisposition = accepts.has('dispositionProfile') || accepts.has('allianceContinuity');
+    const dispositionRow = wantsDisposition ? await getDispositionProfile(session.user_id) : undefined;
+    const recentPersonas = accepts.has('allianceContinuity') ? await listRecentPersonaSessions(session.user_id, session.id) : null;
+    const allianceContinuity =
+      accepts.has('allianceContinuity') && dispositionRow !== undefined && recentPersonas !== null
+        ? decideContinuity(dispositionRow, recentPersonas, session.character as 'dina' | 'liruf' | 'rho' | 'zara', new Date())
+        : null;
+    const allianceKillSwitch = accepts.has('allianceMode') ? await getAllianceKillSwitch() : null;
+    /*
+     * C.11 Appendix F Stage 7: the spaced-review router's automatic rollback
+     * verdict — evaluated only for an Oracle that can receive it.
+     */
+    const spacedReviewSwitch = accepts.has('spacedReviewMode') ? await getSpacedReviewKillSwitch() : null;
+    /*
+     * C.17: the dialogue register. The band is derived HERE from Core's own
+     * age evidence (the birth date never travels); the variant comes from the
+     * adults-only H.7 experiment or is the SPEC's calibrated default. Anything
+     * unexpected sends null — Oracle then uses the tier fallback, never a
+     * guess about this learner's age.
+     */
+    let dialogueCalibration: DialogueCalibration | null = null;
+    if (accepts.has('dialogueCalibration')) {
+      try {
+        const { band, age } = dialogueBandFor({ birthDate: calibration.birthDate, screening, tier: session.tier });
+        const dialogueSwitch = await getDialogueKillSwitch();
+        dialogueCalibration = await resolveDialogueCalibration({
+          userId: session.user_id,
+          band,
+          age,
+          roles,
+          screening,
+          eligibleBands: getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS,
+          rollback: dialogueSwitch.rollback,
+        });
+      } catch (error) {
+        console.error('[tutor] dialogue calibration could not be decided — the tier fallback applies:', error);
+        dialogueCalibration = null;
+      }
+    }
+
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
       skillKeys: row.summary.skillKeys.slice(0, 5),
@@ -621,6 +769,15 @@ function internalRouter(): Router {
       intelDegraded,
       sessionPlan: pedagogyPlan?.plan ?? null,
       kcStates: pedagogyPlan?.kcStates ?? null,
+      ...(accepts.has('opening') ? { opening } : {}),
+      ...(killSwitch !== null ? { behavioralTelemetryMode: killSwitch.mode } : {}),
+      ...(accepts.has('dispositionProfile')
+        ? { dispositionProfile: dispositionRow ? toOracleProjection(dispositionRow) : null }
+        : {}),
+      ...(accepts.has('allianceContinuity') ? { allianceContinuity } : {}),
+      ...(allianceKillSwitch !== null ? { allianceMode: allianceKillSwitch.mode } : {}),
+      ...(spacedReviewSwitch !== null ? { spacedReviewMode: spacedReviewSwitch.mode } : {}),
+      ...(accepts.has('dialogueCalibration') ? { dialogueCalibration } : {}),
     });
   });
 
@@ -1146,6 +1303,29 @@ function internalRouter(): Router {
     .min(1)
     .max(8);
 
+  /*
+   * C.18 — the Mentor turn's honesty facts (answer-reveal and anti-
+   * sycophancy instrumentation). HAND-MIRRORED from Oracle's `TurnHonesty`
+   * (oracle/src/tutor/feedbackHonesty.ts) and the `tutor_turn_honesty`
+   * CHECK lists; `npm run honesty:check` (root) keeps the three identical.
+   * Strict inside, optional outside: an Oracle build that predates it sends
+   * none and nothing changes.
+   */
+  const TurnHonestyBody = z
+    .object({
+      sequenceKind: z.enum(['hint_ladder', 'repair', 'open_activity', 'none']),
+      hintLevel: z.enum(['reask', 'indirect', 'misconception', 'fill_blank', 'tell']).nullable(),
+      revealSanctioned: z.boolean(),
+      revealSelfAnswered: z.boolean(),
+      revealPhrase: z.boolean(),
+      openSegmentId: z.string().min(1).max(64).nullable(),
+      verdictContext: z.enum(['after_incorrect', 'after_correct', 'after_unsound_claim']).nullable(),
+      falseAffirmationCaught: z.boolean(),
+      falseAffirmationDelivered: z.boolean(),
+      praise: z.enum(['specific', 'generic']).nullable(),
+    })
+    .strict();
+
   const TurnBody = z.object({
     sessionId: z.string().uuid(),
     seq: z.number().int().nonnegative(),
@@ -1175,12 +1355,32 @@ function internalRouter(): Router {
     roleplayScene: z.string().min(1).max(64).nullish(),
     /** Class III `point_at` (2026-09-04): the array index `action: "point"` reached for, if any. */
     pointAt: z.number().int().min(0).nullish(),
+    /** C.18: see `TurnHonestyBody`. Only meaningful on a tutor turn. */
+    honesty: TurnHonestyBody.nullish(),
   });
 
   router.post('/turns', async (req, res) => {
     const parsed = TurnBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid turn');
     const recorded = await insertTutorTurn(parsed.data);
+
+    /*
+     * C.18: the Mentor-integrity row (tutor_turn_honesty), with Core's own
+     * key-based reveal check. Best-effort and independent of the turn write,
+     * like the plan save below: a lost honesty row costs the dashboard one
+     * data point, never the learner a reported failure.
+     */
+    if (recorded && parsed.data.speaker === 'tutor' && parsed.data.honesty) {
+      const honestyRecorded = await recordTurnHonesty({
+        sessionId: parsed.data.sessionId,
+        turnSeq: parsed.data.seq,
+        text: parsed.data.text,
+        honesty: parsed.data.honesty,
+      }).catch(() => false);
+      if (!honestyRecorded) {
+        console.warn(`[tutor] honesty row did not land for session ${parsed.data.sessionId} turn ${parsed.data.seq}`);
+      }
+    }
 
     /*
      * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): a turn that drew
@@ -1392,7 +1592,16 @@ function internalRouter(): Router {
   const TrajectoryStepBody = z
     .object({
       turnSeq: z.number().int().min(1),
-      eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'entry_opened']),
+      /*
+       * `stated_misconception` was always in Oracle's own vocabulary
+       * (`oracle/src/session/trajectory.ts` records it for every learner
+       * turn that states a wrong idea) and never in this one, so every
+       * session containing one had its WHOLE batch refused with a 400 — the
+       * steps most relevant to C.10's remediation evidence were exactly the
+       * ones that never landed. Accepted now; the DB CHECK is widened by the
+       * matching contract migration (`*_trajectory_stated_misconception_kind.sql`).
+       */
+      eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'stated_misconception', 'entry_opened']),
       // Never null in practice — the controller always seeds a real strategy
       // before `decide()` can be called at all — but the wire shape is not
       // where that invariant should be enforced twice; Zod validates the
@@ -1406,8 +1615,25 @@ function internalRouter(): Router {
       misconceptionCode: z.string().min(1).max(64).nullable(),
       kcId: z.uuid().nullable(),
       kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
+      /*
+       * C.10 — the evidence behind a consequential decision (Extended
+       * Mastery Engine event log). Optional so a batch from an Oracle build
+       * that predates them still lands; when present they are validated as
+       * a unit (all three set, or all three null) by the refine below.
+       */
+      evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().optional(),
+      evidenceObservations: z.number().int().min(0).max(100).nullable().optional(),
+      evidenceRequired: z.number().int().min(1).max(5).nullable().optional(),
+      masteryRevoked: z.boolean().optional(),
     })
-    .strict();
+    .strict()
+    .refine(
+      (step) =>
+        (step.evidenceRule ?? null) === null
+          ? (step.evidenceObservations ?? null) === null && (step.evidenceRequired ?? null) === null
+          : step.evidenceObservations != null && step.evidenceRequired != null,
+      { message: 'evidenceRule, evidenceObservations and evidenceRequired travel together' },
+    );
 
   // Capped generously above anything a real 25-minute session budget could
   // ever produce (idle-nudge/listen-silence floors alone put real sessions
@@ -1446,6 +1672,41 @@ function internalRouter(): Router {
     turnCount: z.number().int().nonnegative(),
     segmentCount: z.number().int().nonnegative(),
     costUsd: z.number().nonnegative(),
+    /*
+     * C.16 / C.8 / C.12 (Appendix F §1.1–1.2). OPTIONAL so an Oracle deployed
+     * before this Core still closes; each is validated against its closed
+     * vocabulary (hand-mirrored — `npm run session-end:check`), and a bad
+     * value refuses the close like any other malformed field.
+     */
+    closingScript: z.enum(CLOSING_SCRIPTS).optional(),
+    opening: z.enum(SESSION_OPENINGS).optional(),
+    endSignal: SessionEndReportBody.optional(),
+    /*
+     * C.9/C.19 (Appendix F §1.2): the Behavioral Telemetry Layer's counts and
+     * firings. OPTIONAL (an older Oracle, or the layer switched off); strict
+     * inside, so an emotion label or an unknown outcome refuses the close.
+     */
+    behavioralTelemetry: BehavioralTelemetryReportBody.optional(),
+    /*
+     * C.15 / C.14 / C.7 (Appendix F §1.2): the Alliance Controller's record,
+     * the self-explanation events and this session's disposition
+     * observations. OPTIONAL (an older Oracle, or a component switched off);
+     * strict inside, so an emotion label or the learner's words refuse the
+     * close.
+     */
+    alliance: AllianceReportBody.optional(),
+    selfExplanation: SelfExplanationReportBody.optional(),
+    disposition: DispositionObservationBody.optional(),
+    /*
+     * C.11 / C.17 (Appendix F §1.1–1.2): the spaced-review routing decisions
+     * with the inputs the rule read, and the dialogue register the session
+     * ran with its counts. OPTIONAL (an older Oracle, or C.11 switched off);
+     * strict inside, so learner text, an unknown label, a routing that does
+     * not fit its tier or a register that does not fit its variant refuses
+     * the close.
+     */
+    spacedReview: SpacedReviewReportBody.optional(),
+    dialogueCalibration: DialogueCalibrationReportBody.optional(),
   });
 
   router.post('/sessions/:id/close', async (req, res) => {
@@ -1467,6 +1728,101 @@ function internalRouter(): Router {
      * Best-effort after the close: a failed digest costs continuity, not the
      * session record.
      */
+    /*
+     * C.8/C.12: the signal's firings, written only by the close that actually
+     * landed (first close wins, like the row itself). Best-effort: a failed
+     * write costs Trigger Rate data points, never the close.
+     */
+    if (outcome === 'closed' && parsed.data.endSignal && parsed.data.endSignal.events.length > 0) {
+      const owner = await getTutorSession(parsed.data.sessionId);
+      if (owner) {
+        const written = await recordSessionEndSignal({
+          sessionId: owner.id,
+          character: owner.character,
+          events: parsed.data.endSignal.events,
+        });
+        if (!written) console.warn(`[tutor] session-end signal NOT recorded for session ${owner.id}`);
+      }
+    }
+
+    /*
+     * C.9/C.19: the telemetry firings, written only by the close that
+     * actually landed. Best-effort: a failed write costs Repair Initiation
+     * data points, never the close.
+     */
+    const telemetry = parsed.data.behavioralTelemetry;
+    if (outcome === 'closed' && telemetry && telemetry.events.length > 0) {
+      const owner = await getTutorSession(parsed.data.sessionId);
+      if (owner) {
+        const written = await recordTelemetryFirings({
+          sessionId: owner.id,
+          character: owner.character,
+          events: telemetry.events,
+        });
+        if (!written) console.warn(`[tutor] behavioral-telemetry firings NOT recorded for session ${owner.id}`);
+      }
+    }
+
+    /*
+     * C.15 / C.14 / C.7: the alliance record, the self-explanation ledger and
+     * the disposition profile, written only by the close that actually
+     * landed. Best-effort: a failed write costs metric data points or one
+     * session's contribution to the profile, never the close.
+     */
+    if (outcome === 'closed') {
+      const owner = await getTutorSession(parsed.data.sessionId);
+      if (owner) {
+        if (parsed.data.alliance || parsed.data.selfExplanation) {
+          const written = await recordAllianceClose({
+            sessionId: owner.id,
+            character: owner.character,
+            alliance: parsed.data.alliance,
+            selfExplanation: parsed.data.selfExplanation,
+          });
+          if (!written) console.warn(`[tutor] alliance / self-explanation record NOT fully written for session ${owner.id}`);
+        }
+        const telemetryEvents = parsed.data.behavioralTelemetry?.events;
+        const answered = (telemetryEvents ?? []).filter((e) => e.outcome === 'aligned' || e.outcome === 'misaligned');
+        const seEvents = (parsed.data.selfExplanation?.events ?? []).filter(
+          (e) => e.mode === 'act' && e.firstQuality !== null && e.firstQuality !== 'unanswered' && e.firstQuality !== 'help',
+        );
+        const folded = await recordDispositionClose(owner.user_id, parsed.data.disposition ?? null, {
+          character: owner.character as 'dina' | 'liruf' | 'rho' | 'zara',
+          closeReason: parsed.data.closeReason,
+          endedAt: new Date().toISOString(),
+          disengagementFired: telemetryEvents === undefined ? null : telemetryEvents.length > 0,
+          checkInMisaligned: answered.length === 0 ? null : answered.some((e) => e.outcome === 'misaligned'),
+          selfExplanationPrompts: seEvents.length,
+          selfExplanationFirstPass: seEvents.filter((e) => e.firstQuality === 'concept').length,
+        });
+        if (!folded) console.warn(`[tutor] disposition profile NOT updated for session ${owner.id}`);
+        /*
+         * C.11: the routing log, and the hand-off of every knowledge component
+         * the session did not retire to the cross-session scheduler. C.17: the
+         * register row. Best-effort: a failed write costs audit rows or one
+         * early review, never the close.
+         */
+        if (parsed.data.spacedReview) {
+          const routed = await recordSpacedReviewClose({
+            sessionId: owner.id,
+            userId: owner.user_id,
+            character: owner.character,
+            report: parsed.data.spacedReview,
+            closedAt: new Date(),
+          });
+          if (!routed.recorded) console.warn(`[tutor] spaced-review routing NOT fully recorded for session ${owner.id}`);
+        }
+        if (parsed.data.dialogueCalibration) {
+          const written = await recordDialogueCalibrationClose({
+            sessionId: owner.id,
+            character: owner.character,
+            report: parsed.data.dialogueCalibration,
+          });
+          if (!written) console.warn(`[tutor] dialogue calibration NOT recorded for session ${owner.id}`);
+        }
+      }
+    }
+
     if (closed) {
       const session = await getTutorSession(parsed.data.sessionId);
       if (session) {
@@ -1590,6 +1946,33 @@ function internalRouter(): Router {
     return ok(res, status);
   });
 
+  /*
+   * C.21 / C.24: ONE PASS OF THE EVALUATION LOOP (Appendix E §3.1 Tier 3).
+   * Scores every ended, unscored session against the transcript rubric,
+   * recomputes every consolidated signal, opens or refreshes flags for the
+   * named owners, and stores the snapshot the staff dashboard reads.
+   * Called hourly by .github/workflows/mentor-evaluation-loop.yml from inside
+   * the container (the key never leaves it). No model call: zero spend.
+   * A pass that could not read everything answers 200 with status 'partial'
+   * (and says what it could not do); one that could not record itself is a 502.
+   */
+  const EvaluationBody = z.object({ limit: z.number().int().min(1).max(5000).default(500) }).strict();
+  router.post('/evaluation/run', async (req, res) => {
+    const parsed = EvaluationBody.safeParse(req.body ?? {});
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
+    const result = await runEvaluationPass({ trigger: 'schedule', limit: parsed.data.limit });
+    if (result.status === 'failed') return fail(res, 502, 'DATA_UNAVAILABLE', 'The evaluation pass could not record its run');
+    return ok(res, {
+      status: result.status,
+      runId: result.runId,
+      scored: result.scoring.scored,
+      failed: result.scoring.failed,
+      backlogBefore: result.scoring.backlogBefore,
+      signals: result.signals,
+      flags: result.flags,
+    });
+  });
+
   router.post('/retention/purge', async (req, res) => {
     const parsed = PurgeBody.safeParse(req.body ?? {});
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
@@ -1607,6 +1990,18 @@ function internalRouter(): Router {
       );
     }
     /*
+     * C.7 (S06.15 lane review): the learner disposition profile's retention
+     * (a profile not updated for 365 days is deleted) rides this nightly
+     * sweep, so the promise has a scheduled job and not only an operator
+     * command. It is reported, never swallowed: `null` means the delete could
+     * not run (the workflow warns), which is different from "nothing due".
+     * It does not fail the session sweep, which has already committed.
+     */
+    const dispositionProfilesPurged = await purgeStaleDispositionProfiles();
+    if (dispositionProfilesPurged === null) {
+      console.error('[tutor-retention] disposition-profile retention FAILED — stale profiles were not deleted this run');
+    }
+    /*
      * ORACLE.md §15.2 item 4 (closed 2026-08-31): the sweep's own monitoring.
      * Written on every reply that reaches here — INCLUDING a batch that
      * deletes zero sessions — because "ran and found nothing due" and "never
@@ -1620,6 +2015,7 @@ function internalRouter(): Router {
       audioDeleted: result.audioDeleted,
       audioFailed: result.audioFailed,
       audioRetained: result.audioRetained,
+      dispositionProfilesPurged,
     });
     if (!audited) {
       // The purge already committed, so this must not become a caller-facing
@@ -1627,7 +2023,7 @@ function internalRouter(): Router {
       // staleness check this exists to feed. audit_logs is the only record.
       console.error('[tutor-retention] audit write FAILED — the sweep ran but will not show as having run');
     }
-    return ok(res, result);
+    return ok(res, { ...result, dispositionProfilesPurged });
   });
 
   const SegmentRequestBody = z.object({
@@ -1799,6 +2195,30 @@ function internalRouter(): Router {
           excludeSegmentIds: alreadyServed,
         });
       }
+      let route: LadderRoute = candidate ? 'named_skill' : 'none';
+
+      /*
+       * C.6: THE CURATED PACK FOR THIS EXACT KNOWLEDGE COMPONENT.
+       *
+       * A KC that no published topic teaches (`kc.skill_key` null) had no
+       * human-approved content at all, so every activity about it was live
+       * generation: the highest-predictability live demand there is. A
+       * curated pack may target the KC itself (`kc:<kc key>`), and it is
+       * tried before the prerequisite and frontier rungs because it is about
+       * the exact KC the evidence will be filed under.
+       */
+      const activeKc = parsed.data.kcId ? kcCatalog?.find((k) => k.id === parsed.data.kcId) : undefined;
+      if (!candidate && activeKc?.key) {
+        candidate = await serveFromBank({
+          skillKey: `kc:${activeKc.key}`,
+          tier: session.tier,
+          locale: session.locale,
+          preferredTypes: parsed.data.preferredTypes,
+          difficulty: parsed.data.difficulty,
+          excludeSegmentIds: alreadyServed,
+        });
+        if (candidate) route = 'kc_pack';
+      }
 
       /*
        * THE GRAPH EARNS ITS KEEP: A PREREQUISITE THAT DOES HAVE CONTENT.
@@ -1830,12 +2250,33 @@ function internalRouter(): Router {
         const [edges, kcs] = await Promise.all([getKcEdges(), kcCatalog ?? getActiveKcs()]);
         if (edges && kcs) {
           const byId = new Map(kcs.map((k) => [k.id, k]));
-          const prerequisiteKeys = edges
+          const prerequisites = edges
             .filter((e) => e.dependent_kc_id === parsed.data.kcId)
-            .map((e) => byId.get(e.prerequisite_kc_id)?.skill_key)
-            .filter((k): k is string => typeof k === 'string' && k !== '');
+            .map((e) => byId.get(e.prerequisite_kc_id))
+            .filter((k): k is KcRow => k !== undefined);
 
-          for (const key of prerequisiteKeys) {
+          for (const prerequisite of prerequisites) {
+            const key = typeof prerequisite.skill_key === 'string' && prerequisite.skill_key !== '' ? prerequisite.skill_key : null;
+            // C.6: a prerequisite with no published topic may still have a
+            // curated pack of its own.
+            if (key === null) {
+              if (prerequisite.key) {
+                candidate = await serveFromBank({
+                  skillKey: `kc:${prerequisite.key}`,
+                  tier: session.tier,
+                  locale: session.locale,
+                  preferredTypes: parsed.data.preferredTypes,
+                  difficulty: parsed.data.difficulty,
+                  excludeSegmentIds: alreadyServed,
+                });
+              }
+              if (candidate) {
+                route = 'prerequisite';
+                console.warn(`[tutor] no content for the active KC; served its prerequisite pack kc:${prerequisite.key} instead`);
+                break;
+              }
+              continue;
+            }
             const fallbackSkill = await resolveSkill(key);
             if (fallbackSkill) {
               candidate = await serveFromCatalog({
@@ -1867,7 +2308,18 @@ function internalRouter(): Router {
                 excludeSegmentIds: alreadyServed,
               });
             }
+            if (!candidate && prerequisite.key) {
+              candidate = await serveFromBank({
+                skillKey: `kc:${prerequisite.key}`,
+                tier: session.tier,
+                locale: session.locale,
+                preferredTypes: parsed.data.preferredTypes,
+                difficulty: parsed.data.difficulty,
+                excludeSegmentIds: alreadyServed,
+              });
+            }
             if (candidate) {
+              route = 'prerequisite';
               console.warn(
                 `[tutor] no content for the active KC; served its prerequisite ${key} instead`,
               );
@@ -1928,6 +2380,7 @@ function internalRouter(): Router {
             });
           }
           if (candidate) {
+            route = 'frontier';
             console.warn(
               `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
             );
@@ -1935,7 +2388,46 @@ function internalRouter(): Router {
         }
       }
 
+      const eventKey = activeKc?.key ? `kc:${activeKc.key}` : namedSkill;
       if (!candidate) {
+        /*
+         * C.5 / Appendix E §3.1.1(b): the human-approved tiers missed. Live
+         * generation is open only while its content-risk category is not
+         * suspended (an uncalibrated or stale judge, a concordance or review
+         * floor breached). The request's category is read from what the
+         * Mentor asked for and the session's safety history; the item's own
+         * category is decided again, and finally, at verification.
+         */
+        const flags = await sessionSafetyFlagCount(session.id);
+        const requestRisk = classifyLiveContent({
+          texts: [parsed.data.framing, parsed.data.rationale],
+          reportedSignals: undefined,
+          // An unreadable safety history is treated as a flagged one.
+          sessionSafetyFlags: flags ?? 1,
+        });
+        const gate = liveGenerationOpen(await getLiveContentGate(), requestRisk.category);
+        if (!gate.open) {
+          void recordLadderEvent({
+            outcome: 'live_suspended',
+            route: 'none',
+            kcId: parsed.data.kcId ?? null,
+            skillKey: eventKey,
+            tier: session.tier,
+            locale: session.locale,
+            riskCategory: requestRisk.category,
+            reason: gate.reason,
+          });
+          return ok(res, { needsGeneration: false, liveSuspended: true, reason: gate.reason });
+        }
+        void recordLadderEvent({
+          outcome: 'needs_generation',
+          route: 'none',
+          kcId: parsed.data.kcId ?? null,
+          skillKey: eventKey,
+          tier: session.tier,
+          locale: session.locale,
+          riskCategory: requestRisk.category,
+        });
         return ok(res, {
           needsGeneration: true,
           skillKey: parsed.data.skillKey,
@@ -1948,6 +2440,16 @@ function internalRouter(): Router {
 
       candidate.provenance = stampPedagogy(candidate.provenance, parsed.data);
       const result = await persistAndServe(res, session.id, candidate, session.tier);
+      if (result !== 'conflict') {
+        void recordLadderEvent({
+          outcome: candidate.origin === 'bank' ? 'bank' : 'catalog',
+          route,
+          kcId: parsed.data.kcId ?? null,
+          skillKey: eventKey,
+          tier: session.tier,
+          locale: session.locale,
+        });
+      }
       if (result !== 'conflict') return result;
       // A concurrent request already claimed this exact candidate for this
       // session (migration 0064's fresh re-check) — loop and reselect
@@ -1979,9 +2481,54 @@ function internalRouter(): Router {
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
 
     const segment = parsed.data.segment as unknown as SegmentBase;
+    const ladderEvent = (
+      outcome: 'live_served' | 'live_refused',
+      risk: ContentRiskCategory | null,
+      reason: Parameters<typeof recordLadderEvent>[0]['reason'] = null,
+    ) =>
+      void recordLadderEvent({
+        outcome,
+        route: 'verify',
+        kcId: parsed.data.kcId ?? null,
+        skillKey: typeof parsed.data.provenance.skill_key === 'string' ? parsed.data.provenance.skill_key : null,
+        tier: session.tier,
+        locale: session.locale,
+        riskCategory: risk,
+        reason,
+      });
     const verification = verifyGeneratedSegment(segment, session.tier);
     if (!verification.ok) {
+      ladderEvent('live_refused', null, 'verification_failed');
       return ok(res, { accepted: false, failures: verification.failures });
+    }
+
+    /*
+     * C.5: THE GOVERNANCE GATE (Appendix E §3.1.1). Core decides the item's
+     * content-risk category itself (its own lexicon over the item and the
+     * rationale, the session's recorded safety flags) and takes the union
+     * with what Oracle reported, so a report can raise the category and
+     * never lower it. The item is served only if that category is not
+     * suspended and the judge that approved it is the calibrated one; the
+     * sampling rate is the category's current (baseline or elevated) rate.
+     */
+    const flags = await sessionSafetyFlagCount(session.id);
+    const risk = classifyLiveContent({
+      texts: [
+        collectSegmentProse(segment),
+        typeof parsed.data.provenance.rationale === 'string' ? parsed.data.provenance.rationale : '',
+      ],
+      reportedSignals: parsed.data.provenance.risk_signals,
+      sessionSafetyFlags: flags ?? 1,
+    });
+    const admission = admitLiveCandidate(
+      await getLiveContentGate(),
+      risk.category,
+      parsed.data.provenance.judge_model,
+      parsed.data.provenance.judge_prompt_hash,
+    );
+    if (!admission.admitted) {
+      ladderEvent('live_refused', risk.category, admission.reason);
+      return ok(res, { accepted: false, failures: [`live generation is not admitted: ${admission.reason}`] });
     }
 
     const candidate: LadderCandidate = {
@@ -1990,9 +2537,28 @@ function internalRouter(): Router {
       segment,
       answer: (segment.answer as Record<string, unknown> | undefined) ?? null,
       provenance: stampPedagogy(
-        { ...parsed.data.provenance, tier: 3, verification: verification.failures },
+        {
+          ...parsed.data.provenance,
+          tier: 3,
+          verification: verification.failures,
+          // Core's final classification replaces whatever Oracle reported.
+          risk_category: risk.category,
+          risk_signals: risk.signals,
+          sampling: { rate: admission.rate, elevated: admission.elevated },
+          calibration_id: admission.calibrationId,
+        },
         parsed.data,
       ),
+    };
+    const live = {
+      riskCategory: risk.category,
+      riskSignals: risk.signals,
+      sampleRate: admission.rate,
+      elevated: admission.elevated,
+      judgeModel: String(parsed.data.provenance.judge_model),
+      judgePromptHash: String(parsed.data.provenance.judge_prompt_hash),
+      calibrationId: admission.calibrationId,
+      locale: session.locale,
     };
 
     /*
@@ -2006,8 +2572,11 @@ function internalRouter(): Router {
      * to re-run — the candidate is whatever Oracle already generated).
      */
     for (let attempt = 0; attempt < 2; attempt++) {
-      const result = await persistAndServe(res, session.id, candidate, session.tier, verification.keyVerified);
-      if (result !== 'conflict') return result;
+      const result = await persistAndServe(res, session.id, candidate, session.tier, verification.keyVerified, live);
+      if (result !== 'conflict') {
+        if (res.statusCode === 200) ladderEvent('live_served', risk.category);
+        return result;
+      }
     }
     return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
   });
@@ -2318,6 +2887,22 @@ async function persistAndServe(
   candidate: LadderCandidate,
   tier: number,
   keyVerifiedOverride?: boolean,
+  /**
+   * C.5: the governance facts of an admitted LIVE candidate. A live item is
+   * claimed only through the governed function (segment + systematic
+   * sampling decision + log row in one transaction); there is no path that
+   * serves a live item without its sampling record.
+   */
+  live?: {
+    riskCategory: ContentRiskCategory;
+    riskSignals: readonly string[];
+    sampleRate: number;
+    elevated: boolean;
+    judgeModel: string;
+    judgePromptHash: string;
+    calibrationId: string;
+    locale: string;
+  },
 ): Promise<unknown | 'conflict'> {
   // A catalog or bank segment was human-published, so its key is verified by
   // construction. A live one is verified only if re-execution said so.
@@ -2328,21 +2913,48 @@ async function persistAndServe(
   // rather than ever comparing against an empty string.
   const sourceKey = typeof candidate.segment.id === 'string' && candidate.segment.id !== '' ? candidate.segment.id : null;
 
-  const row = await insertTutorSegmentChecked({
-    sessionId,
-    sourceKey,
-    origin: candidate.origin,
-    lessonId: candidate.lessonId,
-    segmentType: candidate.segment.type,
-    payload: candidate.segment as unknown as Record<string, unknown>,
-    answer: candidate.answer,
-    keyVerified,
-    provenance: candidate.provenance,
-    // Sample live segments into the human review queue (/ORACLE.md §7.3). This
-    // does not protect the first learner; it is what catches a SYSTEMATIC
-    // defect before it reaches the thousandth.
-    reviewStatus: candidate.origin === 'live' && shouldSampleForReview() ? 'pending' : null,
-  });
+  if (candidate.origin === 'live' && live === undefined) {
+    // Unreachable by construction; refusing is the only safe answer.
+    return fail(res, 500, 'INTERNAL', 'A live segment reached persistence without its governance record');
+  }
+  /*
+   * Live items are sampled into the staff review queue by the governed
+   * claim (C.5): systematically, at the category's current rate, never
+   * below the Appendix E floor. This does not protect the first learner; it
+   * is what catches a SYSTEMATIC defect early, and what drives the dynamic
+   * rate and the Stage 7 suspension.
+   */
+  const row = live !== undefined
+    ? await insertLiveSegmentChecked<TutorSegmentRow>({
+        sessionId,
+        sourceKey,
+        segmentType: candidate.segment.type,
+        payload: candidate.segment as unknown as Record<string, unknown>,
+        answer: candidate.answer,
+        keyVerified,
+        provenance: candidate.provenance,
+        riskCategory: live.riskCategory,
+        riskSignals: live.riskSignals,
+        tier,
+        locale: live.locale,
+        sampleRate: live.sampleRate,
+        elevated: live.elevated,
+        judgeModel: live.judgeModel,
+        judgePromptHash: live.judgePromptHash,
+        calibrationId: live.calibrationId,
+      })
+    : await insertTutorSegmentChecked({
+        sessionId,
+        sourceKey,
+        origin: candidate.origin,
+        lessonId: candidate.lessonId,
+        segmentType: candidate.segment.type,
+        payload: candidate.segment as unknown as Record<string, unknown>,
+        answer: candidate.answer,
+        keyVerified,
+        provenance: candidate.provenance,
+        reviewStatus: null,
+      });
   if (row === 'conflict') return 'conflict';
   if (row === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
 
@@ -2384,10 +2996,6 @@ async function persistAndServe(
 function servedDifficultyOf(segment: SegmentBase): number | null {
   const value = (segment as { difficulty?: unknown }).difficulty;
   return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5 ? value : null;
-}
-
-function shouldSampleForReview(): boolean {
-  return Math.random() < getConfig().TUTOR_LIVE_REVIEW_SAMPLE_RATE;
 }
 
 interface CourseTitleRow {
@@ -3013,6 +3621,92 @@ export function tutorRouter(): Router {
     if (calibration.tier !== session.tier) return fail(res, 409, 'SESSION_AGE_CHANGED', 'Start a session with the confirmed teaching register');
     const { url, expiresAt } = tutorSocketUrl(session.id, user.id);
     return ok(res, { sessionId: session.id, socketUrl: url, socketExpiresAt: expiresAt });
+  });
+
+  /*
+   * C.15 THE END-OF-SESSION BOND PROXY: "did I get what you were going for
+   * today?" (Appendix D §3.4; Appendix F §1.2 Alliance Bond Proxy Score).
+   * The learner answers it on the closing surface AFTER the session closed.
+   * Their own session only (a guardian answers nothing for the child), once,
+   * within a day of the close, and never after a safety stop — nothing on
+   * that screen may invite the learner back into the lesson or ask them to
+   * rate it.
+   */
+  const AllianceCheckBody = z.object({ answer: z.enum(BOND_PROXY_ANSWERS) }).strict();
+
+  router.post('/sessions/:id/alliance-check', async (req, res) => {
+    const sessionId = z.string().uuid().safeParse(req.params.id);
+    if (!sessionId.success) return fail(res, 400, VALIDATION, 'Invalid session id');
+    const body = AllianceCheckBody.safeParse(req.body);
+    if (!body.success) return fail(res, 400, VALIDATION, 'Choose one answer');
+    const user = authedUser(res);
+
+    const session = await getTutorSession(sessionId.data);
+    if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
+    if (session.user_id !== user.id) return fail(res, 403, 'FORBIDDEN', 'This is not your session');
+    if (session.ended_at === null) return fail(res, 409, 'SESSION_OPEN', 'The session has not ended yet');
+    if (session.close_reason === 'safety_stop') return fail(res, 409, 'NOT_ASKED', 'This session does not ask for feedback');
+    if (Date.now() - Date.parse(session.ended_at) > ALLIANCE_THRESHOLDS.bondProxyWindowHours * 3_600_000) {
+      return fail(res, 409, 'TOO_LATE', 'This question has closed');
+    }
+    const row = await getAllianceRow(session.id);
+    if (row === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the session record');
+    if (row === null) return fail(res, 409, 'NOT_TRACKED', 'This session did not record the question');
+    if (row.bond_proxy !== null) return fail(res, 409, 'ALREADY_ANSWERED', 'Already answered');
+    const written = await writeBondProxy(row.id, body.data.answer);
+    if (written === 'failed') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save the answer');
+    if (written === 'already') return fail(res, 409, 'ALREADY_ANSWERED', 'Already answered');
+    // Persona rapport (C.7), best-effort: the metric row is the record.
+    const folded = await recordDispositionBondProxy(user.id, session.character as 'dina' | 'liruf' | 'rho' | 'zara', body.data.answer);
+    if (!folded) console.warn(`[tutor] bond proxy not folded into the disposition profile for session ${session.id}`);
+    return ok(res, { recorded: true });
+  });
+
+  /*
+   * C.7 THE DISPOSITION PROFILE, READABLE AND RESETTABLE (Appendix D §2.6:
+   * interpretable, never a black box; the learner-memory boundary). Closed
+   * labels and numbers only. The learner reads their own; a verified
+   * guardian reads their child's. A reset follows the memory-review rule
+   * (OD-18): a child's profile is reset by their verified guardian; a teen
+   * without a guardian link and an adult reset their own.
+   */
+  router.get('/disposition', async (_req, res) => {
+    const row = await getDispositionProfile(authedUser(res).id);
+    if (row === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning profile');
+    return ok(res, explainProfile(row));
+  });
+
+  router.delete('/disposition', async (_req, res) => {
+    const user = authedUser(res);
+    const reviewer = await classifyMemoryReview(user.id);
+    if (reviewer === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve who manages this profile');
+    if (reviewer === 'guardian-review') return fail(res, 403, 'GUARDIAN_MANAGED', 'A verified Tutor manages this profile');
+    if (reviewer === 'hold') return fail(res, 403, 'AGE_EVIDENCE_REQUIRED', 'Complete the age check first');
+    if (!(await deleteDispositionProfile(user.id))) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not reset the learning profile');
+    return ok(res, { reset: true });
+  });
+
+  router.get('/kids/:kidUserId/disposition', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const guardian = await isVerifiedGuardian(authedUser(res).id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    const row = await getDispositionProfile(kidUserId.data);
+    if (row === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning profile');
+    return ok(res, explainProfile(row));
+  });
+
+  router.delete('/kids/:kidUserId/disposition', async (req, res) => {
+    const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
+    if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const user = authedUser(res);
+    const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
+    if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
+    if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
+    if (!(await deleteDispositionProfile(kidUserId.data))) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not reset the learning profile');
+    await insertAuditLog(user.id, 'mentor.disposition_profile.reset_by_guardian', 'tutor', { learner: kidUserId.data });
+    return ok(res, { reset: true });
   });
 
   /** A full transcript, for replay (/ORACLE.md §12). Owner or verified guardian. */

@@ -385,14 +385,20 @@ describe('cross-surface consistency: the Mentor map and the course path never di
     let seed = 20260925 + age;
     const random = (): number => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
     for (let trial = 0; trial < 25; trial++) {
-      const rows = new Map<string, { p: number; attempts: number }>();
-      for (const kc of kcs) if (random() < 0.6) rows.set(kc, { p: random(), attempts: Math.floor(random() * 6) });
+      const rows = new Map<string, { p: number; attempts: number; streak: number }>();
+      for (const kc of kcs) {
+        if (random() >= 0.6) continue;
+        const attempts = Math.floor(random() * 6);
+        // C.10: the trailing run of correct answers never exceeds the attempts behind it.
+        rows.set(kc, { p: random(), attempts, streak: Math.min(attempts, Math.floor(random() * 4)) });
+      }
       const pOf = (kc: string): number => rows.get(kc)?.p ?? 0;
       const mentorState = new Map(kcs.map((kc) => [kc, deriveNodeState({
         pKnown: pOf(kc),
         attempts: rows.get(kc)?.attempts ?? 0,
         reviewDue: false,
         prereqsMet: (built.prerequisites.get(kc) ?? []).every((pre) => pOf(pre) >= MASTERY_PREREQ_THRESHOLD),
+        consecutiveCorrect: rows.get(kc)?.streak ?? 0,
       })]));
       const mentorPKnown = new Map([...rows].map(([kc, row]) => [kc, row.p]));
       const tree = applyCoursePathway(linearTree(built), inputs(built, ageOf(age), { kcPrerequisites: built.prerequisites, mentorPKnown }));

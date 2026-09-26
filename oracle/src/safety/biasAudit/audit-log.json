@@ -1,0 +1,301 @@
+{
+  "entries": [
+    {
+      "date": "2026-09-25",
+      "trigger": "initial",
+      "components": {
+        "telemetry.hedging": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.terse": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.verbosity": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.off_topic": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.answer_key": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.help_request": {
+          "hash": "17ac0dcd20a0930f",
+          "status": "passed"
+        },
+        "check_in.reply": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "session_end.stop_reply": {
+          "hash": "a0b5b5f474943127",
+          "status": "passed"
+        },
+        "moderation.input_classifier": {
+          "hash": "f84067a1ccc62d49",
+          "status": "passed"
+        },
+        "moderation.output_deterministic": {
+          "hash": "7db0f0e47fea8eb8",
+          "status": "passed"
+        },
+        "moderation.output_judge": {
+          "hash": "7db0f0e47fea8eb8",
+          "status": "pending_live"
+        },
+        "telemetry.fused_decision": {
+          "hash": "eaff57b121b3c36a",
+          "status": "passed"
+        }
+      },
+      "totals": {
+        "items": 78,
+        "variants": 468,
+        "failures": 0,
+        "knownGaps": 1
+      },
+      "knownGaps": [
+        {
+          "item": "moderation.input_classifier:es-MX:benign-slang",
+          "group": "vernacular",
+          "reason": "Mexican \"pelado\" (a rude or cheeky person) matches the adult-content word list, where it stands for Portuguese \"pelado\" (naked): a benign Mexican sentence gets the scripted adult-content reply and a guardian-visible flag. Pending Safety/Trust decision."
+        }
+      ],
+      "sessions": [
+        {
+          "id": "en-US:disengaging",
+          "ok": true
+        },
+        {
+          "id": "en-US:steady",
+          "ok": true
+        },
+        {
+          "id": "es-MX:frustrated",
+          "ok": true
+        },
+        {
+          "id": "es-MX:steady",
+          "ok": true
+        },
+        {
+          "id": "pt-BR:disengaging",
+          "ok": true
+        }
+      ],
+      "reviewedBy": null,
+      "notes": "First run (S06 wave S06.4). Found 72 differential or accuracy failures across 7 components; all fixed in the same change except one known gap (es-MX 'pelado', pending Safety/Trust decision). Fixture-based; the live model-judge audit is pending owner approval (OD-23)."
+    },
+    {
+      "date": "2026-09-25",
+      "trigger": "material_change",
+      "components": {
+        "telemetry.hedging": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.terse": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.verbosity": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.off_topic": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.answer_key": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.help_request": {
+          "hash": "17ac0dcd20a0930f",
+          "status": "passed"
+        },
+        "check_in.reply": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "session_end.stop_reply": {
+          "hash": "a0b5b5f474943127",
+          "status": "passed"
+        },
+        "self_explanation.quality": {
+          "hash": "a002527066038c42",
+          "status": "passed"
+        },
+        "self_explanation.decision_answer": {
+          "hash": "a002527066038c42",
+          "status": "passed"
+        },
+        "alliance.goal_reply": {
+          "hash": "a002527066038c42",
+          "status": "passed"
+        },
+        "moderation.input_classifier": {
+          "hash": "f84067a1ccc62d49",
+          "status": "passed"
+        },
+        "moderation.output_deterministic": {
+          "hash": "7db0f0e47fea8eb8",
+          "status": "passed"
+        },
+        "moderation.output_judge": {
+          "hash": "7db0f0e47fea8eb8",
+          "status": "pending_live"
+        },
+        "telemetry.fused_decision": {
+          "hash": "eaff57b121b3c36a",
+          "status": "passed"
+        }
+      },
+      "totals": {
+        "items": 96,
+        "variants": 576,
+        "failures": 0,
+        "knownGaps": 1
+      },
+      "knownGaps": [
+        {
+          "item": "moderation.input_classifier:es-MX:benign-slang",
+          "group": "vernacular",
+          "reason": "Mexican \"pelado\" (a rude or cheeky person) matches the adult-content word list, where it stands for Portuguese \"pelado\" (naked): a benign Mexican sentence gets the scripted adult-content reply and a guardian-visible flag. Pending Safety/Trust decision."
+        }
+      ],
+      "sessions": [
+        {
+          "id": "en-US:disengaging",
+          "ok": true
+        },
+        {
+          "id": "en-US:steady",
+          "ok": true
+        },
+        {
+          "id": "es-MX:frustrated",
+          "ok": true
+        },
+        {
+          "id": "es-MX:steady",
+          "ok": true
+        },
+        {
+          "id": "pt-BR:disengaging",
+          "ok": true
+        }
+      ],
+      "reviewedBy": null,
+      "notes": ""
+    },
+    {
+      "date": "2026-09-25",
+      "trigger": "material_change",
+      "components": {
+        "telemetry.hedging": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.terse": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.verbosity": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.off_topic": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.answer_key": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "telemetry.help_request": {
+          "hash": "267809cee06bb034",
+          "status": "passed"
+        },
+        "check_in.reply": {
+          "hash": "036510eaf9512c3c",
+          "status": "passed"
+        },
+        "session_end.stop_reply": {
+          "hash": "a0b5b5f474943127",
+          "status": "passed"
+        },
+        "self_explanation.quality": {
+          "hash": "a002527066038c42",
+          "status": "passed"
+        },
+        "self_explanation.decision_answer": {
+          "hash": "a002527066038c42",
+          "status": "passed"
+        },
+        "alliance.goal_reply": {
+          "hash": "a002527066038c42",
+          "status": "passed"
+        },
+        "moderation.input_classifier": {
+          "hash": "f84067a1ccc62d49",
+          "status": "passed"
+        },
+        "moderation.output_deterministic": {
+          "hash": "7db0f0e47fea8eb8",
+          "status": "passed"
+        },
+        "moderation.output_judge": {
+          "hash": "7db0f0e47fea8eb8",
+          "status": "pending_live"
+        },
+        "telemetry.fused_decision": {
+          "hash": "eaff57b121b3c36a",
+          "status": "passed"
+        }
+      },
+      "totals": {
+        "items": 96,
+        "variants": 576,
+        "failures": 0,
+        "knownGaps": 1
+      },
+      "knownGaps": [
+        {
+          "item": "moderation.input_classifier:es-MX:benign-slang",
+          "group": "vernacular",
+          "reason": "Mexican \"pelado\" (a rude or cheeky person) matches the adult-content word list, where it stands for Portuguese \"pelado\" (naked): a benign Mexican sentence gets the scripted adult-content reply and a guardian-visible flag. Pending Safety/Trust decision."
+        }
+      ],
+      "sessions": [
+        {
+          "id": "en-US:disengaging",
+          "ok": true
+        },
+        {
+          "id": "en-US:steady",
+          "ok": true
+        },
+        {
+          "id": "es-MX:frustrated",
+          "ok": true
+        },
+        {
+          "id": "es-MX:steady",
+          "ok": true
+        },
+        {
+          "id": "pt-BR:disengaging",
+          "ok": true
+        }
+      ],
+      "reviewedBy": null,
+      "notes": ""
+    }
+  ]
+}

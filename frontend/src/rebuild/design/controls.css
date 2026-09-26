@@ -67,6 +67,7 @@
   box-shadow: inset 0 0 0 var(--focus-width) transparent;
 }
 .lf-rebuild .lf-input::placeholder { color: var(--content-muted); opacity: 1; }
+.lf-rebuild .lf-textarea { display: block; min-block-size: calc(var(--target-base) * 2); resize: vertical; overflow-wrap: break-word; }
 .lf-rebuild .lf-input:focus-visible { outline: none; box-shadow: inset 0 0 0 var(--focus-width) var(--focus-color), 0 0 0 var(--spacing-1) var(--primary-soft); }
 .lf-rebuild .lf-input[aria-invalid='true'] { box-shadow: inset 0 0 0 var(--focus-width) var(--error-strong); }
 .lf-rebuild .lf-input[aria-invalid='true']:focus-visible { box-shadow: inset 0 0 0 var(--focus-width) var(--error-strong), 0 0 0 var(--spacing-1) var(--primary-soft); }
@@ -292,6 +293,8 @@
 }
 .lf-rebuild .lf-choice-chip[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); }
 .lf-rebuild .lf-choice-chip:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
+/* Reply chip (08 §2): the button base with a sunken fill, so it keeps a boundary on a surface panel in both themes. */
+.lf-rebuild .lf-reply-chip { background: var(--sunken); overflow-wrap: anywhere; }
 .lf-rebuild .lf-pill { display: inline-flex; align-items: center; max-inline-size: 100%; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); font: var(--type-chip); }
 .lf-rebuild .lf-pill--primary { background: var(--primary); color: var(--on-primary); }
 .lf-rebuild .lf-pill--success { background: var(--success); color: var(--on-success); }

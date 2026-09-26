@@ -76,9 +76,16 @@ const Env = z.object({
     .refine((value) => !value.startsWith('replace-me-'), 'LESSON_ATTEMPT_SECRET must be generated for this environment')
     .optional(),
 
-  // Fraction of live-generated tutor segments queued for post-hoc human
-  // review (/ORACLE.md §7.3). Zero is a valid deployment choice and a bad one.
+  // C.5 / Appendix E §3.1.1: the BASELINE share of live-generated Mentor
+  // activities sampled for post-hoc staff review, per content-risk category.
+  // The floors (15% standard, 50% sensitive) are Tier-1-adjacent: a value
+  // may RAISE the baseline, never lower it — a value below the floor is
+  // ignored (the floor applies) and logged at boot of the gate. Zero, once a
+  // valid choice here, is no longer possible. A quality or safety issue found
+  // by staff raises the rate further, automatically, for that category
+  // (services/pedagogy/liveContentGovernance.ts).
   TUTOR_LIVE_REVIEW_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.15),
+  TUTOR_LIVE_REVIEW_SENSITIVE_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.5),
 
   // The Tutor v3 pedagogical brain (KC graph + BKT + FSRS + session plan,
   // migration 0052). On by default WITH graceful degradation: while 0052 is
@@ -99,6 +106,32 @@ const Env = z.object({
   // add, so it stays off until both are true: an operator switches it on after
   // acceptance and after the migrations are applied, never a deploy by accident.
   COURSE_PATHWAY_ENGINE: z.enum(['linear', 'pathway']).default('linear'),
+
+  // C.11 (Appendix D §2.4): the cross-session scheduler's SHORT HORIZON, in
+  // minutes. A graded attempt within this long of the card's last counted
+  // (spaced) review is a within-session re-exposure: a success does not grow
+  // the card's stability and a second lapse does not collapse it again — the
+  // within-session tier owns that repetition. 0 turns the rule off (every
+  // attempt counts as a spaced review, the pre-C.11 behaviour). Proposed,
+  // pending calibration (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
+  TUTOR_REVIEW_SHORT_HORIZON_MIN: z.coerce.number().int().min(0).max(24 * 60).default(180),
+
+  // C.17: the dialogue bands the age-band calibration A/B experiment may
+  // enrol, comma-separated from young_child,tween,teen,adult. OD-23 / H.7
+  // interim default: ADULTS ONLY until Product and Legal choose wider
+  // experiment ages; every learner outside these bands receives the SPEC's
+  // calibrated register and is never enrolled. Unknown names are ignored.
+  MENTOR_DIALOGUE_EXPERIMENT_BANDS: z
+    .string()
+    .default('adult')
+    .transform((v) =>
+      v
+        .split(',')
+        .map((band) => band.trim())
+        .filter((band): band is 'young_child' | 'tween' | 'teen' | 'adult' =>
+          ['young_child', 'tween', 'teen', 'adult'].includes(band),
+        ),
+    ),
 
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),

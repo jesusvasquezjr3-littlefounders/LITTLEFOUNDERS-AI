@@ -15,6 +15,10 @@
 
 import process from 'node:process';
 import { runPedagogyGym } from '../src/tutor/pedagogyGym.js';
+import { runSessionEndGym } from '../src/tutor/sessionEndGym.js';
+import { runTelemetryGym } from '../src/tutor/telemetryGym.js';
+import { runAllianceGym } from '../src/tutor/allianceGym.js';
+import { runReviewCalibrationGym } from '../src/tutor/reviewCalibrationGym.js';
 
 function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void {
   console.log('== The simulated-student gym: reactive students against the real controller ==');
@@ -34,19 +38,104 @@ function printHuman(reports: ReturnType<typeof runPedagogyGym>['reports']): void
 }
 
 function main(): void {
-  const { reports, ok } = runPedagogyGym();
+  const controller = runPedagogyGym();
+  const { reports } = controller;
+  /*
+   * C.8/C.12: the behavioral-signature session-end signal against Appendix F
+   * Part 3 Stage 2's simulated learners (`src/tutor/sessionEndGym.ts`).
+   */
+  const sessionEnd = runSessionEndGym();
+  /*
+   * C.9/C.19: the Behavioral Telemetry Layer and its check-in against the
+   * same Stage 2 learners (`src/tutor/telemetryGym.ts`), with the suite-wide
+   * Default-to-Inaction floor and the no-emotion-label check.
+   */
+  const telemetry = runTelemetryGym();
+  /*
+   * C.15/C.14: the Alliance Controller (goal agreement, the renegotiation
+   * trigger, persona continuity) and the self-explanation move against the
+   * same Stage 2 learners (`src/tutor/allianceGym.ts`).
+   */
+  const alliance = runAllianceGym();
+  /*
+   * C.11/C.17: the two-tier spaced-review router (with the controller's
+   * re-check detour) and the age-band dialogue calibration against the same
+   * Stage 2 learners (`src/tutor/reviewCalibrationGym.ts`).
+   */
+  const reviewCalibration = runReviewCalibrationGym();
+  const ok = controller.ok && sessionEnd.ok && telemetry.ok && alliance.ok && reviewCalibration.ok;
 
   if (process.argv.includes('--json')) {
-    console.log(JSON.stringify({ ok, reports }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          ok,
+          reports,
+          sessionEnd: sessionEnd.reports,
+          telemetry: {
+            defaultToInaction: telemetry.defaultToInaction,
+            reports: telemetry.reports.map(({ readings: _readings, ...rest }) => rest),
+          },
+          alliance: alliance.reports,
+          reviewCalibration,
+        },
+        null,
+        2,
+      ),
+    );
   } else {
     printHuman(reports);
     console.log('');
-    const totalProblems = reports.reduce((sum, report) => sum + report.problems.length, 0);
+    console.log('== The session-end signal (C.8/C.12) against the simulated learners ==');
+    console.log('');
+    for (const report of sessionEnd.reports) {
+      const offers = report.offers.map((o) => `minute ${o.minute.toFixed(1)}`).join(', ') || 'no offer';
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${offers} (${report.firings} firing(s))`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log('');
+    console.log('== The Behavioral Telemetry Layer and its check-in (C.9/C.19) against the simulated learners ==');
+    console.log('');
+    for (const report of telemetry.reports) {
+      const checkIns = report.checkIns.map((turn) => `turn ${turn}`).join(', ') || 'no check-in';
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${checkIns}`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log(`  default-to-inaction across the suite: ${(telemetry.defaultToInaction * 100).toFixed(1)}% (floor 85%)`);
+    console.log('');
+    console.log('== The Alliance Controller and the self-explanation move (C.15/C.14) against the simulated learners ==');
+    console.log('');
+    for (const report of alliance.reports) {
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${report.why}`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log('');
+    console.log('== The spaced-review router and the dialogue calibration (C.11/C.17) against the simulated learners ==');
+    console.log('');
+    for (const report of reviewCalibration.review) {
+      console.log(
+        `  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${report.decisions} routing decision(s), ${report.detours} re-check(s)`,
+      );
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    for (const report of reviewCalibration.calibration) {
+      console.log(`  ${report.problems.length === 0 ? 'ok  ' : 'FAIL'}  ${report.persona}: ${report.why}`);
+      for (const problem of report.problems) console.log(`        ↳ ${problem}`);
+    }
+    console.log('');
+    const totalProblems =
+      reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      sessionEnd.reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      telemetry.reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      alliance.reports.reduce((sum, report) => sum + report.problems.length, 0) +
+      [...reviewCalibration.review, ...reviewCalibration.calibration].reduce((sum, report) => sum + report.problems.length, 0);
     if (!ok) {
       console.log(`gym:pedagogy FAILED — ${totalProblems} problem(s) across ${reports.length} scenario(s).`);
       console.log('Each of these archetypes is a reactive student; a violation here is a sequence a real session could produce.');
     } else {
-      console.log(`gym:pedagogy OK — ${reports.length} reactive student archetype(s), no guardrail violations.`);
+      console.log(
+        `gym:pedagogy OK — ${reports.length} reactive student archetype(s), ${sessionEnd.reports.length} session-end persona(s), ${telemetry.reports.length} telemetry persona(s), ${alliance.reports.length} alliance persona(s) and ${reviewCalibration.review.length + reviewCalibration.calibration.length} review/calibration persona(s), no guardrail violations.`,
+      );
     }
   }
 

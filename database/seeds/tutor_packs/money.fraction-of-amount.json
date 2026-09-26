@@ -1,0 +1,489 @@
+{
+  "$comment": "Curated activity packs (C.6, tutor-pack.v1). Hand-authored at zero spend (OD-23) for a knowledge component that no published topic teaches, so every activity about it used to be live-generated. Loaded as status \"review\" by `npm --prefix backend run seed:tutor-packs`; a staff member publishes each pack. Contract: docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md section 5.",
+  "contract": "tutor-pack.v1",
+  "kc_key": "money.fraction-of-amount",
+  "demand_pattern": "kc_without_catalog_content",
+  "source": "hand_authored",
+  "packs": [
+    {
+      "tier": 2,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-fraction-amount-t2-en-1",
+          "type": "number_input",
+          "prompt_md": "You have 20 coins and spend half of them. How many coins do you spend?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Half means 2 equal parts. 20 split into 2 equal parts is 10 and 10, so you spend 10 coins.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 10,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-en-2",
+          "type": "quiz_mcq",
+          "prompt_md": "Which is more: half of 12 coins or a quarter of 12 coins?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "The more equal parts you split into, the smaller each part. Half of 12 is 6 coins, a quarter is 3.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Half (6 coins)"
+              },
+              {
+                "id": "b",
+                "text_md": "A quarter, because 4 is more than 2",
+                "rationale_md": "Splitting into 4 parts makes smaller parts. A quarter of 12 is 3 coins; half is 6."
+              },
+              {
+                "id": "c",
+                "text_md": "They are the same",
+                "rationale_md": "Half of 12 is 6 coins and a quarter is 3 coins, so they are different."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-en-3",
+          "type": "number_input",
+          "prompt_md": "What is a third of 15 coins?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "A third means 3 equal parts. 15 split into 3 equal parts is 5, 5 and 5.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-en-4",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "True. 8 split into 4 equal parts is 2, 2, 2 and 2 coins.",
+          "payload": {
+            "statement_md": "A quarter of 8 coins is 2 coins."
+          },
+          "answer": {
+            "is_true": true
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-fraction-amount-t2-es-1",
+          "type": "number_input",
+          "prompt_md": "Tienes 20 monedas y gastas la mitad. ¿Cuántas monedas gastas?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "La mitad son 2 partes iguales. 20 en 2 partes iguales son 10 y 10, así que gastas 10 monedas.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 10,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-es-2",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Qué es más: la mitad de 12 monedas o un cuarto de 12 monedas?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Entre más partes iguales hagas, más pequeña es cada parte. La mitad de 12 son 6 monedas, un cuarto son 3.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "La mitad (6 monedas)"
+              },
+              {
+                "id": "b",
+                "text_md": "Un cuarto, porque 4 es más que 2",
+                "rationale_md": "Repartir en 4 partes hace partes más pequeñas. Un cuarto de 12 son 3 monedas; la mitad son 6."
+              },
+              {
+                "id": "c",
+                "text_md": "Son iguales",
+                "rationale_md": "La mitad de 12 son 6 monedas y un cuarto son 3 monedas, así que son distintas."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-es-3",
+          "type": "number_input",
+          "prompt_md": "¿Cuánto es un tercio de 15 monedas?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Un tercio son 3 partes iguales. 15 en 3 partes iguales son 5, 5 y 5.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-es-4",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Verdadero. 8 en 4 partes iguales son 2, 2, 2 y 2 monedas.",
+          "payload": {
+            "statement_md": "Un cuarto de 8 monedas son 2 monedas."
+          },
+          "answer": {
+            "is_true": true
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-fraction-amount-t2-pt-1",
+          "type": "number_input",
+          "prompt_md": "Você tem 20 moedas e gasta a metade. Quantas moedas você gasta?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Metade são 2 partes iguais. 20 em 2 partes iguais são 10 e 10, então você gasta 10 moedas.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 10,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-pt-2",
+          "type": "quiz_mcq",
+          "prompt_md": "O que é mais: a metade de 12 moedas ou um quarto de 12 moedas?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Quanto mais partes iguais você faz, menor fica cada parte. A metade de 12 são 6 moedas, um quarto são 3.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "A metade (6 moedas)"
+              },
+              {
+                "id": "b",
+                "text_md": "Um quarto, porque 4 é mais que 2",
+                "rationale_md": "Dividir em 4 partes faz partes menores. Um quarto de 12 são 3 moedas; a metade são 6."
+              },
+              {
+                "id": "c",
+                "text_md": "São iguais",
+                "rationale_md": "A metade de 12 são 6 moedas e um quarto são 3 moedas, então são diferentes."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-pt-3",
+          "type": "number_input",
+          "prompt_md": "Quanto é um terço de 15 moedas?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Um terço são 3 partes iguais. 15 em 3 partes iguais são 5, 5 e 5.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t2-pt-4",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Verdadeiro. 8 em 4 partes iguais são 2, 2, 2 e 2 moedas.",
+          "payload": {
+            "statement_md": "Um quarto de 8 moedas são 2 moedas."
+          },
+          "answer": {
+            "is_true": true
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-fraction-amount-t3-en-1",
+          "type": "number_input",
+          "prompt_md": "A game costs 36 coins. You have saved a quarter of it. How many coins have you saved?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "A quarter is 1 of 4 equal parts. 36 ÷ 4 = 9, so you have saved 9 coins.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 9,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-en-2",
+          "type": "number_input",
+          "prompt_md": "What is three quarters of 40 coins?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "One quarter of 40 is 40 ÷ 4 = 10. Three quarters is 3 × 10 = 30 coins.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-en-3",
+          "type": "quiz_mcq",
+          "prompt_md": "From 60 coins, which part gives you the most coins?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Half of 60 is 30, a third is 20 and a quarter is 15. Fewer equal parts give bigger parts.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Half"
+              },
+              {
+                "id": "b",
+                "text_md": "A third",
+                "rationale_md": "A third of 60 is 20 coins, which is less than half (30)."
+              },
+              {
+                "id": "c",
+                "text_md": "A quarter",
+                "rationale_md": "A quarter of 60 is 15 coins. More parts means smaller parts."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-en-4",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 4,
+          "xp": 10,
+          "explanation_md": "True. A third of 30 is 10, so two thirds is 20 coins. Half of 30 is 15, and 20 is more.",
+          "payload": {
+            "statement_md": "Two thirds of 30 coins is more than half of 30 coins."
+          },
+          "answer": {
+            "is_true": true
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-fraction-amount-t3-es-1",
+          "type": "number_input",
+          "prompt_md": "Un juego cuesta 36 monedas. Ya ahorraste un cuarto. ¿Cuántas monedas has ahorrado?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Un cuarto es 1 de 4 partes iguales. 36 ÷ 4 = 9, así que has ahorrado 9 monedas.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 9,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-es-2",
+          "type": "number_input",
+          "prompt_md": "¿Cuánto son tres cuartos de 40 monedas?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Un cuarto de 40 es 40 ÷ 4 = 10. Tres cuartos son 3 × 10 = 30 monedas.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-es-3",
+          "type": "quiz_mcq",
+          "prompt_md": "De 60 monedas, ¿qué parte te da más monedas?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "La mitad de 60 son 30, un tercio son 20 y un cuarto son 15. Menos partes iguales dan partes más grandes.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "La mitad"
+              },
+              {
+                "id": "b",
+                "text_md": "Un tercio",
+                "rationale_md": "Un tercio de 60 son 20 monedas, menos que la mitad (30)."
+              },
+              {
+                "id": "c",
+                "text_md": "Un cuarto",
+                "rationale_md": "Un cuarto de 60 son 15 monedas. Más partes hacen partes más pequeñas."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-es-4",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 4,
+          "xp": 10,
+          "explanation_md": "Verdadero. Un tercio de 30 es 10, así que dos tercios son 20 monedas. La mitad de 30 es 15, y 20 es más.",
+          "payload": {
+            "statement_md": "Dos tercios de 30 monedas son más que la mitad de 30 monedas."
+          },
+          "answer": {
+            "is_true": true
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-fraction-amount-t3-pt-1",
+          "type": "number_input",
+          "prompt_md": "Um jogo custa 36 moedas. Você já guardou um quarto. Quantas moedas você já guardou?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Um quarto é 1 de 4 partes iguais. 36 ÷ 4 = 9, então você já guardou 9 moedas.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 9,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-pt-2",
+          "type": "number_input",
+          "prompt_md": "Quanto é três quartos de 40 moedas?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Um quarto de 40 é 40 ÷ 4 = 10. Três quartos são 3 × 10 = 30 moedas.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-pt-3",
+          "type": "quiz_mcq",
+          "prompt_md": "De 60 moedas, qual parte dá mais moedas?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "A metade de 60 são 30, um terço são 20 e um quarto são 15. Menos partes iguais dão partes maiores.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "A metade"
+              },
+              {
+                "id": "b",
+                "text_md": "Um terço",
+                "rationale_md": "Um terço de 60 são 20 moedas, menos que a metade (30)."
+              },
+              {
+                "id": "c",
+                "text_md": "Um quarto",
+                "rationale_md": "Um quarto de 60 são 15 moedas. Mais partes fazem partes menores."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-fraction-amount-t3-pt-4",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 4,
+          "xp": 10,
+          "explanation_md": "Verdadeiro. Um terço de 30 é 10, então dois terços são 20 moedas. A metade de 30 é 15, e 20 é mais.",
+          "payload": {
+            "statement_md": "Dois terços de 30 moedas são mais que a metade de 30 moedas."
+          },
+          "answer": {
+            "is_true": true
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
@@ -128,10 +128,19 @@ function bootOracle(entry: string, env: NodeJS.ProcessEnv): Booted {
     exited,
     kill: () => {
       if (child.pid) {
-        try {
-          process.kill(-child.pid, 'SIGKILL');
-        } catch {
-          // Already dead — fine, that's the success case.
+        if (process.platform === 'win32') {
+          // Windows has no process groups: `process.kill(-pid)` throws, the
+          // catch below swallowed it, and every booted Oracle (the tsx wrapper
+          // AND its loader child) was left running as an orphan server after
+          // the suite (found in the S06.15 lane review: 15 of them on one
+          // worktree). `taskkill /T` kills the whole tree.
+          spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+        } else {
+          try {
+            process.kill(-child.pid, 'SIGKILL');
+          } catch {
+            // Already dead — fine, that's the success case.
+          }
         }
       }
       child.stdout?.destroy();

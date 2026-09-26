@@ -130,15 +130,29 @@ describe('the scripted set is closed, which is what makes it buyable once', () =
      * words)". The count is pinned here precisely so a new line cannot be
      * added without also being SYNTHESIZED — an unpregenerated scripted line
      * is a silent tutor, which is worse than a repeated one.
+     *
+     * 25, not 14 (C.16, 2026-09-24): the two generic closes (soft/hard) became
+     * the four end-reason scripts — the recap question, six completed closes
+     * (one per observed act), the interrupted close and the safety close —
+     * plus the four queued re-engagement openings. 14 − 2 + 13 = 25.
+     *
+     * 26, not 25 (C.19, 2026-09-25): the disengagement check-in the system
+     * asks when the Behavioral Telemetry Layer fires.
+     *
+     * 32, not 26 (C.14/C.15, 2026-09-25): the three self-explanation
+     * questions (why / how / a sentence stem), the renegotiation question
+     * after repeated declined adaptations, and the two persona-continuity
+     * openings (introduce / reconnect) that replace a falsely familiar
+     * greeting.
      */
-    expect(catalogue).toHaveLength(14 * CHARACTER_IDS.length * LOCALES.length);
+    expect(catalogue).toHaveLength(32 * CHARACTER_IDS.length * LOCALES.length);
 
     for (const character of CHARACTER_IDS) {
       for (const locale of LOCALES) {
         const slot = catalogue.filter((l) => l.character === character && l.locale === locale);
-        expect(slot).toHaveLength(14);
+        expect(slot).toHaveLength(32);
         // Keys stay unique — the three model-down variants are `model_down.0..2`.
-        expect(new Set(slot.map((l) => l.key)).size).toBe(14);
+        expect(new Set(slot.map((l) => l.key)).size).toBe(32);
         for (const line of slot) expect(line.text.trim().length).toBeGreaterThan(0);
       }
     }

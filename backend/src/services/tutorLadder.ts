@@ -9,13 +9,20 @@ import { findPublishedPack } from './tutorData.js';
  *
  *   tier 1  catalog  — a segment from a PUBLISHED lesson. Free, instant, and a
  *                      human approved it. This should carry most turns.
- *   tier 2  bank     — a pre-generated pack, generated offline by Forge and
+ *   tier 2  bank     — a curated activity pack (C.6): hand-authored or
+ *                      generated offline by Forge, checked against the
+ *                      tutor-pack.v1 contract (services/tutorPacks.ts) and
  *                      PUBLISHED BY A HUMAN. Personalization happens at
- *                      selection time, not at generation time.
+ *                      selection time, not at generation time. A pack may
+ *                      target a knowledge component with no published topic
+ *                      (skill key `kc:<kc key>`).
  *   tier 3  live     — generated in the moment. Oracle authors and judges it;
  *                      THIS FILE verifies it before a learner sees it, because
  *                      verification means re-running the real graders and the
- *                      real graders live on this side of the boundary.
+ *                      real graders live on this side of the boundary. Its
+ *                      governance (a calibrated judge, risk-scaled dynamic
+ *                      staff sampling, the Stage 7 suspension) is C.5's:
+ *                      services/pedagogy/liveContentGovernance.ts.
  *
  * WHY VERIFICATION IS HERE AND GENERATION IS NOT. Oracle holds the model, the
  * prompt discipline and the judge. Core holds the grading registry, the answer
@@ -237,7 +244,18 @@ export async function serveFromBank(input: {
     lessonId: null,
     segment: chosen,
     answer: shape.answers?.[chosen.id] ?? (chosen as { answer?: Record<string, unknown> }).answer ?? null,
-    provenance: { tier: 2, pack_id: pack.id, skill_key: input.skillKey, locale: pack.locale },
+    // C.6: which pack VERSION (and content) served this, so a defect found
+    // later is traceable to every learner who saw that exact text. Absent
+    // on a row stored before the curated-pack migration.
+    provenance: {
+      tier: 2,
+      pack_id: pack.id,
+      skill_key: input.skillKey,
+      locale: pack.locale,
+      ...(typeof pack.pack_version === 'number' ? { pack_version: pack.pack_version } : {}),
+      ...(typeof pack.content_hash === 'string' ? { content_hash: pack.content_hash } : {}),
+      ...(typeof pack.source === 'string' ? { pack_source: pack.source } : {}),
+    },
   };
 }
 
@@ -390,6 +408,10 @@ function extractOptions(segment: SegmentBase): OptionLike[] {
 }
 
 /** Every learner-visible string, concatenated, for the vocabulary bands. */
+export function collectSegmentProse(segment: SegmentBase): string {
+  return collectProse(segment);
+}
+
 function collectProse(segment: SegmentBase): string {
   const parts: string[] = [segment.prompt_md ?? '', segment.explanation_md ?? ''];
   const walk = (value: unknown): void => {

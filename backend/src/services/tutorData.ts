@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
 import { countServiceRows, serviceRest } from './supabaseRest.js';
+import { telemetryColumns, type BehavioralTelemetryReport } from './pedagogy/behavioralTelemetry.js';
 
 /*
  * The Tutor's data plane (migration 0047, /ORACLE.md).
@@ -408,6 +409,14 @@ export async function closeTutorSession(input: {
   turnCount: number;
   segmentCount: number;
   costUsd: number;
+  /** C.16: the closing script Oracle used (omitted by an older Oracle). */
+  closingScript?: string;
+  /** C.16: the opening the session began with. */
+  opening?: string;
+  /** C.8/C.12: whether the session-end signal was evaluated at all. */
+  endSignal?: { evaluated: boolean };
+  /** C.9/C.19: how the Behavioral Telemetry Layer ran (absent while it was off). */
+  behavioralTelemetry?: BehavioralTelemetryReport;
 }): Promise<CloseTutorSessionOutcome> {
   const rows = await serviceRest<{ id: string }[]>(`/tutor_sessions?id=eq.${eu(input.sessionId)}&ended_at=is.null`, {
     method: 'PATCH',
@@ -418,6 +427,12 @@ export async function closeTutorSession(input: {
       turn_count: input.turnCount,
       segment_count: input.segmentCount,
       cost_usd: input.costUsd,
+      // Only named when reported, so a close from an older Oracle writes
+      // exactly the columns it always did.
+      ...(input.closingScript !== undefined ? { closing_script: input.closingScript } : {}),
+      ...(input.opening !== undefined ? { opening: input.opening } : {}),
+      ...(input.endSignal !== undefined ? { end_signal_evaluated: input.endSignal.evaluated } : {}),
+      ...telemetryColumns(input.behavioralTelemetry),
     }),
   });
   if (rows === null) return 'failed';
@@ -2802,6 +2817,10 @@ export interface TutorPackRow {
   locale: string;
   pack: Record<string, unknown>;
   status: string;
+  /** C.6 columns (curated-pack migration); absent on an older schema. */
+  pack_version?: number;
+  content_hash?: string | null;
+  source?: string;
 }
 
 /**
@@ -2917,7 +2936,7 @@ export async function listPlacementSafetyFlags(
 
 export interface TrajectoryStepInput {
   turnSeq: number;
-  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'entry_opened';
+  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'stated_misconception' | 'entry_opened';
   strategyBefore: string;
   strategy: string;
   skillName: string | null;
@@ -2927,6 +2946,11 @@ export interface TrajectoryStepInput {
   misconceptionCode: string | null;
   kcId: string | null;
   kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
+  /** C.10 evidence (absent from an Oracle build that predates it). */
+  evidenceRule?: 'mastery' | 'remediation' | 'rescue' | null;
+  evidenceObservations?: number | null;
+  evidenceRequired?: number | null;
+  masteryRevoked?: boolean;
 }
 
 /**
@@ -2972,6 +2996,10 @@ export async function insertTutorTrajectory(
         misconception_code: step.misconceptionCode,
         kc_id: step.kcId,
         kc_mode: step.kcMode,
+        evidence_rule: step.evidenceRule ?? null,
+        evidence_observations: step.evidenceObservations ?? null,
+        evidence_required: step.evidenceRequired ?? null,
+        mastery_revoked: step.masteryRevoked ?? false,
       })),
     ),
   });

@@ -70,3 +70,14 @@ export function predictCorrect(pKnown: number, params: BktParams): number {
 export const MASTERY_PREREQ_THRESHOLD = 0.8;
 /** A KC is presented as "mastered" at ≥ 0.85 with enough evidence. */
 export const MASTERY_DISPLAY_THRESHOLD = 0.85;
+
+/**
+ * Product C.10 — the corroborating-evidence rule, on the PERSISTED side: a
+ * KC is only presented as mastered (and only dropped from the planner's
+ * frontier) when the learner's most recent attempts on it end in at least
+ * this many consecutive correct answers. The posterior alone let a single
+ * lucky answer flip a KC to "mastered" on the map and the parent's view.
+ * Mirrors Oracle's `CORROBORATION_MIN_OBSERVATIONS`; proposed pending
+ * calibration (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
+ */
+export const MASTERY_CORROBORATION_MIN = 2;

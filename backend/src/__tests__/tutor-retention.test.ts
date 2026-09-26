@@ -190,6 +190,59 @@ describe('POST /api/v1/tutor/internal/retention/purge', () => {
     expect(response.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 
+  it('C.7: deletes disposition profiles not updated for 365 days in the same nightly sweep, and reports the count', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        calls.push({ url, method, body: init?.body as string | undefined });
+        if (url.includes('/rpc/purge_expired_tutor_sessions')) return Promise.resolve(jsonResponse(200, []));
+        if (url.includes('/learner_disposition_profile') && method === 'DELETE') {
+          return Promise.resolve(jsonResponse(200, [{ user_id: 'a' }, { user_id: 'b' }]));
+        }
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+    const before = Date.now();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/retention/purge')
+      .set('x-internal-api-key', key())
+      .send({});
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({ sessionsDeleted: 0, dispositionProfilesPurged: 2 });
+    const del = calls.find((c) => c.method === 'DELETE' && c.url.includes('/learner_disposition_profile'))!;
+    const cutoff = Date.parse(decodeURIComponent(del.url.split('updated_at=lt.')[1]!));
+    // 365 days back, and a filter: never an unfiltered delete of every profile.
+    expect(Math.round((before - cutoff) / 86_400_000)).toBe(365);
+    const audit = calls.find((c) => c.method === 'POST' && c.url.includes('/audit_logs'))!;
+    expect(JSON.parse(audit.body ?? '{}').detail).toMatchObject({ dispositionProfilesPurged: 2 });
+  });
+
+  it('C.7: a disposition purge that could not run is reported as null and logged, without failing the session sweep', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rpc/purge_expired_tutor_sessions')) return Promise.resolve(jsonResponse(200, [{ session_id: '1', audio_paths: [] }]));
+        if (url.includes('/learner_disposition_profile') && (init?.method ?? 'GET') === 'DELETE') {
+          return Promise.resolve(new Response(null, { status: 404 }));
+        }
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/retention/purge')
+      .set('x-internal-api-key', key())
+      .send({});
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({ sessionsDeleted: 1, dispositionProfilesPurged: null });
+    expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('disposition-profile retention FAILED'));
+    consoleError.mockRestore();
+  });
+
   it('rejects an out-of-range batch size', async () => {
     stub();
     const response = await request(createApp())

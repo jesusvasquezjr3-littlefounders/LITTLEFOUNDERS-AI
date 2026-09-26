@@ -23,6 +23,12 @@ npm run secrets:check
 # audit no older than 45 days with nothing failing or open
 # (docs/rebuild/DARK-PATTERN-AUDIT.md).
 node agent/tools/check-dark-patterns.mjs --release
+
+# C.22 / Appendix F §1.3 Tier-Compliance Audit: every Tier 1 (and live-content)
+# component's current version and every governance decision must carry both
+# sign-offs (Pedagogical Reviewer, Safety/Trust Lead) before a release.
+npm run governance:check -- --release
+npm run judge-calibration:check
 npm run i18n:check
 npm run deps:check
 npm run typecheck:all

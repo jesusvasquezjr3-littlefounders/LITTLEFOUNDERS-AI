@@ -22,7 +22,17 @@
     "seed:kc": "tsx --env-file-if-exists=.env src/scripts/seed-kc-graph.ts",
     "audit:content-bridge": "tsx --env-file-if-exists=.env src/scripts/audit-content-bridge.ts",
     "curate:tutor-skills": "tsx --env-file-if-exists=.env src/scripts/curate-tutor-skills.ts",
-    "audit:bkt-calibration": "tsx --env-file-if-exists=.env src/scripts/audit-bkt-calibration.ts"
+    "audit:bkt-calibration": "tsx --env-file-if-exists=.env src/scripts/audit-bkt-calibration.ts",
+    "tutor:integrity-report": "tsx --env-file-if-exists=.env src/scripts/mentor-integrity-report.ts",
+    "tutor:session-end-report": "tsx --env-file-if-exists=.env src/scripts/session-end-report.ts",
+    "tutor:telemetry-report": "tsx --env-file-if-exists=.env src/scripts/telemetry-report.ts",
+    "tutor:alliance-report": "tsx --env-file-if-exists=.env src/scripts/alliance-report.ts",
+    "tutor:spaced-review-report": "tsx --env-file-if-exists=.env src/scripts/spaced-review-report.ts",
+    "tutor:dialogue-calibration-report": "tsx --env-file-if-exists=.env src/scripts/dialogue-calibration-report.ts",
+    "tutor:live-content-report": "tsx --env-file-if-exists=.env src/scripts/live-content-report.ts",
+    "seed:tutor-packs": "tsx --env-file-if-exists=.env src/scripts/seed-tutor-packs.ts",
+    "tutor:evaluate": "tsx --env-file-if-exists=.env src/scripts/evaluate-transcripts.ts",
+    "tutor:judge-calibration": "tsx --env-file-if-exists=.env src/scripts/judge-calibration.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",

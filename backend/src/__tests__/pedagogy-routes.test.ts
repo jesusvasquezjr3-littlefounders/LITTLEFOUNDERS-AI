@@ -5,6 +5,7 @@ import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 import { buildSessionPlan, difficultyFor } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap, deriveNodeState } from '../services/pedagogy/tutorMap.js';
+import { trailingCorrectStreaks } from '../services/pedagogy/kcData.js';
 
 /*
  * The v3 brain's Core wiring: the session plan on the internal context, the
@@ -116,6 +117,10 @@ const CHANGE_SEGMENT_ROW = {
 interface StubOpts {
   mastery?: unknown[];
   cards?: unknown[];
+  /** `kc_attempt` rows, NEWEST FIRST (the order the C.10 streak read asks for). */
+  attempts?: unknown[];
+  /** Fail the C.10 streak read outright. */
+  attemptsFail?: boolean;
   writes?: { url: string; method: string; body?: string }[];
 }
 
@@ -129,7 +134,10 @@ function stub(opts: StubOpts = {}) {
       if (method !== 'GET') writes.push({ url, method, body: init?.body as string | undefined });
 
       if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, EDGE_ROWS));
-      if (url.includes('/rest/v1/kc_attempt')) return Promise.resolve(jsonResponse(200, []));
+      if (url.includes('/rest/v1/kc_attempt')) {
+        if (method === 'GET' && opts.attemptsFail) return Promise.resolve(new Response(null, { status: 500 }));
+        return Promise.resolve(jsonResponse(200, method === 'GET' ? (opts.attempts ?? []) : []));
+      }
       if (url.includes('/rest/v1/kc?')) {
         if (url.includes('id=eq.')) {
           const row = KC_ROWS.find((k) => url.includes(k.id));
@@ -292,11 +300,33 @@ describe('buildSessionPlan', () => {
 
 describe('the learning map', () => {
   it('deriveNodeState covers the five states, review outranking mastery', () => {
-    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: true, prereqsMet: true })).toBe('needs_review');
-    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true })).toBe('mastered');
-    expect(deriveNodeState({ pKnown: 0.9, attempts: 1, reviewDue: false, prereqsMet: true })).toBe('in_progress');
-    expect(deriveNodeState({ pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: false })).toBe('locked');
-    expect(deriveNodeState({ pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: true })).toBe('available');
+    const base = { consecutiveCorrect: 2 };
+    expect(deriveNodeState({ ...base, pKnown: 0.9, attempts: 5, reviewDue: true, prereqsMet: true })).toBe('needs_review');
+    expect(deriveNodeState({ ...base, pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true })).toBe('mastered');
+    expect(deriveNodeState({ ...base, pKnown: 0.9, attempts: 1, reviewDue: false, prereqsMet: true })).toBe('in_progress');
+    expect(deriveNodeState({ ...base, pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: false })).toBe('locked');
+    expect(deriveNodeState({ ...base, pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: true })).toBe('available');
+  });
+
+  it('C.10: never "mastered" on a single observation — the latest answers must corroborate it', () => {
+    // A high posterior and plenty of history, but the latest answer is the
+    // only correct one (or the latest answer is wrong): still in progress.
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true, consecutiveCorrect: 1 })).toBe('in_progress');
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true, consecutiveCorrect: 0 })).toBe('in_progress');
+  });
+
+  it('C.10: trailingCorrectStreaks counts only the unbroken run at the NEWEST end', () => {
+    const streaks = trailingCorrectStreaks([
+      { kc_id: 'a', correct: true },
+      { kc_id: 'b', correct: false },
+      { kc_id: 'a', correct: true },
+      { kc_id: 'b', correct: true },
+      { kc_id: 'a', correct: false },
+      { kc_id: 'a', correct: true },
+    ]);
+    expect(streaks.get('a')).toBe(2);
+    expect(streaks.get('b')).toBe(0);
+    expect(streaks.get('c')).toBeUndefined();
   });
 
   it('locks the dependent while its prerequisite is unmastered, and CONTINUE follows the planner', async () => {
@@ -313,10 +343,56 @@ describe('the learning map', () => {
   });
 
   it('a mastered prerequisite opens the dependent on the map too', async () => {
-    stub({ mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }] });
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }],
+      attempts: [
+        { kc_id: KC_COUNT, correct: true },
+        { kc_id: KC_COUNT, correct: true },
+      ],
+    });
     const map = await buildTutorMap(KID, 2, 'es-MX');
-    expect(map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins')?.state).toBe('mastered');
+    const count = map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins');
+    expect(count?.state).toBe('mastered');
+    // The evidence behind the claim travels with it (Appendix D §2.6).
+    expect(count?.consecutiveCorrect).toBe(2);
     expect(map!.nodes.find((n) => n.kcKey === 'money.make-change-counting-up')?.state).toBe('available');
+  });
+
+  it('C.10: one lucky answer after a miss does not show as mastered, and the planner keeps teaching it', async () => {
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 4, params_override: null }],
+      attempts: [
+        { kc_id: KC_COUNT, correct: true },
+        { kc_id: KC_COUNT, correct: false },
+      ],
+    });
+    const map = await buildTutorMap(KID, 2, 'es-MX');
+    const count = map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins');
+    expect(count?.state).toBe('in_progress');
+    expect(count?.consecutiveCorrect).toBe(1);
+    const plan = await buildSessionPlan(KID, 2, 'es-MX');
+    expect(plan!.plan.map((p) => p.kcKey)).toContain('money.count-mixed-coins');
+  });
+
+  it('C.10: a corroborated mastery leaves the frontier', async () => {
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }],
+      attempts: [
+        { kc_id: KC_COUNT, correct: true },
+        { kc_id: KC_COUNT, correct: true },
+      ],
+    });
+    const plan = await buildSessionPlan(KID, 2, 'es-MX');
+    expect(plan!.plan.map((p) => p.kcKey)).not.toContain('money.count-mixed-coins');
+  });
+
+  it('C.10: a failed streak read is a failed map and plan, never a silent demotion', async () => {
+    stub({
+      mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }],
+      attemptsFail: true,
+    });
+    expect(await buildTutorMap(KID, 2, 'es-MX')).toBeNull();
+    expect(await buildSessionPlan(KID, 2, 'es-MX')).toBeNull();
   });
 });
 
@@ -562,5 +638,88 @@ describe('the internal voice-check', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
       .send({ sessionId: SESSION, utterance: 'tres' });
     expect(response.status).toBe(403);
+  });
+});
+
+/*
+ * C.11 — the cross-session scheduler counts SPACED reviews only. An attempt
+ * inside the short horizon of the card's last counted review is a
+ * within-session re-exposure: the card is not rewritten, and the attempt row
+ * says which tier it was.
+ */
+describe('C.11 — the short-horizon rule on the grade route', () => {
+  const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
+  const card = (lastReviewMinutesAgo: number, state: 'review' | 'relearning' = 'review') => ({
+    kc_id: KC_CHANGE,
+    state,
+    stability: 3,
+    difficulty: 5,
+    reps: 2,
+    lapses: 0,
+    due_at: new Date(Date.now() + 3 * 86_400_000).toISOString(),
+    last_review_at: minutesAgo(lastReviewMinutesAgo),
+  });
+  const grade = (value: number) =>
+    request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { value }, attemptNumber: 1 });
+  const attemptBody = (writes: { url: string; method: string; body?: string }[]) =>
+    JSON.parse(String(writes.find((w) => w.url.includes('/rest/v1/kc_attempt') && w.method === 'POST')?.body ?? '{}'));
+
+  it('a correct answer 20 minutes after a counted review leaves the card alone and is marked short_horizon', async () => {
+    const existing = card(20);
+    const writes = stub({ cards: [existing] });
+    const response = await grade(3);
+    expect(response.status).toBe(200);
+    expect(writes.some((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST')).toBe(false);
+    expect(attemptBody(writes).review_tier).toBe('short_horizon');
+    // The schedule the learner sees is the unchanged one.
+    expect(response.body.data.pedagogy.reviewDueAt).toBe(existing.due_at);
+  });
+
+  it('the same answer five hours later is a spaced review: the card grows and the row says spaced', async () => {
+    const writes = stub({ cards: [card(5 * 60)] });
+    await grade(3);
+    const upsert = writes.find((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST');
+    expect(upsert).toBeDefined();
+    expect(Number(JSON.parse(String(upsert!.body)).stability)).toBeGreaterThan(3);
+    expect(attemptBody(writes).review_tier).toBe('spaced');
+  });
+
+  it('a lapse inside the horizon after a counted success is real forgetting: the card lapses', async () => {
+    const writes = stub({ cards: [card(20, 'review')] });
+    await grade(17);
+    const upsert = writes.find((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST');
+    expect(JSON.parse(String(upsert!.body)).state).toBe('relearning');
+    expect(attemptBody(writes).review_tier).toBe('spaced');
+  });
+
+  it('a second lapse inside the horizon does not collapse the card again', async () => {
+    const writes = stub({ cards: [card(20, 'relearning')] });
+    await grade(17);
+    expect(writes.some((w) => w.url.includes('/rest/v1/memory_card') && w.method === 'POST')).toBe(false);
+    expect(attemptBody(writes).review_tier).toBe('short_horizon');
+  });
+
+  it('a schema without the column (Core deployed first) still records the attempt, once more without the tier', async () => {
+    const writes = stub({ cards: [card(20)] });
+    const inner = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/kc_attempt') && init?.method === 'POST' && String(init.body).includes('review_tier')) {
+          writes.push({ url, method: 'POST', body: init.body as string });
+          return Promise.resolve(new Response(JSON.stringify({ message: 'column "review_tier" does not exist' }), { status: 400 }));
+        }
+        return inner(input, init);
+      }),
+    );
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect((await grade(3)).status).toBe(200);
+    const inserts = writes.filter((w) => w.url.includes('/rest/v1/kc_attempt') && w.method === 'POST');
+    expect(inserts).toHaveLength(2);
+    expect(JSON.parse(String(inserts[1]!.body))).not.toHaveProperty('review_tier');
   });
 });

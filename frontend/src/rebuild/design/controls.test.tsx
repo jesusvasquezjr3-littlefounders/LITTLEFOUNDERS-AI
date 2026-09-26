@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   AnswerChoice, Art, Banner, Button, ButtonGroup, Card, Checkbox, Chip, ChipGroup, ChoiceChip, EmptyState, ErrorState, Glyph, GLYPH_BUDGET,
   GLYPH_FAMILIES, IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip,
-  SegmentedControl, SelectField, Slider, StatusMark, Stepper, Switch, SYSTEM_GLYPHS, TextField,
+  ReplyChip, SegmentedControl, SelectField, Slider, StatusMark, Stepper, Switch, SYSTEM_GLYPHS, TextAreaField, TextField,
 } from './controls';
 import { findMentorAvatar, MENTOR_CHARACTERS, resolveMentorRender } from './assets';
 
@@ -267,6 +267,35 @@ describe('display components', () => {
     rerender(<ChoiceChip selected onToggle={onToggle}>Save</ChoiceChip>);
     expect(screen.getByRole('button', { name: 'Save' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Save' }).querySelector('svg')).not.toBeNull();
+  });
+
+  it('sends a reply chip with one press: an option control, never a toggle', () => {
+    const onPress = vi.fn();
+    const { container } = render(<ChipGroup label="Your answer">
+      <ReplyChip onPress={onPress} data-reply="yes">We're good</ReplyChip>
+      <ReplyChip onPress={vi.fn()} data-reply="no" disabled>Not really</ReplyChip>
+    </ChipGroup>);
+    const [yes, no] = screen.getAllByRole('button');
+    fireEvent.click(yes!);
+    expect(onPress).toHaveBeenCalledOnce();
+    for (const chip of [yes!, no!]) {
+      expect(chip).toHaveAttribute('data-copy-role', 'option');
+      expect(chip).not.toHaveAttribute('aria-pressed');
+    }
+    expect(yes!.className).toBe(no!.className);
+    expect(yes).toHaveAttribute('data-reply', 'yes');
+    expect(no).toBeDisabled();
+    expectCopyRoles(container);
+  });
+
+  it('labels a multi-line field and describes it by its help and error', () => {
+    const { container } = render(<TextAreaField label="Root cause" help="At least 20 characters." error="Too short." value="" onChange={vi.fn()} />);
+    const field = screen.getByLabelText('Root cause');
+    expect(field.tagName).toBe('TEXTAREA');
+    expect(field).toHaveAttribute('aria-invalid', 'true');
+    expect(field.getAttribute('aria-describedby')!.split(' ')).toHaveLength(2);
+    expect(field).toHaveAttribute('rows', '3');
+    expectCopyRoles(container);
   });
 
   it('names cards by their heading and lists rows with an optional press target', () => {

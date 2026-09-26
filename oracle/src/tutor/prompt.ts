@@ -1,3 +1,4 @@
+import { ANSWER_HONESTY_RULE } from './feedbackHonesty.js';
 import type { TutorContext, Locale } from '../context/schema.js';
 import {
   EMOTIONS,
@@ -2123,7 +2124,9 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'Use "next": "segment" when the learner is ready to DO something rather than',
   'hear something. You never write the activity yourself: you describe which',
   'skill it should practise and how hard it should be, and the product builds it.',
-  'Use "next": "close" only when you are ending the session.',
+  'Use "next": "close" only when you are ending the session, and do not say',
+  'goodbye or list what was learned in that turn: the system asks the learner',
+  'what clicked for them and closes the session itself (C.16).',
   '',
   'WHEN THEY ASK TO DO SOMETHING, GIVE THEM SOMETHING TO DO. "quiero hacer un',
   'ejercicio", "dame algo que hacer", "quiero practicar", "ponme uno" — set',
@@ -2404,6 +2407,9 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'trying, by name ("contaste todas sin saltarte ninguna"), and then work on',
   'what went wrong. And never state the number yourself and then praise it as',
   'though it came from them.',
+  '',
+  // C.18 — the anti-sycophancy constraint (feedbackHonesty.ts), a Tier 1 rule.
+  ANSWER_HONESTY_RULE,
   '',
   '## Length',
   '',
@@ -2693,8 +2699,9 @@ const PLAN_STEP_GUIDANCE: Record<string, string> = {
 const FINAL_STEP_ESCALATION =
   'The planned arc for this session is complete — there is nothing further scripted to teach toward. If ' +
   'there is one natural activity left worth offering, request it now via next="segment". Otherwise, start ' +
-  'winding the conversation down warmly: sum up what they explored today in one short sentence, and move ' +
-  'toward next="close" within the next turn or two instead of continuing to ask open questions indefinitely.';
+  'winding the conversation down warmly and move toward next="close" within the next turn or two instead of ' +
+  'continuing to ask open questions indefinitely. Do not list what they learned yourself: the system asks them ' +
+  'what clicked (C.16), and a recap they build is worth more than one they are read.';
 
 /**
  * `diagnostic`'s own version of the `check` step (round 48, 2026-08-30):

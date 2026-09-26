@@ -34,6 +34,22 @@ export function ChoiceChip({ selected, onToggle, children, disabled }: { selecte
   </button>;
 }
 
+/**
+ * A reply chip in the Mentor's response area (08 §2): a suggested answer the
+ * learner sends with one press ("We're good", "Not really"). It is an `option`
+ * control (8 words, 5 for ages 6–9) and never a toggle: answering moves the
+ * turn on, so it has no pressed state. Chips offered together share one look,
+ * none is preselected, and the caller lays the group out. It keeps the button
+ * base (focus ring, 56 px target, press feedback) with a sunken fill, so it
+ * has its own boundary on a surface panel in both themes (02 §4.4).
+ */
+export function ReplyChip({ children, onPress, disabled, className, ...data }: {
+  children: ReactNode; onPress: () => void; disabled?: boolean; className?: string;
+} & { [attribute: `data-${string}`]: string | undefined }) {
+  return <button type="button" {...data} className={`lf-button lf-reply-chip${className ? ` ${className}` : ''}`} data-copy-role="option"
+    disabled={disabled} onClick={onPress}>{children}</button>;
+}
+
 /** Solid label pill. Accent is excluded: it is reserved for the call to action (02 §4.2). */
 export type PillTone = 'primary' | 'success' | 'reward' | 'sky' | 'mint' | 'berry' | 'inverse';
 export function Pill({ tone, children, role = 'body' }: { tone: PillTone; children: ReactNode; role?: CopyRole }) {

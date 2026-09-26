@@ -201,6 +201,26 @@ export type ServerMessage =
       framing: string;
     }
   | { type: 'adaptation_offer'; adaptation: Adaptation }
+  /**
+   * C.8/C.12: the turn just delivered asked "stop here for today, or one
+   * more?". Two equal choices; the answer is `session_end_response`
+   * (mirrors oracle/src/ws/protocol.ts).
+   */
+  | { type: 'session_end_offer' }
+  /**
+   * C.19: the turn just delivered is the system's check-in ("are we on the
+   * same page?"). Two equal reply chips; the answer is `check_in_response`
+   * or the learner's own words (mirrors oracle/src/ws/protocol.ts).
+   */
+  | { type: 'check_in' }
+  /**
+   * C.15: the turn just delivered restated the session goal as one confirming
+   * question. Two equal chips; the answer is `goal_response` or the learner's
+   * own words (mirrors oracle/src/ws/protocol.ts).
+   */
+  | { type: 'goal_check' }
+  /** C.16: how the session ended, sent once just before `closed` on a graceful close. */
+  | { type: 'session_closing'; script: ClosingScript; effort: EffortAct | null; topic: string | null }
   | { type: 'state'; budget: BudgetState; remainingMs: number; turnCount: number }
   | { type: 'closed'; reason: string }
   | { type: 'error'; code: string; message: string };
@@ -613,6 +633,20 @@ export type TutorWhiteboardWire =
       currency: 'MXN' | 'USD' | 'BRL' | null;
     };
 
+/**
+ * C.16: the four end-reason closing scripts and the act a completed close
+ * names (mirror oracle/src/tutor/sessionClosing.ts; `npm run session-end:check`).
+ */
+export type ClosingScript = 'completed' | 'interrupted' | 'learner_left' | 'safety_stop';
+export type EffortAct = 'corroborated' | 'recovered' | 'hint_then_solved' | 'kept_going' | 'talked_through' | 'none';
+
+/** What the closing state shows (Frontend Bible 08 §3–4). */
+export interface SessionClosingSummary {
+  script: ClosingScript;
+  effort: EffortAct | null;
+  topic: string | null;
+}
+
 // ── Wire messages, outbound ─────────────────────────────────────────────────
 
 export type ClientMessage =
@@ -633,6 +667,12 @@ export type ClientMessage =
       attemptNumber?: number;
     }
   | { type: 'adaptation_response'; adaptation: Adaptation; accepted: boolean }
+  /** C.8/C.12: the learner's choice on the stop-or-continue offer. */
+  | { type: 'session_end_response'; accepted: boolean }
+  /** C.19: the learner's answer to the check-in: `aligned` = "we're good", false = "not really". */
+  | { type: 'check_in_response'; aligned: boolean }
+  /** C.15: the learner's answer to the goal restatement: `agreed` = "yes, that's it", false = "something else". */
+  | { type: 'goal_response'; agreed: boolean }
   | { type: 'end_session' }
   | { type: 'ping' };
 

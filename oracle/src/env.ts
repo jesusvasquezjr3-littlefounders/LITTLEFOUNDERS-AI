@@ -201,6 +201,104 @@ const Env = z.object({
   TURN_MAX_INPUT_CHARS: z.coerce.number().int().positive().default(600),
 
   /**
+   * Product C.10 — the corroborating-evidence requirement: how many
+   * consecutive qualifying observations the pedagogy controller needs before
+   * it declares mastery or triggers remediation/rescue. The SPEC's value is
+   * 2, "proposed, pending data-driven validation" (Threshold Recalibration
+   * Log, docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). Changing it is
+   * a Tier 1 governance change (C.22), never a tuning knob.
+   *
+   * The floor is 2, not 1: "no mastery or remediation decision executes on a
+   * single observation" is a non-negotiable Block C constraint, so an
+   * environment value cannot switch C.10 off globally (S06.15 lane review).
+   * A value below 2 refuses to boot rather than weakening the rule. The only
+   * sanctioned single-observation path is the per-KC Stage 7 rollback below.
+   */
+  TUTOR_CORROBORATION_MIN_OBSERVATIONS: z.coerce.number().int().min(2).max(5).default(2),
+  /**
+   * Appendix F Part 3 Stage 7 — the Extended Mastery Engine kill switch:
+   * comma-separated `kc.key`s reverted to the pre-C.10 single-observation
+   * baseline until root-caused. Empty (the default) rolls nothing back.
+   * Every use is logged in the Kill-Switch Trigger Log.
+   */
+  TUTOR_CORROBORATION_ROLLBACK_KC_KEYS: z
+    .string()
+    .default('')
+    .transform((raw) =>
+      raw
+        .split(',')
+        .map((key) => key.trim())
+        .filter((key) => key.length > 0),
+    ),
+  /**
+   * Product C.8/C.12 — the behavioral-signature session-end signal
+   * (`tutor/sessionEndSignal.ts`). `offer` (default): the Mentor may offer to
+   * stop early when the signal fires. `shadow`: computed and logged, never
+   * offered. `off`: not computed. `shadow` and `off` are the Appendix F
+   * Stage 7 rollback — session management reverts to the time/turn caps.
+   * An unknown value falls back to `offer` rather than silently disabling it.
+   */
+  TUTOR_SESSION_END_SIGNAL: z.enum(['offer', 'shadow', 'off']).catch('offer').default('offer'),
+
+  /**
+   * C.9/C.19 Stage 7 kill switch for the Behavioral Telemetry Layer
+   * (`tutor/behavioralTelemetry.ts`). `act` (default): a fired disengagement
+   * signal makes the Mentor check in ("are we on the same page?") and routes
+   * the answer through the adaptation offer. `shadow`: computed and recorded,
+   * never acted on. `off`: not computed. `shadow` and `off` are the Appendix F
+   * Stage 7 rollback (Default-to-Inaction Rate below 85% or Disengagement-
+   * Repair Initiation Rate below 100%); session management reverts to the
+   * time/turn caps. An unknown value falls back to `act`, never a silent off.
+   */
+  TUTOR_BEHAVIORAL_TELEMETRY: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
+   * C.15 Stage 7 kill switch for the Alliance Controller
+   * (`tutor/allianceController.ts`). `act` (default): the goal-agreement
+   * opening move, the renegotiation trigger after repeated declined
+   * adaptations, and the persona-continuity re-establishment. `shadow`:
+   * the renegotiation trigger and the continuity re-establishment are
+   * suspended (recorded, never acted on) and the passive bond/goal tracking
+   * keeps running — the Appendix F Part 3 rollback. `off`: nothing. Core's
+   * automatic rollback verdict can only make it stricter. An unknown value
+   * falls back to `act`, never a silent off.
+   */
+  TUTOR_ALLIANCE_CONTROLLER: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
+   * C.14 switch for the self-explanation move (`tutor/selfExplanation.ts`).
+   * `act` (default): after a financial decision the system asks the learner
+   * why, checks the reply names the idea and follows up once. `shadow`: the
+   * decision points are recorded, never prompted. `off`: nothing. An unknown
+   * value falls back to `act`.
+   */
+  TUTOR_SELF_EXPLANATION: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
+   * C.11 switch for the two-tier spaced-review router
+   * (`tutor/spacedReview.ts`). `act` (default): a wrong answer close to the
+   * mastery threshold with budget left is brought back once more in this
+   * session after a short gap (the controller's review detour); every other
+   * wrong answer, and every item still open at close, is handed to Core's
+   * cross-session scheduler. `shadow`: every routing decision is computed and
+   * recorded, no re-exposure detour is opened — the Stage 7 rollback. `off`:
+   * nothing is routed or recorded. Core's automatic verdict
+   * (`spacedReviewMode`) can only make it stricter. An unknown value falls
+   * back to `act`.
+   */
+  TUTOR_SPACED_REVIEW: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
+
+  /**
+   * C.17 switch for the age-band dialogue calibration
+   * (`tutor/dialogueCalibration.ts`). `act` (default): the session runs the
+   * variant Core assigned (the SPEC's calibrated register for every learner
+   * outside the adults-only experiment). `off`: every session runs the
+   * uniform pre-C.17 register (`control`, recorded as `operator_off`). An
+   * unknown value falls back to `act`.
+   */
+  TUTOR_DIALOGUE_CALIBRATION: z.enum(['act', 'off']).catch('act').default('act'),
+
+  /**
    * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
    * item is a separate, larger, architecturally-undecided piece of work).
    *

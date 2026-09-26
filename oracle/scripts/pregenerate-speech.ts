@@ -3,9 +3,10 @@
  * Tutor can say, once, ever, and records the resulting URLs as tracked config.
  *
  * WHY. `src/tutor/scripted.ts` holds a closed set of human-written lines: the
- * four characters' greetings, the six safety responses, the two closes, and
- * the model-down / moderation-blocked / consent-revoked fallbacks. Twelve texts
- * per character per locale — 144 clips — and until now every one of them was
+ * four characters' greetings, the six safety responses, the C.16 closing
+ * scripts and re-engagement openings, and the model-down / moderation-blocked /
+ * consent-revoked fallbacks. Twenty-five texts per character per locale — 300
+ * clips since C.16 (144 when this was written) — and until now every one of them was
  * synthesised and BILLED again each time a child heard it. Depot already
  * deduplicated the storage by content hash, so not even the disk grew; only
  * the invoice did. The set does not grow with usage, so it can be paid for
@@ -36,7 +37,7 @@
  * session and to no learner, and deleting one would silence every future
  * session rather than protect anybody (/ORACLE.md §12, §15).
  *
- * COST. 144 clips at roughly 90 characters each is about 13,000 characters of
+ * COST. 300 clips at roughly 60 characters each is about 18,000 characters of
  * text-to-speech — a fraction of a cent at any provider's rate, spent once,
  * against a per-session charge that recurred forever.
  */
