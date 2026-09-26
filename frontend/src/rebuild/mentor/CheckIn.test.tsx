@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { CheckInChoice, type CheckInCopy } from './CheckIn';
 import { checkCopy, type Locale } from '../design/copyBudget';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-mentor.json';
+import es from '@/i18n/es-MX/rebuild-mentor.json';
+import pt from '@/i18n/pt-BR/rebuild-mentor.json';
 
 /*
  * C.19 on the stage: the check-in is a Mentor turn with two EQUAL reply

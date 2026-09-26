@@ -2,9 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { ManagedConnectionsNote } from '@/rebuild/social/PrivateProfile';
 import { ProfileSafetyNotice } from '@/rebuild/social/ProfileSafetyNotice';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
+import es from '@/i18n/es-MX/rebuild-profile.json';
+import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
  * Legacy-route mounts for the E.8 and E.13 rebuild notes. They resolve the

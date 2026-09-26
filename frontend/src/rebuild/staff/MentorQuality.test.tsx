@@ -9,9 +9,9 @@ import {
 } from './MentorQualityDashboard';
 import { acknowledgeFlag, getMentorQualityDashboard, resolveFlag, signWeeklyReview } from './mentorQualityApi';
 import { PREVIEW_SIGNAL_REGISTRY, previewMentorQuality } from './mentorQualityFixtures';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-staff.json';
+import es from '@/i18n/es-MX/rebuild-staff.json';
+import pt from '@/i18n/pt-BR/rebuild-staff.json';
 
 /*
  * S06.13 — C.24's rebuilt staff surface: freshness and gaps in words, open

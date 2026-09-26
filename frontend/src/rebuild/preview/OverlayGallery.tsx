@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type en from '../../i18n/en-US/rebuild.json';
+import type en from '../../i18n/en-US/rebuild-core.json';
 import {
   Button, ButtonGroup, Card, ConfirmDialog, DestructiveAction, Dialog, IconButton, List, ListRow, Menu, Popover, Sheet, Tooltip, useAnnounce, useToast,
 } from '../design/controls';

@@ -1,0 +1,23 @@
+{
+  "ageScreen": {
+    "exit": "Sair",
+    "month": "Mês",
+    "title": "Quando você nasceu?",
+    "unavailable": "Não conseguimos verificar. Tente novamente.",
+    "saving": "Salvando…",
+    "retry": "Tentar novamente",
+    "continue": "Continuar",
+    "invalid": "Confira sua data de nascimento.",
+    "day": "Dia",
+    "year": "Ano",
+    "loading": "Verificando sua conta…",
+    "help": "Sua idade nos ajuda a proteger seu aprendizado."
+  },
+  "kidSuspended": {
+    "title": "Esta conta está pausada",
+    "suspendedBody": "Sua conta está pausada. Ela abre quando um Tutor verificado se conectar.",
+    "deletedBody": "Esta conta foi removida após 90 dias pausada.",
+    "help": "Peça a um adulto para escrever para {email}.",
+    "supportEmail": "informame@littlefounders.ai"
+  }
+}

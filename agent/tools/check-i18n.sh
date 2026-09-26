@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # i18n:check — three-phase verification:
-#   Phase 1: JSON key parity across en-US, es-MX, pt-BR (en-US = source of truth)
+#   Phase 1: JSON key parity across en-US, es-MX, pt-BR (en-US = source of truth),
+#            every file of the folder, the per-lane rebuild-<namespace>.json included;
+#            phase 1b then checks those namespaces are registered and disjoint
 #   Phase 2: Hardcoded string scan in TSX/TS source (strings not wrapped in t())
 #   Phase 3: Every STATICALLY DECIDABLE t() key in source EXISTS in en-US —
 #            plain literals, BOTH branches of t(cond ? 'a' : 'b'), and the
@@ -57,6 +59,15 @@ for loc in es-MX pt-BR; do
 done
 
 [ "$FAIL" -eq 1 ] && exit 1
+
+# ── Phase 1b: rebuilt copy namespaces ─────────────────────────────────────────
+# The rebuilt UI's copy is one rebuild-<namespace>.json per wave-2 lane. Phase 1
+# proves the locales agree file by file; this proves every such file is a
+# registered namespace (frontend/src/i18n/rebuild.ts) and that no top-level key
+# is in two namespaces (their merge would silently shadow one lane's string).
+if ! node agent/tools/check-rebuild-namespaces.mjs; then
+  exit 1
+fi
 
 # ── Phase 2: Hardcoded string scan ────────────────────────────────────────────
 if ! node agent/tools/check-hardcoded-strings.mjs; then

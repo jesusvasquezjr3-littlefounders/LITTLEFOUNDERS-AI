@@ -6,9 +6,9 @@ import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { configureInsights } from '@/lib/insights';
 import { AnalyticsChoice } from '@/rebuild/privacy/AnalyticsChoice';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
+import es from '@/i18n/es-MX/rebuild-profile.json';
+import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 interface Preference { canManage: boolean; enabled: boolean; disclosed: boolean }
 const valid = (value: Preference | null): value is Preference => !!value && typeof value.canManage === 'boolean' && typeof value.enabled === 'boolean' && typeof value.disclosed === 'boolean';

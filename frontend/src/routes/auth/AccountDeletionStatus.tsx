@@ -6,9 +6,9 @@ import { useAuth } from '@/auth/AuthContext';
 import { BASE_URL } from '@/lib/api';
 import { AccountDeletion, type AccountDeletionView } from '@/rebuild/account/AccountDeletion';
 import { cancelAccountDeletion } from '@/rebuild/account/deletionClient';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
+import es from '@/i18n/es-MX/rebuild-profile.json';
+import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
  * Product 10 E.6's one public deletion screen, on the rebuild design system.

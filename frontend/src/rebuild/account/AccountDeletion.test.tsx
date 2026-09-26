@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import en from '../../i18n/en-US/rebuild.json';
-import es from '../../i18n/es-MX/rebuild.json';
-import pt from '../../i18n/pt-BR/rebuild.json';
+import en from '../../i18n/en-US/rebuild-profile.json';
+import es from '../../i18n/es-MX/rebuild-profile.json';
+import pt from '../../i18n/pt-BR/rebuild-profile.json';
 import { AccountDeletion, type AccountDeletionView } from './AccountDeletion';
 import { ACCOUNT_DELETION_PREVIEW_STATES } from './AccountDeletionPreview';
 

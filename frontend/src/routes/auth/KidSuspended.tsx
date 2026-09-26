@@ -2,9 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { useAuth } from '@/auth/AuthContext';
 import { KidSuspendedScreen } from '@/rebuild/identity/KidSuspendedScreen';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-site.json';
+import es from '@/i18n/es-MX/rebuild-site.json';
+import pt from '@/i18n/pt-BR/rebuild-site.json';
 
 /*
  * A.1's suspended-account route — public by design: Core has already

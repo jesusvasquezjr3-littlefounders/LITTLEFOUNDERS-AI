@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TeenMemoryReviewSetting } from '../TeenMemoryReviewSetting';
-import en from '@/i18n/en-US/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
 
 const copy = en.memorySelfReview;
 

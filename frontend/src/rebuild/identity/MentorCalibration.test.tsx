@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { MentorCalibration } from './MentorCalibration';
-import en from '@/i18n/en-US/rebuild.json';
+import en from '@/i18n/en-US/rebuild-mentor.json';
 
 it('offers coarse groups and disables all choices while saving', () => {
   const onChoose = vi.fn();

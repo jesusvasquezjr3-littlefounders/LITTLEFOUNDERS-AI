@@ -1,0 +1,210 @@
+{
+  "staffLiveContent": {
+    "title": "Atividades ao vivo do Mentor",
+    "intro": "O Mentor as escreve durante a sessão. A equipe revisa uma parte.",
+    "judgeLabel": "Juiz de conteúdo",
+    "judge": {
+      "passed": "Calibrado há {n} dias",
+      "uncalibrated": "Sem calibração. As atividades ao vivo estão pausadas.",
+      "stale": "Calibração vencida. As atividades ao vivo estão pausadas."
+    },
+    "category": {
+      "standard": "Temas do dia a dia",
+      "sensitive": "Temas sensíveis"
+    },
+    "rate": "{rate} revisado, nunca abaixo de {floor}",
+    "open": "Atividades ao vivo ativas",
+    "reason": {
+      "uncalibrated": "Pausado até calibrar o juiz",
+      "calibration_stale": "Pausado até recalibrar o juiz",
+      "concordance_below_floor": "Pausado: a equipe rejeitou demais",
+      "review_rate_below_floor": "Pausado: revisões atrasadas"
+    },
+    "elevated": "Aumentou após um problema. Faltam {n} revisões sem problema.",
+    "overdue": "{n} revisões atrasadas",
+    "nothingOverdue": "Nenhuma revisão atrasada",
+    "loading": "Carregando.",
+    "loadFailed": "Não carregou. Tente mais tarde.",
+    "reviewTitle": "Revise esta atividade",
+    "reviewLabel": "Sua decisão",
+    "approve": "Aprovar",
+    "quality": "Problema de qualidade",
+    "safety": "Problema de segurança",
+    "decided": "Decisão registrada.",
+    "alreadyDecided": "Alguém já decidiu isto.",
+    "decideFailed": "Não salvou. Tente de novo.",
+    "packsTitle": "Pacotes de atividades para revisar",
+    "packsEmpty": "Nenhum pacote aguardando.",
+    "packMeta": "Nível {tier}, {locale}, {count} atividades",
+    "publish": "Publicar",
+    "archive": "Arquivar",
+    "published": "Publicado.",
+    "archived": "Arquivado.",
+    "refused": "Não publicado. Corrija isto primeiro:",
+    "packFailed": "Não salvou. Tente de novo."
+  },
+  "staffMentorQuality": {
+    "title": "Qualidade do Mentor",
+    "intro": "Todos os sinais do Mentor em um lugar, com quem deve revisá-los.",
+    "loading": "Carregando.",
+    "loadFailed": "Não carregou. Tente mais tarde.",
+    "updated": "Atualizado há {n} horas",
+    "stale": "Desatualizado: última atualização há {n} horas",
+    "never": "Ainda não calculado. A verificação horária não rodou.",
+    "lastRun": {
+      "ok": "Última verificação completa",
+      "partial": "A última verificação não leu tudo",
+      "failed": "A última verificação falhou"
+    },
+    "noOwner": "Ninguém designado para estas funções:",
+    "flagsTitle": "Para revisar",
+    "flagsEmpty": "Nenhum alerta aberto.",
+    "kind": {
+      "threshold_breach": "Passou do limite",
+      "zero_tolerance": "Falha de tolerância zero",
+      "upward_drift": "Em alta",
+      "relative_drop": "Caiu",
+      "persona_disparity": "Um Mentor ficou para trás",
+      "subgroup_disparity": "Um grupo ficou para trás",
+      "source_unavailable": "Dados faltando"
+    },
+    "severity": {
+      "urgent": "Urgente",
+      "review": "Revisar"
+    },
+    "flagStatus": {
+      "open": "Aberto",
+      "acknowledged": "Visto"
+    },
+    "flagMeta": "Responsável: {role}. Visto {n} vezes.",
+    "acknowledge": "Marcar como visto",
+    "resolve": "Resolver",
+    "noteLabel": "Causa raiz",
+    "noteHint": "Pelo menos 10 caracteres.",
+    "confirmResolve": "Marcar resolvido",
+    "cancel": "Cancelar",
+    "acknowledged": "Marcado como visto.",
+    "resolved": "Resolvido.",
+    "notOwner": "Só a pessoa responsável pode fazer isso.",
+    "changed": "Este alerta mudou. Recarregue a página.",
+    "actionFailed": "Não salvou. Tente de novo.",
+    "signalsTitle": "Sinais",
+    "category": {
+      "pedagogy": "Ensino",
+      "relational": "Relação",
+      "safety_governance": "Segurança e governança",
+      "pipeline": "Processo",
+      "learning_outcome": "Resultados de aprendizagem",
+      "engagement_health": "Saúde do uso"
+    },
+    "signalStatus": {
+      "ok": "Na meta",
+      "breach": "Para revisar",
+      "insufficient_data": "Poucos dados",
+      "diagnostic": "Acompanhando a tendência",
+      "unavailable": "Não foi possível ler",
+      "not_instrumented": "Ainda sem medição",
+      "external": "Medido em outro lugar"
+    },
+    "notComputed": "Ainda não calculado",
+    "ownerRole": {
+      "pedagogical_lead": "Líder de pedagogia",
+      "safety_trust_lead": "Líder de segurança e confiança",
+      "engineering_lead": "Líder de engenharia"
+    },
+    "sample": "{n} observados",
+    "reviewTitle": "Revisão semanal",
+    "reviewDone": "{role}: assinada esta semana",
+    "reviewMissing": "{role}: ainda não assinada",
+    "reviewRate": "Semana passada: {rate} dos responsáveis assinaram",
+    "signReview": "Assinar revisão",
+    "reviewSigned": "Revisão assinada.",
+    "reviewAlready": "Já assinada esta semana.",
+    "signal": {
+      "mastery": {
+        "corroboration_compliance": "Domínio confirmado por duas respostas",
+        "reversal_rate": "Domínio revertido depois"
+      },
+      "rubric": {
+        "hint_repeat": "Dicas nunca repetidas",
+        "tell_honored": "Resposta dada quando pedida",
+        "self_explanation": "Explicações que citam a ideia",
+        "goal_agreement": "Meta combinada no início",
+        "answer_reveal": "Respostas reveladas sem pedido",
+        "false_affirmation": "Respostas erradas elogiadas",
+        "praise_specificity": "Elogios ligados a um passo real",
+        "check_in": "Pergunta após distração",
+        "closing_script": "Encerramento certo para cada final",
+        "controlling_language": "Linguagem controladora com adolescentes",
+        "emotion_label": "Emoções afirmadas como fatos"
+      },
+      "spaced_review": {
+        "routing": "Revisão direcionada pela regra"
+      },
+      "disposition": {
+        "completeness": "Estudantes com perfil atualizado"
+      },
+      "session_end": {
+        "trigger_rate": "Sinal antecipado de pausa acionado"
+      },
+      "alliance": {
+        "bond_proxy": "Estudantes que se sentiram entendidos",
+        "renegotiation": "Plano renegociado após recusas"
+      },
+      "telemetry": {
+        "default_to_inaction": "Turnos sem intervenção",
+        "friction_rate": "Sessões com sinais de distração"
+      },
+      "dialogue": {
+        "ab_outcome": "Regressões no teste por idade"
+      },
+      "judge": {
+        "content_calibration": "Juiz de conteúdo calibrado"
+      },
+      "kill_switch": {
+        "open": "Reversões automáticas ativas"
+      },
+      "bias_audit": {
+        "coverage": "Cobertura da auditoria de viés"
+      },
+      "transcript_judge": {
+        "agreement": "Concordância do juiz de conversas"
+      },
+      "governance": {
+        "tier_compliance": "Regras de nível cumpridas"
+      },
+      "evaluation": {
+        "coverage": "Sessões avaliadas"
+      },
+      "content_ladder": {
+        "distribution": "Atividades escritas ao vivo"
+      },
+      "simulated_student": {
+        "pass_rate": "Testes com estudantes simulados"
+      },
+      "canary": {
+        "regression_rate": "Reversões em teste limitado"
+      },
+      "learning": {
+        "delayed_retention": "Lembrado semanas depois",
+        "practice_success_band": "Acertos na prática",
+        "time_to_mastery": "Tentativas até dominar uma habilidade",
+        "transfer_success": "Acertos em contextos novos",
+        "judgment_quality": "Julgamento além do acerto",
+        "bridge_conversion": "Lições que viram tarefas reais",
+        "decision_journal": "Escolhas passadas retomadas"
+      },
+      "engagement": {
+        "session_efficiency": "Tempo dedicado à prática",
+        "mentor_resolution": "Turnos para resolver uma pergunta",
+        "streak_anxiety": "Retornos por alertas de sequência",
+        "rest_day_use": "Dias de descanso usados",
+        "dark_pattern_audit": "Padrões manipuladores encontrados",
+        "variable_ratio_audit": "Prêmios de razão variável para menores",
+        "reward_framing": "Prêmios apresentados como aprendizado",
+        "autonomy_adoption": "Estudantes que escolhem o caminho",
+        "parent_time_to_value": "Tempo do responsável até o resumo semanal"
+      }
+    }
+  }
+}

@@ -2,9 +2,9 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LiveContentStatusPanel, LiveReviewDecision, PackRelease, type LiveContentCopy } from './LiveContentGovernance';
 import { decideLiveItem, getLiveContentStatus, reviewBody, setPackStatus, type LiveContentStatus, type TutorPackSummary } from './liveContentApi';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-staff.json';
+import es from '@/i18n/es-MX/rebuild-staff.json';
+import pt from '@/i18n/pt-BR/rebuild-staff.json';
 
 /*
  * C.5 / C.6 staff surfaces: the per-category status, one review decision

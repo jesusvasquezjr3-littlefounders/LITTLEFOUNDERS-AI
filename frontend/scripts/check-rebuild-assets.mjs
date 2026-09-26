@@ -179,7 +179,10 @@ for (const [, name, hex] of tokenSheet.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})\b/
   else if (!hueOf.has(value)) hueOf.set(value, family);
 }
 const locales = ['en-US', 'es-MX', 'pt-BR'];
-const copy = Object.fromEntries(locales.map((locale) => [locale, JSON.parse(readFileSync(resolve(root, `src/i18n/${locale}/rebuild.json`), 'utf8'))]));
+// Every rebuilt namespace (`src/i18n/<locale>/rebuild-<lane>.json`, one per wave-2 lane), merged: an altKey names its full key path.
+const rebuildCopy = (locale) => Object.assign({}, ...readdirSync(resolve(root, `src/i18n/${locale}`)).filter((file) => /^rebuild-[a-z]+\.json$/.test(file)).sort()
+  .map((file) => JSON.parse(readFileSync(resolve(root, `src/i18n/${locale}/${file}`), 'utf8'))));
+const copy = Object.fromEntries(locales.map((locale) => [locale, rebuildCopy(locale)]));
 const lookup = (object, key) => key.split('.').reduce((node, part) => (node && typeof node === 'object' ? node[part] : undefined), object);
 const words = (text) => (text.match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) ?? []).length;
 

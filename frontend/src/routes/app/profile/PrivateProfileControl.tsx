@@ -5,9 +5,9 @@ import { useTheme } from '@/theme/useTheme';
 import { BASE_URL } from '@/lib/api';
 import { PrivateProfile, type PrivateRequestState } from '@/rebuild/social/PrivateProfile';
 import { askToConnect } from '@/rebuild/social/teenConnectionsClient';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
+import es from '@/i18n/es-MX/rebuild-profile.json';
+import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
  * Data plane for E.8's private teen card on the legacy public-profile route.

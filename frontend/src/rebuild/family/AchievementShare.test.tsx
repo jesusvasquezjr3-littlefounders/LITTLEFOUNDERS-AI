@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import en from '../../i18n/en-US/rebuild.json';
-import es from '../../i18n/es-MX/rebuild.json';
-import pt from '../../i18n/pt-BR/rebuild.json';
+import en from '../../i18n/en-US/rebuild-family.json';
+import es from '../../i18n/es-MX/rebuild-family.json';
+import pt from '../../i18n/pt-BR/rebuild-family.json';
 import { AchievementShare, type AchievementShareStatus } from './AchievementShare';
 
 /*

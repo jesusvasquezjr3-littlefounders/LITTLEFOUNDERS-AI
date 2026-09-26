@@ -54,7 +54,7 @@ try{
  await warmDevServer(page,origin);await page.send('Page.navigate',{url:origin});await wait('!!document.body');
  for(locale of ['en-US','es-MX','pt-BR'])for(theme of ['light','dark'])for(const width of [375,1280]){
   writes=0;graphReads=0;historyReads=0;queue=[queued('first','First requester'),queued('second','Second requester'),queued('third','Third requester')];const before=reads;
-  const copy=JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild.json`),'utf8')).socialRequests;
+  const copy=JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-family.json`),'utf8')).socialRequests;
   const session={accessToken:token,refreshToken:'synthetic',expiresAt:Date.now()+3600000,user:{id},isGuest:false};
   await page.evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('lf.session.v1',${JSON.stringify(JSON.stringify(session))});localStorage.setItem('i18nextLng',${JSON.stringify(locale)});localStorage.setItem('lf-theme',${JSON.stringify(theme)});`);
   await page.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
@@ -64,7 +64,7 @@ try{
   await wait(`document.querySelector('[data-social-audit=requests]')?.dataset.theme === ${JSON.stringify(theme)} && document.querySelector('[data-social-audit=requests]')?.lang === ${JSON.stringify(locale)}`);
   await page.evaluate('document.fonts.ready.then(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))');
   assert.equal(reads,before,'Closed panel fetched the social graph');
-  const allCopy=JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild.json`),'utf8'));
+  const allCopy=JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-family.json`),'utf8'));
   await click(allCopy.socialGraph.title);await click(allCopy.socialHistory.title);
   await wait(`!!document.querySelector('[data-social-audit=history] ul')`);
   await click(copy.title);await wait(`document.querySelectorAll('[data-social-audit=requests] li').length === 3`);

@@ -50,7 +50,7 @@ try{
  await warmDevServer(page,origin);await page.send('Page.navigate',{url:origin});await wait('!!document.body');
  for(locale of ['en-US','es-MX','pt-BR'])for(theme of ['light','dark'])for(const width of [375,1280]){
   failedPage=false;const before=reads;
-  const copy=JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild.json`),'utf8')).socialRequests;
+  const copy=JSON.parse(readFileSync(resolve(`src/i18n/${locale}/rebuild-family.json`),'utf8')).socialRequests;
   const session={accessToken:token,refreshToken:'synthetic',expiresAt:Date.now()+3600000,user:{id},isGuest:false};
   await page.evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('lf.session.v1',${JSON.stringify(JSON.stringify(session))});localStorage.setItem('i18nextLng',${JSON.stringify(locale)});localStorage.setItem('lf-theme',${JSON.stringify(theme)});`);
   await page.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});

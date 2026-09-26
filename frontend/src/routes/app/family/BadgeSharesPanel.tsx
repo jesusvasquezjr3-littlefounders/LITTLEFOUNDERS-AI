@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { BadgeShares, type BadgeShareEntry } from '@/rebuild/family/BadgeShares';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-family.json';
+import es from '@/i18n/es-MX/rebuild-family.json';
+import pt from '@/i18n/pt-BR/rebuild-family.json';
 
 /*
  * F.2's Family-panel data plane for the rebuild BadgeShares surface: loads a

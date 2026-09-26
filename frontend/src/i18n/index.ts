@@ -9,6 +9,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  * <locale>/errors.json    — API error codes (mounted under "errors")
  * New product sections add a new file per locale (e.g. learn.json → "learn").
  * Key paths seen by t() are unchanged by the fragmentation.
+ *
+ * The REBUILT UI's copy is deliberately not loaded here: it is one
+ * `<locale>/rebuild-<namespace>.json` per wave-2 lane (core, site, learn,
+ * mentor, family, profile, staff), imported as typed JSON by the surface that
+ * owns it, or merged by `./rebuild.ts` (REBUILD_NAMESPACES). A rebuilt string
+ * missing from its namespace is then a type error, never a raw key on screen.
  */
 import enCommon from './en-US/common.json';
 import enMarketing from './en-US/marketing.json';

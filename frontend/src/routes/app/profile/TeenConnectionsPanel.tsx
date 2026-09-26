@@ -5,9 +5,9 @@ import { useTheme } from '@/theme/useTheme';
 import { BASE_URL } from '@/lib/api';
 import { TeenConnections, type FollowerView, type TeenNotice, type TeenRequestView } from '@/rebuild/social/TeenConnections';
 import { decideTeenRequest, getFollowers, getTeenRequests, removeFollower } from '@/rebuild/social/teenConnectionsClient';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
+import es from '@/i18n/es-MX/rebuild-profile.json';
+import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
  * Data plane for E.8's self-managed teen connections on the legacy own-profile

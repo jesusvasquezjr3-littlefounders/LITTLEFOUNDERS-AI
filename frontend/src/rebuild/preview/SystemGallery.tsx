@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import type en from '../../i18n/en-US/rebuild.json';
+import type en from '../../i18n/en-US/rebuild-core.json';
 import {
   Art, Banner, Button, ButtonGroup, Card, Celebration, celebrationPart, Checkbox, Chip, ChipGroup, ChoiceChip, CountUp, EmptyState, ErrorState,
   IconButton, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, RadioGroup, RewardChip, SegmentedControl,

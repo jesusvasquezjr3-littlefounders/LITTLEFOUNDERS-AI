@@ -84,7 +84,7 @@ test('E.10: a messaging table, a reply column, a function, a view or a renamed t
 test('E.10: a messaging route in Core or the frontend fails', () => {
   expectFailure([['backend/src/routes/profile.ts', "router.get('/followers',", "router.post('/say-hi/reply', (_q, r) => r.end());\n  router.get('/followers',"]], /Core route "\/say-hi\/reply"/);
   expectFailure([['backend/src/app.ts', "app.use('/api/v1/profile', ownProfileRouter());", "app.use('/api/v1/profile', ownProfileRouter());\n  app.use('/api/v1/kid-chat', ownProfileRouter());"]], /Core route "\/api\/v1\/kid-chat"/);
-  expectFailure([['frontend/src/App.tsx', 'path="faq"', 'path="faq" /><Route path="family/messages"']], /frontend route "family\/messages"/);
+  expectFailure([['frontend/src/app-routes/site.tsx', 'path="faq"', 'path="faq" element={null} /><Route path="family/messages"']], /frontend route "family\/messages"/);
 });
 
 test('E.10: vocabulary or reviewed-list drift fails', () => {

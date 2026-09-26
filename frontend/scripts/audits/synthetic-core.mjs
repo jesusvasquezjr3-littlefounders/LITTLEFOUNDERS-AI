@@ -1,3 +1,5 @@
+import { LANES, LANE_SCENARIOS } from './lanes/index.mjs';
+
 /*
  * A synthetic Core for the rebuilt-app audits on AUTHENTICATED routes (S03.5).
  *
@@ -20,10 +22,14 @@
  * Unknown endpoints get `{ data: {}, error: null }` and are recorded in
  * `unknownRequests`, so a new dependency of a route is visible in the report
  * instead of silently shaping what was measured.
+ *
+ * The answers every route needs (the session, the age screen, analytics, the
+ * profile) live here; each wave-2 lane answers the endpoints only its routes
+ * call from its own `lanes/<lane>.mjs` (`respond`), and declares its
+ * scenarios there too.
  */
 
 const LEARNER_ID = '33333333-3333-4333-8333-333333333333';
-const RUN_ID = '44444444-4444-4444-8444-444444444444';
 
 /** The access token the app stores; Core never sees it (every request is answered locally). */
 function token(guest) {
@@ -66,29 +72,17 @@ export async function loadLessonFixtures(page, locales) {
   })()`);
 }
 
-const MEMORY_NOTE = { 'en-US': 'Saving for a bike.', 'es-MX': 'Ahorra para una bici.', 'pt-BR': 'Poupa para uma bicicleta.' };
-
 const AGE_BANDS = { '6-9': 'under_13', '10-12': 'under_13', '13-17': '13_to_17', adult: 'adult' };
 
 /**
- * What each authenticated scenario answers. `population` is who is signed in
- * (every minor safeguard follows age, not role): a guest before the age
- * screen, a parent-created child, an independent teen, an adult.
+ * What each authenticated scenario answers, declared by the lane that owns the
+ * route (lanes/<lane>.mjs). `population` is who is signed in (every minor
+ * safeguard follows age, not role): a guest before the age screen, a
+ * parent-created child, an independent teen, an adult, a verified Tutor, a
+ * staff member. Optional fields: `roles` (default ['universal']),
+ * `adminPermissions`, `username`.
  */
-export const SCENARIOS = {
-  'age-screen': { population: 'guest', guest: true, ageBand: null },
-  'settings-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17' },
-  'lesson-goal': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', lesson: 'goal' },
-  'lesson-allocation': { population: 'adult', guest: false, ageBand: 'adult', lesson: 'allocation', graded: true, mentorStage: { character: 'zara', scene: 'diorama-a' } },
-  'lesson-function-machine': { population: 'parent-created child 10-12', guest: false, ageBand: '10-12', lesson: 'functionMachine', graded: true },
-  'lesson-opening': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', hold: true },
-  'lesson-offline': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', fail: 'InternetDisconnected' },
-  'lesson-load-error': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', error: [500, 'INTERNAL'] },
-  'lesson-placement': { population: 'parent-created child 10-12', guest: false, ageBand: '10-12', error: [403, 'PLACEMENT_REQUIRED'] },
-  'lesson-eligibility-required': { population: 'adult', guest: false, ageBand: 'adult', error: [403, 'LESSON_AGE_ELIGIBILITY_REQUIRED'] },
-  'lesson-eligibility-restricted': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', error: [403, 'LESSON_AGE_RESTRICTED'] },
-  'lesson-eligibility-unavailable': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', error: [409, 'LESSON_ELIGIBILITY_MISSING'] },
-};
+export const SCENARIOS = LANE_SCENARIOS;
 
 /**
  * Answers every `/api/v1/*` request of `page` from `page.core`
@@ -125,7 +119,8 @@ function respond(core, path, request, unknownRequests) {
   const spec = SCENARIOS[scenario];
   const ok = (data) => ({ status: 200, body: { data, error: null } });
   if (path === '/auth/me') return ok({
-    profile: { display_name: 'Synthetic', locale, theme, cover: {} }, roles: ['universal'], avatarOptions: {},
+    profile: { display_name: 'Synthetic', ...(spec.username ? { username: spec.username } : {}), locale, theme, cover: {} }, roles: spec.roles ?? ['universal'],
+    adminPermissions: spec.adminPermissions ?? [], avatarOptions: {},
     analyticsEnabled: false, isGuest: spec.guest, newAccount: false, onboardingComplete: !spec.guest,
   });
   if (path === '/auth/age-screen') return ok(spec.ageBand
@@ -137,24 +132,9 @@ function respond(core, path, request, unknownRequests) {
   if (path === '/profile') return ok({ displayName: 'Synthetic', username: 'synthetic', locale, birthDate: null,
     learningStats: { xpPoints: 0, minutesLearned: 0, lessonsCompleted: 0, streakDays: 0, lastActiveDate: null } });
   if (path === '/profile/blocked') return ok({ users: [] });
-  // The teen's own Mentor-memory review queue (OD-18): one proposed note, so the rebuilt panel shows a real item.
-  if (path === '/tutor/memory-proposals' && request.method === 'GET') return ok({
-    proposals: [{ id: '55555555-5555-4555-8555-555555555555', proposed: MEMORY_NOTE[locale], expectedBefore: null, sessionId: null, createdAt: '2026-09-20T10:00:00Z' }],
-    current: null,
-  });
-  const lesson = path.match(/^\/learn\/lessons\/([^/]+)(\/v2-runs)?$/);
-  if (lesson && !lesson[2]) {
-    if (spec.hold) return 'hold';
-    if (spec.fail) return { fail: spec.fail };
-    if (spec.error) return { status: spec.error[0], body: { data: null, error: { code: spec.error[1], message: 'Synthetic refusal' } } };
-    const document = fixtures[locale][spec.lesson];
-    return ok({ lesson: { id: lesson[1], slug: lesson[1] }, locale, document, audio: {}, ...(spec.mentorStage ? { mentor_stage: spec.mentorStage } : {}) });
-  }
-  if (lesson && lesson[2] && request.method === 'POST' && spec.graded) {
-    const document = fixtures[locale][spec.lesson];
-    const tokens = Object.fromEntries(document.segments.filter((segment) => segment.grading === 'server').map((segment) => [segment.id, `synthetic-${segment.id}`]));
-    return ok({ run_id: RUN_ID, version_id: document.version_id, expires_at: new Date(Date.now() + 3_600_000).toISOString(),
-      resumed: false, met_segment_ids: [], attempted_segment_ids: [], attempt_tokens: tokens });
+  for (const lane of LANES) {
+    const answer = lane.respond({ core, spec, scenario, locale, theme, fixtures, path, request, ok });
+    if (answer !== undefined) return answer;
   }
   unknownRequests.add(`${request.method} ${path} (${scenario})`);
   return ok({});

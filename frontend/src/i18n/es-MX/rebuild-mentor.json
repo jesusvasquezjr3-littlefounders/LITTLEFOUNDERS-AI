@@ -1,0 +1,101 @@
+{
+  "mentorCalibration": {
+    "question": "¿En qué grupo de edad estás?",
+    "help": "Así puedo explicarte mejor.",
+    "youngest": "6–7",
+    "middle": "8–9",
+    "older": "10+",
+    "loading": "Preparando…",
+    "saving": "Guardando…",
+    "unavailable": "No pudimos guardar. Intenta otra vez.",
+    "retry": "Reintentar"
+  },
+  "mentorSessionEnd": {
+    "choiceLabel": "Parar o seguir",
+    "stop": "Parar por hoy",
+    "more": "Una más",
+    "completedTitle": "Sesión terminada",
+    "interruptedTitle": "En pausa por hoy",
+    "leftTitle": "Sesión en pausa",
+    "safetyTitle": "Clase detenida",
+    "effort": {
+      "corroborated": "Te salió la misma idea bien dos veces seguidas.",
+      "recovered": "Lo intentaste otra vez después de fallar y te salió.",
+      "hint_then_solved": "Usaste una pista y luego lo terminaste tú.",
+      "kept_going": "Seguiste trabajando en las actividades.",
+      "talked_through": "Pensaste en voz alta paso a paso.",
+      "none": "Gracias por pasar."
+    },
+    "interruptedNext": "Paramos a la mitad, y está bien.",
+    "interruptedNextNoTopic": "La próxima vez, seguimos donde nos quedamos.",
+    "leftBody": "Puedes seguir donde te quedaste.",
+    "safetyBody": "Habla con una persona adulta de confianza.",
+    "nextLabel": "La próxima vez:",
+    "backToPath": "Volver al camino",
+    "previewTopic": "Ahorrar para una meta"
+  },
+  "mentorCheckIn": {
+    "choiceLabel": "Tu respuesta",
+    "aligned": "Sí, vamos bien",
+    "misaligned": "La verdad no"
+  },
+  "mentorGoalCheck": {
+    "choiceLabel": "Tu respuesta",
+    "agree": "Sí, eso",
+    "other": "Otra cosa"
+  },
+  "mentorAllianceCheck": {
+    "question": "¿Entendí lo que querías hoy?",
+    "choiceLabel": "Tu respuesta",
+    "yes": "Sí",
+    "partly": "Un poco",
+    "no": "La verdad no",
+    "thanks": "Gracias por decírmelo.",
+    "failed": "No se guardó. Intenta de nuevo.",
+    "retry": "Reintentar"
+  },
+  "mentorProfile": {
+    "titleOwn": "Cómo aprendes",
+    "titleChild": "Cómo aprende",
+    "intro": "El Mentor se ajusta a esto, según sesiones pasadas.",
+    "empty": "Aún nada. Se forma tras unas sesiones.",
+    "notCurrent": "Actualizado hace más de un mes.",
+    "loading": "Cargando.",
+    "loadFailed": "No se pudo cargar. Intenta más tarde.",
+    "helpLabel": "Pedir ayuda",
+    "help": {
+      "independent": "Intenta primero, luego pregunta",
+      "hint_seeking": "Pide pistas seguido",
+      "tell_early": "Pide la respuesta pronto",
+      "unknown": "Aún faltan sesiones"
+    },
+    "persistenceLabel": "Momentos difíciles",
+    "persistence": {
+      "persists": "Suele seguir adelante",
+      "disengages_early": "Suele parar pronto",
+      "unknown": "Aún faltan sesiones"
+    },
+    "explanationLabel": "Explicar decisiones",
+    "explanation": {
+      "explains": "Nombra la idea",
+      "needs_scaffold": "Recibe un inicio de frase",
+      "unknown": "Aún faltan sesiones"
+    },
+    "declinedLabel": "No quiso",
+    "declinedNone": "Nada",
+    "adaptation": {
+      "slower_pacing": "Ir más despacio",
+      "more_examples": "Más ejemplos",
+      "less_text": "Menos texto",
+      "more_visual": "Más dibujos",
+      "repeat_before_advancing": "Repetir antes"
+    },
+    "paceLabel": "Tiempo usual de respuesta",
+    "paceSeconds": "Unos {n} segundos",
+    "paceUnknown": "Aún sin medir",
+    "reset": "Reiniciar perfil",
+    "resetting": "Reiniciando",
+    "resetDone": "Perfil reiniciado.",
+    "resetFailed": "No se reinició. Intenta de nuevo."
+  }
+}

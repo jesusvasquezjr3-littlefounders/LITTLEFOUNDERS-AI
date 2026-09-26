@@ -4,9 +4,9 @@ import { useAuth } from '@/auth/AuthContext';
 import { useTheme } from '@/theme/useTheme';
 import { api } from '@/lib/api';
 import { ConnectionRequest } from '@/rebuild/social/ConnectionRequest';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
+import es from '@/i18n/es-MX/rebuild-profile.json';
+import pt from '@/i18n/pt-BR/rebuild-profile.json';
 export function ConnectionRequestControl({ username, decidedBy = 'guardian' }: { username: string; decidedBy?: 'guardian' | 'subject' }) {
   const { session } = useAuth();
   return <ScopedRequest key={`${session?.user.id}:${username}`} username={username} decidedBy={decidedBy} />;

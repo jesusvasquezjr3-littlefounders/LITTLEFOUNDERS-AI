@@ -1,0 +1,101 @@
+{
+  "mentorCalibration": {
+    "question": "Which age group are you in?",
+    "help": "This helps me explain things.",
+    "youngest": "6–7",
+    "middle": "8–9",
+    "older": "10+",
+    "loading": "Getting ready…",
+    "saving": "Saving…",
+    "unavailable": "Could not save. Try again.",
+    "retry": "Try again"
+  },
+  "mentorSessionEnd": {
+    "choiceLabel": "Stop or keep going",
+    "stop": "Stop for today",
+    "more": "One more",
+    "completedTitle": "Session done",
+    "interruptedTitle": "Paused for today",
+    "leftTitle": "Session paused",
+    "safetyTitle": "Lesson stopped",
+    "effort": {
+      "corroborated": "You got the same idea right twice in a row.",
+      "recovered": "You tried again after a miss and got it.",
+      "hint_then_solved": "You used a hint, then finished it yourself.",
+      "kept_going": "You kept working through the activities.",
+      "talked_through": "You thought it through out loud.",
+      "none": "Thanks for stopping by."
+    },
+    "interruptedNext": "We stopped in the middle, and that is okay.",
+    "interruptedNextNoTopic": "Next time, we start where we stopped.",
+    "leftBody": "You can pick up where you left off.",
+    "safetyBody": "Please talk to a grown-up you trust.",
+    "nextLabel": "Next time:",
+    "backToPath": "Back to path",
+    "previewTopic": "Saving for a goal"
+  },
+  "mentorCheckIn": {
+    "choiceLabel": "Your answer",
+    "aligned": "We're good",
+    "misaligned": "Not really"
+  },
+  "mentorGoalCheck": {
+    "choiceLabel": "Your answer",
+    "agree": "Yes, that's it",
+    "other": "Something else"
+  },
+  "mentorAllianceCheck": {
+    "question": "Did I get what you wanted today?",
+    "choiceLabel": "Your answer",
+    "yes": "Yes",
+    "partly": "A little",
+    "no": "Not really",
+    "thanks": "Thanks for telling me.",
+    "failed": "That did not save. Try again.",
+    "retry": "Try again"
+  },
+  "mentorProfile": {
+    "titleOwn": "How you learn",
+    "titleChild": "How they learn",
+    "intro": "The Mentor adjusts to this, from past sessions.",
+    "empty": "Nothing yet. It builds after a few sessions.",
+    "notCurrent": "Last updated over a month ago.",
+    "loading": "Loading.",
+    "loadFailed": "This did not load. Try later.",
+    "helpLabel": "Asking for help",
+    "help": {
+      "independent": "Tries first, then asks",
+      "hint_seeking": "Asks for hints often",
+      "tell_early": "Asks for the answer early",
+      "unknown": "Not enough sessions yet"
+    },
+    "persistenceLabel": "Hard moments",
+    "persistence": {
+      "persists": "Usually stays with it",
+      "disengages_early": "Often stops early",
+      "unknown": "Not enough sessions yet"
+    },
+    "explanationLabel": "Explaining choices",
+    "explanation": {
+      "explains": "Names the idea",
+      "needs_scaffold": "Gets a sentence starter",
+      "unknown": "Not enough sessions yet"
+    },
+    "declinedLabel": "Turned down",
+    "declinedNone": "Nothing",
+    "adaptation": {
+      "slower_pacing": "Slower pace",
+      "more_examples": "More examples",
+      "less_text": "Less text",
+      "more_visual": "More pictures",
+      "repeat_before_advancing": "Repeat first"
+    },
+    "paceLabel": "Usual reply time",
+    "paceSeconds": "About {n} seconds",
+    "paceUnknown": "Not measured yet",
+    "reset": "Reset profile",
+    "resetting": "Resetting",
+    "resetDone": "Profile reset.",
+    "resetFailed": "That did not reset. Try again."
+  }
+}

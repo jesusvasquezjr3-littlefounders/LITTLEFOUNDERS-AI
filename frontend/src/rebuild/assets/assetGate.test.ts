@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -24,7 +24,9 @@ function tree() {
   cpSync(join(frontend, 'src/tutor-scene/poseLibrary.ts'), join(dir, 'src/tutor-scene/poseLibrary.ts'));
   for (const locale of ['en-US', 'es-MX', 'pt-BR']) {
     mkdirSync(join(dir, 'src/i18n', locale), { recursive: true });
-    cpSync(join(frontend, 'src/i18n', locale, 'rebuild.json'), join(dir, 'src/i18n', locale, 'rebuild.json'));
+    for (const file of readdirSync(join(frontend, 'src/i18n', locale)).filter((name) => /^rebuild-[a-z]+\.json$/.test(name))) {
+      cpSync(join(frontend, 'src/i18n', locale, file), join(dir, 'src/i18n', locale, file));
+    }
   }
   return dir;
 }

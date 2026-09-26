@@ -1,0 +1,23 @@
+{
+  "ageScreen": {
+    "exit": "Sign out",
+    "month": "Month",
+    "title": "When were you born?",
+    "unavailable": "We could not check. Try again.",
+    "saving": "Saving…",
+    "retry": "Try again",
+    "continue": "Continue",
+    "invalid": "Check your birth date.",
+    "day": "Day",
+    "year": "Year",
+    "loading": "Checking your account…",
+    "help": "Your age helps us protect your learning."
+  },
+  "kidSuspended": {
+    "title": "This account is paused",
+    "suspendedBody": "Your account is paused. It opens again when a verified Tutor links.",
+    "deletedBody": "This account was removed after 90 days paused.",
+    "help": "Ask a parent to email {email}.",
+    "supportEmail": "informame@littlefounders.ai"
+  }
+}

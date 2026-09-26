@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest';
 /*
  * Mechanical rules over every rebuilt string and source file (S03.8 lane
  * review). The per-surface copy-budget tests check each surface's own keys;
- * these check ALL of `i18n/<locale>/rebuild.json` and `emails.json`, so a new
+ * these check ALL of `i18n/<locale>/rebuild-*.json` (every wave-2 lane's
+ * namespace, discovered from the folder) and `emails.json`, so a new
  * key cannot slip past a rule because no surface test lists it.
  *
  *   - 02 rule 16: no em dash anywhere in UI copy.
@@ -22,8 +23,8 @@ type Tree = { [key: string]: string | Tree };
 function strings(tree: Tree, prefix = ''): [string, string][] {
   return Object.entries(tree).flatMap(([key, value]) => typeof value === 'string' ? [[`${prefix}${key}`, value] as [string, string]] : strings(value, `${prefix}${key}.`));
 }
-/** Every rebuilt namespace: the app surfaces (rebuild.json) and the account emails (emails.json). */
-const NAMESPACES = ['rebuild', 'emails'] as const;
+/** Every rebuilt namespace: the app surfaces (one `rebuild-<lane>.json` per lane) and the account emails (emails.json). */
+const NAMESPACES = [...readdirSync(join(root, 'src/i18n/en-US')).filter((file) => /^rebuild-[a-z]+\.json$/.test(file)).map((file) => file.slice(0, -5)).sort(), 'emails'];
 const copy = Object.fromEntries(LOCALES.map((locale) => [locale, NAMESPACES.flatMap((namespace) =>
   strings(JSON.parse(readFileSync(join(root, 'src/i18n', locale, `${namespace}.json`), 'utf8')) as Tree, `${namespace}:`))]));
 
@@ -57,7 +58,11 @@ function sources(dir: string): { file: string; text: string }[] {
 }
 const withoutComments = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
 
-describe('rebuilt copy: mechanical rules over every string of rebuild.json and emails.json', () => {
+describe('rebuilt copy: mechanical rules over every string of rebuild-*.json and emails.json', () => {
+  it('reads every lane namespace', () => {
+    expect(NAMESPACES.filter((namespace) => namespace.startsWith('rebuild-')).length).toBeGreaterThanOrEqual(7);
+  });
+
   it('has the same keys in all three locales', () => {
     const keys = (locale: (typeof LOCALES)[number]) => copy[locale]!.map(([key]) => key).sort();
     expect(keys('es-MX')).toEqual(keys('en-US'));

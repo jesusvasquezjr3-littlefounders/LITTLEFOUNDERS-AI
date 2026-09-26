@@ -4,9 +4,9 @@ import { useTheme } from '@/theme/useTheme';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { GuardianInviteMint, GuardianInviteAccept } from '@/rebuild/family/GuardianInvite';
-import en from '@/i18n/en-US/rebuild.json';
-import es from '@/i18n/es-MX/rebuild.json';
-import pt from '@/i18n/pt-BR/rebuild.json';
+import en from '@/i18n/en-US/rebuild-family.json';
+import es from '@/i18n/es-MX/rebuild-family.json';
+import pt from '@/i18n/pt-BR/rebuild-family.json';
 
 /*
  * A.1's second-verified-guardian data plane. Two surfaces:

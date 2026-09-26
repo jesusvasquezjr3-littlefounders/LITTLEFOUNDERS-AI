@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { MemorySelfReview, type MemoryProposal, type SettledVerdict } from './MemorySelfReview';
-import en from '@/i18n/en-US/rebuild.json';
+import en from '@/i18n/en-US/rebuild-profile.json';
 
 const copy = en.memorySelfReview;
 
