@@ -150,6 +150,17 @@ To upgrade Supabase: bump `database/SUPABASE_VERSION`, `db:sync`, prove locally 
 
 Secrets: only `.env.example` files are tracked. Real values live in Railway variables / Vercel env / GitHub secrets. If a secret ever lands in git: **rotate first**, then purge history.
 
+## Frontend layout for the SPEC rebuild (wave 2)
+
+The rebuilt frontend (`docs/littlefounders-spec/`, OD-2/OD-15) is built by parallel lanes, one per product domain. The shared files are split so that two lanes never edit the same one; `docs/rebuild/sprints/W2-SHELLS-AND-ROUTING.md` has the full lane ownership map and the rationale.
+
+- **Routes: `frontend/src/app-routes/<lane>.tsx`.** `site` (public pages, sign-in, recovery, verification, onboarding, the badge page), `learn`, `mentor`, `family`, `profile`, `staff` (with `staffGrants.ts`, the one table of which grant opens which console page) and `core` (dev harnesses, the standalone states, the 404). Each module exports its child `<Route>`s with their guards; `App.tsx` only composes them and chooses the layout. React Router ranks routes by specificity, so the order across modules does not matter.
+- **Shells on real routes: `frontend/src/app-shell/`** (Lane 0). `AppShellLayout` renders the learner app (`LearnerShell`, with the Mentor tab named after the chosen character) or, for a verified parent, the Tutor console (`TutorShell`); `StaffShellLayout` renders `/admin` with items filtered by the same grants as the route guards; `SiteLayout` and `AuthLayout` render the public site and the sign-in flow; `StandaloneState` renders the single-state screens (not found, suspended, deletion). `navigation.ts` is the one navigation definition per shell: each slot names the lane whose route it points at, and a lane changes only its slot's `path`. Legacy page bodies render inside the shells (`LegacyBody`, `[data-legacy-body]`) until their lane rebuilds them; the design system's element rules and the audits skip that subtree.
+- **Rebuilt copy: `frontend/src/i18n/<locale>/rebuild-<namespace>.json`**, one namespace per lane (`core`, `site`, `learn`, `mentor`, `family`, `profile`, `staff`), registered in `frontend/src/i18n/rebuild.ts`. A surface imports its own namespace's JSON (typed); `rebuildCopy` merges them for the preview. A top-level key lives in exactly one namespace (`i18n:check` phase 1b, `agent/tools/check-rebuild-namespaces.mjs`). Each namespace has its own copy-budget test in `frontend/src/rebuild/copy-budget/<namespace>.test.ts`, which must budget every key group of its file.
+- **Preview entry: `frontend/src/rebuild/preview/registry/<lane>.tsx`.** Each lane registers its `rebuild.html?screen=` screens in its own registry; `Preview.tsx` only composes them, and a screen id may be registered once.
+- **Audits: `frontend/scripts/audits/lanes/<lane>.mjs`.** Each lane declares its audited states, its synthetic-Core scenarios and the Core answers only its routes need; `audit:rebuild` composes them and refuses a state id or scenario declared twice.
+- **The 3D stage bridge** (`agent/tools/check-product-spec.mjs`): a rebuilt file may import only `src/rebuild` and `src/i18n`, except two named stage files that may import the 3D renderer, its quality probe and the theme context: `rebuild/learning/CompactMentorStage.tsx` and the Mentor lane's future `rebuild/mentor/MentorStage.tsx`.
+
 ## Mandatory testing — before every commit
 
 **NON-NEGOTIABLE:** CD is chained to CI, so a push to `main` deploys every service it touched — a red push can ship a broken deploy, and one touching `database/migrations/` applies those migrations to production (see "Production database" below). Run these locally first, before every commit and again before every push — they are the same checks CI runs, and passing locally is required, not optional on the assumption CI will catch it.
@@ -212,6 +223,7 @@ Overlays (dialog, confirmation, bottom and full sheets, popover, menu, tooltip, 
 | Tutor pedagogy/controller | `oracle/` → `npm run verify:pedagogy` + `npm run gym:pedagogy` (free — no network, no model) |
 | Lesson Engine or character layer | `frontend/` → `npm run verify:lesson-engine` — real pointer events, hit-testing |
 | Rebuilt UI (`frontend/src/rebuild/` or a route that renders it) | `frontend/` → `npm run audit:rebuild` with the dev server running (text fit, proportion, copy budget; before merge) |
+| The shells on real routes, navigation or route layout (`frontend/src/app-shell/`, `frontend/src/app-routes/`, `App.tsx`, `rebuild/design/shells.*`) | `frontend/` → `npm run verify:app-shells` and `npm run verify:shells` with the dev server running (`REBUILD_URL`), then `npm run audit:rebuild` |
 | Rebuild glyphs or assets (`frontend/src/rebuild/assets/manifest.json`, `public/rebuild/`) | `frontend/` → `npm run assets:check` |
 | Account emails (`frontend/public/email-templates/`, `frontend/src/i18n/*/emails.json`) | `frontend/` → `npm run emails:build`, then `npm run emails:check` (also inside `spec:check`) and `npx vitest run src/rebuild/design/emailsContract.test.ts` |
 | Tutor HUD/layout | `frontend/` → `npm run verify:tutor-ui` + `npm run verify:tutor-a11y` (captions/phases) |
