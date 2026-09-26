@@ -274,7 +274,7 @@
     "ongoing": "Hablando ahora mismo",
     "practicedOne": "Practicó {topic}.",
     "practicedTwo": "Practicó {topic1} y {topic2}.",
-    "struggledResolved": "{topic} le costó, y luego lo resolvió.",
+    "struggledResolved": "Le costó {topic}, y luego lo resolvió.",
     "struggledOngoing": "Sigue trabajando en {topic}.",
     "score": "{correct} de {total} actividades bien.",
     "closeReason": {
