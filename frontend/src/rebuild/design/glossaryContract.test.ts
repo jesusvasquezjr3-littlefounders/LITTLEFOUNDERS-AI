@@ -107,8 +107,12 @@ describe('rebuilt source: no lives mechanic can be built (D9, 02 rule 18, OD-1)'
     // B.26 (S05.3f): the register policy mirrored from Core names the lives language it DETECTS, as `word('...')`
     // lexicon entries. Those detector patterns are not a counter; everything else in that file is still scanned.
     const DETECTOR_LEXICON = 'learnerRegisterPolicy.generated.ts';
+    // W2P.1 (E.12): the cartoon avatar's closed option set names a heart-shaped eye drawing `hearts` (a stored
+    // value Core accepts, OD-9). In the one list literally named `eyes` of the avatar kit it is a drawing, not a counter.
+    const AVATAR_KIT = 'avatarKit.ts';
     const scanned = (file: string, text: string) => {
       const code = withoutComments(text);
+      if (file.endsWith(AVATAR_KIT)) return code.replace(/\beyes:\s*\[[^\]]*\]/g, 'eyes: []');
       return file.endsWith(DETECTOR_LEXICON) ? code.replace(/\bword\('(?:[^'\\]|\\.)*'\)/g, "word('')") : code;
     };
     const found = sources(join(root, 'src/rebuild'))

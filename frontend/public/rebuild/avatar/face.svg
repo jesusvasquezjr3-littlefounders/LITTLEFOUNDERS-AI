@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<g id="eyes-default" fill="var(--ink)"><circle cx="84" cy="88" r="5.5"/><circle cx="116" cy="88" r="5.5"/></g>
+<g id="eyes-happy" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M77 91q7-9 14 0m18 0q7-9 14 0"/></g>
+<g id="eyes-wink"><circle cx="84" cy="88" r="5.5" fill="var(--ink)"/><path fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round" d="M109 91q7-9 14 0"/></g>
+<g id="eyes-hearts" fill="var(--berry)"><path d="M84 96c-11-7-10-15-5-15 2 0 4 1 5 3 1-2 3-3 5-3 5 0 6 8-5 15zm32 0c-11-7-10-15-5-15 2 0 4 1 5 3 1-2 3-3 5-3 5 0 6 8-5 15z"/></g>
+<g id="eyes-surprised"><circle cx="84" cy="88" r="8.5" fill="var(--on-primary)"/><circle cx="116" cy="88" r="8.5" fill="var(--on-primary)"/><circle cx="84" cy="88" r="4.5" fill="var(--ink)"/><circle cx="116" cy="88" r="4.5" fill="var(--ink)"/></g>
+<g id="eyes-squint" fill="var(--ink)"><ellipse cx="84" cy="89" rx="6.5" ry="2.8"/><ellipse cx="116" cy="89" rx="6.5" ry="2.8"/></g>
+<g id="eyes-side"><ellipse cx="84" cy="88" rx="8" ry="6.5" fill="var(--on-primary)"/><ellipse cx="116" cy="88" rx="8" ry="6.5" fill="var(--on-primary)"/><circle cx="87.5" cy="88" r="4.2" fill="var(--ink)"/><circle cx="119.5" cy="88" r="4.2" fill="var(--ink)"/></g>
+<g id="eyes-closed" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M77 87q7 7 14 0m18 0q7 7 14 0"/></g>
+<g id="eyebrows-default" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M76 74q8-6 16-1m16 0q8-5 16 1"/></g>
+<g id="eyebrows-defaultNatural" fill="var(--ink)"><path d="M74 76c4-9 15-11 20-6l-1 3c-5-3-13-2-18 5zm52 0c-4-9-15-11-20-6l1 3c5-3 13-2 18 5z"/></g>
+<g id="eyebrows-raisedExcited" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M76 68q8-8 16-2m16 0q8-6 16 2"/></g>
+<g id="eyebrows-raisedExcitedNatural" fill="var(--ink)"><path d="M74 70c4-10 15-12 20-6l-1 3c-5-3-13-2-18 6zm52 0c-4-10-15-12-20-6l1 3c5-3 13-2 18 6z"/></g>
+<g id="eyebrows-upDown" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M76 68q8-8 16-2m16 7 16-1"/></g>
+<g id="eyebrows-flatNatural" fill="var(--ink)"><path d="m75 72 18-1v4l-18 1zm50 0-18-1v4l18 1z"/></g>
+<g id="mouth-smile"><path fill="var(--ink)" d="M86 108q14 20 28 0z"/><path fill="var(--on-primary)" d="M89 109h22q-2 5-11 5t-11-5z"/></g>
+<g id="mouth-default" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M90 112q10 6 20 0"/></g>
+<g id="mouth-twinkle" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M93 111q7 5 14 0m-19-3 2 2m24-2-2 2"/></g>
+<g id="mouth-tongue"><path fill="var(--ink)" d="M86 108q14 20 28 0z"/><ellipse cx="100" cy="121" rx="7" ry="6.5" fill="var(--berry)"/></g>
+<g id="mouth-serious" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M90 113h20"/></g>
+<g id="mouth-eating"><circle cx="78" cy="110" r="7" fill="var(--ink)" opacity=".1"/><circle cx="122" cy="110" r="7" fill="var(--ink)" opacity=".1"/><path fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round" d="M90 112q5 4 10 0 5 4 10 0"/></g>
+</svg>

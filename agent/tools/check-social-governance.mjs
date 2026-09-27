@@ -306,7 +306,11 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
   const sqlPresets = quoted(/IN \(([^)]*)\)\)/.exec(coverSql?.body ?? '')?.[1]);
   const corePresets = tsArray(shape, 'COVER_PRESETS') ?? [];
   const frontendPresets = [...(tryRead(root, 'frontend/src/lib/coverPresets.ts') ?? '').matchAll(/\{ id: '([^']+)'/g)].map((m) => m[1]);
-  if (sqlPresets.length !== 10 || !sameList(sqlPresets, corePresets) || !sameList(corePresets, frontendPresets)) failures.push(`E.12 cover preset drift: SQL [${sqlPresets}], Core [${corePresets}], frontend [${frontendPresets}]`);
+  // The rebuilt look editor and profile (W2P.1) draw the same ten presets from their own list.
+  const rebuiltPresets = quoted(/export const COVER_IDS = \[([^\]]*)\]/.exec(tryRead(root, 'frontend/src/rebuild/account/avatar/avatarKit.ts') ?? '')?.[1]);
+  if (sqlPresets.length !== 10 || !sameList(sqlPresets, corePresets) || !sameList(corePresets, frontendPresets) || !sameList(corePresets, rebuiltPresets)) {
+    failures.push(`E.12 cover preset drift: SQL [${sqlPresets}], Core [${corePresets}], frontend [${frontendPresets}], rebuilt [${rebuiltPresets}]`);
+  }
   const migrationsText = migrationFiles(root).map((f) => read(root, `database/migrations/${f}`)).join('\n');
   for (const [trigger, fn] of [['avatar_shape_guard', 'guard_avatar_shape'], ['profile_cover_guard', 'guard_profile_cover']]) {
     if (!new RegExp(`CREATE (?:OR REPLACE )?TRIGGER ${trigger}`).test(migrationsText) || new RegExp(`DROP TRIGGER (?:IF EXISTS )?${trigger}`).test(migrationsText) || !latestDefinition(root, fn)) failures.push(`database/migrations: the E.12 write guard ${trigger} is missing or dropped`);

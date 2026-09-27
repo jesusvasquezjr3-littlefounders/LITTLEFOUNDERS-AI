@@ -44,6 +44,7 @@ import {
   unblockUser,
   upsertOwnAvatar,
   tutorBadgeVisible,
+  hasRole,
   type FullProfileRow,
   type LearningStatsRow,
 } from '../services/supabaseRest.js';
@@ -151,6 +152,17 @@ async function connectionMode(viewerId: string, subjectId: string, viewerTier: S
   return subjectTier === 'teen' ? 'teenRequest' : 'follow';
 }
 
+/**
+ * OD-6, E.5: the Tutor pill for this viewer. Only an account that holds the
+ * parent role and is a currently ID-verified parent is a Tutor, and the
+ * relationship rule of `tutorBadgeVisible` decides who else sees it. The
+ * people lists apply the same role gate (socialVisibility).
+ */
+async function tutorVerdict(viewerId: string, subjectId: string): Promise<boolean> {
+  if (!(await hasRole(subjectId, 'parent'))) return false;
+  return tutorBadgeVisible(viewerId, subjectId);
+}
+
 /** The fields a minor may not set to something that locates them off-platform (E.13). */
 function unsafeFields(fields: { username?: string; displayName?: string }): ('username' | 'displayName')[] {
   const out: ('username' | 'displayName')[] = [];
@@ -166,12 +178,13 @@ export function ownProfileRouter(): Router {
 
   router.get('/', async (_req, res) => {
     const user = authedUser(res);
-    const [profiles, avatars, stats, completedBadges, tier] = await Promise.all([
+    const [profiles, avatars, stats, completedBadges, tier, tutor] = await Promise.all([
       getFullOwnProfile(user.accessToken, user.id),
       getOwnAvatar(user.accessToken, user.id),
       getLearningStats(user.accessToken, user.id),
       getCompletedCourseBadgesByUserId(user.id),
       readSocialTier(user.id),
+      tutorVerdict(user.id, user.id),
     ]);
     if (!profiles?.[0]) return fail(res, 502, 'INTERNAL', 'Profile unreachable');
     const minor = tier === null || MINOR_SOCIAL_TIERS.includes(tier);
@@ -183,6 +196,9 @@ export function ownProfileRouter(): Router {
       birthDate: profiles[0].birth_date,
       learningStats: statsShape(stats),
       courseBadges: courseBadgesShape(completedBadges),
+      // OD-6, E.5: the owner's own Tutor verdict (a currently ID-verified
+      // parent), the same one other people's views are bound to.
+      isTutor: tutor,
       // E.8: the account's own social tier, so the owner sees why their
       // profile is private and where their requests are. Unreadable = null.
       social: { tier, privateProfile: tier !== 'adult' },
@@ -387,7 +403,7 @@ export function publicProfilesRouter(): Router {
       // E.5: the badge is a verified-adult signal shown only inside an
       // established relationship (linked kid, mutual approved follow, self,
       // staff) — never to an unconnected kid-role viewer.
-      tutorBadgeVisible(user.id, profile.user_id),
+      tutorVerdict(user.id, profile.user_id),
       getLearningStatsByUserId(profile.user_id),
       getCompletedCourseBadgesByUserId(profile.user_id),
     ]);

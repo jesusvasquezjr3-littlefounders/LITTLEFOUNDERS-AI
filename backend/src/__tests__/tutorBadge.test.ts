@@ -20,6 +20,7 @@ const SUBJECT = '22222222-2222-4222-8222-222222222222';
 
 interface StubOpts {
   viewerRoles?: string[];
+  subjectRoles?: string[];
   subjectVerification?: unknown[] | null;
   linkedRows?: unknown[] | null;
   viewerFollows?: unknown[] | null;
@@ -58,10 +59,22 @@ function stub(opts: StubOpts = {}) {
 const verified = () => [{ status: 'verified', method: 'local-ocr', birth_date: '1988-02-14' }];
 
 describe('tutorBadgeVisible (E.5)', () => {
-  it('is true for the subject themself and for staff viewers', async () => {
+  it('is true for the subject themself and for staff viewers when the subject is a verified parent', async () => {
+    stub();
     expect(await tutorBadgeVisible(SUBJECT, SUBJECT)).toBe(true);
     stub({ viewerRoles: ['admin'] });
     expect(await tutorBadgeVisible(VIEWER, SUBJECT)).toBe(true);
+  });
+
+  it('OD-6: never for the subject themself or staff when the subject is not a verified parent (W2P.3)', async () => {
+    stub({ subjectVerification: [] });
+    expect(await tutorBadgeVisible(SUBJECT, SUBJECT)).toBe(false);
+    stub({ subjectVerification: [{ status: 'verified', method: 'staff-granted', birth_date: null }] });
+    expect(await tutorBadgeVisible(SUBJECT, SUBJECT)).toBe(false);
+    stub({ viewerRoles: ['admin'], subjectVerification: [] });
+    expect(await tutorBadgeVisible(VIEWER, SUBJECT)).toBe(false);
+    stub({ subjectVerification: null });
+    expect(await tutorBadgeVisible(SUBJECT, SUBJECT)).toBe(false);
   });
 
   it('shows to the subject’s own verified-linked kid', async () => {
@@ -107,7 +120,9 @@ describe('public profile badge projection (E.5)', () => {
         if (url.includes('/rest/v1/user_roles')) {
           const roleMatch = url.match(/role=eq\.([a-z]+)/);
           const requested = roleMatch ? roleMatch[1] : null;
-          const roles = requested ? (opts.viewerRoles ?? ['universal']).filter((role) => role === requested) : (opts.viewerRoles ?? ['universal']);
+          // The profile's owner holds `subjectRoles` (a parent unless a case says otherwise); anyone else `viewerRoles`.
+          const held = url.includes(`user_id=eq.${TARGET_ID}`) ? (opts.subjectRoles ?? ['parent']) : (opts.viewerRoles ?? ['universal']);
+          const roles = requested ? held.filter((role) => role === requested) : held;
           return Promise.resolve(jsonResponse(200, roles.map((role) => ({ role }))));
         }
         if (url.includes('/rest/v1/parent_verifications')) {
@@ -116,7 +131,7 @@ describe('public profile badge projection (E.5)', () => {
         }
         if (url.includes('/rest/v1/guardian_links')) return Promise.resolve(jsonResponse(200, opts.linkedRows ?? []));
         if (url.includes('/rest/v1/follows')) return Promise.resolve(jsonResponse(200, []));
-        if (url.includes('/rest/v1/profiles') && url.includes('username=eq.')) {
+        if (url.includes('/rest/v1/profiles')) {
           return Promise.resolve(jsonResponse(200, [{
             user_id: TARGET_ID, display_name: 'Ana Tutor', username: 'anatutor', locale: 'es-MX',
             theme: 'system', cover: { preset: 'sunset' }, created_at: '2026-07-12T00:00:00Z',
@@ -137,6 +152,45 @@ describe('public profile badge projection (E.5)', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: VIEWER })}`);
     expect(res.status).toBe(200);
     expect(res.body.data.isTutor).toBe(false);
+  });
+
+  it('OD-6: a person looking at their own profile sees no badge unless they are a verified parent (W2P.3)', async () => {
+    stubProfile({ subjectVerification: [] });
+    const own = await request(createApp())
+      .get('/api/v1/profiles/anatutor')
+      .set('Authorization', `Bearer ${mintToken({ sub: TARGET_ID })}`);
+    expect(own.status).toBe(200);
+    expect(own.body.data.isSelf).toBe(true);
+    expect(own.body.data.isTutor).toBe(false);
+    stubProfile({ subjectVerification: verified(), subjectRoles: ['universal'] });
+    const noRole = await request(createApp())
+      .get('/api/v1/profiles/anatutor')
+      .set('Authorization', `Bearer ${mintToken({ sub: TARGET_ID })}`);
+    expect(noRole.body.data.isTutor).toBe(false);
+    stubProfile({ subjectVerification: verified() });
+    const tutor = await request(createApp())
+      .get('/api/v1/profiles/anatutor')
+      .set('Authorization', `Bearer ${mintToken({ sub: TARGET_ID })}`);
+    expect(tutor.body.data.isTutor).toBe(true);
+  });
+
+  it('OD-6: the own profile read carries the same verdict (W2P.3)', async () => {
+    stubProfile({ subjectVerification: verified() });
+    const tutor = await request(createApp())
+      .get('/api/v1/profile')
+      .set('Authorization', `Bearer ${mintToken({ sub: TARGET_ID })}`);
+    expect(tutor.status).toBe(200);
+    expect(tutor.body.data.isTutor).toBe(true);
+    stubProfile({ subjectVerification: [{ status: 'verified', method: 'staff-granted', birth_date: null }] });
+    const staffGranted = await request(createApp())
+      .get('/api/v1/profile')
+      .set('Authorization', `Bearer ${mintToken({ sub: TARGET_ID })}`);
+    expect(staffGranted.body.data.isTutor).toBe(false);
+    stubProfile({ subjectVerification: verified(), subjectRoles: ['kid'] });
+    const kid = await request(createApp())
+      .get('/api/v1/profile')
+      .set('Authorization', `Bearer ${mintToken({ sub: TARGET_ID })}`);
+    expect(kid.body.data.isTutor).toBe(false);
   });
 
   it('the verified parent’s linked kid sees the badge', async () => {

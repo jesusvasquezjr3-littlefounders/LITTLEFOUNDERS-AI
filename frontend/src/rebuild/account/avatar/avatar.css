@@ -1,0 +1,23 @@
+/* The cartoon avatar and the profile cover (E.12): our own sprites, tokens only, both modes. */
+.lf-cartoon-avatar {
+  display: inline-block;
+  flex: none;
+  inline-size: var(--lf-avatar-size, 96px);
+  block-size: var(--lf-avatar-size, 96px);
+  border-radius: var(--rounded-full);
+  line-height: 0;
+}
+.lf-cartoon-avatar--sm { --lf-avatar-size: 56px; }
+.lf-cartoon-avatar--md { --lf-avatar-size: 96px; }
+.lf-cartoon-avatar--lg { --lf-avatar-size: 128px; }
+.lf-cartoon-avatar--xl { --lf-avatar-size: 176px; }
+.lf-cartoon-avatar svg { inline-size: 100%; block-size: 100%; display: block; overflow: visible; }
+/* The face framing zooms past the disc's edge: the round slot keeps the picture round. */
+.lf-cartoon-avatar--face { overflow: hidden; }
+.lf-cartoon-avatar--face svg { overflow: hidden; }
+.lf-cartoon-avatar-disc { fill: var(--primary-soft); }
+/* An empty slot keeps its space and shape; nothing stands in for the person. */
+.lf-cartoon-avatar[data-refused='true'] { background: var(--sunken); }
+
+.lf-cover-art { display: block; inline-size: 100%; block-size: 100%; line-height: 0; background: var(--primary); }
+.lf-cover-art svg { inline-size: 100%; block-size: 100%; display: block; }

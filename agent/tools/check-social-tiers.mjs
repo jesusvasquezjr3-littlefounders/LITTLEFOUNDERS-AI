@@ -12,8 +12,8 @@ import { fileURLToPath } from 'node:url';
  * that span packages and documents:
  *
  *   1. E.9: no follower/following COUNT exists on any profile surface. Core's
- *      profile routes never read or emit a count, and the legacy profile
- *      pages never render one.
+ *      profile routes never read or emit a count, and the rebuilt profile
+ *      screens and people lists never render one.
  *   2. E.8 in the database: the tier classifier exists, and the LATEST
  *      definitions of the follow trigger and the visibility policy function
  *      (a later migration could silently replace them) still apply it: teen
@@ -53,6 +53,13 @@ function tsPattern(source, name) {
   return match ? match[1].replaceAll('\\/', '/') : null;
 }
 
+/** The screens, and their data planes, that show a profile or a list of people. */
+export const SOCIAL_SCREENS = [
+  'frontend/src/rebuild/account/OwnProfile.tsx', 'frontend/src/routes/app/profile/OwnProfileRoute.tsx',
+  'frontend/src/rebuild/social/PublicProfile.tsx', 'frontend/src/routes/app/profile/PublicProfileRoute.tsx',
+  'frontend/src/rebuild/social/PeopleList.tsx', 'frontend/src/routes/app/profile/PeopleListRoute.tsx',
+];
+
 export function checkSocialTiers(root) {
   const failures = [];
 
@@ -60,9 +67,10 @@ export function checkSocialTiers(root) {
   const route = read(root, 'backend/src/routes/profile.ts');
   if (/getFollowCounts/.test(route)) failures.push('backend/src/routes/profile.ts: reads follower/following counts (E.9 removed them from every profile surface)');
   if (/\bfollowers:\s*counts\b|\bfollowing:\s*counts\b/.test(route)) failures.push('backend/src/routes/profile.ts: emits a follower/following count');
-  for (const page of ['frontend/src/routes/app/profile/ProfilePage.tsx', 'frontend/src/routes/app/profile/PublicProfilePage.tsx']) {
+  // Every profile surface is a rebuilt screen and its data plane: the own profile (W2P.1), the public profile and the people lists (W2P.2).
+  for (const page of SOCIAL_SCREENS) {
     const source = read(root, page);
-    if (/(?<!\.)\bdata\.follow(?:ers|ing)\b|name="followers"|name="following"/.test(source)) failures.push(`${page}: renders a follower/following count (E.9)`);
+    if (/(?<!\.)\b(?:data|person)\.follow(?:ers|ing)\b|name="followers"|name="following"|follow(?:er|ing)s?Count/.test(source)) failures.push(`${page}: renders a follower/following count (E.9)`);
   }
 
   // 2. E.8 in the database: the latest definitions still apply the tiers.

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<g id="top-shortFlat-back"/>
+<g id="top-shortFlat-front" fill="var(--lf-avatar-hair)"><path d="M58 86c-2-36 18-50 44-50s44 16 40 50c-4-14-8-22-14-26-18 6-42 6-58 2-6 6-10 14-12 24z"/></g>
+<g id="top-shortWaved-back"/>
+<g id="top-shortWaved-front" fill="var(--lf-avatar-hair)"><path d="M58 86c-2-38 20-50 44-50 26 0 44 16 40 50-4-16-10-24-16-28q-8 8-16 2-8 8-16 0-8 8-16 0-8 4-12 10c-4 4-7 10-8 16z"/></g>
+<g id="top-shortCurly-back"/>
+<g id="top-shortCurly-front" fill="var(--lf-avatar-hair)"><circle cx="66" cy="66" r="12"/><circle cx="76" cy="52" r="14"/><circle cx="92" cy="44" r="14"/><circle cx="108" cy="42" r="14"/><circle cx="124" cy="50" r="14"/><circle cx="134" cy="64" r="12"/><circle cx="140" cy="78" r="8"/><circle cx="60" cy="80" r="8"/></g>
+<g id="top-theCaesar-back"/>
+<g id="top-theCaesar-front" fill="var(--lf-avatar-hair)"><path d="M60 80c-2-30 18-40 40-40s42 10 40 40c-4-16-16-24-40-24s-36 8-40 24z"/></g>
+<g id="top-sides-back"/>
+<g id="top-sides-front" fill="var(--lf-avatar-hair)"><path d="M58 96c-2-18 2-28 8-34l5 2c-4 8-6 18-6 32zm84 0c2-18-2-28-8-34l-5 2c4 8 6 18 6 32z"/></g>
+<g id="top-curly-back" fill="var(--lf-avatar-hair)"><circle cx="62" cy="70" r="18"/><circle cx="70" cy="48" r="20"/><circle cx="92" cy="36" r="20"/><circle cx="114" cy="36" r="20"/><circle cx="134" cy="48" r="20"/><circle cx="140" cy="72" r="18"/><circle cx="56" cy="96" r="14"/><circle cx="144" cy="96" r="14"/></g>
+<g id="top-curly-front" fill="var(--lf-avatar-hair)"><circle cx="74" cy="53" r="11"/><circle cx="90" cy="47" r="11"/><circle cx="106" cy="47" r="11"/><circle cx="122" cy="52" r="11"/></g>
+<g id="top-fro-back" fill="var(--lf-avatar-hair)"><circle cx="100" cy="76" r="60"/></g>
+<g id="top-fro-front" fill="var(--lf-avatar-hair)"><path d="M62 78c0-22 18-30 38-30s38 8 38 30c-8-12-22-16-38-16s-30 4-38 16z"/></g>
+<g id="top-bob-back" fill="var(--lf-avatar-hair)"><path d="M54 90c-4-40 20-58 46-58s50 18 46 58l4 42q-26 8-50 8t-50-8z"/></g>
+<g id="top-bob-front" fill="var(--lf-avatar-hair)"><path d="M60 84c-2-32 18-46 40-46 24 0 42 14 40 46-6-14-18-26-36-28-14 4-30 10-44 28z"/></g>
+<g id="top-bun-back" fill="var(--lf-avatar-hair)"><circle cx="100" cy="34" r="18"/></g>
+<g id="top-bun-front" fill="var(--lf-avatar-hair)"><path d="M60 82c-2-32 18-42 40-42s42 10 40 42c-6-18-20-24-40-24s-34 6-40 24z"/></g>
+<g id="top-longButNotTooLong-back" fill="var(--lf-avatar-hair)"><path d="M56 84c-4-38 20-52 44-52s48 14 44 52l6 84q-24 8-34-8l-2-30q-14 10-28 0l-2 30q-10 16-34 8z"/></g>
+<g id="top-longButNotTooLong-front" fill="var(--lf-avatar-hair)"><path d="M60 86c-2-36 20-48 42-48 24 0 42 16 38 48-4-18-14-28-28-32-14 10-36 16-52 32z"/></g>
+<g id="top-straight02-back" fill="var(--lf-avatar-hair)"><path d="M56 84c-4-40 20-54 44-54s48 14 44 54l4 102h-30l-4-54H86l-4 54H52z"/></g>
+<g id="top-straight02-front" fill="var(--lf-avatar-hair)"><path d="M60 88c-2-36 16-50 40-50s42 14 40 50c-8-18-24-30-38-36l-2 8-2-8c-14 6-30 18-38 36z"/></g>
+<g id="top-bigHair-back" fill="var(--lf-avatar-hair)"><path d="M40 110C28 60 60 20 100 20s72 40 60 90c4 30-10 50-24 52l-6-42H70l-6 42c-14-2-28-22-24-52z"/></g>
+<g id="top-bigHair-front" fill="var(--lf-avatar-hair)"><path d="M60 84c-4-34 20-48 44-48 26 0 42 20 36 48-8-24-30-30-44-26s-28 12-36 26z"/></g>
+<g id="top-dreads-back" fill="var(--lf-avatar-hair)"><path d="M56 80c-2-36 22-48 44-48s46 12 44 48z"/><rect x="48" y="70" width="14" height="92" rx="7"/><rect x="62" y="62" width="14" height="104" rx="7"/><rect x="124" y="62" width="14" height="104" rx="7"/><rect x="138" y="70" width="14" height="92" rx="7"/></g>
+<g id="top-dreads-front" fill="var(--lf-avatar-hair)"><path d="M60 80c-2-30 18-40 40-40s42 10 40 40c-10-14-22-20-40-20s-30 6-40 20z"/><rect x="74" y="54" width="10" height="20" rx="5"/><rect x="95" y="54" width="10" height="18" rx="5"/><rect x="116" y="54" width="10" height="20" rx="5"/></g>
+<g id="top-winterHat1-back"/>
+<g id="top-winterHat1-front" fill="var(--lf-avatar-clothes)"><path d="M56 82c-2-38 20-56 44-56s46 18 44 56z"/><rect x="54" y="68" width="92" height="18" rx="9"/><rect x="54" y="68" width="92" height="18" rx="9" fill="var(--ink)" opacity=".14"/><circle cx="100" cy="24" r="12" fill="var(--on-primary)"/></g>
+<g id="top-hijab-back" fill="var(--lf-avatar-clothes)"><path d="M50 92c-2-52 26-68 50-68s52 16 50 68l2 58c4 20 18 30 24 56H24c6-26 20-36 24-56z"/></g>
+<g id="top-hijab-front" fill="var(--lf-avatar-clothes)"><path fill-rule="evenodd" d="M52 94c0-52 24-66 48-66s48 14 48 66c0 30-12 48-30 56H82c-18-8-30-26-30-56zm48-42c-20 0-34 14-34 40 0 24 14 42 34 42s34-18 34-42c0-26-14-40-34-40z"/><path d="M64 134q36 26 72 0l14 36c-10 16-30 20-50 20s-40-4-50-20z"/><path fill="var(--ink)" opacity=".14" d="M64 134q36 26 72 0l3 8q-39 26-78 0z"/></g>
+<g id="top-turban-back"/>
+<g id="top-turban-front" fill="var(--lf-avatar-clothes)"><path d="M56 80c-6-40 20-60 44-58 24-2 50 18 44 58-12-10-28-14-44-14s-32 4-44 14z"/><path fill="none" stroke="var(--ink)" stroke-opacity=".16" stroke-width="5" stroke-linecap="round" d="M66 66c16-24 44-32 66-18M70 46c22 4 44 12 62 24"/></g>
+</svg>

@@ -36,6 +36,7 @@
     "verify:controls": "node scripts/verify-rebuild-controls.mjs",
     "verify:shells": "node scripts/verify-rebuild-shells.mjs",
     "verify:app-shells": "node scripts/verify-app-shells.mjs",
+    "verify:profile-screens": "node scripts/verify-profile-screens.mjs",
     "audit:text-fit": "node scripts/audit-rebuild.mjs text-fit",
     "audit:proportion": "node scripts/audit-rebuild.mjs proportion",
     "audit:copy-budget": "node scripts/audit-rebuild.mjs copy-budget",

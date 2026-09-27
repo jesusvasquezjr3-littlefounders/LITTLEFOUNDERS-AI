@@ -137,6 +137,44 @@ export function RadioGroup<T extends string>({ legend, help, error, name, option
   </fieldset>;
 }
 
+export interface PictureOption<T extends string> {
+  value: T;
+  /** The option's name. Shown when the option has no picture; otherwise it names the picture for assistive technology. */
+  label: string;
+  /** Our own drawing of the option (a manifest-registered asset), decorative: the label names it. */
+  picture?: ReactNode;
+  /** A colour to choose, drawn as a round swatch with a thin functional edge (02 §4.4 (1)). */
+  swatch?: string;
+}
+
+/**
+ * "Choose one" among pictures: a colour, a drawing, a preset (W2 profile lane:
+ * the avatar parts and the cover presets). One radio group, so the arrow keys
+ * move within it and Tab leaves it; every option has a name, and the chosen one
+ * carries a ring and a check, never colour alone (02 rule 6, §4.4 (2)). An
+ * option without a picture (for example "None") shows its label.
+ */
+export function PictureChoice<T extends string>({ legend, legendRole = 'body', name, options, value, onValueChange, disabled }: {
+  legend: string; legendRole?: 'body' | 'heading'; name: string; options: readonly PictureOption<T>[]; value: T | null;
+  onValueChange: (value: T) => void; disabled?: boolean;
+}) {
+  return <fieldset className="lf-picture-choice" disabled={disabled}>
+    <legend className="lf-picture-choice-legend" data-copy-role={legendRole}>{legend}</legend>
+    <div className="lf-picture-options">
+      {options.map((option) => {
+        const kind = option.swatch ? 'swatch' : option.picture ? 'picture' : 'text';
+        return <label key={option.value} className={`lf-picture-option lf-picture-option--${kind}`} data-value={option.value}>
+          <input type="radio" className="lf-picture-input" name={name} value={option.value} checked={value === option.value}
+            aria-label={kind === 'text' ? undefined : option.label} onChange={() => onValueChange(option.value)} />
+          {kind === 'swatch' ? <span className="lf-picture-swatch" style={{ background: option.swatch }} aria-hidden="true" />
+            : kind === 'picture' ? option.picture : <span data-copy-role="option">{option.label}</span>}
+          <span className="lf-picture-check" aria-hidden="true"><Glyph name="check" /></span>
+        </label>;
+      })}
+    </div>
+  </fieldset>;
+}
+
 /**
  * A compact "choose one" control; the selected segment also shows a check, so
  * colour is never the only cue. `legendHidden` names the group for assistive

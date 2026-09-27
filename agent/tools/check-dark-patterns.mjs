@@ -160,7 +160,10 @@ export function structuralFindings(path, text) {
       findings.push({ item: 'DP-03', where: path, message: 'a dialog without Escape and a close handler' });
     }
     if (/\bleaderboards?\b|\branking\b/i.test(code)) findings.push({ item: 'DP-05', where: path, message: 'a leaderboard or ranking in rebuilt UI' });
-    if (/\b(hearts|livesLeft|lives_left|heartCount)\b/.test(code)) findings.push({ item: 'DP-07', where: path, message: 'a lives or hearts counter in rebuilt UI' });
+    // The cartoon avatar's closed option set names an eye shape 'hearts' (E.12, W2P.1): a list literally named
+    // `eyes` is a drawing choice, never a counter, and is the one place the word is not read as a lives mechanic.
+    const withoutEyeOptions = code.replace(/\beyes:\s*\[[^\]]*\]/g, 'eyes: []');
+    if (/\b(hearts|livesLeft|lives_left|heartCount)\b/.test(withoutEyeOptions)) findings.push({ item: 'DP-07', where: path, message: 'a lives or hearts counter in rebuilt UI' });
     if (SAD_EMOTION.test(code)) findings.push({ item: 'SH-02', where: path, message: 'a sad or disappointed character state' });
   }
   if (path.endsWith('.css')) {

@@ -411,3 +411,54 @@
   .lf-rebuild .lf-toggle-thumb { background: ButtonText; }
   .lf-rebuild .lf-toggle[aria-checked='true'] .lf-toggle-thumb { background: Highlight; }
 }
+
+/* ---- Picture choice: choose one colour, drawing or preset (W2 profile lane) ---- */
+.lf-rebuild .lf-picture-choice { display: grid; gap: var(--spacing-3); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.lf-rebuild .lf-picture-choice-legend { padding: 0; margin-block-end: var(--spacing-3); font: var(--type-label); }
+.lf-rebuild .lf-picture-choice-legend[data-copy-role='heading'] { font: var(--type-title); }
+.lf-rebuild .lf-picture-options { display: flex; flex-wrap: wrap; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-picture-option {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: var(--target-lg);
+  min-block-size: var(--target-lg);
+  padding: var(--spacing-1);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  cursor: pointer;
+}
+.lf-rebuild[data-theme='dark'] .lf-picture-option { background: var(--raised); }
+.lf-rebuild .lf-picture-option--text { padding-inline: var(--spacing-4); font: var(--type-label); }
+.lf-rebuild .lf-picture-option--swatch { border-radius: var(--rounded-full); padding: var(--spacing-2); }
+/* A pale colour (a light skin tone, silver, light yellow) would vanish into its well: every swatch keeps a thin functional edge (02 §4.4 (1)). */
+.lf-rebuild .lf-picture-swatch { display: block; inline-size: var(--spacing-12); block-size: var(--spacing-12); border-radius: var(--rounded-full); box-shadow: inset 0 0 0 2px var(--edge); }
+.lf-rebuild .lf-picture-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
+/* "The one currently selected" is a real interaction state (02 §4.4 (2)): a ring, a soft fill and a check, never colour alone. */
+.lf-rebuild .lf-picture-option:has(.lf-picture-input:checked) { background: var(--primary-soft); box-shadow: inset 0 0 0 var(--focus-width) var(--primary-strong); }
+.lf-rebuild .lf-picture-check {
+  position: absolute;
+  inset-block-start: calc(var(--spacing-1) * -1);
+  inset-inline-end: calc(var(--spacing-1) * -1);
+  display: none;
+  place-items: center;
+  inline-size: var(--spacing-6);
+  block-size: var(--spacing-6);
+  border-radius: var(--rounded-full);
+  background: var(--primary-strong);
+  color: var(--on-primary);
+}
+.lf-rebuild .lf-picture-check .lf-system-glyph { inline-size: var(--spacing-4); block-size: var(--spacing-4); }
+.lf-rebuild .lf-picture-option:has(.lf-picture-input:checked) .lf-picture-check { display: grid; }
+.lf-rebuild .lf-picture-input:focus-visible { outline: none; }
+.lf-rebuild .lf-picture-option:has(.lf-picture-input:focus-visible) { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+.lf-rebuild .lf-picture-option:has(.lf-picture-input:disabled) { cursor: default; opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-picture-option { transition: transform var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard); }
+  .lf-rebuild .lf-picture-option:not(:has(:disabled)):active { transform: scale(var(--press-scale)); transition-duration: var(--dur-instant); }
+}
+@media (forced-colors: active) {
+  .lf-rebuild .lf-picture-option { border: 2px solid ButtonText; }
+  .lf-rebuild .lf-picture-option:has(.lf-picture-input:checked) { border-color: Highlight; }
+}
