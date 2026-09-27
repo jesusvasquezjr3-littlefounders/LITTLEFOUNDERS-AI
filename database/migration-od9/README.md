@@ -28,7 +28,7 @@ The product side lives in the migration `*_od9_legacy_migration.sql`: `legacy_kc
 
 Each step is safe to repeat. Every correction step has a dry run (no product row written) that is reviewed before `--apply`.
 
-1. **Restore a copy** of the legacy database and rehearse the whole procedure on it. Never run a first apply on production.
+1. **Restore a copy** of the legacy database and rehearse the whole procedure on it. Never run a first apply on production. For the real cutover, hold the legacy platform read-only from step 3 to step 9: ordinary activity between the two inventories (a lesson passed, a coin earned) would show up in the comparison as a change.
 2. `od9 install` — creates or refreshes the `od9` schema. Works on the legacy schema.
 3. `od9 inventory --label before` — on the legacy database, before any rebuild migration. Captures 16 categories: lesson progress, placement credits, placement records, XP, learning streak, chore streak, coin balances, the coin ledger, course badges, savings goals (reached goals are the goal badges), chore history, rewards, Mentor plans, notebooks, memory and mastery; plus every username and guardian link.
 4. Apply the migration chain (the operator's normal migration procedure), then `npm run seed:kc` in `backend/`.
