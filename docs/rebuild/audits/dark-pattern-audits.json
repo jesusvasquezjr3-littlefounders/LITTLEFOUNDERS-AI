@@ -25,7 +25,7 @@
         "SH-03": { "result": "pass", "evidence": "No rank or peer-visible result exists for a learner; misses change nothing anyone else sees." },
         "FF-01": { "result": "pass", "evidence": "Gate: 0 family-finance moralizing findings across i18n, rebuilt UI, the family-bridge and narrative catalogs and scripted Mentor lines. Forge gate 18 blocks it in lesson content; existing catalog content was not regenerated (OD-23)." },
         "MN-01": { "result": "open", "evidence": "The human walkthrough of every flow in three locales has not been done. Engineering evidence: the Chrome matrices listed in the S05.3f record." },
-        "MN-02": { "result": "open", "evidence": "Timed drills in the live choice and storyplay families reduce the score by 20 percent when time runs out (grade.ts, mirrored in Core). Proposal: remove the reduction or make timers opt-in. Forge gate 18 now flags timed segments for review." },
+        "MN-02": { "result": "open", "evidence": "OD-28 (27 September 2026) removed the 20 percent reduction: timed drills in the choice and storyplay families keep the answer's own score when time runs out, in grade.ts and its Core mirror (W2L.4, pinned by timeoutPenalty.test.ts). The timer stays and costs nothing. Forge gate 18 still flags timed segments for review. Open for the reviewer's manual check." },
         "MN-03": { "result": "open", "evidence": "The registers are defined and enforced (policy, gate 19); the first quarterly Age-Band Register Differentiation Audit is due after release." }
       }
     }
