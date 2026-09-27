@@ -16,9 +16,10 @@ import { STAFF_ROUTE_GRANTS, type StaffRouteGrant } from './staffGrants';
  * deploy, and an unhandled rejection inside Suspense is a blank page.
  */
 /*
- * W2T.1: Overview, Users, Emails, Audit log, Reports and Roles & Access are
- * the rebuilt console screens (./staffConsole.tsx hosts them); the other
- * sections are still legacy page bodies until this lane rebuilds them.
+ * W2T.1: Overview, Users, Emails, Audit log, Reports and Roles & Access; W2T.2:
+ * Content, Generation and Mentor quality (C.24) are the rebuilt console
+ * screens (./staffConsole.tsx hosts them). Analytics & Health and Learning
+ * intel are still legacy page bodies until this lane rebuilds them.
  */
 const loadConsole = () => import('./staffConsole');
 const StaffOverviewRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffOverviewRoute })));
@@ -27,11 +28,12 @@ const StaffEmailsRoute = lazy(() => loadConsole().then((m) => ({ default: m.Staf
 const StaffAuditRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffAuditRoute })));
 const StaffReportsRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffReportsRoute })));
 const StaffRolesRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffRolesRoute })));
-const AdminContentPage = lazy(() => import('@/routes/admin/AdminContentPage').then((m) => ({ default: m.AdminContentPage })));
+const StaffContentRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffContentRoute })));
+const StaffGenerationRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffGenerationRoute })));
+const StaffMentorQualityRoute = lazy(() => loadConsole().then((m) => ({ default: m.StaffMentorQualityRoute })));
 const AdminInsightsPage = lazy(() => import('@/routes/admin/AdminInsightsPage').then((m) => ({ default: m.AdminInsightsPage })));
 const AdminIntelPage = lazy(() => import('@/routes/admin/AdminIntelPage').then((m) => ({ default: m.AdminIntelPage })));
 const AnalyticsHealthPage = lazy(() => import('@/routes/admin/AnalyticsHealthPage').then((m) => ({ default: m.AnalyticsHealthPage })));
-const AdminGenerationPage = lazy(() => import('@/routes/admin/AdminGenerationPage').then((m) => ({ default: m.AdminGenerationPage })));
 
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 export const STAFF_ROLES = ['admin', 'superadmin'];
@@ -39,13 +41,14 @@ export const STAFF_ROLES = ['admin', 'superadmin'];
 /** The page of each console section (./staffGrants.ts ids). */
 export const STAFF_PAGES: Readonly<Record<string, ReactNode>> = {
   overview: <StaffOverviewRoute />,
-  content: <AdminContentPage />,
+  content: <StaffContentRoute />,
   users: <StaffUsersRoute />,
   emails: <StaffEmailsRoute />,
   insights: <AdminInsightsPage />,
   intel: <AdminIntelPage />,
   analytics: <AnalyticsHealthPage />,
-  generation: <AdminGenerationPage />,
+  mentorQuality: <StaffMentorQualityRoute />,
+  generation: <StaffGenerationRoute />,
   audit: <StaffAuditRoute />,
   reports: <StaffReportsRoute />,
   roles: <StaffRolesRoute />,

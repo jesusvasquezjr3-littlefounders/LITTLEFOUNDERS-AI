@@ -2,13 +2,14 @@ import { readFileSync } from 'node:fs';
 import { app } from './helpers.mjs';
 
 /*
- * Lane 6 (staff): the rebuilt staff console on its real routes (W2T.1).
+ * Lane 6 (staff): the rebuilt staff console on its real routes (W2T.1, W2T.2).
  *
  *   states     each rebuilt console screen, signed in as the population that
  *              opens it, plus its details sheets (reached by a real press) and
  *              its whole-page error, empty and refused states
  *   scenarios  staff populations by grant: a superadmin, an admin with only
- *              manage_support (the mixed Overview), and the same superadmin
+ *              manage_support (the mixed Overview), only manage_content (Content,
+ *              Generation), only view_analytics (Mentor quality), and the same superadmin
  *              whose Core answers every console read with an error, nothing,
  *              or a 403 (the grant withdrawn after sign-in)
  *   respond    the console's Core reads, answered from the same fixtures the
@@ -17,6 +18,8 @@ import { app } from './helpers.mjs';
 export const lane = 'staff';
 
 const fixtures = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffConsoleFixtures.json', import.meta.url), 'utf8'));
+// W2T.2: Content, Generation and Mentor quality (the same file the preview entry answers from).
+const sections = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffSectionFixtures.json', import.meta.url), 'utf8'));
 
 const page = (screen) => `[data-screen="${screen}"]`;
 const ready = (screen, also) => `${page(screen)} ${also}`;
@@ -47,6 +50,30 @@ export const states = [
   app('/admin@refused', '/admin', 'staff-refused', ready('staff-overview', '[data-failure="refused"]')),
   app('/admin/reports@empty', '/admin/reports', 'staff-empty', ready('staff-reports', '.lf-state--empty')),
   app('/admin/roles@empty', '/admin/roles', 'staff-empty', ready('staff-roles', '.lf-state--empty')),
+  // W2T.2: Content (S2, B.3, G.2, C.5, C.6, S05.3d), Generation (S7) and Mentor quality (C.24).
+  app('/admin/content@staff-super', '/admin/content', 'staff-super', ready('staff-content', '.lf-table-row'), { readyAlso: '[data-incidents]' }),
+  app('/admin/content@staff-content', '/admin/content', 'staff-content', ready('staff-content', '.lf-table-row')),
+  app('/admin/content@course', '/admin/content', 'staff-super', ready('staff-content', '.lf-table-row'),
+    { open: ['[data-screen="staff-content"] .lf-table-row:nth-child(2) .lf-table-cell:last-child button'] }),
+  app('/admin/content@review', '/admin/content?view=review', 'staff-super', ready('staff-content', '.lf-table-row')),
+  app('/admin/content@lesson', '/admin/content?view=review', 'staff-super', ready('staff-content', '.lf-table-row'),
+    { open: ['[data-screen="staff-content"] .lf-table-row:first-child .lf-table-cell:last-child button'] }),
+  app('/admin/content@live', '/admin/content?view=live', 'staff-super', ready('staff-content', '[data-screen="staff-live-content-packs"]'),
+    { readyAlso: '[data-screen="staff-content"] .lf-table-row' }),
+  app('/admin/content@activity', '/admin/content?view=live', 'staff-super', ready('staff-content', '.lf-table-row'),
+    { open: ['[data-screen="staff-content"] .lf-table-row:nth-child(2) .lf-table-cell:last-child button'] }),
+  app('/admin/content@quality', '/admin/content?view=quality', 'staff-super', ready('staff-content', '[data-screen="learning-quality"] form')),
+  app('/admin/content@empty', '/admin/content', 'staff-empty', ready('staff-content', '.lf-state--empty')),
+  app('/admin/generation@staff-super', '/admin/generation', 'staff-super', ready('staff-generation', '.lf-staff-stages')),
+  app('/admin/generation@history', '/admin/generation?view=history', 'staff-content', ready('staff-generation', '.lf-table-row'),
+    { readyAlso: '[data-screen="staff-generation"] .lf-staff-plot-svg' }),
+  app('/admin/generation@slot', '/admin/generation?view=history', 'staff-super', ready('staff-generation', '.lf-table-row'),
+    { open: ['[data-screen="staff-generation"] .lf-table-row:nth-child(3) .lf-table-cell:last-child button'] }),
+  app('/admin/generation@trends', '/admin/generation?view=trends', 'staff-super', ready('staff-generation', '.lf-staff-plot-svg')),
+  app('/admin/generation@coach', '/admin/generation?view=coach', 'staff-super', ready('staff-generation', '.lf-staff-proposals')),
+  app('/admin/generation@empty', '/admin/generation', 'staff-empty', ready('staff-generation', '.lf-state--empty')),
+  app('/admin/mentor-quality@staff-analytics', '/admin/mentor-quality', 'staff-analytics', ready('staff-mentor-quality', '[data-screen="staff-mentor-quality-signals"]')),
+  app('/admin/mentor-quality@refused', '/admin/mentor-quality', 'staff-refused', ready('staff-mentor-quality', '[data-failure="refused"]')),
 ];
 
 const SUPER = { guest: false, ageBand: 'adult', roles: ['superadmin'], adminPermissions: [] };
@@ -54,6 +81,8 @@ export const scenarios = {
   'staff-super': { population: 'staff, superadmin', ...SUPER, consoleState: 'ready' },
   'staff-users': { population: 'staff, admin with manage_users only', guest: false, ageBand: 'adult', roles: ['admin'], adminPermissions: ['manage_users'], consoleState: 'ready' },
   'staff-support': { population: 'staff, admin with manage_support only', guest: false, ageBand: 'adult', roles: ['admin'], adminPermissions: ['manage_support'], consoleState: 'ready' },
+  'staff-content': { population: 'staff, admin with manage_content only', guest: false, ageBand: 'adult', roles: ['admin'], adminPermissions: ['manage_content'], consoleState: 'ready' },
+  'staff-analytics': { population: 'staff, admin with view_analytics only', guest: false, ageBand: 'adult', roles: ['admin'], adminPermissions: ['view_analytics'], consoleState: 'ready' },
   'staff-unavailable': { population: 'staff, superadmin; Core answers every console read with an error', ...SUPER, consoleState: 'error' },
   'staff-refused': { population: 'staff, superadmin; the grant withdrawn after sign-in (Core answers 403)', ...SUPER, consoleState: 'refused' },
   'staff-empty': { population: 'staff, superadmin; a new deployment with no data', ...SUPER, consoleState: 'empty' },
@@ -97,5 +126,28 @@ export function respond({ spec, scenario, path, request, ok }) {
   }
   if (route === '/admin/emails/logs') return ok({ entries: empty ? [] : fixtures.emailLogs, total: empty ? 0 : 948 });
   if (route === '/admin/emails/summary') return ok(empty ? { total: 0, statuses: {}, templates: {}, locales: {}, trend: [] } : fixtures.emailSummary);
+  return sectionRespond(route, query, empty, ok);
+}
+
+/** W2T.2 answers (mirrors staffConsoleFixtures.ts sectionAnswer). */
+function sectionRespond(route, query, empty, ok) {
+  const unavailable = { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Synthetic: no generation data' } } };
+  const g = sections.generation;
+  if (route === '/admin/content') return ok(empty ? { courses: [], summary: { courses: { total: 0 }, lessons: { total: 0 } }, courseAssemblyIncidents: [] } : sections.content);
+  if (route === '/admin/moderation') return ok(empty ? { lessons: [], total: 0 } : sections.moderation);
+  if (route.startsWith('/admin/moderation/')) return ok({ ...sections.lessonDetail, ...(sections.moderation.lessons.find((lesson) => route.endsWith(lesson.id)) ?? {}) });
+  if (route === '/admin/tutor/review-queue') return ok(empty ? { segments: [], total: 0 } : sections.liveQueue);
+  if (route === '/admin/tutor/live-content/status') return ok(sections.liveStatus);
+  if (route === '/admin/tutor/packs') return ok(empty ? { packs: [], total: 0 } : sections.packs);
+  if (route === '/admin/content/learning-quality') return ok(sections.learningQuality);
+  if (route === '/admin/generation') return ok(empty ? { tracks: [], runs: [] } : g.overview);
+  if (route === '/admin/generation/live') return ok(empty ? { activeRuns: [] } : g.live);
+  if (route.startsWith('/admin/generation/runs/')) return ok(g.runDetail);
+  if (route.startsWith('/admin/generation/slots/')) return ok(g.slotDetail);
+  if (route.startsWith('/admin/generation/snapshots/')) return ok(g.snapshots);
+  if (route === '/admin/generation/compare') return query.get('runA') && query.get('runB') ? ok(g.compare) : undefined;
+  if (route === '/admin/generation/analytics') return empty ? unavailable : ok(g.analytics);
+  if (route === '/admin/generation/coach') return empty ? unavailable : ok(g.coach);
+  if (route === '/admin/mentor-quality') return ok(sections.mentorQuality);
   return undefined;
 }

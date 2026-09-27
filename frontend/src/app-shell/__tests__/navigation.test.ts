@@ -93,12 +93,12 @@ describe('staff console', () => {
     }
   });
 
-  it('a view_analytics admin sees the overview, analytics and Learning intel (Insights lives there, G.5), then the way back', () => {
+  it('a view_analytics admin sees the overview, analytics, Learning intel (Insights lives there, G.5) and Mentor quality (C.24), then the way back', () => {
     const items = staffNav({ roles: ['admin'], adminPermissions: ['view_analytics'] }).map(({ slot, grant }) => ({
       id: slot.id, label: slot.label, href: slot.path, ...(grant ? { permission: grant as StaffPermission | readonly StaffPermission[] } : {}),
     }));
     expect(permittedStaffItems(items, { superadmin: false, permissions: ['view_analytics'] }).map((item) => item.id))
-      .toEqual(['overview', 'analytics', 'intel', 'back-to-app']);
+      .toEqual(['overview', 'analytics', 'intel', 'mentorQuality', 'back-to-app']);
     expect(items.at(-1)?.href).toBe(APP_HOME);
   });
 

@@ -11,6 +11,11 @@ import { StaffAccess } from '../../staff/console/StaffAccess';
 import { StaffAudit } from '../../staff/console/StaffAudit';
 import { StaffReports } from '../../staff/console/StaffReports';
 import { StaffEmails } from '../../staff/console/StaffEmails';
+import { StaffContent } from '../../staff/console/StaffContent';
+import { StaffGeneration } from '../../staff/console/StaffGeneration';
+import { StaffMentorQuality } from '../../staff/console/StaffMentorQuality';
+import { contentView } from '../../staff/console/contentApi';
+import { generationView } from '../../staff/console/generationApi';
 import { fixtureApi, type FixtureState } from '../../staff/console/staffConsoleFixtures';
 import { staffViewer } from '../../staff/console/staffConsoleApi';
 import { framed, type PreviewContext, type PreviewRegistry } from './types';
@@ -113,4 +118,10 @@ export const staffPreviewScreens: PreviewRegistry = {
   'staff-console-audit': consoleScreen('staff-console-audit', ({ api }) => <StaffAudit api={api} />),
   'staff-console-reports': consoleScreen('staff-console-reports', ({ api }) => <StaffReports api={api} />),
   'staff-console-emails': consoleScreen('staff-console-emails', ({ api }) => <StaffEmails api={api} />),
+  /* W2T.2: ?view=courses|review|live|quality (Content), ?view=live|history|trends|coach (Generation). The preview has no lesson player. */
+  'staff-console-content': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-content" params={params}
+    render={({ api }) => <StaffContent api={api} initialView={contentView(params.get('view'))} />} />),
+  'staff-console-generation': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-generation" params={params}
+    render={({ api }) => <StaffGeneration api={api} initialView={generationView(params.get('view'))} />} />),
+  'staff-console-mentor-quality': consoleScreen('staff-console-mentor-quality', ({ api }) => <StaffMentorQuality api={api} />),
 };

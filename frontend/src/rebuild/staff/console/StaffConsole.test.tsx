@@ -101,7 +101,7 @@ describe('S1 Overview: mixed by the current grants (G.1)', () => {
     expect(screen.getByText(c.overview.body.up)).toBeTruthy();
     await screen.findByText('7 days later');
     expect(gets.sort()).toEqual(['/admin/health/services', '/admin/learning/retention', '/admin/overview']);
-    expect(links(container)).toEqual(['/admin/analytics', '/admin/intel']);
+    expect(links(container)).toEqual(['/admin/analytics', '/admin/intel', '/admin/mentor-quality']);
   });
 
   it('says when health monitoring is not configured instead of a generic failure', async () => {
@@ -115,7 +115,7 @@ describe('S1 Overview: mixed by the current grants (G.1)', () => {
     const onNavigate = vi.fn();
     const { container } = render(<Frame><StaffOverview api={api} viewer={superadmin} onNavigate={onNavigate} /></Frame>);
     await screen.findByText(c.overview.heading.roles);
-    expect(links(container)).toHaveLength(9);
+    expect(links(container)).toHaveLength(10);
     fireEvent.click(screen.getByText(c.overview.action.manageRoles));
     expect(onNavigate).toHaveBeenCalledWith('/admin/roles');
   });

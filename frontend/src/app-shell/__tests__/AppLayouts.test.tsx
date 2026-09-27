@@ -120,14 +120,14 @@ describe('the Tutor console (verified parent)', () => {
 });
 
 describe('the staff console', () => {
-  it('lists only what the grants open (Learning intel, where Insights lives, G.5), plus the way back', () => {
+  it('lists only what the grants open (Learning intel, where Insights lives, G.5; Mentor quality, C.24), plus the way back', () => {
     auth.roles = ['admin'];
     auth.adminPermissions = ['view_analytics'];
     const { container } = renderApp('/admin/intel', 'staff');
     expect(container.querySelector('[data-shell="staff"]')).not.toBeNull();
     const rail = screen.getAllByRole('navigation')[0]!;
     expect(within(rail as HTMLElement).getAllByRole('link').map((link) => link.textContent))
-      .toEqual(['Overview', 'Analytics & Health', 'Learning intel', 'Back to app']);
+      .toEqual(['Overview', 'Analytics & Health', 'Learning intel', 'Mentor quality', 'Back to app']);
     expect(within(rail as HTMLElement).getByRole('link', { name: 'Learning intel' })).toHaveAttribute('aria-current', 'page');
   });
 

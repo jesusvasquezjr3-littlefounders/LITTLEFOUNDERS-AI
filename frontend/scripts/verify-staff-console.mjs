@@ -7,7 +7,7 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
 import { consoleRequests } from './audits/lanes/staff.mjs';
 
 /*
- * W2 Lane 6 (W2T.1): the rebuilt staff console on its REAL routes, in real Chrome.
+ * W2 Lane 6 (W2T.1, W2T.2): the rebuilt staff console on its REAL routes, in real Chrome.
  *
  *   REBUILD_URL=http://localhost:5460 npm run verify:staff-console
  *
@@ -15,7 +15,11 @@ import { consoleRequests } from './audits/lanes/staff.mjs';
  * (scripts/audits/synthetic-core.mjs with the staff lane's fixtures; nothing
  * leaves the machine). Screen families: Overview (superadmin, and an admin with
  * only manage_support), Users (superadmin, and an admin with only
- * manage_users), Roles & Access, Audit log, Reports and Emails. For each of
+ * manage_users), Roles & Access, Audit log, Reports and Emails; W2T.2 adds
+ * Content in its four views (superadmin, and an admin with only
+ * manage_content), Generation in its four views and Mentor quality (an admin
+ * with only view_analytics), with the course, lesson, live-activity and
+ * generation-lesson sheets. For each of
  * 3 locales x 2 modes x 320/375/768/1280 px x normal and 140% text:
  *
  *   - the page is the rebuilt screen inside the staff shell (no legacy body),
@@ -57,6 +61,26 @@ const CASES = [
   { id: 'audit', path: '/admin/audit', scenario: 'staff-super', screen: 'staff-audit', section: 'audit', ready: '.lf-table-row', details: '.lf-table-row:first-child .lf-table-cell:last-child button' },
   { id: 'reports', path: '/admin/reports', scenario: 'staff-super', screen: 'staff-reports', section: 'reports', ready: '.lf-table-row', details: '.lf-table-row:first-child .lf-table-cell:last-child button' },
   { id: 'emails', path: '/admin/emails', scenario: 'staff-super', screen: 'staff-emails', section: 'emails', ready: '.lf-table-row', details: '.lf-table-row:first-child .lf-table-cell:last-child button' },
+  // W2T.2: Content (courses, lesson review, Mentor activities, learning quality), Generation and Mentor quality.
+  { id: 'content-courses', path: '/admin/content', scenario: 'staff-super', screen: 'staff-content', section: 'content', ready: '.lf-table-row',
+    details: '.lf-table-row:nth-child(2) .lf-table-cell:last-child button' },
+  { id: 'content-manage-content', path: '/admin/content', scenario: 'staff-content', screen: 'staff-content', section: 'content', ready: '.lf-table-row',
+    never: ['/admin/users', '/admin/roles', '/admin/mentor-quality', '/admin/audit', '/admin/tutor', '/admin/moderation', '/admin/content/learning-quality'] },
+  { id: 'content-review', path: '/admin/content?view=review', scenario: 'staff-super', screen: 'staff-content', section: 'content', ready: '.lf-table-row',
+    details: '.lf-table-row:first-child .lf-table-cell:last-child button' },
+  { id: 'content-live', path: '/admin/content?view=live', scenario: 'staff-super', screen: 'staff-content', section: 'content', ready: '[data-screen="staff-live-content-packs"]',
+    details: '.lf-table-row:nth-child(2) .lf-table-cell:last-child button' },
+  { id: 'content-quality', path: '/admin/content?view=quality', scenario: 'staff-super', screen: 'staff-content', section: 'content', ready: '[data-screen="learning-quality"] form' },
+  { id: 'denied-content', path: '/admin/content', scenario: 'staff-analytics', denied: true },
+  { id: 'generation-live', path: '/admin/generation', scenario: 'staff-content', screen: 'staff-generation', section: 'generation', ready: '.lf-staff-stages',
+    never: ['/admin/generation/analytics', '/admin/generation/coach', '/admin/content'] },
+  { id: 'generation-history', path: '/admin/generation?view=history', scenario: 'staff-super', screen: 'staff-generation', section: 'generation', ready: '.lf-staff-plot-svg',
+    details: '.lf-table-row:nth-child(3) .lf-table-cell:last-child button' },
+  { id: 'generation-trends', path: '/admin/generation?view=trends', scenario: 'staff-super', screen: 'staff-generation', section: 'generation', ready: '.lf-staff-plot-svg' },
+  { id: 'generation-coach', path: '/admin/generation?view=coach', scenario: 'staff-super', screen: 'staff-generation', section: 'generation', ready: '.lf-staff-proposals' },
+  { id: 'mentor-quality', path: '/admin/mentor-quality', scenario: 'staff-analytics', screen: 'staff-mentor-quality', section: 'mentorQuality', ready: '[data-screen="staff-mentor-quality-signals"]',
+    never: ['/admin/content', '/admin/generation', '/admin/users'] },
+  { id: 'denied-mentor-quality', path: '/admin/mentor-quality', scenario: 'staff-content', denied: true },
 ];
 const filter = process.env.STAFF_CASES?.split(',');
 const cases = CASES.filter((entry) => !filter || filter.includes(entry.id));

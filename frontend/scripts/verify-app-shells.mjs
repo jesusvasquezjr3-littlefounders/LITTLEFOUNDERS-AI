@@ -56,7 +56,7 @@ const CASES = [
   { id: 'tutor', shell: 'tutor', path: '/family', scenario: 'shell-tutor', navigate: 'learn', to: '/learn',
     expect: ['family', 'tasks', 'banking', 'learn', 'profile'] },
   { id: 'staff-limited', shell: 'staff', path: '/admin/intel', scenario: 'shell-staff', navigate: 'analytics', to: '/admin/analytics',
-    expect: ['overview', 'analytics', 'intel', 'back-to-app'] },
+    expect: ['overview', 'analytics', 'intel', 'mentorQuality', 'back-to-app'] },
   { id: 'marketing', shell: 'site', path: '/faq', scenario: null, navigate: 'how-it-works', to: '/how-it-works',
     expect: ['how-it-works', 'families', 'faq'] },
   { id: 'auth', shell: 'auth', path: '/login', scenario: null, navigate: null, expect: [] },

@@ -23,6 +23,7 @@ export const OVERVIEW_SECTIONS: readonly { id: ConsoleSection; path: string; gra
   { id: 'emails', path: '/admin/emails', grant: 'manage_support' },
   { id: 'analytics', path: '/admin/analytics', grant: 'view_analytics' },
   { id: 'intel', path: '/admin/intel', grant: 'view_analytics' },
+  { id: 'mentorQuality', path: '/admin/mentor-quality', grant: 'view_analytics' },
   { id: 'generation', path: '/admin/generation', grant: 'manage_content' },
   { id: 'audit', path: '/admin/audit', grant: 'manage_support' },
   { id: 'reports', path: '/admin/reports', grant: 'manage_support' },
@@ -64,7 +65,7 @@ export function StaffOverview({ api, viewer, onNavigate }: { api: StaffApi; view
       <h3 data-copy-role="heading" className="lf-staff-subheading">{t.body.lessons}</h3>
       <ShareBars label={t.body.lessons} locale={locale} total={sum(data.content.lessons)} rows={statusRows(data.content.lessons)} tone="mint" />
       {data.content.reviewQueue > 0 ? <InlineNotice tone="info">{fill(t.body.reviewQueue, { n: format.number(data.content.reviewQueue) })}</InlineNotice> : null}
-      <div><ConsoleLink href="/admin/content" onNavigate={onNavigate} variant="brand">{t.action.review}</ConsoleLink></div>
+      <div><ConsoleLink href="/admin/content?view=review" onNavigate={onNavigate} variant="brand">{t.action.review}</ConsoleLink></div>
     </Card> : null}
     {data?.users ? <Card heading={t.heading.roles}>
       {Object.keys(data.users.byRole).length === 0 ? <p data-copy-role="body">{t.body.noRoles}</p>

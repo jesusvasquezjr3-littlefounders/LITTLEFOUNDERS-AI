@@ -6,7 +6,7 @@ import { OVERVIEW_SECTIONS } from '@/rebuild/staff/console/StaffOverview';
 import { staffViewer } from '@/rebuild/staff/console/staffConsoleApi';
 import { isRebuiltStaffPath, STAFF_ROUTE_GRANTS } from '../staffGrants';
 import { STAFF_PAGES } from '../staff';
-import { StaffOverviewRoute, useStaffConsole } from '../staffConsole';
+import { renderLessonPreview, StaffContentRoute, StaffOverviewRoute, useStaffConsole } from '../staffConsole';
 
 /*
  * W2T.1 route contracts: the rebuilt Overview's section list mirrors the one
@@ -20,6 +20,9 @@ const auth = vi.hoisted(() => ({ roles: ['admin'] as string[], adminPermissions:
 const core = vi.hoisted(() => vi.fn());
 vi.mock('@/auth/AuthContext', () => ({ useAuth: () => auth }));
 vi.mock('@/lib/api', () => ({ api: core }));
+// The learner's lesson player, as the Content host hands it to the rebuilt review (W2T.2).
+const player = vi.hoisted(() => vi.fn());
+vi.mock('@/lesson-engine/player/LessonPlayer', () => ({ default: (props: Record<string, unknown>) => { player(props); return <div data-testid="lesson-player" />; } }));
 
 beforeEach(() => {
   core.mockReset();
@@ -33,10 +36,12 @@ describe('staff console routes (W2T.1)', () => {
       .toEqual(table.map((route) => [route.id, `/${route.path}`, route.grant]).sort());
   });
 
-  it('marks exactly the six rebuilt sections, and every section still has a page', () => {
-    expect(STAFF_ROUTE_GRANTS.filter((route) => route.rebuilt).map((route) => route.id).sort()).toEqual(['audit', 'emails', 'overview', 'reports', 'roles', 'users']);
-    expect(['/admin', '/admin/users', '/admin/emails/', '/admin/audit', '/admin/reports', '/admin/roles'].every(isRebuiltStaffPath)).toBe(true);
-    expect(['/admin/content', '/admin/intel', '/admin/analytics', '/admin/generation', '/admin/insights', '/learn'].some(isRebuiltStaffPath)).toBe(false);
+  it('marks exactly the nine rebuilt sections (W2T.1 and W2T.2), and every section still has a page', () => {
+    expect(STAFF_ROUTE_GRANTS.filter((route) => route.rebuilt).map((route) => route.id).sort())
+      .toEqual(['audit', 'content', 'emails', 'generation', 'mentorQuality', 'overview', 'reports', 'roles', 'users']);
+    expect(['/admin', '/admin/users', '/admin/emails/', '/admin/audit', '/admin/reports', '/admin/roles', '/admin/content', '/admin/generation', '/admin/mentor-quality']
+      .every(isRebuiltStaffPath)).toBe(true);
+    expect(['/admin/intel', '/admin/analytics', '/admin/insights', '/learn'].some(isRebuiltStaffPath)).toBe(false);
     for (const route of STAFF_ROUTE_GRANTS) expect(STAFF_PAGES[route.id], route.id).toBeTruthy();
   });
 
@@ -64,5 +69,30 @@ describe('staff console routes (W2T.1)', () => {
     await waitFor(() => expect(core.mock.calls.map(([path]) => path)).toEqual(['/admin/overview']));
     expect(document.querySelector('[data-console-section="/admin/content"], a[href="/admin/content"]')).toBeNull();
     expect(document.querySelector('a[href="/admin/audit"]')).not.toBeNull();
+  });
+
+  it('Content: ?view=review opens the review queue, and a refusal to publish keeps its itemized reasons', async () => {
+    core.mockImplementation(async (path: string) => (path === '/admin/moderation' ? { data: { lessons: [], total: 0 }, error: null }
+      : path === '/admin/tutor/packs/x/status' ? { data: null, error: { code: 'PACK_CONTRACT_FAILED', message: '', failures: ['tier 1 is below tier_min 2', 3] } }
+        : { data: null, error: { code: 'DATA_UNAVAILABLE', message: '' } }));
+    render(<MemoryRouter initialEntries={['/admin/content?view=review']}><RebuildRoot theme="light" locale="en-US"><RebuildProvider environment={{ theme: 'light', locale: 'en-US' }} labels={{ dismiss: 'Dismiss' }}>
+      <StaffContentRoute />
+    </RebuildProvider></RebuildRoot></MemoryRouter>);
+    await screen.findByText('Nothing waits for review.');
+    let hook: ReturnType<typeof useStaffConsole> | null = null;
+    function Probe() { hook = useStaffConsole(); return null; }
+    render(<MemoryRouter><Probe /></MemoryRouter>);
+    expect(await hook!.api.post('/admin/tutor/packs/x/status', { status: 'published' })).toEqual({ ok: false, code: 'PACK_CONTRACT_FAILED', failures: ['tier 1 is below tier_min 2'] });
+  });
+
+  it("the lesson preview is the learner's own player in preview mode: nothing graded", async () => {
+    const onExit = vi.fn();
+    render(<>{renderLessonPreview({ lessonId: 'l1', locale: 'es-MX', document: { segments: [] }, audio: {}, labels: { start: 'Start', next: 'Next', loading: 'Opening' }, onExit })}</>);
+    await screen.findByTestId('lesson-player');
+    const props = player.mock.calls.at(-1)![0] as { preview: boolean; previewStartLabel: string; grader: { grade: () => Promise<unknown> }; onExit: () => void };
+    expect(props.preview).toBe(true);
+    expect(props.previewStartLabel).toBe('Start');
+    await expect(props.grader.grade()).rejects.toThrow('Preview mode does not grade');
+    expect(props.onExit).toBe(onExit);
   });
 });

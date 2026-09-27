@@ -18,7 +18,8 @@ import { STAFF_PERMISSIONS, type StaffPermission } from '../../design/controls';
  * state, never a crash or a guessed zero.
  */
 
-export type StaffResult<T> = { ok: true; data: T } | { ok: false; code: string };
+/** A refusal may carry Core's itemized reasons (the C.6 pack contract lists every failure). */
+export type StaffResult<T> = { ok: true; data: T } | { ok: false; code: string; failures?: string[] };
 
 export interface StaffApi {
   get<T>(path: string): Promise<StaffResult<T>>;

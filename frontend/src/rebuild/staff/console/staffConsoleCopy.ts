@@ -17,12 +17,17 @@ import type { Locale } from '../../design/copyBudget';
 
 export type ConsoleCopy = typeof enStaff.staffConsole;
 export type SectionNames = typeof enCore.appShell.staff;
+/** The C.5 / C.6 panels' copy (`staffLiveContent`) and the C.24 dashboard's (`staffMentorQuality`), mounted by W2T.2. */
+export type LiveCopy = typeof enStaff.staffLiveContent;
+export type QualityCopy = typeof enStaff.staffMentorQuality;
 
 const COPY: Record<Locale, ConsoleCopy> = { 'en-US': enStaff.staffConsole, 'es-MX': esStaff.staffConsole, 'pt-BR': ptStaff.staffConsole };
 const SECTIONS: Record<Locale, SectionNames> = { 'en-US': enCore.appShell.staff, 'es-MX': esCore.appShell.staff, 'pt-BR': ptCore.appShell.staff };
+const LIVE: Record<Locale, LiveCopy> = { 'en-US': enStaff.staffLiveContent, 'es-MX': esStaff.staffLiveContent, 'pt-BR': ptStaff.staffLiveContent };
+const QUALITY: Record<Locale, QualityCopy> = { 'en-US': enStaff.staffMentorQuality, 'es-MX': esStaff.staffMentorQuality, 'pt-BR': ptStaff.staffMentorQuality };
 
-export function consoleCopyFor(locale: Locale): { copy: ConsoleCopy; sections: SectionNames; locale: Locale } {
-  return { copy: COPY[locale], sections: SECTIONS[locale], locale };
+export function consoleCopyFor(locale: Locale): { copy: ConsoleCopy; sections: SectionNames; locale: Locale; live: LiveCopy; quality: QualityCopy } {
+  return { copy: COPY[locale], sections: SECTIONS[locale], locale, live: LIVE[locale], quality: QUALITY[locale] };
 }
 
 /** The copy in the surface's language (the shell's RebuildRoot sets it from the app's i18n). */
