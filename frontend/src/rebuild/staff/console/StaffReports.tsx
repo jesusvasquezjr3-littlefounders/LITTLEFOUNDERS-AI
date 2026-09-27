@@ -87,7 +87,7 @@ export function StaffReports({ api, initialView = 'cases' }: { api: StaffApi; in
   const name = useId();
   const [view, setView] = useState<ReportsView>(initialView);
   const [generation, setGeneration] = useState(0);
-  return <StaffPage screen="staff-reports" title={sections.reports} intro={t.body.intro}
+  return <StaffPage screen="staff-reports" title={sections.reports}
     actions={<Button size="sm" onClick={() => setGeneration((value) => value + 1)}>{copy.common.action.refresh}</Button>}>
     <SegmentedControl legend={t.body.view} name={`${name}-view`} value={view} onValueChange={setView} className="lf-staff-views"
       options={[{ value: 'cases' as const, label: t.option.view_cases }, { value: 'support' as const, label: t.option.view_support }]} />

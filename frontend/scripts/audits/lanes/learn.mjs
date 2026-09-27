@@ -19,8 +19,15 @@ const lessonSurfaces = [
   ['childdecisions', ['adult']],
 ];
 
+// A panel another page mounts (its heading is an h2 under that page's h1): every string budgeted and text fit, but
+// the one-screen rules (one h1, heading ratio, first view) belong to the host page, as for a specimen.
+const PANELS = new Set(['childdecisions']);
+const PANEL = { firstView: false, catalogue: true };
+// The lesson result is centred on purpose, as the reference proportion audit exempts its `result` route.
+const CENTRED = { centred: true };
+
 export const states = [
-  ...lessonSurfaces.flatMap(([screen, ages]) => ages.map((age) => preview(`${screen}@${age}`, { screen, age }))),
+  ...lessonSurfaces.flatMap(([screen, ages]) => ages.map((age) => preview(`${screen}@${age}`, { screen, age }, PANELS.has(screen) ? PANEL : screen.startsWith('result') ? CENTRED : {}))),
   // The lesson route mounts the rebuilt lesson inside the design-system root (S03.6): every screen it can show.
   app('/learn/lesson@goal-6-9', '/learn/lesson/audit-goal', 'lesson-goal', '[data-screen="goal"]'),
   app('/learn/lesson@allocation-adult', '/learn/lesson/audit-allocation', 'lesson-allocation', '[data-screen="lesson"]'),

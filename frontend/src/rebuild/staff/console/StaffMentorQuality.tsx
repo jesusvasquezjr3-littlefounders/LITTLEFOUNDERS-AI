@@ -39,7 +39,7 @@ export function StaffMentorQuality({ api, viewer }: { api: StaffApi; viewer?: St
     const result = await api.post(path, body);
     return result.ok ? null : { code: result.code };
   };
-  return <StaffPage screen="staff-mentor-quality" title={sections.mentorQuality} intro={copy.mentorQuality.body.intro}
+  return <StaffPage screen="staff-mentor-quality" title={sections.mentorQuality}
     actions={<Button size="sm" onClick={read.reload}>{copy.common.action.refresh}</Button>}>
     {read.load.state === 'error' ? <LoadFailure code={read.load.code} onRetry={read.reload} />
       : <MentorQualityDashboard copy={panelCopy} locale={locale} dark={theme === 'dark'}

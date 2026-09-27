@@ -11,7 +11,7 @@
     "day": "Day",
     "year": "Year",
     "loading": "Checking your account…",
-    "help": "It keeps learning safe. We keep at most the month and year."
+    "help": "We keep only the month and year."
   },
   "kidSuspended": {
     "title": "This account is paused",
@@ -342,9 +342,9 @@
     "title": "Create your account",
     "lead": "Everyone starts free. No documents needed.",
     "name": "Your name",
-    "birthHelp": "We keep at most the month and year.",
+    "birthHelp": "We keep only the month and year.",
     "tutorIntent": "I'm a parent or guardian",
-    "tutorIntentHelp": "Verify your ID later to become a Tutor.",
+    "tutorIntentHelp": "Tutors verify their ID later.",
     "submit": "Create account",
     "submitting": "Creating…",
     "haveAccount": "Have an account?",

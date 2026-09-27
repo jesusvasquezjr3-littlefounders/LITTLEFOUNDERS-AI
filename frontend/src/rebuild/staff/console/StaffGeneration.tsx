@@ -608,7 +608,7 @@ export function StaffGeneration({ api, liveFeed, pollMs = POLL_MS, initialView =
   const [view, setView] = useState<GenerationView>(initialView);
   // A refresh remounts the open view, so every read in it starts again (the live view also keeps polling on its own).
   const [generation, setGeneration] = useState(0);
-  return <StaffPage screen="staff-generation" title={sections.generation} intro={t.body.intro}
+  return <StaffPage screen="staff-generation" title={sections.generation}
     actions={<Button size="sm" onClick={() => setGeneration((value) => value + 1)}>{copy.common.action.refresh}</Button>}>
     <SegmentedControl legend={t.body.view} name={`${name}-view`} value={view} onValueChange={setView} className="lf-staff-views"
       options={GENERATION_VIEWS.map((value) => ({ value, label: t.option[value] }))} />

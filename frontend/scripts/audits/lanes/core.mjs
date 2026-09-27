@@ -40,13 +40,16 @@ export const states = [
   ...[
     ['/learn@shell-child-10-12', '/learn', 'shell-child', '[data-shell="learner"] [data-nav-id="mentor"]'],
     ['/profile/settings@shell-teen', '/profile/settings', 'shell-teen', '[data-shell="learner"] [data-nav-id="wallet"]'],
-    ['/family@shell-tutor', '/family', 'shell-tutor', '[data-shell="tutor"] [data-nav-id="family"]'],
-    ['/admin/intel@shell-staff-limited', '/admin/intel', 'shell-staff', '[data-shell="staff"] [data-nav-id="intel"]'],
-  ].map(([id, path, scenario, ready]) => app(id, path, scenario, ready, { firstView: false, catalogue: true, embedded: true })),
+    // The staff console page under the shell is rebuilt (W2T.3): wait for it, or the route's loading fallback is measured.
+    ['/admin/intel@shell-staff-limited', '/admin/intel', 'shell-staff', '[data-shell="staff"] [data-nav-id="intel"]', '[data-screen="staff-intel"]'],
+  ].map(([id, path, scenario, ready, readyAlso]) => app(id, path, scenario, ready, { readyAlso, firstView: false, catalogue: true, embedded: true })),
+  // The Tutor shell on /family with no child is the family lane's '/family@empty' state (W2F.1 rebuilt the page;
+  // the same load renders the same markup, measured there with the full rules).
+  // The sign-in shell on /login is measured by the site lane's '/login@login' state (W2S.2 rebuilt the page
+  // under it, so the same load renders the same markup, now with the full one-screen rules).
   ...[
     ['/faq@shell-site', '/faq', '[data-shell="site"] .lf-site-footer'],
-    ['/login@shell-auth', '/login', '[data-shell="auth"] [data-shell-preferences]'],
-  ].map(([id, path, ready]) => app(id, path, null, ready, { firstView: false, catalogue: true, embedded: true, budget: path === '/faq' ? 'site' : 'app' })),
+  ].map(([id, path, ready]) => app(id, path, null, ready, { firstView: false, catalogue: true, embedded: true, budget: 'site' })),
 ];
 
 /*
@@ -75,6 +78,11 @@ export function respond({ spec, path, request, ok }) {
   // A scenario that declares its own shelf (the learn lane's, W2L.1) or its own family (lanes/family.mjs) is answered by that lane.
   if (path === '/learn/courses' && !spec.family && !spec.shelf) return ok({ courses: [] });
   if (path === '/family/kids' && !spec.family) return ok({ kids: [] });
+  if (path === '/family/guardian-links/mine' && !spec.family) return ok({ links: [] });
+  // S10.3 (OD-9): no audited population is a migrated child, so no data practice asks for a specific consent.
+  if (request.method === 'GET' && (path === '/family-hub/data-practices/me' || /^\/family-hub\/kids\/[^/]+\/data-practices$/.test(path))) {
+    return ok({ migrated: false, hasTutor: Boolean(spec.roles?.includes('kid')), practices: [] });
+  }
   if (spec.adminUnavailable && path.startsWith('/admin/')) return { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Synthetic: not available' } } };
   return undefined;
 }

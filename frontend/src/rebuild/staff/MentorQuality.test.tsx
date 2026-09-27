@@ -69,7 +69,7 @@ describe('MentorQualityDashboard', () => {
     const emotion = document.querySelector('[data-flag="flag-emotion"]')!;
     expect(emotion.textContent).toContain('Urgent');
     expect(emotion.textContent).toContain(en.staffMentorQuality.kind.zero_tolerance);
-    expect(emotion.textContent).toContain('Owner: Safety and trust lead. Seen 25 times.');
+    expect(emotion.textContent).toContain('Safety and trust lead, seen 25 times.');
     expect(document.querySelector('[data-flag="flag-friction"]')!.textContent).toContain('persona:dina/locale:es-MX');
     expect(emotion.querySelectorAll('button')).toHaveLength(2);
     // Already acknowledged: only Resolve remains.

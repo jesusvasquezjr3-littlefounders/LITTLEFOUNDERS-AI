@@ -132,7 +132,14 @@ function AudienceView({ api, days }: { api: StaffApi; days: number }) {
   }, [sessions.load]);
   const surfaceName = (value: string) => labelOf(t.option as Record<string, string>, `surface_${value}`).replace(/^surface_/, '');
 
-  const who = audience.load.state === 'ready' ? audience.load.data : null;
+  // A refusal is about the viewer, not one read: the grant was withdrawn, so every card would say the same thing
+  // with its own accent retry. One failure for the view, and its retry asks again for every read.
+  const reads = [audience, integrity, acquisition, activity, adoption, sessions];
+  if (reads.some((read) => read.load.state === 'error' && read.load.code === 'FORBIDDEN')) {
+    return <LoadFailure code="FORBIDDEN" onRetry={() => { for (const read of reads) read.reload(); }} />;
+  }
+
+  const who =audience.load.state === 'ready' ? audience.load.data : null;
   const bands = ['anonymous', 'registered', ...(withStaff ? ['staff'] as const : [])] as const;
   const primary = <>
     <Card heading={t.heading.audience}>
@@ -525,7 +532,7 @@ export function StaffAnalytics({ api, viewer, device, initialView = 'audience' }
   useEffect(() => { setView(initialView); }, [initialView]);
   const period = periodQuery(selection);
   const days = daysForSelection(selection);
-  return <StaffPage screen="staff-analytics" title={sections.analytics} intro={t.body.intro}
+  return <StaffPage screen="staff-analytics" title={sections.analytics}
     actions={<Button size="sm" onClick={() => setGeneration((value) => value + 1)}>{copy.common.action.refresh}</Button>}>
     <div className="lf-staff-controls">
       <SegmentedControl legend={t.body.view} name={`${name}-view`} value={view} onValueChange={setView} className="lf-staff-views"

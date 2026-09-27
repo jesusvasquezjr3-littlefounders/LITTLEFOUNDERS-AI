@@ -463,6 +463,14 @@ function LiveView({ api }: { api: StaffApi }) {
   };
   const dark = theme === 'dark';
   return <div className="lf-staff-section" data-view="live">
+    {/* The queue first: it is what a reviewer acts on, and the category status follows it. */}
+    <section className="lf-staff-section" aria-label={t.heading.queue} ref={heading} tabIndex={-1}>
+      <p data-copy-role="body" className="lf-staff-muted">{t.body.queueIntro}</p>
+      {queue.load.state === 'loading' ? <Loading />
+        : queue.load.state === 'error' ? <LoadFailure code={queue.load.code} onRetry={queue.reload} />
+          : segments.length === 0 ? <EmptyState heading={t.body.queueEmpty} />
+            : <DataTable caption={t.heading.queue} columns={columns} rows={segments} rowKey={(entry) => entry.id} />}
+    </section>
     <div className="lf-staff-pair">
       <div className="lf-staff-stack">
         <LiveContentStatusPanel copy={live} locale={locale} dark={dark}
@@ -478,13 +486,6 @@ function LiveView({ api }: { api: StaffApi }) {
         </Card>
           : packs.load.state === 'ready' ? <PackRelease copy={live} locale={locale} dark={dark} packs={packs.load.data.packs} onStatus={onPackStatus} /> : null}
     </div>
-    <section className="lf-staff-section" aria-label={t.heading.queue} ref={heading} tabIndex={-1}>
-      <p data-copy-role="body" className="lf-staff-muted">{t.body.queueIntro}</p>
-      {queue.load.state === 'loading' ? <Loading />
-        : queue.load.state === 'error' ? <LoadFailure code={queue.load.code} onRetry={queue.reload} />
-          : segments.length === 0 ? <EmptyState heading={t.body.queueEmpty} />
-            : <DataTable caption={t.heading.queue} columns={columns} rows={segments} rowKey={(entry) => entry.id} />}
-    </section>
     {segment ? <ActivitySheet key={segment.id} api={api} segment={segment} onClose={close} onDecided={() => setDirty(true)} /> : null}
   </div>;
 }
@@ -527,23 +528,22 @@ export function StaffContent({ api, initialView = 'courses', renderLessonPreview
   const data = content.load.state === 'ready' ? content.load.data : null;
   const incidents = data?.courseAssemblyIncidents ?? [];
   const summary = data?.summary;
-  return <StaffPage screen="staff-content" title={sections.content} intro={t.body.intro}
+  // Course load failures belong to the Courses view: every other view keeps its first screen for its own task.
+  const incidentsSection = incidents.length ? <section className="lf-staff-incidents" aria-labelledby="staff-incidents" data-incidents={incidents.length}>
+    <h2 id="staff-incidents" data-copy-role="heading">{t.heading.incidents}</h2>
+    <InlineNotice tone="error">{t.body.incidents}</InlineNotice>
+    <List label={t.heading.incidents}>
+      {incidents.map((incident) => <ListRow key={incident.courseId} title={incident.courseTitle} titleRole="data"
+        supporting={fill(t.body.incident, { n: format.number(incident.occurrenceCount), date: format.date(incident.lastSeenAt, copy.common.body.notAvailable) })} />)}
+    </List>
+  </section> : null;
+  return <StaffPage screen="staff-content" title={sections.content}
     actions={<Button size="sm" onClick={content.reload}>{copy.common.action.refresh}</Button>}>
     {content.load.state === 'loading' ? <Loading />
-      : content.load.state === 'error' ? <LoadFailure code={content.load.code} onRetry={content.reload} />
-        : data && summary ? <>
-          {incidents.length ? <section className="lf-staff-incidents" aria-labelledby="staff-incidents" data-incidents={incidents.length}>
-            <h2 id="staff-incidents" data-copy-role="heading">{t.heading.incidents}</h2>
-            <InlineNotice tone="error">{t.body.incidents}</InlineNotice>
-            <List label={t.heading.incidents}>
-              {incidents.map((incident) => <ListRow key={incident.courseId} title={incident.courseTitle} titleRole="data"
-                supporting={fill(t.body.incident, { n: format.number(incident.occurrenceCount), date: format.dateTime(incident.lastSeenAt, copy.common.body.notAvailable) })} />)}
-            </List>
-          </section> : null}
-        </> : null}
+      : content.load.state === 'error' ? <LoadFailure code={content.load.code} onRetry={content.reload} /> : null}
     <SegmentedControl legend={t.body.view} name={`${name}-view`} value={view} onValueChange={setView} className="lf-staff-views"
       options={CONTENT_VIEWS.map((value) => ({ value, label: t.option[value] }))} />
-    {view === 'courses' ? (data && summary ? <CoursesView api={api} courses={data.courses} summary={summary} onChanged={content.reload} /> : null)
+    {view === 'courses' ? (data && summary ? <>{incidentsSection}<CoursesView api={api} courses={data.courses} summary={summary} onChanged={content.reload} /></> : null)
       : view === 'review' ? <ReviewView api={api} onChanged={content.reload} renderLessonPreview={renderLessonPreview} />
         : view === 'live' ? <LiveView api={api} />
           : <QualityView api={api} />}

@@ -44,7 +44,6 @@ import './mentorQuality.css';
 
 export interface MentorQualityCopy {
   title: string;
-  intro: string;
   loading: string;
   loadFailed: string;
   updated: string;
@@ -114,11 +113,11 @@ export function MentorQualityStatus({ copy, locale, dark, phase, data }: {
   const hours = data?.freshness.ageHours === null || data?.freshness.ageHours === undefined ? null : Math.max(0, Math.floor(data.freshness.ageHours));
   return <Panel locale={locale} dark={dark} screen="staff-mentor-quality-status" busy={phase === 'loading'}>
     <h2 data-copy-role="heading">{copy.title}</h2>
-    <Copy role="body">{copy.intro}</Copy>
     {phase === 'loading' ? <LoadingState label={copy.loading} lines={2} />
       : phase === 'failed' || !data ? <Banner tone="error">{copy.loadFailed}</Banner>
         : <div className="lf-quality-facts">
-          <p data-copy-role="body" className="lf-quality-fresh" data-stale={data.freshness.stale ? 'true' : 'false'}>
+          {/* A fresh reading is a timestamp (data); a stale one is a warning to act on (body). */}
+          <p data-copy-role={data.freshness.stale || hours === null ? 'body' : 'data'} className="lf-quality-fresh" data-stale={data.freshness.stale ? 'true' : 'false'}>
             {hours === null ? copy.never : fill(data.freshness.stale ? copy.stale : copy.updated, { n: hours })}
           </p>
           {data.lastRun ? <p data-copy-role="body" data-run={data.lastRun.status}>{copy.lastRun[data.lastRun.status]}</p> : null}

@@ -319,7 +319,7 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     render(<Frame><StaffIntel api={api} viewer={ANALYST} /></Frame>);
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual([nav.intel]);
     expect(await screen.findByText('219 of 341')).toBeInTheDocument();
-    expect(await screen.findByText('Staff activity left out: 61,230 events (56%) from 9 accounts.')).toBeInTheDocument();
+    expect(await screen.findByText('Staff left out: 61,230 events (56%).')).toBeInTheDocument();
     const anomalies = await screen.findByRole('table', { name: n.heading.anomalies });
     expect(within(anomalies).getAllByRole('row')).toHaveLength(2);
     expect(within(anomalies).getByText('+3.2 standard deviations')).toBeInTheDocument();
@@ -353,7 +353,8 @@ describe('Learning intel S6 with Insights S8 (W2T.3)', () => {
     render(<Frame><StaffIntel api={api} viewer={ANALYST} initialView="insights" /></Frame>);
     const table = await screen.findByRole('table', { name: n.option.directory_courses });
     fireEvent.click(within(table).getByRole('button', { name: 'Open Earning coins' }));
-    const sheet = await screen.findByRole('dialog', { name: 'Earning coins' });
+    const sheet = await screen.findByRole('dialog', { name: en.staffConsole.content.heading.course });
+    expect(within(sheet).getByText('Earning coins')).toBeInTheDocument();
     expect(within(sheet).getByText('21%')).toBeInTheDocument();
     fireEvent.click(within(sheet).getByRole('button', { name: common.action.close }));
     fireEvent.click(screen.getByRole('radio', { name: n.option.directory_learners }));

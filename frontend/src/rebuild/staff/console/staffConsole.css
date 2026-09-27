@@ -31,19 +31,22 @@
   display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-1); min-inline-size: 0;
   padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card);
 }
-.lf-rebuild .lf-staff-metric dt { font: var(--type-label); color: var(--content-muted); overflow-wrap: break-word; }
+/* A long label word (es-MX "Disponibilidad") breaks with a hyphen in a narrow tile under WCAG spacing. */
+.lf-rebuild .lf-staff-metric dt { font: var(--type-label); color: var(--content-muted); overflow-wrap: anywhere; hyphens: auto; }
 .lf-rebuild .lf-staff-metric dd { margin: 0; font: var(--type-numeral); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* Label / value pairs (details sheets, the funnel). */
 .lf-rebuild .lf-staff-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--spacing-3) var(--spacing-5); margin: 0; }
 .lf-rebuild .lf-staff-fact { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
-.lf-rebuild .lf-staff-fact dt { font: var(--type-label); color: var(--content-muted); }
+.lf-rebuild .lf-staff-fact dt { font: var(--type-label); color: var(--content-muted); overflow-wrap: anywhere; hyphens: auto; }
 .lf-rebuild .lf-staff-fact dd { margin: 0; font: var(--type-body); min-inline-size: 0; }
 
 .lf-rebuild .lf-staff-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-rebuild .lf-staff-sheet { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
-/* A notice in a wide sheet keeps a readable measure (03 §3: at most 75 characters a line). */
-.lf-rebuild .lf-staff-sheet > .lf-notice { max-inline-size: 34rem; }
+/* A notice or a bar list keeps a readable measure on a wide page too (03 §3: at most 75 characters a line). */
+.lf-rebuild .lf-staff-sheet > .lf-notice, .lf-rebuild .lf-staff-page .lf-notice, .lf-rebuild .lf-staff-page .lf-viz-bars { max-inline-size: 34rem; }
+/* A wide table scrolls inside its own box under the WCAG 1.4.12 spacing overrides, never the page. */
+.lf-rebuild .lf-staff-page .lf-table-wrap { overflow-x: auto; }
 .lf-rebuild .lf-staff-subheading { margin: 0; font: var(--type-label); }
 .lf-rebuild .lf-staff-muted { color: var(--content-muted); }
 .lf-rebuild .lf-staff-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }

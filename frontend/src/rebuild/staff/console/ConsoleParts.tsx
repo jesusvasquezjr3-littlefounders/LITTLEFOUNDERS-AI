@@ -49,7 +49,7 @@ export const shortId = (id: string) => id.slice(0, 8);
 
 /** A console page: the section title, one intro line, an optional action row, then the page's blocks. */
 export function StaffPage({ screen, title, intro, actions, children }: {
-  screen: string; title: string; intro: string; actions?: ReactNode; children: ReactNode;
+  screen: string; title: string; intro?: string; actions?: ReactNode; children: ReactNode;
 }) {
   const { copy } = useConsoleCopy();
   const online = useOnline();
@@ -57,7 +57,7 @@ export function StaffPage({ screen, title, intro, actions, children }: {
     <header className="lf-staff-head">
       <div className="lf-staff-head-text">
         <h1 data-copy-role="heading">{title}</h1>
-        <p data-copy-role="body">{intro}</p>
+        {intro ? <p data-copy-role="body">{intro}</p> : null}
       </div>
       {actions ? <div className="lf-staff-head-actions">{actions}</div> : null}
     </header>

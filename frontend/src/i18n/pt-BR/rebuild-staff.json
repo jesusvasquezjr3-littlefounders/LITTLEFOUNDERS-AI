@@ -45,18 +45,17 @@
   },
   "staffMentorQuality": {
     "title": "Qualidade do Mentor",
-    "intro": "Todos os sinais do Mentor em um lugar, com quem deve revisá-los.",
     "loading": "Carregando.",
     "loadFailed": "Não carregou. Tente mais tarde.",
     "updated": "Atualizado há {n} horas",
     "stale": "Desatualizado: última atualização há {n} horas",
     "never": "Ainda não calculado. A verificação horária não rodou.",
     "lastRun": {
-      "ok": "Última verificação completa",
+      "ok": "Verificação completa",
       "partial": "A última verificação não leu tudo",
       "failed": "A última verificação falhou"
     },
-    "noOwner": "Ninguém designado para estas funções:",
+    "noOwner": "Sem responsável:",
     "flagsTitle": "Para revisar",
     "flagsEmpty": "Nenhum alerta aberto.",
     "kind": {
@@ -76,7 +75,7 @@
       "open": "Aberto",
       "acknowledged": "Visto"
     },
-    "flagMeta": "Responsável: {role}. Visto {n} vezes.",
+    "flagMeta": "{role}, visto {n} vezes.",
     "acknowledge": "Marcar como visto",
     "resolve": "Resolver",
     "noteLabel": "Causa raiz",
@@ -556,7 +555,6 @@
         "confirm": "Resolver este caso?"
       },
       "body": {
-        "intro": "Denúncias e casos automáticos por padrão. Cada um precisa de uma decisão.",
         "open": "Casos abertos",
         "pattern": "Casos por padrão",
         "openReports": "Denúncias abertas",
@@ -665,8 +663,7 @@
         "packs": "Pacotes de atividades"
       },
       "body": {
-        "intro": "Cursos, revisão de lições e atividades do Mentor.",
-        "incidents": "Os alunos não conseguiram abrir estes. Confira a estrutura publicada.",
+        "incidents": "Os alunos não conseguiram abrir estes.",
         "incident": "{n} vezes, a última em {date}",
         "courses": "Cursos",
         "coursesLive": "Cursos publicados",
@@ -709,7 +706,7 @@
         "releaseVerificationIncomplete": "Uma verificação obrigatória do Forge falta ou falhou. Verifique o curso de novo.",
         "releaseCourseRequired": "Este curso ainda não está publicado. Publique o curso inteiro.",
         "releaseBlocked": "A verificação recusou por outro motivo.",
-        "reviewIntro": "Cada lição passa por esta revisão humana antes de chegar aos alunos.",
+        "reviewIntro": "Cada lição passa antes por revisão humana.",
         "reviewEmpty": "Nada aguardando revisão.",
         "lesson": "Lição",
         "where": "Onde",
@@ -810,12 +807,11 @@
         "actions": "Ações propostas"
       },
       "body": {
-        "intro": "Como cada execução de geração de cursos se comportou.",
         "view": "Mostrar",
         "idle": "Nenhuma geração está ativa.",
         "idleHelp": "Atualiza quando o Forge inicia uma execução.",
         "liveFailed": "O status ao vivo não carregou. Continua tentando.",
-        "polling": "Confere a cada poucos segundos.",
+        "polling": "Atualiza com frequência.",
         "connecting": "Conectando.",
         "realtime": "As atualizações ao vivo estão ligadas.",
         "realtimeFailed": "As atualizações ao vivo falharam. Continua conferindo a cada poucos segundos.",
@@ -838,11 +834,11 @@
         "stageCount": "{n} lições",
         "critical": "Crítico",
         "warning": "Aviso",
-        "alertLiveCost": "O custo total projetado é {cost}.",
+        "alertLiveCost": "Custo projetado: {cost}.",
         "alertLiveCostDetail": "Gastou {spent} com {progress} concluído.",
-        "alertLowCache": "Os acertos de cache estão muito baixos: {share}.",
+        "alertLowCache": "Poucos acertos de cache: {share}.",
         "alertLowCacheDetail": "O prefixo do prompt pode ter mudado.",
-        "alertHighFail": "{share} das lições processadas falharam.",
+        "alertHighFail": "{share} das lições falharam.",
         "alertHighFailDetail": "{failed} de {total} falharam. Considere pausar a execução.",
         "alertQualityDrop": "{dimension} caiu de {from} para {to}.",
         "alertQualityDropDetail": "O ruído é de 0,4. Mais de 0,8 pode ser real.",
@@ -947,9 +943,7 @@
       "heading": {
         "status": "Status dos dados"
       },
-      "body": {
-        "intro": "Alertas, sinais e a revisão semanal dos responsáveis."
-      }
+      "body": {}
     },
     "analytics": {
       "action": {
@@ -992,17 +986,16 @@
         "webTrend": "Visitantes ao longo do tempo"
       },
       "body": {
-        "intro": "Uso, saúde dos serviços e arquivos de relatório do período escolhido.",
         "view": "Visão",
         "period": "Período",
-        "audienceSource": "Nosso próprio fluxo de eventos, com o papel de cada sessão.",
+        "audienceSource": "Nosso fluxo de eventos, por papel.",
         "band_anonymous": "Anônimos",
         "band_registered": "Com login",
         "band_staff": "Equipe",
         "externalShare": "Fora da equipe",
         "includeStaff": "Incluir sessões da equipe",
         "staffHidden": "As sessões da equipe ficam ocultas só no gráfico.",
-        "audienceChart": "Colunas empilhadas de sessões diárias por quem esteve aqui",
+        "audienceChart": "Sessões diárias por quem visitou",
         "audienceSummary": "{share} das sessões não foram da equipe.",
         "acquisitionSource": "Pessoas que chegaram sem conta, e se criaram uma.",
         "visitors": "Visitantes",
@@ -1048,7 +1041,7 @@
         "bounceRate": "Taxa de rejeição",
         "boundaryNote": "{n} visualizações de páginas da equipe anteriores a uma correção estão incluídas.",
         "boundaryUnknown": "Não foi possível verificar se visualizações da equipe estão incluídas.",
-        "behaviorChart": "Gráfico de linhas de visualizações e visitas diárias",
+        "behaviorChart": "Visualizações e visitas diárias",
         "behaviorChartSummary": "Mais visualizações por visita significa leitura mais profunda.",
         "breakdownBy": "Detalhar por",
         "noRows": "Nada registrado neste período.",
@@ -1228,11 +1221,10 @@
         "trend": "Tendência"
       },
       "body": {
-        "intro": "Evidências de produto, retenção e aprendizagem, com consentimento e sem a equipe.",
         "view": "Visão",
         "period": "Período",
         "show": "Mostrar",
-        "staffExcluded": "Atividade da equipe fora: {n} eventos ({share}) de {accounts} contas.",
+        "staffExcluded": "Equipe fora: {n} eventos ({share}).",
         "dau": "Usuários diários",
         "wau": "Usuários semanais",
         "mau": "Usuários mensais",
@@ -1298,9 +1290,8 @@
         "namesNeedGrant": "Os nomes aparecem só com a permissão de gestão de usuários.",
         "weekN": "Semana {n}",
         "week": "Semana",
-        "cohortsIntro": "Parte de cada coorte semanal de cadastro que voltou.",
-        "cohortChart": "Gráfico de linhas das três coortes mais novas, semana a semana",
-        "cohortSummary": "Cada linha é uma coorte. As mais baixas perderam mais pessoas.",
+        "cohortChart": "As três coortes mais novas, por semana",
+        "cohortSummary": "Uma linha por coorte.",
         "cohortOf": "Coorte de {date}",
         "cohort": "Coorte",
         "cohortSize": "Pessoas",
@@ -1320,7 +1311,7 @@
         "risk": "Risco",
         "lastActive": "Última atividade",
         "riskScore": "Pontuação de risco",
-        "readOnly": "Somente leitura aqui. A equipe de dados configura isso no armazém.",
+        "readOnly": "Somente leitura. A equipe de dados configura isso.",
         "name": "Nome",
         "status": "Situação",
         "control": "Controle",
@@ -1451,7 +1442,7 @@
         "reflections": "Decisões de Tutores com a pergunta de reflexão antes.",
         "bridge": "Aprendizes elegíveis que participaram de cada momento de dinheiro.",
         "research": "Cobertura e completude dos dados de pesquisa de longo prazo.",
-        "socialSafety": "Contas por nível social, revisões de perfil e consentimento adolescente.",
+        "socialSafety": "Níveis, revisões e consentimento adolescente.",
         "socialGovernance": "Linhas fora do prazo, superfícies de mensagens e envios.",
         "accountDeletions": "Pedidos de exclusão, prazos e a fila aberta.",
         "achievementSharing": "Compartilhamentos por tipo e novos links públicos. Meta: nenhum.",
@@ -1469,9 +1460,8 @@
         "scoredNo": "Avaliado como não acionável.",
         "scoreRefused": "Seu acesso não permite avaliar.",
         "scoreGone": "Este motivo saiu da amostra. Atualize.",
-        "familiesIntro": "Métricas familiares do Apêndice H. Só contagens e taxas, nunca uma pessoa.",
-        "group": "Grupo",
-        "trustIntro": "Métricas de confiança dos Apêndices J e L. Só contagens."
+        "familiesIntro": "Só contagens, nunca uma pessoa.",
+        "group": "Grupo"
       },
       "option": {
         "yes": "Sim",
@@ -1693,7 +1683,7 @@
         "sweep": "Limpeza de dados do Mentor"
       },
       "body": {
-        "autonomyIntro": "Baixe o nível de uma criança quando a família pedir. O Core registra.",
+        "autonomyIntro": "Só quando a família pedir.",
         "childId": "ID da conta da criança",
         "idInvalid": "Digite o ID completo da conta.",
         "notInFamily": "Nenhuma criança em uma família tem este ID.",
@@ -1717,7 +1707,7 @@
         "lowered": "Nível baixado. Ficou no registro de auditoria.",
         "lowerRefused": "Seu acesso não permite esta mudança.",
         "lowerConflict": "O nível mudou nesse meio-tempo. Busque de novo.",
-        "sweepIntro": "A limpeza noturna que apaga os dados do Mentor após 90 dias.",
+        "sweepIntro": "Apaga os dados do Mentor após 90 dias, toda noite.",
         "lastRun": "Última execução",
         "hoursSince": "Desde a última execução",
         "staleHelp": "A limpeza não roda há 36 horas. Verifique o fluxo."

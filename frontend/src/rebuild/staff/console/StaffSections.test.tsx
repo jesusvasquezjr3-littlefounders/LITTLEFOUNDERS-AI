@@ -347,7 +347,7 @@ describe('S7 Generation: the live monitor', () => {
     expect(document.querySelector('.lf-staff-transport')).toHaveTextContent(c.generation.body.polling);
     const alerts = screen.getByRole('region', { name: c.generation.heading.alerts });
     expect(alerts.querySelectorAll('[data-alert]')).toHaveLength(3);
-    expect(alerts).toHaveTextContent(/Projected total cost is/);
+    expect(alerts).toHaveTextContent(/Projected cost:/);
     const stages = document.querySelector('.lf-staff-stages')!;
     expect(stages.querySelector('[data-stage="writing"]')).toHaveTextContent(c.generation.body.working);
     expect(stages.querySelector('[data-stage="published"]')).toHaveTextContent(c.generation.body.done);
@@ -491,6 +491,6 @@ describe('W2T.2 copy in Spanish', () => {
     const { api } = fakeApi();
     render(<Frame locale="es-MX"><StaffContent api={api} /></Frame>);
     expect(await screen.findByRole('region', { name: es.staffConsole.content.heading.incidents })).toBeInTheDocument();
-    expect(screen.getByText(es.staffConsole.content.body.intro)).toBeInTheDocument();
+    expect(screen.getByText(es.staffConsole.content.body.incidents)).toBeInTheDocument();
   });
 });

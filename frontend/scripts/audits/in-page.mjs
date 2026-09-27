@@ -307,8 +307,16 @@ export function installAudit() {
     return { blocks: blocks.map((b) => ({ ...b, fold: b.top < fold })), modal, dashes };
   }
 
+  // Identical markup means an identical digest of the whole markup. The length and the first 160 characters
+  // of text alone collided by chance between distinct pages under one shell (the staff console's nav fills
+  // those 160 characters), which stopped the run on two pages the driver had reached.
   function signature() {
-    return ROOTS().map((root) => root.innerHTML.length + ':' + root.textContent.slice(0, 160)).join('|');
+    const digest = (text) => {
+      let h = 0x811c9dc5;
+      for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193);
+      return (h >>> 0).toString(16);
+    };
+    return ROOTS().map((root) => root.innerHTML.length + ':' + digest(root.innerHTML) + ':' + root.textContent.slice(0, 160)).join('|');
   }
 
   window.__lfAudit = {

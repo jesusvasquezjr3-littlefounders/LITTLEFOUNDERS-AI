@@ -226,6 +226,8 @@
 
 /* "Keep board" under a live board (T1g). */
 .lf-mentor-keep { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); padding-inline: var(--spacing-2); padding-block-end: var(--spacing-2); }
+/* A board taller than its cover scrolls; "Keep board" stays at the bottom of it instead of scrolling out of reach. */
+.lf-mentor-stage-region > .lf-mentor-board > .lf-mentor-keep { position: sticky; inset-block-end: 0; padding-block-start: var(--spacing-2); background: var(--surface); }
 
 /* A past talk on the stage (T1e): its transport in the response area. */
 .lf-mentor-replay { display: grid; gap: var(--spacing-3); min-inline-size: 0; }

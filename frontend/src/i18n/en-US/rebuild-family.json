@@ -63,7 +63,7 @@
     "shared": "Picture shared.",
     "downloaded": "Picture saved to your device.",
     "failed": "Could not make the picture. Try again.",
-    "disclosure": "You get a picture with their first name. No link is made.",
+    "disclosure": "A picture with their first name. No link is made.",
     "keepNote": "Anyone you send it to can keep it. It shows LittleFounders."
   },
   "socialNotices": {
@@ -183,7 +183,7 @@
     "off": "Off",
     "insightsFailed": "That did not save. Try again.",
     "micTitle": "Microphone",
-    "micOff": "Off. Typing still works.",
+    "micOff": "Off. Typing works.",
     "micSince": "Allowed since {date}.",
     "micUnavailable": "Not offered to children yet. The Mentor works by typing.",
     "micPaused": "You allowed it, but it is not offered to children yet.",

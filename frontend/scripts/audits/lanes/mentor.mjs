@@ -81,8 +81,10 @@ export const scenarios = {
     mentorStage: { character: 'liruf', scene: 'diorama-b' } },
   'mentor-compact-13-17': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', lesson: 'allocation', graded: true,
     mentorStage: { character: 'rho', scene: 'diorama-a' } },
+  // Not Lane 2's allocation Mentor (zara, lanes/learn.mjs 'lesson-allocation'): the same learner, lesson and
+  // character render the same markup, so this state measures the compact stage with the other articulated Mentor.
   'mentor-compact-adult': { population: 'adult', guest: false, ageBand: 'adult', lesson: 'allocation', graded: true,
-    mentorStage: { character: 'zara', scene: 'diorama-b' } },
+    mentorStage: { character: 'rho', scene: 'diorama-b' } },
 };
 
 /* The register policy version the UI accepts, read from the generated policy so this answer cannot go stale. */

@@ -45,18 +45,17 @@
   },
   "staffMentorQuality": {
     "title": "Mentor quality",
-    "intro": "Every Mentor signal in one place, with who must review it.",
     "loading": "Loading.",
     "loadFailed": "This did not load. Try later.",
     "updated": "Updated {n} hours ago",
     "stale": "Out of date: last update {n} hours ago",
     "never": "Not computed yet. The hourly check has not run.",
     "lastRun": {
-      "ok": "Last check complete",
+      "ok": "Check complete",
       "partial": "Last check could not read everything",
       "failed": "Last check failed"
     },
-    "noOwner": "No one is named for these roles:",
+    "noOwner": "No owner named:",
     "flagsTitle": "Needs review",
     "flagsEmpty": "No open flags.",
     "kind": {
@@ -76,7 +75,7 @@
       "open": "Open",
       "acknowledged": "Acknowledged"
     },
-    "flagMeta": "Owner: {role}. Seen {n} times.",
+    "flagMeta": "{role}, seen {n} times.",
     "acknowledge": "Acknowledge",
     "resolve": "Resolve",
     "noteLabel": "Root cause",
@@ -556,7 +555,6 @@
         "confirm": "Resolve this case?"
       },
       "body": {
-        "intro": "Reports and automatic pattern cases. Each needs a decision.",
         "open": "Open cases",
         "pattern": "Pattern cases",
         "openReports": "Open reports",
@@ -642,7 +640,7 @@
     },
     "content": {
       "heading": {
-        "incidents": "Courses that failed to load",
+        "incidents": "Courses failing to load",
         "courses": "Courses",
         "review": "Lessons waiting for review",
         "queue": "Activities to review",
@@ -665,8 +663,7 @@
         "packs": "Activity packs"
       },
       "body": {
-        "intro": "Courses, lesson review and Mentor activities.",
-        "incidents": "Learners could not open these. Check the published structure.",
+        "incidents": "Learners could not open these.",
         "incident": "{n} times, last on {date}",
         "courses": "Courses",
         "coursesLive": "Courses live",
@@ -709,7 +706,7 @@
         "releaseVerificationIncomplete": "A required Forge gate is missing or failed. Check the course again.",
         "releaseCourseRequired": "This course is not live yet. Publish the whole course.",
         "releaseBlocked": "The release check refused it for another reason.",
-        "reviewIntro": "Every lesson passes this human review before learners see it.",
+        "reviewIntro": "Every lesson passes human review first.",
         "reviewEmpty": "Nothing waits for review.",
         "lesson": "Lesson",
         "where": "Where",
@@ -810,12 +807,11 @@
         "actions": "Proposed actions"
       },
       "body": {
-        "intro": "How each course generation run behaved.",
         "view": "Show",
         "idle": "No generation run is active.",
         "idleHelp": "This updates when Forge starts a run.",
         "liveFailed": "Live status did not load. It keeps trying.",
-        "polling": "Checks every few seconds.",
+        "polling": "Refreshes often.",
         "connecting": "Connecting.",
         "realtime": "Live updates are on.",
         "realtimeFailed": "Live updates failed. It still checks every few seconds.",
@@ -838,11 +834,11 @@
         "stageCount": "{n} lessons",
         "critical": "Critical",
         "warning": "Warning",
-        "alertLiveCost": "Projected total cost is {cost}.",
+        "alertLiveCost": "Projected cost: {cost}.",
         "alertLiveCostDetail": "Spent {spent} at {progress} done.",
-        "alertLowCache": "Cache hits are very low: {share}.",
+        "alertLowCache": "Cache hits low: {share}.",
         "alertLowCacheDetail": "The prompt prefix may have drifted.",
-        "alertHighFail": "{share} of processed lessons failed.",
+        "alertHighFail": "{share} of lessons failed.",
         "alertHighFailDetail": "{failed} of {total} failed. Consider pausing the run.",
         "alertQualityDrop": "{dimension} fell from {from} to {to}.",
         "alertQualityDropDetail": "Noise is about 0.4. More than 0.8 may be real.",
@@ -947,9 +943,7 @@
       "heading": {
         "status": "Data status"
       },
-      "body": {
-        "intro": "Flags, signals and the weekly owner review."
-      }
+      "body": {}
     },
     "analytics": {
       "action": {
@@ -992,17 +986,16 @@
         "webTrend": "Visitors over time"
       },
       "body": {
-        "intro": "Usage, service health and report files for the chosen period.",
         "view": "View",
         "period": "Period",
-        "audienceSource": "Our own event stream, with the role of each session.",
+        "audienceSource": "Our own event stream, by role.",
         "band_anonymous": "Anonymous",
         "band_registered": "Signed in",
         "band_staff": "Staff",
         "externalShare": "Not staff",
         "includeStaff": "Include staff sessions",
         "staffHidden": "Staff sessions are hidden from the chart only.",
-        "audienceChart": "Stacked columns of daily sessions by who was here",
+        "audienceChart": "Daily sessions by who visited",
         "audienceSummary": "{share} of sessions were not staff.",
         "acquisitionSource": "People who arrived without an account, and whether they signed up.",
         "visitors": "Visitors",
@@ -1048,7 +1041,7 @@
         "bounceRate": "Bounce rate",
         "boundaryNote": "{n} views of staff pages from before a tracker fix are included.",
         "boundaryUnknown": "Whether staff page views are included could not be checked.",
-        "behaviorChart": "Line chart of daily page views and visits",
+        "behaviorChart": "Daily page views and visits",
         "behaviorChartSummary": "More page views per visit means people read deeper.",
         "breakdownBy": "Break down by",
         "noRows": "Nothing recorded for this period.",
@@ -1228,11 +1221,10 @@
         "trend": "Trend"
       },
       "body": {
-        "intro": "Product, retention and learning evidence, with consent and without staff.",
         "view": "View",
         "period": "Period",
         "show": "Show",
-        "staffExcluded": "Staff activity left out: {n} events ({share}) from {accounts} accounts.",
+        "staffExcluded": "Staff left out: {n} events ({share}).",
         "dau": "Daily users",
         "wau": "Weekly users",
         "mau": "Monthly users",
@@ -1298,9 +1290,8 @@
         "namesNeedGrant": "Names show only with the user management grant.",
         "weekN": "Week {n}",
         "week": "Week",
-        "cohortsIntro": "Share of each weekly signup cohort that came back.",
-        "cohortChart": "Line chart of the three newest cohorts, week by week",
-        "cohortSummary": "Each line is one cohort. Lower lines lost more people.",
+        "cohortChart": "Newest cohorts",
+        "cohortSummary": "One line per cohort.",
         "cohortOf": "Cohort of {date}",
         "cohort": "Cohort",
         "cohortSize": "People",
@@ -1320,7 +1311,7 @@
         "risk": "Risk",
         "lastActive": "Last active",
         "riskScore": "Risk score",
-        "readOnly": "Read-only here. The data team sets these up in the warehouse.",
+        "readOnly": "Read-only. The data team sets these up.",
         "name": "Name",
         "status": "Status",
         "control": "Control",
@@ -1345,7 +1336,7 @@
         "view_insights": "Insights",
         "view_retention": "Retention",
         "view_people": "People",
-        "view_operations": "Experiments and alerts",
+        "view_operations": "Experiments & alerts",
         "lastDays": "Last {n} days",
         "metric_dau": "Daily users",
         "metric_events": "Events",
@@ -1415,7 +1406,7 @@
         "reflections": "Reflection before decisions",
         "bridge": "Real-world money moments",
         "research": "Long-term research data",
-        "socialSafety": "Social tiers and profile review",
+        "socialSafety": "Social safety",
         "socialGovernance": "Social data governance",
         "accountDeletions": "Account deletions",
         "achievementSharing": "Achievement sharing",
@@ -1451,7 +1442,7 @@
         "reflections": "Tutor decisions where the reflective prompt came first.",
         "bridge": "Eligible learners who engaged with each money moment.",
         "research": "Coverage and completeness of long-term research data.",
-        "socialSafety": "Accounts by social tier, profile reviews and teen consent.",
+        "socialSafety": "Tiers and teen consent.",
         "socialGovernance": "Rows past their window, messaging surfaces and uploads.",
         "accountDeletions": "Deletion requests, timelines and the open queue.",
         "achievementSharing": "Shares by kind and any new public links. Target: none.",
@@ -1469,9 +1460,8 @@
         "scoredNo": "Scored as not actionable.",
         "scoreRefused": "Your access does not allow scoring.",
         "scoreGone": "This reason left the sample. Refresh.",
-        "familiesIntro": "Appendix H family metrics. Counts and rates only, never a person.",
-        "group": "Group",
-        "trustIntro": "Appendix J and L trust metrics. Counts only."
+        "familiesIntro": "Counts only, never a person.",
+        "group": "Group"
       },
       "option": {
         "yes": "Yes",
@@ -1693,7 +1683,7 @@
         "sweep": "Mentor data sweep"
       },
       "body": {
-        "autonomyIntro": "Lower a child's level when a family asks. Core records it.",
+        "autonomyIntro": "Only when a family asks.",
         "childId": "Child account ID",
         "idInvalid": "Enter the full account ID.",
         "notInFamily": "No child in a family has this ID.",
@@ -1717,7 +1707,7 @@
         "lowered": "Level lowered. The audit log has it.",
         "lowerRefused": "Your access does not allow this change.",
         "lowerConflict": "The level changed meanwhile. Look it up again.",
-        "sweepIntro": "The nightly sweep that deletes Mentor data after 90 days.",
+        "sweepIntro": "Deletes Mentor data after 90 days, nightly.",
         "lastRun": "Last run",
         "hoursSince": "Since the last run",
         "staleHelp": "The sweep has not run in 36 hours. Check the workflow."

@@ -239,11 +239,13 @@ function HealthSheet({ item, onClose }: { item: CourseHealth | LessonHealth; onC
   const title = lesson ? titleIn(locale, { en: item.lessonTitleEn, es: item.lessonTitleEs, pt: item.lessonTitlePt, slug: item.lessonSlug })
     : titleIn(locale, { en: item.courseTitleEn, es: item.courseTitleEs, pt: item.courseTitlePt, slug: item.courseSlug });
   const none = t.body.noData;
-  return <Sheet open onClose={onClose} heading={title ?? (lesson ? t.body.untitledLesson : t.body.untitledCourse)} closeLabel={copy.common.action.close}>
+  // The title is content, not copy: it goes in the facts as data, and the sheet keeps a budgeted heading (as Content's sheets do).
+  return <Sheet open onClose={onClose} heading={lesson ? copy.content.heading.lesson : copy.content.heading.course} closeLabel={copy.common.action.close}>
     <div className="lf-staff-sheet" data-sheet={lesson ? 'lesson' : 'course'}>
       <div className="lf-staff-chips">{attentionChip(copy, item.attention)}{evidenceChip(copy, item.evidenceStatus)}</div>
       <p data-copy-role="body" className="lf-staff-muted">{t.body[`evidenceHint_${item.evidenceStatus}`]}</p>
       <Facts items={[
+        { id: 'title', label: lesson ? t.body.lesson : t.body.course, value: title ?? (lesson ? t.body.untitledLesson : t.body.untitledCourse), ugc: true },
         { id: 'learners', label: t.body.learners, value: format.number(item.learners) },
         { id: 'attempts', label: t.body.attempts, value: format.number(item.attempts) },
         { id: 'score', label: t.body.averageScore, value: f.score(item.avgScore, none) },
@@ -471,7 +473,6 @@ function RetentionView({ api, span }: { api: StaffApi; span: IntelWindow }) {
   const grid = useMemo(() => (cohorts.load.state === 'ready' ? cohortGrid(cohorts.load.data) : null), [cohorts.load]);
   const week = (offset: number) => fill(t.body.weekN, { n: String(offset) });
   const primary = <Card heading={t.heading.cohorts}>
-    <p data-copy-role="body" className="lf-staff-muted">{t.body.cohortsIntro}</p>
     {cohorts.load.state === 'loading' ? <Loading />
       : cohorts.load.state === 'error' ? <LoadFailure code={cohorts.load.code} onRetry={cohorts.reload} />
         : !grid || grid.rows.length === 0 ? <p data-copy-role="body">{t.body.noData}</p> : <>
@@ -609,7 +610,7 @@ export function StaffIntel({ api, viewer, initialView = 'overview' }: { api: Sta
   const [span, setSpan] = useState<IntelWindow>({ days: 30 });
   const [generation, setGeneration] = useState(0);
   useEffect(() => { setView(initialView); }, [initialView]);
-  return <StaffPage screen="staff-intel" title={sections.intel} intro={t.body.intro}
+  return <StaffPage screen="staff-intel" title={sections.intel}
     actions={<Button size="sm" onClick={() => setGeneration((value) => value + 1)}>{copy.common.action.refresh}</Button>}>
     <div className="lf-staff-controls">
       <SegmentedControl legend={t.body.view} name={`${name}-view`} value={view} onValueChange={setView} className="lf-staff-views"

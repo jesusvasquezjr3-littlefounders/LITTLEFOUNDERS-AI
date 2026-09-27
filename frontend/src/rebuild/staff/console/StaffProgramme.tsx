@@ -152,9 +152,7 @@ export function FamilyMetricsView({ api, days }: { api: StaffApi; days: number }
 
 /** Analytics & Health → Trust: the Appendix J/L trust metrics. */
 export function TrustMetricsView({ api, days }: { api: StaffApi; days: number }) {
-  const { copy } = useConsoleCopy();
   return <div className="lf-staff-section">
-    <p data-copy-role="body" className="lf-staff-muted">{copy.programme.body.trustIntro}</p>
     <div className="lf-staff-pair">
       {TRUST_METRICS.map((spec) => <MetricCard key={spec.id} api={api} spec={spec} days={days} />)}
     </div>
