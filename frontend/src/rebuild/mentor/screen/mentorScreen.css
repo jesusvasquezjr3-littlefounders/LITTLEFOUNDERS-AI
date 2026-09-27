@@ -270,6 +270,30 @@
   .lf-mentor-panel { padding-inline: var(--spacing-6); }
 }
 
+/*
+ * W3M.1, age bands (08 §9, B.23): the same stage, component and Diorama for every band; only the presence changes.
+ * 6-9 gets the largest stage (60% of a phone's height, 55% on a tablet), 10-12 a slightly smaller one (57%, 52%),
+ * 13 and older the base (55%, 50%). The desktop split keeps its 7 of 12 columns for everyone (08 §6).
+ */
+.lf-mentor-screen[data-age-band='6-9'] .lf-mentor-main { grid-template-rows: minmax(max(60dvh, var(--lf-mentor-response-block, 0px)), 1fr) auto; }
+.lf-mentor-screen[data-age-band='10-12'] .lf-mentor-main { grid-template-rows: minmax(max(57dvh, var(--lf-mentor-response-block, 0px)), 1fr) auto; }
+@container app (min-width: 600px) {
+  .lf-mentor-screen[data-age-band='6-9'] .lf-mentor-main { grid-template-rows: minmax(max(55dvh, var(--lf-mentor-response-block, 0px)), 1fr) auto; }
+  .lf-mentor-screen[data-age-band='10-12'] .lf-mentor-main { grid-template-rows: minmax(max(52dvh, var(--lf-mentor-response-block, 0px)), 1fr) auto; }
+}
+
+/*
+ * W3M.1, tablet (08 §6: "the speech plate sits beside the character when the scene allows it"): on a stacked
+ * screen from 600 px whose stage is wide (landscape, at least 3:2), the character in the centre leaves the side of
+ * the Diorama free, and the plate stands there, at the inline end, instead of across the lower stage.
+ */
+@container app (min-width: 600px) {
+  .lf-mentor-screen[data-layout='stacked'] .lf-mentor-stage-region { container: lf-mentor-region / size; }
+}
+@container lf-mentor-region (min-aspect-ratio: 3 / 2) {
+  .lf-mentor-plate-slot { inset-inline-start: auto; inline-size: min(22rem, 34%); }
+}
+
 @container app (min-width: 1024px) {
   .lf-mentor-main {
     grid-template-columns: repeat(12, minmax(0, 1fr));

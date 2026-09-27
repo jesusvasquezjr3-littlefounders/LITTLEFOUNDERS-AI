@@ -10,7 +10,7 @@ import { MENTOR_CHARACTERS, type MentorCharacter } from '../design/assets';
  * still, the stage shows its empty scene colour and says so (`onError`).
  *
  * Preference order for one request:
- *   1. a stage still of this character in the requested pose (`mentor.stageStill`);
+ *   1. for the full stage, a stage still of this character in the requested pose (`mentor.stageStill`);
  *   2. for the compact lesson stage, the character's lesson band still (`lesson.compactMentorStill`);
  *   3. for the full stage, the character standing on its Diorama (`mentor.chooserStill`, the idle pose);
  *   4. the character's avatar render (`mentor.avatar`: the idle pose, square, transparent).
@@ -55,6 +55,9 @@ function pick(slot: string, character: MentorCharacter, theme: 'light' | 'dark',
 
 const still = (row: StillRow, fit: StageStill['fit']): StageStill => ({ id: row.id, path: row.path, poseId: row.poseId as string, fit });
 
+/** The manifest id of a full-stage still: one per character, catalogue pose and colour mode. */
+export const stageStillId = (character: MentorCharacter, pose: string, theme: 'light' | 'dark') => `mentor.${character}.stage.${pose}.${theme}`;
+
 /**
  * The stills for one character, pose, colour mode and stage size, or null when
  * the manifest holds no render of that character at all.
@@ -68,8 +71,12 @@ export function findStageStills({ character, poseId, theme, size, band }: {
   band: 'young' | 'teen';
 }): StageStillSet | null {
   if (!MENTOR_CHARACTERS.includes(character)) return null;
-  const exact = pick(STAGE_STILL_SLOT, character, theme, (row) => row.poseId === poseId);
-  if (exact) return { base: still(exact, 'cover'), square: null };
+  // W3M.1: the full stage's per-pose stills (scripts/render-mentor-stage-stills.mjs): a 4:5 scene render per catalogue
+  // pose, so the fallback shows the state the stage is in (08 §7). The lesson band keeps its own band-shaped stills.
+  if (size === 'full') {
+    const exact = pick(STAGE_STILL_SLOT, character, theme, (row) => row.id === stageStillId(character, poseId, theme) && row.poseId === poseId);
+    if (exact) return { base: still(exact, 'cover'), square: null };
+  }
   // The lesson band stills (scene included, per band and mode). Only Dina's are authored so far; another
   // character's band stills join here when they are rendered and registered.
   if (size === 'compact' && character === 'dina') {

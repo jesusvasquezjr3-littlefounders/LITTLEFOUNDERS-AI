@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { StartedSession, TutorOffers } from '../../session/types';
-import { startOfLocalDayIso, useMentorSession } from '../useMentorSession';
+import { RECAP_ANSWER_WAIT_MS, startOfLocalDayIso, useMentorSession } from '../useMentorSession';
 
 /*
  * W2M.2: the Mentor screen's session controller keeps every server contract
@@ -263,6 +263,27 @@ describe('how a session ends (C.16)', () => {
     act(() => { vi.advanceTimersByTime(5000); });
     expect(result.current.phase).toBe('conversing');
     act(() => result.current.endSession());
+    expect(socket.current.endSession).toHaveBeenCalledTimes(2);
+  });
+
+  it('W3M.1 (M-04): an unanswered recap question closes the talk after the wait; a draft holds it', async () => {
+    const { result, rerender } = await conversing();
+    const asking = { seq: 3, text: 'What clicked?', next: 'ask' };
+    socket.current = { ...socket.current, turn: { ...asking, seq: 2 } };
+    rerender();
+    vi.useFakeTimers();
+    act(() => result.current.endSession());
+    socket.current = { ...socket.current, turn: asking };
+    rerender();
+    expect(result.current.recapOpen).toBe(true);
+    // A learner typing an answer is never cut off.
+    act(() => result.current.setHasDraft(true));
+    act(() => { vi.advanceTimersByTime(RECAP_ANSWER_WAIT_MS + 1000); });
+    expect(socket.current.endSession).toHaveBeenCalledTimes(1);
+    act(() => result.current.setHasDraft(false));
+    act(() => { vi.advanceTimersByTime(RECAP_ANSWER_WAIT_MS - 1000); });
+    expect(socket.current.endSession).toHaveBeenCalledTimes(1);
+    act(() => { vi.advanceTimersByTime(2000); });
     expect(socket.current.endSession).toHaveBeenCalledTimes(2);
   });
 

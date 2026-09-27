@@ -86,6 +86,13 @@ const ACTIVE_SESSION = 'lf.tutor.activeSession.';
 const SESSION_LIMIT_DAY = 'lf.tutor.sessionLimitDay.';
 const REPLY_CEILING_MS = 25_000;
 const END_GRACE_MS = 4_000;
+/**
+ * OD-28 (M-04): the recap question waits this long for an answer, then the talk
+ * closes as the learner asked (the server lane's `RECAP_ANSWER_WAIT_MS`, which
+ * did not survive the merge; kept here so a learner who walked away is not held).
+ * A draft in the field or a reply on its way holds it.
+ */
+export const RECAP_ANSWER_WAIT_MS = 120_000;
 
 const read = (storage: 'local' | 'session', key: string): string | null => {
   try { return (storage === 'local' ? window.localStorage : window.sessionStorage).getItem(key); } catch { return null; }
@@ -318,6 +325,14 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
   }, [phase, socket]);
   const recapOpen = phase === 'conversing' && endPressSeq !== null && (socket.turn?.seq ?? 0) > endPressSeq;
   useEffect(() => { if (recapOpen && ending) setEnding(false); }, [recapOpen, ending]);
+  const endRef = useRef(endSession);
+  endRef.current = endSession;
+  const recapSeq = recapOpen ? socket.turn?.seq ?? 0 : null;
+  useEffect(() => {
+    if (recapSeq === null || hasDraft || awaitingReply) return undefined;
+    const timer = window.setTimeout(() => endRef.current(), RECAP_ANSWER_WAIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [recapSeq, hasDraft, awaitingReply]);
   useEffect(() => {
     if (!ending || phase !== 'conversing') return undefined;
     const timer = window.setTimeout(() => {

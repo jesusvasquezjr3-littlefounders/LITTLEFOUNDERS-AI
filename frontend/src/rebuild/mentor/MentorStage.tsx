@@ -191,8 +191,29 @@ export function MentorStage({
   const { state: shown, pose } = resolveMentorPose({ state, ageBand, milestone, closing });
   const mentor = REGISTERS[registerForCopyBand(ageBand)].mentor;
   const band = ageBand === '13-17' || ageBand === 'adult' ? 'teen' : 'young';
-  const stills = findStageStills({ character, poseId: pose.id, theme, size, band });
   const rendered3d = mode !== 'still';
+
+  /*
+   * Reduced motion: a pose change is a short cross-fade, not a movement (08 §7).
+   * The scene fades down, the held pose switches while it is faded, and the
+   * scene fades back up. A repeated state (a second miss) fades the same way.
+   * The still fallback changes state the same way (W3M.1): the next pose's
+   * still comes in under a fade and settles, once per state change (08 §7).
+   */
+  const swaps = mode === 'held' || mode === 'still';
+  const [heldPose, setHeldPose] = useState(pose);
+  const [swapping, setSwapping] = useState(false);
+  const firstPose = useRef(true);
+  useEffect(() => {
+    if (firstPose.current || !swaps) { firstPose.current = false; setHeldPose(pose); setSwapping(false); return undefined; }
+    setSwapping(true);
+    const timer = window.setTimeout(() => { setHeldPose(pose); setSwapping(false); }, HELD_SWITCH_MS);
+    return () => window.clearTimeout(timer);
+    // `pose` is a constant row of the catalogue table, so its id is its identity.
+  }, [swaps, pose.id, beat]);
+  const played = swaps ? heldPose : pose;
+  // The still of the pose on screen: in the fallback the one the fade settled on; while the live model loads, the requested one.
+  const stills = findStageStills({ character, poseId: played.id, theme, size, band });
 
   // A new character, Diorama or render mode loads again: the still covers the wait.
   const loaded = useRef<string | null>(null);
@@ -230,22 +251,6 @@ export function MentorStage({
 
   // The catalogue idle loop takes the hero object's idle slot (02 §9.4, 08 §3): one of the three, and only while live.
   const idle = useIdleMotion('hero', mode === 'live');
-  /*
-   * Reduced motion: a pose change is a short cross-fade, not a movement (08 §7).
-   * The scene fades down, the held pose switches while it is faded, and the
-   * scene fades back up. A repeated state (a second miss) fades the same way.
-   */
-  const [heldPose, setHeldPose] = useState(pose);
-  const [swapping, setSwapping] = useState(false);
-  const firstPose = useRef(true);
-  useEffect(() => {
-    if (firstPose.current || mode !== 'held') { firstPose.current = false; setHeldPose(pose); setSwapping(false); return undefined; }
-    setSwapping(true);
-    const timer = window.setTimeout(() => { setHeldPose(pose); setSwapping(false); }, HELD_SWITCH_MS);
-    return () => window.clearTimeout(timer);
-    // `pose` is a constant row of the catalogue table, so its id is its identity.
-  }, [mode, pose.id, beat]);
-  const played = mode === 'held' ? heldPose : pose;
 
   /*
    * In the still fallback there is no renderer to own the voice, so the stage
