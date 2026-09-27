@@ -237,6 +237,18 @@ describe('F1–F6 frontier', () => {
     expect(computeFrontier(CHAPTERS, teenAccess, KCS, PREREQS, mentor).items.map((i) => i.topicPath)).not.toContain('ch1/s2/tc');
   });
 
+  it('OD-24: a legacy KC credit is course evidence that opens dependents, and never completes the topic that teaches it', () => {
+    const e = noEvidence();
+    (e as { legacyCreditedKcs?: Set<string> }).legacyCreditedKcs = new Set(['k.b']);
+    const f = computeFrontier(CHAPTERS, teenAccess, KCS, PREREQS, e);
+    expect(f.items.map((i) => i.topicPath)).toContain('ch1/s2/tc');
+    expect(f.blocked).toEqual([]);
+    // The topic that teaches k.b is still offered: the credit satisfies the skill, it never passes lessons.
+    expect(pathwayProgress(CHAPTERS, teenAccess, KCS, e)).toMatchObject({ passed: 0, complete: false, kcsSatisfied: 1 });
+    // Without the credit the same saga is blocked on k.b (control).
+    expect(computeFrontier(CHAPTERS, teenAccess, KCS, PREREQS, noEvidence()).blocked.map((b) => b.missingKcs)).toEqual([['k.b']]);
+  });
+
   it('opens a review topic only once what it reviews is complete, and honours authored hard prerequisites', () => {
     const e = noEvidence();
     ['ch1/s1/ta#1', 'ch1/s1/ta#2', 'ch1/s1/tb#1', 'kid/s0/tx#1', 'ch2/s3/ty#1'].forEach((id) => (e.passedLessonIds as Set<string>).add(id));

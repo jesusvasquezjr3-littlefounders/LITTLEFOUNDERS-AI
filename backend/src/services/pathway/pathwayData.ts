@@ -55,6 +55,8 @@ export interface LearnerPathwayContext {
   completedCourseSlugs: Set<string>;
   /** course_pathway_placements stages, by course id. */
   placedStages: Map<string, Set<PathwayStage>>;
+  /** OD-24: ACTIVE KC keys credited by completed legacy topics (legacy_kc_credits). */
+  legacyCreditedKcs: Set<string>;
 }
 
 const BadgeRows = z.array(z.object({
@@ -65,6 +67,7 @@ const BadgeRows = z.array(z.object({
 const PlacementRows = z.array(z.object({ course_id: z.string(), pathway_stage: z.enum(STAGES) }).passthrough());
 const ProfileRows = z.array(z.object({ birth_date: z.string().nullable().optional() }).passthrough()).max(1);
 const CompletedRows = z.array(z.object({ course_slug: z.string() }).passthrough());
+const LegacyCreditRows = z.array(z.object({ kc_id: z.string() }).passthrough());
 
 /** The badge RPC with its failure kept distinct from "no badges" (the older helper collapses both to []). */
 export async function readCompletedCourseSlugs(userId: string): Promise<Set<string> | null> {
@@ -84,7 +87,7 @@ export async function readCompletedCourseSlugs(userId: string): Promise<Set<stri
  */
 export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeScreenState, now = new Date()): Promise<LearnerPathwayContext | null> {
   if (!Uuid.safeParse(userId).success) return null;
-  const [kcs, edges, mastery, cards, badges, placements, profiles, completed] = await Promise.all([
+  const [kcs, edges, mastery, cards, badges, placements, profiles, completed, legacyCredits] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
@@ -93,12 +96,16 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     serviceRest<unknown>(`/course_pathway_placements?user_id=eq.${eu(userId)}&select=course_id,pathway_stage&limit=1000`),
     serviceRest<unknown>(`/profiles?user_id=eq.${eu(userId)}&select=birth_date&limit=1`),
     readCompletedCourseSlugs(userId),
+    serviceRest<unknown>(`/legacy_kc_credits?user_id=eq.${eu(userId)}&select=kc_id&limit=10000`),
   ]);
   if (!kcs || !edges || !mastery || !cards || !completed) return null;
   const badgeRows = BadgeRows.safeParse(badges);
   const placementRows = PlacementRows.safeParse(placements);
   const profileRows = ProfileRows.safeParse(profiles);
-  if (!badgeRows.success || !placementRows.success || !profileRows.success) return null;
+  // A failed legacy-credit read is "unreachable", never "no credit": treating
+  // it as none would re-lock work a learner completed before the cutover.
+  const legacyRows = LegacyCreditRows.safeParse(legacyCredits);
+  if (!badgeRows.success || !placementRows.success || !profileRows.success || !legacyRows.success) return null;
 
   const kcKeyById = new Map(kcs.map((kc) => [kc.id, kc.key]));
   const kcTitles = new Map(kcs.map((kc) => [kc.key, kc.title]));
@@ -122,6 +129,11 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
   }
   const storedBadges = new Map<string, Array<{ award_key: string; pathway_stage: string | null }>>();
   for (const row of badgeRows.data) storedBadges.set(row.course_id, [...(storedBadges.get(row.course_id) ?? []), row]);
+  const legacyCreditedKcs = new Set<string>();
+  for (const row of legacyRows.data) {
+    const key = kcKeyById.get(row.kc_id);
+    if (key) legacyCreditedKcs.add(key); // a draft or retired KC stays invisible, as for the Mentor
+  }
   const placedStages = new Map<string, Set<PathwayStage>>();
   for (const row of placementRows.data) placedStages.set(row.course_id, new Set([...(placedStages.get(row.course_id) ?? []), row.pathway_stage]));
 
@@ -130,7 +142,7 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     declaredBand: ageScreen.ageBand,
     protectedOrigin: ageScreen.protectedOrigin,
   }, now);
-  return { age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages };
+  return { age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages, legacyCreditedKcs };
 }
 
 const ChapterRows = z.array(z.object({
@@ -205,6 +217,7 @@ export function coursePathwayInputs(
     earnedStages,
     placedStages: ctx.placedStages.get(course.id) ?? new Set(),
     hasLegacyPlacement,
+    legacyCreditedKcs: ctx.legacyCreditedKcs,
   };
 }
 

@@ -268,6 +268,13 @@ export interface LearnerEvidence {
   mentorPKnown: ReadonlyMap<string, number>;
   /** KC keys whose Mentor memory card is due now (memory_card). */
   dueReviewKcs: ReadonlySet<string>;
+  /**
+   * OD-24: ACTIVE KC keys a completed legacy topic taught (legacy_kc_credits,
+   * written by the OD-9 toolkit before the legacy catalog is retired). Graded
+   * course evidence under E2 that outlives the legacy content; T3: it
+   * satisfies prerequisites at every stage and never completes a topic.
+   */
+  legacyCreditedKcs?: ReadonlySet<string>;
 }
 
 export interface TopicCompletion {
@@ -291,8 +298,8 @@ export interface GraphState {
 
 /**
  * Rule E2 — a KC is satisfied by graded course evidence (a complete topic, in
- * any open chapter, that TEACHES it) or by the Mentor's posterior at its own
- * prerequisite bar. Either way the other surface cannot show it as locked.
+ * any open chapter, that TEACHES it, or an OD-24 legacy credit for one) or by
+ * the Mentor's posterior at its own prerequisite bar. Either way the other surface cannot show it as locked.
  */
 export function graphState(
   chapters: readonly PathwayChapter[],
@@ -309,6 +316,9 @@ export function graphState(
         if (kcs && topicCompletion(topic, evidence).complete) kcs.teaches.forEach((kc) => satisfaction.set(kc, 'course'));
       }
     }
+  }
+  for (const kc of evidence.legacyCreditedKcs ?? []) {
+    if (!satisfaction.has(kc)) satisfaction.set(kc, 'course');
   }
   for (const [kc, p] of evidence.mentorPKnown) {
     if (!satisfaction.has(kc) && p >= MASTERY_PREREQ_THRESHOLD) satisfaction.set(kc, 'mentor');

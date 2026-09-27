@@ -114,6 +114,8 @@ export interface CoursePathwayInputs {
   placedStages: ReadonlySet<PathwayStage>;
   /** A B.1 course_placements row exists for this course. */
   hasLegacyPlacement: boolean;
+  /** OD-24 legacy KC credits (ACTIVE KC keys), course evidence under E2. */
+  legacyCreditedKcs?: ReadonlySet<string>;
 }
 
 const byPosition = <T extends { position: number }>(rows: readonly T[]): T[] => [...rows].sort((a, b) => a.position - b.position);
@@ -176,7 +178,10 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
     chapters,
     kcsByPath,
     topicIdByPath,
-    evidence: { passedLessonIds: passed, creditedLessonIds: credited, mentorPKnown: inputs.mentorPKnown, dueReviewKcs: inputs.dueReviewKcs },
+    evidence: {
+      passedLessonIds: passed, creditedLessonIds: credited, mentorPKnown: inputs.mentorPKnown, dueReviewKcs: inputs.dueReviewKcs,
+      legacyCreditedKcs: inputs.legacyCreditedKcs,
+    },
   };
 }
 

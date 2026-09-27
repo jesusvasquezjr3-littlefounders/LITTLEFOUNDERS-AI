@@ -426,6 +426,8 @@ RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/id_ed25519 \
 
 **Backups:** two daily `pg_dump`s of two different databases, both landing on filebase's (Depot) Railway volume — a genuinely separate disk and service from `db`'s, so a `db`-volume incident doesn't take the dumps with it. `vault-backup.yml` (08:00 UTC) dumps the production Vault; `pulse-backup.yml` (08:30 UTC) dumps pulse-db (Plausible + Umami). Railway allows one volume per service, which is why both share Depot's rather than getting a dedicated backup disk — so that volume is the single point of failure to watch. A restore drill has been performed; re-drill after material schema changes.
 
+**Legacy-data cutover (OD-9, OD-24).** The switch from the legacy platform runs the toolkit in `database/migration-od9/` (procedure in its README): a before/after inventory of every promised record with per-family checksums, the legacy-defect corrections (A.5, A.2, A.3/A.4, F.2), the OD-24 knowledge-component credit and the consent carry-over marks, each as a dry run and then an idempotent apply. Rehearse it on a restored copy first; `npm --prefix database run od9:prove` proves it on a disposable native PostgreSQL. Retire legacy lessons by archiving them, never deleting: progress, placement credits, placements and stored badges cascade on delete.
+
 ## Scheduled production jobs
 
 Twelve workflows run against production on a schedule with no external alerting — a missed or failed run surfaces only as a red GitHub run, so someone has to look. Several of them are promises to users, not maintenance:

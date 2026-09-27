@@ -1,0 +1,61 @@
+# S10: legacy-data migration and cutover toolkit
+
+Status: in progress (S10.1 implemented and locally verified on native PostgreSQL; no production run, sign-off, acceptance or release approval is recorded). Recorded 27 September 2026 on branch `codex/spec-s10data`. Owner: Engineering for implementation; the owner for the decisions listed at the end; an operator and a named reviewer for the section 4.5 sign-off.
+
+## Binding acceptance sources
+
+- Owner log section 4 (OD-9): 4.1 nothing promised is lost, 4.2 consent carries over only for the practices it covered, 4.3 legacy defects are flagged and corrected (A.5, A.2, A.3/A.4, F.2), 4.4 usernames and guardian links unchanged, 4.5 row counts and per-family spot checks signed off before the legacy platform is switched off.
+- OD-24: the legacy catalog is replaced, every earned record kept, and every completed legacy topic credits the matching knowledge components so new courses start learners at the right place.
+- `S05-B6-PATHWAY-POLICY.md` rules E1, E2, T3, F8, B4, B5 and the legacy-credit equivalence (section 6). OD-13 (the default share window), OD-20 (no new public badge links), OD-23 (zero spend).
+
+Risk classification: **data migration of every family's record**. A defect here loses what a family earned or carries a legacy safety defect into the new platform, so every step is dry-run first, idempotent, and proven against the real migration chain.
+
+## Point-by-point checkpoints
+
+| ID | Scope | Acceptance | State |
+|---|---|---|---|
+| S10.1a | Before/after inventory (4.1, 4.5) | Every promised category counted and checksummed per account and per family on the legacy and the migrated schema; a comparison that fails on any loss | Implemented and locally verified |
+| S10.1b | Legacy defects (4.3) | A.5, A.2, A.3/A.4 and F.2 each flagged with a dry run and corrected by an idempotent apply, audited, never inventing an age or removing a parent role | Implemented and locally verified |
+| S10.1c | OD-24 KC credit | Completed legacy topics credit the KCs they teach, durable past the content's retirement; Core reads them as course evidence; badges frozen | Implemented and locally verified |
+| S10.1d | Identifiers (4.4) | Usernames and guardian links compared verbatim | Implemented and locally verified |
+| S10.1e | Consent carry-over (4.2) | Rebuild practices listed with the consent each needs; migrated children lacking it marked | Implemented and locally verified (marking only; see open items) |
+| S10.1f | Synthetic fixture and native proof | No real data; the full chain applied over legacy data; expectations computed independently | Locally verified |
+
+## S10.1 what was built
+
+**Toolkit** `database/migration-od9/` (README there is the operator procedure): a Node runner (`npm run od9 -- <command>` in `database/`) over five idempotent SQL files that install an `od9` evidence schema closed to every browser role and to the service role.
+
+- **Inventory** (`sql/10_inventory.sql`): 16 categories per account (lesson progress, placement credits, placement records, XP, learning streak current and best, chore streak current and best, coin balances per pocket, the coin ledger, course badges through the badge reader, savings goals including reached-goal badges, chore history, rewards, Mentor plans, notebooks, memory and mastery), each with a row count and an md5 over a canonical `jsonb` form under UTC. Only columns the legacy platform had are hashed, so a rebuild column never changes a checksum; an unreadable category is recorded as a gap. Families are the connected components of the live guardian graph. Usernames and guardian links are captured verbatim. `compare` fails on a changed or missing account row, a changed family, a new gap, or a changed or missing identifier; new records after are informational.
+- **Defects** (`sql/20_defects.sql`): A.5 — a parent role with no ID-verified latest verification and no `admin.parent_role_justification` audit row is marked `staff-granted` (a new `parent_verifications` row, the distinct trust level A.5 asks for) and kept `review_required`; a later justification resolves it; a role that outlived a revoked verification is flagged for review only; no role is removed. A.2 — a legacy guest with a stored birth date gets the declaration that date implies (under 13 includes the origin marker); a guest with no age evidence gets the protective under-13 marker. A.3/A.4 — Google and other accounts with no age evidence are flagged; nothing is invented, since Core already makes the age screen mandatory for any account without a declaration and treats it as a child until then. Carry-over — an account whose profile or ID-verified birth date answers the screen gets its declaration from it. F.2 — any live share whose window is longer than the 30-day default gets it from its own creation date. Every data change writes an `audit_logs` row (`od9.<kind>`) and an `od9.findings` row.
+- **OD-24 KC credit** (`sql/30_kc_credit.sql`): a topic is complete when every published lesson is passed or placement-credited (E1); each KC it *teaches* (never *reviews*) is credited with the legacy chapter's stage, basis (lessons passed, placement credit or mixed), lesson count, completion date and map version. The same run re-freezes every badge the live rule grants (B5), so badges earned after the 0123 backfill are frozen before content is retired.
+- **Consent** (`sql/40_consent.sql`): for every legacy account whose youngest possible age is under 18 or unknown (role is never evidence), each rebuild practice is `consented` or `missing`, with who could give it: the verified Tutor, the teen themselves for H.1-style analytics classes only, or nobody yet (`none_available`: a guest, or an independent teen for a guardian-only practice).
+
+**Migration** `*_od9_legacy_migration.sql` (expand, 16.9 KB): `legacy_kc_credits` (source topic kept as values, not foreign keys, so retiring the topic never removes the credit; RLS: the learner and their verified Tutor read, the service role inserts), `legacy_kc_credit_covers` (the equivalence rule: same KC, same or older stage content), the `data_practices` registry seeded with 14 practices, `data_practice_consents` (RLS: the child and their verified Tutor read, the service role writes), `has_data_practice_consent`, and `get_completed_course_badges` rewritten so a stored badge survives its course being archived.
+
+**New finding fixed here:** the 0125 badge reader filtered stored badges on `courses.status = 'published'`, so retiring a legacy course (OD-24) would have hidden every frozen badge of it from the profile, the Family Hub and the B.2 check. The rewrite keeps stored badges of published and archived courses; the live rule is unchanged. **Second finding (documented, not code):** `lesson_progress`, `placement_credits`, `course_placements` and `course_pathway_badges` cascade on delete of a lesson or course, so the legacy catalog must be retired by archiving, never deleting.
+
+**Core** (`backend/src/services/pathway/`): `pathwayData.ts` reads the learner's `legacy_kc_credits` (active KCs only, as the Mentor does; a failed read is 502, never "no credit"); `pathwayPolicy.ts` counts them as course evidence under E2, so a new course opens a topic whose skill a completed legacy topic taught as "known" (F8) and unblocks its dependents, without completing anything (B2).
+
+**Fixture** `fixtures/generate-legacy-fixture.mjs`: a seeded generator (no real data; `example.test` addresses) writing against the legacy schema: named populations for every defect (a staff-granted parent with and without a justification, a parent with a revoked verification, guests with no, child and adult birth dates, Google accounts with and without one, an email account without one, an independent 15-year-old, kids with and without a birth date) plus 12 random verified families; a catalog built from real B.6 map paths (the whole lemonade stand, two financial-education sagas at tier 1, one entrepreneurship saga at tier 4; a draft lesson that must never count). It returns expectations computed in JavaScript, independently of the SQL.
+
+## S10.1 verification (27 September 2026)
+
+- `npm run od9:prove` on the lane's portable PostgreSQL 17.6 (port 15480, data under `.lane-cache/pg`), 13 checks, about 140 s: the legacy schema (82 migrations, through `0082_rename_banking_accounts.sql`) with 54 accounts, 479 progress rows and 76 ledger rows; the before inventory with no gap; the three correction steps refused on the legacy schema (`OD9_REBUILD_SCHEMA_REQUIRED`); the remaining 97 migrations applied over that data; each step's dry run writes no product row and reports exactly the independent expectation; apply performs it and a second apply writes nothing; 307 KC credits equal to the independently computed set, with all three bases; covers-rule checks in both directions; 476 consent gaps over 34 children with the expected grantor split, a granted consent resolving its gap and a revoked one no longer counting; after retiring the whole legacy catalog, 0 comparison failures, 24/24 families identical; a one-day streak change and one renamed username fail exactly at that account, family and identifier; the 0125 reader restored hides the archived course's badge and this migration brings it back; RLS and grants through the browser roles. Report: `audit-results/od9/prove-od9-postgres.json` (git-ignored).
+- `database`: `check-migrations`, `check-migration-phase` (134 expand, 45 contract), `check-family-lifecycle` and 37 node tests including the 9 new toolkit tests passed. The Railway transport test was not rerun in this checkpoint (lean mode); the migration is under the size cap.
+- `backend`: type-check and lint passed; focused tests passed: `pathwayPolicy` (45, one new), `learnPathway` (24, three new: legacy credit opens the topic as course evidence without completing it; no cross-learner leak and drafts ignored; 502 on an unreadable credit table), `learnNarrative`, `coursePathway`, `kcTopicMap`, `topicKcSeed`, `family` (68).
+- Not run here (orchestrator per merge): full backend suite, root `test:all`, browser matrices.
+
+## Open items
+
+- The toolkit has not run against a restored copy of production data; the section 4.5 sign-off (a person reviewing the comparison and per-family spot checks) is outstanding by design.
+- Consent: the registry and the per-child marks exist, but no Core route lets a Tutor grant a `data_practice_consents` row yet, and no consumer gates its practice on `has_data_practice_consent` for migrated children. Until both exist, section 4.2 is marked, not enforced.
+- Upgraded former guests cannot be told apart from accounts that were never guests (Supabase keeps no history), so A.2 correction reaches only accounts that are still anonymous.
+- The fixture's retirement step archives rows with triggers bypassed; the real retirement path (a release function that archives the legacy catalog) belongs to the Forge phase and must be followed by `od9 inventory --label after` and `compare`.
+- `legacy_kc_credit_covers` is ready for the Forge phase's reviewed lesson equivalences; no new course content consumes it yet.
+
+## Owner questions (conservative defaults implemented)
+
+1. **Unjustified staff-granted parents (A.5).** Default: keep the role, mark it `staff-granted`, require a staff justification (review queue); never revoke automatically. Alternative: revoke roles still unjustified after a deadline.
+2. **Legacy guests with no age evidence (A.2).** Default: the protective under-13 marker (the refusal path cannot be ruled out); it lifts only through a verified guardian link or adult evidence, as A.2 requires. Alternative: mark only guests created after the refusal path shipped.
+3. **Consent registry.** Default: the 14 practices listed in the migration, with self-consent for teens only on the seven analytics classes (H.1 model) and a verified Tutor for Mentor memory types, sharing surfaces, the decision journal and research. Please confirm the list and the grantor rule.
+4. **Unknown age in the consent step.** Default: an account with no age evidence is a child until the age screen answers (Rule P3), so adults who never gave an age are marked too. Alternative: exclude accounts holding a parent role.
