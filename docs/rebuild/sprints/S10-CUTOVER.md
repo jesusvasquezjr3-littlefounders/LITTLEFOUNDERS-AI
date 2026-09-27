@@ -1,6 +1,6 @@
 # S10: legacy-data migration and cutover toolkit
 
-Status: in progress (S10L.1 legacy UI removal implemented and locally verified; S10.1, S10.2 and S10.3 implemented and locally verified on native PostgreSQL and in unit tests; no production run, sign-off, acceptance or release approval is recorded). Recorded 27 September 2026 on branch `codex/spec-s10data`. Owner: Engineering for implementation; the owner for the decisions listed at the end; an operator and a named reviewer for the section 4.5 sign-off.
+Status: in progress (S10L.1 legacy UI removal and S10L.2 local production build implemented and locally verified; S10.1, S10.2 and S10.3 implemented and locally verified on native PostgreSQL and in unit tests; no production run, sign-off, acceptance or release approval is recorded). Recorded 27 September 2026 on branch `codex/spec-s10data`. Owner: Engineering for implementation; the owner for the decisions listed at the end; an operator and a named reviewer for the section 4.5 sign-off.
 
 ## Binding acceptance sources
 
@@ -31,6 +31,8 @@ Risk classification: **data migration of every family's record**. A defect here 
 | S10L.1a | Legacy UI inventory (OD-2, OD-15, 02 rule 23) | Every legacy UI module classified reachable or not from a route, by an import graph (static and dynamic imports, TypeScript resolution) from both entries | Implemented and locally verified |
 | S10L.1b | Deletion | Every unreachable legacy module deleted, with its tests, CSS, i18n keys, dev labs, browser gates and scripts; routes still rendering a legacy body reported, not rebuilt | Implemented and locally verified |
 | S10L.1c | Freeze gate | `spec:check` refuses a new file under a legacy UI directory, an import of a removed module and a new legacy i18n namespace; mutation-tested | Implemented and locally verified |
+| S10L.2a | Local production build (07 §6 kept strict) | `npm run build:local` runs the full production build end to end with draft assets; `npm run build`, CI and hosting builders still refuse any unapproved asset | Implemented and locally verified |
+| S10L.2b | Dead bundle output | No dev-lab chunk in a production build, no Lottie player in the entry chunk; dead legacy CSS, modules and public files the build revealed removed | Implemented and locally verified |
 
 ## S10.1 what was built
 
@@ -155,6 +157,35 @@ The adversarial pass over S10.1 and S10.2 against OD-9 sections 1 to 5, the OD-2
 - `node --test` for `check-legacy-ui` (9 tests, 5 deliberate reds), `check-roleplay-voice-parity`, `check-family-copy-tone`, `check-achievement-sharing`, `check-reward-mechanics`; root `spec:check`, `secrets:check` and the i18n gate.
 - Not run (the orchestrator runs them once per merge): full suites, browser matrices, `audit:rebuild`.
 
+## S10L.2 local production build and dead output (27 September 2026, branch `codex/spec-s10legacy`)
+
+**The build now runs end to end locally.** `npm run build` stopped in `prebuild`: the asset gate's `--release` mode refuses every asset that is not `approved` (Frontend Bible 07 §6), and all 46 class B assets are `draft` until the owner's style review (OD-14, 07 §7). That refusal is by design and stays:
+- `LF_LOCAL_DRAFT_ASSETS=1` (read by `frontend/scripts/check-rebuild-assets.mjs`) downgrades only the "not approved" refusal for `draft` rows to one warning line (`LOCAL DRAFT BUILD ... not releasable`). Every other rule of the gate still fails the build, and a `retired` asset is still refused.
+- The gate refuses the flag itself when `CI`, `VERCEL`, `RAILWAY_ENVIRONMENT` or `NETLIFY` is set, so a CI run or a Vercel build can never ship drafts even if the variable leaks into its environment.
+- `npm run build:local` (`frontend/scripts/build-local.mjs`) sets the flag, runs the unchanged `npm run build` (prebuild gates, `tsc`, `vite build`, SEO prerender) and stamps `dist/LOCAL-DRAFT-BUILD.txt`. `npx vite preview` serves the result.
+- Mutation-tested in `src/rebuild/assets/assetGate.test.ts`: the local pass, the flag being inert without `--release`, `0` not being the flag, the refusal under `CI` and `VERCEL`, and a retired asset still blocking. The suite now clears the flag and the builder markers from its child environment.
+- `vite.config.ts` allows the real path of a junctioned `node_modules` in Vite's file guard. Without it a worktree whose `node_modules` is a junction (the lane setup) refused the Lottie player's `?url` WASM import in Vitest and the dev server.
+
+**Dead output the build revealed, removed:**
+- The four dev-lab chunks (`LessonLabPage`, `LessonViewPage`, `SceneLabPage`, `PoseLabPage`, about 140 kB) were emitted into every production build: their `lazy(() => import())` sat at module scope, outside the `import.meta.env.DEV` branch. The imports now live inside that branch (`src/app-routes/core.tsx`), and the production build emits no lab chunk.
+- The dotlottie player (about 335 kB minified) sat in the entry chunk of every route because `main.tsx` imported it to set its WASM URL, though only the OD-24 lesson island plays a Lottie. `LottieIcon` now sets the URL on its first render (not as a module side effect, so the `components/ui` barrel does not keep it alive). Entry chunk: 1,966 kB to 1,620 kB minified (520 kB to 481 kB gzip); the island's `LessonPlayer` chunk carries the player.
+- `src/tutor-scene/atmosphere.ts` and its test: it wrote the Lumen light variables for the legacy Tutor HUD's stage root (deleted in S10L.1), and nothing imported it. Comments in `index.css` and `backdrops.ts` now say the registered defaults are what every consumer reads.
+- Five `index.css` rules no source uses (`lf-display-xl` with its breakpoint, `lf-marketing-header`, `lf-caption-tail`, `lf-burst` with its keyframes and reduced-motion rule, `lf-land` with its keyframes and reduced-motion rule; about 110 lines). `designClasses.test.ts`'s closed type scale drops the two type classes; `celebrationBudget.test.ts` keeps refusing `lf-burst` and `lf-land` anywhere.
+- Unreferenced public files that every build copied into `dist/`: `logo-hero.png`, `logo-sized.png` (v1 leftovers, about 2.8 MB), `sounds/edu/error.mp3` (replaced by the gentle `not_yet.wav`, OD-28 L-02) and `sounds/ui/hover.mp3`. `logo-main.png` and `Hero-Families.webp` stay: `public/marketing/CREDITS.md` names them the brand sources.
+
+**Checked and kept.** Every other chunk is reached by a live route or the OD-24 island (`LessonRoute` and `LessonPlayer`; `TutorPage` is the rebuilt Mentor screen; `Character3D` and `useLipSync` the 3D stage; `staffConsole` and `MapCanvas` the staff console). Source files absent from the production bundle are type-only modules, the preview entry's fixtures and previews, generated sources read by tests, or files read by scripts (`emails.json`, `coverPresets.ts`). Rebuilt components that only the preview reaches are not legacy; they are listed as open below for their lanes.
+
+## S10L.2 verification (27 September 2026)
+
+- `npm run build:local` in `frontend/`: exit 0 (prebuild gates, `tsc`, `vite build`, SEO: 7 pages prerendered); no lab chunk in the output, entry chunk 1,620 kB. `npm run build` (strict) still exits 1 on the 46 drafts. `vite preview` served the bundle: `/`, `/learn`, `/tutor`, `/faq`, `/badge/:token`, the entry script and the sound cue answered 200, and `/faq` booted in the browser with its heading and no console error.
+- Frontend `type-check` and `lint` clean; focused vitest: `assetGate` (9 tests), `designClasses`, `celebrationBudget`, `App.test`; root `spec:check` and `secrets:check`.
+- Not run (the orchestrator runs them once per merge): full suites, browser matrices, `audit:rebuild`.
+
+**Open after S10L.2:**
+- `frontend-ci.yml` runs the strict `npm run build`, and Vercel's build command is the same script, so both stay red until the owner approves the draft asset families (OD-14). That is the intended release gate, not a defect of this lane.
+- Rebuilt components reached only from the design-system preview, not from a product route: `rebuild/mentor/VoiceConsent.tsx` (with `voiceConsent.css`), `rebuild/learning/ChildDecisionsPanel.tsx`, `rebuild/learning/LearnerNarrativeShortcut.tsx`, `rebuild/social/PrivateProfile.tsx`. Their owning lanes or the gap audit should wire or retire them.
+- The entry chunk still carries all three locales' rebuilt copy (about 690 kB minified) and every rebuilt family and learning screen; route-level splitting of the rebuilt app is a performance task, not dead code.
+
 ## Owner questions (conservative defaults implemented)
 
 1. **Unjustified staff-granted parents (A.5).** Default: keep the role, mark it `staff-granted`, require a staff justification (review queue); never revoke automatically. Alternative: revoke roles still unjustified after a deadline.
@@ -170,6 +201,7 @@ The adversarial pass over S10.1 and S10.2 against OD-9 sections 1 to 5, the OD-2
 11. **CLAUDE.md / AGENTS.md name retired scripts (S10L.1).** Both still list `verify:tutor-ui` and `verify:tutor-a11y` among the frontend scripts; those scripts and the legacy Tutor lab they drove are deleted. An agent may not edit these files, so the owner (or the orchestrator with the owner's approval) should drop the two names from both, identically. Default: left untouched.
 12. **A browser gate for the rebuilt Mentor stage in CI (S10L.1).** The two removed CI steps are not replaced: `verify-mentor-stage.mjs` needs a running preview server and was never measured on a runner. Default: `browser-gates` runs `verify:lesson-engine` only. Alternative: wire the Mentor stage matrix into that job.
 13. **The `guided-voice-shared` Depot bucket (S10L.1).** The clips it holds are no longer played by anything. Default: left in place (no production action in this lane). Alternative: delete the bucket at cutover.
+14. **Local builds with draft assets (S10L.2).** Default: `npm run build:local` may ship draft assets on a developer machine only; CI and hosting builders stay strict, so no build that can deploy contains a draft. Alternative: also allow drafts on a preview (non-production) Vercel deployment, which would need its own guarded flag.
 
 ## Merge integration (into codex/spec-migration-s02)
 

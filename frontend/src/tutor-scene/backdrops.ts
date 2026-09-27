@@ -72,7 +72,7 @@ const AUTO_LIGHT: BackdropLighting = {
  * (`#232062` at the core of its vignette, falling to near-black), which is what
  * makes it read as a lit cinematic stage rather than as a dark app. The sky
  * colour is the hemisphere term, so it is also what the HUD's whole Lumen
- * material mixes its fill against (`atmosphere.ts` publishes it as `--lf-sky`)
+ * material mixed its fill against (the removed `atmosphere.ts` published it as `--lf-sky`)
  * — moving it moves the chrome and the island together, which is the point.
  *
  * The key light keeps a real direction and a cool-violet cast rather than

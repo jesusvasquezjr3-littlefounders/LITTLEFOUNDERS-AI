@@ -1,5 +1,19 @@
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact, setWasmUrl } from '@lottiefiles/dotlottie-react';
+import lottieWasmUrl from '@lottiefiles/dotlottie-web/dotlottie-player.wasm?url';
 import { cn } from '@/lib/utils';
+
+/*
+ * Serve the pinned player with the app so animations do not depend on a CDN.
+ * Set on the first render, not at module scope: a module side effect would
+ * keep this file (and the player) in any chunk that imports the
+ * components/ui barrel, which is how it sat in the entry chunk (S10L.2).
+ */
+let wasmUrlSet = false;
+function ensureWasmUrl() {
+  if (wasmUrlSet) return;
+  setWasmUrl(lottieWasmUrl);
+  wasmUrlSet = true;
+}
 
 interface LottieIconProps {
   name: 'streak' | 'lesson' | 'gold-coin' | 'time' | 'followers' | 'following' | 'loading';
@@ -11,6 +25,7 @@ interface LottieIconProps {
 }
 
 export function LottieIcon({ name, value = 0, activated = false, className }: LottieIconProps) {
+  ensureWasmUrl();
   // loading.lottie never applies filters and ignores value/activated.
   const isLoading = name === 'loading';
 

@@ -64,11 +64,10 @@
  * (`tutor-scene/SceneLighting.tsx`), and an unregistered variable would snap the
  * whole HUD to the new hour a third of a second before the island got there.
  *
- * They are written ONCE per backdrop change, by the stage root, from the same
- * palette the lights read (`tutor-scene/atmosphere.ts`). Nothing writes them per
- * frame: a custom-property write invalidates style on the whole inheriting
- * subtree, and doing that sixty times a second to tint a shadow would cost more
- * than drawing the island.
+ * The legacy Tutor stage root wrote them once per backdrop change from the
+ * palette the lights read (`tutor-scene/atmosphere.ts`, removed with the legacy
+ * Tutor UI in S10L.1-2). Nothing writes them any more, so every consumer reads
+ * the registered defaults below.
  *
  * The defaults below are `AUTO_LIGHT` from `tutor-scene/backdrops.ts`, so a
  * HudPlate rendered outside the stage entirely — the lab, a test — still has a
@@ -505,8 +504,8 @@
      * `--lf-stage-sun-y`, the object seat, the stage vignette) computed as
      * though the sun were nearly overhead, and the entire "as the sun goes
      * down" half of this material was unreachable in the theme it was written
-     * for. It is `AUTO_DARK`'s own elevation, derived the same way
-     * `atmosphere.ts` derives it: y / |sunPosition| for [4, 3.4, 5].
+     * for. It is `AUTO_DARK`'s own elevation: y / |sunPosition| for
+     * [4, 3.4, 5].
      */
     --lf-sun-height: 0.469;
   }
@@ -570,14 +569,6 @@
  * way to set type. Composing ad-hoc sizes with utilities is prohibited.
  */
 @layer components {
-  .lf-display-xl {
-    font-family: 'Sora', system-ui, sans-serif;
-    font-size: 37px;
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
-  }
   .lf-display-lg {
     font-family: 'Sora', system-ui, sans-serif;
     font-size: 27px;
@@ -664,21 +655,6 @@
       0 8px 16px rgba(0,0,0,0.25),
       0 16px 32px rgba(0,0,0,0.35);
   }
-  /*
-   * The marketing topbar keeps .lf-glass's frosted blur (the actual "glass"
-   * look) but drops its box-shadow. Sitting right above a full-bleed hero
-   * that already carries its own atmosphere (the knowledge-graph canvas,
-   * radial glows), the shared component's 5-layer atmospheric shadow plus
-   * hover shadow read as a second, competing light source rather than a
-   * quiet piece of chrome — distracting, per the report. Scoped to this one
-   * header rather than changed on .lf-glass itself, which the sticky
-   * dropdown, mobile menu and cards elsewhere still rely on unchanged.
-   */
-  .lf-marketing-header,
-  .lf-marketing-header:hover {
-    box-shadow: none;
-  }
-
   .lf-glass-deep {
     background-color: rgb(255 255 255 / 0.06);
     background-image: var(--lf-glass-caustic), var(--lf-glass-mesh);
@@ -720,24 +696,6 @@
    * "hovered" after the finger lifts, which is the standing trap of `:hover`
    * on a touchscreen.
    */
-
-  /*
-   * The caption's tail: a short line from the plate down onto the speaker's
-   * crown, so at a two-shot the learner can see at a glance WHICH character the
-   * words belong to.
-   *
-   * It is made of the scene's own shade rather than of `outline`, for the same
-   * reason the plate's edge is: a token hairline over a warm island is the
-   * loudest "sticker" cue there is, and this one is the only part of the
-   * caption that actually touches the character.
-   */
-  .lf-caption-tail {
-    background-image: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--lf-lumen-shade) 42%, transparent),
-      transparent
-    );
-  }
 
   /*
    * ONE BLUR-LESS LUMEN, REACHED TWO WAYS.
@@ -1161,46 +1119,6 @@
   }
 
   /*
-   * COMBO BURST — the one VFX in a lesson (DESIGN.md motion recipe 7).
-   *
-   * A ring that expands and fades once, behind whatever just earned it: a
-   * perfect answer, a combo milestone. It is a RING and not confetti on
-   * purpose — confetti is a screen full of independently animated nodes on the
-   * mid-range phones §1.0 exists for, and this is two composited properties on
-   * one element that leaves nothing behind.
-   *
-   * One-shot, token-timed, and it never moves layout: `position: absolute` with
-   * `pointer-events: none`, so it cannot cover a tap target on a 44 px control.
-   */
-  .lf-burst {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 9999px;
-    pointer-events: none;
-    border: 2px solid currentColor;
-    animation: lf-burst calc(var(--lf-dur-slow) * 1.2) var(--lf-ease) both;
-  }
-  @keyframes lf-burst {
-    from {
-      opacity: 0.55;
-      transform: scale(0.35);
-    }
-    to {
-      opacity: 0;
-      transform: scale(2.1);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    /* No pulse, and no lingering ring either: the beat is simply not drawn. */
-    .lf-burst {
-      display: none;
-    }
-  }
-
-  /*
    * ── The loading indicator ──────────────────────────────────────────────
    *
    * CSS, not Lottie, and that is a payload decision rather than a taste one.
@@ -1306,9 +1224,6 @@
   }
 
   @media (min-width: 640px) {
-    .lf-display-xl {
-      font-size: 48px;
-    }
     .lf-display-lg {
       font-size: 32px;
     }
@@ -1791,28 +1706,6 @@
   }
 
   /*
-   * REWARD MOTION — the one place the overshoot easing is allowed.
-   * One-shot, like every other action in the system (§Motion recipe 7): it
-   * lands and it is over. Nothing here loops.
-   */
-  .lf-land {
-    animation: lf-land var(--lf-dur-reward) var(--lf-ease-tactile) both;
-  }
-  @keyframes lf-land {
-    0% {
-      opacity: 0;
-      transform: translateY(-16px) scale(0.65);
-    }
-    70% {
-      opacity: 1;
-      transform: translateY(2px) scale(1.08);
-    }
-    100% {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  /*
    * The breakpoint lives HERE, not in a `md:` utility prefix. A Tailwind
    * variant on a class defined in `@layer components` generates NOTHING and
    * says nothing about it — `md:lf-bubble-tail` compiled to zero rules and the
@@ -1858,9 +1751,6 @@
     .lf-tactile:active,
     .lf-press:active {
       transform: none;
-    }
-    .lf-land {
-      animation: none;
     }
   }
 
