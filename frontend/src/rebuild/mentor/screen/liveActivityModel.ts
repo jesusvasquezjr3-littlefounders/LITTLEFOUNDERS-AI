@@ -27,7 +27,12 @@ export type ActivityView =
   | { kind: 'tray'; type: 'coin_count' | 'make_change'; currency: string; denominations: number[];
     target: number | null; price: number | null; paidWith: number | null }
   | { kind: 'blanks'; type: string; parts: ({ text: string } | { gap: number })[]; bank: { id: string; label: string }[] | null }
-  | { kind: 'weeks'; type: string; currency: string; goal: number; options: number[] };
+  | { kind: 'weeks'; type: string; currency: string; goal: number; options: number[] }
+  /** Each item gets one of the choices: sort into buckets, match a pair, or say yes or no for a case. */
+  | { kind: 'assign'; type: 'sort_buckets' | 'match_pairs' | 'yes_no_cases'; context: string | null;
+    items: { id: string; label: string }[]; choices: { id: string; label: string }[] }
+  /** Split the income between the jars; the jars must add up to all of it. */
+  | { kind: 'split'; type: string; currency: string; income: number; step: number; jars: { id: string; label: string }[] };
 
 export type ActivityDraft =
   | { kind: 'choose'; id: string | null }
@@ -39,7 +44,9 @@ export type ActivityDraft =
   | { kind: 'select'; ids: string[] }
   | { kind: 'tray'; picked: number[] }
   | { kind: 'blanks'; gaps: Record<string, string> }
-  | { kind: 'weeks'; weeks: Record<string, string> };
+  | { kind: 'weeks'; weeks: Record<string, string> }
+  | { kind: 'assign'; picks: Record<string, string> }
+  | { kind: 'split'; alloc: Record<string, number> };
 
 type Dict = Record<string, unknown>;
 const obj = (v: unknown): Dict | null => (typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as Dict) : null);
@@ -177,6 +184,28 @@ export function activityView(segment: Dict): ActivityView | null {
       if (last < text.length) parts.push({ text: plainText(text.slice(last)) });
       return parts.some((part) => 'gap' in part) ? { kind: 'blanks', type, parts: parts.filter((part) => !('text' in part) || part.text !== ''), bank } : null;
     }
+    case 'sort_buckets': case 'match_pairs': {
+      const items = idLabels(type === 'sort_buckets' ? p.items : p.left, 'text_md');
+      const choices = type === 'sort_buckets' ? idLabels(p.buckets, 'label') : idLabels(p.right, 'text_md');
+      return items && choices && items.length >= 2 && choices.length >= 2 ? { kind: 'assign', type, context: null, items, choices } : null;
+    }
+    case 'yes_no_cases': {
+      const items = idLabels(p.cases, 'text_md');
+      const rule = str(p.rule_md);
+      return items && items.length >= 2 ? { kind: 'assign', type, context: rule ? plainText(rule) : null, items, choices: [{ id: 'yes', label: '' }, { id: 'no', label: '' }] } : null;
+    }
+    case 'number_line': {
+      const min = num(p.min), max = num(p.max);
+      if (min === null || max === null || max <= min) return null;
+      const ticks = num(p.ticks);
+      return { kind: 'slider', type, min, max, step: ticks && ticks > 0 ? (max - min) / ticks : Math.max((max - min) / 100, Number.EPSILON), unit: null };
+    }
+    case 'piggy_split': {
+      const currency = str(p.unit), income = num(p.income);
+      const jars = idLabels(p.jars, 'label');
+      if (!currency || income === null || !jars || jars.length < 2) return null;
+      return { kind: 'split', type, currency, income, step: num(p.step) ?? 1, jars };
+    }
     case 'savings_goal': {
       const currency = str(p.currency), goal = num(p.goal);
       const options = list(p.weekly_options).map(num).filter((o): o is number => o !== null && o > 0);
@@ -199,6 +228,8 @@ export function emptyDraft(view: ActivityView): ActivityDraft {
     case 'tray': return { kind: 'tray', picked: [] };
     case 'blanks': return { kind: 'blanks', gaps: {} };
     case 'weeks': return { kind: 'weeks', weeks: {} };
+    case 'assign': return { kind: 'assign', picks: {} };
+    case 'split': return { kind: 'split', alloc: Object.fromEntries(view.jars.map((jar) => [jar.id, 0])) };
   }
 }
 
@@ -252,6 +283,17 @@ export function answerOf(view: ActivityView, draft: ActivityDraft): unknown | nu
       }
       return { weeks };
     }
+    case 'assign': {
+      if (view.kind !== 'assign' || !view.items.every((item) => draft.picks[item.id])) return null;
+      if (view.type === 'sort_buckets') return { assignments: { ...draft.picks } };
+      if (view.type === 'match_pairs') return { pairs: view.items.map((item) => [item.id, draft.picks[item.id]!]) };
+      return { applies_ids: view.items.filter((item) => draft.picks[item.id] === 'yes').map((item) => item.id) };
+    }
+    case 'split': {
+      if (view.kind !== 'split') return null;
+      const total = Math.round(Object.values(draft.alloc).reduce((sum, value) => sum + value, 0) * 100) / 100;
+      return total === view.income ? { alloc: { ...draft.alloc } } : null;
+    }
   }
 }
 
@@ -271,6 +313,7 @@ export const traySum = (picked: readonly number[]): number => Math.round(picked.
 export function demoDraftOf(draft: ActivityDraft): unknown {
   if (draft.kind === 'tray') return { picked: draft.picked };
   if (draft.kind === 'order') return { order: draft.order };
+  if (draft.kind === 'slider') return { value: draft.value };
   return undefined;
 }
 
@@ -278,5 +321,6 @@ export function draftFromDemo(draft: ActivityDraft, next: unknown): ActivityDraf
   const value = obj(next);
   if (draft.kind === 'tray' && value && Array.isArray(value.picked)) return { kind: 'tray', picked: value.picked.filter((v): v is number => typeof v === 'number') };
   if (draft.kind === 'order' && value && Array.isArray(value.order)) return { kind: 'order', order: value.order.filter((v): v is string => typeof v === 'string') };
+  if (draft.kind === 'slider' && value && typeof value.value === 'number') return { kind: 'slider', value: value.value };
   return draft;
 }

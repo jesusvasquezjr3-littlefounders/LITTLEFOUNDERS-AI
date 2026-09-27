@@ -305,7 +305,13 @@
       "count": "Quantos {item}?",
       "scene": "O que você vê",
       "sliderValue": "Cerca de {value}",
-      "demo": "Olhe com atenção."
+      "demo": "Olhe com atenção.",
+      "yes": "Sim",
+      "no": "Não",
+      "choose": "Escolha",
+      "left": "Falta dividir: {amount}",
+      "less": "Menos",
+      "more": "Mais"
     }
   },
   "mentorPersonalise": {

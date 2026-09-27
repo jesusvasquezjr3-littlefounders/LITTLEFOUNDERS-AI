@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { LiveSegmentState } from '../../session/useTutorSocket';
 import { LiveActivity, type ActivityGrade } from '../LiveActivity';
@@ -61,6 +61,21 @@ describe('the activity model reads what the Mentor serves, in the grader’s sha
     expect(answer(blanks, { gaps: { 1: 'saving', 2: ' spending ' } } as never)).toEqual({ gaps: { 1: 'saving', 2: 'spending' } });
     expect(answer({ type: 'savings_goal', payload: { goal: 20, currency: 'USD', weekly_options: [5, 10] } }, { weeks: { 5: '4', 10: '2' } } as never)).toEqual({ weeks: { 5: 4, 10: 2 } });
     expect(traySum([0.1, 0.2])).toBe(0.3);
+  });
+
+  it('sorting, matching, yes-or-no cases, the number line and the jars answer in their grader’s shape', () => {
+    const items = [{ id: 'i1', text_md: 'Rent' }, { id: 'i2', text_md: 'Candy' }];
+    const sort = { type: 'sort_buckets', payload: { buckets: [{ id: 'need', label: 'Need' }, { id: 'want', label: 'Want' }], items } };
+    expect(answer(sort, { picks: { i1: 'need' } } as never)).toBeNull();
+    expect(answer(sort, { picks: { i1: 'need', i2: 'want' } } as never)).toEqual({ assignments: { i1: 'need', i2: 'want' } });
+    const match = { type: 'match_pairs', payload: { left: items, right: [{ id: 'r1', text_md: 'Home' }, { id: 'r2', text_md: 'Treat' }, { id: 'r3', text_md: 'Toy' }] } };
+    expect(answer(match, { picks: { i1: 'r1', i2: 'r2' } } as never)).toEqual({ pairs: [['i1', 'r1'], ['i2', 'r2']] });
+    const cases = { type: 'yes_no_cases', payload: { rule_md: 'Is it a need?', cases: [...items, { id: 'i3', text_md: 'Food' }] } };
+    expect(answer(cases, { picks: { i1: 'yes', i2: 'no', i3: 'yes' } } as never)).toEqual({ applies_ids: ['i1', 'i3'] });
+    expect(activityView({ type: 'number_line', payload: { min: 0, max: 20, ticks: 10 } })).toMatchObject({ kind: 'slider', step: 2 });
+    const jars = { type: 'piggy_split', payload: { income: 10, unit: 'USD', jars: [{ id: 'save', label: 'Save', icon: 'x' }, { id: 'spend', label: 'Spend', icon: 'x' }] } };
+    expect(answer(jars, { alloc: { save: 4, spend: 5 } } as never)).toBeNull();
+    expect(answer(jars, { alloc: { save: 4, spend: 6 } } as never)).toEqual({ alloc: { save: 4, spend: 6 } });
   });
 
   it('returns null for a type it does not draw, so the learner answers in words', () => {
@@ -148,6 +163,17 @@ describe('the live activity on the stage (T1c)', () => {
     fireEvent.click(screen.getByRole('button', { name: copy.check }));
     await waitFor(() => expect(check).toHaveBeenCalledWith('seg-1', { order: ['a', 'b', 'c'] }, 1));
     await waitFor(() => expect(screen.getByRole('button', { name: copy.check })).not.toHaveAttribute('aria-busy', 'true'));
+  });
+
+  it('says yes or no for each case, and sends the cases that apply', async () => {
+    const check = vi.fn(async () => grade());
+    const cases = { type: 'yes_no_cases', payload: { rule_md: 'Is it a need?', cases: [{ id: 'a', text_md: 'Food' }, { id: 'b', text_md: 'Candy' }, { id: 'c', text_md: 'Rent' }] } };
+    render(<LiveActivity live={live(cases)} copy={copy} locale="en-US" headingId="h" grade={check} onDone={vi.fn()} demo={null} />);
+    for (const [legend, choice] of [['Food', copy.yes], ['Candy', copy.no], ['Rent', copy.yes]] as const) {
+      fireEvent.click(within(screen.getByRole('group', { name: legend })).getByRole('radio', { name: choice }));
+    }
+    fireEvent.click(screen.getByRole('button', { name: copy.check }));
+    await waitFor(() => expect(check).toHaveBeenCalledWith('seg-1', { applies_ids: ['a', 'c'] }, 1));
   });
 
   it('shows an activity it does not draw as its prompt, answered in words', () => {

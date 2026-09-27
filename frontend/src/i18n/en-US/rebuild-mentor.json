@@ -305,7 +305,13 @@
       "count": "How many {item}?",
       "scene": "What you see",
       "sliderValue": "About {value}",
-      "demo": "Watch closely."
+      "demo": "Watch closely.",
+      "yes": "Yes",
+      "no": "No",
+      "choose": "Choose",
+      "left": "Left to share: {amount}",
+      "less": "Less",
+      "more": "More"
     }
   },
   "mentorPersonalise": {

@@ -43,13 +43,13 @@ describe('rebuild-mentor copy budget', () => {
       const ACTIONS = new Set(['close', 'menu', 'changeMentor', 'transcript', 'grownUp', 'sheetClose', 'retry', 'send', 'talk', 'stopTalking',
         'interrupt', 'nextLine', 'showBoard', 'hideBoard', 'board.showTable', 'board.showPicture', 'board.showNext', 'board.takeBack', 'board.more', 'board.less',
         'editLast', 'editCancel', 'startOver', 'keepGoing', 'activityUi.check', 'activityUi.checking', 'activityUi.add', 'activityUi.takeBack',
-        'activityUi.moveUp', 'activityUi.moveDown', 'activityUi.place']);
+        'activityUi.moveUp', 'activityUi.moveDown', 'activityUi.place', 'activityUi.less', 'activityUi.more']);
       const OPTIONS = new Set(['continue', 'continueGeneric', 'practise', 'practiseSkill', 'courseTopic', 'diagnostic', 'hint', 'tell', 'yes', 'no',
-        'explain', 'finishNow', 'activityUi.true', 'activityUi.false']);
+        'explain', 'finishNow', 'activityUi.true', 'activityUi.false', 'activityUi.yes', 'activityUi.no', 'activityUi.choose']);
       const MENTOR = new Set(['unavailable', 'greeting', 'greetingNamed', 'limit', 'thinking', 'loading']);
       const HEADINGS = new Set(['documentTitle', 'chooser.heading', 'startOverHeading', 'activityUi.heading']);
       const DATA = new Set(['step', 'xp', 'activityUi.inTray', 'activityUi.target', 'activityUi.budget', 'activityUi.total', 'activityUi.gap',
-        'activityUi.sliderValue', 'activityUi.placed', 'activityUi.unplaced', 'activityUi.practiceOnly']);
+        'activityUi.sliderValue', 'activityUi.placed', 'activityUi.unplaced', 'activityUi.practiceOnly', 'activityUi.left']);
       for (const [path, raw] of flatten(screen as never)) {
         const text = raw.replace('{name}', 'Dr. Rho').replace('{nickname}', 'Ana').replace('{topic}', 'Saving money')
           .replace('{item}', 'Water').replace('{n}', '3').replace('{total}', '10').replace('{amount}', '$17').replace('{price}', '$7')

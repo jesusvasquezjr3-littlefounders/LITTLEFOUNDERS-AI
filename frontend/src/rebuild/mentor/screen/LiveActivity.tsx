@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { Locale } from '../../design/copyBudget';
-import { AnswerChoice, Banner, Button, ChoiceChip, IconButton, InlineNotice, Pill, Slider, TextField } from '../../design/controls';
+import { AnswerChoice, Banner, Button, ChoiceChip, IconButton, InlineNotice, Pill, RadioGroup, SelectField, Slider, Stepper, TextField } from '../../design/controls';
 import { isSegmentLocked, MAX_ATTEMPTS } from '../session/segmentLock';
 import { mayDemonstrate, runTrayDemo } from '../session/trayDemo';
 import type { TrayDemoStep } from '../session/types';
@@ -31,7 +31,7 @@ export interface MentorActivityCopy {
   answer: string; yourAnswer: string; true: string; false: string; add: string; takeBack: string; inTray: string;
   target: string; change: string; moveUp: string; moveDown: string; place: string; placed: string; unplaced: string;
   budget: string; total: string; needs: string; weeksFor: string; gap: string; count: string; scene: string;
-  sliderValue: string; demo: string;
+  sliderValue: string; demo: string; yes: string; no: string; choose: string; left: string; less: string; more: string;
 }
 
 export interface ActivityGrade {
@@ -265,6 +265,30 @@ function ActivityControls({ view, draft, copy, locale, disabled, onChange }: {
         </div>
         : <TextField key={gap} label={fill(copy.gap, { n: gap })} autoComplete="off" value={draft.gaps[String(gap)] ?? ''} disabled={disabled}
           onChange={(event) => onChange({ kind: 'blanks', gaps: { ...draft.gaps, [String(gap)]: event.target.value } })} />)}
+    </div>;
+  }
+  if (view.kind === 'assign' && draft.kind === 'assign') {
+    const choices = view.type === 'yes_no_cases' ? [{ id: 'yes', label: copy.yes }, { id: 'no', label: copy.no }] : view.choices;
+    const pick = (item: string, value: string) => onChange({ kind: 'assign', picks: { ...draft.picks, [item]: value } });
+    return <div className="lf-mentor-activity-options">
+      {view.context ? <p data-copy-role="data">{view.context}</p> : null}
+      {view.items.map((item) => choices.length <= 4
+        ? <RadioGroup key={item.id} legend={item.label} name={`assign-${item.id}`} value={draft.picks[item.id] ?? null} disabled={disabled}
+          options={choices.map((choice) => ({ value: choice.id, label: choice.label }))} onValueChange={(value) => pick(item.id, value)} />
+        : <SelectField key={item.id} label={item.label} value={draft.picks[item.id] ?? ''} disabled={disabled}
+          options={[{ value: '', label: copy.choose }, ...choices.map((choice) => ({ value: choice.id, label: choice.label }))]}
+          onChange={(event) => pick(item.id, event.target.value)} />)}
+    </div>;
+  }
+  if (view.kind === 'split' && draft.kind === 'split') {
+    const amount = (value: number) => money(value, view.currency, locale);
+    const used = traySum(Object.values(draft.alloc));
+    return <div className="lf-mentor-activity-options">
+      <p className="lf-mentor-activity-sum" data-copy-role="data" aria-live="polite">{fill(copy.left, { amount: amount(Math.round((view.income - used) * 100) / 100) })}</p>
+      {view.jars.map((jar) => <Stepper key={jar.id} valuePlacement="label" label={jar.label} value={draft.alloc[jar.id] ?? 0}
+        valueText={amount(draft.alloc[jar.id] ?? 0)} min={0} max={Math.round(((draft.alloc[jar.id] ?? 0) + view.income - used) * 100) / 100}
+        step={view.step} disabled={disabled} labels={{ decrease: copy.less, increase: copy.more }}
+        onValueChange={(value) => onChange({ kind: 'split', alloc: { ...draft.alloc, [jar.id]: Math.round(value * 100) / 100 } })} />)}
     </div>;
   }
   if (view.kind === 'weeks' && draft.kind === 'weeks') {
