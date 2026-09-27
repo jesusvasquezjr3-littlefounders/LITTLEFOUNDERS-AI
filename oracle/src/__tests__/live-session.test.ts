@@ -631,6 +631,17 @@ function freshJournal(): void {
   modelJournal = { bodies: [] };
 }
 
+/**
+ * OD-28 (owner review M-04): the first `end_session` asks the recap question
+ * and the session waits for one answer; a second `end_session` is the learner
+ * leaving without answering, which gives the completed close at once. For the
+ * tests whose subject is not the close itself.
+ */
+function endNow(socket: WebSocket): void {
+  socket.send(JSON.stringify({ type: 'end_session' }));
+  socket.send(JSON.stringify({ type: 'end_session' }));
+}
+
 describe('a real live session over a real websocket', () => {
   it('serves /health without any of the upstreams being healthy', async () => {
     const response = await fetch(`http://127.0.0.1:${oraclePort}/health`);
@@ -695,12 +706,29 @@ describe('a real live session over a real websocket', () => {
     const seqs = journal.turns.map((t) => t.seq);
     expect(new Set(seqs).size, `duplicate seq in ${JSON.stringify(journal.turns)}`).toBe(seqs.length);
 
-    // ── the farewell is a real turn, and the close is recorded ──
-    const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+    // ── OD-28 (owner review M-04): "end" asks the recap question FIRST ──
+    const { recapPromptText, completedCloseText } = await import('../tutor/scripted.js');
+    const recapAsked = collect(socket, (m) => m.some((x) => x.type === 'turn'));
     socket.send(JSON.stringify({ type: 'end_session' }));
+    const recapFrames = await recapAsked;
+    expect(recapFrames.find((m) => m.type === 'turn')).toMatchObject({ say: recapPromptText('es-MX'), next: 'ask' });
+    // Scripted (no model call), and the session stays open for the answer.
+    const modelCallsAtRecap = modelJournal.bodies.length;
+    await new Promise((r) => setTimeout(r, 750));
+    expect(modelJournal.bodies).toHaveLength(modelCallsAtRecap);
+    expect(journal.closes).toHaveLength(0);
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    // ── the answer gets the reflection and the completed close, and the close is recorded ──
+    const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'que ahorrar poquito cada semana suma' }));
     const closing = await ending;
     expect(closing.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
+    expect(journal.closes).toHaveLength(1);
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
+    // The last line before the close is the completed close naming the act.
+    const closingTurns = closing.filter((m) => m.type === 'turn');
+    expect(closingTurns.at(-1)).toMatchObject({ say: completedCloseText('es-MX', 'talked_through') });
 
     // C.16: the closing state reaches the client just before `closed` — the
     // completed script, naming the act the server observed (the learner
@@ -827,7 +855,7 @@ describe('a real live session over a real websocket', () => {
       expect(modelJournal.bodies.some((body) => body.includes('confirmed the goal'))).toBe(true);
 
       const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
-      socket.send(JSON.stringify({ type: 'end_session' }));
+      endNow(socket);
       await ending;
       const close = journal.closes.at(-1) as Record<string, unknown>;
       expect(close).toMatchObject({
@@ -853,7 +881,7 @@ describe('a real live session over a real websocket', () => {
       await collect(socket, (m) => m.some((x) => x.type === 'turn'));
       expect(announcedContextFields).toBe(CONTEXT_OPTIONAL_FIELDS.join(','));
       const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
-      socket.send(JSON.stringify({ type: 'end_session' }));
+      endNow(socket);
       await ending;
       // The session ran (the context parsed) and the layer reported in shadow.
       expect(journal.closes.at(-1)).toMatchObject({ behavioralTelemetry: { mode: 'shadow', actionTurns: 0 } });
@@ -1701,29 +1729,40 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
    * refusing, and the busy turn's own `releaseTurn` retries it the instant
    * the floor frees. This proves the whole chain with the client still
    * listening: the slow reply still lands, no `RATE_LIMITED` refusal ever
-   * fires for the deferred request, the farewell follows as its own real
-   * turn, and the close is recorded `completed`.
+   * fires for the deferred request, the Mentor's reaction to it follows as
+   * its own real turn, and the close is recorded `completed`.
+   *
+   * Since OD-28 (owner review M-04) that reaction is the recap question, and
+   * the close follows the learner's next move — here a second "end", the
+   * learner leaving without answering.
    */
-  it('defers an end_session that lands mid-turn instead of dropping it, and still delivers the farewell', async () => {
+  it('defers an end_session that lands mid-turn instead of dropping it, and still asks the recap and closes', async () => {
     freshJournal();
     const { socket, closed } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const { recapPromptText } = await import('../tutor/scripted.js');
 
     // The marker makes the fake model sit for 1.5 s; `end_session` sent
     // partway through that window is guaranteed to land while `claimTurn`
     // still reports the floor busy.
-    const outcome = collect(socket, (m) => m.some((x) => x.type === 'closed'), 4_000);
+    const asked = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.say === recapPromptText('es-MX')), 4_000);
     socket.send(JSON.stringify({ type: 'learner_text', text: 'cuentamelotodomuydespacio' }));
     await new Promise((r) => setTimeout(r, 300));
     socket.send(JSON.stringify({ type: 'end_session' }));
-    const messages = await outcome;
+    const beforeClose = await asked;
 
     // Never refused: the request was deferred, not dropped on the floor.
-    expect(messages.some((m) => m.type === 'error' && m.code === 'RATE_LIMITED')).toBe(false);
+    expect(beforeClose.some((m) => m.type === 'error' && m.code === 'RATE_LIMITED')).toBe(false);
+    // The slow turn's own reply still lands, and the recap question follows
+    // it as its own real turn — two turns in this one run, not a dropped request.
+    expect(beforeClose.filter((m) => m.type === 'turn').length).toBeGreaterThanOrEqual(2);
+    expect(beforeClose.some((m) => m.type === 'closed')).toBe(false);
 
-    // The slow turn's own reply still lands, and the farewell follows it as
-    // its own real turn — two turns in this one run, not a dropped request.
-    expect(messages.filter((m) => m.type === 'turn').length).toBeGreaterThanOrEqual(2);
+    const outcome = collect(socket, (m) => m.some((x) => x.type === 'closed'), 4_000);
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    const messages = await outcome;
+    expect(messages.some((m) => m.type === 'error' && m.code === 'RATE_LIMITED')).toBe(false);
+    expect(messages.find((m) => m.type === 'session_closing')).toMatchObject({ script: 'completed' });
     expect(messages.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
 
     await new Promise((r) => setTimeout(r, 150));
@@ -1770,6 +1809,117 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
 
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
     expect(journal.closes).toHaveLength(1);
+  });
+
+  /*
+   * OD-28 (owner review M-04), against the client that exists today: the
+   * frontend fires `end_session` and tears its socket down at once
+   * (`TutorExperience.tsx`'s `onExit`/`onRestart`), so nobody is left to
+   * answer the recap question the press now asks. The learner asked to leave:
+   * the session must still close `completed`, promptly (the closing screen
+   * posts the bond proxy against a CLOSED session), and exactly once — never
+   * parked until the grace window turns it into `learner_left`.
+   */
+  it('OD-28: end_session on a free floor, then the socket torn down at once, still closes completed promptly and once', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const { recapPromptText, completedCloseText } = await import('../tutor/scripted.js');
+
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    socket.close();
+    await closed();
+
+    // Well inside this suite's 1.5 s `SESSION_RESUME_GRACE_MS`: not a park
+    // waiting to be finalized.
+    await new Promise((r) => setTimeout(r, 700));
+    expect(journal.closes).toHaveLength(1);
+    expect(journal.closes[0]).toMatchObject({ closeReason: 'completed', closingScript: 'completed' });
+
+    // Past the grace window: still exactly one close, never a later `learner_left`.
+    await new Promise((r) => setTimeout(r, 1_800));
+    expect(journal.closes).toHaveLength(1);
+    // The transcript holds what was said: the recap question, then the completed close.
+    const tutorLines = journal.turns.filter((t) => t.speaker === 'tutor').map((t) => t.text);
+    expect(tutorLines).toContain(recapPromptText('es-MX'));
+    expect(tutorLines).toContain(completedCloseText('es-MX', 'none'));
+    expect(tutorLines.filter((t) => t === completedCloseText('es-MX', 'none'))).toHaveLength(1);
+  });
+
+  it('OD-28: a socket that drops while the recap asked on "end" waits closes completed, not as a silent dropout', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const asked = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    await asked;
+    await new Promise((r) => setTimeout(r, 200));
+    expect(journal.closes).toHaveLength(0);
+
+    socket.close();
+    await closed();
+    await new Promise((r) => setTimeout(r, 2_500));
+    expect(journal.closes).toHaveLength(1);
+    expect(journal.closes[0]).toMatchObject({ closeReason: 'completed', closingScript: 'completed' });
+  });
+
+  /*
+   * OD-28 (owner review M-04): the learner is never trapped behind the
+   * question. A recap asked on "end" that gets no answer closes as completed
+   * once `RECAP_ANSWER_WAIT_MS` passes, driven by the existing heartbeat.
+   * Only `setInterval` and `Date` are faked, so the sockets and the fake
+   * upstreams still run on real I/O; each beat lets the real ping/pong round
+   * trip land so the liveness check keeps seeing a live socket.
+   */
+  it('OD-28: an unanswered recap asked on "end" closes as completed when its wait runs out', async () => {
+    freshJournal();
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'], now: Date.now() });
+    try {
+      const { RECAP_ANSWER_WAIT_MS } = await import('../ws/server.js');
+      const { socket, closed } = open(await socketUrl());
+      await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+      const asked = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      socket.send(JSON.stringify({ type: 'end_session' }));
+      await asked;
+      await new Promise((r) => setTimeout(r, 200));
+
+      const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'), 6_000);
+      let waitedMs = 0;
+      for (let beat = 0; beat < 8 && journal.closes.length === 0; beat += 1) {
+        vi.advanceTimersByTime(30_000);
+        waitedMs += 30_000;
+        await new Promise((r) => setTimeout(r, 150));
+        // Nothing closes before the wait is over.
+        if (waitedMs <= RECAP_ANSWER_WAIT_MS) expect(journal.closes).toHaveLength(0);
+      }
+      const messages = await ending;
+      expect(waitedMs).toBeGreaterThan(RECAP_ANSWER_WAIT_MS);
+      expect(messages.find((m) => m.type === 'session_closing')).toMatchObject({ script: 'completed', effort: 'none' });
+      expect(messages.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
+      await new Promise((r) => setTimeout(r, 150));
+      expect(journal.closes).toHaveLength(1);
+      expect(journal.closes[0]).toMatchObject({ closeReason: 'completed' });
+      await closed();
+    } finally {
+      vi.useRealTimers();
+    }
+  }, 15_000);
+
+  it('OD-28: the recap wait expires only for a pending recap asked on "end", with the floor free, inside the idle window', async () => {
+    const { recapWaitExpired, RECAP_ANSWER_WAIT_MS } = await import('../ws/server.js');
+    const { getConfig } = await import('../env.js');
+    const base = { recapPending: true, closing: false, inFlight: false, lastActivityAtMs: 1_000 };
+    const late = 1_000 + RECAP_ANSWER_WAIT_MS + 1;
+    expect(recapWaitExpired(base, 1_000 + RECAP_ANSWER_WAIT_MS)).toBe(false);
+    expect(recapWaitExpired(base, late)).toBe(true);
+    expect(recapWaitExpired({ ...base, recapPending: false }, late)).toBe(false);
+    // A turn holding the floor (the answer being produced) is never cut off.
+    expect(recapWaitExpired({ ...base, inFlight: true }, late)).toBe(false);
+    expect(recapWaitExpired({ ...base, closing: true }, late)).toBe(false);
+    // It is what bounds the wait: shorter than the idle close that would otherwise.
+    expect(RECAP_ANSWER_WAIT_MS).toBeLessThan(getConfig().SESSION_IDLE_TIMEOUT_MS);
   });
 
   /*
@@ -2020,7 +2170,7 @@ describe('a dropped session can be resumed on a fresh token', () => {
 
     // The resumed session is fully alive: it can end properly.
     const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
-    second.socket.send(JSON.stringify({ type: 'end_session' }));
+    endNow(second.socket);
     await ending;
     await new Promise((r) => setTimeout(r, 150));
     /*
@@ -2068,7 +2218,7 @@ describe('a dropped session can be resumed on a fresh token', () => {
     expect(redrawn.whiteboard?.values).toEqual([10, 12, 14]);
 
     const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
-    second.socket.send(JSON.stringify({ type: 'end_session' }));
+    endNow(second.socket);
     await ending;
   });
 
@@ -2108,7 +2258,7 @@ describe('a dropped session can be resumed on a fresh token', () => {
 
     await new Promise((r) => setTimeout(r, 750));
     const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
-    second.socket.send(JSON.stringify({ type: 'end_session' }));
+    endNow(second.socket);
     await ending;
   });
 
@@ -2213,7 +2363,7 @@ describe('a dropped session can be resumed on a fresh token', () => {
     // session normally.
     expect(first.socket.readyState).toBe(first.socket.OPEN);
     const ending = collect(first.socket, (m) => m.some((x) => x.type === 'closed'));
-    first.socket.send(JSON.stringify({ type: 'end_session' }));
+    endNow(first.socket);
     await ending;
     expect(journal.closes).toHaveLength(1);
     expect(journal.closes[0]).toMatchObject({ closeReason: 'completed' });
@@ -2586,7 +2736,7 @@ describe('the exclusivity gate also honors a claim NO local Map ever recorded', 
     const { socket, closed } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
     const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
-    socket.send(JSON.stringify({ type: 'end_session' }));
+    endNow(socket);
     await ending;
     await closed();
   });
@@ -2878,7 +3028,7 @@ describe('account erasure ends the learner’s Mentor sessions without writing b
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
     expect(await (await erase('44444444-4444-4444-8444-444444444444')).json()).toMatchObject({ data: { live: 0, parked: 0 } });
     expect(socket.readyState).toBe(WebSocket.OPEN);
-    socket.send(JSON.stringify({ type: 'end_session' }));
+    endNow(socket);
     await closed();
   });
 });

@@ -224,7 +224,7 @@ describe('C.16 — the completed close is co-constructed and names an observed a
     expect(outcome.after).toBeUndefined();
   });
 
-  it('leaving by choice gets the completed close naming the act, never a generic one', async () => {
+  it('the immediate close (a second "end", a gone socket) names the act, never a generic one', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     const quiet = await orchestrator.farewell(Date.now(), 'soft');
     expect(quiet.emission.turn.say).toBe(completedCloseText('es-MX', 'none'));
@@ -243,6 +243,148 @@ describe('C.16 — the completed close is co-constructed and names an observed a
     const outcome = (await orchestrator.handleLearnerText('ahorrar', now + 1_000))!;
     expect(outcome.emission.turn.say).toBe(completedCloseText('es-MX', 'talked_through'));
     expect(outcome.closeReason).toBe('completed');
+  });
+});
+
+/*
+ * OD-28 (owner review M-04): "When a learner presses end, the Mentor asks the
+ * recap question first." It used to give the completed close at once.
+ */
+describe('OD-28 / M-04 — pressing "end" asks the recap question first, then the completed close', () => {
+  it('the first "end" asks the recap question and holds the session open for one answer', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    const recap = await orchestrator.learnerEnd(now, { canAnswer: true });
+    // Scripted, no model call, and it does not close.
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(recap.emission.source).toBe('scripted');
+    expect(recap.emission.turn.say).toBe(recapPromptText('es-MX'));
+    expect(recap.closeReason).toBeNull();
+    expect(recap.after).toBeUndefined();
+    expect(orchestrator.closingInProgress).toBe(true);
+    expect(orchestrator.learnerEndRecapPending).toBe(true);
+
+    // The answer gets the reflection (a model turn) and the completed close.
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...TURN, say: 'Sí, guardar un poco cada semana suma.', next: 'close' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const reflection = (await orchestrator.handleLearnerText('que ahorrar poquito suma', now + 1_000))!;
+    expect(modelBodies().some((b) => b.includes(RECAP_REFLECTION_INSTRUCTION.slice(0, 60)))).toBe(true);
+    expect(reflection.emission.source).toBe('model');
+    expect(reflection.closeReason).toBeNull();
+    // The recap answer is the learner's one utterance: the act is the conversation.
+    expect(reflection.after?.emission.turn.say).toBe(completedCloseText('es-MX', 'talked_through'));
+    expect(reflection.after?.closeReason).toBe('completed');
+    expect(orchestrator.learnerEndRecapPending).toBe(false);
+    expect(orchestrator.closingSummary('completed')).toMatchObject({ script: 'completed', effort: 'talked_through' });
+    expect(orchestrator.closeRecord('completed')).toMatchObject({
+      closingScript: 'completed',
+      endSignal: { events: [] },
+    });
+  });
+
+  it('a second "end" while the recap waits gives the completed close at once, with no model call', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    await orchestrator.learnerEnd(now, { canAnswer: true });
+    const bye = await orchestrator.learnerEnd(now + 500, { canAnswer: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(bye.emission.turn.say).toBe(completedCloseText('es-MX', 'none'));
+    expect(bye.closeReason).toBe('completed');
+    expect(orchestrator.learnerEndRecapPending).toBe(false);
+    // Nothing is asked twice.
+    const after = await orchestrator.learnerEnd(now + 600, { canAnswer: true });
+    expect(after.emission.turn.say).not.toBe(recapPromptText('es-MX'));
+    expect(after.closeReason).toBe('completed');
+  });
+
+  it('"end" while a Mentor wrap-up recap waits closes at once — the learner is never asked twice', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...TURN, say: 'Terminamos este tema por hoy.', next: 'close' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('ok', now);
+    expect(orchestrator.closingInProgress).toBe(true);
+    // A recap the Mentor asked is not one the learner asked for by pressing end.
+    expect(orchestrator.learnerEndRecapPending).toBe(false);
+    fetchMock.mockClear();
+    const bye = await orchestrator.learnerEnd(now + 1_000, { canAnswer: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(bye.emission.turn.say).toBe(completedCloseText('es-MX', 'talked_through'));
+    expect(bye.closeReason).toBe('completed');
+  });
+
+  it('with nobody left to answer (the socket is gone) the completed close comes at once', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const bye = await orchestrator.learnerEnd(Date.now(), { canAnswer: false });
+    expect(bye.emission.turn.say).toBe(completedCloseText('es-MX', 'none'));
+    expect(bye.closeReason).toBe('completed');
+    expect(orchestrator.closingInProgress).toBe(false);
+  });
+
+  it('a stopped session gets the safety close at once, never the recap', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya no quiero vivir', Date.now());
+    const bye = await orchestrator.learnerEnd(Date.now(), { canAnswer: true });
+    expect(bye.emission.turn.say).toBe(safetyStopCloseResponse('es-MX').say);
+    expect(bye.closeReason).toBe('safety_stop');
+    expect(orchestrator.closingInProgress).toBe(false);
+  });
+
+  it('an ended budget gets the completed close at once: no model call is bought past the cap', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now() - 60 * 60_000, silent);
+    const bye = await orchestrator.learnerEnd(Date.now(), { canAnswer: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(bye.emission.turn.say).toBe(completedCloseText('es-MX', 'none'));
+    expect(bye.closeReason).toBe('completed');
+  });
+
+  it('a budget that ends while the recap waits still closes as completed on the answer, never interrupted', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    await orchestrator.learnerEnd(now, { canAnswer: true });
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...TURN, say: 'Sí, ahorrar poquito cada semana suma mucho.', next: 'close' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const reflection = (await orchestrator.handleLearnerText('ahorrar', now + 60 * 60_000))!;
+    expect(reflection.emission.turn.say).not.toBe(interruptedCloseText('es-MX'));
+    expect(reflection.after?.emission.turn.say).toBe(completedCloseText('es-MX', 'talked_through'));
+    expect(reflection.after?.closeReason).toBe('completed');
+  });
+
+  it('a disclosure in the recap answer is classified first and ends on the safety close', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    await orchestrator.learnerEnd(now, { canAnswer: true });
+    const outcome = (await orchestrator.handleLearnerText('ya no quiero vivir', now + 1_000))!;
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(outcome.closeReason).toBe('safety_stop');
+    expect(outcome.after).toBeUndefined();
+    // Any later "end" keeps the safety close.
+    expect((await orchestrator.learnerEnd(now + 2_000, { canAnswer: true })).closeReason).toBe('safety_stop');
+  });
+
+  it('the recap asked on "end" survives the park snapshot, and an older record without the marker still parses', async () => {
+    const { OrchestratorSnapshotSchema } = await import('../tutor/orchestrator.js');
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    await orchestrator.learnerEnd(now, { canAnswer: true });
+    const snapshot = orchestrator.snapshot();
+    expect(snapshot.sessionClosing).toMatchObject({ phase: 'recap_asked', learnerEnded: true });
+
+    const parsed = OrchestratorSnapshotSchema.parse(JSON.parse(JSON.stringify(snapshot)));
+    const restored = TutorOrchestrator.restore(parsed, KID, now, silent);
+    expect(restored.learnerEndRecapPending).toBe(true);
+    // The restored session still gives the completed close on the next "end".
+    expect((await restored.learnerEnd(now + 1_000, { canAnswer: true })).closeReason).toBe('completed');
+
+    // A park record written before OD-28 has no `learnerEnded`: it defaults to false.
+    const legacy = JSON.parse(JSON.stringify(snapshot)) as { sessionClosing: Record<string, unknown> };
+    delete legacy.sessionClosing.learnerEnded;
+    const legacyParsed = OrchestratorSnapshotSchema.parse(legacy);
+    expect(legacyParsed.sessionClosing.learnerEnded).toBe(false);
+    expect(TutorOrchestrator.restore(legacyParsed, KID, now, silent).learnerEndRecapPending).toBe(false);
   });
 });
 
@@ -329,6 +471,35 @@ describe('C.8/C.12 — the behavioral-signature offer, through the real pipeline
     expect(accepted.closeReason).toBeNull();
     expect(orchestrator.closingInProgress).toBe(true);
     expect(orchestrator.sessionEndReport.events[0]).toMatchObject({ outcome: 'accepted', confirmed: true });
+  });
+
+  it('OD-28: pressing "end" while the offer is open accepts it once, then asks the recap — the record matches the old immediate close', async () => {
+    delete process.env.JUDGE_API_KEY;
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+    vi.useFakeTimers({ toFake: ['Date'] });
+    fetchMock.mockImplementation(async () => uniqueTurn());
+    const orchestrator = new TutorOrchestrator(STRONG_ADULT, Date.now(), silent);
+    for (let i = 0; i < 4; i++) await grade(orchestrator, true, 8_000 + (i % 2) * 300);
+    for (let i = 0; i < 10 && !orchestrator.sessionEndOfferOpen; i++) {
+      await grade(orchestrator, i % 3 === 0, i % 2 === 0 ? 2_000 : 30_000);
+    }
+    expect(orchestrator.sessionEndOfferOpen).toBe(true);
+    const eventsBefore = orchestrator.sessionEndReport.events.length;
+
+    const recap = await orchestrator.learnerEnd(Date.now(), { canAnswer: true });
+    expect(recap.emission.turn.say).toBe(recapPromptText('en-US'));
+    expect(recap.closeReason).toBeNull();
+    expect(orchestrator.sessionEndOfferOpen).toBe(false);
+    const accepted = orchestrator.sessionEndReport.events.at(-1);
+    expect(accepted).toMatchObject({ outcome: 'accepted' });
+
+    // A second "end": the completed close at once, and nothing is recorded twice.
+    const bye = await orchestrator.learnerEnd(Date.now(), { canAnswer: true });
+    expect(bye.closeReason).toBe('completed');
+    expect(orchestrator.sessionEndReport.events).toHaveLength(eventsBefore);
+    expect(orchestrator.sessionEndReport.events.at(-1)).toEqual(accepted);
+    expect(orchestrator.closeRecord('completed').endSignal).toEqual(orchestrator.sessionEndReport);
   });
 
   it('an offer answered in words: only an explicit stop accepts', async () => {

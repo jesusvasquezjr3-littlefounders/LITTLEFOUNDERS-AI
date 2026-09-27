@@ -16,6 +16,8 @@ import type { CloseReason } from '../core/client.js';
  *                 a SPECIFIC effort acknowledgment naming an act the system
  *                 actually observed (`EffortAct`, below — never generic
  *                 praise), with forward framing to the next session.
+ *                 Since OD-28 (owner review M-04) this includes a learner
+ *                 pressing "end": the recap question is asked first.
  *   interrupted   The budget ran out mid-task (or the session was cut short
  *                 by the system). Says so explicitly and names the re-entry
  *                 point ("next time, we pick up right here"); the promise is
@@ -110,6 +112,16 @@ export const SessionClosingSnapshotSchema = z
     learnerTurns: z.number().int().min(0),
     /** Skills with a miss not yet followed by a correct answer. */
     missedSkills: z.array(z.string().min(1).max(160)).max(40),
+    /**
+     * OD-28 (owner review M-04): the recap question now open was asked
+     * because the learner pressed "end" (`end_session`), not because the
+     * Mentor wrapped up or the learner accepted a stop offer. It is what
+     * lets a socket that goes away before the answer still close as
+     * `completed` (the learner asked to leave) instead of being parked as
+     * a silent dropout. Defaulted so a park record written before this
+     * field existed still parses.
+     */
+    learnerEnded: z.boolean().default(false),
   })
   .strict();
 export type SessionClosingSnapshot = z.infer<typeof SessionClosingSnapshotSchema>;
@@ -122,6 +134,7 @@ export const EMPTY_SESSION_CLOSING: SessionClosingSnapshot = {
   hintThenSolved: false,
   learnerTurns: 0,
   missedSkills: [],
+  learnerEnded: false,
 };
 
 /** The server-owned closing state; rides the park snapshot. */
@@ -142,6 +155,20 @@ export class SessionCloser {
 
   set phase(phase: ClosingPhase) {
     this.state.phase = phase;
+  }
+
+  /**
+   * OD-28 (M-04): the learner pressed "end" and the recap question is asked
+   * on that press. The session stays open for one answer.
+   */
+  askRecapOnLearnerEnd(): void {
+    this.state.phase = 'recap_asked';
+    this.state.learnerEnded = true;
+  }
+
+  /** OD-28 (M-04): the learner pressed "end" and the recap question still waits for its answer. */
+  get learnerEndRecapPending(): boolean {
+    return this.state.phase === 'recap_asked' && this.state.learnerEnded;
   }
 
   /** One graded answer (activity or voice check), as the server verified it. */

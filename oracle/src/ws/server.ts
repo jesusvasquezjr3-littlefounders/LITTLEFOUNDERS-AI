@@ -1181,11 +1181,54 @@ async function attemptEndSession(live: Live): Promise<void> {
     return;
   }
   try {
-    await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
-    await finish(live, 'completed');
+    /*
+     * OD-28 (owner review M-04): the first "end" asks the recap question
+     * and the session stays open for ONE answer, which the ordinary learner
+     * turn path turns into the reflection and the completed close (C.16).
+     * `learnerEnd` gives the completed close at once instead when the recap
+     * is already waiting (a second "end", or `recapWaitExpired` below), when
+     * the session is stopped (the safety close), or when nobody can answer
+     * because the socket is already gone (`canAnswer` false: the old client
+     * tears its socket down right behind `end_session`, and the close
+     * handler hands the request back here).
+     */
+    const outcome = await live.orchestrator.learnerEnd(Date.now(), {
+      canAnswer: live.socket.readyState === live.socket.OPEN,
+    });
+    // `deliver` finishes the session itself when the outcome carries a close;
+    // the call below is the backstop, and a no-op once `live.closing` is set.
+    await deliver(live, outcome);
+    if (outcome.closeReason !== null) {
+      await finish(live, outcome.closeReason === 'safety_stop' ? 'safety_stop' : 'completed');
+    }
   } finally {
     releaseTurn(live);
   }
+}
+
+/**
+ * OD-28 (owner review M-04): how long the recap question asked on "end" waits
+ * for its answer before the completed close is given anyway, so a learner who
+ * pressed "end" and then says nothing is never held open. Driven by the
+ * existing heartbeat (every `HEARTBEAT_INTERVAL_MS`), so the real wait is
+ * between this and this plus one interval; no new timer, and nothing to carry
+ * in the park snapshot — the clock is `Live.lastActivityAtMs`, which the
+ * `end_session` frame itself refreshed, and which a resumed socket restarts.
+ * Deliberately generous: a young learner may answer slowly, by voice.
+ */
+export const RECAP_ANSWER_WAIT_MS = 2 * 60_000;
+
+/** Whether the recap question asked on "end" has waited past `RECAP_ANSWER_WAIT_MS` with the floor free. */
+export function recapWaitExpired(
+  state: { recapPending: boolean; closing: boolean; inFlight: boolean; lastActivityAtMs: number },
+  nowMs: number,
+): boolean {
+  return (
+    state.recapPending &&
+    !state.closing &&
+    !state.inFlight &&
+    nowMs - state.lastActivityAtMs > RECAP_ANSWER_WAIT_MS
+  );
 }
 
 /** After this many consecutive unconfirmed transcript writes, the session ends. */
@@ -1885,6 +1928,26 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         socket.close(CLOSE_CODES.NORMAL, 'idle');
         return;
       }
+      /*
+       * OD-28 (owner review M-04): the learner pressed "end", was asked the
+       * recap question and has not answered within `RECAP_ANSWER_WAIT_MS`.
+       * They asked to leave, so they get the completed close now — the same
+       * path as a second "end" — rather than waiting out the idle window.
+       */
+      if (
+        recapWaitExpired(
+          {
+            recapPending: live.orchestrator.learnerEndRecapPending,
+            closing: live.closing,
+            inFlight: live.inFlight,
+            lastActivityAtMs: live.lastActivityAtMs,
+          },
+          now,
+        )
+      ) {
+        void attemptEndSession(live);
+        return;
+      }
       socket.ping();
       /*
        * RENEW, NEVER REVOKE. A failed renewal (a Redis blip mid-session)
@@ -1971,11 +2034,32 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * `.finally` rather than `.then`: a publish that throws must still
        * release the claim, or a failed snapshot would strand this session
        * behind a claim nobody holds until its TTL expires.
+       *
+       * OD-28 (owner review M-04): A SOCKET THAT GOES WHILE THE RECAP ASKED
+       * ON "END" WAITS is not a silent dropout — the learner asked to leave,
+       * and the frontend of the time tears its socket down right behind
+       * `end_session` without waiting for anything. So the request is put
+       * back exactly as a deferred `end_session` would be
+       * (`Live.endSessionRequested`, copied onto the park entry, so the park
+       * is never published and `finalizeParked` defers its review), and
+       * `attemptEndSession` runs again: with the socket gone it gives the
+       * completed close at once and `finish()` cancels this park, so the
+       * session closes `completed`, once, as it did before M-04. If a turn
+       * holds the floor (the recap itself still being delivered),
+       * `releaseTurn` fires it when that turn ends. A recap the MENTOR asked
+       * (a wrap-up, an accepted offer) is untouched: the learner did not ask
+       * to leave, so that drop parks and stays resumable, as before.
        */
+      const learnerEndPending = live.orchestrator.learnerEndRecapPending;
+      if (learnerEndPending) live.endSessionRequested = true;
       const entry = parkSession(session.sessionId, live);
       void publishPark(session.sessionId, entry).finally(() => {
         void releaseLock(sessionLockKey(session.sessionId), live.lockOwner);
       });
+      if (learnerEndPending && !live.inFlight) {
+        live.endSessionRequested = false;
+        void attemptEndSession(live);
+      }
     } else {
       live.speech.memo.clear();
       /*

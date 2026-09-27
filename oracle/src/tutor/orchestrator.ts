@@ -2643,14 +2643,66 @@ export class TutorOrchestrator {
   }
 
   /**
-   * Ends the session in character — the learner asked to (`end_session`).
+   * The learner pressed "end" (`end_session`). OD-28 (owner review M-04):
+   * the Mentor asks the recap question FIRST, then gives the completed close
+   * (C.16) after the answer — the same sequence a Mentor wrap-up gets.
+   *
+   * The returned outcome's `closeReason` says whether the session ends on it:
+   *
+   *   - A stopped (safety) session: the calm safety close at once, never the
+   *     recap (`farewell`).
+   *   - The recap question is already waiting (a second "end", the wrap-up's
+   *     or an accepted offer's recap), the close already happened, the budget
+   *     has already ended, or `canAnswer` is false (the socket is gone, so
+   *     nobody can answer): the completed close at once (`farewell`). The
+   *     learner is never held for more than one question.
+   *   - Otherwise the recap question, scripted, with `closeReason` null: the
+   *     session stays open for one answer, which `handleLearnerText` turns
+   *     into the reflection and the completed close (`finishCompletedClose`).
+   *     An open stop-or-continue offer is recorded as accepted first, exactly
+   *     as accepting it would (C.8/C.12): pressing "end" while it is open IS
+   *     the answer to it, and it is recorded once.
+   *
+   * The state changes happen before the first `await`, so a socket `close`
+   * event that follows the `end_session` frame already reads the recap as
+   * pending (`learnerEndRecapPending`).
+   */
+  async learnerEnd(nowMs: number, opts: { canAnswer: boolean }): Promise<TurnOutcome> {
+    const budget = this.currentBudget(nowMs);
+    if (
+      this.stopped ||
+      !opts.canAnswer ||
+      this.sessionClosing.phase !== 'none' ||
+      budget.state === 'ended'
+    ) {
+      return this.farewell(nowMs, 'soft');
+    }
+    if (this.sessionEndSignal.offerOpen) this.sessionEndSignal.recordResponse('accepted');
+    /*
+     * Nothing else is recorded on the press: no learner turn (pressing "end"
+     * is not an utterance, so the effort act is what it was before) and no
+     * system question superseded here — an open C.19 check-in is superseded
+     * by the completed close itself, exactly as when the close came at once.
+     */
+    this.sessionClosing.askRecapOnLearnerEnd();
+    return this.scriptedOutcome(recapPromptResponse(this.session.locale), budget, null, null);
+  }
+
+  /** OD-28 (M-04): the learner pressed "end" and the recap question still waits for its answer. */
+  get learnerEndRecapPending(): boolean {
+    return this.sessionClosing.learnerEndRecapPending;
+  }
+
+  /**
+   * Ends the session in character AT ONCE, with no recap question.
    *
    * C.16: the script follows how the session ended. A stopped session gets
-   * the calm safety close, never the positive one. A learner who chooses to
-   * leave gets the completed close naming the act the server observed; the
-   * recap QUESTION is not asked here, because the learner is leaving now and
-   * holding them for one more answer would override their choice (recorded
-   * as a proposal in the S06 sprint record). `hard` is the budget variant.
+   * the calm safety close, never the positive one; otherwise the completed
+   * close naming the act the server observed. Since OD-28 (owner review
+   * M-04) a learner's first "end" asks the recap question instead
+   * (`learnerEnd`); this is what a second "end", a socket gone before the
+   * answer, or an unanswered recap past its wait window gets, so the learner
+   * is never trapped behind the question. `hard` is the budget variant.
    */
   async farewell(nowMs: number, kind: 'soft' | 'hard'): Promise<TurnOutcome> {
     const budget = this.currentBudget(nowMs);
