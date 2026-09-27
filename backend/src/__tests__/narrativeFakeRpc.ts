@@ -12,6 +12,14 @@ import { createFakeFetch, type FakeDb, type FakeRow } from './fakePostgrest.js';
  *
  * `missing` simulates a deploy that ran before the migration: every narrative
  * RPC and table answers 404, as PostgREST does for an unknown relation.
+ *
+ * L-12 (OD-28, `*_teen_bridge_own_goal.sql`): a self savings-goal prompt acted
+ * on with goal details creates the learner's own goal when the learner holds a
+ * personal wallet (teen_wallet_holder, mirrored below without GoTrue's
+ * is_anonymous, which this double does not model), and otherwise records the
+ * commitment with goal_refused = 'WALLET_HOLDER_REQUIRED'. All-null details
+ * still record a commitment only. `bridgeBeforeL12` reproduces the previous
+ * function, which refuses any detail on a self prompt with SQLSTATE 22023.
  */
 
 const NARRATIVE_TABLES = ['learner_decision_journal', 'learner_decision_resurfacings', 'learning_bridge_prompts'];
@@ -20,7 +28,24 @@ const reply = (status: number, body: unknown) => new Response(JSON.stringify(bod
 const DAY = 24 * 60 * 60 * 1000;
 const GOAL_ICONS = ['star', 'game', 'toy', 'book', 'bike', 'trip', 'gift'];
 
-export function createNarrativeFakeFetch(db: FakeDb, options: { missing?: boolean } = {}): typeof fetch {
+/** public.teen_wallet_holder (0152, re-pointed by later migrations), minus is_anonymous. */
+function teenWalletHolder(db: FakeDb, user: unknown): boolean {
+  const band = (db.account_age_declarations ?? []).find((r) => r.user_id === user)?.declared_age_band;
+  if (band !== '13_to_17') return false;
+  if ((db.account_safety_origins ?? []).some((r) => r.user_id === user)) return false;
+  if ((db.user_roles ?? []).some((r) => r.user_id === user && ['kid', 'parent', 'admin', 'superadmin'].includes(String(r.role)))) return false;
+  const birth = (db.profiles ?? []).find((r) => r.user_id === user)?.birth_date;
+  if (typeof birth === 'string') {
+    const born = new Date(`${birth}T00:00:00.000Z`);
+    const now = new Date();
+    let age = now.getUTCFullYear() - born.getUTCFullYear();
+    if (now.getUTCMonth() < born.getUTCMonth() || (now.getUTCMonth() === born.getUTCMonth() && now.getUTCDate() < born.getUTCDate())) age--;
+    if (age < 13 || age > 17) return false;
+  }
+  return true;
+}
+
+export function createNarrativeFakeFetch(db: FakeDb, options: { missing?: boolean; bridgeBeforeL12?: boolean } = {}): typeof fetch {
   const base = createFakeFetch(db);
   return (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
@@ -118,8 +143,25 @@ export function createNarrativeFakeFetch(db: FakeDb, options: { missing?: boolea
     const title = String(p.p_title ?? '').trim();
     let taskId: string | null = null;
     let goalId: string | null = null;
+    let goalRefused: string | null = null;
+    const noDetails = p.p_title === null && p.p_amount === null && p.p_icon === null && p.p_recurrence === null;
     if (prompt.audience === 'self') {
-      if (p.p_title !== null || p.p_amount !== null || p.p_icon !== null || p.p_recurrence !== null) return reply(400, { message: 'a self prompt creates nothing' });
+      if (noDetails) {
+        // A commitment only (the pre-L-12 contract).
+      } else if (options.bridgeBeforeL12) {
+        return reply(400, { code: '22023', message: 'act_on_learning_bridge_prompt: a self prompt creates nothing' });
+      } else if (prompt.action !== 'savings_goal') {
+        return reply(400, { code: '22023', message: 'act_on_learning_bridge_prompt: a self prompt creates no task' });
+      } else {
+        const amount = Number(p.p_amount);
+        if (title.length < 1 || title.length > 80 || !(amount >= 1 && amount <= 100000) || !GOAL_ICONS.includes(String(p.p_icon)) || p.p_recurrence !== null) return reply(400, { code: '22023', message: 'invalid savings goal' });
+        if (teenWalletHolder(db, prompt.learner_id)) {
+          goalId = randomUUID();
+          (db.savings_goals ??= []).push({ id: goalId, kid_user_id: prompt.learner_id, title, target: amount, icon: p.p_icon, status: 'active', created_at: new Date().toISOString(), reached_at: null });
+        } else {
+          goalRefused = 'WALLET_HOLDER_REQUIRED';
+        }
+      }
     } else if (prompt.action === 'savings_goal') {
       const amount = Number(p.p_amount);
       if (title.length < 1 || title.length > 80 || !(amount >= 1 && amount <= 100000) || !GOAL_ICONS.includes(String(p.p_icon)) || p.p_recurrence !== null) return reply(400, { message: 'invalid savings goal' });
@@ -131,10 +173,11 @@ export function createNarrativeFakeFetch(db: FakeDb, options: { missing?: boolea
       taskId = randomUUID();
       (db.tasks ??= []).push({ id: taskId, assigned_by: p.p_actor_id, assigned_to: prompt.learner_id, title, reward_coins: amount, recurrence: p.p_recurrence, due_at: null, requires_evidence: false, status: 'open' });
     }
-    // The table's CHECKs: a task or goal only for an acted guardian prompt of the matching action.
+    // The table's CHECKs: a task only for an acted guardian task prompt; a goal
+    // for an acted savings-goal prompt (L-12 adds the self one), always the learner's own.
     if (taskId && !(prompt.action === 'earning_task' && prompt.audience === 'guardian')) return reply(400, { message: 'learning_bridge_prompts_task_guardian' });
-    if (goalId && !(prompt.action === 'savings_goal' && prompt.audience === 'guardian')) return reply(400, { message: 'learning_bridge_prompts_goal_guardian' });
+    if (goalId && prompt.action !== 'savings_goal') return reply(400, { message: 'learning_bridge_prompts_goal_savings' });
     Object.assign(prompt, { status: 'acted', closed_at: new Date().toISOString(), closed_by: p.p_actor_id, result_task_id: taskId, result_goal_id: goalId });
-    return reply(200, { status: 'acted', replayed: false, task_id: taskId, goal_id: goalId });
+    return reply(200, { status: 'acted', replayed: false, task_id: taskId, goal_id: goalId, ...(options.bridgeBeforeL12 ? {} : { goal_refused: goalRefused }) });
   }) as typeof fetch;
 }

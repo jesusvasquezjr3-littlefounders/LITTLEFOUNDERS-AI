@@ -1,5 +1,6 @@
 {
   "lessonUnavailable": "This lesson needs an update.",
   "lessonInvalid": "This lesson cannot open.",
-  "back": "Go back"
+  "back": "Go back",
+  "journalTutorSeesChoices": "Your Tutor can see the choices you make in stories."
 }

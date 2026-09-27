@@ -1,5 +1,6 @@
 {
   "lessonUnavailable": "Esta lección necesita una actualización.",
   "lessonInvalid": "Esta lección no se puede abrir.",
-  "back": "Volver"
+  "back": "Volver",
+  "journalTutorSeesChoices": "Tu Tutor puede ver lo que eliges en las historias."
 }

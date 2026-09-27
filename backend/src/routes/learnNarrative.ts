@@ -4,9 +4,11 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser } from '../middleware/auth.js';
 import type { AgeScreenState } from '../services/ageScreen.js';
 import { getRolesForGate } from '../services/insights.js';
-import { bridgeAudience } from '../services/narrative/familyBridge.js';
-import { actOnBridgePrompt, clearJournal, dismissBridgePrompt, getBridgePrompt, kcRowsByIds, listJournal, listOpenBridgePrompts } from '../services/narrative/narrativeData.js';
-import { getVerifiedGuardiansOfKid, insertAuditLog, serviceRest } from '../services/supabaseRest.js';
+import { bridgeAudience, SELF_GOAL_ICONS, selfGoalDetails, type BridgeLocale } from '../services/narrative/familyBridge.js';
+import { clearJournal, dismissBridgePrompt, getBridgePrompt, kcRowsByIds, listJournal, listOpenBridgePrompts, type PromptRow } from '../services/narrative/narrativeData.js';
+import { actOnSelfBridgePrompt } from '../services/narrative/selfBridgeGoal.js';
+import { readLearnerChoicesShared } from '../services/narrative/tutorChoices.js';
+import { getFullOwnProfile, getVerifiedGuardiansOfKid, insertAuditLog, serviceRest } from '../services/supabaseRest.js';
 
 /*
  * /api/v1/learn/journal and /api/v1/learn/bridges (S05.3c). Mounted inside
@@ -14,13 +16,19 @@ import { getVerifiedGuardiansOfKid, insertAuditLog, serviceRest } from '../servi
  *
  * B.9 — the learner's own decision journal: read it, clear it. Only ever the
  * caller's own rows; there is no id in the path to point at someone else.
+ * L-13 (OD-27 (3)): the read also says whether the learner's verified Tutor
+ * can see the options chosen (`tutorSeesChoices`: a parent-created child under
+ * 13 with a verified Tutor), so the child is told, in the journal itself.
  *
  * B.13 — self-directed bridge prompts, for an independent teen only (Option
  * B). Every other population gets an empty list and a 404 on any prompt id:
  * a child's guardian prompts live in the Family Hub, never on the child's
  * side, and nobody can act on a prompt addressed to someone else. Acting on a
- * self prompt records the teen's own commitment and creates nothing; the
- * database refuses a task for a self prompt whatever Core sends.
+ * self prompt records the teen's own commitment; the database refuses a task
+ * for a self prompt whatever Core sends. L-12 (OD-28): on a savings-goal
+ * prompt, "I will try" also creates the teen's OWN savings goal in their
+ * personal wallet (D.3), in the same transaction; the optional body names it,
+ * and a body-less act (every pre-L-12 client) gets the generic defaults.
  */
 
 const NOT_FOUND = 'NOT_FOUND';
@@ -31,6 +39,14 @@ const Page = z.object({
 }).strict();
 
 type LessonTitleRow = { id: string; title: Record<string, unknown> };
+const normalizeLocale = (raw: string | null | undefined): BridgeLocale => (raw === 'en-US' || raw === 'pt-BR' ? raw : 'es-MX');
+
+/** L-12: the teen's own goal, all optional (a pre-L-12 client sends `{}`); the same limits as the goal form. */
+const SelfActBody = z.object({
+  title: z.string().trim().min(1).max(80).optional(),
+  target: z.number().int().min(1).max(100000).optional(),
+  icon: z.enum(SELF_GOAL_ICONS).optional(),
+}).strict();
 type CourseTitleRow = { id: string; slug: string; title: Record<string, unknown> };
 
 export function learnNarrativeRouter(): Router {
@@ -40,8 +56,11 @@ export function learnNarrativeRouter(): Router {
     const page = Page.safeParse(req.query);
     if (!page.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit must be 1-50 and offset 0-10000');
     const user = authedUser(res);
-    const journal = await listJournal(user.id, page.data.limit, page.data.offset);
-    if (!journal) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your journal');
+    const [journal, tutorSeesChoices] = await Promise.all([
+      listJournal(user.id, page.data.limit, page.data.offset),
+      readLearnerChoicesShared(user.id, (res.locals.ageScreen as AgeScreenState | undefined) ?? null),
+    ]);
+    if (!journal || tutorSeesChoices === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your journal');
     const lessonIds = [...new Set(journal.rows.map((r) => r.lesson_id))];
     const courseIds = [...new Set(journal.rows.map((r) => r.course_id))];
     const [lessons, courses] = await Promise.all([
@@ -70,6 +89,7 @@ export function learnNarrativeRouter(): Router {
         }];
       }),
       hasMore: journal.hasMore,
+      tutorSeesChoices,
     });
   });
 
@@ -108,7 +128,7 @@ export function learnNarrativeRouter(): Router {
   const PromptId = z.string().uuid();
 
   /** Resolves a self prompt the caller may act on, or answers 404/502 itself. */
-  async function ownSelfPrompt(req: { params: Record<string, string | undefined> }, res: Parameters<typeof authedUser>[0]): Promise<string | null> {
+  async function ownSelfPrompt(req: { params: Record<string, string | undefined> }, res: Parameters<typeof authedUser>[0]): Promise<PromptRow | null> {
     const id = PromptId.safeParse(req.params.id);
     if (!id.success) {
       fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
@@ -129,28 +149,40 @@ export function learnNarrativeRouter(): Router {
       fail(res, 404, NOT_FOUND, 'No such suggestion');
       return null;
     }
-    return prompt.id;
+    return prompt;
   }
 
   router.post('/bridges/:id/act', async (req, res) => {
-    if (z.object({}).strict().safeParse(req.body ?? {}).success === false) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'A self suggestion takes no details');
-    }
-    const promptId = await ownSelfPrompt(req, res);
-    if (!promptId) return res;
+    const body = SelfActBody.safeParse(req.body ?? {});
+    if (!body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the goal details');
+    const prompt = await ownSelfPrompt(req, res);
+    if (!prompt) return res;
+    const sent = body.data;
+    const hasDetails = sent.title !== undefined || sent.target !== undefined || sent.icon !== undefined;
+    // Tasks stay guardian-only (OD-3): an earning-task self prompt takes no details.
+    if (prompt.action !== 'savings_goal' && hasDetails) return fail(res, 400, 'VALIDATION_ERROR', 'A self suggestion takes no details');
     const user = authedUser(res);
-    const result = await actOnBridgePrompt({ promptId, actorId: user.id, title: null, amount: null, icon: null, recurrence: null });
+    let goal: { title: string; target: number; icon: string } | null = null;
+    if (prompt.action === 'savings_goal') {
+      // The generic title is written in the teen's own locale; a failed profile read falls back like every other locale read.
+      const locale = sent.title === undefined ? normalizeLocale((await getFullOwnProfile(user.accessToken, user.id))?.[0]?.locale) : 'es-MX';
+      goal = selfGoalDetails(sent, locale);
+    }
+    const result = await actOnSelfBridgePrompt({ promptId: prompt.id, actorId: user.id, goal });
     if (!result) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save this');
     if (result.status === 'closed') return fail(res, 409, 'BRIDGE_CLOSED', 'This suggestion has closed');
     if (result.status !== 'acted') return fail(res, 404, NOT_FOUND, 'No such suggestion');
-    if (!result.replayed) await insertAuditLog(user.id, 'learning_bridge.self_committed', promptId, {});
-    return ok(res, { status: 'acted', replayed: result.replayed === true });
+    // The audit row records the act and the goal it created, never the title (free text).
+    if (!result.replayed) {
+      await insertAuditLog(user.id, 'learning_bridge.self_committed', prompt.id, { action: prompt.action, goalId: result.goalId, goalRefused: result.goalRefused });
+    }
+    return ok(res, { status: 'acted', replayed: result.replayed, goalId: result.goalId, ...(result.goalRefused ? { goalRefused: result.goalRefused } : {}) });
   });
 
   router.post('/bridges/:id/dismiss', async (req, res) => {
-    const promptId = await ownSelfPrompt(req, res);
-    if (!promptId) return res;
-    const result = await dismissBridgePrompt(promptId, authedUser(res).id);
+    const prompt = await ownSelfPrompt(req, res);
+    if (!prompt) return res;
+    const result = await dismissBridgePrompt(prompt.id, authedUser(res).id);
     if (!result) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save this');
     if (result.status === 'closed') return fail(res, 409, 'BRIDGE_CLOSED', 'This suggestion has closed');
     if (result.status !== 'dismissed') return fail(res, 404, NOT_FOUND, 'No such suggestion');

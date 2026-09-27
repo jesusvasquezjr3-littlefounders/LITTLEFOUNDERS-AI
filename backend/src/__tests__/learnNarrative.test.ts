@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import { ipKeyGenerator } from 'express-rate-limit';
 import { createApp } from '../app.js';
+import { globalRateLimiter } from '../middleware/rateLimit.js';
 import { resetConfigForTests } from '../config.js';
 import { mintToken } from './helpers.js';
 import type { FakeDb } from './fakePostgrest.js';
@@ -12,9 +14,15 @@ import { createNarrativeFakeFetch } from './narrativeFakeRpc.js';
  * every population. The UI never substitutes for any of these decisions.
  *
  * Populations: a parent-created 7-year-old (kid role, verified Tutor), the
- * under-13 refusal-path guest, an independent teen of 15, an adult learning for
- * themselves, the child's verified-parent Tutor, a second verified parent with
- * no link to the child, and a parent who never verified.
+ * under-13 refusal-path guest, an independent teen of 15, a second independent
+ * teen, a self-registered teen of 14 who later linked the same Tutor, an adult
+ * learning for themselves, the child's verified-parent Tutor, a second verified
+ * parent with no link to the child, and a parent who never verified.
+ *
+ * Owner answers (27 September 2026): L-12 (OD-28), an independent teen's "I
+ * will try" creates their own savings goal; L-13 (OD-27 (3)), the verified
+ * Tutor of a parent-created child under 13 sees which option the child chose in
+ * each story decision, and every teen's journal stays private.
  *
  * Catalog, linear engine (the default until the owner accepts B.6):
  *   money / chapter 1 / arc A   story  (a story_branch lesson, kc.story)
@@ -32,14 +40,24 @@ const yearsAgo = (years: number): string => {
   return d.toISOString().slice(0, 10);
 };
 
+/** An ISO date exactly `years` years before today (UTC), shifted by `days`. */
+const birthdayAgo = (years: number, days = 0): string => {
+  const d = new Date();
+  d.setUTCFullYear(d.getUTCFullYear() - years);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+};
+
 const KID7 = uid(101);
 const GUEST = uid(102);
 const TEEN15 = uid(103);
+const TEEN_B = uid(104);
 const ADULT = uid(105);
 const TUTOR = uid(106);
 const OTHER_PARENT = uid(107);
 const UNVERIFIED_PARENT = uid(108);
-const LEARNERS = [KID7, GUEST, TEEN15, ADULT, TUTOR];
+const LINKED_TEEN = uid(109);
+const LEARNERS = [KID7, GUEST, TEEN15, TEEN_B, LINKED_TEEN, ADULT, TUTOR];
 const COURSE = { money: uid(1), other: uid(2) };
 
 const storyDoc = (slug: string) => ({
@@ -81,6 +99,8 @@ function build(): Built {
     account_age_declarations: [
       { user_id: KID7, declared_age_band: 'under_13' },
       { user_id: TEEN15, declared_age_band: '13_to_17' },
+      { user_id: TEEN_B, declared_age_band: '13_to_17' },
+      { user_id: LINKED_TEEN, declared_age_band: '13_to_17' },
       { user_id: ADULT, declared_age_band: 'adult' },
       { user_id: TUTOR, declared_age_band: 'adult' },
       { user_id: OTHER_PARENT, declared_age_band: 'adult' },
@@ -91,6 +111,8 @@ function build(): Built {
       { user_id: KID7, display_name: 'Kid', locale: 'en-US', birth_date: yearsAgo(7) },
       { user_id: GUEST, display_name: 'Guest', locale: 'en-US', birth_date: null },
       { user_id: TEEN15, display_name: 'Teen', locale: 'en-US', birth_date: yearsAgo(15) },
+      { user_id: TEEN_B, display_name: 'Teen B', locale: 'es-MX', birth_date: null },
+      { user_id: LINKED_TEEN, display_name: 'Linked', locale: 'en-US', birth_date: yearsAgo(14) },
       { user_id: ADULT, display_name: 'Adult', locale: 'en-US', birth_date: null },
       { user_id: TUTOR, display_name: 'Tutor', locale: 'pt-BR', birth_date: '1985-05-05' },
       { user_id: OTHER_PARENT, display_name: 'Other', locale: 'en-US', birth_date: '1985-05-05' },
@@ -99,7 +121,11 @@ function build(): Built {
     learning_stats: LEARNERS.map((user_id) => ({ user_id, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null })),
     user_roles: [{ user_id: KID7, role: 'kid' }, { user_id: TUTOR, role: 'parent' }, { user_id: OTHER_PARENT, role: 'parent' }, { user_id: UNVERIFIED_PARENT, role: 'parent' }],
     parent_verifications: [verified(TUTOR), verified(OTHER_PARENT)],
-    guardian_links: [{ parent_user_id: TUTOR, kid_user_id: KID7, verification_status: 'verified' }],
+    guardian_links: [
+      { parent_user_id: TUTOR, kid_user_id: KID7, verification_status: 'verified' },
+      // A self-registered teen who invited the same Tutor later (no kid role).
+      { parent_user_id: TUTOR, kid_user_id: LINKED_TEEN, verification_status: 'verified' },
+    ],
   };
   const lesson: Record<string, string> = {};
   const topic: Record<string, string> = {};
@@ -164,6 +190,9 @@ async function walk(user: string, keys: string[]) {
 }
 
 beforeEach(() => {
+  // Each scenario is an independent journey; none may spend another's loopback rate budget.
+  globalRateLimiter.resetKey(ipKeyGenerator('::ffff:127.0.0.1'));
+  globalRateLimiter.resetKey('127.0.0.1');
   resetConfigForTests();
   built = build();
   vi.stubGlobal('fetch', createNarrativeFakeFetch(built.db));
@@ -308,7 +337,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     expect(built.db.savings_goals).toEqual([]);
   });
 
-  it('independent teen: a self-directed prompt that never creates a task or any wallet record', async () => {
+  it('independent teen (L-12): "I will try" from a pre-L-12 client (`{}`) creates their own goal once, with the generic defaults, and never a task', async () => {
     await grade(TEEN15, 'p5');
     await walk(TEEN15, ['story', 'save1']);
     const done = await complete(TEEN15, 'save2');
@@ -316,16 +345,125 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
     const list = await get(TEEN15, '/learn/bridges');
     expect(list.body.data.prompts).toEqual([expect.objectContaining({ action: 'savings_goal', skill: { 'en-US': 'Saving toward a goal', 'pt-BR': 'Poupar para uma meta' } })]);
     const id = list.body.data.prompts[0].id as string;
-    expect((await post(TEEN15, `/learn/bridges/${id}/act`, { title: 'Bike', target: 100 })).status).toBe(400);
     const acted = await post(TEEN15, `/learn/bridges/${id}/act`);
-    expect(acted.status).toBe(200);
-    expect(acted.body.data).toEqual({ status: 'acted', replayed: false });
+    expect(acted.status, JSON.stringify(acted.body)).toBe(200);
+    expect(built.db.savings_goals).toEqual([expect.objectContaining({ kid_user_id: TEEN15, title: 'My savings goal', target: 100, icon: 'star', status: 'active' })]);
+    const goalId = built.db.savings_goals![0]!.id;
+    expect(acted.body.data).toEqual({ status: 'acted', replayed: false, goalId });
     expect(built.db.tasks).toEqual([]);
-    expect(built.db.savings_goals).toEqual([]);
-    expect(built.db.learning_bridge_prompts![0]).toMatchObject({ audience: 'self', status: 'acted', result_task_id: null, result_goal_id: null });
-    expect((await post(TEEN15, `/learn/bridges/${id}/act`)).body.data.replayed).toBe(true);
+    expect(built.db.learning_bridge_prompts![0]).toMatchObject({ audience: 'self', status: 'acted', closed_by: TEEN15, result_task_id: null, result_goal_id: goalId });
+    // The audit row names the goal, never its title (free text).
+    expect(built.db.audit_logs).toEqual([expect.objectContaining({ actor_id: TEEN15, action: 'learning_bridge.self_committed', subject: id })]);
+    expect(built.db.audit_logs![0]!.detail).toEqual({ action: 'savings_goal', goalId, goalRefused: null });
+    expect(JSON.stringify(built.db.audit_logs)).not.toContain('My savings goal');
+    // Acting twice returns the same goal and never creates a second one.
+    const replay = await post(TEEN15, `/learn/bridges/${id}/act`, { title: 'Another', target: 5 });
+    expect(replay.status).toBe(200);
+    expect(replay.body.data).toEqual({ status: 'acted', replayed: true, goalId });
+    expect(built.db.savings_goals).toHaveLength(1);
+    expect(built.db.audit_logs).toHaveLength(1);
     // Family routes are guardian-only, whatever the teen sends.
     expect((await post(TEEN15, `/family/learning/kids/${TEEN15}/bridges/${id}/act`, { action: 'savings_goal', title: 'x', target: 1 })).status).toBe(403);
+  });
+
+  it('independent teen (L-12): an optional body names the goal; the generic title follows the teen\'s locale; a bad body is 400 and changes nothing', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2']);
+    const id = String(built.db.learning_bridge_prompts![0]!.id);
+    const bad: object[] = [
+      { title: '' }, { title: '   ' }, { title: 'x'.repeat(81) }, { target: 0 }, { target: 100001 }, { target: 1.5 }, { target: '100' },
+      { icon: 'car' }, { recurrence: 'weekly' }, { action: 'savings_goal' }, { title: 'Bike', rewardCoins: 5 },
+    ];
+    for (const body of bad) {
+      const res = await post(TEEN15, `/learn/bridges/${id}/act`, body);
+      expect(res.status, JSON.stringify(body)).toBe(400);
+    }
+    expect(built.db.savings_goals).toEqual([]);
+    expect(built.db.learning_bridge_prompts![0]).toMatchObject({ status: 'open' });
+    const acted = await post(TEEN15, `/learn/bridges/${id}/act`, { title: '  New bike  ', target: 250, icon: 'bike' });
+    expect(acted.status, JSON.stringify(acted.body)).toBe(200);
+    expect(built.db.savings_goals).toEqual([expect.objectContaining({ kid_user_id: TEEN15, title: 'New bike', target: 250, icon: 'bike' })]);
+
+    // A partial body keeps the defaults for the rest, in the teen's own locale (es-MX here).
+    await grade(TEEN_B, 'p5');
+    await walk(TEEN_B, ['story', 'save1', 'save2']);
+    const promptB = built.db.learning_bridge_prompts!.find((p) => p.learner_id === TEEN_B)!;
+    expect((await post(TEEN_B, `/learn/bridges/${promptB.id}/act`, { target: 40 })).status).toBe(200);
+    expect(built.db.savings_goals!.find((g) => g.kid_user_id === TEEN_B)).toMatchObject({ title: 'Mi meta de ahorro', target: 40, icon: 'star' });
+  });
+
+  it('independent teen (L-12): without a personal wallet today, "I will try" still records the commitment and reports why no goal was created', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2']);
+    const id = String(built.db.learning_bridge_prompts![0]!.id);
+    // The declared band still says 13-17, but the birth date now says 18: the
+    // database's wallet-holder rule refuses a goal; no wallet is ever created.
+    built.db.profiles!.find((r) => r.user_id === TEEN15)!.birth_date = birthdayAgo(18, -1);
+    const acted = await post(TEEN15, `/learn/bridges/${id}/act`);
+    expect(acted.status).toBe(200);
+    expect(acted.body.data).toEqual({ status: 'acted', replayed: false, goalId: null, goalRefused: 'WALLET_HOLDER_REQUIRED' });
+    expect(built.db.savings_goals).toEqual([]);
+    expect(built.db.learning_bridge_prompts![0]).toMatchObject({ status: 'acted', result_goal_id: null });
+    expect(built.db.audit_logs![0]!.detail).toEqual({ action: 'savings_goal', goalId: null, goalRefused: 'WALLET_HOLDER_REQUIRED' });
+    expect((await post(TEEN15, `/learn/bridges/${id}/act`)).body.data).toEqual({ status: 'acted', replayed: true, goalId: null });
+  });
+
+  it('independent teen (L-12): an earning-task self prompt keeps the commitment-only behaviour and refuses details', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2', 'work1']);
+    const task = built.db.learning_bridge_prompts!.find((p) => p.action === 'earning_task')!;
+    expect((await post(TEEN15, `/learn/bridges/${task.id}/act`, { title: 'Mow' })).status).toBe(400);
+    const acted = await post(TEEN15, `/learn/bridges/${task.id}/act`);
+    expect(acted.status).toBe(200);
+    expect(acted.body.data).toEqual({ status: 'acted', replayed: false, goalId: null });
+    expect(built.db.tasks).toEqual([]);
+    expect(built.db.savings_goals).toEqual([]);
+  });
+
+  it('independent teen (L-12): against a database still on the pre-L-12 function, "I will try" falls back to the commitment', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2']);
+    const id = String(built.db.learning_bridge_prompts![0]!.id);
+    vi.stubGlobal('fetch', createNarrativeFakeFetch(built.db, { bridgeBeforeL12: true }));
+    const acted = await post(TEEN15, `/learn/bridges/${id}/act`);
+    expect(acted.status, JSON.stringify(acted.body)).toBe(200);
+    expect(acted.body.data).toEqual({ status: 'acted', replayed: false, goalId: null, goalRefused: 'GOAL_UNAVAILABLE' });
+    expect(built.db.savings_goals).toEqual([]);
+    expect(built.db.learning_bridge_prompts![0]).toMatchObject({ status: 'acted', result_goal_id: null });
+  });
+
+  it('L-12 boundary: nobody else acts on a teen\'s self prompt, and nobody else\'s goal is created', async () => {
+    await grade(TEEN15, 'p5');
+    await walk(TEEN15, ['story', 'save1', 'save2']);
+    const id = String(built.db.learning_bridge_prompts![0]!.id);
+    for (const user of [TEEN_B, LINKED_TEEN, KID7, ADULT, TUTOR, GUEST]) {
+      const res = await post(user, `/learn/bridges/${id}/act`, { title: 'Mine', target: 10 });
+      expect(res.status, user).toBe(404);
+    }
+    expect((await post(TEEN15, '/learn/bridges/not-a-uuid/act')).status).toBe(400);
+    expect((await post(TEEN15, `/learn/bridges/${uid(999)}/act`)).status).toBe(404);
+    // The database double refuses another account as the actor, whatever Core sends.
+    const raw = await fetch('http://supabase.test/rest/v1/rpc/act_on_learning_bridge_prompt', {
+      method: 'POST', body: JSON.stringify({ p_prompt_id: id, p_actor_id: TEEN_B, p_title: 'Mine', p_amount: 10, p_icon: 'star', p_recurrence: null }),
+    });
+    expect(await raw.json()).toEqual({ status: 'forbidden' });
+    expect(built.db.savings_goals).toEqual([]);
+    expect(built.db.learning_bridge_prompts![0]).toMatchObject({ status: 'open' });
+  });
+
+  it('L-12 leaves the guardian flow unchanged: a self-registered teen who linked a Tutor gets a Family Hub prompt, never a self one', async () => {
+    await grade(LINKED_TEEN, 'p5');
+    await walk(LINKED_TEEN, ['story', 'save1']);
+    const done = await complete(LINKED_TEEN, 'save2');
+    expect(done.body.data.self_bridge).toBeUndefined();
+    const prompt = built.db.learning_bridge_prompts!.find((p) => p.learner_id === LINKED_TEEN)!;
+    expect(prompt).toMatchObject({ audience: 'guardian', action: 'savings_goal' });
+    expect((await get(LINKED_TEEN, '/learn/bridges')).body.data.prompts).toEqual([]);
+    expect((await post(LINKED_TEEN, `/learn/bridges/${prompt.id}/act`)).status).toBe(404);
+    expect(built.db.savings_goals).toEqual([]);
+    const acted = await post(TUTOR, `/family/learning/kids/${LINKED_TEEN}/bridges/${prompt.id}/act`, { action: 'savings_goal', title: 'Camp', target: 300, icon: 'trip' });
+    expect(acted.status, JSON.stringify(acted.body)).toBe(201);
+    expect(built.db.savings_goals).toEqual([expect.objectContaining({ kid_user_id: LINKED_TEEN, title: 'Camp', target: 300 })]);
   });
 
   it('the database double refuses a task from a self prompt even if Core sent one', async () => {
@@ -372,7 +510,7 @@ describe('B.13 — a finished bridge topic prompts the right audience, and only 
 });
 
 describe('B.10 — the guardian narrative, through the verified-parent boundary', () => {
-  it('names the lesson, the skills and the struggle in the guardian\'s locale, counts decisions, and never reveals a choice', async () => {
+  it('names the lesson, the skills and the struggle in the guardian\'s locale and counts decisions; for a child under 13 it adds the chosen option (L-13), minimized', async () => {
     await grade(KID7, 'p10');
     await walk(KID7, ['story', 'save1']);
     const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
@@ -380,14 +518,103 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
     expect(res.body.data.locale).toBe('pt-BR');
     expect(res.body.data.week).toEqual({ lessons: 2, topicsCompleted: 1 });
     const story = res.body.data.entries.find((e: { lessonId: string }) => e.lessonId === built.lesson.story);
+    // The per-entry shape is unchanged (the Family Hub client validates it strictly).
     expect(story).toEqual({
       lessonId: built.lesson.story, lessonTitle: 'Lição story', topicTitle: 'Tópico story', courseTitle: 'money (pt)', completedAt: expect.any(String),
       skills: ['Definir um preço'], struggle: 'none', usedHint: false, decisions: 1, topicComplete: true, conversation: 'decision',
     });
     const save1 = res.body.data.entries.find((e: { lessonId: string }) => e.lessonId === built.lesson.save1);
     expect(save1).toMatchObject({ struggle: null, decisions: 0, topicComplete: false, conversation: 'explain', skills: ['Poupar para uma meta'] });
-    // The child's own choice never crosses into the guardian's view.
-    expect(JSON.stringify(res.body)).not.toMatch(/10 coins|double the price|Two neighbors/);
+    // L-13: the question and the option chosen, in the LESSON's locale; nothing more.
+    expect(res.body.data.choicesVisible).toBe(true);
+    expect(res.body.data.choices).toEqual([{
+      lessonId: built.lesson.story, situation: 'What price brings me closer to the guitar?', choice: '10 coins, double the price', locale: 'en-US',
+    }]);
+    expect(JSON.stringify(res.body)).not.toMatch(/Two neighbors|timesDecided|firstChoice|resurfaced/);
+  });
+
+  it('L-13: after a changed replay the Tutor sees the latest option only, never the first one', async () => {
+    await grade(KID7, 'p10');
+    await grade(KID7, 'p5', 2);
+    await walk(KID7, ['story']);
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.body.data.choices).toEqual([expect.objectContaining({ choice: '5 coins, the usual' })]);
+    expect(JSON.stringify(res.body)).not.toContain('double the price');
+  });
+
+  const expectCountsOnly = (body: { data: Record<string, unknown> }) => {
+    expect(body.data.choicesVisible).toBe(false);
+    expect(body.data).not.toHaveProperty('choices');
+    expect(JSON.stringify(body)).not.toMatch(/guitar|10 coins|double the price|Two neighbors/);
+  };
+
+  it.each([
+    ['a parent-created child who is 13 by birth date', () => { built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = birthdayAgo(13); }],
+    ['a parent-created child aged 13 by birth date even though the age screen said under 13', () => {
+      built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = yearsAgo(14);
+    }],
+    ['a parent-created child with no age evidence at all', () => {
+      built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = null;
+      built.db.account_age_declarations = built.db.account_age_declarations!.filter((r) => r.user_id !== KID7);
+    }],
+  ])('L-13, counts only: %s', async (_label, arrange) => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    arrange();
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data.entries[0]).toMatchObject({ decisions: 1, conversation: 'decision' });
+    expectCountsOnly(res.body);
+  });
+
+  it('L-13 boundary: the choices are shown the day before the 13th birthday and private from that birthday on (computed at read time)', async () => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    const profile = built.db.profiles!.find((r) => r.user_id === KID7)!;
+    profile.birth_date = birthdayAgo(13, 1);
+    expect((await get(TUTOR, `/family/learning/kids/${KID7}/narrative`)).body.data.choicesVisible).toBe(true);
+    expect((await get(KID7, '/learn/journal')).body.data.tutorSeesChoices).toBe(true);
+    profile.birth_date = birthdayAgo(13);
+    expectCountsOnly((await get(TUTOR, `/family/learning/kids/${KID7}/narrative`)).body);
+    expect((await get(KID7, '/learn/journal')).body.data.tutorSeesChoices).toBe(false);
+  });
+
+  it('L-13: a parent-created child with no birth date but an under-13 age screen counts as under 13', async () => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    built.db.profiles!.find((r) => r.user_id === KID7)!.birth_date = null;
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.body.data.choices).toEqual([expect.objectContaining({ choice: '10 coins, double the price' })]);
+  });
+
+  it('L-13: a self-registered teen who linked the same Tutor keeps a private journal (counts only)', async () => {
+    await grade(LINKED_TEEN, 'p10');
+    await walk(LINKED_TEEN, ['story']);
+    const res = await get(TUTOR, `/family/learning/kids/${LINKED_TEEN}/narrative`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data.entries[0]).toMatchObject({ decisions: 1 });
+    expectCountsOnly(res.body);
+    expect((await get(LINKED_TEEN, '/learn/journal')).body.data.tutorSeesChoices).toBe(false);
+  });
+
+  it('L-13: the learner\'s own journal says whether the verified Tutor can see the choices', async () => {
+    await grade(KID7, 'p10');
+    await grade(TEEN15, 'p10');
+    expect((await get(KID7, '/learn/journal')).body.data.tutorSeesChoices).toBe(true);
+    expect((await get(TEEN15, '/learn/journal')).body.data.tutorSeesChoices).toBe(false);
+    expect((await get(ADULT, '/learn/journal')).body.data.tutorSeesChoices).toBe(false);
+    // A child with no verified Tutor left: nobody sees, so the line is not shown.
+    built.db.guardian_links = built.db.guardian_links!.filter((l) => l.kid_user_id !== KID7);
+    expect((await get(KID7, '/learn/journal')).body.data.tutorSeesChoices).toBe(false);
+  });
+
+  it('L-13: a cleared journal is gone for the Tutor too', async () => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
+    expect((await del(KID7, '/learn/journal')).status).toBe(200);
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/narrative`);
+    expect(res.body.data).toMatchObject({ choicesVisible: true, choices: [] });
+    expect(res.body.data.entries[0]).toMatchObject({ decisions: 0 });
   });
 
   it('reports a mistake worked through from the graded attempts', async () => {
@@ -404,11 +631,12 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
     ['an independent teen', TEEN15, 403],
     ['a verified parent with no link to this child', OTHER_PARENT, 404],
     ['a parent who never verified', UNVERIFIED_PARENT, 403],
-  ])('%s cannot read it', async (_label, user, status) => {
-    await walk(KID7, []);
+  ])('%s cannot read it, nor the choices a child under 13 made', async (_label, user, status) => {
+    await grade(KID7, 'p10');
+    await walk(KID7, ['story']);
     const res = await get(user, `/family/learning/kids/${KID7}/narrative`);
     expect(res.status).toBe(status);
-    expect(JSON.stringify(res.body)).not.toContain('entries');
+    expect(JSON.stringify(res.body)).not.toMatch(/entries|choices|guitar|10 coins/);
   });
 
   it('pages through completions and refuses a malformed page', async () => {

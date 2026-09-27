@@ -22,8 +22,10 @@ import type { AgeScreenState } from '../ageScreen.js';
  *             protected under-13 origin, no kid role, no guardian). The prompt
  *             is self-directed: the teen commits to trying it for real. It
  *             never creates a task (tasks stay guardian-only, enforced by a
- *             database CHECK), and it creates no wallet record until the
- *             personal wallet of D.3 exists (S07).
+ *             database CHECK). L-12 (OD-28): on a savings-goal prompt, "I will
+ *             try" creates the teen's OWN savings goal in their personal
+ *             wallet (D.3), in the same transaction that closes the prompt;
+ *             with no wallet today it records the commitment only.
  *   none      everyone else: adults learning for themselves, guests, a child
  *             whose guardian link is gone, an unscreened account. No prompt is
  *             stored for them.
@@ -52,6 +54,40 @@ export const BRIDGE_CATALOG: ReadonlyArray<{ kcKey: string; action: BridgeAction
 
 export const BRIDGE_TTL_DAYS = 14;
 export const BRIDGE_COOLDOWN_DAYS = 30;
+
+/** The goal form's icon set (routes/tasks.ts CreateGoal, routes/familyLearning.ts ActBody, the database function). */
+export const SELF_GOAL_ICONS = ['star', 'game', 'toy', 'book', 'bike', 'trip', 'gift'] as const;
+export type SelfGoalIcon = (typeof SELF_GOAL_ICONS)[number];
+export type BridgeLocale = 'en-US' | 'es-MX' | 'pt-BR';
+
+/*
+ * L-12 (OD-28): what the teen's own goal is called when "I will try" arrives
+ * without details (every client built before L-12 sends `{}`). A generic
+ * label in the teen's own locale, never text the teen typed, so it carries
+ * nothing that could identify them (E.13; S-02 confirmed the generic label for
+ * goal titles). It is not the skill's title: skill titles name a lesson
+ * ("Math of a saving plan"), not something a teen saves for. The target is a
+ * documented starting point inside the goal form's range (1–100,000 coins),
+ * the same order of magnitude as one self-logged income (up to 1,000); the
+ * icon is the goal form's own default.
+ */
+export const SELF_GOAL_DEFAULTS: { title: Record<BridgeLocale, string>; target: number; icon: SelfGoalIcon } = {
+  title: { 'en-US': 'My savings goal', 'es-MX': 'Mi meta de ahorro', 'pt-BR': 'Minha meta de poupança' },
+  target: 100,
+  icon: 'star',
+};
+
+/** The details of the teen's own goal: what the teen sent, the defaults for the rest. */
+export function selfGoalDetails(
+  sent: { title?: string; target?: number; icon?: SelfGoalIcon },
+  locale: BridgeLocale,
+): { title: string; target: number; icon: SelfGoalIcon } {
+  return {
+    title: sent.title ?? SELF_GOAL_DEFAULTS.title[locale],
+    target: sent.target ?? SELF_GOAL_DEFAULTS.target,
+    icon: sent.icon ?? SELF_GOAL_DEFAULTS.icon,
+  };
+}
 
 /**
  * The candidates to offer for a completed topic, in the order the database
