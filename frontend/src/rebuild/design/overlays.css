@@ -4,8 +4,8 @@
  * the real viewport, in a body-level host (`.lf-layer-root`) that carries the
  * surface's theme. The z-index order is the generated `--layer-*` tokens:
  * sticky nav 30 → sheet 50 → dialog scrim 65 → toast 70. Neutral surfaces
- * separate by the float shadow in light mode and by the `raised` surface step
- * in dark mode, never by an outline. Tokens and logical properties only.
+ * separate by the float shadow, and in dark mode also by the `raised` surface
+ * step (the dark float shadow is derived, OD-28 V-04), never by an outline. Tokens and logical properties only.
  */
 
 /* A host is not a page: no height, no background of its own. */
@@ -198,7 +198,7 @@
   white-space: nowrap;
 }
 
-/* ---- Dark mode: elevation is a lighter surface step, never a shadow (02 §5) ---- */
+/* ---- Dark mode: a lighter surface step as well as the soft dark shadow (02 §5, OD-28 V-04) ---- */
 .lf-rebuild[data-theme='dark'] :is(.lf-dialog, .lf-sheet--bottom, .lf-popover, .lf-menu) { background: var(--raised); }
 .lf-rebuild[data-theme='dark'] .lf-sheet--full .lf-sheet-header { background: var(--surface); }
 

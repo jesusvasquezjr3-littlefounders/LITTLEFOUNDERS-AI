@@ -163,7 +163,7 @@ function Body({ copy, locale, view, onStart, onBack, onConfirm, onKeep, onRetry,
         <div className="lf-actions">
           {view.signedOut
             ? <Button variant="accent" onClick={onSignIn}>{copy.signIn}</Button>
-            : <Button variant="accent" onClick={onKeep} disabled={view.keeping} aria-busy={view.keeping}>{copy.keep}</Button>}
+            : <Button variant="accent" onClick={onKeep} pending={view.keeping}>{copy.keep}</Button>}
           {!view.signedOut && onSignOut ? <Button onClick={onSignOut} disabled={view.keeping}>{copy.signOut}</Button> : null}
         </div>
       </>;
@@ -239,7 +239,7 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
       <div className="lf-actions">
         {view.error === 'reauth'
           ? <Button variant="accent" onClick={onSignIn}>{copy.signInAgain}</Button>
-          : <Button type="submit" data-destructive="true" disabled={!canConfirm} aria-busy={view.submitting}
+          : <Button type="submit" data-destructive="true" disabled={!canConfirm && !view.submitting} pending={view.submitting}
             aria-describedby={!view.submitting && errorText ? errorId : undefined}>{copy.confirm}</Button>}
         <Button onClick={onBack} disabled={view.submitting}>{copy.back}</Button>
       </div>

@@ -38,7 +38,7 @@ export function SessionPreferences({ copy, locale, dark, choice, onChoice, onSig
     <SegmentedControl<ThemeChoice> legend={copy.theme} name={`${headingId}-theme`} value={choice} onValueChange={onChoice}
       options={[{ value: 'auto', label: copy.themeAuto }, { value: 'light', label: copy.themeLight }, { value: 'dark', label: copy.themeDark }]} />
     <div className="lf-session-preferences-actions">
-      <Button onClick={onSignOut} disabled={signingOut} aria-busy={signingOut}>{signingOut ? copy.signingOut : copy.signOut}</Button>
+      <Button onClick={onSignOut} pending={signingOut} pendingLabel={copy.signingOut}>{copy.signOut}</Button>
     </div>
   </section>;
 }

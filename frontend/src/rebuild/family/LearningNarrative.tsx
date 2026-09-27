@@ -83,7 +83,7 @@ export function LearningNarrative({ state, locale, dark, open, onToggle, onRetry
             {state.entries.length === 0 ? <p data-copy-role="body">{t.empty}</p> : <ol className="lf-family-learning-list">
               {state.entries.map((entry) => <NarrativeCard key={entry.lessonId} entry={entry} t={t} />)}
             </ol>}
-            {state.hasMore && onMore ? <Button aria-busy={loadingMore} disabled={loadingMore} onClick={onMore}>{t.more}</Button> : null}
+            {state.hasMore && onMore ? <Button pending={loadingMore} onClick={onMore}>{t.more}</Button> : null}
           </>}
   </section>;
 }
