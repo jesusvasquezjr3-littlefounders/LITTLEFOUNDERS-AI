@@ -41,6 +41,11 @@ interface World {
   removeFollower?: { status: number; body: unknown };
   metrics?: unknown;
   permissions?: string[];
+  /** S-03: accounts opted in AND still eligible (public.teen_profile_discoverable). */
+  discoverable?: string[];
+  /** S-03: accounts that may opt in now (public.teen_discoverable_eligible). */
+  eligible?: string[];
+  setDiscoverable?: { status: number; body: unknown };
 }
 
 interface Call { url: string; method: string; body?: string }
@@ -73,6 +78,11 @@ function stub(w: World) {
     if (url.includes('/rpc/remove_social_follower')) return json(w.removeFollower?.body ?? true, w.removeFollower?.status ?? 200);
     if (url.includes('/rpc/request_social_connection')) return json(REQUEST_ID);
     if (url.includes('/rpc/social_safety_metrics')) return json(w.metrics ?? null);
+    if (url.includes('/rpc/teen_profile_discoverable')) return json((w.discoverable ?? []).includes(args.p_user));
+    if (url.includes('/rpc/teen_discoverable_eligible')) return json((w.eligible ?? []).includes(args.p_user));
+    if (url.includes('/rpc/set_teen_profile_discoverable')) {
+      return w.setDiscoverable ? json(w.setDiscoverable.body, w.setDiscoverable.status) : json((JSON.parse(body!) as { p_discoverable: boolean }).p_discoverable);
+    }
     if (url.includes('/rpc/get_completed_course_badges')) return json([]);
     if (url.includes('/rpc/')) return Promise.resolve(new Response(null, { status: 204 }));
     if (url.includes('/rest/v1/staff_sightings')) return Promise.resolve(new Response(null, { status: 204 }));
@@ -365,7 +375,7 @@ describe('E.13 — a minor’s fields that could locate them', () => {
     stub(world({ accounts: [{ ...TEEN, displayName: 'Río TikTok' }] }));
     const own = await get(TEEN, '/profile');
     expect(own.body.data.profileReview).toEqual({ flagged: true, fields: ['displayName'] });
-    expect(own.body.data.social).toEqual({ tier: 'teen', privateProfile: true });
+    expect(own.body.data.social).toEqual({ tier: 'teen', privateProfile: true, discoverable: { canChoose: false, enabled: false } });
   });
 
   it('an unreadable tier refuses a rename rather than skipping the review', async () => {
@@ -427,5 +437,97 @@ describe('Appendix J social-safety metrics (E.8 tiers, E.13 coverage)', () => {
     expect((await get(staff, '/admin/analytics/social-safety')).status).toBe(502);
     stub(world({ accounts: [staff], metrics, permissions: ['view_analytics'] }));
     expect((await get(staff, '/admin/analytics/social-safety?tier=teen')).status).toBe(400);
+  });
+});
+
+/*
+ * S-03 (owner decision OD-27 (2)): a 16- or 17-year-old may opt in to a
+ * discoverable profile. The database decides eligibility (teen tier, age
+ * evidence proving 16, unflagged) and is exercised against PostgreSQL in
+ * database/scripts/verify-teen-discoverable-postgres.py; here Core honours it.
+ */
+describe('S-03 — a 16- or 17-year-old may opt in to a discoverable profile', () => {
+  const put = (viewer: Account, body: unknown, extra: Record<string, unknown> = {}) =>
+    request(createApp()).put('/api/v1/profile/discoverable').set('Authorization', as(viewer, extra)).send(body as object);
+
+  it('private stays the default: without an opt-in a stranger gets the card', async () => {
+    stub(world({ eligible: [TEEN.id] }));
+    expect((await get(STRANGER, '/profiles/rio')).body.data.visibility).toBe('private');
+  });
+
+  it('an opted-in teen is discoverable to a stranger, while a follow still needs the teen and stats stay hidden', async () => {
+    const calls = stub(world({ discoverable: [TEEN.id], eligible: [TEEN.id] }));
+    const res = await get(STRANGER, '/profiles/rio');
+    expect(res.body.data).toMatchObject({ visibility: 'full', displayName: 'Río', connection: 'teenRequest' });
+    expect(res.body.data.learningStats.lastActiveDate).toBeNull();
+    const follow = await post(STRANGER, '/profiles/rio/follow');
+    expect(follow.status).toBe(403);
+    expect(follow.body.error.code).toBe('SUBJECT_CONSENT_REQUIRED');
+    expect(wrote(calls, '/rest/v1/follows')).toBe(false);
+    // Lists: a discoverable teen may appear in another account's lists.
+    stub(world({ discoverable: [TEEN.id], follows: [[TEEN.id, ADULT.id]] }));
+    const list = await get(OTHER_TEEN, '/profiles/marta/followers');
+    expect(list.body.data.users.map((u: { username: string }) => u.username)).toEqual(['rio']);
+  });
+
+  it('a flagged profile stays hidden even when opted in (E.13 is checked first)', async () => {
+    stub(world({ accounts: [{ ...TEEN, displayName: 'Río TikTok' }, STRANGER], discoverable: [TEEN.id] }));
+    expect((await get(STRANGER, '/profiles/rio')).status).toBe(404);
+  });
+
+  it('a guest or unscreened viewer still sees nothing', async () => {
+    stub(world({ discoverable: [TEEN.id] }));
+    expect((await get(GUEST, '/profiles/rio')).status).toBe(404);
+    expect((await get(UNSCREENED, '/profiles/rio')).status).toBe(404);
+  });
+
+  it('the owner reads the choice; privateProfile turns false only while discoverable', async () => {
+    stub(world({ eligible: [TEEN.id] }));
+    expect((await get(TEEN, '/profile')).body.data.social).toEqual({ tier: 'teen', privateProfile: true, discoverable: { canChoose: true, enabled: false } });
+    stub(world({ eligible: [TEEN.id], discoverable: [TEEN.id] }));
+    expect((await get(TEEN, '/profile')).body.data.social).toEqual({ tier: 'teen', privateProfile: false, discoverable: { canChoose: true, enabled: true } });
+    stub(world());
+    expect((await get(ADULT, '/profile')).body.data.social).toEqual({ tier: 'adult', privateProfile: false, discoverable: { canChoose: false, enabled: false } });
+    expect((await get(KID, '/profile')).body.data.social.discoverable).toEqual({ canChoose: false, enabled: false });
+  });
+
+  it('an eligible teen opts in and out explicitly; each change goes through the audited database call', async () => {
+    const calls = stub(world({ eligible: [TEEN.id], discoverable: [TEEN.id] }));
+    const on = await put(TEEN, { discoverable: true });
+    expect(on.status).toBe(200);
+    expect(on.body.data).toEqual({ discoverable: { canChoose: true, enabled: true } });
+    const set = calls.find((c) => c.url.includes('/rpc/set_teen_profile_discoverable'));
+    expect(JSON.parse(set!.body!)).toEqual({ p_user: TEEN.id, p_discoverable: true });
+    stub(world({ eligible: [TEEN.id] }));
+    const off = await put(TEEN, { discoverable: false });
+    expect(off.status).toBe(200);
+    expect(off.body.data.discoverable.enabled).toBe(false);
+  });
+
+  it.each([
+    ['a 13-to-15-year-old (or a teen whose age cannot prove 16)', TEEN],
+    ['a parent-created child', KID],
+    ['an adult', ADULT],
+    ['an unscreened account', UNSCREENED],
+  ])('refuses %s turning it on with the database refusal', async (_label, viewer) => {
+    stub(world({ setDiscoverable: { status: 400, body: { code: 'P0001', message: 'DISCOVERABLE_NOT_ELIGIBLE' } } }));
+    const res = await put(viewer, { discoverable: true });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('DISCOVERABLE_NOT_ELIGIBLE');
+  });
+
+  it('refuses a guest before the database, and any body that is not one literal boolean', async () => {
+    const calls = stub(world());
+    expect((await put(GUEST, { discoverable: true }, { is_anonymous: true })).status).toBe(403);
+    for (const body of [{}, { discoverable: 'yes' }, { discoverable: 1 }, { discoverable: true, userId: OTHER_TEEN.id }]) {
+      expect((await put(TEEN, body)).status).toBe(400);
+    }
+    expect(calls.some((c) => c.url.includes('/rpc/set_teen_profile_discoverable'))).toBe(false);
+    expect((await request(createApp()).put('/api/v1/profile/discoverable').send({ discoverable: true })).status).toBe(401);
+  });
+
+  it('never reports a choice the database did not confirm', async () => {
+    stub(world({ setDiscoverable: { status: 200, body: null } }));
+    expect((await put(TEEN, { discoverable: true })).status).toBe(502);
   });
 });

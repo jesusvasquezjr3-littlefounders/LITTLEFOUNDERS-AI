@@ -149,7 +149,7 @@ describe('GET /api/v1/profile', () => {
       locale: 'es-MX',
       birthDate: '1990-05-01',
       learningStats: { xpPoints: 120, minutesLearned: 45, lessonsCompleted: 3, streakDays: 2 },
-      social: { tier: 'adult', privateProfile: false },
+      social: { tier: 'adult', privateProfile: false, discoverable: { canChoose: false, enabled: false } },
       profileReview: { flagged: false, fields: [] },
     });
     expect(res.body.data).not.toHaveProperty('followers');
