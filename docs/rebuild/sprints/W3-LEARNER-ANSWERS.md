@@ -33,6 +33,20 @@ Core `type-check`; `eslint` on the touched Core files; `learnPathway.test.ts` (3
 ## Still open
 
 - **Browser look.** No screenshot was taken for the new offer lines, the created-goal line and the Tutor's choices (the machine was saturated by parallel lanes); the preview states exist (`coursepath&path=offers`, `journal`, `familylearning&narrative=choices`) and the narrative verifier has `family-choices`.
-- **Native PostgreSQL for `0188`.** One new table in 0181's posture; not yet applied to a physical cluster.
+- **Native PostgreSQL for `0188`.** Closed at W3L.2 (below).
 - **A Mentor-session version of the mastery offer** (on the stage, during a session) stays the Mentor lane's; it can call the same route with `decision`.
 - **Migration number.** `0188` in this worktree; the orchestrator renumbers at merge.
+
+## W3L.2 (27 September 2026): lane finish
+
+**Sync.** `git merge codex/spec-migration-s02` was a no-op (the base had not moved since `cfe204d3`). No uncommitted work was left in the worktree.
+
+**Adversarial pass against the scope.** P-03/P-04 (OD-25) UI: both offers, their meaning, the recorded yes and no, answered cards kept with focus; the decline is re-derived and refused at the server for anyone without the offer (another learner, a child placed below the stage, a bad decision, the other answer after the first). L-12: goal announced only on Core's created `goalId`, named back, Wallet link. L-13: Tutor choices only on Core's `choicesVisible`, the child's under-13 notice unchanged. Every touched rebuilt file imports only from `frontend/src/rebuild/` (no legacy component) and declares `data-copy-role`; every new string exists in EN, es-MX and pt-BR. The other OD-27/OD-28 items belong to sibling wave-3 lanes and are not duplicated here: teen cooperative goals (OD-27 (1), L-04) to `codex/spec-w3social`, the OD-28 design items (confetti, shimmer, spinners, dark-mode shadows, emails) to `codex/spec-w3design`, the on-stage mastery offer to `codex/spec-w3mentor`. One gap closed: the native-PostgreSQL proof of `0188`.
+
+**Built.** `database/scripts/verify-pathway-od25-postgres.py` now covers `course_topic_mastery_declines`: an empty evidence list refused by CHECK, a second answer for the same learner and topic refused by the key, RLS own rows only, the browser role cannot insert, update or delete a decline (privileges revoked), account erasure cascades.
+
+**Verification (once per touched service).** Core `type-check` and `lint` green; full Core unit suite 123 files, 3,037 passed, 1 skipped (the PostgreSQL-only placement file). Frontend `type-check` and `lint` green; full frontend unit suite 299 files, 3,428 passed. `database`: `check-migrations` (188 files), `check-migration-phase` (0188 expand), `check-family-lifecycle` and the 44 node tests green; `railway-migrate.test.mjs` was started alone from this lane but had not finished after 40 minutes while two other lanes ran their own copies of it (it spawns a node per fake transport call; about 18 minutes when run alone); this lane did not change it or the migration transport, and `check-migrations` confirms 0188 is under the Railway transport size cap. `verify-pathway-od25-postgres.py` passed on the lane's own PostgreSQL 17.6 cluster (port 15520, stopped afterwards; one earlier attempt failed while applying the chain with an empty psql error and the rerun passed, recorded as a transient). Root `spec:check`, `secrets:check` and the full i18n gate (`agent/tools/check-i18n.sh`) green. Not run (the orchestrator's merge gates): browser matrices, `audit:rebuild`, root `test:all`.
+
+**Result.** Every item in the lane's scope is implemented and locally verified; none is accepted, released or deployed, and nothing was pushed.
+
+**Still open.** The browser look of the three preview states above; renumbering `0188` at merge (the social lane's worktree also uses 0188); the Mentor-session version of the mastery offer (Mentor lane); the owner's answers to the four defaults above; deleting or keeping the unmounted `ChildDecisionsPanel`.
