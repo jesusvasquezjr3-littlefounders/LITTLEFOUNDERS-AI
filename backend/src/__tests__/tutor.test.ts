@@ -6071,7 +6071,7 @@ describe('C.11 / C.17 — the spaced-review routing, the dialogue register and t
     expect(response.body.data.dialogueCalibration.band).toBe('tween');
   });
 
-  it('the independent teen (13-17): the teen register, outside the experiment by OD-23', async () => {
+  it('the independent teen (13-17) without their own analytics opt-in: the teen register, not enrolled (OD-26), no runtime call', async () => {
     const { response, calls } = await contextFor({
       session: [{ ...SESSION_ROW, tier: 3 }],
       declaredAgeBand: '13_to_17',
@@ -6079,8 +6079,22 @@ describe('C.11 / C.17 — the spaced-review routing, the dialogue register and t
       roles: [{ role: 'universal' }],
       runtime: { assignments: [{ experimentId: EXP, variant: 'A', surface: 'tutor', target: 'mentor.dialogue-register' }] },
     });
-    expect(response.body.data.dialogueCalibration).toEqual({ band: 'teen', variant: 'calibrated', assignment: 'not_eligible', experimentId: null });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'teen', variant: 'calibrated', assignment: 'no_consent', experimentId: null });
     expect(calls.some((c) => c.url.includes(ASSIGN))).toBe(false);
+  });
+
+  it('the independent teen (13-17) with their own analytics opt-in: enrolled in C.17 (OD-26), exposure recorded', async () => {
+    const assignment = { experimentId: EXP, variant: 'A', surface: 'tutor', target: 'mentor.dialogue-register' };
+    const { response, calls } = await contextFor({
+      session: [{ ...SESSION_ROW, tier: 3 }],
+      declaredAgeBand: '13_to_17',
+      profile: { ...KID_PROFILE, birth_date: null },
+      roles: [{ role: 'universal' }],
+      runtime: { assignments: [assignment], exposure: assignment },
+      intercept: (url) => (url.includes('/teen_analytics_preferences?') ? jsonResponse(200, [{ enabled: true, disclosure_version: 1 }]) : null),
+    });
+    expect(response.body.data.dialogueCalibration).toEqual({ band: 'teen', variant: 'control', assignment: 'experiment', experimentId: EXP });
+    expect(calls.some((c) => c.url.includes(EXPOSE))).toBe(true);
   });
 
   it('the adult: enrolled in the running experiment, exposure recorded, the assigned arm sent', async () => {
