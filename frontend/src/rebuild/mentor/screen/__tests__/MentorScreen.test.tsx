@@ -33,7 +33,7 @@ const OFFERS: TutorOffers = {
 function live(overrides: Partial<MentorLive> = {}): MentorLive {
   return {
     adaptationOffer: null, sessionEndOffer: false, checkInOpen: false, goalCheckOpen: false, error: null, budget: 'running',
-    intelDegraded: false, segment: null, thinking: false,
+    intelDegraded: false, segment: null, lesson: null, thinking: false,
     answerAdaptation: vi.fn(), answerSessionEnd: vi.fn(), answerCheckIn: vi.fn(), answerGoal: vi.fn(), ...overrides,
   };
 }
@@ -50,9 +50,10 @@ function session(overrides: Partial<MentorScreenSession> = {}): MentorScreenSess
     catalog: null, personalized: true, updatePreferences: vi.fn(async () => true), keepBoard: vi.fn(async () => true), data: fixtureData('en-US'),
     calibrationSaving: false, calibrationError: false, starting: false, startError: null, socket: live(), turn: null,
     speechUrl: null, audioKey: 0, speaking: false, awaitingReply: false, replyTimedOut: false, resuming: false, ending: false,
-    history: [], closing: null,
+    history: [], closing: null, recapOpen: false,
     mic: { present: true, blockedBy: null, denied: false, recording: false, microphone: { subscribe: () => noop } },
-    retry: vi.fn(), chooseCalibration: vi.fn(), start: vi.fn(), sendText: vi.fn(), pressMic: vi.fn(), endSession: vi.fn(),
+    retry: vi.fn(), chooseCalibration: vi.fn(), start: vi.fn(), sendText: vi.fn(), pressMic: vi.fn(), endSession: vi.fn(), restart: vi.fn(), editLast: vi.fn(),
+    gradeActivity: vi.fn(async () => null), reportActivity: vi.fn(),
     chooseCharacter: vi.fn(async () => true), answerAlliance: vi.fn(async () => 'recorded' as const), setHasDraft: vi.fn(),
     onSpeechEnd: noop, onSpeechBlocked: noop, ...overrides,
   };
@@ -241,10 +242,11 @@ describe('a conversation: the current turn only, Block C as chips', () => {
     expect(onLeave).not.toHaveBeenCalled();
   });
 
-  it('shows a live activity as its prompt with the answer in the field', () => {
-    show(session({ phase: 'conversing', turn: turn(), socket: live({ segment: { segmentId: 's', seq: 1, origin: 'catalog', segment: { prompt: 'How many coins?' }, scoresXp: true, framing: '' } }) }));
-    expect(screen.getByRole('heading', { name: t.activity })).toBeInTheDocument();
+  it('shows an activity type the screen does not draw as its prompt, with the answer in the field', () => {
+    show(session({ phase: 'conversing', turn: turn(), socket: live({ segment: { segmentId: 's', seq: 1, origin: 'catalog', segment: { type: 'memory_flip', prompt: 'How many coins?' }, scoresXp: true, framing: '' } }) }));
+    expect(screen.getByRole('heading', { name: t.activityUi.heading })).toBeInTheDocument();
     expect(screen.getByText('How many coins?')).toBeInTheDocument();
+    expect(screen.getByText(t.activityUi.answer)).toBeInTheDocument();
   });
 });
 
@@ -286,7 +288,8 @@ describe('the menu: change Mentor, what we said, and the grown-up line only with
     openMenu();
     fireEvent.click(screen.getByRole('menuitem', { name: t.transcript }));
     const items = within(screen.getByRole('dialog', { name: t.transcript })).getAllByRole('listitem');
-    expect(items.map((item) => item.textContent)).toEqual(['DinaHello there', `${t.you}Hi`]);
+    // The learner's last line carries the one way to change it (T1c).
+    expect(items.map((item) => item.textContent)).toEqual(['DinaHello there', `${t.you}Hi${t.editLast}`]);
   });
 
   it('chooses among the four real characters, saved before it is shown as chosen (08 §8)', async () => {

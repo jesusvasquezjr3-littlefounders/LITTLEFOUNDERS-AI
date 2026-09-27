@@ -131,6 +131,16 @@
       "origin": "human",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "a27d14dd9d7a3ae0cb57625031605b11899450dc1e93a0afa7fa91b535787d5a",
+      "files": 9,
+      "date": "2026-09-27",
+      "change": "OD-28 (owner review M-04): pressing end on the Mentor screen asks the C.16 recap question first (end_session recapFirst, TutorOrchestrator.recapOnEnd, ws/server attemptRecapOnEnd); a second press, start over or a plain end_session closes at once",
+      "origin": "human",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
     }
   ]
 }

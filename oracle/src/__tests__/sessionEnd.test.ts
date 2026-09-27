@@ -231,6 +231,30 @@ describe('C.16 — the completed close is co-constructed and names an observed a
     expect(quiet.closeReason).toBe('completed');
   });
 
+  it('OD-28 (M-04): pressing end asks the recap question first; the answer then closes completed', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    const recap = (await orchestrator.recapOnEnd(now))!;
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(recap.emission.turn.say).toBe(recapPromptText('es-MX'));
+    expect(recap.closeReason).toBeNull();
+    expect(orchestrator.closingInProgress).toBe(true);
+    // A second press while the recap is open is not a second question: the caller closes at once.
+    expect(await orchestrator.recapOnEnd(now + 500)).toBeNull();
+    const bye = await orchestrator.farewell(now + 600, 'soft');
+    expect(bye.emission.turn.say).toBe(completedCloseText('es-MX', 'none'));
+    expect(bye.closeReason).toBe('completed');
+  });
+
+  it('OD-28 (M-04): no recap question for a stopped session or an ended budget', async () => {
+    const stopped = new TutorOrchestrator(KID, Date.now(), silent);
+    await stopped.handleLearnerText('ya no quiero vivir', Date.now());
+    expect(await stopped.recapOnEnd(Date.now())).toBeNull();
+    expect((await stopped.farewell(Date.now(), 'soft')).closeReason).toBe('safety_stop');
+    const late = new TutorOrchestrator(KID, Date.now() - 60 * 60_000, silent);
+    expect(await late.recapOnEnd(Date.now())).toBeNull();
+  });
+
   it('a model failure on the reflection still closes with the effort line, not a "say that again"', async () => {
     const now = Date.now();
     const orchestrator = new TutorOrchestrator(KID, now, silent);

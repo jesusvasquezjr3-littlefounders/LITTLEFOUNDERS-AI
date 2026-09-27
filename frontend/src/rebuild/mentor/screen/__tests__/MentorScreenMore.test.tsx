@@ -34,7 +34,7 @@ const OFFERS: TutorOffers = {
 
 const live = (overrides: Partial<MentorLive> = {}): MentorLive => ({
   adaptationOffer: null, sessionEndOffer: false, checkInOpen: false, goalCheckOpen: false, error: null, budget: 'running',
-  intelDegraded: false, segment: null, thinking: false,
+  intelDegraded: false, segment: null, lesson: null, thinking: false,
   answerAdaptation: vi.fn(), answerSessionEnd: vi.fn(), answerCheckIn: vi.fn(), answerGoal: vi.fn(), ...overrides,
 });
 
@@ -52,9 +52,10 @@ function session(overrides: Partial<MentorScreenSession> = {}): MentorScreenSess
     personalized: true, updatePreferences: vi.fn(async () => true), keepBoard: vi.fn(async () => true), data: fixtureData('en-US'),
     calibrationSaving: false, calibrationError: false, starting: false, startError: null, socket: live(), turn: null,
     speechUrl: null, audioKey: 0, speaking: false, awaitingReply: false, replyTimedOut: false, resuming: false, ending: false,
-    history: [], closing: null,
+    history: [], closing: null, recapOpen: false,
     mic: { present: false, blockedBy: null, denied: false, recording: false, microphone: { subscribe: () => noop } },
-    retry: vi.fn(), chooseCalibration: vi.fn(), start: vi.fn(), sendText: vi.fn(), pressMic: vi.fn(), endSession: vi.fn(),
+    retry: vi.fn(), chooseCalibration: vi.fn(), start: vi.fn(), sendText: vi.fn(), pressMic: vi.fn(), endSession: vi.fn(), restart: vi.fn(), editLast: vi.fn(),
+    gradeActivity: vi.fn(async () => null), reportActivity: vi.fn(),
     chooseCharacter: vi.fn(async () => true), answerAlliance: vi.fn(async () => 'recorded' as const), setHasDraft: vi.fn(),
     onSpeechEnd: noop, onSpeechBlocked: noop, ...overrides,
   };
@@ -81,7 +82,8 @@ describe('the menu opens what fits the moment (08 §2 layer 1, T1b)', () => {
   it('keeps only reading views during a conversation: no change of Mentor or island, no replay over a live talk', () => {
     show(session({ phase: 'conversing', turn: turn() }));
     openMenu();
-    expect(menuItems()).toEqual([copy.mentorMap.menu, copy.mentorNotebook.menu, t.transcript]);
+    // "Start over" (T1c) ends this talk, behind a confirmation; it is the only action.
+    expect(menuItems()).toEqual([copy.mentorMap.menu, copy.mentorNotebook.menu, t.transcript, t.startOver]);
   });
 
   it('offers nothing but the transcript before Core has said who the Mentor is', () => {
@@ -353,5 +355,85 @@ describe('the first visit (08 §8: the learner chooses)', () => {
 describe('the map fixture is a real graph', () => {
   it('has every state once', () => {
     expect(new Set(mapFixture('en-US').nodes.map((node) => node.state)).size).toBe(5);
+  });
+});
+
+describe('W2M.4: the conversation layer (T1c), the close (T1d) and OD-28', () => {
+  const conversing = (overrides: Partial<MentorScreenSession> = {}) => session({ phase: 'conversing', turn: turn({ seq: 3, next: 'close' }), ...overrides });
+
+  it('offers "explain another way" once the lesson is under way, sent as the learner’s own words', () => {
+    const sendText = vi.fn();
+    show(conversing({ sendText }));
+    fireEvent.click(screen.getByRole('button', { name: t.explain }));
+    expect(sendText).toHaveBeenCalledWith(t.explain);
+  });
+
+  it('never shows more than three reply chips (08 §2)', () => {
+    show(conversing({ turn: turn({ seq: 3, next: 'ask' }) }));
+    const chips = within(screen.getByRole('group', { name: t.replyChips })).getAllByRole('button');
+    expect(chips.map((chip) => chip.textContent)).toEqual([t.hint, t.tell, t.explain]);
+  });
+
+  it('OD-28: after the recap question, the only chip is "finish now", which leaves', () => {
+    const endSession = vi.fn();
+    show(conversing({ recapOpen: true, endSession, turn: turn({ seq: 4, next: 'ask' }) }));
+    const chips = within(screen.getByRole('group', { name: t.replyChips })).getAllByRole('button');
+    expect(chips.map((chip) => chip.textContent)).toEqual([t.finishNow]);
+    fireEvent.click(chips[0]!);
+    expect(endSession).toHaveBeenCalled();
+  });
+
+  it('changes the last message from the transcript, and the field sends it as an edit', () => {
+    const editLast = vi.fn();
+    const sendText = vi.fn();
+    show(conversing({ editLast, sendText, history: [{ speaker: 'tutor', text: 'Hi', seq: 1 }, { speaker: 'learner', text: 'ten', seq: 2 }, { speaker: 'tutor', text: 'Why?', seq: 3 }] }));
+    openMenu();
+    fireEvent.click(screen.getByRole('menuitem', { name: t.transcript }));
+    fireEvent.click(screen.getByRole('button', { name: t.editLast }));
+    const field = screen.getByLabelText(t.editLabel) as HTMLInputElement;
+    expect(field.value).toBe('ten');
+    fireEvent.change(field, { target: { value: 'twenty' } });
+    fireEvent.click(screen.getByRole('button', { name: t.send }));
+    expect(editLast).toHaveBeenCalledWith('twenty');
+    expect(sendText).not.toHaveBeenCalled();
+  });
+
+  it('starts over only after the learner confirms', () => {
+    const restart = vi.fn();
+    show(conversing({ restart }));
+    openMenu();
+    fireEvent.click(screen.getByRole('menuitem', { name: t.startOver }));
+    expect(screen.getByRole('alertdialog', { name: t.startOverHeading })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: t.keepGoing }));
+    expect(restart).not.toHaveBeenCalled();
+    openMenu();
+    fireEvent.click(screen.getByRole('menuitem', { name: t.startOver }));
+    fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: t.startOver }));
+    expect(restart).toHaveBeenCalledTimes(1);
+  });
+
+  it('draws a live activity, reports the result to Oracle and shows it with the XP Core paid', async () => {
+    const reportActivity = vi.fn();
+    const gradeActivity = vi.fn(async () => ({ correct: true, score: 100, feedback: null, xpAwarded: 10, scoresXp: true, pedagogy: null }));
+    const segment = { segmentId: 'seg-9', seq: 3, origin: 'catalog' as const, scoresXp: true, framing: '',
+      segment: { type: 'true_false', prompt_md: 'True or false?', payload: { statement_md: 'Saving means keeping money for later.' } } };
+    show(conversing({ reportActivity, gradeActivity, socket: live({ segment, lesson: { topic: null, step: 2, of: 4 } }) }));
+    expect(screen.getByText(t.step.replace('{n}', '2').replace('{total}', '4'))).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: t.activityUi.true }));
+    fireEvent.click(screen.getByRole('button', { name: t.activityUi.check }));
+    await flush();
+    expect(gradeActivity).toHaveBeenCalledWith('seg-9', { is_true: true }, 1);
+    expect(reportActivity).toHaveBeenCalledWith(expect.objectContaining({ segmentId: 'seg-9', correct: true, attempt: 1 }));
+    expect(screen.getByText(t.right)).toBeInTheDocument();
+    expect(screen.getByText(t.xp.replace('{n}', '10'))).toBeInTheDocument();
+  });
+
+  it('T1d: the closing says the talk was saved to replay, never after a safety stop', () => {
+    const history = [{ speaker: 'tutor' as const, text: 'Hi', seq: 1 }];
+    const { unmount } = show(session({ phase: 'closing', history, closing: { sessionId: 's1', script: 'completed', effort: 'kept_going', topic: null } }));
+    expect(screen.getByText(t.savedReplay)).toBeInTheDocument();
+    unmount();
+    show(session({ phase: 'closing', history, closing: { sessionId: 's1', script: 'safety_stop', effort: null, topic: null } }));
+    expect(screen.queryByText(t.savedReplay)).toBeNull();
   });
 });

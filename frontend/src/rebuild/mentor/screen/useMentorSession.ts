@@ -7,12 +7,14 @@ import { api } from '../session/coreApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from '../session/mic';
 import type { MicBlockedReason } from '../session/micForPhase';
 import {
-  getAgeCalibration, getOffers, getPreferences, keepBoard as keepBoardRequest, resumeSession, saveAgeCalibration, savePreferences, startSession,
+  getAgeCalibration, getOffers, getPreferences, gradeSegment, keepBoard as keepBoardRequest, resumeSession, saveAgeCalibration, savePreferences, startSession,
   type AgeCalibration, type StartSessionInput,
 } from '../session/tutorApi';
 import type { ClosingScript, EffortAct, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '../session/types';
 import { MENTOR_STAGE_LIGHTS, type MentorStageLight } from '../MentorStage';
 import { coreMentorData } from './mentorData';
+import { plainText } from './liveActivityModel';
+import type { ActivityGrade, ActivityOutcome } from './LiveActivity';
 import { useHandsFreeTurn } from '../session/useHandsFreeTurn';
 import { useMicrophone, type Microphone } from '../session/useMicrophone';
 import { useTutorSocket, type TutorSocket } from '../session/useTutorSocket';
@@ -48,8 +50,10 @@ import { useTutorSocket, type TutorSocket } from '../session/useTutorSocket';
  *     the learning map, the notebook and past conversations are read through
  *     one small interface (`mentorData.ts`).
  *
- * The live activity renderers are not carried by this screen yet
- * (docs/rebuild/sprints/W2-MENTOR-STAGE.md, limitations).
+ *   - W2M.4 (T1c, T1d, OD-28): a live activity is graded by Core and its
+ *     result reported to Oracle; the learner can change their last message,
+ *     start over, and pressing end asks the recap question first (a second
+ *     press leaves at once).
  */
 
 export type MentorPhase = 'loading' | 'unavailable' | 'calibration' | 'openings' | 'conversing' | 'closing';
@@ -137,6 +141,8 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
   const [hasDraft, setHasDraft] = useState(false);
   const [ending, setEnding] = useState(false);
   const [pendingText, setPendingText] = useState<string | null>(null);
+  /** OD-28 (M-04): the turn on screen when the learner pressed end; the recap question is the next turn. */
+  const [endPressSeq, setEndPressSeq] = useState<number | null>(null);
   const userRef = useRef(userId);
   userRef.current = userId;
 
@@ -228,6 +234,7 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
       setClosing(null);
       setClosedHistory([]);
       setEnding(false);
+      setEndPressSeq(null);
       setPendingText(firstText);
       setSession(result.data);
       setPhase('conversing');
@@ -297,12 +304,20 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
 
   useEffect(() => { if (resuming && socket.connection === 'open') setResuming(false); }, [resuming, socket.connection]);
 
-  /* The learner ends it: the Mentor still gets its closing; if the server never answers, the screen closes anyway. */
+  /*
+   * The learner ends it (OD-28, M-04): the first press asks the Mentor's recap
+   * question, which keeps the session open for one answer; a second press
+   * leaves at once with the completed close. If the server answers neither,
+   * the screen closes anyway.
+   */
   const endSession = useCallback(() => {
     if (phase !== 'conversing') return;
     setEnding(true);
-    socket.endSession();
+    setEndPressSeq(socket.turn?.seq ?? 0);
+    socket.endSession(true);
   }, [phase, socket]);
+  const recapOpen = phase === 'conversing' && endPressSeq !== null && (socket.turn?.seq ?? 0) > endPressSeq;
+  useEffect(() => { if (recapOpen && ending) setEnding(false); }, [recapOpen, ending]);
   useEffect(() => {
     if (!ending || phase !== 'conversing') return undefined;
     const timer = window.setTimeout(() => {
@@ -314,6 +329,24 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     }, END_GRACE_MS);
     return () => window.clearTimeout(timer);
   }, [ending, phase, socket.history]);
+
+  /* T1c "start over": the session closes at once (no recap question) and the openings come back, re-read for today. */
+  const restart = useCallback(() => {
+    if (phase !== 'conversing') return;
+    socket.endSession();
+    if (userRef.current) write('session', ACTIVE_SESSION + userRef.current, null);
+    setSession(null);
+    setEnding(false);
+    setEndPressSeq(null);
+    resetTurnState();
+    setPhase('openings');
+    void (async () => {
+      const auth = token ?? await getToken();
+      if (!auth) return;
+      const offered = await getOffers(auth);
+      if (offered.data) setOffers(offered.data);
+    })();
+  }, [phase, socket, token, getToken]);
 
   /* Turns, speech and the wait for a reply. */
   const turn = phase === 'conversing' ? socket.turn : null;
@@ -373,6 +406,34 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     }
     void microphone.start();
   }, [phase, offers, startError, begin, microphone, handleClip, speaking, turnSeq, socket]);
+
+  /* T1c: the learner rephrases their last message; the conversation drops the pair it replaces. */
+  const editLast = useCallback((text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || phase !== 'conversing') return;
+    if (speaking) { setInterruptedSeq(turnSeq); socket.interrupt(); }
+    socket.editLast(trimmed);
+    setAwaitingReply(true);
+  }, [phase, speaking, turnSeq, socket]);
+
+  /* T1c: a live activity is graded by Core (the key never reaches the browser). A failed check is null, never a wrong answer. */
+  const gradeActivity = useCallback(async (segmentId: string, answer: unknown, attempt: number): Promise<ActivityGrade | null> => {
+    const auth = token ?? await getToken();
+    if (!auth) return null;
+    const result = await gradeSegment(auth, segmentId, answer, attempt);
+    if (!result.data) return null;
+    const { verdict, xpAwarded, scoresXp, pedagogy } = result.data;
+    return { correct: verdict.correct, score: verdict.score, feedback: verdict.feedback_md ? plainText(verdict.feedback_md) : null,
+      xpAwarded, scoresXp, pedagogy: pedagogy ? { echo: pedagogy.echo } : null };
+  }, [token, getToken]);
+
+  /* The finished activity goes to Oracle with Core's signed receipt, and the Mentor reacts to it. */
+  const reportActivity = useCallback((outcome: ActivityOutcome) => {
+    if (phase !== 'conversing') return;
+    socket.reportGrade(outcome.segmentId, outcome.score, outcome.correct,
+      outcome.pedagogy ? { echo: outcome.pedagogy.echo, attemptNumber: outcome.attempt } : undefined);
+    setAwaitingReply(true);
+  }, [phase, socket]);
 
   const sendText = useCallback((text: string) => {
     const trimmed = text.trim();
@@ -444,8 +505,8 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     starting, startError, session,
     socket, turn, speechUrl, audioKey: turnSeq, speaking, awaitingReply, replyTimedOut, resuming, ending,
     history: phase === 'closing' ? closedHistory : socket.history,
-    closing, mic,
-    retry, chooseCalibration, start, begin, sendText, pressMic, endSession, chooseCharacter, answerAlliance,
+    closing, mic, recapOpen,
+    retry, chooseCalibration, start, begin, sendText, pressMic, endSession, restart, editLast, gradeActivity, reportActivity, chooseCharacter, answerAlliance,
     setHasDraft, onSpeechEnd, onSpeechBlocked,
   };
 }

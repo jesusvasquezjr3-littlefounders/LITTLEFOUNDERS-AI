@@ -11,7 +11,7 @@ import { startOfLocalDayIso, useMentorSession } from '../useMentorSession';
  */
 const api = vi.hoisted(() => ({
   getPreferences: vi.fn(), getOffers: vi.fn(), getAgeCalibration: vi.fn(), saveAgeCalibration: vi.fn(),
-  startSession: vi.fn(), resumeSession: vi.fn(), savePreferences: vi.fn(), keepBoard: vi.fn(),
+  startSession: vi.fn(), resumeSession: vi.fn(), savePreferences: vi.fn(), keepBoard: vi.fn(), gradeSegment: vi.fn(),
 }));
 vi.mock('../../session/tutorApi', () => api);
 const core = vi.hoisted(() => ({ api: vi.fn() }));
@@ -245,6 +245,64 @@ describe('how a session ends (C.16)', () => {
     act(() => { vi.advanceTimersByTime(4100); });
     expect(result.current.phase).toBe('closing');
     expect(result.current.closing).toMatchObject({ script: 'learner_left' });
+  });
+
+  it('OD-28 (M-04): pressing end asks for the recap first; the recap turn keeps the talk open and a second press ends it', async () => {
+    const { result, rerender } = await conversing();
+    const asking = { seq: 3, text: 'What clicked?', next: 'ask' };
+    socket.current = { ...socket.current, turn: { ...asking, seq: 2 } };
+    rerender();
+    vi.useFakeTimers();
+    act(() => result.current.endSession());
+    expect(socket.current.endSession).toHaveBeenLastCalledWith(true);
+    expect(result.current.ending).toBe(true);
+    socket.current = { ...socket.current, turn: asking };
+    rerender();
+    expect(result.current.recapOpen).toBe(true);
+    expect(result.current.ending).toBe(false);
+    act(() => { vi.advanceTimersByTime(5000); });
+    expect(result.current.phase).toBe('conversing');
+    act(() => result.current.endSession());
+    expect(socket.current.endSession).toHaveBeenCalledTimes(2);
+  });
+
+  it('T1c: grades an activity through Core, and reports it to Oracle with the signed receipt', async () => {
+    const { result } = await conversing();
+    api.gradeSegment.mockResolvedValueOnce(ok({ verdict: { correct: true, score: 100, tier: 'perfect', feedback_md: '**Yes**, 17.', allowRetry: false },
+      xpAwarded: 10, scoresXp: true, dailyXpCap: 100, pedagogy: { kcId: 'k', correct: true, pKnownAfter: 0.9, misconceptionCode: null, reviewDueAt: 'x', echo: 'signed' } }));
+    let grade: unknown = 'unset';
+    await act(async () => { grade = await result.current.gradeActivity('seg-1', { picked: [10, 5, 2] }, 1); });
+    expect(api.gradeSegment).toHaveBeenCalledWith('token', 'seg-1', { picked: [10, 5, 2] }, 1);
+    expect(grade).toEqual({ correct: true, score: 100, feedback: 'Yes, 17.', xpAwarded: 10, scoresXp: true, pedagogy: { echo: 'signed' } });
+    act(() => result.current.reportActivity({ ...(grade as object), segmentId: 'seg-1', attempt: 1 } as never));
+    expect(socket.current.reportGrade).toHaveBeenCalledWith('seg-1', 100, true, { echo: 'signed', attemptNumber: 1 });
+    expect(result.current.awaitingReply).toBe(true);
+  });
+
+  it('T1c: a failed check is null, never a wrong answer', async () => {
+    const { result } = await conversing();
+    api.gradeSegment.mockResolvedValueOnce(fail('INTERNAL'));
+    let grade: unknown = 'unset';
+    await act(async () => { grade = await result.current.gradeActivity('seg-1', { option_id: 'a' }, 1); });
+    expect(grade).toBeNull();
+  });
+
+  it('T1c: changing the last message rewinds it through the socket', async () => {
+    const { result } = await conversing();
+    act(() => result.current.editLast('  I meant twenty  '));
+    expect(socket.current.editLast).toHaveBeenCalledWith('I meant twenty');
+    expect(result.current.awaitingReply).toBe(true);
+  });
+
+  it('T1c: start over closes at once (no recap) and brings the openings back, re-read for today', async () => {
+    const { result } = await conversing();
+    api.getOffers.mockClear();
+    act(() => result.current.restart());
+    expect(socket.current.endSession).toHaveBeenLastCalledWith();
+    expect(result.current.phase).toBe('openings');
+    expect(socketUrls.at(-1)).toBeNull();
+    await waitFor(() => expect(api.getOffers).toHaveBeenCalledTimes(1));
+    expect(sessionStorage.getItem(`lf.tutor.activeSession.${USER}`)).toBeNull();
   });
 });
 

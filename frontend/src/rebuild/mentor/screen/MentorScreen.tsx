@@ -1,7 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { AgeBand, Locale } from '../../design/copyBudget';
 import {
-  Button, IconButton, InlineNotice, List, ListRow, Menu, MentorAvatar, MENTOR_NAMES, Pill, ReplyChip, Sheet, TextField,
+  Banner, Button, ConfirmDialog, IconButton, InlineNotice, List, ListRow, Menu, MentorAvatar, MENTOR_NAMES, Pill, ReplyChip, RewardChip, Sheet, TextField,
   type MentorCharacter, type MenuItem,
 } from '../../design/controls';
 import { findMentorAvatar, MENTOR_CHARACTERS } from '../../design/assets';
@@ -31,6 +31,7 @@ import {
 import { replayBeats, replayHasSound, type ReplayBeat } from './replayModel';
 import { useReplay } from './useReplay';
 import { useRoleplay } from './useRoleplay';
+import { LiveActivity, type ActivityGrade, type ActivityOutcome, type MentorActivityCopy } from './LiveActivity';
 import '../../design/tokens.css';
 import '../../design/system.css';
 import './mentorScreen.css';
@@ -68,6 +69,13 @@ import './mentorScreen.css';
  * in the notebook. A roleplay scene the Mentor names plays beat by beat in the
  * plate, the companion the learner invited speaking its part beside the
  * Mentor. A first visit opens the chooser once (08 §8: the learner chooses).
+ *
+ * W2M.4 (T1c, T1d, OD-28): a live activity is drawn with the 02 controls and
+ * graded by Core; "say it another way", "change my last message" and "start
+ * over" are back; the lesson's step is said in words; pressing close asks the
+ * recap question first, and a second press leaves. There is no minutes-left
+ * clock: a countdown on a learner surface is a dark pattern (DP-01), so the
+ * gentle "almost done" notice is the only word about time.
  */
 
 export interface MentorScreenCopy {
@@ -80,10 +88,14 @@ export interface MentorScreenCopy {
   micBlocked: Record<MicBlockedReason, string>; micDenied: string; thinking: string; nextLine: string;
   replyChips: string; hint: string; tell: string; adaptation: Record<Adaptation, string>; yes: string; no: string;
   limit: string; startFailed: string; startRefused: Record<string, string>; errors: Record<string, string>;
-  reconnecting: string; replyTimeout: string; wrapping: string; activity: string; activityAnswer: string;
+  reconnecting: string; replyTimeout: string; wrapping: string;
   showBoard: string; hideBoard: string;
+  explain: string; step: string; finishNow: string; editLast: string; editLabel: string; editCancel: string;
+  startOver: string; startOverHeading: string; startOverBody: string; keepGoing: string; savedReplay: string;
+  right: string; together: string; xp: string; noXp: string;
   chooser: { heading: string; chosen: string; saving: string; failed: string; lines: Record<MentorCharacter, string> };
   board: MentorBoardCopy;
+  activityUi: MentorActivityCopy;
 }
 
 export interface MentorReplayCopy {
@@ -123,6 +135,8 @@ export interface MentorLive {
   budget: BudgetState;
   intelDegraded: boolean;
   segment: LiveSegmentState | null;
+  /** V4: the lesson thread (step N of M); null in an open conversation. */
+  lesson: { topic: string | null; step: number; of: number } | null;
   thinking: boolean;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
   answerSessionEnd: (accepted: boolean) => void;
@@ -165,6 +179,8 @@ export interface MentorScreenSession {
   ending: boolean;
   history: readonly { speaker: 'learner' | 'tutor'; text: string; seq: number }[];
   closing: MentorClosing | null;
+  /** OD-28 (M-04): the learner pressed close and the Mentor asked the recap question; a second press leaves. */
+  recapOpen: boolean;
   mic: { present: boolean; blockedBy: MicBlockedReason | null; denied: boolean; recording: boolean; microphone: Pick<Microphone, 'subscribe'> };
   retry: () => void;
   chooseCalibration: (tier: 1 | 2 | 3) => void;
@@ -172,6 +188,14 @@ export interface MentorScreenSession {
   sendText: (text: string) => void;
   pressMic: () => void;
   endSession: () => void;
+  /** T1c "start over": the conversation closes at once and the openings come back. */
+  restart: () => void;
+  /** T1c: rephrase the learner's last message. */
+  editLast: (text: string) => void;
+  /** T1c: Core grades a live activity (null when the check itself failed). */
+  gradeActivity: (segmentId: string, answer: unknown, attempt: number) => Promise<ActivityGrade | null>;
+  /** T1c: a finished activity goes to Oracle, and the Mentor reacts to it. */
+  reportActivity: (outcome: ActivityOutcome) => void;
   chooseCharacter: (character: MentorCharacter) => Promise<boolean>;
   /** Saves a T1a choice to Core; resolves false when Core refused it (nothing changes). */
   updatePreferences: (patch: Partial<TutorPreferences>) => Promise<boolean>;
@@ -352,6 +376,10 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
   const [sheet, setSheet] = useState<MentorSheet | null>(initialSheet);
   const [choosing, setChoosing] = useState<MentorCharacter | null>(null);
   const [chooseFailed, setChooseFailed] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [confirmRestart, setConfirmRestart] = useState(false);
+  /** The last finished activity's result, shown until the next activity or the learner's next word (T1c). */
+  const [activityResult, setActivityResult] = useState<ActivityOutcome | null>(null);
   const turn = session.phase === 'conversing' ? session.turn : null;
 
   /* T1e: a past talk replaying on the stage, outside any conversation. */
@@ -389,6 +417,9 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
   }, [turn?.seq, turn?.whiteboard]);
   useEffect(() => { if (session.phase !== 'conversing') { setBoard(null); setBoardOpen(false); } }, [session.phase]);
   const segment = session.phase === 'conversing' ? session.socket.segment : null;
+  /* An edit targets "the last message": a new turn or an activity makes it stale (the words stay in the field). */
+  useEffect(() => { setEditing(false); }, [turn?.seq, segment?.segmentId]);
+  useEffect(() => { if (segment || session.phase !== 'conversing') setActivityResult(null); }, [segment?.segmentId, session.phase]);
 
   /* A turn without a voice is still delivered: the speaking pose for about the time it takes to read it. */
   const [delivering, setDelivering] = useState(false);
@@ -468,14 +499,35 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
   /* The reply chips of this moment: an offer the server opened outranks the hint ladder. */
   const live = session.socket;
   const offerOpen = session.phase === 'conversing' && (live.adaptationOffer !== null || live.sessionEndOffer || live.checkInOpen || live.goalCheckOpen);
-  const ladder = session.phase === 'conversing' && !offerOpen && !!turn && turn.next === 'ask' && !session.awaitingReply && !session.ending && !roleplay;
+  const between = session.phase === 'conversing' && !offerOpen && !!turn && !session.awaitingReply && !session.ending && !roleplay && !session.recapOpen;
+  const ladder = between && turn!.next === 'ask';
+  // "Say it another way" (T1c): once the lesson is under way, never over a board or an activity.
+  const explain = between && turn!.seq > 1 && !boardOpen && !segment;
+  const boardChip = !!board && !boardOpen && session.phase === 'conversing' && !session.recapOpen;
+  // 08 §2: at most three reply chips; the board comes back first, then the hint ladder, then another way.
+  const chips = ([
+    boardChip ? { id: 'board', label: copy.showBoard, onPress: () => setBoardOpen(true) } : null,
+    ladder ? { id: 'hint', label: copy.hint, onPress: () => say(copy.hint) } : null,
+    ladder ? { id: 'tell', label: copy.tell, onPress: () => say(copy.tell) } : null,
+    explain ? { id: 'explain', label: copy.explain, onPress: () => say(copy.explain) } : null,
+  ].filter(Boolean) as { id: string; label: string; onPress: () => void }[]).slice(0, 3);
 
+  function say(text: string) {
+    setActivityResult(null);
+    session.sendText(text);
+  }
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!draft.trim()) return;
-    session.sendText(draft);
+    setActivityResult(null);
+    // Never rewind the conversation while an activity or a board is on screen: the words go as a new message.
+    if (editing && !segment && !boardOpen) session.editLast(draft); else session.sendText(draft);
+    setEditing(false);
     setDraft('');
   };
+  const lastLearnerIndex = session.phase === 'conversing' ? session.history.map((line) => line.speaker).lastIndexOf('learner') : -1;
+  const canEdit = lastLearnerIndex >= 0 && !segment && !boardOpen && !session.awaitingReply && !session.ending && !session.recapOpen && !replayOn;
+  const beginEdit = (text: string) => { setSheet(null); setDraft(text); setEditing(true); };
   const fieldShown = session.phase === 'conversing' || (session.phase === 'openings' && !!offers?.canAskOpen && canStart);
   const busy = session.phase === 'conversing' && (session.ending || session.resuming);
 
@@ -489,6 +541,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
     ...(reading ? [{ id: 'map', label: all.mentorMap.menu, onSelect: open('map') }, { id: 'notebook', label: all.mentorNotebook.menu, onSelect: open('notebook') }] : []),
     ...(outside ? [{ id: 'history', label: all.mentorHistory.menu, onSelect: open('history') }] : []),
     { id: 'transcript', label: copy.transcript, onSelect: open('transcript') },
+    ...(session.phase === 'conversing' && !replayOn && !session.ending ? [{ id: 'start-over', label: copy.startOver, onSelect: () => setConfirmRestart(true) }] : []),
     ...(guardianLink ? [{ id: 'grown-up', label: copy.grownUp, onSelect: open('grownUp') }] : []),
   ];
 
@@ -530,6 +583,9 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
     ? <div className="lf-mentor-closing" ref={response as React.RefObject<HTMLDivElement>}>
           <SessionClosing copy={all.mentorSessionEnd} locale={locale} dark={dark} script={session.closing.script}
             effort={session.closing.effort} topic={session.closing.topic} onBack={onPath} />
+          {/* T1d: the talk is kept, and it can be heard again from past talks (never after a safety stop). */}
+          {session.closing.sessionId && session.closing.script !== 'safety_stop' && session.history.length > 0
+            ? <p className="lf-mentor-saved" data-copy-role="body">{copy.savedReplay}</p> : null}
           {session.closing.sessionId
             ? <AllianceCheck copy={all.mentorAllianceCheck} locale={locale} dark={dark} script={session.closing.script} onAnswer={session.answerAlliance} />
             : null}
@@ -547,18 +603,25 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
         </div>
         : null;
   const activityEl = segment && !boardOpen
-        ? <section className="lf-mentor-board lf-mentor-activity" aria-labelledby={`${titleId}-activity`} key={segment.segmentId}>
-          <h2 id={`${titleId}-activity`} data-copy-role="heading">{copy.activity}</h2>
-          {typeof segment.segment.prompt === 'string' ? <p data-copy-role="data">{segment.segment.prompt}</p> : null}
-          <p data-copy-role="body">{copy.activityAnswer}</p>
-        </section>
+        ? <LiveActivity key={segment.segmentId} live={segment} copy={copy.activityUi} locale={locale} headingId={`${titleId}-activity`}
+          grade={session.gradeActivity} onDone={(outcome) => { setActivityResult(outcome); session.reportActivity(outcome); }}
+          demo={turn?.demonstrate ? { seq: turn.seq, steps: turn.demonstrate } : null} />
         : null;
+  const resultEl = activityResult && session.phase === 'conversing'
+    ? <div className="lf-mentor-activity-result" role="status">
+      <Banner tone={activityResult.correct ? 'success' : 'retry'} live={false}>
+        {[activityResult.correct ? copy.right : copy.together, activityResult.feedback].filter(Boolean).join(' ')}
+      </Banner>
+      {activityResult.xpAwarded > 0 ? <RewardChip>{fill(copy.xp, { n: activityResult.xpAwarded })}</RewardChip>
+        : !activityResult.scoresXp ? <p data-copy-role="body">{copy.noXp}</p> : null}
+    </div>
+    : null;
   const replayActivity = replayOn && beat?.kind === 'activity'
     ? <p className="lf-mentor-replay-score" data-copy-role="body">{beat.score === null ? all.mentorReplay.unanswered : fill(all.mentorReplay.scored, { score: beat.score })}</p>
     : null;
   const composeEl = fieldShown
-            ? <form className="lf-mentor-compose" onSubmit={submit}>
-              <TextField label={session.phase === 'openings' ? copy.askLabel : copy.replyLabel} value={draft} autoComplete="off"
+            ? <form className="lf-mentor-compose" onSubmit={submit} data-editing={editing ? '' : undefined}>
+              <TextField label={session.phase === 'openings' ? copy.askLabel : editing ? copy.editLabel : copy.replyLabel} value={draft} autoComplete="off"
                 disabled={busy} onChange={(event) => setDraft(event.target.value)} />
               <div className="lf-mentor-compose-actions">
                 <IconButton glyph="send" label={copy.send} type="submit" variant="soft" disabled={busy || !drafting} />
@@ -567,6 +630,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
                     data-mic={session.mic.recording ? 'recording' : session.speaking ? 'interrupt' : 'idle'}
                     disabled={busy || (session.phase === 'openings' && !canStart)} onClick={session.pressMic} />
                   : null}
+                {editing ? <Button size="sm" variant="secondary" onClick={() => { setEditing(false); setDraft(''); }}>{copy.editCancel}</Button> : null}
               </div>
             </form>
             : session.phase === 'openings' && session.mic.present && canStart
@@ -586,6 +650,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
     </section>
     : session.phase !== 'closing'
         ? <section className="lf-mentor-response" ref={response}>
+          {resultEl}
           {session.phase === 'calibration'
             ? <MentorCalibration copy={all.mentorCalibration} locale={locale} dark={dark} error={session.calibrationError}
               state={session.calibrationSaving ? 'saving' : 'form'} onChoose={session.chooseCalibration} onRetry={session.retry} />
@@ -619,13 +684,16 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
                   ? <CheckInChoice copy={all.mentorCheckIn} locale={locale} dark={dark} onAnswer={live.answerCheckIn} />
                   : null}
 
-          {ladder || (board && !boardOpen && session.phase === 'conversing')
+          {session.phase === 'conversing' && session.recapOpen
             ? <div className="lf-mentor-chips" role="group" aria-label={copy.replyChips}>
-              {ladder ? <ReplyChip data-ladder="hint" onPress={() => session.sendText(copy.hint)}>{copy.hint}</ReplyChip> : null}
-              {ladder ? <ReplyChip data-ladder="tell" onPress={() => session.sendText(copy.tell)}>{copy.tell}</ReplyChip> : null}
-              {board && !boardOpen ? <ReplyChip data-board-show="" onPress={() => setBoardOpen(true)}>{copy.showBoard}</ReplyChip> : null}
+              <ReplyChip data-finish-now="" onPress={session.endSession}>{copy.finishNow}</ReplyChip>
             </div>
-            : null}
+            : chips.length > 0
+              ? <div className="lf-mentor-chips" role="group" aria-label={copy.replyChips}>
+                {chips.map((chip) => <ReplyChip key={chip.id} data-chip={chip.id} data-ladder={chip.id === 'hint' || chip.id === 'tell' ? chip.id : undefined}
+                  data-board-show={chip.id === 'board' ? '' : undefined} onPress={chip.onPress}>{chip.label}</ReplyChip>)}
+              </div>
+              : null}
 
           {fieldFirst ? null : composeEl}
 
@@ -634,6 +702,8 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
           {liveError ? <InlineNotice tone="error" live>{liveError}</InlineNotice> : null}
           {session.phase === 'conversing' && session.replyTimedOut ? <InlineNotice tone="info" live>{copy.replyTimeout}</InlineNotice> : null}
           {session.phase === 'conversing' && live.budget === 'wrapping' ? <InlineNotice tone="info">{copy.wrapping}</InlineNotice> : null}
+          {session.phase === 'conversing' && live.lesson && live.lesson.of > 1
+            ? <p className="lf-mentor-step" data-copy-role="data">{fill(copy.step, { n: Math.min(live.lesson.step, live.lesson.of), total: live.lesson.of })}</p> : null}
           {session.phase === 'openings' && offers?.intelDegraded ? <InlineNotice tone="info">{copy.noProgress}</InlineNotice> : null}
           {blockedLine && (session.phase === 'openings' ? canStart : true) ? <InlineNotice tone="info">{blockedLine}</InlineNotice> : null}
           {session.mic.denied ? <InlineNotice tone="info">{copy.micDenied}</InlineNotice> : null}
@@ -686,9 +756,14 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
           {transcript.map((line) => <li key={line.key} data-speaker={line.tutor ? 'tutor' : 'learner'}>
             <span className="lf-mentor-transcript-speaker" data-copy-role="data">{line.speaker}</span>
             <p data-copy-role="data">{line.text}</p>
+            {!replayOn && canEdit && line.index === lastLearnerIndex
+              ? <Button size="sm" variant="secondary" data-edit-last="" onClick={() => beginEdit(line.text)}>{copy.editLast}</Button> : null}
           </li>)}
         </ol>}
     </Sheet>
+    <ConfirmDialog open={confirmRestart} heading={copy.startOverHeading} consequence={copy.startOverBody} keepLabel={copy.keepGoing}
+      confirmLabel={copy.startOver} onKeep={() => setConfirmRestart(false)}
+      onConfirm={() => { setConfirmRestart(false); setActivityResult(null); setDraft(''); setEditing(false); session.restart(); }} />
     <Sheet open={sheet === 'grownUp'} onClose={closeSheet} heading={copy.grownUp} closeLabel={copy.sheetClose}>
       <p data-copy-role="body">{copy.grownUpBody}</p>
     </Sheet>

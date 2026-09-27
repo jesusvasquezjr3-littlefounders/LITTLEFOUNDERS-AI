@@ -118,6 +118,27 @@
 [data-theme='dark'] .lf-mentor-activity { box-shadow: none; background: var(--raised); }
 .lf-mentor-activity h2 { margin: 0; font: var(--type-title); letter-spacing: var(--type-title-tracking); }
 .lf-mentor-activity p { margin: 0; overflow-wrap: anywhere; }
+.lf-mentor-activity-prompt { font: var(--type-body-lg); letter-spacing: var(--type-body-lg-tracking); }
+/* W2M.4 (T1c): the live activity's answer controls, one Check, and the verdict between them. */
+.lf-mentor-activity-form { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-mentor-activity-options { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-activity-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-activity-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--spacing-2); }
+.lf-mentor-activity-verdict:empty { display: none; }
+.lf-mentor-activity-scene { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-mentor-activity-placed { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-mentor-activity-placed > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-activity-placed > li > span:first-child { flex: 1 1 12ch; min-inline-size: 0; overflow-wrap: anywhere; }
+.lf-mentor-activity-row-actions { display: flex; gap: var(--spacing-1); }
+.lf-mentor-activity-up .lf-system-glyph { transform: rotate(-90deg); }
+.lf-mentor-activity-down .lf-system-glyph { transform: rotate(90deg); }
+.lf-mentor-activity-label { color: var(--content-muted); }
+.lf-mentor-activity-sum { font: var(--type-body-lg); letter-spacing: var(--type-body-lg-tracking); }
+.lf-mentor-activity-gap { display: inline-block; min-inline-size: 4ch; border-block-end: 2px solid var(--outline); text-align: center; }
+.lf-mentor-activity-result { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-mentor-activity-result > .lf-banner { flex: 1 1 18rem; }
+.lf-mentor-step { margin: 0; color: var(--content-muted); font: var(--type-label); letter-spacing: var(--type-label-tracking); }
+.lf-mentor-saved { margin: 0; color: var(--content-muted); overflow-wrap: anywhere; }
 
 .lf-mentor-board-bars { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
 .lf-mentor-board-bar-row {

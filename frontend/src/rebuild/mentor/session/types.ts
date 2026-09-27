@@ -673,7 +673,8 @@ export type ClientMessage =
   | { type: 'check_in_response'; aligned: boolean }
   /** C.15: the learner's answer to the goal restatement: `agreed` = "yes, that's it", false = "something else". */
   | { type: 'goal_response'; agreed: boolean }
-  | { type: 'end_session' }
+  /** `recapFirst` (OD-28, M-04): the learner pressed end; the Mentor asks the recap question first. */
+  | { type: 'end_session'; recapFirst?: true }
   | { type: 'ping' };
 
 // ── Replay ──────────────────────────────────────────────────────────────────

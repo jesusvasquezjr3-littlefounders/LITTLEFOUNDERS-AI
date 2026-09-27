@@ -757,6 +757,38 @@ describe('a real live session over a real websocket', () => {
     socket.close();
   });
 
+  it('OD-28 (M-04): pressing end asks the recap question first; a second press closes completed, with no model call', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const { recapPromptText } = await import('../tutor/scripted.js');
+    const asked = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'end_session', recapFirst: true }));
+    const recap = (await asked).find((m) => m.type === 'turn');
+    expect(recap?.say).toBe(recapPromptText('es-MX'));
+    // The session stays open for the learner's answer: nothing closed, nothing generated.
+    await new Promise((r) => setTimeout(r, 150));
+    expect(journal.closes).toHaveLength(0);
+    expect(modelJournal.bodies).toHaveLength(0);
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    // A forged flag value is refused by the schema like any other frame.
+    const invalid = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'end_session', recapFirst: 'yes' }));
+    expect((await invalid).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+
+    // Pressing end again leaves at once with the completed close.
+    const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+    socket.send(JSON.stringify({ type: 'end_session', recapFirst: true }));
+    const closing = await ending;
+    expect(closing.find((m) => m.type === 'session_closing')).toMatchObject({ script: 'completed' });
+    expect(closing.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed', closingScript: 'completed' });
+    expect(modelJournal.bodies).toHaveLength(0);
+    await closed();
+  });
+
   it('C.19: refuses a forged check-in answer when no check-in is open, without a model call', async () => {
     freshJournal();
     const { socket } = open(await socketUrl());

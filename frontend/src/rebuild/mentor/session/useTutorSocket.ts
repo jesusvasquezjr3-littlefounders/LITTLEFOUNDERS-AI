@@ -224,7 +224,12 @@ export interface TutorSocket {
   answerCheckIn: (aligned: boolean) => void;
   /** C.15: answer the goal restatement on its chips. Never sent unless the goal check is open. */
   answerGoal: (agreed: boolean) => void;
-  endSession: () => void;
+  /**
+   * End the session. `recapFirst` (OD-28, M-04): the learner pressed end, so
+   * the Mentor asks the recap question first and the session stays open for
+   * one answer; a second press (or no flag) closes it at once.
+   */
+  endSession: (recapFirst?: boolean) => void;
 }
 
 async function blobToBase64(blob: Blob): Promise<string> {
@@ -804,7 +809,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     [send],
   );
 
-  const endSession = useCallback(() => send({ type: 'end_session' }), [send]);
+  const endSession = useCallback((recapFirst = false) => send(recapFirst ? { type: 'end_session', recapFirst: true } : { type: 'end_session' }), [send]);
 
   return {
     connection,

@@ -91,7 +91,11 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
     adaptationOffer: state === 'adaptation' ? 'more_examples' as Adaptation : null,
     sessionEndOffer: state === 'session-end', checkInOpen: state === 'check-in', goalCheckOpen: state === 'goal',
     error: state === 'error' ? { code: 'STT_FAILED' } : null, budget: 'running', intelDegraded: false,
-    segment: state === 'activity' ? { segmentId: 's1', seq: 3, origin: 'catalog', segment: { type: 'coin_count', prompt: locale === 'es-MX' ? '¿Cuántas monedas hay en total?' : locale === 'pt-BR' ? 'Quantas moedas há no total?' : 'How many coins are there in all?' }, scoresXp: true, framing: '' } : null,
+    // A real tray activity (coin_count), drawn by the rebuilt live activity; the key never reaches the browser.
+    segment: state === 'activity' ? { segmentId: 's1', seq: 3, origin: 'catalog', segment: { type: 'coin_count',
+      prompt_md: locale === 'es-MX' ? 'Junta el dinero para pagar la limonada.' : locale === 'pt-BR' ? 'Junte o dinheiro para pagar a limonada.' : 'Put together the money to pay for the lemonade.',
+      payload: { currency: locale === 'es-MX' ? 'MXN' : locale === 'pt-BR' ? 'BRL' : 'USD', denominations: [1, 2, 5, 10], target: 17 } }, scoresXp: state === 'activity', framing: '' } : null,
+    lesson: state === 'activity' ? { topic: null, step: 2, of: 4 } : null,
     thinking: state === 'thinking',
     answerAdaptation: noop, answerSessionEnd: noop, answerCheckIn: noop, answerGoal: noop,
   };
@@ -106,10 +110,12 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
     calibrationSaving: false, calibrationError: false, starting: false, startError: state === 'limit' ? 'SESSION_LIMIT' : null,
     socket, turn, speechUrl: null, audioKey: 3, speaking: false, awaitingReply: state === 'thinking', replyTimedOut: false, resuming: false, ending: false,
     history: [{ speaker: 'tutor', text: TURNS[locale].ask, seq: 1 }, { speaker: 'learner', text: locale === 'en-US' ? 'Save them' : locale === 'es-MX' ? 'Ahorrarlas' : 'Poupar', seq: 2 }, { speaker: 'tutor', text, seq: 3 }],
+    recapOpen: false,
     closing: phase === 'closing' ? { sessionId: 'preview', script: state === 'closing-safety' ? 'safety_stop' : 'completed', effort: 'recovered', topic: state === 'closing-safety' ? null : (copy.mentorSessionEnd as { previewTopic?: string }).previewTopic ?? null } : null,
     mic: { present: mic === 'on' && (phase === 'openings' || phase === 'conversing'), blockedBy: mic === 'consent' ? 'CONSENT_REQUIRED' : mic === 'policy' ? 'POLICY_BLOCKED' : mic === 'off' ? 'VOICE_UNAVAILABLE' : null,
       denied: false, recording, microphone: { subscribe: (listener) => { listener(0.6); return noop; } } },
-    retry: noop, chooseCalibration: noop, start: noop, sendText: noop, pressMic: noop, endSession: noop,
+    retry: noop, chooseCalibration: noop, start: noop, sendText: noop, pressMic: noop, endSession: noop, restart: noop, editLast: noop,
+    gradeActivity: async () => null, reportActivity: noop,
     chooseCharacter: async () => true, answerAlliance: async () => 'recorded', setHasDraft: noop, onSpeechEnd: noop, onSpeechBlocked: noop,
   };
   return <div className="lf-rebuild" data-theme={theme} lang={locale} data-age-band={ageBand}>
