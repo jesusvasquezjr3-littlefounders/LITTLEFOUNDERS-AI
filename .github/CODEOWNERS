@@ -1,0 +1,38 @@
+# CODEOWNERS: the governed Mentor code (C.22, owner decision OD-28, owner
+# review O-01). Prepared by Engineering; it takes effect only once the owner
+# applies the ruleset in docs/operations/BRANCH-PROTECTION.md, which requires a
+# code-owner review on pull requests into main.
+#
+# The list mirrors docs/rebuild/mentor/governance/registry.json: every
+# governed root, plus every Tier 1 or live-content file a component names
+# outside those roots. agent/tools/codeowners-governance.test.mjs (tools:test)
+# fails when the registry gains a path this file does not cover.
+#
+# Later matching lines take precedence in CODEOWNERS; every line below names
+# the same owner, so the order does not matter.
+
+# Governed roots (registry.governedRoots)
+/oracle/src/tutor/                        @jesusvasquezjr3-littlefounders
+/oracle/src/safety/                       @jesusvasquezjr3-littlefounders
+/oracle/src/content/                      @jesusvasquezjr3-littlefounders
+/oracle/src/evaluation/                   @jesusvasquezjr3-littlefounders
+/oracle/src/context/                      @jesusvasquezjr3-littlefounders
+/backend/src/services/pedagogy/           @jesusvasquezjr3-littlefounders
+
+# Component files outside the governed roots
+/oracle/src/session/review.ts             @jesusvasquezjr3-littlefounders
+/oracle/src/session/memoryRevision.ts     @jesusvasquezjr3-littlefounders
+/oracle/src/session/budget.ts             @jesusvasquezjr3-littlefounders
+/oracle/src/session/spend-guard.ts        @jesusvasquezjr3-littlefounders
+/oracle/src/env.ts                        @jesusvasquezjr3-littlefounders
+/backend/src/services/tutorPacks.ts       @jesusvasquezjr3-littlefounders
+
+# The governance model itself (component governance.model) and its records
+/docs/rebuild/mentor/governance/          @jesusvasquezjr3-littlefounders
+/agent/tools/check-mentor-governance.mjs  @jesusvasquezjr3-littlefounders
+/agent/tools/check-judge-calibration-parity.mjs @jesusvasquezjr3-littlefounders
+
+# This file and the ruleset it depends on
+/.github/CODEOWNERS                       @jesusvasquezjr3-littlefounders
+/docs/operations/BRANCH-PROTECTION.md     @jesusvasquezjr3-littlefounders
+/docs/operations/mentor-governance-ruleset.json @jesusvasquezjr3-littlefounders

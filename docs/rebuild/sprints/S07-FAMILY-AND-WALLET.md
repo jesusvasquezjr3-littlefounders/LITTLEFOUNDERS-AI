@@ -1445,7 +1445,7 @@ Captures inspected in this session:
 - `database.ts` has not been regenerated: seven new tables and the new functions.
 - No production data yet for any of the five new metrics, and the first compliance run.
 - The Pedagogical Lead's review of the twelve tips: until then no tip is sent, by design.
-- The owner still has to name the Product owner of D.19 and the Product/Research owner of D.22. Legal has not reviewed the retention periods or the research disclosure (no family may be asked before that).
+- The project leader is the interim owner of D.19 and D.22 (OD-28, owner review O-02, 27 September 2026); a permanent Product (D.19) and Product/Research (D.22) owner is still to be named. Legal has not reviewed the retention periods or the research disclosure (no family may be asked before that).
 - The first human scope audit and the first Appendix G recalibration review have not been done.
 - Appendix H Stage 5 family usability testing: the reflective prompt, the bridge and the research disclosure.
 - Native review of `familyGovernance.json` in three locales.
@@ -1487,10 +1487,10 @@ An adversarial review of every commit on `codex/spec-s07` since `337c9f0e` (seve
 | D.16 | Bonus credit visually distinct in every goal display | Provenance on every read; one component; a release gate. The review found no goal progress drawn anywhere outside the gate's scopes | Holds |
 | D.17 | Tiers by age and track record, fading pre-approval, child voice, rollback | Three levels in the database, eligibility logged, staff and system rollback | **Test gap found and fixed:** the support-staff read of a level before a rollback. Marketing approval claims corrected (D.7) |
 | D.18 | Mandatory actionable reasons; the child's reasoning at decision time; a talk nudge | Every writer is refused a "not yet" without a code and an actionable reason; child notes in the queue; nudge after three in 14 days | Holds |
-| D.19 | A scoped, age-gated bridge with a first milestone | Milestone 1 from age 15, by age evidence; engagement and the research cohort served | Holds. Milestones 2-4 and the named owner are open |
+| D.19 | A scoped, age-gated bridge with a first milestone | Milestone 1 from age 15, by age evidence; engagement and the research cohort served | Holds. Milestones 2-4 are open; the project leader is interim owner (OD-28) |
 | D.20 | A plain scope statement in parent-facing material | Mounted for Tutors and teens; a gate against lending or interest mechanics | **Gap found and fixed:** the statement was only in the signed-in app; it is now in the public FAQ too |
 | D.21 | A published retention and deletion policy | Enforced periods, a nightly sweep, erasure paths, the compliance audit | **Gap found and fixed:** the periods were only in the signed-in app and the repository; they are now published in the public FAQ, pinned to the enforced numbers |
-| D.22 | A long-horizon research plan and its first phase | Separate consent, pseudonymous snapshots, completeness served; no experiment on a minor | Holds. The named owner is open |
+| D.22 | A long-horizon research plan and its first phase | Separate consent, pseudonymous snapshots, completeness served; no experiment on a minor | Holds. The project leader is interim owner (OD-28) |
 | D.23 | Coaching in the controls, a reflective prompt, monthly reviewed tips | Guidance in the composer and the limit; the prompt before every decision; tips gated on the Pedagogical Lead's review | Holds. No tip is reviewed yet, so none is delivered: honest, and the delivery metric reads zero until then |
 
 ### Gaps found and fixed in S07.8
@@ -1572,10 +1572,10 @@ Executed 24 September 2026 (the lane's verification date) in the S07 worktree, f
 | D.16 | In progress: implemented and locally verified (S07.4, re-reviewed S07.8); per-release compliance in production pending |
 | D.17 | In progress: implemented and locally verified (S07.5, test gap fixed S07.8); progression baseline, threshold review, usability testing pending |
 | D.18 | In progress: implemented and locally verified (S07.5, re-reviewed S07.8); first human-scored sample, usability testing pending |
-| D.19 | In progress: first milestone implemented and locally verified (S07.7, re-reviewed S07.8); owner naming, milestones 2-4 pending |
+| D.19 | In progress: first milestone implemented and locally verified (S07.7, re-reviewed S07.8); interim owner named (OD-28); milestones 2-4 pending |
 | D.20 | In progress: implemented and locally verified (S07.7, public FAQ added S07.8); first quarterly scope audit pending |
 | D.21 | In progress: implemented and locally verified (S07.7, published in the FAQ S07.8); Legal review, first compliance run pending |
-| D.22 | In progress: scope document and phase 1 implemented and locally verified (S07.7, re-reviewed S07.8); owner naming, Legal review of the disclosure pending |
+| D.22 | In progress: scope document and phase 1 implemented and locally verified (S07.7, re-reviewed S07.8); interim owner named (OD-28); Legal review of the disclosure pending |
 | D.23 | In progress: implemented and locally verified (S07.7, re-reviewed S07.8); Pedagogical Lead tip review, delivery baseline pending |
 
 **Commits on `codex/spec-s07`:** `84887636` (S07.1), `72c9552c` (S07.2), `954a59dd` (S07.3), `992e5044` (S07.4), `18cb1add` (S07.5), `940656a3` (S07.6), `85eb02f2` (S07.7) and the S07.8 review commit.
@@ -1613,7 +1613,7 @@ Operator jobs: `family-retention.yml` nightly, plus three guarded calls in `insi
   - Legal review of the retention periods, the research disclosure and the Privacy Notice wording;
   - native copy review of the lane namespaces and the new FAQ answers in es-MX and pt-BR.
 - Appendix H Stage 5 family usability testing of the new mechanics.
-- The owner naming the D.19 and D.22 owners.
+- ~~The owner naming the D.19 and D.22 owners.~~ Answered by OD-28 (O-02): the project leader is interim owner of both.
 - Cross-lane merge points:
   - B.21 learning streak;
   - H.1/A.2 under-13 gate;
