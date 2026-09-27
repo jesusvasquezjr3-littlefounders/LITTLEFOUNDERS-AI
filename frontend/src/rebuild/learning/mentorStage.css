@@ -8,3 +8,15 @@
   .lf-learning--with-stage .lf-mentor-band { grid-column: 1 / 5; block-size: auto; aspect-ratio: 1; }
   .lf-learning--with-stage .lf-learning-content { grid-column: 5 / -1; margin-block-start: 0; }
 }
+/*
+ * W2L.3: every v2 board places the stage slot under its progress row (lessonStage.tsx), so the side column is
+ * keyed on the band's presence instead of a class each board would have to repeat (Bible 08 §11: 4 of 12 columns
+ * beside the question from a tablet container; below it, the band under the progress row).
+ */
+@container app (min-width: 640px) {
+  .lf-learning-inner:has(> .lf-mentor-band) { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--spacing-6); align-items: start; }
+  .lf-learning-inner:has(> .lf-mentor-band) > * { grid-column: 5 / -1; }
+  .lf-learning-inner:has(> .lf-mentor-band) > .lf-learning-top { grid-column: 1 / -1; }
+  .lf-learning-inner:has(> .lf-mentor-band) > .lf-mentor-band { grid-column: 1 / 5; grid-row: 2; block-size: auto; aspect-ratio: 1; }
+  .lf-learning-inner:has(> .lf-mentor-band) > .lf-learning-content { margin-block-start: 0; }
+}

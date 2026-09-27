@@ -807,12 +807,66 @@ describe('LessonRoute', () => {
   });
 
   it('shows the rebuilt load-error state with a way back when the lesson fetch fails', async () => {
-    mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'LESSON_LOCKED', message: 'Locked' } });
+    mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'Content service unreachable' } });
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
     expect(await screen.findByRole('heading', { name: 'Lesson unavailable' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Go back' }));
     expect(mockNavigate).toHaveBeenCalledWith('/learn');
+  });
+
+  /* W2L.3: each refusal Core gives has its own screen, and none offers a retry that could only fail again. */
+  it.each([
+    ['LESSON_LOCKED', 'Opens later'],
+    ['COURSE_PREREQUISITE_REQUIRED', 'One step first'],
+    ['NOT_FOUND', 'Lesson not found'],
+    ['COURSE_AGE_RESTRICTED', 'This lesson is for later'],
+    ['UNSUPPORTED_LESSON', 'This lesson is not ready'],
+  ])('W2L.3: says the %s refusal plainly, with the way back to the course and no retry', async (code, heading) => {
+    mockedApi.mockResolvedValueOnce({ data: null, error: { code, message: 'refused' } });
+    renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
+
+    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Go back' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/learn/money-basics');
+    expect(mockedApi).toHaveBeenCalledTimes(1);
+  });
+
+  it('W2L.3: a v2 run that cannot start for a lost connection is the offline screen, not a lesson that needs an update, and retries', async () => {
+    const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'Network error' } })
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: {
+        run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+        expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'allocate-01': 'opaque-signed-token' },
+      }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'Connection lost' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'This lesson needs an update.' })).toBeNull();
+    // The connection coming back retries by itself.
+    window.dispatchEvent(new Event('online'));
+    expect(await screen.findByRole('button', { name: 'Save: Add' })).toBeInTheDocument();
+    expect(mockedApi).toHaveBeenCalledTimes(4);
+  });
+
+  it('W2L.3: a v2 run Core refuses is said as the refusal, and one it cannot sign yet offers a retry', async () => {
+    const document = allocationPilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { code: 'LESSON_LOCKED', message: 'This lesson is still locked' } });
+    const first = renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByRole('heading', { name: 'Opens later' })).toBeInTheDocument();
+    first.unmount();
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { code: 'LESSON_ATTEMPT_UNAVAILABLE', message: 'This lesson attempt is not ready' } });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByRole('heading', { name: 'Lesson unavailable' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
   });
 
   it('uses the rebuilt task-scoped screen for a lesson-age refusal', async () => {
@@ -861,6 +915,85 @@ describe('LessonRoute', () => {
     renderLessonRoute(['/learn/lesson/lesson-1']);
 
     expect(await screen.findByRole('heading', { name: 'Placement comes first' })).toBeInTheDocument();
+  });
+});
+
+describe('LessonRoute: the lesson layer and the legacy island (W2L.3)', () => {
+  const numberLineRun = (document: { version_id: string }) => ({ data: {
+    run_id: '99999999-9999-4999-8999-999999999999', version_id: document.version_id,
+    expires_at: '2026-09-23T12:00:00.000Z', resumed: false, met_segment_ids: [], attempt_tokens: { 'place-01': 'line-attempt-token' },
+  }, error: null });
+
+  it('keeps one layer from opening to the lesson: the skip link first, the title per screen, focus on the new heading', async () => {
+    const document = numberLinePilotDocument('en-US', '6-9') as { version_id: string; title: string };
+    let answer: (value: unknown) => void = () => undefined;
+    mockedApi
+      .mockImplementationOnce(() => new Promise((resolve) => { answer = resolve as (value: unknown) => void; }))
+      .mockResolvedValueOnce(numberLineRun(document));
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    expect(await screen.findByRole('heading', { name: 'Opening lesson' })).toBeInTheDocument();
+    const layer = window.document.querySelector('[data-shell="lesson"]');
+    expect(window.document.title).toBe('Lesson · LittleFounders');
+    answer({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null });
+    await screen.findByRole('slider', { name: 'Place the point' });
+    // The same layer element: the lesson moved screens inside it.
+    expect(window.document.querySelector('[data-shell="lesson"]')).toBe(layer);
+    expect(layer).toHaveAttribute('data-lesson-screen', 'lesson');
+    expect(window.document.title).toBe(`${document.title} · LittleFounders`);
+    const heading = screen.getByRole('heading', { level: 1, name: document.title });
+    await waitFor(() => expect(window.document.activeElement).toBe(heading));
+    const skip = layer!.firstElementChild;
+    expect(skip?.tagName).toBe('A');
+    expect(skip?.textContent).toBe('Skip to content');
+    expect(skip?.getAttribute('href')).toBe(`#${layer!.querySelector('main')!.id}`);
+    expect(layer!.querySelectorAll('main')).toHaveLength(1);
+  });
+
+  it('B.8: places the compact Mentor stage on a board other than the allocation pilot', async () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const document = numberLinePilotDocument('en-US', '6-9') as { version_id: string };
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {}, mentor_stage: { character: 'liruf', scene: 'diorama-b' } }, error: null })
+      .mockResolvedValueOnce(numberLineRun(document));
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByRole('slider', { name: 'Place the point' });
+    const band = window.document.querySelector('.lf-learning-inner > .lf-mentor-band');
+    expect(band).toHaveAttribute('data-mentor-character', 'liruf');
+    expect(await screen.findByTestId('tutor-stage')).toHaveAttribute('data-scene', 'diorama-b');
+  });
+
+  it('OD-24: plays a v1 lesson in the legacy island, outside the rebuilt layer', async () => {
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    const player = await screen.findByTestId('live-player');
+    // No design-system root (the element carrying the mode) around the legacy player.
+    expect(player.closest('div[data-theme]')).toBeNull();
+    expect(window.document.querySelector('[data-shell="lesson"]')).toBeNull();
+  });
+
+  it('OD-7: shows the badge Core named on the result, with the course it was earned in', async () => {
+    const document = numberLinePilotDocument('en-US', '6-9') as { version_id: string };
+    const runId = '99999999-9999-4999-8999-999999999999';
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce(numberLineRun(document))
+      .mockResolvedValueOnce({ data: { verdict: { correct: true, score: 100 }, replayed: false }, error: null })
+      .mockResolvedValueOnce({ data: { score: 100, passed: true, receipt: {
+        schema_version: 2, completion_id: runId, lesson_id: 'pilot-number-line', version_id: document.version_id, locale: 'en-US',
+        first_try_correct: 1, graded_count: 1, awarded_xp: 10, duration_seconds: 42, previous_best_percent: 0,
+        replay: { kind: 'first', notice: 'none', best_score_kept: false, xp_policy: 'improvement_only' },
+        celebrations: ['lesson-complete', 'course-complete', 'badge-earned'],
+      } }, error: null });
+    renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'investing' } }]);
+    fireEvent.change(await screen.findByRole('slider', { name: 'Place the point' }), { target: { value: '7' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Finish lesson' }));
+    const badge = await screen.findByText('Badge earned');
+    expect(badge).toHaveAttribute('data-celebrate', 'badge-earned');
+    expect(badge.querySelector('[data-asset-id="course.investing.icon"]')).not.toBeNull();
+    expect(window.document.title).toBe('Your result · LittleFounders');
+    await waitFor(() => expect(window.document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Lesson complete!' })));
   });
 });
 

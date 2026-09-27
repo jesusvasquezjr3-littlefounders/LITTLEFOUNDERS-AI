@@ -4,6 +4,8 @@ import type { Locale } from '../design/copyBudget';
 import { Button, Celebration, celebrationPart, CountUp, InlineNotice } from '../design/controls';
 import { mayCelebrate, streakMilestone } from '../design/milestones';
 import { REGISTERS, type LearnerRegister } from '../design/learnerRegisterPolicy.generated';
+import { CourseBadge } from './CourseBadge';
+import { learnCopy } from './learnCopy';
 import './result.css';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
@@ -91,8 +93,10 @@ export const lessonResultCopy = copy;
  * "saved best is still X" notice is actually on screen (the numerator of
  * Appendix C's replay-notice display rate); a fixture never reports it.
  */
-export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young' }: {
+export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young', courseSlug = null }: {
   rawReceipt: unknown; locale: Locale; onContinue: () => void; fixture?: boolean;
+  /** W2L.3: the course the lesson was opened from, so an earned badge shows that course's own icon. */
+  courseSlug?: string | null;
   /**
    * B.23 (S05.3f): the learner's register, from Core. It changes the reward
    * framing (the recognition line, whether the medal shows, whether XP leads
@@ -162,6 +166,17 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
     <p className={`lf-result-streak ${celebrationPart('pop').className}`} data-copy-role="body" data-celebrate={milestone}>
       <img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p>
   </Celebration> : null;
+  // W2L.3 (OD-7, B.20): the course and badge milestones Core named for this completion. One moment on the result:
+  // the badge when one was earned (it is the course's), otherwise the finished course; nothing when Core named neither.
+  const celebrateBadge = mayCelebrate(receipt.celebrations, 'badge-earned');
+  const celebrateCourse = mayCelebrate(receipt.celebrations, 'course-complete');
+  const lessonCopy = learnCopy[locale].lesson;
+  const courseMoment = celebrateBadge || celebrateCourse
+    ? <Celebration milestone={celebrateBadge ? 'badge-earned' : 'course-complete'} momentId={`${receipt.completion_id}:course`}>
+      <p className={`lf-result-course ${celebrationPart('pop').className}`} data-copy-role="body" data-celebrate={celebrateBadge ? 'badge-earned' : 'course-complete'}>
+        {celebrateBadge ? <CourseBadge slug={courseSlug} size="sm" /> : null}
+        {celebrateBadge ? lessonCopy.badgeEarned : lessonCopy.courseComplete}</p>
+    </Celebration> : null;
   const inner = <div className="lf-result-inner">
       {fixture ? <p className="lf-result-preview-label" data-copy-role="body">{t.preview}</p> : null}
       <div className="lf-result-hero">
@@ -171,6 +186,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
         {skill ? <p className="lf-result-figured" data-copy-role="body">{recognition(skill)}</p>
           : keptBest ? null
             : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
+        {courseMoment}
         {streakLine}
       </div>
       <div className="lf-result-sheet">

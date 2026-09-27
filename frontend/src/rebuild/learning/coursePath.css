@@ -21,7 +21,7 @@
 /* A finished path is a state, so it takes the first view on its own (rule 15); it is stated, never celebrated here. */
 .lf-course-path-done { display: grid; align-content: center; gap: var(--spacing-3); min-block-size: min(60dvh, 440px); padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--success-soft); color: var(--content); }
 .lf-course-path-done h2 { font-size: 1.5rem; color: var(--success-strong); }
-.lf-course-path-earned { display: inline-flex; align-items: center; gap: var(--spacing-2); font-weight: 800; color: var(--success-strong); }
+.lf-course-path-earned { display: inline-flex; align-items: center; gap: var(--spacing-3); font-weight: 800; color: var(--success-strong); }
 .lf-course-path-earned .lf-system-glyph, .lf-course-path-skill-state .lf-system-glyph { inline-size: 20px; block-size: 20px; flex: none; }
 
 .lf-course-path-note { color: var(--content-muted); font-weight: 700; }

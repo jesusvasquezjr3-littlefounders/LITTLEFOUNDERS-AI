@@ -675,11 +675,16 @@ describe('compact Mentor stage projection', () => {
     expect(screen.getByRole('heading', { name: 'Split your money' })).toBeTruthy();
   });
 
-  it('drops the stage for a board that does not support one instead of refusing the lesson', () => {
+  it('W2L.3 (B.8): places the stage on every board, not only the allocation pilot', () => {
     render(<LessonDocumentView raw={growthPilotDocument('en-US', '6-9')} locale="en-US" ageBand="6-9" onBack={noop}
       mentorStage={{ character: 'rho', scene: 'diorama-a' }} />);
-    expect(document.querySelector('.lf-mentor-band')).toBeNull();
+    expect(document.querySelector('.lf-learning-inner > .lf-mentor-band')?.getAttribute('data-mentor-character')).toBe('rho');
     expect(screen.getByRole('slider')).toBeTruthy();
+  });
+
+  it('W2L.3: a board without a projection carries no stage', () => {
+    render(<LessonDocumentView raw={growthPilotDocument('en-US', '6-9')} locale="en-US" ageBand="6-9" onBack={noop} />);
+    expect(document.querySelector('.lf-mentor-band')).toBeNull();
   });
 
   it('keeps the controlled preview fixture fixed to Dina on diorama-a', () => {

@@ -6,6 +6,7 @@ import { ratioTableRows } from './ratioTableModel';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import './learning.css';
+import { LessonStageSlot } from './lessonStage';
 
 type CopySet = {
   back: string; practice: string; board: string; showTable: string; showChart: string; packs: string; pack: string;
@@ -67,7 +68,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence }: {
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, changed)} max={100} valueText={`${sequenceProgress(sequence, changed)}%`} /> : null}
         <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span>
-      </header>
+      </header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}

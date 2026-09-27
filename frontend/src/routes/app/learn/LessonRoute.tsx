@@ -1,56 +1,57 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
-import type { LessonDocument } from '@/lesson-engine/core/types';
-import type { AudioManifest } from '@/lesson-engine/player/narration';
-import type { ServerCompletion } from '@/lesson-engine/player/completion';
-import { createCoreGrader } from './coreGrader';
-import { clearCoursesCache } from './coursesCache';
-import { coursePath, placementPath } from './paths';
-import { checkpointKey, newCheckpoint, readCheckpoint, removeCheckpoint, writeCheckpoint } from '@/lesson-engine/player/checkpoint';
-import type { SessionState } from '@/lesson-engine/core/session';
+// The resume checkpoint is a storage record (no UI); the legacy player itself stays behind its island.
+import { checkpointKey, newCheckpoint, readCheckpoint, writeCheckpoint } from '@/lesson-engine/player/checkpoint';
 import { useTheme } from '@/theme/useTheme';
-import { RebuildRoot } from '@/rebuild/design/controls';
-import { AuthenticatedLessonDocument } from '@/rebuild/learning/AuthenticatedLessonDocument';
+import { AuthenticatedLessonDocument, lessonDocumentFrame } from '@/rebuild/learning/AuthenticatedLessonDocument';
 import type { OnGrade, OnGradeBarModel, OnGradeFractionArea, OnGradeNumberLine, OnGradeReasoning, OnGradeSchemaDiagram, OnGradeWorkedExample } from '@/rebuild/learning/LessonDocumentView';
 import { LessonResultView } from '@/rebuild/learning/LessonResultView';
 import type { JudgmentQuality } from '@/rebuild/learning/DecisionReasonsBoard';
 import { LessonEligibilityStateView, type LessonEligibilityState } from '@/rebuild/learning/LessonEligibilityStateView';
-import { LessonTransportStateView } from '@/rebuild/learning/LessonTransportStateView';
+import { LessonTransportStateView, type LessonTransportState } from '@/rebuild/learning/LessonTransportStateView';
+import { LessonLayer } from '@/rebuild/learning/LessonLayer';
 import { NarrativeRecallView } from '@/rebuild/learning/NarrativeRecallView';
 import { parseNarrativeRecall, type NarrativeRecall } from '@/rebuild/learning/narrative';
-import type { Locale } from '@/rebuild/design/copyBudget';
+import type { AgeBand, Locale } from '@/rebuild/design/copyBudget';
+import { REGISTERS } from '@/rebuild/design/learnerRegisterPolicy.generated';
+import { learnCopy } from '@/rebuild/learning/learnCopy';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
 import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
-import { guidedReviewPath } from './paths';
+import { clearCoursesCache } from './coursesCache';
+import { isLegacyLessonDocument, LegacyLessonIsland, reconcileLegacyCheckpoint } from './LegacyLessonIsland';
+import { coursePath, guidedReviewPath, placementPath } from './paths';
 
 /*
- * /learn/lesson/:lessonId — the fullscreen Lesson Player wired to Core
- * (COURSE_ENGINE.md §2, LESSON_ENGINE.md §7). Registered OUTSIDE the
- * AppLayout route group in App.tsx so no dashboard chrome ever renders
- * behind it — LessonPlayer already owns a `fixed inset-0` layer.
+ * /learn/lesson/:lessonId — the learner's lesson route (COURSE_ENGINE.md §2,
+ * LESSON_ENGINE.md §7), a full-screen layer of its own outside the app shell:
+ * no navigation ever renders behind a lesson.
  *
- * Deviation from the literal task brief (documented per /AGENTS.md §1.12):
- * completion persistence (`onComplete`) and navigation (`onExit`) are kept
- * separate rather than both living in `onComplete`. LessonPlayer fires
- * `onComplete` the instant it reaches the results phase — navigating away
- * there would rip the Results screen (score ring, XP stat cards, cast
- * celebration — DESIGN.md Screen Recipes → Lesson) out from under the kid
- * before they ever see it. So `onComplete` only POSTs the score; navigation
- * happens from `onExit`, which fires when the kid taps "Finish" on the
- * Results screen (or exits early) — matching the Lesson screen recipe.
+ * W2L.3: every rebuilt screen of the route renders in ONE lesson layer
+ * (`LessonLayer`): opening, Core's refusals, the offline and failure states,
+ * the B.9 recall, the v2 lesson with its compact Mentor stage on every board
+ * (B.8), the B.5 result with the OD-7 lesson, course, badge and streak
+ * moments Core named, and the B.26 guided-review offer. The layer persists
+ * across them, so the document title follows the screen and focus moves to
+ * each new screen's heading.
+ *
+ * A published v1 document still plays in the legacy Lesson Player, the one
+ * sanctioned legacy island (OD-24), mounted through its single adapter
+ * (`LegacyLessonIsland.tsx`) outside the rebuilt layer. Completion
+ * persistence and navigation stay separate there: the player keeps its
+ * results screen up after `onComplete`, and only `onExit` navigates.
  */
 
 interface LessonResponse {
   lesson: { id: string; slug: string };
   locale: string;
   document: unknown;
-  audio: AudioManifest;
+  /** Echo's narration manifest for a v1 lesson; the legacy island reads it. */
+  audio?: unknown;
   mentor_stage?: unknown;
   /** B.9 (S05.3c): an earlier, relevant story decision Core resurfaced for this lesson. */
   narrative_recall?: unknown;
@@ -59,7 +60,7 @@ interface LessonResponse {
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: AudioManifest; mentorStage: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null };
+  | { status: 'ready'; document: unknown; locale: string; audio: unknown; mentorStage: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -94,8 +95,7 @@ function LessonRouteSession() {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? 'dark' : 'light';
-  // Rebuilt state screens mount the design system's root (tokens, `app` container, mode, language); the legacy player does not use it.
-  const rebuilt = (view: JSX.Element) => <RebuildRoot theme={theme} locale={localeFromI18n(i18n.language)}>{view}</RebuildRoot>;
+  const appLocale = localeFromI18n(i18n.language);
   const { lessonId = '' } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -104,18 +104,13 @@ function LessonRouteSession() {
   const [initialCheckpoint] = useState(() => storageKey ? readCheckpoint(storageKey) : newCheckpoint());
   const checkpoint = useRef(initialCheckpoint);
   const v2EnteredAt = useRef(Date.now());
-  const saved = useRef(false);
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [loadRevision, setLoadRevision] = useState(0);
+  const retry = useCallback(() => setLoadRevision((revision) => revision + 1), []);
   // B.5 (S05.3d): Core's authenticated completion receipt for a v2 lesson.
   const [v2Receipt, setV2Receipt] = useState<unknown>(null);
   // B.9: the recall shows once, before the lesson, and never over a lesson resumed mid-way.
   const [recallDone, setRecallDone] = useState(() => (initialCheckpoint.state?.index ?? 0) > 0);
-  const active = useRef(true);
-  useEffect(() => {
-    active.current = true;
-    return () => { active.current = false; };
-  }, []);
 
   const courseSlug = (location.state as LocationState | null)?.courseSlug ?? null;
   // Insights (/INSIGHTS.md): lesson_start on entry; lesson_abandon on exit
@@ -133,8 +128,7 @@ function LessonRouteSession() {
       }
     };
   }, [lessonId]);
-  // Keep the run across reloads; Finish discards it so deliberate replay starts fresh.
-  const runId = checkpoint.current.runId;
+  const reachedResults = useCallback(() => { completedRef.current = true; }, []);
   // B.26 / OD-1 (S05.3f): a miss costs nothing; consecutive misses on one
   // skill bring the learner's Mentor's offer to review it (never a lock).
   const [guidedReview, setGuidedReview] = useState<GuidedReviewOfferValue | null>(null);
@@ -144,6 +138,11 @@ function LessonRouteSession() {
   // answers, and if it fails, the youngest register is the reading.
   const [register, setRegister] = useState<RegisterState>({ status: 'loading' });
   const registerRequested = useRef(false);
+  const active = useRef(true);
+  useEffect(() => {
+    active.current = true;
+    return () => { active.current = false; };
+  }, []);
   useEffect(() => {
     if (registerRequested.current) return;
     registerRequested.current = true;
@@ -153,10 +152,6 @@ function LessonRouteSession() {
       return api<unknown>(path, { token, method: init?.method, body: init?.body });
     }).then((next) => { if (active.current) setRegister(next); });
   }, [getToken]);
-  const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId, { onGuidedReview: setGuidedReview }), [lessonId, getToken, runId]);
-  const withOffer = (node: JSX.Element) => guidedReview ? <>{node}<GuidedReviewOffer offer={guidedReview} register={registerOf(register)}
-    locale={localeFromI18n(i18n.language)} dark={isDark} onDecline={() => setGuidedReview(null)}
-    onReview={(skillKey) => navigate(guidedReviewPath(skillKey))} /></> : node;
 
   useEffect(() => {
     let cancelled = false;
@@ -166,42 +161,55 @@ function LessonRouteSession() {
       const { data, error } = await api<LessonResponse>(`/learn/lessons/${lessonId}`, { token });
       if (cancelled) return;
       if (error) {
-        setState({ status: 'error', code: error.code, offline: /offline|network|fetch/i.test(error.message) });
+        setState({ status: 'error', code: error.code, offline: isOfflineError(error) });
         return;
       }
+      const ready = { document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, recall: parseNarrativeRecall(data.narrative_recall) };
       if (isLegacyLessonDocument(data.document)) {
-        const signature = JSON.stringify(data.document);
-        const snapshot = checkpoint.current.state;
-        const segmentIds = new Set(data.document.segments.map(segment => segment.id));
-        const invalidSnapshot = snapshot && (snapshot.index >= data.document.segments.length || Object.keys(snapshot.seg).some(id => !segmentIds.has(id)));
-        // Never restore segment indices/verdicts into a revised or translated document.
-        if (invalidSnapshot || (checkpoint.current.document && checkpoint.current.document !== signature)) checkpoint.current = newCheckpoint();
-        checkpoint.current.document = signature;
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null, recall: parseNarrativeRecall(data.narrative_recall) });
+        checkpoint.current = reconcileLegacyCheckpoint(checkpoint.current, data.document);
+        setState({ status: 'ready', ...ready, v2Attempt: null });
         return;
       }
       const clientDocument = loadLessonClientDocument(data.document);
       // Ungraded visual lessons remain presentation-only until the separate
       // version-pinned completion design exists; there is no token to request.
       if (clientDocument.status !== 'ready' || !clientDocument.document.segments.some(segment => segment.grading === 'server')) {
-        setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: null, recall: parseNarrativeRecall(data.narrative_recall) });
+        setState({ status: 'ready', ...ready, v2Attempt: null });
         return;
       }
       const resumeRunId = checkpoint.current.document?.startsWith('v2:') ? checkpoint.current.runId : undefined;
       const started = await api<V2RunResponse>(`/learn/lessons/${lessonId}/v2-runs`, { method: 'POST', token, body: resumeRunId ? { run_id: resumeRunId } : {} });
       if (cancelled) return;
-      const attempt = started.error ? null : validateV2Attempt(clientDocument.document, started.data);
+      /*
+       * W2L.3: a run that could not start is said as what it is. A lost
+       * connection or a Core failure is the offline or retry screen, a refusal
+       * is its own screen; only a run Core answered with data that does not
+       * match this document fails closed as a lesson that cannot be played.
+       */
+      if (started.error) {
+        setState({ status: 'error', code: started.error.code, offline: isOfflineError(started.error) });
+        return;
+      }
+      const attempt = validateV2Attempt(clientDocument.document, started.data);
       if (attempt) {
         checkpoint.current.runId = attempt.runId;
         checkpoint.current.document = `v2:${attempt.versionId}`;
         if (storageKey) writeCheckpoint(storageKey, checkpoint.current);
       }
-      setState({ status: 'ready', document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, v2Attempt: attempt, recall: parseNarrativeRecall(data.narrative_recall) });
+      setState({ status: 'ready', ...ready, v2Attempt: attempt });
     })();
     return () => {
       cancelled = true;
     };
   }, [lessonId, getToken, loadRevision]);
+
+  // W2L.3: an offline screen retries by itself when the connection comes back; the button stays for the learner.
+  const offline = state.status === 'error' && state.offline;
+  useEffect(() => {
+    if (!offline) return;
+    window.addEventListener('online', retry);
+    return () => window.removeEventListener('online', retry);
+  }, [offline, retry]);
 
   const submitV2GradeDetailed = useCallback(async (answer: unknown, segmentId: string, document: LessonClientDocument) => {
     const attempt = state.status === 'ready' ? state.v2Attempt : null;
@@ -240,7 +248,7 @@ function LessonRouteSession() {
     const token = await getToken();
     if (!attempt || !token) return false;
     const d = new Date();
-    const { data, error } = await api<ServerCompletion & { receipt?: unknown }>(`/learn/lessons/${lessonId}/complete`, {
+    const { data, error } = await api<{ receipt?: unknown }>(`/learn/lessons/${lessonId}/complete`, {
       method: 'POST', token, body: { run_id: attempt.runId, seconds_spent: Math.min(7200, Math.max(1, Math.round((Date.now() - v2EnteredAt.current) / 1000))), local_date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` },
     });
     if (!error) {
@@ -251,124 +259,74 @@ function LessonRouteSession() {
     return !error;
   }, [getToken, lessonId, state]);
 
-  function goBack() {
-    if (saved.current && storageKey) removeCheckpoint(storageKey);
+  const goBack = useCallback(() => {
     navigate(courseSlug ? coursePath(courseSlug) : '/learn');
-  }
+  }, [navigate, courseSlug]);
 
-  const saveCheckpoint = useCallback((snapshot: SessionState, elapsedMs: number) => {
-    if (!active.current) return;
-    checkpoint.current.state = snapshot;
-    checkpoint.current.elapsedMs = elapsedMs;
-    if (storageKey) writeCheckpoint(storageKey, checkpoint.current);
-  }, [storageKey]);
-
-  async function persistCompletion(secondsSpent: number): Promise<ServerCompletion | null> {
-    // Reaching the results phase means the lesson was NOT abandoned,
-    // regardless of whether the persist below succeeds.
-    completedRef.current = true;
-    const d = new Date();
-    checkpoint.current.completion ??= {
-      seconds_spent: Math.min(7200, Math.max(1, secondsSpent)),
-      run_id: checkpoint.current.runId,
-      local_date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
-    };
-    if (storageKey) writeCheckpoint(storageKey, checkpoint.current);
-    const token = await getToken();
-    if (!active.current || !token) return null;
-    // The player keeps the outcome visible and exposes an explicit retry
-    // on null. Reuse the run id so a lost response cannot duplicate rewards.
-    const { data, error } = await api<ServerCompletion>(`/learn/lessons/${lessonId}/complete`, {
-      method: 'POST',
-      token,
-      body: checkpoint.current.completion,
-    });
-    /*
-     * The shelf's cached progress is now wrong — this lesson just changed it.
-     * Dropped whether or not the persist succeeded: on failure the player
-     * falls back to its own numbers and the server may still have recorded
-     * the attempt, so a cache kept here could show a stale count either way.
-     */
-    clearCoursesCache();
-    if (!error) saved.current = true;
-    return error ? null : data;
-  }
+  const offer = guidedReview ? <GuidedReviewOffer offer={guidedReview} register={registerOf(register)}
+    locale={appLocale} dark={isDark} onDecline={() => setGuidedReview(null)}
+    onReview={(skillKey) => navigate(guidedReviewPath(skillKey))} /> : null;
+  const lessonTitle = learnCopy[appLocale].lesson.pageTitle;
+  const layer = (screen: string, view: JSX.Element, frame: { locale?: Locale; ageBand?: AgeBand; pageTitle?: string } = {}) =>
+    <LessonLayer theme={theme} locale={frame.locale ?? appLocale} ageBand={frame.ageBand} screen={screen}
+      pageTitle={frame.pageTitle ?? learnCopy[frame.locale ?? appLocale].lesson.pageTitle}>{view}{offer}</LessonLayer>;
 
   if (state.status === 'loading') {
-    return rebuilt(<LessonTransportStateView state="opening" locale={localeFromI18n(i18n.language)} onBack={goBack} />);
+    return layer('opening', <LessonTransportStateView state="opening" locale={appLocale} onBack={goBack} />);
   }
 
   /*
    * PLACEMENT_REQUIRED is not an error the learner can act on — it is a
-   * missing STEP, and that step is one route away. As a banner it left a kid
-   * who tapped the lesson their own /learn page had just offered them looking
-   * at "Complete this course's placement quiz first" with a single button,
-   * "Back to course" — which lands on the course page and is redirected to
-   * that very quiz (CoursePage.tsx). Two screens and a red error to reach
-   * where the first tap could have gone.
-   *
-   * So take them there. `replace` keeps the 403ing lesson URL out of history:
-   * the quiz navigates forward into the lesson when it commits, and Back
-   * should return to the list rather than to a URL that fails until it does.
-   *
-   * Only possible when the course is known — courseSlug rides in router state
-   * from the link that opened the player. A bare deep link carries no state,
-   * so it keeps the banner, which is honest about being stuck.
+   * missing STEP, and that step is one route away. `replace` keeps the
+   * 403ing lesson URL out of history: the placement flow navigates forward
+   * into the lesson when it commits. Only possible when the course is known —
+   * courseSlug rides in router state from the link that opened the lesson. A
+   * bare deep link carries no state, so it keeps the honest placement screen.
    */
   if (state.status === 'error' && state.code === 'PLACEMENT_REQUIRED' && courseSlug) {
     return <Navigate to={placementPath(courseSlug)} replace />;
   }
 
-  if (state.status === 'error' && state.code === 'PLACEMENT_REQUIRED') {
-    return rebuilt(<LessonTransportStateView state="placement" locale={localeFromI18n(i18n.language)} onBack={goBack} />);
-  }
-
   if (state.status === 'error') {
-    const eligibilityState = lessonEligibilityState(state.code);
-    if (eligibilityState) return rebuilt(<LessonEligibilityStateView state={eligibilityState} locale={localeFromI18n(i18n.language)} onBack={goBack} />);
-    if (state.offline) return rebuilt(<LessonTransportStateView state="offline" locale={localeFromI18n(i18n.language)} onBack={goBack}
-      onRetry={() => setLoadRevision((revision) => revision + 1)} />);
-    return rebuilt(<LessonTransportStateView state="load-error" locale={localeFromI18n(i18n.language)} onBack={goBack}
-      onRetry={() => setLoadRevision((revision) => revision + 1)} />);
+    const screen = lessonErrorScreen(state.code, state.offline);
+    return layer(`error:${screen.state}`, screen.kind === 'eligibility'
+      ? <LessonEligibilityStateView state={screen.state} locale={appLocale} onBack={goBack} />
+      : <LessonTransportStateView state={screen.state} locale={appLocale} onBack={goBack} onRetry={screen.retry ? retry : undefined} />);
   }
 
   if (state.recall && !recallDone) {
-    return <NarrativeRecallView recall={state.recall} locale={localeFromI18n(i18n.language)} dark={isDark} onContinue={() => setRecallDone(true)} />;
+    return layer('recall', <NarrativeRecallView recall={state.recall} locale={appLocale} dark={isDark} onContinue={() => setRecallDone(true)} />);
   }
 
   if (v2Receipt) {
     // The receipt is written in the lesson's own locale, which is the response locale.
-    const receiptLocale = state.status === 'ready' && ['en-US', 'es-MX', 'pt-BR'].includes(state.locale) ? state.locale as Locale : localeFromI18n(i18n.language);
+    const receiptLocale = ['en-US', 'es-MX', 'pt-BR'].includes(state.locale) ? state.locale as Locale : appLocale;
     // B.23: a v2 lesson declares its audience band, and Core admits only learners inside it (S05.2a).
-    const band = state.status === 'ready' ? (state.document as { age_band?: unknown }).age_band : undefined;
+    const band = (state.document as { age_band?: unknown }).age_band;
     const resultRegister = band === '6-9' || band === '10-12' || band === '13-17' || band === 'adult' ? registerForBand(band) : registerOf(register);
-    return <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack} register={resultRegister}
-      onNoticeShown={() => trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })} />;
+    return layer('result', <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack} register={resultRegister}
+      courseSlug={courseSlug} onNoticeShown={() => trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })} />,
+    { locale: receiptLocale, ageBand: REGISTERS[resultRegister].copyBand, pageTitle: learnCopy[receiptLocale].lesson.resultTitle });
   }
 
   if (!isLegacyLessonDocument(state.document)) {
-    return withOffer(<AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} theme={theme} onBack={goBack}
+    const frame = lessonDocumentFrame(state.document, state.locale);
+    return layer('lesson', <AuthenticatedLessonDocument raw={state.document} responseLocale={state.locale} mentorStage={state.mentorStage} theme={theme} onBack={goBack}
       onGrade={state.v2Attempt ? gradeV2 : undefined} onGradeNumberLine={state.v2Attempt ? gradeV2NumberLine : undefined}
       onGradeFractionArea={state.v2Attempt ? gradeV2FractionArea : undefined} onGradeBarModel={state.v2Attempt ? gradeV2BarModel : undefined}
       onGradeSchemaDiagram={state.v2Attempt ? gradeV2SchemaDiagram : undefined} onGradeWorkedExample={state.v2Attempt ? gradeV2WorkedExample : undefined}
       onGradeReasoning={state.v2Attempt ? gradeV2Reasoning : undefined}
       onComplete={state.v2Attempt ? completeV2 : undefined} metSegmentIds={state.v2Attempt?.metSegmentIds}
-      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} />);
+      attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} />,
+    { locale: frame.locale, ageBand: frame.ageBand, pageTitle: frame.title ?? lessonTitle });
   }
 
-  return withOffer(
-    <LessonPlayer
-      document={state.document}
-      lessonId={lessonId}
-      grader={grader}
-      audio={state.audio}
-      recovery={checkpoint.current}
-      onCheckpoint={saveCheckpoint}
-      onExit={goBack}
-      onComplete={(result) => persistCompletion(result.seconds_spent)}
-      register={registerOf(register)}
-    />
-  );
+  // OD-24: the published v1 catalog, in its one legacy island, outside the rebuilt layer.
+  return <>
+    <LegacyLessonIsland lessonId={lessonId} document={state.document} audio={state.audio} checkpoint={checkpoint} storageKey={storageKey}
+      register={registerOf(register)} onGuidedReview={setGuidedReview} onReachedResults={reachedResults} onExit={goBack} />
+    {offer}
+  </>;
 }
 
 /** Reject malformed/mismatched run data before opaque browser tokens reach a visual. */
@@ -400,20 +358,37 @@ function isOrderedCpaAttemptProjection(document: LessonClientDocument, attempted
     || stages.slice(0, index).every((previous) => attempted.has(previous.segment_id)));
 }
 
-function isLegacyLessonDocument(document: unknown): document is LessonDocument {
-  return typeof document === 'object' && document !== null && !Array.isArray(document)
-    && (document as { schema_version?: unknown }).schema_version === 1;
-}
-
 function localeFromI18n(value: string): Locale {
   return value === 'es-MX' || value === 'pt-BR' ? value : 'en-US';
 }
 
-function lessonEligibilityState(code: string): LessonEligibilityState | null {
-  if (code === 'LESSON_AGE_ELIGIBILITY_REQUIRED') return 'required';
-  if (code === 'LESSON_AGE_RESTRICTED') return 'restricted';
-  if (code === 'LESSON_ELIGIBILITY_MISSING') return 'unavailable';
-  return null;
+/** A transport failure (the API client's network error) or a browser that knows it is offline. */
+function isOfflineError(error: { message?: string }): boolean {
+  return /offline|network|fetch/i.test(error.message ?? '') || (typeof navigator !== 'undefined' && navigator.onLine === false);
+}
+
+type ErrorScreen =
+  | { kind: 'eligibility'; state: LessonEligibilityState }
+  | { kind: 'transport'; state: LessonTransportState; retry: boolean };
+
+/**
+ * W2L.3: every answer Core gives the lesson route has its own screen. A
+ * refusal no retry can change never offers one (it would only fail again);
+ * a lost connection or a Core failure always does.
+ */
+export function lessonErrorScreen(code: string, offline: boolean): ErrorScreen {
+  switch (code) {
+    case 'LESSON_AGE_ELIGIBILITY_REQUIRED': return { kind: 'eligibility', state: 'required' };
+    case 'LESSON_AGE_RESTRICTED':
+    case 'COURSE_AGE_RESTRICTED': return { kind: 'eligibility', state: 'restricted' };
+    case 'LESSON_ELIGIBILITY_MISSING':
+    case 'UNSUPPORTED_LESSON': return { kind: 'eligibility', state: 'unavailable' };
+    case 'PLACEMENT_REQUIRED': return { kind: 'transport', state: 'placement', retry: false };
+    case 'LESSON_LOCKED': return { kind: 'transport', state: 'locked', retry: false };
+    case 'COURSE_PREREQUISITE_REQUIRED': return { kind: 'transport', state: 'prerequisite', retry: false };
+    case 'NOT_FOUND': return { kind: 'transport', state: 'not-found', retry: false };
+    default: return offline ? { kind: 'transport', state: 'offline', retry: true } : { kind: 'transport', state: 'load-error', retry: true };
+  }
 }
 
 export default LessonRoute;

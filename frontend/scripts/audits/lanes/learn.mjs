@@ -14,7 +14,7 @@ const lessonSurfaces = [
   ['rulebuilder', ['10-12']], ['ledger', ['13-17']], ['growthcompare', ['13-17']], ['taxbracket', ['13-17']], ['fractionline', ['10-12']],
   ['fractionarea', ['6-9']], ['barmodel', ['10-12']], ['schemadiagram', ['10-12']], ['workedexample', ['10-12']], ['functionmachine', ['10-12']],
   ['cpafading', ['6-9', '10-12']], ['result', ['6-9']], ['replay', ['6-9']], ['upgrade', ['6-9']], ['invalid', ['6-9']], ['opening', ['6-9']],
-  ['offline', ['6-9']], ['loaderror', ['6-9']],
+  ['offline', ['6-9']], ['loaderror', ['6-9']], ['resultbadge', ['6-9']],
 ];
 
 export const states = [
@@ -30,6 +30,10 @@ export const states = [
   app('/learn/lesson@eligibility-required', '/learn/lesson/audit-required', 'lesson-eligibility-required', '[data-screen="lesson-eligibility-required"]'),
   app('/learn/lesson@eligibility-restricted', '/learn/lesson/audit-restricted', 'lesson-eligibility-restricted', '[data-screen="lesson-eligibility-restricted"]'),
   app('/learn/lesson@eligibility-unavailable', '/learn/lesson/audit-unavailable', 'lesson-eligibility-unavailable', '[data-screen="lesson-eligibility-unavailable"]'),
+  // W2L.3: Core's refusals that no retry can change, each its own screen in the lesson layer.
+  app('/learn/lesson@locked', '/learn/lesson/audit-locked', 'lesson-locked', '[data-screen="lesson-locked"]'),
+  app('/learn/lesson@prerequisite', '/learn/lesson/audit-prerequisite', 'lesson-prerequisite', '[data-screen="lesson-prerequisite"]'),
+  app('/learn/lesson@not-found', '/learn/lesson/audit-not-found', 'lesson-not-found', '[data-screen="lesson-not-found"]'),
 ];
 
 /*
@@ -118,6 +122,9 @@ export const scenarios = {
   'lesson-eligibility-required': { population: 'adult', guest: false, ageBand: 'adult', error: [403, 'LESSON_AGE_ELIGIBILITY_REQUIRED'] },
   'lesson-eligibility-restricted': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', error: [403, 'LESSON_AGE_RESTRICTED'] },
   'lesson-eligibility-unavailable': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', error: [409, 'LESSON_ELIGIBILITY_MISSING'] },
+  'lesson-locked': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', error: [403, 'LESSON_LOCKED'] },
+  'lesson-prerequisite': { population: 'parent-created child 10-12', guest: false, ageBand: '10-12', error: [403, 'COURSE_PREREQUISITE_REQUIRED'] },
+  'lesson-not-found': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', error: [404, 'NOT_FOUND'] },
   // W2L.1. `shelf` is what GET /learn/courses answers; `engine` which course engine Core runs; `register` the B.23 register.
   'learn-home-child': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'zara', shelf: 'child', engine: 'linear', register: 'young' },
   'learn-home-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina',
@@ -286,6 +293,11 @@ function respondPlacement({ spec, locale, kind, request, ok }) {
 export function respond({ spec, scenario, locale, fixtures, path, request, ok }) {
   const learnerPage = respondLearnerPages({ spec, scenario, locale, path, request, ok });
   if (learnerPage !== undefined) return learnerPage;
+  // W2L.3: the lesson route reads the learner's register (B.23) as the lesson opens; answer it from the scenario's age.
+  if (scenario.startsWith('lesson-') && path === '/learn/register' && request.method === 'GET') {
+    const register = { '6-9': 'young', '10-12': 'transition', '13-17': 'teen', adult: 'adult' }[spec.ageBand];
+    if (register) return ok({ register, copy_band: BAND[register], policy_version: '2026-09-24.1', graduation: null });
+  }
   const lesson = path.match(/^\/learn\/lessons\/([^/]+)(\/v2-runs)?$/);
   if (lesson && !lesson[2]) {
     if (spec.hold) return 'hold';

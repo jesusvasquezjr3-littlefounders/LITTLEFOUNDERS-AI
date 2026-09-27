@@ -170,5 +170,11 @@
     "errorBody": "We could not load them. Try again.",
     "offlineBody": "Connect to the internet to find your start.",
     "courses": "Courses"
+  },
+  "lesson": {
+    "pageTitle": "Lesson",
+    "resultTitle": "Your result",
+    "badgeEarned": "Badge earned",
+    "courseComplete": "Course complete"
   }
 }

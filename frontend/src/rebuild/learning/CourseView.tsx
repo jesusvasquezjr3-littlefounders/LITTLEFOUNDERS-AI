@@ -6,6 +6,7 @@ import '../design/system.css';
 import './learnerPage.css';
 import './coursePath.css';
 import { localizedText, type CoursePath, type CoursePathItem } from './coursePath';
+import { CourseBadge } from './CourseBadge';
 import { courseProgress, courseTitle, nextStep, type CourseDetail, type CourseState, type CourseTree, type TreeAdventure } from './course';
 import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } from './learnCopy';
 
@@ -121,7 +122,10 @@ function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, f
   const empty = detail.engine === 'pathway' ? detail.path.chapters.length === 0 : detail.tree.adventures.length === 0;
   const heroId = useId();
   const text = (value: Record<string, unknown>) => localizedText(value, locale);
-  const earned = detail.engine === 'pathway' && detail.path.pathway.badge.stage !== null && detail.path.pathway.badge.earnedStages.includes(detail.path.pathway.badge.stage);
+  // The course badge: the pathway's stage credential, or under the linear engine the finished course itself (Core's badge rule).
+  const earned = detail.engine === 'pathway'
+    ? detail.path.pathway.badge.stage !== null && detail.path.pathway.badge.earnedStages.includes(detail.path.pathway.badge.stage)
+    : progress.total > 0 && progress.passed >= progress.total;
   return <>
     <div className="lf-course-path-progress">
       <ProgressBar label={fill(t.progress, { passed: progress.passed, total: progress.total })} labelHidden tone="mint"
@@ -139,7 +143,7 @@ function ReadyCourse({ detail, slug, locale, t, inProgress, links, onNavigate, f
       </section> : step.kind === 'done' ? <section className="lf-course-path-done" aria-labelledby={heroId} data-step="done">
         <h2 id={heroId} data-copy-role="heading">{t.completeTitle}</h2>
         <p data-copy-role="body">{t.completeBody}</p>
-        {earned ? <p className="lf-course-path-earned" data-copy-role="body"><StatusMark correct />{t.badgeEarned}</p> : null}
+        {earned ? <p className="lf-course-path-earned" data-copy-role="body"><CourseBadge slug={slug} />{t.badgeEarned}</p> : null}
       </section> : step.kind === 'lesson' ? <section className="lf-course-path-hero" aria-labelledby={heroId} data-step="lesson">
         <h2 id={heroId} data-copy-role="heading">{text(step.title) || title}</h2>
         <div className="lf-course-path-hero-action">

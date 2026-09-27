@@ -6,6 +6,7 @@ import { TeachingChartBoard } from './TeachingChartBoard';
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './goalBullet.css';
+import { LessonStageSlot } from './lessonStage';
 
 type GoalBulletSegment = Extract<LessonClientSegment, { type: 'visual.goal-bullet.v2' }>;
 type Labels = { back: string; explore: string; progress: string; board: string; showTable: string; showChart: string; reset: string; category: string; value: string;
@@ -64,7 +65,7 @@ export function GoalBulletBoard({ document, segment, onBack, sequence }: {
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
         {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, saved !== initial)} max={100} valueText={`${sequenceProgress(sequence, saved !== initial)}%`} /> : null}
-        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header>
+        <span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.explore}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart} columns={[t.category, t.value]}

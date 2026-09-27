@@ -137,6 +137,17 @@ describe('course screen under the pathway engine (B.6)', () => {
 });
 
 describe('course screen under the linear engine', () => {
+  it('W2L.3: shows the course badge on a finished course, with its own course icon and no celebration', () => {
+    const tree = childTree();
+    const done = { ...tree, course: { ...tree.course, progress: { passed: 14, total: 14, pct: 100 } }, nextLessonId: null };
+    const { container } = view({ status: 'ready', detail: { engine: 'linear', tree: done } });
+    const earned = screen.getByText('Badge earned');
+    expect(earned.querySelector('[data-asset-id="course.badge.frame"]')).not.toBeNull();
+    expect(earned.querySelector('[data-asset-id="course.money-basics.icon"]')).not.toBeNull();
+    expect(earned.querySelector('[aria-hidden="true"]')).not.toBeNull();
+    expect(container.querySelector('[data-celebrate], [class*="celebrat"]')).toBeNull();
+  });
+
   it('lists the chapters closed, and opens one to its lessons in the state Core gave each', () => {
     const { onNavigate } = view(coursePreviewStates.linear!);
     expect(screen.getByRole('heading', { level: 1, name: 'Money basics' })).toBeTruthy();

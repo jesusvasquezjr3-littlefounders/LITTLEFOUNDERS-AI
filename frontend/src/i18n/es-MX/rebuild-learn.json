@@ -170,5 +170,11 @@
     "errorBody": "No pudimos cargarlas. Inténtalo de nuevo.",
     "offlineBody": "Conéctate a internet para encontrar tu inicio.",
     "courses": "Cursos"
+  },
+  "lesson": {
+    "pageTitle": "Lección",
+    "resultTitle": "Tu resultado",
+    "badgeEarned": "Insignia ganada",
+    "courseComplete": "Curso terminado"
   }
 }

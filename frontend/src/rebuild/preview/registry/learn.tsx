@@ -189,6 +189,9 @@ export const learnPreviewScreens: PreviewRegistry = {
     onBack={() => go('home')} onRetry={() => {}} onOpenPath={() => {}} onOpenMentor={() => {}}
     onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} /></LearnPreviewHost>),
   resultmilestone: framed(({ locale, go }) => <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={milestoneReceipt(locale)} />),
+  // W2L.3: the course and badge milestones Core named, the badge showing the course it was earned in.
+  resultbadge: framed(({ locale, go }) => <LessonResultView locale={locale} onContinue={() => go('home')} fixture courseSlug="investing"
+    rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete', 'course-complete', 'badge-earned'], streak: undefined, pace: undefined }} />),
   resultregister: framed(({ locale, register, go }) => <LessonResultView key={`resultregister:${register}`} locale={locale} onContinue={() => go('home')} fixture
     register={register} rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete'], streak: undefined, pace: undefined }} />),
   graduation: framed(({ locale, theme, params }) => <main className="lf-family-preview" data-surface="app" data-screen="graduation-host">

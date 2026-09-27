@@ -24,6 +24,7 @@ import { FunctionMachineBoard } from './FunctionMachineBoard';
 import { CpaFadingBoard } from './CpaFadingBoard';
 import { DecisionReasonsBoard, type ReasoningGrade } from './DecisionReasonsBoard';
 import type { Allocation } from './allocationModel';
+import { LessonStageProvider } from './lessonStage';
 import { lessonVersionKey, loadLessonClientDocument, type LessonClientDocument, type LessonClientSegment, type LessonMentorStage } from './lessonDocument';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
@@ -85,8 +86,9 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   const schemaSequence = loaded.document.segments.length === 3 && loaded.document.segments[0]?.type === 'math.schema-diagram.structure.v2' && loaded.document.segments[1]?.type === 'math.schema-diagram.slots.v2' && loaded.document.segments[2]?.type === 'math.schema-diagram.answer.v2';
   const cpaSequence = loaded.document.segments.length === 3 && loaded.document.segments.every((segment) => segment.type === 'math.cpa-count.v2') && !!loaded.document.representation_progressions;
   if (!supported || loaded.document.segments.length > 1 && !previewSequence && !barSequence && !schemaSequence && !cpaSequence) return unavailable(locale, onBack, 'upgrade');
-  return <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
-    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={mentorStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} />;
+  // W2L.3 (B.8): every board's stage slot reads Core's projection from here; the allocation pilot keeps its own prop.
+  return <LessonStageProvider stage={mentorStage} ageBand={loaded.document.age_band} theme={theme}><ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
+    onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} mentorStage={mentorStage} theme={theme} previewSequence={previewSequence||barSequence||schemaSequence||cpaSequence} /></LessonStageProvider>;
 }
 
 function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onComplete, metSegmentIds, attemptedSegmentIds, mentorStage, theme, previewSequence }: {

@@ -7,6 +7,7 @@ import { ageEligibilityForBand, type LessonClientDocument, type LessonClientSegm
 import { sequenceProgress, type LessonSequenceControl } from './lessonSequence';
 import './learning.css';
 import './growth.css';
+import { LessonStageSlot } from './lessonStage';
 
 type CopySet = {
   back: string; practice: string; board: string; showTable: string; showChart: string;
@@ -86,7 +87,7 @@ export function GrowthBoard({ document, segment, onBack, sequence }: { document:
   return <main className="lf-learning" data-surface="app" data-screen="timeline">
     <div className="lf-learning-inner">
       <header className="lf-learning-top"><Button onClick={onBack}>{t.back}</Button>
-        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, contribution !== fixture.item.initial)} max={100} valueText={`${sequenceProgress(sequence, contribution !== fixture.item.initial)}%`} /> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header>
+        {sequence ? <ProgressBar className="lf-learning-progress" labelHidden label={t.progress} value={sequenceProgress(sequence, contribution !== fixture.item.initial)} max={100} valueText={`${sequenceProgress(sequence, contribution !== fixture.item.initial)}%`} /> : null}<span data-copy-role={sequence ? 'data' : 'body'}>{sequence ? `${sequence.index + 1}/${sequence.total}` : t.practice}</span></header><LessonStageSlot />
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><p data-copy-role="prompt">{segment.prompt}</p></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}

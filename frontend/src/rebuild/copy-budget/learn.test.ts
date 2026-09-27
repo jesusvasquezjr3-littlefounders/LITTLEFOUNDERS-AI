@@ -48,6 +48,11 @@ const placement: Record<string, CopyRole> = {
   offlineError: 'body', retry: 'action', saving: 'action', capped: 'body', adjustTitle: 'heading', adjustMentor: 'mentor',
   adjustEarlier: 'action', adjustKeep: 'action', errorTitle: 'heading', errorBody: 'body', offlineBody: 'body', courses: 'action',
 };
+/*
+ * W2L.3: the lesson layer's document titles and the result's badge and
+ * course moments (LessonLayer.tsx, LessonResultView.tsx).
+ */
+const lesson: Record<string, CopyRole> = { pageTitle: 'heading', resultTitle: 'heading', badgeEarned: 'body', courseComplete: 'body' };
 
 const LONGEST_TITLE = { 'en-US': 'My first lemonade stand', 'es-MX': 'Mi primer puesto de limonada', 'pt-BR': 'Minha primeira barraca de limonada' } as const;
 const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
@@ -57,9 +62,9 @@ const filled = (text: string, locale: keyof typeof LONGEST_TITLE) => text
 describe('rebuild-learn copy budget', () => {
   for (const [locale, strings] of namespaceCopy('learn')) {
     it(`fits the youngest copy budget in ${locale}`, () => {
-      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement']);
+      expectBudgetedGroups(strings, [...Object.keys(flat), 'home', 'course', 'territory', 'placement', 'lesson']);
       for (const [key, role] of Object.entries(flat)) expectFits(strings[key] as string, role, locale, '6-9', key);
-      for (const [group, roles] of [['home', home], ['course', course], ['territory', territory], ['placement', placement]] as const) {
+      for (const [group, roles] of [['home', home], ['course', course], ['territory', territory], ['placement', placement], ['lesson', lesson]] as const) {
         const entries = flatten(strings[group]!);
         // Exhaustive: every key of the group has a role here, and every role names a key.
         expect(new Set(entries.map(([key]) => key.split('.')[0]))).toEqual(new Set(Object.keys(roles)));
