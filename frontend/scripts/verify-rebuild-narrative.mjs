@@ -51,6 +51,8 @@ const STATES = {
   'family-empty': { query: { screen: 'familylearning', narrative: 'empty', bridges: '0' }, band: 'adult', root: '.lf-family-preview', screen: false, h1: 0 },
   'family-error': { query: { screen: 'familylearning', narrative: 'error' }, band: 'adult', root: '.lf-family-preview', screen: false, h1: 0 },
   'family-closed': { query: { screen: 'familylearning', open: '0' }, band: 'adult', root: '.lf-family-preview', screen: false, h1: 0 },
+  // W3L.1 (OD-27 (3), L-13): an under-13 child's story choices in the Tutor's narrative.
+  'family-choices': { query: { screen: 'familylearning', narrative: 'choices' }, band: 'adult', root: '.lf-family-preview', screen: false, h1: 0 },
 };
 
 async function navigate({ state, locale, theme, width, scale, spacing, reduced = false }) {

@@ -256,7 +256,7 @@ describe('OD-25: the learner answers the one-stage-early and the Mentor-mastery 
     const mastery = screen.getByRole('region', { name: 'Shown with your Mentor' });
     expect(within(mastery).getByText('You showed Save for later. Unlock the next step?')).toBeTruthy();
     expect(onOpenEarly).not.toHaveBeenCalled();
-    fireEvent.click(within(early).getByRole('button', { name: 'Open it' }));
+    fireEvent.click(within(early).getByRole('button', { name: 'Yes, open it' }));
     expect(await within(early).findByText('Open. It is an extra, at your pace.')).toBeTruthy();
     expect(onOpenEarly).toHaveBeenCalledWith('ch-teens');
     fireEvent.click(within(mastery).getByRole('button', { name: 'Yes, unlock' }));
@@ -269,12 +269,44 @@ describe('OD-25: the learner answers the one-stage-early and the Mentor-mastery 
     const onAcceptMastery = vi.fn(async () => 'refused' as const);
     view(offers, { onOpenEarly, onAcceptMastery });
     const early = screen.getByRole('region', { name: 'Ready for more' });
-    fireEvent.click(within(early).getByRole('button', { name: 'Open it' }));
+    fireEvent.click(within(early).getByRole('button', { name: 'Yes, open it' }));
     expect(await within(early).findByText('Could not save it. Try again.')).toBeTruthy();
     fireEvent.click(within(early).getByRole('button', { name: 'Not now' }));
     expect(screen.queryByRole('region', { name: 'Ready for more' })).toBeNull();
     fireEvent.click(within(screen.getByRole('region', { name: 'Shown with your Mentor' })).getByRole('button', { name: 'Yes, unlock' }));
     await vi.waitFor(() => expect(screen.queryByRole('region', { name: 'Shown with your Mentor' })).toBeNull());
+  });
+
+  it('W3L.1: each offer says what yes means and what it rests on; the Mentor offer takes a recorded no', async () => {
+    const onOpenEarly = vi.fn(async () => 'done' as const);
+    const onAcceptMastery = vi.fn(async () => 'done' as const);
+    const onDeclineMastery = vi.fn(async () => 'done' as const);
+    const state = offers;
+    const { rerender, onNavigate } = view(state, { onOpenEarly, onAcceptMastery, onDeclineMastery });
+    const early = screen.getByRole('region', { name: 'Ready for more' });
+    expect(within(early).getByText('It is from the next stage. It stays extra, at your pace.')).toBeTruthy();
+    expect(within(early).getByText('You showed')).toBeTruthy();
+    expect(within(early).getByText('Save for later')).toBeTruthy();
+    const mastery = screen.getByRole('region', { name: 'Shown with your Mentor' });
+    expect(within(mastery).getByText('Yes counts this topic as done. No keeps its lessons for you.')).toBeTruthy();
+    expect(within(mastery).queryByRole('button', { name: 'Not now' })).toBeNull();
+    fireEvent.click(within(mastery).getByRole('button', { name: "No, I'll practice" }));
+    expect(await within(mastery).findByText('Okay. Its lessons stay open for you.')).toBeTruthy();
+    expect(onDeclineMastery).toHaveBeenCalledWith('topic-l-4');
+    expect(onAcceptMastery).not.toHaveBeenCalled();
+    // The answered card takes focus, so a keyboard learner hears what the answer did.
+    expect(document.activeElement).toBe(mastery);
+    fireEvent.click(within(early).getByRole('button', { name: 'Yes, open it' }));
+    expect(await within(early).findByText('Open. It is an extra, at your pace.')).toBeTruthy();
+    // The host reads the course again and both offers leave the payload: the answers stay on screen for this visit.
+    const ready = state as Extract<typeof state, { status: 'ready' }>;
+    const path = ready.detail.engine === 'pathway' ? ready.detail.path : null;
+    const after: CourseViewProps['state'] = { status: 'ready', detail: { engine: 'pathway',
+      path: { ...path!, earlyAccess: [{ ...path!.earlyAccess[0]!, state: 'opened' }], masteryOffers: [] } } };
+    rerender(<CourseView state={after} slug="financial-education" locale="en-US" dark={false} links={links} onNavigate={onNavigate}
+      onOpenEarly={onOpenEarly} onAcceptMastery={onAcceptMastery} onDeclineMastery={onDeclineMastery} />);
+    expect(within(screen.getByRole('region', { name: 'Shown with your Mentor' })).getByText('Okay. Its lessons stay open for you.')).toBeTruthy();
+    expect(within(screen.getByRole('region', { name: 'Ready for more' })).getByText('Open. It is an extra, at your pace.')).toBeTruthy();
   });
 
   it('without handlers (an older host) and without offers, nothing is asked', () => {
@@ -295,6 +327,10 @@ describe('OD-25: the learner answers the one-stage-early and the Mentor-mastery 
     const answer = (code: string) => vi.fn(async () => ({ data: null, error: { code } }));
     expect(await openChapterEarly(answer('EARLY_ACCESS_NOT_ELIGIBLE'), 'money', 'c')).toBe('refused');
     expect(await acceptMasteryCredit(answer('MASTERY_CREDIT_NOT_ELIGIBLE'), 'money', 't')).toBe('refused');
+    const { declineMasteryCredit } = await import('./course');
+    expect(await declineMasteryCredit(ok, 'money', 't-1')).toBe('done');
+    expect(ok).toHaveBeenLastCalledWith('/learn/courses/money/mastery-credit', { method: 'POST', body: { topicId: 't-1', decision: 'decline' } });
+    expect(await declineMasteryCredit(answer('MASTERY_OFFER_ANSWERED'), 'money', 't')).toBe('refused');
     expect(await acceptMasteryCredit(answer('NETWORK'), 'money', 't')).toBe('offline');
     expect(await acceptMasteryCredit(answer('DATA_UNAVAILABLE'), 'money', 't')).toBe('error');
     expect(await openChapterEarly(vi.fn(async () => { throw new Error('offline'); }), 'money', 'c')).toBe('offline');

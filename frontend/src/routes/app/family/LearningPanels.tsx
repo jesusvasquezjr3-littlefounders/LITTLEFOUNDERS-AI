@@ -94,7 +94,9 @@ function ScopedNarrative({ kidUserId, token }: { kidUserId: string; token: strin
     const next = await fetchKidNarrative(transport, kidUserId, state.entries.length);
     setLoadingMore(false);
     if (current !== generation.current) return;
-    if (next.status === 'ready') setState({ ...state, entries: [...state.entries, ...next.entries], hasMore: next.hasMore });
+    // L-13: Core re-decides on every page whether the Tutor sees the choices; a page that says no drops them all.
+    if (next.status === 'ready') setState({ status: 'ready', week: state.week, entries: [...state.entries, ...next.entries], hasMore: next.hasMore,
+      ...(next.choices ? { choices: [...(state.choices ?? []), ...next.choices] } : {}) });
   }
 
   return <LearningNarrative state={state} locale={locale} dark={isDark} open={open} loadingMore={loadingMore}

@@ -149,7 +149,7 @@ export const learnPreviewScreens: PreviewRegistry = {
     slug="financial-education" state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
     courseTitles={{ entre: 'Entrepreneurship' }} links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('coursepath')}
     // OD-25 (`?path=offers`): the preview answers yes without Core; the real route re-reads the course.
-    onOpenEarly={async () => 'done'} onAcceptMastery={async () => 'done'} /></LearnPreviewHost>),
+    onOpenEarly={async () => 'done'} onAcceptMastery={async () => 'done'} onDeclineMastery={async () => 'done'} /></LearnPreviewHost>),
   // W2L.1 (L2): the one course screen in every state, both course engines (`?course=`).
   course: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`course:${locale}:${params.get('course')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePreviewStates[params.get('course') ?? 'linear'] ?? coursePreviewStates.linear!} inProgress={params.get('building') === '1'}
@@ -165,7 +165,7 @@ export const learnPreviewScreens: PreviewRegistry = {
     return <LearnPreviewHost><LearnHomeView key={`learnhome:${locale}:${home}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand} name={params.get('name') === '0' ? null : 'Sofía'}
       shelf={shelf} featured={featured} rhythm={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
       bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []} links={previewLinks} onNavigate={previewNavigate(go)}
-      onRetry={() => go('learnhome')} onBridge={async () => 'done'}
+      onRetry={() => go('learnhome')} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')}
       graduation={params.get('graduation') === '1' ? <RegisterGraduationView fixture locale={locale} dark={theme === 'dark'} into="transition" onAcknowledge={async () => true} /> : null} /></LearnPreviewHost>;
   }),
   recall: framed(({ locale, theme, params, go }) => <NarrativeRecallView key={`recall:${locale}`} fixture locale={locale} dark={theme === 'dark'}
@@ -173,7 +173,7 @@ export const learnPreviewScreens: PreviewRegistry = {
   journal: framed(({ locale, theme, params, go }) => <LearnPreviewHost><DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'}
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
-    onClear={async () => true} onBridge={async () => 'done'} /></LearnPreviewHost>),
+    onClear={async () => true} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')} /></LearnPreviewHost>),
   // OD-27 (3): the Tutor's view of an under-13 child's story choices, as the Family Hub mounts it (open, one page).
   childdecisions: framed(({ locale, theme }) => <main className="lf-family-preview" data-surface="app" data-screen="child-decisions-host">
     <ChildDecisionsView key={`childdecisions:${locale}`} fixture locale={locale} dark={theme === 'dark'} state={childDecisionsFixture(locale)} open
@@ -182,7 +182,7 @@ export const learnPreviewScreens: PreviewRegistry = {
   learnershortcut: framed(({ locale, theme, params, go }) => <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
     <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
       bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}
-      onOpenJournal={() => go('journal')} onOpenRhythm={() => go('rhythm')} onBridge={async () => 'done'} />
+      onOpenJournal={() => go('journal')} onOpenRhythm={() => go('rhythm')} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')} />
   </main>),
   reasoning: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`reasoning:${locale}:${ageBand}`} raw={decideJustifyPilotDocument(locale, ageBand)}
     locale={locale} ageBand={ageBand} onBack={() => go('home')} onGradeReasoning={(answer) => {

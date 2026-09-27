@@ -11,6 +11,12 @@
 .lf-family-learning-entry h3 { margin: 0; font: 600 1.125rem/1.3 Fredoka, sans-serif; overflow-wrap: break-word; }
 .lf-family-learning-meta { color: var(--content-muted); font-weight: 800; font-size: .875rem; }
 .lf-family-learning-label { font-weight: 800; }
+/* OD-27 (3), L-13: an under-13 child's story choices, with the line that says the child is told. */
+.lf-family-learning-note { color: var(--content-muted); overflow-wrap: anywhere; }
+.lf-family-learning-choices { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-family-learning-choices li { display: grid; gap: var(--spacing-1); padding-inline-start: var(--spacing-3); border-inline-start: var(--spacing-1) solid var(--outline); overflow-wrap: anywhere; }
+.lf-family-learning-choices p { margin: 0; }
+.lf-family-learning-situation { color: var(--content-muted); }
 .lf-family-learning-talk { padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--content); font-weight: 800; }
 .lf-family-learning-tag { display: inline-flex; align-items: center; gap: var(--spacing-1); padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--success-soft); color: var(--success-strong); font-size: .875rem; font-weight: 800; }
 .lf-family-learning-tag .lf-system-glyph { inline-size: 18px; block-size: 18px; flex: none; }

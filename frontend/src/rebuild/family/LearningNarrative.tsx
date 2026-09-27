@@ -4,7 +4,7 @@ import { Button, ErrorState, InlineNotice, LoadingState, StatusMark } from '../d
 import '../design/tokens.css';
 import '../design/system.css';
 import './familyLearning.css';
-import type { NarrativeEntry, NarrativeState } from './familyLearning';
+import type { NarrativeEntry, NarrativeState, TutorChoice } from './familyLearning';
 
 /*
  * B.10 / S05.3c — what the child learned in their courses, told to the
@@ -14,8 +14,13 @@ import type { NarrativeEntry, NarrativeState } from './familyLearning';
  * (the Plan, step 2). Deterministic from Core's data, like the Mentor's
  * session narrative; nothing here is generated.
  *
- * The child's story choices are counted, never shown: the guardian asks, the
- * child tells. Adult register (B.23): direct, no decoration, respects time,
+ * The child's story choices are counted, not shown: the guardian asks, the
+ * child tells. One exception, decided by Core on every read (OD-27 (3),
+ * L-13): for a parent-created child under 13 each lesson shows the story's
+ * situation and the option the child chose (the latest; no outcome), in the
+ * lesson's language, and the panel says the child is told (their journal
+ * says "Your Tutor can see the choices you make"). Teens stay counts only.
+ * Adult register (B.23): direct, no decoration, respects time,
  * so the first view carries the week in two numbers and the latest lessons.
  *
  * Presentation only: the host panel owns transport. Core already checked the
@@ -27,6 +32,8 @@ type Copy = {
   week: (lessons: number, topics: number) => string; practiced: string;
   struggle: Record<'none' | 'resolved' | 'open', string>; hint: string; decisions: (n: number) => string;
   talk: Record<NarrativeEntry['conversation'], string>; topicDone: string;
+  /** L-13: the choices of an under-13 child, and the line that says the child knows. */
+  choicesNote: string; chose: string; talkSeen: string;
 };
 
 export const learningNarrativeCopy: Record<Locale, Copy> = {
@@ -37,6 +44,7 @@ export const learningNarrativeCopy: Record<Locale, Copy> = {
     struggle: { none: 'Got it right away.', resolved: 'Found it tricky, then got it.', open: 'Still working on it.' }, hint: 'Used a hint.',
     decisions: (n) => `Made ${n} story ${n === 1 ? 'choice' : 'choices'}.`,
     talk: { decision: 'Ask what they chose, and why.', explain: 'Ask them to explain it in their own words.' }, topicDone: 'Topic finished',
+    choicesNote: 'Under 13, you see each story choice. Your child is told.', chose: 'Chose', talkSeen: 'Ask why they chose it.',
   },
   'es-MX': {
     title: 'Aprendizaje en cursos', open: 'Ver aprendizaje', close: 'Ocultar aprendizaje', loading: 'Cargando aprendizaje', retry: 'Reintentar', error: 'No se pudo cargar el aprendizaje.', noAccess: 'Este niño ya no está vinculado contigo.',
@@ -45,6 +53,7 @@ export const learningNarrativeCopy: Record<Locale, Copy> = {
     struggle: { none: 'Lo entendió a la primera.', resolved: 'Le costó, y luego lo logró.', open: 'Todavía lo está practicando.' }, hint: 'Usó una pista.',
     decisions: (n) => `Tomó ${n} ${n === 1 ? 'decisión' : 'decisiones'} en la historia.`,
     talk: { decision: 'Pregúntale qué eligió y por qué.', explain: 'Pídele que te lo explique con sus palabras.' }, topicDone: 'Tema terminado',
+    choicesNote: 'Mientras tenga menos de 13, ves cada elección. Se le avisa.', chose: 'Eligió', talkSeen: 'Pregúntale por qué lo eligió.',
   },
   'pt-BR': {
     title: 'Aprendizado nos cursos', open: 'Ver aprendizado', close: 'Ocultar aprendizado', loading: 'Carregando aprendizado', retry: 'Tentar de novo', error: 'Não foi possível carregar o aprendizado.', noAccess: 'Esta criança não está mais vinculada a você.',
@@ -53,6 +62,7 @@ export const learningNarrativeCopy: Record<Locale, Copy> = {
     struggle: { none: 'Entendeu de primeira.', resolved: 'Achou difícil, depois conseguiu.', open: 'Ainda está praticando.' }, hint: 'Usou uma dica.',
     decisions: (n) => `Tomou ${n} ${n === 1 ? 'decisão' : 'decisões'} na história.`,
     talk: { decision: 'Pergunte o que escolheu e por quê.', explain: 'Peça que explique com as próprias palavras.' }, topicDone: 'Tema terminado',
+    choicesNote: 'Enquanto tiver menos de 13, você vê cada escolha. A criança sabe.', chose: 'Escolheu', talkSeen: 'Pergunte por que escolheu.',
   },
 };
 
@@ -80,15 +90,18 @@ export function LearningNarrative({ state, locale, dark, open, onToggle, onRetry
         : state.status === 'error' ? <ErrorState heading={t.error} retryLabel={t.retry} retryingLabel={t.loading} onRetry={onRetry} />
           : <>
             <p className="lf-family-learning-week" data-copy-role="body">{t.week(state.week.lessons, state.week.topicsCompleted)}</p>
+            {state.choices ? <p className="lf-family-learning-note" data-copy-role="body">{t.choicesNote}</p> : null}
             {state.entries.length === 0 ? <p data-copy-role="body">{t.empty}</p> : <ol className="lf-family-learning-list">
-              {state.entries.map((entry) => <NarrativeCard key={entry.lessonId} entry={entry} t={t} />)}
+              {state.entries.map((entry) => <NarrativeCard key={entry.lessonId} entry={entry} t={t}
+                choices={state.choices ? state.choices.filter((choice) => choice.lessonId === entry.lessonId) : null} />)}
             </ol>}
             {state.hasMore && onMore ? <Button aria-busy={loadingMore} disabled={loadingMore} onClick={onMore}>{t.more}</Button> : null}
           </>}
   </section>;
 }
 
-function NarrativeCard({ entry, t }: { entry: NarrativeEntry; t: Copy }) {
+function NarrativeCard({ entry, t, choices }: { entry: NarrativeEntry; t: Copy; choices: TutorChoice[] | null }) {
+  const seen = choices !== null && choices.length > 0;
   return <li className="lf-family-learning-entry">
     <div className="lf-family-learning-entry-head">
       <h3 data-copy-role="data">{entry.lessonTitle}</h3>
@@ -98,7 +111,12 @@ function NarrativeCard({ entry, t }: { entry: NarrativeEntry; t: Copy }) {
     <p><span className="lf-family-learning-label" data-copy-role="body">{t.practiced}</span>{' '}<span data-copy-role="data">{entry.skills.join(', ')}</span></p>
     {entry.struggle ? <p data-copy-role="body">{t.struggle[entry.struggle]}</p> : null}
     {entry.usedHint ? <p data-copy-role="body">{t.hint}</p> : null}
-    {entry.decisions > 0 ? <p data-copy-role="body">{t.decisions(entry.decisions)}</p> : null}
-    <p className="lf-family-learning-talk" data-copy-role="body">{t.talk[entry.conversation]}</p>
+    {seen && choices ? <ul className="lf-family-learning-choices">
+      {choices.map((choice, index) => <li key={`${choice.lessonId}:${index}`} lang={choice.locale}>
+        <p className="lf-family-learning-situation" data-copy-role="data">{choice.situation}</p>
+        <p><span className="lf-family-learning-label" data-copy-role="body">{t.chose}</span>{' '}<span data-copy-role="data">{choice.choice}</span></p>
+      </li>)}
+    </ul> : entry.decisions > 0 ? <p data-copy-role="body">{t.decisions(entry.decisions)}</p> : null}
+    <p className="lf-family-learning-talk" data-copy-role="body">{seen && entry.conversation === 'decision' ? t.talkSeen : t.talk[entry.conversation]}</p>
   </li>;
 }

@@ -142,6 +142,8 @@ export interface CoursePathwayInputs {
   earlyOpenedChapterIds?: ReadonlySet<string>;
   /** OD-25: topics this learner accepted as done on Mentor mastery (course_topic_mastery_credits). Their lessons arrive as credits. */
   masteryCreditedTopicIds?: ReadonlySet<string>;
+  /** OD-25 (W3L.1): topics whose Mentor-mastery offer this learner declined (course_topic_mastery_declines). Never offered again. */
+  masteryDeclinedTopicIds?: ReadonlySet<string>;
   /** OD-24 legacy KC credits (ACTIVE KC keys), course evidence under E2. */
   legacyCreditedKcs?: ReadonlySet<string>;
 }
@@ -320,7 +322,8 @@ function earlyChapters(
  * OD-25 — topics the learner may accept as done on Mentor mastery: in an open
  * chapter, not complete, every taught skill shown and at least one shown with
  * the Mentor (graded course evidence alone already completes topics its own
- * way). Teaching topics only; a review keeps its graded practice.
+ * way). Teaching topics only; a review keeps its graded practice. A topic the
+ * learner declined is never offered again (the first answer is final, W3L.1).
  */
 function masteryOffers(
   chapters: readonly PathwayChapter[],
@@ -328,13 +331,14 @@ function masteryOffers(
   kcsByPath: ReadonlyMap<string, TopicKcs>,
   satisfaction: ReadonlyMap<string, KcSatisfaction>,
   evidence: LearnerEvidence,
+  declined: ReadonlySet<string> = new Set(),
 ): Array<{ topicId: string; chapterId: string; skills: string[] }> {
   const out: Array<{ topicId: string; chapterId: string; skills: string[] }> = [];
   for (const chapter of byPosition(chapters)) {
     if ((access.get(chapter.id) ?? 'closed') === 'closed') continue;
     for (const saga of byPosition(chapter.sagas)) {
       for (const topic of byPosition(saga.topics)) {
-        if (topic.kind !== 'teaching' || topic.lessonIds.length === 0 || topicCompletion(topic, evidence).complete) continue;
+        if (topic.kind !== 'teaching' || topic.lessonIds.length === 0 || declined.has(topic.id) || topicCompletion(topic, evidence).complete) continue;
         const teaches = [...(kcsByPath.get(topic.path)?.teaches ?? [])];
         const shown = teaches.map((kc) => satisfaction.get(kc) ?? 'none');
         if (teaches.length > 0 && shown.every((how) => how !== 'none') && shown.includes('mentor')) {
@@ -430,7 +434,7 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
     placement: { required: placementRequired, stage },
     skills: skillsOrder.map((key) => ({ key, shown: satisfaction.get(key) ?? 'none' })),
     earlyAccess,
-    masteryOffers: masteryOffers(chapters, access, kcsByPath, satisfaction, evidence),
+    masteryOffers: masteryOffers(chapters, access, kcsByPath, satisfaction, evidence, inputs.masteryDeclinedTopicIds),
     masteryCredited: [...(inputs.masteryCreditedTopicIds ?? [])].filter((id) => [...topicIdByPath.values()].includes(id)).sort(),
     graphPriorFraction: graphPrior(chapters, access, kcsByPath, satisfaction),
   };

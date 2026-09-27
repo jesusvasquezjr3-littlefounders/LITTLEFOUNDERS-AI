@@ -117,7 +117,7 @@ async function write(request: LearnWriteTransport, path: string, body: unknown):
   if (!reply.error) return 'done';
   if (reply.error.code === 'NETWORK') return 'offline';
   // Core re-derived the offer and it no longer stands (or the engine is off): refresh, never retry blindly.
-  return ['EARLY_ACCESS_NOT_ELIGIBLE', 'MASTERY_CREDIT_NOT_ELIGIBLE', 'PATHWAY_ENGINE_DISABLED', 'COURSE_AGE_RESTRICTED', 'NOT_FOUND'].includes(reply.error.code)
+  return ['EARLY_ACCESS_NOT_ELIGIBLE', 'MASTERY_CREDIT_NOT_ELIGIBLE', 'MASTERY_OFFER_ANSWERED', 'PATHWAY_ENGINE_DISABLED', 'COURSE_AGE_RESTRICTED', 'NOT_FOUND'].includes(reply.error.code)
     ? 'refused' : 'error';
 }
 
@@ -129,6 +129,11 @@ export function openChapterEarly(request: LearnWriteTransport, slug: string, cha
 /** OD-25: the learner accepts counting a topic as done on what they showed with the Mentor. */
 export function acceptMasteryCredit(request: LearnWriteTransport, slug: string, topicId: string): Promise<CourseAnswer> {
   return write(request, `/learn/courses/${encodeURIComponent(slug)}/mastery-credit`, { topicId });
+}
+
+/** OD-25 (W3L.1): the learner says no; Core remembers it and never asks about this topic again. */
+export function declineMasteryCredit(request: LearnWriteTransport, slug: string, topicId: string): Promise<CourseAnswer> {
+  return write(request, `/learn/courses/${encodeURIComponent(slug)}/mastery-credit`, { topicId, decision: 'decline' });
 }
 
 /** What the course offers next: its entry placement, one lesson, a finished course, or nothing to start. */

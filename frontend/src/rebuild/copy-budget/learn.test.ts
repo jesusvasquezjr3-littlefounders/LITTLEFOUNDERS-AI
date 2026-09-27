@@ -32,6 +32,8 @@ const course: Record<string, CopyRole> = {
   // W2L.4 (OD-25): the one-stage-early chapter and the Mentor-mastery topic, each a question the learner answers.
   earlyTitle: 'heading', earlyAsk: 'body', earlyYes: 'action', earlyDone: 'body', masteryTitle: 'heading', masteryAsk: 'body',
   masteryYes: 'action', notNow: 'action', masteryDone: 'body', saveFailed: 'body',
+  // W3L.1 (OD-25): what each offer means, the skills it rests on, and the recorded "no".
+  earlyMeans: 'body', earlyShowed: 'body', masteryMeans: 'body', masteryNo: 'action', masteryDeclined: 'body',
 };
 /*
  * W2L.2: the course world (L3, TerritoryMapView.tsx) and the placement flow

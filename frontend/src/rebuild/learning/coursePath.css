@@ -76,3 +76,6 @@
 .lf-rebuild .lf-course-path-offer--early { background: var(--sky-soft); }
 .lf-course-path-offer-topic { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--surface); font-weight: 800; overflow-wrap: anywhere; }
 .lf-rebuild .lf-course-path-offer .lf-actions { max-inline-size: 480px; }
+/* W3L.1: what the answer means, the skills it rests on; the card takes focus after an answer. */
+.lf-rebuild .lf-course-path-offer-means, .lf-rebuild .lf-course-path-offer-skills { margin: 0; overflow-wrap: anywhere; }
+.lf-rebuild .lf-course-path-offer:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--spacing-1); }

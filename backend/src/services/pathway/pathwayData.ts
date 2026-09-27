@@ -59,6 +59,8 @@ export interface LearnerPathwayContext {
   earlyOpenedChapterIds: Set<string>;
   /** OD-25: topics the learner accepted as done on Mentor mastery. */
   masteryCreditedTopicIds: Set<string>;
+  /** OD-25 (W3L.1): topics whose Mentor-mastery offer the learner declined; never offered again. */
+  masteryDeclinedTopicIds: Set<string>;
   /** OD-24: ACTIVE KC keys credited by completed legacy topics (legacy_kc_credits). */
   legacyCreditedKcs: Set<string>;
 }
@@ -91,7 +93,7 @@ export async function readCompletedCourseSlugs(userId: string): Promise<Set<stri
  */
 export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeScreenState, now = new Date()): Promise<LearnerPathwayContext | null> {
   if (!Uuid.safeParse(userId).success) return null;
-  const [kcs, edges, mastery, cards, badges, placements, profiles, completed, early, masteryCredits, legacyCredits] = await Promise.all([
+  const [kcs, edges, mastery, cards, badges, placements, profiles, completed, early, masteryCredits, legacyCredits, masteryDeclines] = await Promise.all([
     getActiveKcs(),
     getKcEdges(),
     getLearnerMastery(userId),
@@ -103,12 +105,15 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     serviceRest<unknown>(`/course_chapter_early_access?user_id=eq.${eu(userId)}&select=adventure_id&limit=1000`),
     serviceRest<unknown>(`/course_topic_mastery_credits?user_id=eq.${eu(userId)}&select=topic_id&limit=5000`),
     serviceRest<unknown>(`/legacy_kc_credits?user_id=eq.${eu(userId)}&select=kc_id&limit=10000`),
+    serviceRest<unknown>(`/course_topic_mastery_declines?user_id=eq.${eu(userId)}&select=topic_id&limit=5000`),
   ]);
   if (!kcs || !edges || !mastery || !cards || !completed) return null;
   const earlyRows = z.array(z.object({ adventure_id: z.string() }).passthrough()).safeParse(early);
   const creditRows = z.array(z.object({ topic_id: z.string() }).passthrough()).safeParse(masteryCredits);
   // A failed read is never "nothing opened" or "nothing credited" (that would re-lock shown work).
   if (!earlyRows.success || !creditRows.success) return null;
+  // A failed decline read (or a database without 0188) reads as none: an offer asked again never re-locks shown work.
+  const declineRows = z.array(z.object({ topic_id: z.string() }).passthrough()).safeParse(masteryDeclines);
   const badgeRows = BadgeRows.safeParse(badges);
   const placementRows = PlacementRows.safeParse(placements);
   const profileRows = ProfileRows.safeParse(profiles);
@@ -156,6 +161,7 @@ export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeSc
     age, mentorPKnown, dueReviewKcs, kcPrerequisites, kcKeyById, kcTitles, storedBadges, completedCourseSlugs: completed, placedStages,
     earlyOpenedChapterIds: new Set(earlyRows.data.map((row) => row.adventure_id)),
     masteryCreditedTopicIds: new Set(creditRows.data.map((row) => row.topic_id)),
+    masteryDeclinedTopicIds: new Set(declineRows.success ? declineRows.data.map((row) => row.topic_id) : []),
     legacyCreditedKcs,
   };
 }
@@ -234,6 +240,7 @@ export function coursePathwayInputs(
     hasLegacyPlacement,
     earlyOpenedChapterIds: ctx.earlyOpenedChapterIds,
     masteryCreditedTopicIds: ctx.masteryCreditedTopicIds,
+    masteryDeclinedTopicIds: ctx.masteryDeclinedTopicIds,
     legacyCreditedKcs: ctx.legacyCreditedKcs,
   };
 }
@@ -316,6 +323,22 @@ export async function recordTopicMasteryCredit(row: { userId: string; courseId: 
     body: JSON.stringify({
       user_id: Uuid.parse(row.userId), course_id: Uuid.parse(row.courseId), topic_id: Uuid.parse(row.topicId),
       kc_keys: [...row.skills], p_known: row.pKnown,
+    }),
+  });
+  return result !== null;
+}
+
+/**
+ * OD-25 (W3L.1) — the learner's "no" to a Mentor-mastery offer, with the
+ * skills it was offered on. One row per learner and topic; the first answer is
+ * final, so a replay is ignored by the key. Core checked the offer first.
+ */
+export async function recordTopicMasteryDecline(row: { userId: string; courseId: string; topicId: string; skills: readonly string[] }): Promise<boolean> {
+  const result = await serviceRest<unknown>('/course_topic_mastery_declines?on_conflict=user_id,topic_id', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify({
+      user_id: Uuid.parse(row.userId), course_id: Uuid.parse(row.courseId), topic_id: Uuid.parse(row.topicId), kc_keys: [...row.skills],
     }),
   });
   return result !== null;

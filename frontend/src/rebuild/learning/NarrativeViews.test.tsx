@@ -22,7 +22,7 @@ function strings(copy: Record<string, unknown>): Array<[string, string]> {
 describe('narrative copy (B.9, B.13)', () => {
   const recallRole = (key: string): CopyRole => (['next', 'happened', 'hide'].includes(key) ? 'action' : key === 'heading' ? 'heading' : key === 'reflect' ? 'prompt' : 'body');
   const journalRole = (key: string): CopyRole => {
-    if (['back', 'retry', 'more', 'clear', 'clearYes', 'clearNo', 'tryIt', 'notNow', 'createGoal', 'planOnly'].includes(key)) return 'action';
+    if (['back', 'retry', 'more', 'clear', 'clearYes', 'clearNo', 'tryIt', 'notNow', 'createGoal', 'planOnly', 'openWallet'].includes(key)) return 'action';
     if (['title', 'loading', 'errorTitle', 'emptyTitle', 'bridgeTitle'].includes(key)) return 'heading';
     return 'body';
   };
@@ -84,8 +84,12 @@ describe('narrative client', () => {
     expect(await answerSelfBridge(vi.fn<NarrativeTransport>(async () => ({ data: null, error: { code: 'BRIDGE_CLOSED' } })), 'x', 'dismiss')).toBe('closed');
     expect(await answerSelfBridge(vi.fn<NarrativeTransport>(async () => ({ data: null, error: { code: 'DATA_UNAVAILABLE' } })), 'x', 'act')).toBe('error');
     // OD-28 (L-12): the teen's own goal travels on the act call; a wallet that does not admit them is its own outcome.
+    // W3L.1: "goal" only when Core answered the goal it created; without a goalId the act was (or replayed) the plan.
     expect(await answerSelfBridge(ok, 'g', 'act', { title: '  Headphones ', target: 300 })).toBe('done');
     expect(ok).toHaveBeenLastCalledWith('/learn/bridges/g/act', { method: 'POST', body: { title: 'Headphones', target: 300 } });
+    const created = vi.fn<NarrativeTransport>(async () => ({ data: { status: 'acted', replayed: false, goalId: 'goal-1' }, error: null }));
+    expect(await answerSelfBridge(created, 'g', 'act', { title: 'Headphones', target: 300 })).toBe('goal');
+    expect(await answerSelfBridge(created, 'g', 'act')).toBe('done');
     expect(await answerSelfBridge(ok, 'g', 'dismiss', { title: 'x', target: 1 })).toBe('done');
     expect(ok).toHaveBeenLastCalledWith('/learn/bridges/g/dismiss', { method: 'POST', body: {} });
     expect(await answerSelfBridge(vi.fn<NarrativeTransport>(async () => ({ data: null, error: { code: 'WALLET_UNAVAILABLE' } })), 'g', 'act', { title: 'x', target: 1 })).toBe('no_wallet');
@@ -96,9 +100,10 @@ describe('an independent teen turns a savings prompt into their own goal (OD-28,
   const savings = selfBridgesFixture();
   const earning = [{ ...savings[0]!, id: 'bridge-2', action: 'earning_task' as const }];
 
-  it('"I will try" opens the goal; a valid name and coins create it in the Wallet', async () => {
-    const onBridge = vi.fn(async () => 'done' as const);
-    render(<SelfBridgeList bridges={savings} locale="en-US" onBridge={onBridge} />);
+  it('"I will try" opens the goal; a valid name and coins create it in the Wallet, named back with the way to it', async () => {
+    const onBridge = vi.fn(async () => 'goal' as const);
+    const onOpenWallet = vi.fn();
+    render(<SelfBridgeList bridges={savings} locale="en-US" onBridge={onBridge} onOpenWallet={onOpenWallet} />);
     fireEvent.click(screen.getByRole('button', { name: 'I will try' }));
     expect(onBridge).not.toHaveBeenCalled();
     const create = screen.getByRole('button', { name: 'Create goal' });
@@ -110,6 +115,23 @@ describe('an independent teen turns a savings prompt into their own goal (OD-28,
     fireEvent.click(create);
     expect(await screen.findByText('Goal added to your Wallet.')).toBeTruthy();
     expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act', { title: 'Headphones', target: 300 });
+    expect(screen.getByText('Headphones')).toBeTruthy();
+    expect(screen.getByText('300 coins to save')).toBeTruthy();
+    expect(screen.queryByRole('textbox')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'See my Wallet' }));
+    expect(onOpenWallet).toHaveBeenCalledTimes(1);
+  });
+
+  it('a goal Core did not create is never announced: a replayed plan reads as the plan', async () => {
+    const onBridge = vi.fn(async () => 'done' as const);
+    render(<SelfBridgeList bridges={savings} locale="pt-BR" onBridge={onBridge} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Vou tentar' }));
+    fireEvent.change(screen.getByLabelText('Para que você vai poupar?'), { target: { value: 'Fone' } });
+    fireEvent.change(screen.getByLabelText('Moedas para poupar'), { target: { value: '1200' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Criar meta' }));
+    expect(await screen.findByText('Salvo como seu plano.')).toBeTruthy();
+    expect(screen.queryByText('Meta adicionada à sua Carteira.')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Ver minha Carteira' })).toBeNull();
   });
 
   it('"Just a plan" keeps the commitment alone, and a closed Wallet is said with the form kept', async () => {

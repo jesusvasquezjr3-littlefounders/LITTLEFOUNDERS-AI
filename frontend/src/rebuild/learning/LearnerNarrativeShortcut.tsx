@@ -20,19 +20,21 @@ import type { BridgeAnswer, SelfBridge } from './narrative';
  *
  * Presentation only: the host owns transport and navigation.
  */
-export function LearnerNarrativeShortcut({ bridges, locale, dark, onOpenJournal, onOpenRhythm, onBridge, fixture = false }: {
+export function LearnerNarrativeShortcut({ bridges, locale, dark, onOpenJournal, onOpenRhythm, onBridge, onOpenWallet, fixture = false }: {
   bridges: SelfBridge[];
   locale: Locale;
   dark: boolean;
   onOpenJournal: () => void;
   onOpenRhythm?: () => void;
   onBridge: BridgeAnswer;
+  /** W3L.1 (L-12): the teen's Wallet, after a goal was created there. */
+  onOpenWallet?: () => void;
   fixture?: boolean;
 }) {
   const t = decisionJournalCopy[locale];
   return <section className="lf-rebuild lf-learner-shortcut" data-theme={dark ? 'dark' : 'light'} lang={locale} data-surface="app"
     data-screen={fixture ? 'learner-shortcut-preview' : 'learner-shortcut'} aria-label={t.title}>
-    <SelfBridgeList bridges={bridges} locale={locale} onBridge={onBridge} />
+    <SelfBridgeList bridges={bridges} locale={locale} onBridge={onBridge} onOpenWallet={onOpenWallet} />
     <div className="lf-learner-shortcut-link">
       <Button onClick={onOpenJournal}>{t.title}</Button>
       {onOpenRhythm ? <Button onClick={onOpenRhythm}>{learningRhythmCopy[locale].title}</Button> : null}

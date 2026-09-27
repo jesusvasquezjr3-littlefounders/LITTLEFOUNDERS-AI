@@ -60,6 +60,8 @@ export interface LearnHomeProps {
   onRetry: () => void;
   retrying?: boolean;
   onBridge: BridgeAnswer;
+  /** W3L.1 (L-12): the teen's Wallet, after a goal was created there. */
+  onOpenWallet?: () => void;
   fixture?: boolean;
 }
 
@@ -84,7 +86,7 @@ export function LearnHomeView(props: LearnHomeProps) {
       primary={<Shelf {...props} courses={courses} lead={featured} />}
       secondary={<>
         <StreakCard {...props} />
-        <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} />
+        <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} onOpenWallet={props.onOpenWallet} />
         <StoryCard {...props} />
       </>} />
   </div>;
