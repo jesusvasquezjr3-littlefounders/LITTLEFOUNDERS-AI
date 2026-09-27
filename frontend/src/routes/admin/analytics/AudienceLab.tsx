@@ -1,5 +1,5 @@
 import { AudienceChart } from './AudienceChart';
-import { INSTRUMENTED_EVENTS } from './usageShared';
+import { INSTRUMENTED_EVENTS } from '@/rebuild/staff/console/usageShared';
 import type { AudienceSeriesPoint } from './analyticsShared';
 
 /*

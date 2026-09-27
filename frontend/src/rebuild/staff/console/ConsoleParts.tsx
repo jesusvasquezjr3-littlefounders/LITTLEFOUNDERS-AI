@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type MouseEvent, type ReactNode } from 'react';
-import { Button, ButtonGroup, ButtonLink, ErrorState, InlineNotice, LoadingState, ProgressBar } from '../../design/controls';
+import { Button, ButtonGroup, ButtonLink, ErrorState, InlineNotice, LoadingState, ProgressBar, Sheet, TextField, type VizLabels } from '../../design/controls';
 import type { Locale } from '../../design/copyBudget';
 import { fill, useConsoleCopy } from './staffConsoleCopy';
 import './staffConsole.css';
@@ -170,4 +170,87 @@ export function ShareBars({ label, rows, total, locale, tone = 'primary' }: {
         valueText={`${nf.format(row.count)} · ${pf.format(total > 0 ? row.count / total : 0)}`} />
     </li>)}
   </ul>;
+}
+
+/* ---- W2T.3: shared by Analytics & Health and Learning intel -------------------------------- */
+
+/** Hands a file Core rendered to the browser's save. The name is ours: a cross-origin response hides its Content-Disposition. */
+export function saveDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+/** A duration in the surface's language ("3 min 12 s"), from seconds. */
+export function useDuration(locale: Locale) {
+  return useMemo(() => {
+    const minutes = new Intl.NumberFormat(locale, { style: 'unit', unit: 'minute', unitDisplay: 'short', maximumFractionDigits: 0 });
+    const seconds = new Intl.NumberFormat(locale, { style: 'unit', unit: 'second', unitDisplay: 'short', maximumFractionDigits: 0 });
+    return (value: number) => {
+      const total = Math.max(0, Math.round(value));
+      const m = Math.floor(total / 60);
+      return m > 0 ? `${minutes.format(m)} ${seconds.format(total % 60)}` : seconds.format(total);
+    };
+  }, [locale]);
+}
+
+/** Today as YYYY-MM-DD in the browser's calendar (a custom range never ends in the future). */
+export const today = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
+
+/**
+ * A custom date range, chosen in a sheet: both ends are required and a range
+ * that ends before it starts is refused in words. Nothing is applied until
+ * the person presses Apply, so a half-typed range never reaches Core.
+ */
+export function RangeSheet({ open, initial, onApply, onClose }: {
+  open: boolean; initial: { from: string; to: string }; onApply: (range: { from: string; to: string }) => void; onClose: () => void;
+}) {
+  const { copy } = useConsoleCopy();
+  const t = copy.common;
+  const [draft, setDraft] = useState(initial);
+  const [checked, setChecked] = useState(false);
+  useEffect(() => { if (open) { setDraft(initial); setChecked(false); } }, [open, initial]);
+  const missing = !draft.from || !draft.to;
+  const reversed = !missing && draft.from > draft.to;
+  const future = !missing && (draft.from > today() || draft.to > today());
+  const error = missing ? t.body.rangeMissing : reversed ? t.body.rangeReversed : future ? t.body.rangeFuture : undefined;
+  return <Sheet open={open} onClose={onClose} heading={t.heading.range} closeLabel={t.action.close}>
+    <form className="lf-staff-form" data-form="range" noValidate onSubmit={(event) => {
+      event.preventDefault();
+      setChecked(true);
+      if (!error) onApply(draft);
+    }}>
+      <TextField type="date" label={t.body.rangeFrom} value={draft.from} max={today()} data-copy-role="data"
+        error={checked ? error : undefined} errorLive onChange={(event) => setDraft({ ...draft, from: event.target.value })} />
+      <TextField type="date" label={t.body.rangeTo} value={draft.to} max={today()} data-copy-role="data"
+        onChange={(event) => setDraft({ ...draft, to: event.target.value })} />
+      <div className="lf-staff-actions"><Button type="submit" variant="brand">{t.action.apply}</Button></div>
+    </form>
+  </Sheet>;
+}
+
+/** The chart primitives' words in the surface's language (the design system's charts hold no copy). */
+export function useChartLabels(): VizLabels {
+  const { copy } = useConsoleCopy();
+  const t = copy.chart;
+  return useMemo(() => ({ table: t.action.table, chart: t.action.chart, point: t.body.day, missing: t.body.missing, keys: t.body.keys }), [t]);
+}
+
+/** A day label for a chart point ("Sep 12"), read at noon so no time zone moves it. */
+export function useDay(locale: Locale) {
+  return useMemo(() => {
+    const day = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
+    return (value: string) => {
+      const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value);
+      return Number.isNaN(date.getTime()) ? value : day.format(date);
+    };
+  }, [locale]);
 }

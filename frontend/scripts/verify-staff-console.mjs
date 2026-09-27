@@ -7,7 +7,7 @@ import { installSyntheticCore, SCENARIOS, sessionStorageScript } from './audits/
 import { consoleRequests } from './audits/lanes/staff.mjs';
 
 /*
- * W2 Lane 6 (W2T.1, W2T.2): the rebuilt staff console on its REAL routes, in real Chrome.
+ * W2 Lane 6 (W2T.1-W2T.3): the rebuilt staff console on its REAL routes, in real Chrome.
  *
  *   REBUILD_URL=http://localhost:5460 npm run verify:staff-console
  *
@@ -19,7 +19,10 @@ import { consoleRequests } from './audits/lanes/staff.mjs';
  * Content in its four views (superadmin, and an admin with only
  * manage_content), Generation in its four views and Mentor quality (an admin
  * with only view_analytics), with the course, lesson, live-activity and
- * generation-lesson sheets. For each of
+ * generation-lesson sheets. W2T.3 adds Analytics & Health in its five views
+ * (an admin with only view_analytics, and the superadmin for the exclusion
+ * tools) and Learning intel in its five views, Insights (S8) included, with
+ * the course sheet and the /admin/insights bookmark. For each of
  * 3 locales x 2 modes x 320/375/768/1280 px x normal and 140% text:
  *
  *   - the page is the rebuilt screen inside the staff shell (no legacy body),
@@ -81,6 +84,25 @@ const CASES = [
   { id: 'mentor-quality', path: '/admin/mentor-quality', scenario: 'staff-analytics', screen: 'staff-mentor-quality', section: 'mentorQuality', ready: '[data-screen="staff-mentor-quality-signals"]',
     never: ['/admin/content', '/admin/generation', '/admin/users'] },
   { id: 'denied-mentor-quality', path: '/admin/mentor-quality', scenario: 'staff-content', denied: true },
+  // W2T.3: Analytics & Health (S5) and Learning intel (S6) with Insights (S8, G.5).
+  { id: 'analytics-audience', path: '/admin/analytics', scenario: 'staff-analytics', screen: 'staff-analytics', section: 'analytics', ready: '.lf-viz-plot',
+    never: ['/admin/analytics/exclusions', '/admin/users', '/admin/content', '/admin/analytics/overview', '/admin/intel'] },
+  { id: 'analytics-web', path: '/admin/analytics?view=web', scenario: 'staff-analytics', screen: 'staff-analytics', section: 'analytics', ready: '.lf-staff-map-svg',
+    never: ['/admin/analytics/exclusions', '/admin/insights/audience'], map: true },
+  { id: 'analytics-behavior', path: '/admin/analytics?view=behavior', scenario: 'staff-analytics', screen: 'staff-analytics', section: 'analytics', ready: '.lf-viz-bars' },
+  { id: 'analytics-health', path: '/admin/analytics?view=health', scenario: 'staff-analytics', screen: 'staff-analytics', section: 'analytics', ready: '.lf-table-row' },
+  { id: 'analytics-tools', path: '/admin/analytics?view=tools', scenario: 'staff-super', screen: 'staff-analytics', section: 'analytics', ready: '[data-form="exclusion"]' },
+  { id: 'denied-analytics', path: '/admin/analytics', scenario: 'staff-content', denied: true },
+  { id: 'intel-overview', path: '/admin/intel', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-viz-plot',
+    never: ['/admin/users', '/admin/intel/learning', '/admin/analytics'], chart: true },
+  { id: 'intel-insights', path: '/admin/intel?view=insights', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '[data-view="insights"] .lf-table-row',
+    never: ['/admin/users'], details: '[data-view="insights"] .lf-table-row:first-child .lf-table-cell:last-child button' },
+  // G.5: an old /admin/insights bookmark lands on the Insights view (route focus moves to the new heading, so the skip-link check is the case above).
+  { id: 'intel-bookmark', path: '/admin/insights', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '[data-view="insights"] .lf-table-row', to: '/admin/intel', keys: false },
+  { id: 'intel-retention', path: '/admin/intel?view=retention', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-table-row' },
+  { id: 'intel-people', path: '/admin/intel?view=people', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-viz-bars', never: ['/admin/intel/engagement'] },
+  { id: 'intel-operations', path: '/admin/intel?view=operations', scenario: 'staff-analytics', screen: 'staff-intel', section: 'intel', ready: '.lf-table-row' },
+  { id: 'denied-intel', path: '/admin/intel', scenario: 'staff-support', denied: true },
 ];
 const filter = process.env.STAFF_CASES?.split(',');
 const cases = CASES.filter((entry) => !filter || filter.includes(entry.id));
@@ -196,7 +218,10 @@ try {
       if (width === 375 || width === 1280) await shot(page, name);
       const record = { case: entry.id, locale, theme, width, scale, oneH1: true, noOverflow: true, targets: true, noClipping: true };
 
-      if (full) {
+      if (full && entry.keys === false) {
+        assert.equal(await page.evaluate('location.pathname'), entry.to, 'the bookmark lands on its section');
+        Object.assign(record, { landedOn: entry.to });
+      } else if (full) {
         // Keyboard: the skip link first, then <main>, then the page's first control.
         await page.evaluate('document.activeElement?.blur(); window.scrollTo(0, 0)');
         await key(page, 'Tab', 'Tab', 9);
@@ -231,6 +256,34 @@ try {
           await key(page, 'Escape', 'Escape', 27);
           await waitFor(page, `!document.querySelector('[role=dialog][aria-modal=true]') && document.activeElement?.closest('.lf-table-row')`, `${where}: Escape closes and returns focus`);
           record.details = 'opens with focus inside, Escape returns focus';
+        }
+        if (entry.to) {
+          assert.equal(await page.evaluate('location.pathname'), entry.to, 'the bookmark lands on its section');
+          record.landedOn = entry.to;
+        }
+        if (entry.chart) {
+          // Keyboard reading of a chart: focus the plot, step back one point, the polite readout names it.
+          const before = await page.evaluate("document.querySelector('[data-screen] .lf-viz-readout')?.textContent");
+          await page.evaluate("document.querySelector('[data-screen] .lf-viz-plot').focus()");
+          await key(page, 'ArrowLeft', 'ArrowLeft', 37);
+          await waitFor(page, `document.querySelector('[data-screen] .lf-viz-readout')?.textContent !== ${JSON.stringify(before)}`, `${where}: the readout follows the keyboard`);
+          await press(page, '[data-screen] .lf-viz .lf-viz-head button');
+          await waitFor(page, "document.querySelector('[data-screen] .lf-viz table')", `${where}: Show as table`);
+          record.chart = 'arrow keys move the readout; Show as table opens the table';
+        }
+        if (entry.map) {
+          // The map's keyboard and tap path is its list: choosing a country focuses the console on it; Whole world undoes it.
+          await press(page, '[data-screen="staff-analytics"] .lf-list-row--pressable');
+          await waitFor(page, "[...document.querySelectorAll('[data-screen=\"staff-analytics\"] .lf-staff-map-actions button')].length === 2", `${where}: a country focused`);
+          await sleep(300);
+          assert.ok(consoleRequests.some((request) => request.includes('/admin/analytics/overview') && request.includes('visit%3Acountry')), 'the console re-read with the country filter');
+          await press(page, '[data-screen="staff-analytics"] .lf-staff-map-actions .lf-button--brand');
+          await waitFor(page, "document.querySelector('[data-screen=\"staff-analytics\"] [data-map=\"country\"]')", `${where}: the country opened`);
+          await page.evaluate("document.querySelector('[data-screen=\"staff-analytics\"] .lf-staff-map-actions button').scrollIntoView({ block: 'center' })");
+          await shot(page, `${name}-country`);
+          await press(page, '[data-screen="staff-analytics"] .lf-staff-map-actions button');
+          await waitFor(page, "document.querySelector('[data-screen=\"staff-analytics\"] [data-map=\"world\"]') && !document.querySelector('[data-screen=\"staff-analytics\"] .lf-staff-map-actions button')", `${where}: Whole world undoes it`);
+          record.map = 'list focuses a country, opens its regions, Whole world undoes both';
         }
         if (entry.follow) {
           await page.evaluate('window.scrollTo(0, 400)');

@@ -1,11 +1,16 @@
 import { lazy, Suspense, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { api as coreApi } from '@/lib/api';
+import { api as coreApi, BASE_URL } from '@/lib/api';
+import { isDeviceOptedOut, setDeviceOptOut } from '@/lib/analytics';
 import { getSupabaseClient } from '@/lib/supabaseRealtime';
 import type { Grader, LessonDocument } from '@/lesson-engine/core/types';
 import type { AudioManifest } from '@/lesson-engine/player/narration';
-import { staffViewer, type StaffApi, type StaffResult } from '@/rebuild/staff/console/staffConsoleApi';
+import { staffViewer, type StaffApi, type StaffDownload, type StaffResult } from '@/rebuild/staff/console/staffConsoleApi';
+import { StaffAnalytics, type DeviceOptOut } from '@/rebuild/staff/console/StaffAnalytics';
+import { analyticsView } from '@/rebuild/staff/console/analyticsApi';
+import { StaffIntel } from '@/rebuild/staff/console/StaffIntel';
+import { intelView } from '@/rebuild/staff/console/intelApi';
 import { contentView } from '@/rebuild/staff/console/contentApi';
 import { StaffContent, type LessonPreviewRenderer } from '@/rebuild/staff/console/StaffContent';
 import { StaffGeneration } from '@/rebuild/staff/console/StaffGeneration';
@@ -28,10 +33,10 @@ import { StaffEmails } from '@/rebuild/staff/console/StaffEmails';
  * guard admitted; Core still checks the same grant on every read and write.
  */
 
-async function call<T>(getToken: () => Promise<string | null>, path: string, body?: unknown): Promise<StaffResult<T>> {
+async function call<T>(getToken: () => Promise<string | null>, path: string, body?: unknown, method?: 'DELETE'): Promise<StaffResult<T>> {
   try {
     const token = await getToken();
-    const result = await coreApi<T>(path, body === undefined ? { token } : { method: 'POST', body, token });
+    const result = await coreApi<T>(path, method ? { method, token } : body === undefined ? { token } : { method: 'POST', body, token });
     if (!result.error) return { ok: true, data: result.data };
     // lib/api reports a failed fetch as INTERNAL; a browser that says it is offline gets the offline state instead.
     const code = typeof navigator !== 'undefined' && navigator.onLine === false ? 'OFFLINE' : result.error.code;
@@ -43,12 +48,39 @@ async function call<T>(getToken: () => Promise<string | null>, path: string, bod
   }
 }
 
+/**
+ * W2T.3: a file Core renders (the analytics reports, the intel and raw-event
+ * exports). These routes answer bytes on success and the usual envelope on
+ * failure, and need the Bearer header, which a plain link cannot carry. The
+ * X-LF-Export-* headers (truncation and paging of the raw export) are the
+ * ones Core's CORS exposes; they are passed on in lower case, without the prefix.
+ */
+async function download(getToken: () => Promise<string | null>, path: string): Promise<StaffResult<StaffDownload>> {
+  try {
+    const token = await getToken();
+    const response = await fetch(`${BASE_URL}/api/v1${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => null)) as { error?: { code?: unknown } } | null;
+      return { ok: false, code: typeof body?.error?.code === 'string' ? body.error.code : 'INTERNAL' };
+    }
+    const headers: Record<string, string> = {};
+    // Keyed without Core's prefix: truncated, next-offset, rows, token.
+    const prefix = 'x-lf-export-';
+    response.headers.forEach((value, name) => { if (name.toLowerCase().startsWith(prefix)) headers[name.toLowerCase().slice(prefix.length)] = value; });
+    return { ok: true, data: { blob: await response.blob(), headers } };
+  } catch {
+    return { ok: false, code: typeof navigator !== 'undefined' && navigator.onLine === false ? 'OFFLINE' : 'INTERNAL' };
+  }
+}
+
 export function useStaffConsole() {
   const { getToken, roles, adminPermissions } = useAuth();
   const navigate = useNavigate();
   const api = useMemo<StaffApi>(() => ({
     get: <T,>(path: string) => call<T>(getToken, path),
     post: <T,>(path: string, body: unknown) => call<T>(getToken, path, body),
+    remove: <T,>(path: string) => call<T>(getToken, path, undefined, 'DELETE'),
+    download: (path: string) => download(getToken, path),
   }), [getToken]);
   const viewer = useMemo(() => staffViewer(roles, adminPermissions), [roles, adminPermissions]);
   return { api, viewer, onNavigate: navigate };
@@ -115,4 +147,23 @@ export function StaffGenerationRoute() {
 
 export function StaffMentorQualityRoute() {
   return <StaffMentorQuality api={useStaffConsole().api} />;
+}
+
+/*
+ * W2T.3: Analytics & Health and Learning intel (with Insights). The device
+ * opt-out is this browser's own flag (lib/analytics): it stops the trackers
+ * here and affects nobody else, so the host hands the screen that one switch.
+ */
+const DEVICE_OPT_OUT: DeviceOptOut = { optedOut: isDeviceOptedOut, set: setDeviceOptOut };
+
+export function StaffAnalyticsRoute() {
+  const { api, viewer } = useStaffConsole();
+  const [params] = useSearchParams();
+  return <StaffAnalytics api={api} viewer={viewer} device={DEVICE_OPT_OUT} initialView={analyticsView(params.get('view'))} />;
+}
+
+export function StaffIntelRoute() {
+  const { api, viewer } = useStaffConsole();
+  const [params] = useSearchParams();
+  return <StaffIntel api={api} viewer={viewer} initialView={intelView(params.get('view'), params.get('focus'))} />;
 }

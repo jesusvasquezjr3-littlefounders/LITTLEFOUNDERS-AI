@@ -8,7 +8,7 @@
 //   1. the database function family_engagement_insight (latest migration),
 //   2. its nightly probe (probe_family_engagement_insight), which checks them,
 //   3. Core's parser (FAMILY_ENGAGEMENT_*_KEYS in backend/src/services/insights.ts),
-//   4. the staff console's types (IntelFamilySummary / IntelFamilyChild).
+//   4. the staff console's types (IntelFamilySummary / IntelFamilyChild in rebuild/staff/console/intelApi.ts).
 // This gate reads all four from the real files and fails on any difference.
 // It runs in the unfiltered repo gates, since any one of them can change alone.
 
@@ -19,7 +19,7 @@ import { latestFunctionBody } from './check-no-unbacked-guarantee.mjs';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const CORE = 'backend/src/services/insights.ts';
-const CONSOLE = 'frontend/src/routes/admin/AdminIntelPage.tsx';
+const CONSOLE = 'frontend/src/rebuild/staff/console/intelApi.ts';
 
 const keysOf = (span) => [...span.matchAll(/'([a-z_]+)',/g)].map((m) => m[1]);
 const sorted = (list) => [...new Set(list)].sort();

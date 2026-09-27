@@ -38,22 +38,30 @@
       {
         "id": 1,
         "name": "Core API",
-        "status": 1
+        "status": 1,
+        "pingMs": 84,
+        "uptime24h": 0.9993
       },
       {
         "id": 2,
         "name": "Oracle",
-        "status": 1
+        "status": 1,
+        "pingMs": 212,
+        "uptime24h": 0.998
       },
       {
         "id": 3,
         "name": "Courier email",
-        "status": 0
+        "status": 0,
+        "pingMs": null,
+        "uptime24h": 0.9412
       },
       {
         "id": 4,
         "name": "Depot",
-        "status": 1
+        "status": 1,
+        "pingMs": 47,
+        "uptime24h": 1
       }
     ]
   },
@@ -667,11 +675,92 @@
     }
   ],
   "acquisition": {
-    "visitors": 5120
+    "days": 30,
+    "visitors": 5120,
+    "converted": 212,
+    "conversionRate": 0.0414,
+    "noCampaignsTagged": true,
+    "byLandingRoute": [
+      {
+        "label": "/",
+        "visitors": 3120,
+        "converted": 140
+      },
+      {
+        "label": "/para-familias-con-hijos-de-seis-a-doce-anos",
+        "visitors": 910,
+        "converted": 41
+      },
+      {
+        "label": "/pricing",
+        "visitors": 602,
+        "converted": 19
+      },
+      {
+        "label": "/signup",
+        "visitors": 488,
+        "converted": 12
+      }
+    ],
+    "byReferrer": [
+      {
+        "label": "direct",
+        "visitors": 2900,
+        "converted": 120
+      },
+      {
+        "label": "search",
+        "visitors": 1400,
+        "converted": 61
+      },
+      {
+        "label": "social",
+        "visitors": 820,
+        "converted": 31
+      }
+    ],
+    "byDevice": [
+      {
+        "label": "mobile",
+        "visitors": 3410,
+        "converted": 128
+      },
+      {
+        "label": "desktop",
+        "visitors": 1510,
+        "converted": 80
+      },
+      {
+        "label": "tablet",
+        "visitors": 200,
+        "converted": 4
+      }
+    ],
+    "byLocale": [
+      {
+        "label": "es-MX",
+        "visitors": 3300,
+        "converted": 150
+      },
+      {
+        "label": "en-US",
+        "visitors": 1200,
+        "converted": 40
+      },
+      {
+        "label": "pt-BR",
+        "visitors": 620,
+        "converted": 22
+      }
+    ]
   },
   "funnelIntegrity": {
+    "days": 30,
     "accountsCreated": 212,
-    "unobserved": 37
+    "signupComplete": 175,
+    "unobserved": 37,
+    "observedShare": 0.8255,
+    "entries": []
   },
   "registrations": {
     "entries": [

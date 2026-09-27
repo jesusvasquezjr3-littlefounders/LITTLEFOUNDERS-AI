@@ -16,11 +16,11 @@ test('the live repository agrees, and every copy is really read', () => {
   assert.deepEqual(functionKeys(body).child, ['first_link_on', 'guardians', 'last_task_on', 'tasks_approved', 'tasks_created']);
   assert.ok(functionKeys(body).summary.includes('listed_children'));
   assert.deepEqual(coreKeys(live.readFile('backend/src/services/insights.ts')).child, functionKeys(body).child);
-  assert.deepEqual(consoleKeys(live.readFile('frontend/src/routes/admin/AdminIntelPage.tsx')).summary, functionKeys(body).summary);
+  assert.deepEqual(consoleKeys(live.readFile('frontend/src/rebuild/staff/console/intelApi.ts')).summary, functionKeys(body).summary);
 });
 
 test('catches the original defect: the console still on the per-family shape', () => {
-  const readFile = (path) => path.endsWith('AdminIntelPage.tsx')
+  const readFile = (path) => path.endsWith('intelApi.ts')
     ? live.readFile(path).replace('  guardians: number;\n  tasks_created: number;\n  tasks_approved: number;\n  first_link_on: string;', '  family_id: string;\n  members: number;\n  tasks_created: number;\n  tasks_completed: number;')
     : live.readFile(path);
   const failures = checkContract({ ...live, readFile });

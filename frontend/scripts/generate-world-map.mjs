@@ -1,5 +1,5 @@
 /*
- * Generates src/routes/admin/analytics/worldGeography.ts — real country
+ * Generates src/rebuild/staff/console/geo/worldGeography.ts — real country
  * outlines for the staff-console choropleth.
  *
  * WHY GENERATE INSTEAD OF PROJECTING AT RUNTIME: the admin console is bundled
@@ -151,7 +151,7 @@ export function countryPosition(code: string): [number, number] | null {
 }
 `;
 
-const out = resolve(dirname(fileURLToPath(import.meta.url)), '../src/routes/admin/analytics/worldGeography.ts');
+const out = resolve(dirname(fileURLToPath(import.meta.url)), '../src/rebuild/staff/console/geo/worldGeography.ts');
 writeFileSync(out, `${header}${body}`);
 console.log(
   `worldGeography.ts — ${attributed.length} ISO countries, ${shapes.length - attributed.length} unattributed, ` +

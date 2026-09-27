@@ -14,6 +14,10 @@ import { StaffEmails } from '../../staff/console/StaffEmails';
 import { StaffContent } from '../../staff/console/StaffContent';
 import { StaffGeneration } from '../../staff/console/StaffGeneration';
 import { StaffMentorQuality } from '../../staff/console/StaffMentorQuality';
+import { StaffAnalytics } from '../../staff/console/StaffAnalytics';
+import { StaffIntel } from '../../staff/console/StaffIntel';
+import { analyticsView } from '../../staff/console/analyticsApi';
+import { intelView } from '../../staff/console/intelApi';
 import { contentView } from '../../staff/console/contentApi';
 import { generationView } from '../../staff/console/generationApi';
 import { fixtureApi, type FixtureState } from '../../staff/console/staffConsoleFixtures';
@@ -124,4 +128,9 @@ export const staffPreviewScreens: PreviewRegistry = {
   'staff-console-generation': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-generation" params={params}
     render={({ api }) => <StaffGeneration api={api} initialView={generationView(params.get('view'))} />} />),
   'staff-console-mentor-quality': consoleScreen('staff-console-mentor-quality', ({ api }) => <StaffMentorQuality api={api} />),
+  /* W2T.3: ?view=audience|web|behavior|health|tools (Analytics & Health), ?view=overview|insights|retention|people|operations (Learning intel). */
+  'staff-console-analytics': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-analytics" params={params}
+    render={({ api, viewer }) => <StaffAnalytics api={api} viewer={viewer} initialView={analyticsView(params.get('view'))} />} />),
+  'staff-console-intel': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-intel" params={params}
+    render={({ api, viewer }) => <StaffIntel api={api} viewer={viewer} initialView={intelView(params.get('view'))} />} />),
 };

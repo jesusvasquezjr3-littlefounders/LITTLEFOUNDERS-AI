@@ -1,5 +1,6 @@
 import fixtures from './staffConsoleFixtures.json';
 import sections from './staffSectionFixtures.json';
+import insight from './staffInsightFixtures.json';
 import type { StaffApi, StaffResult } from './staffConsoleApi';
 
 /*
@@ -15,6 +16,13 @@ import type { StaffApi, StaffResult } from './staffConsoleApi';
  * incident, a live activity with and without a risk category, packs, a run
  * with a failed, a salvaged and a skipped lesson, and a live run that trips
  * the cost, cache and failure alerts.
+ *
+ * W2T.3 adds Analytics & Health and Learning intel from
+ * staffInsightFixtures.json: a web overview with a comparison, a country
+ * list with a micro-state and a country the map cannot place, Mexico's
+ * regions with one label no outline matches, a shared staff address, an
+ * instrumented event that never fired, a stress-length course, experiment and
+ * skill, and a staff share above half.
  *
  * `?state=` picks a whole-page state: loading (never answers), error, refused
  * (Core's 403), empty, or ready (default). Writes succeed unless
@@ -53,7 +61,42 @@ export function fixtureAnswer(path: string, state: FixtureState): StaffResult<un
   }
   if (route === '/admin/emails/logs') return ok({ entries: empty ? [] : fixtures.emailLogs, total: empty ? 0 : 948 });
   if (route === '/admin/emails/summary') return ok(empty ? { total: 0, statuses: {}, templates: {}, locales: {}, trend: [] } : fixtures.emailSummary);
-  return sectionAnswer(route, query, empty) ?? { ok: false, code: 'NOT_FOUND' };
+  return sectionAnswer(route, query, empty) ?? insightAnswer(route, query, empty) ?? { ok: false, code: 'NOT_FOUND' };
+}
+
+/** W2T.3: Analytics & Health and Learning intel (staffInsightFixtures.json; the audit's synthetic Core answers from the same file). */
+export function insightAnswer(route: string, query: URLSearchParams, empty: boolean): StaffResult<unknown> | null {
+  const ok = (data: unknown): StaffResult<unknown> => ({ ok: true, data });
+  const a = insight.analytics;
+  const i = insight.intel;
+  if (route === '/admin/analytics/overview') return ok(empty ? { ...a.webOverview, aggregate: { visitors: 0, pageviews: 0, bounce_rate: 0, visit_duration: 0 }, timeseries: [], previous: null } : a.webOverview);
+  if (route === '/admin/analytics/breakdown') {
+    const dimension = query.get('dimension');
+    if (empty) return ok({ ...a.breakdown, rows: [] });
+    return ok(dimension === 'country' ? a.countries : dimension === 'region' ? a.regions : a.breakdown);
+  }
+  if (route === '/admin/analytics/behavior') return ok(empty ? { ...a.behavior, pageviews: 0, visitors: 0, visits: 0, bounces: 0, totaltime: 0, outOfBoundaryPageviews: 0 } : a.behavior);
+  if (route === '/admin/analytics/behavior/series') return ok(empty ? { ...a.behaviorSeries, series: [] } : a.behaviorSeries);
+  if (route === '/admin/analytics/behavior/breakdown') return ok(empty ? { ...a.behaviorBreakdown, rows: [] } : a.behaviorBreakdown);
+  if (route === '/admin/analytics/exclusions') return ok(empty ? { ...a.exclusions, active: [], suggestions: [] } : a.exclusions);
+  if (route === '/admin/insights/audience') return ok(empty ? { days: 30, series: [], entries: [], totals: { anonymous: 0, registered: 0, staff: 0 }, externalShare: null } : a.audience);
+  if (route === '/admin/insights/activity') return ok(empty ? { days: 30, entries: [], users: [] } : a.activity);
+  if (route === '/admin/insights/adoption') return ok(empty ? { entries: [] } : a.adoption);
+  if (route === '/admin/insights/sessions') return ok(empty ? { entries: [] } : a.sessions);
+  if (route === '/admin/intel/metrics/summary') return ok(empty ? { ...i.summary, dau: 0, wau: 0, mau: 0, totalEvents: 0, week1Retention: 0, activationRate: 0, peakDailyUsers: 0, adoption: [] } : i.summary);
+  if (route === '/admin/intel/metrics/trends') return ok(empty ? [] : i.trend);
+  if (route === '/admin/intel/funnels/activation') return ok(empty ? [] : i.funnel);
+  if (route === '/admin/intel/anomalies/active') return ok(empty ? [] : i.anomalies);
+  if (route === '/admin/intel/quality/staff-exclusion') return ok(i.staffExclusion);
+  if (route === '/admin/insights/families') return ok(empty ? { summary: { ...i.families.summary, listed_children: 0 }, children: [], consent: i.families.consent } : i.families);
+  if (route === '/admin/intel/retention/cohorts') return ok(empty ? [] : i.cohorts);
+  if (route === '/admin/intel/churn/risk') return ok(empty ? [] : i.churn);
+  if (route === '/admin/intel/experiments') return ok(empty ? [] : i.experiments);
+  if (route === '/admin/intel/alerts') return ok(empty ? [] : i.alerts);
+  if (route === '/admin/intel/learning/overview') return ok(empty ? { ...i.learning, snapshot: { courses: 0, lessons: 0, attempts: 0, learners: 0, avgScore: null, firstTryAvgScore: null, hintRate: null, retryRate: null, avgSecondsPerAttempt: null, evidenceStatus: 'awaiting_evidence' }, courses: [], lessons: [], learners: [], trends: [] } : i.learning);
+  if (route === '/admin/intel/learning/content-health') return ok(empty ? { skills: [] } : i.skills);
+  if (route.startsWith('/admin/intel/learning/learners/')) return ok(i.learner);
+  return null;
 }
 
 /**
@@ -90,8 +133,12 @@ export function fixtureApi(state: FixtureState, write: 'ok' | 'failed' | 'reject
     const result = fixtureAnswer(path, state);
     return result === 'hold' ? new Promise<never>(() => {}) : Promise.resolve(result);
   };
+  const written = <T,>() => Promise.resolve((write === 'ok' ? { ok: true, data: {} } : { ok: false, code: write === 'rejected' ? 'ROLE_REJECTED' : 'DATA_UNAVAILABLE' }) as StaffResult<T>);
   return {
     get: <T,>(path: string) => answer(path) as Promise<StaffResult<T>>,
-    post: <T,>() => Promise.resolve((write === 'ok' ? { ok: true, data: {} } : { ok: false, code: write === 'rejected' ? 'ROLE_REJECTED' : 'DATA_UNAVAILABLE' }) as StaffResult<T>),
+    post: written,
+    remove: written,
+    // The preview hands back a tiny text file; a real download is Core's to render.
+    download: () => Promise.resolve(write === 'ok' ? { ok: true, data: { blob: new Blob(['preview'], { type: 'text/plain' }), headers: {} } } : { ok: false, code: 'DATA_UNAVAILABLE' }),
   };
 }

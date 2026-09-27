@@ -21,9 +21,16 @@ import { STAFF_PERMISSIONS, type StaffPermission } from '../../design/controls';
 /** A refusal may carry Core's itemized reasons (the C.6 pack contract lists every failure). */
 export type StaffResult<T> = { ok: true; data: T } | { ok: false; code: string; failures?: string[] };
 
+/** A file Core rendered (W2T.3: the analytics reports, the intel and raw-event exports): its bytes and Core's export headers (truncated, next-offset, rows, token). */
+export interface StaffDownload { blob: Blob; headers: Record<string, string> }
+
 export interface StaffApi {
   get<T>(path: string): Promise<StaffResult<T>>;
   post<T>(path: string, body: unknown): Promise<StaffResult<T>>;
+  /** DELETE (W2T.3: revoking an analytics exclusion). A host without it offers no revoke. */
+  remove?<T>(path: string): Promise<StaffResult<T>>;
+  /** A raw file route (success is bytes; a failure is Core's usual envelope). A host without it offers no download. */
+  download?(path: string): Promise<StaffResult<StaffDownload>>;
 }
 
 /** What the signed-in staff member may open: the same grants the route guards and the staff navigation read. */

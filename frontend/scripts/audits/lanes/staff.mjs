@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { app } from './helpers.mjs';
 
 /*
- * Lane 6 (staff): the rebuilt staff console on its real routes (W2T.1, W2T.2).
+ * Lane 6 (staff): the rebuilt staff console on its real routes (W2T.1-W2T.3).
  *
  *   states     each rebuilt console screen, signed in as the population that
  *              opens it, plus its details sheets (reached by a real press) and
@@ -20,6 +20,8 @@ export const lane = 'staff';
 const fixtures = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffConsoleFixtures.json', import.meta.url), 'utf8'));
 // W2T.2: Content, Generation and Mentor quality (the same file the preview entry answers from).
 const sections = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffSectionFixtures.json', import.meta.url), 'utf8'));
+// W2T.3: Analytics & Health and Learning intel (with Insights).
+const insight = JSON.parse(readFileSync(new URL('../../../src/rebuild/staff/console/staffInsightFixtures.json', import.meta.url), 'utf8'));
 
 const page = (screen) => `[data-screen="${screen}"]`;
 const ready = (screen, also) => `${page(screen)} ${also}`;
@@ -74,6 +76,22 @@ export const states = [
   app('/admin/generation@empty', '/admin/generation', 'staff-empty', ready('staff-generation', '.lf-state--empty')),
   app('/admin/mentor-quality@staff-analytics', '/admin/mentor-quality', 'staff-analytics', ready('staff-mentor-quality', '[data-screen="staff-mentor-quality-signals"]')),
   app('/admin/mentor-quality@refused', '/admin/mentor-quality', 'staff-refused', ready('staff-mentor-quality', '[data-failure="refused"]')),
+  // W2T.3: Analytics & Health (S5) in its five views, and Learning intel (S6) with Insights (S8, G.5).
+  app('/admin/analytics@staff-analytics', '/admin/analytics', 'staff-analytics', ready('staff-analytics', '.lf-viz-plot'), { readyAlso: '[data-metric="external"]' }),
+  app('/admin/analytics@web', '/admin/analytics?view=web', 'staff-analytics', ready('staff-analytics', '.lf-staff-map-svg'), { readyAlso: '[data-screen="staff-analytics"] .lf-table-row' }),
+  app('/admin/analytics@behavior', '/admin/analytics?view=behavior', 'staff-analytics', ready('staff-analytics', '.lf-viz-plot'), { readyAlso: '.lf-viz-bars' }),
+  app('/admin/analytics@health', '/admin/analytics?view=health', 'staff-analytics', ready('staff-analytics', '.lf-table-row')),
+  app('/admin/analytics@tools', '/admin/analytics?view=tools', 'staff-super', ready('staff-analytics', '[data-form="exclusion"]')),
+  app('/admin/analytics@empty', '/admin/analytics', 'staff-empty', ready('staff-analytics', '[data-metric="external"]')),
+  app('/admin/analytics@refused', '/admin/analytics', 'staff-refused', ready('staff-analytics', '[data-failure="refused"]')),
+  app('/admin/intel@staff-analytics', '/admin/intel', 'staff-analytics', ready('staff-intel', '.lf-viz-plot'), { readyAlso: '[data-metric="dau"]' }),
+  app('/admin/intel@insights', '/admin/intel?view=insights', 'staff-analytics', ready('staff-intel', '.lf-table-row'), { readyAlso: '[data-screen="staff-intel"] .lf-viz-plot' }),
+  app('/admin/intel@course', '/admin/intel?view=insights', 'staff-super', ready('staff-intel', '.lf-table-row'),
+    { open: ['[data-screen="staff-intel"] .lf-table-row:first-child .lf-table-cell:last-child button'] }),
+  app('/admin/intel@retention', '/admin/intel?view=retention', 'staff-analytics', ready('staff-intel', '.lf-table-row')),
+  app('/admin/intel@people', '/admin/intel?view=people', 'staff-analytics', ready('staff-intel', '.lf-viz-bars')),
+  app('/admin/intel@operations', '/admin/intel?view=operations', 'staff-analytics', ready('staff-intel', '.lf-table-row')),
+  app('/admin/intel@empty', '/admin/intel?view=insights', 'staff-empty', ready('staff-intel', '.lf-state--empty')),
 ];
 
 const SUPER = { guest: false, ageBand: 'adult', roles: ['superadmin'], adminPermissions: [] };
@@ -94,13 +112,15 @@ export const consoleRequests = [];
 /** Core's answers for the console, by scenario state (mirrors staffConsoleFixtures.ts fixtureAnswer). */
 export function respond({ spec, scenario, path, request, ok }) {
   if (!spec.consoleState || !path.startsWith('/admin')) return undefined;
-  consoleRequests.push(`${request.method} ${path} (${scenario})`);
+  // The synthetic Core hands lanes the pathname; the query (a breakdown's dimension, a filter) comes from the request itself.
+  const search = new URL(request.url).search;
+  consoleRequests.push(`${request.method} ${path}${search} (${scenario})`);
   const state = spec.consoleState;
-  if (request.method === 'POST') return ok({});
+  if (request.method === 'POST' || request.method === 'DELETE') return ok({});
   if (state === 'error') return { status: 502, body: { data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Synthetic: unavailable' } } };
   if (state === 'refused') return { status: 403, body: { data: null, error: { code: 'FORBIDDEN', message: 'Synthetic: refused' } } };
   const empty = state === 'empty';
-  const [route, search = ''] = path.split('?');
+  const route = path.split('?')[0];
   const query = new URLSearchParams(search);
   // Core projects the overview by grant: each part only for its grant (G.1).
   if (route === '/admin/overview') {
@@ -149,5 +169,39 @@ function sectionRespond(route, query, empty, ok) {
   if (route === '/admin/generation/analytics') return empty ? unavailable : ok(g.analytics);
   if (route === '/admin/generation/coach') return empty ? unavailable : ok(g.coach);
   if (route === '/admin/mentor-quality') return ok(sections.mentorQuality);
+  return insightRespond(route, query, empty, ok);
+}
+
+/** W2T.3 answers (mirrors staffConsoleFixtures.ts insightAnswer). */
+function insightRespond(route, query, empty, ok) {
+  const a = insight.analytics;
+  const i = insight.intel;
+  if (route === '/admin/analytics/overview') return ok(empty ? { ...a.webOverview, aggregate: { visitors: 0, pageviews: 0, bounce_rate: 0, visit_duration: 0 }, timeseries: [], previous: null } : a.webOverview);
+  if (route === '/admin/analytics/breakdown') {
+    if (empty) return ok({ ...a.breakdown, rows: [] });
+    const dimension = query.get('dimension');
+    return ok(dimension === 'country' ? a.countries : dimension === 'region' ? a.regions : a.breakdown);
+  }
+  if (route === '/admin/analytics/behavior') return ok(empty ? { ...a.behavior, pageviews: 0, visitors: 0, visits: 0, bounces: 0, totaltime: 0, outOfBoundaryPageviews: 0 } : a.behavior);
+  if (route === '/admin/analytics/behavior/series') return ok(empty ? { ...a.behaviorSeries, series: [] } : a.behaviorSeries);
+  if (route === '/admin/analytics/behavior/breakdown') return ok(empty ? { ...a.behaviorBreakdown, rows: [] } : a.behaviorBreakdown);
+  if (route === '/admin/analytics/exclusions') return ok(empty ? { ...a.exclusions, active: [], suggestions: [] } : a.exclusions);
+  if (route === '/admin/insights/audience') return ok(empty ? { days: 30, series: [], entries: [], totals: { anonymous: 0, registered: 0, staff: 0 }, externalShare: null } : a.audience);
+  if (route === '/admin/insights/activity') return ok(empty ? { days: 30, entries: [], users: [] } : a.activity);
+  if (route === '/admin/insights/adoption') return ok(empty ? { entries: [] } : a.adoption);
+  if (route === '/admin/insights/sessions') return ok(empty ? { entries: [] } : a.sessions);
+  if (route === '/admin/intel/metrics/summary') return ok(empty ? { ...i.summary, dau: 0, wau: 0, mau: 0, totalEvents: 0, week1Retention: 0, activationRate: 0, peakDailyUsers: 0, adoption: [] } : i.summary);
+  if (route === '/admin/intel/metrics/trends') return ok(empty ? [] : i.trend);
+  if (route === '/admin/intel/funnels/activation') return ok(empty ? [] : i.funnel);
+  if (route === '/admin/intel/anomalies/active') return ok(empty ? [] : i.anomalies);
+  if (route === '/admin/intel/quality/staff-exclusion') return ok(i.staffExclusion);
+  if (route === '/admin/insights/families') return ok(empty ? { summary: { ...i.families.summary, listed_children: 0 }, children: [], consent: i.families.consent } : i.families);
+  if (route === '/admin/intel/retention/cohorts') return ok(empty ? [] : i.cohorts);
+  if (route === '/admin/intel/churn/risk') return ok(empty ? [] : i.churn);
+  if (route === '/admin/intel/experiments') return ok(empty ? [] : i.experiments);
+  if (route === '/admin/intel/alerts') return ok(empty ? [] : i.alerts);
+  if (route === '/admin/intel/learning/overview') return ok(empty ? { ...i.learning, snapshot: { courses: 0, lessons: 0, attempts: 0, learners: 0, avgScore: null, firstTryAvgScore: null, hintRate: null, retryRate: null, avgSecondsPerAttempt: null, evidenceStatus: 'awaiting_evidence' }, courses: [], lessons: [], learners: [], trends: [] } : i.learning);
+  if (route === '/admin/intel/learning/content-health') return ok(empty ? { skills: [] } : i.skills);
+  if (route.startsWith('/admin/intel/learning/learners/')) return ok(i.learner);
   return undefined;
 }

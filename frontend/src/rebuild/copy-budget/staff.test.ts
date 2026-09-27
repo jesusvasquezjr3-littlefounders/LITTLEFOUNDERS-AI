@@ -21,7 +21,12 @@ describe('rebuild-staff copy budget', () => {
           .replace(/\{(?:n|start|end|total|shown|open|visitors|accounts|bucket)\}/g, '12').replace(/\{id\}/g, '1a2b3c4d')
           .replace(/\{share\}/g, '50%').replace(/\{dimension\}/g, longestDimension)
           .replace(/\{(?:cost|spent|latest|average)\}/g, '12,345.67 USD').replace(/\{(?:progress)\}/g, '100%')
-          .replace(/\{(?:topics|lessons|published|failed|skipped|done|passed|inherited|billed)\}/g, '1,234').replace(/\{value\}/g, '4.25');
+          .replace(/\{(?:topics|lessons|published|failed|skipped|done|passed|inherited|billed)\}/g, '1,234').replace(/\{value\}/g, '4.25')
+          // W2T.3: Analytics & Health and Learning intel. A place is the longest country name we list; a list of places, two of them;
+          // a filter is a dimension and its value; a metric is the longest metric label; counts take their longest real shape.
+          .replace(/\{(?:country|place)\}/g, 'United States').replace(/\{places\}/g, 'Kosovo, Western Sahara')
+          .replace(/\{filter\}/g, 'Country: Mexico').replace(/\{metric\}/g, 'daily users')
+          .replace(/\{(?:converted|events|sessions|accounts|learners|peak|latest)\}/g, '12,345').replace(/\{change\}/g, '+1,234');
         expect(filled, `staffConsole.${path} has an unfilled placeholder`).not.toMatch(/\{\w+\}/);
         expectFits(filled, role as 'action' | 'heading' | 'body' | 'option', locale, 'adult', `staffConsole.${path}`);
       }

@@ -167,3 +167,69 @@
 .lf-rebuild .lf-staff-multiples { display: grid; gap: var(--spacing-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
 .lf-rebuild .lf-staff-plot[data-compact='true'] .lf-staff-plot-svg { block-size: var(--spacing-16); }
 .lf-rebuild .lf-staff-preview-loading { font: var(--type-body); color: var(--content-muted); }
+
+/* ---- W2T.3: Analytics & Health, Learning intel (with Insights) ------------------------------------ */
+
+/* The view switch and the period control, side by side once there is room. */
+.lf-rebuild .lf-staff-controls { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+@container lf-staff-page (min-width: 840px) {
+  .lf-rebuild .lf-staff-controls { grid-template-columns: minmax(0, 1fr) minmax(14rem, 20rem); align-items: end; }
+}
+.lf-rebuild .lf-staff-window { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-staff-window-text { font: var(--type-label); color: var(--content-muted); }
+
+/* Four ranked lists (landing page, source, device, language): as many across as fit a readable column. */
+.lf-rebuild .lf-staff-quad { display: grid; gap: var(--spacing-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); min-inline-size: 0; }
+
+/* Event names (machine words) as a wrapping list of small sunken tags. */
+.lf-rebuild .lf-staff-codes { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-codes > li {
+  padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken);
+  font: var(--type-caption); font-family: ui-monospace, monospace; overflow-wrap: anywhere;
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-codes > li { background: var(--raised); }
+
+/* A row with its facts and one action (an exclusion, a detected address, an active filter). */
+.lf-rebuild .lf-staff-rows { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3);
+  min-inline-size: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken);
+}
+.lf-rebuild[data-theme='dark'] .lf-staff-row { background: var(--raised); }
+.lf-rebuild .lf-staff-row > .lf-staff-stack, .lf-rebuild .lf-staff-row > p, .lf-rebuild .lf-staff-row > .lf-staff-facts { flex: 1 1 14em; min-inline-size: 0; }
+.lf-rebuild .lf-staff-emphasis-small { font: var(--type-label); }
+
+/* The map: the drawn picture, the readout under it, the legend with real ranges, then the ranked places. */
+.lf-rebuild .lf-staff-map { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-staff-map-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-rebuild .lf-staff-map-actions:empty { display: none; }
+.lf-rebuild .lf-staff-map-frame { overflow: hidden; border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-rebuild[data-theme='dark'] .lf-staff-map-frame { background: var(--raised); }
+.lf-rebuild .lf-staff-map-svg { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 2; }
+.lf-rebuild .lf-staff-map-water { fill: var(--surface); }
+.lf-rebuild .lf-staff-map-graticule { fill: none; stroke: var(--outline); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-land { fill: var(--outline); stroke: var(--surface); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-region { fill: var(--sunken); stroke: var(--surface); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-border { fill: none; stroke: var(--content-muted); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-staff-map-point { stroke: var(--surface); stroke-width: 2; vector-effect: non-scaling-stroke; }
+/* One data hue (sky), five steps from light to full; primary marks only the selected place (05 §2). */
+.lf-rebuild .lf-staff-map-step-0 { fill: color-mix(in srgb, var(--sky-strong) 20%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-1 { fill: color-mix(in srgb, var(--sky-strong) 38%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-2 { fill: color-mix(in srgb, var(--sky-strong) 56%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-3 { fill: color-mix(in srgb, var(--sky-strong) 78%, var(--surface)); }
+.lf-rebuild .lf-staff-map-step-4 { fill: var(--sky-strong); }
+.lf-rebuild .lf-staff-map-land[class*='lf-staff-map-step-'], .lf-rebuild .lf-staff-map-point { cursor: pointer; }
+.lf-rebuild .lf-staff-map-selected { stroke: var(--primary-strong); stroke-width: 3; }
+.lf-rebuild .lf-staff-map-readout { font: var(--type-label); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-map-legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-4); font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-staff-map-legend ul { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-staff-map-legend li { display: inline-flex; align-items: center; gap: var(--spacing-2); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-staff-map-swatch { display: inline-block; inline-size: var(--spacing-6); block-size: var(--spacing-3); border-radius: var(--rounded-sm); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-0 { background: color-mix(in srgb, var(--sky-strong) 20%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-1 { background: color-mix(in srgb, var(--sky-strong) 38%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-2 { background: color-mix(in srgb, var(--sky-strong) 56%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-3 { background: color-mix(in srgb, var(--sky-strong) 78%, var(--surface)); }
+.lf-rebuild .lf-staff-map-swatch.lf-staff-map-step-4 { background: var(--sky-strong); }
+
+/* Ranked places: the design system list rows (the keyboard and tap path into the map). */
+.lf-rebuild .lf-staff-place-rank { color: var(--content-muted); font-variant-numeric: tabular-nums; }
