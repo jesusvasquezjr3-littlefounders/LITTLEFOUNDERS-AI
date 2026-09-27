@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { HudPlate } from './HudPlate';
 import type { Microphone } from '../useMicrophone';
+import type { MicBlockedReason, MicOrbState } from '@/rebuild/mentor/session/micForPhase';
 
 /*
  * The hero control, and the answer to the sentence that got the last version
@@ -58,7 +59,9 @@ import type { Microphone } from '../useMicrophone';
  * the accessible name, so nothing is announced twice.
  */
 
-export type MicOrbState = 'unavailable' | 'idle' | 'listening' | 'thinking' | 'speaking';
+/* The orb's states and Core's three refusals are defined once, with the ported
+ * session logic (`rebuild/mentor/session/micForPhase.ts`), and re-exported here. */
+export type { MicBlockedReason, MicOrbState };
 
 /**
  * The orb's diameter on a phone, in CSS pixels.
@@ -73,9 +76,6 @@ export type MicOrbState = 'unavailable' | 'idle' | 'listening' | 'thinking' | 's
  * out of Tailwind at build time.
  */
 export const MIC_ORB_SIZE_PX = 96;
-
-/** Core's answers, verbatim (backend/src/routes/tutor.ts `microphoneBlockedBy`). */
-export type MicBlockedReason = 'POLICY_BLOCKED' | 'CONSENT_REQUIRED' | 'VOICE_UNAVAILABLE';
 
 export interface MicOrbProps {
   state: MicOrbState;

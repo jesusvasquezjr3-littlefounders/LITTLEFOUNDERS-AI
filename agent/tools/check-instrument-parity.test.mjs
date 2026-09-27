@@ -24,7 +24,7 @@ const FILES = {
   wire: 'oracle/src/ws/protocol.ts',
   coreBody: 'backend/src/routes/tutor.ts',
   coreRow: 'backend/src/services/tutorData.ts',
-  frontendWire: 'frontend/src/tutor/types.ts',
+  frontendWire: 'frontend/src/rebuild/mentor/session/types.ts',
 };
 
 const real = Object.fromEntries(
@@ -134,7 +134,7 @@ test('RED when the frontend mirror loses a kind — the client cannot draw it', 
   const read = readWith(FILES.frontendWire, (s) => s.replace("kind: 'marked_line';", "kind: 'marked_line_TYPO';"));
   const problems = checkInstrumentParity(read);
   assert.ok(
-    problems.some((p) => p.includes('frontend/src/tutor/types.ts') && p.includes('marked_line')),
+    problems.some((p) => p.includes('frontend/src/rebuild/mentor/session/types.ts') && p.includes('marked_line')),
     `expected a marked_line failure, got:\n${problems.join('\n')}`,
   );
 });

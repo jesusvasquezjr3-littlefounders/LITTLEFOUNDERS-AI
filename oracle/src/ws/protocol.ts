@@ -164,7 +164,14 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
       accepted: z.boolean(),
     })
     .strict(),
-  z.object({ type: z.literal('end_session') }).strict(),
+  /**
+   * `recapFirst` (OD-28, owner review M-04): the learner pressed "end" on the
+   * Mentor screen. The Mentor asks the C.16 recap question first and the
+   * session stays open for one answer; a second `end_session` (or the answer)
+   * closes it. Without the flag the session closes at once (start over, a
+   * learner leaving mid-recap, older clients).
+   */
+  z.object({ type: z.literal('end_session'), recapFirst: z.literal(true).optional() }).strict(),
   /**
    * C.8/C.12: the learner's choice on the stop-or-continue offer
    * (`session_end_offer`). Honoured only while an offer is open.

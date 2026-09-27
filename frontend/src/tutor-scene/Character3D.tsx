@@ -15,6 +15,7 @@ import { bindRig, resetRig, rigKindOf, type Rig } from './rig';
 import {
   ACTION_SECONDS,
   CLIP_LIFT,
+  HELD_ACTION_PROGRESS,
   LOOPING_ACTIONS,
   applyCharacterFrame,
   applyEmotionPosture,
@@ -288,6 +289,14 @@ export function Character3D({
    * her frozen in bind pose — strictly worse than the procedural motion she has
    * — so she is excluded by RIG KIND rather than by hoping the names miss.
    */
+  /*
+   * `prefers-reduced-motion`: every pose is HELD at one representative frame
+   * instead of played, and the idle loop stops (Frontend Bible 04 §3, 08 §7).
+   * The low tier alone does not hold poses: it is a performance decision, and a
+   * gesture is how the learner sees what the character is doing.
+   */
+  const heldPose = settings.reducedMotion;
+
   const { clips } = useClipLibrary();
   const clip = useMemo(
     () => (rigKind === 'biped' ? clipFor(clips, action, id) : null),
@@ -323,11 +332,14 @@ export function Character3D({
     const layer = mixer.clipAction(additive);
     layer.setLoop(LoopRepeat, Infinity);
     layer.play();
+    // Reduced motion: the emotion layer is held at its first frame, never looped
+    // (see `HELD_ACTION_PROGRESS`).
+    if (heldPose) layer.paused = true;
     return () => {
       layer.stop();
       mixer.uncacheAction(additive, scene);
     };
-  }, [mixer, clipDriven, emotionClip, restClip, scene]);
+  }, [mixer, clipDriven, emotionClip, restClip, scene, heldPose]);
 
   useEffect(() => {
     if (!clip || !restClip) return;
@@ -349,6 +361,11 @@ export function Character3D({
     // a bow completes.
     running.clampWhenFinished = true;
     running.play();
+    if (heldPose) {
+      // Reduced motion: one representative frame of the gesture, held.
+      running.time = HELD_ACTION_PROGRESS[action] * additive.duration;
+      running.paused = true;
+    }
     // Kept so the frame loop can read the clip's OWN progress for the lift,
     // rather than running a second, drifting clock beside it.
     runningAction.current = running;
@@ -359,7 +376,7 @@ export function Character3D({
     };
     // actionKey replays the same clip: a one-shot that has already finished
     // will not restart on its own.
-  }, [mixer, clip, restClip, scene, actionKey]);
+  }, [mixer, clip, restClip, scene, actionKey, heldPose, action]);
 
   useFrame((state, delta) => {
     const group = inner.current;
@@ -382,7 +399,7 @@ export function Character3D({
       // An authored emotion clip is already blended in additively by the mixer;
       // applying the procedural posture as well would double it.
       if (!emotionClip) {
-        applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
+        applyEmotionPosture(bones, emotion, heldPose ? PHASE[id] : state.clock.elapsedTime + PHASE[id]);
       }
       if (speaking && !settings.reducedMotion) {
         applySpeaking(bones, state.clock.elapsedTime + PHASE[id]);
@@ -404,7 +421,7 @@ export function Character3D({
       const travel = CLIP_LIFT[action] ?? 0;
       const playing = runningAction.current;
       actionLift.current =
-        travel > 0 && playing && playing.getClip().duration > 0
+        !heldPose && travel > 0 && playing && playing.getClip().duration > 0
           ? arc(playing.time / playing.getClip().duration) * travel * asset.targetHeightM
           : 0;
     } else if (bones) {
@@ -433,7 +450,9 @@ export function Character3D({
       const looping = LOOPING_ACTIONS.has(action);
       // A finished one-shot holds at progress 1 (its arc returns to zero
       // there), rather than snapping or restarting.
-      const progress = duration <= 0 ? 0 : looping ? (elapsed % duration) / duration : Math.min(elapsed / duration, 1);
+      const progress = heldPose
+        ? HELD_ACTION_PROGRESS[action]
+        : duration <= 0 ? 0 : looping ? (elapsed % duration) / duration : Math.min(elapsed / duration, 1);
 
       const lift = applyCharacterFrame(
         bones,
@@ -441,12 +460,13 @@ export function Character3D({
         action,
         {
           progress,
-          time: state.clock.elapsedTime + PHASE[id],
+          // A held pose holds the clock too, so the emotion posture stops.
+          time: heldPose ? PHASE[id] : state.clock.elapsedTime + PHASE[id],
           lift: 0,
         },
         pointBearing,
       );
-      actionLift.current = lift * asset.targetHeightM;
+      actionLift.current = heldPose ? 0 : lift * asset.targetHeightM;
       if (speaking && !settings.reducedMotion) {
         applySpeaking(bones, state.clock.elapsedTime + PHASE[id]);
       }

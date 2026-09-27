@@ -1,0 +1,405 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { MutableRefObject } from 'react';
+
+/*
+ * Push-to-talk, deliberately.
+ *
+ * NOT open-mic voice activity detection, and the reason is §1.9 rather than
+ * engineering taste: an always-listening microphone in a child's room captures
+ * everything said near it, including by people who never agreed to anything.
+ * Hold-to-talk means the learner decides, every single time, exactly what
+ * leaves the device — and the recording indicator is honest, because there is
+ * nothing to indicate when they are not holding.
+ *
+ * The stream is acquired on FIRST USE rather than on mount. Asking a child for
+ * their microphone the instant a page loads is the pattern that teaches people
+ * to click "block", and a session that never uses voice never asks at all.
+ */
+
+/*
+ * THE LEVEL IS A REF CHANNEL, NOT REACT STATE.
+ *
+ * The meter used to be `setLevel(peak)` inside a requestAnimationFrame loop,
+ * which re-rendered every component under the tutor route sixty times a second
+ * for the whole hold. Nothing read the value, so the cost was invisible; the
+ * moment a meter actually consumed it, the entire route would have re-rendered
+ * per frame while a 3D scene was already competing for the same budget.
+ * `levelRef` plus `subscribe` gives a meter the same sixty updates a second
+ * with zero renders: the subscriber writes an SVG attribute directly.
+ *
+ * THE HOLD CAP IS MEASURED IN BYTES, NOT SECONDS.
+ *
+ * The recorder asks for a container Oracle's transcriber has been MEASURED
+ * against (see `PREFERRED_MIME_TYPES`) and otherwise lets the browser pick. We
+ * still cannot know the bitrate, so "how many seconds fit under the wire cap"
+ * has no answer:
+ * 1.5M base64 characters is roughly thirty-five seconds of PCM and several
+ * minutes of Opus. Guessing a duration would either truncate a Chrome learner
+ * mid-sentence or hand Oracle a frame its schema rejects. So the recorder runs
+ * with a timeslice, we add up the chunk sizes it actually produces, and the
+ * hold releases itself at 90% of the cap. The number is then exact on every
+ * browser without knowing anything about any of them.
+ */
+
+/*
+ * CONTAINERS WE HAVE ACTUALLY SENT TO THE TRANSCRIBER AND SEEN COME BACK.
+ *
+ * The recorder used to take no options at all, on the reasoning that the
+ * browser knows best. It does — about recording. It knows nothing about what
+ * our speech-to-text provider accepts, and the two disagreed: Inworld supports
+ * WAV, MP3, OGG, FLAC, M4A and WebM, and rejects anything else with a 400.
+ *
+ * Ordering matters. Opus in WebM is first because it is the smallest of the
+ * accepted formats over the wire — this frame is base64 in a websocket message
+ * — and because it is what Chrome, Edge and Android produce anyway. Safari has
+ * only ever offered `audio/mp4`, so it lands there, which Inworld accepts as
+ * M4A.
+ *
+ * An empty result is not a failure: `isTypeSupported` may be absent, and every
+ * unmatched browser falls through to `new MediaRecorder(stream)` exactly as
+ * before. Preferring a measured format improves the odds; it is not load-bearing.
+ */
+const PREFERRED_MIME_TYPES = [
+  'audio/webm;codecs=opus',
+  'audio/webm',
+  'audio/ogg;codecs=opus',
+  'audio/mp4',
+] as const;
+
+function pickRecorderMimeType(): string | null {
+  if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function') {
+    return null;
+  }
+  return PREFERRED_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type)) ?? null;
+}
+
+export type MicPermission = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupported';
+
+/**
+ * Oracle's inbound audio ceiling, mirrored from `oracle/src/ws/protocol.ts`.
+ *
+ * It is duplicated rather than imported because the frontend may only ever
+ * reach Core, never an internal service (frontend/AGENTS.md). The two numbers
+ * must agree: a larger value here produces a frame Zod rejects at the socket,
+ * which surfaces to a child as a turn that silently never happened.
+ */
+export const MAX_AUDIO_B64_CHARS = 1_500_000;
+
+/**
+ * How much of the wire cap a single hold is allowed to spend.
+ *
+ * The remaining tenth absorbs the final chunk, which arrives after the decision
+ * to stop has already been taken: `MediaRecorder` flushes whatever it buffered
+ * when `stop()` is called, so the last chunk lands after the check that fired.
+ */
+export const WIRE_SAFETY_FRACTION = 0.9;
+
+/** Recorded bytes that base64 to the safe fraction of the cap (4 chars per 3 bytes). */
+export const HOLD_MAX_BYTES = Math.floor((MAX_AUDIO_B64_CHARS * WIRE_SAFETY_FRACTION * 3) / 4);
+
+/**
+ * A wall-clock ceiling on one hold, stated as a PRODUCT limit rather than a
+ * technical one.
+ *
+ * The byte cap is what the wire can carry; this is what a turn should be. A
+ * learner who leans on the button for two minutes has stopped talking to a
+ * tutor and started recording a monologue, and the reply to it would arrive far
+ * outside the latency budget that makes this feel like a conversation. On a
+ * low-bitrate codec the byte cap would never fire first, so without this the
+ * hold has no end at all.
+ */
+export const HOLD_MAX_MS = 60_000;
+
+/**
+ * How often the recorder hands us a chunk.
+ *
+ * Small enough that the byte total is never more than a quarter second stale
+ * when the cap decision is made, large enough that we are not allocating a Blob
+ * every frame for a sixty-second hold.
+ */
+const RECORDER_TIMESLICE_MS = 250;
+
+/** Below this, a "recording" was a mis-tap rather than an utterance. */
+const MIN_USEFUL_BYTES = 1_200;
+
+/** Called once per animation frame while a hold is live. */
+export type MicLevelListener = (level: number) => void;
+
+export interface Microphone {
+  permission: MicPermission;
+  recording: boolean;
+  /**
+   * Peak level 0-1 for the current frame. Read it inside your own loop, or
+   * subscribe; either way it never triggers a render.
+   */
+  levelRef: MutableRefObject<number>;
+  /** Bytes recorded so far in this hold. Resets to 0 when the hold ends. */
+  holdBytesRef: MutableRefObject<number>;
+  /** Milliseconds elapsed in this hold. Resets to 0 when the hold ends. */
+  holdMsRef: MutableRefObject<number>;
+  /**
+   * Fraction 0-1 of whichever ceiling is actually closest — bytes or seconds.
+   * A meter driven by this fills at the rate the hold is really being spent.
+   */
+  holdFractionRef: MutableRefObject<number>;
+  /** Register a per-frame level listener. Returns its unsubscribe. */
+  subscribe: (listener: MicLevelListener) => () => void;
+  start: () => Promise<void>;
+  /** Resolves with the recorded audio, or null if nothing usable was captured. */
+  stop: () => Promise<Blob | null>;
+  release: () => void;
+}
+
+export interface MicrophoneOptions {
+  /**
+   * Called when the hold ended itself because it hit a ceiling.
+   *
+   * A caller that does not pass this still gets the auto-release — the frame
+   * would otherwise be rejected by the server — but the audio is dropped
+   * locally rather than sent, so anything that can hold the button for a long
+   * turn should pass it.
+   */
+  onAutoRelease?: (clip: Blob | null) => void;
+  /**
+   * Called with each recorded chunk AS IT IS PRODUCED, mid-hold — the feed for
+   * the streamed upload, so the clip is already at the server when the button
+   * is released. The chunks are the same Blobs the final clip is assembled
+   * from; a caller that streams them still receives the whole clip at stop,
+   * and decides there whether to commit the stream or fall back to sending it
+   * whole. `mimeType` is the RECORDER's (a slice's own `type` can be empty).
+   */
+  onChunk?: (chunk: Blob, mimeType: string) => void;
+}
+
+export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {}): Microphone {
+  const [permission, setPermission] = useState<MicPermission>('idle');
+  const [recording, setRecording] = useState(false);
+
+  const levelRef = useRef(0);
+  const holdBytesRef = useRef(0);
+  const holdMsRef = useRef(0);
+  const holdFractionRef = useRef(0);
+
+  const streamRef = useRef<MediaStream | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const startedAtRef = useRef(0);
+  const listenersRef = useRef(new Set<MicLevelListener>());
+
+  // The stop function reaches the frame loop through a ref because the loop is
+  // created inside `start` and the loop is what decides to stop. Closing over
+  // the callback directly would make the two depend on each other's identity
+  // and re-create the loop every time either one changed.
+  const stopRef = useRef<() => Promise<Blob | null>>(async () => null);
+  const onAutoReleaseRef = useRef(options.onAutoRelease);
+  onAutoReleaseRef.current = options.onAutoRelease;
+  const onChunkRef = useRef(options.onChunk);
+  onChunkRef.current = options.onChunk;
+
+  const subscribe = useCallback((listener: MicLevelListener) => {
+    const listeners = listenersRef.current;
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  }, []);
+
+  /** Zero every meter and tell the subscribers, so a ring never freezes mid-fill. */
+  const resetMeters = useCallback(() => {
+    levelRef.current = 0;
+    holdBytesRef.current = 0;
+    holdMsRef.current = 0;
+    holdFractionRef.current = 0;
+    for (const listener of listenersRef.current) listener(0);
+  }, []);
+
+  const release = useCallback(() => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    recorderRef.current = null;
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    void audioContextRef.current?.close().catch(() => {});
+    audioContextRef.current = null;
+    setRecording(false);
+    resetMeters();
+  }, [resetMeters]);
+
+  // Releasing on unmount is not tidiness: a live MediaStream keeps the
+  // browser's recording indicator lit after the learner has left the page,
+  // which reads as "this site is still listening" and is a promise we break.
+  useEffect(() => release, [release]);
+
+  /*
+   * THE SAME PROMISE, ON A REVOCATION MID-SESSION, NOT JUST ON LEAVING.
+   *
+   * Found by adversarial review, 2026-08-30 (MEDIUM): `stop()` deliberately
+   * keeps `streamRef` warm between holds — a repeated push-to-talk press
+   * should not re-prompt for the microphone every time — and `release()`,
+   * the only thing that actually stops the hardware tracks, used to run
+   * only on unmount. But a guardian's ONE-PRESS revoke (/ORACLE.md §4.3)
+   * flips `enabled` false in this SAME component instance, because the
+   * tutor deliberately keeps running in text-and-choices mode rather than
+   * unmounting — so the browser's own mic-in-use indicator stayed lit for
+   * the rest of the conversation even though `start()` already refuses any
+   * new recording while `!enabled` and no audio was ever actually sent.
+   * No audio leaked; a guardian who presses "off" and trusts the browser's
+   * own indicator deserves that indicator to actually go dark.
+   */
+  useEffect(() => {
+    if (!enabled) release();
+  }, [enabled, release]);
+
+  const start = useCallback(async () => {
+    if (!enabled) return;
+    /*
+     * ALREADY LISTENING IS NOT A REASON TO START AGAIN.
+     *
+     * There are now two things that open this microphone — the orb the learner
+     * presses, and hands-free listening after a tutor turn — and a second
+     * `start()` on a live recorder is silently destructive: it builds a NEW
+     * MediaRecorder over the same stream, overwrites `recorderRef`, orphans the
+     * running one, and clears `chunksRef`, so the audio captured so far is
+     * discarded and the orphan keeps streaming chunks nobody will commit. A
+     * child pressing the orb to answer a question the microphone was already
+     * listening to would lose the first half of their sentence.
+     */
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') return;
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+      setPermission('unsupported');
+      return;
+    }
+
+    try {
+      if (!streamRef.current) {
+        setPermission('requesting');
+        streamRef.current = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        });
+        setPermission('granted');
+      }
+    } catch {
+      setPermission('denied');
+      return;
+    }
+
+    const stream = streamRef.current;
+    if (!stream) return;
+
+    chunksRef.current = [];
+    resetMeters();
+    startedAtRef.current = Date.now();
+
+    const preferred = pickRecorderMimeType();
+    const recorder = preferred
+      ? new MediaRecorder(stream, { mimeType: preferred })
+      : new MediaRecorder(stream);
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        chunksRef.current.push(event.data);
+        holdBytesRef.current += event.data.size;
+        onChunkRef.current?.(event.data, recorder.mimeType || 'audio/webm');
+      }
+    };
+    // The timeslice is the whole point: without it `ondataavailable` fires once,
+    // at stop, and the running total this cap is derived from would not exist
+    // until the moment it was too late to act on it.
+    recorder.start(RECORDER_TIMESLICE_MS);
+    recorderRef.current = recorder;
+    setRecording(true);
+
+    // A level meter, so the learner can see they are being heard. Silence with
+    // no feedback is indistinguishable from a broken microphone, and a child
+    // will conclude the tutor is ignoring them.
+    let analyser: AnalyserNode | null = null;
+    let data = new Uint8Array(0);
+    try {
+      const context = new AudioContext();
+      audioContextRef.current = context;
+      analyser = context.createAnalyser();
+      analyser.fftSize = 256;
+      context.createMediaStreamSource(stream).connect(analyser);
+      data = new Uint8Array(analyser.frequencyBinCount);
+    } catch {
+      // No meter. Recording still works, and a missing meter must never stop a
+      // learner from speaking.
+    }
+
+    /*
+     * One loop, and it runs whether or not the analyser exists.
+     *
+     * It is the hold's clock as well as its meter: the auto-release lives here.
+     * Nesting it inside the analyser's try block would mean a browser that
+     * refused an AudioContext also lost the only thing enforcing the wire cap,
+     * and that failure would show up as a rejected frame rather than as a
+     * missing meter.
+     */
+    const tick = () => {
+      if (analyser) {
+        analyser.getByteTimeDomainData(data);
+        let peak = 0;
+        for (const sample of data) peak = Math.max(peak, Math.abs(sample - 128) / 128);
+        levelRef.current = peak;
+      }
+
+      holdMsRef.current = Date.now() - startedAtRef.current;
+      holdFractionRef.current = Math.min(
+        1,
+        Math.max(holdBytesRef.current / HOLD_MAX_BYTES, holdMsRef.current / HOLD_MAX_MS),
+      );
+      for (const listener of listenersRef.current) listener(levelRef.current);
+
+      if (holdBytesRef.current >= HOLD_MAX_BYTES || holdMsRef.current >= HOLD_MAX_MS) {
+        void stopRef.current().then((clip) => onAutoReleaseRef.current?.(clip));
+        return;
+      }
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    tick();
+  }, [enabled, resetMeters]);
+
+  const stop = useCallback(async (): Promise<Blob | null> => {
+    const recorder = recorderRef.current;
+    if (!recorder || recorder.state === 'inactive') {
+      setRecording(false);
+      resetMeters();
+      return null;
+    }
+
+    const finished = new Promise<Blob | null>((resolve) => {
+      recorder.onstop = () => {
+        const chunks = chunksRef.current;
+        chunksRef.current = [];
+        if (chunks.length === 0) return resolve(null);
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        resolve(blob.size >= MIN_USEFUL_BYTES ? blob : null);
+      };
+    });
+
+    recorder.stop();
+    recorderRef.current = null;
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    setRecording(false);
+    resetMeters();
+    return finished;
+  }, [resetMeters]);
+
+  stopRef.current = stop;
+
+  return {
+    permission,
+    recording,
+    levelRef,
+    holdBytesRef,
+    holdMsRef,
+    holdFractionRef,
+    subscribe,
+    start,
+    stop,
+    release,
+  };
+}

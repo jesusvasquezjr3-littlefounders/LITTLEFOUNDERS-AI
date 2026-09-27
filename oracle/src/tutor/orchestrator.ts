@@ -2647,10 +2647,11 @@ export class TutorOrchestrator {
    *
    * C.16: the script follows how the session ended. A stopped session gets
    * the calm safety close, never the positive one. A learner who chooses to
-   * leave gets the completed close naming the act the server observed; the
-   * recap QUESTION is not asked here, because the learner is leaving now and
-   * holding them for one more answer would override their choice (recorded
-   * as a proposal in the S06 sprint record). `hard` is the budget variant.
+   * leave gets the completed close naming the act the server observed. Since
+   * OD-28 (M-04) a first press of "end" on the Mentor screen asks the recap
+   * question first (`recapOnEnd`); this is the close that follows a second
+   * press, a start-over, or a client that asks to leave at once. `hard` is
+   * the budget variant.
    */
   async farewell(nowMs: number, kind: 'soft' | 'hard'): Promise<TurnOutcome> {
     const budget = this.currentBudget(nowMs);
@@ -2672,6 +2673,24 @@ export class TutorOrchestrator {
       'completed',
       null,
     );
+  }
+
+  /**
+   * OD-28 (owner review M-04): the learner pressed "end" on the Mentor screen
+   * (`end_session` with `recapFirst`). While the session is running normally
+   * the Mentor asks the C.16 recap question first (scripted, no model call)
+   * and the session stays open for one answer: the answer closes it through
+   * `finishCompletedClose`, and a second `end_session` closes it at once with
+   * the completed close. Returns null when the recap cannot be asked (a
+   * stopped session, a close already under way, an ended budget): the caller
+   * then ends the session with `farewell`, exactly as before.
+   */
+  async recapOnEnd(nowMs: number): Promise<TurnOutcome | null> {
+    if (this.stopped || this.sessionClosing.phase !== 'none') return null;
+    if (this.currentBudget(nowMs).state === 'ended') return null;
+    // Pressing end while "stop here, or one more?" is open IS the answer to it.
+    if (this.sessionEndSignal.offerOpen) this.sessionEndSignal.recordResponse('accepted');
+    return this.beginCompletedClose(nowMs);
   }
 
   /**

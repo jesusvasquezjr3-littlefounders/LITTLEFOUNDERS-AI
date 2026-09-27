@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import type { AgeBand, Locale } from '../../design/copyBudget';
+import { MENTOR_CHARACTERS, type MentorCharacter } from '../../design/assets';
+import { RebuildProvider } from '../../design/controls';
+import type { Adaptation, TutorOffers, TutorWhiteboardWire } from '../session/types';
+import type { TutorTurnState } from '../session/useTutorSocket';
+import { boardFixtures } from './boardFixtures';
+import { mentorCopy } from './MentorRoute';
+import { MentorScreen, type MentorLive, type MentorScreenSession, type MentorSheet } from './MentorScreen';
+import { fixtureData, sessionsFixture, transcriptFixture } from './mentorFixtures';
+import { replayBeats } from './replayModel';
+import type { TutorCatalog, TutorPreferences } from '../session/types';
+import type { MentorPhase } from './useMentorSession';
+
+/*
+ * Development preview of the Mentor screen (the preview entry's `mentor-screen` screen),
+ * every state from fixtures, no Core and no Oracle:
+ *
+ *   ?state=  loading | unavailable | calibration | openings | limit | conversing | thinking | long | board |
+ *            adaptation | session-end | goal | check-in | activity | recording | error | closing | closing-safety |
+ *            replay | roleplay | first-visit
+ *   ?board=<whiteboard kind>  ?character=  ?companion=  ?light=  ?guardian=1  ?mic=on|off|consent|policy
+ *   ?sheet=transcript|grown-up|chooser|personalise|map|notebook|history  ?data=ready|empty|failed|loading
+ */
+
+const CATALOG: TutorCatalog = {
+  characters: ['rho', 'zara', 'liruf', 'dina'], dioramas: ['diorama-a', 'diorama-b'], backdrops: ['auto', 'dawn', 'day', 'dusk', 'night'],
+  adaptations: ['slower_pacing', 'more_examples', 'less_text', 'more_visual', 'repeat_before_advancing'], articulates: ['rho', 'zara'],
+};
+const SHEETS: Record<string, MentorSheet> = {
+  transcript: 'transcript', 'grown-up': 'grownUp', chooser: 'chooser', personalise: 'personalise', map: 'map', notebook: 'notebook', history: 'history',
+};
+
+const TURNS: Record<Locale, { short: string; long: string; ask: string }> = {
+  'en-US': {
+    short: 'Nice thinking. How much is left to save for the bike?',
+    long: 'You saved ten coins the first week. Then you added five coins each week after that, so the jar kept growing. Look at the board: every bar is one more week. Can you tell me what the jar will hold in week four, and how you worked it out?',
+    ask: 'What would you do with the ten coins?',
+  },
+  'es-MX': {
+    short: 'Bien pensado. ¿Cuánto falta ahorrar para la bici?',
+    long: 'Ahorraste diez monedas la primera semana. Después agregaste cinco monedas cada semana, así que el frasco siguió creciendo. Mira el pizarrón: cada barra es una semana más. ¿Me dices cuánto tendrá el frasco en la semana cuatro y cómo lo pensaste?',
+    ask: '¿Qué harías con las diez monedas?',
+  },
+  'pt-BR': {
+    short: 'Bem pensado. Quanto falta poupar para a bicicleta?',
+    long: 'Você poupou dez moedas na primeira semana. Depois colocou cinco moedas a cada semana, então o pote continuou crescendo. Olhe o quadro: cada barra é mais uma semana. Pode me dizer quanto o pote terá na semana quatro e como pensou?',
+    ask: 'O que você faria com as dez moedas?',
+  },
+};
+
+const OFFERS: TutorOffers = {
+  locale: 'en-US', lastSession: { topic: 'Saving', courseId: 'c1', topicId: 't1', skillKey: null, outcome: 'left', daysAgo: 1 },
+  intelDegraded: false, canStart: true, startBlockedBy: null, sessionCapResetAt: null, voiceAvailable: true, microphoneBlockedBy: null,
+  weakSkills: [{ skillKey: 'money/change', title: 'Change', courseId: 'c1', topicId: 't2', recommendedAction: 'practice', reasonCode: 'x' }],
+  faqIds: ['what_is_saving'], canAskOpen: true,
+};
+
+const noop = () => undefined;
+
+export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale: Locale; theme: 'light' | 'dark'; ageBand: AgeBand; params: URLSearchParams }) {
+  const copy = mentorCopy(locale);
+  const state = params.get('state') ?? 'openings';
+  const character = (MENTOR_CHARACTERS as readonly string[]).includes(params.get('character') ?? '') ? params.get('character') as MentorCharacter : 'dina';
+  const boards = boardFixtures(locale);
+  const boardKind = (params.get('board') ?? (state === 'board' ? 'sequence' : null)) as TutorWhiteboardWire['kind'] | null;
+  const board = boardKind && boardKind in boards ? boards[boardKind] : null;
+  const mic = params.get('mic') ?? 'on';
+  const [recording] = useState(state === 'recording');
+  const companionParam = params.get('companion');
+  const companion = (MENTOR_CHARACTERS as readonly string[]).includes(companionParam ?? '') && companionParam !== character ? companionParam as MentorCharacter : null;
+  const dataMode = (['empty', 'failed', 'loading'] as const).find((mode) => mode === params.get('data')) ?? 'ready';
+  const [data] = useState(() => fixtureData(locale, dataMode));
+  const [preferences, setPreferences] = useState<TutorPreferences>({
+    character, companion, diorama: character === 'liruf' || character === 'dina' ? 'diorama-b' : 'diorama-a',
+    backdrop: params.get('light') ?? 'auto', nickname: params.get('nickname'), adaptations: ['more_examples'],
+  });
+  const [replay] = useState(() => (state === 'replay' ? { summary: { ...sessionsFixture()[0]!, character }, beats: replayBeats(transcriptFixture(locale, character)) } : null));
+
+  const phase: MentorPhase = state === 'loading' || state === 'unavailable' || state === 'calibration' ? state
+    : state === 'openings' || state === 'limit' || state === 'replay' || state === 'first-visit' ? 'openings'
+      : state.startsWith('closing') ? 'closing' : 'conversing';
+  const text = state === 'long' || board ? TURNS[locale].long : state === 'adaptation' || state === 'session-end' || state === 'goal' || state === 'check-in' ? TURNS[locale].ask : TURNS[locale].short;
+  const turn: TutorTurnState | null = phase === 'conversing' && state !== 'thinking' ? {
+    seq: 3, text, emotion: state === 'error' ? 'encouraging' : 'happy', action: board ? 'point' : 'idle', audioUrl: null, audioPending: false, wordTimings: null,
+    next: 'ask', policy: null, demonstrate: null, whiteboard: board, roleplayScene: state === 'roleplay' ? 'lemonade_change' : null, pointAt: null,
+    // A roleplay fixture starts its scene at once: the introducing line's voice is still "on its way".
+    ...(state === 'roleplay' ? { audioPending: true } : {}),
+  } : null;
+  const socket: MentorLive = {
+    adaptationOffer: state === 'adaptation' ? 'more_examples' as Adaptation : null,
+    sessionEndOffer: state === 'session-end', checkInOpen: state === 'check-in', goalCheckOpen: state === 'goal',
+    error: state === 'error' ? { code: 'STT_FAILED' } : null, budget: 'running', intelDegraded: false,
+    // A real tray activity (coin_count), drawn by the rebuilt live activity; the key never reaches the browser.
+    segment: state === 'activity' ? { segmentId: 's1', seq: 3, origin: 'catalog', segment: { type: 'coin_count',
+      prompt_md: locale === 'es-MX' ? 'Junta el dinero para pagar la limonada.' : locale === 'pt-BR' ? 'Junte o dinheiro para pagar a limonada.' : 'Put together the money to pay for the lemonade.',
+      payload: { currency: locale === 'es-MX' ? 'MXN' : locale === 'pt-BR' ? 'BRL' : 'USD', denominations: [1, 2, 5, 10], target: 17 } }, scoresXp: state === 'activity', framing: '' } : null,
+    lesson: state === 'activity' ? { topic: null, step: 2, of: 4 } : null,
+    thinking: state === 'thinking',
+    answerAdaptation: noop, answerSessionEnd: noop, answerCheckIn: noop, answerGoal: noop,
+  };
+  const session: MentorScreenSession = {
+    phase, known: phase !== 'loading' && phase !== 'unavailable', ageBand, character, scene: preferences.diorama === 'diorama-b' ? 'diorama-b' : 'diorama-a',
+    companion: preferences.companion && preferences.companion !== character ? preferences.companion as MentorCharacter : null,
+    light: (['auto', 'dawn', 'day', 'dusk', 'night'] as const).find((id) => id === preferences.backdrop) ?? 'auto',
+    preferences, catalog: CATALOG, personalized: state !== 'first-visit', voice: false,
+    updatePreferences: async (patch) => { setPreferences((current) => ({ ...current, ...patch })); return true; },
+    keepBoard: async () => true, data,
+    nickname: params.get('nickname'), offers: phase === 'openings' ? { ...OFFERS, locale, canStart: true, startBlockedBy: state === 'limit' ? 'SESSION_LIMIT' : null } : null,
+    calibrationSaving: false, calibrationError: false, starting: false, startError: state === 'limit' ? 'SESSION_LIMIT' : null,
+    socket, turn, speechUrl: null, audioKey: 3, speaking: false, awaitingReply: state === 'thinking', replyTimedOut: false, resuming: false, ending: false,
+    history: [{ speaker: 'tutor', text: TURNS[locale].ask, seq: 1 }, { speaker: 'learner', text: locale === 'en-US' ? 'Save them' : locale === 'es-MX' ? 'Ahorrarlas' : 'Poupar', seq: 2 }, { speaker: 'tutor', text, seq: 3 }],
+    recapOpen: false,
+    closing: phase === 'closing' ? { sessionId: 'preview', script: state === 'closing-safety' ? 'safety_stop' : 'completed', effort: 'recovered', topic: state === 'closing-safety' ? null : (copy.mentorSessionEnd as { previewTopic?: string }).previewTopic ?? null } : null,
+    mic: { present: mic === 'on' && (phase === 'openings' || phase === 'conversing'), blockedBy: mic === 'consent' ? 'CONSENT_REQUIRED' : mic === 'policy' ? 'POLICY_BLOCKED' : mic === 'off' ? 'VOICE_UNAVAILABLE' : null,
+      denied: false, recording, microphone: { subscribe: (listener) => { listener(0.6); return noop; } } },
+    retry: noop, chooseCalibration: noop, start: noop, sendText: noop, pressMic: noop, endSession: noop, restart: noop, editLast: noop,
+    gradeActivity: async () => null, reportActivity: noop,
+    chooseCharacter: async () => true, answerAlliance: async () => 'recorded', setHasDraft: noop, onSpeechEnd: noop, onSpeechBlocked: noop,
+  };
+  return <div className="lf-rebuild" data-theme={theme} lang={locale} data-age-band={ageBand}>
+    <RebuildProvider environment={{ theme, locale, ageBand }} labels={{ dismiss: copy.mentorScreen.sheetClose }}>
+      <MentorScreen session={session} copy={copy} locale={locale} theme={theme} guardianLink={params.get('guardian') === '1'}
+        onLeave={noop} onPath={noop} initialSheet={SHEETS[params.get('sheet') ?? ''] ?? null} initialReplay={replay} roleplayFrozen={state === 'roleplay'} />
+    </RebuildProvider>
+  </div>;
+}

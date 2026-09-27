@@ -12,7 +12,7 @@ const FILES = {
   oracleWire: 'oracle/src/ws/protocol.ts',
   coreBody: 'backend/src/routes/tutor.ts',
   coreData: 'backend/src/services/tutorData.ts',
-  frontendWire: 'frontend/src/tutor/types.ts',
+  frontendWire: 'frontend/src/rebuild/mentor/session/types.ts',
 };
 const real = Object.fromEntries(
   Object.values(FILES).map((f) => [f, readFileSync(path.join(ROOT, f), 'utf8')]),

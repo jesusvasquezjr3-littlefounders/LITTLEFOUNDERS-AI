@@ -1,0 +1,14 @@
+/*
+ * The microphone permission for one child (C.2), on a verified Tutor's family
+ * surface. A section of that surface, not a card of its own: the wording a
+ * parent confirms sits on a sunken fill so it reads as the text being agreed to.
+ */
+.lf-voice-consent { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-voice-consent-title { margin: 0; font: var(--type-title); letter-spacing: var(--type-title-tracking); overflow-wrap: anywhere; }
+.lf-voice-consent-status { margin: 0; color: var(--content-muted); overflow-wrap: anywhere; }
+.lf-voice-consent-confirm { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-voice-consent-for { margin: 0; font: var(--type-label); letter-spacing: var(--type-label-tracking); }
+.lf-voice-consent-body { margin: 0; font: var(--type-body); letter-spacing: var(--type-body-tracking); overflow-wrap: anywhere; }
+
+/* The development preview of this control (mentor-voice-consent). */
+.lf-preview--mentor-voice-consent .lf-preview-content { gap: var(--spacing-6); }

@@ -58,6 +58,11 @@ test('structure red team: timers, autoplay, timed navigation, unclosable dialogs
   assert.deepEqual(tsx('const host = useModal(open, "scrim", onClose, panel);\nreturn <section role="dialog" aria-modal="true" />;'), []);
   assert.deepEqual(tsx('const host = useModal(open, "scrim", undefined, panel);\nreturn <section role="dialog" aria-modal="true" />;'), ['DP-03']);
   assert.deepEqual(tsx('<Leaderboard />'), ['DP-05']);
+  // The whiteboard's ordering instrument is exempt by its literal kind only; any other ranking still fails.
+  assert.deepEqual(tsx("type Board = { kind: 'ranking'; order: number[] };"), []);
+  assert.deepEqual(tsx("type Board = { kind: 'ranking' }; const ranking = peers.sort();"), ['DP-05']);
+  assert.deepEqual(tsx("switch (board.kind) { case 'ranking': return rows(board.order); }"), []);
+  assert.deepEqual(tsx("switch (board.kind) { case 'ranking': return leaderboard(peers); }"), ['DP-05']);
   assert.deepEqual(tsx('<span>{state.hearts}</span>'), ['DP-07']);
   // The avatar's eye shape named 'hearts' is a closed drawing option, not a counter; anything else named hearts still fails.
   assert.deepEqual(tsx("export const AVATAR_PARTS = { eyes: ['default', 'happy', 'hearts'], mouth: ['smile'] };"), []);

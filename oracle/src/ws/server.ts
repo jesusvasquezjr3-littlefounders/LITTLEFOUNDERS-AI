@@ -187,6 +187,14 @@ interface Live {
    */
   endSessionRequested: boolean;
   /**
+   * OD-28 (M-04): an `end_session` with `recapFirst` arrived while another
+   * turn held the floor. The recap question is asked the moment the floor
+   * frees (`releaseTurn`). Deliberately separate from `endSessionRequested`:
+   * a recap keeps the session open, so a park that races it is an ordinary
+   * drop, never a close `finalizeParked` may assume will still happen.
+   */
+  recapRequested: boolean;
+  /**
    * Consecutive transcript writes that Core did not confirm. `persistTurn`
    * has always RETURNED whether the record was kept "so the caller can count
    * failures and close the session if the record is systematically not being
@@ -1120,7 +1128,13 @@ function releaseTurn(live: Live): void {
    */
   if (live.endSessionRequested && !live.closing) {
     live.endSessionRequested = false;
+    live.recapRequested = false;
     void attemptEndSession(live);
+    return;
+  }
+  if (live.recapRequested && !live.closing) {
+    live.recapRequested = false;
+    void attemptRecapOnEnd(live);
   }
 }
 
@@ -1181,6 +1195,33 @@ async function attemptEndSession(live: Live): Promise<void> {
     return;
   }
   try {
+    await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
+    await finish(live, 'completed');
+  } finally {
+    releaseTurn(live);
+  }
+}
+
+/**
+ * OD-28 (owner review M-04): the learner pressed "end" (`end_session` with
+ * `recapFirst`). The Mentor asks the C.16 recap question first and the
+ * session stays open for one answer; when the recap cannot be asked (a
+ * stopped session, a close already under way, an ended budget) the session
+ * ends exactly as a plain `end_session` does. Busy is re-armed like
+ * `attemptEndSession`, and leaving is never gated on the 700 ms floor.
+ */
+async function attemptRecapOnEnd(live: Live): Promise<void> {
+  const claim = claimTurn(live, Date.now(), false);
+  if (claim !== 'ok') {
+    live.recapRequested = true;
+    return;
+  }
+  try {
+    const recap = await live.orchestrator.recapOnEnd(Date.now());
+    if (recap !== null) {
+      await deliver(live, recap);
+      return;
+    }
     await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
     await finish(live, 'completed');
   } finally {
@@ -1848,6 +1889,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     microphone,
     closing: false,
     endSessionRequested: false,
+    recapRequested: false,
     persistFailures: 0,
     flagPersistFailures: 0,
     /*
@@ -2125,6 +2167,10 @@ async function onMessage(live: Live, raw: string): Promise<void> {
        * already funnels through — retries it the instant the busy turn
        * frees the floor.
        */
+      if (message.data.recapFirst === true) {
+        await attemptRecapOnEnd(live);
+        return;
+      }
       await attemptEndSession(live);
       return;
 
