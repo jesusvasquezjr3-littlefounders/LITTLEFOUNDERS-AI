@@ -3,6 +3,7 @@ import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { ForgotPasswordScreen, type ForgotView } from '@/rebuild/identity/RecoveryScreens';
+import { failureCode } from './failureCode';
 
 /*
  * `/forgot-password` (A3): asks Core to send the recovery email. Core answers
@@ -21,7 +22,7 @@ export function ForgotPasswordPage() {
     const { error } = await api('/auth/recover', { method: 'POST', body: { email } });
     if (error) {
       playPlatformSound('auth_error');
-      setView({ kind: 'form', pending: false, errorCode: error.code });
+      setView({ kind: 'form', pending: false, errorCode: failureCode(error) });
       return;
     }
     playPlatformSound('auth_success');

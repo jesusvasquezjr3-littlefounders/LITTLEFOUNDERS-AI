@@ -94,7 +94,7 @@
     "consequenceSpend": "You ask for a reward and say why. It waits for your Tutor's yes, unless it fits your level.",
     "consequenceShare": "Your share coins go to a cause your Tutor chose. You hear what really happened.",
     "simulation": "Simulation",
-    "bankingTitle": "Practice banking, not a bank account",
+    "bankingTitle": "A practice Wallet, not a bank account",
     "bankingBody": "Allowance, savings bonus and spending limits, all in coins. None of it is real money.",
     "mapTitle": "Their own map, in your view",
     "mapBody": "See the map your child explores: lessons finished, streak and their last visit. Never compared to another child.",
@@ -324,6 +324,7 @@
       "DOCUMENT_UNREADABLE": "We could not read that photo. Try a sharper one.",
       "PAYLOAD_TOO_LARGE": "That photo is too large. Use one under 8 MB.",
       "FORBIDDEN": "Only an adult can become a Tutor.",
+      "OFFLINE": "No connection. Reconnect, then try again.",
       "INTERNAL": "Something went wrong on our side. Try again."
     }
   },

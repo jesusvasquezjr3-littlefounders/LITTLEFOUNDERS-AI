@@ -3,6 +3,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { api } from '@/lib/api';
+import { failureCode } from './failureCode';
 import { VERIFICATION_CHECKS, VerifyParentScreen, type VerificationCheck, type VerifyValues, type VerifyView } from '@/rebuild/identity/VerifyParentScreen';
 
 /*
@@ -56,7 +57,7 @@ export function VerifyParentPage() {
     if (error) {
       if (error.code === 'ALREADY_VERIFIED') { setView({ kind: 'verified' }); return; }
       if (error.code === 'PARENT_VERIFICATION_REVOKED' || error.code === 'FORBIDDEN') { setView(statusView(error.code)); return; }
-      setView({ kind: 'form', pending: false, errorCode: error.code, failedChecks });
+      setView({ kind: 'form', pending: false, errorCode: failureCode(error), failedChecks });
       return;
     }
     if (data.verified) {

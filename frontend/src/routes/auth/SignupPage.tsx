@@ -7,6 +7,7 @@ import { APP_HOME } from '@/app-shell/home';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { SignupScreen, type SignupValues, type SignupView } from '@/rebuild/identity/SignInScreens';
 import { useGoogleSignIn } from './useGoogleSignIn';
+import { failureCode } from './failureCode';
 
 /*
  * `/signup` (A2): the rebuilt screen fed the session. Kept from the legacy page:
@@ -50,7 +51,7 @@ export function SignupPage() {
         setView({ kind: 'refused', starting: false, failed: false });
         return;
       }
-      setView({ kind: 'form', pending: false, errorCode: error.code });
+      setView({ kind: 'form', pending: false, errorCode: failureCode(error) });
       return;
     }
     playPlatformSound('auth_success');

@@ -40,6 +40,9 @@ describe('shared pieces', () => {
     for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
       expect(authErrorText(copy(locale), 'INVALID_CREDENTIALS')).toBe(copy(locale).authCommon.errors.INVALID_CREDENTIALS);
       expect(authErrorText(copy(locale), 'NETWORK_ERROR')).toBe(copy(locale).authCommon.errors.INTERNAL);
+      // Offline is the person's connection, never "something went wrong on our side" (W2S.3).
+      expect(authErrorText(copy(locale), 'OFFLINE')).toBe(copy(locale).authCommon.errors.OFFLINE);
+      expect(copy(locale).authCommon.errors.OFFLINE).not.toBe(copy(locale).authCommon.errors.INTERNAL);
     }
   });
 
@@ -140,6 +143,22 @@ describe('A2 Sign up', () => {
     rerender(<RebuildRoot theme="light" locale="es-MX"><SignupScreen locale="es-MX" google={noGoogle} view={{ kind: 'refused', starting: false, failed: true }}
       initialParentIntent={false} onSubmit={vi.fn()} onStartGuest={onStartGuest} /></RebuildRoot>);
     expect(screen.getByRole('alert')).toHaveTextContent(c.authSignup.guestFailed);
+  });
+
+  it('discards what a refused child typed: the form unmounts with the refusal and never comes back filled (A.2)', () => {
+    const c = copy();
+    const screenFor = (view: Parameters<typeof SignupScreen>[0]['view']) => <RebuildRoot theme="light" locale="en-US">
+      <SignupScreen locale="en-US" google={noGoogle} view={view} initialParentIntent={false} onSubmit={vi.fn()} onStartGuest={vi.fn()} />
+    </RebuildRoot>;
+    const { rerender } = render(screenFor({ kind: 'form', pending: false, errorCode: null }));
+    fireEvent.change(screen.getByLabelText(c.authSignup.name), { target: { value: 'Synthetic child' } });
+    fireEvent.change(screen.getByLabelText(c.authCommon.email), { target: { value: 'child@example.test' } });
+    fireEvent.change(screen.getByLabelText(c.authCommon.year), { target: { value: '2018' } });
+    rerender(screenFor({ kind: 'refused', starting: false, failed: false }));
+    rerender(screenFor({ kind: 'form', pending: false, errorCode: null }));
+    expect(screen.getByLabelText(c.authSignup.name)).toHaveValue('');
+    expect(screen.getByLabelText(c.authCommon.email)).toHaveValue('');
+    expect(screen.getByLabelText(c.authCommon.year)).toHaveValue('');
   });
 });
 

@@ -87,7 +87,7 @@ const failures = [];
 const unknown = new Set();
 
 /** The Core this run answers from: the case, what it has received, and a small state machine. */
-const core = { entry: null, calls: [], signedIn: null, upgradeFailures: 1, onboarded: false };
+const core = { entry: null, calls: [], signedIn: null, upgradeFailures: 1, onboarded: false, offline: false };
 
 function answer(path, method, body) {
   const entry = core.entry;
@@ -147,6 +147,8 @@ async function installCore(page) {
       const headers = [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: origin },
         { name: 'Access-Control-Allow-Headers', value: '*' }, { name: 'Access-Control-Allow-Methods', value: '*' }];
       if (request.method === 'OPTIONS') return void await page.send('Fetch.fulfillRequest', { requestId, responseCode: 204, responseHeaders: headers });
+      // Offline (the login journey): the request fails as a dropped connection does, before Core sees it.
+      if (core.offline) return void await page.send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' });
       const path = new URL(request.url).pathname.replace(/^.*\/api\/v1/, '');
       // A multipart body (the ID photo) may arrive only as postDataEntries.
       const posted = request.postData ?? (request.postDataEntries ?? []).map((entry) => Buffer.from(entry.bytes ?? '', 'base64').toString('latin1')).join('');
@@ -212,10 +214,24 @@ const JOURNEY = {
     const login = core.calls.find((call) => call.path === '/auth/login');
     assert.deepEqual(login.body, { identifier: 'kiddo_7', password: 'not-this-one' }, 'a username signs in through Core\'s identifier');
     assert.equal(await page.evaluate('location.pathname'), '/login');
+    // Offline (W2S.3): the same form, no connection. The person's connection is named, never "our side", and the form stays.
+    const loginCalls = core.calls.filter((call) => call.path === '/auth/login').length;
+    await page.send('Network.enable');
+    await page.send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+    core.offline = true;
+    try {
+      await press(page, '[data-auth="submit"]');
+      await waitFor(page, `[...document.querySelectorAll('[role=alert]')].some((e) => e.textContent.trim() === ${JSON.stringify(c.authCommon.errors.OFFLINE)})`, 'offline alert');
+      assert.equal(await page.evaluate("document.querySelector('input[autocomplete=username]').value"), 'kiddo_7', 'the form keeps what was typed');
+      assert.equal(core.calls.filter((call) => call.path === '/auth/login').length, loginCalls, 'nothing reached Core while offline');
+    } finally {
+      core.offline = false;
+      await page.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+    }
     // Google: a start Core cannot hand an authorize URL for says so and can be pressed again.
     await press(page, '[data-auth="google"]');
     await waitFor(page, `[...document.querySelectorAll('[role=alert]')].some((e) => e.textContent.includes(${JSON.stringify(c.authCommon.googleFailed)}))`, 'google failure');
-    return { loginBody: 'identifier+password', googleFailureSaid: true };
+    return { loginBody: 'identifier+password', offlineSaid: true, googleFailureSaid: true };
   },
   async refusal(page, c) {
     assert.equal(await page.evaluate("document.querySelector('[data-auth=\"parent-intent\"]').checked"), true, '?intent=tutor pre-ticks the intent');

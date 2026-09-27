@@ -211,7 +211,7 @@ export const PAGES = [
   {
     path: '/families',
     index: true, // Flag flipped 2026-09-14: the page now carries real content (see the note above PAGES).
-    lastmod: '2026-09-26',
+    lastmod: '2026-09-27',
     priority: '0.8',
     changefreq: 'monthly',
     agentSummary:

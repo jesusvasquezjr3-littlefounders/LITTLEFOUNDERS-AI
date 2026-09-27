@@ -7,6 +7,7 @@ import { APP_HOME } from '@/app-shell/home';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { LoginScreen } from '@/rebuild/identity/SignInScreens';
 import { useGoogleSignIn } from './useGoogleSignIn';
+import { failureCode } from './failureCode';
 
 /*
  * `/login` (A1): the rebuilt screen (rebuild/identity) fed the session. What
@@ -47,7 +48,7 @@ export function LoginPage() {
     setPending(false);
     if (error) {
       playPlatformSound('auth_error');
-      setErrorCode(error.code);
+      setErrorCode(failureCode(error));
       return;
     }
     playPlatformSound('auth_success');

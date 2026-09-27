@@ -94,7 +94,7 @@
     "consequenceSpend": "Pides una recompensa y dices por qué. Espera el sí de tu Tutor, salvo que entre en tu nivel.",
     "consequenceShare": "Tus monedas para compartir van a una causa que eligió tu Tutor. Te cuentan qué pasó de verdad.",
     "simulation": "Simulación",
-    "bankingTitle": "Practica la banca, sin cuenta bancaria",
+    "bankingTitle": "Una Cartera de práctica, no una cuenta bancaria",
     "bankingBody": "Domingo, bono de ahorro y límites de gasto, todo en monedas. Nada de esto es dinero real.",
     "mapTitle": "Su propio mapa, a tu vista",
     "mapBody": "Ve el mapa que explora tu hijo: lecciones terminadas, racha y su última visita. Nunca comparado con otro niño.",
@@ -324,6 +324,7 @@
       "DOCUMENT_UNREADABLE": "No pudimos leer esa foto. Prueba con una más nítida.",
       "PAYLOAD_TOO_LARGE": "Esa foto es muy grande. Usa una de menos de 8 MB.",
       "FORBIDDEN": "Solo un adulto puede ser Tutor.",
+      "OFFLINE": "Sin conexión. Conéctate e intenta de nuevo.",
       "INTERNAL": "Algo falló de nuestro lado. Inténtalo de nuevo."
     }
   },

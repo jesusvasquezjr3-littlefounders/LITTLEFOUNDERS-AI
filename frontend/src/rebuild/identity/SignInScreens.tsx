@@ -35,7 +35,7 @@ export function LoginScreen({ locale, google, pending, errorCode, onSubmit, onNa
     <GoogleSignIn copy={copy} google={google} />
     <AuthForm onSubmit={() => { if (ready && !pending) onSubmit(identifier.trim(), password); }} busy={pending} data-auth-form="login">
       <AuthError copy={copy} code={errorCode} />
-      {/* Not type="email": a child's username is not an address, and an email keyboard would refuse it. */}
+      {/* Not type="email": a child's username is not an address, and the browser's email check would refuse it. The email keyboard (inputMode) still types a username. */}
       <TextField label={copy.authLogin.identifier} help={copy.authLogin.identifierHelp} value={identifier} onChange={(event) => setIdentifier(event.target.value)}
         autoComplete="username" inputMode="email" autoCapitalize="none" spellCheck={false} required />
       <PasswordField copy={copy} label={copy.authCommon.password} value={password} onChange={setPassword} autoComplete="current-password" />
@@ -61,11 +61,6 @@ export function SignupScreen({ locale, google, view, initialParentIntent, onSubm
   onSubmit: (values: SignupValues) => void; onFirstEdit?: () => void; onStartGuest: () => void; onNavigate?: Navigate;
 }) {
   const copy = identityCopy(locale);
-  const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [birth, setBirth] = useState<DateParts>(EMPTY_DATE);
-  const [parentIntent, setParentIntent] = useState(initialParentIntent);
   const [why, setWhy] = useState(false);
 
   if (view.kind === 'confirm') {
@@ -95,6 +90,24 @@ export function SignupScreen({ locale, google, view, initialParentIntent, onSubm
     </AuthOutcome>;
   }
 
+  return <SignupForm copy={copy} google={google} view={view} initialParentIntent={initialParentIntent} onSubmit={onSubmit} onFirstEdit={onFirstEdit} onNavigate={onNavigate} />;
+}
+
+/*
+ * The sign-up form owns what was typed. It is its own component so that the
+ * refused and confirmation views unmount it: a refused child's name, email,
+ * password and date of birth are discarded with it (A.2), not kept in memory
+ * behind the refusal (W2S.3; the legacy page cleared them by hand).
+ */
+function SignupForm({ copy, google, view, initialParentIntent, onSubmit, onFirstEdit, onNavigate }: {
+  copy: ReturnType<typeof identityCopy>; google: GoogleState; view: Extract<SignupView, { kind: 'form' }>; initialParentIntent: boolean;
+  onSubmit: (values: SignupValues) => void; onFirstEdit?: () => void; onNavigate?: Navigate;
+}) {
+  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [birth, setBirth] = useState<DateParts>(EMPTY_DATE);
+  const [parentIntent, setParentIntent] = useState(initialParentIntent);
   const birthDate = isoDate(birth);
   const birthTyped = birth.year.length === 4 && birth.day !== '' && birth.month !== '';
   const ready = displayName.trim() !== '' && email.trim() !== '' && password.length >= 8 && birthDate !== null;

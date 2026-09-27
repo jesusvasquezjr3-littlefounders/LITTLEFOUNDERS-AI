@@ -3,6 +3,7 @@ import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { ResetPasswordScreen, type ResetView } from '@/rebuild/identity/RecoveryScreens';
+import { failureCode } from './failureCode';
 
 /*
  * `/reset-password` (A4), the recovery email's link (GoTrue redirect_to, Core
@@ -40,7 +41,7 @@ export function ResetPasswordPage() {
     const { error } = await api('/auth/reset-password', { method: 'POST', token, body: { password } });
     if (error) {
       playPlatformSound('auth_error');
-      setView(LINK_UNUSABLE.has(error.code) ? { kind: 'expired' } : { kind: 'form', pending: false, errorCode: error.code });
+      setView(LINK_UNUSABLE.has(error.code) ? { kind: 'expired' } : { kind: 'form', pending: false, errorCode: failureCode(error) });
       return;
     }
     playPlatformSound('auth_success');

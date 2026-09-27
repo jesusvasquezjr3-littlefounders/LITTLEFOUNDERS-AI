@@ -4,6 +4,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { UpgradeAccountScreen } from '@/rebuild/identity/RecoveryScreens';
+import { failureCode } from './failureCode';
 
 /*
  * `/upgrade-account` (A6): attaches an email and password to the CURRENT guest
@@ -29,7 +30,7 @@ export function UpgradeAccountPage() {
     setErrorCode(null);
     const { error } = await upgradeAccount({ email, password });
     setPending(false);
-    if (error) { setErrorCode(error.code); return; }
+    if (error) { setErrorCode(failureCode(error)); return; }
     navigate(APP_HOME, { replace: true });
   }
 

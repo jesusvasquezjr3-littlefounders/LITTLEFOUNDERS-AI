@@ -101,4 +101,17 @@ describe('rebuild-site copy budget', () => {
       }
     }
   });
+
+  it('names the money section Wallet / Cartera / Carteira, never banking (OD-28 glossary)', () => {
+    for (const [locale, strings] of namespaceCopy('site')) {
+      for (const [key, text] of flatten(strings)) {
+        // "Is this a real bank account?" stays a fair question; naming the section banking does not.
+        expect(/digital banking|banca digital|banco digital|practi(ce|ca) (the )?bank|pratique o banco|practica la banca/i.test(text), `${locale} ${key}: ${text}`).toBe(false);
+      }
+    }
+    const wallet = { 'en-US': /Wallet/, 'es-MX': /Cartera/, 'pt-BR': /Carteira/ } as const;
+    for (const [locale, strings] of namespaceCopy('site')) {
+      expect((strings.families as { bankingTitle: string }).bankingTitle).toMatch(wallet[locale as keyof typeof wallet]);
+    }
+  });
 });
