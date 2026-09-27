@@ -1,5 +1,5 @@
 {
-  "about": "S07.6 (D.8): the Family Hub and Digital Banking tone gate's scope, lexicon and reviewed exceptions. Law 2: speak like a mentor, never like a bank. D.7: no copy may imply a guarantee the system does not enforce. Owner log §5: the controlled glossary. agent/tools/check-family-copy-tone.mjs reads this file; docs/operations/FAMILY-COPY-TONE-GATE.md explains how to change it. An exception needs a reason a reviewer can check.",
+  "about": "S07.6 (D.8): the Family Hub and Wallet tone gate's scope, lexicon and reviewed exceptions. Law 2: speak like a mentor, never like a bank. D.7: no copy may imply a guarantee the system does not enforce. Owner log §5: the controlled glossary. agent/tools/check-family-copy-tone.mjs reads this file; docs/operations/FAMILY-COPY-TONE-GATE.md explains how to change it. An exception needs a reason a reviewer can check.",
   "version": 1,
   "scope": {
     "namespaces": [

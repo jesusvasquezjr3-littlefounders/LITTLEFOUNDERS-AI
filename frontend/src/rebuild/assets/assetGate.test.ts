@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
+import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 /*
@@ -41,9 +42,13 @@ const readManifest = (dir: string) => JSON.parse(readFileSync(manifestPath(dir),
 const writeManifest = (dir: string, rows: Row[]) => writeFileSync(manifestPath(dir), JSON.stringify(rows));
 // Asynchronous on purpose: a synchronous child blocks the test worker's event
 // loop for the whole gate run, and vitest's worker RPC times out under load.
-function run(dir: string, ...args: string[]): Promise<{ status: number | null; output: string }> {
+// The OCR no-text check (OD-28 V-16) runs only where a case is about it: every
+// other case sets REBUILD_ASSET_OCR=off so the file stays fast under load.
+function run(dir: string, ...args: string[]) { return spawnGate(dir, args, 'off'); }
+function runWithOcr(dir: string, ...args: string[]) { return spawnGate(dir, args, 'on'); }
+function spawnGate(dir: string, args: string[], ocr: 'on' | 'off'): Promise<{ status: number | null; output: string }> {
   return new Promise((done, fail) => {
-    const child = spawn(process.execPath, [gate, ...args], { env: { ...process.env, REBUILD_ASSET_ROOT: dir } });
+    const child = spawn(process.execPath, [gate, ...args], { env: { ...process.env, REBUILD_ASSET_ROOT: dir, REBUILD_ASSET_OCR: ocr } });
     let stdout = '';
     let stderr = '';
     child.stdout.setEncoding('utf8').on('data', (chunk: string) => { stdout += chunk; });
@@ -64,8 +69,9 @@ afterAll(() => rmSync(base, { recursive: true, force: true }));
 describe('rebuild asset gate', { timeout: 90_000 }, () => {
   it('passes the real manifest and refuses every draft in a release build', async () => {
     const dir = tree();
-    const ok = await run(dir);
+    const ok = await runWithOcr(dir);
     expect(ok.output).toContain('Rebuild asset integrity OK');
+    expect(ok.output).toMatch(/[1-9]\d* raster\(s\) free of text by OCR/);
     expect(ok.status).toBe(0);
     const release = await run(dir, '--release');
     expect(release.status).toBe(1);
@@ -133,6 +139,20 @@ describe('rebuild asset gate', { timeout: 90_000 }, () => {
     });
     expect(unreferenced.output).toContain('Registered asset is referenced nowhere: badge.spare');
     for (const result of [unregistered, colour, text, unreferenced]) expect(result.status).toBe(1);
+  });
+
+  it('refuses raster art with text in it, dark or light, in any locale (07 §7 OCR no-text check, OD-28 V-16)', async () => {
+    // A square transparent render with a painted blob, as the avatars are, plus one word.
+    const render = (word: string, ink: string) => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">
+      <circle cx="160" cy="110" r="70" fill="#5C55FD"/><text x="70" y="250" font-family="Arial" font-size="48" fill="${ink}">${word}</text></svg>`)).png().toBuffer();
+    const dir = tree();
+    writeFileSync(join(dir, 'public/rebuild/mentor-avatars/rho-light.png'), await render('Ahorra', '#1B2130'));
+    writeFileSync(join(dir, 'public/rebuild/mentor-avatars/zara-dark.png'), await render('Poupar', '#FFFFFF'));
+    const result = await runWithOcr(dir);
+    expect(result.output).toMatch(/Raster art contains text \(07 §7, OCR read "Ahorra" \d+%\): \/rebuild\/mentor-avatars\/rho-light\.png/);
+    expect(result.output).toMatch(/Raster art contains text \(07 §7, OCR read "Poupar" \d+%\): \/rebuild\/mentor-avatars\/zara-dark\.png/);
+    expect(result.output).not.toMatch(/Raster art contains text[^\n]*(rho-dark|liruf|dina)/);
+    expect(result.status).toBe(1);
   });
 
   it('keeps reserved hues out of art and at most 3 hues per asset (07 §3, 02 §4.2)', async () => {

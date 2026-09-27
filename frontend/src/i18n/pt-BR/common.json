@@ -223,11 +223,11 @@
       "cancelledAnnounce": "\"{{title}}\" cancelada.",
       "redemptionApprovedAnnounce": "Prêmio aprovado.",
       "redemptionDeniedAnnounce": "Prêmio ainda não aprovado.",
-      "bankingLink": "Ver detalhes da carteira no Banco Digital"
+      "bankingLink": "Ver detalhes na sua Carteira"
     },
     "kid": {
       "subtitle": "Faça suas tarefas, ganhe LF Coins e decida o que fazer com elas.",
-      "bankingLink": "Ver sua conta do Banco Digital",
+      "bankingLink": "Abrir sua Carteira",
       "walletTitle": "Minha carteira",
       "save": "Guardar",
       "spend": "Gastar",
@@ -303,11 +303,11 @@
   },
   "banking": {
     "loading": "Carregando sua conta…",
-    "title": "Banco Digital",
+    "title": "Carteira",
     "kid": {
       "subtitle": "Pratique com suas LF Coins: um cartão de treino, bolsos e metas.",
       "emptyTitle": "Sua conta ainda não está aberta",
-      "emptyBody": "Peça a um adulto para abrir sua conta do Banco Digital. Seu saldo de Guardar, Gastar e Compartilhar já está esperando por ela.",
+      "emptyBody": "Peça a um adulto para abrir sua Carteira. Seu saldo de Guardar, Gastar e Compartilhar já está esperando por ela.",
       "accountLabel": "Sua conta",
       "cardDetails": "Detalhes do cartão",
       "frozenBadge": "Congelado",

@@ -1,6 +1,6 @@
 """D.6 and D.12 (S07.6): the staff family-engagement insight on the per-child
 shape with its uptime record, and the age register of every Family Hub and
-Digital Banking surface, enforced by PostgreSQL.
+Wallet surface (formerly Digital Banking, OD-28), enforced by PostgreSQL.
 
 Applies the ACTUAL migration chain (every file in database/migrations, in
 order) to fresh databases on an owned native PostgreSQL cluster, over the same

@@ -1,6 +1,6 @@
-# No unbacked guarantee (Digital Banking and Family Hub)
+# No unbacked guarantee (Wallet and Family Hub)
 
-Requirement D.7 (Block D, `docs/littlefounders-spec/product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md`) makes this a standing design principle for the whole surface: **no visual element or copy in Digital Banking may imply a guarantee the underlying system does not enforce.** Each control must be re-verified against this principle as it changes, never assumed satisfied once the backend is fixed. Appendix H measures it with the **No-Unbacked-Guarantee Audit** (recurring, human-judged, target zero violations) and runs every family-facing copy change through Stage 4 of its pipeline, which checks for phrasing that implies an unenforced guarantee.
+Requirement D.7 (Block D, `docs/littlefounders-spec/product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md`) makes this a standing design principle for the whole surface: **no visual element or copy in the Wallet may imply a guarantee the underlying system does not enforce.** Each control must be re-verified against this principle as it changes, never assumed satisfied once the backend is fixed. Appendix H measures it with the **No-Unbacked-Guarantee Audit** (recurring, human-judged, target zero violations) and runs every family-facing copy change through Stage 4 of its pipeline, which checks for phrasing that implies an unenforced guarantee.
 
 This file is the written principle and its audit procedure. The mechanisms that enforce it are listed at the end. It is not a specification: the SPEC and the owner decision log win when they disagree with it.
 
@@ -62,7 +62,7 @@ Findings of the 2026-09-24 pre-audit:
    - the Tutor's form says "Counts the last: 7 days / 30 days" and when the limit is checked.
 6. **A dead "Deny".** Since S07.5 a denial needs an actionable reason. The Tutor's Banking page still offered a bare "Deny", which the server always refused and which showed no error. *Fixed:* the Banking page mounts the rebuilt decision queue.
 7. **"Your own account, card and savings"** in the child's subtitle, and "a named account and a card" in the Tutor's. *Fixed:* "a practice card, pockets and goals", and "a named practice card".
-8. **"Digital Banking" as the section name.** *Reviewed, kept.* It is the SPEC's name for the section, and the page now states that it is practice with coins that stay in the app.
+8. **"Wallet" as the section name.** *Renamed by the owner (OD-28, H-16).* The section was first called "Digital Banking"; it is now Wallet / Cartera / Carteira, and the page still states that it is practice with coins that stay in the app. `agent/tools/check-wallet-glossary.mjs` (part of `npm run spec:check`) keeps the old name from coming back.
 
 Findings of the 2026-09-24 S07.8 lane review (the marketing site):
 

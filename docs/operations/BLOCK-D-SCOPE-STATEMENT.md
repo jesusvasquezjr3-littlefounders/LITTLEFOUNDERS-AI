@@ -1,4 +1,4 @@
-# What the Family Hub and Digital Banking practice teaches, and what it does not
+# What the Family Hub and the Wallet practice teaches, and what it does not
 
 **Status:** Product 10 D.20, written by Engineering (S07.7, 2026-09-24). The statement below is what families read; its registry is `docs/operations/block-d-scope.json` and `agent/tools/check-block-d-scope.mjs` keeps them equal. The SPEC and the owner decision log win over this file.
 

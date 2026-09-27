@@ -121,7 +121,7 @@
     },
     "card": {
       "wallet": "{{count}} LF Coins",
-      "walletUnknown": "Monedero no disponible",
+      "walletUnknown": "Cartera no disponible",
       "streak": "Racha de {{count}} días",
       "pendingApproval": "{{count}} por aprobar"
     }
@@ -178,7 +178,7 @@
       "cancelTask": "Cancelar tarea",
       "cancelling": "Cancelando…",
       "rewardLabel": "{{count}} LF Coins",
-      "walletLink": "Ver monedero",
+      "walletLink": "Ver cartera",
       "goalsLink": "Ver metas",
       "catalogTitle": "Catálogo de recompensas",
       "catalogSubtitle": "Premios reales que tus hijos pueden pedir con LF Coins.",
@@ -223,12 +223,12 @@
       "cancelledAnnounce": "\"{{title}}\" cancelada.",
       "redemptionApprovedAnnounce": "Premio aprobado.",
       "redemptionDeniedAnnounce": "Premio aún no aprobado.",
-      "bankingLink": "Ver detalles del monedero en Banca Digital"
+      "bankingLink": "Ver detalles en tu Cartera"
     },
     "kid": {
       "subtitle": "Haz tus quehaceres, gana LF Coins y decide qué hacer con ellos.",
-      "bankingLink": "Ver tu cuenta de Banca Digital",
-      "walletTitle": "Mi monedero",
+      "bankingLink": "Abrir tu Cartera",
+      "walletTitle": "Mi cartera",
       "save": "Ahorrar",
       "spend": "Gastar",
       "share": "Compartir",
@@ -303,11 +303,11 @@
   },
   "banking": {
     "loading": "Cargando tu cuenta…",
-    "title": "Banca Digital",
+    "title": "Cartera",
     "kid": {
       "subtitle": "Practica con tus LF Coins: una tarjeta de práctica, bolsillos y metas.",
       "emptyTitle": "Tu cuenta aún no está abierta",
-      "emptyBody": "Pídele a un adulto que abra tu cuenta de Banca Digital. Tu saldo de Ahorrar, Gastar y Compartir ya te está esperando.",
+      "emptyBody": "Pídele a un adulto que abra tu Cartera. Tu saldo de Ahorrar, Gastar y Compartir ya te está esperando.",
       "accountLabel": "Tu cuenta",
       "cardDetails": "Detalles de la tarjeta",
       "frozenBadge": "Congelada",

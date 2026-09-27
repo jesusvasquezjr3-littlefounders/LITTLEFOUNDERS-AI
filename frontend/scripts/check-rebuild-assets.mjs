@@ -39,9 +39,14 @@ import { inflateSync } from 'node:zlib';
  *   how its §6 fields and §7 gate apply to a sound is written beside the
  *   SOUND_* constants below (first cue: OD-28 L-02, the gentle "not yet").
  *
- * Not automated here (recorded open in the S03 sprint record): OCR for text
- * inside raster renders, and the human style review of the first asset of each
- * family (07 §7 item 2, OD-14).
+ *   Raster art (types `png`, `render`, `webp`; OD-28 V-16): 07 §7's no-text check.
+ *   Every live raster is read by OCR (scripts/ocr/rasterText.mjs: tesseract.js with
+ *   the vendored eng/spa/por models, offline, zero spend) on a white and on a black
+ *   background, and any word it reads is refused. REBUILD_ASSET_OCR=off skips only
+ *   this check (the gate's own mutation tests use it for the cases about other rules).
+ *
+ * Not automated here: the human style review of the first asset of each family
+ * (07 §7 item 2, OD-14).
  */
 // REBUILD_ASSET_ROOT points the gate at a copy of the frontend tree (its own mutation tests do this).
 const root = process.env.REBUILD_ASSET_ROOT ? resolve(process.env.REBUILD_ASSET_ROOT) : resolve(import.meta.dirname, '..');
@@ -180,6 +185,9 @@ const REVIEW = new Set(['draft', 'approved', 'retired']);
 // W2 profile lane: the cartoon avatar parts and the profile covers (E.12) are two more families of our own, each with its first-asset style review.
 const FAMILIES = new Set(['character-renders', 'badges', 'course-icons', 'pockets', 'empty-states', 'scenes', 'task-categories', 'coins', 'celebration-motion', 'avatar-parts', 'profile-covers', 'sounds']);
 const BUDGET_KB = { svg: 6, webp: 120, png: 120, lottie: 150, render: 150, wav: 32 };
+const RASTER = new Set(['png', 'render', 'webp']);
+let ocrRead = 0;
+const rasters = []; // live raster art, read by OCR after the per-row checks (07 §7)
 /*
  * Sound cues (type `wav`, family `sounds`; first one: the gentle "not yet" cue, OD-28 L-02). Frontend 07 has no
  * audio section, so its §6 fields and §7 review gate are applied as follows, and nothing in 07 is relaxed for images:
@@ -344,6 +352,7 @@ for (const asset of classB) {
   const kb = Math.ceil(statSync(file).size / 1024);
   if (kb > asset.sizesKb) fail(`Asset exceeds its declared size (${kb} KB > ${asset.sizesKb}): ${asset.path}`);
   if (kb > BUDGET_KB[asset.type] && !asset.budgetReason) fail(`Asset over the 07 §3.2 budget (${kb} KB > ${BUDGET_KB[asset.type]}) without a reason: ${asset.path}`);
+  if (RASTER.has(asset.type) && asset.reviewStatus !== 'retired') rasters.push({ path: asset.path, bytes });
   if (asset.type === 'render' || asset.type === 'png') {
     const png = readPng(bytes);
     if (!png) { fail(`Not a PNG: ${asset.path}`); continue; }
@@ -465,8 +474,23 @@ for (const character of MENTORS) for (const mode of ['light', 'dark']) {
   if (!live.some((asset) => asset.slot === AVATAR_SLOT && asset.character === character && (asset.modes === mode || asset.modes === 'both'))) fail(`No ${mode} avatar render for ${character}`);
 }
 
+// 07 §7 item 1: the no-text check. OCR finds no word in any live raster (OD-28 V-16).
+if (process.env.REBUILD_ASSET_OCR !== 'off' && rasters.length) {
+  try {
+    const { createRasterTextReader } = await import(pathToFileURL(resolve(frontendRoot, 'scripts/ocr/rasterText.mjs')).href);
+    const reader = await createRasterTextReader();
+    try {
+      for (const { path, bytes } of rasters) {
+        const words = await reader.read(bytes);
+        ocrRead++;
+        if (words.length) fail(`Raster art contains text (07 §7, OCR read ${words.map((word) => `"${word.text}" ${word.confidence}%`).join(', ')}): ${path}`);
+      }
+    } finally { await reader.close(); }
+  } catch (error) { fail(`The OCR no-text check could not run (07 §7): ${error.message}`); }
+}
+
 if (failures.length) { console.error(failures.join('\n')); process.exitCode = 1; }
 else {
   const pending = [...new Set(live.filter((asset) => asset.reviewStatus !== 'approved').map((asset) => asset.reviewFamily))];
-  console.log(`Rebuild asset integrity OK: ${glyphRows.length}/${GLYPH_BUDGET} glyph families from one source (${glyphNames.length} names); ${classB.length} class B assets${release ? ' approved' : `, ${live.filter((asset) => asset.reviewStatus === 'draft').length} awaiting review${pending.length ? ` (owner style review pending for: ${pending.join(', ')})` : ''}`}.`);
+  console.log(`Rebuild asset integrity OK: ${glyphRows.length}/${GLYPH_BUDGET} glyph families from one source (${glyphNames.length} names); ${classB.length} class B assets, ${ocrRead} raster(s) free of text by OCR${release ? ' approved' : `, ${live.filter((asset) => asset.reviewStatus === 'draft').length} awaiting review${pending.length ? ` (owner style review pending for: ${pending.join(', ')})` : ''}`}.`);
 }

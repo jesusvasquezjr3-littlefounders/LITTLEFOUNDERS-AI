@@ -2024,7 +2024,7 @@ export async function decideRedemption(redemptionId: string, approve: boolean, d
   return typeof res === 'boolean' ? res : null;
 }
 
-// ── Digital Banking (0081) — BANKING.md Waves 0-2: a named account +
+// ── Wallet, formerly Digital Banking (0081) — BANKING.md Waves 0-2: a named account +
 // card, automated allowance, a "Parent-Paid" savings bonus, and a spend
 // limit. Still LF Coins, still closed-loop — see BANKING.md §0/§13. ──
 

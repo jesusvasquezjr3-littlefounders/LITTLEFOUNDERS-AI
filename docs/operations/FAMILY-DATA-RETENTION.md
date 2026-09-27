@@ -1,4 +1,4 @@
-# Family Hub and Digital Banking data: retention, deletion and consent
+# Family Hub and the Wallet data: retention, deletion and consent
 
 **Status:** written policy for Product 10 D.21, proposed by Engineering (S07.7, 2026-09-24) on the SPEC's conservative default. The periods are proposals awaiting Product and Legal review (owner log OD-10: Legal validates before launch). The SPEC (`docs/littlefounders-spec/`) and the owner decision log win over this file. A change here without the matching change in the code is a defect, and `agent/tools/check-block-d-retention.mjs` fails on it.
 
