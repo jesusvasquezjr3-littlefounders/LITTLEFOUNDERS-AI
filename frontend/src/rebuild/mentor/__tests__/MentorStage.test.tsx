@@ -70,7 +70,8 @@ describe('MentorStage: live 3D', () => {
     const onReady = vi.fn();
     render(<MentorStage character="rho" state="idle" ageBand="10-12" theme="dark" onReady={onReady} />);
     await screen.findByTestId('tutor-stage');
-    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-chooser/rho-dark.png');
+    // W3M.1: the still of the same character AND pose covers the wait (08 §7).
+    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-stage/rho-ambient-idle-dark.png');
     expect(stage().dataset.ready).toBe('false');
     act(() => harness.last!.onReady!());
     expect(stage().dataset.ready).toBe('true');
@@ -135,7 +136,7 @@ describe('MentorStage: live 3D', () => {
     quiet.mockRestore();
     expect(stage().dataset.renderMode).toBe('still');
     expect(stage().dataset.fallback).toBe('render-error');
-    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-chooser/rho-light.png');
+    expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-stage/rho-ambient-idle-light.png');
   });
 });
 
@@ -168,13 +169,33 @@ describe('MentorStage: stills fallback (08 §7)', () => {
     expect(stage().dataset.fallback).toBe('no-webgl');
     expect(screen.queryByTestId('tutor-stage')).toBeNull();
     const still = document.querySelector<HTMLImageElement>('.lf-mentor-stage-still')!;
-    expect(still.getAttribute('src')).toBe('/rebuild/mentor-chooser/liruf-dark.png');
+    // W3M.1: the still of the state the stage is in (08 §7), and the stage says which pose it shows.
+    expect(still.getAttribute('src')).toBe('/rebuild/mentor-stage/liruf-ambient-listen-dark.png');
     expect(still.getAttribute('alt')).toBe('');
-    // The still shows the idle render, and the stage says so rather than claiming "listening".
-    expect(stage().dataset.stillPose).toBe('ambient.idle');
+    expect(stage().dataset.stillPose).toBe('ambient.listen');
     fireEvent.load(still);
     expect(onReady).toHaveBeenCalledWith(expect.objectContaining({ mode: 'still', fallback: 'no-webgl' }));
     expect(stage().dataset.ready).toBe('true');
+  });
+
+  it('W3M.1: a state change in the fallback fades to the next pose\'s still once and settles', () => {
+    harness.probe = { ...harness.probe, webgl: 'none' };
+    vi.useFakeTimers();
+    try {
+      const { rerender } = render(<MentorStage character="zara" state="idle" ageBand="6-9" theme="light" />);
+      expect(stage().dataset.stillPose).toBe('ambient.idle');
+      rerender(<MentorStage character="zara" state="thinking" ageBand="6-9" theme="light" />);
+      expect(document.querySelector('.lf-mentor-stage-scene')?.getAttribute('data-swap')).toBe('out');
+      expect(stage().dataset.stillPose).toBe('ambient.idle');
+      act(() => { vi.advanceTimersByTime(150); });
+      expect(document.querySelector('.lf-mentor-stage-scene')?.getAttribute('data-swap')).toBeNull();
+      expect(stage().dataset.stillPose).toBe('think.ponder');
+      expect(document.querySelector('.lf-mentor-stage-still')?.getAttribute('src')).toBe('/rebuild/mentor-stage/zara-think-ponder-light.png');
+      // The calm register's thinking pose has its own still.
+      rerender(<MentorStage character="zara" state="thinking" ageBand="13-17" theme="light" />);
+      act(() => { vi.advanceTimersByTime(150); });
+      expect(stage().dataset.stillPose).toBe('teach.aside');
+    } finally { vi.useRealTimers(); }
   });
 
   it('still speaks in the still fallback: it plays the clip itself and reports its end and a blocked autoplay', async () => {

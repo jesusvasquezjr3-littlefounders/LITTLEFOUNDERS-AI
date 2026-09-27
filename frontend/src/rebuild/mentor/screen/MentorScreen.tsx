@@ -1,5 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import type { AgeBand, Locale } from '../../design/copyBudget';
+import { copyLimit, wordCount, type AgeBand, type Locale } from '../../design/copyBudget';
 import {
   Banner, Button, ConfirmDialog, IconButton, InlineNotice, List, ListRow, Menu, MentorAvatar, MENTOR_NAMES, Pill, ReplyChip, RewardChip, Sheet, TextField,
   type MentorCharacter, type MenuItem,
@@ -103,10 +103,6 @@ export interface MentorReplayCopy {
   previous: string; next: string; fromStart: string; talk: string; ended: string; note: string; activity: string; scored: string; unanswered: string;
 }
 export interface MentorRoleplayCopy { customer: string; scenes: Record<string, { title: string; beats: string[] }> }
-export interface MentorVoiceConsentCopy {
-  title: string; body: string; grant: string; revoke: string; activeSince: string; inactive: string; unavailable: string; pausedByPolicy: string;
-  saving: string; failed: string; forChild: string; confirm: string; cancel: string; loading: string;
-}
 
 export interface MentorCopy {
   mentorScreen: MentorScreenCopy;
@@ -116,7 +112,6 @@ export interface MentorCopy {
   mentorHistory: MentorHistoryCopy;
   mentorReplay: MentorReplayCopy;
   mentorRoleplay: MentorRoleplayCopy;
-  mentorVoiceConsent: MentorVoiceConsentCopy;
   mentorStage: MentorStageCopy;
   mentorCalibration: MentorCalibrationCopy;
   mentorSessionEnd: SessionEndCopy;
@@ -234,16 +229,25 @@ export type MentorSheet = 'transcript' | 'grownUp' | 'chooser' | 'personalise' |
 interface Opening { id: string; label: string; input: Omit<StartSessionInput, 'wantsVoice'> }
 
 /** 2-3 openings (08 §2 layer 5): where the learner left off first, one flagged skill as an offer, then the course and a curated question. */
-export function openingsFor(offers: TutorOffers, copy: MentorScreenCopy): Opening[] {
+export function openingsFor(offers: TutorOffers, copy: MentorScreenCopy, context?: { locale: Locale; ageBand: AgeBand }): Opening[] {
+  /*
+   * W3M.1 (08 §2 layer 5, 06): a chip is an `option`, at most 8 words (5 for ages 6-9). A topic title comes from
+   * the catalogue and can be long; a chip it would overflow says the generic line instead (never cut, 02 D1).
+   */
+  const limit = context ? copyLimit('option', { ...context, surface: 'app' }) : null;
+  const named = (template: string, topic: string, generic: string) => {
+    const label = fill(template, { topic });
+    return limit !== null && wordCount(label) > limit ? generic : label;
+  };
   const list: Opening[] = [];
   const last = offers.lastSession;
   if (last && (last.topic || last.skillKey)) {
     // A topic Core could not name is never shown as its internal key (an English slug in every language).
-    list.push({ id: 'continue', label: last.topic ? fill(copy.continue, { topic: last.topic }) : copy.continueGeneric,
+    list.push({ id: 'continue', label: last.topic ? named(copy.continue, last.topic, copy.continueGeneric) : copy.continueGeneric,
       input: last.courseId || last.topicId ? { intent: 'course_topic', courseId: last.courseId, topicId: last.topicId } : { intent: 'weak_skill', skillKey: last.skillKey } });
   }
   const weak = offers.weakSkills[0];
-  if (weak) list.push({ id: 'weak_skill', label: weak.title ? fill(copy.practise, { topic: weak.title }) : copy.practiseSkill,
+  if (weak) list.push({ id: 'weak_skill', label: weak.title ? named(copy.practise, weak.title, copy.practiseSkill) : copy.practiseSkill,
     input: { intent: 'weak_skill', skillKey: weak.skillKey, courseId: weak.courseId, topicId: weak.topicId } });
   else list.push({ id: 'diagnostic', label: copy.diagnostic, input: { intent: 'diagnostic' } });
   list.push({ id: 'course_topic', label: copy.courseTopic, input: { intent: 'course_topic' } });
@@ -253,13 +257,18 @@ export function openingsFor(offers: TutorOffers, copy: MentorScreenCopy): Openin
 }
 
 /** The state the character plays (08 §3), from what the session is doing. The UI requests it; the stage never fakes it. */
-export function stageStateFor(session: MentorScreenSession, { board, delivering, drafting }: { board: boolean; delivering: boolean; drafting: boolean }): MentorStageState {
+export function stageStateFor(session: MentorScreenSession, { board, delivering, drafting, missed = false }: {
+  board: boolean; delivering: boolean; drafting: boolean;
+  /** The learner's last activity was a miss (T1c): the Mentor meets it warmly (08 §3, B.26). */
+  missed?: boolean;
+}): MentorStageState {
   if (session.phase === 'closing') return 'closing';
   if (session.phase !== 'conversing') return drafting ? 'listening' : 'idle';
   if (session.mic.recording || drafting) return 'listening';
   if (session.awaitingReply || session.socket.thinking) return 'thinking';
   if (session.speaking || delivering) return board ? 'demonstrating' : 'speaking';
-  if (session.turn?.emotion === 'encouraging') return 'encouraging';
+  // 08 §3: encouraging after a miss, or while offering a guided review (C.15, D9); never disappointment.
+  if (session.turn?.emotion === 'encouraging' || session.socket.adaptationOffer !== null || missed) return 'encouraging';
   return 'idle';
 }
 
@@ -308,21 +317,35 @@ function MicLevel({ microphone, label }: { microphone: Pick<Microphone, 'subscri
   </span>;
 }
 
-function SpeechPlate({ text, locale, ageBand, copy, status, speaker = null, pageMs = null }: {
+/** 08 §3, §5: while the Mentor speaks, each caption page stays up about as long as it takes to say it (a child's pace). */
+export const CAPTION_MS_PER_WORD = 400;
+export const CAPTION_MIN_PAGE_MS = 1500;
+export function captionPageMs(page: string): number {
+  return Math.max(CAPTION_MIN_PAGE_MS, page.split(/\s+/u).filter(Boolean).length * CAPTION_MS_PER_WORD);
+}
+
+function SpeechPlate({ text, locale, ageBand, copy, status, speaker = null, pageMs = null, paced = false }: {
   text: string | null; locale: Locale; ageBand: AgeBand; copy: MentorScreenCopy; status: string | null;
   /** Who is speaking, when it is not the Mentor's own live turn (a roleplay beat, a replayed line). */
   speaker?: string | null;
   /** Turn the caption's pages by themselves every `pageMs` (a roleplay beat plays without a Next press). */
   pageMs?: number | null;
+  /**
+   * The Mentor is saying this turn aloud: the caption follows the voice (08 §3 "the speech plate text shown as it
+   * is spoken"), each page held for its own length and settling on the last; Next still moves on sooner.
+   */
+  paced?: boolean;
 }) {
   const pages = useMemo(() => (text ? speechPages(text, locale, ageBand) : []), [text, locale, ageBand]);
   const [page, setPage] = useState(0);
   useEffect(() => setPage(0), [text]);
   useEffect(() => {
-    if (!pageMs || page >= pages.length - 1) return undefined;
-    const timer = window.setTimeout(() => setPage((n) => n + 1), pageMs);
+    if (page >= pages.length - 1) return undefined;
+    const hold = pageMs ?? (paced ? captionPageMs(pages[page] ?? '') : null);
+    if (!hold) return undefined;
+    const timer = window.setTimeout(() => setPage((n) => n + 1), hold);
     return () => window.clearTimeout(timer);
-  }, [pageMs, page, pages.length]);
+  }, [pageMs, paced, page, pages]);
   const shown = status ?? pages[Math.min(page, pages.length - 1)] ?? null;
   if (shown === null) return null;
   const more = status === null && !pageMs && page < pages.length - 1;
@@ -455,7 +478,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
     : beat.kind === 'mentor' ? (beat.whiteboard ? 'demonstrating' : 'speaking') : beat.kind === 'learner' ? 'listening' : 'idle';
   const state: MentorStageState = replayOn ? replayState
     : roleplay ? (roleplay.beat.speaker === 'lead' ? 'speaking' : 'listening')
-      : stageStateFor(session, { board: boardOpen && board !== null, delivering, drafting });
+      : stageStateFor(session, { board: boardOpen && board !== null, delivering, drafting, missed: activityResult !== null && !activityResult.correct });
   const companionPose: MentorCompanionPose | null = roleplay && roleplay.beat.speaker === 'companion' && roleplay.speaker
     ? { emotion: roleplay.beat.emotion, action: roleplay.beat.action, beat: roleplay.index + 1 } : null;
   const offers = session.offers;
@@ -575,6 +598,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
     ? copy.micBlocked[session.mic.blockedBy] : null;
 
   const plate = <SpeechPlate text={plateText} locale={locale} ageBand={session.ageBand} copy={copy} status={plateStatus}
+    paced={replayOn ? clock.playing : !roleplay && session.phase === 'conversing' && session.speaking}
     speaker={plateSpeaker} pageMs={roleplay ? Math.max(1200, Math.floor(roleplay.holdMs / Math.max(1, speechPages(plateText ?? '', locale, session.ageBand).length))) : null} />;
   const replayBoard = replayOn && beat?.kind === 'mentor' ? beat.whiteboard : null;
   // A roleplay scene is the picture while it plays: an earlier board steps aside (and can be shown again after it).
@@ -663,7 +687,7 @@ export function MentorScreen({ session, copy: all, locale, theme, guardianLink, 
 
           {session.phase === 'openings' && offers && canStart
             ? <div className="lf-mentor-chips" role="group" aria-label={copy.openingsLabel}>
-              {openingsFor(offers, copy).map((opening) => <ReplyChip key={opening.id} data-opening={opening.id}
+              {openingsFor(offers, copy, { locale, ageBand: session.ageBand }).map((opening) => <ReplyChip key={opening.id} data-opening={opening.id}
                 disabled={session.starting} onPress={() => session.start(opening.input)}>{opening.label}</ReplyChip>)}
             </div>
             : null}

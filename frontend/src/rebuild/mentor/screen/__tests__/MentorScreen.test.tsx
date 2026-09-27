@@ -6,7 +6,10 @@ import type { TutorTurnState } from '../../session/useTutorSocket';
 import { boardFixtures } from '../boardFixtures';
 import { fixtureData } from '../mentorFixtures';
 import { mentorCopy } from '../MentorRoute';
-import { MentorScreen, openingsFor, stageStateFor, type MentorLive, type MentorScreenSession } from '../MentorScreen';
+import {
+  CAPTION_MIN_PAGE_MS, CAPTION_MS_PER_WORD, captionPageMs, MentorScreen, openingsFor, stageStateFor, type MentorLive, type MentorScreenSession,
+} from '../MentorScreen';
+import { copyLimit, wordCount } from '../../../design/copyBudget';
 
 /*
  * W2M.2: the Mentor screen (Frontend Bible 08 §2-§8) against fixtures of its
@@ -334,5 +337,48 @@ describe('age bands change presence and order, never components (08 §9)', () =>
     for (const phase of ['openings', 'conversing', 'closing'] as const) {
       expect(stageStateFor(session({ phase }), { board: true, delivering: true, drafting: false })).not.toBe('celebrating');
     }
+  });
+
+  it('W3M.1: encourages after a missed activity and while offering a guided review; speaking and thinking outrank it', () => {
+    const plain = session({ phase: 'conversing', turn: turn({ emotion: 'neutral' }) });
+    expect(stageStateFor(plain, { board: false, delivering: false, drafting: false })).toBe('idle');
+    expect(stageStateFor(plain, { board: false, delivering: false, drafting: false, missed: true })).toBe('encouraging');
+    const offering = session({ phase: 'conversing', turn: turn({ emotion: 'neutral' }), socket: { ...plain.socket, adaptationOffer: 'guided_review' as never } });
+    expect(stageStateFor(offering, { board: false, delivering: false, drafting: false })).toBe('encouraging');
+    expect(stageStateFor(offering, { board: false, delivering: true, drafting: false })).toBe('speaking');
+    expect(stageStateFor({ ...plain, awaitingReply: true }, { board: false, delivering: false, drafting: false, missed: true })).toBe('thinking');
+  });
+});
+
+describe('W3M.1: the chip budget and the paced caption (08 §2, §3, 06)', () => {
+  it('a topic that would overflow a chip says the generic line instead, per age band and locale', () => {
+    const long = 'Comparing unit prices across several different grocery store brands';
+    const offers: TutorOffers = { ...OFFERS, lastSession: { topic: long, courseId: 'c', topicId: 't', skillKey: null, outcome: 'left', daysAgo: 1 },
+      weakSkills: [{ skillKey: 'money/change', title: 'Making change', courseId: 'c', topicId: 't2', recommendedAction: 'practice', reasonCode: 'x' }] };
+    const young = openingsFor(offers, t, { locale: 'en-US', ageBand: '6-9' });
+    expect(young[0]!.label).toBe(t.continueGeneric);
+    expect(young[1]!.label).toBe('Practise Making change');
+    for (const opening of young) expect(wordCount(opening.label)).toBeLessThanOrEqual(copyLimit('option', { locale: 'en-US', ageBand: '6-9', surface: 'app' })!);
+    // Without a budget context (the legacy callers), the label is filled as before.
+    expect(openingsFor(offers, t)[0]!.label).toBe(`Keep going: ${long}`);
+  });
+
+  it('holds each caption page about as long as it takes to say it, never under 1.5 s', () => {
+    expect(captionPageMs('Hi')).toBe(CAPTION_MIN_PAGE_MS);
+    expect(captionPageMs('one two three four five six seven eight nine ten')).toBe(10 * CAPTION_MS_PER_WORD);
+  });
+
+  it('turns caption pages by themselves while the Mentor speaks, and settles on the last', () => {
+    vi.useFakeTimers();
+    try {
+      const text = 'Money you keep is called savings. It waits for later. A jar can hold it safe. Banks can hold it too. We can count it together.';
+      show(session({ phase: 'conversing', ageBand: '6-9', speaking: true, turn: turn({ text, seq: 2 }) }));
+      const plate = () => document.querySelector('.lf-mentor-plate-text')!.textContent;
+      const first = plate();
+      act(() => { vi.advanceTimersByTime(captionPageMs(first ?? '') + 50); });
+      expect(plate()).not.toBe(first);
+      act(() => { vi.advanceTimersByTime(60_000); });
+      expect(text.endsWith(plate() ?? '')).toBe(true);
+    } finally { vi.useRealTimers(); }
   });
 });

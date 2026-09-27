@@ -60,9 +60,6 @@ export const states = [
   screen('roleplay-dina-zara-6-9', { age: '6-9', character: 'dina', companion: 'zara', state: 'roleplay' }, { readyAll: ['[data-roleplay] .lf-mentor-plate-speaker'] }),
   screen('roleplay-rho-adult', { age: 'adult', character: 'rho', state: 'roleplay' }, { readyAll: ['[data-roleplay] .lf-mentor-plate-speaker'] }),
   screen('first-visit-chooser-rho-6-9', { age: '6-9', character: 'rho', state: 'first-visit' }, { readyAll: ['[role="dialog"] .lf-list'] }),
-  preview('mentor-voice-consent@off-adult', { screen: 'mentor-voice-consent', age: 'adult', consent: 'off' }, { readyAll: ['[data-consent="off"]'] }),
-  preview('mentor-voice-consent@confirm-adult', { screen: 'mentor-voice-consent', age: 'adult', consent: 'off', confirm: '1' }, { readyAll: ['.lf-voice-consent-confirm'] }),
-  preview('mentor-voice-consent@active-blocked-adult', { screen: 'mentor-voice-consent', age: 'adult', consent: 'active', policy: 'blocked' }, { readyAll: ['[data-consent="active"]'] }),
   /* The real route, signed in: a child in a family, an independent teen and an adult, answered by the synthetic Core. */
   app('/tutor@mentor-screen-child', '/tutor', 'mentor-screen-child', '.lf-mentor-screen[data-phase="openings"]'),
   app('/tutor@mentor-screen-teen', '/tutor', 'mentor-screen-teen', '.lf-mentor-screen[data-phase="openings"]'),

@@ -195,6 +195,14 @@ interface Live {
    */
   recapRequested: boolean;
   /**
+   * OD-28 (M-04): the recap question now on screen was asked because the
+   * LEARNER pressed "end" (not a Mentor wrap-up or an accepted offer). While
+   * it waits, an unanswered recap closes after `RECAP_ANSWER_WAIT_MS` and a
+   * dropped socket closes `completed` instead of parking: the learner asked
+   * to leave.
+   */
+  learnerRecapAsked: boolean;
+  /**
    * Consecutive transcript writes that Core did not confirm. `persistTurn`
    * has always RETURNED whether the record was kept "so the caller can count
    * failures and close the session if the record is systematically not being
@@ -1219,6 +1227,7 @@ async function attemptRecapOnEnd(live: Live): Promise<void> {
   try {
     const recap = await live.orchestrator.recapOnEnd(Date.now());
     if (recap !== null) {
+      live.learnerRecapAsked = true;
       await deliver(live, recap);
       return;
     }
@@ -1227,6 +1236,33 @@ async function attemptRecapOnEnd(live: Live): Promise<void> {
   } finally {
     releaseTurn(live);
   }
+}
+
+/**
+ * OD-28 (owner review M-04): how long the recap question asked on "end" waits
+ * for its answer before the completed close is given anyway, so a learner who
+ * pressed "end" and then says nothing is never held open. Driven by the
+ * existing heartbeat (every `HEARTBEAT_INTERVAL_MS`), so the real wait is
+ * between this and this plus one interval; the clock is
+ * `Live.lastActivityAtMs`, which the `end_session` frame itself refreshed.
+ * Deliberately generous: a young learner may answer slowly, by voice. The
+ * rebuilt Mentor screen mirrors the same value (`useMentorSession.ts`).
+ */
+export const RECAP_ANSWER_WAIT_MS = 2 * 60_000;
+
+/** Whether the recap question asked on "end" has waited past `RECAP_ANSWER_WAIT_MS` with the floor free. */
+export function recapWaitExpired(
+  state: { recapPending: boolean; closing: boolean; inFlight: boolean; lastActivityAtMs: number },
+  nowMs: number,
+): boolean {
+  return (
+    state.recapPending && !state.closing && !state.inFlight && nowMs - state.lastActivityAtMs > RECAP_ANSWER_WAIT_MS
+  );
+}
+
+/** Whether the learner's own "end" is waiting on its recap answer (or on the floor to ask it). */
+function learnerEndPending(live: Live): boolean {
+  return live.recapRequested || (live.learnerRecapAsked && live.orchestrator.closingInProgress);
 }
 
 /** After this many consecutive unconfirmed transcript writes, the session ends. */
@@ -1890,6 +1926,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     closing: false,
     endSessionRequested: false,
     recapRequested: false,
+    learnerRecapAsked: false,
     persistFailures: 0,
     flagPersistFailures: 0,
     /*
@@ -1925,6 +1962,26 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
       }
       if (now - live.lastActivityAtMs > getConfig().SESSION_IDLE_TIMEOUT_MS && !live.inFlight) {
         socket.close(CLOSE_CODES.NORMAL, 'idle');
+        return;
+      }
+      /*
+       * OD-28 (owner review M-04): the learner pressed "end", was asked the
+       * recap question and has not answered within `RECAP_ANSWER_WAIT_MS`.
+       * They asked to leave, so they get the completed close now (the same
+       * path as a second "end") rather than waiting out the idle window.
+       */
+      if (
+        recapWaitExpired(
+          {
+            recapPending: live.learnerRecapAsked && live.orchestrator.closingInProgress,
+            closing: live.closing,
+            inFlight: live.inFlight,
+            lastActivityAtMs: live.lastActivityAtMs,
+          },
+          now,
+        )
+      ) {
+        void attemptEndSession(live);
         return;
       }
       socket.ping();
@@ -2013,11 +2070,30 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * `.finally` rather than `.then`: a publish that throws must still
        * release the claim, or a failed snapshot would strand this session
        * behind a claim nobody holds until its TTL expires.
+       *
+       * OD-28 (owner review M-04): A SOCKET THAT GOES WHILE THE LEARNER'S OWN
+       * "END" WAITS ON ITS RECAP is not a silent dropout: the learner asked
+       * to leave. The request is put back exactly as a deferred `end_session`
+       * would be (`Live.endSessionRequested`, copied onto the park entry, so
+       * the park is never published as resumable and `finalizeParked` defers
+       * its review), and `attemptEndSession` runs: with the socket gone it
+       * gives the completed close at once and `finish()` cancels this park,
+       * so the session closes `completed`, once. If a turn holds the floor
+       * (the recap itself still being delivered), `releaseTurn` fires it.
+       * A recap the MENTOR asked (a wrap-up, an accepted offer) is untouched:
+       * that drop parks and stays resumable, as before.
        */
+      const endPending = learnerEndPending(live);
+      if (endPending) live.endSessionRequested = true;
       const entry = parkSession(session.sessionId, live);
       void publishPark(session.sessionId, entry).finally(() => {
         void releaseLock(sessionLockKey(session.sessionId), live.lockOwner);
       });
+      if (endPending && !live.inFlight) {
+        live.endSessionRequested = false;
+        live.recapRequested = false;
+        void attemptEndSession(live);
+      }
     } else {
       live.speech.memo.clear();
       /*

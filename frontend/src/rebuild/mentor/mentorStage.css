@@ -41,6 +41,9 @@
 /* Only the 3D fading in over its still travels. */
 @media (prefers-reduced-motion: no-preference) {
   .lf-mentor-stage-live, .lf-mentor-stage-still { transition: opacity var(--dur-component) var(--ease-standard); }
+  /* The still fallback (W3M.1, 08 §7): a state change fades to the next pose's still once and settles. */
+  .lf-mentor-stage[data-render-mode='still'] > .lf-mentor-stage-scene { transition: opacity var(--dur-micro) var(--ease-standard); }
+  .lf-mentor-stage[data-render-mode='still'] > .lf-mentor-stage-scene[data-swap='out'] { opacity: 0.2; }
 }
 
 /*

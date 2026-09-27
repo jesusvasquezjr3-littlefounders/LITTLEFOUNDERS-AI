@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import type { Locale } from '../../design/copyBudget';
 import { SessionClosing, SessionEndChoice, type ClosingScript, type EffortAct } from '../../mentor/SessionEnd';
 import { CheckInChoice } from '../../mentor/CheckIn';
 import { GoalCheckChoice } from '../../mentor/GoalCheck';
@@ -8,8 +6,6 @@ import { DispositionSummary } from '../../mentor/DispositionSummary';
 import type { DispositionSummaryData } from '../../mentor/allianceApi';
 import { MentorStagePreview } from '../../mentor/MentorStagePreview';
 import { MentorScreenPreview } from '../../mentor/screen/MentorScreenPreview';
-import { VoiceConsent, type VoiceConsentApi } from '../../mentor/VoiceConsent';
-import type { MentorVoiceConsentCopy } from '../../mentor/screen/MentorScreen';
 import { framed, standalone, type PreviewRegistry } from './types';
 
 /*
@@ -34,34 +30,11 @@ const PREVIEW_PROFILE: DispositionSummaryData = {
 
 const SCRIPTS = ['completed', 'interrupted', 'learner_left', 'safety_stop'];
 
-/** C.2 preview fixture: Core's consent record for ?consent=off|active&policy=allowed|blocked, or ?consent=failed. */
-function consentFixture(params: URLSearchParams): VoiceConsentApi {
-  let record = params.get('consent') === 'failed' ? null : {
-    active: params.get('consent') === 'active', grantedAt: params.get('consent') === 'active' ? '2026-09-12T10:00:00Z' : null, locale: null,
-    policy: params.get('policy') === 'blocked' ? 'blocked' as const : 'allowed' as const,
-  };
-  return {
-    read: async () => record,
-    grant: async () => { record = record && { ...record, active: true, grantedAt: '2026-09-26T10:00:00Z' }; return record ? { grantedAt: '2026-09-26T10:00:00Z' } : null; },
-    revoke: async () => { record = record && { ...record, active: false, grantedAt: null }; return record !== null; },
-  };
-}
-
-function ConsentPreview({ params, copy, locale }: { params: URLSearchParams; copy: MentorVoiceConsentCopy; locale: Locale }) {
-  const [api] = useState(() => consentFixture(params));
-  return <VoiceConsent kidUserId="preview-kid" kidName="Ana" api={api} copy={copy} locale={locale} initiallyConfirming={params.get('confirm') === '1'} headingLevel={1} />;
-}
-
 export const mentorPreviewScreens: PreviewRegistry = {
   /* W2M.1: the one Mentor stage at full size, in the Mentor screen's stage region (08 §6, §7); see MentorStagePreview. */
   'mentor-stage': standalone(({ locale, theme, ageBand, params }) => <MentorStagePreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
   /* W2M.2: the Mentor screen (08 §2-§6) in every state from fixtures; see MentorScreenPreview. */
   'mentor-screen': standalone(({ locale, theme, ageBand, params }) => <MentorScreenPreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
-  /* W2M.3 (C.2): the microphone permission a verified Tutor gives for one child; ?consent=off|active|failed&policy=allowed|blocked&confirm=1. */
-  'mentor-voice-consent': framed(({ t, locale, params }) => <main className="lf-preview lf-preview--mentor-voice-consent" data-surface="app"
-    data-screen="mentor-voice-consent-preview"><div className="lf-preview-content">
-    <ConsentPreview params={params} copy={t.mentorVoiceConsent as unknown as MentorVoiceConsentCopy} locale={locale} />
-  </div></main>),
   'mentor-session-end': framed(({ t, locale, theme, params, go }) => <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
     data-screen="mentor-session-end"><div className="lf-preview-content">
     {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}
