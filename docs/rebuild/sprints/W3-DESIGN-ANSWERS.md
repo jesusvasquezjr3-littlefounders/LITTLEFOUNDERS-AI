@@ -8,6 +8,7 @@
 |---|---|---|
 | W3D.1 | OD-28 V-04, V-12, V-13, V-14 and L-02 | Implemented and unit-verified |
 | W3D.2 | OD-28 H-16 (Wallet rename and glossary gate) and V-16 (OCR no-text check) | Implemented and unit-verified |
+| W3D.3 | Lane finish: sync, adversarial pass, full unit suites | Implemented and unit-verified |
 
 ### W3D.1: design-system owner answers
 
@@ -56,3 +57,31 @@
 **Verification (27 September 2026).** Root: `spec:check` green (asset gate: 22 rasters free of text by OCR; glossary gate green), plus `seo:check`, `secrets:check`, `family-copy-tone`, `no-unbacked-guarantee` and the i18n gate. `node --test` on the glossary, copy-tone, no-unbacked, block-D scope, repo-consistency, SEO-surface and product-spec tool tests: 77 green. Frontend `type-check` and `lint` green. Vitest: `assetGate` (the real manifest with OCR, the new OCR mutation case, the SVG no-text case) and the `family`, `site` and `namespaces` copy-budget tests green. Backend `type-check`, and lint of the two touched files, green.
 
 **Remaining.** The owner's amendment of the SPEC text (decision 1). Native review of the renamed es-MX and pt-BR strings. The full `assetGate` file and the full frontend suite at merge. A CI run on Linux, where the mutation test's text is drawn with a different system font (the calibration margin is 85% against 90% or more for real words).
+
+### W3D.3: lane finish
+
+**Sync.** `codex/spec-migration-s02` merged into the lane: already up to date (the lane is based on its tip, `cfe204d3`).
+
+**Adversarial pass against the lane scope.**
+
+| ID | Finding | Resolution |
+|---|---|---|
+| V-04 (b) | Seven rebuilt buttons marked their own in-flight work with raw `aria-busy` plus `disabled`, so they never showed the spinner: account deletion keep and confirm, achievement share, the three "more" buttons (family learning narrative, child decisions panel, decision journal) and sign out. | They now use the shared `Button pending` (focusable, announced busy, spinner as busy motion; sign out keeps its "Signing out" label through `pendingLabel`). Tests updated to pin `aria-busy` and the spinner instead of `disabled`. Buttons disabled only because a sibling's work is in flight (cancel, back) stay disabled without a spinner, which is correct. |
+| V-04 (c) | Two stale comments still said dark mode has no shadow (`overlays.css`) and that placeholders are still (`CourseView.tsx`). | Corrected. The overlays already use `--elevation-float`, which has a derived dark value. |
+| V-12, V-13, V-14, V-16, H-16, L-02 | Re-read against the owner answers: the confetti asset and its single mount, the compact control, the dark emails, the OCR check in the asset gate, the glossary gate over every locale and service, and the not-yet cue (a new, registered in-house asset, `sound.lesson.not-yet`) played by every lesson feedback path (v1 player, v2 lesson, Mentor live activity). | Nothing missing. No server surface is in this lane's scope (no new endpoint or population), and no legacy component is imported by the lane's rebuilt UI. |
+
+**Verification (27 September 2026).** Frontend: `type-check` and `lint` green; the **full** Vitest suite green, 300 files and 3438 tests, including the whole `assetGate` file with OCR. Backend (touched only by W3D.2 comments): `type-check`, `lint` and the full suite green, 123 files passed and 1 skipped (a Postgres-only file), 3036 tests. Database (touched only by a W3D.2 comment in a Python verifier): `check-migrations`, `check-migration-phase`, `check-family-lifecycle` and the 44 `node --test` cases green, the verifier compiles. The last step of its `npm test`, `railway-migrate.test.mjs`, hangs on this Windows machine because `bash` from `cmd.exe` resolves to WSL, not Git Bash; it was stopped. The lane did not touch it, and the same hang shows in two other lanes' worktrees; CI runs it on Linux. Root: `spec:check`, `secrets:check`, the i18n gate, and `node --test` on the glossary and dark-pattern gates (24) green. No migration.
+
+## Final summary
+
+The lane delivered every OD-28 design-system answer assigned to it, implemented and unit-verified, not accepted:
+
+- **V-04**: shimmering placeholders, a spinner on every pending button, soft derived shadows in dark mode, all budgeted as busy motion and still under reduced motion.
+- **V-12**: the lesson-complete confetti as a registered, generated Lottie with a static frame, played once inside the closed-list celebration only.
+- **V-13**: a compact segmented control; the function machine keeps Run in the first view at phone width without shrinking its diagram.
+- **V-14**: the five account emails in light and dark, AA contrast checked in both.
+- **L-02**: the gentle not-yet sound on every lesson feedback path, through the platform off switch.
+- **H-16**: the money section is Wallet / Cartera / Carteira everywhere a person reads it, held by a glossary gate in `spec:check`.
+- **V-16**: an offline OCR check (vendored models, zero spend) refuses text inside raster art in the asset gate.
+
+**Open, for the orchestrator or owner.** The owner's style review of the draft `celebration-motion` and `sounds` families. The owner's amendment of the checksummed SPEC text that still says "Digital Banking" (Product 10 Block D, appendices G, H and I, SPEC README) and of the Bible wording that OD-28 overrides (02 §5 "never a shadow", 02 §9.4). Native review of the renamed es-MX and pt-BR strings. The merge gates' browser looks (shimmer, spinner, dark shadows, confetti in real Chrome, the compact control at 320 and 375 px), `audit:rebuild`, `verify-rebuild-controls` and `verify-rebuild-function-machine`. A dark-mode send test of the account emails in real mail clients. A Linux CI run of the OCR mutation case and of `railway-migrate.test.mjs`.
