@@ -118,3 +118,22 @@ describe('yes_no_cases', () => {
     expect(grade('yes_no_cases', { ...segment, answer: undefined }, blanket(4, false)).score).toBe(0)
   })
 })
+
+// OD-28 (owner review L-01, MN-02): speed_tap keeps its timer, but running out
+// of time never reduces the score.
+describe('speed_tap overtime', () => {
+  const items = ['a', 'b', 'c', 'd'].map((id) => ({ id, label: id }))
+  const segment = seg('speed_tap', { items }, { target_ids: ['a', 'b'] })
+
+  it('scores a complete answer 100 with or without overtime', () => {
+    expect(grade('speed_tap', segment, { selected_ids: ['a', 'b'], overtime: false }).score).toBe(100)
+    expect(grade('speed_tap', segment, { selected_ids: ['a', 'b'], overtime: true }).score).toBe(100)
+  })
+
+  it('scores a partial answer identically with or without overtime', () => {
+    const on = grade('speed_tap', segment, { selected_ids: ['a', 'c'], overtime: true }).score
+    const off = grade('speed_tap', segment, { selected_ids: ['a', 'c'], overtime: false }).score
+    expect(on).toBe(off)
+    expect(on).toBe(25)
+  })
+})

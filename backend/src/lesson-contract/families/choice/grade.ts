@@ -117,10 +117,11 @@ const gradeSpeedTap: FamilyGrader = (segment, answer) => {
   const targets = key ? strArray(key.target_ids) : null
   if (!selected || !targets) return MALFORMED
   const items = Array.isArray(segment.payload.items) ? (segment.payload.items as unknown[]) : []
-  const raw = signalDetection(selected, targets, items.length)
-  const overtime = a?.overtime === true
+  // OD-28 (owner review L-01, audit MN-02): running out of time costs nothing.
+  // The timer stays and the client still reports `overtime`, but the score is
+  // exactly what the answer earned; the old ×0.8 reduction is gone.
   return {
-    score: overtime ? Math.round(raw * 0.8) : raw,
+    score: signalDetection(selected, targets, items.length),
     reveal: { target_ids: targets },
   }
 }

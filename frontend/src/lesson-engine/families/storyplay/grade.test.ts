@@ -1,6 +1,6 @@
 // `storyplay` family — grading tests (LESSON_ENGINE.md §5.7, §6).
 // Every type: best → 100 (or top quality), mixed → exact expected mean,
-// malformed → 0 without throwing. Plus flash_match overtime cap and
+// malformed → 0 without throwing. Plus flash_match overtime (no penalty, OD-28) and
 // lightning_round null answers.
 
 import { describe, expect, it } from 'vitest'
@@ -290,17 +290,24 @@ describe('flash_match', () => {
     expect(out.score).toBe(50) // 2 of 4
   })
 
-  it('caps at ×0.8 when overtime', () => {
-    const out = grade(segment, {
-      pairs: [
-        ['l1', 'r1'],
-        ['l2', 'r2'],
-        ['l3', 'r3'],
-        ['l4', 'r4'],
-      ],
-      overtime: true,
-    })
-    expect(out.score).toBe(80)
+  // OD-28 (owner review L-01, MN-02): the timer stays, but running out of
+  // time never costs points. Full and partial answers score the same either way.
+  it('overtime never reduces the score', () => {
+    const full: [string, string][] = [
+      ['l1', 'r1'],
+      ['l2', 'r2'],
+      ['l3', 'r3'],
+      ['l4', 'r4'],
+    ]
+    expect(grade(segment, { pairs: full, overtime: true }).score).toBe(100)
+    const partial: [string, string][] = [
+      ['l1', 'r1'],
+      ['l2', 'r3'],
+      ['l3', 'r3'],
+    ]
+    expect(grade(segment, { pairs: partial, overtime: true }).score).toBe(
+      grade(segment, { pairs: partial, overtime: false }).score,
+    )
   })
 
   it('reversed tuples and duplicates do not double-count', () => {
