@@ -1,0 +1,60 @@
+/*
+ * W2F.1: the rebuilt Family console (F1), a child's progress (F2) and a
+ * child's Mentor talks (F3). Tokens only; separation by fill and elevation,
+ * never an outline (02 §4.4); layouts by container width, not viewport.
+ */
+.lf-rebuild.lf-family-console { min-block-size: 0; display: grid; gap: var(--spacing-6); align-content: start; }
+.lf-family-console .lf-console-header { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-family-console .lf-console-back .lf-button { gap: var(--spacing-2); }
+.lf-family-console h3 { margin: 0; font: var(--type-title); text-wrap: balance; }
+.lf-family-console h4 { margin: 0; font: var(--type-label); }
+
+/* F1: the child picker, the overview card and the grouped tools. */
+.lf-family-console .lf-console-picker { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-family-console .lf-console-overview { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-family-console .lf-console-who { display: grid; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-family-console .lf-console-handle { color: var(--content-muted); font: var(--type-caption); }
+.lf-family-console .lf-console-group { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-family-console .lf-console-group > h2 { font: var(--type-headline); }
+.lf-family-console .lf-console-group-items { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-family-console .lf-console-control { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-family-console .lf-console-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-family-console .lf-console-danger { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding-block-start: var(--spacing-4); }
+.lf-family-console .lf-console-consent { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-family-console .lf-console-consent [data-copy-role='legal'] { margin: 0; max-inline-size: 60ch; overflow-wrap: break-word; }
+.lf-family-console .lf-console-control--bare { padding: 0; background: none; box-shadow: none; }
+.lf-family-console .lf-console-share > .lf-rebuild.lf-achievement-share { padding: 0; }
+
+/* F2: the stats, the shares and the read-only course map. */
+.lf-family-console .lf-console-stats { display: grid; gap: var(--spacing-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr)); margin: 0; padding: 0; }
+.lf-family-console .lf-console-stat { display: grid; gap: var(--spacing-1); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-family-console .lf-console-stat dt { font: var(--type-caption); color: var(--content-muted); }
+.lf-family-console .lf-console-stat dd { margin: 0; font: var(--type-numeral); }
+.lf-family-console .lf-console-shares { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-family-console .lf-console-share { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-family-console .lf-console-share > .lf-rebuild { min-block-size: 0; background: transparent; }
+.lf-family-console .lf-console-units { display: grid; gap: var(--spacing-4); min-inline-size: 0; list-style: none; margin: 0; padding: 0; }
+.lf-family-console .lf-console-topics { display: grid; gap: var(--spacing-2); min-inline-size: 0; list-style: none; margin: 0; padding: 0; }
+.lf-family-console .lf-console-topic { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2) var(--spacing-3);
+  min-inline-size: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-family-console .lf-console-topic-name { min-inline-size: 0; flex: 1 1 12rem; overflow-wrap: anywhere; }
+.lf-family-console .lf-console-muted { color: var(--content-muted); }
+
+/* F3: flags first, then the note, the microphone, the profile, the kept boards and the talks. */
+.lf-family-console .lf-console-list { display: grid; gap: var(--spacing-3); min-inline-size: 0; list-style: none; margin: 0; padding: 0; }
+.lf-family-console .lf-console-item { display: grid; gap: var(--spacing-2); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-family-console .lf-console-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2) var(--spacing-3); min-inline-size: 0; }
+.lf-family-console .lf-console-row > :first-child { min-inline-size: 0; flex: 1 1 14rem; display: grid; gap: var(--spacing-1); }
+.lf-family-console .lf-console-note-now { display: grid; gap: var(--spacing-1); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-family-console .lf-console-ugc { white-space: pre-line; overflow-wrap: anywhere; }
+.lf-family-console .lf-console-replaces { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--surface); }
+.lf-family-console .lf-console-transcript { display: grid; gap: var(--spacing-2); min-inline-size: 0; list-style: none; margin: 0; padding: 0; }
+.lf-family-console .lf-console-beat { display: grid; gap: var(--spacing-1); min-inline-size: 0; max-inline-size: 34rem; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); }
+.lf-family-console .lf-console-beat[data-speaker='child'] { justify-self: end; background: var(--accent-soft); }
+.lf-family-console .lf-console-beat[data-speaker='note'], .lf-family-console .lf-console-beat[data-speaker='activity'] { background: var(--sky-soft); }
+.lf-family-console .lf-console-beat[data-flagged='true'] { background: var(--warning-soft); }
+.lf-family-console .lf-console-speaker { font: var(--type-caption); color: var(--content); }
+/* 03 §3 measure (at most 75 characters a line), found by the W2F.3 rebuild audit: a talk's lines, the talk cards on F3 and the
+   removal warning ran 81-117 characters wide on a tablet or desktop column. */
+.lf-family-console[data-screen='child-mentor'] .lf-console-item { max-inline-size: 36rem; }
+.lf-family-console .lf-console-danger .lf-notice { max-inline-size: 32rem; }

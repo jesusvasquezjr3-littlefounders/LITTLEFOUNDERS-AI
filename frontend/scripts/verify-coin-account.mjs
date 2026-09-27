@@ -174,6 +174,11 @@ async function mounted() {
 }
 async function ready(panel) {
   await wait(`${inPanel(panel)}?.closest('[data-theme]')?.dataset.theme === ${JSON.stringify(theme)} && ${inPanel(panel)}?.closest('[lang]')?.lang === ${JSON.stringify(locale)}`);
+  // The app cross-fades between modes (W2 Lane 0 shells): a contrast read during the fade measures the old mode's text on the new ground.
+  await wait("!document.documentElement.classList.contains('theme-transitioning')");
+  // ...and every finite animation or colour transition (the page body's entrance fade, a surface settling into the new mode):
+  // an axe read mid-change blends the text into the ground. Idle loops (infinite) are not waited for.
+  await wait("document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity)");
 }
 async function shot(name, panel) {
   await page.evaluate(`${inPanel(panel)}.scrollIntoView({block:'start',behavior:'instant'})`);
@@ -201,6 +206,8 @@ try {
     await load('/banking', kidId); await ready('child'); await page.evaluate(axeSource);
     const y = c.young;
     await has('child', y.practice); await has('child', y.coinsOnly);
+    // W2F.2: while nothing is frozen, what a freeze pauses is one press away (06 §4 layering); pressed here, then checked.
+    await click('child', y.whatHolds);
     for (const k of ['holdRewards', 'holdSplits', 'holdCredits', 'holdShare']) await has('child', y[k]);
     await has('child', fill(y.limitWeekly, { remaining: 5 }));
     await has('child', y.limitWhen);
@@ -253,9 +260,12 @@ try {
     await load('/banking', parentId); await ready('tutor'); await page.evaluate(axeSource);
     const tu = c.tutor;
     await has('tutor', fill(tu.view, { name: 'Nico', band: tu.bandYoung }));
-    await has('tutor', tu.noCoinsMoved);
+    // W2F.2: what a freeze holds (and that it moves no coins) is shown at the point of action, the confirmation;
+    // before it, one press away (06 §4 layering).
     await click('tutor', tu.freeze);
     await has('tutor', fill(tu.confirmFreeze, { name: 'Nico' }));
+    await has('tutor', tu.noCoinsMoved);
+    for (const k of ['holdRewards', 'holdSplits', 'holdCredits', 'holdShare']) await has('tutor', tu[k]);
     assert.equal(state.posts.length, 0, 'Freezing did not ask first');
     geometry.tutorConfirm = await audit('tutor');
     await shot(`${width}-tutor-confirm`, 'tutor');

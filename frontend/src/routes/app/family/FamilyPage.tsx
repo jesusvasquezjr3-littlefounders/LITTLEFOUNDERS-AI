@@ -1,285 +1,106 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { ProfileSafetyControl } from '@/routes/app/profile/SocialTierNotes';
-import { api } from '@/lib/api';
-import { Card, Icon, LoadingOverlay } from '@/components/ui';
-import { ErrorBanner } from '@/routes/auth/ErrorBanner';
-import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
-import { AddKidCard, type CreatedKid } from './AddKidCard';
+import { FamilyConsole } from '@/rebuild/family/console/FamilyConsole';
+import { childName, type Child } from '@/rebuild/family/console/consoleApi';
+import { AutonomyLadderPanel } from './AutonomyLadderPanel';
 import { BadgeSharesPanel } from './BadgeSharesPanel';
-import { LearningBridgesPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
 import { CoGuardiansPanel, GuardianRequestsPanel } from './CoGuardiansPanel';
+import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
 import { GuardianInviteJoin, GuardianInvitePanel } from './GuardianInvitePanel';
-import { ManageKidPanel } from './ManageKidPanel';
+import { LearningBridgesPanel, LearningNarrativePanel, StreakPausePanel } from './LearningPanels';
+import { ShareDestinationsPanel } from './ShareDestinationsPanel';
 import { SocialGraphPanel } from './SocialGraphPanel';
 import { SocialHistoryPanel } from './SocialHistoryPanel';
 import { SocialNoticesPanel } from './SocialNoticesPanel';
 import { SocialRequestsPanel } from './SocialRequestsPanel';
-import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
 import { StreakPausesPanel } from './StreakPausesPanel';
-import { ShareDestinationsPanel } from './ShareDestinationsPanel';
-import { AutonomyLadderPanel } from './AutonomyLadderPanel';
-import { CoachingTipPanel, DataPolicyPanel, ResearchConsentPanel, ScopeStatementPanel } from './GovernancePanels';
+import { WalletCorrectionsPanel } from './WalletCorrectionsPanel';
+import { useConsoleEnvironment, useConsoleTransport } from './consoleSession';
 
 /*
- * /family — the parent dashboard's front door (parent-role gated in App.tsx;
- * navConfig renders it LOCKED for everyone else). Lists the caller's VERIFIED
- * kids (Core re-checks guardian_links on every request) and opens each kid's
- * territory. Parent visibility is a product invariant (§1.9) — this is that
- * invariant becoming a surface.
+ * /family: F1, the verified Tutor's Family console (W2F.1). The route is
+ * parent-gated (app-routes/family.tsx) and Core re-checks the verified
+ * guardian link on every request; this adapter only binds the rebuilt
+ * console to the session, the language, the mode and the router, and hands
+ * it the wave-1 surfaces (S05, S07, S08 data planes, unchanged) for the
+ * child in view.
  *
- * The usage-insights toggle per kid is the §1.9 parental consent gate made
- * visible (/INSIGHTS.md): OFF means the kid's browser transmits no usage
- * events at all and Core drops anything that slips through. Granting and
- * revoking are both re-guarded server-side by the verified guardian link.
+ * `?child=` names the child in view, so a way back from a child's progress
+ * or Mentor talks returns to them; `?join=` carries a second Tutor's invite.
  */
-
-interface Kid {
-  userId: string;
-  displayName: string | null;
-  username: string | null;
-  analyticsConsent: boolean;
-  pendingApprovalCount: number;
-  walletTotal: number | null;
-  taskStreakDays: number;
-  /** E.13: which of the child's fields keeps it hidden from approved outside connections. */
-  profileReview?: { flagged: boolean; fields: ('username' | 'displayName')[] };
-}
-
-type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; kids: Kid[] };
-
 export function FamilyPage() {
-  const { t } = useTranslation();
   const { getToken } = useAuth();
-  const [searchParams] = useSearchParams();
-  const joinToken = searchParams.get('join');
-  const [state, setState] = useState<LoadState>({ status: 'loading' });
-  const [busyKid, setBusyKid] = useState<string | null>(null);
-  const [consentError, setConsentError] = useState<string | null>(null);
+  const transport = useConsoleTransport();
+  const { locale, dark, family, copy } = useConsoleEnvironment();
+  const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const join = params.get('join');
+  const selected = params.get('child');
   const [token, setToken] = useState<string | null>(null);
+  // Losing access to a child (another Tutor's decision, stepping away) reloads the family list.
+  const [generation, setGeneration] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const token = await getToken();
-      if (!token || cancelled) return;
-      setToken(token);
-      const { data, error } = await api<{ kids: Kid[] }>('/family/kids', { token });
-      if (cancelled) return;
-      setState(error ? { status: 'error', code: error.code } : { status: 'ready', kids: data.kids });
-    })();
-    return () => {
-      cancelled = true;
-    };
+    let live = true;
+    void getToken().then((value) => { if (live) setToken(value); });
+    return () => { live = false; };
   }, [getToken]);
 
-  async function toggleConsent(kid: Kid) {
-    if (state.status !== 'ready' || busyKid) return;
-    setConsentError(null);
-    setBusyKid(kid.userId);
-    const token = await getToken();
-    const { data, error } = await api<{ kidId: string; analyticsConsent: boolean }>(
-      `/family/kids/${kid.userId}/analytics-consent`,
-      { method: kid.analyticsConsent ? 'DELETE' : 'POST', token },
-    );
-    setBusyKid(null);
-    if (error || !data) {
-      setConsentError(error?.code ?? 'INTERNAL');
-      return; // Keep the server-confirmed consent state visible.
-    }
-    setState((prev) =>
-      prev.status === 'ready'
-        ? { ...prev, kids: prev.kids.map((k) => (k.userId === data.kidId ? { ...k, analyticsConsent: data.analyticsConsent } : k)) }
-        : prev,
-    );
-  }
+  const select = useCallback((userId: string) => {
+    setParams((previous) => {
+      const next = new URLSearchParams(previous);
+      next.set('child', userId);
+      return next;
+    }, { replace: true });
+  }, [setParams]);
 
-  function onKidCreated(kid: CreatedKid) {
-    // A brand-new kid has no tasks, wallet or streak history yet — these
-    // three are known-zero by construction, not fetched.
-    const withDefaults: Kid = { ...kid, pendingApprovalCount: 0, walletTotal: 0, taskStreakDays: 0 };
-    setState((prev) => (prev.status === 'ready' ? { ...prev, kids: [...prev.kids, withDefaults] } : prev));
-  }
+  const slots = (child: Child) => {
+    const name = childName(child);
+    const common = { kidUserId: child.userId, token };
+    return {
+      // S05.3c/e: B.10's narrative, B.13's real-world prompts, B.21's holiday pause of the learning streak.
+      learning: <>
+        <LearningNarrativePanel {...common} />
+        <LearningBridgesPanel {...common} />
+        <StreakPausePanel {...common} />
+      </>,
+      // S07.1/S07.3/S07.4/S07.5: coin corrections, the chore streak's pauses, the Share places, the independence ladder.
+      money: <>
+        <WalletCorrectionsPanel {...common} kidName={name} />
+        <StreakPausesPanel {...common} kidName={name} />
+        <ShareDestinationsPanel {...common} kidName={name} />
+        <AutonomyLadderPanel {...common} kidName={name} />
+      </>,
+      // S08 (E.*): connection requests, who follows whom, the history, and the older share links (OD-20).
+      connections: <>
+        <SocialRequestsPanel {...common} />
+        <SocialGraphPanel {...common} />
+        <SocialHistoryPanel {...common} />
+        <BadgeSharesPanel {...common} />
+      </>,
+      // S07.7 (D.22): the Tutor's research answer for this child.
+      privacy: <ResearchConsentPanel {...common} kidName={name} />,
+      // S04.1 / S07.1 (D.5, OD-21): invite a second Tutor; the Tutors of this child and stepping away.
+      account: <>
+        <GuardianInvitePanel {...common} />
+        <CoGuardiansPanel {...common} kidName={name} onAccessLost={() => setGeneration((value) => value + 1)} />
+      </>,
+    };
+  };
 
-  // Both apply the server's outcome to the list in place. A refetch would be a
-  // second round trip that can answer before the write has propagated.
-  function onKidRenamed(userId: string, displayName: string) {
-    setState((prev) =>
-      prev.status === 'ready'
-        ? { ...prev, kids: prev.kids.map((k) => (k.userId === userId ? {
-            ...k,
-            displayName,
-            // Core accepted the new name, so it passed the E.13 review; the handle's flag (if any) stays.
-            profileReview: k.profileReview && {
-              flagged: k.profileReview.fields.includes('username'),
-              fields: k.profileReview.fields.filter((field) => field !== 'displayName'),
-            },
-          } : k)) }
-        : prev,
-    );
-  }
-
-  function onKidRemoved(userId: string) {
-    setState((prev) =>
-      prev.status === 'ready' ? { ...prev, kids: prev.kids.filter((k) => k.userId !== userId) } : prev,
-    );
-  }
-
-  if (state.status === 'loading') return <LoadingOverlay label={t('family.loading')} />;
-  if (state.status === 'error') return <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6">
-    <ErrorBanner code={state.code} />
-    {state.code === 'PARENT_VERIFICATION_REQUIRED' && <Link to="/verify-parent" className="lf-label text-primary underline">{t('auth.verify.checkIdentity')}</Link>}
-  </div>;
-
-  return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6 md:px-6">
-      <header>
-        <h1 className="lf-display-lg text-content">{t('family.title')}</h1>
-        <p className="lf-body text-content-muted">{t('family.subtitle')}</p>
-      </header>
-
-      {/* S07.7 (D.23, D.20, D.21): this month's tip, what the practice covers, and how long the family's data is kept. */}
-      {state.kids.length > 0 && <CoachingTipPanel token={token} />}
+  return <FamilyConsole key={generation} copy={family.familyConsole} accountCopy={family.familyChildAccount} consentCopy={family.familyChildConsent}
+    profileSafetyCopy={copy.profile.profileSafety} locale={locale} dark={dark} transport={transport} selectedId={selected} onSelect={select}
+    onNavigate={(href) => navigate(href)} childSlots={slots}
+    familyTop={join !== null ? <GuardianInviteJoin inviteToken={join} /> : undefined}
+    familyAside={(hasChildren) => <>
+      {/* S07.7 (D.23, D.20, D.21): this month's tip, what the practice covers, how long the family's data is kept. */}
+      {hasChildren ? <CoachingTipPanel token={token} /> : null}
+      {hasChildren ? <SocialNoticesPanel token={token} /> : null}
+      <GuardianRequestsPanel token={token} />
       <ScopeStatementPanel />
       <DataPolicyPanel token={token} />
-
-      {state.kids.length === 0 ? (
-        <Card className="flex flex-col items-center gap-3 p-8 text-center">
-          <Icon name="family_restroom" className="text-[40px] text-content-faint" aria-hidden />
-          <h2 className="lf-title text-content">{t('family.emptyTitle')}</h2>
-          <p className="lf-body max-w-md text-content-muted">{t('family.emptyBody')}</p>
-          <AddKidCard onCreated={onKidCreated} />
-        </Card>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {state.kids.map((kid) => (
-            <li key={kid.userId} className="rounded-lg border border-outline/70 bg-surface shadow-glass-sm">
-              <Link
-                to={`/family/${kid.userId}/territory`}
-                className="flex min-h-14 items-center gap-4 rounded-t-lg px-4 py-3 transition-[background-color] duration-150 hover:bg-surface-sunken/50 lf-press focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft lf-title font-bold text-primary">
-                  {(kid.displayName ?? kid.username ?? '?').charAt(0).toUpperCase()}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="lf-label block truncate text-content">{kid.displayName ?? kid.username}</span>
-                  {kid.username ? <span className="lf-caption block truncate text-content-faint">@{kid.username}</span> : null}
-                </span>
-                <span className="lf-caption flex shrink-0 items-center gap-1 font-bold text-primary">
-                  <Icon name="map" className="text-[18px]" aria-hidden />
-                  {t('family.viewTerritory')}
-                </span>
-              </Link>
-
-              {/* "What needs my attention" per kid (FAMILY_HUB.md §7) — a
-                  wallet total and chore streak are always shown; the
-                  awaiting-approval count only appears when it is non-zero,
-                  since that is the one fact this row exists to surface. */}
-              <div className="flex flex-wrap items-center gap-2 border-t border-outline/50 px-4 py-2.5">
-                <Link
-                  to="/banking"
-                  className="lf-caption lf-press flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 font-bold text-success-strong hover:bg-success/20"
-                >
-                  <Icon name="savings" className="text-[15px]" aria-hidden />
-                  {kid.walletTotal === null ? t('family.card.walletUnknown') : t('family.card.wallet', { count: kid.walletTotal })}
-                </Link>
-                {kid.taskStreakDays > 0 && (
-                  <span className="lf-caption flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 font-bold text-warning-strong">
-                    <Icon name="local_fire_department" fill className="text-[15px]" aria-hidden />
-                    {t('family.card.streak', { count: kid.taskStreakDays })}
-                  </span>
-                )}
-                {kid.pendingApprovalCount > 0 && (
-                  <Link
-                    to="/tasks"
-                    className="lf-caption lf-press flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 font-bold text-accent hover:bg-accent/20"
-                  >
-                    <Icon name="pending_actions" className="text-[15px]" aria-hidden />
-                    {t('family.card.pendingApproval', { count: kid.pendingApprovalCount })}
-                  </Link>
-                )}
-              </div>
-
-              <div className="flex items-center gap-3 border-t border-outline/50 px-4 py-2.5">
-                <Icon name="query_stats" className="shrink-0 text-[18px] text-content-faint" aria-hidden />
-                <span className="min-w-0 flex-1">
-                  <span className="lf-caption block text-content">{t('family.insightsConsent.label')}</span>
-                  <span className="lf-caption block text-content-faint">{t('family.insightsConsent.hint')}</span>
-                </span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={kid.analyticsConsent}
-                  aria-label={t('family.insightsConsent.label')}
-                  disabled={busyKid === kid.userId}
-                  onClick={() => void toggleConsent(kid)}
-                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 ${
-                    kid.analyticsConsent ? 'bg-primary' : 'bg-outline'
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] duration-150 ${
-                      kid.analyticsConsent ? 'left-[22px]' : 'left-0.5'
-                    }`}
-                  />
-                </button>
-              </div>
-              {/* The microphone gate (/ORACLE.md §4.3). Deliberately below the
-                  analytics switch and deliberately not shaped like it: this
-                  one shows the exact wording before it is agreed to. */}
-              <VoiceConsentControl
-                kidUserId={kid.userId}
-                token={token}
-                kidName={kid.displayName ?? kid.username ?? ''}
-              />
-              {/* S05.3c: B.13's optional real-world prompts, then B.10's course-learning narrative. */}
-              <LearningBridgesPanel kidUserId={kid.userId} token={token} />
-              <LearningNarrativePanel kidUserId={kid.userId} token={token} />
-              {/* S05.3e: B.21's holiday pause for the child's learning streak. */}
-              <StreakPausePanel kidUserId={kid.userId} token={token} />
-              <SocialRequestsPanel kidUserId={kid.userId} token={token} />
-              <SocialGraphPanel kidUserId={kid.userId} token={token} />
-              <SocialHistoryPanel kidUserId={kid.userId} token={token} />
-              <BadgeSharesPanel kidUserId={kid.userId} token={token} />
-              <GuardianInvitePanel kidUserId={kid.userId} token={token} />
-              {kid.profileReview?.flagged && (
-                <div className="border-t border-outline/50 px-4 py-2.5">
-                  <ProfileSafetyControl audience="guardian" fields={kid.profileReview.fields} name={kid.displayName ?? kid.username ?? ''} />
-                </div>
-              )}
-              {/* S07.1 (D.5 / OD-21): pending, rejected and revoked Tutor
-                  links, and the guardian-only money corrections. */}
-              <CoGuardiansPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} onAccessLost={() => onKidRemoved(kid.userId)} />
-              <WalletCorrectionsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
-              <StreakPausesPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
-              {/* S07.4 (D.14): the real places this child's Share coins go, and what the family did. */}
-              <ShareDestinationsPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
-              {/* S07.5 (D.17): the child's independence level, set by the Tutor within the documented rule. */}
-              <AutonomyLadderPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
-              {/* S07.7 (D.22): research participation, the Tutor's own answer for this child. */}
-              <ResearchConsentPanel kidUserId={kid.userId} kidName={kid.displayName ?? kid.username ?? ''} token={token} />
-              <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
-              <Link
-                to={`/family/${kid.userId}/tutor`}
-                className="lf-caption lf-press flex min-h-11 items-center gap-2 border-t border-outline/50 px-4 py-2.5 font-bold text-primary transition-[background-color] duration-150 hover:bg-surface-sunken/50"
-              >
-                <Icon name="forum" className="text-[18px]" aria-hidden />
-                {t('tutor.guardian.linkFromFamily')}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {state.kids.length > 0 && <SocialNoticesPanel token={token} />}
-      {joinToken !== null && <GuardianInviteJoin inviteToken={joinToken} />}
-      <GuardianRequestsPanel token={token} />
-      {consentError && <ErrorBanner code={consentError} />}
-      {state.kids.length > 0 && <AddKidCard onCreated={onKidCreated} />}
-    </div>
-  );
+    </>} />;
 }
 
 export default FamilyPage;

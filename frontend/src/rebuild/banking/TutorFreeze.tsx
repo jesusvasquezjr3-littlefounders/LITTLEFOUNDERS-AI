@@ -16,7 +16,7 @@ import './coinAccount.css';
  */
 
 export interface TutorFreezeCopy {
-  heading: string; practice: string; frozen: string; notFrozen: string; byYou: string; byChild: string; byTutor: string; whileFrozen: string;
+  heading: string; practice: string; frozen: string; notFrozen: string; byYou: string; byChild: string; byTutor: string; whileFrozen: string; whatHolds: string;
   holdRewards: string; holdSplits: string; holdCredits: string; holdShare: string; nothingLost: string; noCoinsMoved: string; freeze: string;
   unfreeze: string; confirmFreeze: string; confirm: string; cancel: string; view: string; bandYoung: string; bandTransition: string; bandTeen: string;
   noAccount: string; loading: string; failed: string; retry: string; frozenNotice: string; unfrozenNotice: string; changeFailed: string;
@@ -44,7 +44,9 @@ export function TutorFreeze({ copy, name, locale, dark, view, loading, failed, b
 }) {
   const headingId = useId();
   const holdsId = useId();
+  const listId = useId();
   const [confirming, setConfirming] = useState(false);
+  const [holdsOpen, setHoldsOpen] = useState(false);
   const card = view?.account ?? null;
 
   return <section className="lf-rebuild lf-family-hub lf-coin-account" data-coin-account="tutor" data-theme={dark ? 'dark' : 'light'} lang={locale}
@@ -64,12 +66,18 @@ export function TutorFreeze({ copy, name, locale, dark, view, loading, failed, b
         <Copy role="body">{copy.practice}</Copy>
         <section className="lf-coin-freeze" data-control="freeze" data-frozen={card.freeze.frozen} data-by={card.freeze.by ?? 'none'} aria-labelledby={holdsId}>
           {card.freeze.frozen && <Copy role="body">{card.freeze.by === 'you' ? copy.byYou : card.freeze.by === 'child' ? fill(copy.byChild, { name }) : copy.byTutor}</Copy>}
-          <p id={holdsId} data-copy-role="body">{copy.whileFrozen}</p>
-          <ul className="lf-coin-holds">
-            {card.freeze.holds.map((hold) => <li key={hold} data-hold={hold} data-control={`freeze.${hold}`}><span data-copy-role="body">{copy[HOLD_KEY[hold]]}</span></li>)}
-          </ul>
-          <Copy role="body">{copy.nothingLost}</Copy>
-          <Copy role="body">{copy.noCoinsMoved}</Copy>
+          {/* W2F.2 (06 §4 layering): what a freeze holds is always shown while frozen and at the point of action (the confirmation), and
+              one press away otherwise, so the page's first view stays within budget. The list is the server's, never copy's (D.7). */}
+          {!card.freeze.frozen && !confirming && <div className="lf-family-hub-actions"><Button size="sm" aria-expanded={holdsOpen} aria-controls={listId}
+            onClick={() => setHoldsOpen((open) => !open)}>{copy.whatHolds}</Button></div>}
+          <div id={listId} hidden={!card.freeze.frozen && !confirming && !holdsOpen}>
+            <p id={holdsId} data-copy-role="body">{copy.whileFrozen}</p>
+            <ul className="lf-coin-holds">
+              {card.freeze.holds.map((hold) => <li key={hold} data-hold={hold} data-control={`freeze.${hold}`}><span data-copy-role="body">{copy[HOLD_KEY[hold]]}</span></li>)}
+            </ul>
+            <Copy role="body">{copy.nothingLost}</Copy>
+            <Copy role="body">{copy.noCoinsMoved}</Copy>
+          </div>
           {card.freeze.frozen
             ? <div className="lf-family-hub-actions"><Button variant="success" disabled={busy} data-control="freeze.owner" onClick={() => onFreeze(false)}>{copy.unfreeze}</Button></div>
             : confirming ? <div className="lf-coin-confirm" role="group" aria-label={fill(copy.confirmFreeze, { name })}>

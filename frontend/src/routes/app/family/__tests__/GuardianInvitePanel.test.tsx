@@ -25,7 +25,7 @@ describe('GuardianInvitePanel', () => {
   it('mints an invite and renders the single-use link', async () => {
     mockApi.mockResolvedValue({ data: { token: 'a'.repeat(32) }, error: null });
     render(<GuardianInvitePanel kidUserId="kid" token="session" />);
-    fireEvent.click(screen.getByRole('button', { name: 'Invite a second Tutor' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Invite a Tutor' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
     expect(await screen.findByLabelText('invite link')).toHaveTextContent('https://app.test/family?join=');
     expect(mockApi).toHaveBeenCalledWith('/family/kids/kid/guardian-invite', { method: 'POST', token: 'session' });
@@ -34,7 +34,7 @@ describe('GuardianInvitePanel', () => {
   it('reports a mint failure without a link', async () => {
     mockApi.mockResolvedValue({ data: null, error: { code: 'INTERNAL' } });
     render(<GuardianInvitePanel kidUserId="kid" token="session" />);
-    fireEvent.click(screen.getByRole('button', { name: 'Invite a second Tutor' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Invite a Tutor' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create invite link' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not create the invite. Try again.');
     expect(screen.queryByLabelText('invite link')).toBeNull();

@@ -59,7 +59,7 @@
     "askTutor": "Your Tutor can change your username.",
     "kidTitle": "{name} needs a new name",
     "kidBody": "It could help strangers find them. Outside connections see nothing until then.",
-    "kidUsername": "You can give them a new username.",
+    "kidUsername": "Change their username in Manage account.",
     "kidDisplayName": "Change their name below."
   },
   "memorySelfReview": {

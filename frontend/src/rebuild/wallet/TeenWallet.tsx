@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Button, ButtonLink, Copy, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField } from '../design/controls';
+import {
+  Button, ButtonLink, Copy, DashboardLayout, EmptyState, ErrorState, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField,
+} from '../design/controls';
 import {
   archiveGoal, archiveReward, claimReward, createGoal, createParentInvite, createReward, decideParent, fetchBalances,
   fetchHistory, fetchParents, fetchRewards, fetchWalletAccess, logIncome, releaseGoal,
@@ -13,6 +15,7 @@ import { GoalProgress, type GoalProgressCopy } from '../family/GoalProgress';
 import { GoalNextStep, type GoalNextStepCopy } from '../family/GoalNextStep';
 import { ShareGiving, type ShareGivingCopy, type ShareTeenCopy } from '../family/ShareGiving';
 import { UsualSplit, type UsualSplitCopy } from '../family/UsualSplit';
+import type { TeenWalletScreenCopy } from '../family/tasks/taskParts';
 import '../design/tokens.css';
 import '../design/system.css';
 import './teenWallet.css';
@@ -39,6 +42,13 @@ import './teenWallet.css';
  * Client validation mirrors the server's (integers, 1–1000 income, 1–500
  * reward cost, 1–60 character names); Core and the database remain the
  * boundary.
+ *
+ * W2F.2 (the /wallet screen): with `screen`, a failed read is one of the
+ * design system's page states: offline says so, a refusal (Core does not
+ * classify this account as a self-registered teen's) explains itself and
+ * offers the way back, anything else is ours to fix, with a retry. `aside`
+ * holds the page's companions beside the wallet (Beyond the app, what the
+ * practice covers, the teen's own research answer).
  */
 
 type Group<K extends string> = Record<K, string>;
@@ -106,7 +116,11 @@ function Section({ id, heading, children }: { id: string; heading: string; child
   </section>;
 }
 
-export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onOpenTasks, inviteLinkFor, copyText, onAccessChanged }: {
+/** Core's answers that mean "this account holds no personal wallet", not a failure to fix. */
+const REFUSED = new Set(['WALLET_UNAVAILABLE', 'WALLET_HOLDER_REQUIRED', 'FORBIDDEN', 'TEEN_WALLET_REQUIRED']);
+type Failure = 'failed' | 'offline' | 'refused';
+
+export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onOpenTasks, inviteLinkFor, copyText, onAccessChanged, screen, aside }: {
   copy: TeenWalletCopy;
   habits: TeenHabitsCopy;
   locale: string;
@@ -118,6 +132,10 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
   copyText: (text: string) => Promise<boolean>;
   /** Called after the teen confirms a parent, so the shell re-reads which sections unlock. */
   onAccessChanged?: () => void;
+  /** The /wallet screen's page states (W2F.2); without it, a failure is the S07.2 notice and retry. */
+  screen?: { copy: TeenWalletScreenCopy; learnHref: string; onNavigate: (href: string) => void };
+  /** The page's companions, beside the wallet on a wide screen and after it on a phone. */
+  aside?: ReactNode;
 }) {
   const ids = { title: useId(), income: useId(), goals: useId(), rewards: useId(), share: useId(), history: useId(), parents: useId() };
   const [access, setAccess] = useState<WalletAccess | null>(null);
@@ -129,6 +147,8 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
   const [history, setHistory] = useState<WalletEntry[]>([]);
   const [parents, setParents] = useState<ParentLink[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [failure, setFailure] = useState<Failure>('failed');
+  const [retrying, setRetrying] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
@@ -142,8 +162,12 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
       fetchUsualSplit(session), fetchShare(session),
     ]);
     if (current !== generation.current) return;
+    setRetrying(false);
     if (!accessRes.ok || !balanceRes.ok || !goalsRes.ok || !rewardsRes.ok || !historyRes.ok || !parentsRes.ok || !usualRes.ok || !shareRes.ok
       || accessRes.data.holder !== 'teen') {
+      const codes = [accessRes, balanceRes, goalsRes, rewardsRes, historyRes, parentsRes, usualRes, shareRes].flatMap((result) => result.ok ? [] : [result.code]);
+      setFailure(codes.includes('NETWORK') ? 'offline'
+        : (accessRes.ok && accessRes.data.holder !== 'teen') || codes.some((code) => REFUSED.has(code)) ? 'refused' : 'failed');
       setState('failed');
       return;
     }
@@ -342,12 +366,20 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
     </header>
 
     {state === 'loading' && <LoadingState label={copy.page.loading} lines={3} />}
-    {state === 'failed' && <>
+    {state === 'failed' && !screen && <>
       <NoticeLine notice={{ text: copy.page.failed, error: true }} />
       <div><Button onClick={() => { setState('loading'); void load(); }}>{copy.page.retry}</Button></div>
     </>}
+    {state === 'failed' && screen && (failure === 'refused'
+      ? <EmptyState heading={screen.copy.refusedTitle} body={screen.copy.refusedBody}
+        action={<ButtonLink href={screen.learnHref} variant="accent" onClick={(event) => {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          event.preventDefault(); screen.onNavigate(screen.learnHref);
+        }}>{screen.copy.refusedAction}</ButtonLink>} />
+      : <ErrorState heading={screen.copy.failedTitle} body={failure === 'offline' ? screen.copy.offlineBody : screen.copy.failedBody}
+        retryLabel={screen.copy.retry} retryingLabel={screen.copy.retrying} retrying={retrying} onRetry={() => { setRetrying(true); void load(); }} />)}
 
-    {state === 'ready' && balances && access && <>
+    {state === 'ready' && balances && access && <DashboardLayout secondary={aside} primary={<>
       <section className="lf-teen-wallet-balance" aria-label={fill(copy.page.total, { n: balanceTotal })}>
         <p className="lf-teen-wallet-total" data-copy-role="data">{fill(copy.page.total, { n: balanceTotal })}</p>
         <ul className="lf-teen-wallet-pockets">
@@ -504,7 +536,7 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
             <div className="lf-actions"><Button onClick={() => void copyLink()}>{copied ? copy.parents.copied : copy.parents.copy}</Button></div>
           </div>}
       </Section>}
-    </>}
+    </>} />}
   </section>;
 }
 

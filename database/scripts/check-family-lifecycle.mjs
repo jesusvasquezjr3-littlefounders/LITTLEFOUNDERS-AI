@@ -62,7 +62,7 @@ export const REGISTRY = {
       producer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'approved', decided_by = p_actor"), E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'approved', decided_at = now(), decision_id = v_decision")],
       consumer: [E(SQL('_family_hub_transition_guards'), "v_task.status <> 'approved'"), E('database/migrations/*_enforce_banking_freeze.sql', "v_task.status <> 'approved'")],
     },
-    cancelled: { producer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'cancelled', decided_by = p_actor")], consumer: [E('frontend/src/routes/app/tasks/ParentTaskBoard.tsx', "task.status === 'cancelled'")] },
+    cancelled: { producer: [E(DECISION_FLOWS, "UPDATE public.tasks SET status = 'cancelled', decided_by = p_actor")], consumer: [E('frontend/src/rebuild/family/tasks/TutorTasks.tsx', "task.status === 'cancelled'")] },
   },
   // S07.3 (D.10): each chore is an expected family contribution or a paid
   // bonus task. Both kinds must stay producible by the Tutor's composer and

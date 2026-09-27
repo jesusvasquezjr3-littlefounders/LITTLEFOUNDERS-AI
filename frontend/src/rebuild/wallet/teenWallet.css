@@ -3,9 +3,9 @@
   display: grid;
   align-content: start;
   gap: var(--spacing-6);
-  padding: var(--spacing-6) var(--spacing-4);
+  padding: 0;
   min-block-size: 0;
-  max-inline-size: 960px;
+  max-inline-size: none;
   margin-inline: auto;
 }
 .lf-teen-wallet p, .lf-teen-wallet h1, .lf-teen-wallet h2 { margin: 0; }

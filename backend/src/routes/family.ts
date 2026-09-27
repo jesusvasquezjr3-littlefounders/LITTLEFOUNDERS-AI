@@ -18,7 +18,7 @@ import { assembleCourseTree } from '../services/courseTree.js';
 import { eraseNow } from '../services/accountDeletion.js';
 import { applyCoursePathway } from '../services/pathway/coursePathway.js';
 import { courseEngine, coursePathwayInputs, loadLearnerPathwayContext, loadPathwayContent, readLearnerPlacementState } from '../services/pathway/pathwayData.js';
-import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
+import { adminCreateUser, adminDeleteUser, adminUpdateUserEmail, adminUpdateUserPassword } from '../services/gotrue.js';
 import { declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
 import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
 import { mayDiscoverProfile, profileAccess, visibleSocialUsers } from '../services/socialVisibility.js';
@@ -63,6 +63,7 @@ import {
   insertVerifiedGuardianLink,
   patchKidProfile,
   patchKidProfileFields,
+  patchKidUsername,
   usernameExists,
 } from '../services/supabaseRest.js';
 
@@ -86,7 +87,9 @@ import {
  * exists because the auth table needs a unique handle, not because anyone
  * writes to it. Derived from the username so sign-in can reproduce it
  * without storing a second copy, which is also why a kid's username is not
- * editable: changing it would strand the account behind its old address.
+ * freely editable: changing it alone would strand the account behind its old
+ * address. The one exception (S-06) moves the address with it: see
+ * POST /kids/:kidId/username.
  */
 export const KID_EMAIL_DOMAIN = 'kids.littlefounders.invalid';
 export function kidEmail(username: string): string {
@@ -504,6 +507,53 @@ export function familyRouter(): Router {
     // one: audit_logs is append-only and readable by staff.
     await insertAuditLog(authedUser(res).id, 'family.kid_passphrase_rotated', kidId, {});
     return ok(res, { rotated: true });
+  });
+
+  /*
+   * S-06 (owner review, 27 September 2026): the verified Tutor changes the
+   * username of a parent-created child whose handle the E.13 review flags.
+   * Only a flagged handle may change (every other handle stays fixed, as the
+   * sign-in address is derived from it), the new one passes the same review
+   * and the same uniqueness check as at creation, and the auth address moves
+   * first so the profile never names a handle nobody can sign in with. If the
+   * profile cannot follow, the address is moved back. The audit records that
+   * it changed, never either value (the old one is what the review flagged).
+   */
+  const ChangeUsername = z.object({ username: z.string().trim().toLowerCase().regex(/^[a-z0-9_]{3,20}$/) }).strict();
+
+  router.post('/kids/:kidId/username', async (req, res) => {
+    const kidId = await guardManagedChild(req, res);
+    if (!kidId) return res;
+    const parsed = ChangeUsername.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Use 3 to 20 letters, numbers or underscores');
+    const next = parsed.data.username;
+    const profiles = await getKidProfiles([kidId]);
+    if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the child profile');
+    const current = profiles[0]?.username ?? null;
+    if (current === null || profileFieldFlags(current).length === 0) {
+      return fail(res, 409, 'USERNAME_NOT_FLAGGED', 'Only a username the safety review flags can be changed');
+    }
+    if (next === current) return fail(res, 400, 'VALIDATION_ERROR', 'Choose a different username');
+    if (profileFieldFlags(next).length > 0) {
+      return fail(res, 422, 'PROFILE_FIELD_UNSAFE', 'That name could help someone find the child outside LittleFounders', { fields: ['username'] });
+    }
+    const taken = await usernameExists(next);
+    if (taken === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the username');
+    if (taken) return fail(res, 409, 'USERNAME_IN_USE', 'That username is already taken');
+
+    const moved = await adminUpdateUserEmail(kidId, kidEmail(next));
+    if (moved.error) {
+      if (moved.error.code === 'EMAIL_IN_USE') return fail(res, 409, 'USERNAME_IN_USE', 'That username is already taken');
+      return fail(res, moved.error.status >= 500 ? 502 : 400, moved.error.code, moved.error.message);
+    }
+    const renamed = await patchKidUsername(kidId, next);
+    if (!renamed) {
+      const undone = await adminUpdateUserEmail(kidId, kidEmail(current));
+      await insertAuditLog(authedUser(res).id, 'family.kid_username_change.rolled_back', kidId, { rollbackSucceeded: undone.error === null });
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the username');
+    }
+    await insertAuditLog(authedUser(res).id, 'family.kid_username_changed', kidId, { reason: 'flagged_handle' });
+    return ok(res, { kid: { userId: kidId, username: next } });
   });
 
   router.delete('/kids/:kidId', async (req, res) => {

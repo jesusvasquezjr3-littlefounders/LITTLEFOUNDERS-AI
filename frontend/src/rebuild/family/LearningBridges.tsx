@@ -45,7 +45,7 @@ export const learningBridgesCopy: Record<Locale, Copy> = {
     goalName: 'Nombre de la meta', goalTarget: 'Monedas para ahorrar', goalIcon: 'Imagen', icons: { star: 'Estrella', game: 'Juego', toy: 'Juguete', book: 'Libro', bike: 'Bici', trip: 'Viaje', gift: 'Regalo' }, createGoal: 'Crear meta',
     taskName: 'Nombre de la tarea', taskReward: 'Premio en monedas', taskRepeat: 'Se repite', once: 'Una vez', weekly: 'Cada semana', createTask: 'Crear tarea',
     targetHint: `Usa de 1 a ${GOAL_TARGET_MAX} monedas.`, rewardHint: `Usa de 1 a ${TASK_REWARD_MAX} monedas.`, nameHint: 'Ponle un nombre corto.',
-    created: { savings_goal: 'Meta creada. Está en su billetera.', earning_task: 'Tarea creada. Está en sus tareas.' },
+    created: { savings_goal: 'Meta creada. Está en su cartera.', earning_task: 'Tarea creada. Está en sus tareas.' },
     closed: 'Esta sugerencia ya cerró.', failed: 'No se pudo guardar. Inténtalo de nuevo.', invalid: 'Revisa los datos.', noAccess: 'Este niño ya no está vinculado contigo.', loadFailed: 'No se pudieron cargar las sugerencias.', retry: 'Reintentar',
   },
   'pt-BR': {

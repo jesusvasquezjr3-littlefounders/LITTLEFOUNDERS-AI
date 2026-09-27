@@ -162,6 +162,25 @@ export function adminUpdateUserPassword(userId: string, password: string): Promi
 }
 
 /*
+ * Move a parent-created child's synthetic sign-in address (S-06, OD-28): the
+ * address is derived from the username, so a guardian-initiated username
+ * change moves both, and the caller undoes this if the profile cannot follow.
+ * Confirmed at once: the `.invalid` address can never receive mail.
+ */
+export function adminUpdateUserEmail(userId: string, email: string): Promise<GotrueResult<GotrueUser>> {
+  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
+    method: 'PUT',
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, email_confirm: true }),
+  });
+}
+
+/*
  * Delete an account outright. Two callers, both deliberate: the rollback for
  * the window between "auth user exists" and "the family link that makes it
  * legitimate exists" (§1.3 - a kid row without a verified link is a bug rather

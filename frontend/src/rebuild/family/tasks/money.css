@@ -1,0 +1,49 @@
+/*
+ * W2F.2: the rebuilt Tasks (F4) and coin (F5) screens, on top of the Family
+ * console's page grammar (console.css). Tokens only; separation by fill and
+ * elevation, never an outline (02 §4.4); layouts by container width.
+ */
+.lf-family-money .lf-money-subgroup { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-family-money .lf-money-title { font: var(--type-label); overflow-wrap: anywhere; }
+.lf-family-money .lf-money-quote { margin: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-1) var(--spacing-2); min-inline-size: 0; overflow-wrap: anywhere; }
+.lf-family-money .lf-money-quote > [data-copy-role='body'] { color: var(--content-muted); }
+.lf-family-money .lf-money-link { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-family-money .lf-money-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2) var(--spacing-3); min-inline-size: 0; }
+.lf-family-money .lf-money-actions > .lf-notice { flex: 1 1 100%; }
+
+/* The three pockets: identity hue, our own pocket art, the word and the number (02 §4.3). */
+.lf-family-money .lf-money-pockets { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-5);
+  border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-family-money .lf-money-pockets > h2 { font: var(--type-title); }
+.lf-family-money .lf-money-pockets > ul { display: grid; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.lf-family-money .lf-money-pockets li { display: flex; align-items: center; gap: var(--spacing-3); min-inline-size: 0; min-block-size: var(--target-min);
+  padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md); background: var(--pocket-soft); color: var(--content); }
+.lf-family-money [data-pocket='save'] { --pocket-soft: var(--mint-soft); }
+.lf-family-money [data-pocket='spend'] { --pocket-soft: var(--sky-soft); }
+.lf-family-money [data-pocket='share'] { --pocket-soft: var(--berry-soft); }
+.lf-family-money .lf-money-pocket-amount { margin-inline-start: auto; font: var(--type-numeral); }
+
+/* A chore's row on the child's board: the chips, then the photo and "done" controls. */
+.lf-family-money .lf-money-chore-controls { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-family-money .lf-money-chore-controls > .lf-rebuild { padding: 0; background: transparent; box-shadow: none; }
+
+/* A wave-1 surface inside one of these screens sits on the page's own rhythm, not its standalone padding. */
+.lf-family-money .lf-money-slot > .lf-rebuild { min-block-size: 0; }
+
+/* The evidence photo, in its dialog: never cropped, never taller than the view. */
+.lf-rebuild .lf-money-photo { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-money-photo img { display: block; max-inline-size: 100%; max-block-size: 28rem; margin-inline: auto; border-radius: var(--rounded-md); object-fit: contain; }
+
+/* The coin card's colour choice (F5): each chip is its word and a swatch of the card's own hue (never the hue alone). */
+.lf-rebuild .lf-money-swatch { display: inline-block; flex: none; inline-size: 1.25rem; block-size: 1.25rem; border-radius: var(--rounded-full); background: var(--card); }
+.lf-rebuild .lf-money-swatch[data-design='indigo'] { --card: var(--primary); }
+.lf-rebuild .lf-money-swatch[data-design='emerald'] { --card: var(--mint); }
+.lf-rebuild .lf-money-swatch[data-design='violet'] { --card: var(--berry); }
+.lf-rebuild .lf-money-swatch[data-design='amber'] { --card: var(--reward); }
+.lf-rebuild .lf-money-swatch[data-design='sunrise'] { --card: var(--accent); }
+.lf-rebuild .lf-money-swatch[data-design='ocean'] { --card: var(--sky); }
+.lf-rebuild .lf-money-colours { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-money-colours .lf-choice-chip > span { display: inline-flex; align-items: center; gap: var(--spacing-2); }
+/* A form inside a dialog (the child's card name and colour): the dialog is a body-level layer, outside the screen's own root. */
+.lf-rebuild .lf-money-dialog-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
