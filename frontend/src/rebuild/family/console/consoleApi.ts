@@ -107,6 +107,13 @@ export function setChildPassphrase(transport: ConsoleTransport, kidId: string, p
     { method: 'POST', body: { passphrase } });
 }
 
+/** S-06: a new username for a child whose handle the E.13 review flags; Core moves the sign-in address with it. */
+export function changeChildUsername(transport: ConsoleTransport, kidId: string, username: string) {
+  return call(transport, `/family/kids/${kid(kidId)}/username`, (data): data is { kid: { userId: string; username: string } } =>
+    isObject(data) && isObject(data.kid) && data.kid.userId === kidId && isString(data.kid.username),
+  { method: 'POST', body: { username } });
+}
+
 /** E.6: 'held' means the erasure is paused (nothing was deleted); 'finishing' means stored files are still being cleared. */
 export type Removal = { deleted: true; status: 'completed' | 'finishing' } | { deleted: false; status: 'held' };
 

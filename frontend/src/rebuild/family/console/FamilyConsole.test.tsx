@@ -214,6 +214,45 @@ describe('Managing a child', () => {
     expect(transport.calls.find((call) => call.method === 'PATCH')?.body).toEqual({ displayName: 'Sofi' });
   });
 
+  it('offers no username change for a handle the review does not flag', async () => {
+    await openManage(childWire());
+    expect(screen.queryByLabelText(en.familyChildAccount.newUsername)).toBeNull();
+    expect(screen.getByText(en.familyChildAccount.renameHelp)).toBeInTheDocument();
+  });
+
+  it('S-06: changes a flagged username, then removal asks for the new one and the safety notice goes', async () => {
+    const flagged = childWire({ profileReview: { flagged: true, fields: ['username'] } });
+    const { transport } = await openManage(flagged, { [`POST /family/kids/${KID_A}/username`]: ok({ kid: { userId: KID_A, username: 'sofia_stars' } }) });
+    expect(screen.getByText(en.familyChildAccount.usernameFlagged)).toBeInTheDocument();
+    expect(screen.queryByText(en.familyChildAccount.renameHelp)).toBeNull();
+    const save = screen.getByRole('button', { name: en.familyChildAccount.saveUsername });
+    expect(save).toBeDisabled();
+    fireEvent.change(screen.getByLabelText(en.familyChildAccount.newUsername), { target: { value: 'no' } });
+    expect(save).toBeDisabled();
+    expect(screen.getByText(en.familyChildAccount.usernameInvalid)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(en.familyChildAccount.newUsername), { target: { value: ' Sofia_Stars ' } });
+    fireEvent.click(save);
+    await screen.findByText('Saved. Sofía now signs in as @sofia_stars.');
+    expect(transport.calls.find((call) => call.path.endsWith('/username'))?.body).toEqual({ username: 'sofia_stars' });
+    expect(screen.getByLabelText('Type sofia_stars to confirm')).toBeInTheDocument();
+    expect(screen.queryByLabelText(en.familyChildAccount.newUsername)).toBeNull();
+    expect(screen.queryByText(copyFor('en-US').profile.profileSafety.kidUsername)).toBeNull();
+    everyTextHasARole(document.body);
+  });
+
+  it('S-06: says why Core refused a new username and keeps the old one', async () => {
+    for (const [code, text] of [['USERNAME_IN_USE', en.familyChildAccount.usernameTaken], ['PROFILE_FIELD_UNSAFE', en.familyChildAccount.unsafe],
+      ['USERNAME_NOT_FLAGGED', en.familyChildAccount.usernameFixed], ['ACCOUNT_SELF_MANAGED', 'Sofía manages their own sign-in.'], ['DATA_UNAVAILABLE', en.familyChildAccount.failed]] as const) {
+      const flagged = childWire({ profileReview: { flagged: true, fields: ['username'] } });
+      const { view } = await openManage(flagged, { [`POST /family/kids/${KID_A}/username`]: refuse(code) });
+      fireEvent.change(screen.getByLabelText(en.familyChildAccount.newUsername), { target: { value: 'sofia_stars' } });
+      fireEvent.click(screen.getByRole('button', { name: en.familyChildAccount.saveUsername }));
+      expect(await screen.findByText(text), code).toBeInTheDocument();
+      expect(screen.getByLabelText('Type sofia_2016 to confirm')).toBeInTheDocument();
+      view.unmount();
+    }
+  });
+
   it('saves a new passphrase and clears it from the field', async () => {
     const { transport } = await openManage(childWire(), { [`POST /family/kids/${KID_A}/passphrase`]: ok({ rotated: true }) });
     const field = screen.getByLabelText(en.familyChildAccount.newPassphrase) as HTMLInputElement;

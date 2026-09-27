@@ -1336,6 +1336,21 @@ export async function patchKidProfileFields(
 }
 
 /*
+ * S-06 (OD-28): the ONE path that changes a child's username, used only by
+ * the guardian-initiated change of a flagged handle, and only after the
+ * child's auth address was moved to match (routes/family.ts). The unique
+ * index and profile_fields_guard still refuse a taken or unsafe value.
+ */
+export async function patchKidUsername(kidUserId: string, username: string): Promise<boolean> {
+  const res = await rest<unknown>(`/profiles?user_id=eq.${eu(kidUserId)}`, serviceToken(), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ username }),
+  });
+  return res !== null;
+}
+
+/*
  * Answers the question the DB's unique index would otherwise answer with a
  * 409 AFTER an auth user had already been created. Checked before anything is
  * written, so the common "that name is taken" case never leaves a half-made

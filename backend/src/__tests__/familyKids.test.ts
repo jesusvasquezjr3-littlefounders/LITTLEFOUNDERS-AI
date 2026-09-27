@@ -40,6 +40,10 @@ interface StubOptions {
   ageWriteFails?: boolean;
   verification?: 'verified' | 'revoked' | 'missing';
   createStatus?: number;
+  /** S-06: the linked child's current username (GET /profiles?user_id=in.). */
+  currentUsername?: string | null;
+  /** S-06: the GoTrue address move answers with this status. */
+  emailUpdateStatus?: number;
   calls?: string[];
   writes?: { url: string; method: string; body: unknown }[];
 }
@@ -80,6 +84,14 @@ function stub(opts: StubOptions = {}) {
           verification_status: 'verified',
         }));
         return Promise.resolve(jsonResponse(200, rows));
+      }
+      if (url.includes('/rest/v1/profiles?user_id=in.') && method === 'GET') {
+        return Promise.resolve(jsonResponse(200, opts.currentUsername === undefined ? [] : [{
+          user_id: opts.linkedKidId, display_name: 'Sofía', username: opts.currentUsername, birth_date: null,
+        }]));
+      }
+      if (url.includes('/auth/v1/admin/users/') && method === 'PUT' && opts.emailUpdateStatus && opts.emailUpdateStatus >= 400) {
+        return Promise.resolve(jsonResponse(opts.emailUpdateStatus, { msg: opts.emailUpdateStatus === 422 ? 'A user with this email address has already been registered' : 'down' }));
       }
       if (url.includes('/rest/v1/profiles?username=eq.')) {
         if (opts.usernameCheckUnavailable) return Promise.resolve(jsonResponse(200, null));
@@ -447,5 +459,94 @@ describe('managing an existing child', () => {
     // Afterwards there is no row left to name, and a mid-way failure would
     // otherwise leave no trace that it was attempted.
     expect(firstAudit).toBeLessThan(del);
+  });
+});
+
+describe('POST /api/v1/family/kids/:kidId/username (S-06: a flagged handle)', () => {
+  const KID_ID_3 = randomUUID();
+  const FLAGGED = 'sofia_2016';
+  const change = (username: unknown) => request(createApp())
+    .post(`/api/v1/family/kids/${KID_ID_3}/username`)
+    .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`)
+    .send({ username } as object);
+
+  function managed(extra: StubOptions = {}) {
+    return stub({ existingKids: 1, linkedKidId: KID_ID_3, currentUsername: FLAGGED, ...extra });
+  }
+
+  it('moves the sign-in address first, then the handle, and audits neither value', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes });
+    const res = await change('Sofia_Stars');
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ kid: { userId: KID_ID_3, username: 'sofia_stars' } });
+    const address = writes.findIndex((w) => w.method === 'PUT' && w.url.includes(`/admin/users/${KID_ID_3}`));
+    const profile = writes.findIndex((w) => w.method === 'PATCH' && w.url.includes('/profiles?user_id=eq.'));
+    expect(address).toBeGreaterThanOrEqual(0);
+    expect(profile).toBeGreaterThan(address);
+    expect(writes[address]?.body).toEqual({ email: 'sofia_stars@kids.littlefounders.invalid', email_confirm: true });
+    expect(writes[profile]?.body).toEqual({ username: 'sofia_stars' });
+    const audit = JSON.stringify(writes.filter((w) => w.url.includes('audit_logs')));
+    expect(audit).toContain('family.kid_username_changed');
+    expect(audit).not.toContain(FLAGGED);
+    expect(audit).not.toContain('sofia_stars');
+  });
+
+  it('refuses a handle the review does not flag: usernames stay fixed otherwise', async () => {
+    const calls = managed({ currentUsername: 'sofia_stars' });
+    const res = await change('another_one');
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('USERNAME_NOT_FLAGGED');
+    expect(calls.some((c) => c.startsWith('PUT ') || c.startsWith('PATCH '))).toBe(false);
+  });
+
+  it('refuses a child with no username, an unsafe or taken new handle, and a malformed one, before any write', async () => {
+    for (const [opts, username, status, code] of [
+      [{ currentUsername: null }, 'sofia_stars', 409, 'USERNAME_NOT_FLAGGED'],
+      [{}, 'sofia_2017', 422, 'PROFILE_FIELD_UNSAFE'],
+      [{ usernameTaken: true }, 'sofia_stars', 409, 'USERNAME_IN_USE'],
+      [{}, 'no', 400, 'VALIDATION_ERROR'],
+      [{}, 'sofía!', 400, 'VALIDATION_ERROR'],
+      [{}, FLAGGED, 400, 'VALIDATION_ERROR'],
+    ] as const) {
+      const calls = managed(opts);
+      const res = await change(username);
+      expect(res.status, username).toBe(status);
+      expect(res.body.error.code, username).toBe(code);
+      expect(calls.some((c) => c.startsWith('PUT ') || c.startsWith('PATCH ')), username).toBe(false);
+    }
+  });
+
+  it('refuses a self-registered teen and a child that is not this caller\'s', async () => {
+    let calls = managed({ linkedKidRoles: ['universal'] });
+    let res = await change('sofia_stars');
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('ACCOUNT_SELF_MANAGED');
+    expect(calls.some((c) => c.includes('/auth/v1/admin/users'))).toBe(false);
+    calls = stub({ existingKids: 1, currentUsername: FLAGGED });
+    res = await change('sofia_stars');
+    expect(res.status).toBe(404);
+    expect(calls.some((c) => c.includes('/auth/v1/admin/users'))).toBe(false);
+  });
+
+  it('answers a taken address as a taken username and leaves the profile alone', async () => {
+    const calls = managed({ emailUpdateStatus: 422 });
+    const res = await change('sofia_stars');
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('USERNAME_IN_USE');
+    expect(calls.some((c) => c.startsWith('PATCH '))).toBe(false);
+  });
+
+  it('moves the address back when the profile cannot follow', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes, profilePatchFails: true });
+    const res = await change('sofia_stars');
+    expect(res.status).toBe(502);
+    const moves = writes.filter((w) => w.method === 'PUT' && w.url.includes(`/admin/users/${KID_ID_3}`)).map((w) => w.body);
+    expect(moves).toEqual([
+      { email: 'sofia_stars@kids.littlefounders.invalid', email_confirm: true },
+      { email: `${FLAGGED}@kids.littlefounders.invalid`, email_confirm: true },
+    ]);
+    expect(JSON.stringify(writes.filter((w) => w.url.includes('audit_logs')))).toContain('family.kid_username_change.rolled_back');
   });
 });

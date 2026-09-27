@@ -26,6 +26,8 @@ const tutor = (family) => ({ population: 'verified parent (Tutor)', guest: false
 export const scenarios = {
   'family-two': tutor({ kids: 'two' }),
   'family-one': tutor({ kids: 'one' }),
+  // S-06: a child whose handle the E.13 review flags; Manage account offers the new username.
+  'family-flagged': tutor({ kids: 'flagged' }),
   'family-empty': tutor({ kids: 'none' }),
   'family-unverified': tutor({ kids: 'unverified' }),
   'family-offline': tutor({ kids: 'offline' }),
@@ -80,6 +82,7 @@ export const states = [
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
   app('/family@one-child', '/family', 'family-one', ready.console),
   app('/family@manage-open', '/family', 'family-one', ...opens('[data-console-control="manage-child"] button')),
+  app('/family@username-flagged', '/family', 'family-flagged', ...opens('[data-console-control="manage-child"] button')),
   app('/family@add-child', '/family', 'family-empty', ...opens('[data-console-control="add-child"] button')),
   app('/family@empty', '/family', 'family-empty', '[data-screen="family-console"] .lf-state--empty'),
   app('/family@unverified', '/family', 'family-unverified', '[data-screen="family-console"] .lf-state--empty a[href="/verify-parent"]'),
@@ -116,6 +119,7 @@ const KIDS = {
   two: [kid({}), kid({ userId: KID_B, displayName: 'Mateo', username: 'mateo_teen', analyticsConsent: true, pendingApprovalCount: 0, walletTotal: 120,
     taskStreakDays: 0, accountType: 'teen', profileReview: { flagged: true, fields: ['displayName'] } })],
   one: [kid({})],
+  flagged: [kid({ profileReview: { flagged: true, fields: ['username'] } })],
   none: [],
 };
 

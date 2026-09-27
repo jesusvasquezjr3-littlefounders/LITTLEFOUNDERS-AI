@@ -156,6 +156,14 @@ export function FamilyConsole({ copy, accountCopy, consentCopy, profileSafetyCop
                 fields: entry.profileReview.fields.filter((field) => field !== 'displayName'),
               },
             } : entry))}
+            onUsernameChanged={(userId, username) => update((list) => list.map((entry) => entry.userId === userId ? {
+              ...entry, username,
+              // Core accepted the new handle, so it passed the E.13 review; a flagged first name stays flagged.
+              profileReview: entry.profileReview && {
+                flagged: entry.profileReview.fields.includes('displayName'),
+                fields: entry.profileReview.fields.filter((field) => field !== 'username'),
+              },
+            } : entry))}
             onRemoved={(userId) => {
               setAdded(null);
               setRemoved(childName(child));

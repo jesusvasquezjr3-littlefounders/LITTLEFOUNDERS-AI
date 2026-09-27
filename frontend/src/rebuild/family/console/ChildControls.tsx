@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { Button, ButtonGroup, Copy, DestructiveAction, InlineNotice, LoadingState, Switch, TextField } from '../../design/controls';
 import {
-  createChild, fetchMicrophone, grantMicrophone, PASSPHRASE_MIN, removeChild, renameChild, revokeMicrophone, setChildPassphrase, setInsightsConsent,
+  changeChildUsername, createChild, fetchMicrophone, grantMicrophone, PASSPHRASE_MIN, removeChild, renameChild, revokeMicrophone, setChildPassphrase, setInsightsConsent,
   USERNAME_PATTERN, type Child, type ConsoleTransport, type MicrophoneState,
 } from './consoleApi';
 import { fill, type ChildAccountCopy, type ChildConsentCopy, type ConsoleLocale } from './consoleParts';
@@ -18,7 +18,9 @@ import { fill, type ChildAccountCopy, type ChildConsentCopy, type ConsoleLocale 
  *                      The confirmation repeats the username, never the
  *                      passphrase. Nothing celebrates (not an OD-7 milestone).
  *   ManageChild        rename, a new passphrase, and removal. The username
- *                      never changes (the sign-in address derives from it).
+ *                      never changes (the sign-in address derives from it),
+ *                      except a handle the E.13 review flags: the Tutor
+ *                      chooses a new one and Core moves the address (S-06).
  *                      Removal is a hard delete, so the button stays disabled
  *                      until the Tutor types the child's username; a child
  *                      with no username cannot be confirmed by any input.
@@ -128,19 +130,25 @@ export function AddChild({ copy, locale, transport, startOpen = false, onAdded, 
   </section>;
 }
 
-export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
+const USERNAME_ERRORS: Record<string, keyof ChildAccountCopy> = {
+  USERNAME_IN_USE: 'usernameTaken', PROFILE_FIELD_UNSAFE: 'unsafe', USERNAME_NOT_FLAGGED: 'usernameFixed', VALIDATION_ERROR: 'usernameInvalid',
+};
+
+export function ManageChild({ child, copy, transport, onRenamed, onUsernameChanged, onRemoved }: {
   child: Child;
   copy: ChildAccountCopy;
   transport: ConsoleTransport;
   onRenamed: (userId: string, displayName: string) => void;
+  onUsernameChanged?: (userId: string, username: string) => void;
   onRemoved: (userId: string) => void;
 }) {
   const heading = useId();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(child.displayName ?? '');
   const [passphrase, setPassphrase] = useState('');
+  const [handle, setHandle] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [busy, setBusy] = useState<'idle' | 'name' | 'passphrase' | 'remove'>('idle');
+  const [busy, setBusy] = useState<'idle' | 'name' | 'username' | 'passphrase' | 'remove'>('idle');
   const [notice, setNotice] = useState<{ tone: 'success' | 'error' | 'info'; text: string } | null>(null);
   const label = child.displayName ?? child.username ?? '';
 
@@ -164,6 +172,23 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
     if (!result.ok) { setNotice({ tone: 'error', text: result.code === 'PROFILE_FIELD_UNSAFE' ? copy.unsafe : refusal(result.code) }); return; }
     setNotice({ tone: 'success', text: copy.nameSaved });
     onRenamed(child.userId, next);
+  }
+
+  // S-06: only a handle the E.13 review flags is offered for change; Core refuses any other (USERNAME_NOT_FLAGGED).
+  const usernameFlagged = child.username !== null && child.profileReview?.fields.includes('username') === true;
+  const nextHandle = handle.trim().toLowerCase();
+  const handleInvalid = nextHandle.length > 0 && !USERNAME_PATTERN.test(nextHandle);
+
+  async function saveUsername(event: FormEvent) {
+    event.preventDefault();
+    if (!USERNAME_PATTERN.test(nextHandle) || nextHandle === child.username || busy !== 'idle') return;
+    setBusy('username'); setNotice(null);
+    const result = await changeChildUsername(transport, child.userId, nextHandle);
+    setBusy('idle');
+    if (!result.ok) { const known = USERNAME_ERRORS[result.code]; setNotice({ tone: 'error', text: known ? copy[known] : refusal(result.code) }); return; }
+    setHandle(''); setConfirm('');
+    setNotice({ tone: 'success', text: fill(copy.usernameSaved, { name: label, username: `@${result.data.kid.username}` }) });
+    onUsernameChanged?.(child.userId, result.data.kid.username);
   }
 
   async function savePassphrase(event: FormEvent) {
@@ -201,10 +226,19 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
     <div role="status">{notice && notice.tone !== 'error' ? <InlineNotice tone={notice.tone}>{notice.text}</InlineNotice> : null}</div>
     {notice?.tone === 'error' ? <InlineNotice tone="error" live>{notice.text}</InlineNotice> : null}
     <form className="lf-console-form" noValidate onSubmit={(event) => void saveName(event)}>
-      <TextField label={copy.name} help={copy.renameHelp} maxLength={80} required value={name} onChange={(e) => setName(e.target.value)} />
+      <TextField label={copy.name} help={usernameFlagged ? undefined : copy.renameHelp} maxLength={80} required value={name} onChange={(e) => setName(e.target.value)} />
       <ButtonGroup><Button type="submit" disabled={name.trim().length === 0 || name.trim() === child.displayName} pending={busy === 'name'}
         pendingLabel={copy.saving}>{copy.saveName}</Button></ButtonGroup>
     </form>
+    {usernameFlagged
+      ? <form className="lf-console-form" noValidate onSubmit={(event) => void saveUsername(event)} data-console-control="change-username">
+        <Copy role="body">{copy.usernameFlagged}</Copy>
+        <TextField label={copy.newUsername} help={copy.usernameHelp} autoComplete="off" autoCapitalize="none" spellCheck={false} maxLength={20} required
+          value={handle} onChange={(e) => setHandle(e.target.value)} error={handleInvalid ? copy.usernameInvalid : undefined} />
+        <ButtonGroup><Button type="submit" disabled={!USERNAME_PATTERN.test(nextHandle) || nextHandle === child.username} pending={busy === 'username'}
+          pendingLabel={copy.saving}>{copy.saveUsername}</Button></ButtonGroup>
+      </form>
+      : null}
     <form className="lf-console-form" noValidate onSubmit={(event) => void savePassphrase(event)}>
       <TextField type="password" label={copy.newPassphrase} help={copy.passphraseHelp} autoComplete="new-password" minLength={PASSPHRASE_MIN}
         revealLabels={{ show: copy.show, hide: copy.hide }} value={passphrase} onChange={(e) => setPassphrase(e.target.value)}
@@ -227,7 +261,7 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
           : <Button disabled>{copy.removeAction}</Button>}
       </ButtonGroup>
     </section>
-    <ButtonGroup><Button onClick={() => { setOpen(false); setNotice(null); setConfirm(''); setPassphrase(''); }}>{copy.close}</Button></ButtonGroup>
+    <ButtonGroup><Button onClick={() => { setOpen(false); setNotice(null); setConfirm(''); setPassphrase(''); setHandle(''); }}>{copy.close}</Button></ButtonGroup>
   </section>;
 }
 

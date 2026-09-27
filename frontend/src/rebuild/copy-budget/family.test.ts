@@ -29,7 +29,7 @@ describe('rebuild-family copy budget', () => {
         connections: 'heading', privacy: 'heading', account: 'heading', retry: 'action', retrying: 'action', verifyAction: 'action', approvals: 'action',
         progress: 'action', mentor: 'action', coinCard: 'action', coins: 'data' });
       budget('familyChildAccount', { addTitle: 'heading', doneTitle: 'heading', remove: 'heading', add: 'action', create: 'action', creating: 'action', cancel: 'action',
-        done: 'action', manage: 'action', close: 'action', saveName: 'action', savePassphrase: 'action', removeAction: 'action', removing: 'action', keep: 'action',
+        done: 'action', manage: 'action', close: 'action', saveName: 'action', saveUsername: 'action', savePassphrase: 'action', removeAction: 'action', removing: 'action', keep: 'action',
         show: 'action', hide: 'action', saving: 'action' });
       // The microphone consent is the stored, mandated disclosure (06 §3.3 `legal`): shown in full behind "Allow microphone", never shortened.
       budget('familyChildConsent', { micTitle: 'heading', micAllow: 'action', micTurnOff: 'action', micConfirm: 'action', micCancel: 'action', micSaving: 'action',
