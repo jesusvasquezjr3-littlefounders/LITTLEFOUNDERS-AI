@@ -47,7 +47,8 @@ import { coursePath, guidedReviewPath, placementPath } from './paths';
  */
 
 interface LessonResponse {
-  lesson: { id: string; slug: string };
+  /** W2L.4: `course_slug` names the lesson's course, so a deep link still finds its badge and its way back. */
+  lesson: { id: string; slug: string; course_slug?: unknown };
   locale: string;
   document: unknown;
   /** Echo's narration manifest for a v1 lesson; the legacy island reads it. */
@@ -60,7 +61,7 @@ interface LessonResponse {
 type LoadState =
   | { status: 'loading' }
   | { status: 'error'; code: string; offline: boolean }
-  | { status: 'ready'; document: unknown; locale: string; audio: unknown; mentorStage: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null };
+  | { status: 'ready'; document: unknown; locale: string; audio: unknown; mentorStage: unknown; v2Attempt: V2Attempt | null; recall: NarrativeRecall | null; courseSlug: string | null };
 
 interface V2RunResponse {
   run_id: string;
@@ -112,7 +113,8 @@ function LessonRouteSession() {
   // B.9: the recall shows once, before the lesson, and never over a lesson resumed mid-way.
   const [recallDone, setRecallDone] = useState(() => (initialCheckpoint.state?.index ?? 0) > 0);
 
-  const courseSlug = (location.state as LocationState | null)?.courseSlug ?? null;
+  // The link that opened the lesson names its course; a deep link falls back to the course Core names (W2L.4).
+  const courseSlug = (location.state as LocationState | null)?.courseSlug ?? (state.status === 'ready' ? state.courseSlug : null);
   // Insights (/INSIGHTS.md): lesson_start on entry; lesson_abandon on exit
   // WITHOUT completing — the drop-off signal the server cannot see, since
   // /complete only fires on the results screen. trackInsight is a no-op for
@@ -164,7 +166,8 @@ function LessonRouteSession() {
         setState({ status: 'error', code: error.code, offline: isOfflineError(error) });
         return;
       }
-      const ready = { document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, recall: parseNarrativeRecall(data.narrative_recall) };
+      const servedSlug = typeof data.lesson?.course_slug === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(data.lesson.course_slug) ? data.lesson.course_slug : null;
+      const ready = { document: data.document, locale: data.locale, audio: data.audio ?? {}, mentorStage: data.mentor_stage, recall: parseNarrativeRecall(data.narrative_recall), courseSlug: servedSlug };
       if (isLegacyLessonDocument(data.document)) {
         checkpoint.current = reconcileLegacyCheckpoint(checkpoint.current, data.document);
         setState({ status: 'ready', ...ready, v2Attempt: null });

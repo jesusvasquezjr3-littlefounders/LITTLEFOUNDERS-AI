@@ -475,3 +475,12 @@ describe('OD-25 — mastery may open one stage early, and Mentor mastery may com
     expect((await post(AGE12, '/learn/courses/money/early-access', { chapterId: chapterId('teens') })).body.error.code).toBe('PATHWAY_ENGINE_DISABLED');
   });
 });
+
+describe('W2L.4 — a lesson names its course', () => {
+  it('GET /learn/lessons/:id carries the course slug, so a deep-linked result finds its badge and its way back', async () => {
+    place(TEEN15, 'money', 'teen');
+    const res = await get(TEEN15, `/learn/lessons/${built.lesson.t1}`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data.lesson.course_slug).toBe('money');
+  });
+});

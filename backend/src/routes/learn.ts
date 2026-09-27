@@ -928,6 +928,8 @@ export function learnRouter(): Router {
         estimated_minutes: ctx.lessonRow.estimated_minutes,
         cast: deliveredDocument.meta?.cast ?? [],
         scoring: deliveredDocument.scoring ?? null,
+        // W2L.4: the course the lesson belongs to, so a deep-linked lesson's result shows that course's badge and its way back.
+        course_slug: ctx.course.slug,
       },
       locale: picked.locale,
       document: deliveredDocument,

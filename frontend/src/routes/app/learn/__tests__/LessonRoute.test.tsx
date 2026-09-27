@@ -806,6 +806,21 @@ describe('LessonRoute', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/learn');
   });
 
+  it('W2L.4: a deep-linked lesson finds its way back through the course Core names, and ignores a malformed one', async () => {
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1', course_slug: 'investing' }, locale: 'en-US', document: fixtureDocument }, error: null });
+    const { unmount } = renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByText('mock-exit');
+    fireEvent.click(screen.getByText('mock-exit'));
+    expect(mockNavigate).toHaveBeenCalledWith('/learn/investing');
+    unmount();
+    mockNavigate.mockClear();
+    mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1', course_slug: '../admin' }, locale: 'en-US', document: fixtureDocument }, error: null });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+    await screen.findByText('mock-exit');
+    fireEvent.click(screen.getByText('mock-exit'));
+    expect(mockNavigate).toHaveBeenCalledWith('/learn');
+  });
+
   it('shows the rebuilt load-error state with a way back when the lesson fetch fails', async () => {
     mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'INTERNAL', message: 'Content service unreachable' } });
     renderLessonRoute(['/learn/lesson/lesson-1']);
