@@ -789,6 +789,34 @@ describe('a real live session over a real websocket', () => {
     await closed();
   });
 
+  it('OD-28 (M-04): a socket that goes while the learner\'s own recap waits closes completed, once, never parked as learner_left', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const asked = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'end_session', recapFirst: true }));
+    await asked;
+    socket.close();
+    await closed();
+
+    // Past the suite's resume grace window: an unhandled park would finalize as learner_left.
+    await new Promise((r) => setTimeout(r, 2_500));
+    expect(journal.closes).toHaveLength(1);
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
+  });
+
+  it('OD-28 (M-04): the recap wait expires only for a learner-asked recap, with the floor free, past RECAP_ANSWER_WAIT_MS', async () => {
+    const { RECAP_ANSWER_WAIT_MS, recapWaitExpired } = await import('../ws/server.js');
+    expect(RECAP_ANSWER_WAIT_MS).toBe(120_000);
+    const base = { recapPending: true, closing: false, inFlight: false, lastActivityAtMs: 0 };
+    expect(recapWaitExpired(base, RECAP_ANSWER_WAIT_MS + 1)).toBe(true);
+    expect(recapWaitExpired(base, RECAP_ANSWER_WAIT_MS)).toBe(false);
+    expect(recapWaitExpired({ ...base, recapPending: false }, RECAP_ANSWER_WAIT_MS * 10)).toBe(false);
+    expect(recapWaitExpired({ ...base, closing: true }, RECAP_ANSWER_WAIT_MS * 10)).toBe(false);
+    expect(recapWaitExpired({ ...base, inFlight: true }, RECAP_ANSWER_WAIT_MS * 10)).toBe(false);
+  });
+
   it('C.19: refuses a forged check-in answer when no check-in is open, without a model call', async () => {
     freshJournal();
     const { socket } = open(await socketUrl());

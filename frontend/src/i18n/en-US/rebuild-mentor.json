@@ -438,21 +438,5 @@
         ]
       }
     }
-  },
-  "mentorVoiceConsent": {
-    "title": "Talking with the Mentor",
-    "body": "Your child can talk out loud with the Mentor instead of typing. Their voice is sent to our speech provider so it can be turned into text, and it is never stored by us. The Mentor's replies and the written conversation are saved for 90 days so you and your child can read or replay them. You can turn this off at any time.",
-    "grant": "Allow the microphone",
-    "revoke": "Turn microphone off",
-    "activeSince": "Allowed since {date}.",
-    "inactive": "Off. Your child can still type.",
-    "unavailable": "Not offered to children yet. Typing works.",
-    "pausedByPolicy": "You allowed it. It's paused for children for now.",
-    "saving": "Saving…",
-    "failed": "Could not save. Try again.",
-    "forChild": "For {name}",
-    "confirm": "I allow it",
-    "cancel": "Not now",
-    "loading": "Loading…"
   }
 }

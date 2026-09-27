@@ -1,6 +1,6 @@
 # W3 lane: Mentor answers and stage completeness
 
-Status: in progress. W3M.1 is implemented and locally verified; nothing here is accepted or released. Recorded 27 September 2026 on branch `codex/spec-w3mentor` (worktree `C:/lf-wt/w3mentor`), branched from `cfe204d3`. Owner: Engineering (W3 Mentor lane) for implementation; the owner for the questions below and for the character-render style review (07 §7, OD-14); Product for copy review.
+Status: lane finished (W3M.1 and W3M.2 implemented and locally verified); nothing here is accepted or released. Recorded 27 September 2026 on branch `codex/spec-w3mentor` (worktree `C:/lf-wt/w3mentor`), branched from `cfe204d3`. Owner: Engineering (W3 Mentor lane) for implementation; the owner for the questions below and for the character-render style review (07 §7, OD-14); Product for copy review.
 
 This lane finishes the rebuilt Mentor screen against Frontend Bible 08 after wave 2: the M-04 recap before the closing (OD-28) on the Mentor screen, the open items of the [W2 Mentor stage record](W2-MENTOR-STAGE.md), and the 08 checklist (eight catalogue states, speech-plate budget, board on demand, reply chips, microphone policy, transcript sheet, width layouts, performance fallbacks, age bands, and the lesson's compact stage as the same component, 08 §11).
 
@@ -28,6 +28,19 @@ What was already true on the integration branch (W2M.1 to W2M.4) was read agains
 
 **Remains open.** See the limitations and owner questions below.
 
+## W3M.2: lane finish
+
+Synced with `codex/spec-migration-s02` (already up to date at `cfe204d3`, no conflicts). Adversarial pass over the lane against M-04, Bible 08 and the compact stage; two items were mandated and half-built, and both are now built.
+
+| Item | Before | Built in W3M.2 | Where |
+|---|---|---|---|
+| OD-28 M-04: the server holds the recap wait | Only the client closed an unanswered recap; a learner who closed the tab left Oracle to park the session and finalize it as `learner_left` after the grace window. | Oracle closes a learner-asked recap that has gone unanswered for `RECAP_ANSWER_WAIT_MS` (two minutes, on the existing heartbeat, floor free) with the completed close. A socket that drops while the learner's own recap waits (or is still queued behind a busy turn) closes `completed` once instead of parking. A recap the Mentor asked (a wrap-up, an accepted offer) still parks and stays resumable. The client constant now mirrors the server one. | `oracle/src/ws/server.ts` (`Live.learnerRecapAsked`, `recapWaitExpired`, heartbeat, close handler); `docs/rebuild/mentor/SESSION-END-POLICY.md` |
+| C.2 one microphone permission control | Two rebuilt controls with the same contract: the family lane's `MicrophoneConsent` (mounted) and this lane's `VoiceConsent` (preview only). | `VoiceConsent`, its stylesheet, test, preview state (`mentor-voice-consent`), its three audit states and its `mentorVoiceConsent` copy in all three locales were retired; the family control is the only one. The Core client calls in `mentor/session/tutorApi.ts` stay (the API surface is unchanged). | `frontend/src/rebuild/mentor/`, `preview/registry/mentor.tsx`, `scripts/audits/lanes/mentor.mjs`, `i18n/*/rebuild-mentor.json`, `copy-budget/mentor.test.ts` |
+
+Checked and unchanged: the M-04 UI (first end asks, close disabled until the recap turn, "Finish now" and a second press leave, a two-minute client wait), the eight 08 §3 states and their stills, the compact lesson band as the same `MentorStage` (08 §11), no legacy component under `rebuild/mentor`, the Mentor copy in EN, es-MX and pt-BR (i18n gate green).
+
+**Verified (local only).** Frontend: `npm run type-check`, `npm run lint`, full unit suite (298 files, 3424 tests pass). Oracle: `npm run type-check`, `npm run lint`, full unit suite (64 files, 1692 tests pass), including two new tests: a socket dropped during the learner's recap closes `completed` exactly once past the resume grace window, and `recapWaitExpired` fires only for a learner-asked recap with the floor free past the wait. Root: `spec:check`, `secrets:check`, `session-end:check`, `governance:check`, `agent/tools/check-i18n.sh`. No browser matrix and no `audit:rebuild` (speed mode).
+
 ## Verification log
 
 | Check | Command | Result |
@@ -38,14 +51,17 @@ What was already true on the integration branch (W2M.1 to W2M.4) was read agains
 | Types and lint | `npm run type-check`, `npm run lint` (frontend) | Clean |
 | Unit tests | `npx vitest run src/rebuild/mentor src/rebuild/copy-budget/mentor.test.ts src/rebuild/learning/wellbeingS053f.test.tsx src/tutor-scene/__tests__/rebuildMentorParity.test.ts` | 27 files, 365 tests pass |
 | Root gates | `npm run spec:check`, `npm run secrets:check` | Pass |
+| W3M.2 frontend | `npm run type-check`, `npm run lint`, `npm test` (frontend) | Clean; 298 files, 3424 tests pass |
+| W3M.2 Oracle | `npm run type-check`, `npm run lint`, `npm test` (oracle) | Clean; 64 files, 1692 tests pass |
+| W3M.2 root gates | `spec:check`, `secrets:check`, `session-end:check`, `governance:check`, `check-i18n.sh` | Pass |
 
 ## Limitations and open items
 
 - **Stills are drafts.** The 96 stage stills await the character-render family's style review (07 §7, OD-14); a release build refuses drafts by design. They are rendered on `diorama-a` with the live stage's default shot; a learner on `diorama-b` sees the other Diorama in the still until the live model is ready (the chooser renders have the same limit). Props that cross the character in the live close-up (Dr. Rho's ammonite) cross it in the still too (the W2M engine-placement limitation).
 - **No sequence clips.** 08 §7 allows "short sequences" in the fallback; the stage cross-fades between per-pose stills instead.
-- **The server-side recap wait is still lost.** The client closes an unanswered recap after two minutes while the page is open; a learner who closes the tab leaves Oracle to its disconnect handling. Restoring `RECAP_ANSWER_WAIT_MS` in Oracle belongs to the server lane.
-- **`VoiceConsent` duplicates the family lane's `MicrophoneConsent`.** Both follow the same contract; the product mounts only the family one. Retiring `VoiceConsent`, its preview state and its copy is a clean-up for the merge owner.
 - **The compact band shows the Diorama, not the chapter scene.** 08 §11 allows ("may") the active adventure's scene; not built.
+- **The learner-asked marker is not in the park snapshot.** It lives on the socket (`Live.learnerRecapAsked`). A drop while the recap waits now closes the session, so no resume carries it; a recap still waiting after a crash-and-resume on another replica falls back to the idle close.
+- **Owed at merge or release:** `audit:rebuild` on the Mentor preview states and the real `/tutor` and lesson routes (the retired `mentor-voice-consent` states are gone from the lane list).
 - **Evidence scope.** Local, Chromium, software GL on a shared machine; no device, GPU, Safari, Firefox or screen-reader pass; no human design review.
 
 ## Owner questions (conservative defaults implemented)

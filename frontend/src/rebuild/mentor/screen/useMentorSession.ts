@@ -88,8 +88,8 @@ const REPLY_CEILING_MS = 25_000;
 const END_GRACE_MS = 4_000;
 /**
  * OD-28 (M-04): the recap question waits this long for an answer, then the talk
- * closes as the learner asked (the server lane's `RECAP_ANSWER_WAIT_MS`, which
- * did not survive the merge; kept here so a learner who walked away is not held).
+ * closes as the learner asked. Mirrors Oracle's `RECAP_ANSWER_WAIT_MS` (`ws/server.ts`,
+ * enforced on the heartbeat), so the screen and the server agree on the same wait.
  * A draft in the field or a reply on its way holds it.
  */
 export const RECAP_ANSWER_WAIT_MS = 120_000;

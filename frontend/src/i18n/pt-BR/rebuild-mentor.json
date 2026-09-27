@@ -438,21 +438,5 @@
         ]
       }
     }
-  },
-  "mentorVoiceConsent": {
-    "title": "Falar com o Mentor",
-    "body": "Seu filho pode falar em voz alta com o Mentor em vez de digitar. A voz dele é enviada ao nosso provedor de voz para virar texto, e nunca é guardada por nós. As respostas do Mentor e a conversa escrita ficam salvas por 90 dias para que você e seu filho possam ler ou ouvir de novo. Você pode desligar isso a qualquer momento.",
-    "grant": "Permitir o microfone",
-    "revoke": "Desligar o microfone",
-    "activeSince": "Permitido desde {date}.",
-    "inactive": "Desligado. Seu filho ainda pode digitar.",
-    "unavailable": "Ainda não oferecido a crianças. Digitar funciona.",
-    "pausedByPolicy": "Você permitiu. Por enquanto está pausado para crianças.",
-    "saving": "Salvando…",
-    "failed": "Não deu para salvar. Tente de novo.",
-    "forChild": "Para {name}",
-    "confirm": "Eu permito",
-    "cancel": "Agora não",
-    "loading": "Carregando…"
   }
 }

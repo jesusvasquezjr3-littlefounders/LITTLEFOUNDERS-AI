@@ -9,7 +9,7 @@ describe('rebuild-mentor copy budget', () => {
   for (const [locale, strings] of namespaceCopy('mentor')) {
     it(`fits its budgets in ${locale}`, () => {
       expectBudgetedGroups(strings, ['mentorCalibration', 'mentorSessionEnd', 'mentorCheckIn', 'mentorGoalCheck', 'mentorAllianceCheck', 'mentorProfile', 'mentorStage', 'mentorScreen',
-        'mentorPersonalise', 'mentorMap', 'mentorNotebook', 'mentorHistory', 'mentorReplay', 'mentorRoleplay', 'mentorVoiceConsent']);
+        'mentorPersonalise', 'mentorMap', 'mentorNotebook', 'mentorHistory', 'mentorReplay', 'mentorRoleplay']);
       for (const [key, text] of Object.entries(strings.mentorCalibration as Record<string, string>)) {
         const role = key === 'question' ? 'prompt' : ['youngest', 'middle', 'older', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '6-9', `mentorCalibration.${key}`);
@@ -93,12 +93,6 @@ describe('rebuild-mentor copy budget', () => {
           expect(speechPages(beat, locale, '6-9').join(' ').split(/\s+/u), `no word lost in ${id} beat ${index}`).toEqual(beat.split(/\s+/u));
         });
       }
-      // C.2: the microphone permission is read by the verified Tutor (a parent, the adult register); its wording is the stored consent record.
-      for (const [path, text] of flatten(strings.mentorVoiceConsent!)) {
-        const role = path === 'title' ? 'heading' : ['grant', 'revoke', 'confirm', 'cancel'].includes(path) ? 'action' : path === 'body' ? 'legal' : path === 'forChild' ? 'data' : 'body';
-        expectFits(text.replace('{date}', 'Sep 24, 2026').replace('{name}', 'Ana'), role, locale, 'adult', `mentorVoiceConsent.${path}`);
-      }
-      expect(`${(strings.mentorVoiceConsent as Record<string, string>).body}`, 'the consent names the Mentor, never an AI tutor').toMatch(/Mentor/u);
       // C.7: the profile is read by a teen, an adult or a verified Tutor (13-17 budget, the stricter of the two).
       for (const [path, text] of flatten(strings.mentorProfile!)) {
         const role = path.startsWith('title') ? 'heading' : ['reset', 'resetting'].includes(path) ? 'action' : 'body';

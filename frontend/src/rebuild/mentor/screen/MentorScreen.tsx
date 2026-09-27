@@ -103,10 +103,6 @@ export interface MentorReplayCopy {
   previous: string; next: string; fromStart: string; talk: string; ended: string; note: string; activity: string; scored: string; unanswered: string;
 }
 export interface MentorRoleplayCopy { customer: string; scenes: Record<string, { title: string; beats: string[] }> }
-export interface MentorVoiceConsentCopy {
-  title: string; body: string; grant: string; revoke: string; activeSince: string; inactive: string; unavailable: string; pausedByPolicy: string;
-  saving: string; failed: string; forChild: string; confirm: string; cancel: string; loading: string;
-}
 
 export interface MentorCopy {
   mentorScreen: MentorScreenCopy;
@@ -116,7 +112,6 @@ export interface MentorCopy {
   mentorHistory: MentorHistoryCopy;
   mentorReplay: MentorReplayCopy;
   mentorRoleplay: MentorRoleplayCopy;
-  mentorVoiceConsent: MentorVoiceConsentCopy;
   mentorStage: MentorStageCopy;
   mentorCalibration: MentorCalibrationCopy;
   mentorSessionEnd: SessionEndCopy;
