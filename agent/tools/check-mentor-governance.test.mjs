@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
   canaryRegressionRate,
+  changedSymbols,
   checkAppendOnly,
   checkCommits,
   checkCoverage,
@@ -12,6 +13,7 @@ import {
   checkPolicyStatements,
   checkProposals,
   checkRegistry,
+  checkSymbols,
   checkTier2Parameters,
   componentHash,
   evaluateProposal,
@@ -19,10 +21,12 @@ import {
   governedFiles,
   isAutomated,
   LEDGER,
+  MODULE_SYMBOL,
   recordChanges,
   REGISTRY,
   ROOT,
   tierOf,
+  topLevelSymbols,
 } from './check-mentor-governance.mjs';
 
 /*
@@ -355,4 +359,202 @@ test('RED when an automated commit touches Tier 1, or governed files without a c
   // A human commit, and an automated commit outside the governed roots, are not fenced.
   assert.deepEqual(checkCommits([{ ...bot, name: 'Ana', email: 'ana@example.com' }], reg, []), []);
   assert.deepEqual(checkCommits([{ ...bot, files: ['pulse/Dockerfile'] }], reg, []), []);
+});
+
+// ── finer boundaries: Tier 1 at declaration level (OD-28, owner review M-19) ─
+
+test('topLevelSymbols: names each top-level declaration with its own doc comment, and is not fooled by nesting, strings, templates or regexes', () => {
+  const src = [
+    "import { x } from './x';",
+    '',
+    '/* A header comment about the module. */',
+    '',
+    '/** Doc for A. */',
+    'export const A = { nested: { deep: 1 } };',
+    '',
+    'const TEMPLATE = `',
+    'const NOT_A_DECLARATION = 1;',
+    '${A.nested.deep > 0 ? `inner ${"}"}` : "{"}',
+    'function alsoNot() {}',
+    '`;',
+    '',
+    "const RE = /[{(]const x/g; // a regex with braces",
+    '',
+    'export function f(a: number): number;',
+    'export function f(a: number) {',
+    '  const inner = 2;',
+    "  return a + inner + '}'.length;",
+    '}',
+    '',
+    'export class K {',
+    '  m() {',
+    '    return 1;',
+    '  }',
+    '}',
+    'export type T = { a: number };',
+    'export interface I {',
+    '  b: string;',
+    '}',
+    'if (A) console.log(A);',
+  ].join('\n');
+  const s = topLevelSymbols(src);
+  assert.deepEqual([...s.keys()].sort(), [MODULE_SYMBOL, 'A', 'I', 'K', 'RE', 'T', 'TEMPLATE', 'f'].sort());
+  assert.match(s.get('A'), /^\/\*\* Doc for A\. \*\/\nexport const A/);
+  assert.match(s.get(MODULE_SYMBOL), /header comment/);
+  assert.match(s.get(MODULE_SYMBOL), /import \{ x \}/);
+  assert.match(s.get(MODULE_SYMBOL), /if \(A\)/);
+  assert.match(s.get('TEMPLATE'), /NOT_A_DECLARATION[\s\S]*alsoNot/);
+  assert.match(s.get('f'), /: number;\nexport function f[\s\S]*inner/);
+  assert.match(s.get('K'), /m\(\)/);
+  // Re-spacing or moving a declaration changes no declaration's text; editing one changes only it.
+  assert.deepEqual(changedSymbols(src, src.replace('\n\nexport class K', '\n\n\n\nexport class K')), []);
+  assert.deepEqual(changedSymbols(src, src.replace('return 1;', 'return 2;')), ['K']);
+  assert.deepEqual(changedSymbols(src, `${src}\nexport const NEW = 1;`), ['NEW']);
+});
+
+test('topLevelSymbols loses nothing on the real mixed files', () => {
+  for (const f of ['oracle/src/tutor/controller.ts', 'oracle/src/tutor/orchestrator.ts', 'backend/src/services/pedagogy/behavioralTelemetry.ts', 'backend/src/services/pedagogy/mentorQuality.ts']) {
+    const src = readFileSync(path.join(ROOT, f), 'utf8').replace(/\r\n/g, '\n');
+    const symbols = topLevelSymbols(src);
+    const nonBlank = (t) => t.split('\n').filter((l) => l.trim() !== '').length;
+    const covered = [...symbols.values()].reduce((n, t) => n + nonBlank(t), 0);
+    assert.equal(covered, nonBlank(src), `${f}: every non-blank line belongs to exactly one declaration or the module`);
+    assert.ok(symbols.size > 10, f);
+  }
+});
+
+const SPLIT_SRC = [
+  "import { helper } from './helper';",
+  '',
+  '/** The non-negotiable. */',
+  'export function neverRevealOnFirstAsk(asks: number) {',
+  '  return asks >= 2 && PACE_MS > 0;',
+  '}',
+  '',
+  'export const PACE_MS = 1_500;',
+  '',
+  'export function summarize(rows: number[]) {',
+  '  return rows.length;',
+  '}',
+].join('\n');
+
+function splitWorld(patch = {}) {
+  return world({ 'svc/tutor/mixed.ts': SPLIT_SRC, ...patch });
+}
+
+function splitRegistry({ signed = false, over = {} } = {}) {
+  const reg = registry(over);
+  reg.components[0].symbols = [{ file: 'svc/tutor/mixed.ts', names: ['*'] }];
+  reg.components[2].symbols = [{ file: 'svc/tutor/mixed.ts', names: ['PACE_MS'], decision: 'D-2026-09-27-finer' }];
+  reg.components[3].symbols = [{ file: 'svc/tutor/mixed.ts', names: ['summarize'], decision: 'D-2026-09-27-finer' }];
+  reg.decisions.push({ id: 'D-2026-09-27-finer', date: '2026-09-27', kind: 'classification', components: ['safety.judge'], summary: 'Finer boundaries for the mixed file.', pedagogicalReviewer: signed ? 'Ana P.' : 'pending', safetyTrustLead: signed ? 'Luis S.' : 'pending' });
+  return reg;
+}
+
+test('a split file is classified per declaration: green as shipped, and the shipped registry splits the named mixed files', () => {
+  const w = splitWorld();
+  assert.deepEqual(checkCoverage(splitRegistry(), w.fsList, w.read), []);
+  assert.deepEqual(checkRegistry(splitRegistry(), { fsList: w.fsList, read: w.read }), []);
+  const real = JSON.parse(readFileSync(path.join(ROOT, REGISTRY), 'utf8'));
+  for (const f of ['oracle/src/tutor/controller.ts', 'oracle/src/tutor/orchestrator.ts', 'backend/src/services/pedagogy/behavioralTelemetry.ts', 'backend/src/services/pedagogy/alliance.ts']) {
+    assert.equal(tierOf([f], real).tier, 'tier_1', `${f} named whole is Tier 1`);
+    assert.equal(tierOf([`${f}#${MODULE_SYMBOL}`], real).tier, 'tier_1', `${f}'s imports stay Tier 1`);
+    assert.equal(tierOf([`${f}#aDeclarationAddedTomorrow`], real).tier, 'tier_1', `a new declaration in ${f} defaults to Tier 1`);
+  }
+  assert.deepEqual(checkSymbols(real), []);
+});
+
+test('RED on every broken declaration-level claim', () => {
+  const w = splitWorld();
+  const cases = [
+    ['a stale name', (r) => r.components[2].symbols[0].names.push('GONE'), 'not a top-level declaration'],
+    ['a name claimed twice', (r) => r.components[3].symbols[0].names.push('PACE_MS'), 'exactly one tier'],
+    ['no "*"', (r) => { r.components[0].symbols[0].names = ['neverRevealOnFirstAsk']; }, 'exactly one component must claim "*"'],
+    ['two "*"', (r) => { r.components[2].symbols[0].names = ['*']; }, 'exactly one component must claim "*"'],
+    ['"*" held by a less strict tier', (r) => {
+      r.components[0].symbols = [{ file: 'svc/tutor/mixed.ts', names: ['neverRevealOnFirstAsk'] }];
+      r.components[2].symbols = [{ file: 'svc/tutor/mixed.ts', names: ['*'] }];
+    }, 'must be the strictest tier'],
+    ['a carve-out without a decision', (r) => { delete r.components[2].symbols[0].decision; }, 'must cite a recorded decision'],
+    ['the module carved out', (r) => r.components[2].symbols[0].names.push(MODULE_SYMBOL), 'stays with the strictest claimant'],
+    ['a split file also claimed whole', (r) => r.components[1].paths.push('svc/tutor/mixed.ts'), 'also claimed whole'],
+    ['a split file that does not exist', (r) => r.components[0].symbols.push({ file: 'svc/tutor/gone.ts', names: ['*'] }), 'does not exist'],
+  ];
+  for (const [label, mutate, message] of cases) {
+    const reg = splitRegistry();
+    mutate(reg);
+    const problems = checkSymbols(reg, { read: w.read, fsList: w.fsList });
+    assert.ok(problems.some((p) => p.includes(message)), `${label}: ${problems.join(' | ') || 'no problem reported'}`);
+  }
+});
+
+test('RED when a Tier 3 carve-out feeds a stricter declaration, in its file or by import', () => {
+  const inFile = splitWorld({ 'svc/tutor/mixed.ts': SPLIT_SRC.replace('return asks >= 2 && PACE_MS > 0;', 'return asks >= 2 && summarize([asks]) > 0;') });
+  assert.ok(checkSymbols(splitRegistry(), { read: inFile.read, fsList: inFile.fsList }).some((p) => p.includes('used by neverRevealOnFirstAsk (tier_1)')));
+  const imported = splitWorld({ 'svc/safety/judge.ts': "import { summarize } from '../tutor/mixed.js';\nexport const refuse = summarize([1]) > 0;" });
+  assert.ok(checkSymbols(splitRegistry(), { read: imported.read, fsList: imported.fsList }).some((p) => p.includes('imported by svc/safety/judge.ts (tier_1)')));
+  // A Tier 2 parameter consumed by Tier 1 wiring is the normal shape and stays green.
+  const w = splitWorld();
+  assert.deepEqual(checkSymbols(splitRegistry(), { read: w.read, fsList: w.fsList }), []);
+});
+
+test('a carve-out waits for both signatures: until then the strict hash covers the whole file', () => {
+  const w = splitWorld();
+  const pending = splitRegistry();
+  const ledger = ledgerFor(pending, w);
+  // Editing the carved-out Tier 2 constant still needs a Tier 1 row while the decision is unsigned.
+  const paced = splitWorld({ 'svc/tutor/mixed.ts': SPLIT_SRC.replace('1_500', '1_800') });
+  assert.ok(checkLedger(pending, ledger, { read: paced.read, fsList: paced.fsList }).some((p) => p.includes('safety.judge (tier_1) changed')));
+  assert.equal(tierOf(['svc/tutor/mixed.ts#PACE_MS'], pending).tier, 'tier_1');
+  // Adopting a boundary changes no hash until a carve-out takes effect.
+  const plain = registry();
+  plain.components[0].paths.push('svc/tutor/mixed.ts');
+  assert.equal(componentHash(pending.components[0], pending, w.read, w.fsList).hash, componentHash(plain.components[0], plain, w.read, w.fsList).hash);
+});
+
+test('once both leads sign, the Tier 1 hash, the fence and the bounds follow each declaration', () => {
+  const w = splitWorld();
+  const signed = splitRegistry({ signed: true });
+  const ledger = ledgerFor(signed, w);
+  const read = (patch) => splitWorld({ 'svc/tutor/mixed.ts': patch });
+  // Tier 2 and Tier 3 edits need no Tier 1 row…
+  for (const edited of [SPLIT_SRC.replace('1_500', '1_800'), SPLIT_SRC.replace('return rows.length;', 'return rows.length * 2;')]) {
+    const e = read(edited);
+    assert.deepEqual(checkLedger(signed, ledger, { read: e.read, fsList: e.fsList }), [], edited);
+  }
+  // …but an edit to the Tier 1 declaration, its doc comment, the imports, or a NEW declaration does.
+  for (const edited of [
+    SPLIT_SRC.replace('asks >= 2', 'asks >= 1'),
+    SPLIT_SRC.replace('The non-negotiable.', 'The negotiable.'),
+    SPLIT_SRC.replace("from './helper'", "from './otherHelper'"),
+    `${SPLIT_SRC}\nexport function sneakyReveal() {\n  return true;\n}`,
+  ]) {
+    const e = read(edited);
+    assert.ok(checkLedger(signed, ledger, { read: e.read, fsList: e.fsList }).some((p) => p.includes('safety.judge (tier_1) changed')), edited);
+  }
+  assert.equal(tierOf(['svc/tutor/mixed.ts#PACE_MS'], signed).tier, 'tier_2');
+  assert.equal(tierOf(['svc/tutor/mixed.ts#summarize'], signed).tier, 'tier_3');
+  assert.equal(tierOf(['svc/tutor/mixed.ts'], signed).tier, 'tier_1');
+  // A Tier 2 parameter must sit in a Tier 2 declaration, not merely in a file that has one.
+  const bounded = { ...signed, tier2Parameters: [{ id: 'pace', file: 'svc/tutor/mixed.ts', object: 'PACE_MS', field: 'x', bounds: [0, 1] }] };
+  assert.ok(!checkTier2Parameters(bounded, w.read).some((p) => p.includes('not in a Tier 2 component')));
+  const wrong = { ...signed, tier2Parameters: [{ id: 'reveal', file: 'svc/tutor/mixed.ts', object: 'neverRevealOnFirstAsk', field: 'x', bounds: [0, 1] }] };
+  assert.ok(checkTier2Parameters(wrong, w.read).some((p) => p.includes('mixed.ts#neverRevealOnFirstAsk is not in a Tier 2 component')));
+});
+
+test('the automated-origin fence reads the declarations a commit changed', () => {
+  const signed = splitRegistry({ signed: true });
+  const bot = { sha: 'd'.repeat(40), name: 'mentor-loop', email: 'loop@example.com', body: 'Tune pace\n\nMentor-Change-Origin: automated\nMentor-Proposal: P-2026-10-01-latency', files: ['svc/tutor/mixed.ts'] };
+  const records = [{ file: 'x', record: proposal({ paths: ['svc/tutor/mixed.ts#PACE_MS'] }) }];
+  // Only the Tier 2 declaration changed, under a cleared proposal naming it: allowed.
+  assert.deepEqual(checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': ['PACE_MS'] } }], signed, records), []);
+  // The same commit also touching the Tier 1 declaration, or the imports: never automated.
+  for (const changed of [['PACE_MS', 'neverRevealOnFirstAsk'], [MODULE_SYMBOL]]) {
+    const problems = checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': changed } }], signed, records);
+    assert.ok(problems.some((p) => p.includes('never automated')), changed.join());
+  }
+  // Unknown declaration-level changes fall back to the file, whose strictest claimant is Tier 1.
+  assert.ok(checkCommits([bot], signed, records).some((p) => p.includes('never automated')));
+  // While the carve-out is unsigned, even the Tier 2 declaration is Tier 1.
+  assert.ok(checkCommits([{ ...bot, symbolChanges: { 'svc/tutor/mixed.ts': ['PACE_MS'] } }], splitRegistry(), records).some((p) => p.includes('never automated')));
 });

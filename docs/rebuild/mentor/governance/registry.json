@@ -92,10 +92,12 @@
         "oracle/src/tutor/affectClaims.ts",
         "oracle/src/tutor/checkIn.ts",
         "oracle/src/tutor/sessionClosing.ts",
-        "oracle/src/tutor/controller.ts",
-        "oracle/src/tutor/orchestrator.ts",
         "backend/src/services/pedagogy/bkt.ts",
         "backend/src/services/pedagogy/kcData.ts"
+      ],
+      "symbols": [
+        { "file": "oracle/src/tutor/controller.ts", "names": ["*"] },
+        { "file": "oracle/src/tutor/orchestrator.ts", "names": ["*"] }
       ],
       "examples": [
         "Letting mastery be declared on one observation",
@@ -130,15 +132,17 @@
       "owner": "pedagogical_lead",
       "policy": "docs/rebuild/mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md",
       "paths": [
-        "backend/src/services/pedagogy/mentorIntegrity.ts",
-        "backend/src/services/pedagogy/mentorQuality.ts",
-        "backend/src/services/pedagogy/behavioralTelemetry.ts",
-        "backend/src/services/pedagogy/alliance.ts",
-        "backend/src/services/pedagogy/dialogueCalibration.ts",
-        "backend/src/services/pedagogy/spacedReview.ts",
-        "backend/src/services/pedagogy/sessionEnd.ts",
         "backend/src/services/pedagogy/disposition.ts",
         "oracle/src/env.ts"
+      ],
+      "symbols": [
+        { "file": "backend/src/services/pedagogy/mentorIntegrity.ts", "names": ["*"] },
+        { "file": "backend/src/services/pedagogy/mentorQuality.ts", "names": ["*"] },
+        { "file": "backend/src/services/pedagogy/behavioralTelemetry.ts", "names": ["*"] },
+        { "file": "backend/src/services/pedagogy/alliance.ts", "names": ["*"] },
+        { "file": "backend/src/services/pedagogy/dialogueCalibration.ts", "names": ["*"] },
+        { "file": "backend/src/services/pedagogy/spacedReview.ts", "names": ["*"] },
+        { "file": "backend/src/services/pedagogy/sessionEnd.ts", "names": ["*"] }
       ],
       "examples": [
         "Lowering the Default-to-Inaction kill-switch floor",
@@ -233,7 +237,10 @@
         "Moving the telemetry latency z-score from 1.5 to 1.7",
         "Renegotiating after 3 declines instead of 2"
       ],
-      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }]
+      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }],
+      "symbols": [
+        { "file": "oracle/src/tutor/controller.ts", "names": ["IDLE_NUDGE_MS", "LISTEN_SILENCE_MS", "NEW_TO_SKILL_OPPORTUNITIES", "NEW_TO_SKILL_SILENCE_GRACE", "listenSilenceMsFor"], "decision": "D-2026-09-27-finer-tier1-boundaries" }
+      ]
     },
     {
       "id": "mentor.runtime",
@@ -254,7 +261,10 @@
         "backend/src/services/pedagogy/sessionNarrative.ts"
       ],
       "examples": ["A whiteboard layout adjustment", "A grading tolerance for spoken numbers"],
-      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }]
+      "tierHistory": [{ "tier": "tier_2", "decision": "D-2026-09-25-adoption" }],
+      "symbols": [
+        { "file": "oracle/src/tutor/orchestrator.ts", "names": ["TURN_HISTORY_WINDOW", "EMPTY_RETRY_HISTORY_WINDOWS"], "decision": "D-2026-09-27-finer-tier1-boundaries" }
+      ]
     },
     {
       "id": "measurement.reporting",
@@ -270,7 +280,16 @@
         "backend/src/services/pedagogy/turnHonesty.ts"
       ],
       "examples": ["Adding a breakdown to a report", "Batching the evaluation pass differently"],
-      "tierHistory": [{ "tier": "tier_3", "decision": "D-2026-09-25-adoption" }]
+      "tierHistory": [{ "tier": "tier_3", "decision": "D-2026-09-25-adoption" }],
+      "symbols": [
+        { "file": "backend/src/services/pedagogy/mentorIntegrity.ts", "names": ["HonestySummary", "summarizeHonesty"], "decision": "D-2026-09-27-finer-tier1-boundaries" },
+        { "file": "backend/src/services/pedagogy/mentorQuality.ts", "names": ["rubricSummary"], "decision": "D-2026-09-27-finer-tier1-boundaries" },
+        { "file": "backend/src/services/pedagogy/behavioralTelemetry.ts", "names": ["KillSwitchLogEntry", "killSwitchLog"], "decision": "D-2026-09-27-finer-tier1-boundaries" },
+        { "file": "backend/src/services/pedagogy/alliance.ts", "names": ["summarizeGoalAgreement", "summarizeSelfExplanation", "summarizeCompleteness", "allianceKillSwitchLog"], "decision": "D-2026-09-27-finer-tier1-boundaries" },
+        { "file": "backend/src/services/pedagogy/dialogueCalibration.ts", "names": ["summarizeObservational", "summarizeControllingLanguage"], "decision": "D-2026-09-27-finer-tier1-boundaries" },
+        { "file": "backend/src/services/pedagogy/spacedReview.ts", "names": ["drawAuditSample", "spacedReviewKillSwitchLog"], "decision": "D-2026-09-27-finer-tier1-boundaries" },
+        { "file": "backend/src/services/pedagogy/sessionEnd.ts", "names": ["ClosingAccuracySummary", "summarizeClosingAccuracy"], "decision": "D-2026-09-27-finer-tier1-boundaries" }
+      ]
     }
   ],
   "tier2Parameters": [
@@ -306,6 +325,15 @@
       "kind": "adoption",
       "components": ["*"],
       "summary": "Adopts the three-tier model and the live-content axis (C.22) before any automated proposal-generation capability exists, with the initial classification above. Proposed in S06.14; binding on engineering from adoption, awaiting the two sign-offs.",
+      "pedagogicalReviewer": "pending",
+      "safetyTrustLead": "pending"
+    },
+    {
+      "id": "D-2026-09-27-finer-tier1-boundaries",
+      "date": "2026-09-27",
+      "kind": "classification",
+      "components": ["mentor.non_negotiables", "measurement.stage7_and_thresholds", "mentor.pacing_and_signals", "mentor.runtime", "measurement.reporting"],
+      "summary": "OD-28 (owner review M-19): mixed Mentor files get finer Tier 1 boundaries at the level of top-level declarations. Oracle's controller.ts and orchestrator.ts and seven Core kill-switch modules are split: the strict component keeps every declaration by default (\"*\"), and the listed carve-outs move turn-pacing tables and two model-history windows to Tier 2 and report-only summaries and kill-switch log readers to Tier 3. Engineering's proposal; each carve-out takes effect only when both leads sign this decision, and until then the whole files stay Tier 1.",
       "pedagogicalReviewer": "pending",
       "safetyTrustLead": "pending"
     }
