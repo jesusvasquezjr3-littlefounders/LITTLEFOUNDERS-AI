@@ -132,4 +132,14 @@ describe('parseOwnProfile', () => {
     expect(parseOwnProfile(wire({ isTutor: false }), 'en-US', 's', true)!.data.tutor).toBe(false);
     expect(parseOwnProfile(wire(), 'en-US', 's', true)!.data.tutor).toBe(true);
   });
+
+  it("reads a teen's choice to be found only as Core states it (OD-27 (2)); anything else is private", () => {
+    const found = (social: unknown) => parseOwnProfile(wire({ social }), 'en-US', 's', false)!.discoverable;
+    expect(found({ tier: 'teen', discoverable: { canChoose: true, enabled: true } })).toBe(true);
+    expect(found({ tier: 'teen', discoverable: { canChoose: true, enabled: false } })).toBe(false);
+    expect(found({ tier: 'teen', discoverable: { enabled: 'true' } })).toBe(false);
+    expect(found({ tier: 'teen' })).toBe(false);
+    expect(found({ tier: 'guardian', discoverable: { enabled: true } })).toBe(false);
+    expect(found({ tier: 'adult', discoverable: { enabled: true } })).toBe(false);
+  });
 });

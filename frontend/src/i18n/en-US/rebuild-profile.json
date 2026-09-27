@@ -48,17 +48,18 @@
     "noFollowers": "Nobody follows you right now.",
     "remove": "Remove",
     "removed": "Removed. They no longer see your profile.",
-    "removeFailed": "Not removed. Try again."
+    "removeFailed": "Not removed. Try again.",
+    "introDiscoverable": "People can find your profile. You choose who connects."
   },
   "profileSafety": {
     "title": "Your name needs a change",
     "body": "It could help strangers find you. Your profile is hidden until then.",
     "username": "Change your username in Settings.",
     "displayName": "Change your name in Settings.",
-    "askTutor": "Ask your Tutor about your username.",
+    "askTutor": "Your Tutor can change your username.",
     "kidTitle": "{name} needs a new name",
     "kidBody": "It could help strangers find them. Outside connections see nothing until then.",
-    "kidUsername": "Their username needs help from support.",
+    "kidUsername": "You can give them a new username.",
     "kidDisplayName": "Change their name below."
   },
   "memorySelfReview": {
@@ -491,5 +492,23 @@
     "leaveBody": "To follow again, you might have to ask again.",
     "leaveKeep": "Cancel",
     "leaveConfirm": "Unfollow"
+  },
+  "discoverable": {
+    "title": "Who can find you",
+    "privateBody": "Your profile is private. Only people you accept can see it.",
+    "onBody": "People can find you. Anyone with an account can see your profile.",
+    "rules": "People still ask before they follow you. Nobody can message you.",
+    "label": "Let people find my profile",
+    "on": "On",
+    "off": "Off",
+    "confirmTitle": "Let people find you?",
+    "confirmBody": "Anyone with an account will see your profile. Turn it off anytime.",
+    "confirmKeep": "Keep private",
+    "confirmYes": "Turn on",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "failed": "This change was not saved. Try again.",
+    "offline": "You are offline. Nothing was saved.",
+    "notEligible": "This choice is not available for your account now."
   }
 }

@@ -196,3 +196,79 @@ describe('Settings (P3)', () => {
     expect(screen.getAllByRole('radio').length).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('Settings (P3): a 16-17-year-old\'s choice to be found (OD-27 (2))', () => {
+  const TEEN = (discoverable: unknown) => ok({ ...PROFILE, birthDate: '2009-05-01', social: { tier: 'teen', privateProfile: true, discoverable } });
+  const put = () => mocks.api.mock.calls.filter(([path, options]) => path === '/profile/discoverable' && options?.method === 'PUT').map(([, options]) => options.body);
+  const card = async () => (await screen.findByText('Who can find you')).closest('section')!;
+
+  it('is not offered to a child, an adult, a teen Core does not offer it to, or when Core does not send it', async () => {
+    for (const answer of [
+      ok(PROFILE),
+      ok({ ...PROFILE, social: { tier: 'adult', privateProfile: false, discoverable: { canChoose: true, enabled: false } } }),
+      ok({ ...PROFILE, social: { tier: 'guardian', privateProfile: true, discoverable: { canChoose: true, enabled: true } } }),
+      TEEN({ canChoose: false, enabled: false }),
+      TEEN(undefined),
+      TEEN({ canChoose: 'yes', enabled: false }),
+    ]) {
+      routes['GET /profile'] = answer;
+      const view = renderSettings();
+      await screen.findByLabelText('Name');
+      expect(screen.queryByText('Who can find you')).toBeNull();
+      view.unmount();
+    }
+    expect(put()).toEqual([]);
+  });
+
+  it('asks before turning it on, sends nothing on Keep private, and shows Core\'s receipt after confirming', async () => {
+    routes['GET /profile'] = TEEN({ canChoose: true, enabled: false });
+    routes['PUT /profile/discoverable'] = ok({ discoverable: { canChoose: true, enabled: true } });
+    renderSettings();
+    const section = await card();
+    expect(within(section).getByText('Your profile is private. Only people you accept can see it.')).toBeInTheDocument();
+    expect(within(section).getByText('People still ask before they follow you. Nobody can message you.')).toBeInTheDocument();
+    const toggle = within(section).getByRole('switch', { name: 'Let people find my profile' });
+    expect(toggle).toHaveAttribute('aria-checked', 'false');
+    fireEvent.click(toggle);
+    const dialog = await screen.findByRole('alertdialog');
+    expect(within(dialog).getByText('Anyone with an account will see your profile. Turn it off anytime.')).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Keep private' }));
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    expect(put()).toEqual([]);
+    fireEvent.click(toggle);
+    fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Turn on' }));
+    expect(await within(section).findByText('Saved.')).toBeInTheDocument();
+    expect(put()).toEqual([{ discoverable: true }]);
+    expect(within(section).getByRole('switch', { name: 'Let people find my profile' })).toHaveAttribute('aria-checked', 'true');
+    expect(within(section).getByText('People can find you. Anyone with an account can see your profile.')).toBeInTheDocument();
+  });
+
+  it('turns it off in one press, and keeps it on when Core does not confirm', async () => {
+    routes['GET /profile'] = TEEN({ canChoose: true, enabled: true });
+    routes['PUT /profile/discoverable'] = refuse('INTERNAL');
+    renderSettings();
+    const section = await card();
+    const toggle = within(section).getByRole('switch', { name: 'Let people find my profile' });
+    fireEvent.click(toggle);
+    expect(await within(section).findByText('This change was not saved. Try again.')).toBeInTheDocument();
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    routes['PUT /profile/discoverable'] = ok({ discoverable: { canChoose: true, enabled: false } });
+    fireEvent.click(toggle);
+    expect(await within(section).findByText('Saved.')).toBeInTheDocument();
+    expect(toggle).toHaveAttribute('aria-checked', 'false');
+    expect(put()).toEqual([{ discoverable: false }, { discoverable: false }]);
+  });
+
+  it('hides the switch and says so when Core refuses the choice', async () => {
+    routes['GET /profile'] = TEEN({ canChoose: true, enabled: false });
+    routes['PUT /profile/discoverable'] = refuse('DISCOVERABLE_NOT_ELIGIBLE');
+    renderSettings();
+    const section = await card();
+    fireEvent.click(within(section).getByRole('switch', { name: 'Let people find my profile' }));
+    fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Turn on' }));
+    expect(await within(section).findByText('This choice is not available for your account now.')).toBeInTheDocument();
+    expect(within(section).queryByRole('switch')).toBeNull();
+    expect(within(section).getByText('Your profile is private. Only people you accept can see it.')).toBeInTheDocument();
+  });
+});

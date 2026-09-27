@@ -19,7 +19,7 @@ interface WireProfile {
   displayName: unknown; username: unknown; memberSince: unknown; avatarOptions: unknown; cover: unknown;
   learningStats: { xpPoints: unknown; minutesLearned: unknown; lessonsCompleted: unknown; streakDays: unknown } | null;
   courseBadges?: unknown;
-  social?: { tier?: unknown } | null;
+  social?: { tier?: unknown; discoverable?: { enabled?: unknown } | null } | null;
   isTutor?: unknown;
   profileReview?: { flagged?: unknown; fields?: unknown } | null;
 }
@@ -27,7 +27,8 @@ interface WireProfile {
 const TIERS = ['guardian', 'teen', 'adult', 'closed'] as const;
 const count = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? Math.floor(value) : null);
 
-export interface ParsedProfile { data: OwnProfileData; review: ('username' | 'displayName')[] }
+/** `discoverable`: OD-27 (2), a 16-17-year-old's own choice to be found, as Core reports it (absent = private). */
+export interface ParsedProfile { data: OwnProfileData; review: ('username' | 'displayName')[]; discoverable: boolean }
 
 /**
  * Core's answer, checked field by field. `null` when anything the screen relies on is missing.
@@ -62,6 +63,7 @@ export function parseOwnProfile(raw: unknown, locale: string, seed: string, role
       tutor: typeof wire.isTutor === 'boolean' ? wire.isTutor : roleTutor,
     },
     review,
+    discoverable: tier === 'teen' && wire.social?.discoverable?.enabled === true,
   };
 }
 
@@ -78,6 +80,7 @@ function ScopedOwnProfile() {
   const tutor = roles.includes('parent');
   const [view, setView] = useState<OwnProfileView>({ kind: 'loading' });
   const [review, setReview] = useState<('username' | 'displayName')[]>([]);
+  const [discoverable, setDiscoverable] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [invite, setInvite] = useState<InviteStatus>('idle');
   const inviteTimer = useRef<number | null>(null);
@@ -91,6 +94,7 @@ function ScopedOwnProfile() {
       const parsed = result?.data ? parseOwnProfile(result.data, locale, seed, tutor) : null;
       if (!parsed) { setView({ kind: 'failed', offline: isOffline(result?.error), retrying: false }); return; }
       setReview(parsed.review);
+      setDiscoverable(parsed.discoverable);
       setView({ kind: 'ready', data: parsed.data });
     })();
     return () => { cancelled = true; };
@@ -114,7 +118,7 @@ function ScopedOwnProfile() {
   const safetyNotice = review.length > 0 && (tier === 'teen' || tier === 'guardian')
     ? <ProfileSafetyControl audience={tier === 'teen' ? 'self' : 'kidSelf'} fields={review} /> : null;
   // E.8: the self-registered teen manages their own connection requests.
-  const connections = tier === 'teen' ? <TeenConnectionsPanel /> : null;
+  const connections = tier === 'teen' ? <TeenConnectionsPanel discoverable={discoverable} /> : null;
 
   return <OwnProfile copy={copy.ownProfile} locale={locale} dark={dark} ageBand={ageBand} view={view} origin={window.location.origin}
     invite={invite} safetyNotice={safetyNotice} connections={connections} onNavigate={(href) => navigate(href)}

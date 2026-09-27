@@ -14,7 +14,7 @@ import './socialTiers.css';
  */
 
 export interface TeenConnectionsCopy {
-  title: string; intro: string; loading: string; failed: string; retry: string; empty: string;
+  title: string; intro: string; introDiscoverable?: string; loading: string; failed: string; retry: string; empty: string;
   accept: string; decline: string; saving: string; accepted: string; declined: string; decisionFailed: string;
   conflict: string; review: string; more: string; followersTitle: string; noFollowers: string; remove: string;
   removed: string; removeFailed: string;
@@ -24,10 +24,12 @@ export interface TeenRequestView { requestId: string; requestedAt: string; usern
 export interface FollowerView { username: string; displayName: string }
 export interface TeenNotice { tone: 'status' | 'alert'; text: string }
 
-export function TeenConnections({ copy, locale, dark, requests, followers, loading, failed, busy, notice, hasMore, onDecide, onRemove, onRetry, onMore }: {
+export function TeenConnections({ copy, locale, dark, discoverable = false, requests, followers, loading, failed, busy, notice, hasMore, onDecide, onRemove, onRetry, onMore }: {
   copy: TeenConnectionsCopy;
   locale: string;
   dark: boolean;
+  /** OD-27 (2): a 16-17-year-old who chose to be found; the intro no longer says private. */
+  discoverable?: boolean;
   requests: TeenRequestView[];
   followers: FollowerView[];
   loading: boolean;
@@ -54,7 +56,7 @@ export function TeenConnections({ copy, locale, dark, requests, followers, loadi
   const act = (event: MouseEvent<HTMLButtonElement>, fn: () => void) => { lastAction.current = event.currentTarget; fn(); };
   return <section ref={root} aria-label={copy.title} className="lf-rebuild lf-social-tier-card" data-social-audit="teen-connections" lang={locale} data-theme={dark ? 'dark' : 'light'}>
     <Copy role="heading" as="h2">{copy.title}</Copy>
-    <Copy role="body">{copy.intro}</Copy>
+    <Copy role="body">{discoverable && copy.introDiscoverable ? copy.introDiscoverable : copy.intro}</Copy>
     {notice && <InlineNotice tone={notice.tone === 'alert' ? 'error' : 'info'} live>{notice.text}</InlineNotice>}
     {busy && <InlineNotice tone="info" live>{copy.saving}</InlineNotice>}
     {failed ? <div className="lf-social-tier-row">

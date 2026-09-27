@@ -7,7 +7,7 @@ describe('rebuild-profile copy budget', () => {
   for (const [locale, strings] of namespaceCopy('profile')) {
     const group = (name: string) => Object.entries(strings[name] as Record<string, string>);
     it(`fits its budgets in ${locale}`, () => {
-      expectBudgetedGroups(strings, ['analyticsChoice', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings', 'publicProfile', 'report', 'peopleList']);
+      expectBudgetedGroups(strings, ['analyticsChoice', 'privateProfile', 'teenConnections', 'profileSafety', 'memorySelfReview', 'accountDeletion', 'ownProfile', 'lookEditor', 'settings', 'publicProfile', 'report', 'peopleList', 'discoverable']);
       for (const [key, text] of group('analyticsChoice')) {
         const role = key === 'title' ? 'heading' : key === 'label' ? 'option' : ['on', 'off', 'retry'].includes(key) ? 'action' : 'body';
         expectFits(text, role, locale, '13-17', `analyticsChoice.${key}`);
@@ -70,6 +70,12 @@ describe('rebuild-profile copy budget', () => {
       for (const [path, text] of flatten(strings.report!)) {
         const role = path === 'title' ? 'heading' : ['send', 'sending', 'cancel'].includes(path) ? 'action' : path.startsWith('categories.') ? 'option' : 'body';
         expectFits(text, role, locale, '6-9', `report.${path}`);
+      }
+      // OD-27 (2): only a 16- or 17-year-old is offered the choice to be found.
+      for (const [key, text] of group('discoverable')) {
+        const role = ['title', 'confirmTitle'].includes(key) ? 'heading' : key === 'label' ? 'option'
+          : ['on', 'off', 'confirmKeep', 'confirmYes', 'saving'].includes(key) ? 'action' : 'body';
+        expectFits(text, role, locale, '13-17', `discoverable.${key}`);
       }
       for (const [key, text] of group('peopleList')) {
         const role = ['followersTitle', 'followingTitle', 'failedTitle', 'offlineTitle', 'unavailableTitle', 'emptyFollowers', 'emptyFollowing', 'emptyPublic', 'closedTitle',

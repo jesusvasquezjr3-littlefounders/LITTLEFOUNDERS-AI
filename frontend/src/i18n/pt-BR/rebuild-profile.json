@@ -48,17 +48,18 @@
     "noFollowers": "Ninguém segue você agora.",
     "remove": "Remover",
     "removed": "Removido. A pessoa não vê mais seu perfil.",
-    "removeFailed": "Não removido. Tente de novo."
+    "removeFailed": "Não removido. Tente de novo.",
+    "introDiscoverable": "Podem encontrar seu perfil. Você escolhe quem se conecta."
   },
   "profileSafety": {
     "title": "Seu nome precisa mudar",
     "body": "Ele pode ajudar estranhos a achar você. Seu perfil fica oculto até lá.",
     "username": "Mude seu nome de usuário em Configurações.",
     "displayName": "Mude seu nome em Configurações.",
-    "askTutor": "Fale com seu Tutor sobre seu nome de usuário.",
+    "askTutor": "Seu Tutor pode mudar seu nome de usuário.",
     "kidTitle": "{name} precisa de outro nome",
     "kidBody": "Pode ajudar estranhos a achar a criança. Conexões de fora não veem nada até lá.",
-    "kidUsername": "O nome de usuário precisa de ajuda do suporte.",
+    "kidUsername": "Você pode dar um novo nome de usuário.",
     "kidDisplayName": "Mude o nome da criança abaixo."
   },
   "memorySelfReview": {
@@ -491,5 +492,23 @@
     "leaveBody": "Para seguir de novo, talvez você tenha que pedir outra vez.",
     "leaveKeep": "Cancelar",
     "leaveConfirm": "Deixar de seguir"
+  },
+  "discoverable": {
+    "title": "Quem pode te encontrar",
+    "privateBody": "Seu perfil é privado. Só quem você aceita pode vê-lo.",
+    "onBody": "Podem te encontrar. Qualquer pessoa com uma conta pode ver seu perfil.",
+    "rules": "Ainda assim, pedem antes de te seguir. Ninguém pode te mandar mensagens.",
+    "label": "Deixar encontrarem meu perfil",
+    "on": "Ativado",
+    "off": "Desativado",
+    "confirmTitle": "Deixar te encontrarem?",
+    "confirmBody": "Qualquer pessoa com uma conta verá seu perfil. Desative quando quiser.",
+    "confirmKeep": "Manter privado",
+    "confirmYes": "Ativar",
+    "saving": "Salvando…",
+    "saved": "Salvo.",
+    "failed": "Esta mudança não foi salva. Tente de novo.",
+    "offline": "Você está sem conexão. Nada foi salvo.",
+    "notEligible": "Esta opção não está disponível para sua conta agora."
   }
 }

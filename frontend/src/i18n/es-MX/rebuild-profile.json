@@ -48,17 +48,18 @@
     "noFollowers": "Nadie te sigue ahora.",
     "remove": "Quitar",
     "removed": "Quitado. Ya no ve tu perfil.",
-    "removeFailed": "No se quitó. Intenta de nuevo."
+    "removeFailed": "No se quitó. Intenta de nuevo.",
+    "introDiscoverable": "Te pueden encontrar. Tú eliges quién se conecta."
   },
   "profileSafety": {
     "title": "Tu nombre necesita un cambio",
     "body": "Podría ayudar a extraños a encontrarte. Tu perfil está oculto hasta entonces.",
     "username": "Cambia tu nombre de usuario en Ajustes.",
     "displayName": "Cambia tu nombre en Ajustes.",
-    "askTutor": "Pregunta a tu Tutor por tu nombre de usuario.",
+    "askTutor": "Tu Tutor puede cambiar tu nombre de usuario.",
     "kidTitle": "{name} necesita otro nombre",
     "kidBody": "Podría ayudar a extraños a encontrarle. Las conexiones de fuera no ven nada hasta entonces.",
-    "kidUsername": "Su nombre de usuario requiere ayuda de soporte.",
+    "kidUsername": "Puedes darle un nuevo nombre de usuario.",
     "kidDisplayName": "Cambia su nombre aquí abajo."
   },
   "memorySelfReview": {
@@ -491,5 +492,23 @@
     "leaveBody": "Para volver a seguir, quizá tengas que pedirlo otra vez.",
     "leaveKeep": "Cancelar",
     "leaveConfirm": "Dejar de seguir"
+  },
+  "discoverable": {
+    "title": "Quién puede encontrarte",
+    "privateBody": "Tu perfil es privado. Solo lo ven las personas que aceptas.",
+    "onBody": "Te pueden encontrar. Cualquier persona con una cuenta puede ver tu perfil.",
+    "rules": "Aun así, te piden permiso antes de seguirte. Nadie puede enviarte mensajes.",
+    "label": "Dejar que encuentren mi perfil",
+    "on": "Activado",
+    "off": "Desactivado",
+    "confirmTitle": "¿Dejar que te encuentren?",
+    "confirmBody": "Cualquier persona con una cuenta podrá ver todo tu perfil. Puedes desactivarlo cuando quieras.",
+    "confirmKeep": "Mantener privado",
+    "confirmYes": "Activar",
+    "saving": "Guardando…",
+    "saved": "Guardado.",
+    "failed": "Este cambio no se guardó. Inténtalo de nuevo.",
+    "offline": "No tienes conexión. No se guardó nada.",
+    "notEligible": "Esta opción no está disponible para tu cuenta ahora."
   }
 }

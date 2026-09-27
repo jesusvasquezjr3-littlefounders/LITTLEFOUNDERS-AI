@@ -14,6 +14,7 @@ import { TeenAnalyticsSetting } from './TeenAnalyticsSetting';
 import { TeenMemoryReviewSetting } from './TeenMemoryReviewSetting';
 import { DispositionSetting } from './DispositionSetting';
 import { AccountDeletionSetting } from './AccountDeletionSetting';
+import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from './DiscoverableSetting';
 
 /*
  * /profile/settings (P3): the data plane of the rebuilt Settings page.
@@ -27,6 +28,9 @@ import { AccountDeletionSetting } from './AccountDeletionSetting';
  *              re-verified by Core with the current password. No email row
  *              for a child (A.6) and none for a guest (nothing to change yet).
  *   blocked    GET /profile/blocked, DELETE /profiles/:username/block.
+ *   found      OD-27 (2): a 16-17-year-old's choice to be found, offered only
+ *              where GET /profile's `social.discoverable.canChoose` says so
+ *              (DiscoverableSetting writes PUT /profile/discoverable).
  *   panels     the rebuilt panels with their own data planes: the analytics
  *              choice (H.1), the memory self-review (OD-18), how the Mentor
  *              adapts (C.7), the mode and sign-out (Lane 0), account deletion
@@ -56,6 +60,7 @@ function ScopedSettings() {
   const [emailChange, setEmailChange] = useState<EmailChangeState>(CLOSED_EMAIL);
   const [passwordChange, setPasswordChange] = useState<PasswordChangeState>(CLOSED_PASSWORD);
   const [blocked, setBlocked] = useState<BlockedView>({ kind: 'loading' });
+  const [discoverable, setDiscoverable] = useState<DiscoverableState | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [blockedAttempt, setBlockedAttempt] = useState(0);
   const inFlight = useRef({ details: false, email: false, password: false, unblock: false });
@@ -79,6 +84,7 @@ function ScopedSettings() {
         email: typeof data.email === 'string' && data.email ? data.email : null,
       };
       setStored(next);
+      setDiscoverable(parseDiscoverable(data));
       setForm({ displayName: next.displayName, username: next.username, locale: next.locale, birthDate: next.birthDate, saving: false, status: null, errors: {} });
       setView({ kind: 'ready' });
     })();
@@ -205,6 +211,7 @@ function ScopedSettings() {
       onEmail={(action) => void onEmail(action)} onPassword={(action) => void onPassword(action)} />}
     <BlockedCard copy={copy.settings} view={blocked} onUnblock={(user) => void unblock(user)} onRetry={() => setBlockedAttempt((value) => value + 1)} />
     <SettingsPanels>
+      {isGuest ? null : <DiscoverableSetting key={`${attempt}`} copy={copy.discoverable} initial={discoverable} />}
       <TeenAnalyticsSetting />
       <TeenMemoryReviewSetting />
       <DispositionSetting />

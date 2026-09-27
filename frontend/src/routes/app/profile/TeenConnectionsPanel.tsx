@@ -15,12 +15,12 @@ import pt from '@/i18n/pt-BR/rebuild-profile.json';
  * changes; a conflict or a removal reloads both lists from the first page.
  * Session changes invalidate in-flight answers.
  */
-export function TeenConnectionsPanel() {
+export function TeenConnectionsPanel({ discoverable = false }: { discoverable?: boolean }) {
   const { session } = useAuth();
-  return <Scoped key={session?.user.id ?? 'none'} />;
+  return <Scoped key={session?.user.id ?? 'none'} discoverable={discoverable} />;
 }
 
-function Scoped() {
+function Scoped({ discoverable }: { discoverable: boolean }) {
   const { getToken } = useAuth();
   const { isDark } = useTheme();
   const { i18n } = useTranslation();
@@ -96,7 +96,7 @@ function Scoped() {
     setNotice({ tone: 'alert', text: copy.removeFailed });
   }
 
-  return <TeenConnections copy={copy} locale={locale} dark={isDark} requests={requests} followers={followers} loading={loading}
+  return <TeenConnections copy={copy} locale={locale} dark={isDark} discoverable={discoverable} requests={requests} followers={followers} loading={loading}
     failed={failed} busy={busy} notice={notice} hasMore={nextOffset !== null}
     onDecide={(id, decision) => void decide(id, decision)} onRemove={(username) => void remove(username)}
     onRetry={() => void load(0)} onMore={() => { if (nextOffset !== null) void load(nextOffset); }} />;
