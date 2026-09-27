@@ -34,7 +34,11 @@ describe('narrative copy (B.9, B.13)', () => {
     }
     for (const [key, text] of strings(decisionJournalCopy[locale])) {
       expect(checkCopy(text, journalRole(key.split('.')[0]!), { locale, ageBand: '6-9', surface: 'app' }), `${locale} ${key}: ${text}`).toEqual([]);
-      expect(text, key).not.toMatch(FORBIDDEN);
+      // OD-27 (3): `tutorSees` names the verified parent, the one thing the glossary calls Tutor; the AI never.
+      if (key === 'tutorSees') {
+        expect(text).toMatch(/\bTutor\b/);
+        expect(text.replace(/\bTutor\b/, '')).not.toMatch(FORBIDDEN);
+      } else expect(text, key).not.toMatch(FORBIDDEN);
     }
   });
 

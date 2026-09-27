@@ -38,7 +38,8 @@ import type { LearnLinks } from '../../learning/learnCopy';
 import { NarrativeRecallView } from '../../learning/NarrativeRecallView';
 import { DecisionJournalView } from '../../learning/DecisionJournalView';
 import { LearnerNarrativeShortcut } from '../../learning/LearnerNarrativeShortcut';
-import { journalPreviewStates, recallFixture, selfBridgesFixture } from '../../learning/narrativeFixtures';
+import { childDecisionsFixture, journalPreviewStates, recallFixture, selfBridgesFixture } from '../../learning/narrativeFixtures';
+import { ChildDecisionsView } from '../../learning/ChildDecisionsPanel';
 import type { LessonMentorStage } from '../../learning/lessonDocument';
 import { LearningRhythmView } from '../../learning/LearningRhythmView';
 import { milestoneReceipt, rhythmPreviewStates } from '../../learning/motivationFixtures';
@@ -171,6 +172,11 @@ export const learnPreviewScreens: PreviewRegistry = {
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
     onClear={async () => true} onBridge={async () => 'done'} /></LearnPreviewHost>),
+  // OD-27 (3): the Tutor's view of an under-13 child's story choices, as the Family Hub mounts it (open, one page).
+  childdecisions: framed(({ locale, theme }) => <main className="lf-family-preview" data-surface="app" data-screen="child-decisions-host">
+    <ChildDecisionsView key={`childdecisions:${locale}`} fixture locale={locale} dark={theme === 'dark'} state={childDecisionsFixture(locale)} open
+      onToggle={() => {}} onRetry={() => {}} />
+  </main>),
   learnershortcut: framed(({ locale, theme, params, go }) => <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
     <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
       bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}

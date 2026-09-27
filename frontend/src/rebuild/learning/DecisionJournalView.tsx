@@ -12,8 +12,10 @@ import type { BridgeAnswer, JournalEntry, JournalState, SelfBridge } from './nar
 /*
  * B.9 / S05.3c — the learner's decision journal: the story choices they made
  * across lessons, what happened next, and where they changed their mind. It
- * is the learner's own record (Core shows it to nobody else) and they can
- * clear it; their progress, scores and coins are untouched by that.
+ * is the learner's own record and they can clear it; their progress, scores
+ * and coins are untouched by that. Core shows it to nobody else, with one
+ * exception the page says out loud: the verified Tutor of a parent-created
+ * child under 13 sees which option the child chose (OD-27 (3)).
  *
  * B.13, Option B — an independent teen also sees "Try it for real": a
  * self-directed prompt after a topic that teaches a real-world money skill.
@@ -36,6 +38,8 @@ type Copy = {
   planned: string; bridgeClosed: string; bridgeFailed: string;
   /** OD-28 (L-12): the teen's own savings goal from a savings prompt. */
   goalName: string; goalTarget: string; createGoal: string; planOnly: string; goalCreated: string; noWallet: string;
+  /** OD-27 (3): said on the journal of a parent-created child under 13, whose Tutor sees the chosen options. */
+  tutorSees: string;
 };
 
 export const decisionJournalCopy: Record<Locale, Copy> = {
@@ -47,6 +51,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     tryIt: 'I will try', notNow: 'Not now', planned: 'Saved as your plan.', bridgeClosed: 'This idea has closed.', bridgeFailed: 'Could not save it. Try again.',
     goalName: 'What will you save for?', goalTarget: 'Coins to save', createGoal: 'Create goal', planOnly: 'Just a plan',
     goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.',
+    tutorSees: 'Your Tutor can see the choices you make.',
   },
   'es-MX': {
     title: 'Mis decisiones', back: 'Volver', loading: 'Cargando tus decisiones', retry: 'Reintentar', errorTitle: 'Diario no disponible', errorBody: 'No pudimos cargarlo. Inténtalo de nuevo.',
@@ -56,6 +61,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     tryIt: 'Lo intentaré', notNow: 'Ahora no', planned: 'Guardado como tu plan.', bridgeClosed: 'Esta idea ya cerró.', bridgeFailed: 'No se pudo guardar. Inténtalo de nuevo.',
     goalName: '¿Para qué vas a ahorrar?', goalTarget: 'Monedas por ahorrar', createGoal: 'Crear meta', planOnly: 'Solo un plan',
     goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.',
+    tutorSees: 'Tu Tutor puede ver las elecciones que haces.',
   },
   'pt-BR': {
     title: 'Minhas decisões', back: 'Voltar', loading: 'Carregando suas decisões', retry: 'Tentar de novo', errorTitle: 'Diário indisponível', errorBody: 'Não foi possível carregar. Tente de novo.',
@@ -65,6 +71,7 @@ export const decisionJournalCopy: Record<Locale, Copy> = {
     tryIt: 'Vou tentar', notNow: 'Agora não', planned: 'Salvo como seu plano.', bridgeClosed: 'Esta ideia já fechou.', bridgeFailed: 'Não foi possível salvar. Tente de novo.',
     goalName: 'Para que você vai poupar?', goalTarget: 'Moedas para poupar', createGoal: 'Criar meta', planOnly: 'Só um plano',
     goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.',
+    tutorSees: 'Seu Tutor pode ver as escolhas que você faz.',
   },
 };
 
@@ -210,6 +217,8 @@ function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, loadingMore
   }
 
   return <>
+      {/* OD-27 (3): the child knows who else sees their choices, before the list. */}
+      {state.sharedWithTutor ? <p className="lf-journal-shared" data-copy-role="body">{t.tutorSees}</p> : null}
       <SelfBridgeList bridges={state.bridges} locale={locale} onBridge={onBridge} />
 
       {entries.length === 0 ? <section className="lf-journal-section" aria-labelledby={emptyId}>

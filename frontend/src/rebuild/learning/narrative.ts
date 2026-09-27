@@ -52,7 +52,8 @@ export const journalEntrySchema = z.object({
   recordedAt: z.string().min(1),
 });
 export type JournalEntry = z.infer<typeof journalEntrySchema>;
-const journalSchema = z.object({ entries: z.array(journalEntrySchema), hasMore: z.boolean() });
+/* OD-27 (3): whether the verified Tutor can see the chosen options (a parent-created child under 13); null when Core could not tell. */
+const journalSchema = z.object({ entries: z.array(journalEntrySchema), hasMore: z.boolean(), sharedWithTutor: z.boolean().nullable().optional() });
 
 export const selfBridgeSchema = z.object({
   id: z.string().min(1),
@@ -78,7 +79,7 @@ async function call(request: NarrativeTransport, path: string, init?: Parameters
 
 export type JournalState =
   | { status: 'loading' }
-  | { status: 'ready'; entries: JournalEntry[]; hasMore: boolean; bridges: SelfBridge[] }
+  | { status: 'ready'; entries: JournalEntry[]; hasMore: boolean; bridges: SelfBridge[]; sharedWithTutor?: boolean }
   | { status: 'error' };
 
 export const JOURNAL_PAGE = 10;
@@ -93,7 +94,8 @@ export async function fetchJournal(request: NarrativeTransport, offset = 0): Pro
   const parsed = journalSchema.safeParse(journal.data);
   if (!parsed.success) return { status: 'error' };
   const prompts = bridges.error ? null : selfBridgesSchema.safeParse(bridges.data);
-  return { status: 'ready', entries: parsed.data.entries, hasMore: parsed.data.hasMore, bridges: prompts?.success ? prompts.data.prompts : [] };
+  return { status: 'ready', entries: parsed.data.entries, hasMore: parsed.data.hasMore, bridges: prompts?.success ? prompts.data.prompts : [],
+    sharedWithTutor: parsed.data.sharedWithTutor === true };
 }
 
 /** Only the self prompts, for the learner shortcut. Unavailable reads as none: a suggestion is never worth an error. */

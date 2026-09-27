@@ -467,3 +467,62 @@ describe('B.10 — the guardian narrative, through the verified-parent boundary'
     expect((await get(TUTOR, `/family/learning/kids/not-a-uuid/narrative`)).status).toBe(400);
   });
 });
+
+describe('OD-27 (3), L-13 — the verified Tutor sees an under-13 child\'s chosen options; a teen\'s journal stays private', () => {
+  const KID_TEEN = uid(109);
+  const KID_UNKNOWN = uid(110);
+  const addKid = (id: string, birth: string | null, band: string) => {
+    built.db.user_roles!.push({ user_id: id, role: 'kid' });
+    built.db.profiles!.push({ user_id: id, display_name: 'Kid', locale: 'en-US', birth_date: birth });
+    built.db.account_age_declarations!.push({ user_id: id, declared_age_band: band });
+    built.db.guardian_links!.push({ parent_user_id: TUTOR, kid_user_id: id, verification_status: 'verified' });
+    built.db.course_placements!.push({ user_id: id, course_id: COURSE.money });
+    built.db.learning_stats!.push({ user_id: id, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null });
+  };
+
+  it('the Tutor reads the chosen option and the situation, in the Tutor\'s locale, minimised and audited', async () => {
+    await grade(KID7, 'p10');
+    const res = await get(TUTOR, `/family/learning/kids/${KID7}/decisions`);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(res.body.data).toEqual({
+      locale: 'pt-BR', hasMore: false,
+      entries: [{ id: expect.any(String), courseTitle: 'money (pt)', lessonTitle: 'Lição story', situation: 'What price brings me closer to the guitar?',
+        choice: '10 coins, double the price', recordedAt: expect.any(String) }],
+    });
+    // Never the outcome, the first choice or anything scored.
+    expect(JSON.stringify(res.body)).not.toMatch(/outcome|first|score|neighbors/i);
+    expect(built.db.audit_logs).toEqual(expect.arrayContaining([expect.objectContaining({ actor_id: TUTOR, action: 'learner_journal.guardian_read', subject: KID7 })]));
+    // The child is told on their own journal.
+    expect((await get(KID7, '/learn/journal')).body.data.sharedWithTutor).toBe(true);
+  });
+
+  it('a teen\'s journal stays private: a parent-created teen and a self-registered teen alike', async () => {
+    addKid(KID_TEEN, yearsAgo(14), '13_to_17');
+    const denied = await get(TUTOR, `/family/learning/kids/${KID_TEEN}/decisions`);
+    expect(denied.status).toBe(403);
+    expect(denied.body.error.code).toBe('JOURNAL_PRIVATE');
+    expect((await get(KID_TEEN, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+    expect((await get(TEEN15, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+    expect((await get(ADULT, '/learn/journal')).body.data.sharedWithTutor).toBe(false);
+  });
+
+  it('age follows age: without a birth date the screened band decides, and an unknown age stays private', async () => {
+    addKid(KID_UNKNOWN, null, 'under_13');
+    expect((await get(TUTOR, `/family/learning/kids/${KID_UNKNOWN}/decisions`)).status).toBe(200);
+    built.db.account_age_declarations = built.db.account_age_declarations!.filter((r) => r.user_id !== KID_UNKNOWN);
+    built.db.account_age_declarations.push({ user_id: KID_UNKNOWN, declared_age_band: '13_to_17' });
+    expect((await get(TUTOR, `/family/learning/kids/${KID_UNKNOWN}/decisions`)).status).toBe(403);
+  });
+
+  it('every other population is refused at the server', async () => {
+    await grade(KID7, 'p10');
+    expect((await get(OTHER_PARENT, `/family/learning/kids/${KID7}/decisions`)).status).toBe(404);
+    const unverified = await get(UNVERIFIED_PARENT, `/family/learning/kids/${KID7}/decisions`);
+    expect(unverified.status).toBe(403);
+    expect(unverified.body.error.code).toBe('PARENT_VERIFICATION_REQUIRED');
+    for (const user of [KID7, TEEN15, ADULT]) expect((await get(user, `/family/learning/kids/${KID7}/decisions`)).status).toBe(403);
+    expect((await get(TUTOR, `/family/learning/kids/${KID7}/decisions?limit=99`)).status).toBe(400);
+    expect((await get(TUTOR, '/family/learning/kids/not-a-uuid/decisions')).status).toBe(400);
+    expect(built.db.audit_logs!.filter((r) => r.action === 'learner_journal.guardian_read')).toEqual([]);
+  });
+});

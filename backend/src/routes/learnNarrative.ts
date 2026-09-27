@@ -5,6 +5,7 @@ import { authedUser } from '../middleware/auth.js';
 import type { AgeScreenState } from '../services/ageScreen.js';
 import { getRolesForGate } from '../services/insights.js';
 import { bridgeAudience } from '../services/narrative/familyBridge.js';
+import { readJournalSharing } from '../services/narrative/journalSharing.js';
 import { actOnBridgePrompt, clearJournal, dismissBridgePrompt, getBridgePrompt, kcRowsByIds, listJournal, listOpenBridgePrompts } from '../services/narrative/narrativeData.js';
 import { getVerifiedGuardiansOfKid, insertAuditLog, serviceRest } from '../services/supabaseRest.js';
 
@@ -13,7 +14,9 @@ import { getVerifiedGuardiansOfKid, insertAuditLog, serviceRest } from '../servi
  * learnRouter, behind its requireAuth + requireAgeScreen.
  *
  * B.9 — the learner's own decision journal: read it, clear it. Only ever the
- * caller's own rows; there is no id in the path to point at someone else.
+ * caller's own rows; there is no id in the path to point at someone else. It
+ * says whether the verified Tutor can see the chosen options (OD-27 (3): a
+ * parent-created child under 13 only; journalSharing.ts).
  *
  * B.13 — self-directed bridge prompts, for an independent teen only (Option
  * B). Every other population gets an empty list and a 404 on any prompt id:
@@ -51,7 +54,10 @@ export function learnNarrativeRouter(): Router {
     const page = Page.safeParse(req.query);
     if (!page.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit must be 1-50 and offset 0-10000');
     const user = authedUser(res);
-    const journal = await listJournal(user.id, page.data.limit, page.data.offset);
+    const [journal, shared] = await Promise.all([
+      listJournal(user.id, page.data.limit, page.data.offset),
+      readJournalSharing(user.id, res.locals.ageScreen as AgeScreenState),
+    ]);
     if (!journal) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your journal');
     const lessonIds = [...new Set(journal.rows.map((r) => r.lesson_id))];
     const courseIds = [...new Set(journal.rows.map((r) => r.course_id))];
@@ -81,6 +87,8 @@ export function learnNarrativeRouter(): Router {
         }];
       }),
       hasMore: journal.hasMore,
+      // OD-27 (3): the learner is told when their verified Tutor can see their choices; null when that could not be read.
+      sharedWithTutor: shared,
     });
   });
 

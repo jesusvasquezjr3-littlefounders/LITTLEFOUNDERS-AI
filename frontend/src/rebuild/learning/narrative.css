@@ -64,3 +64,10 @@
 .lf-learner-shortcut-link { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-2); }
 /* OD-28 (L-12): the teen's own goal from a savings prompt, a short form in the same card. */
 .lf-bridge-self-goal { display: grid; gap: var(--spacing-3); }
+/* OD-27 (3): who else sees the choices, said plainly under the title. */
+.lf-journal-shared { font-weight: 700; color: var(--content); }
+/* OD-27 (3): the Tutor's panel of an under-13 child's story choices (mounted in the Family Hub). */
+.lf-child-decisions { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); }
+.lf-child-decisions-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
+.lf-child-decisions .lf-journal-entry > * { grid-column: 1 / -1; }
+.lf-child-decisions .lf-journal-situation { padding-inline: var(--spacing-3); }

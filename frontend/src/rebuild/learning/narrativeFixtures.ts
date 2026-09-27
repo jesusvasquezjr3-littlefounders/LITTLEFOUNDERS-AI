@@ -1,5 +1,6 @@
 import type { Locale } from '../design/copyBudget';
 import type { JournalState, NarrativeRecall, SelfBridge } from './narrative';
+import type { ChildDecisionsState } from './childDecisions';
 
 /*
  * S05.3c preview fixtures for the recall and the journal, in the three
@@ -57,7 +58,19 @@ export function journalFixture(locale: Locale, withBridge: boolean): JournalStat
 export const journalPreviewStates = (locale: Locale): Record<string, JournalState> => ({
   list: journalFixture(locale, false),
   teen: journalFixture(locale, true),
+  // OD-27 (3): a parent-created child under 13, whose verified Tutor sees the chosen options.
+  shared: { ...journalFixture(locale, false), sharedWithTutor: true } as JournalState,
   empty: { status: 'ready', entries: [], hasMore: false, bridges: [] },
   loading: { status: 'loading' },
   error: { status: 'error' },
 });
+
+/** OD-27 (3): the Tutor's view of an under-13 child's story choices (titles arrive in the Tutor's locale). */
+export function childDecisionsFixture(locale: Locale): ChildDecisionsState {
+  const course = { 'en-US': 'Money basics', 'es-MX': 'Bases del dinero', 'pt-BR': 'Básico do dinheiro' }[locale];
+  const lesson = { 'en-US': 'The lemonade stand', 'es-MX': 'El puesto de limonada', 'pt-BR': 'A banca de limonada' }[locale];
+  const recall = recallFixture(locale);
+  return { status: 'ready', hasMore: false, entries: [
+    { id: 'decision-1', courseTitle: course, lessonTitle: lesson, situation: recall.situation, choice: recall.choice, recordedAt: '2026-09-20T10:00:00.000Z' },
+  ] };
+}

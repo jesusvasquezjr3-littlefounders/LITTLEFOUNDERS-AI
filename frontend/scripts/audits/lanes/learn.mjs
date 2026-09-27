@@ -15,6 +15,8 @@ const lessonSurfaces = [
   ['fractionarea', ['6-9']], ['barmodel', ['10-12']], ['schemadiagram', ['10-12']], ['workedexample', ['10-12']], ['functionmachine', ['10-12']],
   ['cpafading', ['6-9', '10-12']], ['result', ['6-9']], ['replay', ['6-9']], ['upgrade', ['6-9']], ['invalid', ['6-9']], ['opening', ['6-9']],
   ['offline', ['6-9']], ['loaderror', ['6-9']], ['resultbadge', ['6-9']],
+  // W2L.4 (OD-27 (3)): the Tutor's view of an under-13 child's story choices, at the adult budget it is written to.
+  ['childdecisions', ['adult']],
 ];
 
 export const states = [
