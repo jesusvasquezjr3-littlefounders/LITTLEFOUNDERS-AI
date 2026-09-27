@@ -304,7 +304,7 @@ export function familyRouter(): Router {
 
     // A parent-provided date supplies the same minimal admission evidence as
     // the standalone screen. Do not ask the child to repeat or override it.
-    if (birthDate && !await recordAgeScreen(kidId, declaredBandForDate(birthDate)!)) {
+    if (birthDate && !await recordAgeScreen(kidId, declaredBandForDate(birthDate)!, birthDate)) {
       const undone = await adminDeleteUser(kidId);
       await insertAuditLog(parent.id, 'family.kid_create.rolled_back', kidId, {
         rollbackSucceeded: undone.error === null, stage: 'age_declaration',

@@ -12,8 +12,9 @@
  *    hydration is invisible to every social unfurler and to almost every AI
  *    crawler, which are precisely the consumers this exists for.
  * 2. It does not invent copy. Titles and descriptions come from site.mjs; the
- *    body shell is assembled from the SAME i18n JSON the running app renders,
- *    so the prerendered page cannot drift from the page a person sees. Serving
+ *    body shell is assembled from the SAME i18n JSON the running app renders
+ *    (the rebuilt public site's `rebuild-site.json`, W2 Lane 1), so the
+ *    prerendered page cannot drift from the page a person sees. Serving
  *    crawlers different content than users is cloaking, and it is penalised.
  * 3. It does not guess the routes. It fails the build if site.mjs and the
  *    app's own marketing-path allowlist disagree — the drift class that
@@ -100,7 +101,7 @@ function headFor(page, locale, marketing) {
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:type" content="image/jpeg" />`,
-    `<meta property="og:image:alt" content="${esc(`${SITE.name} — ${meta.h1}`)}" />`,
+    `<meta property="og:image:alt" content="${esc(`${SITE.name}: ${meta.h1}`)}" />`,
     `<meta property="og:locale" content="${SITE.ogLocale[locale]}" />`,
     ...alternates.map((id) => `<meta property="og:locale:alternate" content="${SITE.ogLocale[id]}" />`),
 
@@ -110,7 +111,7 @@ function headFor(page, locale, marketing) {
     `<meta name="twitter:title" content="${esc(meta.title)}" />`,
     `<meta name="twitter:description" content="${esc(meta.description)}" />`,
     `<meta name="twitter:image" content="${esc(image)}" />`,
-    `<meta name="twitter:image:alt" content="${esc(`${SITE.name} — ${meta.h1}`)}" />`,
+    `<meta name="twitter:image:alt" content="${esc(`${SITE.name}: ${meta.h1}`)}" />`,
 
     /*
      * Small icons on purpose. `favicon.png` is the 2553px master and weighs
@@ -216,13 +217,13 @@ function jsonLd(page, locale, marketing) {
 
     // The one statistic in the marketing copy, carried with its attribution so
     // a machine quoting it can quote the source too.
-    const fact = marketing?.fact;
-    if (fact?.heading) {
+    const landing = marketing?.landing;
+    if (landing?.factValue) {
       graph.push({
         '@type': 'Claim',
-        text: fact.heading,
+        text: `${landing.factValue} ${landing.factBody}`,
         appearance: { '@type': 'WebPage', url },
-        citation: fact.source ?? undefined,
+        citation: landing.factSource ?? undefined,
       });
     }
   }
@@ -245,26 +246,47 @@ function shellFor(page, locale, marketing) {
   const meta = metaFor(page, locale);
   const nav = marketing.nav ?? {};
   const parts = [`<h1>${esc(meta.h1)}</h1>`];
+  const section = (heading, ...paragraphs) => `<h2>${esc(heading)}</h2>${paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}`;
 
   if (page.path === '/') {
+    const l = marketing.landing;
     parts.push(
-      `<p>${esc(marketing.hero.subtitle)}</p>`,
-      `<p>${esc(marketing.fact.heading)} ${esc(marketing.fact.intro)} <small>${esc(marketing.fact.source)}</small></p>`,
-      `<h2>${esc(marketing.journey.heading)}</h2>`,
-      `<p>${esc(marketing.journey.intro)} ${esc(MENTORS.join(', '))}.</p>`,
-      `<h2>${esc(marketing.legacy.heading)}</h2>`,
-      `<p>${esc(marketing.legacy.body)}</p>`,
+      `<p>${esc(l.lead)} ${esc(l.note)}</p>`,
+      section(l.mentorsTitle, `${l.mentorsBody} ${MENTORS.join(', ')}.`),
+      `<p>${esc(l.factValue)} ${esc(l.factBody)} <small>${esc(l.factSource)}</small></p>`,
+      section(l.decideTitle, l.decideBody),
+      section(l.familyTitle, l.familyBody),
       `<h2>${esc(SUBJECTS[locale].map((s) => s.name).join(' · '))}</h2>`,
-      `<ul>${SUBJECTS[locale].map((s) => `<li><strong>${esc(s.name)}</strong> — ${esc(s.about)}</li>`).join('')}</ul>`,
-      `<p>${esc(marketing.finalCta.title)}. ${esc(marketing.finalCta.body)}</p>`,
+      `<ul>${SUBJECTS[locale].map((s) => `<li><strong>${esc(s.name)}</strong>: ${esc(s.about)}</li>`).join('')}</ul>`,
+      section(l.closingTitle, l.closingBody),
     );
   } else if (page.path === '/how-it-works') {
     const h = marketing.howItWorks;
     parts.push(
-      `<h2>${esc(h.decisions.heading)}</h2><p>${esc(h.decisions.body)}</p>`,
-      `<h2>${esc(h.mentors.heading)}</h2><p>${esc(h.mentors.body)}</p>`,
-      `<h2>${esc(h.account.heading)}</h2><p>${esc(h.account.body)}</p>`,
-      `<p>${esc(h.closing.title)} ${esc(h.closing.body)}</p>`,
+      `<p>${esc(h.lead)}</p>`,
+      section(h.demoTitle, h.demoQuestion),
+      section(h.mentorsTitle, `${h.mentorsBody} ${MENTORS.join(', ')}.`),
+      section(h.guestTitle, h.guestBody),
+      section(h.closingTitle, h.closingBody),
+    );
+  } else if (page.path === '/families') {
+    const f = marketing.families;
+    parts.push(
+      `<p>${esc(f.lead)}</p>`,
+      section(f.visibilityTitle, f.visibilityBody, f.micNote),
+      section(f.choresTitle, f.choresBody),
+      section(f.bankingTitle, f.bankingBody),
+      section(f.mapTitle, f.mapBody),
+      section(f.privacyTitle, f.privacyBody),
+      `<h2>${esc(f.stepsTitle)}</h2><ol>${[1, 2, 3, 4].map((n) => `<li><strong>${esc(f[`step${n}Title`])}</strong>: ${esc(f[`step${n}Body`])}</li>`).join('')}</ol>`,
+      section(f.closingTitle, f.closingBody),
+    );
+  } else if (page.path === '/faq') {
+    // The answers themselves: the page a person sees is these questions, each opening its answer.
+    const q = marketing.faq;
+    parts.push(
+      `<p>${esc(q.lead)}</p>`,
+      `<dl>${Object.values(q.items).map((item) => `<dt>${esc(item.question)}</dt><dd>${esc(item.answer)}</dd>`).join('')}</dl>`,
     );
   } else {
     parts.push(`<p>${esc(meta.description)}</p>`);
@@ -275,7 +297,7 @@ function shellFor(page, locale, marketing) {
     .filter((other) => other.path !== page.path)
     .map((other) => `<li><a href="${other.path}">${esc(metaFor(other, locale).title.split(' | ')[0])}</a></li>`)
     .join('');
-  parts.push(`<nav aria-label="${esc(nav.howItWorks ?? 'Site')}"><ul>${links}</ul></nav>`);
+  parts.push(`<nav aria-label="${esc(nav.navigation ?? 'Site')}"><ul>${links}</ul></nav>`);
 
   return parts.join('\n      ');
 }
@@ -475,7 +497,8 @@ function main() {
   }
 
   const locale = SITE.canonicalLocale;
-  const marketing = readJson(join(FRONTEND, `src/i18n/${locale}/marketing.json`));
+  // The rebuilt public site's copy (the pages a person sees) and the site shell's navigation label.
+  const marketing = { ...readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-site.json`)), nav: readJson(join(FRONTEND, `src/i18n/${locale}/rebuild-core.json`)).appShell };
 
   // The SPA fallback FIRST, from the untouched template.
   writeFileSync(join(DIST, 'app-shell.html'), renderAppShell(template));

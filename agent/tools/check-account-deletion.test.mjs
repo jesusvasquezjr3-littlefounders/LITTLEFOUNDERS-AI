@@ -23,9 +23,9 @@ const FILES = [
   'oracle/src/routes/erasure.ts',
   'dataintel/src/routes/queries.ts',
   'docs/rebuild/policies/ACCOUNT-DELETION.md',
-  'frontend/src/i18n/en-US/marketing.json',
-  'frontend/src/i18n/es-MX/marketing.json',
-  'frontend/src/i18n/pt-BR/marketing.json',
+  'frontend/src/i18n/en-US/rebuild-site.json',
+  'frontend/src/i18n/es-MX/rebuild-site.json',
+  'frontend/src/i18n/pt-BR/rebuild-site.json',
   '.github/workflows/account-deletion.yml',
 ];
 
@@ -110,10 +110,10 @@ test('a policy that disagrees with Core’s grace period fails', () => {
 
 test('a FAQ that goes back to "contact us" fails', () => {
   withFixture((root) => {
-    const path = join(root, 'frontend/src/i18n/en-US/marketing.json');
+    const path = join(root, 'frontend/src/i18n/en-US/rebuild-site.json');
     const faq = readFileSync(path, 'utf8');
     writeFileSync(path, faq.replace(/("deleteAccount": \{\s*"question": "[^"]*",\s*"answer": ")[^"]*"/, '$1Yes, contact us and we will process it."'));
-  }, /en-US\/marketing\.json/);
+  }, /en-US\/rebuild-site\.json/);
 });
 
 test('an unscheduled sweep fails', () => {
@@ -143,12 +143,12 @@ test('a later migration that re-declares the key with SET NULL fixes it', () => 
 });
 
 test('a FAQ that says signing in alone keeps the account fails', () => {
-  withFixture((root) => edit(root, 'frontend/src/i18n/es-MX/marketing.json', 'salvo que inicies sesión y la conserves.', 'salvo que vuelvas a iniciar sesión.'), /es-MX\/marketing\.json: the deletion FAQ must say the account is kept/);
+  withFixture((root) => edit(root, 'frontend/src/i18n/es-MX/rebuild-site.json', 'salvo que decidas conservarla.', 'salvo que vuelvas a iniciar sesión.'), /es-MX\/rebuild-site\.json: the deletion FAQ must say the account is kept/);
 });
 
 test('an over-budget deletion FAQ answer fails', () => {
-  withFixture((root) => edit(root, 'frontend/src/i18n/en-US/marketing.json',
+  withFixture((root) => edit(root, 'frontend/src/i18n/en-US/rebuild-site.json',
     "Guest accounts go at once; a Tutor deletes a child's.",
     "Guest accounts go at once. A Tutor deletes a child's account from the Family page."),
-  /en-US\/marketing\.json: the deletion FAQ answer is over the Copy Budget/);
+  /en-US\/rebuild-site\.json: the deletion FAQ answer is over the Copy Budget/);
 });

@@ -25,9 +25,13 @@ export function KidSuspendedScreen({ copy, variant }: {
   copy: KidSuspendedCopy;
   variant: 'suspended' | 'deleted';
 }) {
+  const [before, after = ''] = copy.help.split('{email}');
   return <div className="lf-kid-suspended" data-screen="account-suspended">
     <Copy role="heading" as="h1">{copy.title}</Copy>
     <Copy role="body">{variant === 'deleted' ? copy.deletedBody : copy.suspendedBody}</Copy>
-    <Copy role="body">{copy.help.replace('{email}', copy.supportEmail)}</Copy>
+    {/* "Ask a parent to email {email}." reads as "Ask a parent to email:" with the address on the next line. */}
+    <Copy role="body">{`${before}${after}`.replace(/\s*[.!?]$/u, '').trim()}:</Copy>
+    {/* The address, on its own line as a link a parent can press on this device (W2S.2): data, not copy. */}
+    <a className="lf-kid-suspended-email ugc" href={`mailto:${copy.supportEmail}`} data-copy-role="data">{copy.supportEmail}</a>
   </div>;
 }

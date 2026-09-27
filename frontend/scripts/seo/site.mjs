@@ -102,11 +102,11 @@ export const SITE = {
  */
 export const ELEVATOR = {
   'en-US':
-    'LittleFounders is a family learning platform where children and teenagers build real money skills — saving, spending, earning, entrepreneurship and investing — by making decisions inside guided stories rather than by watching lessons. Four mentor characters lead the way and a tutor answers out loud. Parents get their own account and full visibility. Available in English, Spanish and Portuguese, and free to start without an account.',
+    'LittleFounders is a family learning platform where children and teenagers build real money skills (saving, spending, earning, entrepreneurship and investing) by making decisions inside guided stories rather than by watching lessons. Four Mentor characters guide the way and answer questions. Parents open a Tutor account and see every Mentor conversation. Available in English, Spanish and Portuguese, and free to start without an account.',
   'es-MX':
-    'LittleFounders es una plataforma de aprendizaje familiar donde niñas, niños y adolescentes desarrollan habilidades reales con el dinero — ahorrar, gastar, ganar, emprender e invertir — tomando decisiones dentro de historias guiadas, no viendo lecciones. Cuatro personajes mentores los acompañan y un tutor responde en voz alta. Los padres tienen su propia cuenta y visibilidad completa. Disponible en español, inglés y portugués, y gratis para empezar sin crear cuenta.',
+    'LittleFounders es una plataforma de aprendizaje familiar donde niñas, niños y adolescentes desarrollan habilidades reales con el dinero (ahorrar, gastar, ganar, emprender e invertir) tomando decisiones dentro de historias guiadas, no viendo lecciones. Cuatro personajes Mentor los acompañan y responden sus preguntas. Los padres abren una cuenta Tutor y ven cada conversación con el Mentor. Disponible en español, inglés y portugués, y gratis para empezar sin crear cuenta.',
   'pt-BR':
-    'LittleFounders é uma plataforma de aprendizagem familiar onde crianças e adolescentes desenvolvem habilidades reais com dinheiro — poupar, gastar, ganhar, empreender e investir — tomando decisões dentro de histórias guiadas, em vez de assistir a aulas. Quatro personagens mentores conduzem o caminho e um tutor responde em voz alta. Os responsáveis têm a própria conta e visibilidade completa. Disponível em português, espanhol e inglês, e grátis para começar sem criar conta.',
+    'LittleFounders é uma plataforma de aprendizagem familiar onde crianças e adolescentes desenvolvem habilidades reais com dinheiro (poupar, gastar, ganhar, empreender e investir) tomando decisões dentro de histórias guiadas, em vez de assistir a aulas. Quatro personagens Mentor conduzem o caminho e respondem perguntas. Os responsáveis abrem uma conta Tutor e veem cada conversa com o Mentor. Disponível em português, espanhol e inglês, e grátis para começar sem criar conta.',
 };
 
 /** Short positioning line for the share card. Kept under ~70 characters so it sets large. */
@@ -153,7 +153,7 @@ export const PAGES = [
   {
     path: '/',
     index: true,
-    lastmod: '2026-08-26',
+    lastmod: '2026-09-26',
     priority: '1.0',
     changefreq: 'weekly',
     /** Included in llms.txt so an agent knows what the page is for. */
@@ -162,48 +162,48 @@ export const PAGES = [
       'en-US': {
         title: 'Financial literacy for kids and teens | LittleFounders',
         description:
-          "Kids don't watch lessons here — they make decisions and live the results. Four mentors, a tutor that answers, and real money skills. Free to start.",
-        h1: 'Financial learning for the digital economy and smart investing',
+          "Kids don't watch lessons here: they make decisions and live the results. Four Mentors who answer back, and real money skills. Free to start.",
+        h1: 'The money pattern in your family ends with you.',
       },
       'es-MX': {
         title: 'Educación financiera para niños y adolescentes | LittleFounders',
         description:
-          'Aquí no ven lecciones: toman decisiones y viven el resultado. Cuatro mentores, un tutor que responde y habilidades reales con el dinero. Gratis para empezar.',
-        h1: 'Aprendizaje financiero para la economía digital y la inversión inteligente',
+          'Aquí no ven lecciones: toman decisiones y viven el resultado. Cuatro Mentores que responden y habilidades reales con el dinero. Gratis para empezar.',
+        h1: 'El patrón del dinero en tu familia termina contigo.',
       },
       'pt-BR': {
         title: 'Educação financeira para crianças e adolescentes | LittleFounders',
         description:
-          'Aqui não se assiste a aulas: decide-se e vive-se o resultado. Quatro mentores, um tutor que responde e habilidades reais com dinheiro. Grátis para começar.',
-        h1: 'Aprendizado financeiro para a economia digital e o investimento inteligente',
+          'Aqui não se assiste a aulas: decide-se e vive-se o resultado. Quatro Mentores que respondem e habilidades reais com dinheiro. Grátis para começar.',
+        h1: 'O padrão do dinheiro na sua família termina com você.',
       },
     },
   },
   {
     path: '/how-it-works',
     index: true,
-    lastmod: '2026-08-26',
+    lastmod: '2026-09-26',
     priority: '0.9',
     changefreq: 'monthly',
     agentSummary:
-      'How the learning works: decisions with consequences, four mentors, a tutor you can talk to, and no account required to try it.',
+      'How the learning works: decisions with consequences, four Mentors who answer questions, and no account required to try it.',
     meta: {
       'en-US': {
-        title: 'How it works — decisions, not lectures | LittleFounders',
+        title: 'How it works: decisions, not lectures | LittleFounders',
         description:
-          'Every lesson puts your child inside a choice that has a consequence. Four mentors guide it, the tutor answers back, and you can try it without an account.',
+          'Every lesson puts your child inside a choice that has a consequence. Four Mentors guide it and answer back, and you can try it without an account.',
         h1: 'From curiosity to financial confidence',
       },
       'es-MX': {
-        title: 'Cómo funciona — decisiones, no lecciones | LittleFounders',
+        title: 'Cómo funciona: decisiones, no lecciones | LittleFounders',
         description:
-          'Cada lección pone a tu hijo dentro de una decisión que tiene consecuencia. Cuatro mentores la guían, el tutor responde y puedes probarlo sin crear cuenta.',
+          'Cada lección pone a tu hijo dentro de una decisión que tiene consecuencia. Cuatro Mentores la guían y responden, y puedes probarlo sin crear cuenta.',
         h1: 'De la curiosidad a la confianza financiera',
       },
       'pt-BR': {
-        title: 'Como funciona — decisões, não aulas | LittleFounders',
+        title: 'Como funciona: decisões, não aulas | LittleFounders',
         description:
-          'Cada lição coloca seu filho dentro de uma escolha que tem consequência. Quatro mentores conduzem, o tutor responde e dá para testar sem criar conta.',
+          'Cada lição coloca seu filho dentro de uma escolha que tem consequência. Quatro Mentores conduzem e respondem, e dá para testar sem criar conta.',
         h1: 'Da curiosidade à confiança financeira',
       },
     },
@@ -211,28 +211,28 @@ export const PAGES = [
   {
     path: '/families',
     index: true, // Flag flipped 2026-09-14: the page now carries real content (see the note above PAGES).
-    lastmod: '2026-09-14',
+    lastmod: '2026-09-27',
     priority: '0.8',
     changefreq: 'monthly',
     agentSummary:
-      'What a Tutor (parent/guardian) account controls: full visibility into the AI Tutor, chores with real rewards, simulated banking, and how to create a Tutor account and link a child to it.',
+      'What a Tutor (verified parent) account controls: every Mentor conversation in full, chores with real rewards, simulated banking, and how to create a Tutor account and link a child to it.',
     meta: {
       'en-US': {
-        title: 'For families — the Tutor account | LittleFounders',
+        title: 'For families: the Tutor account | LittleFounders',
         description:
-          'Full visibility into every Tutor conversation, chores with real rewards, and privacy off by default. How to create your Tutor account and link your family.',
+          'Read every Mentor conversation, set chores with real rewards, keep usage analytics off by default. How to create your Tutor account and link your family.',
         h1: 'Here, you decide.',
       },
       'es-MX': {
-        title: 'Para familias — la cuenta Tutor | LittleFounders',
+        title: 'Para familias: la cuenta Tutor | LittleFounders',
         description:
-          'Visibilidad completa de cada conversación con el Tutor, tareas con recompensa real y privacidad apagada por defecto. Cómo crear tu cuenta Tutor y vincular tu familia.',
+          'Lee cada conversación con el Mentor, fija tareas con recompensa real y deja la analítica apagada. Cómo crear tu cuenta Tutor y vincular tu familia.',
         h1: 'Aquí decides tú.',
       },
       'pt-BR': {
-        title: 'Para famílias — a conta Tutor | LittleFounders',
+        title: 'Para famílias: a conta Tutor | LittleFounders',
         description:
-          'Visibilidade total de cada conversa com o Tutor, tarefas com recompensa real e privacidade desativada por padrão. Como criar sua conta Tutor e vincular sua família.',
+          'Leia cada conversa com o Mentor, defina tarefas com recompensa real e deixe a análise desligada. Como criar sua conta Tutor e vincular sua família.',
         h1: 'Aqui, você decide.',
       },
     },
@@ -240,28 +240,28 @@ export const PAGES = [
   {
     path: '/faq',
     index: true, // Flag flipped 2026-09-15: the page now carries real content (see the note above PAGES).
-    lastmod: '2026-09-15',
+    lastmod: '2026-09-26',
     priority: '0.6',
     changefreq: 'monthly',
     agentSummary:
-      'Answers to the specific objections people have right before signing up: is it free, is it private, does a child talk to an AI, what LF Coins are, and how Tutor accounts and data privacy work.',
+      'Answers to the specific objections people have right before signing up: is it free to start, is it private, does a child talk to an AI (the Mentor), what the coins are, and how Tutor accounts and data privacy work.',
     meta: {
       'en-US': {
         title: 'Frequently asked questions | LittleFounders',
         description:
-          'Is it free? Is it private? Does my child talk to an AI? Real answers about Tutor accounts, LF Coins and data privacy — no marketing spin.',
+          'Is it free to start? Is it private? Does my child talk to an AI? Real answers about Tutor accounts, coins and data privacy, without marketing spin.',
         h1: 'Frequently asked questions',
       },
       'es-MX': {
         title: 'Preguntas frecuentes | LittleFounders',
         description:
-          '¿Es gratis? ¿Es privado? ¿Mi hijo habla con una IA? Respuestas reales sobre la cuenta Tutor, los LF Coins y la privacidad de tus datos.',
+          '¿Es gratis para empezar? ¿Es privado? ¿Mi hijo habla con una IA? Respuestas reales sobre la cuenta Tutor, las monedas y la privacidad de tus datos.',
         h1: 'Preguntas frecuentes',
       },
       'pt-BR': {
         title: 'Perguntas frequentes | LittleFounders',
         description:
-          'É grátis? É privado? Meu filho conversa com uma IA? Respostas reais sobre a conta Tutor, os LF Coins e a privacidade dos seus dados.',
+          'É grátis para começar? É privado? Meu filho conversa com uma IA? Respostas reais sobre a conta Tutor, as moedas e a privacidade dos seus dados.',
         h1: 'Perguntas frequentes',
       },
     },
@@ -328,17 +328,17 @@ export const MENTORS = ['Dina', 'Liruf', 'Dr. Rho', 'Zara'];
  */
 export const SUBJECTS = {
   'en-US': [
-    { name: 'Financial Education', about: 'Saving, spending, earning, budgeting and avoiding fraud — the everyday habits money rests on.' },
+    { name: 'Financial Education', about: 'Saving, spending, earning, budgeting and avoiding fraud: the everyday habits money rests on.' },
     { name: 'Entrepreneurship', about: 'Turning an idea into an offer someone will pay for, and running it without losing money.' },
     { name: 'Investing', about: 'Risk, patience, compounding and the difference between investing and gambling.' },
   ],
   'es-MX': [
-    { name: 'Educación Financiera', about: 'Ahorrar, gastar, ganar, presupuestar y evitar fraudes — los hábitos diarios sobre los que descansa el dinero.' },
+    { name: 'Educación Financiera', about: 'Ahorrar, gastar, ganar, presupuestar y evitar fraudes: los hábitos diarios sobre los que descansa el dinero.' },
     { name: 'Emprendimiento', about: 'Convertir una idea en una oferta por la que alguien pague, y sostenerla sin perder dinero.' },
     { name: 'Inversiones', about: 'Riesgo, paciencia, interés compuesto y la diferencia entre invertir y apostar.' },
   ],
   'pt-BR': [
-    { name: 'Educação Financeira', about: 'Poupar, gastar, ganhar, fazer orçamento e evitar fraudes — os hábitos diários sobre os quais o dinheiro se apoia.' },
+    { name: 'Educação Financeira', about: 'Poupar, gastar, ganhar, fazer orçamento e evitar fraudes: os hábitos diários sobre os quais o dinheiro se apoia.' },
     { name: 'Empreendedorismo', about: 'Transformar uma ideia em uma oferta que alguém pague, e mantê-la sem perder dinheiro.' },
     { name: 'Investimentos', about: 'Risco, paciência, juros compostos e a diferença entre investir e apostar.' },
   ],

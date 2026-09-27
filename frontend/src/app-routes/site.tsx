@@ -48,12 +48,16 @@ export const siteAuthRoutes = (
   </>
 );
 
-/** Routes that sat in the marketing chrome but are part of the sign-in flow. */
+/** The OAuth return, parent verification and saving a guest's progress: sign-in screens that need (or make) a session. */
 export const siteAccountRoutes = (
   <>
     {/* OAuth landing — not guest-guarded: it completes the transition from guest to authed. */}
     <Route path="auth/callback" element={<AuthCallbackPage />} />
     <Route path="verify-parent" element={<RequireAuth><VerifyParentPage /></RequireAuth>} />
+    {/* Attach a permanent identity to the current guest session in
+        place — never /signup, which would mint a second blank identity.
+        On the sign-in shell since W2S.2 (A6 is a sign-in screen). */}
+    <Route path="upgrade-account" element={<RequireAuth><UpgradeAccountPage /></RequireAuth>} />
   </>
 );
 
@@ -64,9 +68,6 @@ export const siteStandaloneRoutes = (
         app/marketing chrome; RequireAuth only (a guest already has a
         session the moment they land here — see Landing's startAsGuest). */}
     <Route path="onboarding" element={<RequireAuth><OnboardingPage /></RequireAuth>} />
-    {/* Attach a permanent identity to the current guest session in
-        place — never /signup, which would mint a second blank identity. */}
-    <Route path="upgrade-account" element={<RequireAuth><UpgradeAccountPage /></RequireAuth>} />
     {/* Shareable-achievement-badge landing page (0072/0073) — the ONE
         route in this app a stranger opens with no account and no
         session. No chrome, no auth: its own fullscreen layer, but

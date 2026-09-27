@@ -1,136 +1,52 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
-import { Button, Icon } from '@/components/ui';
-import { Field } from '@/components/ui/Field';
-import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
-import { ErrorBanner } from './ErrorBanner';
+import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
+import { ResetPasswordScreen, type ResetView } from '@/rebuild/identity/RecoveryScreens';
+import { failureCode } from './failureCode';
 
 /*
- * Landing page for the recovery.html link (GoTrue redirect_to=/reset-password
- * — backend/src/routes/auth.ts POST /recover). GoTrue hands back a SHORT-
- * LIVED `type=recovery` session in the URL fragment, same shape as the OAuth
- * callback — but unlike AuthCallbackPage this token is NEVER persisted as a
- * normal session: it exists only to authorize the one POST /reset-password
- * call below, then the user signs in fresh with the new password.
+ * `/reset-password` (A4), the recovery email's link (GoTrue redirect_to, Core
+ * POST /auth/recover). GoTrue hands back a short-lived `type=recovery` session
+ * in the URL fragment. It is never kept as a sign-in: it authorises the one
+ * POST /auth/reset-password below, then the person signs in with the new
+ * password. The token leaves the address bar and the history at once.
+ *
+ * Core refuses a token that is not a recovery session (FORBIDDEN) or no longer
+ * valid (UNAUTHORIZED): both mean the link cannot be used, so the screen says
+ * the link expired and offers a new one rather than an error to retry.
  */
-const MENTOR = '/marketing/mentor-rho-bust.webp';
+const LINK_UNUSABLE = new Set(['UNAUTHORIZED', 'FORBIDDEN']);
 
 export function ResetPasswordPage() {
-  const { t } = useTranslation();
+  const locale = useShellLocale();
+  const onNavigate = useShellNavigate();
   const ran = useRef(false);
-
-  const [recoveryToken, setRecoveryToken] = useState<string | null | undefined>(undefined); // undefined = still parsing
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [view, setView] = useState<ResetView>({ kind: 'checking' });
 
   useEffect(() => {
     if (ran.current) return;
     ran.current = true;
     const raw = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.search.slice(1);
-    const params = new URLSearchParams(raw);
-    const accessToken = params.get('access_token');
-    // Never leave the recovery token sitting in the address bar / history.
+    const accessToken = new URLSearchParams(raw).get('access_token');
     window.history.replaceState(null, '', window.location.pathname);
-    setRecoveryToken(accessToken);
+    setToken(accessToken);
+    setView(accessToken ? { kind: 'form', pending: false, errorCode: null } : { kind: 'expired' });
   }, []);
 
-  const passwordTooShort = password.length > 0 && password.length < 8;
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (password.length < 8 || !recoveryToken) return;
-    setSubmitting(true);
-    setErrorCode(null);
-    const { error } = await api('/auth/reset-password', { method: 'POST', token: recoveryToken, body: { password } });
-    setSubmitting(false);
+  async function submit(password: string) {
+    if (!token) return;
+    setView({ kind: 'form', pending: true, errorCode: null });
+    const { error } = await api('/auth/reset-password', { method: 'POST', token, body: { password } });
     if (error) {
       playPlatformSound('auth_error');
-      setErrorCode(error.code);
+      setView(LINK_UNUSABLE.has(error.code) ? { kind: 'expired' } : { kind: 'form', pending: false, errorCode: failureCode(error) });
       return;
     }
     playPlatformSound('auth_success');
-    setDone(true);
+    setView({ kind: 'done' });
   }
 
-  if (done) {
-    return (
-      <AuthShell character={MENTOR} title={t('auth.resetPassword.doneTitle')}>
-        <div className="flex flex-col items-center gap-4 text-center">
-          {/* The study's icon well, in place of a hand-rolled tinted circle. */}
-          <span className="lf-tile h-14 w-14 text-success-strong">
-            <Icon name="check_circle" aria-hidden className="!text-[26px]" />
-          </span>
-          <p className="lf-body text-content">{t('auth.resetPassword.doneBody')}</p>
-          <Link
-            to="/login"
-            className={AUTH_LINK_CLASS}
-          >
-            {t('auth.resetPassword.goToLogin')}
-          </Link>
-        </div>
-      </AuthShell>
-    );
-  }
-
-  if (recoveryToken === null) {
-    return (
-      <AuthShell character={MENTOR} title={t('auth.resetPassword.expiredTitle')}>
-        <div className="flex flex-col items-center gap-4 text-center">
-          {/* The expired state was the one terminal screen in the auth surface
-              with no icon at all, so it read as a paragraph that had lost its
-              page. Same well, warning hue — the state is recoverable, not an
-              error. */}
-          <span className="lf-tile h-14 w-14 text-warning-strong">
-            <Icon name="link_off" aria-hidden className="!text-[26px]" />
-          </span>
-          <p className="lf-body text-content-muted">{t('auth.resetPassword.expiredBody')}</p>
-          <Link
-            to="/forgot-password"
-            className={AUTH_LINK_CLASS}
-          >
-            {t('auth.resetPassword.requestNew')}
-          </Link>
-        </div>
-      </AuthShell>
-    );
-  }
-
-  return (
-    <AuthShell character={MENTOR} title={t('auth.resetPassword.title')} subtitle={t('auth.resetPassword.subtitle')}>
-      <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5" aria-busy={recoveryToken === undefined}>
-        {errorCode && <ErrorBanner code={errorCode} />}
-        <Field
-          label={t('auth.resetPassword.password')}
-          type={showPassword ? 'text' : 'password'}
-          autoComplete="new-password"
-          required
-          minLength={8}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          hint={t('auth.resetPassword.passwordHint')}
-          error={passwordTooShort ? t('auth.resetPassword.passwordTooShort') : undefined}
-          trailing={
-            <button
-              type="button"
-              aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
-              aria-pressed={showPassword}
-              onClick={() => setShowPassword((s) => !s)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <Icon name={showPassword ? 'visibility_off' : 'visibility'} />
-            </button>
-          }
-        />
-        <Button type="submit" disabled={submitting || recoveryToken === undefined || password.length < 8} className="mt-1 w-full">
-          {submitting ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submit')}
-        </Button>
-      </form>
-    </AuthShell>
-  );
+  return <ResetPasswordScreen locale={locale} view={view} onSubmit={(password) => void submit(password)} onNavigate={onNavigate} />;
 }

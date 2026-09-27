@@ -11,7 +11,7 @@
     "day": "Día",
     "year": "Año",
     "loading": "Revisando tu cuenta…",
-    "help": "Tu edad nos ayuda a proteger tu aprendizaje."
+    "help": "Tu edad protege tu aprendizaje. Guardamos como máximo el mes y el año."
   },
   "kidSuspended": {
     "title": "Esta cuenta está en pausa",
@@ -19,5 +19,471 @@
     "deletedBody": "Esta cuenta se eliminó tras 90 días en pausa.",
     "help": "Pide a un adulto que escriba a {email}.",
     "supportEmail": "informame@littlefounders.ai"
+  },
+  "site": {
+    "startFree": "Empieza gratis",
+    "starting": "Empezando…",
+    "startError": "No pudimos empezar. Inténtalo de nuevo.",
+    "continue": "Continuar",
+    "login": "Iniciar sesión",
+    "becomeTutor": "Conviértete en el Tutor de tu hijo",
+    "openFamily": "Abrir tu familia",
+    "openApp": "Abrir la app",
+    "pickOne": "Elige una para ver qué cambia.",
+    "mentorsLabel": "Los cuatro Mentores"
+  },
+  "landing": {
+    "title": "El patrón del dinero en tu familia termina contigo.",
+    "lead": "Te mostramos cómo. Tú tienes que estar presente.",
+    "note": "Gratis para empezar. Pruébalo como invitado, sin crear cuenta.",
+    "factValue": "67%",
+    "factBody": "de los adultos nunca aprendió a manejar el dinero a tiempo.",
+    "factSource": "Fuente: S&P Global FinLit Survey",
+    "decideTitle": "Aprenden de dinero decidiendo, no mirando.",
+    "decideBody": "Cada lección pone a tu hijo dentro de una decisión con consecuencia. Aprende porque decidió.",
+    "decideAction": "Cómo funciona",
+    "mentorsTitle": "Tu hijo elige a su Mentor",
+    "mentorsBody": "Cuatro Mentores explican, preguntan y responden. Tu hijo elige quién lo acompaña.",
+    "familyTitle": "Conviértete en el Tutor de tu hijo",
+    "familyBody": "Verifícate, agrega a tu hijo y ve lo que aprende, incluida cada conversación con su Mentor.",
+    "familyAction": "Para familias",
+    "closingTitle": "Empieza la conversación que nunca tuviste",
+    "closingBody": "Gratis para empezar. Tu hijo juega las lecciones y tú hablas de ellas en casa."
+  },
+  "howItWorks": {
+    "title": "De la curiosidad a la confianza financiera",
+    "lead": "No damos lecciones. Damos decisiones.",
+    "demoTitle": "Prueba una decisión",
+    "demoQuestion": "Ganaste 10 monedas. ¿Qué haces?",
+    "optionCandy": "Comprar dulces hoy",
+    "optionBike": "Ahorrar para la bici",
+    "consequenceCandy": "Dulce por 5 minutos y luego nada. La bici sigue igual de lejos.",
+    "consequenceBike": "Hoy no hay dulces. La bici está 10 monedas más cerca.",
+    "mentorsTitle": "Cuatro Mentores que responden",
+    "mentorsBody": "Guían las lecciones. Tu hijo pregunta y el Mentor responde.",
+    "guestTitle": "Empieza sin crear cuenta",
+    "guestBody": "Pruébalo ahora como invitado. Crea una cuenta cuando quieras guardar tu progreso.",
+    "closingTitle": "Hazlo tuyo",
+    "closingBody": "Un paso. Una vida de ideas."
+  },
+  "families": {
+    "title": "Aquí decides tú.",
+    "lead": "Tú abres la cuenta, vinculas a tu hijo y ves lo que aprende.",
+    "visibilityTitle": "Cada conversación con el Mentor, completa",
+    "visibilityBody": "Lee cada intercambio, turno por turno, no un resumen. Si el Mentor quiere recordar algo, primero lo apruebas tú.",
+    "exampleShow": "Ver un ejemplo",
+    "exampleHide": "Ocultar el ejemplo",
+    "exampleLabel": "Ejemplo",
+    "childLabel": "Tu hijo pregunta",
+    "childLine": "¿Por qué las tiendas quieren tanto mi dinero?",
+    "mentorLine": "Las tiendas están hechas para que quieras cosas. ¿Qué te hizo notarlo?",
+    "memoryPrompt": "El Mentor quiere recordar:",
+    "memoryNote": "Le interesa cómo los anuncios convencen a la gente.",
+    "approve": "Aprobar",
+    "notNow": "Ahora no",
+    "approved": "Recordado, con tu aprobación.",
+    "declined": "No se recordará.",
+    "micNote": "El micrófono de tu hijo está apagado por defecto. Solo se enciende con tu consentimiento.",
+    "choresTitle": "Tareas con una recompensa real",
+    "choresBody": "Tú fijas la tarea y sus monedas, y la apruebas o dejas pasar las pequeñas según el nivel que elijas.",
+    "choresQuestion": "Ganaste 10 monedas por una tarea. ¿Qué haces?",
+    "save": "Ahorrarlas",
+    "spend": "Gastarlas",
+    "share": "Compartirlas",
+    "consequenceSave": "10 monedas van hacia tu meta. Tu Tutor también ve tu avance.",
+    "consequenceSpend": "Pides una recompensa y dices por qué. Espera el sí de tu Tutor, salvo que entre en tu nivel.",
+    "consequenceShare": "Tus monedas para compartir van a una causa que eligió tu Tutor. Te cuentan qué pasó de verdad.",
+    "simulation": "Simulación",
+    "bankingTitle": "Una Cartera de práctica, no una cuenta bancaria",
+    "bankingBody": "Domingo, bono de ahorro y límites de gasto, todo en monedas. Nada de esto es dinero real.",
+    "mapTitle": "Su propio mapa, a tu vista",
+    "mapBody": "Ve el mapa que explora tu hijo: lecciones terminadas, racha y su última visita. Nunca comparado con otro niño.",
+    "privacyTitle": "Privado desde el diseño",
+    "privacyBody": "La analítica de uso sigue apagada para cada hijo hasta que tú la activas. Las respuestas del Mentor se revisan antes de que tu hijo las vea.",
+    "stepsTitle": "Configura tu familia en 4 pasos",
+    "step1Title": "Crea tu cuenta",
+    "step1Body": "Correo y contraseña. Elige convertirte en Tutor.",
+    "step2Title": "Verifica tu identidad",
+    "step2Body": "Tu nombre, fecha de nacimiento y una foto de tu identificación. La foto nunca se guarda.",
+    "step3Title": "Agrega a tu hijo",
+    "step3Body": "Un nombre, un usuario y una contraseña que tú eliges. Tu hijo no necesita correo.",
+    "step4Title": "Quedan vinculados",
+    "step4Body": "Un vínculo verificado une sus cuentas. Otro adulto verificado puede unirse con una invitación de un solo uso.",
+    "closingTitle": "Abre la cuenta que es tuya",
+    "closingBody": "Gratis para empezar. La cuenta de tu hijo viene justo después."
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "lead": "Respuestas cortas a lo que preguntan las familias antes de empezar.",
+    "filterLabel": "Temas",
+    "all": "Todas",
+    "categories": {
+      "start": "Primeros pasos",
+      "family": "Tutor y familia",
+      "mentor": "El Mentor",
+      "money": "Monedas y recompensas",
+      "privacy": "Privacidad y seguridad",
+      "support": "Soporte"
+    },
+    "items": {
+      "whatIs": {
+        "question": "¿Qué es LittleFounders?",
+        "answer": "Una plataforma familiar donde niños y adolescentes aprenden de dinero tomando decisiones en historias guiadas, con un Mentor a su lado."
+      },
+      "isFree": {
+        "question": "¿Es gratis?",
+        "answer": "Es gratis para empezar. Hoy no existe un plan de pago, y una cuenta Tutor nunca pide datos de pago."
+      },
+      "tryWithoutAccount": {
+        "question": "¿Puede mi hijo probarlo sin crear una cuenta?",
+        "answer": "Sí. Toca Empieza gratis para probarlo como invitado; el progreso se guarda en ese navegador."
+      },
+      "languages": {
+        "question": "¿En qué idiomas está?",
+        "answer": "Inglés, español y portugués. Cámbialo cuando quieras desde el menú de idioma."
+      },
+      "ages": {
+        "question": "¿Para qué edades es?",
+        "answer": "Niños y adolescentes, de 6 a 17 años más o menos. Antes de los 13, un Tutor crea la cuenta; los adolescentes también pueden registrarse solos."
+      },
+      "whatIsTutor": {
+        "question": "¿Qué es una cuenta Tutor?",
+        "answer": "La cuenta de un padre o madre verificado. Confirmas tu identidad, y cada hijo vinculado a ti es tuyo para ver y supervisar."
+      },
+      "addChild": {
+        "question": "¿Cómo agrego a mi hijo?",
+        "answer": "Desde tu cuenta Tutor: un nombre, un usuario y una contraseña que tú eliges. Tu hijo no necesita correo."
+      },
+      "twoParents": {
+        "question": "¿Pueden dos adultos supervisar al mismo hijo?",
+        "answer": "Sí. Otro Tutor verificado puede unirse con una invitación de un solo uso desde tu panel, que caduca en 7 días, y tú lo confirmas primero."
+      },
+      "howMany": {
+        "question": "¿Cuántos hijos puedo agregar?",
+        "answer": "Hasta 10 por cuenta Tutor."
+      },
+      "ownDevice": {
+        "question": "¿Mi hijo necesita su propio dispositivo?",
+        "answer": "No. Las cuentas de hijo funcionan en un dispositivo compartido, y cada sesión es independiente de la tuya."
+      },
+      "talksToAI": {
+        "question": "¿Mi hijo habla con una IA?",
+        "answer": "Sí, con un personaje Mentor que responde por escrito. La voz está apagada para menores por defecto y necesita tu consentimiento."
+      },
+      "privateFromYou": {
+        "question": "¿Lo que mi hijo le dice al Mentor es privado?",
+        "answer": "De otros usuarios, sí. De ti, no: puedes leer cada intercambio completo, no un resumen."
+      },
+      "remember": {
+        "question": "¿El Mentor puede recordar cosas de mi hijo?",
+        "answer": "Solo con tu aprobación. Ves cada nota propuesta junto a la anterior y la apruebas o la rechazas."
+      },
+      "mentors": {
+        "question": "¿Quiénes son los Mentores?",
+        "answer": "Tu hijo elige uno de 4 personajes, cada uno con personalidad propia: Dina, Liruf, Dr. Rho o Zara."
+      },
+      "canBeWrong": {
+        "question": "¿El Mentor puede equivocarse?",
+        "answer": "Sí, es una IA y puede explicar algo con poca precisión. Sus respuestas a menores se revisan antes y nunca reemplazan tu criterio."
+      },
+      "realBank": {
+        "question": "¿Es una cuenta bancaria real?",
+        "answer": "No. Es práctica en monedas, una simulación que nunca usa dinero real."
+      },
+      "lfCoins": {
+        "question": "¿Qué son las monedas?",
+        "answer": "La moneda de práctica de la app. Se ganan con tareas y lecciones para practicar ahorrar, gastar y compartir; no valen nada fuera de la app."
+      },
+      "chores": {
+        "question": "¿Cómo funcionan las tareas y recompensas?",
+        "answer": "Tú fijas una tarea y sus monedas, y tu hijo las reparte entre ahorrar, gastar y compartir. Apruebas cada una o dejas pasar las pequeñas."
+      },
+      "realMoney": {
+        "question": "¿Mi hijo puede gastar dinero real?",
+        "answer": "No, en ninguna parte del producto. LittleFounders nunca pide datos de pago a un menor ni mueve dinero real."
+      },
+      "notTaught": {
+        "question": "¿Enseña crédito, deudas o inversión?",
+        "answer": "La práctica cubre ganar, repartir, ahorrar y recompensas. No enseña crédito, deudas, interés compuesto, riesgo, inversiones ni seguros, y el bono de ahorro no es interés."
+      },
+      "dataCollected": {
+        "question": "¿Qué datos recogen de mi hijo?",
+        "answer": "Solo lo que el producto necesita: para una cuenta de hijo, un apodo y, si la escribes, una fecha de nacimiento. Nada de nombre completo, dirección ni contacto."
+      },
+      "moderation": {
+        "question": "¿Todo lo que dice el Mentor se revisa antes?",
+        "answer": "Sí. En una cuenta de hijo, las respuestas del Mentor se revisan antes de mostrarse o decirse en voz alta."
+      },
+      "retention": {
+        "question": "¿Cuánto tiempo guardan las conversaciones con el Mentor?",
+        "answer": "Hasta 90 días, en un ciclo automático fijo."
+      },
+      "noMessaging": {
+        "question": "¿Mi hijo puede enviar mensajes a otras personas?",
+        "answer": "No. No hay chat, mensajes ni comentarios entre personas, y algo así seguiría apagado para los niños salvo que su Tutor lo active."
+      },
+      "socialRetention": {
+        "question": "¿Cuánto tiempo guardan quién sigue a quién?",
+        "answer": "Los seguidores y bloqueos duran hasta que alguien los quita o borra la cuenta. Las solicitudes sin respuesta caducan en 30 días, y las cerradas se borran 30 días después."
+      },
+      "familyRecords": {
+        "question": "¿Cuánto guardan los registros de tareas?",
+        "answer": "Las fotos de tareas, 30 días después de tu decisión; las tareas, recompensas, decisiones y notas, 400 días. Al borrar la cuenta de tu hijo se borra todo."
+      },
+      "analyticsToggle": {
+        "question": "¿Puedo apagar la analítica de uso de mi hijo?",
+        "answer": "Sí, hijo por hijo, desde tu cuenta Tutor. Sigue apagada hasta que tú la activas."
+      },
+      "coppa": {
+        "question": "¿Cumplen las leyes de privacidad infantil?",
+        "answer": "Nuestro Aviso de Privacidad sigue los estándares de COPPA y la LGPD de minimización de datos y consentimiento parental. El detalle legal completo está ahí."
+      },
+      "contact": {
+        "question": "¿Cómo contacto a soporte?",
+        "answer": "Escribe a informame@littlefounders.ai, o reporta un perfil en la app: Reportar está junto a Bloquear en cada perfil."
+      },
+      "deleteAccount": {
+        "question": "¿Puedo borrar nuestra cuenta?",
+        "answer": "Sí, en Configuración: se elimina 14 días después, salvo que decidas conservarla. Las de invitado se eliminan al instante; la de un niño la elimina su Tutor."
+      },
+      "cancelTutor": {
+        "question": "¿Qué pasa si cancelo mi cuenta?",
+        "answer": "La cuenta de tu hijo se pausa al instante, hasta que un Tutor activo la supervise de nuevo. Si nadie lo hace en 90 días, se elimina."
+      }
+    },
+    "closingTitle": "¿Te queda una pregunta?",
+    "closingBody": "Escríbenos. Una persona lee cada mensaje.",
+    "emailUs": "Escríbenos"
+  },
+  "legalPage": {
+    "official": "Documento oficial",
+    "documents": "Documentos legales",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "contents": "Contenido",
+    "search": "Buscar en este documento",
+    "noResults": "Ninguna cláusula coincide con tu búsqueda.",
+    "cookieSettings": "Preferencias de cookies"
+  },
+  "cookies": {
+    "region": "Elección de cookies",
+    "title": "Tu elección de cookies",
+    "body": "Usamos cookies necesarias para que el sitio funcione. Si aceptas, también contamos visitas y qué enlace te trajo.",
+    "accept": "Aceptar opcionales",
+    "reject": "Rechazar opcionales",
+    "preferences": "Preferencias",
+    "sheetTitle": "Preferencias de cookies",
+    "sheetIntro": "Las cookies opcionales siguen apagadas hasta que las aceptes. Puedes cambiarlo desde el pie de página.",
+    "necessaryTitle": "Necesarias",
+    "necessaryBody": "Mantienen tu sesión y recuerdan opciones como idioma y modo.",
+    "attributionTitle": "De dónde llegaste",
+    "attributionBody": "Registra qué enlace o campaña te trajo aquí.",
+    "measurementTitle": "Medición de visitas",
+    "measurementBody": "Cuenta visitas y páginas para mejorar el sitio.",
+    "alwaysOn": "Siempre activas",
+    "optional": "Opcionales",
+    "together": "Las dos opcionales se aceptan o rechazan juntas.",
+    "currentGranted": "Tu elección: cookies opcionales aceptadas.",
+    "currentDenied": "Tu elección: cookies opcionales rechazadas.",
+    "currentUnset": "Aún no eliges. Las opcionales están apagadas.",
+    "privacyLink": "Aviso de Privacidad",
+    "close": "Cerrar"
+  },
+  "routeError": {
+    "title": "Esta pantalla tuvo un problema",
+    "body": "Algo falló al cargar esta parte. No fue algo que hiciste.",
+    "staleTitle": "Hay una versión nueva",
+    "staleBody": "La app se actualizó con esta pestaña abierta. Recarga para verla.",
+    "reload": "Recargar",
+    "home": "Inicio",
+    "learn": "Mis lecciones"
+  },
+  "authCommon": {
+    "email": "Correo",
+    "password": "Contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "passwordHelp": "Al menos 8 caracteres.",
+    "passwordShort": "Usa al menos 8 caracteres.",
+    "birthDate": "Fecha de nacimiento",
+    "day": "Día",
+    "month": "Mes",
+    "year": "Año",
+    "dateInvalid": "Revisa la fecha.",
+    "google": "Continuar con Google",
+    "googleFailed": "No pudimos conectar con Google. Inténtalo de nuevo.",
+    "or": "o",
+    "backToLogin": "Volver a iniciar sesión",
+    "errors": {
+      "INVALID_CREDENTIALS": "El usuario y la contraseña no coinciden.",
+      "EMAIL_NOT_CONFIRMED": "Primero confirma tu correo. Revisa tu bandeja.",
+      "EMAIL_IN_USE": "Ya hay una cuenta con este correo.",
+      "RATE_LIMITED": "Demasiados intentos. Espera un momento.",
+      "VALIDATION_ERROR": "Revisa lo que escribiste e inténtalo de nuevo.",
+      "NOT_A_GUEST": "Esta cuenta ya está guardada.",
+      "DOCUMENT_UNREADABLE": "No pudimos leer esa foto. Prueba con una más nítida.",
+      "PAYLOAD_TOO_LARGE": "Esa foto es muy grande. Usa una de menos de 8 MB.",
+      "FORBIDDEN": "Solo un adulto puede ser Tutor.",
+      "OFFLINE": "Sin conexión. Conéctate e intenta de nuevo.",
+      "INTERNAL": "Algo falló de nuestro lado. Inténtalo de nuevo."
+    }
+  },
+  "authLogin": {
+    "title": "Qué bueno verte de nuevo",
+    "identifier": "Correo o nombre de usuario",
+    "identifierHelp": "Los niños usan el usuario que creó su madre o padre.",
+    "submit": "Iniciar sesión",
+    "submitting": "Iniciando sesión…",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "newHere": "¿Eres nuevo?",
+    "signup": "Crear cuenta"
+  },
+  "authSignup": {
+    "title": "Crea tu cuenta",
+    "lead": "Todos empiezan gratis. Sin documentos.",
+    "name": "Tu nombre",
+    "birthHelp": "Guardamos como máximo el mes y el año.",
+    "tutorIntent": "Soy madre, padre o responsable legal",
+    "tutorIntentHelp": "Verifica tu identidad después para ser Tutor.",
+    "submit": "Crear cuenta",
+    "submitting": "Creando…",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "login": "Iniciar sesión",
+    "confirmTitle": "Revisa tu correo",
+    "confirmBody": "Abre el enlace que enviamos para confirmar tu cuenta:",
+    "refusedTitle": "Un adulto de tu familia crea tu cuenta",
+    "refusedBody": "Puedes seguir aprendiendo como invitado.",
+    "tryGuest": "Probar como invitado",
+    "starting": "Iniciando…",
+    "guestFailed": "No pudimos empezar. Inténtalo de nuevo.",
+    "why": "¿Por qué?",
+    "whyTitle": "Aprender como invitado",
+    "whyNoEmail": "Un invitado no necesita correo ni contraseña.",
+    "whySafety": "El micrófono sigue apagado. El Mentor sigue las reglas de seguridad más estrictas.",
+    "whyParent": "Un adulto puede crear tu propia cuenta después.",
+    "close": "Cerrar"
+  },
+  "authForgot": {
+    "title": "Restablece tu contraseña",
+    "lead": "Te enviaremos un enlace para elegir una nueva.",
+    "submit": "Enviar enlace",
+    "submitting": "Enviando…",
+    "sentTitle": "Revisa tu correo",
+    "sentBody": "Si hay una cuenta con este correo, enviamos un enlace:"
+  },
+  "authReset": {
+    "title": "Elige una contraseña nueva",
+    "checking": "Revisando tu enlace…",
+    "newPassword": "Contraseña nueva",
+    "submit": "Actualizar contraseña",
+    "submitting": "Actualizando…",
+    "doneTitle": "Contraseña actualizada",
+    "doneBody": "Inicia sesión con tu contraseña nueva.",
+    "login": "Iniciar sesión",
+    "expiredTitle": "Este enlace ya no funciona",
+    "expiredBody": "El enlace es viejo o ya se usó. Pide uno nuevo.",
+    "requestNew": "Pedir otro enlace"
+  },
+  "authCallback": {
+    "title": "Iniciando sesión",
+    "signingIn": "Un momento…",
+    "failedTitle": "No se completó el inicio de sesión",
+    "failedBody": "Vuelve e inténtalo de nuevo."
+  },
+  "authUpgrade": {
+    "title": "Guarda tu progreso",
+    "lead": "Tu racha y tu progreso siguen igual.",
+    "submit": "Guardar cuenta",
+    "submitting": "Guardando…",
+    "later": "Ahora no",
+    "other": "¿Tienes otra cuenta?",
+    "login": "Iniciar sesión"
+  },
+  "authVerify": {
+    "title": "Hazte Tutor",
+    "checking": "Revisando tu estado…",
+    "statusFailedTitle": "No pudimos revisarlo",
+    "statusFailedBody": "Tu estado no cargó. Inténtalo de nuevo.",
+    "retry": "Intentar de nuevo",
+    "retrying": "Intentando…",
+    "revokedTitle": "Tu verificación fue revocada",
+    "revokedBody": "Una persona de nuestro equipo puede revisarla. Escríbenos.",
+    "ineligibleTitle": "Solo un adulto puede verificarse",
+    "ineligibleBody": "Un Tutor es una madre, un padre o un responsable verificado.",
+    "home": "Ir al inicio",
+    "alreadyTitle": "Ya eres Tutor",
+    "alreadyBody": "Abre tu familia para agregar a tu hijo.",
+    "openFamily": "Abrir familia",
+    "successTitle": "Ahora eres Tutor",
+    "successBody": "Ya puedes agregar a tu hijo y asignar tareas.",
+    "verified": "Tutor verificado",
+    "step1": "Escribe tu nombre y fecha de nacimiento como en tu identificación.",
+    "step2": "Fotografía tu identificación. La comparamos y te respondemos.",
+    "step3": "Nunca guardamos la foto.",
+    "ready": "Comenzar",
+    "notNow": "Ahora no",
+    "privacy": "La foto de tu identificación se revisa en memoria y se borra de inmediato. Nunca se guarda ni se comparte. Guardamos los datos que escribes solo si la verificación funciona.",
+    "identity": "Sobre ti",
+    "givenNames": "Nombre(s)",
+    "surnames": "Apellidos",
+    "birthHelp": "Exactamente como en tu identificación.",
+    "document": "Tu identificación",
+    "photo": "Foto de tu identificación",
+    "photoHelp": "Nítida y con buena luz. JPEG, PNG o WebP, hasta 8 MB.",
+    "choosePhoto": "Elegir foto",
+    "changePhoto": "Cambiar foto",
+    "photoType": "Usa una foto JPEG, PNG o WebP.",
+    "photoSize": "Usa una foto de menos de 8 MB.",
+    "submit": "Verificar identidad",
+    "submitting": "Revisando…",
+    "failTitle": "No pudimos verificar esta identificación",
+    "checks": {
+      "documentReadable": "La foto es difícil de leer.",
+      "nameMatch": "El nombre no coincide.",
+      "birthDateMatch": "La fecha de nacimiento no coincide.",
+      "notExpired": "La identificación parece vencida."
+    },
+    "retryHint": "Prueba con una foto más nítida u otra identificación.",
+    "helpBody": "Una persona puede revisarla por ti.",
+    "writeToUs": "Escríbenos",
+    "supportEmail": "informame@littlefounders.ai"
+  },
+  "onboardingFlow": {
+    "title": "Primeros pasos",
+    "progress": "Paso {current} de {total}",
+    "back": "Atrás",
+    "continue": "Continuar",
+    "skip": "Omitir",
+    "saving": "Guardando…",
+    "failed": "No pudimos guardar. Inténtalo de nuevo.",
+    "welcomeTitle": "Te damos la bienvenida a LittleFounders",
+    "welcomeBody": "Toma menos de un minuto.",
+    "start": "Empezar",
+    "nameTitle": "¿Cómo te llamas?",
+    "nameLabel": "Tu nombre",
+    "mentorTitle": "Elige a tu Mentor",
+    "chosen": "Elegido",
+    "mentorFailed": "No pudimos guardar tu elección. Inténtalo de nuevo.",
+    "lines": {
+      "rho": "Cálido y preciso",
+      "zara": "Curiosa y rápida",
+      "liruf": "Juguetón y lleno de energía",
+      "dina": "Tranquila y paciente"
+    },
+    "discoveryTitle": "¿Cómo nos conociste?",
+    "discoveryLegend": "Elige una opción",
+    "channels": {
+      "friend": "Amigos o familia",
+      "social_media": "Redes sociales",
+      "search": "Búsqueda en internet",
+      "app_store": "Tienda de apps",
+      "school": "Escuela",
+      "ad": "Anuncio",
+      "other": "Otro"
+    },
+    "accountTitle": "¿Guardamos tu progreso?",
+    "accountBody": "Con una cuenta, tu racha te sigue en cualquier dispositivo.",
+    "create": "Crear cuenta",
+    "later": "Después"
   }
 }

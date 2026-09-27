@@ -1,0 +1,139 @@
+/*
+ * Sign-in, recovery, verification and onboarding (W2 Lane 1, W2S.2): tokens
+ * only, the 4 px spacing scale (03 §3.1), the named type steps (03 §3.2),
+ * layouts by the `app` container width (02 §7 rule 9), no border on a filled
+ * shape (02 §4.4), light and dark from the same tokens. Text never truncates:
+ * every row wraps (02 §7).
+ */
+
+/* ---- A sign-in screen: one column inside the sign-in shell ---- */
+.lf-rebuild .lf-auth-page { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-rebuild .lf-auth-page :is(ol, ul) { margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-auth-intro { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-rebuild .lf-auth-intro h1:focus { outline: none; }
+.lf-rebuild .lf-auth-lead { font: var(--type-body-lg); color: var(--content-muted); }
+.lf-rebuild .lf-auth-address { font: var(--type-label); }
+.lf-rebuild .lf-auth-note { color: var(--content-muted); text-align: center; justify-self: center; }
+.lf-rebuild .lf-auth-form, .lf-rebuild .lf-auth-fields, .lf-rebuild .lf-auth-group { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+.lf-rebuild .lf-auth-group > h2 { font: var(--type-title); }
+.lf-rebuild .lf-auth-form > .lf-button { inline-size: 100%; }
+
+/* A text link: a 48 px target without a surface of its own (it never competes with the one call to action). */
+.lf-rebuild .lf-auth-link {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  justify-content: center;
+  min-block-size: var(--target-min);
+  min-inline-size: var(--target-min);
+  color: var(--primary-strong);
+  font: var(--type-label);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+.lf-rebuild .lf-auth-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--spacing-2); max-inline-size: none; }
+
+/* Google, then "or" between the two ways in. */
+.lf-rebuild .lf-auth-social { display: grid; gap: var(--spacing-4); }
+.lf-rebuild .lf-auth-social > .lf-button { inline-size: 100%; }
+/* Words, not a rule: separation is never a drawn line (02 §4.4). */
+.lf-rebuild .lf-auth-or { max-inline-size: none; color: var(--content-muted); font: var(--type-label); text-align: center; }
+
+/* Day, month, year: one row while they fit, one column on the narrowest phones. */
+.lf-rebuild .lf-date-fields { display: grid; gap: var(--spacing-2); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.lf-rebuild .lf-date-fields > legend { padding: 0; margin-block-end: var(--spacing-1); }
+.lf-rebuild .lf-date-fields-row { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: var(--spacing-3); min-inline-size: 0; }
+@container app (max-width: 339px) { .lf-rebuild .lf-date-fields-row { grid-template-columns: 1fr; } }
+
+/* The why-sheet of the under-13 refusal: short paragraphs (06 §4 layering). */
+.lf-rebuild .lf-auth-why { display: grid; gap: var(--spacing-3); }
+
+/* ---- Become a Tutor ---- */
+.lf-rebuild .lf-auth-steps { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-auth-step { display: flex; align-items: flex-start; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--content); font: var(--type-body); }
+.lf-rebuild .lf-auth-step > span:last-child { flex: 1 1 0; min-inline-size: 0; }
+.lf-rebuild .lf-auth-step-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--spacing-8);
+  block-size: var(--spacing-8);
+  border-radius: var(--rounded-full);
+  background: var(--primary);
+  color: var(--on-primary);
+  font: var(--type-label);
+}
+.lf-rebuild .lf-auth-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+  max-inline-size: none;
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--sky-soft);
+  color: var(--sky-strong);
+  font: var(--type-body);
+}
+.lf-rebuild .lf-auth-privacy .lf-system-glyph { flex: none; inline-size: var(--spacing-5); block-size: var(--spacing-5); }
+.lf-rebuild .lf-auth-checks { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--warning-soft); color: var(--content); }
+/* The verdict's notice already sits on the panel's warning fill: no second inset, so its glyph lines up with the checks'. */
+.lf-rebuild .lf-auth-checks > .lf-notice { padding: 0; }
+.lf-rebuild .lf-auth-check-list { display: grid; gap: var(--spacing-2); }
+.lf-rebuild .lf-auth-check-list > li { display: flex; align-items: flex-start; gap: var(--spacing-2); font: var(--type-body); }
+.lf-rebuild .lf-auth-check-list .lf-system-glyph { flex: none; inline-size: var(--spacing-5); block-size: var(--spacing-5); color: var(--error-strong); }
+.lf-rebuild .lf-auth-help { display: grid; gap: var(--spacing-2); }
+.lf-rebuild .lf-auth-chip { max-inline-size: none; }
+
+/* The ID photo (IdDocumentField): the well is the input's label, so the whole well is the target. */
+.lf-rebuild .lf-id-document-drop {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2) var(--spacing-4);
+  min-block-size: var(--target-lg);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--rounded-md);
+  background: var(--sunken);
+  color: var(--content);
+  cursor: pointer;
+}
+.lf-rebuild .lf-id-document-drop:has(.lf-id-document-input:disabled) { cursor: default; }
+.lf-rebuild .lf-id-document-action {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  min-inline-size: min-content;
+  padding: var(--spacing-2) var(--spacing-5);
+  border-radius: var(--rounded-full);
+  background: var(--surface);
+  box-shadow: var(--elevation-card);
+  font: var(--type-label);
+  overflow-wrap: break-word;
+}
+.lf-rebuild[data-theme='dark'] .lf-id-document-action { background: var(--raised); }
+.lf-rebuild .lf-id-document-name { flex: 1 1 10em; font: var(--type-body); }
+.lf-rebuild .lf-id-document-drop:has(.lf-id-document-input:focus-visible) { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+.lf-rebuild .lf-id-document-drop:has(.lf-id-document-input[aria-invalid='true']) { box-shadow: inset 0 0 0 var(--focus-width) var(--error-strong); }
+.lf-rebuild .lf-id-document-drop:has(.lf-id-document-input:disabled) { color: var(--content-disabled); }
+
+/* ---- Onboarding: a full-bleed single-state screen, the step on a tint of its hue ---- */
+.lf-rebuild .lf-onboarding-bar { display: flex; flex: 1 1 auto; align-items: center; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-onboarding-progress { display: grid; flex: 1 1 12em; gap: var(--spacing-2); min-inline-size: 0; font: var(--type-label); }
+.lf-rebuild .lf-onboarding-panel {
+  display: grid;
+  gap: var(--spacing-5);
+  min-inline-size: 0;
+  padding: var(--spacing-6) var(--spacing-5);
+  border-radius: var(--rounded-xl);
+  background: var(--primary-soft);
+  color: var(--content);
+}
+.lf-rebuild .lf-onboarding-panel h1:focus { outline: none; }
+/* On the hue's tint, a field is the contrasting fill (the surface), not the sunken well it is on a neutral page. */
+.lf-rebuild .lf-onboarding-panel .lf-input { background: var(--surface); }
+/* The same for a choice row: its resting fill is the hue's tint, which the panel already is (the chosen row stays the hue). */
+.lf-rebuild .lf-onboarding-panel .lf-radio-option { background: var(--surface); }
+.lf-rebuild .lf-onboarding-form { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
+@container app (min-width: 640px) { .lf-rebuild .lf-onboarding-panel { padding: var(--spacing-8); } }

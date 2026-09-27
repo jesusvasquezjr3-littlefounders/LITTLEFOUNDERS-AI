@@ -272,13 +272,14 @@ export function checkSocialGovernance(root, { today = new Date() } = {}) {
   // The published half (E.11 "publish"; E.10 stated to families): the FAQ in every locale.
   for (const locale of ['en-US', 'es-MX', 'pt-BR']) {
     let items = null;
-    try { items = JSON.parse(read(root, `frontend/src/i18n/${locale}/marketing.json`)).faq?.items ?? null; } catch { /* reported below */ }
+    try { items = JSON.parse(read(root, `frontend/src/i18n/${locale}/rebuild-site.json`)).faq?.items ?? null; } catch { /* reported below */ }
     const retention = items?.socialRetention?.answer ?? '';
-    if (!items?.noMessaging?.answer || !items?.noMessaging?.question) failures.push(`frontend/src/i18n/${locale}/marketing.json: the FAQ must state the no-messaging constraint (faq.items.noMessaging, E.10)`);
-    if (!retention.includes(String(sqlWindows.pendingRequestDays)) || !retention.includes(String(sqlWindows.closedRequestDays))) failures.push(`frontend/src/i18n/${locale}/marketing.json: the FAQ must publish the request windows (${sqlWindows.pendingRequestDays} and ${sqlWindows.closedRequestDays} days; faq.items.socialRetention, E.11)`);
+    if (!items?.noMessaging?.answer || !items?.noMessaging?.question) failures.push(`frontend/src/i18n/${locale}/rebuild-site.json: the FAQ must state the no-messaging constraint (faq.items.noMessaging, E.10)`);
+    if (!retention.includes(String(sqlWindows.pendingRequestDays)) || !retention.includes(String(sqlWindows.closedRequestDays))) failures.push(`frontend/src/i18n/${locale}/rebuild-site.json: the FAQ must publish the request windows (${sqlWindows.pendingRequestDays} and ${sqlWindows.closedRequestDays} days; faq.items.socialRetention, E.11)`);
   }
-  const faqPage = tryRead(root, 'frontend/src/routes/marketing/FAQ.tsx') ?? '';
-  for (const id of ['noMessaging', 'socialRetention']) if (!faqPage.includes(`{ id: "${id}", category: "privacy" }`)) failures.push(`frontend/src/routes/marketing/FAQ.tsx: the FAQ does not list ${id}`);
+  // The rebuilt FAQ (W2 Lane 1) lists its questions in one file beside the surface.
+  const faqPage = tryRead(root, 'frontend/src/rebuild/site/faqItems.ts') ?? '';
+  for (const id of ['noMessaging', 'socialRetention']) if (!faqPage.includes(`{ id: "${id}", category: "privacy" }`)) failures.push(`frontend/src/rebuild/site/faqItems.ts: the FAQ does not list ${id}`);
 
   const events = tsArray(tryRead(root, 'backend/src/services/insights.ts') ?? '', 'RECORDABLE_EVENTS');
   if (!events) failures.push('backend/src/services/insights.ts: RECORDABLE_EVENTS not found');

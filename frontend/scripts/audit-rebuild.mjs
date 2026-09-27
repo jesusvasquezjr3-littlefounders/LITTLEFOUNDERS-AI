@@ -53,6 +53,7 @@ const output = resolve('../audit-results/rebuild-audits');
 mkdirSync(output, { recursive: true });
 
 const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+const readyTries = Math.max(300, Math.ceil(Number(process.env.AUDIT_READY_MS ?? 15000) / 50));
 const rows = { 'text-fit': [], proportion: [], 'copy-budget': [] };
 const configurations = { 'text-fit': 0, proportion: 0, 'copy-budget': 0 };
 const jsErrors = [];

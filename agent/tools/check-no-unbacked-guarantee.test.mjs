@@ -85,6 +85,16 @@ test('catches a retired claim coming back in any string of its namespace (S07.8)
   assert.match(failures[0], /^marketing:extra\.note \(pt-BR\) says "gastar precisa da sua aprovação antes"/);
 });
 
+test('holds the rebuilt public site to the same retired claims (W2 Lane 1)', () => {
+  const failures = mutate((live) => ({
+    locales: (locale, ns) => (locale === 'es-MX' && ns === 'rebuild-site'
+      ? { ...live.locales(locale, ns), extra: { note: 'Gastar necesita tu aprobación primero.' } }
+      : live.locales(locale, ns)),
+  }));
+  assert.equal(failures.length, 1, failures.join('\n'));
+  assert.match(failures[0], /^rebuild-site:extra\.note \(es-MX\) says "gastar necesita tu aprobación primero"/);
+});
+
 test('flattens copy to dotted keys', () => {
   assert.deepEqual(flatStrings({ a: { b: 'x', c: ['y'] }, d: 1 }), [['a.b', 'x'], ['a.c.0', 'y']]);
 });

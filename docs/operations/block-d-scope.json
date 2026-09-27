@@ -23,7 +23,7 @@
   "requiredConcepts": ["credit", "debt", "compound_interest", "risk_insurance"],
   "publicAnswers": [
     { "id": "notTaught", "why": "S07.8: D.20 asks for the statement in parent-facing material, and a parent weighing the product reads the marketing FAQ before any in-app screen.",
-      "list": "frontend/src/routes/marketing/FAQ.tsx", "namespace": "marketing", "copyKey": "faq.items.notTaught.answer",
+      "list": "frontend/src/rebuild/site/faqItems.ts", "namespace": "rebuild-site", "copyKey": "faq.items.notTaught.answer",
       "mustName": {
         "en-US": ["credit", "debt", "compound interest", "risk", "insurance", "not interest"],
         "es-MX": ["crédito", "deudas", "interés compuesto", "riesgo", "seguros", "no es interés"],

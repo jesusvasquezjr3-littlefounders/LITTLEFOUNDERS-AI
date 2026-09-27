@@ -10,7 +10,7 @@
   },
   "publicAnswers": [
     { "id": "familyRecords", "why": "S07.8: D.21 asks for the policy to be published; the marketing FAQ states the photo and record periods to anyone, and must never drift from the periods the nightly job enforces.",
-      "list": "frontend/src/routes/marketing/FAQ.tsx", "namespace": "marketing", "copyKey": "faq.items.familyRecords.answer", "periods": ["evidence", "records"] }
+      "list": "frontend/src/rebuild/site/faqItems.ts", "namespace": "rebuild-site", "copyKey": "faq.items.familyRecords.answer", "periods": ["evidence", "records"] }
   ],
   "domainPrefixes": [
     "tasks", "wallet_", "banking_", "banca_", "family_", "chore_", "savings_", "share_", "spend_", "allowance_", "pending_credits", "redemption",

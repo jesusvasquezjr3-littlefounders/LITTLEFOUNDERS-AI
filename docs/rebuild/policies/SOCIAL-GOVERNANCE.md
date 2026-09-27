@@ -177,7 +177,7 @@ Three guards hold it:
 
 ### 4.2 Reviewed upload surfaces
 
-These are the only places a file can be uploaded. None is a profile, avatar or cover. `guardrails:check` fails if a Core file other than the two routes imports an upload parser (`multer`, `busboy`, `formidable`, `express.raw`) or a frontend file other than the three listed renders a file input.
+These are the only places a file can be uploaded. None is a profile, avatar or cover. `guardrails:check` fails if a Core file other than the two routes imports an upload parser (`multer`, `busboy`, `formidable`, `express.raw`) or a frontend file other than the ones listed renders a file input.
 
 | Surface | What it uploads | Who sees it |
 |---|---|---|
@@ -185,6 +185,7 @@ These are the only places a file can be uploaded. None is a profile, avatar or c
 | `backend/src/routes/verification.ts` | A parent's ID document for A.5 verification | Nobody but the verification pipeline |
 | `frontend/src/routes/app/tasks/EvidencePhoto.tsx` | Task evidence photo input | Same as the tasks route |
 | `frontend/src/components/ui/FileField.tsx` | The ID document input on the parent verification page | Same as the verification route |
+| `frontend/src/rebuild/identity/IdDocumentField.tsx` | The same ID document input, rebuilt on the design system (W2S.2); the legacy row above goes when S10 deletes the legacy UI | Same as the verification route |
 | `frontend/src/tutor-scene/lab/SceneLabPage.tsx` | A local model file in a development-only lab | Only the developer's browser; nothing is sent |
 
 ## 5. Brand position (E.12)

@@ -1,13 +1,25 @@
-.lf-age-screen {
-  max-inline-size: 34rem;
-  margin-inline: auto;
-  padding: var(--spacing-5);
-  padding-block-start: var(--spacing-8);
-  display: grid;
-  gap: var(--spacing-6);
-}
+/*
+ * The age question (A.3). Standalone, it sits on a tint of the single-state
+ * screen's hue (02 §4.5: every element on a single-state screen is a tint or a
+ * contrasting fill of its hue, never a jump to a neutral page); embedded in the
+ * sign-in shell's column, it is that column's content. Fixed steps by the `app`
+ * container, never fluid or by the viewport (02 §6, §7 rule 9).
+ */
+/* Embedded: the shell's page already paints the background and the height. */
+.lf-rebuild.lf-age-root--embedded { min-block-size: 0; background: none; }
+.lf-age-screen { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
 .lf-age-form { display: grid; gap: var(--spacing-6); }
 .lf-age-date { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: var(--spacing-3); }
-/* Fixed steps by the `app` container, never fluid or by the viewport (02 §6, §7 rule 9). */
-@container app (min-width: 640px) { .lf-age-screen { padding: var(--spacing-12); padding-block-start: var(--spacing-24); } }
+.lf-rebuild .lf-age-panel {
+  inline-size: 100%;
+  max-inline-size: 34rem;
+  margin-inline: auto;
+  padding: var(--spacing-6) var(--spacing-5);
+  border-radius: var(--rounded-xl);
+  background: var(--primary-soft);
+  color: var(--content);
+}
+/* On the hue's tint, a field is the contrasting fill (the surface), not the sunken well of a neutral page. */
+.lf-rebuild .lf-age-panel .lf-input { background: var(--surface); }
+@container app (min-width: 640px) { .lf-rebuild .lf-age-panel { padding: var(--spacing-8); } }
 @container app (max-width: 339px) { .lf-age-date { grid-template-columns: 1fr; } }

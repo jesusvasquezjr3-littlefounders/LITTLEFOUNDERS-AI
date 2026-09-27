@@ -1,26 +1,29 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, Icon } from '@/components/ui';
+import { useTheme } from '@/theme/useTheme';
+import { useShellLocale } from '@/app-shell/ShellRoot';
+import { RouteErrorFrame } from '@/rebuild/site/RouteErrorScreen';
 
 /*
- * The boundary that keeps a broken route from becoming a white screen.
+ * The boundary that keeps a broken route from becoming a white screen (X2).
  *
  * Two reasons this exists, and both were live defects rather than theory:
  *
  *   1. A route that throws while rendering unmounts the whole React tree. The
- *      app had no boundary above any route, so the result was an empty #root —
+ *      app had no boundary above any route, so the result was an empty #root:
  *      the exact failure mode that hid a wrong `to=` in the /learn chapter list
  *      for a week, reported as "the Lesson Engine is dead".
  *   2. Lazy routes add a SECOND way to get there, and it is routine rather than
  *      rare: after a deploy, a tab that is still running the previous build
  *      asks for a chunk whose content hash no longer exists. The import
- *      rejects, Suspense cannot recover, and the page goes blank — for a user
+ *      rejects, Suspense cannot recover, and the page goes blank for a user
  *      who did nothing wrong except leave the app open.
  *
  * A stale chunk is fixed by reloading, so that case says so and offers it. Any
- * other error keeps the same shell but sends the learner somewhere real
- * instead of leaving them nowhere. Either way the screen SAYS something: a
- * blank page is the one outcome this component exists to prevent.
+ * other error sends the person somewhere real. Either way the screen SAYS
+ * something. The screen itself is rebuilt (rebuild/site/RouteErrorScreen,
+ * W2 Lane 1): inside a shell it renders as that page's content, so the shell
+ * keeps its one <main> and its navigation; on a full-screen layer (the lesson
+ * player, the Mentor stage) it is the single-state screen.
  */
 
 interface Props {
@@ -41,47 +44,23 @@ interface State {
  * Safari:      "Importing a module script failed"
  * Vite also throws its own "Unable to preload CSS" for the stylesheet half.
  */
-function isStaleChunk(error: Error): boolean {
+export function isStaleChunk(error: Error): boolean {
   return /dynamically imported module|Importing a module script failed|Unable to preload CSS|ChunkLoadError/i.test(
     `${error.name} ${error.message}`,
   );
 }
 
+function useDarkMode(): boolean {
+  // The boundary may sit outside the theme provider in an isolated render; it must still say something.
+  try { return useTheme().isDark; } catch { return false; }
+}
+
 function Fallback({ error, home }: { error: Error; home: string }) {
-  const { t } = useTranslation();
-  const stale = isStaleChunk(error);
-
-  return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-base px-5 py-12 text-center">
-      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-sunken text-content-muted">
-        <Icon name="cloud_off" className="!text-[32px]" aria-hidden />
-      </span>
-
-      <div className="flex max-w-md flex-col gap-2">
-        <h1 className="lf-display-lg text-content">
-          {t(stale ? 'routeError.staleTitle' : 'routeError.title')}
-        </h1>
-        <p className="lf-body-lg text-content-muted">
-          {t(stale ? 'routeError.staleBody' : 'routeError.body')}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {/*
-         * A full reload, not a router navigation: the point of the stale-chunk
-         * case is to fetch the new index and its new hashes, which client-side
-         * routing would not do.
-         */}
-        <Button variant="primary" onClick={() => window.location.reload()}>
-          {t('routeError.reload')}
-        </Button>
-        <Button variant="secondary" onClick={() => window.location.assign(home)}>
-          <Icon name="arrow_back" className="mr-1" aria-hidden />
-          {t('routeError.goHome')}
-        </Button>
-      </div>
-    </main>
-  );
+  const locale = useShellLocale();
+  const dark = useDarkMode();
+  // A full reload, not a router navigation: a stale chunk is fixed only by fetching the new index and its new hashes.
+  return <RouteErrorFrame theme={dark ? 'dark' : 'light'} locale={locale} stale={isStaleChunk(error)} home={home === '/' ? 'home' : 'learn'}
+    onReload={() => window.location.reload()} onHome={() => window.location.assign(home)} />;
 }
 
 export class RouteErrorBoundary extends Component<Props, State> {

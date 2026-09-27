@@ -78,15 +78,15 @@ test('catches the public FAQ answer dropping an exclusion in one locale, or leav
   const dropped = mutate((live) => ({
     locales: (locale, ns) => {
       const json = live.locales(locale, ns);
-      if (locale !== 'es-MX' || ns !== 'marketing') return json;
+      if (locale !== 'es-MX' || ns !== 'rebuild-site') return json;
       const copy = structuredClone(json);
       copy.faq.items.notTaught.answer = copy.faq.items.notTaught.answer.replace('deudas, ', '');
       return copy;
     },
   }));
-  assert.deepEqual(dropped, ['notTaught: marketing:faq.items.notTaught.answer (es-MX) no longer names "deudas"']);
+  assert.deepEqual(dropped, ['notTaught: rebuild-site:faq.items.notTaught.answer (es-MX) no longer names "deudas"']);
   const unlisted = mutate((live) => ({
-    readFile: (path) => (path.endsWith('FAQ.tsx') ? live.readFile(path).replace('{ id: "notTaught", category: "money" },', '') : live.readFile(path)),
+    readFile: (path) => (path.endsWith('faqItems.ts') ? live.readFile(path).replace('{ id: "notTaught", category: "money" },', '') : live.readFile(path)),
   }));
-  assert.deepEqual(unlisted, ['frontend/src/routes/marketing/FAQ.tsx: no longer lists the "notTaught" answer']);
+  assert.deepEqual(unlisted, ['frontend/src/rebuild/site/faqItems.ts: no longer lists the "notTaught" answer']);
 });

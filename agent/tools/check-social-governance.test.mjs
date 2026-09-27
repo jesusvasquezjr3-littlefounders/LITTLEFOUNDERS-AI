@@ -130,9 +130,9 @@ test('E.11: a sweep that drops a class, a weaker consent rule, an unmounted rout
 });
 
 test('E.11/E.10: the FAQ must publish the windows and the no-messaging constraint in every locale', () => {
-  expectFailure([['frontend/src/i18n/pt-BR/marketing.json', 'expiram em 30 dias, e os encerrados são excluídos 30 dias depois', 'expiram em 60 dias, e os encerrados são excluídos 60 dias depois']], /pt-BR\/marketing\.json: the FAQ must publish/);
-  expectFailure([['frontend/src/i18n/es-MX/marketing.json', '"noMessaging"', '"noMessagingOld"']], /es-MX\/marketing\.json: the FAQ must state the no-messaging/);
-  expectFailure([['frontend/src/routes/marketing/FAQ.tsx', '{ id: "socialRetention", category: "privacy" },', '']], /does not list socialRetention/);
+  expectFailure([['frontend/src/i18n/pt-BR/rebuild-site.json', 'expiram em 30 dias, e os encerrados são excluídos 30 dias depois', 'expiram em 60 dias, e os encerrados são excluídos 60 dias depois']], /pt-BR\/rebuild-site\.json: the FAQ must publish/);
+  expectFailure([['frontend/src/i18n/es-MX/rebuild-site.json', '"noMessaging"', '"noMessagingOld"']], /es-MX\/rebuild-site\.json: the FAQ must state the no-messaging/);
+  expectFailure([['frontend/src/rebuild/site/faqItems.ts', '{ id: "socialRetention", category: "privacy" },', '']], /does not list socialRetention/);
 });
 
 test('E.11: a migration that deletes from the append-only audit log fails', () => {
