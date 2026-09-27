@@ -29,7 +29,7 @@ import './console.css';
  *      category and a severity, never the child's words; a talk's flag opens
  *      that talk at the flagged moment. A course-choice flag has no talk to
  *      open, and says so in words.
- *   2. What the Mentor remembers: the parental approval gate on the note the
+ *   2. The Mentor's note: the parental approval gate on the note the
  *      Mentor reads before each talk. The current note and what a suggestion
  *      would replace are both shown; a suggestion written against an older
  *      note is marked before anyone taps, and Core refuses it independently.
@@ -112,7 +112,6 @@ export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, lo
     <header className="lf-console-header">
       <BackLink href={backHref} label={copy.back} onNavigate={onNavigate} />
       <h1 className="ugc" data-copy-role="heading">{name ? fill(copy.title, { name }) : copy.titleFallback}</h1>
-      <Copy role="body">{copy.intro}</Copy>
     </header>
     {body}
   </div>;
@@ -135,6 +134,8 @@ export function ChildMentorTalks({ copy, notesCopy, consentCopy, profileCopy, lo
     <Kept key={`kept:${kidId}`} kidId={kidId} copy={copy} locale={locale} transport={transport} />
     <section className="lf-console-group" aria-labelledby="child-mentor-talks" data-console-part="sessions">
       <h2 id="child-mentor-talks" data-copy-role="heading">{copy.sessionsTitle}</h2>
+      {/* "Every word, in full" (§1.9) is said where the transcripts are, not in the page header: the first view stays within 06 §3.1 (W2F.3 audit). */}
+      {sessions.length > 0 ? <Copy role="body">{copy.intro}</Copy> : null}
       {sessions.length === 0 ? <Copy role="body">{copy.empty}</Copy>
         : <ul className="lf-console-list">
           {sessions.map((session) => <Session key={session.id} session={session} copy={copy} locale={locale} transport={transport} speakerName={speakerName}
@@ -284,7 +285,8 @@ function MemoryNotesReview({ kidId, copy, locale, transport }: { kidId: string; 
   return <Card as="div">
     <section className="lf-console-group" aria-labelledby="child-mentor-notes" data-console-part="memory-notes" aria-busy={load.status === 'loading'}>
       <h2 id="child-mentor-notes" data-copy-role="heading">{copy.title}</h2>
-      <Copy role="body">{copy.body}</Copy>
+      {/* The approval gate is said where there is something it governs; "No note yet." alone needs no rule (06 §3.1, W2F.3 audit). */}
+      {load.status === 'ready' && (load.notes.current !== null || load.notes.proposals.length > 0) ? <Copy role="body">{copy.body}</Copy> : null}
       {load.status === 'loading' ? <LoadingState label={copy.loading} lines={2} />
         : load.status === 'failed' ? <>
           <InlineNotice tone="error" live>{copy.loadFailed}</InlineNotice>

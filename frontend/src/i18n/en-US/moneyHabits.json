@@ -23,7 +23,7 @@
     "loading": "Getting your split…",
     "retry": "Try again",
     "ready": "{count} coins to split",
-    "splitNow": "Split them"
+    "splitNow": "Split"
   },
   "usualSplit": {
     "open": "My usual split",

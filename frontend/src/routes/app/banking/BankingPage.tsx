@@ -20,7 +20,7 @@ import { SavingsBonusSettingsPanel } from './SavingsBonusSettingsPanel';
 import { TutorFreezePanel } from './TutorFreezePanel';
 
 /*
- * /banking: F5 (W2F.2), "Digital Banking", the practice coin card. One
+ * /banking: F5 (W2F.2), the Wallet (formerly "Digital Banking", OD-28), the practice coin card. One
  * route, two rebuilt screens by who is signed in: the verified parent (the
  * Tutor) gets F5-P, the coin cards of their children one at a time
  * (`?child=` names the child in view); a child in a family (a parent-created

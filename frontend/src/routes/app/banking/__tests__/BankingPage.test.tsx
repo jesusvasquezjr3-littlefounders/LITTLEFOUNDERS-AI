@@ -34,7 +34,7 @@ vi.mock('../../tasks/SavingsGoalsPanel', () => ({ SavingsGoalsPanel: () => null 
 vi.mock('../../tasks/UsualSplitPanel', () => ({ UsualSplitPanel: () => null }));
 vi.mock('../../tasks/WalletActivityPanel', () => ({ WalletActivityPanel: () => null }));
 vi.mock('../../tasks/AllocationPanel', () => ({
-  AllocationPanel: ({ frozen }: { frozen?: boolean }) => <button type="button" data-copy-role="action" disabled={frozen}>Split them</button>,
+  AllocationPanel: ({ frozen }: { frozen?: boolean }) => <button type="button" data-copy-role="action" disabled={frozen}>Split</button>,
 }));
 beforeEach(async () => { mocks.api.mockReset(); resetMoneyRegisterCache(); await i18n.changeLanguage('en-US'); });
 
@@ -80,7 +80,7 @@ describe('the Tutor (F5-P)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Freeze' }));
     fireEvent.click(screen.getByRole('button', { name: 'Freeze' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('That did not change. Try again.');
-    expect(screen.getByText('Not frozen')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Freeze' }));
     fireEvent.click(screen.getByRole('button', { name: 'Freeze' }));
     await waitFor(() => expect(screen.getByText('You froze it.')).toBeInTheDocument());
@@ -99,7 +99,7 @@ describe('the Tutor (F5-P)', () => {
     await act(async () => finish({ data: { account: { frozen: true } }, error: null }));
     expect(screen.getByText('Account b')).toBeInTheDocument();
     expect(screen.queryByText('Account a')).toBeNull();
-    expect(screen.getByText('Not frozen')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Freeze' })).toBeEnabled();
   });
 });
@@ -138,16 +138,16 @@ describe('the child (F5-K)', () => {
     expect(screen.getByText('They wait until the freeze ends.')).toBeInTheDocument();
     for (const hold of ['Rewards', 'Splitting coins', 'New coins', 'Share gifts']) expect(screen.getByText(hold)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Unfreeze' })).toBeNull();
-    expect(await screen.findByRole('button', { name: 'Split them' })).toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'Split' })).toBeDisabled();
     expect(mocks.api.mock.calls.some(([path]) => String(path).endsWith('/freeze'))).toBe(false);
   });
 
   it("resumes the split only after the child's own freeze is lifted and re-read", async () => {
     fixture('kid');
     fireEvent.click(await screen.findByRole('button', { name: 'Unfreeze' }));
-    await waitFor(() => expect(screen.getByText('Not frozen')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Active')).toBeInTheDocument());
     expect(mocks.api).toHaveBeenCalledWith('/banking/account/freeze', expect.objectContaining({ method: 'POST', body: { frozen: false } }));
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Split them' })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Split' })).toBeEnabled());
   });
 
   it('shows a failed unfreeze and keeps the confirmed frozen state and credits', async () => {
@@ -155,6 +155,6 @@ describe('the child (F5-K)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Unfreeze' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('That did not change. Try again.');
     expect(screen.getAllByText('Frozen').length).toBeGreaterThan(0);
-    expect(screen.getByRole('button', { name: 'Split them' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Split' })).toBeDisabled();
   });
 });

@@ -35,7 +35,8 @@ import { installSyntheticCore, loadLessonFixtures, SCENARIOS, sessionStorageScri
  * Env filters for a debugging run (recorded evidence always uses the full set):
  *   AUDIT_STATES=system,lesson@6-9 (ids or id prefixes ending in *), AUDIT_LOCALES,
  *   AUDIT_THEMES, AUDIT_WIDTHS, AUDIT_ROUTES=/some/route (extra real-app routes),
- *   AUDIT_WORKERS (parallel pages, default 3).
+ *   AUDIT_WORKERS (parallel pages, default 3), AUDIT_READY_MS (how long one load
+ *   may take to mount; it only lengthens the default 300 polls; a readiness wait, never an audit rule).
  * Reports: audit-results/rebuild-audits/<audit>.json. Exit 0 clean, 1 findings, 2 setup error.
  */
 const AUDITS = ['text-fit', 'proportion', 'copy-budget'];
@@ -52,6 +53,7 @@ const output = resolve('../audit-results/rebuild-audits');
 mkdirSync(output, { recursive: true });
 
 const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+const READY_MS = Number(process.env.AUDIT_READY_MS ?? 0) || 0;
 const rows = { 'text-fit': [], proportion: [], 'copy-budget': [] };
 const configurations = { 'text-fit': 0, proportion: 0, 'copy-budget': 0 };
 const jsErrors = [];
@@ -85,7 +87,8 @@ async function load(page, state, locale, theme, width) {
     ? `document.readyState === 'complete' && !!document.querySelector('.lf-rebuild') && document.documentElement.lang === ${JSON.stringify(locale)}${(state.readyAll ?? []).map((selector) => ` && !!document.querySelector(${JSON.stringify(selector)})`).join('')}`
     :`location.href === ${JSON.stringify(url)} && !!document.querySelector('.lf-rebuild main, main.lf-rebuild')`;
   let ok = false;
-  for (let n = 0; n < 300 && !ok; n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
+  // At least the historical 300 polls; AUDIT_READY_MS only ever lengthens the wait.
+  for (let n = 0, until = Date.now() + READY_MS; !ok && (n < 300 || Date.now() < until); n++) { await wait(50); ok = await page.evaluate(`!!(${ready})`).catch(() => false); }
   if (!ok) throw new Error(`${state.id} ${locale} ${theme}: never became ready at ${url}`);
   // A hidden page gets no animation frames: every measurement after this would be of a frozen page.
   if (await page.evaluate('document.visibilityState') !== 'visible') throw new Error(`${state.id}: the audit page is hidden`);

@@ -49,8 +49,12 @@
 .lf-family-console .lf-console-ugc { white-space: pre-line; overflow-wrap: anywhere; }
 .lf-family-console .lf-console-replaces { display: grid; gap: var(--spacing-1); padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--surface); }
 .lf-family-console .lf-console-transcript { display: grid; gap: var(--spacing-2); min-inline-size: 0; list-style: none; margin: 0; padding: 0; }
-.lf-family-console .lf-console-beat { display: grid; gap: var(--spacing-1); min-inline-size: 0; max-inline-size: 42rem; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); }
+.lf-family-console .lf-console-beat { display: grid; gap: var(--spacing-1); min-inline-size: 0; max-inline-size: 34rem; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); }
 .lf-family-console .lf-console-beat[data-speaker='child'] { justify-self: end; background: var(--accent-soft); }
 .lf-family-console .lf-console-beat[data-speaker='note'], .lf-family-console .lf-console-beat[data-speaker='activity'] { background: var(--sky-soft); }
 .lf-family-console .lf-console-beat[data-flagged='true'] { background: var(--warning-soft); }
 .lf-family-console .lf-console-speaker { font: var(--type-caption); color: var(--content); }
+/* 03 §3 measure (at most 75 characters a line), found by the W2F.3 rebuild audit: a talk's lines, the talk cards on F3 and the
+   removal warning ran 81-117 characters wide on a tablet or desktop column. */
+.lf-family-console[data-screen='child-mentor'] .lf-console-item { max-inline-size: 36rem; }
+.lf-family-console .lf-console-danger .lf-notice { max-inline-size: 32rem; }

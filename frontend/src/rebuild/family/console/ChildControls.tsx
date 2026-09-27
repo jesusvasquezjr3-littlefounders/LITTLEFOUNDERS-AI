@@ -150,6 +150,10 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
     </div>;
   }
 
+  // Core refuses every account change for a self-registered teen (ACCOUNT_SELF_MANAGED). When the family list could not say
+  // which kind of account this is (accountType null), the controls show, and that refusal is explained, never a bare failure.
+  const refusal = (code: string) => code === 'ACCOUNT_SELF_MANAGED' ? fill(copy.teenNote, { name: label }) : copy.failed;
+
   async function saveName(event: FormEvent) {
     event.preventDefault();
     const next = name.trim();
@@ -157,7 +161,7 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
     setBusy('name'); setNotice(null);
     const result = await renameChild(transport, child.userId, next);
     setBusy('idle');
-    if (!result.ok) { setNotice({ tone: 'error', text: result.code === 'PROFILE_FIELD_UNSAFE' ? copy.unsafe : copy.failed }); return; }
+    if (!result.ok) { setNotice({ tone: 'error', text: result.code === 'PROFILE_FIELD_UNSAFE' ? copy.unsafe : refusal(result.code) }); return; }
     setNotice({ tone: 'success', text: copy.nameSaved });
     onRenamed(child.userId, next);
   }
@@ -168,7 +172,7 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
     setBusy('passphrase'); setNotice(null);
     const result = await setChildPassphrase(transport, child.userId, passphrase);
     setBusy('idle');
-    if (!result.ok) { setNotice({ tone: 'error', text: copy.failed }); return; }
+    if (!result.ok) { setNotice({ tone: 'error', text: refusal(result.code) }); return; }
     setPassphrase('');
     setNotice({ tone: 'success', text: fill(copy.passphraseSaved, { name: label }) });
   }
@@ -181,7 +185,7 @@ export function ManageChild({ child, copy, transport, onRenamed, onRemoved }: {
     setBusy('remove'); setNotice(null);
     const result = await removeChild(transport, child.userId);
     setBusy('idle');
-    if (!result.ok) { setNotice({ tone: 'error', text: copy.failed }); return; }
+    if (!result.ok) { setNotice({ tone: 'error', text: refusal(result.code) }); return; }
     if (!result.data.deleted) { setNotice({ tone: 'info', text: copy.removeHeld }); return; }
     onRemoved(child.userId);
   }

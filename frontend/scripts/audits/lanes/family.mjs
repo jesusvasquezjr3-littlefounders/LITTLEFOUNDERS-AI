@@ -65,12 +65,22 @@ const ready = {
   childCoins: '[data-screen="child-coins"] [data-family-part="card-look"]',
 };
 
+/*
+ * A state reached by a press: the runner waits for readiness BEFORE it presses (audit-rebuild.mjs `load`), so readiness is
+ * the control to press, never what the press reveals (W2F.3: waiting for the revealed part meant these states could never
+ * become ready). That the press landed is proved by the runner's signature check: the opened page must not render the same
+ * markup as the unopened state of the same scenario, which is also audited (one-child, empty, talks, tutor, child).
+ * The first-view word budget (06 §3.1) is what a screen says on arrival, so it is measured on those unopened states; what
+ * a deliberate press reveals is layered copy (06 §4), measured by every other rule (roles, text fit, proportion).
+ */
+const opens = (selector) => [selector, { open: [selector], firstView: false }];
+
 export const states = [
   app('/family@two-children', `/family?child=${KID_A}`, 'family-two', ready.console, { readyAlso: '[data-console-part="picker"]' }),
   app('/family@teen-selected', `/family?child=${KID_B}`, 'family-two', `[data-console-control="manage-child"][data-self-managed="true"]`),
   app('/family@one-child', '/family', 'family-one', ready.console),
-  app('/family@manage-open', '/family', 'family-one', '[data-console-control="remove-child"]', { open: ['[data-console-control="manage-child"] button'] }),
-  app('/family@add-child', '/family', 'family-empty', '[data-console-control="add-child"] form', { open: ['[data-console-control="add-child"] button'] }),
+  app('/family@manage-open', '/family', 'family-one', ...opens('[data-console-control="manage-child"] button')),
+  app('/family@add-child', '/family', 'family-empty', ...opens('[data-console-control="add-child"] button')),
   app('/family@empty', '/family', 'family-empty', '[data-screen="family-console"] .lf-state--empty'),
   app('/family@unverified', '/family', 'family-unverified', '[data-screen="family-console"] .lf-state--empty a[href="/verify-parent"]'),
   app('/family@offline', '/family', 'family-offline', '[data-screen="family-console"] .lf-state--error'),
@@ -78,13 +88,12 @@ export const states = [
   app('/family/:kid/territory@forbidden', `/family/${KID_A}/territory`, 'family-progress-forbidden', '[data-screen="child-progress"] .lf-state--empty'),
   app('/family/:kid/territory@no-course', `/family/${KID_A}/territory`, 'family-progress-no-course', '[data-screen="child-progress"] .lf-state--empty'),
   app('/family/:kid/tutor@talks', `/family/${KID_A}/tutor`, 'family-two', ready.mentor, { readyAlso: ['[data-console-part="flags"]', '[data-memory-note]'] }),
-  app('/family/:kid/tutor@transcript', `/family/${KID_A}/tutor`, 'family-two', '[data-console-part="sessions"] [data-console-part="transcript"]',
-    { open: ['[data-console-part="sessions"] [data-session-id] button'] }),
+  app('/family/:kid/tutor@transcript', `/family/${KID_A}/tutor`, 'family-two', ...opens('[data-console-part="sessions"] [data-session-id] button')),
   app('/family/:kid/tutor@quiet', `/family/${KID_A}/tutor`, 'family-mentor-quiet', ready.mentor),
   app('/family/:kid/tutor@forbidden', `/family/${KID_A}/tutor`, 'family-mentor-forbidden', '[data-screen="child-mentor"] .lf-state--empty'),
   // W2F.2: Tasks (F4) and coins (F5), both sides, and the teen wallet.
   app('/tasks@tutor', '/tasks', 'money-tutor', ready.tutorTasks, { readyAlso: '[data-family-part="rewards"] li' }),
-  app('/tasks@tutor-add-reward', '/tasks', 'money-tutor', '[data-family-part="add-reward"]', { open: ['[data-family-part="rewards"] > .lf-button-group button'] }),
+  app('/tasks@tutor-add-reward', '/tasks', 'money-tutor', ...opens('[data-family-part="rewards"] > .lf-button-group button')),
   app('/tasks@tutor-empty', '/tasks', 'money-tutor-empty', '[data-screen="tutor-tasks"] .lf-state--empty'),
   app('/tasks@tutor-offline', '/tasks', 'money-tutor-offline', '[data-screen="tutor-tasks"] .lf-state--error'),
   app('/tasks@child', '/tasks', 'money-child', ready.childTasks, { readyAlso: '[data-family-part="payouts"]' }),
@@ -95,7 +104,7 @@ export const states = [
   app('/banking@tutor-open-card', `/banking?child=${KID_A}`, 'money-tutor-new', '[data-family-part="open-card"]'),
   app('/banking@tutor-offline', '/banking', 'money-tutor-offline', '[data-screen="tutor-coins"] .lf-state--error'),
   app('/banking@child', '/banking', 'money-child', ready.childCoins, { readyAlso: '[data-family-part="payouts"]' }),
-  app('/banking@child-card', '/banking', 'money-child', '[data-overlay="dialog"] [data-family-part="card-colour"]', { open: ['[data-family-part="card-look"] button'] }),
+  app('/banking@child-card', '/banking', 'money-child', ...opens('[data-family-part="card-look"] button')),
   app('/banking@teen-linked', '/banking', 'money-teen-linked', ready.childCoins),
   app('/wallet@teen', '/wallet', 'money-teen', '[data-teen-wallet="root"] [data-pocket="save"]'),
   app('/wallet@teen-offline', '/wallet', 'money-teen-offline', '[data-teen-wallet="root"] .lf-state--error'),

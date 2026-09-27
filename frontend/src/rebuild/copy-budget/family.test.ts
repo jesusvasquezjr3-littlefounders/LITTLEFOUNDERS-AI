@@ -1,5 +1,7 @@
-import { describe, it } from 'vitest';
-import { expectBudgetedGroups, expectFits, flatten, namespaceCopy } from './budget';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { expectBudgetedGroups, expectFits, flatten, LOCALES, namespaceCopy } from './budget';
 
 /* `rebuild-family.json` (Lane 4): Family Hub, Tutor console, tasks, banking, teen wallet, family social decisions. */
 
@@ -89,4 +91,52 @@ describe('rebuild-family copy budget', () => {
       }
     });
   }
+});
+
+/*
+ * OD-28 (owner glossary §5, 27 September 2026): the money section formerly
+ * called "Digital Banking" is Wallet / Cartera / Carteira, and never a bank or
+ * a banking account. Pinned over every namespace this lane owns (the rebuilt
+ * one and the wave-1 family, money and wallet namespaces its screens mount)
+ * and over the inline copy of its rebuilt components. A sentence that says
+ * coins are NOT in a bank ("not a bank interest rate") stays allowed: the
+ * rule is about naming the section or the card, not about the disclaimer.
+ */
+const LANE_NAMESPACES = ['rebuild-family', 'familyHub', 'familyMoney', 'familyAutonomy', 'familyGovernance', 'moneyHabits', 'moneyRegister', 'coinAccount', 'teenWallet'];
+const SECTION_NAMES: Record<(typeof LOCALES)[number], RegExp> = {
+  'en-US': /(?<![\p{L}])(?:digital banking|online banking|bank account|banking account|banking)(?![\p{L}])/iu,
+  'es-MX': /(?<![\p{L}])(?:billetera|banca digital|banca en l[ií]nea|cuenta bancaria|monedero)(?![\p{L}])/iu,
+  'pt-BR': /(?<![\p{L}])(?:banco digital|conta banc[aá]ria|carteira digital)(?![\p{L}])/iu,
+};
+
+function laneSources(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return laneSources(path);
+    return /\.tsx?$/.test(entry.name) && !/\.test\.tsx?$/.test(entry.name) && !/Fixtures\.ts$/.test(entry.name) ? [path] : [];
+  });
+}
+/** In source, a bare "banking" is a route or an API path (`/banking`), not a name a family reads. */
+const INLINE_NAMES = new RegExp(`${SECTION_NAMES['en-US'].source.replace('|banking)', ')')}|${SECTION_NAMES['es-MX'].source}|${SECTION_NAMES['pt-BR'].source}`, 'iu');
+const withoutComments = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
+
+describe('the money section is the Wallet (OD-28)', () => {
+  const root = process.cwd();
+  for (const locale of LOCALES) {
+    it(`${locale}: no lane namespace names it a bank or "Digital Banking"`, () => {
+      const found = LANE_NAMESPACES.flatMap((namespace) => flatten(JSON.parse(readFileSync(join(root, 'src/i18n', locale, `${namespace}.json`), 'utf8')) as never)
+        .filter(([, text]) => SECTION_NAMES[locale].test(text)).map(([key, text]) => `${namespace}:${key} "${text}"`));
+      expect(found).toEqual([]);
+    });
+  }
+
+  it('no rebuilt family, banking or wallet component carries such a name inline', () => {
+    const files = ['src/rebuild/family', 'src/rebuild/banking', 'src/rebuild/wallet'].flatMap((dir) => laneSources(join(root, dir)));
+    expect(files.length).toBeGreaterThan(20);
+    const found = files.flatMap((file) => {
+      const text = withoutComments(readFileSync(file, 'utf8'));
+      return INLINE_NAMES.test(text) ? [relative(root, file).split('\\').join('/')] : [];
+    });
+    expect(found).toEqual([]);
+  });
 });

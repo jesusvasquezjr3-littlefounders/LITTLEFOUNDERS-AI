@@ -262,6 +262,14 @@ describe('Managing a child', () => {
     await screen.findByText('Sofía manages their own sign-in.');
     expect(screen.queryByRole('button', { name: en.familyChildAccount.manage })).toBeNull();
   });
+
+  it('explains Core\'s self-managed refusal when the family list could not say the account is a teen\'s', async () => {
+    await openManage(childWire({ accountType: null }), { [`POST /family/kids/${KID_A}/passphrase`]: refuse('ACCOUNT_SELF_MANAGED') });
+    fireEvent.change(screen.getByLabelText(en.familyChildAccount.newPassphrase), { target: { value: 'another long one' } });
+    fireEvent.click(screen.getByRole('button', { name: en.familyChildAccount.savePassphrase }));
+    expect(await screen.findByText('Sofía manages their own sign-in.')).toBeInTheDocument();
+    expect(screen.queryByText(en.familyChildAccount.failed)).toBeNull();
+  });
 });
 
 describe('Microphone consent', () => {
